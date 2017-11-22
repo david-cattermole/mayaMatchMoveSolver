@@ -48,6 +48,8 @@ public:
 
     Attr &getFocalLengthAttr();
 
+    MMatrix getWorldProjMatrix();
+
 private:
     MString m_transformNodeName;
     MObject m_transformObject;

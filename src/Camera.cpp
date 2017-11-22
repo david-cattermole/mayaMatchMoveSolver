@@ -111,3 +111,24 @@ Attr &Camera::getFilmbackOffsetYAttr() {
 Attr &Camera::getFocalLengthAttr() {
     return m_focalLength;
 }
+
+MMatrix Camera::getWorldProjMatrix() {
+//    INFO("Camera::getWorldProjMatrix");
+    MMatrix camWorldMat = Camera::getMatrix().inverse();
+    MFnCamera cameraFn(Camera::getShapeObject());
+
+//    double near = cameraFn.nearClippingPlane();
+//    double left, right, bottom, top;
+//    cameraFn.getViewingFrustum(1.5, left, right, bottom, top);
+//    left = left * (1.0 / near);
+//    right = right * (1.0 / near);
+//    bottom = bottom * (1.0 / near);
+//    top = top * (1.0 / near);
+//    INFO("getViewingFrustum=" << left << ", " << right << ", " << bottom << ", " << top);
+
+    MMatrix camProjMat = MMatrix(cameraFn.projectionMatrix().matrix);
+//    MMatrix camPostProjMat = MMatrix(cameraFn.postProjectionMatrix().matrix);
+    MMatrix resultMat = camWorldMat * camProjMat; //* camPostProjMat;
+
+    return resultMat;
+}

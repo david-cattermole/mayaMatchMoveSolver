@@ -36,7 +36,7 @@
 #include <maya/MFloatMatrix.h>
 #include <maya/MFnCamera.h>
 
-
+// GL Math
 #include <glm/glm.hpp>
 
 
@@ -88,20 +88,17 @@ void solveFunc(double *p, double *x, int m, int n, void *data) {
     SolverData *udata = static_cast<SolverData*>(data);
 
     CameraPtr cam = udata->cameraList[0];
-    MMatrix camWorldMat = cam->getMatrix().inverse();
-    MFnCamera cameraFn(cam->getShapeObject());
-    MMatrix camProjMat = MMatrix(cameraFn.projectionMatrix().matrix);
-
-    MMatrix resultMat = camWorldMat * camProjMat;
+    MMatrix resultMat = cam->getWorldProjMatrix();
 
     for (i = 0; i < m; ++i) {
         MPlug plug = udata->attrList[i]->getPlug();
-        INFO("set i=" << i << " " << plug.name() << " p=" << p[i]);
+//        INFO("set i=" << i << " " << plug.name() << " p=" << p[i]);
         udata->dgmod->newPlugValueDouble(plug, p[i]);
     }
     udata->dgmod->doIt();
 
     // Force evaluate bundles
+    // TODO: Do Camera's also need to be updated here?
     for (i = 0; i < (n / 3); ++i) {
         MarkerPtr mkr = udata->markerList[i];
         glm::vec3 mkr_pos;
@@ -125,47 +122,48 @@ void solveFunc(double *p, double *x, int m, int n, void *data) {
     for (i = 0; i < (n / 3); ++i) {
         MarkerPtr mkr = udata->markerList[i];
         mkr->getPos(mkr_mpos);
-        INFO("mkr name=" << mkr->getNodeName()
-                         << " x=" << mkr_mpos.x
-                         << " y=" << mkr_mpos.y
-                         << " z=" << mkr_mpos.z
-                         << " w=" << mkr_mpos.w
-        );
+//        INFO("mkr name=" << mkr->getNodeName()
+//                         << " x=" << mkr_mpos.x
+//                         << " y=" << mkr_mpos.y
+//                         << " z=" << mkr_mpos.z
+//                         << " w=" << mkr_mpos.w
+//        );
         mkr_mpos = mkr_mpos * resultMat;
         mkr_mpos.cartesianize();
 
-        INFO("mkr name=" << mkr->getNodeName()
-                         << " x=" << mkr_mpos.x
-                         << " y=" << mkr_mpos.y
-                         << " z=" << mkr_mpos.z
-                         << " w=" << mkr_mpos.w
-        );
+//        INFO("mkr name=" << mkr->getNodeName()
+//                         << " x=" << mkr_mpos.x
+//                         << " y=" << mkr_mpos.y
+//                         << " z=" << mkr_mpos.z
+//                         << " w=" << mkr_mpos.w
+//        );
         glm::vec2 mkr_pos2d(mkr_mpos.x, mkr_mpos.y);
 
         BundlePtr bnd = mkr->getBundle();
         bnd->getPos(bnd_mpos);
-        INFO("bnd name=" << bnd->getNodeName()
-                         << " x=" << bnd_mpos.x
-                         << " y=" << bnd_mpos.y
-                         << " z=" << bnd_mpos.z
-                         << " w=" << bnd_mpos.w
-        );
+//        INFO("bnd name=" << bnd->getNodeName()
+//                         << " x=" << bnd_mpos.x
+//                         << " y=" << bnd_mpos.y
+//                         << " z=" << bnd_mpos.z
+//                         << " w=" << bnd_mpos.w
+//        );
         bnd_mpos = bnd_mpos * resultMat;
         bnd_mpos.cartesianize();
-        INFO("bnd name=" << bnd->getNodeName()
-                         << " x=" << bnd_mpos.x
-                         << " y=" << bnd_mpos.y
-                         << " z=" << bnd_mpos.z
-                         << " w=" << bnd_mpos.w
-        );
+//        INFO("bnd name=" << bnd->getNodeName()
+//                         << " x=" << bnd_mpos.x
+//                         << " y=" << bnd_mpos.y
+//                         << " z=" << bnd_mpos.z
+//                         << " w=" << bnd_mpos.w
+//        );
         glm::vec2 bnd_pos2d(bnd_mpos.x, bnd_mpos.y);
 
+        // NOTE: Interestingly, using an x, y and distance error measurement seems to allow at least some scenes to converge much faster; ~20 iterations compared to ~160 iterations.
         double dx = fabs(mkr_pos2d.x - bnd_pos2d.x);
         double dy = fabs(mkr_pos2d.y - bnd_pos2d.y);
         double d = fabs(glm::distance(bnd_pos2d, mkr_pos2d));
-        INFO("err " << i << " : dx=" << dx << " dy=" << dy << " d=" << d);
-        x[i+0] = 0.5 * (d * d);    // Distance error
-        x[i+1] = 0.5 * (d * d);    // Distance error
+//        INFO("err " << i << " : dx=" << dx << " dy=" << dy << " d=" << d);
+        x[i+0] = 0.5 * (dx * dx);  // X error
+        x[i+1] = 0.5 * (dy * dy);  // Y error
         x[i+2] = 0.5 * (d * d);    // Distance error
     }
 }
@@ -178,6 +176,7 @@ bool solve(int iterMax,
            std::vector< std::shared_ptr<Bundle> > bundleList,
            std::vector< std::shared_ptr<Attr> > attrList,
            MDGModifier &dgmod,
+           // MAnimCurveChange &animChange,
            double &outError) {
     register int i, j;
     int ret;
@@ -210,6 +209,7 @@ bool solve(int iterMax,
     userData.bundleList = bundleList;
     userData.attrList = attrList;
     userData.dgmod = &dgmod;
+    // userData.animChange = &animChange;
 
     // Set Initial parameters
     INFO("Set Initial parameters");
@@ -318,6 +318,15 @@ bool solve(int iterMax,
             // pointer to possibly needed additional data, passed uninterpreted to func.
             // Set to NULL if not needed
             (void *) &userData);
+
+//    INFO("Covariance of the fit:");
+//    for (i = 0; i < m; ++i) {
+//        for (j = 0; j < m; ++j) {
+//            INFO(covar[i * m + j]);
+//        }
+//        INFO("");
+//    }
+//    INFO("");
 
     free(work);
 

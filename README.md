@@ -135,7 +135,7 @@ Here is a table of command flags, as currently specified in the command.
 | ----------------- | ---------------------- | ----------- | ------------- |
 | -camera (-c)      | string, string         | Camera transform and shape nodes | None |
 | -marker (-m)      | string, string, string, double | Marker, Camera, Bundle and error weighting | None |
-| -attr (-a)        | string                 | Node attributes to solve | None |
+| -attr (-a)        | string, bool           | Node attribute and animated | None |
 | -iterations (-it) | int                    | Number of iterations to perform. | 1000 |
 | -verbose (-v)     | bool                   | Prints more information | False |
 
@@ -148,13 +148,24 @@ Here is a table of command flags, as currently specified in the command.
 - [glm (GL Math)](https://glm.g-truc.net/)
 - [levmar 2.6+](http://users.ics.forth.gr/~lourakis/levmar/)
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
-- [ATLAS (optional)](http://www.netlib.org/atlas/)
-- [LAPACK (optional)](http://www.netlib.org/lapack/)
-- [BLAS (optional)](http://www.netlib.org/blas/)
+- [ATLAS](http://www.netlib.org/atlas/) (optional)
+- [LAPACK](http://www.netlib.org/lapack/)  (optional)
+- [BLAS](http://www.netlib.org/blas/)  (optional)
 
 ### Build and Install
-  
-Run the following in a Bash-like shell:
+
+#### Build GL Math (glm)
+
+GL Math (glm) is a header-only library implementing common OpenGL-like classes and functions for mathematics, like vectors and matrices.
+
+Download glm from the [github project](https://github.com/g-truc/glm/releases/tag/0.9.8.5) and uncompress the ZIP file into a directory. Get the location of the glm headers, we will use when building the Maya plug-in.
+
+```commandline
+$ tar -xf glm-0.9.8.5.tar.gz
+$ cd glm-0.9.8.5
+$ pwd
+/path/to/glm-0.9.8.5
+```
 
 #### Build LevMar
 

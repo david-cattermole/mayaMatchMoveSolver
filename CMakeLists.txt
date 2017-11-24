@@ -3,6 +3,11 @@ project(mayaMatchMoveSolver)
 set(CMD_NAME mmSolver)
 set(CMAKE_CXX_STANDARD 11)
 
+# Compile Flags, Release flags come from the Autodesk Maya build scripts.
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall")
+set(CMAKE_C_FLAGS_RELEASE "-DBits64_ -m64 -DUNIX -D_BOOL -DLINUX -DFUNCPROTO -D_GNU_SOURCE -DLINUX_64 -fPIC -fno-strict-aliasing -DREQUIRE_IOSTREAM -O3 -Wall -Wno-multichar -Wno-comment -Wno-sign-compare -funsigned-char  -pthread")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wno-deprecated -Wno-reorder -ftemplate-depth-25 -fno-gnu-keywords")
+
 # Maya SDK
 set(MAYA_INCLUDE_PATH "/usr/autodesk/maya2016/include" CACHE PATH "Maya include directory")
 set(MAYA_LIB_PATH "/usr/autodesk/maya2016/lib" CACHE PATH "Maya library directory")

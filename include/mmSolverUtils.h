@@ -199,7 +199,6 @@ bool solve(int iterMax,
     i = 0;
     j = 0;
     for (AttrPtrListIt ait = attrList.begin(); ait != attrList.end(); ++ait){
-        INFO("ait=" << i << " m=" << m);
         AttrPtr attr = *ait;
         if (attr->getDynamic()) {
             m += frameList.length();

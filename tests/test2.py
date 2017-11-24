@@ -1,9 +1,14 @@
+"""
+Semi-Complex hierarchy and object-space utilising solve.
+"""
+
 try:
     import maya.standalone
     maya.standalone.initialize()
 except RuntimeError:
     pass
 import maya.cmds
+import time
 
 maya.cmds.file(new=True, force=True)
 maya.cmds.unloadPlugin('mmSolver')
@@ -46,16 +51,16 @@ markers = (
     (marker2_tfm, cam_shp, bundle2_tfm, weight),
 )
 node_attrs = [
-    (group_tfm + '.tx', 1),
-    (group_tfm + '.ty', 1),
-    (group_tfm + '.tz', 1),
-    (group_tfm + '.sx', 1),
-    (group_tfm + '.ry', 1),
-    (group_tfm + '.rz', 1),
-
+    (group_tfm + '.tx', 0),
+    (group_tfm + '.ty', 0),
+    (group_tfm + '.tz', 0),
+    (group_tfm + '.sx', 0),
+    (group_tfm + '.ry', 0),
+    (group_tfm + '.rz', 0),
 ]
 
 # Run solver!
+s = time.time()
 maya.cmds.mmSolver(
     camera=cameras,
     marker=markers,
@@ -65,6 +70,8 @@ maya.cmds.mmSolver(
     endFrame=1,
     verbose=True,
 )
+e = time.time()
+print 'total time:', e - s
 
 # maya.cmds.lookThru(cam_tfm)
 

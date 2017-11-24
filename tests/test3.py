@@ -1,9 +1,14 @@
+"""
+Testing a single point nodal camera solve on a single frame.
+"""
+
 try:
     import maya.standalone
     maya.standalone.initialize()
 except RuntimeError:
     pass
 import maya.cmds
+import time
 
 maya.cmds.file(new=True, force=True)
 maya.cmds.unloadPlugin('mmSolver')
@@ -35,11 +40,12 @@ markers = (
     (marker_tfm, cam_shp, bundle_tfm, weight),
 )
 node_attrs = [
-    (bundle_tfm + '.tx', 1),
-    (bundle_tfm + '.ty', 1),
+    (cam_tfm + '.rx', 0),
+    (cam_tfm + '.ry', 0),
 ]
 
 # Run solver!
+s = time.time()
 maya.cmds.mmSolver(
     camera=cameras,
     marker=markers,
@@ -49,6 +55,8 @@ maya.cmds.mmSolver(
     endFrame=1,
     verbose=True,
 )
+e = time.time()
+print 'total time:', e - s
 
 # maya.cmds.lookThru(cam_tfm)
 

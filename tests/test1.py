@@ -1,9 +1,14 @@
+"""
+Solve a single non-animated bundle to the screen-space location of a bundle.
+"""
+
 try:
     import maya.standalone
     maya.standalone.initialize()
 except RuntimeError:
     pass
 import maya.cmds
+import time
 
 maya.cmds.file(new=True, force=True)
 maya.cmds.unloadPlugin('mmSolver')
@@ -35,11 +40,12 @@ markers = (
     (marker_tfm, cam_shp, bundle_tfm, weight),
 )
 node_attrs = [
-    (cam_tfm + '.rx', 1),
-    (cam_tfm + '.ry', 1),
+    (bundle_tfm + '.tx', 0),
+    (bundle_tfm + '.ty', 0),
 ]
 
 # Run solver!
+s = time.time()
 maya.cmds.mmSolver(
     camera=cameras,
     marker=markers,
@@ -49,6 +55,8 @@ maya.cmds.mmSolver(
     endFrame=1,
     verbose=True,
 )
+e = time.time()
+print 'total time:', e - s
 
 # maya.cmds.lookThru(cam_tfm)
 

@@ -24,13 +24,13 @@ Camera::Camera() :
         m_transformObject(),
         m_shapeNodeName(""),
         m_shapeObject(),
-        m_worldMatrix(),
+        m_matrix(),
         m_filmbackWidth(),
         m_filmbackHeight(),
         m_filmbackOffsetX(),
         m_filmbackOffsetY(),
         m_focalLength() {
-    m_worldMatrix.setAttrName("worldMatrix");
+    m_matrix.setAttrName("worldMatrix");
     m_filmbackWidth.setAttrName("horizontalFilmAperture");
     m_filmbackHeight.setAttrName("verticalFilmAperture");
     m_filmbackOffsetX.setAttrName("horizontalFilmOffset");
@@ -44,7 +44,7 @@ MString Camera::getTransformNodeName() {
 
 void Camera::setTransformNodeName(MString value) {
     if (value != m_transformNodeName) {
-        m_worldMatrix.setNodeName(value);
+        m_matrix.setNodeName(value);
     }
     m_transformNodeName = value;
 }
@@ -80,17 +80,8 @@ MObject Camera::getShapeObject() {
 }
 
 Attr &Camera::getMatrixAttr() {
-    return m_worldMatrix;
+    return m_matrix;
 }
-
-MMatrix Camera::getMatrix() {
-    Attr &attr = Camera::getMatrixAttr();
-    MPlug plug = attr.getPlug();
-    MObject matrixObj = plug.asMObject();
-    MFnMatrixData matrixData(matrixObj);
-    return matrixData.matrix();
-}
-
 
 Attr &Camera::getFilmbackWidthAttr() {
     return m_filmbackWidth;
@@ -112,23 +103,29 @@ Attr &Camera::getFocalLengthAttr() {
     return m_focalLength;
 }
 
-MMatrix Camera::getWorldProjMatrix() {
-//    INFO("Camera::getWorldProjMatrix");
-    MMatrix camWorldMat = Camera::getMatrix().inverse();
-    MFnCamera cameraFn(Camera::getShapeObject());
+MStatus Camera::getWorldProjMatrix(MMatrix &value) {
+    MTime time = MAnimControl::currentTime();
+    return Camera::getWorldProjMatrix(value, time);
+}
 
-//    double near = cameraFn.nearClippingPlane();
-//    double left, right, bottom, top;
-//    cameraFn.getViewingFrustum(1.5, left, right, bottom, top);
-//    left = left * (1.0 / near);
-//    right = right * (1.0 / near);
-//    bottom = bottom * (1.0 / near);
-//    top = top * (1.0 / near);
-//    INFO("getViewingFrustum=" << left << ", " << right << ", " << bottom << ", " << top);
+MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time) {
+    MStatus status;
 
-    MMatrix camProjMat = MMatrix(cameraFn.projectionMatrix().matrix);
-//    MMatrix camPostProjMat = MMatrix(cameraFn.postProjectionMatrix().matrix);
-    MMatrix resultMat = camWorldMat * camProjMat; //* camPostProjMat;
+    // Get world matrix at time
+    MMatrix worldMat;
+    status = m_matrix.getValue(worldMat, time);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    worldMat = worldMat.inverse();
 
-    return resultMat;
+    // Get the projection matrix.
+    MFnCamera cameraFn(Camera::getShapeObject(), &status);
+    MDGContext ctx(time);
+    MFloatMatrix floatProjMat = cameraFn.projectionMatrix(ctx, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMatrix projMat = MMatrix(&floatProjMat.matrix[0]);
+    // MMatrix postProjMat = MMatrix(cameraFn.postProjectionMatrix(ctx).matrix);
+
+    // Multiply and lets be on our way.
+    value = worldMat * projMat; //* postProjMat;
+    return status;
 }

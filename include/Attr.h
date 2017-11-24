@@ -8,52 +8,76 @@
 #include <maya/MObject.h>
 #include <maya/MString.h>
 #include <maya/MPlug.h>
-//#include <maya/MFnAnimCurve.h>
+#include <maya/MTime.h>
+#include <maya/MFnAnimCurve.h>
+#include <maya/MAnimControl.h>
+#include <maya/MDGModifier.h>
 
 #include <vector>
 #include <memory>
 
 class Attr {
 public:
+    Attr();
+
     MString getName() const;
 
-    void setName(MString value);
+    MStatus setName(MString value);
 
     MString getNodeName() const;
 
-    void setNodeName(MString value);
+    MStatus setNodeName(MString value);
 
     MString getAttrName() const;
 
-    void setAttrName(MString value);
+    MStatus setAttrName(MString value);
 
     MObject getObject();
 
-    MPlug &getPlug();
+    MPlug getPlug();
+
+//    MStatus getPlug(MPlug &plug);
 
     MObject getAttribute();
 
+    MStatus getValue(bool &value, const MTime &time);
+
+    MStatus getValue(double &value, const MTime &time);
+
+    MStatus getValue(MMatrix &value, const MTime &time);
+
+    MStatus getValue(bool &value);
+
+    MStatus getValue(double &value);
+
+    MStatus getValue(MMatrix &value);
+
+    MStatus setValue(double value, const MTime &time,
+                  MDGModifier &dgmod, MAnimCurveChange &animChange);
+
+    MStatus setValue(double value,
+                  MDGModifier &dgmod, MAnimCurveChange &animChange);
+
     bool isFreeToChange();
 
-    bool getStatic() const;
+    bool isAnimated();
 
-    void setStatic(bool value);
+    bool getDynamic() const;
+
+    void setDynamic(bool value);
 
 private:
     MString m_nodeName;
     MString m_attrName;
     MObject m_object;
-    bool m_static;
-
-//    MFnAnimCurve m_curve;
     MPlug m_plug;
+    bool m_dynamic;
+    int m_animated;
+    int m_isFreeToChange;
 };
 
 typedef std::vector<Attr> AttrList;
 typedef AttrList::iterator AttrListIt;
-
-//typedef std::vector<Attr*> AttrPtrList;
-//typedef std::vector<Attr*>::iterator AttrPtrListIt;
 
 typedef std::shared_ptr<Attr> AttrPtr;
 typedef std::vector<std::shared_ptr<Attr> > AttrPtrList;

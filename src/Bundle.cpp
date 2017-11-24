@@ -21,8 +21,8 @@ Bundle::Bundle() :
         m_nodeName(""),
         m_object(),
         m_weight(1.0),
-        m_worldMatrix() {
-    m_worldMatrix.setAttrName("worldMatrix");
+        m_matrix() {
+    m_matrix.setAttrName("worldMatrix");
 }
 
 
@@ -30,11 +30,14 @@ MString Bundle::getNodeName() const {
     return m_nodeName;
 }
 
-void Bundle::setNodeName(MString value) {
+MStatus Bundle::setNodeName(MString value) {
+    MStatus status = MS::kSuccess;
     if (value != m_nodeName) {
-        m_worldMatrix.setNodeName(value);
+        status = m_matrix.setNodeName(value);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     m_nodeName = value;
+    return status;
 }
 
 MObject Bundle::getObject() {
@@ -48,45 +51,73 @@ double Bundle::getWeight() const {
     return m_weight;
 }
 
-void Bundle::setWeight(double value) {
+MStatus Bundle::setWeight(double value) {
     m_weight = value;
+    return MS::kSuccess;
 }
 
-Attr &Bundle::getWorldMatrixAttr() {
-    return m_worldMatrix;
+Attr &Bundle::getMatrixAttr() {
+    return m_matrix;
 }
 
-MMatrix Bundle::getWorldMatrix() {
-    Attr &attr = Bundle::getWorldMatrixAttr();
-    MPlug plug = attr.getPlug();
-    MObject matrixObj = plug.asMObject();
-    MFnMatrixData matrixData(matrixObj);
-    MMatrix matrix = matrixData.matrix();
-    return matrix;
+MStatus Bundle::getMatrix(MMatrix &value, const MTime &time) {
+    return m_matrix.getValue(value, time);
 }
 
-void Bundle::getWorldPos(double &x, double &y, double &z) {
-    MMatrix matrix = Bundle::getWorldMatrix();
+
+MStatus Bundle::getMatrix(MMatrix &value) {
+    return m_matrix.getValue(value);
+}
+
+MStatus Bundle::getPos(double &x, double &y, double &z, const MTime &time) {
+    MStatus status;
+    MMatrix matrix;
+    status = Bundle::getMatrix(matrix, time);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
     x = matrix(3, 0);
     y = matrix(3, 1);
     z = matrix(3, 2);
-    return;
+    return status;
 }
 
-void Bundle::getPos(glm::vec3 &pos) {
-    MMatrix matrix = Bundle::getWorldMatrix();
-    pos.x = (float) matrix(3, 0);
-    pos.y = (float) matrix(3, 1);
-    pos.z = (float) matrix(3, 2);
-    return;
+MStatus Bundle::getPos(glm::vec3 &pos, const MTime &time) {
+    MStatus status;
+    MMatrix matrix;
+    status = Bundle::getMatrix(matrix, time);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    pos.x = matrix(3, 0);
+    pos.y = matrix(3, 1);
+    pos.z = matrix(3, 2);
+    return status;
 }
 
-void Bundle::getPos(MPoint &point) {
-    MMatrix matrix = Bundle::getWorldMatrix();
+MStatus Bundle::getPos(MPoint &point, const MTime &time) {
+    MStatus status;
+    MMatrix matrix;
+    status = Bundle::getMatrix(matrix, time);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
     point.x = matrix(3, 0);
     point.y = matrix(3, 1);
     point.z = matrix(3, 2);
     point.w = matrix(3, 3);
     point.cartesianize();
-    return;
+    return status;
+}
+
+MStatus Bundle::getPos(double &x, double &y, double &z) {
+    MTime time = MAnimControl::currentTime();
+    MStatus status = Bundle::getPos(x, y, z, time);
+    return status;
+}
+
+MStatus Bundle::getPos(glm::vec3 &pos) {
+    MTime time = MAnimControl::currentTime();
+    MStatus status = Bundle::getPos(pos, time);
+    return status;
+}
+
+MStatus Bundle::getPos(MPoint &point) {
+    MTime time = MAnimControl::currentTime();
+    MStatus status = Bundle::getPos(point, time);
+    return status;
 }

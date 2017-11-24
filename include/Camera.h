@@ -36,8 +36,6 @@ public:
 
     Attr &getMatrixAttr();
 
-    MMatrix getMatrix();
-
     Attr &getFilmbackWidthAttr();
 
     Attr &getFilmbackHeightAttr();
@@ -48,7 +46,9 @@ public:
 
     Attr &getFocalLengthAttr();
 
-    MMatrix getWorldProjMatrix();
+    MStatus getWorldProjMatrix(MMatrix &value, const MTime &time);
+
+    MStatus getWorldProjMatrix(MMatrix &value);
 
 private:
     MString m_transformNodeName;
@@ -57,7 +57,7 @@ private:
     MString m_shapeNodeName;
     MObject m_shapeObject;
 
-    Attr m_worldMatrix;
+    Attr m_matrix;
     Attr m_filmbackWidth;
     Attr m_filmbackHeight;
     Attr m_filmbackOffsetX;

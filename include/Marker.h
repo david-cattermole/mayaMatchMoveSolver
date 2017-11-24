@@ -17,6 +17,7 @@
 #include <Attr.h>
 
 class Camera;
+
 class Bundle;
 
 
@@ -25,24 +26,44 @@ public:
     Marker();
 
     MString getNodeName() const;
-    void setNodeName(MString value);
+
+    MStatus setNodeName(MString value);
+
     MObject getObject();
 
     std::shared_ptr<Camera> getCamera();
-    void setCamera(std::shared_ptr<Camera> &value);
+
+    MStatus setCamera(std::shared_ptr<Camera> &value);
 
     std::shared_ptr<Bundle> getBundle();
-    void setBundle(std::shared_ptr<Bundle> &value);
+
+    MStatus setBundle(std::shared_ptr<Bundle> &value);
+
+    Attr &getMatrixAttr();
+
+    Attr &getVisibleAttr();
 
     Attr &getPosXAttr();
 
     Attr &getPosYAttr();
 
-    Attr& getMatrixAttr();
-    MMatrix getMatrix();
-    void getPos(double &x, double &y, double &z);
-    void getPos(glm::vec3 &pos);
-    void getPos(MPoint &point);
+    MStatus getMatrix(MMatrix &value, const MTime &time);
+
+    MStatus getMatrix(MMatrix &value);
+
+    MStatus getValid(bool &value, const MTime &time);
+
+    MStatus getPos(double &x, double &y, double &z, const MTime &time);
+
+    MStatus getPos(glm::vec3 &pos, const MTime &time);
+
+    MStatus getPos(MPoint &point, const MTime &time);
+
+    MStatus getPos(double &x, double &y, double &z);
+
+    MStatus getPos(glm::vec3 &pos);
+
+    MStatus getPos(MPoint &point);
 
 private:
     MString m_nodeName;
@@ -50,6 +71,7 @@ private:
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Bundle> m_bundle;
     Attr m_matrix;
+    Attr m_visible;
     Attr m_px;
     Attr m_py;
 };
@@ -59,7 +81,7 @@ typedef std::vector<Marker> MarkerList;
 typedef MarkerList::iterator MarkerListIt;
 
 typedef std::shared_ptr<Marker> MarkerPtr;
-typedef std::vector< std::shared_ptr<Marker> > MarkerPtrList;
+typedef std::vector<std::shared_ptr<Marker> > MarkerPtrList;
 typedef MarkerPtrList::iterator MarkerPtrListIt;
 
 #endif // MAYA_MM_SOLVER_MARKER_H

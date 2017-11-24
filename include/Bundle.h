@@ -27,29 +27,45 @@ public:
 
     MString getNodeName() const;
 
-    void setNodeName(MString value);
+    MStatus setNodeName(MString value);
 
     MObject getObject();
 
     double getWeight() const;
 
-    void setWeight(double value);
+    MStatus setWeight(double value);
 
-    Attr &getWorldMatrixAttr();
+    Attr &getMatrixAttr();
 
-    MMatrix getWorldMatrix();
+    MStatus getMatrix(MMatrix &value, const MTime &time);
 
-    void getWorldPos(double &x, double &y, double &z);
+    MStatus getMatrix(MMatrix &value);
 
-    void getPos(glm::vec3 &pos);
+    MStatus getPos(double &x, double &y, double &z, const MTime &time);
 
-    void getPos(MPoint &point);
+    MStatus getPos(glm::vec3 &pos, const MTime &time);
+
+    MStatus getPos(MPoint &point, const MTime &time);
+
+    MStatus getPos(double &x, double &y, double &z);
+
+    MStatus getPos(glm::vec3 &pos);
+
+    MStatus getPos(MPoint &point);
+
+//    MMatrix getMatrix();
+//
+//    void getPos(double &x, double &y, double &z);
+//
+//    void getPos(glm::vec3 &pos);
+//
+//    void getPos(MPoint &point);
 
 private:
     MString m_nodeName;
     MObject m_object;
     double m_weight;
-    Attr m_worldMatrix;
+    Attr m_matrix;
 };
 
 typedef std::vector<Bundle> BundleList;

@@ -21,24 +21,41 @@ Marker::Marker() :
         m_nodeName(""),
         m_object(),
         m_camera(),
-        m_bundle()
- {
+        m_bundle() {
     m_matrix.setAttrName("worldMatrix");
+    m_visible.setAttrName("visibility");
     m_px.setAttrName("translateX");
     m_py.setAttrName("translateY");
+
+    // World matrix is always considered animated, but technically it cannot be animated and it cannot be static only.
+    m_matrix.setDynamic(true);
+    m_visible.setDynamic(true);
+    m_px.setDynamic(true);
+    m_py.setDynamic(true);
 }
 
 MString Marker::getNodeName() const {
     return MString(m_nodeName);
 }
 
-void Marker::setNodeName(MString value) {
+MStatus Marker::setNodeName(MString value) {
+    MStatus status = MS::kSuccess;
+    INFO("Marker::setNodeName: " << value);
     if (value != m_nodeName) {
-        m_matrix.setNodeName(value);
-        m_px.setNodeName(value);
-        m_py.setNodeName(value);
+        status = m_matrix.setNodeName(value);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        status = m_visible.setNodeName(value);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        status = m_px.setNodeName(value);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        status = m_py.setNodeName(value);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     m_nodeName = value;
+    return status;
 }
 
 MObject Marker::getObject() {
@@ -52,16 +69,26 @@ CameraPtr Marker::getCamera() {
     return m_camera;
 }
 
-void Marker::setCamera(CameraPtr &value) {
+MStatus Marker::setCamera(CameraPtr &value) {
     m_camera = value;
+    return MS::kSuccess;
 }
 
 BundlePtr Marker::getBundle() {
     return m_bundle;
 }
 
-void Marker::setBundle(BundlePtr &value) {
+MStatus Marker::setBundle(BundlePtr &value) {
     m_bundle = value;
+    return MS::kSuccess;
+}
+
+Attr &Marker::getMatrixAttr() {
+    return m_matrix;
+}
+
+Attr &Marker::getVisibleAttr() {
+    return m_visible;
 }
 
 Attr &Marker::getPosXAttr() {
@@ -72,42 +99,72 @@ Attr &Marker::getPosYAttr() {
     return m_py;
 }
 
-Attr &Marker::getMatrixAttr() {
-    return m_matrix;
+MStatus Marker::getMatrix(MMatrix &value, const MTime &time) {
+    return m_matrix.getValue(value, time);
 }
 
-MMatrix Marker::getMatrix() {
-    Attr attr = Marker::getMatrixAttr();
-    MPlug plug = attr.getPlug();
-    MObject matrixObj = plug.asMObject();
-    MFnMatrixData matrixData(matrixObj);
-    MMatrix matrix(matrixData.matrix());
-    return matrix;
+MStatus Marker::getMatrix(MMatrix &value) {
+    return m_matrix.getValue(value);
 }
 
-void Marker::getPos(double &x, double &y, double &z) {
-    MMatrix matrix = Marker::getMatrix();
+MStatus Marker::getPos(double &x, double &y, double &z, const MTime &time) {
+    MStatus status;
+    MMatrix matrix;
+    status = Marker::getMatrix(matrix, time);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
     x = matrix(3, 0);
     y = matrix(3, 1);
     z = matrix(3, 2);
-    return;
+    return status;
 }
 
-void Marker::getPos(glm::vec3 &pos) {
-    MMatrix matrix = Marker::getMatrix();
+MStatus Marker::getPos(glm::vec3 &pos, const MTime &time) {
+    MStatus status;
+    MMatrix matrix;
+    status = Marker::getMatrix(matrix, time);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
     pos.x = matrix(3, 0);
     pos.y = matrix(3, 1);
     pos.z = matrix(3, 2);
-    return;
+    return status;
 }
 
-void Marker::getPos(MPoint &point) {
-    MMatrix matrix = Marker::getMatrix();
+MStatus Marker::getPos(MPoint &point, const MTime &time) {
+    MStatus status;
+    MMatrix matrix;
+    status = Marker::getMatrix(matrix, time);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
     point.x = matrix(3, 0);
     point.y = matrix(3, 1);
     point.z = matrix(3, 2);
     point.w = matrix(3, 3);
     point.cartesianize();
-    return;
+    return status;
 }
 
+MStatus Marker::getPos(double &x, double &y, double &z) {
+    MTime time = MAnimControl::currentTime();
+    MStatus status = Marker::getPos(x, y, z, time);
+    return status;
+}
+
+MStatus Marker::getPos(glm::vec3 &pos) {
+    MTime time = MAnimControl::currentTime();
+    MStatus status = Marker::getPos(pos, time);
+    return status;
+}
+
+MStatus Marker::getPos(MPoint &point) {
+    MTime time = MAnimControl::currentTime();
+    MStatus status = Marker::getPos(point, time);
+    return status;
+}
+
+MStatus Marker::getValid(bool &value, const MTime &time) {
+    MStatus status;
+    // TODO: Workout the marker 'validation' logic.
+//    status = m_visible.getValue(value, time);
+//    CHECK_MSTATUS_AND_RETURN_IT(status);
+    value = true;
+    return status;
+}

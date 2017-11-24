@@ -74,14 +74,13 @@ err = maya.cmds.mmSolver(
     endFrame=end,
     verbose=True,
 )
+e = time.time()
+print 'total time:', e - s
 
 # Turn viewports back on.
 if not maya.cmds.about(batch=True):
     for panel in panels:
         maya.cmds.control(panel, edit=True, manage=True)
-
-e = time.time()
-print 'total time:', e - s
 
 # Ensure the values are correct
 assert err < 0.001

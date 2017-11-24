@@ -26,6 +26,8 @@
 
 #include <maya/MPlug.h>
 #include <maya/MPlugArray.h>
+#include <maya/MAnimCurveChange.h>
+#include <maya/MComputation.h>
 
 #include <maya/MPoint.h>
 #include <maya/MVector.h>
@@ -92,18 +94,20 @@ public:
 private:
     MStatus parseArgs( const MArgList& args );
 
-    std::vector< std::shared_ptr<Camera> > m_cameraList;
-    std::vector< std::shared_ptr<Marker> > m_markerList;
-    std::vector< std::shared_ptr<Bundle> > m_bundleList;
-    std::vector< std::shared_ptr<Attr> > m_attrList;
-
     int m_startFrame;
     int m_endFrame;
     unsigned int m_iterations;
     bool m_verbose;
 
+    std::vector< std::shared_ptr<Camera> > m_cameraList;
+    std::vector< std::shared_ptr<Marker> > m_markerList;
+    std::vector< std::shared_ptr<Bundle> > m_bundleList;
+    std::vector< std::shared_ptr<Attr> > m_attrList;
+    MTimeArray m_frameList;
+
     MDGModifier m_dgmod;
-//    MAnimCurveChange m_animCurveChange;
+    MAnimCurveChange m_curveChange;
+    MComputation m_computation;
 };
 
 #endif // MAYA_MM_SOLVER_CMD_H

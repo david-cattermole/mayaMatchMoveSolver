@@ -33,7 +33,6 @@ void *mmSolverCmd::creator() {
     return new mmSolverCmd();
 }
 
-
 /*
  * Tell Maya we have a syntax function.
  */
@@ -42,10 +41,8 @@ bool mmSolverCmd::hasSyntax() const {
 }
 
 bool mmSolverCmd::isUndoable() const {
-    // TODO: Switch this to true once we support undo/redo.
-    return false;
+    return true;
 }
-
 
 /*
  * Add flags to the command syntax
@@ -95,7 +92,6 @@ MStatus mmSolverCmd::parseArgs(const MArgList &args) {
 
         // TODO: Check node names are valid before creating a Camera object.
 
-        // Camera cam = Camera();
         CameraPtr camera = CameraPtr(new Camera());
         camera->setTransformNodeName(cameraTransform);
         camera->setShapeNodeName(cameraShape);
@@ -120,8 +116,8 @@ MStatus mmSolverCmd::parseArgs(const MArgList &args) {
                 continue;
             }
 
-            // TODO: Ensure we have a marker and bundle node.
-            // Test the node type to be sure; they should be transforms.
+            // TODO: Ensure we have a marker and bundle node. Test the node type to
+            // be sure; they should be transforms.
 
             MString markerName = markerArgs.asString(0);
             MString cameraName = markerArgs.asString(1);
@@ -185,23 +181,23 @@ MStatus mmSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgumentList(kAttrFlag, i, attrArgs);
         if(status == MStatus::kSuccess) {
             if (attrArgs.length() != 2){
-                ERR("Attribute argument list must have 2 argument; \"node.attribute\", \"static\".");
+                ERR("Attribute argument list must have 2 argument; \"node.attribute\", \"dynamic\".");
                 continue;
             }
 
             // Attr attr = Attr();
             AttrPtr attr = AttrPtr(new Attr());
             MString nodeAttrName = attrArgs.asString(0);
-            bool attrStatic = attrArgs.asBool(1);
+            bool dyn = attrArgs.asBool(1);
             attr->setName(nodeAttrName);
-            attr->setStatic(attrStatic);
+            attr->setDynamic(dyn);
             m_attrList.push_back(attr);
 
             MPlug attrPlug = attr->getPlug();
             INFO("Attr = " << i << " : "
                            << attr->getName() << " : "
                            << attr->getNodeName() << " : "
-                           << attr->getStatic() << " : "
+                           << attr->getDynamic() << " : "
                            << attrPlug.name());
         }
     }
@@ -220,7 +216,11 @@ MStatus mmSolverCmd::parseArgs(const MArgList &args) {
     }
     INFO("m_endFrame=" << m_endFrame);
 
-    // Get 'Iterations'
+    if (m_startFrame > m_endFrame){
+        status = MS::kFailure;
+    }
+
+   // Get 'Iterations'
     m_iterations = kIterationsDefaultValue;
     if (argData.isFlagSet(kIterationsFlag)) {
         status = argData.getFlagArgument(kIterationsFlag, 0, m_iterations);
@@ -254,25 +254,38 @@ MStatus mmSolverCmd::doIt(const MArgList &args) {
 //
     MStatus status = MStatus::kSuccess;
     INFO("mmSolverCmd::doIt()");
+    MGlobal::executeCommand("waitCursor -state on;");
 
     // Read all the flag arguments.
     status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    int iterMax = m_iterations;
+    MTime::Unit unit = MTime::uiUnit();
+    assert(m_endFrame >= m_startFrame);
+    for(int i=m_startFrame; i <= m_endFrame; ++i) {
+        MTime frame = MTime(double(i), unit);
+        m_frameList.append(frame);
+    }
+    m_curveChange.setInteractive(true);
+
     double outError = -1.0;
     bool ret = solve(
-            iterMax,
+            m_iterations,
             m_cameraList,
             m_markerList,
             m_bundleList,
             m_attrList,
+            m_frameList,
             m_dgmod,
-            outError);
+            m_curveChange,
+            m_computation,
+            outError
+    );
     mmSolverCmd::setResult(outError);
     if (ret == false) {
         WRN("mmSolver: Solver returned false!");
     }
+    MGlobal::executeCommand("waitCursor -state off;");
     return status;
 }
 
@@ -292,6 +305,8 @@ MStatus mmSolverCmd::redoIt() {
 //
     MStatus status;
     INFO("mmSolverCmd::redoIt()");
+    m_dgmod.doIt();
+    m_curveChange.redoIt();
     return status;
 }
 
@@ -311,5 +326,7 @@ MStatus mmSolverCmd::undoIt() {
 //
     MStatus status;
     INFO("mmSolverCmd::undoIt()");
+    m_curveChange.undoIt();
+    m_dgmod.undoIt();
     return status;
 }

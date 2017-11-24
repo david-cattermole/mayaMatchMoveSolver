@@ -65,7 +65,7 @@ if not maya.cmds.about(batch=True):
 
 # Run solver!
 s = time.time()
-maya.cmds.mmSolver(
+err = maya.cmds.mmSolver(
     camera=cameras,
     marker=markers,
     attr=node_attrs,
@@ -83,6 +83,10 @@ if not maya.cmds.about(batch=True):
 e = time.time()
 print 'total time:', e - s
 
-# maya.cmds.lookThru(cam_tfm)
+# Ensure the values are correct
+assert err < 0.001
 
-maya.cmds.quit(force=True)
+if maya.cmds.about(batch=True):
+    maya.cmds.quit(force=True)
+else:
+    maya.cmds.lookThru(cam_tfm)

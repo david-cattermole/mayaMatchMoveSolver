@@ -61,7 +61,7 @@ node_attrs = [
 
 # Run solver!
 s = time.time()
-maya.cmds.mmSolver(
+err = maya.cmds.mmSolver(
     camera=cameras,
     marker=markers,
     attr=node_attrs,
@@ -75,4 +75,17 @@ print 'total time:', e - s
 
 # maya.cmds.lookThru(cam_tfm)
 
-maya.cmds.quit(force=True)
+# Ensure the values are correct
+assert err < 0.001
+# TODO: Make an 'approximately equal' function.
+# assert maya.cmds.getAttr(group_tfm+'.tx') == 0.253288
+# assert maya.cmds.getAttr(group_tfm+'.ty') == 1.44417
+# assert maya.cmds.getAttr(group_tfm+'.tz') == -35.0552
+# assert maya.cmds.getAttr(group_tfm+'.sx') == 1.11311
+# assert maya.cmds.getAttr(group_tfm+'.ry') == 2.7976
+# assert maya.cmds.getAttr(group_tfm+'.rz') == -0.386601
+
+if maya.cmds.about(batch=True):
+    maya.cmds.quit(force=True)
+else:
+    maya.cmds.lookThru(cam_tfm)

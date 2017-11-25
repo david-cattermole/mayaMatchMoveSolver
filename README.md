@@ -44,114 +44,18 @@ The aim of this project is to provide a optimising/minimising solver to aid in c
   - Tool to project 2D tracks onto polygons, creating associated static or animated locators.
   - Tool to import 2D tracks to Maya, reading 3DE or pfTrack, etc. 2D tracking files.
 
-## Usage
+## Documentation
 
-Here is a simple example of how to use the mmSolver command.
+The documentation has been split into [Tool Usage](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/USAGE.md) and [Script API](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/API.md).
 
-```python
-import maya.cmds
+Additionally some of the low-level design is documented in [DESIGN.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DESIGN.md).
 
-# Load Plugin
-maya.cmds.loadPlugin('mmSolver')
+The documentation is not complete at this time.
 
-cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
-cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
-maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
-maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
-
-bundle_tfm = maya.cmds.createNode('transform', name='bundle_tfm')
-bundle_shp = maya.cmds.createNode('locator', name='bundle_shp', parent=bundle_tfm)
-maya.cmds.setAttr(bundle_tfm + '.tx', 5.5)
-maya.cmds.setAttr(bundle_tfm + '.ty', 6.4)
-maya.cmds.setAttr(bundle_tfm + '.tz', -25.0)
-
-marker_tfm = maya.cmds.createNode('transform', name='marker_tfm', parent=cam_tfm)
-marker_shp = maya.cmds.createNode('locator', name='marker_shp', parent=marker_tfm)
-maya.cmds.setAttr(marker_tfm + '.tx', -2.5)
-maya.cmds.setAttr(marker_tfm + '.ty', 1.3)
-maya.cmds.setAttr(marker_tfm + '.tz', -10)
-
-cameras = (
-    (cam_tfm, cam_shp),
-)
-weight = 1.0
-markers = (
-    (marker_tfm, cam_shp, bundle_tfm, weight),
-)
-node_attrs = [
-    (bundle_tfm + '.tx', 1),
-    (bundle_tfm + '.ty', 1),
-]
-
-# Run solver!
-maya.cmds.mmSolver(
-    camera=cameras,
-    marker=markers,
-    attr=node_attrs,
-    iterations=1000,
-    verbose=True,
-)
-
-# Take a look of our results.
-maya.cmds.lookThru(cam_tfm)
-```
-
-_See 'tests/test*.py' files for more examples_
-
-## Command Flags
-
-The command syntax is:
-```text
-mmSolver [flags]
-```
-
-The command can be run in both MEL and Python. 
-
-MEL Example:
-```text
-mmSolver  
-    -camera "camera1" "cameraShape1" 
-    -marker "camera1" "marker1" "bundle1" 1.0
-    -marker "camera1" "marker2" "bundle2" 1.0
-    -attr "node.attr" 1
-    -attr "bundle1.tx" 1
-    -attr "bundle1.ty" 1
-    -attr "bundle1.tz" 1
-    -iterations 1000;
-```
-
-Python Example:
-```python
-maya.cmds.mmSolver(
-    camera=('camera1', 'cameraShape1'),
-    marker=(
-        ('camera1', 'marker1', 'bundle1', 1.0),
-        ('camera1', 'marker2', 'bundle2', 1.0),
-    ),
-    attr=(
-        ('bundle1.tx', 1), 
-        ('bundle1.ty', 1), 
-        ('bundle1.tz', 1)
-    ),
-    iterations=1000
-)
-```
-
-Here is a table of command flags, as currently specified in the command. 
-
-| Flag              | Type                   | Description | Default Value |
-| ----------------- | ---------------------- | ----------- | ------------- |
-| -camera (-c)      | string, string         | Camera transform and shape nodes | None |
-| -marker (-m)      | string, string, string, double | Marker, Camera, Bundle and error weighting | None |
-| -attr (-a)        | string, bool           | Node attribute and dynamic | None |
-| -iterations (-it) | int                    | Number of iterations to perform. | 1000 |
-| -verbose (-v)     | bool                   | Prints more information | False |
-
-## Build and Install
+## Building and Installation
 
 For building and installation follow the instructions in [INSTALL.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL.md).
 
 ## Known Bugs 
 
-_To be written_
+All issues are listed in the [issues page](https://github.com/david-cattermole/mayaMatchMoveSolver/issues) on GitHub. If you have found a bug, please submit an issue and we will try to address it.

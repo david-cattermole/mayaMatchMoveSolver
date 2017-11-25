@@ -96,8 +96,6 @@ $ ./lmdemo  # run the demo (optional)
  
  Minimization info:
  1308.25 8.79459e-05 1.12674e-07 1.13856e-29 636.638 208 2 272 21 209
-$ ls -l -h liblevmar.a  # ensure the library exists 
--rw-rw-r--. 1 user user 97K Aug 22 13:19 liblevmar.a
 ```
 
 #### Build LevMar (complex method)
@@ -189,8 +187,6 @@ Solution: 2.481779 6.181346 3.502236
 
 Minimization info:
 1308.25 8.79459e-05 1.12674e-07 1.13856e-29 636.638 208 2 272 21 209
-$ ls -l -h liblevmar.a  # ensure the library exists 
--rw-rw-r--. 1 user user 461K Aug 22 13:19 liblevmar.a
 ```
 ### Build mmSolver plugin
 

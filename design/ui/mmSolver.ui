@@ -318,21 +318,31 @@
             </column>
             <item>
              <property name="text">
-              <string>group1</string>
+              <string>character_1:C_elbow_L</string>
              </property>
              <item>
               <property name="text">
-               <string>translateX</string>
+               <string>rotateY</string>
               </property>
              </item>
             </item>
             <item>
              <property name="text">
-              <string>group2</string>
+              <string>character_1:C_shoulder_L</string>
              </property>
              <item>
               <property name="text">
-               <string>rotateY</string>
+               <string>rotateX</string>
+              </property>
+             </item>
+            </item>
+            <item>
+             <property name="text">
+              <string>character_1:C_wrist_L</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>rotateX</string>
               </property>
              </item>
             </item>

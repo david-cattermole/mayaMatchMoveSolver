@@ -50,7 +50,9 @@ The documentation has been split into [Tool Usage](https://github.com/david-catt
 
 Additionally some of the low-level design is documented in [DESIGN.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DESIGN.md).
 
-The documentation is not complete at this time.
+If you're interested in contributing to the Maya MatchMove Solver project, please see the conventions and information in [DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
+
+The documentation is lacking at this time.
 
 ## Building and Installation
 

@@ -16,6 +16,7 @@
 #include <vector>
 #include <memory>
 
+
 class Attr {
 public:
     Attr();
@@ -35,8 +36,6 @@ public:
     MObject getObject();
 
     MPlug getPlug();
-
-//    MStatus getPlug(MPlug &plug);
 
     MObject getAttribute();
 
@@ -75,6 +74,7 @@ private:
     int m_animated;
     int m_isFreeToChange;
 };
+
 
 typedef std::vector<Attr> AttrList;
 typedef AttrList::iterator AttrListIt;

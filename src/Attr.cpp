@@ -2,6 +2,10 @@
  * Attribute class holds functions for getting and setting an attribute, as well as state information.
  */
 
+// STL
+#include <cassert>   // assert
+
+// Maya
 #include <maya/MGlobal.h>
 #include <maya/MStatus.h>
 #include <maya/MObject.h>
@@ -19,6 +23,8 @@
 #include <mayaUtils.h>
 #include <Attr.h>
 
+#define USE_DG_CONTEXT 1
+
 Attr::Attr() :
         m_nodeName(""),
         m_attrName(""),
@@ -26,7 +32,7 @@ Attr::Attr() :
         m_plug(),
         m_dynamic(false),
         m_animated(-1),
-        m_isFreeToChange(-1){
+        m_isFreeToChange(-1) {
 }
 
 MString Attr::getName() const {
@@ -101,9 +107,9 @@ MPlug Attr::getPlug() {
             return m_plug;
         }
 
-        // For attributes like 'worldMatrix', where we need the first element of the array,
-        // not the attribute itself.
-        if (plug.isArray()){
+        // For attributes like 'worldMatrix', where we need the first
+        // element of the array, not the attribute itself.
+        if (plug.isArray()) {
             // NOTE: Here we need 'evaluateNumElements' in case Maya hasn't already computed
             // how many elements the array plug is expected to have.
             unsigned int num = plug.evaluateNumElements(&status);
@@ -122,45 +128,6 @@ MPlug Attr::getPlug() {
     }
     return m_plug;
 }
-
-//MStatus Attr::getPlug(MPlug &plug) {
-//    MStatus status;
-//    if (m_plug.isNull()){
-//        MObject nodeObj = Attr::getObject();
-//        MString attrName = Attr::getAttrName();
-//        MFnDependencyNode dependsNode(nodeObj, &status);
-//        MPlug tmpPlug = dependsNode.findPlug(attrName, true, &status);
-//        if (status != MStatus::kSuccess) {
-//            MString name = Attr::getName();
-//            ERR("Attribute cannot be found; " << name);
-//            plug = m_plug;
-//            return status;
-//        }
-//
-//        // For attributes like 'worldMatrix', where we need the first element of the array,
-//        // not the attribute itself.
-//        if (plug.isArray()){
-//            // NOTE: Here we need 'evaluateNumElements' in case Maya hasn't already computed
-//            // how many elements the array plug is expected to have.
-//            unsigned int num = plug.evaluateNumElements(&status);
-//            CHECK_MSTATUS(status);
-//            num = plug.numElements(&status);
-//            CHECK_MSTATUS(status);
-//            if (num > 0) {
-//                plug = plug.elementByPhysicalIndex(0, &status);
-//                if (status != MStatus::kSuccess) {
-//                    ERR("Could not get first plug element.");
-//                    plug = m_plug;
-//                    return status;
-//                }
-//            }
-//        }
-//
-//        m_plug = tmpPlug;
-//        plug = m_plug;
-//    }
-//    return status;
-//}
 
 
 MObject Attr::getAttribute() {
@@ -198,17 +165,17 @@ bool Attr::isAnimated() {
         bool animated = false;
         bool isDest = plug.isDestination(&status);
         CHECK_MSTATUS(status);
-        if (isDest){
+        if (isDest) {
             MPlugArray connPlugs;
             bool asDest = true;  // get the source plugs on the other end of 'plug'.
             bool asSrc = false;
             plug.connectedTo(connPlugs, asDest, asSrc, &status);
             CHECK_MSTATUS(status);
-            for (unsigned int i=0; i < connPlugs.length(); ++i){
+            for (unsigned int i = 0; i < connPlugs.length(); ++i) {
                 MPlug connPlug = connPlugs[i];
                 MObject connObj = connPlug.node(&status);
                 CHECK_MSTATUS(status);
-                if (connObj.hasFn(MFn::Type::kAnimCurve)){
+                if (connObj.hasFn(MFn::Type::kAnimCurve)) {
                     animated = true;
                     break;
                 }
@@ -240,25 +207,25 @@ MStatus Attr::getValue(bool &value, const MTime &time) {
     MPlug plug = Attr::getPlug();
 
     if (animated) {
-        // Animated Attribute
         MFnAnimCurve curveFn(plug, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double curveValue;
         status = curveFn.evaluate(time, curveValue);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         value = (bool) trunc(curveValue);
-    }  else if (dyn)  {
-        // Dynamic Attribute
-        MDGContext ctx(time);
-        value = plug.asBool(ctx, &status);
-//        MAnimControl::setCurrentTime(time);
-//        value = plug.asBool(MDGContext::fsNormal, &status);
+    } else if (dyn) {
+        if (USE_DG_CONTEXT) {
+            MDGContext ctx(time);
+            value = plug.asBool(ctx, &status);
+        } else {
+            MAnimControl::setCurrentTime(time);
+            value = plug.asBool(MDGContext::fsNormal, &status);
+        }
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        // INFO(Attr::getName() << " dynamic " << value);
     } else {
-        // Static Attribute
         value = plug.asBool();
     }
+
     return MS::kSuccess;
 }
 
@@ -273,11 +240,13 @@ MStatus Attr::getValue(double &value, const MTime &time) {
         MFnAnimCurve curveFn(plug);
         curveFn.evaluate(time, value);
     } else if (dyn) {
-        MDGContext ctx(time);
-        value = plug.asDouble(ctx, &status);
-
-//        MAnimControl::setCurrentTime(time);
-//        value = plug.asDouble(MDGContext::fsNormal, &status);
+        if (USE_DG_CONTEXT) {
+            MDGContext ctx(time);
+            value = plug.asDouble(ctx, &status);
+        } else {
+            MAnimControl::setCurrentTime(time);
+            value = plug.asDouble(MDGContext::fsNormal, &status);
+        }
     } else {
         value = plug.asDouble();
     }
@@ -288,12 +257,15 @@ MStatus Attr::getValue(MMatrix &value, const MTime &time) {
     MStatus status;
     MPlug plug = Attr::getPlug();
 
-//    MAnimControl::setCurrentTime(time);
-//    MObject matrixObj = plug.asMObject(MDGContext::fsNormal, &status);
-
     // Do we change the behaviour for a dynamic attribute?
-    MDGContext ctx(time);
-    MObject matrixObj = plug.asMObject(ctx, &status);
+    MObject matrixObj;
+    if (USE_DG_CONTEXT) {
+        MDGContext ctx(time);
+        matrixObj = plug.asMObject(ctx, &status);
+    } else {
+        MAnimControl::setCurrentTime(time);
+        matrixObj = plug.asMObject(MDGContext::fsNormal, &status);
+    }
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MFnMatrixData matrixData(matrixObj, &status);
@@ -326,15 +298,24 @@ MStatus Attr::setValue(double value, const MTime &time,
     bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
+//    double x = 0;
     if (animated) {
-        MFnAnimCurve curveFn(plug);
+        MFnAnimCurve curveFn(plug, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
         unsigned int keyIndex;
+        // TODO: The keyframe index may be possible to cache, as long
+        // as we can control that when a new keyframe is inserted, we
+        // invalidate the cache, or instead of invalidating the cache
+        // we automatically increment all keyframe indexes based on
+        // the newly insert keyframe index.
         bool found = curveFn.find(time, keyIndex);
         if (found) {
             curveFn.setValue(keyIndex, value, &animChange);
         } else {
             curveFn.addKeyframe(time, value, &animChange);
         }
+//        x = curveFn.evaluate(time, &status);
+//        assert(x == value);
     } else if (dyn) {
         // TODO: What do we do??? Just error?
         MString name = Attr::getName();
@@ -345,8 +326,8 @@ MStatus Attr::setValue(double value, const MTime &time,
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         dgmod.newPlugValueDouble(plug, value);
-        // plug.setValue(value);
-        // dgmod.doIt(); // TODO: Should we 'doit' here? Or should we make the caller 'doit'?
+//        x = plug.asDouble();
+//        assert(x == value);
     }
     status = MS::kSuccess;
     return status;
@@ -356,3 +337,6 @@ MStatus Attr::setValue(double value, MDGModifier &dgmod, MAnimCurveChange &animC
     MTime time = MAnimControl::currentTime();
     return Attr::setValue(value, time, dgmod, animChange);
 }
+
+
+#undef USE_DG_CONTEXT

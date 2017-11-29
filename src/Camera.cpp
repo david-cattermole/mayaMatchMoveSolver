@@ -1,5 +1,5 @@
 /*
- *
+ * An object for the camera.
  */
 
 #include <maya/MPlug.h>
@@ -18,6 +18,12 @@
 #include <mayaUtils.h>
 #include <Marker.h>
 #include <Camera.h>
+
+// NOTE: Turning this on will slow down the solve a lot, since
+// Maya seems to switch the current time when computing the
+// camera projection matrix internally, even when given
+// only a DGContext.
+#define USE_MAYA_PROJECTION_MATRIX 0
 
 Camera::Camera() :
         m_transformNodeName(""),
@@ -79,6 +85,16 @@ MObject Camera::getShapeObject() {
     return object;
 }
 
+bool Camera::getProjectionDynamic() const {
+    return m_isProjectionDynamic;
+}
+
+MStatus Camera::setProjectionDynamic(bool value) {
+    MStatus status = MS::kSuccess;
+    m_isProjectionDynamic = value;
+    return status;
+}
+
 Attr &Camera::getMatrixAttr() {
     return m_matrix;
 }
@@ -111,21 +127,47 @@ MStatus Camera::getWorldProjMatrix(MMatrix &value) {
 MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time) {
     MStatus status;
 
-    // Get world matrix at time
-    MMatrix worldMat;
-    status = m_matrix.getValue(worldMat, time);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    worldMat = worldMat.inverse();
+    MTime::Unit unit = MTime::uiUnit();
+    double timeDouble = time.as(unit);
+    DoubleMatrixMapCIt found = m_worldProjMatrixCache.find(timeDouble);
 
-    // Get the projection matrix.
-    MFnCamera cameraFn(Camera::getShapeObject(), &status);
-    MDGContext ctx(time);
-    MFloatMatrix floatProjMat = cameraFn.projectionMatrix(ctx, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    MMatrix projMat = MMatrix(&floatProjMat.matrix[0]);
-    // MMatrix postProjMat = MMatrix(cameraFn.postProjectionMatrix(ctx).matrix);
+    if (found == m_worldProjMatrixCache.end()) {
+        // To entry in the cache... lets compute and add it.
 
-    // Multiply and lets be on our way.
-    value = worldMat * projMat; //* postProjMat;
+        // Get world matrix at time
+        MMatrix worldMat;
+        status = m_matrix.getValue(worldMat, time);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        worldMat = worldMat.inverse();
+
+        // Get the projection matrix.
+        // TODO: Querying the projection matrix from Maya at a specific time
+        // is VERY slow, we need to find a faster way to compute this ourselves.
+        // The tricky part will be making sure to match Maya's computation perfectly.
+        MFnCamera cameraFn(Camera::getShapeObject(), &status);
+#if USE_MAYA_PROJECTION_MATRIX == 1
+        MDGContext ctx(time);
+        MFloatMatrix floatProjMat = cameraFn.projectionMatrix(ctx, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+#else
+        MFloatMatrix floatProjMat = cameraFn.projectionMatrix();
+#endif
+        MMatrix projMat = MMatrix(&floatProjMat.matrix[0]);
+        // MMatrix postProjMat = MMatrix(cameraFn.postProjectionMatrix(ctx).matrix);
+
+        value = worldMat * projMat; //* postProjMat;
+
+        // Add into the cache.
+        DoubleMatrixPair timeMatrixPair (timeDouble, value);
+        m_worldProjMatrixCache.insert(timeMatrixPair);
+    } else {
+        value = found->second;
+    }
     return status;
 }
+
+MStatus Camera::clearWorldProjMatrixCache() {
+    m_worldProjMatrixCache.clear();
+    return MS::kSuccess;
+}
+

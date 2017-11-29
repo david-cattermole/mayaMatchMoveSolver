@@ -14,13 +14,26 @@ The simple steps are:
 - C++ compiler ([GCC](https://gcc.gnu.org/), Clang, VC++, etc)
 - [CMake 2.6+](https://cmake.org/)
 - [glm (GL Math)](https://glm.g-truc.net/)
-- [levmar 2.6+](http://users.ics.forth.gr/~lourakis/levmar/)
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
-- [ATLAS](http://www.netlib.org/atlas/) (optional)
-- [LAPACK](http://www.netlib.org/lapack/)  (optional)
-- [BLAS](http://www.netlib.org/blas/)  (optional)
+- [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
+  - [LAPACK](http://www.netlib.org/lapack/)  (optional)
+  - [BLAS](http://www.netlib.org/blas/)  (optional)
+  - [ATLAS](http://www.netlib.org/atlas/) (optional)
+  - [Intel Math Kernal Library (MLK)](https://software.intel.com/en-us/mkl) (optional)
+- [sparseLM 1.3](http://users.ics.forth.gr/~lourakis/sparseLM/) (optional)
+  - [SuiteSparse 5.0.0](http://faculty.cse.tamu.edu/davis/suitesparse.html)
+  - [LAPACK](http://www.netlib.org/lapack/)
+  - [BLAS](http://www.netlib.org/blas/)
+  - [ATLAS](http://www.netlib.org/atlas/) (optional)
+  - [Intel Math Kernal Library (MLK)](https://software.intel.com/en-us/mkl) (optional)
 
 ## Build and Install
+
+There are two solving engines; one is good at small problems, named `levmar`, the other good at large problems, named `sparseLM`. It is recommended to have both available, but only levmar is required for the solver to function adequately.
+  
+The `sparseLM` (Sparse Lev-Mar) algorithm is recommended for large problems, specifically solving across time, where adjustments to a parameter only affects a relatively small number of errors.
+
+`sparseLM` requires `SuiteSparse` for sparse algorithms and `SuiteSparse` requires `LAPACK` and `BLAS`. `ATLAS` or `Intel MLK` can be used instead of `LAPACK` and `BLAS`, but are said to have higher performance.
 
 ### Build GL Math (glm)
 
@@ -37,11 +50,13 @@ $ pwd
 
 ### Build LevMar
 
-Lev-Mar is the core library at the heart of this plug-in solver; the plug-in will not function without it.
+Lev-Mar is the core library at the heart of this plug-in solver; the plug-in will not function without it. 
 
-There are two approaches to building Lev-Mar, one simple, the other is more complex.
+There are two approaches to building `levmar`, one simple, the other is more complex. 
 
-In the simple build method we do not use the LAPACK library. LAPACK is a 'Linear Algebra' package, and has been implemented multiple times for heavy performance and robustness optimisations over many years. If you would like to compile with LAPACK, follow the 'complex method' below.
+In the simple build method we do not use the `LAPACK` or `BLAS` libraries. `LAPACK` is a 'Linear Algebra' package, and has been implemented multiple times for heavy performance and robustness optimisations over many years. If you would like to compile with `LAPACK`, follow the 'complex method' below.
+
+If you intend on compiling `sparseLM`, you should build `levmar` with `LAPACK` and `BLAS` support since `sparseLM` requires `LAPACK` and `BLAS`. 
 
 #### Build LevMar (simple method)
 
@@ -188,6 +203,15 @@ Solution: 2.481779 6.181346 3.502236
 Minimization info:
 1308.25 8.79459e-05 1.12674e-07 1.13856e-29 636.638 208 2 272 21 209
 ```
+
+### Build SuiteSparse
+
+_To be written._
+
+### Build sparseLM
+
+_To be written._
+
 ### Build mmSolver plugin
 
 To compile the Maya plugin, run the commands.

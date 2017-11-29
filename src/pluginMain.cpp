@@ -4,18 +4,18 @@
 
 
 #include <maya/MFnPlugin.h>
-#include <mmSolverCmd.h>
+#include <MMSolverCmd.h>
 
 
 // Register command with system
 MStatus initializePlugin(MObject obj) {
     MStatus status;
-    MFnPlugin plugin(obj, PLUGIN_COMPANY, "1.0", "Any");
+    MFnPlugin plugin(obj, PLUGIN_COMPANY, COMMAND_VERSION, "Any");
 
     status = plugin.registerCommand(
-            kCommandName,
-            mmSolverCmd::creator,
-            mmSolverCmd::newSyntax);
+            COMMAND_NAME,
+            MMSolverCmd::creator,
+            MMSolverCmd::newSyntax);
     if (!status) {
         status.perror("mmSolver: registerCommand");
         return status;
@@ -28,7 +28,7 @@ MStatus uninitializePlugin(MObject obj) {
     MStatus status;
     MFnPlugin plugin(obj);
 
-    status = plugin.deregisterCommand(kCommandName);
+    status = plugin.deregisterCommand(COMMAND_NAME);
     if (!status) {
         status.perror("mmSolver: deregisterCommand");
         return status;

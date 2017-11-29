@@ -40,7 +40,6 @@ MString Marker::getNodeName() const {
 
 MStatus Marker::setNodeName(MString value) {
     MStatus status = MS::kSuccess;
-    INFO("Marker::setNodeName: " << value);
     if (value != m_nodeName) {
         status = m_matrix.setNodeName(value);
         CHECK_MSTATUS_AND_RETURN_IT(status);

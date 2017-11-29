@@ -53,18 +53,10 @@ public:
 
     MStatus getPos(MPoint &point);
 
-//    MMatrix getMatrix();
-//
-//    void getPos(double &x, double &y, double &z);
-//
-//    void getPos(glm::vec3 &pos);
-//
-//    void getPos(MPoint &point);
-
 private:
     MString m_nodeName;
     MObject m_object;
-    double m_weight;
+     double m_weight;
     Attr m_matrix;
 };
 

@@ -88,18 +88,32 @@ namespace debug {
     class CPUBenchmark {
     public:
         CPUBenchmark() :
-                ticktime(0) {
+                ticktime(0),
+                ticktimeTotal(0){
             start();
         }
 
         Ticks ticktime;
+        Ticks ticktimeTotal;
 
         void start() {
             ticktime = rdtsc();
         }
 
         Ticks stop() {
-            return rdtsc() - ticktime;
+            return ticktimeTotal += rdtsc() - ticktime;
+        }
+
+        void print(std::string heading, uint loopNums = 0) {
+            Ticks ticks = ticktimeTotal;
+            if (loopNums <= 1) {
+                std::cout << heading << " Ticks: ";
+            } else if (loopNums > 0) {
+                ticks /= loopNums;
+                std::cout << heading << " Ticks (per-loop): ";
+            }
+            std::cout << ticks << " ticks";
+            std::cout << std::endl;
         }
     };
 
@@ -121,8 +135,11 @@ namespace debug {
         }
 
         Timestamp stop() {
-            // return get_timestamp() - timestamp;
             return timestampTotal += get_timestamp() - timestamp;
+        }
+
+        void print(std::string heading, uint loopNums = 0) {
+            return printInSec(heading, loopNums);
         }
 
         void printInSec(std::string heading, uint loopNums = 0) {

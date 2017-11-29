@@ -29,7 +29,7 @@ MStatus getAsSelectionList(MStringArray nodeNames, MSelectionList &selList) {
     }
     if (selList.length() != nodeNames.length()) {
         status = MStatus::kFailure;
-        status.perror("getAsSelectionList failed.");
+        status.perror("getAsSelectionList failed");
     }
     return status;
 }
@@ -40,6 +40,32 @@ MStatus getAsSelectionList(MString nodeName, MSelectionList &selList) {
     MStringArray nodeNames;
     nodeNames.append(nodeName);
     return getAsSelectionList(nodeNames, selList);
+}
+
+
+static inline
+MStatus nodeExistsAndIsType(MString nodeName, MFn::Type nodeType) {
+    MStatus status;
+    MSelectionList selList;
+    selList.clear();
+
+    status = getAsSelectionList(nodeName, selList);
+    if (status != MS::kSuccess) {
+        ERR("Node does not exist; " << nodeName);
+    }
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    MObject nodeObj;
+    status = selList.getDependNode(0, nodeObj);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    if (nodeObj.apiType() != nodeType) {
+        ERR("Node type is not correct; node=" << nodeName << " type=" << nodeType);
+        status = MS::kFailure;
+        status.perror("Node Type is not correct");
+        return status;
+    }
+    return status;
 }
 
 

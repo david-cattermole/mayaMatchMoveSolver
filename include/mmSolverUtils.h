@@ -25,7 +25,9 @@
 
 // Sparse Lev-Mar
 #if HAVE_SPLM == 1
+
 #include <splm.h>    // sparselm_difccs
+
 #endif
 
 
@@ -57,14 +59,20 @@
 #include <maya/MComputation.h>
 #include <maya/MProfiler.h>
 
-// GL Math
-#include <glm/glm.hpp>
+// Utilities
+#include <mayaUtils.h>
 
 #define FABS(x)     (((x)>=0)? (x) : -(x))
 #define CNST(x) (x)
-#define EXTRA_GET_TRIGGER 0
-#define SWITCH_TIME_TRIGGER 0
 #define BENCHMARK_TYPE debug::TimestampBenchmark
+
+// NOTE: There is a very strange bug in Maya. After setting a number of plug values
+// using a DG Context, when quering plug values at the same times, the values do
+// not evaluate correctly. To 'trick' Maya into triggering an eval the next time a
+// plug is queried we query the matrix of a marker node. It doesn't matter which
+// marker node, however it does matter that it's a marker node, if the eval is
+// performed with a bundle node the error continues to happen.
+#define FORCE_TRIGGER_EVAL 1
 
 #define SOLVER_TYPE_LEVMAR 0
 #define SOLVER_TYPE_SPARSE_LEVMAR 1
@@ -142,6 +150,15 @@ struct SolverData {
 };
 
 
+inline
+double distance_2d(MPoint a, MPoint b)
+{
+    double dx = (a.x - b.x);
+    double dy = (a.y - b.y);
+    return sqrt((dx * dx) + (dy * dy));
+}
+
+
 // Function run by lev-mar algorithm to test the input parameters, p, and compute the output errors, x.
 inline
 void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
@@ -149,11 +166,14 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
     SolverData *ud = static_cast<SolverData *>(data);
     ud->funcBench->start();
     ud->computation->setProgress(ud->iterNum);
-    if (ud->isJacobianCalculation == false){
+    if (ud->isJacobianCalculation == false) {
         INFO("Solve " << ++ud->iterNum);
     } else {
         INFO("Solve Jacobian " << ++ud->jacIterNum);
     }
+
+    int profileCategory = MProfiler::getCategoryIndex("mmSolver");
+    MProfilingScope iterScope(profileCategory, MProfiler::kColorC_L1, "iteration");
 
     if (ud->computation->isInterruptRequested()) {
         WRN("User wants to cancel the solve!");
@@ -165,95 +185,105 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
         return;
     }
 
-    ud->paramBench->start();
+    // Set Parameter
     MStatus status;
-    MTime time;
+    {
+        ud->paramBench->start();
+        MProfilingScope setParamScope(profileCategory, MProfiler::kColorA_L2, "set parameters");
 
-    MTime currentFrame = MAnimControl::currentTime();
-    for (i = 0; i < m; ++i) {
-        std::pair<int, int> attrPair = ud->paramToAttrList[i];
-        AttrPtr attr = ud->attrList[attrPair.first];
+        MTime currentFrame = MAnimControl::currentTime();
+        for (i = 0; i < m; ++i) {
+            std::pair<int, int> attrPair = ud->paramToAttrList[i];
+            AttrPtr attr = ud->attrList[attrPair.first];
 
-        // Get frame time
-        MTime frame = currentFrame;
-        if (attrPair.second != -1) {
-            frame = ud->frameList[attrPair.second];
+            // Get frame time
+            MTime frame = currentFrame;
+            if (attrPair.second != -1) {
+                frame = ud->frameList[attrPair.second];
+            }
+
+            attr->setValue(p[i], frame, *ud->dgmod, *ud->curveChange);
         }
 
-        attr->setValue(p[i], frame, *ud->dgmod, *ud->curveChange);
+        // Commit changed data into Maya
+        ud->dgmod->doIt();
+
+        // Invalidate the Camera Matrix cache.
+        // In future we might be able to auto-detect if the camera will change based on
+        // the current solve and not invalidate the cache but for now we cannot take the
+        // risk of an incorrect solve; we clear the cache.
+        for (i = 0; i < (int) ud->cameraList.size(); ++i) {
+            ud->cameraList[i]->clearWorldProjMatrixCache();
+        }
+        ud->paramBench->stop();
     }
 
-    // Commit changed data into Maya
-    ud->dgmod->doIt();
+    // Measure Errors
+    {
+        ud->errorBench->start();
+        MProfilingScope setParamScope(profileCategory, MProfiler::kColorA_L1, "measure errors");
 
-    // Invalidate the Camera Matrix cache.
-    // In future we might be able to auto-detect if the camera will change based on
-    // the current solve and not invalidate the cache but for now we cannot take the
-    // risk of an incorrect solve; we clear the cache.
-    for (i = 0; i < (int) ud->cameraList.size(); ++i) {
-        ud->cameraList[i]->clearWorldProjMatrixCache();
+#if FORCE_TRIGGER_EVAL == 1
+        {
+            MPoint pos;
+            i = 0;
+            std::pair<int, int> markerPair = ud->errorToMarkerList[i];
+            MarkerPtr marker = ud->markerList[markerPair.first];
+            MTime frame = ud->frameList[markerPair.second];
+            status = marker->getPos(pos, frame + 1);
+            CHECK_MSTATUS(status);
+        }
+#endif
+
+        MMatrix cameraWorldProjectionMatrix;
+        MPoint mkr_mpos;
+        MPoint bnd_mpos;
+        for (i = 0; i < (n / 3); ++i) {
+            std::pair<int, int> markerPair = ud->errorToMarkerList[i];
+            MarkerPtr marker = ud->markerList[markerPair.first];
+            MTime frame = ud->frameList[markerPair.second];
+
+            CameraPtr camera = marker->getCamera();
+            status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
+            CHECK_MSTATUS(status);
+
+            BundlePtr bnd = marker->getBundle();
+
+            status = marker->getPos(mkr_mpos, frame);
+            CHECK_MSTATUS(status);
+            mkr_mpos = mkr_mpos * cameraWorldProjectionMatrix;
+            mkr_mpos.cartesianize();
+
+//#if EXTRA_GET_TRIGGER == 1
+//            status = marker->getPos(mkr_mpos, frame + 1);
+//            CHECK_MSTATUS(status);
+//#endif
+
+            status = bnd->getPos(bnd_mpos, frame);
+            CHECK_MSTATUS(status);
+            bnd_mpos = bnd_mpos * cameraWorldProjectionMatrix;
+            bnd_mpos.cartesianize();
+
+            // NOTE: Interestingly, using an x, y and distance error measurement
+            // seems to allow at least some scenes to converge much faster;
+            // ~20 iterations compared to ~160 iterations.
+            // TODO: dx, dy and d are all in world units. We should shift them
+            // into 'image space', so that we can refer to the error in
+            // terms of pixels.
+            double dx = fabs(mkr_mpos.x - bnd_mpos.x);
+            double dy = fabs(mkr_mpos.y - bnd_mpos.y);
+            double d = distance_2d(mkr_mpos, bnd_mpos);
+
+            x[(i * 3) + 0] = dx;  // X error
+            x[(i * 3) + 1] = dy;  // Y error
+            x[(i * 3) + 2] = d;   // Distance error
+
+            ud->errorList[(i * 3) + 0] = dx;
+            ud->errorList[(i * 3) + 1] = dy;
+            ud->errorList[(i * 3) + 2] = dy;
+        }
+        ud->errorBench->stop();
     }
-    ud->paramBench->stop();
-
-    // Calculate Errors
-    ud->errorBench->start();
-    MMatrix cameraWorldProjectionMatrix;
-    MPoint mkr_mpos;
-    MPoint bnd_mpos;
-    for (i = 0; i < (n / 3); ++i) {
-        std::pair<int, int> markerPair = ud->errorToMarkerList[i];
-        MarkerPtr marker = ud->markerList[markerPair.first];
-        MTime frame = ud->frameList[markerPair.second];
-
-        CameraPtr camera = marker->getCamera();
-        status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
-        CHECK_MSTATUS(status);
-
-#if SWITCH_TIME_TRIGGER == 1
-        MAnimControl::setCurrentTime(frame+1);
-        status = marker->getPos(mkr_mpos, frame + 1);
-        MAnimControl::setCurrentTime(frame);
-#endif
-
-#if EXTRA_GET_TRIGGER == 1
-        status = marker->getPos(mkr_mpos, frame + 1);
-        CHECK_MSTATUS(status);
-#endif
-        status = marker->getPos(mkr_mpos, frame);
-        CHECK_MSTATUS(status);
-        mkr_mpos = mkr_mpos * cameraWorldProjectionMatrix;
-        mkr_mpos.cartesianize();
-        glm::vec2 mkr_pos2d(mkr_mpos.x, mkr_mpos.y);
-
-        BundlePtr bnd = marker->getBundle();
-#if EXTRA_GET_TRIGGER == 1
-        status = bnd->getPos(bnd_mpos, frame + 1);
-        CHECK_MSTATUS(status);
-#endif
-        status = bnd->getPos(bnd_mpos, frame);
-        CHECK_MSTATUS(status);
-        bnd_mpos = bnd_mpos * cameraWorldProjectionMatrix;
-        bnd_mpos.cartesianize();
-        glm::vec2 bnd_pos2d(bnd_mpos.x, bnd_mpos.y);
-
-        // NOTE: Interestingly, using an x, y and distance error measurement
-        // seems to allow at least some scenes to converge much faster;
-        // ~20 iterations compared to ~160 iterations.
-        // TODO: dx, dy and d are all in world units. We should shift them
-        // into 'image space', so that we can refer to the error in
-        // terms of pixels.
-        double dx = fabs(mkr_mpos.x - bnd_mpos.x);
-        double dy = fabs(mkr_mpos.y - bnd_mpos.y);
-        double d = fabs(glm::distance(bnd_pos2d, mkr_pos2d));
-        x[(i * 3) + 0] = dx;  // X error
-        x[(i * 3) + 1] = dy;  // Y error
-        x[(i * 3) + 2] = d;   // Distance error
-
-        ud->errorList[(i * 3) + 0] = dx;
-        ud->errorList[(i * 3) + 1] = dy;
-        ud->errorList[(i * 3) + 2] = dy;
-    }
-    ud->errorBench->stop();
     ud->funcBench->stop();
     return;
 }
@@ -467,15 +497,12 @@ bool solve(int iterMax,
            MAnimCurveChange &curveChange,
            MComputation &computation,
            double &outError) {
-    register int i=0;
-    register int j=0;
+    register int i = 0;
+    register int j = 0;
     MStatus status;
     int ret = true;
-    int profileCategory = MProfiler::getCategoryIndex("mmSolverCategory");
-    MProfilingScope profilingScope(profileCategory,
-                                   MProfiler::kColorC_L3,
-                                   "mmSolverName",
-                                   "mmSolverDesc");
+    int profileCategory = MProfiler::getCategoryIndex("mmSolver");
+    MProfilingScope profilingScope(profileCategory, MProfiler::kColorC_L3, "solve");
     struct SolverData userData;
 
     // Indexing maps
@@ -647,8 +674,8 @@ bool solve(int iterMax,
     if (solverType != SOLVER_TYPE_LEVMAR) {
         if (solverType == SOLVER_TYPE_SPARSE_LEVMAR) {
 #if HAVE_SPLM == 0
-             WRN("Selected solver type \'SparseLM\' is not available, switching to \'Lev-Mar\' instead.");
-             solverType = SOLVER_TYPE_LEVMAR;
+            WRN("Selected solver type \'SparseLM\' is not available, switching to \'Lev-Mar\' instead.");
+            solverType = SOLVER_TYPE_LEVMAR;
 #endif
         } else {
             WRN("Selected Solver Type \'" << solverType << "\' is unknown, switching to \'Lev-Mar\' instead.");
@@ -752,8 +779,7 @@ bool solve(int iterMax,
                 (void *) &userData);
 
         free(work);
-    }
-    else if (solverType == SOLVER_TYPE_SPARSE_LEVMAR) {
+    } else if (solverType == SOLVER_TYPE_SPARSE_LEVMAR) {
 #if (HAVE_SPLM == 1)
 
         // TODO: We could calculate an (approximate) non-zero value. We can do this by assuming that all dynamic attributes solve on on all single frames and are independant of static attributes.

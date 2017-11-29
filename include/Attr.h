@@ -61,6 +61,8 @@ public:
 
     bool isAnimated();
 
+    MString getAnimCurveName();
+
     bool getDynamic() const;
 
     void setDynamic(bool value);
@@ -72,6 +74,7 @@ private:
     MPlug m_plug;
     bool m_dynamic;
     int m_animated;
+    MString m_animCurveName;
     int m_isFreeToChange;
 };
 

@@ -11,9 +11,9 @@
 #include <maya/MPoint.h>
 #include <maya/MFnCamera.h>
 
-#include <glm/glm.hpp>
-
-#include <utilities/cgCameraUtils.h>
+// TODO: Use this header to re-implement the camera projection
+// matrix, without the Maya API.
+//#include <utilities/cgCameraUtils.h>
 
 #include <mayaUtils.h>
 #include <Marker.h>

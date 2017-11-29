@@ -117,17 +117,6 @@ MStatus Marker::getPos(double &x, double &y, double &z, const MTime &time) {
     return status;
 }
 
-MStatus Marker::getPos(glm::vec3 &pos, const MTime &time) {
-    MStatus status;
-    MMatrix matrix;
-    status = Marker::getMatrix(matrix, time);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    pos.x = matrix(3, 0);
-    pos.y = matrix(3, 1);
-    pos.z = matrix(3, 2);
-    return status;
-}
-
 MStatus Marker::getPos(MPoint &point, const MTime &time) {
     MStatus status;
     MMatrix matrix;
@@ -144,12 +133,6 @@ MStatus Marker::getPos(MPoint &point, const MTime &time) {
 MStatus Marker::getPos(double &x, double &y, double &z) {
     MTime time = MAnimControl::currentTime();
     MStatus status = Marker::getPos(x, y, z, time);
-    return status;
-}
-
-MStatus Marker::getPos(glm::vec3 &pos) {
-    MTime time = MAnimControl::currentTime();
-    MStatus status = Marker::getPos(pos, time);
     return status;
 }
 

@@ -25,8 +25,8 @@ set(SPLM_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
 set(USE_ATLAS ON CACHE BOOLEAN "Should we use ATLAS with Lev-Mar?")
 set(ATLAS_LIB_PATH "/usr/lib64/atlas" CACHE PATH "ATLAS library directory")
 
-# GL Math
-set(GLM_INCLUDE_PATH "/usr/local/include" CACHE PATH "GL Math include directory")
+## GL Math
+#set(GLM_INCLUDE_PATH "/usr/local/include" CACHE PATH "GL Math include directory")
 
 # Source
 set(SOURCE_FILES
@@ -49,7 +49,7 @@ set(SOURCE_FILES
 
 include_directories(
         include
-        ${GLM_INCLUDE_PATH}
+#        ${GLM_INCLUDE_PATH}
         ${LEVMAR_INCLUDE_PATH}
         ${SPLM_INCLUDE_PATH}
         ${MAYA_INCLUDE_PATH}

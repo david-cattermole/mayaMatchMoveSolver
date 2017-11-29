@@ -32,6 +32,7 @@ Attr::Attr() :
         m_plug(),
         m_dynamic(false),
         m_animated(-1),
+        m_animCurveName(""),
         m_isFreeToChange(-1) {
 }
 
@@ -66,6 +67,7 @@ MStatus Attr::setNodeName(MString value) {
         m_object = MObject();
         m_plug = MPlug();
         m_animated = -1;
+        m_animCurveName = "";
         m_isFreeToChange = -1;
     }
     m_nodeName = value;
@@ -81,6 +83,7 @@ MStatus Attr::setAttrName(MString value) {
         m_object = MObject();
         m_plug = MPlug();
         m_animated = -1;
+        m_animCurveName = "";
         m_isFreeToChange = -1;
     }
     m_attrName = value;
@@ -177,6 +180,10 @@ bool Attr::isAnimated() {
                 CHECK_MSTATUS(status);
                 if (connObj.hasFn(MFn::Type::kAnimCurve)) {
                     animated = true;
+                    MFnDependencyNode dependsNode(connObj, &status);
+                    CHECK_MSTATUS(status);
+                    m_animCurveName = dependsNode.name(&status);
+                    CHECK_MSTATUS(status);
                     break;
                 }
             }
@@ -190,6 +197,17 @@ bool Attr::isAnimated() {
         m_animated = (int) animated;
     }
     return (bool) m_animated;
+}
+
+MString Attr::getAnimCurveName()
+{
+    MString result = "";
+    // isAnimated will compute 'm_animCurveName' for us.
+    bool animated = Attr::isAnimated();
+    if (animated == true) {
+        result = m_animCurveName;
+    }
+    return result;
 }
 
 bool Attr::getDynamic() const {
@@ -228,7 +246,6 @@ MStatus Attr::getValue(bool &value, const MTime &time) {
 
     return MS::kSuccess;
 }
-
 
 MStatus Attr::getValue(double &value, const MTime &time) {
     MStatus status;

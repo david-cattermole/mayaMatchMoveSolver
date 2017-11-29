@@ -14,8 +14,6 @@
 #include <unordered_map>
 #include <memory>
 
-#include <glm/glm.hpp>
-
 #include <Attr.h>
 
 typedef std::pair<double, MMatrix> DoubleMatrixPair;

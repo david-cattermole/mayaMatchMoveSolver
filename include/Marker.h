@@ -8,8 +8,6 @@
 #include <vector>
 #include <memory>
 
-#include <glm/glm.hpp>
-
 #include <maya/MObject.h>
 #include <maya/MString.h>
 #include <maya/MPlug.h>
@@ -55,21 +53,19 @@ public:
 
     MStatus getPos(double &x, double &y, double &z, const MTime &time);
 
-    MStatus getPos(glm::vec3 &pos, const MTime &time);
-
     MStatus getPos(MPoint &point, const MTime &time);
 
     MStatus getPos(double &x, double &y, double &z);
-
-    MStatus getPos(glm::vec3 &pos);
 
     MStatus getPos(MPoint &point);
 
 private:
     MString m_nodeName;
     MObject m_object;
+
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Bundle> m_bundle;
+
     Attr m_matrix;
     Attr m_visible;
     Attr m_px;

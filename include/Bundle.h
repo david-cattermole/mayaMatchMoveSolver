@@ -14,8 +14,6 @@
 #include <vector>
 #include <memory>
 
-#include <glm/glm.hpp>
-
 #include <Attr.h>
 
 class Marker;
@@ -43,13 +41,9 @@ public:
 
     MStatus getPos(double &x, double &y, double &z, const MTime &time);
 
-    MStatus getPos(glm::vec3 &pos, const MTime &time);
-
     MStatus getPos(MPoint &point, const MTime &time);
 
     MStatus getPos(double &x, double &y, double &z);
-
-    MStatus getPos(glm::vec3 &pos);
 
     MStatus getPos(MPoint &point);
 

@@ -9,8 +9,6 @@
 #include <maya/MMatrix.h>
 #include <maya/MPoint.h>
 
-#include <glm/glm.hpp>
-
 #include <mayaUtils.h>
 #include <Marker.h>
 #include <Bundle.h>
@@ -80,17 +78,6 @@ MStatus Bundle::getPos(double &x, double &y, double &z, const MTime &time) {
     return status;
 }
 
-MStatus Bundle::getPos(glm::vec3 &pos, const MTime &time) {
-    MStatus status;
-    MMatrix matrix;
-    status = Bundle::getMatrix(matrix, time);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    pos.x = matrix(3, 0);
-    pos.y = matrix(3, 1);
-    pos.z = matrix(3, 2);
-    return status;
-}
-
 MStatus Bundle::getPos(MPoint &point, const MTime &time) {
     MStatus status;
     MMatrix matrix;
@@ -107,12 +94,6 @@ MStatus Bundle::getPos(MPoint &point, const MTime &time) {
 MStatus Bundle::getPos(double &x, double &y, double &z) {
     MTime time = MAnimControl::currentTime();
     MStatus status = Bundle::getPos(x, y, z, time);
-    return status;
-}
-
-MStatus Bundle::getPos(glm::vec3 &pos) {
-    MTime time = MAnimControl::currentTime();
-    MStatus status = Bundle::getPos(pos, time);
     return status;
 }
 

@@ -24,8 +24,8 @@ maya.cmds.loadPlugin('mmSolver')
 # Start the Profiler
 profilerOutPath = None
 if '__file__' in dir():
-    profilerOutPath = os.path.join(os.path.dirname(__file__), 'test4.data')
-maya.cmds.profiler(addCategory='mmSolverCategory')
+    profilerOutPath = os.path.join(os.path.dirname(__file__), 'test4.txt')
+maya.cmds.profiler(addCategory='mmSolver')
 maya.cmds.profiler(bufferSize=250)
 maya.cmds.profiler(sampling=True)
 

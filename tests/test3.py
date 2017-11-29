@@ -8,7 +8,11 @@ try:
 except RuntimeError:
     pass
 import maya.cmds
+import math
 import time
+
+def approxEqual(x, y, eps=0.0001):
+    return x == y or (x < (y+eps) and x > (y-eps))
 
 maya.cmds.file(new=True, force=True)
 maya.cmds.unloadPlugin('mmSolver')
@@ -35,13 +39,15 @@ maya.cmds.setAttr(marker_tfm + '.tz', -10)
 cameras = (
     (cam_tfm, cam_shp),
 )
-weight = 1.0
 markers = (
-    (marker_tfm, cam_shp, bundle_tfm, weight),
+    (marker_tfm, cam_shp, bundle_tfm),
 )
 node_attrs = [
     (cam_tfm + '.rx', 0),
     (cam_tfm + '.ry', 0),
+]
+frames = [
+    (1),
 ]
 
 # Run solver!
@@ -50,21 +56,18 @@ err = maya.cmds.mmSolver(
     camera=cameras,
     marker=markers,
     attr=node_attrs,
-    iterations=1000,
-    startFrame=1,
-    endFrame=1,
+    iterations=100,
+    solverType=0,
+    frame=frames,
     verbose=True,
 )
 e = time.time()
 print 'total time:', e - s
 
-# maya.cmds.lookThru(cam_tfm)
-
 # Ensure the values are correct
-assert err < 0.001
-# TODO: Make an 'approximately equal' function.
-# assert maya.cmds.getAttr(cam_tfm+'.rx') == 0.129855
-# assert maya.cmds.getAttr(cam_tfm+'.ry') == -0.565297
+assert approxEqual(err, 0.0, eps=0.001)
+assert approxEqual(maya.cmds.getAttr(cam_tfm+'.rx'), math.degrees(0.129855))
+assert approxEqual(maya.cmds.getAttr(cam_tfm+'.ry'), math.degrees(-0.565297))
 
 if maya.cmds.about(batch=True):
     maya.cmds.quit(force=True)

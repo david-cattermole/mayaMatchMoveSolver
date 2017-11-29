@@ -8,7 +8,11 @@ try:
 except RuntimeError:
     pass
 import maya.cmds
+import math
 import time
+
+def approxEqual(x, y, eps=0.0001):
+    return x == y or (x < (y+eps) and x > (y-eps))
 
 maya.cmds.file(new=True, force=True)
 maya.cmds.unloadPlugin('mmSolver')
@@ -45,10 +49,9 @@ maya.cmds.setAttr(marker2_tfm + '.tz', -6.0)
 cameras = (
     (cam_tfm, cam_shp),
 )
-weight = 1.0
 markers = (
-    (marker1_tfm, cam_shp, bundle1_tfm, weight),
-    (marker2_tfm, cam_shp, bundle2_tfm, weight),
+    (marker1_tfm, cam_shp, bundle1_tfm),
+    (marker2_tfm, cam_shp, bundle2_tfm),
 )
 node_attrs = [
     (group_tfm + '.tx', 0),
@@ -58,6 +61,9 @@ node_attrs = [
     (group_tfm + '.ry', 0),
     (group_tfm + '.rz', 0),
 ]
+frames = [
+    (1),
+]
 
 # Run solver!
 s = time.time()
@@ -66,24 +72,21 @@ err = maya.cmds.mmSolver(
     marker=markers,
     attr=node_attrs,
     iterations=1000,
-    startFrame=1,
-    endFrame=1,
+    solverType=0,
+    frame=frames,
     verbose=True,
 )
 e = time.time()
 print 'total time:', e - s
 
-# maya.cmds.lookThru(cam_tfm)
-
 # Ensure the values are correct
-assert err < 0.001
-# TODO: Make an 'approximately equal' function.
-# assert maya.cmds.getAttr(group_tfm+'.tx') == 0.253288
-# assert maya.cmds.getAttr(group_tfm+'.ty') == 1.44417
-# assert maya.cmds.getAttr(group_tfm+'.tz') == -35.0552
-# assert maya.cmds.getAttr(group_tfm+'.sx') == 1.11311
-# assert maya.cmds.getAttr(group_tfm+'.ry') == 2.7976
-# assert maya.cmds.getAttr(group_tfm+'.rz') == -0.386601
+assert approxEqual(err, 0.0, eps=0.001)
+assert approxEqual(maya.cmds.getAttr(group_tfm+'.tx'), 1.47797)
+assert approxEqual(maya.cmds.getAttr(group_tfm+'.ty'), 0.894038)
+assert approxEqual(maya.cmds.getAttr(group_tfm+'.tz'), -32.9307)
+assert approxEqual(maya.cmds.getAttr(group_tfm+'.sx'), 1.00556)
+assert approxEqual(maya.cmds.getAttr(group_tfm+'.ry'), math.degrees(3.18648))
+assert approxEqual(maya.cmds.getAttr(group_tfm+'.rz'), math.degrees(-0.374883))
 
 if maya.cmds.about(batch=True):
     maya.cmds.quit(force=True)

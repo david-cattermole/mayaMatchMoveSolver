@@ -14,17 +14,13 @@ except RuntimeError:
 import maya.cmds
 
 
-import test.test_solver.utils as solverUtils
+import test.test_solver.solverutils as solverUtils
 
 
-@unittest.skip
+# @unittest.skip
 class TestSolver1(solverUtils.SolverTestBase):
 
     def test_init(self):
-        maya.cmds.file(new=True, force=True)
-        maya.cmds.unloadPlugin('mmSolver')
-        maya.cmds.loadPlugin('mmSolver')
-
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
@@ -72,9 +68,9 @@ class TestSolver1(solverUtils.SolverTestBase):
         print 'total time:', e - s
 
         # Ensure the values are correct
-        assert self.approxEqual(err, 0.0, eps=0.001)
-        assert self.approxEqual(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
-        assert self.approxEqual(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
+        assert self.approx_equal(err, 0.0, eps=0.001)
+        assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
+        assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
 
 
 if __name__ == '__main__':

@@ -14,10 +14,15 @@ except RuntimeError:
     pass
 import maya.cmds
 
+import test.baseutils as baseUtils
 
-class SolverTestBase(unittest.TestCase):
+
+class SolverTestBase(baseUtils.TestBase):
 
     def setUp(self):
+        maya.cmds.file(new=True, force=True)
+        self.reload_solver()
+
         # Start the Profiler
         self._profilerName = self.id().replace('.', '_')
         self._profilerDataName = self._profilerName + '.txt'
@@ -28,15 +33,12 @@ class SolverTestBase(unittest.TestCase):
         maya.cmds.profiler(bufferSize=250)
         maya.cmds.profiler(sampling=True)
 
+        super(SolverTestBase, self).setUp()
+
     def tearDown(self):
         # Stop the Profiler
         maya.cmds.profiler(sampling=False)
         if self._profilerPath is not None:
             maya.cmds.profiler(output=self._profilerPath)
 
-    def quitMaya(self):
-        if maya.cmds.about(batch=True):
-            maya.cmds.quit(force=True)
-
-    def approxEqual(self, x, y, eps=0.0001):
-        return x == y or (x < (y + eps) and x > (y - eps))
+        super(SolverTestBase, self).tearDown()

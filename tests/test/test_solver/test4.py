@@ -15,27 +15,15 @@ except RuntimeError:
 import maya.cmds
 
 
-import test.test_solver.utils as solverUtils
+import test.test_solver.solverutils as solverUtils
 
 
-@unittest.skip
+# @unittest.skip
 class TestSolver4(solverUtils.SolverTestBase):
 
     def test_init(self):
         start = 1
         end = 100
-
-        maya.cmds.file(new=True, force=True)
-        maya.cmds.unloadPlugin('mmSolver')
-        maya.cmds.loadPlugin('mmSolver')
-
-        # Start the Profiler
-        profilerOutPath = None
-        if '__file__' in dir():
-            profilerOutPath = os.path.join(os.path.dirname(__file__), 'test4.txt')
-        maya.cmds.profiler(addCategory='mmSolver')
-        maya.cmds.profiler(bufferSize=250)
-        maya.cmds.profiler(sampling=True)
 
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
@@ -90,14 +78,9 @@ class TestSolver4(solverUtils.SolverTestBase):
         e = time.time()
         print 'total time:', e - s
 
-        # Stop the Profiler
-        maya.cmds.profiler(sampling=False)
-        if profilerOutPath is not None:
-            maya.cmds.profiler(output=profilerOutPath)
-
         # Ensure the values are correct
         print 'Error:', err
-        assert self.approxEqual(err, 0.0, eps=0.001)
+        assert self.approx_equal(err, 0.0, eps=0.001)
 
 
 if __name__ == '__main__':

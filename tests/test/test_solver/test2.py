@@ -15,17 +15,13 @@ except RuntimeError:
 import maya.cmds
 
 
-import test.test_solver.utils as solverUtils
+import test.test_solver.solverutils as solverUtils
 
 
-@unittest.skip
+# @unittest.skip
 class TestSolver2(solverUtils.SolverTestBase):
 
     def test_init(self):
-        maya.cmds.file(new=True, force=True)
-        maya.cmds.unloadPlugin('mmSolver')
-        maya.cmds.loadPlugin('mmSolver')
-
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
@@ -88,13 +84,13 @@ class TestSolver2(solverUtils.SolverTestBase):
         print 'total time:', e - s
 
         # Ensure the values are correct
-        assert self.approxEqual(err, 0.0, eps=0.001)
-        # assert approxEqual(maya.cmds.getAttr(group_tfm+'.tx'), 1.47797)
-        # assert approxEqual(maya.cmds.getAttr(group_tfm+'.ty'), 0.894038)
-        # assert approxEqual(maya.cmds.getAttr(group_tfm+'.tz'), -32.9307)
-        # assert approxEqual(maya.cmds.getAttr(group_tfm+'.sx'), 1.00556)
-        # assert approxEqual(maya.cmds.getAttr(group_tfm+'.ry'), math.degrees(3.18648))
-        # assert approxEqual(maya.cmds.getAttr(group_tfm+'.rz'), math.degrees(-0.374883))
+        assert self.approx_equal(err, 0.0, eps=0.001)
+        # assert approx_equal(maya.cmds.getAttr(group_tfm+'.tx'), 1.47797)
+        # assert approx_equal(maya.cmds.getAttr(group_tfm+'.ty'), 0.894038)
+        # assert approx_equal(maya.cmds.getAttr(group_tfm+'.tz'), -32.9307)
+        # assert approx_equal(maya.cmds.getAttr(group_tfm+'.sx'), 1.00556)
+        # assert approx_equal(maya.cmds.getAttr(group_tfm+'.ry'), math.degrees(3.18648))
+        # assert approx_equal(maya.cmds.getAttr(group_tfm+'.rz'), math.degrees(-0.374883))
 
 
 

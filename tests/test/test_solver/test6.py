@@ -16,20 +16,16 @@ except RuntimeError:
 import maya.cmds
 
 
-import test.test_solver.utils as solverUtils
+import test.test_solver.solverutils as solverUtils
 
 
-@unittest.skip
+# @unittest.skip
 class TestSolver6(solverUtils.SolverTestBase):
 
     def test_init(self):
         start = 1
         end = 100
         mid = start + ((end - start) / 2)
-
-        maya.cmds.file(new=True, force=True)
-        maya.cmds.unloadPlugin('mmSolver')
-        maya.cmds.loadPlugin('mmSolver')
 
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
@@ -132,7 +128,7 @@ class TestSolver6(solverUtils.SolverTestBase):
         for i, err in enumerate(errs):
             print i, '=', err
         for i, err in enumerate(errs):
-            assert self.approxEqual(err, 0.0, eps=0.001)
+            assert self.approx_equal(err, 0.0, eps=0.001)
 
 
 if __name__ == '__main__':

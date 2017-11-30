@@ -15,10 +15,10 @@ except RuntimeError:
 import maya.cmds
 
 
-import test.test_solver.utils as solverUtils
+import test.test_solver.solverutils as solverUtils
 
 
-@unittest.skip
+# @unittest.skip
 class TestSolver7(solverUtils.SolverTestBase):
 
     def test_init(self):
@@ -27,15 +27,12 @@ class TestSolver7(solverUtils.SolverTestBase):
         scenePath = os.path.join(head, name + '.ma')
 
         # Open File Path
-        maya.cmds.file(new=True, force=True)
-        maya.cmds.unloadPlugin('mmSolver')
         maya.cmds.file(scenePath,
                        open=True,
                        force=True,
                        typ='mayaAscii',
                        ignoreVersion=True,
                        options='v=0')
-        maya.cmds.loadPlugin('mmSolver')
 
         # Get cameras
         cameras = []
@@ -104,7 +101,7 @@ class TestSolver7(solverUtils.SolverTestBase):
 
         # Ensure the values are correct
         print 'Error:', err
-        assert err < 0.001
+        assert self.approx_equal(err, 0.0, eps=0.001)
 
 
 if __name__ == '__main__':

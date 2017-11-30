@@ -14,7 +14,7 @@ import mmSolver.api.sethelper as sethelper
 
 
 # @unittest.skip
-class TestSetHelper(test_api_utils.APITestBase):
+class TestSetHelper(test_api_utils.APITestCase):
     def test_init(self):
         x = sethelper.SetHelper()
         self.assertEqual(x.get_node(), None)
@@ -253,7 +253,7 @@ class TestSetHelper(test_api_utils.APITestBase):
 
         # undo / redo tests
         n1 = len(x.get_all_nodes())
-        self.assertEqual(n1, 2)
+        self.assertEqual(n1, 40)
 
         maya.cmds.undo()  # undo add nodes
         n2 = len(x.get_all_nodes())

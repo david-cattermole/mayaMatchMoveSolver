@@ -8,13 +8,13 @@ maya.cmds.* so that they support undo/redo correctly.
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
-import mmSolver.api.utils as apiUtils
+import mmSolver.api.utils as api_utils
 
 
 class SetHelper(object):
     def __init__(self, name=None):
         if isinstance(name, (str, unicode)):
-            obj = apiUtils.get_as_object(name)
+            obj = api_utils.get_as_object(name)
             self._mfn = OpenMaya.MFnSet(obj)
         else:
             self._mfn = OpenMaya.MFnSet()
@@ -28,7 +28,7 @@ class SetHelper(object):
         return node
 
     def set_node(self, name):
-        obj = apiUtils.get_as_object(name)
+        obj = api_utils.get_as_object(name)
         try:
             self._mfn = OpenMaya.MFnSet(obj)
         except RuntimeError:
@@ -104,7 +104,7 @@ class SetHelper(object):
         return
 
     def node_in_set(self, name):
-        obj = apiUtils.get_as_object(name)
+        obj = api_utils.get_as_object(name)
         return self._mfn.isMember(obj)
 
     def length(self):

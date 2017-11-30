@@ -5,7 +5,7 @@ Utility functions for Maya API.
 import maya.OpenMaya as OpenMaya
 
 
-def getMSelectionList(paths):
+def get_as_selection_list(paths):
     assert isinstance(paths, list) or isinstance(paths, tuple)
     selList = OpenMaya.MSelectionList()
     try:
@@ -16,26 +16,29 @@ def getMSelectionList(paths):
     return selList
 
 
-def getAsDagPath(nodeStr):
-    selList = getMSelectionList([nodeStr])
-    if not selList:
+def get_as_dag_path(node_str):
+    sel_list = get_as_selection_list([node_str])
+    if not sel_list:
         return None
     dagPath = OpenMaya.MDagPath()
-    selList.getDagPath(0, dagPath)
+    sel_list.getDagPath(0, dagPath)
     return dagPath
 
 
-def getNodeAsMObject(nodeStr):
-    selList = getMSelectionList([nodeStr])
+def get_as_object(node_str):
+    selList = get_as_selection_list([node_str])
     if not selList:
         return None
     obj = OpenMaya.MObject()
-    selList.getDependNode(0, obj)
+    try:
+        selList.getDependNode(0, obj)
+    except RuntimeError:
+        pass
     return obj
 
 
-def getNodeAttrAsMPlug(nodeAttr):
-    sel = getMSelectionList([nodeAttr])
+def get_as_plug(node_attr):
+    sel = get_as_selection_list([node_attr])
     plug = None
     if not sel.isEmpty():
         try:

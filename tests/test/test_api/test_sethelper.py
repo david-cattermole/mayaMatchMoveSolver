@@ -301,5 +301,76 @@ class TestSetHelper(testApiUtils.APITestBase):
         n2 = len(x.get_all_nodes())
         self.assertEqual(n2, 2)
 
+    def test_remove_node(self):
+        x = sethelper.SetHelper()
+        x.create_node('mySet')
+
+        node = maya.cmds.createNode('transform')
+        node_attr = node + '.translateX'
+        x.add_nodes([node, node_attr])
+
+        n1 = len(x.get_all_nodes())
+        self.assertEqual(n1, 2)
+
+        x.remove_node(node)
+        n2 = len(x.get_all_nodes())
+        self.assertEqual(n2, n1 - 1)
+
+        x.remove_node(node_attr)
+        n3 = len(x.get_all_nodes())
+        self.assertEqual(n3, 0)
+
+        # undo / redo tests
+        maya.cmds.undo()  # undo remove node_attr
+        maya.cmds.undo()  # undo remove node
+        n4 = len(x.get_all_nodes())
+        self.assertEqual(n4, 2)
+
+        maya.cmds.redo()  # redo remove node_attr
+        maya.cmds.redo()  # redo remove node
+        n5 = len(x.get_all_nodes())
+        self.assertEqual(n5, 0)
+
+    def test_node_in_set(self):
+        x = sethelper.SetHelper()
+        x.create_node('mySet')
+
+        node1 = maya.cmds.createNode('transform')
+        node2 = maya.cmds.createNode('transform')
+        node_attr = node1 + '.translateX'
+        x.add_nodes([node1, node_attr])
+
+        self.assertTrue(x.node_in_set(node1))
+        self.assertTrue(x.node_in_set(node_attr))
+        self.assertFalse(x.node_in_set(node2))
+
+    def test_length(self):
+        x = sethelper.SetHelper()
+        x.create_node('mySet')
+
+        node1 = maya.cmds.createNode('transform')
+        node_attr = node1 + '.translateX'
+        x.add_nodes([node1, node_attr])
+        self.assertEqual(x.length(), 2)
+
+    def test_is_empty(self):
+        x = sethelper.SetHelper()
+        x.create_node('mySet')
+        self.assertTrue(x.is_empty())
+
+        node1 = maya.cmds.createNode('transform')
+        node_attr = node1 + '.translateX'
+        x.add_nodes([node1, node_attr])
+        self.assertFalse(x.is_empty())
+
+        x.clear_all_nodes()
+        y = sethelper.SetHelper()
+        y.create_node('myNestedSet')
+        x.add_node(y.get_node())
+
+        self.assertFalse(x.is_empty())
+        self.assertTrue(y.is_empty())
+
+
 if __name__ == '__main__':
     prog = unittest.main()

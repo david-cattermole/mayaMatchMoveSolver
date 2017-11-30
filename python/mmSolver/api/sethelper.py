@@ -58,28 +58,6 @@ class SetHelper(object):
         maya.cmds.sets(set_node, edit=True, text=value)
         return
 
-    def get_all_nodes(self, flatten=False, full_path=True):
-        assert isinstance(flatten, bool)
-        assert isinstance(full_path, bool)
-
-        sel_list = OpenMaya.MSelectionList()
-        try:
-            self._mfn.getMembers(sel_list, flatten)
-        except RuntimeError:
-            return []
-
-        ret = []
-        sel_list.getSelectionStrings(ret)
-        if full_path is True:
-            ret = maya.cmds.ls(ret, long=True) or []
-
-        return ret
-
-    def clear_all_nodes(self):
-        set_node = self.get_node()
-        maya.cmds.sets(edit=True, clear=set_node)
-        return
-
     def add_nodes(self, name_list):
         assert isinstance(name_list, list)
         set_node = self.get_node()
@@ -101,6 +79,28 @@ class SetHelper(object):
     def remove_node(self, name):
         set_node = self.get_node()
         maya.cmds.sets(name, edit=True, remove=set_node)
+        return
+
+    def get_all_nodes(self, flatten=False, full_path=True):
+        assert isinstance(flatten, bool)
+        assert isinstance(full_path, bool)
+
+        sel_list = OpenMaya.MSelectionList()
+        try:
+            self._mfn.getMembers(sel_list, flatten)
+        except RuntimeError:
+            return []
+
+        ret = []
+        sel_list.getSelectionStrings(ret)
+        if full_path is True:
+            ret = maya.cmds.ls(ret, long=True) or []
+
+        return ret
+
+    def clear_all_nodes(self):
+        set_node = self.get_node()
+        maya.cmds.sets(edit=True, clear=set_node)
         return
 
     def node_in_set(self, name):

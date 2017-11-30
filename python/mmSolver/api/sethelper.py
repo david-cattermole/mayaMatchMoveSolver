@@ -1,5 +1,8 @@
 """
 Set Helper, creates, removes and manipulates Maya set nodes.
+
+Any queries use the Maya Python API, but modifications are handled with
+maya.cmds.* so that they support undo/redo correctly.
 """
 
 import maya.cmds
@@ -33,7 +36,7 @@ class SetHelper(object):
         return
 
     def create_node(self, name):
-        node = maya.cmds.sets(name=name)
+        node = maya.cmds.sets(name=name, empty=True)
         self.set_node(node)
         return self.get_node()
 
@@ -74,50 +77,40 @@ class SetHelper(object):
         return ret
 
     def clear_all_nodes(self):
-        try:
-            self._mfn.clear()
-        except RuntimeError:
-            raise
+        set_node = self.get_node()
+        maya.cmds.sets(edit=True, clear=set_node)
         return
 
     def add_nodes(self, name_list):
-        sel_list = OpenMaya.MSelectionList()
-        for name in name_list:
-            sel_list.add(name)
-        if sel_list.length():
-            self._mfn.addMembers(sel_list)
+        assert isinstance(name_list, list)
+        set_node = self.get_node()
+        maya.cmds.sets(*name_list, edit=True, include=set_node, noWarnings=True)
         return
 
-    def remove_nodes(self, nameList):
-        sel_list = OpenMaya.MSelectionList()
-        for name in nameList:
-            sel_list.add(name)
-        if sel_list.length():
-            self._mfn.removeMembers(sel_list)
+    def remove_nodes(self, name_list):
+        assert isinstance(name_list, list)
+        set_node = self.get_node()
+        maya.cmds.sets(name_list, edit=True, remove=set_node)
         return
 
     def add_node(self, name):
-        if '.' in name:
-            # name is a plug
-            try:
-                plug = apiUtils.get_as_plug(name)
-                self._mfn.addMember(plug)
-            except RuntimeError:
-                raise
-        else:
-            # name is a node
-            try:
-                obj = apiUtils.get_as_object(name)
-                self._mfn.addMember(obj)
-            except RuntimeError:
-                raise
+        assert isinstance(name, (str, unicode))
+        set_node = self.get_node()
+        maya.cmds.sets(name, edit=True, include=set_node, noWarnings=True)
         return
 
     def remove_node(self, name):
-        obj = apiUtils.get_as_object(name)
-        return self._mfn.removeMember(obj)
+        set_node = self.get_node()
+        maya.cmds.sets(name, edit=True, remove=set_node)
+        return
 
     def node_in_set(self, name):
         obj = apiUtils.get_as_object(name)
         return self._mfn.isMember(obj)
+
+    def length(self):
+        return len(self.get_all_nodes())
+
+    def is_empty(self):
+        return len(self.get_all_nodes()) == 0
 

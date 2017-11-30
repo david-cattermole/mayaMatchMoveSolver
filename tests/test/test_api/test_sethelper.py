@@ -173,9 +173,133 @@ class TestSetHelper(testApiUtils.APITestBase):
         self.assertIn(node_attr2, nodes)
         self.assertIn(node_attr3, nodes)
         self.assertIn(node_attr4, nodes)
+        x.clear_all_nodes()
 
-        # TODO: Test 'flatten' argument, with nested sets.
+        # Test 'flatten' argument, with nested sets.
+        y = sethelper.SetHelper()
+        y.create_node('myNestedSet')
+        y.add_node(node2)
+        y.add_node(node3)
+        y.add_node(node_attr4)
+        x.add_node(node1)
+        x.add_node(y.get_node())
 
+        # Query the results.
+        x_nodes_flat = x.get_all_nodes(flatten=True)
+        y_nodes_flat = y.get_all_nodes(flatten=True)
+        x_nodes = x.get_all_nodes(flatten=False)
+        y_nodes = y.get_all_nodes(flatten=False)
+        self.assertEqual(len(x_nodes_flat), 4)
+        self.assertEqual(len(x_nodes), 2)
+        self.assertEqual(len(y_nodes_flat), 3)
+        self.assertEqual(len(y_nodes), 3)
+        self.assertEqual(y_nodes, y_nodes_flat)
+
+    def test_clear_all_nodes(self):
+        x = sethelper.SetHelper()
+        x.create_node('mySet')
+
+        node_attrs = []
+        nodes = []
+        for i in xrange(10):
+            node = maya.cmds.createNode('transform')
+            nodes.append(node)
+        for node in nodes:
+            node_attr = node + '.translateX'
+            node_attrs.append(node_attr)
+        x.add_nodes(nodes)
+        x.add_nodes(node_attrs)
+
+        n1 = len(x.get_all_nodes())
+        self.assertEqual(n1, 20)
+        x.clear_all_nodes()
+        n2 = len(x.get_all_nodes())
+        self.assertEqual(n2, 0)
+
+        # undo / redo tests
+        maya.cmds.undo()
+        n3 = len(x.get_all_nodes())
+        self.assertEqual(n3, 20)
+
+        maya.cmds.redo()
+        n4 = len(x.get_all_nodes())
+        self.assertEqual(n4, 0)
+
+    def test_add_nodes(self):
+        x = sethelper.SetHelper()
+        x.create_node('mySet')
+
+        nodes = []
+        for i in xrange(10):
+            node = maya.cmds.createNode('transform')
+            attr1 = node + '.translateX'
+            attr2 = node + '.rotateY'
+            attr3 = node + '.visibility'
+            nodes.append(node)
+            nodes.append(attr1)
+            nodes.append(attr2)
+            nodes.append(attr3)
+        x.add_nodes(nodes)
+
+        # undo / redo tests
+        n1 = len(x.get_all_nodes())
+        maya.cmds.undo()  # undo add nodes
+        n2 = len(x.get_all_nodes())
+        self.assertEqual(n2, 0)
+
+        maya.cmds.redo()  # redo add nodes
+        n3 = len(x.get_all_nodes())
+        self.assertEqual(n3, 40)
+
+    def test_remove_nodes(self):
+        x = sethelper.SetHelper()
+        x.create_node('mySet')
+
+        # Add nodes.
+        nodes = []
+        for i in xrange(10):
+            node = maya.cmds.createNode('transform')
+            attr1 = node + '.translateX'
+            attr2 = node + '.rotateY'
+            attr3 = node + '.visibility'
+            nodes.append(node)
+            nodes.append(attr1)
+            nodes.append(attr2)
+            nodes.append(attr3)
+        x.add_nodes(nodes)
+
+        # Remove the nodes.
+        nodes1 = x.get_all_nodes()
+        x.remove_nodes(nodes)
+
+        # undo / redo tests
+        maya.cmds.undo()  # undo remove nodes
+        nodes2 = x.get_all_nodes()
+        self.assertEqual(nodes2, nodes1)
+
+        maya.cmds.redo()  # redo remove nodes
+        nodes3 = x.get_all_nodes()
+        self.assertEqual(nodes3, [])
+
+    def test_add_node(self):
+        x = sethelper.SetHelper()
+        x.create_node('mySet')
+
+        node = maya.cmds.createNode('transform')
+        node_attr = node + '.translateX'
+        x.add_node(node)
+        x.add_node(node_attr)
+
+        # undo / redo tests
+        maya.cmds.undo()  # undo add node_attr
+        maya.cmds.undo()  # undo add node
+        n1 = len(x.get_all_nodes())
+        self.assertEqual(n1, 0)
+
+        maya.cmds.redo()  # redo add node_attr
+        maya.cmds.redo()  # redo add node
+        n2 = len(x.get_all_nodes())
+        self.assertEqual(n2, 2)
 
 if __name__ == '__main__':
     prog = unittest.main()

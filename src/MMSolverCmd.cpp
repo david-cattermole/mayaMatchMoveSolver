@@ -299,7 +299,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS(status);
     }
     INFO("m_epsilon3=" << m_epsilon3);
-    
+
     // Get 'Delta'
     m_delta = DELTA_DEFAULT_VALUE;
     if (argData.isFlagSet(DELTA_FLAG)) {
@@ -375,6 +375,11 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
             m_computation,
             outError
     );
+
+    // TODO: In future we would like to return all the possible data from the
+    // solver to the user (Python API). This will clean up stdout, because we
+    // won't need to read the terminal, and it will provide an opportunity to
+    // process the raw data on the user side.
     MMSolverCmd::setResult(outError);
     if (ret == false) {
         WRN("mmSolver: Solver returned false!");

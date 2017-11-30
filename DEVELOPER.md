@@ -12,12 +12,12 @@ Here is a specific list, some are listed in PEP 8, some are not:
 - Line limit of 80 characters, exceptions are allowed if required.
 - Use 4 spaces for indentation, do not use tabs.
 - Each top-level function definition should have 2 blank line of space between it, 1 blank line separates class functions/methods.
-- All modules should should have a doc-string, with a brief description in a single.
+- All modules should should have a doc-string, with a brief description in a single at minimum.
 - Functions should have a doc-string.
 - Doc-strings should use triple double-quote characters: `"""My doc-string"""`
 - Private variables are specified by `_`; `_variable`. These variables should not be called directly, getters and setters should be written.
 - Constant variables should be specified at the top of a module and must be `UPPER_CASE`.
-- Do not use `global` variables, unless you really need to.
+- Do not use `global` variables, unless you really, really need to.
 - Remove all redundant white space in source code.
 
 # C++

@@ -58,9 +58,9 @@ class SetHelper(object):
         maya.cmds.sets(set_node, edit=True, text=value)
         return
 
-    def get_all_nodes(self, flatten=False, fullPath=True):
+    def get_all_nodes(self, flatten=False, full_path=True):
         assert isinstance(flatten, bool)
-        assert isinstance(fullPath, bool)
+        assert isinstance(full_path, bool)
 
         sel_list = OpenMaya.MSelectionList()
         try:
@@ -70,7 +70,7 @@ class SetHelper(object):
 
         ret = []
         sel_list.getSelectionStrings(ret)
-        if fullPath is True:
+        if full_path is True:
             ret = maya.cmds.ls(ret, long=True) or []
 
         return ret

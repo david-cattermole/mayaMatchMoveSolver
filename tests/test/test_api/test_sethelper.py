@@ -152,7 +152,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         x.add_node(node_attr4)
 
         # Get the full path node names
-        nodes = x.get_all_nodes(fullPath=True)
+        nodes = x.get_all_nodes(full_path=True)
         self.assertEqual(len(nodes), 8)
         self.assertIn(node1, nodes)
         self.assertIn(node2, nodes)
@@ -173,7 +173,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         node_attr2 = node2 + '.rotateY'
         node_attr3 = node3 + '.rotateX'
         node_attr4 = node4 + '.operation'
-        nodes = x.get_all_nodes(fullPath=False)
+        nodes = x.get_all_nodes(full_path=False)
         self.assertEqual(len(nodes), 8)
         self.assertIn(node1, nodes)
         self.assertIn(node2, nodes)

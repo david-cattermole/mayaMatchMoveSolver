@@ -8,13 +8,13 @@ import unittest
 
 import maya.cmds
 
-import test.test_api.apiutils as testApiUtils
-import mmSolver.api.utils as apiUtils
+import test.test_api.apiutils as test_api_utils
+import mmSolver.api.utils as api_utils
 import mmSolver.api.sethelper as sethelper
 
 
 # @unittest.skip
-class TestSetHelper(testApiUtils.APITestBase):
+class TestSetHelper(test_api_utils.APITestBase):
     def test_init(self):
         x = sethelper.SetHelper()
         self.assertEqual(x.get_node(), None)
@@ -126,16 +126,16 @@ class TestSetHelper(testApiUtils.APITestBase):
         x.get_all_nodes()
 
         node1 = maya.cmds.createNode('transform', name='myParent')
-        node1 = apiUtils.get_long_name(node1)
+        node1 = api_utils.get_long_name(node1)
 
         node2 = maya.cmds.createNode('transform', name='myChild', parent=node1)
-        node2 = apiUtils.get_long_name(node2)
+        node2 = api_utils.get_long_name(node2)
 
         node3 = maya.cmds.createNode('transform', name='myChild')
-        node3 = apiUtils.get_long_name(node3)
+        node3 = api_utils.get_long_name(node3)
 
         node4 = maya.cmds.createNode('multiplyDivide', name='myMathsNode')
-        node4 = apiUtils.get_long_name(node4)
+        node4 = api_utils.get_long_name(node4)
 
         node_attr1 = node1 + '.tx'  # short attribute name
         node_attr2 = node2 + '.rotateY'
@@ -253,6 +253,8 @@ class TestSetHelper(testApiUtils.APITestBase):
 
         # undo / redo tests
         n1 = len(x.get_all_nodes())
+        self.assertEqual(n1, 2)
+
         maya.cmds.undo()  # undo add nodes
         n2 = len(x.get_all_nodes())
         self.assertEqual(n2, 0)

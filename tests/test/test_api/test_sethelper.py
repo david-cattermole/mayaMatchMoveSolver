@@ -94,7 +94,8 @@ class TestSetHelper(testApiUtils.APITestBase):
         x = sethelper.SetHelper()
         x.create_node('mySet')
         anno = x.get_annotation()
-        self.assertEqual(anno, 'Unnamed object set')
+        default_anno = 'Unnamed object set'
+        self.assertEqual(anno, default_anno)
         line = 'This is the best set in the world!'
         x.set_annotation(line)
         anno = x.get_annotation()
@@ -104,9 +105,18 @@ class TestSetHelper(testApiUtils.APITestBase):
         x = sethelper.SetHelper()
         x.create_node('mySet')
         anno = x.get_annotation()
-        self.assertEqual(anno, 'Unnamed object set')
+        default_anno = 'Unnamed object set'
+        self.assertEqual(anno, default_anno)
         line = 'This is the best set in the world!'
         x.set_annotation(line)
+        anno = x.get_annotation()
+        self.assertEqual(anno, line)
+
+        maya.cmds.undo()  # undo set annotation
+        anno = x.get_annotation()
+        self.assertEqual(anno, default_anno)
+
+        maya.cmds.redo()  # redo set annotation
         anno = x.get_annotation()
         self.assertEqual(anno, line)
 

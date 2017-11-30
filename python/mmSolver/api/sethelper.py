@@ -53,10 +53,9 @@ class SetHelper(object):
         return ret
 
     def set_annotation(self, value):
-        try:
-            self._mfn.setAnnotation(value)
-        except RuntimeError:
-            raise
+        assert isinstance(value, str)
+        set_node = self.get_node()
+        maya.cmds.sets(set_node, edit=True, text=value)
         return
 
     def get_all_nodes(self, flatten=False, fullPath=True):

@@ -2,17 +2,25 @@
 Utility functions for Maya API.
 """
 
+import maya.cmds
 import maya.OpenMaya as OpenMaya
+
+
+def get_long_name(node):
+    result = maya.cmds.ls(node, long=True)
+    if result and len(result):
+        return result[0]
+    return None
 
 
 def get_as_selection_list(paths):
     assert isinstance(paths, list) or isinstance(paths, tuple)
     selList = OpenMaya.MSelectionList()
-    try:
-        for node in paths:
+    for node in paths:
+        try:
             selList.add(node)
-    except RuntimeError:
-        return None
+        except RuntimeError:
+            pass
     return selList
 
 
@@ -33,7 +41,7 @@ def get_as_object(node_str):
     try:
         selList.getDependNode(0, obj)
     except RuntimeError:
-        pass
+        obj = None
     return obj
 
 
@@ -42,8 +50,9 @@ def get_as_plug(node_attr):
     plug = None
     if not sel.isEmpty():
         try:
-            plug = sel.getPlug(0)
+            plug = OpenMaya.MPlug()
+            sel.getPlug(0, plug)
         except RuntimeError:
-            pass
+            plug = None
     return plug
 

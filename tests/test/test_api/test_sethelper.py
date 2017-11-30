@@ -8,12 +8,13 @@ import unittest
 
 import maya.cmds
 
-import test.test_solver.solverutils as apiUtils
+import test.test_api.apiutils as testApiUtils
+import mmSolver.api.utils as apiUtils
 import mmSolver.api.sethelper as sethelper
 
 
 # @unittest.skip
-class TestSetHelper(apiUtils.SolverTestBase):
+class TestSetHelper(testApiUtils.APITestBase):
     def test_init(self):
         x = sethelper.SetHelper()
         self.assertEqual(x.get_node(), None)
@@ -114,15 +115,64 @@ class TestSetHelper(apiUtils.SolverTestBase):
         x.create_node('mySet')
         x.get_all_nodes()
 
-        node1 = maya.cmds.createNode('transform', name='myTransform')
-        node2 = maya.cmds.createNode('multiplyDivide', name='myMathsNode')
+        node1 = maya.cmds.createNode('transform', name='myParent')
+        node1 = apiUtils.get_long_name(node1)
+
+        node2 = maya.cmds.createNode('transform', name='myChild', parent=node1)
+        node2 = apiUtils.get_long_name(node2)
+
+        node3 = maya.cmds.createNode('transform', name='myChild')
+        node3 = apiUtils.get_long_name(node3)
+
+        node4 = maya.cmds.createNode('multiplyDivide', name='myMathsNode')
+        node4 = apiUtils.get_long_name(node4)
+
+        node_attr1 = node1 + '.tx'  # short attribute name
+        node_attr2 = node2 + '.rotateY'
+        node_attr3 = node3 + '.rotateX'
+        node_attr4 = node4 + '.operation'
+
         x.add_node(node1)
         x.add_node(node2)
+        x.add_node(node3)
+        x.add_node(node4)
+        x.add_node(node_attr1)
+        x.add_node(node_attr2)
+        x.add_node(node_attr3)
+        x.add_node(node_attr4)
 
-        nodes = x.get_all_nodes()
-        self.assertEqual(len(nodes), 2)
+        # Get the full path node names
+        nodes = x.get_all_nodes(fullPath=True)
+        self.assertEqual(len(nodes), 8)
         self.assertIn(node1, nodes)
         self.assertIn(node2, nodes)
+        self.assertIn(node3, nodes)
+        self.assertIn(node4, nodes)
+        node_attr1 = node1 + '.translateX'  # full attribute name
+        self.assertIn(node_attr1, nodes)
+        self.assertIn(node_attr2, nodes)
+        self.assertIn(node_attr3, nodes)
+        self.assertIn(node_attr4, nodes)
+
+        # Make sure short-names are handled too
+        node1 = 'myParent'
+        node2 = 'myParent|myChild'
+        node3 = '|myChild'
+        node4 = 'myMathsNode'
+        node_attr1 = node1 + '.translateX'
+        node_attr2 = node2 + '.rotateY'
+        node_attr3 = node3 + '.rotateX'
+        node_attr4 = node4 + '.operation'
+        nodes = x.get_all_nodes(fullPath=False)
+        self.assertEqual(len(nodes), 8)
+        self.assertIn(node1, nodes)
+        self.assertIn(node2, nodes)
+        self.assertIn(node3, nodes)
+        self.assertIn(node4, nodes)
+        self.assertIn(node_attr1, nodes)
+        self.assertIn(node_attr2, nodes)
+        self.assertIn(node_attr3, nodes)
+        self.assertIn(node_attr4, nodes)
 
         # TODO: Test 'flatten' argument, with nested sets.
 

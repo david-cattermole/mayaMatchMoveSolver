@@ -5,13 +5,13 @@ Set Helper, creates, removes and manipulates Maya set nodes.
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
-import mmSolver.api.utils as utils
+import mmSolver.api.utils as apiUtils
 
 
 class SetHelper(object):
     def __init__(self, name=None):
         if isinstance(name, (str, unicode)):
-            obj = utils.get_as_object(name)
+            obj = apiUtils.get_as_object(name)
             self._mfn = OpenMaya.MFnSet(obj)
         else:
             self._mfn = OpenMaya.MFnSet()
@@ -25,7 +25,7 @@ class SetHelper(object):
         return node
 
     def set_node(self, name):
-        obj = utils.get_as_object(name)
+        obj = apiUtils.get_as_object(name)
         try:
             self._mfn = OpenMaya.MFnSet(obj)
         except RuntimeError:
@@ -56,7 +56,10 @@ class SetHelper(object):
             raise
         return
 
-    def get_all_nodes(self, flatten=False):
+    def get_all_nodes(self, flatten=False, fullPath=True):
+        assert isinstance(flatten, bool)
+        assert isinstance(fullPath, bool)
+
         sel_list = OpenMaya.MSelectionList()
         try:
             self._mfn.getMembers(sel_list, flatten)
@@ -64,24 +67,9 @@ class SetHelper(object):
             return []
 
         ret = []
-        if True:
-            sel_list.getSelectionStrings(ret)
-        else:
-            for i in xrange(sel_list.length()):
-                s = sel_list[i]
-                name = None
-                try:
-                    plug = s.getPlug(i)
-                    name = plug.name()
-                except RuntimeError:
-                    try:
-                        dag = OpenMaya.MDagPath()
-                        s.getDagPath(i, dag)
-                        name = dag.fullPathName()
-                    except RuntimeError:
-                        pass
-                if name is not None and len(name):
-                    ret.append(name)
+        sel_list.getSelectionStrings(ret)
+        if fullPath is True:
+            ret = maya.cmds.ls(ret, long=True) or []
 
         return ret
 
@@ -109,14 +97,27 @@ class SetHelper(object):
         return
 
     def add_node(self, name):
-        obj = utils.get_as_object(name)
-        return self._mfn.addMember(obj)
+        if '.' in name:
+            # name is a plug
+            try:
+                plug = apiUtils.get_as_plug(name)
+                self._mfn.addMember(plug)
+            except RuntimeError:
+                raise
+        else:
+            # name is a node
+            try:
+                obj = apiUtils.get_as_object(name)
+                self._mfn.addMember(obj)
+            except RuntimeError:
+                raise
+        return
 
     def remove_node(self, name):
-        obj = utils.get_as_object(name)
+        obj = apiUtils.get_as_object(name)
         return self._mfn.removeMember(obj)
 
     def node_in_set(self, name):
-        obj = utils.get_as_object(name)
+        obj = apiUtils.get_as_object(name)
         return self._mfn.isMember(obj)
 

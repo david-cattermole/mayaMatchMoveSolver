@@ -17,13 +17,13 @@ import maya.cmds
 import test.baseutils as baseUtils
 
 
-class APITestBase(baseUtils.TestBase):
+class APITestCase(baseUtils.TestBase):
 
     def setUp(self):
         maya.cmds.file(new=True, force=True)
         self.reload_solver()
-        super(APITestBase, self).setUp()
+        super(APITestCase, self).setUp()
 
     def tearDown(self):
-        super(APITestBase, self).tearDown()
+        super(APITestCase, self).tearDown()
 

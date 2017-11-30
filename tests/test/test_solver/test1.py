@@ -18,7 +18,7 @@ import test.test_solver.solverutils as solverUtils
 
 
 # @unittest.skip
-class TestSolver1(solverUtils.SolverTestBase):
+class TestSolver1(solverUtils.SolverTestCase):
 
     def test_init(self):
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')

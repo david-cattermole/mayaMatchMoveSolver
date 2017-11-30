@@ -19,7 +19,7 @@ import test.test_solver.solverutils as solverUtils
 
 
 # @unittest.skip
-class TestSolver4(solverUtils.SolverTestBase):
+class TestSolver4(solverUtils.SolverTestCase):
 
     def test_init(self):
         start = 1

@@ -19,7 +19,7 @@ import test.test_solver.solverutils as solverUtils
 
 
 # @unittest.skip
-class TestSolver7(solverUtils.SolverTestBase):
+class TestSolver7(solverUtils.SolverTestCase):
 
     def test_init(self):
         head, tail = os.path.split(__file__)

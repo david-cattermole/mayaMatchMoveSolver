@@ -17,7 +17,7 @@ import maya.cmds
 import test.baseutils as baseUtils
 
 
-class SolverTestBase(baseUtils.TestBase):
+class SolverTestCase(baseUtils.TestBase):
 
     def setUp(self):
         maya.cmds.file(new=True, force=True)
@@ -33,7 +33,7 @@ class SolverTestBase(baseUtils.TestBase):
         maya.cmds.profiler(bufferSize=250)
         maya.cmds.profiler(sampling=True)
 
-        super(SolverTestBase, self).setUp()
+        super(SolverTestCase, self).setUp()
 
     def tearDown(self):
         # Stop the Profiler
@@ -41,4 +41,4 @@ class SolverTestBase(baseUtils.TestBase):
         if self._profilerPath is not None:
             maya.cmds.profiler(output=self._profilerPath)
 
-        super(SolverTestBase, self).tearDown()
+        super(SolverTestCase, self).tearDown()

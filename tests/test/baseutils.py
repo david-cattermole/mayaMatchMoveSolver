@@ -18,7 +18,11 @@ import maya.cmds
 class TestBase(unittest.TestCase):
 
     def setUp(self):
-        pass
+        print ''
+        print '-' * 80
+        print 'Name:', self.id()
+        if self.shortDescription():
+            print 'Description:', self.shortDescription()
 
     def tearDown(self):
         pass

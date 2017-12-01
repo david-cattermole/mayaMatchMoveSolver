@@ -58,30 +58,30 @@ class SetHelper(object):
         maya.cmds.sets(set_node, edit=True, text=value)
         return
 
-    def add_nodes(self, name_list):
+    def add_members(self, name_list):
         assert isinstance(name_list, list)
         set_node = self.get_node()
         maya.cmds.sets(*name_list, edit=True, include=set_node, noWarnings=True)
         return
 
-    def remove_nodes(self, name_list):
+    def remove_members(self, name_list):
         assert isinstance(name_list, list)
         set_node = self.get_node()
         maya.cmds.sets(name_list, edit=True, remove=set_node)
         return
 
-    def add_node(self, name):
+    def add_member(self, name):
         assert isinstance(name, (str, unicode))
         set_node = self.get_node()
         maya.cmds.sets(name, edit=True, include=set_node, noWarnings=True)
         return
 
-    def remove_node(self, name):
+    def remove_member(self, name):
         set_node = self.get_node()
         maya.cmds.sets(name, edit=True, remove=set_node)
         return
 
-    def get_all_nodes(self, flatten=False, full_path=True):
+    def get_all_members(self, flatten=False, full_path=True):
         assert isinstance(flatten, bool)
         assert isinstance(full_path, bool)
 
@@ -98,18 +98,18 @@ class SetHelper(object):
 
         return ret
 
-    def clear_all_nodes(self):
+    def clear_all_members(self):
         set_node = self.get_node()
         maya.cmds.sets(edit=True, clear=set_node)
         return
 
-    def node_in_set(self, name):
+    def member_in_set(self, name):
         obj = api_utils.get_as_object(name)
         return self._mfn.isMember(obj)
 
     def length(self):
-        return len(self.get_all_nodes())
+        return len(self.get_all_members())
 
     def is_empty(self):
-        return len(self.get_all_nodes()) == 0
+        return len(self.get_all_members()) == 0
 

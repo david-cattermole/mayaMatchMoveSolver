@@ -104,8 +104,15 @@ class SetHelper(object):
         return
 
     def member_in_set(self, name):
-        obj = api_utils.get_as_object(name)
-        return self._mfn.isMember(obj)
+        # NOTE: For attributes, you must use a MPlug, as testing with an MObject
+        # only tests the dependency node
+        if '.' in name:
+            plug = api_utils.get_as_plug(name)
+            ret = self._mfn.isMember(plug)
+        else:
+            obj = api_utils.get_as_object(name)
+            ret = self._mfn.isMember(obj)
+        return ret
 
     def length(self):
         return len(self.get_all_members())

@@ -346,7 +346,7 @@ class TestSetHelper(test_api_utils.APITestCase):
 
         node1 = maya.cmds.createNode('transform')
         node2 = maya.cmds.createNode('transform')
-        node_attr = node1 + '.translateX'
+        node_attr = node2 + '.translateX'
         x.add_members([node1, node_attr])
 
         self.assertTrue(x.member_in_set(node1))

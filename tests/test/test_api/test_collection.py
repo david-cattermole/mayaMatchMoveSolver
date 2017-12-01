@@ -162,20 +162,29 @@ class TestCollection(test_api_utils.APITestCase):
 
         self.assertEqual(x.get_marker_list_length(), 0)
 
-
     def test_get_marker_list(self):
         x = collection.Collection()
         x.create('mySolve')
 
-        # TODO: We should also add attributes, and make sure we can detect
-        # the set members correctly.
-
         self.assertEqual(x.get_marker_list_length(), 0)
 
+        node = maya.cmds.createNode('transform')
         mkr1 = marker.Marker().create_node()
         mkr2 = marker.Marker().create_node()
+        attr1 = attribute.Attribute(node=node, attr='translateX')
+        attr2 = attribute.Attribute(node=node, attr='translateY')
+        attr3 = attribute.Attribute(node=node, attr='translateZ')
+        attr4 = attribute.Attribute(node=node, attr='rotateX')
+        attr5 = attribute.Attribute(node=node, attr='rotateY')
+        attr6 = attribute.Attribute(node=node, attr='rotateZ')
         x.add_marker(mkr1)
         x.add_marker(mkr2)
+        x.add_attribute(attr1)
+        x.add_attribute(attr2)
+        x.add_attribute(attr3)
+        x.add_attribute(attr4)
+        x.add_attribute(attr5)
+        x.add_attribute(attr6)
 
         self.assertEqual(x.get_marker_list_length(), 2)
 
@@ -183,9 +192,7 @@ class TestCollection(test_api_utils.APITestCase):
         x = collection.Collection()
         x.create('mySolve')
 
-        # TODO: We should also add attributes, and make sure we can detect
-        # the set members correctly.
-
+        attr_list = []
         mkr_list = []
         mkr1 = marker.Marker().create_node()
         mkr_list.append(mkr1)
@@ -193,7 +200,12 @@ class TestCollection(test_api_utils.APITestCase):
             mkr = marker.Marker().create_node()
             mkr_list.append(mkr)
 
+            node = maya.cmds.createNode('transform')
+            attr = attribute.Attribute(node=node, attr='translateZ')
+            attr_list.append(attr)
+
         x.set_marker_list(mkr_list)
+        x.set_attribute_list(mkr_list)
         self.assertEqual(x.get_marker_list_length(), 11)
 
         mkr_list = [mkr1]
@@ -207,15 +219,18 @@ class TestCollection(test_api_utils.APITestCase):
         x = collection.Collection()
         x.create('mySolve')
 
-        # TODO: We should also add attributes, and make sure we can detect
-        # the set members correctly.
-
+        attr_list = []
         mkr_list = []
         for i in xrange(10):
             mkr = marker.Marker().create_node()
             mkr_list.append(mkr)
 
+            node = maya.cmds.createNode('transform')
+            attr = attribute.Attribute(node=node, attr='translateZ')
+            attr_list.append(attr)
+
         x.set_marker_list(mkr_list)
+        x.set_attribute_list(attr_list)
         self.assertEqual(x.get_marker_list_length(), 10)
 
         x.clear_marker_list()

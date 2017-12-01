@@ -27,10 +27,9 @@ class SolverTestCase(baseUtils.TestBase):
         self._profilerName = self.id().replace('.', '_')
         self._profilerDataName = self._profilerName + '.txt'
         self._profilerPath = None
-        if '__file__' in dir():
-            self._profilerPath = os.path.join(os.path.dirname(__file__), self._profilerName)
+        self._profilerPath = os.path.join(os.path.dirname(__file__), self._profilerDataName)
         maya.cmds.profiler(addCategory='mmSolver')
-        maya.cmds.profiler(bufferSize=250)
+        maya.cmds.profiler(bufferSize=20)
         maya.cmds.profiler(sampling=True)
 
         super(SolverTestCase, self).setUp()

@@ -23,9 +23,12 @@ class TestBase(unittest.TestCase):
         print 'Name:', self.id()
         if self.shortDescription():
             print 'Description:', self.shortDescription()
+        self._start_test_time = time.time()
 
     def tearDown(self):
-        pass
+        self._end_test_time = time.time()
+        self._test_time = self._end_test_time - self._start_test_time
+        print 'Time: ', '{0: f}'.format(self._test_time)
 
     def reload_solver(self):
         maya.cmds.unloadPlugin('mmSolver')

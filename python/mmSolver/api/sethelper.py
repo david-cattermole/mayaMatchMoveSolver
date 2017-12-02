@@ -21,9 +21,17 @@ class SetHelper(object):
         return
 
     def get_node(self):
+        node = None
         try:
-            node = self._mfn.name()
+            obj = self._mfn.object()
         except RuntimeError:
+            obj = None
+        if obj is not None and obj.isNull() is False:
+            try:
+                node = self._mfn.name()
+            except RuntimeError:
+                pass
+        if isinstance(node, (str, unicode)) and len(node) == 0:
             node = None
         return node
 
@@ -38,12 +46,12 @@ class SetHelper(object):
     def create_node(self, name):
         node = maya.cmds.sets(name=name, empty=True)
         self.set_node(node)
-        return self.get_node()
+        return self
 
     def delete_node(self):
         node = self._mfn.name()
         maya.cmds.delete(node)
-        return
+        return self
 
     def get_annotation(self):
         try:

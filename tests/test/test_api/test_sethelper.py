@@ -49,7 +49,8 @@ class TestSetHelper(test_api_utils.APITestCase):
         state1 = maya.cmds.ls(long=True)
 
         x = sethelper.SetHelper()
-        node = x.create_node('newSet')
+        x.create_node('newSet')
+        node = x.get_node()
         self.assertTrue(maya.cmds.objExists(node))
 
         # test undo/redo.
@@ -91,8 +92,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertEqual(state3, state5)
 
     def test_get_annotation(self):
-        x = sethelper.SetHelper()
-        x.create_node('mySet')
+        x = sethelper.SetHelper().create_node('mySet')
         anno = x.get_annotation()
         default_anno = 'Unnamed object set'
         self.assertEqual(anno, default_anno)
@@ -102,8 +102,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertEqual(anno, line)
 
     def test_set_annotation(self):
-        x = sethelper.SetHelper()
-        x.create_node('mySet')
+        x = sethelper.SetHelper().create_node('mySet')
         anno = x.get_annotation()
         default_anno = 'Unnamed object set'
         self.assertEqual(anno, default_anno)
@@ -121,8 +120,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertEqual(anno, line)
 
     def test_get_all_members(self):
-        x = sethelper.SetHelper()
-        x.create_node('mySet')
+        x = sethelper.SetHelper().create_node('mySet')
         x.get_all_members()
 
         node1 = maya.cmds.createNode('transform', name='myParent')
@@ -186,8 +184,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         x.clear_all_members()
 
         # Test 'flatten' argument, with nested sets.
-        y = sethelper.SetHelper()
-        y.create_node('myNestedSet')
+        y = sethelper.SetHelper().create_node('myNestedSet')
         y.add_member(node2)
         y.add_member(node3)
         y.add_member(node_attr4)
@@ -206,8 +203,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertEqual(y_members, y_members_flat)
 
     def test_clear_all_members(self):
-        x = sethelper.SetHelper()
-        x.create_node('mySet')
+        x = sethelper.SetHelper().create_node('mySet')
 
         members = []
         for i in xrange(10):
@@ -233,8 +229,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertEqual(n4, 0)
 
     def test_add_members(self):
-        x = sethelper.SetHelper()
-        x.create_node('mySet')
+        x = sethelper.SetHelper().create_node('mySet')
 
         members = []
         for i in xrange(10):
@@ -261,8 +256,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertEqual(n3, 40)
 
     def test_remove_members(self):
-        x = sethelper.SetHelper()
-        x.create_node('mySet')
+        x = sethelper.SetHelper().create_node('mySet')
 
         # Add members.
         members = []
@@ -291,8 +285,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertEqual(members3, [])
 
     def test_add_member(self):
-        x = sethelper.SetHelper()
-        x.create_node('mySet')
+        x = sethelper.SetHelper().create_node('mySet')
 
         node = maya.cmds.createNode('transform')
         node_attr = node + '.translateX'
@@ -311,8 +304,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertEqual(n2, 2)
 
     def test_remove_member(self):
-        x = sethelper.SetHelper()
-        x.create_node('mySet')
+        x = sethelper.SetHelper().create_node('mySet')
 
         node = maya.cmds.createNode('transform')
         node_attr = node + '.translateX'
@@ -341,8 +333,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertEqual(n5, 0)
 
     def test_member_in_set(self):
-        x = sethelper.SetHelper()
-        x.create_node('mySet')
+        x = sethelper.SetHelper().create_node('mySet')
 
         node1 = maya.cmds.createNode('transform')
         node2 = maya.cmds.createNode('transform')
@@ -354,8 +345,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertFalse(x.member_in_set(node2))
 
     def test_length(self):
-        x = sethelper.SetHelper()
-        x.create_node('mySet')
+        x = sethelper.SetHelper().create_node('mySet')
 
         node1 = maya.cmds.createNode('transform')
         node_attr = node1 + '.translateX'
@@ -363,8 +353,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertEqual(x.length(), 2)
 
     def test_is_empty(self):
-        x = sethelper.SetHelper()
-        x.create_node('mySet')
+        x = sethelper.SetHelper().create_node('mySet')
         self.assertTrue(x.is_empty())
 
         node1 = maya.cmds.createNode('transform')

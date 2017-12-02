@@ -25,7 +25,7 @@ class Collection(object):
         # Store the keyword arguments for the command, return this if the user
         # asks for the arguments. Invalidate these arguments and force a
         # re-compile if the user sets a new value, otherwise it's still valid.
-        self._kwargs = {}
+        self._kwargs_list = [{}]
 
         if isinstance(name, (str, unicode)):
             self.set_node(name)
@@ -43,6 +43,7 @@ class Collection(object):
 
     ############################################################################
 
+    # TODO: Make solver a list of solvers.
     def get_solver(self):
         return self._solver
 
@@ -52,39 +53,6 @@ class Collection(object):
         return
 
     ############################################################################
-
-    def add_marker(self, mkr):
-        assert isinstance(mkr, marker.Marker)
-        node = mkr.get_node()
-        assert isinstance(node, (str, unicode))
-        if not self._set.member_in_set(node):
-            self._set.add_member(node)
-        return
-
-    def remove_marker(self, mkr):
-        assert isinstance(mkr, marker.Marker)
-        node = mkr.get_node()
-        if self._set.member_in_set(node):
-            self._set.remove_member(node)
-        return
-
-    def add_marker_list(self, mkr_list):
-        assert isinstance(mkr_list, list)
-        node_list = []
-        for mkr in mkr_list:
-            if isinstance(mkr, marker.Marker):
-                node_list.append(mkr.get_node())
-        self._set.add_members(node_list)
-        return
-
-    def remove_marker_list(self, mkr_list):
-        assert isinstance(mkr_list, list)
-        node_list = []
-        for mkr in mkr_list:
-            if isinstance(mkr, marker.Marker):
-                node_list.append(mkr.get_node())
-        self._set.remove_members(node_list)
-        return
 
     def get_marker_list(self):
         result = []
@@ -101,6 +69,42 @@ class Collection(object):
                 mkr = marker.Marker(member)
                 result.append(mkr)
         return result
+
+    def get_marker_list_length(self):
+        return len(self.get_marker_list())
+
+    def add_marker(self, mkr):
+        assert isinstance(mkr, marker.Marker)
+        node = mkr.get_node()
+        assert isinstance(node, (str, unicode))
+        if not self._set.member_in_set(node):
+            self._set.add_member(node)
+        return
+
+    def add_marker_list(self, mkr_list):
+        assert isinstance(mkr_list, list)
+        node_list = []
+        for mkr in mkr_list:
+            if isinstance(mkr, marker.Marker):
+                node_list.append(mkr.get_node())
+        self._set.add_members(node_list)
+        return
+
+    def remove_marker(self, mkr):
+        assert isinstance(mkr, marker.Marker)
+        node = mkr.get_node()
+        if self._set.member_in_set(node):
+            self._set.remove_member(node)
+        return
+
+    def remove_marker_list(self, mkr_list):
+        assert isinstance(mkr_list, list)
+        node_list = []
+        for mkr in mkr_list:
+            if isinstance(mkr, marker.Marker):
+                node_list.append(mkr.get_node())
+        self._set.remove_members(node_list)
+        return
 
     def set_marker_list(self, mkr_list):
         assert isinstance(mkr_list, list)
@@ -121,43 +125,7 @@ class Collection(object):
             self._set.remove_members(rm_list)
         return
 
-    def get_marker_list_length(self):
-        return len(self.get_marker_list())
-
     ############################################################################
-
-    def add_attribute(self, attr):
-        assert isinstance(attr, attribute.Attribute)
-        name = attr.get_name()
-        assert isinstance(name, (str, unicode))
-        if not self._set.member_in_set(name):
-            self._set.add_member(name)
-        return
-
-    def remove_attribute(self, attr):
-        assert isinstance(attr, attribute.Attribute)
-        name = attr.get_name()
-        if self._set.member_in_set(name):
-            self._set.remove_member(name)
-        return
-
-    def add_attribute_list(self, attr_list):
-        assert isinstance(attr_list, list)
-        name_list = []
-        for attr in attr_list:
-            if isinstance(attr, attribute.Attribute):
-                name_list.append(attr.get_name())
-        self._set.add_members(name_list)
-        return
-
-    def remove_attribute_list(self, attr_list):
-        assert isinstance(attr_list, list)
-        name_list = []
-        for attr in attr_list:
-            if isinstance(attr, attribute.Attribute):
-                name_list.append(attr.get_name())
-        self._set.remove_members(name_list)
-        return
 
     def get_attribute_list(self):
         result = []
@@ -174,6 +142,42 @@ class Collection(object):
                 attr = attribute.Attribute(name=member)
                 result.append(attr)
         return result
+
+    def get_attribute_list_length(self):
+        return len(self.get_attribute_list())
+
+    def add_attribute(self, attr):
+        assert isinstance(attr, attribute.Attribute)
+        name = attr.get_name()
+        assert isinstance(name, (str, unicode))
+        if not self._set.member_in_set(name):
+            self._set.add_member(name)
+        return
+
+    def add_attribute_list(self, attr_list):
+        assert isinstance(attr_list, list)
+        name_list = []
+        for attr in attr_list:
+            if isinstance(attr, attribute.Attribute):
+                name_list.append(attr.get_name())
+        self._set.add_members(name_list)
+        return
+
+    def remove_attribute(self, attr):
+        assert isinstance(attr, attribute.Attribute)
+        name = attr.get_name()
+        if self._set.member_in_set(name):
+            self._set.remove_member(name)
+        return
+
+    def remove_attribute_list(self, attr_list):
+        assert isinstance(attr_list, list)
+        name_list = []
+        for attr in attr_list:
+            if isinstance(attr, attribute.Attribute):
+                name_list.append(attr.get_name())
+        self._set.remove_members(name_list)
+        return
 
     def set_attribute_list(self, mkr_list):
         assert isinstance(mkr_list, list)
@@ -193,9 +197,6 @@ class Collection(object):
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)
         return
-
-    def get_attribute_list_length(self):
-        return len(self.get_attribute_list())
 
     ############################################################################
 

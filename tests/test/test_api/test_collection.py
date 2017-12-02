@@ -82,86 +82,6 @@ class TestCollection(test_api_utils.APITestCase):
         self.assertIs(s3, s4)
         self.assertIsInstance(s4, solver.Solver)
 
-    def test_add_marker(self):
-        x = collection.Collection()
-        x.create('mySolve')
-
-        name = 'myMarker1'
-        mkr = marker.Marker().create_node(name=name)
-        x.add_marker(mkr)
-
-        mkr_list = x.get_marker_list()
-        n2 = len(mkr_list)
-        self.assertEqual(n2, 1)
-        self.assertIsInstance(mkr_list[0], marker.Marker)
-        self.assertIsNot(mkr, mkr_list[0])  # objects are not the same memory.
-        self.assertIn(name, mkr.get_node())
-        self.assertEqual(mkr.get_node(), mkr_list[0].get_node())  # same node
-
-    def test_remove_marker(self):
-        x = collection.Collection()
-        x.create('mySolve')
-
-        name = 'myMarker1'
-        mkr = marker.Marker().create_node(name=name)
-        x.add_marker(mkr)
-
-        mkr_list = x.get_marker_list()
-        n1 = len(mkr_list)
-        self.assertEqual(n1, 1)
-        self.assertIsInstance(mkr_list[0], marker.Marker)
-        self.assertIn(name, mkr.get_node())
-        self.assertEqual(mkr.get_node(), mkr_list[0].get_node())
-
-        x.remove_marker(mkr)
-        mkr_list = x.get_marker_list()
-        n2 = len(mkr_list)
-        self.assertEqual(n2, 0)
-
-    def test_add_marker_list(self):
-        x = collection.Collection()
-        x.create('mySolve')
-
-        name = 'myMarker1'
-        mkr_list = []
-        for i in xrange(10):
-            mkr = marker.Marker().create_node(name=name)
-            mkr_list.append(mkr)
-        x.add_marker_list(mkr_list)
-
-        mkr_list2 = x.get_marker_list()
-        self.assertEqual(len(mkr_list2), 10)
-
-        node_list = []
-        for mkr in mkr_list:
-            node_list.append(mkr.get_node())
-        for mkr in mkr_list2:
-            node = mkr.get_node()
-            self.assertIn(node, node_list)
-
-    def test_remove_marker_list(self):
-        x = collection.Collection()
-        x.create('mySolve')
-
-        name = 'myMarker1'
-        mkr_list = []
-        for i in xrange(10):
-            mkr = marker.Marker().create_node(name=name)
-            mkr_list.append(mkr)
-        x.add_marker_list(mkr_list)
-
-        self.assertEqual(x.get_marker_list_length(), 10)
-
-        # remove the first half
-        x.remove_marker_list(mkr_list[:5])
-
-        self.assertEqual(x.get_marker_list_length(), 5)
-
-        # remove the second half
-        x.remove_marker_list(mkr_list[4:])
-
-        self.assertEqual(x.get_marker_list_length(), 0)
-
     def test_get_marker_list(self):
         x = collection.Collection()
         x.create('mySolve')
@@ -187,6 +107,95 @@ class TestCollection(test_api_utils.APITestCase):
         x.add_attribute(attr6)
 
         self.assertEqual(x.get_marker_list_length(), 2)
+
+    def test_get_marker_list_length(self):
+        x = collection.Collection()
+        x.create('mySolve')
+        self.assertEqual(x.get_marker_list_length(), 0)
+
+        mkr = marker.Marker().create_node()
+        x.add_marker(mkr)
+        self.assertEqual(x.get_marker_list_length(), 1)
+
+    def test_add_marker(self):
+        x = collection.Collection()
+        x.create('mySolve')
+
+        name = 'myMarker1'
+        mkr = marker.Marker().create_node(name=name)
+        x.add_marker(mkr)
+
+        mkr_list = x.get_marker_list()
+        n2 = len(mkr_list)
+        self.assertEqual(n2, 1)
+        self.assertIsInstance(mkr_list[0], marker.Marker)
+        self.assertIsNot(mkr, mkr_list[0])  # objects are not the same memory.
+        self.assertIn(name, mkr.get_node())
+        self.assertEqual(mkr.get_node(), mkr_list[0].get_node())  # same node
+
+    def test_add_marker_list(self):
+        x = collection.Collection()
+        x.create('mySolve')
+
+        name = 'myMarker1'
+        mkr_list = []
+        for i in xrange(10):
+            mkr = marker.Marker().create_node(name=name)
+            mkr_list.append(mkr)
+        x.add_marker_list(mkr_list)
+
+        mkr_list2 = x.get_marker_list()
+        self.assertEqual(len(mkr_list2), 10)
+
+        node_list = []
+        for mkr in mkr_list:
+            node_list.append(mkr.get_node())
+        for mkr in mkr_list2:
+            node = mkr.get_node()
+            self.assertIn(node, node_list)
+
+    def test_remove_marker(self):
+        x = collection.Collection()
+        x.create('mySolve')
+
+        name = 'myMarker1'
+        mkr = marker.Marker().create_node(name=name)
+        x.add_marker(mkr)
+
+        mkr_list = x.get_marker_list()
+        n1 = len(mkr_list)
+        self.assertEqual(n1, 1)
+        self.assertIsInstance(mkr_list[0], marker.Marker)
+        self.assertIn(name, mkr.get_node())
+        self.assertEqual(mkr.get_node(), mkr_list[0].get_node())
+
+        x.remove_marker(mkr)
+        mkr_list = x.get_marker_list()
+        n2 = len(mkr_list)
+        self.assertEqual(n2, 0)
+
+    def test_remove_marker_list(self):
+        x = collection.Collection()
+        x.create('mySolve')
+
+        name = 'myMarker1'
+        mkr_list = []
+        for i in xrange(10):
+            mkr = marker.Marker().create_node(name=name)
+            mkr_list.append(mkr)
+        x.add_marker_list(mkr_list)
+
+        self.assertEqual(x.get_marker_list_length(), 10)
+
+        # remove the first half
+        x.remove_marker_list(mkr_list[:5])
+
+        self.assertEqual(x.get_marker_list_length(), 5)
+
+        # remove the second half
+        x.remove_marker_list(mkr_list[4:])
+
+        self.assertEqual(x.get_marker_list_length(), 0)
 
     def test_set_marker_list(self):
         x = collection.Collection()
@@ -236,89 +245,6 @@ class TestCollection(test_api_utils.APITestCase):
         x.clear_marker_list()
         self.assertEqual(x.get_marker_list_length(), 0)
 
-    def test_get_marker_list_length(self):
-        x = collection.Collection()
-        x.create('mySolve')
-        self.assertEqual(x.get_marker_list_length(), 0)
-
-        mkr = marker.Marker().create_node()
-        x.add_marker(mkr)
-        self.assertEqual(x.get_marker_list_length(), 1)
-
-    def test_add_attribute(self):
-        x = collection.Collection()
-        x.create('mySolve')
-
-        node = maya.cmds.createNode('transform')
-        attr = attribute.Attribute(node=node, attr='translateX')
-        x.add_attribute(attr)
-
-        attr_list = x.get_attribute_list()
-        self.assertEqual(len(attr_list), 1)
-        self.assertIsInstance(attr_list[0], attribute.Attribute)
-        self.assertIsNot(attr, attr_list[0])  # objects are not the same memory.
-
-        self.assertEqual(attr.get_node(), attr_list[0].get_node())  # same node
-        self.assertEqual(attr.get_attr(), attr_list[0].get_attr())  # same attr
-        self.assertEqual(attr_list[0].get_name(), attr.get_name())  # same name
-
-    def test_remove_attribute(self):
-        x = collection.Collection()
-        x.create('mySolve')
-
-        node = maya.cmds.createNode('transform')
-        attr = attribute.Attribute(node=node, attr='translateX')
-        x.add_attribute(attr)
-
-        self.assertEqual(x.get_attribute_list_length(), 1)
-        x.remove_attribute(attr)
-        self.assertEqual(x.get_attribute_list_length(), 0)
-
-    def test_add_attribute_list(self):
-        x = collection.Collection()
-        x.create('mySolve')
-
-        attr_list = []
-        for i in xrange(10):
-            node = maya.cmds.createNode('transform')
-            attr = attribute.Attribute(node=node, attr='rotateX')
-            attr_list.append(attr)
-        x.add_attribute_list(attr_list)
-
-        attr_list2 = x.get_attribute_list()
-        self.assertEqual(len(attr_list2), 10)
-        self.assertIsInstance(attr_list2[0], attribute.Attribute)
-        
-        node_list = []
-        for attr in attr_list:
-            node_list.append(attr.get_node())
-        for attr in attr_list2:
-            node = attr.get_node()
-            self.assertIn(node, node_list)
-
-    def test_remove_attribute_list(self):
-        x = collection.Collection()
-        x.create('mySolve')
-
-        attr_list = []
-        for i in xrange(10):
-            node = maya.cmds.createNode('transform')
-            attr = attribute.Attribute(node=node, attr='rotateY')
-            attr_list.append(attr)
-        x.add_attribute_list(attr_list)
-
-        self.assertEqual(x.get_attribute_list_length(), 10)
-
-        # Remove the first half
-        x.remove_attribute_list(attr_list[:5])
-
-        self.assertEqual(x.get_attribute_list_length(), 5)
-
-        # Remove the other half
-        x.remove_attribute_list(attr_list[4:])
-
-        self.assertEqual(x.get_attribute_list_length(), 0)
-
     def test_get_attribute_list(self):
         x = collection.Collection()
         x.create('mySolve')
@@ -342,6 +268,90 @@ class TestCollection(test_api_utils.APITestCase):
         for attr in attr_list2:
             name = attr.get_name()
             self.assertIn(name, name_list)
+
+    def test_get_attribute_list_length(self):
+        x = collection.Collection()
+        x.create('mySolve')
+        self.assertEqual(x.get_attribute_list_length(), 0)
+
+        node = maya.cmds.createNode('transform')
+        attr = attribute.Attribute(node=node, attr='translateX')
+        x.add_attribute(attr)
+        self.assertEqual(x.get_attribute_list_length(), 1)
+
+    def test_add_attribute(self):
+        x = collection.Collection()
+        x.create('mySolve')
+
+        node = maya.cmds.createNode('transform')
+        attr = attribute.Attribute(node=node, attr='translateX')
+        x.add_attribute(attr)
+
+        attr_list = x.get_attribute_list()
+        self.assertEqual(len(attr_list), 1)
+        self.assertIsInstance(attr_list[0], attribute.Attribute)
+        self.assertIsNot(attr, attr_list[0])  # objects are not the same memory.
+
+        self.assertEqual(attr.get_node(), attr_list[0].get_node())  # same node
+        self.assertEqual(attr.get_attr(), attr_list[0].get_attr())  # same attr
+        self.assertEqual(attr_list[0].get_name(), attr.get_name())  # same name
+
+    def test_add_attribute_list(self):
+        x = collection.Collection()
+        x.create('mySolve')
+
+        attr_list = []
+        for i in xrange(10):
+            node = maya.cmds.createNode('transform')
+            attr = attribute.Attribute(node=node, attr='rotateX')
+            attr_list.append(attr)
+        x.add_attribute_list(attr_list)
+
+        attr_list2 = x.get_attribute_list()
+        self.assertEqual(len(attr_list2), 10)
+        self.assertIsInstance(attr_list2[0], attribute.Attribute)
+
+        node_list = []
+        for attr in attr_list:
+            node_list.append(attr.get_node())
+        for attr in attr_list2:
+            node = attr.get_node()
+            self.assertIn(node, node_list)
+
+    def test_remove_attribute(self):
+        x = collection.Collection()
+        x.create('mySolve')
+
+        node = maya.cmds.createNode('transform')
+        attr = attribute.Attribute(node=node, attr='translateX')
+        x.add_attribute(attr)
+
+        self.assertEqual(x.get_attribute_list_length(), 1)
+        x.remove_attribute(attr)
+        self.assertEqual(x.get_attribute_list_length(), 0)
+
+    def test_remove_attribute_list(self):
+        x = collection.Collection()
+        x.create('mySolve')
+
+        attr_list = []
+        for i in xrange(10):
+            node = maya.cmds.createNode('transform')
+            attr = attribute.Attribute(node=node, attr='rotateY')
+            attr_list.append(attr)
+        x.add_attribute_list(attr_list)
+
+        self.assertEqual(x.get_attribute_list_length(), 10)
+
+        # Remove the first half
+        x.remove_attribute_list(attr_list[:5])
+
+        self.assertEqual(x.get_attribute_list_length(), 5)
+
+        # Remove the other half
+        x.remove_attribute_list(attr_list[4:])
+
+        self.assertEqual(x.get_attribute_list_length(), 0)
 
     def test_set_attribute_list(self):
         x = collection.Collection()
@@ -378,16 +388,6 @@ class TestCollection(test_api_utils.APITestCase):
         self.assertEqual(x.get_attribute_list_length(), 10)
         x.clear_attribute_list()
         self.assertEqual(x.get_attribute_list_length(), 0)
-
-    def test_get_attribute_list_length(self):
-        x = collection.Collection()
-        x.create('mySolve')
-        self.assertEqual(x.get_attribute_list_length(), 0)
-
-        node = maya.cmds.createNode('transform')
-        attr = attribute.Attribute(node=node, attr='translateX')
-        x.add_attribute(attr)
-        self.assertEqual(x.get_attribute_list_length(), 1)
 
 
 if __name__ == '__main__':

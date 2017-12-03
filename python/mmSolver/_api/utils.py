@@ -3,6 +3,7 @@ Utility functions for Maya API.
 """
 
 from functools import wraps
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
@@ -95,7 +96,14 @@ def detect_object_type(node):
 
 
 def get_camera_above_node(node):
-    # Get the first camera transform and shape node above the node.
+    """
+    Get the first camera transform and shape node above the node.
+
+    :param node: The node name to check above for a camera.
+    :type node: str or unicode
+    :return: Tuple of camera transform and shape nodes, or (None, None)
+    :rtype: tuple
+    """
     # TODO: This function may be called many times, we should look into
     # caching some of this computation.
     cam_tfm = None

@@ -98,6 +98,14 @@ class Collection(object):
         self._set_attr_data('solver_list', data_list)
         return
 
+    def _get_solver_list_names(self, solver_list):
+        ret = []
+        for sol in solver_list:
+            name = sol.get_name()
+            if name is not None:
+                ret.append(name)
+        return ret
+
     def get_solver_list(self):
         solver_list = None
         if self._solver_list is None:
@@ -113,7 +121,8 @@ class Collection(object):
         assert isinstance(sol, solver.Solver)
         if self._solver_list is None:
             self._solver_list = []
-        if sol not in self._solver_list:
+        solver_name_list = self._get_solver_list_names(self._solver_list)
+        if sol.get_name() not in solver_name_list:
             self._solver_list.append(sol)
             self._dump_solver_list(self._solver_list)
         return
@@ -123,32 +132,49 @@ class Collection(object):
         if self._solver_list is None:
             self._solver_list = []
         changed = False
+        solver_name_list = self._get_solver_list_names(self._solver_list)
         for sol in sol_list:
-            if sol not in self._solver_list:
+            if sol.get_name() not in solver_name_list:
                 self._solver_list.append(sol)
                 changed = True
         if changed is True:
             # Only save, if changes have been made.
             self._dump_solver_list(self._solver_list)
-        pass
+        return
 
     def remove_solver(self, sol):
         assert isinstance(sol, solver.Solver)
-        pass
+        if self._solver_list is None:
+            self._solver_list = []
+        solver_name_list = self._get_solver_list_names(self._solver_list)
+        if sol.get_name() in solver_name_list:
+
+            # TODO: This is really messy, we could probably clean this up with
+            # an override to Solver.__cmp__, right?
+            tmp_list = self._solver_list
+            for sol2 in tmp_list:
+                if sol.get_name() == sol2.get_name():
+                    tmp_list.remove(sol2)
+            self._solver_list = tmp_list
+
+            self._dump_solver_list(self._solver_list)
+        return
 
     def remove_solver_list(self, sol_list):
         assert isinstance(sol_list, list)
-        pass
+        for sol in sol_list:
+            self.remove_solver(sol)
+        return
 
     def set_solver_list(self, sol_list):
         assert isinstance(sol_list, list)
         self.clear_solver_list()
-        for sol in sol_list:
-            if isinstance(sol, solver.Solver):
-                self.add_solver(sol)
+        self.add_solver_list(sol_list)
         return
 
     def clear_solver_list(self):
+        self._solver_list = []
+        self._dump_solver_list(self._solver_list)
         return
 
     ############################################################################

@@ -78,7 +78,7 @@ maya.cmds.lookThru(cam_tfm)
 
 ## API Classes
 
-![API Classes](https://raw.githubusercontent.com/david-cattermole/mayaMatchMoveSolver/master/design/api/api_classes.png)
+![API Classes](https://raw.githubusercontent.com/david-cattermole/mayaMatchMoveSolver/master/design/api/api_classes_overview.png)
 
 | Class        | Description |
 | ------------ | ----------- |

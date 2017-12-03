@@ -5,6 +5,8 @@ Any queries use the Maya Python API, but modifications are handled with
 maya.cmds.* so that they support undo/redo correctly.
 """
 
+import json
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
@@ -19,7 +21,8 @@ import mmSolver._api.sethelper as sethelper
 class Collection(object):
     def __init__(self, name=None):
         self._set = sethelper.SetHelper()
-        self._solver = None
+        self._solver_list = None
+        # self._solver_list_data = None
 
         # Store the keyword arguments for the command, return this if the user
         # asks for the arguments. Invalidate these arguments and force a
@@ -31,36 +34,127 @@ class Collection(object):
 
     def create(self, name):
         self._set.create_node(name)
-        return self._set.get_node()
+        set_node = self._set.get_node()
+
+        # Add 'solver_list' attribute.
+        attr_name = 'solver_list'
+        maya.cmds.addAttr(set_node, longName=attr_name, dt='string')
+        maya.cmds.setAttr(set_node + '.' + attr_name, lock=True)
+
+        return set_node
 
     def get_node(self):
         return self._set.get_node()
 
     def set_node(self, name):
-        self._kwargs = {}  # reset argument flag cache.
+        self._kwargs_list = [{}]  # reset argument flag cache.
         return self._set.set_node(name)
 
     ############################################################################
 
-    # TODO: Make solver a list of solvers.
-    def get_solver(self):
-        return self._solver
+    def _get_attr_data(self, attr_name):
+        ret = None
+        set_node = self._set.get_node()
+        attrs = maya.cmds.listAttr(set_node)
+        if attr_name in attrs:
+            node_attr = set_node + '.' + attr_name
+            attr_data = maya.cmds.getAttr(node_attr)
+            data = json.loads(attr_data)
+            if isinstance(data, list):
+                ret = data
+        return ret
 
-    def set_solver(self, value):
-        self._solver = value
-        # TODO: Get data from solver, set it into the collection set attr data.
+    def _set_attr_data(self, attr_name, data):
+        assert isinstance(attr_name, (str, unicode))
+        assert isinstance(data, (list, dict))
+        set_node = self._set.get_node()
+        node_attr = set_node + '.' + attr_name
+        attr_data = json.dumps(data)
+        maya.cmds.setAttr(node_attr, lock=False)
+        maya.cmds.setAttr(node_attr, attr_data, type='string')
+        maya.cmds.setAttr(node_attr, lock=True)
+        return
+
+    ############################################################################
+
+    def _load_solver_list(self):
+        solver_list = None
+        attr_data = self._get_attr_data('solver_list')
+        if isinstance(attr_data, list):
+            solver_list = []
+            for item in attr_data:
+                if isinstance(attr_data, dict):
+                    sol = solver.Solver(data=item)
+                    solver_list.append(sol)
+        return solver_list
+
+    def _dump_solver_list(self, solver_list):
+        assert isinstance(solver_list, list)
+        data_list = []
+        for sol in solver_list:
+            data = sol.get_data()
+            if isinstance(data, dict):
+                data_list.append(data)
+        self._set_attr_data('solver_list', data_list)
+        return
+
+    def get_solver_list(self):
+        solver_list = None
+        if self._solver_list is None:
+            self._solver_list = self._load_solver_list()
+        else:
+            solver_list = self._solver_list
+        return solver_list
+
+    def get_solver_list_length(self):
+        return len(self.get_solver_list())
+
+    def add_solver(self, sol):
+        assert isinstance(sol, solver.Solver)
+        if self._solver_list is None:
+            self._solver_list = []
+        if sol not in self._solver_list:
+            self._solver_list.append(sol)
+            self._dump_solver_list(self._solver_list)
+        return
+
+    def add_solver_list(self, sol_list):
+        assert isinstance(sol_list, list)
+        if self._solver_list is None:
+            self._solver_list = []
+        changed = False
+        for sol in sol_list:
+            if sol not in self._solver_list:
+                self._solver_list.append(sol)
+                changed = True
+        if changed is True:
+            # Only save, if changes have been made.
+            self._dump_solver_list(self._solver_list)
+        pass
+
+    def remove_solver(self, sol):
+        assert isinstance(sol, solver.Solver)
+        pass
+
+    def remove_solver_list(self, sol_list):
+        assert isinstance(sol_list, list)
+        pass
+
+    def set_solver_list(self, sol_list):
+        assert isinstance(sol_list, list)
+        self.clear_solver_list()
+        for sol in sol_list:
+            if isinstance(sol, solver.Solver):
+                self.add_solver(sol)
+        return
+
+    def clear_solver_list(self):
         return
 
     ############################################################################
 
     def get_marker_list(self):
         result = []
-
-        # # TODO: Get hidden data from set node, set marker attributes
-        # # as needed.
-        # set_node = self._set.get_node()
-        # set_data = self._get_data(set_node)
-
         members = self._set.get_all_members(flatten=False, full_path=True)
         for member in members:
             object_type = api_utils.get_object_type(member)

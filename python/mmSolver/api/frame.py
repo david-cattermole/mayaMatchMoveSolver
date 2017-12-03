@@ -1,5 +1,8 @@
 """
 The frame number that the solver will solve on.
+
+TODO: We could add named 'tags' to a frame, this would be very flexible when
+creating function callbacks for inclusion/exclusion of frames.
 """
 
 import maya.cmds

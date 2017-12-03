@@ -44,7 +44,7 @@ maya.cmds.setAttr(marker_tfm + '.tx', -2.5)
 maya.cmds.setAttr(marker_tfm + '.ty', 1.3)
 maya.cmds.setAttr(marker_tfm + '.tz', -10)
 mkr = mmapi.Marker(marker_tfm)
-mkr.link_to_bundle(bnd)
+mkr.set_bundle(bnd)
 
 # Attributes
 attr_tx = mmapi.Attribute(bundle_tfm + '.tx')
@@ -90,6 +90,36 @@ maya.cmds.lookThru(cam_tfm)
 | Solver       | Options that describe how the solving algorithm will run |
 | Collection   | A set of Markers and Attributes to use during solving |
 | SolveResult  | Output of the solver; Details of what happened in a solve |
+
+### Marker Class
+
+2D point to determine screen-space features.
+
+| Method Signature | 
+| ---------------- |
+| Marker(name='marker1') 
+| Marker.get_node()
+| Marker.set_node(node)
+| Marker.create_node(name='marker1', cam=None, bnd=None)
+| Marker.delete_node()
+
+### Attribute Class
+
+Attribute that will be solved.
+
+| Method Signature | 
+| ---------------- |
+| Attribute(name=None)
+| Attribute(node=None, attr=None)
+| Attribute.get_node(full_path=True)
+| Attribute.get_attr(long_name=True)
+| Attribute.get_name(full_path=True)
+| Attribute.get_state()
+| Attribute.is_dynamic()
+| Attribute.is_animated()
+| Attribute.is_static()
+| Attribute.is_free_to_change()
+| Attribute.get_anim_curve_node() 
 
 # Commands
 

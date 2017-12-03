@@ -1,7 +1,7 @@
 import maya.cmds
 from maya import OpenMaya as OpenMaya
 
-from mmSolver._api import utils as api_utils
+import mmSolver._api.utils as api_utils
 
 
 class Bundle(object):
@@ -96,8 +96,8 @@ class Bundle(object):
     def get_marker_list(self):
         return
 
-    # def link_to_marker(self, mkr):
+    # def _link_to_marker(self, mkr):
     #     return
     #
-    # def unlink_from_marker(self, mkr):
+    # def _unlink_from_marker(self, mkr):
     #     pass

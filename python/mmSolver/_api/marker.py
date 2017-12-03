@@ -44,6 +44,7 @@ class Marker(object):
         return node
 
     def set_node(self, name):
+        assert isinstance(name, (str, unicode))
         dag = api_utils.get_as_dag_path(name)
         try:
             self._mfn = OpenMaya.MFnDagNode(dag)

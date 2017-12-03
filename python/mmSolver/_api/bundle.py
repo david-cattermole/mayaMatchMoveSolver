@@ -2,6 +2,7 @@ import maya.cmds
 from maya import OpenMaya as OpenMaya
 
 import mmSolver._api.utils as api_utils
+import mmSolver._api.marker
 
 
 class Bundle(object):
@@ -81,7 +82,11 @@ class Bundle(object):
         return self
 
     def delete_node(self):
+        node = self.get_node()
+        maya.cmds.delete(node)
         return self
+
+    ############################################################################
 
     def get_node_colour(self):
         pass
@@ -94,10 +99,19 @@ class Bundle(object):
     ############################################################################
 
     def get_marker_list(self):
-        return
+        node = self.get_node()
+        node_attr = node + '.message'
+        conns = maya.cmds.listConnections(node_attr) or []
+        mkr_list = []
+        for conn in conns:
+            mkr = mmSolver._api.marker.Marker(name=conn)
+            mkr_list.append(mkr)
+        return mkr_list
 
-    # def _link_to_marker(self, mkr):
-    #     return
-    #
-    # def _unlink_from_marker(self, mkr):
-    #     pass
+
+
+
+
+
+
+

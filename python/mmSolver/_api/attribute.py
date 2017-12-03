@@ -4,18 +4,20 @@ The attributes to be solved for.
 
 import maya.cmds
 import maya.OpenMaya as OpenMaya
-# import maya.OpenMayaAnim as OpenMayaAnim
+import maya.OpenMayaAnim as OpenMayaAnim
 import mmSolver._api.utils as api_utils
 
-STATE_STATIC = 0
-STATE_ANIMATED = 1
-STATE_DYNAMIC = 2
+
+ATTR_STATE_INVALID = 0
+ATTR_STATE_STATIC = 1
+ATTR_STATE_ANIMATED = 2
+ATTR_STATE_LOCKED = 3
 
 
 class Attribute(object):
     def __init__(self, name=None, node=None, attr=None):
         if isinstance(name, (str, unicode)):
-            assert api_utils.detect_object_type(name) == 'attribute'
+            assert api_utils.get_object_type(name) == 'attribute'
             part = name.partition('.')
             node = part[0]
             attr = part[-1]
@@ -75,21 +77,35 @@ class Attribute(object):
         return name
 
     def get_state(self):
-        pass
+        state = ATTR_STATE_INVALID
 
-    def is_dynamic(self):
-        pass
+        check_parents = True
+        check_children = True
+        free = self._plug.isFreeToChange(check_parents, check_children)
+        if free != OpenMaya.MPlug.kFreeToChange:
+            state = ATTR_STATE_LOCKED
+            return state
 
-    def is_animated(self):
-        # OpenMayaAnim.MAnimUtil
-        # self._plug.
-        pass
+        check_parents = False
+        animPlugs = OpenMaya.MPlugArray()
+        OpenMayaAnim.MAnimUtil.findAnimatedPlugs(self._plug.node(),
+                                                 animPlugs,
+                                                 check_parents)
+        for i in xrange(animPlugs.length()):
+            plug = animPlugs[i]
+            if self._plug.name() == plug.name():
+                state = ATTR_STATE_ANIMATED
+
+        if state == ATTR_STATE_INVALID:
+            state = ATTR_STATE_STATIC
+
+        return state
 
     def is_static(self):
-        pass
+        return self.get_state() == ATTR_STATE_STATIC
 
-    def is_free_to_change(self):
-        pass
+    def is_animated(self):
+        return self.get_state() == ATTR_STATE_ANIMATED
 
-    def get_anim_curve_node(self):
-        pass
+    def is_locked(self):
+        return self.get_state() == ATTR_STATE_LOCKED

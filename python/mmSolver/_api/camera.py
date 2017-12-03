@@ -120,6 +120,8 @@ class Camera(object):
 
         return
 
+    ############################################################################
+
     def is_valid(self):
         cam_tfm = self.get_transform_node()
         cam_shp = self.get_shape_node()

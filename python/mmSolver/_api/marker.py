@@ -116,6 +116,8 @@ class Marker(object):
         maya.cmds.delete(node)
         return self
 
+    ############################################################################
+
     def get_node_colour(self):
         pass
 

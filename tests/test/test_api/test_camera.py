@@ -67,5 +67,6 @@ class TestCamera(test_api_utils.APITestCase):
     def test_is_valid(self):
         pass
 
+
 if __name__ == '__main__':
     prog = unittest.main()

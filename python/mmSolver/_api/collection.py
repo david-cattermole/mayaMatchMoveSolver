@@ -345,32 +345,3 @@ class Collection(object):
         kwargs = self._compile()
         solve_data = maya.cmds.mmSolver(**kwargs)
         return solveresult.SolveResult(solve_data)
-
-    ############################################################################
-
-    def _get_data(self, node):
-        pass
-
-    def _set_data(self, node, value):
-        # TODO: This function will allow setting data on arbitrary nodes, using
-        # a locked string attribute.
-
-        # import time
-        #
-        # # what is the maximum length annotation can support?
-        # st = time.time()
-        # print 'setAttr:'
-        # node = x.get_node()
-        # maya.cmds.addAttr(node, longName='my_string_data', dataType='string')
-        # node_attr = node + '.my_string_data'
-        # for i in range(8):
-        #     n = pow(10, i)
-        #     print 'i:', i, n
-        #     s = 'c' * n
-        #     maya.cmds.setAttr(node_attr, s, type='string')
-        #     v = maya.cmds.getAttr(node_attr)
-        #     self.assertEqual(s, v)
-        #     del v
-        #     del s
-        # print 'time:', time.time() - st
-        pass

@@ -82,6 +82,57 @@ class TestCollection(test_api_utils.APITestCase):
         self.assertEqual(sol3.get_data(), sol_list2[1].get_data())
         self.assertIsInstance(sol_list2, list)
 
+    def test_add_solver_list(self):
+        x = collection.Collection()
+        x.create('mySolve')
+
+        sol_list0 = []
+        for i in xrange(10):
+            sol = solver.Solver()
+            sol_list0.append(sol)
+        x.add_solver_list(sol_list0)
+        sol_list1 = x.get_solver_list()
+        self.assertEqual(len(sol_list1), 10)
+        self.assertIsInstance(sol_list1, list)
+
+        x.add_solver_list([
+            solver.Solver(),
+            solver.Solver(),
+            solver.Solver()
+        ])
+        sol_list2 = x.get_solver_list()
+        self.assertEqual(len(sol_list2), 13)
+        self.assertIsInstance(sol_list2, list)
+
+    def test_remove_solver(self):
+        x = collection.Collection()
+        x.create('mySolve')
+
+        sol_list1 = []
+        for i in xrange(10):
+            sol = solver.Solver()
+            sol_list1.append(sol)
+        x.set_solver_list(sol_list1)
+        self.assertEqual(x.get_solver_list_length(), 10)
+
+        for i in xrange(0, 10, 2):
+            x.remove_solver(sol_list1[i])
+        self.assertEqual(x.get_solver_list_length(), 5)
+
+    def test_remove_solver_list(self):
+        x = collection.Collection()
+        x.create('mySolve')
+
+        sol_list1 = []
+        for i in xrange(10):
+            sol = solver.Solver()
+            sol_list1.append(sol)
+        x.set_solver_list(sol_list1)
+        self.assertEqual(x.get_solver_list_length(), 10)
+
+        x.remove_solver_list(sol_list1)
+        self.assertEqual(x.get_solver_list_length(), 0)
+
     def test_set_solver_list(self):
         x = collection.Collection()
         x.create('mySolve')
@@ -91,14 +142,12 @@ class TestCollection(test_api_utils.APITestCase):
             sol = solver.Solver()
             sol_list1.append(sol)
         x.set_solver_list(sol_list1)
-
-        sol_list2 = x.get_solver_list()
-        self.assertEqual(len(sol_list2), 10)
+        self.assertEqual(x.get_solver_list_length(), 10)
 
         # first half of list
-        sol_list3 = sol_list1[:5]
-        x.set_solver_list(sol_list3)
-        self.assertEqual(len(sol_list2), 5)
+        sol_list2 = sol_list1[:5]
+        x.set_solver_list(sol_list2)
+        self.assertEqual(x.get_solver_list_length(), 5)
 
     def test_get_marker_list(self):
         x = collection.Collection()

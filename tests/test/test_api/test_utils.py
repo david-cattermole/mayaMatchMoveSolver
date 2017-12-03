@@ -11,6 +11,7 @@ import maya.OpenMaya as OpenMaya
 
 import test.test_api.apiutils as test_api_utils
 import mmSolver.api.utils as api_utils
+import mmSolver.api.marker as marker
 
 
 # @unittest.skip
@@ -95,16 +96,63 @@ class TestUtils(test_api_utils.APITestCase):
         self.assertEqual(node2_dag.childCount(), 0)
 
     def test_get_as_object(self):
-        # api_utils.get_as_object()
-        pass
+        # TODO: Add more tests. MObject can be used is so many ways.
+        name = 'myNode1'
+        node = maya.cmds.createNode('transform', name=name)
+        obj = api_utils.get_as_object(node)
+        self.assertEqual(obj.apiType(), OpenMaya.MFn.kTransform)
+
+        maya.cmds.delete(node)
+        obj = api_utils.get_as_object(node)
+        self.assertEqual(obj, None)
 
     def test_get_as_plug(self):
-        # api_utils.get_as_plug()
-        pass
+        name = 'myNode1'
+        node = maya.cmds.createNode('transform', name=name)
+        plug = api_utils.get_as_plug(node + '.translateY')
+        self.assertEqual(plug.name(), 'myNode1.translateY')
+        self.assertEqual(plug.asDouble(), 0.0)
+
+        plug.setDouble(3.147)
+        self.assertEqual(plug.asDouble(), 3.147)
 
     def test_detect_object_type(self):
-        # api_utils.detect_object_type(node)
-        pass
+        cam_tfm = maya.cmds.createNode('transform')
+        cam_tfm = api_utils.get_long_name(cam_tfm)
+        cam_shp = maya.cmds.createNode('camera', parent=cam_tfm)
+        cam_shp = api_utils.get_long_name(cam_shp)
+        tfm_obj_type = api_utils.detect_object_type(cam_tfm)
+        shp_obj_type = api_utils.detect_object_type(cam_shp)
+        self.assertEqual(tfm_obj_type, 'camera')
+        self.assertEqual(shp_obj_type, 'camera')
+
+        mkr = marker.Marker().create_node()
+        mkr_node = mkr.get_node()
+        obj_type = api_utils.detect_object_type(mkr_node)
+        self.assertEqual(obj_type, 'marker')
+
+        node = maya.cmds.createNode('transform')
+        obj_type = api_utils.detect_object_type(node)
+        self.assertEqual(obj_type, 'bundle')
+
+        node_attr = node + '.scaleX'
+        obj_type = api_utils.detect_object_type(node_attr)
+        self.assertEqual(obj_type, 'attribute')
+
+    def test_get_camera_above_node(self):
+        root = maya.cmds.createNode('transform')
+        root = api_utils.get_long_name(root)
+
+        cam_tfm = maya.cmds.createNode('transform', parent=root)
+        cam_tfm = api_utils.get_long_name(cam_tfm)
+        cam_shp = maya.cmds.createNode('camera', parent=cam_tfm)
+        cam_shp = api_utils.get_long_name(cam_shp)
+
+        node = maya.cmds.createNode('transform', parent=cam_tfm)
+        node = api_utils.get_long_name(node)
+        above_cam_tfm, above_cam_shp = api_utils.get_camera_above_node(node)
+        self.assertEqual(above_cam_tfm, cam_tfm)
+        self.assertEqual(above_cam_shp, cam_shp)
 
 
 if __name__ == '__main__':

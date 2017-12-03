@@ -2,6 +2,7 @@
 Utility functions for Maya API.
 """
 
+from functools import wraps
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
@@ -84,7 +85,56 @@ def detect_object_type(node):
             ('camera' in shape_node_types)):
         object_type = 'camera'
 
+    elif node_type == 'camera':
+        object_type = 'camera'
+
     elif node_type == 'transform':
         object_type = 'bundle'
 
     return object_type
+
+
+def get_camera_above_node(node):
+    # Get the first camera transform and shape node above the node.
+    # TODO: This function may be called many times, we should look into
+    # caching some of this computation.
+    cam_tfm = None
+    cam_shp = None
+    dag = get_as_dag_path(node)
+    got_it = False
+    while dag.length() != 0:
+        if dag.apiType() == OpenMaya.MFn.kTransform:
+            num_children = dag.childCount()
+            if num_children > 0:
+                for i in xrange(num_children):
+                    child_obj = dag.child(i)
+                    if child_obj.apiType() == OpenMaya.MFn.kCamera:
+                        cam_tfm = dag.fullPathName()
+                        dag.push(child_obj)
+                        cam_shp = dag.fullPathName()
+                        got_it = True
+                        break
+        if got_it is True:
+            break
+        dag.pop(1)
+    return cam_tfm, cam_shp
+
+
+def undo_chunk(func):
+    """
+    Undo/Redo Chunk Decorator.
+
+    Puts the wrapped 'func' into a single Maya Undo action.
+    If 'func' raises and exception, we close the cunk.
+    """
+    @wraps(func)
+    def _func(*args, **kwargs):
+        try:
+            # start an undo chunk
+            maya.cmds.undoInfo(openChunk=True)
+            return func(*args, **kwargs)
+        finally:
+            # after calling the func, end the undo chunk and undo
+            maya.cmds.undoInfo(closeChunk=True)
+            maya.cmds.undo()
+    return _func

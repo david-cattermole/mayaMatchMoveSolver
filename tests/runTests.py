@@ -44,7 +44,15 @@ if __name__ == '__main__':
     import maya.cmds
 
     # Put all test module imports here.
+    import test.test_api.test_attribute
+    import test.test_api.test_bundle
+    import test.test_api.test_camera
+    import test.test_api.test_collection
+    import test.test_api.test_frame
+    import test.test_api.test_marker
     import test.test_api.test_sethelper
+    import test.test_api.test_solve
+    import test.test_api.test_utils
 
     func = None
     msg = ''

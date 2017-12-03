@@ -12,7 +12,6 @@ import mmSolver.api.utils as api_utils
 import mmSolver.api.solveresult as solveresult
 import mmSolver.api.solver as solver
 import mmSolver.api.marker as marker
-import mmSolver.api.bundle as bundle
 import mmSolver.api.attribute as attribute
 import mmSolver.api.sethelper as sethelper
 

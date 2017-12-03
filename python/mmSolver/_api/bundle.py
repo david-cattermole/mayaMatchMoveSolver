@@ -1,7 +1,7 @@
 import maya.cmds
 from maya import OpenMaya as OpenMaya
 
-from mmSolver.api import utils as api_utils
+from mmSolver._api import utils as api_utils
 
 
 class Bundle(object):

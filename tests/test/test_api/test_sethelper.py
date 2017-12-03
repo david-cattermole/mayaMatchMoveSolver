@@ -9,8 +9,8 @@ import unittest
 import maya.cmds
 
 import test.test_api.apiutils as test_api_utils
-import mmSolver.api.utils as api_utils
-import mmSolver.api.sethelper as sethelper
+import mmSolver._api.utils as api_utils
+import mmSolver._api.sethelper as sethelper
 
 
 # @unittest.skip

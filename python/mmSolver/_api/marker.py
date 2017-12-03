@@ -5,10 +5,9 @@ Marker and the related objects, Camera and Bundle.
 import maya.OpenMaya as OpenMaya
 import maya.cmds
 
-import mmSolver.api.utils as api_utils
-import mmSolver.api.bundle
-# from mmSolver.api.camera import Camera
-import mmSolver.api.camera
+import mmSolver._api.utils as api_utils
+import mmSolver._api.bundle
+import mmSolver._api.camera
 
 
 class Marker(object):
@@ -61,9 +60,9 @@ class Marker(object):
                     bnd=None):
         assert isinstance(name, (str, unicode))
         if cam is not None:
-            assert isinstance(cam, mmSolver.api.camera.Camera)
+            assert isinstance(cam, mmSolver._api.camera.Camera)
         if bnd is not None:
-            assert isinstance(bnd, mmSolver.api.bundle.Bundle)
+            assert isinstance(bnd, mmSolver._api.bundle.Bundle)
         if colour is not None:
             assert isinstance(colour, str)
 
@@ -136,19 +135,19 @@ class Marker(object):
             if len(bnd_nodes) > 0:
                 bnd_node = bnd_nodes[0]
             if bnd_node is not None and len(bnd_node) > 0:
-                bnd = mmSolver.api.bundle.Bundle(bnd_node)
+                bnd = mmSolver._api.bundle.Bundle(bnd_node)
         return bnd
 
     def set_bundle(self, bnd):
         if bnd is None:
             self._unlink_from_bundle()
-        elif isinstance(bnd, mmSolver.api.bundle.Bundle):
+        elif isinstance(bnd, mmSolver._api.bundle.Bundle):
             self._link_to_bundle(bnd)
         return
 
     def _link_to_bundle(self, bnd):
         # output message to marker.bundle attr
-        assert isinstance(bnd, mmSolver.api.bundle.Bundle)
+        assert isinstance(bnd, mmSolver._api.bundle.Bundle)
 
         bnd_node = bnd.get_node()
         assert isinstance(bnd_node, (str, unicode))
@@ -195,13 +194,13 @@ class Marker(object):
         # Make the camera object.
         cam = None
         if cam_tfm is not None and cam_shp is not None:
-            cam = mmSolver.api.camera.Camera(transform=cam_tfm, shape=cam_shp)
+            cam = mmSolver._api.camera.Camera(transform=cam_tfm, shape=cam_shp)
         return cam
 
     def set_camera(self, cam):
         if cam is None:
             self._unlink_from_camera()
-        elif isinstance(cam, mmSolver.api.camera.Camera):
+        elif isinstance(cam, mmSolver._api.camera.Camera):
             self._link_to_camera(cam)
         return
 
@@ -210,7 +209,7 @@ class Marker(object):
         Parent a marker under a
         If a 'markerGroup' node exists, we parent under than too.
         """
-        assert isinstance(cam, mmSolver.api.camera.Camera)
+        assert isinstance(cam, mmSolver._api.camera.Camera)
 
         mkr_node = self.get_node()
         cam_tfm = cam.get_transform_node()
@@ -228,7 +227,7 @@ class Marker(object):
         # linked to.
         current_cam = self.get_camera()
         if current_cam is not None:
-            assert isinstance(current_cam, mmSolver.api.camera.Camera)
+            assert isinstance(current_cam, mmSolver._api.camera.Camera)
             current_cam_shp = current_cam.get_shape_node()
             if current_cam_shp == cam_shp:
                 # TODO: Should we use warnings? Or should we raise exceptions?

@@ -5,7 +5,7 @@ The attributes to be solved for.
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 # import maya.OpenMayaAnim as OpenMayaAnim
-import mmSolver.api.utils as api_utils
+import mmSolver._api.utils as api_utils
 
 STATE_STATIC = 0
 STATE_ANIMATED = 1

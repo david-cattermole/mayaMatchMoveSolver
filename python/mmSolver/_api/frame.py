@@ -7,7 +7,7 @@ creating function callbacks for inclusion/exclusion of frames.
 
 import maya.cmds
 import maya.OpenMaya as OpenMaya
-import mmSolver.api.utils as api_utils
+import mmSolver._api.utils as api_utils
 
 
 class Frame(object):

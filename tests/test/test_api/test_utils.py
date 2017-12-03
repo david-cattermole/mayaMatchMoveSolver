@@ -10,8 +10,8 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import test.test_api.apiutils as test_api_utils
-import mmSolver.api.utils as api_utils
-import mmSolver.api.marker as marker
+import mmSolver._api.utils as api_utils
+import mmSolver._api.marker as marker
 
 
 # @unittest.skip

@@ -8,12 +8,12 @@ maya.cmds.* so that they support undo/redo correctly.
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
-import mmSolver.api.utils as api_utils
-import mmSolver.api.solveresult as solveresult
-import mmSolver.api.solver as solver
-import mmSolver.api.marker as marker
-import mmSolver.api.attribute as attribute
-import mmSolver.api.sethelper as sethelper
+import mmSolver._api.utils as api_utils
+import mmSolver._api.solveresult as solveresult
+import mmSolver._api.solver as solver
+import mmSolver._api.marker as marker
+import mmSolver._api.attribute as attribute
+import mmSolver._api.sethelper as sethelper
 
 
 class Collection(object):

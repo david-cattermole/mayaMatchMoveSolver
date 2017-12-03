@@ -8,7 +8,7 @@ maya.cmds.* so that they support undo/redo correctly.
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
-import mmSolver.api.utils as api_utils
+import mmSolver._api.utils as api_utils
 
 
 class SetHelper(object):

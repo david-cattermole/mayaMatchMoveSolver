@@ -9,11 +9,11 @@ import unittest
 import maya.cmds
 
 import test.test_api.apiutils as test_api_utils
-import mmSolver.api.utils as api_utils
-import mmSolver.api.solver as solver
-import mmSolver.api.marker as marker
-import mmSolver.api.attribute as attribute
-import mmSolver.api.collection as collection
+import mmSolver._api.utils as api_utils
+import mmSolver._api.solver as solver
+import mmSolver._api.marker as marker
+import mmSolver._api.attribute as attribute
+import mmSolver._api.collection as collection
 
 
 # @unittest.skip

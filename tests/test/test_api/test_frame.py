@@ -10,7 +10,7 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import test.test_api.apiutils as test_api_utils
-import mmSolver.api.frame as frame
+import mmSolver._api.frame as frame
 
 
 # @unittest.skip

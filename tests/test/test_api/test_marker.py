@@ -150,13 +150,47 @@ class TestMarker(test_api_utils.APITestCase):
         self.assertEqual(bnd3, None)
         self.assertNotEqual(bnd1.get_node(), bnd3)
 
-    # def test_get_camera(self):
-    #     self.fail()
-    #     pass
+    def test_get_camera(self):
+        x = marker.Marker().create_node()
+        mkr_cam = x.get_camera()
+        self.assertEqual(mkr_cam, None)
 
-    # def test_set_camera(self):
-    #     self.fail()
-    #     pass
+        # Create a Camera.
+        cam_tfm = maya.cmds.createNode('transform', name='myCamera1')
+        cam_tfm = api_utils.get_long_name(cam_tfm)
+        cam_shp = maya.cmds.createNode('camera', name='myCameraShape1',
+                                       parent=cam_tfm)
+        cam_shp = api_utils.get_long_name(cam_shp)
+        cam = camera.Camera(transform=cam_tfm, shape=cam_shp)
+
+        y = marker.Marker().create_node(cam=cam)
+        mkr_cam = y.get_camera()
+        self.assertIsInstance(mkr_cam, camera.Camera)
+        self.assertEqual(mkr_cam.get_transform_node(), cam_tfm)
+        self.assertEqual(mkr_cam.get_shape_node(), cam_shp)
+
+    def test_set_camera(self):
+        # Create a Camera.
+        cam_tfm = maya.cmds.createNode('transform', name='myCamera1')
+        cam_tfm = api_utils.get_long_name(cam_tfm)
+        cam_shp = maya.cmds.createNode('camera', name='myCameraShape1',
+                                       parent=cam_tfm)
+        cam_shp = api_utils.get_long_name(cam_shp)
+        cam = camera.Camera(transform=cam_tfm, shape=cam_shp)
+
+        x = marker.Marker().create_node()
+        x.set_camera(cam)
+
+        # Get the camera and test
+        mkr_cam = x.get_camera()
+        self.assertIsInstance(mkr_cam, camera.Camera)
+        self.assertEqual(mkr_cam.get_transform_node(), cam_tfm)
+        self.assertEqual(mkr_cam.get_shape_node(), cam_shp)
+
+        # Unlink marker from camera.
+        x.set_camera(None)
+        mkr_cam = x.get_camera()
+        self.assertEqual(mkr_cam, None)
 
 
 if __name__ == '__main__':

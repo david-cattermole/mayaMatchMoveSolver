@@ -264,5 +264,5 @@ class Marker(object):
 
         # Move the marker under the world root, don't modify the marker in
         # any way otherwise.
-        maya.cmds.parent(mkr_node, cam_tfm, relative=True, world=True)
+        maya.cmds.parent(mkr_node, relative=True, world=True)
         pass

@@ -11,8 +11,8 @@ import maya.cmds
 
 import test.test_api.apiutils as test_api_utils
 import mmSolver._api.utils as api_utils
-import mmSolver._api.bundle
-import mmSolver._api.camera
+import mmSolver._api.bundle as bundle
+import mmSolver._api.camera as camera
 import mmSolver._api.marker as marker
 
 
@@ -75,7 +75,7 @@ class TestMarker(test_api_utils.APITestCase):
         cam_shp = maya.cmds.createNode('camera', name='myCameraShape1',
                                        parent=cam_tfm)
         cam_shp = api_utils.get_long_name(cam_shp)
-        cam = mmSolver._api.camera.Camera(transform=cam_tfm, shape=cam_shp)
+        cam = camera.Camera(transform=cam_tfm, shape=cam_shp)
 
         # Create marker linked to camera
         x = marker.Marker().create_node(name=name, cam=cam)
@@ -85,7 +85,7 @@ class TestMarker(test_api_utils.APITestCase):
         self.assertEqual(mkr_cam.get_shape_node(), cam_shp)
 
         # Create a Bundle.
-        bnd = mmSolver._api.bundle.Bundle().create_node()
+        bnd = bundle.Bundle().create_node()
         bnd_node = bnd.get_node()
 
         # Create marker linked to bundle
@@ -128,7 +128,7 @@ class TestMarker(test_api_utils.APITestCase):
         bnd0 = x.get_bundle()
         self.assertEqual(bnd0, None)
 
-        bnd1 = mmSolver._api.bundle.Bundle().create_node()
+        bnd1 = bundle.Bundle().create_node()
         x.set_bundle(bnd1)
 
         bnd2 = x.get_bundle()
@@ -139,7 +139,7 @@ class TestMarker(test_api_utils.APITestCase):
         bnd0 = x.get_bundle()
         self.assertEqual(bnd0, None)
 
-        bnd1 = mmSolver._api.bundle.Bundle().create_node()
+        bnd1 = bundle.Bundle().create_node()
         x.set_bundle(bnd1)  # link marker to bundle
 
         bnd2 = x.get_bundle()

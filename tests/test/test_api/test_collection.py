@@ -12,7 +12,6 @@ import test.test_api.apiutils as test_api_utils
 import mmSolver.api.utils as api_utils
 import mmSolver.api.solver as solver
 import mmSolver.api.marker as marker
-import mmSolver.api.bundle as bundle
 import mmSolver.api.attribute as attribute
 import mmSolver.api.collection as collection
 

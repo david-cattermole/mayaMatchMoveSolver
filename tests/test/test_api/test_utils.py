@@ -116,27 +116,27 @@ class TestUtils(test_api_utils.APITestCase):
         plug.setDouble(3.147)
         self.assertEqual(plug.asDouble(), 3.147)
 
-    def test_detect_object_type(self):
+    def test_get_object_type(self):
         cam_tfm = maya.cmds.createNode('transform')
         cam_tfm = api_utils.get_long_name(cam_tfm)
         cam_shp = maya.cmds.createNode('camera', parent=cam_tfm)
         cam_shp = api_utils.get_long_name(cam_shp)
-        tfm_obj_type = api_utils.detect_object_type(cam_tfm)
-        shp_obj_type = api_utils.detect_object_type(cam_shp)
+        tfm_obj_type = api_utils.get_object_type(cam_tfm)
+        shp_obj_type = api_utils.get_object_type(cam_shp)
         self.assertEqual(tfm_obj_type, 'camera')
         self.assertEqual(shp_obj_type, 'camera')
 
         mkr = marker.Marker().create_node()
         mkr_node = mkr.get_node()
-        obj_type = api_utils.detect_object_type(mkr_node)
+        obj_type = api_utils.get_object_type(mkr_node)
         self.assertEqual(obj_type, 'marker')
 
         node = maya.cmds.createNode('transform')
-        obj_type = api_utils.detect_object_type(node)
+        obj_type = api_utils.get_object_type(node)
         self.assertEqual(obj_type, 'bundle')
 
         node_attr = node + '.scaleX'
-        obj_type = api_utils.detect_object_type(node_attr)
+        obj_type = api_utils.get_object_type(node_attr)
         self.assertEqual(obj_type, 'attribute')
 
     def test_get_camera_above_node(self):

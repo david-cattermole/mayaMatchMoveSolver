@@ -59,7 +59,7 @@ def get_as_plug(node_attr):
     return plug
 
 
-def detect_object_type(node):
+def get_object_type(node):
     assert isinstance(node, (str, unicode))
     assert maya.cmds.objExists(node)
 

@@ -63,7 +63,7 @@ class Collection(object):
 
         members = self._set.get_all_members(flatten=False, full_path=True)
         for member in members:
-            object_type = api_utils.detect_object_type(member)
+            object_type = api_utils.get_object_type(member)
             if object_type == 'marker':
                 mkr = marker.Marker(member)
                 result.append(mkr)
@@ -117,7 +117,7 @@ class Collection(object):
         members = self._set.get_all_members(flatten=False, full_path=True)
         rm_list = []
         for member in members:
-            object_type = api_utils.detect_object_type(member)
+            object_type = api_utils.get_object_type(member)
             if object_type == 'marker':
                 rm_list.append(member)
         if len(rm_list) > 0:
@@ -136,7 +136,7 @@ class Collection(object):
 
         members = self._set.get_all_members(flatten=False, full_path=True)
         for member in members:
-            object_type = api_utils.detect_object_type(member)
+            object_type = api_utils.get_object_type(member)
             if object_type == 'attribute':
                 attr = attribute.Attribute(name=member)
                 result.append(attr)
@@ -190,7 +190,7 @@ class Collection(object):
         members = self._set.get_all_members(flatten=False, full_path=True)
         rm_list = []
         for member in members:
-            object_type = api_utils.detect_object_type(member)
+            object_type = api_utils.get_object_type(member)
             if object_type == 'attribute':
                 rm_list.append(member)
         if len(rm_list) > 0:

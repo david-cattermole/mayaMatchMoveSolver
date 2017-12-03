@@ -1,7 +1,7 @@
 import maya.cmds
 from maya import OpenMaya as OpenMaya
 
-from mmSolver._api import utils as api_utils
+import mmSolver._api.utils as api_utils
 
 
 class Camera(object):
@@ -11,51 +11,16 @@ class Camera(object):
     """
 
     def __init__(self, transform=None, shape=None):
+        self._mfn_tfm = None
+        self._mfn_shp = None
+
         if transform is None and shape is None:
             self._mfn_tfm = OpenMaya.MFnDagNode()
             self._mfn_shp = OpenMaya.MFnDagNode()
-
         elif shape is not None:
-            assert isinstance(shape, (str, unicode))
-            assert maya.cmds.objExists(shape)
-            shp_dag = api_utils.get_as_dag_path(shape)
-            if shp_dag is not None:
-                assert shp_dag.apiType() == OpenMaya.MFn.kCamera
-
-                # Get transform from shape.
-                tfm_dag = api_utils.get_as_dag_path(shape)
-                tfm_dag.pop(1)
-                assert tfm_dag.apiType() == OpenMaya.MFn.kTransform
-
-                self._mfn_shp = OpenMaya.MFnDagNode(shp_dag)
-                self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
-            else:
-                self._mfn_shp = OpenMaya.MFnDagNode()
-                self._mfn_tfm = OpenMaya.MFnDagNode()
-
+            self.set_shape_node(shape)
         elif transform is not None:
-            assert isinstance(transform, (str, unicode))
-            assert maya.cmds.objExists(transform)
-            tfm_dag = api_utils.get_as_dag_path(transform)
-            if tfm_dag is not None:
-                assert tfm_dag.apiType() == OpenMaya.MFn.kTransform
-                self._mfn_tfm = None
-
-                # Get camera shape from transform.
-                self._mfn_shp = None
-                dag = api_utils.get_as_dag_path(transform)
-                num_children = dag.childCount()
-                if num_children > 0:
-                    for i in xrange(num_children):
-                        child_obj = dag.child(i)
-                        if child_obj.apiType() == OpenMaya.MFn.kCamera:
-                            dag.push(child_obj)
-                            self._mfn_shp = OpenMaya.MFnDagNode(dag)
-                            break
-                if self._mfn_shp is not None:
-                    self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
-            else:
-                self._mfn_tfm = OpenMaya.MFnDagNode()
+            self.set_transform_node(transform)
 
         return
 
@@ -80,9 +45,34 @@ class Camera(object):
             node = None
         return node
 
-    def set_transform_node(self, value):
-        assert False
-        pass
+    def set_transform_node(self, name):
+        assert isinstance(name, (str, unicode))
+        assert maya.cmds.objExists(name)
+
+        self._mfn_tfm = None
+        self._mfn_shp = None
+
+        tfm_dag = api_utils.get_as_dag_path(name)
+        if tfm_dag is not None:
+            assert tfm_dag.apiType() == OpenMaya.MFn.kTransform
+
+            # Get camera shape from transform.
+            dag = api_utils.get_as_dag_path(name)
+            num_children = dag.childCount()
+            if num_children > 0:
+                for i in xrange(num_children):
+                    child_obj = dag.child(i)
+                    if child_obj.apiType() == OpenMaya.MFn.kCamera:
+                        dag.push(child_obj)
+                        self._mfn_shp = OpenMaya.MFnDagNode(dag)
+                        break
+
+            self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
+
+        if self._mfn_tfm is None or self._mfn_shp is None:
+            self._mfn_tfm = OpenMaya.MFnDagNode()
+            self._mfn_shp = OpenMaya.MFnDagNode()
+        return
 
     def get_shape_node(self):
         """
@@ -105,9 +95,30 @@ class Camera(object):
             node = None
         return node
 
-    def set_shape_node(self, value):
-        assert False
-        pass
+    def set_shape_node(self, name):
+        assert isinstance(name, (str, unicode))
+        assert maya.cmds.objExists(name)
+
+        self._mfn_tfm = None
+        self._mfn_shp = None
+
+        shp_dag = api_utils.get_as_dag_path(name)
+        if shp_dag is not None:
+            assert shp_dag.apiType() == OpenMaya.MFn.kCamera
+
+            # Get transform from shape.
+            tfm_dag = api_utils.get_as_dag_path(name)
+            tfm_dag.pop(1)
+            assert tfm_dag.apiType() == OpenMaya.MFn.kTransform
+
+            self._mfn_shp = OpenMaya.MFnDagNode(shp_dag)
+            self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
+
+        if self._mfn_tfm is None or self._mfn_shp is None:
+            self._mfn_tfm = OpenMaya.MFnDagNode()
+            self._mfn_shp = OpenMaya.MFnDagNode()
+
+        return
 
     def is_valid(self):
         cam_tfm = self.get_transform_node()
@@ -119,4 +130,3 @@ class Camera(object):
             return False
         return True
 
-    ############################################################################

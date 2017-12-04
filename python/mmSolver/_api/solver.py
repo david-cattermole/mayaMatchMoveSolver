@@ -23,6 +23,8 @@ class Solver(object):
             # give the solver a random name.
             if 'name' not in self._data:
                 self._data['name'] = str(uuid.uuid4())
+        assert 'name' in self._data
+        return
 
     def get_name(self):
         return self._data.get('name')
@@ -51,16 +53,20 @@ class Solver(object):
         return
 
     def get_solver_type(self):
-        pass
+        return self._data.get('solver_type')
 
     def set_solver_type(self, value):
-        pass
+        self._data['solver_type'] = value
 
     def get_verbose(self):
-        pass
+        return self._data.get('verbose')
 
     def set_verbose(self, value):
-        pass
+        self._data['verbose'] = value
+
+    ############################################################################
+
+    ############################################################################
 
     def add_frame(self, value):
         pass

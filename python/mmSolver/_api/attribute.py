@@ -1,5 +1,5 @@
 """
-The attributes to be solved for.
+Module for attributes and related functions.
 """
 
 import maya.cmds
@@ -15,6 +15,9 @@ ATTR_STATE_LOCKED = 3
 
 
 class Attribute(object):
+    """
+    The Attribute - A variable, or set of variables over time to solve.
+    """
     def __init__(self, name=None, node=None, attr=None):
         if isinstance(name, (str, unicode)):
             assert api_utils.get_object_type(name) == 'attribute'

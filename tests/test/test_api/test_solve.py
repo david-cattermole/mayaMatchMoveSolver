@@ -70,27 +70,24 @@ class TestSolve(test_api_utils.APITestCase):
         sol.add_frame(1)
         sol.set_frame_list([1])
 
-        #
-        api.SolverPresetHelper('current_frame_solve')
-
         # Collection
         col = api.Collection()
         col.create('mySolveCollection')
         col.add_solver(sol)
-        # col.set_solver(sol)
-        col.add_marker(marker_tfm)
+        col.add_marker(mkr)
         col.add_attribute(attr_tx)
         col.add_attribute(attr_ty)
 
         # Run solver!
         s = time.time()
-        result = col.execute()
+        results = col.execute()
         e = time.time()
         print 'total time:', e - s
 
         # Ensure the values are correct
-        err = result.get_error()
-        assert self.approx_equal(err, 0.0, eps=0.001)
+        for res in results:
+            err = res.get_error()
+            assert self.approx_equal(err, 0.0, eps=0.001)
         assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
 

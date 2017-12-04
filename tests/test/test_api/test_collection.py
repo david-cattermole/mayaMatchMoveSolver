@@ -1,5 +1,8 @@
 """
-Test functions for sethelper module.
+Test functions for collection module, and especially for the Collection class.
+
+Note, Collection.execute() is tested separately in 'test.test_api.test_solve'
+module.
 """
 
 import sys

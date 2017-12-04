@@ -29,8 +29,10 @@ class Attribute(object):
         self._dependFn = None
         if isinstance(node, (str, unicode)) and isinstance(attr, (str, unicode)):
             assert maya.cmds.objExists(node)
-            attr_list = maya.cmds.listAttr(node)
-            assert attr in attr_list
+            # Long and short names must be checked.
+            attr_list_long = maya.cmds.listAttr(node, shortNames=False)
+            attr_list_short = maya.cmds.listAttr(node, shortNames=True)
+            assert attr in (attr_list_long + attr_list_short)
 
             node_attr = node + '.' + attr
             plug = api_utils.get_as_plug(node_attr)

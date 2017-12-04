@@ -21,9 +21,14 @@ class TestAttribute(test_api_utils.APITestCase):
         node = maya.cmds.createNode('transform')
         node = api_utils.get_long_name(node)
         x = attribute.Attribute(node=node, attr='translateX')
+        y = attribute.Attribute(node=node, attr='ty')
         self.assertEqual(x.get_node(), node)
         self.assertEqual(x.get_attr(), 'translateX')
         self.assertEqual(x.get_name(), '|transform1.translateX')
+
+        self.assertEqual(y.get_attr(), 'translateY')
+        self.assertEqual(y.get_name(), '|transform1.translateY')
+
 
     def test_get_state(self):
         node = maya.cmds.createNode('transform')

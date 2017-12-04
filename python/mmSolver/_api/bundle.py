@@ -88,13 +88,13 @@ class Bundle(object):
 
     ############################################################################
 
-    def get_node_colour(self):
-        pass
+    # def get_node_colour(self):
+    #     pass
 
-    def set_node_colour(self, name):
-        # TODO: should we allow RGB values directly?
-        # TODO: Look up the colour value from a string.
-        pass
+    # def set_node_colour(self, name):
+    #     # TODO: should we allow RGB values directly?
+    #     # TODO: Look up the colour value from a string.
+    #     pass
 
     ############################################################################
 

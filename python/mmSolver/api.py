@@ -21,6 +21,13 @@ from mmSolver._api.solver import (
     SOLVER_TYPE_SPLM
 )
 from mmSolver._api.solveresult import SolveResult
+from mmSolver._api.excep import (
+    MMException,
+    NotValid,
+    AlreadyLinked,
+    AlreadyUnlinked,
+    NotEnoughMarkers,
+)
 
 # Utility functions that the user is allowed to use.
 from mmSolver._api.utils import (

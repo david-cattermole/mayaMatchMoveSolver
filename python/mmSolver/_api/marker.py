@@ -6,6 +6,7 @@ import maya.OpenMaya as OpenMaya
 import maya.cmds
 
 import mmSolver._api.utils as api_utils
+import mmSolver._api.excep as excep
 import mmSolver._api.bundle as bundle
 import mmSolver._api.camera as camera
 
@@ -104,12 +105,12 @@ class Marker(object):
 
         return self
 
-    def convert_to_node(self):
-        # TODO: Is this needed???
-        # TODO: This function will convert a ordanary node into a marker. It
-        # will:
-        # - Add custom attributes.
-        pass
+    # def convert_to_node(self):
+    #     # TODO: Is this needed???
+    #     # TODO: This function will convert a ordanary node into a marker. It
+    #     # will:
+    #     # - Add custom attributes.
+    #     pass
 
     def delete_node(self):
         node = self.get_node()
@@ -118,13 +119,13 @@ class Marker(object):
 
     ############################################################################
 
-    def get_node_colour(self):
-        pass
+    # def get_node_colour(self):
+    #     pass
 
-    def set_node_colour(self, name):
-        # TODO: should we allow RGB values directly?
-        # TODO: Look up the colour value from a string.
-        pass
+    # def set_node_colour(self, name):
+    #     # TODO: should we allow RGB values directly?
+    #     # TODO: Look up the colour value from a string.
+    #     pass
 
     ############################################################################
 
@@ -170,10 +171,10 @@ class Marker(object):
         if not maya.cmds.isConnected(src, dst):
             maya.cmds.connectAttr(src, dst)
         else:
-            # TODO: Should we raise instead of printing a warning?
             msg = 'Marker and Bundle are already linked; '
             msg += 'marker={0}, bundle={1}'
-            maya.cmds.warning(msg.format(repr(mkr_node), repr(bnd_node)))
+            msg = msg.format(repr(mkr_node), repr(bnd_node))
+            raise excep.AlreadyLinked(msg)
         return
 
     def _unlink_from_bundle(self):
@@ -220,11 +221,10 @@ class Marker(object):
 
         # Make sure the camera is valid for us to link to.
         if cam.is_valid() is False:
-            # TODO: Should we use warnings? Or should we raise exceptions?
             msg = 'Cannot link Marker to Camera; Camera is not valid.'
             msg += ' marker={0} camera={1}'
-            maya.cmds.warning(msg.format(repr(mkr_node), repr(cam_shp)))
-            return
+            msg = msg.format(repr(mkr_node), repr(cam_shp))
+            raise excep.NotValid(msg)
 
         # Check if we're trying to link the the camera that we're already
         # linked to.
@@ -233,11 +233,10 @@ class Marker(object):
             assert isinstance(current_cam, camera.Camera)
             current_cam_shp = current_cam.get_shape_node()
             if current_cam_shp == cam_shp:
-                # TODO: Should we use warnings? Or should we raise exceptions?
                 msg = 'Marker is already linked to camera, skipping.'
                 msg += ' marker={0} camera={1}'
-                maya.cmds.warning(msg.format(repr(mkr_node), repr(cam_shp)))
-                return
+                msg = msg.format(repr(mkr_node), repr(cam_shp))
+                raise excep.AlreadyLinked(msg)
 
         # TODO: Find any 'markerGroup' nodes under the camera transform, parent
         # the marker under that node instead of the camera transform.
@@ -259,11 +258,10 @@ class Marker(object):
                 (cam_shp is None) or
                 (maya.cmds.objExists(cam_tfm) is False) or
                 (maya.cmds.objExists(cam_shp) is False)):
-            # TODO: Should we use warnings? Or should we raise exceptions?
             msg = 'Marker is already unlinked from all cameras, skipping.'
             msg += ' marker={0} camera={1}'
-            maya.cmds.warning(msg.format(repr(mkr_node), repr(cam_shp)))
-            return
+            msg = msg.format(repr(mkr_node), repr(cam_shp))
+            raise excep.AlreadyUnlinked(msg)
 
         # Move the marker under the world root, don't modify the marker in
         # any way otherwise.

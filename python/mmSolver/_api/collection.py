@@ -11,6 +11,7 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver._api.utils as api_utils
+import mmSolver._api.excep as excep
 import mmSolver._api.solveresult as solveresult
 import mmSolver._api.solver as solver
 import mmSolver._api.marker as marker
@@ -27,7 +28,7 @@ class Collection(object):
         # Store the keyword arguments for the command, return this if the user
         # asks for the arguments. Invalidate these arguments and force a
         # re-compile if the user sets a new value, otherwise it's still valid.
-        self._kwargs_list = [{}]
+        self._kwargs_list = []
 
         if isinstance(name, (str, unicode)):
             self.set_node(name)
@@ -47,7 +48,7 @@ class Collection(object):
         return self._set.get_node()
 
     def set_node(self, name):
-        self._kwargs_list = [{}]  # reset argument flag cache.
+        self._kwargs_list = []  # reset argument flag cache.
         return self._set.set_node(name)
 
     ############################################################################
@@ -69,10 +70,16 @@ class Collection(object):
         assert isinstance(data, (list, dict))
         set_node = self._set.get_node()
         node_attr = set_node + '.' + attr_name
-        attr_data = json.dumps(data)
+
+        new_attr_data = json.dumps(data)
+        old_attr_data = maya.cmds.getAttr(node_attr)
+        if old_attr_data == new_attr_data:
+            return  # no change is needed.
+
         maya.cmds.setAttr(node_attr, lock=False)
-        maya.cmds.setAttr(node_attr, attr_data, type='string')
+        maya.cmds.setAttr(node_attr, new_attr_data, type='string')
         maya.cmds.setAttr(node_attr, lock=True)
+        self._kwargs_list = []  # reset argument flag cache.
         return
 
     ############################################################################
@@ -198,6 +205,7 @@ class Collection(object):
         assert isinstance(node, (str, unicode))
         if not self._set.member_in_set(node):
             self._set.add_member(node)
+            self._kwargs_list = []  # reset argument flag cache.
         return
 
     def add_marker_list(self, mkr_list):
@@ -207,6 +215,7 @@ class Collection(object):
             if isinstance(mkr, marker.Marker):
                 node_list.append(mkr.get_node())
         self._set.add_members(node_list)
+        self._kwargs_list = []  # reset argument flag cache.
         return
 
     def remove_marker(self, mkr):
@@ -214,6 +223,7 @@ class Collection(object):
         node = mkr.get_node()
         if self._set.member_in_set(node):
             self._set.remove_member(node)
+            self._kwargs_list = []  # reset argument flag cache.
         return
 
     def remove_marker_list(self, mkr_list):
@@ -223,14 +233,21 @@ class Collection(object):
             if isinstance(mkr, marker.Marker):
                 node_list.append(mkr.get_node())
         self._set.remove_members(node_list)
+        self._kwargs_list = []  # reset argument flag cache.
         return
 
     def set_marker_list(self, mkr_list):
         assert isinstance(mkr_list, list)
+        before_num = self.get_marker_list_length()
+
         self.clear_marker_list()
         for mkr in mkr_list:
             if isinstance(mkr, marker.Marker):
                 self.add_marker(mkr)
+
+        after_num = self.get_marker_list_length()
+        if before_num != after_num:
+            self._kwargs_list = []  # reset argument flag cache.
         return
 
     def clear_marker_list(self):
@@ -242,18 +259,13 @@ class Collection(object):
                 rm_list.append(member)
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)
+            self._kwargs_list = []  # reset argument flag cache.
         return
 
     ############################################################################
 
     def get_attribute_list(self):
         result = []
-
-        # # TODO: Get hidden data from set node, set attribute attributes
-        # # as needed.
-        # set_node = self._set.get_node()
-        # set_data = self._get_data(set_node)
-
         members = self._set.get_all_members(flatten=False, full_path=True)
         for member in members:
             object_type = api_utils.get_object_type(member)
@@ -271,6 +283,7 @@ class Collection(object):
         assert isinstance(name, (str, unicode))
         if not self._set.member_in_set(name):
             self._set.add_member(name)
+            self._kwargs_list = []  # reset argument flag cache.
         return
 
     def add_attribute_list(self, attr_list):
@@ -280,6 +293,7 @@ class Collection(object):
             if isinstance(attr, attribute.Attribute):
                 name_list.append(attr.get_name())
         self._set.add_members(name_list)
+        self._kwargs_list = []  # reset argument flag cache.
         return
 
     def remove_attribute(self, attr):
@@ -287,6 +301,7 @@ class Collection(object):
         name = attr.get_name()
         if self._set.member_in_set(name):
             self._set.remove_member(name)
+            self._kwargs_list = []  # reset argument flag cache.
         return
 
     def remove_attribute_list(self, attr_list):
@@ -296,14 +311,21 @@ class Collection(object):
             if isinstance(attr, attribute.Attribute):
                 name_list.append(attr.get_name())
         self._set.remove_members(name_list)
+        self._kwargs_list = []  # reset argument flag cache.
         return
 
     def set_attribute_list(self, mkr_list):
         assert isinstance(mkr_list, list)
+        before_num = self.get_attribute_list_length()
+
         self.clear_attribute_list()
         for mkr in mkr_list:
             if isinstance(mkr, attribute.Attribute):
                 self.add_attribute(mkr)
+
+        after_num = self.get_attribute_list_length()
+        if before_num != after_num:
+            self._kwargs_list = []  # reset argument flag cache.
         return
 
     def clear_attribute_list(self):
@@ -315,6 +337,7 @@ class Collection(object):
                 rm_list.append(member)
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)
+            self._kwargs_list = []  # reset argument flag cache.
         return
 
     ############################################################################
@@ -323,18 +346,47 @@ class Collection(object):
         # TODO: Take all the data in this class and compile them into keyword
         # argument flags for the mmSolver command.
 
-        # If the class attributes haven't been changed, re-use the previously generated arguments.
-        if len(self._kwargs) > 0:
-            return self._kwargs.copy()
+        # If the class attributes haven't been changed, re-use the previously
+        # generated arguments.
+        if len(self._kwargs_list) > 0:
+            return self._kwargs_list
 
-        # re-compile the arguments.
-        kwargs = {}
-        self._kwargs = kwargs
-        return self._kwargs.copy()
+        # Re-compile the arguments.
+        kwargs_list = []
+        col_node = self.get_node()
+
+        # Check Solvers
+        sol_list = self.get_solver_list()
+        if len(sol_list) == 0:
+            msg = 'Collection is not valid, no Solvers given; collection={0}'
+            msg = msg.format(repr(col_node))
+            raise excep.NotValid(msg)
+
+        # Check Markers
+        mkr_list = self.get_marker_list()
+        if len(mkr_list) == 0:
+            msg = 'Collection is not valid, no Markers given; collection={0}'
+            msg = msg.format(repr(col_node))
+            raise excep.NotValid(msg)
+
+        # Check Attributes
+        attr_list = self.get_attribute_list()
+        if len(attr_list) == 0:
+            msg = 'Collection is not valid, no Attributes given; collection={0}'
+            msg = msg.format(repr(col_node))
+            raise excep.NotValid(msg)
+
+        # Set arguments
+        self._kwargs_list = kwargs_list
+        return self._kwargs_list
 
     def is_valid(self):
-        # TODO: Work out how we will get the validity from self._compile().
-        ret = self._compile()
+        try:
+            self._compile()
+            ret = True
+        except excep.NotValid:
+            ret = False
+        return ret
 
     def execute(self):
         # TODO: This function will compile all the data in the collection, then
@@ -342,6 +394,14 @@ class Collection(object):
         # return a list of strings, which will then be passed to the SolveResult
         # class so the user can query the raw data using an interface.
 
-        kwargs = self._compile()
-        solve_data = maya.cmds.mmSolver(**kwargs)
-        return solveresult.SolveResult(solve_data)
+        #
+        solres_list = []
+        if self.is_valid() is False:
+            return solres_list
+
+        kwargs_list = self._compile()
+        for kwargs in kwargs_list:
+            solve_data = maya.cmds.mmSolver(**kwargs)
+            solres = solveresult.SolveResult(solve_data)
+            solres_list.append(solres)
+        return solres_list

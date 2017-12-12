@@ -1,0 +1,20 @@
+imageSequence	"Sequence01"
+{
+	3072	2304	f( "/data/Tutorials/Footage/operahouse/frame%02d.jpg" )	b( 0 42 1 )	
+}
+pointTrack  "TopLeft"  rgb( 0 0 0 )	
+{
+	0	     0.0       0.0    ki( 0.8 )	    s( 15 15 15 15 )  p( 7 7 7 7 )
+}
+pointTrack  "TopRight"  rgb( 0 0 0 )	
+{
+	0	  3072.0      0.0    ki( 0.8 )	    s( 15 15 15 15 )  p( 7 7 7 7 )
+}
+pointTrack  "BottomLeft"  rgb( 0 0 0 )	
+{
+	0	     0.0    2304.0    ki( 0.8 )	    s( 15 15 15 15 )  p( 7 7 7 7 )
+}
+pointTrack  "BottomRight"  rgb( 0 0 0 )	
+{
+	0	  3072.0    2304.0    ki( 0.8 )	    s( 15 15 15 15 )  p( 7 7 7 7 )
+}

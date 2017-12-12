@@ -92,6 +92,8 @@ class Marker(object):
         maya.cmds.addAttr(tfm, longName='weight', at='double',
                           minValue=0.0, defaultValue=1.0)
         maya.cmds.addAttr(tfm, longName='bundle', at='message')
+        maya.cmds.addAttr(tfm, longName='markerName', dt='string')
+        maya.cmds.setAttr(tfm + '.markerName', lock=True)
 
         self.set_node(tfm)
 

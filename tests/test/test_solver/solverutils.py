@@ -24,10 +24,9 @@ class SolverTestCase(baseUtils.TestBase):
         self.reload_solver()
 
         # Start the Profiler
-        self._profilerName = self.id().replace('.', '_')
-        self._profilerDataName = self._profilerName + '.txt'
-        self._profilerPath = None
-        self._profilerPath = os.path.join(os.path.dirname(__file__), self._profilerDataName)
+        self._mayaProfilerName = self.id().replace('.', '_')
+        self._mayaProfilerDataName = self._mayaProfilerName + '.txt'
+        self._mayaProfilerPath = self.get_profile_path(self._mayaProfilerDataName)
         maya.cmds.profiler(addCategory='mmSolver')
         maya.cmds.profiler(bufferSize=20)
         maya.cmds.profiler(sampling=True)
@@ -37,7 +36,7 @@ class SolverTestCase(baseUtils.TestBase):
     def tearDown(self):
         # Stop the Profiler
         maya.cmds.profiler(sampling=False)
-        if self._profilerPath is not None:
-            maya.cmds.profiler(output=self._profilerPath)
+        if self._mayaProfilerPath is not None:
+            maya.cmds.profiler(output=self._mayaProfilerPath)
 
         super(SolverTestCase, self).tearDown()

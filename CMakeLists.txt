@@ -25,8 +25,12 @@ set(SPLM_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
 set(USE_ATLAS ON CACHE BOOLEAN "Should we use ATLAS with Lev-Mar?")
 set(ATLAS_LIB_PATH "/usr/lib64/atlas" CACHE PATH "ATLAS library directory")
 
-## GL Math
-#set(GLM_INCLUDE_PATH "/usr/local/include" CACHE PATH "GL Math include directory")
+# Intel Math Kernel Library
+set(USE_MKL ON CACHE BOOLEAN "Should we use MKL?")
+set(MKL_LIB_PATH "/opt/intel/mkl/lib/intel64" CACHE PATH "Intel MKL library directory")
+
+# SuiteSparse library path
+set(SUITE_SPARSE_LIB_PATH "/usr/lib64/atlas" CACHE PATH "SuiteSparse library directory")
 
 # Source
 set(SOURCE_FILES
@@ -49,7 +53,6 @@ set(SOURCE_FILES
 
 include_directories(
         include
-#        ${GLM_INCLUDE_PATH}
         ${LEVMAR_INCLUDE_PATH}
         ${SPLM_INCLUDE_PATH}
         ${MAYA_INCLUDE_PATH}
@@ -57,14 +60,37 @@ include_directories(
 
 link_directories(
         ${LIBRARY_OUTPUT_PATH}
-        ${ATLAS_LIB_PATH}
         ${LEVMAR_LIB_PATH}
         ${SPLM_LIB_PATH}
         ${MAYA_LIB_PATH}
+        ${MKL_LIB_PATH}
+        ${ATLAS_LIB_PATH}
+        ${SUITE_SPARSE_LIB_PATH}
 )
 
 # 'mmSolver' maya plugin library
 add_library(${CMD_NAME} SHARED ${SOURCE_FILES})
+if (USE_MKL)
+    add_definitions( -DHAVE_SPLM=1 )
+    target_link_libraries(${CMD_NAME}
+            OpenMaya
+            OpenMayaAnim
+            Foundation
+            levmar
+            splm
+            suitesparseconfig
+            amd
+            cholmod
+            umfpack
+            mkl_core
+            mkl_def
+            mkl_gnu_thread
+            mkl_intel_lp64
+            mkl_mc
+            mkl_sequential
+            m)
+endif()
+
 if (USE_ATLAS)
     if(HAVE_SPLM)
         add_definitions( -DHAVE_SPLM=1 )

@@ -31,8 +31,17 @@ from mmSolver._api.excep import (
 
 # Utility functions that the user is allowed to use.
 from mmSolver._api.utils import (
+    get_long_name,
     get_object_type,
-    undo_chunk
+    undo_chunk,
+    convert_valid_maya_name,
+    get_marker_name,
+    get_bundle_name
+)
+
+# Animation Utility functions that the user is allowed to use.
+from mmSolver._api.animutils import (
+    create_anim_curve_node
 )
 
 __all__ = [
@@ -56,6 +65,11 @@ __all__ = [
     'SolveResult',
 
     # functions
+    'get_long_name',
     'get_object_type',
     'undo_chunk',
+    'convert_valid_maya_name',
+    'get_marker_name',
+    'get_bundle_name',
+    'create_anim_curve_node',
 ]

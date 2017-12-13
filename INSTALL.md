@@ -1,208 +1,108 @@
 # Building and Install
 
-Building mmSolver can be fairly simple or complex, depending if you care about performance.
+Building mmSolver can be fairly simple or complex, depending if you care about performance. For tests, you may use the "Simple Method"
 
-The simple steps are:
+There are also Linux shell scripts to automate most of the compiling of external dependencies. You may edit these scripts for your system. There are patches required are for different builds in `./external/patches/`. 
 
-- Download and unpack `glm`.
+## Build Environment
+
+The below processes were tested on a CentOS 6.x Linux distribution.
+
+These are the versions of various software tested:
+
+| Software     | Version |
+| ------------ | ----------- |
+| OS | CentOS 6.9 |
+| Linux Kernel | Linux 2.6.32-696.16.1.el6.x86_64 | 
+| GCC | gcc (GCC) 4.4.7 20120313 (Red Hat 4.4.7-18) |
+| LDD | ldd (GNU libc) 2.12 |
+| CMake | 2.8.12.2 *(see note below)* |
+| Autodesk Maya | Autodesk Maya 2016 SP6 |
+| Autodesk Maya API | 201614 |
+
+NOTE: If compiling the 'Full Mode', you will require a newer version of CMake. The CMake version 3.6.3 has been confirmed to work. The default CMake in the CentOS 6 repository is not sufficient to build the `metis` sub-component of `SuiteSparse`, however for the 'Simple Method', CMake 2.6 is sufficient.
+
+## Simple Method
+
+An overview of the simple method is:
+
 - Download, unpack, and compile `levmar` with CMake.
-- Download, unpack and compile `mmSolver` with CMake and argument paths pointing to `maya`, `levmar` and `glm`.
+- Download, unpack and compile `mmSolver` with CMake and argument paths pointing to `maya`, `levmar`.
 - Copy mmSolver plugin into Maya plug-in directory.
+- Copy mmSolver python API into Maya scripts directory.
 
-## Dependencies
+### Build Script
+
+To build without any third-party dependencies other than levmar, run these commmand:
+```commandline
+$ cd <project root>
+$ bash external/download_levmar_archive.sh
+$ build_with_levmar.sh
+```
+
+###  Dependencies
 
 - C++ compiler ([GCC](https://gcc.gnu.org/), Clang, VC++, etc)
-- [CMake 2.6+](https://cmake.org/)
-- [glm (GL Math)](https://glm.g-truc.net/)
+- [CMake 2.8+](https://cmake.org/)
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
-  - [LAPACK](http://www.netlib.org/lapack/)  (optional)
-  - [BLAS](http://www.netlib.org/blas/)  (optional)
-  - [ATLAS](http://www.netlib.org/atlas/) (optional)
-  - [Intel Math Kernal Library (MLK)](https://software.intel.com/en-us/mkl) (optional)
-- [sparseLM 1.3](http://users.ics.forth.gr/~lourakis/sparseLM/) (optional)
-  - [SuiteSparse 5.0.0](http://faculty.cse.tamu.edu/davis/suitesparse.html)
-  - [LAPACK](http://www.netlib.org/lapack/)
-  - [BLAS](http://www.netlib.org/blas/)
-  - [ATLAS](http://www.netlib.org/atlas/) (optional)
-  - [Intel Math Kernal Library (MLK)](https://software.intel.com/en-us/mkl) (optional)
 
-## Build and Install
+### Install mmSolver Python API
 
-There are two solving engines; one is good at small problems, named `levmar`, the other good at large problems, named `sparseLM`. It is recommended to have both available, but only levmar is required for the solver to function adequately.
-  
-The `sparseLM` (Sparse Lev-Mar) algorithm is recommended for large problems, specifically solving across time, where adjustments to a parameter only affects a relatively small number of errors.
+The `mmSolver` project has a convenience Python API for tool writers, which is recommended. The API must be added to the `MAYA_SCRIPT_PATH`. 
 
-`sparseLM` requires `SuiteSparse` for sparse algorithms and `SuiteSparse` requires `LAPACK` and `BLAS`. `ATLAS` or `Intel MLK` can be used instead of `LAPACK` and `BLAS`, but are said to have higher performance.
-
-### Build GL Math (glm)
-
-GL Math (glm) is a header-only library implementing common OpenGL-like classes and functions for mathematics, like vectors and matrices.
-
-Download glm from the [github project](https://github.com/g-truc/glm/releases/tag/0.9.8.5) and uncompress the ZIP file into a directory. Get the location of the glm headers, we will use when building the Maya plug-in.
+To install into our home directory maya `scripts` directory, simply run these commands:
 
 ```commandline
-$ tar -xf glm-0.9.8.5.tar.gz
-$ cd glm-0.9.8.5
-$ pwd
-/path/to/glm-0.9.8.5
+$ cd <project root>
+$ cp -R python/mmSolver ~/maya/<maya version>/plug-ins
 ```
 
-### Build LevMar
+### Install mmSolver plugin
 
-Lev-Mar is the core library at the heart of this plug-in solver; the plug-in will not function without it. 
+Once the `mmSolver` plugin has been build you will need to place it on the `MAYA_PLUG_IN_PATH`. 
 
-There are two approaches to building `levmar`, one simple, the other is more complex. 
-
-In the simple build method we do not use the `LAPACK` or `BLAS` libraries. `LAPACK` is a 'Linear Algebra' package, and has been implemented multiple times for heavy performance and robustness optimisations over many years. If you would like to compile with `LAPACK`, follow the 'complex method' below.
-
-If you intend on compiling `sparseLM`, you should build `levmar` with `LAPACK` and `BLAS` support since `sparseLM` requires `LAPACK` and `BLAS`. 
-
-#### Build LevMar (simple method)
-
-Levmar does not use 'make install', and it will only compile a static library, which we will link against in the next step.
+To install into our home directory maya `plug-ins` directory (which is automatically on the `MAYA_PLUG_IN_PATH`), simply run these commands:
 
 ```commandline
-$ tar -xf levmar-2.6.tgz
-$ cd levmar-2.6
-$ mkdir build
-$ cd build
-$ cmake -DNEED_F2C=0 -DHAVE_LAPACK=0 -DBUILD_DEMO=1 ..
--- The C compiler identification is GNU 4.4.7
--- The CXX compiler identification is GNU 4.4.7
--- Check for working C compiler: /usr/bin/cc
--- Check for working C compiler: /usr/bin/cc -- works
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Check for working CXX compiler: /usr/bin/c++
--- Check for working CXX compiler: /usr/bin/c++ -- works
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Configuring done
--- Generating done
--- Build files have been written to: /path/to/example/directory/levmar-2.6/build
-$ make
-Scanning dependencies of target levmar
-[ 14%] Building C object CMakeFiles/levmar.dir/lm.c.o
-[ 28%] Building C object CMakeFiles/levmar.dir/Axb.c.o
-[ 42%] Building C object CMakeFiles/levmar.dir/misc.c.o
-In file included from /home/davidc/bin/levmar/test/levmar-2.6/misc.c:47:
-/path/to/example/directory/levmar-2.6/misc_core.c:577:2: warning: #warning LAPACK not available, LU will be used for matrix inversion when computing the covariance; this might be unstable at times
-In file included from /path/to/example/directory/levmar-2.6/misc.c:64:
-/path/to/example/directory/levmar-2.6/misc_core.c:577:2: warning: #warning LAPACK not available, LU will be used for matrix inversion when computing the covariance; this might be unstable at times
-[ 57%] Building C object CMakeFiles/levmar.dir/lmlec.c.o
-/path/to/example/directory/levmar-2.6/lmlec.c:39:2: warning: #warning Linearly constrained optimization requires LAPACK and was not compiled!
-[ 71%] Building C object CMakeFiles/levmar.dir/lmbc.c.o
-[ 85%] Building C object CMakeFiles/levmar.dir/lmblec.c.o
-/path/to/example/directory/levmar-2.6/lmblec.c:39:2: warning: #warning Combined box and linearly constrained optimization requires LAPACK and was not compiled!
-[100%] Building C object CMakeFiles/levmar.dir/lmbleic.c.o
-/path/to/example/directory/levmar-2.6/lmbleic.c:40:2: warning: #warning Linear inequalities constrained optimization requires LAPACK and was not compiled!
-Linking C static library liblevmar.a
-[100%] Built target levmar
-$ ./lmdemo  # run the demo (optional)
- Covariance of the fit:
- 0.00483514 -0.00162445 -0.000548114
- -0.00162445 0.000546079 0.000184356
- -0.000548114 0.000184356 6.22705e-05
- 
- Results for Meyer's (reformulated) problem:
- Levenberg-Marquardt returned 208 in 208 iter, reason 2
- Solution: 2.481779 6.181346 3.502236
- 
- Minimization info:
- 1308.25 8.79459e-05 1.12674e-07 1.13856e-29 636.638 208 2 272 21 209
+$ cd <project root>
+$ mkdir ~/maya/<maya version>/plug-ins
+$ cp mmSolver.so ~/maya/<maya version>/plug-ins
 ```
 
-#### Build LevMar (complex method)
+### Run Test Suite
 
-This complex method will use LAPACK. For this method to work you need to install the library 'ATLAS', which contains 'LAPACK', 'BLAS' and others. It is advised to do this using your operating system's software repository if you can.
- 
-Unfortunately I cannot provide detailed instructions for building [ATLAS](http://www.netlib.org/atlas/), [LAPACK](http://www.netlib.org/lapack/) or [BLAS](http://www.netlib.org/blas/). Please refer to the respective websites for information of building.
+After all parts of the `mmSolver` are installed and can be found by Maya, try running the test suite to confirm everything is working as expected.
 
-On CentOS 6 install the needed packages from the base repository with:
 ```commandline
-$ yum install atlas atlas-devel
+$ cd <project root>
+$ sh runTests.sh
 ```
-Note: You will need `root` access to install packages.
 
-Unpack the Lev-Mar source code, and start editing the Makefile.
+## Full Method with Intel MKL
+
+This method will use both the `levmar` and `sparselm` algorithms, as well as highly-optimised libraries for computation; `Intel Math Kernal Libraries`.
+
+### Build Script
+
+Note: This will assume Intel MKL is installed under `/opt/intel/mkl`, you will need to modify the scripts if this location is not correct on your system.
+
+To build with Intel MKL, run these command: 
 ```commandline
-$ tar -xf levmar-2.6.tgz
-$ cd levmar-2.6
-$ emacs Makefile  # open Makefile in your favourite text editor.
+$ cd <project root>
+$ bash external/download_all_archives.sh
+$ bash build_with_intel_mkl.sh
 ```
 
-After you've opened the Makefile, by default you'll see something similar to this:
-```text
-#
-# Unix/Linux GCC Makefile for Levenberg - Marquardt minimization
-# Under windows, use Makefile.vc for MSVC
-#
+###  Dependencies
 
-CC=gcc
-CONFIGFLAGS=#-ULINSOLVERS_RETAIN_MEMORY
-#ARCHFLAGS=-march=pentium4 # YOU MIGHT WANT TO UNCOMMENT THIS FOR P4
-CFLAGS=$(CONFIGFLAGS) $(ARCHFLAGS) -O3 -funroll-loops -Wall #-g #-ffast-math #-pg
-LAPACKLIBS_PATH=/usr/local/lib # WHEN USING LAPACK, CHANGE THIS TO WHERE YOUR COMPILED LIBS ARE!
-LDFLAGS=-L$(LAPACKLIBS_PATH) -L.
-LIBOBJS=lm.o Axb.o misc.o lmlec.o lmbc.o lmblec.o lmbleic.o
-LIBSRCS=lm.c Axb.c misc.c lmlec.c lmbc.c lmblec.c lmbleic.c
-DEMOBJS=lmdemo.o
-DEMOSRCS=lmdemo.c
-AR=ar
-RANLIB=ranlib
-LAPACKLIBS=-llapack -lblas -lf2c # comment this line if you are not using LAPACK.
-                                 # On systems with a FORTRAN (not f2c'ed) version of LAPACK, -lf2c is
-                                 # not necessary; on others, -lf2c is equivalent to -lF77 -lI77
-```
-
-Edit 'CFLAGS' and add '-fPIC', so we can compile and link the shared library with other libraries (in the Maya plug-in):
-```text
-CFLAGS=$(CONFIGFLAGS) $(ARCHFLAGS) -O3 -funroll-loops -Wall -fPIC
-```
-
-Change the 'LAPACKLIBS' section to:
-```text
-LAPACKLIBS=-L/usr/lib64/atlas -llapack -lf77blas -latlas
-```
-Note '/usr/lib64/atlas' is a specific location in CentOS 6 which ATLAS is installed, it may be different on other Linux distributions.
-
-Now, lets go back to the command line and 'make' our project. 
-```commandline
-$ make -j4
-gcc   -O3 -funroll-loops -Wall -fPIC   -c -o lm.o lm.c
-gcc   -O3 -funroll-loops -Wall -fPIC   -c -o Axb.o Axb.c
-gcc   -O3 -funroll-loops -Wall -fPIC   -c -o misc.o misc.c
-gcc   -O3 -funroll-loops -Wall -fPIC   -c -o lmlec.o lmlec.c
-gcc   -O3 -funroll-loops -Wall -fPIC   -c -o lmbc.o lmbc.c
-gcc   -O3 -funroll-loops -Wall -fPIC   -c -o lmblec.o lmblec.c
-gcc   -O3 -funroll-loops -Wall -fPIC   -c -o lmbleic.o lmbleic.c
-gcc   -O3 -funroll-loops -Wall -fPIC   -c -o lmdemo.o lmdemo.c
-ar crv liblevmar.a lm.o Axb.o misc.o lmlec.o lmbc.o lmblec.o lmbleic.o
-r - lm.o
-r - Axb.o
-r - misc.o
-r - lmlec.o
-r - lmbc.o
-r - lmblec.o
-r - lmbleic.o
-ranlib liblevmar.a
-gcc -L/usr/lib  -L. lmdemo.o -o lmdemo -llevmar -L/usr/lib64/atlas -llapack -lf77blas -latlas  -lm
-/usr/bin/ld: skipping incompatible /usr/lib/libm.so when searching for -lm
-/usr/bin/ld: skipping incompatible /usr/lib/libc.so when searching for -lc
-$ ./lmdemo  # run the demo (optional)
-Covariance of the fit:
-0.00483514 -0.00162445 -0.000548114
--0.00162445 0.000546079 0.000184356
--0.000548114 0.000184356 6.22705e-05
-
-Results for Meyer's (reformulated) problem:
-Levenberg-Marquardt returned 208 in 208 iter, reason 2
-Solution: 2.481779 6.181346 3.502236
-
-Minimization info:
-1308.25 8.79459e-05 1.12674e-07 1.13856e-29 636.638 208 2 272 21 209
-```
+- C++ compiler ([GCC](https://gcc.gnu.org/), Clang, VC++, etc)
+- [CMake 3.6+](https://cmake.org/)
+- [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
+- [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
+- [SuiteSparse 5.0.0](http://faculty.cse.tamu.edu/davis/suitesparse.html)
+- [sparseLM 1.3](http://users.ics.forth.gr/~lourakis/sparseLM/)
+- [Intel Math Kernal Library (MLK)](https://software.intel.com/en-us/mkl)
 
 ### Build SuiteSparse
 
@@ -220,22 +120,66 @@ To compile the Maya plugin, run the commands.
 $ cd <project root>
 $ mkdir build
 $ cd build
-$ cmake \
-  -DMAYA_INCLUDE_PATH=/path/to/maya/include \
-  -DMAYA_LIB_PATH=/path/to/maya/lib \
-  -DLEVMAR_LIB_PATH=/path/to/levmar/lib \
-  -DLEVMAR_INCLUDE_PATH=/path/to/levmar/include \
-  -DATLAS_LIBRARY_PATH=/path/to/atlas/libraries \
-  -DGLM_INCLUDE_PATH=/path/to/glm \
-  ..
+$ cmake -DCMAKE_BUILD_TYPE=Release \
+        -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2016/include \
+        -DMAYA_LIB_PATH=/usr/autodesk/maya2016/lib \
+        -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
+        -DSPLM_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DSPLM_INCLUDE_PATH=${PROJECT_ROOT}/external/lib \
+        -DSUITE_SPARSE_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DMKL_LIB_PATH=/opt/intel/mkl/lib/intel64 \
+        -DHAVE_SPLM=1 \
+        -DUSE_ATLAS=0 \
+        -DUSE_MKL=1 \
+        ..
 $ make -j4
+```
+
+### Install mmSolver Python API
+
+The `mmSolver` project has a convenience Python API for tool writers, which is recommended. The API must be added to the `MAYA_SCRIPT_PATH`. 
+
+To install into our home directory maya `scripts` directory, simply run these commands:
+
+```commandline
+$ cd <project root>
+$ cp -R python/mmSolver ~/maya/<maya version>/plug-ins
 ```
 
 ### Install mmSolver plugin
 
-Now lets install into our home directory maya 'plug-ins' directory.
+Once the `mmSolver` plugin has been build you will need to place it on the `MAYA_PLUG_IN_PATH`. 
+
+To install into our home directory maya `plug-ins` directory (which is automatically on the `MAYA_PLUG_IN_PATH`), simply run these commands:
 
 ```commandline
+$ cd <project root>
 $ mkdir ~/maya/<maya version>/plug-ins
 $ cp mmSolver.so ~/maya/<maya version>/plug-ins
 ```
+
+Because we're using a number of third-party libraries, we need to make these libraries available to Maya as the plug-in loads. Below I'll add these into `~/maya/<maya version>/lib`, however you may do so however you wish.
+
+```commandline
+$ cd <project root>
+$ mkdir ~/maya/<maya version>/lib
+$ cp -R external/lib/* ~/maya/<maya version>/lib
+```
+
+### Run Test Suite
+
+After all parts of the `mmSolver` are installed and can be found by Maya, try running the test suite to confirm everything is working as expected.
+
+```commandline
+$ cd <project root>
+$ sh runTests.sh
+```
+
+## Full Method with Atlas (LAPACK / BLAS)
+
+This section is for compiling with the free and open-source library Atlas to provide the LAPACK and BLAS algorithms.
+
+This build process is not yet documented, and there are currently no build scripts for it. 
+
+_To be written_

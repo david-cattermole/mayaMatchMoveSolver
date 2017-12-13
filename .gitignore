@@ -3,3 +3,5 @@
 *~
 *.pyc
 cmake-build-*
+test*.pstat
+test*.txt

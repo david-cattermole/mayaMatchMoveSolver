@@ -17,6 +17,7 @@ import mmSolver.tools.loadmarker.formats
 
 
 def read(file_path):
+    # assert start_frame is None or isinstance(start_frame, int)
     if not isinstance(file_path, (str, unicode)):
         return None
     if not os.path.isfile(file_path):
@@ -82,11 +83,22 @@ def __set_node_data(mkr, mkr_data):
     maya.cmds.setAttr(mkr_node + '.markerName', mkr_name, type='string')
     maya.cmds.setAttr(mkr_node + '.markerName', lock=True)
 
-    # Set keyframes.
-    mkr_x = mkr_data.get_x()
-    mkr_y = mkr_data.get_y()
+    # Get keyframe data
+    mkr_x_data = mkr_data.get_x().get_raw_data()
+    mkr_y_data = mkr_data.get_y().get_raw_data()
+    for t, v in mkr_x_data.iteritems():
+        # TODO: Work out the factor we need to put the point into camera space.
+        mkr_x_data[t] = v - 0.5
+    for t, v in mkr_y_data.iteritems():
+        mkr_y_data[t] = v - 0.5
+    mkr_x = interface.KeyframeData(data=mkr_x_data)
+    mkr_y = interface.KeyframeData(data=mkr_y_data)
     mkr_enable = mkr_data.get_enable()
     mkr_weight = mkr_data.get_weight()
+
+    # TODO: Reduce keyframes, if we can, we don't need per-frame keyframes if the data is the same.
+
+    # Set keyframes.
     __set_attr_keyframes(mkr_node, 'translateX', mkr_x)
     __set_attr_keyframes(mkr_node, 'translateY', mkr_y)
     __set_attr_keyframes(mkr_node, 'enable', mkr_enable)

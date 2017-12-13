@@ -79,21 +79,37 @@ class Marker(object):
         maya.cmds.setAttr(tfm + '.sx', lock=True)
         maya.cmds.setAttr(tfm + '.sy', lock=True)
         maya.cmds.setAttr(tfm + '.sz', lock=True)
+        maya.cmds.setAttr(tfm + '.tz', keyable=False, channelBox=False)
+        maya.cmds.setAttr(tfm + '.rx', keyable=False, channelBox=False)
+        maya.cmds.setAttr(tfm + '.ry', keyable=False, channelBox=False)
+        maya.cmds.setAttr(tfm + '.rz', keyable=False, channelBox=False)
+        maya.cmds.setAttr(tfm + '.sx', keyable=False, channelBox=False)
+        maya.cmds.setAttr(tfm + '.sy', keyable=False, channelBox=False)
+        maya.cmds.setAttr(tfm + '.sz', keyable=False, channelBox=False)
 
         # Shape Node
         shp_name = tfm.rpartition('|')[-1] + 'Shape'
         shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm)
+        maya.cmds.setAttr(shp + '.localScaleX', 0.01)
+        maya.cmds.setAttr(shp + '.localScaleY', 0.01)
         maya.cmds.setAttr(shp + '.localScaleZ', 0.0)
         maya.cmds.setAttr(shp + '.localScaleZ', lock=True)
 
         # Add attrs
-        maya.cmds.addAttr(tfm, longName='enable', at='bool',
+        maya.cmds.addAttr(tfm, longName='enable', at='byte',
+                          minValue=0,
+                          maxValue=1,
                           defaultValue=True)
         maya.cmds.addAttr(tfm, longName='weight', at='double',
-                          minValue=0.0, defaultValue=1.0)
+                          minValue=0.0,
+                          defaultValue=1.0)
         maya.cmds.addAttr(tfm, longName='bundle', at='message')
         maya.cmds.addAttr(tfm, longName='markerName', dt='string')
+
+        maya.cmds.setAttr(tfm + '.enable', keyable=True, channelBox=True)
+        maya.cmds.setAttr(tfm + '.weight', keyable=True, channelBox=True)
         maya.cmds.setAttr(tfm + '.markerName', lock=True)
+        maya.cmds.connectAttr(tfm + '.enable', tfm + '.lodVisibility')
 
         self.set_node(tfm)
 

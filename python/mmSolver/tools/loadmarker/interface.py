@@ -73,12 +73,12 @@ class KeyframeData(object):
     with the same value.
     """
 
-    def __init__(self, initial_value=None):
-        self._value = dict()
+    def __init__(self, data=None):
+        self._data = dict()
         self._uptodate = False
         self._keyframe_values = None
-        if initial_value is not None:
-            self.set_value(initial_value, 0)
+        if isinstance(data, dict):
+            self._data = data.copy()
 
     def get_start_frame(self):
         times = self.get_times()
@@ -96,23 +96,32 @@ class KeyframeData(object):
         times = self.get_times()
         return len(times)
 
+    def get_raw_data(self):
+        """
+        Gives access of the underlying data structure to the user.
+
+        This is so that the user can query the data then give it to the
+        __init__ of a new class.
+        """
+        return self._data.copy()
+
     def get_value(self, frame):
         """
         Get the key value at frame. frame is an integer.
         """
-        assert isinstance(self._value, dict)
+        assert isinstance(self._data, dict)
         key = str(frame)
-        value = self._value.get(key)
+        value = self._data.get(key)
         if value is None:
             # there is no key on the frame, find the closest frame.
-            frame = get_closest_frame(frame, self._value)
+            frame = get_closest_frame(frame, self._data)
             key = str(frame)
-            if key in self._value:
-                value = self._value[key]
+            if key in self._data:
+                value = self._data[key]
         return value
 
     def get_keyframe_values(self):
-        assert isinstance(self._value, dict)
+        assert isinstance(self._data, dict)
 
         # This enables multiple calls not to re-compute this data.
         if self._uptodate is True:
@@ -121,10 +130,10 @@ class KeyframeData(object):
         key_values = list()
 
         # Sort keys, based on int values, not string.
-        keys = self._value.keys()
+        keys = self._data.keys()
         int_keys = list()
         # for key in keys:
-        for key in self._value.iterkeys():
+        for key in self._data.iterkeys():
             int_keys.append(int(key))
         keys = sorted(int_keys)
 
@@ -175,7 +184,7 @@ class KeyframeData(object):
         """
         self._uptodate = False
         frame_str = str(frame)
-        self._value[frame_str] = value
+        self._data[frame_str] = value
         return True
 
     def simplify_data(self):
@@ -183,19 +192,19 @@ class KeyframeData(object):
         Tries to convert the keyframe data into
         static if all values are the same.
         """
-        assert isinstance(self._value, dict)
+        assert isinstance(self._data, dict)
         self._uptodate = False
         initial = None
         total = float()  # assume it's a float?
         total_num = int()
-        for key in iter(self._value):
+        for key in iter(self._data):
             if initial is None:
-                initial = self._value[key]
-            total = total + self._value[key]
+                initial = self._data[key]
+            total = total + float(self._data[key])
             total_num = total_num + 1
         average = total / total_num
         if float_is_equal(average, initial):
-            self._value = average
+            self._data = average
         return True
 
 

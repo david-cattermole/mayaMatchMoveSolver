@@ -1,3 +1,8 @@
+#!/usr/bin/env bash
+# Builds the Maya plug-in using the Intel MKL libraries.
+
+
+# The root of this project.
 PROJECT_ROOT=`pwd`
 
 
@@ -7,9 +12,9 @@ rm -R --force ${PROJECT_ROOT}/external/include/*
 
 
 # Build the external dependencies
-sh external/build_levmar_with_mkl.sh
-sh external/build_suitesparse_with_mkl.sh
-sh external/build_sparselm_with_mkl.sh
+bash external/build_levmar_with_mkl.sh
+bash external/build_suitesparse_with_mkl.sh
+bash external/build_sparselm_with_mkl.sh
 
 
 # Build plugin

@@ -20,7 +20,7 @@ import mmSolver.api as api
 import test.test_api.apiutils as test_api_utils
 
 
-# @unittest.skip
+@unittest.skip
 class TestSolve(test_api_utils.APITestCase):
 
     def test_init(self):

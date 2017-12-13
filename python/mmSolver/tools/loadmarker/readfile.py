@@ -96,7 +96,8 @@ def __set_node_data(mkr, mkr_data):
     mkr_enable = mkr_data.get_enable()
     mkr_weight = mkr_data.get_weight()
 
-    # TODO: Reduce keyframes, if we can, we don't need per-frame keyframes if the data is the same.
+    # TODO: Reduce keyframes, if we can, we don't need per-frame keyframes if
+    # the data is the same.
 
     # Set keyframes.
     __set_attr_keyframes(mkr_node, 'translateX', mkr_x)

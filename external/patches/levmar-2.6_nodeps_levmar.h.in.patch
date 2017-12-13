@@ -1,0 +1,15 @@
+--- /home/davidc/dev/mayaMatchMoveSolver/external/archives/levmar-2.6/levmar.h.in	2011-11-28 22:38:29.000000000 +1030
++++ /home/davidc/dev/mayaMatchMoveSolver/external/working/levmar-2.6/levmar.h.in	2017-12-13 03:14:52.923436061 +1030
+@@ -28,10 +28,10 @@
+  */
+ 
+ /* specifies whether to use LAPACK or not. Using LAPACK is strongly recommended */
+-#cmakedefine HAVE_LAPACK
++// #cmakedefine HAVE_LAPACK
+ 
+ /* specifies whether the PLASMA parallel library for multicore CPUs is available */
+-#cmakedefine HAVE_PLASMA
++// #cmakedefine HAVE_PLASMA
+                       
+ /* to avoid the overhead of repeated mallocs(), routines in Axb.c can be instructed to
+  * retain working memory between calls. Such a choice, however, renders these routines

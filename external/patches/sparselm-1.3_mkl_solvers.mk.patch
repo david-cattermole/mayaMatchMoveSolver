@@ -1,0 +1,15 @@
+--- ./external/archives/sparselm-1.3/solvers.mk	2011-05-03 22:15:03.000000000 +0930
++++ ./external/working/sparselm-1.3/solvers.mk	2017-12-12 19:44:33.117138722 +1030
+@@ -7,10 +7,10 @@
+ HAVE_MA57=no
+ HAVE_MA47=no
+ HAVE_MA27=no
+-HAVE_PARDISO=no
++HAVE_PARDISO=yes
+ HAVE_SuperLU=no
+ HAVE_TAUCS=no
+ HAVE_SPOOLES=no
+ HAVE_MUMPS=no
+-HAVE_MKL=no
++HAVE_MKL=yes
+ HAVE_MA77=no

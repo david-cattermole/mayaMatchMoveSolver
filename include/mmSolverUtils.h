@@ -288,6 +288,7 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
     return;
 }
 
+#if HAVE_SPLM == 1
 // From 'splm.c'.
 //
 // Attempt to guess the Jacobian's non-zero pattern
@@ -362,6 +363,7 @@ int jacobianZeroPatternGuess(void (*func)(double *p, double *hx, int nvars, int 
     free(hxx);
     return k;
 }
+#endif
 
 //// From levmar project, used internally to create a jacobian.
 //// Forward finite difference approximation to the Jacobian of func
@@ -644,10 +646,12 @@ bool solve(int iterMax,
     // Options and Info
     unsigned int optsSize = LM_OPTS_SZ;
     unsigned int infoSize = LM_INFO_SZ;
+#if HAVE_SPLM == 1
     if (solverType == SOLVER_TYPE_SPARSE_LEVMAR) {
         optsSize = SPLM_OPTS_SZ;
         infoSize = SPLM_INFO_SZ;
     }
+#endif
     double opts[optsSize];
     double info[infoSize];
 

@@ -7,7 +7,7 @@ import maya.cmds
 
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
-import mmSolver._api.bundle as bundle
+import mmSolver._api.bundle
 import mmSolver._api.camera as camera
 
 
@@ -64,7 +64,7 @@ class Marker(object):
         if cam is not None:
             assert isinstance(cam, camera.Camera)
         if bnd is not None:
-            assert isinstance(bnd, bundle.Bundle)
+            assert isinstance(bnd, mmSolver._api.bundle.Bundle)
         if colour is not None:
             assert isinstance(colour, str)
 
@@ -141,19 +141,19 @@ class Marker(object):
             if len(bnd_nodes) > 0:
                 bnd_node = bnd_nodes[0]
             if bnd_node is not None and len(bnd_node) > 0:
-                bnd = bundle.Bundle(bnd_node)
+                bnd = mmSolver._api.bundle.Bundle(bnd_node)
         return bnd
 
     def set_bundle(self, bnd):
         if bnd is None:
             self._unlink_from_bundle()
-        elif isinstance(bnd, bundle.Bundle):
+        elif isinstance(bnd, mmSolver._api.bundle.Bundle):
             self._link_to_bundle(bnd)
         return
 
     def _link_to_bundle(self, bnd):
         # output message to marker.bundle attr
-        assert isinstance(bnd, bundle.Bundle)
+        assert isinstance(bnd, mmSolver._api.bundle.Bundle)
 
         bnd_node = bnd.get_node()
         assert isinstance(bnd_node, (str, unicode))

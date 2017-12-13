@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Clean up
 rm -R --force ./external/working/levmar-2.6/
 

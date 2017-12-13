@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 sh ./external/download_levmar_archive.sh
 sh ./external/download_suitesparse_archive.sh

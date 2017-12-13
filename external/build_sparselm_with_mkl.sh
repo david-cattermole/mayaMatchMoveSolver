@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Clean up
 rm -R --force ./external/working/sparselm-1.3
 

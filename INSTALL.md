@@ -167,6 +167,12 @@ $ mkdir ~/maya/<maya version>/lib
 $ cp -R external/lib/* ~/maya/<maya version>/lib
 ```
 
+You will need to add `~/maya/<maya version>/lib` onto your `LD_LIBRARY_PATH` environment variable. For example if you use the 'bash' shell, you add this command into your `~/.bashrc` file.
+
+```bash
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:~/maya/<maya version>/lib
+```
+
 ### Run Test Suite
 
 After all parts of the `mmSolver` are installed and can be found by Maya, try running the test suite to confirm everything is working as expected.

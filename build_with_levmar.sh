@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+# Builds the Maya plug-in with levmar.
+
+# The root of this project.
 PROJECT_ROOT=`pwd`
 
 
@@ -7,7 +11,7 @@ rm -R --force ${PROJECT_ROOT}/external/include/*
 
 
 # Build the external dependencies
-sh external/build_levmar_with_nodeps.sh
+bash external/build_levmar_with_nodeps.sh
 
 
 # Build plugin

@@ -34,8 +34,23 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         num_nodes1 = len(maya.cmds.ls())
         marker_read.create_nodes(mkr_data_list)
         num_nodes2 = len(maya.cmds.ls())
-
         self.assertGreater(num_nodes2, num_nodes1)
+
+        self.assertTrue(maya.cmds.objExists('TopLeft_MKR'))
+        self.assertEqual(maya.cmds.getAttr('TopLeft_MKR.translateX'), -0.5)
+        self.assertEqual(maya.cmds.getAttr('TopLeft_MKR.translateY'), 0.5)
+
+        self.assertTrue(maya.cmds.objExists('TopRight_MKR'))
+        self.assertEqual(maya.cmds.getAttr('TopRight_MKR.translateX'), 0.5)
+        self.assertEqual(maya.cmds.getAttr('TopRight_MKR.translateY'), 0.5)
+
+        self.assertTrue(maya.cmds.objExists('BottomLeft_MKR'))
+        self.assertEqual(maya.cmds.getAttr('BottomLeft_MKR.translateX'), -0.5)
+        self.assertEqual(maya.cmds.getAttr('BottomLeft_MKR.translateY'), -0.5)
+
+        self.assertTrue(maya.cmds.objExists('BottomRight_MKR'))
+        self.assertEqual(maya.cmds.getAttr('BottomRight_MKR.translateX'), 0.5)
+        self.assertEqual(maya.cmds.getAttr('BottomRight_MKR.translateY'), -0.5)
 
 
 if __name__ == '__main__':

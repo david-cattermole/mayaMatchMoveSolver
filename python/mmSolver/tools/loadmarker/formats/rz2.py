@@ -108,8 +108,10 @@ class LoaderRZ2(interface.LoaderBase):
                 if len(splt) == 0:
                     continue
                 frame = int(splt[0])
+                # NOTE: In MatchMover, top-left is (0,0), but we want
+                # bottom-left to be (0,0).
                 x = float(splt[1]) / x_res
-                y = float(splt[2]) / y_res
+                y = ((float(splt[2]) / y_res) * -1) + 1.0
                 enable_value = int(frame in frames)
 
                 mkr_data.enable.set_value(frame, enable_value)

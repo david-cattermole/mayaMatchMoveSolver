@@ -441,6 +441,9 @@ bool solve(int iterMax,
     userData.curveChange = &curveChange;
     userData.computation = &computation;
 
+    // Verbosity
+    userData.verbose = verbose;
+
     // Set Initial parameters
     VRB("Set Initial parameters");
     MTime currentFrame = MAnimControl::currentTime();
@@ -739,7 +742,7 @@ bool solve(int iterMax,
         VRB("-> " << paramList[i]);
     }
 
-    resultStr = "solver_parameters=";
+    resultStr = "solver_parameter_list=";
     for (i = 0; i < m; ++i) {
         resultStr += string::numberToString<double>(paramList[i]);
         resultStr += " ";
@@ -762,6 +765,14 @@ bool solve(int iterMax,
         if (err > errorMax) { errorMax = err; }
     }
     errorAvg /= (double) n;
+
+    resultStr = "error_final_list=";
+    for (i = 0; i < n; ++i) {
+        err = userData.errorList[i];
+        resultStr += string::numberToString<double>(err);
+        resultStr += " ";
+    }
+    outResult.append(MString(resultStr.c_str()));
 
     VRB(std::endl << std::endl << "Solve Information:");
     VRB("Initial Error: " << info[0]);

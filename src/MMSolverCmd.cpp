@@ -117,9 +117,9 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
             camera->setShapeNodeName(cameraShape);
             m_cameraList.push_back(camera);
 
-            INFO("Camera = " << i);
-            INFO("  Transform = " << camera->getTransformNodeName());
-            INFO("  Shape = " << camera->getShapeNodeName());
+            // DBG("Camera = " << i);
+            // DBG("  Transform = " << camera->getTransformNodeName());
+            // DBG("  Shape = " << camera->getShapeNodeName());
         }
     }
 
@@ -138,19 +138,19 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
             }
 
             markerName = markerArgs.asString(0, &status);
-            INFO("markerName=" << markerName);
+            // DBG("markerName=" << markerName);
             CHECK_MSTATUS_AND_RETURN_IT(status);
             status = nodeExistsAndIsType(markerName, MFn::Type::kTransform);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
             cameraName = markerArgs.asString(1, &status);
-            INFO("cameraName=" << cameraName);
+            // DBG("cameraName=" << cameraName);
             CHECK_MSTATUS_AND_RETURN_IT(status);
             status = nodeExistsAndIsType(cameraName, MFn::Type::kCamera);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
             bundleName = markerArgs.asString(2, &status);
-            INFO("bundleName=" << bundleName);
+            // DBG("bundleName=" << bundleName);
             CHECK_MSTATUS_AND_RETURN_IT(status);
             status = nodeExistsAndIsType(bundleName, MFn::Type::kTransform);
             CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -196,11 +196,11 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
             m_markerList.push_back(marker);
             m_bundleList.push_back(bundle);
 
-            INFO("Marker = " << i);
-            INFO("  Camera = " << cameraName << " : " << camera->getTransformNodeName() << " : "
-                               << camera->getShapeNodeName());
-            INFO("  Marker = " << markerName << " : " << marker->getNodeName());
-            INFO("  Bundle = " << bundleName << " : " << bundle->getNodeName());
+            // DBG("Marker = " << i);
+            // DBG("  Camera = " << cameraName << " : " << camera->getTransformNodeName() << " : "
+            //                   << camera->getShapeNodeName());
+            // DBG("  Marker = " << markerName << " : " << marker->getNodeName());
+            // DBG("  Bundle = " << bundleName << " : " << bundle->getNodeName());
         }
     }
 
@@ -224,11 +224,11 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
             m_attrList.push_back(attr);
 
             MPlug attrPlug = attr->getPlug();
-            INFO("Attr = " << i << " : "
-                           << attr->getName() << " : "
-                           << attr->getNodeName() << " : "
-                           << attr->getDynamic() << " : "
-                           << attrPlug.name());
+            // DBG("Attr = " << i << " : "
+            //               << attr->getName() << " : "
+            //               << attr->getNodeName() << " : "
+            //               << attr->getDynamic() << " : "
+            //               << attrPlug.name());
         }
     }
 
@@ -249,7 +249,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
 
             MTime frame = MTime((double) value, unit);
             m_frameList.append(frame);
-            INFO("Frame = " << i << " : " << frame << " : " << value);
+            // DBG("Frame = " << i << " : " << frame << " : " << value);
         }
     }
 
@@ -266,7 +266,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(ITERATIONS_FLAG, 0, m_iterations);
         CHECK_MSTATUS(status);
     }
-    INFO("m_iterations=" << m_iterations);
+    // DBG("m_iterations=" << m_iterations);
 
     // Get 'Tau'
     m_tau = TAU_DEFAULT_VALUE;
@@ -274,7 +274,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(TAU_FLAG, 0, m_tau);
         CHECK_MSTATUS(status);
     }
-    INFO("m_tau=" << m_tau);
+    // DBG("m_tau=" << m_tau);
 
     // Get 'Epsilon1'
     m_epsilon1 = EPSILON1_DEFAULT_VALUE;
@@ -282,7 +282,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(EPSILON1_FLAG, 0, m_epsilon1);
         CHECK_MSTATUS(status);
     }
-    INFO("m_epsilon1=" << m_epsilon1);
+    // DBG("m_epsilon1=" << m_epsilon1);
 
     // Get 'Epsilon2'
     m_epsilon2 = EPSILON2_DEFAULT_VALUE;
@@ -290,7 +290,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(EPSILON2_FLAG, 0, m_epsilon2);
         CHECK_MSTATUS(status);
     }
-    INFO("m_epsilon2=" << m_epsilon2);
+    // DBG("m_epsilon2=" << m_epsilon2);
 
     // Get 'Epsilon3'
     m_epsilon3 = EPSILON3_DEFAULT_VALUE;
@@ -298,7 +298,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(EPSILON3_FLAG, 0, m_epsilon3);
         CHECK_MSTATUS(status);
     }
-    INFO("m_epsilon3=" << m_epsilon3);
+    // DBG("m_epsilon3=" << m_epsilon3);
 
     // Get 'Delta'
     m_delta = DELTA_DEFAULT_VALUE;
@@ -306,7 +306,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(DELTA_FLAG, 0, m_delta);
         CHECK_MSTATUS(status);
     }
-    INFO("m_delta=" << m_delta);
+    // DBG("m_delta=" << m_delta);
 
     // Get 'Solver Type'
     m_solverType = SOLVER_TYPE_DEFAULT_VALUE;
@@ -314,7 +314,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(SOLVER_TYPE_FLAG, 0, m_solverType);
         CHECK_MSTATUS(status);
     }
-    INFO("m_solverType=" << m_solverType);
+    // DBG("m_solverType=" << m_solverType);
 
     // Get 'Verbose'
     m_verbose = VERBOSE_DEFAULT_VALUE;
@@ -322,7 +322,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(VERBOSE_FLAG, 0, m_verbose);
         CHECK_MSTATUS(status);
     }
-    INFO("m_verbose=" << m_verbose);
+    // DBG("m_verbose=" << m_verbose);
 
     return status;
 }
@@ -343,7 +343,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
 //                     error is caught using a "catch" statement.
 //
     MStatus status = MStatus::kSuccess;
-    INFO("MMSolverCmd::doIt()");
+    // DBG("MMSolverCmd::doIt()");
 
     // Mouse cursor spinning...
     MGlobal::executeCommand("waitCursor -state on;");
@@ -402,7 +402,7 @@ MStatus MMSolverCmd::redoIt() {
 //                     likely cause the undo queue to be purged
 //
     MStatus status;
-    INFO("MMSolverCmd::redoIt()");
+    // DBG("MMSolverCmd::redoIt()");
     m_dgmod.doIt();
     m_curveChange.redoIt();
     return status;
@@ -423,7 +423,7 @@ MStatus MMSolverCmd::undoIt() {
 //                     likely cause the undo queue to be purged
 //
     MStatus status;
-    INFO("MMSolverCmd::undoIt()");
+    // DBG("MMSolverCmd::undoIt()");
     m_curveChange.undoIt();
     m_dgmod.undoIt();
     return status;

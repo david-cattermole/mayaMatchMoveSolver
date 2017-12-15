@@ -23,7 +23,6 @@ class Collection(object):
     def __init__(self, name=None):
         self._set = sethelper.SetHelper()
         self._solver_list = None
-        # self._solver_list_data = None
 
         # Store the keyword arguments for the command, return this if the user
         # asks for the arguments. Invalidate these arguments and force a
@@ -114,6 +113,12 @@ class Collection(object):
         return ret
 
     def get_solver_list(self):
+        """
+        Get Solver objects attached to the collection.
+
+        :return: Solver objects.
+        :rtype: list of solver.Solver
+        """
         solver_list = None
         if self._solver_list is None:
             self._solver_list = self._load_solver_list()
@@ -200,10 +205,13 @@ class Collection(object):
         return len(self.get_marker_list())
 
     def add_marker(self, mkr):
+        # print 'collection.add_marker:', mkr
         assert isinstance(mkr, marker.Marker)
         node = mkr.get_node()
         assert isinstance(node, (str, unicode))
-        if not self._set.member_in_set(node):
+        assert len(node) > 0
+        # print 'collection.add_marker member_in_set:', self._set.member_in_set(node)
+        if self._set.member_in_set(node) is False:
             self._set.add_member(node)
             self._kwargs_list = []  # reset argument flag cache.
         return
@@ -342,6 +350,59 @@ class Collection(object):
 
     ############################################################################
 
+    def __compile_solver(self, sol, mkr_list, attr_list):
+        assert isinstance(sol, solver.Solver)
+        assert isinstance(mkr_list, list)
+        assert isinstance(attr_list, list)
+        assert sol.get_frame_list_length() > 0
+
+        kwargs = dict()
+        kwargs['camera'] = []
+        kwargs['marker'] = []
+        kwargs['attr'] = []
+        kwargs['frame'] = []
+
+        for mkr in mkr_list:
+            assert isinstance(mkr, marker.Marker)
+            bnd = mkr.get_bundle()
+            cam = mkr.get_camera()
+            mkr_node = mkr.get_node()
+            bnd_node = bnd.get_node()
+            cam_tfm_node = cam.get_transform_node()
+            cam_shp_node = cam.get_shape_node()
+            kwargs['marker'].append((mkr_node, cam_shp_node, bnd_node))
+            kwargs['camera'].append((cam_tfm_node, cam_shp_node))
+
+        # Until we support multiple cameras, assert that we can only use
+        # 1 camera.
+        assert len(kwargs['camera']) == 1
+
+        for attr in attr_list:
+            assert isinstance(attr, attribute.Attribute)
+            if attr.is_locked():
+                continue
+            dyn = attr.is_animated()
+            attr_name = attr.get_name()
+            kwargs['attr'].append((attr_name, dyn))
+
+        frm_list = sol.get_frame_list()
+        for frm in frm_list:
+            # TODO: Add logic into adding frames based on primary or secondary
+            # flag.
+            num = frm.get_number()
+            kwargs['frame'].append(num)
+
+        kwargs['solverType'] = sol.get_solver_type()
+        kwargs['iterations'] = sol.get_max_iterations()
+        kwargs['verbose'] = sol.get_verbose()
+        # TODO: delta argument
+        # TODO: epsilon1 argument
+        # TODO: epsilon2 argument
+        # TODO: epsilon3 argument
+
+        print 'kwargs:', repr(kwargs)
+        return kwargs
+
     def _compile(self):
         # TODO: Take all the data in this class and compile them into keyword
         # argument flags for the mmSolver command.
@@ -354,9 +415,11 @@ class Collection(object):
         # Re-compile the arguments.
         kwargs_list = []
         col_node = self.get_node()
+        print 'col_node:', col_node
 
         # Check Solvers
         sol_list = self.get_solver_list()
+        print 'sol_list:', sol_list
         if len(sol_list) == 0:
             msg = 'Collection is not valid, no Solvers given; collection={0}'
             msg = msg.format(repr(col_node))
@@ -364,6 +427,7 @@ class Collection(object):
 
         # Check Markers
         mkr_list = self.get_marker_list()
+        print 'mkr_list:', mkr_list
         if len(mkr_list) == 0:
             msg = 'Collection is not valid, no Markers given; collection={0}'
             msg = msg.format(repr(col_node))
@@ -371,13 +435,24 @@ class Collection(object):
 
         # Check Attributes
         attr_list = self.get_attribute_list()
+        print 'attr_list:', attr_list
         if len(attr_list) == 0:
             msg = 'Collection is not valid, no Attributes given; collection={0}'
             msg = msg.format(repr(col_node))
             raise excep.NotValid(msg)
 
+        # Compile all the solvers
+        for sol in sol_list:
+            if sol.get_frame_list_length() == 0:
+                assert False
+            kwargs = self.__compile_solver(sol, mkr_list, attr_list)
+            if isinstance(kwargs, dict):
+                kwargs_list.append(kwargs)
+            else:
+                assert False
+
         # Set arguments
-        self._kwargs_list = kwargs_list
+        self._kwargs_list = kwargs_list  # save a copy
         return self._kwargs_list
 
     def is_valid(self):
@@ -394,12 +469,16 @@ class Collection(object):
         # return a list of strings, which will then be passed to the SolveResult
         # class so the user can query the raw data using an interface.
 
-        #
+        print 'collection.execute'
+
+        # Check for validity
         solres_list = []
         if self.is_valid() is False:
+            print 'collection not valid'
             return solres_list
 
         kwargs_list = self._compile()
+        print 'kwargs_list:', kwargs_list
         for kwargs in kwargs_list:
             solve_data = maya.cmds.mmSolver(**kwargs)
             solres = solveresult.SolveResult(solve_data)

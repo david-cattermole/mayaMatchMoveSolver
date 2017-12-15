@@ -134,8 +134,8 @@ Python Example:
 maya.cmds.mmSolver(
     camera=('camera1', 'cameraShape1'),
     marker=(
-        ('camera1', 'marker1', 'bundle1', 1.0),
-        ('camera1', 'marker2', 'bundle2', 1.0),
+        ('marker1', 'camera1', 'bundle1'),
+        ('marker2', 'camera1', 'bundle2'),
     ),
     attr=(
         ('node.attr', 0),
@@ -151,8 +151,8 @@ MEL Example:
 ```text
 mmSolver  
     -camera "camera1" "cameraShape1" 
-    -marker "camera1" "marker1" "bundle1" 1.0
-    -marker "camera1" "marker2" "bundle2" 1.0
+    -marker "marker1" "camera1" "bundle1"
+    -marker "marker2" "camera1" "bundle2"
     -attr "node.attr" 0
     -attr "bundle1.tx" 0
     -attr "bundle1.ty" 0

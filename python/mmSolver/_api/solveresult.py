@@ -70,8 +70,11 @@ class SolveResult(object):
     def get_solver(self):
         pass
 
+    def get_success(self):
+        return self._success
+
     def get_error(self):
-        pass
+        return self._final_error
 
     def get_per_frame_error(self):
         pass

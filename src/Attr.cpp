@@ -113,8 +113,8 @@ MPlug Attr::getPlug() {
         // For attributes like 'worldMatrix', where we need the first
         // element of the array, not the attribute itself.
         if (plug.isArray()) {
-            // NOTE: Here we need 'evaluateNumElements' in case Maya hasn't already computed
-            // how many elements the array plug is expected to have.
+            // Here we need 'evaluateNumElements' in case Maya hasn't already
+            // computed how many elements the array plug is expected to have.
             unsigned int num = plug.evaluateNumElements(&status);
             CHECK_MSTATUS(status);
             num = plug.numElements(&status);
@@ -215,6 +215,7 @@ bool Attr::getDynamic() const {
 }
 
 void Attr::setDynamic(bool value) {
+    // TODO: Do we really need to set dynamic? I think we can work that out for our selves.
     m_dynamic = value;
 }
 

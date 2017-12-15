@@ -38,10 +38,12 @@
 #include <string>    // string
 #include <vector>    // vector
 #include <cassert>   // assert
+#include <limits>    // double max value
 #include <math.h>
 
 // Utils
 #include <utilities/debugUtils.h>
+#include <utilities/stringUtils.h>
 
 // Maya
 #include <maya/MPoint.h>
@@ -63,8 +65,6 @@
 #include <mayaUtils.h>
 
 #define FABS(x)     (((x)>=0)? (x) : -(x))
-#define CNST(x) (x)
-#define BENCHMARK_TYPE debug::TimestampBenchmark
 
 // NOTE: There is a very strange bug in Maya. After setting a number of plug values
 // using a DG Context, when quering plug values at the same times, the values do
@@ -134,11 +134,15 @@ struct SolverData {
     double eps2;
     double eps3;
     double delta;
-
-    BENCHMARK_TYPE *jacBench;
-    BENCHMARK_TYPE *funcBench;
-    BENCHMARK_TYPE *errorBench;
-    BENCHMARK_TYPE *paramBench;
+    
+    debug::TimestampBenchmark *jacBenchTimer;
+    debug::TimestampBenchmark *funcBenchTimer;
+    debug::TimestampBenchmark *errorBenchTimer;
+    debug::TimestampBenchmark *paramBenchTimer;
+    debug::CPUBenchmark *jacBenchTicks;
+    debug::CPUBenchmark *funcBenchTicks;
+    debug::CPUBenchmark *errorBenchTicks;
+    debug::CPUBenchmark *paramBenchTicks;
 
     // Storing changes for undo/redo.
     MDGModifier *dgmod;
@@ -163,13 +167,16 @@ double distance_2d(MPoint a, MPoint b)
 inline
 void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
     register int i = 0;
+    register bool verbose = false;
     SolverData *ud = static_cast<SolverData *>(data);
-    ud->funcBench->start();
+    ud->funcBenchTimer->start();
+    ud->funcBenchTicks->start();
     ud->computation->setProgress(ud->iterNum);
+    verbose = ud->verbose;
     if (ud->isJacobianCalculation == false) {
-        INFO("Solve " << ++ud->iterNum);
+        VRB("Solve " << ++ud->iterNum);
     } else {
-        INFO("Solve Jacobian " << ++ud->jacIterNum);
+        VRB("Solve Jacobian " << ++ud->jacIterNum);
     }
 
     int profileCategory = MProfiler::getCategoryIndex("mmSolver");
@@ -188,7 +195,8 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
     // Set Parameter
     MStatus status;
     {
-        ud->paramBench->start();
+        ud->paramBenchTimer->start();
+        ud->paramBenchTicks->start();
         MProfilingScope setParamScope(profileCategory, MProfiler::kColorA_L2, "set parameters");
 
         MTime currentFrame = MAnimControl::currentTime();
@@ -215,12 +223,14 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
         for (i = 0; i < (int) ud->cameraList.size(); ++i) {
             ud->cameraList[i]->clearWorldProjMatrixCache();
         }
-        ud->paramBench->stop();
+        ud->paramBenchTimer->stop();
+        ud->paramBenchTicks->stop();
     }
 
     // Measure Errors
     {
-        ud->errorBench->start();
+        ud->errorBenchTimer->start();
+        ud->errorBenchTicks->start();
         MProfilingScope setParamScope(profileCategory, MProfiler::kColorA_L1, "measure errors");
 
 #if FORCE_TRIGGER_EVAL == 1
@@ -254,11 +264,6 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
             mkr_mpos = mkr_mpos * cameraWorldProjectionMatrix;
             mkr_mpos.cartesianize();
 
-//#if EXTRA_GET_TRIGGER == 1
-//            status = marker->getPos(mkr_mpos, frame + 1);
-//            CHECK_MSTATUS(status);
-//#endif
-
             status = bnd->getPos(bnd_mpos, frame);
             CHECK_MSTATUS(status);
             bnd_mpos = bnd_mpos * cameraWorldProjectionMatrix;
@@ -282,204 +287,13 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
             ud->errorList[(i * 3) + 1] = dy;
             ud->errorList[(i * 3) + 2] = dy;
         }
-        ud->errorBench->stop();
+        ud->errorBenchTimer->stop();
+        ud->errorBenchTicks->stop();
     }
-    ud->funcBench->stop();
+    ud->funcBenchTimer->stop();
+    ud->funcBenchTicks->stop();
     return;
 }
-
-#if HAVE_SPLM == 1
-// From 'splm.c'.
-//
-// Attempt to guess the Jacobian's non-zero pattern
-// The idea is to add a small value to each parameter in turn
-// and identify the observations that are influenced.
-//
-// This function should be used with caution as it cannot guarantee
-// that the true non-zero pattern will be found. Furthermore, it can
-// give rise to domain errors.
-//
-// Returns the number of nonzero elements found
-//
-inline
-int jacobianZeroPatternGuess(void (*func)(double *p, double *hx, int nvars, int nobs, void *adata),
-                             double *p,
-                             struct splm_ccsm *jac,
-                             int nvars,
-                             int nobs,
-                             void *adata,
-                             double *hx,
-                             double delta) {
-    const double delta_scale = 1E+02;
-    register int i, j, k;
-    register double d, tmp;
-    double *hxx;
-    int *colptr, *rowidx;
-
-    colptr = jac->colptr;
-    rowidx = jac->rowidx;
-
-    // Solve once to get the base-line, these errors and parameters
-    // will be compared against to build the jacobian.
-    (*func)(p, hx, nvars, nobs, adata); // hx=f(p)
-    hxx = (double *) malloc(nobs * sizeof(double));
-
-    // Loop over parameters.
-    for (j = k = 0; j < nvars; ++j) {
-        colptr[j] = k;
-
-        // determine d=max(DELTA_SCALE*|p[j]|, delta), see HZ
-        d = delta_scale * p[j]; // force evaluation
-        d = FABS(d);
-        if (d < delta) {
-            d = delta;
-        }
-
-        // TODO: Sometimes, a small or large delta may not produce a measurable
-        // change in error. Therefore, it may help to compute an accurate jacobian.
-
-        // Set the parameter, solve with the adjustment and then reset the parameter.
-        tmp = p[j];
-        p[j] += d;
-        (*func)(p, hxx, nvars, nobs, adata); // hxx=f(p+d)
-        p[j] = tmp; // restore
-
-        // Loop over errors.
-        for (i = 0; i < nobs; ++i) {
-            tmp = FABS(hxx[i] - hx[i]);
-            if (tmp > 0.0) { // tmp>1E-07*d
-                // element (i, j) of jac != 0
-                if (k >= jac->nnz) { // more memory needed, double current size
-                    splm_ccsm_realloc_novalues(jac, nobs, nvars, jac->nnz << 1); // 2*jac->nnz
-                    rowidx = jac->rowidx; // re-init
-                }
-                rowidx[k++] = i;
-            }
-        }
-    }
-    colptr[nvars] = k;
-    splm_ccsm_realloc_novalues(jac, nobs, nvars, k); // adjust to actual size...
-
-    free(hxx);
-    return k;
-}
-#endif
-
-//// From levmar project, used internally to create a jacobian.
-//// Forward finite difference approximation to the Jacobian of func
-//inline
-//void finiteDiffForwJacGuess(
-//
-//        // function to differentiate
-//        void (*func)(double *p, double *hx, int m, int n, void *adata),
-//
-//        // I: current parameter estimate, mx1
-//        double *p,
-//
-//        // I: func evaluated at p, i.e. hx=func(p), nx1
-//        double *hx,
-//
-//        // W/O: work array for evaluating func(p+delta), nx1
-//        double *hxx,
-//
-//        // increment for computing the Jacobian
-//        double delta,
-//
-//        // O: array for storing approximated Jacobian, nxm
-//        double *jac,
-//
-//        int m,
-//        int n,
-//        void *adata)
-//{
-//    register int i, j;
-//    double tmp;
-//    register double d;
-//
-//    for(j=0; j<m; ++j){
-//        /* determine d=max(1E-04*|p[j]|, delta), see HZ */
-//        d=CNST(1E-04)*p[j]; // force evaluation
-//        d=FABS(d);
-//        if(d<delta)
-//            d=delta;
-//
-//        tmp=p[j];
-//        p[j]+=d;
-//
-//        (*func)(p, hxx, m, n, adata);
-//
-//        p[j]=tmp; /* restore */
-//
-//        d=CNST(1.0)/d; /* invert so that divisions can be carried out faster as multiplications */
-//        for(i=0; i<n; ++i){
-//            jac[i*m+j]=(hxx[i]-hx[i])*d;
-//        }
-//    }
-//}
-
-//// From levmar project, used internally to create a jacobian.
-//// Central finite difference approximation to the Jacobian of func
-//inline
-//void finiteDiffCentJacGuess(
-//
-//        // function to differentiate
-//        void (*func)(double *p, double *hx, int m, int n, void *adata),
-//
-//        // I: current parameter estimate, mx1 */
-//        double *p,
-//
-//        // W/O: work array for evaluating func(p-delta), nx1
-//        double *hxm,
-//
-//        // W/O: work array for evaluating func(p+delta), nx1
-//        double *hxp,
-//
-//        // increment for computing the Jacobian
-//        double delta,
-//
-//        // O: array for storing approximated Jacobian, nxm
-//        double *jac,
-//
-//        int m,
-//        int n,
-//        void *adata)
-//{
-//    register int i, j;
-//    double tmp;
-//    register double d;
-//
-//    for(j=0; j<m; ++j){
-//        /* determine d=max(1E-04*|p[j]|, delta), see HZ */
-//        d=CNST(1E-04)*p[j]; // force evaluation
-//        d=FABS(d);
-//        if(d<delta)
-//            d=delta;
-//
-//        tmp=p[j];
-//        p[j]-=d;
-//        (*func)(p, hxm, m, n, adata);
-//
-//        p[j]=tmp+d;
-//        (*func)(p, hxp, m, n, adata);
-//        p[j]=tmp; /* restore */
-//
-//        d=CNST(0.5)/d; /* invert so that divisions can be carried out faster as multiplications */
-//        for(i=0; i<n; ++i){
-//            jac[i*m+j]=(hxp[i]-hxm[i])*d;
-//        }
-//    }
-//}
-
-
-//void solveJacobianFunc(double *p, struct splm_ccsm *jac, int m, int n, void *adata)
-//{
-//    SolverData *ud = static_cast<SolverData *>(adata);
-//    double *hx = &ud->errorList[0];
-//    double delta = ud->delta;
-//    ud->isJacobianCalculation = true;
-//    jacobianZeroPatternGuess(levmar_solveFunc, p, jac, m, n, adata, hx, delta);
-//    ud->isJacobianCalculation = false;
-//}
 
 
 inline
@@ -498,7 +312,8 @@ bool solve(int iterMax,
            MDGModifier &dgmod,
            MAnimCurveChange &curveChange,
            MComputation &computation,
-           double &outError) {
+           bool verbose,
+           MStringArray &outResult) {
     register int i = 0;
     register int j = 0;
     MStatus status;
@@ -565,18 +380,24 @@ bool solve(int iterMax,
         i++;
     }
 
-    INFO("params m=" << m);
-    INFO("errors n=" << n);
+    VRB("Number of Parameters; m=" << m);
+    VRB("Number of Errors; n=" << n);
     assert(m <= n);
     paramList.resize((unsigned long) m, 0);
     errorList.resize((unsigned long) n, 0);
 
     // Debug timers
-    BENCHMARK_TYPE errorBench = BENCHMARK_TYPE();
-    BENCHMARK_TYPE paramBench = BENCHMARK_TYPE();
-    BENCHMARK_TYPE solveBench = BENCHMARK_TYPE();
-    BENCHMARK_TYPE funcBench = BENCHMARK_TYPE();
-    BENCHMARK_TYPE jacBench = BENCHMARK_TYPE();
+    debug::TimestampBenchmark errorBenchTimer = debug::TimestampBenchmark();
+    debug::TimestampBenchmark paramBenchTimer = debug::TimestampBenchmark();
+    debug::TimestampBenchmark solveBenchTimer = debug::TimestampBenchmark();
+    debug::TimestampBenchmark funcBenchTimer = debug::TimestampBenchmark();
+    debug::TimestampBenchmark jacBenchTimer = debug::TimestampBenchmark();
+
+    debug::CPUBenchmark errorBenchTicks = debug::CPUBenchmark();
+    debug::CPUBenchmark paramBenchTicks = debug::CPUBenchmark();
+    debug::CPUBenchmark solveBenchTicks = debug::CPUBenchmark();
+    debug::CPUBenchmark funcBenchTicks = debug::CPUBenchmark();
+    debug::CPUBenchmark jacBenchTicks = debug::CPUBenchmark();
 
     // Solving Objects.
     userData.cameraList = cameraList;
@@ -605,10 +426,15 @@ bool solve(int iterMax,
     userData.solverType = solverType;
 
     // Timers
-    userData.funcBench = &funcBench;
-    userData.jacBench = &jacBench;
-    userData.errorBench = &errorBench;
-    userData.paramBench = &paramBench;
+    userData.funcBenchTimer = &funcBenchTimer;
+    userData.jacBenchTimer = &jacBenchTimer;
+    userData.errorBenchTimer = &errorBenchTimer;
+    userData.paramBenchTimer = &paramBenchTimer;
+
+    userData.funcBenchTicks = &funcBenchTicks;
+    userData.jacBenchTicks = &jacBenchTicks;
+    userData.errorBenchTicks = &errorBenchTicks;
+    userData.paramBenchTicks = &paramBenchTicks;
 
     // Undo/Redo
     userData.dgmod = &dgmod;
@@ -616,7 +442,7 @@ bool solve(int iterMax,
     userData.computation = &computation;
 
     // Set Initial parameters
-    INFO("Set Initial parameters");
+    VRB("Set Initial parameters");
     MTime currentFrame = MAnimControl::currentTime();
     i = 0;
     for (i = 0; i < m; ++i) {
@@ -636,12 +462,11 @@ bool solve(int iterMax,
         paramList[i] = value;
     }
 
-    // // Initial Parameters
-    // INFO("Initial Parameters: ");
-    // for (i = 0; i < m; ++i) {
-    //     INFO("-> " << params[i]);
-    // }
-    // INFO("");
+     // Initial Parameters
+     VRB("Initial Parameters: ");
+     for (i = 0; i < m; ++i) {
+         VRB("-> " << paramList[i]);
+     }
 
     // Options and Info
     unsigned int optsSize = LM_OPTS_SZ;
@@ -663,14 +488,14 @@ bool solve(int iterMax,
     opts[4] = delta;
 
     // no Jacobian, caller allocates work memory, covariance estimated
-    INFO("Solving...");
-    INFO("Solver Type=" << solverType);
-    INFO("Maximum Iterations=" << iterMax);
-    INFO("Tau=" << tau);
-    INFO("Epsilon1=" << eps1);
-    INFO("Epsilon2=" << eps2);
-    INFO("Epsilon3=" << eps3);
-    INFO("Delta=" << delta);
+    VRB("Solving...");
+    VRB("Solver Type=" << solverType);
+    VRB("Maximum Iterations=" << iterMax);
+    VRB("Tau=" << tau);
+    VRB("Epsilon1=" << eps1);
+    VRB("Epsilon2=" << eps2);
+    VRB("Epsilon3=" << eps3);
+    VRB("Delta=" << delta);
     computation.setProgressRange(0, iterMax);
     computation.beginComputation();
 
@@ -687,7 +512,8 @@ bool solve(int iterMax,
         }
     }
 
-    solveBench.start();
+    solveBenchTimer.start();
+    solveBenchTicks.start();
     if (solverType == SOLVER_TYPE_LEVMAR) {
 
         // Allocate a memory block for both 'work' and 'covar', so that
@@ -784,7 +610,7 @@ bool solve(int iterMax,
 
         free(work);
     } else if (solverType == SOLVER_TYPE_SPARSE_LEVMAR) {
-#if (HAVE_SPLM == 1)
+#if HAVE_SPLM == 1
 
         // TODO: We could calculate an (approximate) non-zero value. We can do this by assuming that all dynamic attributes solve on on all single frames and are independant of static attributes.
 
@@ -887,60 +713,111 @@ bool solve(int iterMax,
                 (void *) &userData);
 #endif
     }
-    solveBench.stop();
+    solveBenchTicks.stop();
+    solveBenchTimer.stop();
     computation.endComputation();
 
-    INFO("Results:");
-    INFO("Solver returned " << ret << " in " << (int) info[5]
-                            << " iterations");
+    std::string resultStr;
+
+    VRB("Results:");
+    VRB("Solver returned " << ret << " in " << (int) info[5]
+                           << " iterations");
 
     int reasonNum = (int) info[6];
-    INFO("Reason: " << reasons[reasonNum]);
-    INFO("Reason number: " << info[6]);
-    INFO("");
+    VRB("Reason: " << reasons[reasonNum]);
+    VRB("Reason number: " << info[6]);
+    VRB("");
 
-    INFO("Solved Parameters:");
+    resultStr = "reason_string=" + reasons[reasonNum];
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "reason_num=" + string::numberToString<int>(reasonNum);
+    outResult.append(MString(resultStr.c_str()));
+
+    VRB("Solved Parameters:");
     for (i = 0; i < m; ++i) {
-        INFO("-> " << paramList[i]);
+        VRB("-> " << paramList[i]);
     }
-    INFO("");
+
+    resultStr = "solver_parameters=";
+    for (i = 0; i < m; ++i) {
+        resultStr += string::numberToString<double>(paramList[i]);
+        resultStr += " ";
+    }
+    outResult.append(MString(resultStr.c_str()));
 
     // Compute the average error based on the error values
     // the solve function last computed.
     // TODO: Create a list of frames and produce an error
     // per-frame. This information will eventually be given
     // to the user to diagnose problems.
-    double avgError = 0;
+    double errorAvg = 0;
+    double errorMin = std::numeric_limits<double>::max();
+    double errorMax = -0.0;
+    double err = 0.0;
     for (i = 0; i < n; ++i) {
-        avgError += userData.errorList[i];
+        err = userData.errorList[i];
+        errorAvg += userData.errorList[i];
+        if (err < errorMin) { errorMin = err; }
+        if (err > errorMax) { errorMax = err; }
     }
-    avgError /= (double) n;
+    errorAvg /= (double) n;
 
-    INFO(std::endl << std::endl << "Solve Information:");
-    INFO("Initial Error: " << info[0]);
-    INFO("Final Error: " << info[1]);
-    INFO("Average Error: " << avgError);
-    INFO("J^T Error: " << info[2]);
-    INFO("Dp Error: " << info[3]);
-    INFO("Max Error: " << info[4]);
+    VRB(std::endl << std::endl << "Solve Information:");
+    VRB("Initial Error: " << info[0]);
+    VRB("Final Error: " << info[1]);
+    VRB("Average Error: " << errorAvg);
+    VRB("J^T Error: " << info[2]);
+    VRB("Dp Error: " << info[3]);
+    VRB("Max Error: " << info[4]);
 
-    INFO("Iterations: " << info[5]);
-    INFO("Termination Reason: " << reasons[reasonNum]);
-    INFO("Function Evaluations: " << info[7]);
-    INFO("Jacobian Evaluations: " << info[8]);
-    INFO("Attempts for reducing error: " << info[9]);
+    VRB("Iterations: " << info[5]);
+    VRB("Termination Reason: " << reasons[reasonNum]);
+    VRB("Function Evaluations: " << info[7]);
+    VRB("Jacobian Evaluations: " << info[8]);
+    VRB("Attempts for reducing error: " << info[9]);
 
-    solveBench.print("Solve", 1);
-    funcBench.print("Func", 1);
-    jacBench.print("Jacobian", 1);
-    paramBench.print("Param", (uint) userData.iterNum);
-    errorBench.print("Error", (uint) userData.iterNum);
-    funcBench.print("Func", (uint) userData.iterNum);
+    resultStr = "error_initial=" + string::numberToString<double>(info[0]);
+    outResult.append(MString(resultStr.c_str()));
 
+    resultStr = "error_final=" + string::numberToString<double>(info[1]);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "error_final_average=" + string::numberToString<double>(errorAvg);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "error_final_maximum=" + string::numberToString<double>(errorMax);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "error_final_minimum=" + string::numberToString<double>(errorMin);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "error_jt=" + string::numberToString<double>(info[2]);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "error_dp=" + string::numberToString<double>(info[3]);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "error_maximum=" + string::numberToString<double>(info[4]);
+    outResult.append(MString(resultStr.c_str()));
+
+    solveBenchTimer.print("Solve Time", 1);
+    funcBenchTimer.print("Func Time", 1);
+    jacBenchTimer.print("Jacobian Time", 1);
+    paramBenchTimer.print("Param Time", (uint) userData.iterNum);
+    errorBenchTimer.print("Error Time", (uint) userData.iterNum);
+    funcBenchTimer.print("Func Time", (uint) userData.iterNum);
+
+    solveBenchTicks.print("Solve Ticks", 1);
+    funcBenchTicks.print("Func Ticks", 1);
+    jacBenchTicks.print("Jacobian Ticks", 1);
+    paramBenchTicks.print("Param Ticks", (uint) userData.iterNum);
+    errorBenchTicks.print("Error Ticks", (uint) userData.iterNum);
+    funcBenchTicks.print("Func Ticks", (uint) userData.iterNum);
+    
     // TODO: Compute the errors of all markers so we can add it to a vector
     // and return it to the user. This vector should be resized so we can
     // return frame-based information. The UI could then graph this information.
-    outError = info[1];
     return ret != -1;
 }
 

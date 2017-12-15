@@ -220,7 +220,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
             MString nodeAttrName = attrArgs.asString(0);
             bool dyn = attrArgs.asBool(1);
             attr->setName(nodeAttrName);
-            attr->setDynamic(dyn);
+            attr->setDynamic(dyn);  // TODO: Do we really need to set Dynamic?
             m_attrList.push_back(attr);
 
             MPlug attrPlug = attr->getPlug();
@@ -356,7 +356,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     // Don't store each individial edits, just store the combination of edits.
     m_curveChange.setInteractive(true);
 
-    double outError = -1.0;
+    MStringArray outResult;
     bool ret = solve(
             m_iterations,
             m_tau,
@@ -373,14 +373,11 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
             m_dgmod,
             m_curveChange,
             m_computation,
-            outError
+            m_verbose,
+            outResult
     );
 
-    // TODO: In future we would like to return all the possible data from the
-    // solver to the user (Python API). This will clean up stdout, because we
-    // won't need to read the terminal, and it will provide an opportunity to
-    // process the raw data on the user side.
-    MMSolverCmd::setResult(outError);
+    MMSolverCmd::setResult(outResult);
     if (ret == false) {
         WRN("mmSolver: Solver returned false!");
     }

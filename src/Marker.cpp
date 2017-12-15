@@ -1,5 +1,5 @@
 /*
- *
+ * TODO: Add marker weight attr, can change per-frame.
  */
 
 #include <maya/MFnDependencyNode.h>
@@ -27,7 +27,8 @@ Marker::Marker() :
     m_px.setAttrName("translateX");
     m_py.setAttrName("translateY");
 
-    // World matrix is always considered animated, but technically it cannot be animated and it cannot be static only.
+    // World matrix is always considered animated, but technically it cannot
+    // be animated and it cannot be static only.
     m_matrix.setDynamic(true);
     m_visible.setDynamic(true);
     m_px.setDynamic(true);

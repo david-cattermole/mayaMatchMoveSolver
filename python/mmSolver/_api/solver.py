@@ -3,6 +3,8 @@ Solver related functions.
 """
 
 import uuid
+import mmSolver._api.frame as frame
+import mmSolver._api.excep as excep
 
 
 SOLVER_TYPE_LEVMAR = 0
@@ -68,8 +70,83 @@ class Solver(object):
 
     ############################################################################
 
-    def add_frame(self, value):
-        pass
+    def get_frame_list(self):
+        """
+        Get frame objects attached to the collection.
 
-    def set_frame_list(self, value_list):
-        pass
+        :return: frame objects.
+        :rtype: list of frame.frame
+        """
+        frame_list_data = self._data.get('frame_list')
+        if frame_list_data is None:
+            return []
+        frm_list = []
+        for f in frame_list_data:
+            frm = frame.Frame(0)
+            frm.set_data(f)  # Override the frame number
+            frm_list.append(frm)
+        return frm_list
+
+    def get_frame_list_length(self):
+        return len(self.get_frame_list())
+
+    def add_frame(self, frm):
+        assert isinstance(frm, frame.Frame)
+        key = 'frame_list'
+        frm_list_data = self._data.get(key)
+        if frm_list_data is None:
+            frm_list_data = []
+
+        # check we won't get a double up.
+        add_frm_data = frm.get_data()
+        for frm_data in frm_list_data:
+            if frm_data.get('number') == add_frm_data.get('number'):
+                msg = 'Frame already added to Solver, cannot add again: {0}'
+                msg = msg.format(add_frm_data)
+                raise excep.NotValid, msg
+
+        frm_list_data.append(add_frm_data)
+        self._data[key] = frm_list_data
+        return
+
+    def add_frame_list(self, frm_list):
+        assert isinstance(frm_list, list)
+        for frm in frm_list:
+            self.add_frame(frm)
+        return
+
+    def remove_frame(self, frm):
+        assert isinstance(frm, frame.Frame)
+        key = 'frame_list'
+        frm_list_data = self._data.get(key)
+        if frm_list_data is None:
+            # Nothing to remove, initialise the data structure.
+            self._data[key] = []
+            return
+        found_index = -1
+        rm_frm_data = frm.get_data()
+        for i, frm_data in enumerate(frm_list_data):
+            if frm_data.get('number') == rm_frm_data.get('number'):
+                found_index = i
+                break
+        if found_index != -1:
+            del frm_list_data[found_index]
+        self._data[key] = frm_list_data
+        return
+
+    def remove_frame_list(self, frm_list):
+        assert isinstance(frm_list, list)
+        for frm in frm_list:
+            self.remove_frame(frm)
+        return
+
+    def set_frame_list(self, frm_list):
+        assert isinstance(frm_list, list)
+        self.clear_frame_list()
+        self.add_frame_list(frm_list)
+        return
+
+    def clear_frame_list(self):
+        key = 'frame_list'
+        self._data[key] = []
+        return

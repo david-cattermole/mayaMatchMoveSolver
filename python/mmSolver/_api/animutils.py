@@ -26,14 +26,12 @@ def create_anim_curve_node(times, values,
     else:
         # Get the plug to be animated.
         dst_plug = utils.get_as_plug(node_attr)
-        # print 'dst_plug.name():', dst_plug.name()
 
         objs = OpenMaya.MObjectArray()
         find = OpenMayaAnim.MAnimUtil.findAnimation(dst_plug, objs)
         if find is True and objs.length() > 0:
             animfn = OpenMayaAnim.MFnAnimCurve(objs[0])
         else:
-            # print 'no anim curve exists:', dst_plug.name()
             animfn = OpenMayaAnim.MFnAnimCurve()
             animfn.create(dst_plug)
 

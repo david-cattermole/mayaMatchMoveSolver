@@ -63,10 +63,10 @@ class TestSolver5(solverUtils.SolverTestCase):
         ]
 
         # Run solver!
-        errs = []
+        results = []
         s = time.time()
         for f in range(start, end+1):
-            err = maya.cmds.mmSolver(
+            result = maya.cmds.mmSolver(
                 camera=cameras,
                 marker=markers,
                 attr=node_attrs,
@@ -75,16 +75,13 @@ class TestSolver5(solverUtils.SolverTestCase):
                 frame=(f),
                 verbose=True,
             )
-            errs.append(err)
+            results.append(result)
         e = time.time()
         print 'total time:', e - s
 
         # Ensure the values are correct
-        print 'Errors...'
-        for i, err in enumerate(errs):
-            print i, '=', err
-        for i, err in enumerate(errs):
-            assert self.approx_equal(err, 0.0, eps=0.001)
+        for result in results:
+            self.assertEqual(result[0], 'success=1')
 
 
 if __name__ == '__main__':

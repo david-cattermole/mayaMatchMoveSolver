@@ -75,12 +75,12 @@ class TestSolver6(solverUtils.SolverTestCase):
         print 'allFrames:', allFrames
 
         # Run solver!
-        errs = []
+        results = []
         s = time.time()
 
         # Solve primary frames (first, middle and last), and sub-divide.
         for frames in framesList:
-            err = maya.cmds.mmSolver(
+            result = maya.cmds.mmSolver(
                 camera=cameras,
                 marker=markers,
                 attr=node_attrs,
@@ -89,7 +89,7 @@ class TestSolver6(solverUtils.SolverTestCase):
                 frame=frames,
                 verbose=True,
             )
-            errs.append(err)
+            results.append(result)
 
         # Solve between primary frames
         for frames in framesList:
@@ -97,7 +97,7 @@ class TestSolver6(solverUtils.SolverTestCase):
                 betweenFrames = []
                 for j in range(frames[i]+1, frames[i+1]):
                     betweenFrames.append(j)
-                err = maya.cmds.mmSolver(
+                result = maya.cmds.mmSolver(
                     camera=cameras,
                     marker=markers,
                     attr=node_attrs,
@@ -106,10 +106,10 @@ class TestSolver6(solverUtils.SolverTestCase):
                     frame=betweenFrames,
                     verbose=True,
                 )
-                errs.append(err)
+                results.append(result)
 
         # # Global Solve
-        # err = maya.cmds.mmSolver(
+        # result = maya.cmds.mmSolver(
         #     camera=cameras,
         #     marker=markers,
         #     attr=node_attrs,
@@ -118,17 +118,14 @@ class TestSolver6(solverUtils.SolverTestCase):
         #     frame=allFrames,
         #     verbose=True,
         # )
-        # errs.append(err)
+        # results.append(result)
 
         e = time.time()
         print 'total time:', e - s
 
         # Ensure the values are correct
-        print 'Errors...'
-        for i, err in enumerate(errs):
-            print i, '=', err
-        for i, err in enumerate(errs):
-            assert self.approx_equal(err, 0.0, eps=0.001)
+        for result in results:
+            self.assertEqual(result[0], 'success=1')
 
 
 if __name__ == '__main__':

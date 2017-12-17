@@ -55,7 +55,7 @@ class TestSolver1(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        err = maya.cmds.mmSolver(
+        result = maya.cmds.mmSolver(
             camera=cameras,
             marker=markers,
             attr=node_attrs,
@@ -68,7 +68,7 @@ class TestSolver1(solverUtils.SolverTestCase):
         print 'total time:', e - s
 
         # Ensure the values are correct
-        assert self.approx_equal(err, 0.0, eps=0.001)
+        self.assertEqual(result[0], 'success=1')
         assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
 

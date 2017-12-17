@@ -87,7 +87,7 @@ class TestSolver7(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        err = maya.cmds.mmSolver(
+        result = maya.cmds.mmSolver(
         camera=cameras,
             marker=markers,
             attr=node_attrs,
@@ -100,8 +100,7 @@ class TestSolver7(solverUtils.SolverTestCase):
         print 'total time:', e - s
 
         # Ensure the values are correct
-        print 'Error:', err
-        assert self.approx_equal(err, 0.0, eps=0.001)
+        self.assertEqual(result[0], 'success=1')
 
 
 if __name__ == '__main__':

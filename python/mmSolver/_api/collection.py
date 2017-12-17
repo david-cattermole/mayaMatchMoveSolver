@@ -362,6 +362,7 @@ class Collection(object):
         kwargs['attr'] = []
         kwargs['frame'] = []
 
+        added_cameras = []
         for mkr in mkr_list:
             assert isinstance(mkr, marker.Marker)
             bnd = mkr.get_bundle()
@@ -371,7 +372,9 @@ class Collection(object):
             cam_tfm_node = cam.get_transform_node()
             cam_shp_node = cam.get_shape_node()
             kwargs['marker'].append((mkr_node, cam_shp_node, bnd_node))
-            kwargs['camera'].append((cam_tfm_node, cam_shp_node))
+            if cam_shp_node not in added_cameras:
+                kwargs['camera'].append((cam_tfm_node, cam_shp_node))
+                added_cameras.append(cam_shp_node)
 
         # Until we support multiple cameras, assert that we can only use
         # 1 camera.
@@ -381,9 +384,8 @@ class Collection(object):
             assert isinstance(attr, attribute.Attribute)
             if attr.is_locked():
                 continue
-            dyn = attr.is_animated()
             attr_name = attr.get_name()
-            kwargs['attr'].append((attr_name, dyn))
+            kwargs['attr'].append((attr_name))
 
         frm_list = sol.get_frame_list()
         for frm in frm_list:
@@ -395,7 +397,13 @@ class Collection(object):
         kwargs['solverType'] = sol.get_solver_type()
         kwargs['iterations'] = sol.get_max_iterations()
         kwargs['verbose'] = sol.get_verbose()
-        # TODO: delta argument
+        delta = sol.get_delta()
+        if delta is not None:
+            kwargs['delta'] = delta
+
+        tau_factor = sol.get_tau_factor()
+        if tau_factor is not None:
+            kwargs['tauFactor'] = tau_factor
         # TODO: epsilon1 argument
         # TODO: epsilon2 argument
         # TODO: epsilon3 argument
@@ -419,7 +427,7 @@ class Collection(object):
 
         # Check Solvers
         sol_list = self.get_solver_list()
-        print 'sol_list:', sol_list
+        # print 'sol_list:', sol_list
         if len(sol_list) == 0:
             msg = 'Collection is not valid, no Solvers given; collection={0}'
             msg = msg.format(repr(col_node))
@@ -427,7 +435,7 @@ class Collection(object):
 
         # Check Markers
         mkr_list = self.get_marker_list()
-        print 'mkr_list:', mkr_list
+        # print 'mkr_list:', mkr_list
         if len(mkr_list) == 0:
             msg = 'Collection is not valid, no Markers given; collection={0}'
             msg = msg.format(repr(col_node))
@@ -435,7 +443,7 @@ class Collection(object):
 
         # Check Attributes
         attr_list = self.get_attribute_list()
-        print 'attr_list:', attr_list
+        # print 'attr_list:', attr_list
         if len(attr_list) == 0:
             msg = 'Collection is not valid, no Attributes given; collection={0}'
             msg = msg.format(repr(col_node))
@@ -478,7 +486,7 @@ class Collection(object):
             return solres_list
 
         kwargs_list = self._compile()
-        print 'kwargs_list:', kwargs_list
+        # print 'kwargs_list:', kwargs_list
         for kwargs in kwargs_list:
             solve_data = maya.cmds.mmSolver(**kwargs)
             solres = solveresult.SolveResult(solve_data)

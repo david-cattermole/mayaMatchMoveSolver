@@ -99,11 +99,22 @@ def __set_node_data(mkr, mkr_data):
     # TODO: Reduce keyframes, if we can, we don't need per-frame keyframes if
     # the data is the same.
 
+    # Unlock
+    maya.cmds.setAttr(mkr_node + '.translateX', lock=False)
+    maya.cmds.setAttr(mkr_node + '.translateY', lock=False)
+    maya.cmds.setAttr(mkr_node + '.enable', lock=False)
+    maya.cmds.setAttr(mkr_node + '.weight', lock=False)
+
     # Set keyframes.
     __set_attr_keyframes(mkr_node, 'translateX', mkr_x)
     __set_attr_keyframes(mkr_node, 'translateY', mkr_y)
     __set_attr_keyframes(mkr_node, 'enable', mkr_enable)
     __set_attr_keyframes(mkr_node, 'weight', mkr_weight)
+
+    # Lock
+    maya.cmds.setAttr(mkr_node + '.translateX', lock=True)
+    maya.cmds.setAttr(mkr_node + '.translateY', lock=True)
+    maya.cmds.setAttr(mkr_node + '.enable', lock=True)
 
     return mkr
 

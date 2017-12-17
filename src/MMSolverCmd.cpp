@@ -55,7 +55,7 @@ MSyntax MMSolverCmd::newSyntax() {
     // Flags
     syntax.addFlag(CAMERA_FLAG, CAMERA_FLAG_LONG, MSyntax::kString, MSyntax::kString);
     syntax.addFlag(MARKER_FLAG, MARKER_FLAG_LONG, MSyntax::kString, MSyntax::kString, MSyntax::kString);
-    syntax.addFlag(ATTR_FLAG, ATTR_FLAG_LONG, MSyntax::kString, MSyntax::kBoolean);
+    syntax.addFlag(ATTR_FLAG, ATTR_FLAG_LONG, MSyntax::kString);
     syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG, MSyntax::kLong);
     syntax.addFlag(TAU_FLAG, TAU_FLAG_LONG, MSyntax::kDouble);
     syntax.addFlag(EPSILON1_FLAG, EPSILON1_FLAG_LONG, MSyntax::kDouble);
@@ -211,23 +211,21 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         MArgList attrArgs;
         status = argData.getFlagArgumentList(ATTR_FLAG, i, attrArgs);
         if (status == MStatus::kSuccess) {
-            if (attrArgs.length() != 2) {
-                ERR("Attribute argument list must have 2 argument; \"node.attribute\", \"dynamic\".");
+            if (attrArgs.length() != 1) {
+                ERR("Attribute argument list must have 1 argument; \"node.attribute\".");
                 continue;
             }
 
             AttrPtr attr = AttrPtr(new Attr());
             MString nodeAttrName = attrArgs.asString(0);
-            bool dyn = attrArgs.asBool(1);
             attr->setName(nodeAttrName);
-            attr->setDynamic(dyn);  // TODO: Do we really need to set Dynamic?
             m_attrList.push_back(attr);
 
             MPlug attrPlug = attr->getPlug();
             // DBG("Attr = " << i << " : "
             //               << attr->getName() << " : "
             //               << attr->getNodeName() << " : "
-            //               << attr->getDynamic() << " : "
+            //               << attr->isAnimated() << " : "
             //               << attrPlug.name());
         }
     }

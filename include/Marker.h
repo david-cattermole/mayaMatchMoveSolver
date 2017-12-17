@@ -39,17 +39,17 @@ public:
 
     Attr &getMatrixAttr();
 
-    Attr &getVisibleAttr();
-
     Attr &getPosXAttr();
 
     Attr &getPosYAttr();
 
+    Attr &getEnableAttr();
+
+    Attr &getWeightAttr();
+
     MStatus getMatrix(MMatrix &value, const MTime &time);
 
     MStatus getMatrix(MMatrix &value);
-
-    MStatus getValid(bool &value, const MTime &time);
 
     MStatus getPos(double &x, double &y, double &z, const MTime &time);
 
@@ -59,6 +59,10 @@ public:
 
     MStatus getPos(MPoint &point);
 
+    MStatus getEnable(bool &value, const MTime &time);
+
+    MStatus getWeight(double &value, const MTime &time);
+
 private:
     MString m_nodeName;
     MObject m_object;
@@ -67,9 +71,10 @@ private:
     std::shared_ptr<Bundle> m_bundle;
 
     Attr m_matrix;
-    Attr m_visible;
     Attr m_px;
     Attr m_py;
+    Attr m_enable;
+    Attr m_weight;
 };
 
 

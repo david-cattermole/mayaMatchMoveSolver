@@ -61,21 +61,19 @@ public:
 
     bool isAnimated();
 
+    bool isConnected();
+
     MString getAnimCurveName();
-
-    bool getDynamic() const;
-
-    void setDynamic(bool value);
 
 private:
     MString m_nodeName;
     MString m_attrName;
     MObject m_object;
     MPlug m_plug;
-    bool m_dynamic;
     int m_animated;
-    MString m_animCurveName;
     int m_isFreeToChange;
+    int m_connected;
+    MString m_animCurveName;
 };
 
 

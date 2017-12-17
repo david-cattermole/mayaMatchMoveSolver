@@ -30,8 +30,8 @@ Attr::Attr() :
         m_attrName(""),
         m_object(),
         m_plug(),
-        m_dynamic(false),
         m_animated(-1),
+        m_connected(-1),
         m_animCurveName(""),
         m_isFreeToChange(-1) {
 }
@@ -67,8 +67,9 @@ MStatus Attr::setNodeName(MString value) {
         m_object = MObject();
         m_plug = MPlug();
         m_animated = -1;
-        m_animCurveName = "";
+        m_connected = -1;
         m_isFreeToChange = -1;
+        m_animCurveName = "";
     }
     m_nodeName = value;
     return MS::kSuccess;
@@ -103,7 +104,6 @@ MPlug Attr::getPlug() {
         MString attrName = Attr::getAttrName();
         MFnDependencyNode dependsNode(nodeObj, &status);
         MPlug plug = dependsNode.findPlug(attrName, true, &status);
-        CHECK_MSTATUS(status);
         if (status != MStatus::kSuccess) {
             MString name = Attr::getName();
             ERR("Attribute cannot be found; " << name);
@@ -194,9 +194,25 @@ bool Attr::isAnimated() {
             ERR("Attr::isAnimated failed; " << name);
             animated = false;  // lets assume that if it failed, the plug cannot be animated.
         }
+        m_connected = (int) isDest;
         m_animated = (int) animated;
     }
     return (bool) m_animated;
+}
+
+/*
+ * Determine if another plug is connected to this plug (so we cannot change the value).
+ */
+bool Attr::isConnected() {
+    MStatus status;
+    MPlug plug = Attr::getPlug();
+
+    if (m_connected < 0) {
+        bool isDest = plug.isDestination(&status);
+        CHECK_MSTATUS(status);
+        m_connected = (int) isDest;
+    }
+    return (bool) m_connected;
 }
 
 MString Attr::getAnimCurveName()
@@ -210,18 +226,9 @@ MString Attr::getAnimCurveName()
     return result;
 }
 
-bool Attr::getDynamic() const {
-    return m_dynamic;
-}
-
-void Attr::setDynamic(bool value) {
-    // TODO: Do we really need to set dynamic? I think we can work that out for our selves.
-    m_dynamic = value;
-}
-
 MStatus Attr::getValue(bool &value, const MTime &time) {
     MStatus status;
-    bool dyn = Attr::getDynamic();
+    bool connected = Attr::isConnected();
     bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
@@ -232,7 +239,7 @@ MStatus Attr::getValue(bool &value, const MTime &time) {
         status = curveFn.evaluate(time, curveValue);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         value = (bool) trunc(curveValue);
-    } else if (dyn) {
+    } else if (connected) {
         if (USE_DG_CONTEXT) {
             MDGContext ctx(time);
             value = plug.asBool(ctx, &status);
@@ -250,14 +257,14 @@ MStatus Attr::getValue(bool &value, const MTime &time) {
 
 MStatus Attr::getValue(double &value, const MTime &time) {
     MStatus status;
-    bool dyn = Attr::getDynamic();
+    bool connected = Attr::isConnected();
     bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
     if (animated) {
         MFnAnimCurve curveFn(plug);
         curveFn.evaluate(time, value);
-    } else if (dyn) {
+    } else if (connected) {
         if (USE_DG_CONTEXT) {
             MDGContext ctx(time);
             value = plug.asDouble(ctx, &status);
@@ -312,7 +319,7 @@ MStatus Attr::getValue(MMatrix &value) {
 MStatus Attr::setValue(double value, const MTime &time,
                        MDGModifier &dgmod, MAnimCurveChange &animChange) {
     MStatus status;
-    bool dyn = Attr::getDynamic();
+    bool connected = Attr::isConnected();
     bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
@@ -334,7 +341,7 @@ MStatus Attr::setValue(double value, const MTime &time,
         }
 //        x = curveFn.evaluate(time, &status);
 //        assert(x == value);
-    } else if (dyn) {
+    } else if (connected) {
         // TODO: What do we do??? Just error?
         MString name = Attr::getName();
         MString plugName = plug.name(&status);

@@ -23,16 +23,10 @@ Marker::Marker() :
         m_camera(),
         m_bundle() {
     m_matrix.setAttrName("worldMatrix");
-    m_visible.setAttrName("visibility");
     m_px.setAttrName("translateX");
     m_py.setAttrName("translateY");
-
-    // World matrix is always considered animated, but technically it cannot
-    // be animated and it cannot be static only.
-    m_matrix.setDynamic(true);
-    m_visible.setDynamic(true);
-    m_px.setDynamic(true);
-    m_py.setDynamic(true);
+    m_enable.setAttrName("enable");
+    m_weight.setAttrName("weight");
 }
 
 MString Marker::getNodeName() const {
@@ -45,13 +39,16 @@ MStatus Marker::setNodeName(MString value) {
         status = m_matrix.setNodeName(value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        status = m_visible.setNodeName(value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-
         status = m_px.setNodeName(value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         status = m_py.setNodeName(value);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        status = m_enable.setNodeName(value);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        status = m_weight.setNodeName(value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     m_nodeName = value;
@@ -87,8 +84,12 @@ Attr &Marker::getMatrixAttr() {
     return m_matrix;
 }
 
-Attr &Marker::getVisibleAttr() {
-    return m_visible;
+Attr &Marker::getEnableAttr() {
+    return m_enable;
+}
+
+Attr &Marker::getWeightAttr() {
+    return m_weight;
 }
 
 Attr &Marker::getPosXAttr() {
@@ -143,11 +144,20 @@ MStatus Marker::getPos(MPoint &point) {
     return status;
 }
 
-MStatus Marker::getValid(bool &value, const MTime &time) {
+MStatus Marker::getEnable(bool &value, const MTime &time) {
     MStatus status;
     // TODO: Workout the marker 'validation' logic.
-//    status = m_visible.getValue(value, time);
-//    CHECK_MSTATUS_AND_RETURN_IT(status);
+    status = m_enable.getValue(value, time);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    value = true;
+    return status;
+}
+
+
+MStatus Marker::getWeight(double &value, const MTime &time) {
+    MStatus status;
+    status = m_weight.getValue(value, time);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
     value = true;
     return status;
 }

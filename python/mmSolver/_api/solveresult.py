@@ -14,6 +14,7 @@ class SolveResult(object):
     """
     def __init__(self, data):
         assert isinstance(data, list)
+        self._data = {}
 
         # Python API data
         self._collection_name = None
@@ -23,6 +24,15 @@ class SolveResult(object):
         # This is the data that the SolveResult will contain from the 'mmSolver'
         # command. We must extract it and each variable...
 
+        for d in data:
+            assert isinstance(d, (str, unicode))
+            splt = d.partition('=')
+            key = splt[0]
+            value = splt[-1]
+            if not key:
+                continue
+            self._data[key] = value
+
         # Command Success or not? Did the solver fail?
         self._success = None
 
@@ -31,13 +41,6 @@ class SolveResult(object):
         self._parameters = None
 
         # Errors
-        self._initial_error = None
-        self._final_error = None
-        self._average_error = None
-        self._max_error = None
-        self._min_error = None
-        self._jt_error = None
-        self._dp_error = None
         # TODO: Create a list of errors, per-marker, per-frame, so we can
         # allowing graph the errors and detecting problems.
         self._per_frame_error = None
@@ -65,22 +68,43 @@ class SolveResult(object):
         self._timer_jacobian_tick = None
 
     def get_collection_name(self):
-        pass
+        return self._data.get('collection_name')
 
     def get_solver(self):
-        pass
+        return self._data.get('solver_type')
 
     def get_success(self):
-        return self._success
+        return self._data.get('success')
 
-    def get_error(self):
-        return self._final_error
+    def get_initial_error(self):
+        return self._data.get('error_initial')
 
-    def get_per_frame_error(self):
-        pass
+    def get_final_error(self):
+        return self._data.get('error_final')
+
+    def get_final_avg_error(self):
+        return self._data.get('error_final_average')
+
+    def get_final_max_error(self):
+        return self._data.get('error_final_maximum')
+
+    def get_final_min_error(self):
+        return self._data.get('error_final_minimum')
+
+    # def get_per_frame_error(self):
+    #     pass
 
     def get_reason_for_stopping(self):
-        pass
+        return self._data.get('reason_string')
 
-    def get_max_iterations(self):
-        pass
+    def get_iterations(self):
+        return self._data.get('iteration_num')
+
+    def get_function_iterations(self):
+        return self._data.get('iteration_function_num')
+
+    def get_jacobian_iterations(self):
+        return self._data.get('iteration_jacobian_num')
+
+    def get_iteration_attempts(self):
+        return self._data.get('iteration_attempt_num')

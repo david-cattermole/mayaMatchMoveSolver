@@ -205,12 +205,10 @@ class Collection(object):
         return len(self.get_marker_list())
 
     def add_marker(self, mkr):
-        # print 'collection.add_marker:', mkr
         assert isinstance(mkr, marker.Marker)
         node = mkr.get_node()
         assert isinstance(node, (str, unicode))
         assert len(node) > 0
-        # print 'collection.add_marker member_in_set:', self._set.member_in_set(node)
         if self._set.member_in_set(node) is False:
             self._set.add_member(node)
             self._kwargs_list = []  # reset argument flag cache.
@@ -406,7 +404,6 @@ class Collection(object):
 
         # Get Frames
         frm_list = sol.get_frame_list()
-        # print 'frm_list:', frm_list
         frame_use_tags = sol.get_frames_use_tags()
         frames = []
         for frm in frm_list:

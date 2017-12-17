@@ -173,11 +173,11 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
     ud->funcBenchTicks->start();
     ud->computation->setProgress(ud->iterNum);
     verbose = ud->verbose;
-    if (ud->isJacobianCalculation == false) {
-        VRB("Solve " << ++ud->iterNum);
-    } else {
-        VRB("Solve Jacobian " << ++ud->jacIterNum);
-    }
+//    if (ud->isJacobianCalculation == false) {
+//        VRB("Solve " << ++ud->iterNum);
+//    } else {
+//        VRB("Solve Jacobian " << ++ud->jacIterNum);
+//    }
 
     int profileCategory = MProfiler::getCategoryIndex("mmSolver");
     MProfilingScope iterScope(profileCategory, MProfiler::kColorC_L1, "iteration");
@@ -228,6 +228,9 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
     }
 
     // Measure Errors
+    double error_avg = 0.0;
+    double error_max = -0.0;
+    double error_min = std::numeric_limits<double>::max();
     {
         ud->errorBenchTimer->start();
         ud->errorBenchTicks->start();
@@ -285,13 +288,23 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
 
             ud->errorList[(i * 3) + 0] = dx;
             ud->errorList[(i * 3) + 1] = dy;
-            ud->errorList[(i * 3) + 2] = dy;
+            ud->errorList[(i * 3) + 2] = d;
+
+            // double d_avg = (dx + dy + d) * 0.333333333333333333333333333;
+            error_avg += d;
+            if (d > error_max) { error_max = d; }
+            if (d < error_min) { error_min = d; }
         }
         ud->errorBenchTimer->stop();
         ud->errorBenchTicks->stop();
     }
     ud->funcBenchTimer->stop();
     ud->funcBenchTicks->stop();
+
+    if (ud->isJacobianCalculation == false) {
+        error_avg /= n / 3;
+        INFO("Solve " << ++ud->iterNum << " | error avg=" << error_avg << " min=" << error_min << " max=" << error_max);
+    }
     return;
 }
 
@@ -341,7 +354,7 @@ bool solve(int iterMax,
     j = 0;
     for (AttrPtrListIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
         AttrPtr attr = *ait;
-        if (attr->getDynamic()) {
+        if (attr->isAnimated()) {
             m += frameList.length();
             for (j = 0; j < (int) frameList.length(); ++j) {
                 // first index is into 'attrList'
@@ -349,7 +362,7 @@ bool solve(int iterMax,
                 std::pair<int, int> attrPair(i, j);
                 paramToAttrList.push_back(attrPair);
             }
-        } else {
+        } else if (attr->isFreeToChange()) {
             ++m;
             // first index is into 'attrList'
             // second index is into 'frameList', '-1' means a static value.
@@ -367,11 +380,16 @@ bool solve(int iterMax,
         MarkerPtr marker = *mit;
         for (j = 0; j < (int) frameList.length(); ++j) {
             MTime frame = frameList[j];
-            bool valid;
-            status = marker->getValid(valid, frame);
+            
+            bool enable = false;
+            status = marker->getEnable(enable, frame);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            if (valid) {
+            double weight = 0.0;
+            status = marker->getWeight(weight, frame);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+
+            if ((enable == true) && (weight > 0.0))  {
                 std::pair<int, int> markerPair(i, j);
                 errorToMarkerList.push_back(markerPair);
                 n += 3;
@@ -439,6 +457,8 @@ bool solve(int iterMax,
     // Undo/Redo
     userData.dgmod = &dgmod;
     userData.curveChange = &curveChange;
+
+    // Allow user to exit out of solve.
     userData.computation = &computation;
 
     // Verbosity
@@ -465,11 +485,11 @@ bool solve(int iterMax,
         paramList[i] = value;
     }
 
-     // Initial Parameters
-     VRB("Initial Parameters: ");
-     for (i = 0; i < m; ++i) {
-         VRB("-> " << paramList[i]);
-     }
+//     // Initial Parameters
+//     VRB("Initial Parameters: ");
+//     for (i = 0; i < m; ++i) {
+//         VRB("-> " << paramList[i]);
+//     }
 
     // Options and Info
     unsigned int optsSize = LM_OPTS_SZ;
@@ -731,29 +751,14 @@ bool solve(int iterMax,
     VRB("Reason number: " << info[6]);
     VRB("");
 
-    resultStr = "reason_string=" + reasons[reasonNum];
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "reason_num=" + string::numberToString<int>(reasonNum);
-    outResult.append(MString(resultStr.c_str()));
-
-    VRB("Solved Parameters:");
-    for (i = 0; i < m; ++i) {
-        VRB("-> " << paramList[i]);
-    }
-
-    resultStr = "solver_parameter_list=";
-    for (i = 0; i < m; ++i) {
-        resultStr += string::numberToString<double>(paramList[i]);
-        resultStr += " ";
-    }
-    outResult.append(MString(resultStr.c_str()));
+//    VRB("Solved Parameters:");
+//    for (i = 0; i < m; ++i) {
+//        VRB("-> " << paramList[i]);
+//    }
 
     // Compute the average error based on the error values
     // the solve function last computed.
-    // TODO: Create a list of frames and produce an error
-    // per-frame. This information will eventually be given
-    // to the user to diagnose problems.
+
     double errorAvg = 0;
     double errorMin = std::numeric_limits<double>::max();
     double errorMax = -0.0;
@@ -765,14 +770,6 @@ bool solve(int iterMax,
         if (err > errorMax) { errorMax = err; }
     }
     errorAvg /= (double) n;
-
-    resultStr = "error_final_list=";
-    for (i = 0; i < n; ++i) {
-        err = userData.errorList[i];
-        resultStr += string::numberToString<double>(err);
-        resultStr += " ";
-    }
-    outResult.append(MString(resultStr.c_str()));
 
     VRB(std::endl << std::endl << "Solve Information:");
     VRB("Initial Error: " << info[0]);
@@ -787,6 +784,49 @@ bool solve(int iterMax,
     VRB("Function Evaluations: " << info[7]);
     VRB("Jacobian Evaluations: " << info[8]);
     VRB("Attempts for reducing error: " << info[9]);
+
+    solveBenchTimer.print("Solve Time", 1);
+    funcBenchTimer.print("Func Time", 1);
+    jacBenchTimer.print("Jacobian Time", 1);
+    paramBenchTimer.print("Param Time", (uint) userData.iterNum);
+    errorBenchTimer.print("Error Time", (uint) userData.iterNum);
+    funcBenchTimer.print("Func Time", (uint) userData.iterNum);
+
+    solveBenchTicks.print("Solve Ticks", 1);
+    funcBenchTicks.print("Func Ticks", 1);
+    jacBenchTicks.print("Jacobian Ticks", 1);
+    paramBenchTicks.print("Param Ticks", (uint) userData.iterNum);
+    errorBenchTicks.print("Error Ticks", (uint) userData.iterNum);
+    funcBenchTicks.print("Func Ticks", (uint) userData.iterNum);
+
+
+    // Add all the data into the output string from the Maya command.
+    resultStr = "success=" + string::numberToString<int>(ret);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "reason_string=" + reasons[reasonNum];
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "reason_num=" + string::numberToString<int>(reasonNum);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "solver_parameter_list=";
+    for (i = 0; i < m; ++i) {
+        resultStr += string::numberToString<double>(paramList[i]);
+        resultStr += " ";
+    }
+    outResult.append(MString(resultStr.c_str()));
+
+    // TODO: Create a list of frames and produce an error
+    // per-frame. This information will eventually be given
+    // to the user to diagnose problems.
+    resultStr = "error_final_list=";
+    for (i = 0; i < n; ++i) {
+        err = userData.errorList[i];
+        resultStr += string::numberToString<double>(err);
+        resultStr += " ";
+    }
+    outResult.append(MString(resultStr.c_str()));
 
     resultStr = "error_initial=" + string::numberToString<double>(info[0]);
     outResult.append(MString(resultStr.c_str()));
@@ -812,20 +852,48 @@ bool solve(int iterMax,
     resultStr = "error_maximum=" + string::numberToString<double>(info[4]);
     outResult.append(MString(resultStr.c_str()));
 
-    solveBenchTimer.print("Solve Time", 1);
-    funcBenchTimer.print("Func Time", 1);
-    jacBenchTimer.print("Jacobian Time", 1);
-    paramBenchTimer.print("Param Time", (uint) userData.iterNum);
-    errorBenchTimer.print("Error Time", (uint) userData.iterNum);
-    funcBenchTimer.print("Func Time", (uint) userData.iterNum);
+    resultStr = "iteration_num=" + string::numberToString<int>((int)info[5]);
+    outResult.append(MString(resultStr.c_str()));
 
-    solveBenchTicks.print("Solve Ticks", 1);
-    funcBenchTicks.print("Func Ticks", 1);
-    jacBenchTicks.print("Jacobian Ticks", 1);
-    paramBenchTicks.print("Param Ticks", (uint) userData.iterNum);
-    errorBenchTicks.print("Error Ticks", (uint) userData.iterNum);
-    funcBenchTicks.print("Func Ticks", (uint) userData.iterNum);
+    resultStr = "iteration_function_num=" + string::numberToString<int>((int)info[7]);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "iteration_jacobian_num=" + string::numberToString<int>((int)info[8]);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "iteration_attempt_num=" + string::numberToString<int>((int)info[9]);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "timer_solve=" + string::numberToString<double>(solveBenchTimer.get_seconds());
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "timer_function=" + string::numberToString<double>(funcBenchTimer.get_seconds());
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "timer_jacobian=" + string::numberToString<double>(jacBenchTimer.get_seconds());
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "timer_parameter=" + string::numberToString<double>(paramBenchTimer.get_seconds());
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "timer_error=" + string::numberToString<double>(paramBenchTimer.get_seconds());
+    outResult.append(MString(resultStr.c_str()));
     
+    resultStr = "ticks_solve=" + string::numberToString<debug::Ticks>(solveBenchTicks.get_ticks());
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "ticks_function=" + string::numberToString<debug::Ticks>(funcBenchTicks.get_ticks());
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "ticks_jacobian=" + string::numberToString<debug::Ticks>(jacBenchTicks.get_ticks());
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "ticks_parameter=" + string::numberToString<debug::Ticks>(paramBenchTicks.get_ticks());
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "ticks_error=" + string::numberToString<debug::Ticks>(paramBenchTicks.get_ticks());
+    outResult.append(MString(resultStr.c_str()));
+
     // TODO: Compute the errors of all markers so we can add it to a vector
     // and return it to the user. This vector should be resized so we can
     // return frame-based information. The UI could then graph this information.

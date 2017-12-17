@@ -57,8 +57,8 @@ class TestSolver4(solverUtils.SolverTestCase):
         )
         # NOTE: All dynamic attributes must have a keyframe before starting to solve.
         node_attrs = [
-            (cam_tfm + '.rx', 1),
-            (cam_tfm + '.ry', 1),
+            (cam_tfm + '.rx'),
+            (cam_tfm + '.ry'),
         ]
         frames = []
         for f in range(start, end+1):

@@ -58,12 +58,12 @@ class TestSolver2(solverUtils.SolverTestCase):
             (marker2_tfm, cam_shp, bundle2_tfm),
         )
         node_attrs = [
-            (group_tfm + '.tx', 0),
-            (group_tfm + '.ty', 0),
-            (group_tfm + '.tz', 0),
-            (group_tfm + '.sx', 0),
-            (group_tfm + '.ry', 0),
-            (group_tfm + '.rz', 0),
+            (group_tfm + '.tx'),
+            (group_tfm + '.ty'),
+            (group_tfm + '.tz'),
+            (group_tfm + '.sx'),
+            (group_tfm + '.ry'),
+            (group_tfm + '.rz'),
         ]
         frames = [
             (1),

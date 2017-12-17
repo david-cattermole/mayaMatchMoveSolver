@@ -69,19 +69,19 @@ class TestSolver7(solverUtils.SolverTestCase):
 
         # Get Attrs
         node_attrs = [
-            (cameras[0][0] + '.tx', 0),
-            (cameras[0][0] + '.ty', 0),
-            (cameras[0][0] + '.tz', 0),
-            (cameras[0][0] + '.rx', 0),
-            (cameras[0][0] + '.ry', 0),
-            (cameras[0][0] + '.rz', 0),
+            (cameras[0][0] + '.tx'),
+            (cameras[0][0] + '.ty'),
+            (cameras[0][0] + '.tz'),
+            (cameras[0][0] + '.rx'),
+            (cameras[0][0] + '.ry'),
+            (cameras[0][0] + '.rz'),
 
-            (cameras[1][0] + '.tx', 0),
-            (cameras[1][0] + '.ty', 0),
-            (cameras[1][0] + '.tz', 0),
-            (cameras[1][0] + '.rx', 0),
-            (cameras[1][0] + '.ry', 0),
-            (cameras[1][0] + '.rz', 0),
+            (cameras[1][0] + '.tx'),
+            (cameras[1][0] + '.ty'),
+            (cameras[1][0] + '.tz'),
+            (cameras[1][0] + '.rx'),
+            (cameras[1][0] + '.ry'),
+            (cameras[1][0] + '.rz'),
         ]
         frames = [1]
 

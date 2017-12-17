@@ -47,8 +47,8 @@ class TestSolver3(solverUtils.SolverTestCase):
             (marker_tfm, cam_shp, bundle_tfm),
         )
         node_attrs = [
-            (cam_tfm + '.rx', 0),
-            (cam_tfm + '.ry', 0),
+            (cam_tfm + '.rx'),
+            (cam_tfm + '.ry'),
         ]
         frames = [
             (1),

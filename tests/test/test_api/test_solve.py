@@ -379,7 +379,6 @@ class TestSolve(test_api_utils.APITestCase):
                                           name='bg',
                                           parent=mkr_grp)
         path = self.get_data_path('match_mover', 'loadmarker.rz2')
-        print 'loadmarker:', path
         mkr_data_list = marker_read.read(path)
         mkr_list = marker_read.create_nodes(mkr_data_list, cam=cam)
         mkr_fg_list = []
@@ -432,7 +431,6 @@ class TestSolve(test_api_utils.APITestCase):
                 grp = 'group_' + str(last_grp)
                 tags.append(grp)
                 frame_grps.append(grp)
-            print 'f:', f, tags, last_grp
             frm = api.Frame(f, tags=tags)
             frm_list.append(frm)
 
@@ -463,39 +461,35 @@ class TestSolve(test_api_utils.APITestCase):
         sol_list.append(sol2)
         sol_list.append(sol2)
         sol_list.append(sol2)
-        sol_list.append(sol2)
-        sol_list.append(sol2)
-        sol_list.append(sol2)
-        sol_list.append(sol2)
 
-        # # Solve all animated attributes for all frames other than primary or secondary.
-        # for grp in frame_grps:
-        #     for frm in frm_list:
-        #         frame_tags = frm.get_tags()
-        #         if grp not in frame_tags:
-        #             continue
-        #         sol = api.Solver()
-        #         sol.set_max_iterations(100)
-        #         sol.set_delta(-0.1)
-        #         sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
-        #         sol.set_attributes_use_animated(True)
-        #         sol.set_attributes_use_static(False)
-        #         sol.set_frames_use_tags([])
-        #         sol.set_verbose(True)
-        #         sol.set_frame_list([frm])
-        #         sol_list.append(sol)
+        # Solve all animated attributes for all frames other than primary or secondary.
+        for grp in frame_grps:
+            for frm in frm_list:
+                frame_tags = frm.get_tags()
+                if grp not in frame_tags:
+                    continue
+                sol = api.Solver()
+                sol.set_max_iterations(100)
+                sol.set_delta(-0.1)
+                sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
+                sol.set_attributes_use_animated(True)
+                sol.set_attributes_use_static(False)
+                sol.set_frames_use_tags([])
+                sol.set_verbose(True)
+                sol.set_frame_list([frm])
+                sol_list.append(sol)
 
-        # # brute force solve all frames
-        # sol = api.Solver()
-        # sol.set_max_iterations(10)
-        # sol.set_solver_type(api.SOLVER_TYPE_SPLM)
-        # sol.set_delta(-0.1)
-        # sol.set_attributes_use_animated(True)
-        # sol.set_attributes_use_static(True)
-        # sol.set_frames_use_tags(['primary', 'secondary', 'normal'])
-        # sol.set_verbose(True)
-        # sol.set_frame_list(frm_list)
-        # sol_list.append(sol)
+        # brute force solve all frames
+        sol = api.Solver()
+        sol.set_max_iterations(10)
+        sol.set_solver_type(api.SOLVER_TYPE_SPLM)
+        sol.set_delta(-0.1)
+        sol.set_attributes_use_animated(True)
+        sol.set_attributes_use_static(True)
+        sol.set_frames_use_tags(['primary', 'secondary', 'normal'])
+        sol.set_verbose(True)
+        sol.set_frame_list(frm_list)
+        sol_list.append(sol)
 
         # Collection
         col = api.Collection()

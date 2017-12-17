@@ -78,6 +78,9 @@
 #define SOLVER_TYPE_SPARSE_LEVMAR 1
 
 
+#define ERRORS_PER_MARKER 3
+
+
 // Sparse LM or Lev-Mar Termination Reasons:
 const std::string reasons[8] = {
         // reason 0
@@ -254,7 +257,7 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
         MMatrix cameraWorldProjectionMatrix;
         MPoint mkr_mpos;
         MPoint bnd_mpos;
-        for (i = 0; i < (n / 3); ++i) {
+        for (i = 0; i < (n / ERRORS_PER_MARKER); ++i) {
             std::pair<int, int> markerPair = ud->errorToMarkerList[i];
             MarkerPtr marker = ud->markerList[markerPair.first];
             MTime frame = ud->frameList[markerPair.second];
@@ -285,13 +288,13 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
             double dy = fabs(mkr_mpos.y - bnd_mpos.y);
             double d = distance_2d(mkr_mpos, bnd_mpos);
 
-            x[(i * 3) + 0] = dx;  // X error
-            x[(i * 3) + 1] = dy;  // Y error
-            x[(i * 3) + 2] = d;   // Distance error
+            x[(i * ERRORS_PER_MARKER) + 0] = dx;  // X error
+            x[(i * ERRORS_PER_MARKER) + 1] = dy;  // Y error
+            x[(i * ERRORS_PER_MARKER) + 2] = d;   // Distance error
 
-            ud->errorList[(i * 3) + 0] = dx;
-            ud->errorList[(i * 3) + 1] = dy;
-            ud->errorList[(i * 3) + 2] = d;
+            ud->errorList[(i * ERRORS_PER_MARKER) + 0] = dx;
+            ud->errorList[(i * ERRORS_PER_MARKER) + 1] = dy;
+            ud->errorList[(i * ERRORS_PER_MARKER) + 2] = d;
 
             error_avg += d;
             if (d > error_max) { error_max = d; }
@@ -304,7 +307,7 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
     ud->funcBenchTicks->stop();
 
     if (ud->isJacobianCalculation == false) {
-        error_avg /= (n / 3);
+        error_avg /= (n / ERRORS_PER_MARKER);
         INFO(" | error avg=" << error_avg << " min=" << error_min << " max=" << error_max);
     }
     return;
@@ -375,7 +378,7 @@ bool solve(int iterMax,
     }
 
     // Count up number of errors
-    // For each marker on each frame that it is valid, we add 3 errors.
+    // For each marker on each frame that it is valid, we add ERRORS_PER_MARKER errors.
     i = 0;
     j = 0;
     for (MarkerPtrListIt mit = markerList.begin(); mit != markerList.end(); ++mit) {
@@ -394,7 +397,7 @@ bool solve(int iterMax,
             if ((enable == true) && (weight > 0.0))  {
                 std::pair<int, int> markerPair(i, j);
                 errorToMarkerList.push_back(markerPair);
-                n += 3;
+                n += ERRORS_PER_MARKER;
             }
         }
         i++;
@@ -758,6 +761,7 @@ bool solve(int iterMax,
         status = attr->setValue(value, frame, dgmod, curveChange);
         CHECK_MSTATUS(status);
     }
+    dgmod.doIt();  // Commit changed data into Maya
 
     std::string resultStr;
 
@@ -820,7 +824,7 @@ bool solve(int iterMax,
 
 
     // Add all the data into the output string from the Maya command.
-    resultStr = "success=" + string::numberToString<int>(ret);
+    resultStr = "success=" + string::numberToString<int>((bool)ret);
     outResult.append(MString(resultStr.c_str()));
 
     resultStr = "reason_string=" + reasons[reasonNum];

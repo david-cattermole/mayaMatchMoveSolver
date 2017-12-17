@@ -54,6 +54,20 @@ class Solver(object):
         self._data['max_iterations'] = value
         return
 
+    def get_delta(self):
+        return self._data.get('delta')
+
+    def set_delta(self, value):
+        self._data['delta'] = value
+        return
+
+    def get_tau_factor(self):
+        return self._data.get('tau_factor')
+
+    def set_tau_factor(self, value):
+        self._data['tau_factor'] = value
+        return
+
     def get_solver_type(self):
         return self._data.get('solver_type')
 

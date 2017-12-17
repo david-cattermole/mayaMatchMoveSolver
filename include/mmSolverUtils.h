@@ -640,12 +640,13 @@ bool solve(int iterMax,
     } else if (solverType == SOLVER_TYPE_SPARSE_LEVMAR) {
 #if HAVE_SPLM == 1
 
-        // TODO: We could calculate an (approximate) non-zero value. We can do this by assuming that all dynamic attributes solve on on all single frames and are independant of static attributes.
+        // TODO: We could calculate an (approximate) non-zero value. We can do this by assuming that all dynamic
+        // attributes solve on on all single frames and are independant of static attributes.
 
         // Calculate number of non-zeros.
         int nonzeros = 0;  // Estimated non-zeros
 
-        // nonzeros = (n * m) / 2;  // Estimated non-zeros
+        nonzeros = (n * m) / 2;  // Estimated non-zeros
         // int Jnnz = 128; // TODO: How can we estimate this value better?
         // Jnnz = n * m;
         // struct splm_ccsm jac;
@@ -662,7 +663,9 @@ bool solve(int iterMax,
         // }
 
         // Options
-        opts[5] = SPLM_CHOLMOD;
+        // TODO: Use 'SPLM_PARDISO' when we can (when we have used Intel MKL), but test using other algorithms.
+        opts[5] = SPLM_CHOLMOD;  // Use this if Pardiso is not available.
+        // opts[5] = SPLM_PARDISO;
 
         //
         // Similar to sparselm_dercrs() except that fjac supplies only the non-zero pattern of the Jacobian

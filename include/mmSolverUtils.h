@@ -134,7 +134,8 @@ struct SolverData {
     double eps2;
     double eps3;
     double delta;
-    
+
+    // Benchmarks
     debug::TimestampBenchmark *jacBenchTimer;
     debug::TimestampBenchmark *funcBenchTimer;
     debug::TimestampBenchmark *errorBenchTimer;
@@ -147,6 +148,8 @@ struct SolverData {
     // Storing changes for undo/redo.
     MDGModifier *dgmod;
     MAnimCurveChange *curveChange;
+
+    // Allow user to cancel the solve.
     MComputation *computation;
 
     // Verbosity.
@@ -173,11 +176,11 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
     ud->funcBenchTicks->start();
     ud->computation->setProgress(ud->iterNum);
     verbose = ud->verbose;
-//    if (ud->isJacobianCalculation == false) {
-//        VRB("Solve " << ++ud->iterNum);
-//    } else {
-//        VRB("Solve Jacobian " << ++ud->jacIterNum);
-//    }
+    if (ud->isJacobianCalculation == false) {
+        std::cout << "Solve " << ++ud->iterNum;
+    } else {
+        std::cout << "Solve Jacobian " << ++ud->jacIterNum;
+    }
 
     int profileCategory = MProfiler::getCategoryIndex("mmSolver");
     MProfilingScope iterScope(profileCategory, MProfiler::kColorC_L1, "iteration");
@@ -290,7 +293,6 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
             ud->errorList[(i * 3) + 1] = dy;
             ud->errorList[(i * 3) + 2] = d;
 
-            // double d_avg = (dx + dy + d) * 0.333333333333333333333333333;
             error_avg += d;
             if (d > error_max) { error_max = d; }
             if (d < error_min) { error_min = d; }
@@ -302,8 +304,8 @@ void levmar_solveFunc(double *p, double *x, int m, int n, void *data) {
     ud->funcBenchTicks->stop();
 
     if (ud->isJacobianCalculation == false) {
-        error_avg /= n / 3;
-        INFO("Solve " << ++ud->iterNum << " | error avg=" << error_avg << " min=" << error_min << " max=" << error_max);
+        error_avg /= (n / 3);
+        INFO(" | error avg=" << error_avg << " min=" << error_min << " max=" << error_max);
     }
     return;
 }
@@ -739,6 +741,23 @@ bool solve(int iterMax,
     solveBenchTicks.stop();
     solveBenchTimer.stop();
     computation.endComputation();
+
+    // Set the solved parameters
+    INFO("Setting Parameters...");
+    for (i = 0; i < m; ++i) {
+        std::pair<int, int> attrPair = paramToAttrList[i];
+        AttrPtr attr = attrList[attrPair.first];
+
+        // Get frame time
+        MTime frame = currentFrame;
+        if (attrPair.second != -1) {
+            frame = frameList[attrPair.second];
+        }
+
+        double value = paramList[i];
+        status = attr->setValue(value, frame, dgmod, curveChange);
+        CHECK_MSTATUS(status);
+    }
 
     std::string resultStr;
 

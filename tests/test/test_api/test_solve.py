@@ -227,12 +227,9 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
-    # @unittest.skip
     def test_opera_house(self):
         start = 0
         end = 41
-        start_key = 12
-        end_key = 41
 
         # Set Time Range
         maya.cmds.playbackOptions(

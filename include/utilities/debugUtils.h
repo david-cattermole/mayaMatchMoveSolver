@@ -104,12 +104,19 @@ namespace debug {
             return ticktimeTotal += rdtsc() - ticktime;
         }
 
+        Ticks get_ticks(uint loopNums = 0) {
+            Ticks total = ticktimeTotal;
+            if (loopNums > 0) {
+                total /= loopNums;
+            }
+            return total;
+        }
+
         void print(std::string heading, uint loopNums = 0) {
-            Ticks ticks = ticktimeTotal;
+            Ticks ticks = get_ticks(loopNums);
             if (loopNums <= 1) {
                 std::cout << heading << " Ticks: ";
             } else if (loopNums > 0) {
-                ticks /= loopNums;
                 std::cout << heading << " Ticks (per-loop): ";
             }
             std::cout << ticks << " ticks";
@@ -138,16 +145,23 @@ namespace debug {
             return timestampTotal += get_timestamp() - timestamp;
         }
 
+        double get_seconds(uint loopNums = 0) {
+            double secs = (double) (timestampTotal / 1000000.0L);
+            if (loopNums > 0) {
+                secs /= loopNums;
+            }
+            return secs;
+        }
+
         void print(std::string heading, uint loopNums = 0) {
             return printInSec(heading, loopNums);
         }
 
         void printInSec(std::string heading, uint loopNums = 0) {
-            double secs = (double) (timestampTotal / 1000000.0L);
+            double secs = get_seconds(loopNums);
             if (loopNums <= 1) {
                 std::cout << heading << " Time: ";
             } else if (loopNums > 0) {
-                secs /= loopNums;
                 std::cout << heading << " Time (per-loop): ";
             }
             std::cout << secs << " seconds";

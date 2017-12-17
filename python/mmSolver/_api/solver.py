@@ -26,6 +26,14 @@ class Solver(object):
             if 'name' not in self._data:
                 self._data['name'] = str(uuid.uuid4())
         assert 'name' in self._data
+
+        self._attributes_use = {
+            'animated': True,
+            'static': True,
+        }
+        self._frames_use = {
+            'tags': ['primary', 'secondary', 'normal'],
+        }
         return
 
     def get_name(self):
@@ -81,6 +89,27 @@ class Solver(object):
         self._data['verbose'] = value
 
     ############################################################################
+
+    def get_attributes_use_animated(self):
+        return self._attributes_use.get('animated')
+
+    def set_attributes_use_animated(self, value):
+        assert isinstance(value, (bool, int))
+        self._attributes_use['animated'] = bool(value)
+
+    def get_attributes_use_static(self):
+        return self._attributes_use.get('static')
+
+    def set_attributes_use_static(self, value):
+        assert isinstance(value, (bool, int))
+        self._attributes_use['static'] = bool(value)
+
+    def get_frames_use_tags(self):
+        return self._frames_use.get('tags')
+
+    def set_frames_use_tags(self, value):
+        assert isinstance(value, list)
+        self._frames_use['tags'] = value
 
     ############################################################################
 

@@ -362,7 +362,10 @@ class Collection(object):
         kwargs['attr'] = []
         kwargs['frame'] = []
 
+        # Get Markers and Cameras
         added_cameras = []
+        markers = []
+        cameras = []
         for mkr in mkr_list:
             assert isinstance(mkr, marker.Marker)
             bnd = mkr.get_bundle()
@@ -371,28 +374,61 @@ class Collection(object):
             bnd_node = bnd.get_node()
             cam_tfm_node = cam.get_transform_node()
             cam_shp_node = cam.get_shape_node()
-            kwargs['marker'].append((mkr_node, cam_shp_node, bnd_node))
+            markers.append((mkr_node, cam_shp_node, bnd_node))
             if cam_shp_node not in added_cameras:
-                kwargs['camera'].append((cam_tfm_node, cam_shp_node))
+                cameras.append((cam_tfm_node, cam_shp_node))
                 added_cameras.append(cam_shp_node)
+        if len(markers) == 0:
+            return None
+        if len(cameras) == 0:
+            return None
 
-        # Until we support multiple cameras, assert that we can only use
-        # 1 camera.
-        assert len(kwargs['camera']) == 1
-
+        # Get Attributes
+        use_animated = sol.get_attributes_use_animated()
+        use_static = sol.get_attributes_use_static()
+        attrs = []
         for attr in attr_list:
             assert isinstance(attr, attribute.Attribute)
             if attr.is_locked():
                 continue
             attr_name = attr.get_name()
-            kwargs['attr'].append((attr_name))
+            animated = attr.is_animated()
+            static = attr.is_static()
+            use = False
+            if use_animated and animated is True:
+                use = True
+            if use_static and static is True:
+                use = True
+            if use is True:
+                attrs.append((attr_name))
+        if len(attrs) == 0:
+            return None
 
+        # Get Frames
         frm_list = sol.get_frame_list()
+        # print 'frm_list:', frm_list
+        frame_use_tags = sol.get_frames_use_tags()
+        frames = []
         for frm in frm_list:
-            # TODO: Add logic into adding frames based on primary or secondary
-            # flag.
             num = frm.get_number()
-            kwargs['frame'].append(num)
+            tags = frm.get_tags()
+            use = False
+            if len(frame_use_tags) > 0 and len(tags) > 0:
+                for tag in frame_use_tags:
+                    if tag in tags:
+                        use = True
+                        break
+            else:
+                use = True
+            if use is True:
+                frames.append(num)
+        if len(frames) == 0:
+            return None
+
+        kwargs['marker'] = markers
+        kwargs['camera'] = cameras
+        kwargs['attr'] = attrs
+        kwargs['frame'] = frames
 
         kwargs['solverType'] = sol.get_solver_type()
         kwargs['iterations'] = sol.get_max_iterations()
@@ -423,11 +459,9 @@ class Collection(object):
         # Re-compile the arguments.
         kwargs_list = []
         col_node = self.get_node()
-        print 'col_node:', col_node
 
         # Check Solvers
         sol_list = self.get_solver_list()
-        # print 'sol_list:', sol_list
         if len(sol_list) == 0:
             msg = 'Collection is not valid, no Solvers given; collection={0}'
             msg = msg.format(repr(col_node))
@@ -435,7 +469,6 @@ class Collection(object):
 
         # Check Markers
         mkr_list = self.get_marker_list()
-        # print 'mkr_list:', mkr_list
         if len(mkr_list) == 0:
             msg = 'Collection is not valid, no Markers given; collection={0}'
             msg = msg.format(repr(col_node))
@@ -443,7 +476,6 @@ class Collection(object):
 
         # Check Attributes
         attr_list = self.get_attribute_list()
-        # print 'attr_list:', attr_list
         if len(attr_list) == 0:
             msg = 'Collection is not valid, no Attributes given; collection={0}'
             msg = msg.format(repr(col_node))
@@ -477,16 +509,13 @@ class Collection(object):
         # return a list of strings, which will then be passed to the SolveResult
         # class so the user can query the raw data using an interface.
 
-        print 'collection.execute'
-
         # Check for validity
         solres_list = []
         if self.is_valid() is False:
-            print 'collection not valid'
+            maya.cmds.warning('collection not valid', self.get_node())
             return solres_list
 
         kwargs_list = self._compile()
-        # print 'kwargs_list:', kwargs_list
         for kwargs in kwargs_list:
             solve_data = maya.cmds.mmSolver(**kwargs)
             solres = solveresult.SolveResult(solve_data)

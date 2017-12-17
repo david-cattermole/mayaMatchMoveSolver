@@ -26,16 +26,29 @@ class TestFrame(test_api_utils.APITestCase):
         self.assertRaises(AssertionError, frame.Frame, None)
 
         f3 = frame.Frame(10.0)
-        self.assertEqual(f3.get_primary(), False)
-        self.assertEqual(f3.get_secondary(), False)
+        self.assertEqual(f3.get_tags(), ['normal'])
 
         f4 = frame.Frame(10.0, primary=True)
-        self.assertEqual(f4.get_primary(), True)
-        self.assertEqual(f4.get_secondary(), False)
+        self.assertEqual(f4.get_tags(), ['primary'])
 
         f5 = frame.Frame(10.0, secondary=True)
-        self.assertEqual(f5.get_primary(), False)
-        self.assertEqual(f5.get_secondary(), True)
+        self.assertEqual(f5.get_tags(), ['secondary'])
+
+    def test_get_data(self):
+        f1 = frame.Frame(10)
+        self.assertEqual(f1.get_data(), {'number': 10, 'tags': ['normal']})
+
+        f2 = frame.Frame(10.0, tags=['myTag'])
+        self.assertEqual(f2.get_data(), {'number': 10, 'tags': ['myTag']})
+
+    def test_set_data(self):
+        f1 = frame.Frame(10)
+        f1_data = f1.get_data()
+
+        f2 = frame.Frame(3147)
+        f2.set_data(f1_data)
+        f2_data = f2.get_data()
+        self.assertEqual(f1_data, f2_data)
 
     def test_get_number(self):
         f1 = frame.Frame(10)
@@ -44,35 +57,37 @@ class TestFrame(test_api_utils.APITestCase):
         f2 = frame.Frame(10.0)
         self.assertIs(f2.get_number(), 10.0)
 
-    def test_get_primary(self):
+    def test_set_number(self):
+        f1 = frame.Frame(10)
+        f1.set_number(3147)
+        self.assertEqual(f1.get_number(), 3147)
+
+        f1.set_number(24)
+        self.assertEqual(f1.get_number(), 24)
+
+    def test_get_tags(self):
         f = frame.Frame(10, primary=False)
-        self.assertIs(f.get_primary(), False)
+        self.assertEqual(f.get_tags(), ['normal'])
 
         f = frame.Frame(10, primary=True)
-        self.assertIs(f.get_primary(), True)
+        self.assertEqual(f.get_tags(), ['primary'])
 
-    def test_set_primary(self):
+    def test_set_tags(self):
         f = frame.Frame(10)
-        f.set_primary(True)
-        self.assertIs(f.get_primary(), True)
+        f.set_tags(['tag'])
+        self.assertEqual(f.get_tags(), ['tag'])
 
-        f.set_primary(False)
-        self.assertIs(f.get_primary(), False)
+        f.set_tags([])
+        self.assertEqual(f.get_tags(), [])
 
-    def test_get_secondary(self):
-        f = frame.Frame(10, secondary=False)
-        self.assertIs(f.get_secondary(), False)
-
-        f = frame.Frame(10, secondary=True)
-        self.assertIs(f.get_secondary(), True)
-
-    def test_set_secondary(self):
+    def test_add_tag(self):
         f = frame.Frame(10)
-        f.set_secondary(True)
-        self.assertIs(f.get_secondary(), True)
+        f.add_tag('primary')
+        self.assertEqual(f.get_tags(), ['normal', 'primary'])
 
-        f.set_secondary(False)
-        self.assertIs(f.get_secondary(), False)
+        f.set_tags([])
+        f.add_tag('tag')
+        self.assertEqual(f.get_tags(), ['tag'])
 
 
 if __name__ == '__main__':

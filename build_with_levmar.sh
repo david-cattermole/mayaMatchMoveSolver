@@ -24,6 +24,7 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
       -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
       -DHAVE_SPLM=0 \
+      -DHAVE_CERES=0 \
       -DUSE_ATLAS=0 \
       -DUSE_MKL=0 \
       ..

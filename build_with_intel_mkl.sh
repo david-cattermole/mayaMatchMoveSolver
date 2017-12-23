@@ -12,9 +12,14 @@ rm -R --force ${PROJECT_ROOT}/external/include/*
 
 
 # Build the external dependencies
+bash external/build_glog.sh
+bash external/build_gflags.sh
+bash external/build_mkl.sh
 bash external/build_levmar_with_mkl.sh
 bash external/build_suitesparse_with_mkl.sh
 bash external/build_sparselm_with_mkl.sh
+bash external/build_eigen.sh
+# bash external/build_ceres_with_mkl.sh
 
 
 # Build plugin
@@ -28,11 +33,12 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DSPLM_LIB_PATH=${PROJECT_ROOT}/external/lib \
       -DSPLM_INCLUDE_PATH=${PROJECT_ROOT}/external/lib \
       -DSUITE_SPARSE_LIB_PATH=${PROJECT_ROOT}/external/lib \
-      -DMKL_LIB_PATH=/opt/intel/mkl/lib/intel64 \
+      -DMKL_LIB_PATH=${PROJECT_ROOT}/external/lib \
       -DHAVE_SPLM=1 \
       -DUSE_ATLAS=0 \
       -DUSE_MKL=1 \
       ..
+# -DHAVE_CERES=1 \
 make clean
 make -j4
 

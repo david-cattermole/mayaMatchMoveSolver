@@ -24,9 +24,3 @@ cd ../../../
 # Copy
 cp --force -t ./external/lib ./external/working/sparselm-1.3/libsplm.a
 cp --force -t ./external/include ./external/working/sparselm-1.3/splm.h
-
-# MKL
-cp --force -t ./external/lib/ /opt/intel/mkl/lib/intel64/libmkl_core.so
-cp --force -t ./external/lib/ /opt/intel/mkl/lib/intel64/libmkl_def.so
-cp --force -t ./external/lib/ /opt/intel/mkl/lib/intel64/libmkl_intel_lp64.so
-cp --force -t ./external/lib/ /opt/intel/mkl/lib/intel64/libmkl_gnu_thread.so

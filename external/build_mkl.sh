@@ -11,6 +11,8 @@
 cp --force -t ./external/lib/ /opt/intel/mkl/lib/intel64/libmkl_core.so
 cp --force -t ./external/lib/ /opt/intel/mkl/lib/intel64/libmkl_def.so
 cp --force -t ./external/lib/ /opt/intel/mkl/lib/intel64/libmkl_intel_lp64.so
+cp --force -t ./external/lib/ /opt/intel/mkl/lib/intel64/libmkl_intel_thread.so
 cp --force -t ./external/lib/ /opt/intel/mkl/lib/intel64/libmkl_mc.so
 cp --force -t ./external/lib/ /opt/intel/mkl/lib/intel64/libmkl_sequential.so
 cp --force -t ./external/lib/ /opt/intel/mkl/lib/intel64/libmkl_gnu_thread.so
+cp --force -t ./external/lib/ /opt/intel/mkl/lib/intel64/libmkl_gf_lp64.so

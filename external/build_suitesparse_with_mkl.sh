@@ -20,7 +20,32 @@ cd ../../../
 
 
 # Copy
-cp --force -t ./external/lib ./external/working/SuiteSparse/lib/lib*
-cp --force -t ./external/include ./external/working/SuiteSparse/include/*.h
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/lib/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/AMD/Lib/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/BTF/Lib/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/CAMD/Lib/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/CCOLAMD/Lib/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/CHOLMOD/Lib/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/CSparse/Lib/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/CXSparse/Lib/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/KLU/Lib/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/LDL/Lib/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/RBio/Lib/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/SPQR/Lib/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/SuiteSparse_config/lib*
+cp --force -d -t ./external/lib ./external/working/SuiteSparse/UMFPACK/Lib/lib*
 
-
+cp --force -t ./external/include ./external/working/SuiteSparse/include/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/AMD/Include/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/BTF/Include/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/CAMD/Include/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/CCOLAMD/Include/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/CHOLMOD/Include/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/CSparse/Include/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/CXSparse/Include/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/KLU/Include/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/LDL/Include/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/RBio/Include/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/SPQR/Include/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/SuiteSparse_config/*.h*
+cp --force -t ./external/include ./external/working/SuiteSparse/UMFPACK/Include/*.h*

@@ -2,6 +2,10 @@
 # Builds the Maya plug-in using the Intel MKL libraries.
 
 
+# Use a different CMake
+# PATH=/opt/clion/clion-2016.3/bin/cmake/bin:${PATH}
+
+
 # The root of this project.
 PROJECT_ROOT=`pwd`
 
@@ -19,7 +23,7 @@ bash external/build_levmar_with_mkl.sh
 bash external/build_suitesparse_with_mkl.sh
 bash external/build_sparselm_with_mkl.sh
 bash external/build_eigen.sh
-# bash external/build_ceres_with_mkl.sh
+bash external/build_ceres_with_mkl.sh
 
 
 # Build plugin
@@ -35,10 +39,10 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DSUITE_SPARSE_LIB_PATH=${PROJECT_ROOT}/external/lib \
       -DMKL_LIB_PATH=${PROJECT_ROOT}/external/lib \
       -DHAVE_SPLM=1 \
+      -DHAVE_CERES=1 \
       -DUSE_ATLAS=0 \
       -DUSE_MKL=1 \
       ..
-# -DHAVE_CERES=1 \
 make clean
 make -j4
 

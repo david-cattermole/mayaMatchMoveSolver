@@ -2,7 +2,7 @@
 
 
 # Use a different CMake
-PATH=/opt/clion/clion-2016.3/bin/cmake/bin:${PATH}
+# PATH=/opt/clion/clion-2016.3/bin/cmake/bin:${PATH}
 
 
 # Remove

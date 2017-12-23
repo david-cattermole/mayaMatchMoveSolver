@@ -1,0 +1,15 @@
+--- /home/davidc/dev/mayaMatchMoveSolver/external/archives/sparselm-1.3/solvers.mk	2011-05-03 22:15:03.000000000 +0930
++++ /home/davidc/dev/mayaMatchMoveSolver/external/working/sparselm-1.3/solvers.mk	2017-12-23 19:57:39.570879470 +1030
+@@ -1,9 +1,9 @@
+ # sparse solvers available
+ 
+ HAVE_CHOLMOD=yes
+-HAVE_CSPARSE=no
+-HAVE_LDL=no
+-HAVE_UMFPACK=no
++HAVE_CSPARSE=yes
++HAVE_LDL=yes
++HAVE_UMFPACK=yes
+ HAVE_MA57=no
+ HAVE_MA47=no
+ HAVE_MA27=no

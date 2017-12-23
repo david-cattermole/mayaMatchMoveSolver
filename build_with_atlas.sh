@@ -5,9 +5,18 @@
 # PATH=/opt/clion/clion-2016.3/bin/cmake/bin:${PATH}
 
 
+# The root of this project.
+PROJECT_ROOT=`pwd`
+
+
 # Remove
-rm -R --force ./external/lib/*
-rm -R --force ./external/include/*
+rm -R --force ${PROJECT_ROOT}/external/lib/lib*.so*
+rm -R --force ${PROJECT_ROOT}/external/lib/lib*.a*
+rm -R --force ${PROJECT_ROOT}/external/include/*.h*
+rm -R --force ${PROJECT_ROOT}/external/include/ceres
+rm -R --force ${PROJECT_ROOT}/external/include/Eigen
+rm -R --force ${PROJECT_ROOT}/external/include/gflags
+rm -R --force ${PROJECT_ROOT}/external/include/glog
 
 
 # # Build the external dependencies
@@ -24,19 +33,19 @@ bash external/build_ceres_with_atlas.sh
 # # Build plugin
 # mkdir -p build
 # cd build
-# cmake -DCMAKE_BUILD_TYPE=Release \
-#       -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2016/include \
-#       -DMAYA_LIB_PATH=/usr/autodesk/maya2016/lib \
-#       -DLEVMAR_LIB_PATH=./external/lib \
-#       -DLEVMAR_INCLUDE_PATH=./external/include \
-#       -DSPLM_LIB_PATH=./external/lib \
-#       -DSPLM_INCLUDE_PATH=./external/lib \
-#       -DSUITE_SPARSE_LIB_PATH=./external/lib \
-#       -DATLAS_LIB_PATH=/usr/lib64/atlas \
-#       -DHAVE_SPLM=1 \
-#       -DHAVE_CERES=1 \
-#       -DUSE_ATLAS=1 \
-#       -DUSE_MKL=0 \
+#cmake -DCMAKE_BUILD_TYPE=Release \
+#      -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2016/include \
+#      -DMAYA_LIB_PATH=/usr/autodesk/maya2016/lib \
+#      -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
+#      -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
+#      -DSPLM_LIB_PATH=${PROJECT_ROOT}/external/lib \
+#      -DSPLM_INCLUDE_PATH=${PROJECT_ROOT}/external/lib \
+#      -DSUITE_SPARSE_LIB_PATH=${PROJECT_ROOT}/external/lib \
+#      -DATLAS_LIB_PATH=${PROJECT_ROOT}/external/lib \
+#      -DHAVE_SPLM=1 \
+#      -DHAVE_CERES=1 \
+#      -DUSE_ATLAS=1 \
+#      -DUSE_MKL=0 \
 #       ..
 # make clean
 # make -j4

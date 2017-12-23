@@ -10,9 +10,15 @@
 PROJECT_ROOT=`pwd`
 
 
-# Remove 
-rm -R --force ${PROJECT_ROOT}/external/lib/*
-rm -R --force ${PROJECT_ROOT}/external/include/*
+# Remove
+rm -R --force ${PROJECT_ROOT}/external/lib/lib*.so*
+rm -R --force ${PROJECT_ROOT}/external/lib/lib*.a*
+rm -R --force ${PROJECT_ROOT}/external/include/*.h*
+rm -R --force ${PROJECT_ROOT}/external/include/ceres
+rm -R --force ${PROJECT_ROOT}/external/include/Eigen
+rm -R --force ${PROJECT_ROOT}/external/include/gflags
+rm -R --force ${PROJECT_ROOT}/external/include/glog
+
 
 
 # Build the external dependencies

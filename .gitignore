@@ -18,9 +18,11 @@ precompiled/*
 *.tgz
 *.zip
 *.tar.gz
+*.tar.bz2
 *.tar
 
 external/working/levmar*
 external/working/sparselm*
 external/working/SuiteSparse*
-external/include/*.h
+external/include/*.h*
+external/include/*atlas*

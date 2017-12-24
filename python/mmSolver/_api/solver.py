@@ -9,6 +9,7 @@ import mmSolver._api.excep as excep
 
 SOLVER_TYPE_LEVMAR = 0
 SOLVER_TYPE_SPLM = 1
+SOLVER_TYPE_CERES = 1
 
 
 class Solver(object):

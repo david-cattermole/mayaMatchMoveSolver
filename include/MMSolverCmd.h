@@ -37,10 +37,12 @@
 #include <maya/MStringArray.h>
 #include <maya/MDoubleArray.h>
 
+// Internal Objects
 #include <Camera.h>
 #include <Marker.h>
 #include <Bundle.h>
 #include <Attr.h>
+
 
 // Command arguments and command name
 #define CAMERA_FLAG       "-c"

@@ -39,6 +39,14 @@ public:
 
     MObject getAttribute();
 
+    MString getAnimCurveName();
+
+    bool isFreeToChange();
+
+    bool isAnimated();
+
+    bool isConnected();
+
     MStatus getValue(bool &value, const MTime &time);
 
     MStatus getValue(double &value, const MTime &time);
@@ -57,23 +65,15 @@ public:
     MStatus setValue(double value,
                   MDGModifier &dgmod, MAnimCurveChange &animChange);
 
-    bool isFreeToChange();
-
-    bool isAnimated();
-
-    bool isConnected();
-
-    MString getAnimCurveName();
-
 private:
     MString m_nodeName;
     MString m_attrName;
     MObject m_object;
     MPlug m_plug;
-    int m_animated;
-    int m_isFreeToChange;
-    int m_connected;
     MString m_animCurveName;
+    int m_animated;
+    int m_connected;
+    int m_isFreeToChange;
 };
 
 

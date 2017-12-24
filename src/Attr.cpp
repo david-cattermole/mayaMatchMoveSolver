@@ -30,9 +30,9 @@ Attr::Attr() :
         m_attrName(""),
         m_object(),
         m_plug(),
+        m_animCurveName(""),
         m_animated(-1),
         m_connected(-1),
-        m_animCurveName(""),
         m_isFreeToChange(-1) {
 }
 

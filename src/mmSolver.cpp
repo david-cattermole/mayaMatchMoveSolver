@@ -715,6 +715,8 @@ bool solve(int iterMax,
             userData.errorToMarkerList = errorToMarkerList;
 
             // Solver Aux data
+            userData.numParameters = m;
+            userData.numErrors = n;
             userData.errorList = errorList;
             userData.iterNum = 0;
             userData.jacIterNum = 0;
@@ -758,17 +760,29 @@ bool solve(int iterMax,
 
             problem.AddResidualBlock(
                     cost_function,
-                    NULL /* squared loss */,
+                    new ceres::HuberLoss(1.0), // NULL=squared loss,
                     &paramList[0]
             );
             problem.AddParameterBlock(&paramList[0], m);
 
             // Run the solver!
             options.minimizer_progress_to_stdout = true;
-            options.gradient_tolerance = 1e-16;
-            options.function_tolerance = 1e-16;
+            // options.gradient_tolerance = 1e-16;
+            // options.function_tolerance = 1e-16;
+            // options.gradient_tolerance = 1e-12;
+            // options.function_tolerance = 1e-6;
+            // options.max_num_iterations = iterMax;
+            options.num_threads = 1;
+            options.num_linear_solver_threads = 1;
+            // options.min_trust_region_radius = eps1;
+            options.dense_linear_algebra_library_type = ceres::LAPACK;
+            // options.min_linear_solver_iterations = 5;
+            // options.max_linear_solver_iterations = 500;
+            // options.
             // options.linear_solver_type = ceres::DENSE_QR;
+            // options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
             // options.linear_solver_type = ceres::DENSE_SCHUR;
+            options.linear_solver_type = ceres::SPARSE_SCHUR;
             ceres::Solver::Summary summary;
             ceres::Solve(options, &problem, &summary);
             INFO(summary.FullReport());

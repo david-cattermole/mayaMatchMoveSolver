@@ -5,11 +5,12 @@
 
 //
 #include <MMSolverCmd.h>
-#include <mmSolverUtils.h>
+#include <mmSolver.h>
 #include <mayaUtils.h>
 
 // STL
 #include <cmath>
+#include <cassert>
 
 // Utils
 #include <utilities/debugUtils.h>

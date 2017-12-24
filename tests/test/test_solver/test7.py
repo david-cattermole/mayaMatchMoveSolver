@@ -22,11 +22,8 @@ import test.test_solver.solverutils as solverUtils
 class TestSolver7(solverUtils.SolverTestCase):
 
     def test_init(self):
-        head, tail = os.path.split(__file__)
-        name, ext = os.path.splitext(tail)
-        scenePath = os.path.join(head, name + '.ma')
-
         # Open File Path
+        scenePath = self.get_data_path('solver_test7.ma')
         maya.cmds.file(scenePath,
                        open=True,
                        force=True,

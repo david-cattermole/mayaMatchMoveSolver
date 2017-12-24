@@ -6,7 +6,9 @@
 #define MAYA_MM_SOLVER_CAMERA_H
 
 
+#include <maya/MStatus.h>
 #include <maya/MObject.h>
+#include <maya/MMatrix.h>
 #include <maya/MString.h>
 #include <maya/MPlug.h>
 

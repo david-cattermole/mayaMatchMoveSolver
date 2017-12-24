@@ -79,64 +79,6 @@ $ cd <project root>
 $ sh runTests.sh
 ```
 
-## Full Method with Intel MKL
-
-This method will use both the `levmar`, `sparselm` and `ceres` algorithms, as well as highly-optimised libraries for computation; `Intel Math Kernel Libraries`.
-
-### Build Script
-
-Note: This will assume Intel MKL is installed under `/opt/intel/mkl`, you will need to modify the scripts if this location is not correct on your system.
-
-To build with Intel MKL, run these command: 
-```commandline
-$ cd <project root>
-$ bash external/download_all_archives.sh
-$ bash build_with_intel_mkl.sh
-```
-
-###  Dependencies
-
-- C++ compiler ([GCC](https://gcc.gnu.org/), Clang, VC++, etc)
-- [CMake 3.6+](https://cmake.org/)
-- [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
-- [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
-- [Intel Math Kernel Library (MLK)](https://software.intel.com/en-us/mkl)
-- [SuiteSparse 5.0.0](http://faculty.cse.tamu.edu/davis/suitesparse.html)
-- [sparseLM 1.3](http://users.ics.forth.gr/~lourakis/sparseLM/)
-- [Eigen 3.3.4](http://eigen.tuxfamily.org/)
-- [glog 0.3.1](https://github.com/google/glog)
-- [gflags 2.2.1](https://github.com/gflags/gflags)
-- [ceres-solver 1.13.0](http://ceres-solver.org/)
-
-### Build mmSolver plugin
-
-To compile the Maya plugin, run the commands.
-
-```commandline
-$ cd <project root>
-$ mkdir build
-$ cd build
-$ cmake -DCMAKE_BUILD_TYPE=Release \
-        -DHAVE_SPLM=1 \
-        -DHAVE_CERES=1 \
-        -DUSE_ATLAS=0 \
-        -DUSE_SUITE_SPARSE=1 \
-        -DUSE_MKL=1 \
-        -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2016/include \
-        -DMAYA_LIB_PATH=/usr/autodesk/maya2016/lib \
-        -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
-        -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
-        -DMKL_LIB_PATH=/opt/intel/mkl/lib/intel64 \
-        -DSUITE_SPARSE_LIB_PATH=${PROJECT_ROOT}/external/lib \
-        -DSPLM_LIB_PATH=${PROJECT_ROOT}/external/lib \
-        -DSPLM_INCLUDE_PATH=${PROJECT_ROOT}/external/lib \
-        -DCERES_LIB_PATH=${PROJECT_ROOT}/external/lib \
-        -DCERES_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
-        ..
-$ make -j4
-```
-
-Once the plug-in is built successfully, continue on to the section "Install Common Files" below.
 
 ## Full Method with ATLAS
 
@@ -191,6 +133,65 @@ $ cmake -DCMAKE_BUILD_TYPE=Release \
         -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
         -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
         -DATLAS_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DSUITE_SPARSE_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DSPLM_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DSPLM_INCLUDE_PATH=${PROJECT_ROOT}/external/lib \
+        -DCERES_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DCERES_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
+        ..
+$ make -j4
+```
+
+Once the plug-in is built successfully, continue on to the section "Install Common Files" below.
+
+## Full Method with Intel MKL
+
+This method will use both the `levmar`, `sparselm` and `ceres` algorithms, as well as highly-optimised libraries for computation; `Intel Math Kernel Libraries`.
+
+### Build Script
+
+Note: This will assume Intel MKL is installed under `/opt/intel/mkl`, you will need to modify the scripts if this location is not correct on your system.
+
+To build with Intel MKL, run these command: 
+```commandline
+$ cd <project root>
+$ bash external/download_all_archives.sh
+$ bash build_with_intel_mkl.sh
+```
+
+###  Dependencies
+
+- C++ compiler ([GCC](https://gcc.gnu.org/), Clang, VC++, etc)
+- [CMake 3.6+](https://cmake.org/)
+- [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
+- [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
+- [Intel Math Kernel Library (MLK)](https://software.intel.com/en-us/mkl)
+- [SuiteSparse 5.0.0](http://faculty.cse.tamu.edu/davis/suitesparse.html)
+- [sparseLM 1.3](http://users.ics.forth.gr/~lourakis/sparseLM/)
+- [Eigen 3.3.4](http://eigen.tuxfamily.org/)
+- [glog 0.3.1](https://github.com/google/glog)
+- [gflags 2.2.1](https://github.com/gflags/gflags)
+- [ceres-solver 1.13.0](http://ceres-solver.org/)
+
+### Build mmSolver plugin
+
+To compile the Maya plugin, run the commands.
+
+```commandline
+$ cd <project root>
+$ mkdir build
+$ cd build
+$ cmake -DCMAKE_BUILD_TYPE=Release \
+        -DHAVE_SPLM=1 \
+        -DHAVE_CERES=1 \
+        -DUSE_ATLAS=0 \
+        -DUSE_SUITE_SPARSE=1 \
+        -DUSE_MKL=1 \
+        -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2016/include \
+        -DMAYA_LIB_PATH=/usr/autodesk/maya2016/lib \
+        -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
+        -DMKL_LIB_PATH=/opt/intel/mkl/lib/intel64 \
         -DSUITE_SPARSE_LIB_PATH=${PROJECT_ROOT}/external/lib \
         -DSPLM_LIB_PATH=${PROJECT_ROOT}/external/lib \
         -DSPLM_INCLUDE_PATH=${PROJECT_ROOT}/external/lib \

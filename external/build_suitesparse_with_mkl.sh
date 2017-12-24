@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+
 # Clean up
 rm -R --force ./external/working/SuiteSparse/
 

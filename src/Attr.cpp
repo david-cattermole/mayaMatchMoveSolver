@@ -106,7 +106,7 @@ MPlug Attr::getPlug() {
         MPlug plug = dependsNode.findPlug(attrName, true, &status);
         if (status != MStatus::kSuccess) {
             MString name = Attr::getName();
-            ERR("Attribute cannot be found; " << name);
+            WRN("Attribute cannot be found; " << name);
             return m_plug;
         }
 

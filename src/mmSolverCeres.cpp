@@ -33,6 +33,15 @@
 #include <mayaUtils.h>
 
 
+// NOTE: There is a very strange bug in Maya. After setting a number of plug values
+// using a DG Context, when quering plug values at the same times, the values do
+// not evaluate correctly. To 'trick' Maya into triggering an eval the next time a
+// plug is queried we query the matrix of a marker node. It doesn't matter which
+// marker node, however it does matter that it's a marker node, if the eval is
+// performed with a bundle node the error continues to happen.
+#define FORCE_TRIGGER_EVAL 1
+
+
 ReprojectionErrorFunctor::ReprojectionErrorFunctor(CeresSolverData &data) {
     m_solverData = data;
 }
@@ -47,23 +56,23 @@ ReprojectionErrorFunctor::operator()(double const* const* parameters,
     register int i = 0;
     register bool verbose = false;
 
+    CeresSolverData *ud = const_cast<CeresSolverData*>(&m_solverData);
+
     // Create the variable names the same as LevMar.
-    int m = 12; // number of parameters/unknowns
-    int n = 36; // number of errors
+    int m = ud->numParameters; // number of parameters/unknowns
+    int n = ud->numErrors; // number of errors
     const double* p = parameters[0];
     double* x = residuals;
 
-
-    CeresSolverData *ud = const_cast<CeresSolverData*>(&m_solverData);
     ud->funcBenchTimer->start();
     ud->funcBenchTicks->start();
     ud->computation->setProgress(ud->iterNum);
     verbose = ud->verbose;
-    if (ud->isJacobianCalculation == false) {
-        std::cout << "Solve " << ++ud->iterNum;
-    } else {
-        std::cout << "Solve Jacobian " << ++ud->jacIterNum;
-    }
+//    if (ud->isJacobianCalculation == false) {
+//        std::cout << "Solve " << ++ud->iterNum;
+//    } else {
+//        std::cout << "Solve Jacobian " << ++ud->jacIterNum;
+//    }
 
     int profileCategory = MProfiler::getCategoryIndex("mmSolver");
     MProfilingScope iterScope(profileCategory, MProfiler::kColorC_L1, "iteration");
@@ -184,11 +193,10 @@ ReprojectionErrorFunctor::operator()(double const* const* parameters,
     ud->funcBenchTimer->stop();
     ud->funcBenchTicks->stop();
 
-    if (ud->isJacobianCalculation == false) {
-        error_avg /= (n / ERRORS_PER_MARKER);
-        INFO(" | error avg=" << error_avg << " min=" << error_min << " max=" << error_max);
-    }
-
+//    if (ud->isJacobianCalculation == false) {
+//        error_avg /= (n / ERRORS_PER_MARKER);
+//        INFO(" | error avg=" << error_avg << " min=" << error_min << " max=" << error_max);
+//    }
 
     return true;
 }

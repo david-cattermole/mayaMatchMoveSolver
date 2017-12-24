@@ -2,15 +2,15 @@
 
 
 # Clean up
-rm -R --force ./external/working/glog-0.3.5/
+rm -R --force ./external/working/glog-0.3.1/
 
 
 # Extract
-tar -C ./external/working -xf ./external/archives/glog-0.3.5.tar.gz
+tar -C ./external/working -xf ./external/archives/glog-0.3.1.tar.gz
 
 
 # Build
-cd ./external/working/glog-0.3.5/
+cd ./external/working/glog-0.3.1/
 ./configure
 make clean
 make -j4
@@ -20,8 +20,8 @@ cd ../../../
 
 # Copy
 mkdir -p ./external/include/glog
-cp --force -t ./external/lib ./external/working/glog-0.3.5/.libs/libglog.a
-cp --force -t ./external/lib ./external/working/glog-0.3.5/.libs/libglog.so*
-cp --force -t ./external/include/glog ./external/working/glog-0.3.5/src/glog/*.h
+cp -d --force -t ./external/lib ./external/working/glog-0.3.1/.libs/lib*.a*
+cp -d --force -t ./external/lib ./external/working/glog-0.3.1/.libs/lib*.so*
+cp --force -t ./external/include/glog ./external/working/glog-0.3.1/src/glog/*.h
 
 

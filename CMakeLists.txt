@@ -16,11 +16,6 @@ set(MAYA_LIB_PATH "/usr/autodesk/maya2016/lib" CACHE PATH "Maya library director
 set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH "Levmar include directory")
 set(LEVMAR_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
 
-# Sparse Lev-Mar (SPLM)
-set(HAVE_SPLM OFF CACHE BOOLEAN "Use Sparse Lev-Mar?")
-set(SPLM_INCLUDE_PATH "/usr/local/include" CACHE PATH "Levmar include directory")
-set(SPLM_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
-
 # SuiteSparse library path
 set(USE_SUITE_SPARSE ON CACHE BOOLEAN "Can we use SuiteSparse?")
 set(SUITE_SPARSE_LIB_PATH "/usr/lib64/atlas" CACHE PATH "SuiteSparse library directory")
@@ -33,6 +28,11 @@ set(ATLAS_LIB_PATH "/usr/lib64/atlas" CACHE PATH "ATLAS library directory")
 set(USE_MKL ON CACHE BOOLEAN "Should we use MKL?")
 set(MKL_LIB_PATH "/opt/intel/mkl/lib/intel64" CACHE PATH "Intel MKL library directory")
 
+# Sparse Lev-Mar (SPLM)
+set(HAVE_SPLM OFF CACHE BOOLEAN "Use Sparse Lev-Mar?")
+set(SPLM_INCLUDE_PATH "/usr/local/include" CACHE PATH "Levmar include directory")
+set(SPLM_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
+
 # Ceres Solver
 set(HAVE_CERES ON CACHE BOOLEAN "Can we use Ceres Solver?")
 set(CERES_INCLUDE_PATH "/usr/local/include" CACHE PATH "Ceres include directory")
@@ -42,14 +42,18 @@ set(CERES_LIB_PATH "/usr/local/lib" CACHE PATH "Ceres library directory")
 # Source
 set(SOURCE_FILES
         include/utilities/debugUtils.h
-        include/utilities/cgCameraUtils.h
         include/mayaUtils.h
+        include/mmSolver.h
+        include/mmSolverCeres.h
+        include/mmSolverLevMar.h
         include/Camera.h
         include/Marker.h
         include/Bundle.h
         include/Attr.h
         include/MMSolverCmd.h
-        include/mmSolverUtils.h
+        src/mmSolver.cpp
+        src/mmSolverCeres.cpp
+        src/mmSolverLevMar.cpp
         src/Camera.cpp
         src/Marker.cpp
         src/Bundle.cpp
@@ -62,6 +66,7 @@ include_directories(
         include
         ${LEVMAR_INCLUDE_PATH}
         ${SPLM_INCLUDE_PATH}
+        ${CERES_INCLUDE_PATH}
         ${MAYA_INCLUDE_PATH}
 )
 
@@ -120,6 +125,7 @@ if (USE_SUITE_SPARSE)
     target_link_libraries(${CMD_NAME}
             suitesparseconfig
             amd
+            ldl
             cholmod
             umfpack)
 endif()

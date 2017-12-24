@@ -18,7 +18,8 @@ from mmSolver._api.frame import Frame
 from mmSolver._api.solver import (
     Solver,
     SOLVER_TYPE_LEVMAR,
-    SOLVER_TYPE_SPLM
+    SOLVER_TYPE_SPLM,
+    SOLVER_TYPE_CERES
 )
 from mmSolver._api.solveresult import SolveResult
 from mmSolver._api.excep import (
@@ -61,6 +62,7 @@ __all__ = [
     'Solver',
     'SOLVER_TYPE_LEVMAR',
     'SOLVER_TYPE_SPLM',
+    'SOLVER_TYPE_CERES',
 
     'SolveResult',
 

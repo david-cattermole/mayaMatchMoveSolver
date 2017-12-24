@@ -64,4 +64,5 @@ cd ../../../../
 # Copy
 cp --force -d -t ./external/lib ./external/working/ceres-solver-1.13.0/build/lib/lib*
 cp -R --force -t ./external/include ./external/working/ceres-solver-1.13.0/include/ceres
+cp --force -t ./external/include/ceres/internal ./external/working/ceres-solver-1.13.0/build/config/ceres/internal/config.h
 

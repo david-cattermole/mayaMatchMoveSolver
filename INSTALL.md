@@ -20,7 +20,7 @@ These are the versions of various software tested:
 | Autodesk Maya | Autodesk Maya 2016 SP6 |
 | Autodesk Maya API | 201614 |
 
-NOTE: If compiling the 'Full Mode', you will require a newer version of CMake. The CMake version 3.6.3 has been confirmed to work. The default CMake in the CentOS 6 repository is not sufficient to build the `metis` sub-component of `SuiteSparse`, however for the 'Simple Method', CMake 2.6 is sufficient.
+NOTE: If compiling the 'Full Mode', you will require a newer version of CMake. The CMake version 3.6.3 has been confirmed to work. The default CMake in the CentOS 6 repository is not sufficient to build the `metis` sub-component of `SuiteSparse`. However for the 'Simple Method', CMake 2.6 is sufficient.
 
 ## Simple Method
 
@@ -81,7 +81,7 @@ $ sh runTests.sh
 
 ## Full Method with Intel MKL
 
-This method will use both the `levmar` and `sparselm` algorithms, as well as highly-optimised libraries for computation; `Intel Math Kernal Libraries`.
+This method will use both the `levmar`, `sparselm` and `ceres` algorithms, as well as highly-optimised libraries for computation; `Intel Math Kernel Libraries`.
 
 ### Build Script
 
@@ -100,17 +100,13 @@ $ bash build_with_intel_mkl.sh
 - [CMake 3.6+](https://cmake.org/)
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
+- [Intel Math Kernel Library (MLK)](https://software.intel.com/en-us/mkl)
 - [SuiteSparse 5.0.0](http://faculty.cse.tamu.edu/davis/suitesparse.html)
 - [sparseLM 1.3](http://users.ics.forth.gr/~lourakis/sparseLM/)
-- [Intel Math Kernal Library (MLK)](https://software.intel.com/en-us/mkl)
-
-### Build SuiteSparse
-
-_To be written._
-
-### Build sparseLM
-
-_To be written._
+- [Eigen 3.3.4](http://eigen.tuxfamily.org/)
+- [glog 0.3.1](https://github.com/google/glog)
+- [gflags 2.2.1](https://github.com/gflags/gflags)
+- [ceres-solver 1.13.0](http://ceres-solver.org/)
 
 ### Build mmSolver plugin
 
@@ -121,20 +117,92 @@ $ cd <project root>
 $ mkdir build
 $ cd build
 $ cmake -DCMAKE_BUILD_TYPE=Release \
+        -DHAVE_SPLM=1 \
+        -DHAVE_CERES=1 \
+        -DUSE_ATLAS=0 \
+        -DUSE_SUITE_SPARSE=1 \
+        -DUSE_MKL=1 \
         -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2016/include \
         -DMAYA_LIB_PATH=/usr/autodesk/maya2016/lib \
         -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
         -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
+        -DMKL_LIB_PATH=/opt/intel/mkl/lib/intel64 \
+        -DSUITE_SPARSE_LIB_PATH=${PROJECT_ROOT}/external/lib \
         -DSPLM_LIB_PATH=${PROJECT_ROOT}/external/lib \
         -DSPLM_INCLUDE_PATH=${PROJECT_ROOT}/external/lib \
-        -DSUITE_SPARSE_LIB_PATH=${PROJECT_ROOT}/external/lib \
-        -DMKL_LIB_PATH=/opt/intel/mkl/lib/intel64 \
-        -DHAVE_SPLM=1 \
-        -DUSE_ATLAS=0 \
-        -DUSE_MKL=1 \
+        -DCERES_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DCERES_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
         ..
 $ make -j4
 ```
+
+Once the plug-in is built successfully, continue on to the section "Install Common Files" below.
+
+## Full Method with ATLAS
+
+This section is for compiling with the free and open-source library ATLAS.
+
+This method will use both the `levmar`, `sparselm` and `ceres` algorithms, as well as open source libraries for computation; `Automatically Tuned Linear Algebra Software (ATLAS)`.
+
+### Build Script
+
+Note: This will assume the `atlas` is installed via yum on CentOS 6.x. If you wish to build your own custom atlas library it is an undocumented exercise for the user. On CentOS 6.x you may install `atlas` with the following command:
+```commandline
+$ yum install atlas.x86_64 atlas-devel.x86_64
+```
+
+To build with ATLAS, run these command: 
+```commandline
+$ cd <project root>
+$ bash external/download_all_archives.sh
+$ bash build_with_atlas.sh
+```
+
+###  Dependencies
+
+- C++ compiler ([GCC](https://gcc.gnu.org/), Clang, VC++, etc)
+- [CMake 3.6+](https://cmake.org/)
+- [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
+- [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
+- [ATLAS 3.8.4](http://math-atlas.sourceforge.net/)
+- [SuiteSparse 5.0.0](http://faculty.cse.tamu.edu/davis/suitesparse.html)
+- [sparseLM 1.3](http://users.ics.forth.gr/~lourakis/sparseLM/)
+- [Eigen 3.3.4](http://eigen.tuxfamily.org/)
+- [glog 0.3.1](https://github.com/google/glog)
+- [gflags 2.2.1](https://github.com/gflags/gflags)
+- [ceres-solver 1.13.0](http://ceres-solver.org/)
+
+### Build mmSolver plugin
+
+To compile the Maya plugin, run the commands.
+
+```commandline
+$ cd <project root>
+$ mkdir build
+$ cd build
+$ cmake -DCMAKE_BUILD_TYPE=Release \
+        -DHAVE_SPLM=1 \
+        -DHAVE_CERES=1 \
+        -DUSE_SUITE_SPARSE=1 \
+        -DUSE_ATLAS=1 \
+        -DUSE_MKL=0 \
+        -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2016/include \
+        -DMAYA_LIB_PATH=/usr/autodesk/maya2016/lib \
+        -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
+        -DATLAS_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DSUITE_SPARSE_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DSPLM_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DSPLM_INCLUDE_PATH=${PROJECT_ROOT}/external/lib \
+        -DCERES_LIB_PATH=${PROJECT_ROOT}/external/lib \
+        -DCERES_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
+        ..
+$ make -j4
+```
+
+Once the plug-in is built successfully, continue on to the section "Install Common Files" directly below.
+
+## Install Common Files
 
 ### Install mmSolver Python API
 
@@ -181,11 +249,3 @@ After all parts of the `mmSolver` are installed and can be found by Maya, try ru
 $ cd <project root>
 $ sh runTests.sh
 ```
-
-## Full Method with Atlas (LAPACK / BLAS)
-
-This section is for compiling with the free and open-source library Atlas to provide the LAPACK and BLAS algorithms.
-
-This build process is not yet documented, and there are currently no build scripts for it. 
-
-_To be written_

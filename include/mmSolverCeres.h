@@ -34,18 +34,6 @@
 
 #include <ceres/ceres.h>
 
-// A templated cost functor that implements the residual r = 10 -
-// x. The method operator() is templated so that we can then use an
-// automatic differentiation wrapper around it to generate its
-// derivatives.
-struct SimpleCostFunctor {
-    template <typename T> bool operator()(const T* const x, T* residual) const {
-        residual[0] = 10.0 - x[0];
-        return true;
-    }
-};
-
-
 
 // The user data given to levmar.
 struct CeresSolverData {
@@ -61,6 +49,8 @@ struct CeresSolverData {
     std::vector<std::pair<int, int> > errorToMarkerList;
 
     // Internal Solver Data.
+    int numParameters;
+    int numErrors;
     std::vector<double> errorList;
     int iterNum;
     int jacIterNum;
@@ -108,8 +98,8 @@ public:
 // Factory to hide the construction of the CostFunction object from
 // the client code.
     static ceres::CostFunction* create(CeresSolverData &data) {
-        ceres::DynamicNumericDiffCostFunction<ReprojectionErrorFunctor>* cost_function =
-                new ceres::DynamicNumericDiffCostFunction<ReprojectionErrorFunctor>(new ReprojectionErrorFunctor(data));
+        ceres::DynamicNumericDiffCostFunction<ReprojectionErrorFunctor, ceres::CENTRAL>* cost_function =
+                new ceres::DynamicNumericDiffCostFunction<ReprojectionErrorFunctor, ceres::CENTRAL>(new ReprojectionErrorFunctor(data));
         return cost_function;
     }
 

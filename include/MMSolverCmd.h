@@ -89,9 +89,6 @@
 #define VERBOSE_FLAG_LONG      "-verbose"
 #define VERBOSE_DEFAULT_VALUE  false
 
-#define COMMAND_NAME    "mmSolver"
-#define COMMAND_VERSION "1.0"
-
 
 class MMSolverCmd : public MPxCommand {
 public:
@@ -112,6 +109,8 @@ public:
     virtual MStatus redoIt();
 
     static void *creator();
+
+    static MString cmdName();
 
 private:
     MStatus parseArgs( const MArgList& args );

@@ -34,6 +34,10 @@ void *MMSolverCmd::creator() {
     return new MMSolverCmd();
 }
 
+MString MMSolverCmd::cmdName() {
+    return MString("mmSolver");
+}
+
 /*
  * Tell Maya we have a syntax function.
  */
@@ -427,3 +431,4 @@ MStatus MMSolverCmd::undoIt() {
     m_dgmod.undoIt();
     return status;
 }
+

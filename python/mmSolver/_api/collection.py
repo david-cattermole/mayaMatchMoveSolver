@@ -404,8 +404,8 @@ class Collection(object):
             if attr.is_locked():
                 continue
             name = attr.get_name()
-            node_name = attr.get_node_name()
-            attr_name = attr.get_attr_name()
+            node_name = attr.get_node()
+            attr_name = attr.get_attr()
 
             # If the user does not specify a min/max value then we get it
             # from Maya directly, if Maya doesn't have one, we leave

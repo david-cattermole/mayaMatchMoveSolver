@@ -255,6 +255,35 @@ MStatus Attr::getValue(bool &value, const MTime &time) {
     return MS::kSuccess;
 }
 
+MStatus Attr::getValue(int &value, const MTime &time) {
+    MStatus status;
+    bool connected = Attr::isConnected();
+    bool animated = Attr::isAnimated();
+    MPlug plug = Attr::getPlug();
+
+    if (animated) {
+        MFnAnimCurve curveFn(plug, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        double curveValue;
+        status = curveFn.evaluate(time, curveValue);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        value = (int) curveValue;
+    } else if (connected) {
+        if (USE_DG_CONTEXT) {
+            MDGContext ctx(time);
+            value = plug.asBool(ctx, &status);
+        } else {
+            MAnimControl::setCurrentTime(time);
+            value = plug.asInt(MDGContext::fsNormal, &status);
+        }
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    } else {
+        value = plug.asInt();
+    }
+
+    return MS::kSuccess;
+}
+
 MStatus Attr::getValue(double &value, const MTime &time) {
     MStatus status;
     bool connected = Attr::isConnected();

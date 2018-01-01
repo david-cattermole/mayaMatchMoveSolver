@@ -49,6 +49,8 @@ public:
 
     MStatus getValue(bool &value, const MTime &time);
 
+    MStatus getValue(int &value, const MTime &time);
+
     MStatus getValue(double &value, const MTime &time);
 
     MStatus getValue(MMatrix &value, const MTime &time);

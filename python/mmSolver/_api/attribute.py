@@ -41,6 +41,9 @@ class Attribute(object):
             node_obj = self._plug.node()
             self._dependFn = OpenMaya.MFnDependencyNode(node_obj)
 
+        # The minimum and maximum values allowed for the attribute.
+        self._min_value = None
+        self._max_value = None
         return
 
     def get_node(self, full_path=True):
@@ -114,3 +117,17 @@ class Attribute(object):
 
     def is_locked(self):
         return self.get_state() == ATTR_STATE_LOCKED
+
+    def get_min_value(self):
+        return self._min_value
+
+    def set_min_value(self, value):
+        assert value is None or isinstance(value, float)
+        self._min_value = value
+
+    def get_max_value(self):
+        return self._max_value
+
+    def set_max_value(self, value):
+        assert value is None or isinstance(value, float)
+        self._max_value = value

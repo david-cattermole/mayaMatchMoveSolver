@@ -349,6 +349,20 @@ class Collection(object):
     ############################################################################
 
     def __compile_solver(self, sol, mkr_list, attr_list):
+        """
+        Compiles data given into flags for a single run of 'mmSolver'.
+
+        :param sol: The solver to compile
+        :type sol: solver.Solver
+
+        :param mkr_list: Markers to measure
+        :type mkr_list: list of marker.Marker
+
+        :param attr_list: Attributes to solve for
+        :type attr_list: list of attribute.Attribute
+
+        :return:
+        """
         assert isinstance(sol, solver.Solver)
         assert isinstance(mkr_list, list)
         assert isinstance(attr_list, list)
@@ -389,7 +403,31 @@ class Collection(object):
             assert isinstance(attr, attribute.Attribute)
             if attr.is_locked():
                 continue
-            attr_name = attr.get_name()
+            name = attr.get_name()
+            node_name = attr.get_node_name()
+            attr_name = attr.get_attr_name()
+
+            # If the user does not specify a min/max value then we get it
+            # from Maya directly, if Maya doesn't have one, we leave
+            # min/max_value as None and pass it to the mmSolver command
+            # indicating there is no bound.
+            min_value = attr.get_min_value()
+            max_value = attr.get_max_value()
+            if min_value is None:
+                if maya.cmds.attributeQuery(attr_name,
+                                            node=node_name,
+                                            minExists=True):
+                    min_value = maya.cmds.attributeQuery(attr_name,
+                                                         node=node_name,
+                                                         minimum=True)
+            if max_value is None:
+                if maya.cmds.attributeQuery(attr_name,
+                                            node=node_name,
+                                            maxExists=True):
+                    max_value = maya.cmds.attributeQuery(attr_name,
+                                                         node=node_name,
+                                                         maximum=True)
+
             animated = attr.is_animated()
             static = attr.is_static()
             use = False
@@ -398,7 +436,9 @@ class Collection(object):
             if use_static and static is True:
                 use = True
             if use is True:
-                attrs.append((attr_name))
+                # TODO: Add the min/max values to the
+                # attrs.append((name, min_value, max_value))
+                attrs.append((name))
         if len(attrs) == 0:
             return None
 
@@ -445,8 +485,12 @@ class Collection(object):
         return kwargs
 
     def _compile(self):
-        # TODO: Take all the data in this class and compile them into keyword
-        # argument flags for the mmSolver command.
+        """
+        Take the data in this class and compile it into keyword argument flags.
+
+        :return: list of keyword arguments.
+        :rtype: list of dict
+        """
 
         # If the class attributes haven't been changed, re-use the previously
         # generated arguments.
@@ -501,10 +545,15 @@ class Collection(object):
         return ret
 
     def execute(self):
-        # TODO: This function will compile all the data in the collection, then
-        # pass that data to the mmSolver command. The mmSolver command will
-        # return a list of strings, which will then be passed to the SolveResult
-        # class so the user can query the raw data using an interface.
+        """
+        Compile the collection, then pass that data to the 'mmSolver' command.
+
+        The mmSolver command will return a list of strings, which will then be
+        passed to the SolveResult class so the user can query the raw data using an interface.
+
+        :return: List of SolveResults
+        :rtype: list of solveresult.SolverResult
+        """
 
         # Check for validity
         solres_list = []

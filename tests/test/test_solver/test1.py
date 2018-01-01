@@ -35,6 +35,10 @@ class TestSolver1(solverUtils.SolverTestCase):
 
         marker_tfm = maya.cmds.createNode('transform', name='marker_tfm', parent=cam_tfm)
         marker_shp = maya.cmds.createNode('locator', name='marker_shp', parent=marker_tfm)
+        maya.cmds.addAttr(marker_tfm, longName='enable', at='byte',
+                          minValue=0, maxValue=1, defaultValue=True)
+        maya.cmds.addAttr(marker_tfm, longName='weight', at='double',
+                          minValue=0.0, defaultValue=1.0)
         maya.cmds.setAttr(marker_tfm + '.tx', -2.5)
         maya.cmds.setAttr(marker_tfm + '.ty', 1.3)
         maya.cmds.setAttr(marker_tfm + '.tz', -10)

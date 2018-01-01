@@ -49,17 +49,12 @@
 
 // Maya
 #include <maya/MPoint.h>
-//#include <maya/MVector.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MObject.h>
 #include <maya/MFnAnimCurve.h>
 #include <maya/MAnimCurveChange.h>
-//#include <maya/MSelectionList.h>
-//#include <maya/MFnDependencyNode.h>
 #include <maya/MMatrix.h>
-//#include <maya/MFloatMatrix.h>
-//#include <maya/MFnCamera.h>
 #include <maya/MComputation.h>
 #include <maya/MProfiler.h>
 

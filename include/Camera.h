@@ -60,6 +60,16 @@ public:
 
     Attr &getFocalLengthAttr();
 
+    Attr &getCameraScaleAttr();
+
+    Attr &getFilmFitAttr();
+
+    Attr &getRenderWidthAttr();
+
+    Attr &getRenderHeightAttr();
+
+    Attr &getRenderAspectAttr();
+
     MStatus getWorldProjMatrix(MMatrix &value, const MTime &time);
 
     MStatus getWorldProjMatrix(MMatrix &value);
@@ -82,6 +92,11 @@ private:
     Attr m_filmbackOffsetX;
     Attr m_filmbackOffsetY;
     Attr m_focalLength;
+    Attr m_cameraScale;
+    Attr m_filmFit;
+    Attr m_renderWidth;
+    Attr m_renderHeight;
+    Attr m_renderAspect;
 
     DoubleMatrixMap m_worldProjMatrixCache;
 };

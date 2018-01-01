@@ -4,6 +4,7 @@
 
 // STL
 #include <cassert>   // assert
+#include <limits>    // numeric_limits<double>::max and min
 
 // Maya
 #include <maya/MGlobal.h>
@@ -33,7 +34,9 @@ Attr::Attr() :
         m_animCurveName(""),
         m_animated(-1),
         m_connected(-1),
-        m_isFreeToChange(-1) {
+        m_isFreeToChange(-1),
+        m_minValue(std::numeric_limits<double>::min()),
+        m_maxValue(std::numeric_limits<double>::max()) {
 }
 
 MString Attr::getName() const {
@@ -390,6 +393,22 @@ MStatus Attr::setValue(double value, const MTime &time,
 MStatus Attr::setValue(double value, MDGModifier &dgmod, MAnimCurveChange &animChange) {
     MTime time = MAnimControl::currentTime();
     return Attr::setValue(value, time, dgmod, animChange);
+}
+
+double Attr::getMinimumValue() {
+    return m_minValue;
+}
+
+void Attr::setMinimumValue(double value) {
+    m_minValue = value;
+}
+
+double Attr::getMaximumValue() {
+    return m_maxValue;
+}
+
+void Attr::setMaximumValue(double value) {
+    m_maxValue = value;
 }
 
 

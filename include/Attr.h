@@ -62,10 +62,18 @@ public:
     MStatus getValue(MMatrix &value);
 
     MStatus setValue(double value, const MTime &time,
-                  MDGModifier &dgmod, MAnimCurveChange &animChange);
+                     MDGModifier &dgmod, MAnimCurveChange &animChange);
 
     MStatus setValue(double value,
-                  MDGModifier &dgmod, MAnimCurveChange &animChange);
+                     MDGModifier &dgmod, MAnimCurveChange &animChange);
+
+    double getMinimumValue();
+
+    void setMinimumValue(double value);
+
+    double getMaximumValue();
+
+    void setMaximumValue(double value);
 
 private:
     MString m_nodeName;
@@ -76,6 +84,8 @@ private:
     int m_animated;
     int m_connected;
     int m_isFreeToChange;
+    double m_minValue;
+    double m_maxValue;
 };
 
 

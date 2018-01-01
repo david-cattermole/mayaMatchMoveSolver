@@ -42,6 +42,7 @@ set(CERES_LIB_PATH "/usr/local/lib" CACHE PATH "Ceres library directory")
 # Source
 set(SOURCE_FILES
         include/utilities/debugUtils.h
+        include/nodeTypeIds.h
         include/mayaUtils.h
         include/mmSolver.h
         include/mmSolverCeres.h
@@ -50,6 +51,7 @@ set(SOURCE_FILES
         include/Marker.h
         include/Bundle.h
         include/Attr.h
+        include/MMTestCameraMatrixCmd.h
         include/MMSolverCmd.h
         src/mmSolver.cpp
         src/mmSolverCeres.cpp
@@ -58,6 +60,7 @@ set(SOURCE_FILES
         src/Marker.cpp
         src/Bundle.cpp
         src/Attr.cpp
+        src/MMTestCameraMatrixCmd.cpp
         src/MMSolverCmd.cpp
         src/pluginMain.cpp
 )

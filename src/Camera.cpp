@@ -55,6 +55,8 @@ Camera::Camera() :
     m_filmbackOffsetY.setAttrName("verticalFilmOffset");
     m_focalLength.setAttrName("focalLength");
     m_cameraScale.setAttrName("cameraScale");
+    m_nearClipPlane.setAttrName("nearClipPlane");
+    m_farClipPlane.setAttrName("farClipPlane");
     m_filmFit.setAttrName("filmFit");
 
     // Default Resolution node exists in every scene.
@@ -97,6 +99,8 @@ void Camera::setShapeNodeName(MString value) {
         m_filmbackOffsetY.setNodeName(value);
         m_focalLength.setNodeName(value);
         m_cameraScale.setNodeName(value);
+        m_nearClipPlane.setNodeName(value);
+        m_farClipPlane.setNodeName(value);
         m_filmFit.setNodeName(value);
     }
     m_shapeNodeName = value;
@@ -148,6 +152,14 @@ Attr &Camera::getCameraScaleAttr() {
     return m_cameraScale;
 }
 
+Attr &Camera::getNearClippingAttr() {
+    return m_nearClipPlane;
+}
+
+Attr &Camera::getFarClippingAttr() {
+    return m_farClipPlane;
+}
+
 Attr &Camera::getFilmFitAttr() {
     return m_filmFit;
 }
@@ -186,11 +198,11 @@ MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time) {
         worldMat = worldMat.inverse();
 
         // Get the projection matrix.
+#if USE_MAYA_PROJECTION_MATRIX == 1
         // TODO: Querying the projection matrix from Maya at a specific time
         // is VERY slow, we need to find a faster way to compute this ourselves.
         // The tricky part will be making sure to match Maya's computation perfectly.
         MFnCamera cameraFn(Camera::getShapeObject(), &status);
-#if USE_MAYA_PROJECTION_MATRIX == 1
         MDGContext ctx(time);
         MFloatMatrix floatProjMat = cameraFn.projectionMatrix(ctx, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -205,6 +217,8 @@ MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time) {
         Attr offsetXAttr = getFilmbackOffsetXAttr();
         Attr offsetYAttr = getFilmbackOffsetYAttr();
         Attr cameraScaleAttr = getCameraScaleAttr();
+        Attr nearClippingAttr = getNearClippingAttr();
+        Attr farClippingAttr = getFarClippingAttr();
         Attr filmFitAttr = getFilmFitAttr();
         Attr renderWidthAttr = getRenderWidthAttr();
         Attr renderHeightAttr = getRenderHeightAttr();
@@ -220,12 +234,16 @@ MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time) {
         double filmOffsetX = 0.0;
         double filmOffsetY = 0.0;
         double cameraScale = 1.0;
+        double near = 0.1;
+        double far = 1000.0;
         filmbackWidthAttr.getValue(filmWidth, time);
         filmbackHeightAttr.getValue(filmHeight, time);
         focalLengthAttr.getValue(focal, time);
         offsetXAttr.getValue(filmOffsetX, time);
         offsetYAttr.getValue(filmOffsetY, time);
         cameraScaleAttr.getValue(cameraScale, time);
+        nearClippingAttr.getValue(near, time);
+        farClippingAttr.getValue(far, time);
         filmFitAttr.getValue(filmFit, time);
         renderWidthAttr.getValue(imageWidth, time);
         renderHeightAttr.getValue(imageHeight, time);
@@ -251,14 +269,12 @@ MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time) {
         VRB("perspective imageHeight=" << imageHeight);
         VRB("perspective imageAspect=" << imageAspectRatio);
 
-        double near = cameraFn.nearClippingPlane();
-        double far = cameraFn.farClippingPlane();
-
         double right =   (((0.5 * filmWidth) + filmOffsetX) / focal) * near;
         double left =   -(((0.5 * filmWidth) - filmOffsetX) / focal) * near;
         double top =     (((0.5 * filmHeight) + filmOffsetY) / focal) * near;
         double bottom = -(((0.5 * filmHeight) - filmOffsetY) / focal) * near;
         if (verbose) {
+            MFnCamera cameraFn(Camera::getShapeObject(), &status);
             double right_maya = 0.0;
             double left_maya = 0.0;
             double top_maya = 0.0;
@@ -397,6 +413,7 @@ MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time) {
         projMat[3][3] = 0;
 
         if (verbose) {
+            MFnCamera cameraFn(Camera::getShapeObject(), &status);
             MFloatMatrix floatProjMat_maya = cameraFn.projectionMatrix();
             MMatrix projMat_maya = MMatrix(&floatProjMat_maya.matrix[0]);
             VRB("perspective -------------");

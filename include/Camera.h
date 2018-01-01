@@ -62,6 +62,10 @@ public:
 
     Attr &getCameraScaleAttr();
 
+    Attr &getNearClippingAttr();
+
+    Attr &getFarClippingAttr();
+
     Attr &getFilmFitAttr();
 
     Attr &getRenderWidthAttr();
@@ -93,6 +97,8 @@ private:
     Attr m_filmbackOffsetY;
     Attr m_focalLength;
     Attr m_cameraScale;
+    Attr m_nearClipPlane;
+    Attr m_farClipPlane;
     Attr m_filmFit;
     Attr m_renderWidth;
     Attr m_renderHeight;

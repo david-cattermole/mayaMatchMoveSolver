@@ -276,6 +276,9 @@ class Collection(object):
         for member in members:
             object_type = api_utils.get_object_type(member)
             if object_type == 'attribute':
+                # TODO: Store the min/max values of the attribute in the
+                # collection node, then get the data back when we turn it
+                # back into an Attribute class.
                 attr = attribute.Attribute(name=member)
                 result.append(attr)
         return result
@@ -420,6 +423,14 @@ class Collection(object):
                     min_value = maya.cmds.attributeQuery(attr_name,
                                                          node=node_name,
                                                          minimum=True)
+                    if len(min_value) == 1:
+                        min_value = min_value[0]
+                    else:
+                        msg = 'Cannot handle attributes with multiple '
+                        msg += 'minimum values; node={0} attr={1}'
+                        msg = msg.format(node_name, attr_name)
+                        raise excep.NotValid(msg)
+
             if max_value is None:
                 if maya.cmds.attributeQuery(attr_name,
                                             node=node_name,
@@ -427,6 +438,13 @@ class Collection(object):
                     max_value = maya.cmds.attributeQuery(attr_name,
                                                          node=node_name,
                                                          maximum=True)
+                    if len(max_value) == 1:
+                        max_value = max_value[0]
+                    else:
+                        msg = 'Cannot handle attributes with multiple '
+                        msg += 'maximum values; node={0} attr={1}'
+                        msg = msg.format(node_name, attr_name)
+                        raise excep.NotValid(msg)
 
             animated = attr.is_animated()
             static = attr.is_static()
@@ -436,9 +454,7 @@ class Collection(object):
             if use_static and static is True:
                 use = True
             if use is True:
-                # TODO: Add the min/max values to the
-                # attrs.append((name, min_value, max_value))
-                attrs.append((name))
+                attrs.append((name, str(min_value), str(max_value)))
         if len(attrs) == 0:
             return None
 

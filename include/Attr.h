@@ -57,6 +57,8 @@ public:
 
     MStatus getValue(bool &value);
 
+    MStatus getValue(int &value);
+
     MStatus getValue(double &value);
 
     MStatus getValue(MMatrix &value);

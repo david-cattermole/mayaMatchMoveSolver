@@ -338,6 +338,11 @@ MStatus Attr::getValue(bool &value) {
     return Attr::getValue(value, time);
 }
 
+MStatus Attr::getValue(int &value) {
+    MTime time = MAnimControl::currentTime();
+    return Attr::getValue(value, time);
+}
+
 MStatus Attr::getValue(double &value) {
     MTime time = MAnimControl::currentTime();
     return Attr::getValue(value, time);

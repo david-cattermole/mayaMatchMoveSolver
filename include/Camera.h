@@ -74,6 +74,26 @@ public:
 
     Attr &getRenderAspectAttr();
 
+    double getCameraScaleValue();
+
+    double getNearClippingValue();
+
+    double getFarClippingValue();
+
+    int getFilmFitValue();
+
+    int getRenderWidthValue();
+
+    int getRenderHeightValue();
+
+    double getRenderAspectValue();
+
+    MStatus getProjMatrix(MMatrix &value, const MTime &time);
+
+    MStatus getProjMatrix(MMatrix &value);
+
+    MStatus clearProjMatrixCache();
+
     MStatus getWorldProjMatrix(MMatrix &value, const MTime &time);
 
     MStatus getWorldProjMatrix(MMatrix &value);
@@ -104,6 +124,23 @@ private:
     Attr m_renderHeight;
     Attr m_renderAspect;
 
+    bool m_cameraScaleCached;
+    bool m_nearClipPlaneCached;
+    bool m_farClipPlaneCached;
+    bool m_filmFitCached;
+    bool m_renderWidthCached;
+    bool m_renderHeightCached;
+    bool m_renderAspectCached;
+
+    double m_cameraScaleValue;
+    double m_nearClipPlaneValue;
+    double m_farClipPlaneValue;
+    int    m_filmFitValue;
+    int    m_renderWidthValue;
+    int    m_renderHeightValue;
+    double m_renderAspectValue;
+
+    DoubleMatrixMap m_projMatrixCache;
     DoubleMatrixMap m_worldProjMatrixCache;
 };
 

@@ -6,6 +6,7 @@ maya.cmds.* so that they support undo/redo correctly.
 """
 
 import json
+import pprint
 
 import maya.cmds
 import maya.OpenMaya as OpenMaya
@@ -497,7 +498,9 @@ class Collection(object):
         # TODO: epsilon2 argument
         # TODO: epsilon3 argument
 
-        print 'kwargs:', repr(kwargs)
+        # print 'kwargs:', repr(kwargs)
+        print 'kwargs:'
+        pprint.pprint(kwargs)
         return kwargs
 
     def _compile(self):

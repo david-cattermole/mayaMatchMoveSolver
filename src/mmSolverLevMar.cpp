@@ -14,23 +14,12 @@
 #endif
 #endif
 
-#ifdef HAVE_CERES
-#if HAVE_CERES == 0
-#warning "HAVE_CERES was not given."
-#endif
-#endif
-
 // Lev-Mar
 #include <levmar.h>  // dlevmar_dif
 
 // Sparse Lev-Mar
 #if HAVE_SPLM == 1
 #include <splm.h>    // sparselm_difccs
-#endif
-
-// Ceres
-#if HAVE_CERES == 1
-#include <ceres/ceres.h>
 #endif
 
 // STL
@@ -172,13 +161,7 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
 
             BundlePtr bnd = marker->getBundle();
 
-            // TODO: If we convert these points into normalised image-space
-            // then we can pre-compute the marker positions, this might have
-            // a signficant performance improvement.
-            status = marker->getPos(mkr_mpos, frame);
-            CHECK_MSTATUS(status);
-            mkr_mpos = mkr_mpos * cameraWorldProjectionMatrix;
-            mkr_mpos.cartesianize();
+            mkr_mpos = ud->markerPosList[i]; // Use pre-computed marker position
 
             status = bnd->getPos(bnd_mpos, frame);
             CHECK_MSTATUS(status);

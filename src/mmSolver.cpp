@@ -100,6 +100,9 @@ bool solve(int iterMax,
     std::vector<std::pair<int, int> > paramToAttrList;
     std::vector<std::pair<int, int> > errorToMarkerList;
 
+    // Cache out the marker positions in screen-space
+    std::vector<MPoint> markerPosList;
+
     // Errors and parameters as used by the solver.
     std::vector<double> errorList(1);
     std::vector<double> paramList(1);
@@ -122,8 +125,6 @@ bool solve(int iterMax,
                 // second index is into 'frameList'
                 std::pair<int, int> attrPair(i, j);
                 paramToAttrList.push_back(attrPair);
-
-                // ordering->AddElementToGroup(???, 0);
             }
         } else if (attr->isFreeToChange()) {
             ++m;
@@ -131,13 +132,9 @@ bool solve(int iterMax,
             // second index is into 'frameList', '-1' means a static value.
             std::pair<int, int> attrPair(i, -1);
             paramToAttrList.push_back(attrPair);
-
-            // ordering->AddElementToGroup(???, 0);
         }
         i++;
     }
-    // options->linear_solver_ordering.reset(ordering);
-
 
     // Count up number of errors
     // For each marker on each frame that it is valid, we add ERRORS_PER_MARKER errors.
@@ -160,6 +157,18 @@ bool solve(int iterMax,
                 std::pair<int, int> markerPair(i, j);
                 errorToMarkerList.push_back(markerPair);
                 n += ERRORS_PER_MARKER;
+
+                // Get Marker Position.
+                MMatrix cameraWorldProjectionMatrix;
+                CameraPtr camera = marker->getCamera();
+                status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
+                CHECK_MSTATUS(status);
+                MPoint marker_pos;
+                status = marker->getPos(marker_pos, frame);
+                CHECK_MSTATUS(status);
+                marker_pos = marker_pos * cameraWorldProjectionMatrix;
+                marker_pos.cartesianize();
+                markerPosList.push_back(marker_pos);
             }
         }
         i++;
@@ -274,6 +283,7 @@ bool solve(int iterMax,
         // Indexing maps
         userData.paramToAttrList = paramToAttrList;
         userData.errorToMarkerList = errorToMarkerList;
+        userData.markerPosList = markerPosList;
 
         // Solver Aux data
         userData.errorList = errorList;
@@ -528,7 +538,7 @@ bool solve(int iterMax,
         computation.endComputation();
 
         // Set the solved parameters
-        INFO("Setting Parameters...");
+        VRB("Setting Parameters...");
         for (i = 0; i < m; ++i) {
             std::pair<int, int> attrPair = paramToAttrList[i];
             AttrPtr attr = attrList[attrPair.first];
@@ -589,20 +599,21 @@ bool solve(int iterMax,
         VRB("Jacobian Evaluations: " << info[8]);
         VRB("Attempts for reducing error: " << info[9]);
 
-        solveBenchTimer.print("Solve Time", 1);
-        funcBenchTimer.print("Func Time", 1);
-        jacBenchTimer.print("Jacobian Time", 1);
-        paramBenchTimer.print("Param Time", (uint) userData.iterNum);
-        errorBenchTimer.print("Error Time", (uint) userData.iterNum);
-        funcBenchTimer.print("Func Time", (uint) userData.iterNum);
+        if (verbose) {
+            solveBenchTimer.print("Solve Time", 1);
+            funcBenchTimer.print("Func Time", 1);
+            jacBenchTimer.print("Jacobian Time", 1);
+            paramBenchTimer.print("Param Time", (uint) userData.iterNum);
+            errorBenchTimer.print("Error Time", (uint) userData.iterNum);
+            funcBenchTimer.print("Func Time", (uint) userData.iterNum);
 
-        solveBenchTicks.print("Solve Ticks", 1);
-        funcBenchTicks.print("Func Ticks", 1);
-        jacBenchTicks.print("Jacobian Ticks", 1);
-        paramBenchTicks.print("Param Ticks", (uint) userData.iterNum);
-        errorBenchTicks.print("Error Ticks", (uint) userData.iterNum);
-        funcBenchTicks.print("Func Ticks", (uint) userData.iterNum);
-
+            solveBenchTicks.print("Solve Ticks", 1);
+            funcBenchTicks.print("Func Ticks", 1);
+            jacBenchTicks.print("Jacobian Ticks", 1);
+            paramBenchTicks.print("Param Ticks", (uint) userData.iterNum);
+            errorBenchTicks.print("Error Ticks", (uint) userData.iterNum);
+            funcBenchTicks.print("Func Ticks", (uint) userData.iterNum);
+        }
 
         // Add all the data into the output string from the Maya command.
         resultStr = "success=" + string::numberToString<int>((bool)ret);
@@ -778,7 +789,6 @@ bool solve(int iterMax,
             options.dense_linear_algebra_library_type = ceres::LAPACK;
             // options.min_linear_solver_iterations = 5;
             // options.max_linear_solver_iterations = 500;
-            // options.
             // options.linear_solver_type = ceres::DENSE_QR;
             // options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
             // options.linear_solver_type = ceres::DENSE_SCHUR;

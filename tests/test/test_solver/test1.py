@@ -50,8 +50,8 @@ class TestSolver1(solverUtils.SolverTestCase):
             (marker_tfm, cam_shp, bundle_tfm),
         )
         node_attrs = [
-            (bundle_tfm + '.tx'),
-            (bundle_tfm + '.ty'),
+            (bundle_tfm + '.tx', 'None', 'None'),
+            (bundle_tfm + '.ty', 'None', 'None'),
         ]
         frames = [
             (1),
@@ -75,6 +75,11 @@ class TestSolver1(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
+
+        # save the output
+        path = self.get_data_path('solver_test1_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
 
 
 if __name__ == '__main__':

@@ -60,7 +60,7 @@ MSyntax MMSolverCmd::newSyntax() {
     // Flags
     syntax.addFlag(CAMERA_FLAG, CAMERA_FLAG_LONG, MSyntax::kString, MSyntax::kString);
     syntax.addFlag(MARKER_FLAG, MARKER_FLAG_LONG, MSyntax::kString, MSyntax::kString, MSyntax::kString);
-    syntax.addFlag(ATTR_FLAG, ATTR_FLAG_LONG, MSyntax::kString);
+    syntax.addFlag(ATTR_FLAG, ATTR_FLAG_LONG, MSyntax::kString, MSyntax::kString, MSyntax::kString);
     syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG, MSyntax::kLong);
     syntax.addFlag(TAU_FLAG, TAU_FLAG_LONG, MSyntax::kDouble);
     syntax.addFlag(EPSILON1_FLAG, EPSILON1_FLAG_LONG, MSyntax::kDouble);
@@ -174,6 +174,13 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
                             << "camera=" << cameraName << " "
                             << "bundle=" << bundleName);
             }
+            // TODO: Print warnings if any of the following attributes on the camera are animated/connected:
+            // - camera.horizontalFilmAperture
+            // - camera.verticalFilmAperture
+            // - camera.nearClippingPlane
+            // - camera.farClippingPlane
+            // - camera.cameraScale
+            // - camera.filmFit
 
             // Bundle
             BundlePtr bundle = BundlePtr(new Bundle());
@@ -216,14 +223,36 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         MArgList attrArgs;
         status = argData.getFlagArgumentList(ATTR_FLAG, i, attrArgs);
         if (status == MStatus::kSuccess) {
-            if (attrArgs.length() != 1) {
-                ERR("Attribute argument list must have 1 argument; \"node.attribute\".");
+            if (attrArgs.length() != 3) {
+                ERR("Attribute argument list must have 3 argument; \"node.attribute\", \"min\", \"max\".");
                 continue;
             }
+
+            // TODO: Print errors and exit with failure if any of the following attributes are detected:
+            // - camera.horizontalFilmAperture
+            // - camera.verticalFilmAperture
+            // - camera.nearClippingPlane
+            // - camera.farClippingPlane
+            // - camera.cameraScale
+            // - camera.filmFit
+            // - defaultResolution.width
+            // - defaultResolution.height
+            // - defaultResolution.deviceAspectRatio
 
             AttrPtr attr = AttrPtr(new Attr());
             MString nodeAttrName = attrArgs.asString(0);
             attr->setName(nodeAttrName);
+
+            // Get Min/Max attribute values
+            MString minValueStr = attrArgs.asString(1);
+            MString maxValueStr = attrArgs.asString(2);
+            if (minValueStr.isDouble()) {
+                attr->setMinimumValue(minValueStr.asDouble());
+            }
+            if (maxValueStr.isDouble()) {
+                attr->setMaximumValue(maxValueStr.asDouble());
+            }
+
             m_attrList.push_back(attr);
 
             MPlug attrPlug = attr->getPlug();
@@ -231,6 +260,8 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
             //               << attr->getName() << " : "
             //               << attr->getNodeName() << " : "
             //               << attr->isAnimated() << " : "
+            //               << attr->getMinimumValue() << " : "
+            //               << attr->getMaximumValue() << " : "
             //               << attrPlug.name());
         }
     }

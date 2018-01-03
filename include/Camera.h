@@ -23,6 +23,13 @@ typedef std::unordered_map<double, MMatrix> DoubleMatrixMap;
 typedef DoubleMatrixMap::const_iterator DoubleMatrixMapCIt;
 typedef DoubleMatrixMap::iterator DoubleMatrixMapIt;
 
+MStatus getFrustum(const double depth,
+                   const double filmWidth, const double filmHeight,
+                   const double filmOffsetX, const double filmOffsetY,
+                   const double focal,
+                   double &left, double &right,
+                   double &top, double &bottom);
+
 class Camera {
 public:
     Camera();
@@ -88,17 +95,30 @@ public:
 
     double getRenderAspectValue();
 
+    MStatus getFrustum(double depth,
+                       double &left, double &right,
+                       double &top, double &bottom,
+                       const MTime &time,
+                       bool withFilmFit = false);
+
+    MStatus getFrustum(double &left, double &right,
+                       double &top, double &bottom,
+                       const MTime &time,
+                       bool withFilmFit = false);
+
     MStatus getProjMatrix(MMatrix &value, const MTime &time);
 
     MStatus getProjMatrix(MMatrix &value);
-
-    MStatus clearProjMatrixCache();
 
     MStatus getWorldProjMatrix(MMatrix &value, const MTime &time);
 
     MStatus getWorldProjMatrix(MMatrix &value);
 
+    MStatus clearProjMatrixCache();
+
     MStatus clearWorldProjMatrixCache();
+
+    MStatus clearAttrValueCache();
 
 private:
     MString m_transformNodeName;

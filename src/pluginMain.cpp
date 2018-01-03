@@ -5,16 +5,15 @@
 
 #include <maya/MFnPlugin.h>
 
-// TODO: Add entry points for mmReprojection cmd and node, mmMarkerScale cmd and node and mmTriangulate cmd.
+// TODO: Add entry points for mmReprojection cmd and node, mmMarkerScale cmd and mmTriangulate cmd.
 #include <MMSolverCmd.h>
 #include <MMTestCameraMatrixCmd.h>
+#include <MMMarkerScaleNode.h>
 // #include <MMReprojectionCmd.h>
 // #include <MMTriangulateCmd.h>
 // #include <MMMarkerScaleCmd.h>
-// #include <MMMarkerScaleNode.h>
 
 
-// TODO: Write #defines to register/deregister nodes.
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
     stat = plugin.registerCommand( name, creator, syntax);    \
     if (!stat) {                                              \
@@ -23,12 +22,25 @@
     }
 
 #define DEREGISTER_COMMAND(plugin, name, stat)              \
-    stat = plugin.deregisterCommand(name);          \
+    stat = plugin.deregisterCommand(name);                  \
     if (!stat) {                                            \
         stat.perror(MString(name) + ": deregisterCommand"); \
         return stat;                                        \
     }
 
+#define REGISTER_NODE(plugin, name, id, creator, initialize, stat) \
+    stat = plugin.registerNode(name, id, creator, initialize);     \
+    if (!stat) {                                                   \
+        stat.perror(MString(name) + ": registerNode");             \
+        return (stat);                                             \
+    }
+
+#define DEREGISTER_NODE(plugin, name, id, stat)          \
+    stat = plugin.deregisterNode(id);                    \
+    if (!stat) {                                         \
+        stat.perror(MString(name) + ": deregisterNode"); \
+        return (stat);                                   \
+    }
 
 #undef PLUGIN_COMPANY  // Maya API defines this, we override it.
 #define PLUGIN_COMPANY "MM Solver"
@@ -66,15 +78,12 @@ MStatus initializePlugin(MObject obj) {
     //                  MMMarkerScaleCmd::newSyntax,
     //                  status);
 
-//    status = plugin.registerNode(
-//            kVelocityNodeName,
-//            velocityNode::id,
-//            velocityNode::creator,
-//            velocityNode::initialize);
-//    if (!status) {
-//        status.perror("velocityNode: registerNode");
-//        return (status);
-//    }
+    REGISTER_NODE(plugin,
+                  MMMarkerScaleNode::nodeName(),
+                  MMMarkerScaleNode::m_id,
+                  MMMarkerScaleNode::creator,
+                  MMMarkerScaleNode::initialize,
+                  status);
 
     return status;
 }
@@ -91,14 +100,7 @@ MStatus uninitializePlugin(MObject obj) {
     // DEREGISTER_COMMAND(plugin, MMTriangulateCmd::cmdName(), status);
     // DEREGISTER_COMMAND(plugin, MMMarkerScaleCmd::cmdName(), status);
 
-    //    status = plugin.deregisterNode(velocityNode::id);
-    //    if (!status) {
-    //        status.perror("velocityNode: deregisterNode");
-    //        return (status);
-    //    }
-    //
-    //    return (status);
-    //}
+    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), MMMarkerScaleNode::m_id, status);
 
     return status;
 }

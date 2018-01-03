@@ -120,7 +120,7 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
         // the current solve and not invalidate the cache but for now we cannot take the
         // risk of an incorrect solve; we clear the cache.
         for (i = 0; i < (int) ud->cameraList.size(); ++i) {
-            ud->cameraList[i]->clearWorldProjMatrixCache();
+            ud->cameraList[i]->clearAttrValueCache();
         }
         ud->paramBenchTimer->stop();
         ud->paramBenchTicks->stop();
@@ -159,6 +159,12 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
             status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
             CHECK_MSTATUS(status);
 
+            double left = 0;
+            double right = 0;
+            double top = 0;
+            double bottom = 0;
+            camera->getFrustum(left, right, top, bottom, frame);
+
             BundlePtr bnd = marker->getBundle();
 
             mkr_mpos = ud->markerPosList[i]; // Use pre-computed marker position
@@ -174,9 +180,9 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
             // TODO: dx, dy and d are all in world units. We should shift them
             // into 'image space', so that we can refer to the error in
             // terms of pixels.
-            double dx = fabs(mkr_mpos.x - bnd_mpos.x);
-            double dy = fabs(mkr_mpos.y - bnd_mpos.y);
-            double d = distance_2d(mkr_mpos, bnd_mpos);
+            double dx = fabs(mkr_mpos.x - bnd_mpos.x) * ((right - left) * ud->imageWidth);
+            double dy = fabs(mkr_mpos.y - bnd_mpos.y) * ((right - left) * ud->imageWidth);
+            double d = distance_2d(mkr_mpos, bnd_mpos) * ((right - left) * ud->imageWidth);
 
             x[(i * ERRORS_PER_MARKER) + 0] = dx;  // X error
             x[(i * ERRORS_PER_MARKER) + 1] = dy;  // Y error

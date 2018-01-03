@@ -80,6 +80,7 @@ struct LevMarSolverData {
     int iterMax;
     int solverType;
     bool isJacobianCalculation;
+    double imageWidth;
 
     // Error Thresholds.
     double tau;

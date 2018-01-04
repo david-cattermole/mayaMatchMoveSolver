@@ -73,7 +73,7 @@ MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
         double aov = (2.0 * atan(filmBackX * (0.5 / focalLength))) * RADIANS_TO_DEGREES;
         double scale = tan(aov * 0.5 * M_PI / 180.0) * depth;
         double scaleX = scale * 2.0;
-        double scaleY = scale * 2.0 * (filmBackY/filmBackY);
+        double scaleY = scale * 2.0 * (filmBackY/filmBackX);
         double scaleZ = depth;
 
         // Output Scale

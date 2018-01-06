@@ -102,6 +102,9 @@ def get_object_type(node):
     elif node_type == 'camera':
         object_type = 'camera'
 
+    elif node_type == 'mmMarkerGroupTransform':
+        object_type = 'markergroup'
+
     elif node_type == 'transform':
         object_type = 'bundle'
 
@@ -139,6 +142,28 @@ def get_camera_above_node(node):
             break
         dag.pop(1)
     return cam_tfm, cam_shp
+
+
+def get_marker_group_above_node(node):
+    """
+    Get the first marker group transform node above the node.
+
+    :param node: The node name to check above for a marker group.
+    :type node: str or unicode
+    :return: String of marker group found, or None.
+    :rtype: str or unicode
+    """
+    # TODO: This function may be called many times, we should look into
+    # caching some of this computation.
+    mkr_grp_node = None
+    dag = get_as_dag_path(node)
+    while dag.length() != 0:
+        name = dag.fullPathName()
+        if maya.cmds.nodeType(name) == 'mmMarkerGroupTransform':
+            mkr_grp_node = name
+            break
+        dag.pop(1)
+    return mkr_grp_node
 
 
 def convert_valid_maya_name(name):

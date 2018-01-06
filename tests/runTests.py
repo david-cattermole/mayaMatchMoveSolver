@@ -50,9 +50,24 @@ if __name__ == '__main__':
     import test.test_api.test_collection
     import test.test_api.test_frame
     import test.test_api.test_marker
+    import test.test_api.test_markergroup
     import test.test_api.test_sethelper
     import test.test_api.test_solve
+    import test.test_api.test_solver
     import test.test_api.test_utils
+    import test.test_solver.test1
+    import test.test_solver.test2
+    import test.test_solver.test3
+    import test.test_solver.test4
+    import test.test_solver.test5
+    import test.test_solver.test6
+    import test.test_solver.test7
+    import test.test_solver.test8
+    import test.test_solver.test9
+    import test.test_solver.test10
+    import test.test_solver.test_marker_scale_node
+    import test.test_solver.test_projection_matrix
+    import test.test_tools.test_loadmarker
 
     func = None
     msg = ''

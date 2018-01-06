@@ -2,7 +2,8 @@
 Marker and the related objects, Camera and Bundle.
 """
 
-import maya.OpenMaya as Opavailablemport maya.cmds
+import maya.OpenMaya as OpenMaya
+import maya.cmds
 
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep

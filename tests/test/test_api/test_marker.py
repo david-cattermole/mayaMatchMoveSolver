@@ -13,11 +13,22 @@ import test.test_api.apiutils as test_api_utils
 import mmSolver._api.utils as api_utils
 import mmSolver._api.bundle as bundle
 import mmSolver._api.camera as camera
+import mmSolver._api.markergroup as markergroup
 import mmSolver._api.marker as marker
 
 
 # @unittest.skip
 class TestMarker(test_api_utils.APITestCase):
+    @staticmethod
+    def create_camera(name):
+        cam_tfm = maya.cmds.createNode('transform', name=name)
+        cam_tfm = api_utils.get_long_name(cam_tfm)
+        cam_shp = maya.cmds.createNode('camera', name=name+'Shape',
+                                       parent=cam_tfm)
+        cam_shp = api_utils.get_long_name(cam_shp)
+        cam = camera.Camera(transform=cam_tfm, shape=cam_shp)
+        return cam
+
     def test_init(self):
         x = marker.Marker()
         x.create_node()
@@ -69,13 +80,9 @@ class TestMarker(test_api_utils.APITestCase):
         self.assertTrue(maya.cmds.objExists(node))
         self.assertEqual(x.get_camera(), None)
 
-        # Create a Camera.
-        cam_tfm = maya.cmds.createNode('transform', name='myCamera1')
-        cam_tfm = api_utils.get_long_name(cam_tfm)
-        cam_shp = maya.cmds.createNode('camera', name='myCameraShape1',
-                                       parent=cam_tfm)
-        cam_shp = api_utils.get_long_name(cam_shp)
-        cam = camera.Camera(transform=cam_tfm, shape=cam_shp)
+        cam = self.create_camera('myCamera1')
+        cam_tfm = cam.get_transform_node()
+        cam_shp = cam.get_shape_node()
 
         # Create marker linked to camera
         x = marker.Marker().create_node(name=name, cam=cam)
@@ -155,13 +162,9 @@ class TestMarker(test_api_utils.APITestCase):
         mkr_cam = x.get_camera()
         self.assertEqual(mkr_cam, None)
 
-        # Create a Camera.
-        cam_tfm = maya.cmds.createNode('transform', name='myCamera1')
-        cam_tfm = api_utils.get_long_name(cam_tfm)
-        cam_shp = maya.cmds.createNode('camera', name='myCameraShape1',
-                                       parent=cam_tfm)
-        cam_shp = api_utils.get_long_name(cam_shp)
-        cam = camera.Camera(transform=cam_tfm, shape=cam_shp)
+        cam = self.create_camera('myCamera1')
+        cam_tfm = cam.get_transform_node()
+        cam_shp = cam.get_shape_node()
 
         y = marker.Marker().create_node(cam=cam)
         mkr_cam = y.get_camera()
@@ -170,13 +173,9 @@ class TestMarker(test_api_utils.APITestCase):
         self.assertEqual(mkr_cam.get_shape_node(), cam_shp)
 
     def test_set_camera(self):
-        # Create a Camera.
-        cam_tfm = maya.cmds.createNode('transform', name='myCamera1')
-        cam_tfm = api_utils.get_long_name(cam_tfm)
-        cam_shp = maya.cmds.createNode('camera', name='myCameraShape1',
-                                       parent=cam_tfm)
-        cam_shp = api_utils.get_long_name(cam_shp)
-        cam = camera.Camera(transform=cam_tfm, shape=cam_shp)
+        cam = self.create_camera('myCamera1')
+        cam_tfm = cam.get_transform_node()
+        cam_shp = cam.get_shape_node()
 
         x = marker.Marker().create_node()
         x.set_camera(cam)
@@ -191,6 +190,54 @@ class TestMarker(test_api_utils.APITestCase):
         x.set_camera(None)
         mkr_cam = x.get_camera()
         self.assertEqual(mkr_cam, None)
+
+    def test_get_marker_group(self):
+        x = marker.Marker().create_node()
+        mkr_grp = x.get_marker_group()
+        self.assertEqual(mkr_grp, None)
+
+        cam = self.create_camera('myCamera1')
+        mkr_grp1 = markergroup.MarkerGroup().create_node(cam=cam)
+        mkr_grp2 = markergroup.MarkerGroup().create_node(cam=cam)
+
+        x = marker.Marker().create_node(mkr_grp=mkr_grp1)
+        mkr_grp3 = x.get_marker_group()
+        self.assertIsInstance(mkr_grp3, markergroup.MarkerGroup)
+        self.assertEqual(mkr_grp1.get_node(), mkr_grp3.get_node())
+
+        x.set_marker_group(mkr_grp2)
+        mkr_grp4 = x.get_marker_group()
+        self.assertIsInstance(mkr_grp4, markergroup.MarkerGroup)
+        self.assertEqual(mkr_grp2.get_node(), mkr_grp4.get_node())
+
+    def test_set_marker_group(self):
+        x = marker.Marker().create_node()
+        mkr_grp1 = x.get_marker_group()
+        self.assertEqual(mkr_grp1, None)
+
+        cam = self.create_camera('myCamera1')
+        mkr_grp2 = markergroup.MarkerGroup().create_node(cam=cam)
+        mkr_grp3 = markergroup.MarkerGroup().create_node(cam=cam)
+
+        x = marker.Marker().create_node()
+
+        # Set mkr_grp2 as marker group.
+        x.set_marker_group(mkr_grp2)
+        mkr_grp4 = x.get_marker_group()
+        self.assertIsInstance(mkr_grp4, markergroup.MarkerGroup)
+        self.assertEqual(mkr_grp2.get_node(), mkr_grp4.get_node())
+
+        # Set mkr_grp3 as marker group.
+        x.set_marker_group(mkr_grp3)
+        mkr_grp5 = x.get_marker_group()
+        self.assertIsInstance(mkr_grp5, markergroup.MarkerGroup)
+        self.assertEqual(mkr_grp3.get_node(), mkr_grp5.get_node())
+
+        # Unlink marker from marker group (detach to world).
+        x.set_marker_group(None)
+        mkr_grp6 = x.get_marker_group()
+        self.assertIs(mkr_grp6, None)
+        self.assertEqual(mkr_grp6, None)
 
 
 if __name__ == '__main__':

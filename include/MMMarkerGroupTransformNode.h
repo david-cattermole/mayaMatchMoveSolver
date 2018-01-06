@@ -3,8 +3,8 @@
  * transform node, but with a different icon.
  */
 
-#ifndef MM_MARKER_GROUP_NODE_H
-#define MM_MARKER_GROUP_NODE_H
+#ifndef MM_MARKER_GROUP_TRANSFORM_NODE_H
+#define MM_MARKER_GROUP_TRANSFORM_NODE_H
 
 #include <maya/MMatrix.h>
 #include <maya/MTransformationMatrix.h>
@@ -32,4 +32,4 @@ public:
 };
 
 
-#endif // MM_MARKER_GROUP_NODE_H
+#endif // MM_MARKER_GROUP_TRANSFORM_NODE_H

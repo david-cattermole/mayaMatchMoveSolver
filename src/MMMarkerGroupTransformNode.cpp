@@ -3,7 +3,7 @@
  * transform node, but with a different icon.
  */
 
-#include <MMMarkerGroupNode.h>
+#include <MMMarkerGroupTransformNode.h>
 
 #include <maya/MTypeId.h>
 #include <maya/MPxTransformationMatrix.h>

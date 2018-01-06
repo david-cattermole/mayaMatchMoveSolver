@@ -103,10 +103,10 @@ MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
         outScaleXHandle.setClean();
         outScaleYHandle.setClean();
         outScaleZHandle.setClean();
-    } else {
-        return status;
+
+        status = MS::kSuccess;
     }
-    return MS::kSuccess;
+    return status;
 }
 
 void *MMMarkerScaleNode::creator() {

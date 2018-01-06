@@ -131,6 +131,10 @@ class TestUtils(test_api_utils.APITestCase):
         obj_type = api_utils.get_object_type(mkr_node)
         self.assertEqual(obj_type, 'marker')
 
+        node = maya.cmds.createNode('mmMarkerGroupTransform')
+        obj_type = api_utils.get_object_type(node)
+        self.assertEqual(obj_type, 'markergroup')
+
         node = maya.cmds.createNode('transform')
         obj_type = api_utils.get_object_type(node)
         self.assertEqual(obj_type, 'bundle')
@@ -154,6 +158,14 @@ class TestUtils(test_api_utils.APITestCase):
         self.assertEqual(above_cam_tfm, cam_tfm)
         self.assertEqual(above_cam_shp, cam_shp)
 
+    def test_get_marker_group_above_node(self):
+        mkr_grp = maya.cmds.createNode('mmMarkerGroupTransform')
+        mkr_grp = api_utils.get_long_name(mkr_grp)
+
+        node = maya.cmds.createNode('transform', parent=mkr_grp)
+        node = api_utils.get_long_name(node)
+        above_mkr_grp = api_utils.get_marker_group_above_node(node)
+        self.assertEqual(above_mkr_grp, mkr_grp)
 
 if __name__ == '__main__':
     prog = unittest.main()

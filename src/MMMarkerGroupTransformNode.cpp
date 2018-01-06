@@ -16,7 +16,7 @@
 MTypeId MMMarkerGroupTransformNode::m_id(MM_MARKER_GROUP_TRANSFORM_TYPE_ID);
 
 MString MMMarkerGroupTransformNode::nodeName() {
-    return MString("mmMarkerGroup");
+    return MString("mmMarkerGroupTransform");
 }
 
 MMMarkerGroupTransformNode::MMMarkerGroupTransformNode() : MPxTransform() {}

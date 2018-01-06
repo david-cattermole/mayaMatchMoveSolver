@@ -6,6 +6,7 @@ Controls the user-facing API.
 from mmSolver._api.camera import Camera
 from mmSolver._api.bundle import Bundle
 from mmSolver._api.marker import Marker
+from mmSolver._api.markergroup import MarkerGroup
 from mmSolver._api.attribute import (
     Attribute,
     ATTR_STATE_INVALID,
@@ -49,6 +50,7 @@ __all__ = [
     'Camera',
     'Bundle',
     'Marker',
+    'MarkerGroup',
 
     'Attribute',
     'ATTR_STATE_INVALID',

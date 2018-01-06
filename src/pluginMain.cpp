@@ -4,14 +4,16 @@
 
 
 #include <maya/MFnPlugin.h>
+#include <maya/MPxTransform.h>
+
 
 // TODO: Add entry points for mmReprojection cmd and node, mmMarkerScale cmd and mmTriangulate cmd.
 #include <MMSolverCmd.h>
 #include <MMTestCameraMatrixCmd.h>
 #include <MMMarkerScaleNode.h>
+#include <MMMarkerGroupTransformNode.h>
 // #include <MMReprojectionCmd.h>
 // #include <MMTriangulateCmd.h>
-// #include <MMMarkerScaleCmd.h>
 
 
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
@@ -42,6 +44,24 @@
         return (stat);                                   \
     }
 
+#define REGISTER_TRANSFORM(plugin, name,                        \
+                           tfm_id, tfm_creator, tfm_initialize, \
+                           mtx_id, mtx_creator,                 \
+                           classification,                      \
+                           stat)                                \
+    stat = plugin.registerTransform(name,                       \
+                                  tfm_id,                       \
+                                  &tfm_creator,                 \
+                                  &tfm_initialize,              \
+                                  &mtx_creator,                 \
+                                  mtx_id,                       \
+                                  &classification);             \
+    if (!stat) {                                                \
+            stat.perror(MString(name) + ": registerTransform"); \
+            return (stat);                                      \
+    }
+
+
 #undef PLUGIN_COMPANY  // Maya API defines this, we override it.
 #define PLUGIN_COMPANY "MM Solver"
 #define PLUGIN_VERSION "1.0"
@@ -62,6 +82,26 @@ MStatus initializePlugin(MObject obj) {
                      MMTestCameraMatrixCmd::creator,
                      MMTestCameraMatrixCmd::newSyntax,
                      status);
+
+    REGISTER_NODE(plugin,
+                  MMMarkerScaleNode::nodeName(),
+                  MMMarkerScaleNode::m_id,
+                  MMMarkerScaleNode::creator,
+                  MMMarkerScaleNode::initialize,
+                  status);
+
+    // MM Marker Group transform
+    const MString markerGroupClassification = "drawdb/geometry/transform";
+    REGISTER_TRANSFORM(plugin,
+                       MMMarkerGroupTransformNode::nodeName(),
+                       MMMarkerGroupTransformNode::m_id,
+                       MMMarkerGroupTransformNode::creator,
+                       MMMarkerGroupTransformNode::initialize,
+                       MPxTransformationMatrix::baseTransformationMatrixId,
+                       MPxTransformationMatrix::creator,
+                       markerGroupClassification,
+                       status)
+
     // REGISTER_COMMAND(plugin,
     //                  MMReprojectionCmd::cmdName(),
     //                  MMReprojectionCmd::creator,
@@ -78,13 +118,6 @@ MStatus initializePlugin(MObject obj) {
     //                  MMMarkerScaleCmd::newSyntax,
     //                  status);
 
-    REGISTER_NODE(plugin,
-                  MMMarkerScaleNode::nodeName(),
-                  MMMarkerScaleNode::m_id,
-                  MMMarkerScaleNode::creator,
-                  MMMarkerScaleNode::initialize,
-                  status);
-
     return status;
 }
 
@@ -96,11 +129,11 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
+    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), MMMarkerScaleNode::m_id, status);
+    DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(), MMMarkerGroupTransformNode::m_id, status);
     // DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     // DEREGISTER_COMMAND(plugin, MMTriangulateCmd::cmdName(), status);
     // DEREGISTER_COMMAND(plugin, MMMarkerScaleCmd::cmdName(), status);
-
-    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), MMMarkerScaleNode::m_id, status);
 
     return status;
 }

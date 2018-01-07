@@ -58,7 +58,8 @@ MStatus computeFrustumCoordinates(
         const double focalLength, // millimetres
         const double filmBackWidth, const double filmBackHeight,  // inches
         const double filmOffsetX, const double filmOffsetY,  // inches
-        const double nearClipPlane, const double cameraScale,
+        const double nearClipPlane, // centimetres
+        const double cameraScale,
         double &left, double &right,
         double &top, double &bottom) {
     MStatus status = MS::kSuccess;
@@ -188,8 +189,8 @@ MStatus computeProjectionMatrix(
         const double screenRight,
         const double screenTop,
         const double screenBottom,
-        const double nearClipPlane,
-        const double farClipPlane,
+        const double nearClipPlane, // centimetres
+        const double farClipPlane,  // centimetres
         MMatrix &projectionMatrix) {
 
     projectionMatrix[0][0] = 1.0 / (screenSizeX * 0.5) * MM_TO_CM;

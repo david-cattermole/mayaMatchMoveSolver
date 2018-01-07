@@ -161,11 +161,11 @@ Attr &Camera::getCameraScaleAttr() {
     return m_cameraScale;
 }
 
-Attr &Camera::getNearClippingAttr() {
+Attr &Camera::getNearClipPlaneAttr() {
     return m_nearClipPlane;
 }
 
-Attr &Camera::getFarClippingAttr() {
+Attr &Camera::getFarClipPlaneAttr() {
     return m_farClipPlane;
 }
 
@@ -246,13 +246,13 @@ double Camera::getCameraScaleValue() {
     return value;
 }
 
-double Camera::getNearClippingValue() {
+double Camera::getNearClipPlaneValue() {
     double value = 0.1;
     if (m_nearClipPlaneCached) {
         value = m_nearClipPlaneValue;
     } else {
         MStatus status;
-        Attr attr = getNearClippingAttr();
+        Attr attr = getNearClipPlaneAttr();
         status = attr.getValue(m_nearClipPlaneValue);
         value = m_nearClipPlaneValue;
         m_nearClipPlaneCached = true;
@@ -261,13 +261,13 @@ double Camera::getNearClippingValue() {
     return value;
 }
 
-double Camera::getFarClippingValue() {
+double Camera::getFarClipPlaneValue() {
     double value = 1000.0;
     if (m_farClipPlaneCached) {
         value = m_farClipPlaneValue;
     } else {
         MStatus status;
-        Attr attr = getFarClippingAttr();
+        Attr attr = getFarClipPlaneAttr();
         status = attr.getValue(m_farClipPlaneValue);
         value = m_farClipPlaneValue;
         m_farClipPlaneCached = true;
@@ -357,7 +357,7 @@ MStatus Camera::getFrustum(
 
     // We assume these are not animated
     double cameraScale = getCameraScaleValue();
-    double near = getNearClippingValue();
+    double near = getNearClipPlaneValue();
 
     computeFrustumCoordinates(focal,
                               filmWidth, filmHeight,
@@ -412,8 +412,8 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time) {
         // We assume that the following attributes won't be animated, but Maya
         // allows them to be animated.
         cameraScale = getCameraScaleValue();
-        near = getNearClippingValue();
-        far = getFarClippingValue();
+        near = getNearClipPlaneValue();
+        far = getFarClipPlaneValue();
         filmFit = getFilmFitValue();
         imageWidth = getRenderWidthValue();
         imageHeight = getRenderHeightValue();

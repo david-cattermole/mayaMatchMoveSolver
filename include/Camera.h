@@ -58,7 +58,7 @@ MStatus computeFrustumCoordinates(
         const double focalLength, // millimetres
         const double filmBackWidth, const double filmBackHeight,  // inches
         const double filmOffsetX, const double filmOffsetY,  // inches
-        const double nearClippingPlane, const double cameraScale,
+        const double nearClipPlane, const double cameraScale,
         double &left, double &right,
         double &top, double &bottom) {
     MStatus status = MS::kSuccess;
@@ -69,7 +69,7 @@ MStatus computeFrustumCoordinates(
     double offsetX = filmOffsetX * INCH_TO_MM;
     double offsetY = filmOffsetY * INCH_TO_MM;
 
-    double focal_to_near = (nearClippingPlane / focalLength) * cameraScale;
+    double focal_to_near = (nearClipPlane / focalLength) * cameraScale;
     right = focal_to_near * (0.5 * filmWidth + offsetX);
     left = focal_to_near * (-0.5 * filmWidth + offsetX);
     top = focal_to_near * (0.5 * filmHeight + offsetY);
@@ -188,8 +188,8 @@ MStatus computeProjectionMatrix(
         const double screenRight,
         const double screenTop,
         const double screenBottom,
-        const double nearClippingPlane,
-        const double farClippingPlane,
+        const double nearClipPlane,
+        const double farClipPlane,
         MMatrix &projectionMatrix) {
 
     projectionMatrix[0][0] = 1.0 / (screenSizeX * 0.5) * MM_TO_CM;
@@ -204,12 +204,12 @@ MStatus computeProjectionMatrix(
 
     projectionMatrix[2][0] = (screenRight + screenLeft) / (screenRight - screenLeft) * filmFitScaleX;
     projectionMatrix[2][1] = (screenTop + screenBottom) / (screenTop - screenBottom) * filmFitScaleY;
-    projectionMatrix[2][2] = (farClippingPlane + nearClippingPlane) / (farClippingPlane - nearClippingPlane);
+    projectionMatrix[2][2] = (farClipPlane + nearClipPlane) / (farClipPlane - nearClipPlane);
     projectionMatrix[2][3] = -1;
 
     projectionMatrix[3][0] = 0;
     projectionMatrix[3][1] = 0;
-    projectionMatrix[3][2] = 2.0 * farClippingPlane * nearClippingPlane / (farClippingPlane - nearClippingPlane);
+    projectionMatrix[3][2] = 2.0 * farClipPlane * nearClipPlane / (farClipPlane - nearClipPlane);
     projectionMatrix[3][3] = 0;
 
     return MS::kSuccess;
@@ -222,8 +222,8 @@ MStatus getProjectionMatrix(
         const double filmOffsetX, const double filmOffsetY,  // inches
         const int imageWidth, const int imageHeight,  // pixels
         const int filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
-        const double nearClippingPlane,
-        const double farClippingPlane,
+        const double nearClipPlane,
+        const double farClipPlane,
         const double cameraScale,
         MMatrix &projectionMatrix) {
     MStatus status = MS::kSuccess;
@@ -238,7 +238,7 @@ MStatus getProjectionMatrix(
     computeFrustumCoordinates(focalLength,
                               filmBackWidth, filmBackHeight,
                               filmOffsetX, filmOffsetY,
-                              nearClippingPlane, cameraScale,
+                              nearClipPlane, cameraScale,
                               left, right, top, bottom);
 
     // Apply 'Film Fit'
@@ -263,7 +263,7 @@ MStatus getProjectionMatrix(
             filmFitScaleX, filmFitScaleY,
             screenSizeX, screenSizeY,
             screenLeft, screenRight, screenTop, screenBottom,
-            nearClippingPlane, farClippingPlane,
+            nearClipPlane, farClipPlane,
             projectionMatrix);
 
     return status;
@@ -309,9 +309,9 @@ public:
 
     Attr &getCameraScaleAttr();
 
-    Attr &getNearClippingAttr();
+    Attr &getNearClipPlaneAttr();
 
-    Attr &getFarClippingAttr();
+    Attr &getFarClipPlaneAttr();
 
     Attr &getFilmFitAttr();
 
@@ -333,9 +333,9 @@ public:
 
     double getCameraScaleValue();
 
-    double getNearClippingValue();
+    double getNearClipPlaneValue();
 
-    double getFarClippingValue();
+    double getFarClipPlaneValue();
 
     int getFilmFitValue();
 

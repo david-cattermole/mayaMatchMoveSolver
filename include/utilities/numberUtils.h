@@ -14,6 +14,7 @@
 // Conversion constants
 #define MM_TO_INCH 0.03937007874015748 // 0.03937
 #define MM_TO_CM 0.1
+#define CM_TO_MM 10.0
 #define INCH_TO_MM 25.4
 #define INCH_TO_CM 2.54
 

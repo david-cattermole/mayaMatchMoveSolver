@@ -52,6 +52,7 @@ set(SOURCE_FILES
         include/Bundle.h
         include/Attr.h
         include/MMMarkerScaleNode.h
+        include/MMReprojectionNode.h
         include/MMMarkerGroupTransformNode.h
         include/MMTestCameraMatrixCmd.h
         include/MMSolverCmd.h
@@ -63,6 +64,7 @@ set(SOURCE_FILES
         src/Bundle.cpp
         src/Attr.cpp
         src/MMMarkerScaleNode.cpp
+        src/MMReprojectionNode.cpp
         src/MMMarkerGroupTransformNode.cpp
         src/MMTestCameraMatrixCmd.cpp
         src/MMSolverCmd.cpp

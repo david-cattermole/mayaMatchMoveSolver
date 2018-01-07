@@ -11,6 +11,7 @@
 #include <MMSolverCmd.h>
 #include <MMTestCameraMatrixCmd.h>
 #include <MMMarkerScaleNode.h>
+#include <MMReprojectionNode.h>
 #include <MMMarkerGroupTransformNode.h>
 // #include <MMReprojectionCmd.h>
 // #include <MMTriangulateCmd.h>
@@ -89,6 +90,12 @@ MStatus initializePlugin(MObject obj) {
                   MMMarkerScaleNode::creator,
                   MMMarkerScaleNode::initialize,
                   status);
+    REGISTER_NODE(plugin,
+                  MMReprojectionNode::nodeName(),
+                  MMReprojectionNode::m_id,
+                  MMReprojectionNode::creator,
+                  MMReprojectionNode::initialize,
+                  status);
 
     // MM Marker Group transform
     const MString markerGroupClassification = "drawdb/geometry/transform";
@@ -130,6 +137,7 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
     DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), MMMarkerScaleNode::m_id, status);
+    DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(), MMReprojectionNode::m_id, status);
     DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(), MMMarkerGroupTransformNode::m_id, status);
     // DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     // DEREGISTER_COMMAND(plugin, MMTriangulateCmd::cmdName(), status);

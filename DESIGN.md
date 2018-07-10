@@ -78,6 +78,18 @@ This is an overview of the solver's process:
 
 The slowest step of the solving process is step 2 as it may be executed hundreds or thousands of times, depending on the number of _Attributes_ and _Markers_ that are in the solve.
 
+### Solving In Time
+
+**To be written**
+
+### General Solving Concepts
+
+**To be written**
+
+- Over-parameterization - parameters-errors ratio is too high
+- Plane and Line Contraints
+- Upper and Lower Value Bounds
+
 # Related Books and Papers
 
 The listed books and papers here were inspirational to this solver design.

@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Builds the Maya plug-in with levmar.
 
+# Maya directories
+MAYA_INCLUDE_PATH=/usr/autodesk/maya2017/include
+MAYA_LIB_PATH=/usr/autodesk/maya2017/lib
+
 
 # The root of this project.
 PROJECT_ROOT=`pwd`
@@ -25,8 +29,8 @@ mkdir -p build
 cd build
 rm --force -R *
 cmake -DCMAKE_BUILD_TYPE=Release \
-      -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2016/include \
-      -DMAYA_LIB_PATH=/usr/autodesk/maya2016/lib \
+      -DMAYA_INCLUDE_PATH=${MAYA_INCLUDE_PATH} \
+      -DMAYA_LIB_PATH=${MAYA_LIB_PATH} \
       -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
       -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
       -DHAVE_SPLM=0 \

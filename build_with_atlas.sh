@@ -2,7 +2,12 @@
 
 
 # Use a different CMake
-PATH=/opt/clion/clion-2016.3/bin/cmake/bin:${PATH}
+PATH=/opt/jetbrains/clion-2017.3/bin/cmake/bin:${PATH}
+
+
+# Maya directories
+MAYA_INCLUDE_PATH=/usr/autodesk/maya2017/include
+MAYA_LIB_PATH=/usr/autodesk/maya2017/lib
 
 
 # The root of this project.
@@ -39,8 +44,8 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DUSE_SUITE_SPARSE=1 \
       -DUSE_ATLAS=1 \
       -DUSE_MKL=0 \
-      -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2016/include \
-      -DMAYA_LIB_PATH=/usr/autodesk/maya2016/lib \
+      -DMAYA_INCLUDE_PATH=${MAYA_INCLUDE_PATH} \
+      -DMAYA_LIB_PATH=${MAYA_LIB_PATH} \
       -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
       -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
       -DMKL_LIB_PATH=${PROJECT_ROOT}/external/lib \

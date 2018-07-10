@@ -91,6 +91,7 @@ This method will use both the `levmar`, `sparselm` and `ceres` algorithms, as we
 Note: This will assume the `atlas` is installed via yum on CentOS 6.x. If you wish to build your own custom atlas library it is an undocumented exercise for the user. On CentOS 6.x you may install `atlas` with the following command:
 ```commandline
 $ yum install atlas.x86_64 atlas-devel.x86_64
+$ yum install lapack64.x86_64 lapack64-devel.x86_64
 ```
 
 To build with ATLAS, run these command: 

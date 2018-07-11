@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 
+# Number of CPUs
+CPU_NUM=`nproc --all`
+
+
 # Clean up
 rm -R --force ./external/working/SuiteSparse/
 
@@ -12,7 +16,7 @@ tar -C ./external/working -xf ./external/archives/SuiteSparse-5.0.0.tar.gz
 # Build
 cd ./external/working/SuiteSparse/
 make distclean
-make library -j4 \
+make library -j${CPU_NUM} \
      AUTOCC=no \
      MKLROOT=/opt/intel/mkl/ \
      BLAS='-L/opt/intel/mkl/lib/intel64 -Wl,--no-as-needed -lmkl_intel_lp64 -lmkl_core -lmkl_gnu_thread -lgomp -lpthread -lm -ldl' \

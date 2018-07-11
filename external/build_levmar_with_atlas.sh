@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 
+# Number of CPUs
+CPU_NUM=`nproc --all`
+
+
 # Clean up
 rm -R --force ./external/working/levmar-2.6/
 
@@ -16,7 +20,7 @@ patch -i ./external/patches/levmar-2.6_atlas_Makefile.patch ./external/working/l
 # Build
 cd ./external/working/levmar-2.6/
 make clean
-make -j4 LAPACKLIBS_PATH=../../../external/lib LAPACK_INCLUDE_DIR=../../../external/include
+make -j${CPU_NUM} LAPACKLIBS_PATH=../../../external/lib LAPACK_INCLUDE_DIR=../../../external/include
 cd ../../../
 
 

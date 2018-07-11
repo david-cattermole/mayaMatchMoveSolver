@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Number of CPUs
+CPU_NUM=`nproc --all`
 
 # Clean up
 rm -R --force ./external/working/ceres-solver-1.13.0/
@@ -57,7 +59,7 @@ cmake \
     -DEIGEN_INCLUDE_DIR=../../../../external/include \
     -DEigen3_DIR=../../../../external/include \
     ..
-make -j4
+make -j${CPU_NUM}
 cd ../../../../
 
 

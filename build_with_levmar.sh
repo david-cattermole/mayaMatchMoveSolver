@@ -10,6 +10,10 @@ MAYA_LIB_PATH=/usr/autodesk/maya2017/lib
 PROJECT_ROOT=`pwd`
 
 
+# Number of CPUs
+CPU_NUM=`nproc --all`
+
+
 # Remove
 rm -R --force ${PROJECT_ROOT}/external/lib/lib*.so*
 rm -R --force ${PROJECT_ROOT}/external/lib/lib*.a*
@@ -39,5 +43,5 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DUSE_MKL=0 \
       ..
 make clean
-make -j4
+make -j${CPU_NUM}
 

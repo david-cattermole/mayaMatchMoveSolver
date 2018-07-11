@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 
+# Number of CPUs
+CPU_NUM=`nproc --all`
+
+
 # Clean up
 rm -R --force ./external/working/gflags-2.2.1/
 
@@ -15,7 +19,7 @@ mkdir build
 cd build
 cmake ..
 make clean
-make -j4
+make -j${CPU_NUM}
 cd ../../../../
 
 

@@ -2,6 +2,10 @@
 # NOTE: This script is for CentOS 6.x, and assumes the base package 'atlas' has
 # been installed.
 
+# Number of CPUs
+CPU_NUM=`nproc --all`
+
+
 # Clean up
 rm -R --force ./external/working/SuiteSparse/
 
@@ -13,7 +17,7 @@ tar -C ./external/working -xf ./external/archives/SuiteSparse-5.0.0.tar.gz
 # Build
 cd ./external/working/SuiteSparse/
 make distclean
-make library -j4 \
+make library -j${CPU_NUM} \
      CFOPENMP='' \
      AUTOCC=no \
      BLAS='-L/usr/lib64/atlas -lcblas -lf77blas' \

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Number of CPUs
+CPU_NUM=`nproc --all`
+
 # Clean up
 rm -R --force ./external/working/levmar-2.6/
 
@@ -12,7 +15,7 @@ patch -i ./external/patches/levmar-2.6_mkl_Makefile.patch ./external/working/lev
 # Build
 cd ./external/working/levmar-2.6/
 make clean
-make -j4
+make -j${CPU_NUM}
 cd ../../../
 
 # Copy

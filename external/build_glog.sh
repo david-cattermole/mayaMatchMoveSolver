@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 
+# Number of CPUs
+CPU_NUM=`nproc --all`
+
+
 # Clean up
 rm -R --force ./external/working/glog-0.3.1/
 
@@ -13,7 +17,7 @@ tar -C ./external/working -xf ./external/archives/glog-0.3.1.tar.gz
 cd ./external/working/glog-0.3.1/
 ./configure
 make clean
-make -j4
+make -j${CPU_NUM}
 # make check  # run tests
 cd ../../../
 

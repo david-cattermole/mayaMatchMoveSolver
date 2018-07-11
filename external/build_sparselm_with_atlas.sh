@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Number of CPUs
+CPU_NUM=`nproc --all`
+
+
 # Clean up
 rm -R --force ./external/working/sparselm-1.3
 
@@ -16,7 +20,7 @@ patch -i ./external/patches/sparselm-1.3_atlas_solvers.mk.patch ./external/worki
 # Build
 cd ./external/working/sparselm-1.3/
 make clean
-make libsplm.a -j4 SUITESPARSE_LIB_PATH=../../../external/lib SUITESPARSE_INCLUDE_DIR=../../../external/include
+make libsplm.a -j${CPU_NUM} SUITESPARSE_LIB_PATH=../../../external/lib SUITESPARSE_INCLUDE_DIR=../../../external/include
 cd ../../../
 
 

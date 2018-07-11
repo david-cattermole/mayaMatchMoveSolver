@@ -2,6 +2,10 @@
 # Build LevMar library without any dependencies.
 
 
+# Number of CPUs
+CPU_NUM=`nproc --all`
+
+
 # Clean up
 rm -R --force ./external/working/levmar-2.6
 
@@ -19,7 +23,7 @@ patch -i ./external/patches/levmar-2.6_nodeps_levmar.h.in.patch ./external/worki
 # Build
 cd ./external/working/levmar-2.6/
 make clean
-make liblevmar.a -j4
+make liblevmar.a -j${CPU_NUM}
 cd ../../../
 
 

@@ -19,6 +19,7 @@ import mmSolver._api.marker as marker
 
 # @unittest.skip
 class TestMarker(test_api_utils.APITestCase):
+
     @staticmethod
     def create_camera(name):
         cam_tfm = maya.cmds.createNode('transform', name=name)

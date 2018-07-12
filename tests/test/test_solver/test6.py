@@ -45,6 +45,10 @@ class TestSolver6(solverUtils.SolverTestCase):
 
         marker_tfm = maya.cmds.createNode('transform', name='marker_tfm', parent=cam_tfm)
         marker_shp = maya.cmds.createNode('locator', name='marker_shp', parent=marker_tfm)
+        maya.cmds.addAttr(marker_tfm, longName='enable', at='byte',
+                          minValue=0, maxValue=1, defaultValue=True)
+        maya.cmds.addAttr(marker_tfm, longName='weight', at='double',
+                      minValue=0.0, defaultValue=1.0)
         maya.cmds.setAttr(marker_tfm + '.tz', -10)
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-2.5)
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=3.0)
@@ -59,8 +63,8 @@ class TestSolver6(solverUtils.SolverTestCase):
         )
         # NOTE: All dynamic attributes must have a keyframe before starting to solve.
         node_attrs = [
-            (cam_tfm + '.rx'),
-            (cam_tfm + '.ry'),
+            (cam_tfm + '.rx', 'None', 'None'),
+            (cam_tfm + '.ry', 'None', 'None'),
         ]
 
         framesList = [
@@ -85,7 +89,7 @@ class TestSolver6(solverUtils.SolverTestCase):
                 marker=markers,
                 attr=node_attrs,
                 iterations=100,
-                solverType=1,
+                solverType=0,
                 frame=frames,
                 verbose=True,
             )
@@ -96,17 +100,29 @@ class TestSolver6(solverUtils.SolverTestCase):
             for i in range(len(frames)-1):
                 betweenFrames = []
                 for j in range(frames[i]+1, frames[i+1]):
-                    betweenFrames.append(j)
-                result = maya.cmds.mmSolver(
-                    camera=cameras,
-                    marker=markers,
-                    attr=node_attrs,
-                    iterations=100,
-                    solverType=1,
-                    frame=betweenFrames,
-                    verbose=True,
-                )
-                results.append(result)
+                    result = maya.cmds.mmSolver(
+                        camera=cameras,
+                        marker=markers,
+                        attr=node_attrs,
+                        iterations=100,
+                        solverType=0,
+                        frame=[j],
+                        verbose=True,
+                    )
+                    results.append(result)
+                # betweenFrames = []
+                # for j in range(frames[i]+1, frames[i+1]):
+                #     betweenFrames.append(j)
+                # result = maya.cmds.mmSolver(
+                #     camera=cameras,
+                #     marker=markers,
+                #     attr=node_attrs,
+                #     iterations=100,
+                #     solverType=0,
+                #     frame=betweenFrames,
+                #     verbose=True,
+                # )
+                # results.append(result)
 
         # # Global Solve
         # result = maya.cmds.mmSolver(
@@ -114,7 +130,7 @@ class TestSolver6(solverUtils.SolverTestCase):
         #     marker=markers,
         #     attr=node_attrs,
         #     iterations=10,
-        #     solverType=1,
+        #     solverType=0,
         #     frame=allFrames,
         #     verbose=True,
         # )
@@ -124,8 +140,16 @@ class TestSolver6(solverUtils.SolverTestCase):
         print 'total time:', e - s
 
         # Ensure the values are correct
+        for i, result in enumerate(results):
+            print 'i', i, result[0]
         for result in results:
+            print result[0]
             self.assertEqual(result[0], 'success=1')
+
+        # save the output
+        path = self.get_data_path('solver_test6_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
 
 
 if __name__ == '__main__':

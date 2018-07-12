@@ -128,19 +128,11 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.setAttr(bundle_tfm + '.tz', -25.0)
         assert api.get_object_type(bundle_tfm) == 'bundle'
 
-        # Marker Group
-        mkr_grp = maya.cmds.createNode('transform',
-                                       name='markerGroup',
-                                       parent=cam_tfm)
+        # calculate angle of view (AOV)
         f = maya.cmds.getAttr(cam_shp + '.focalLength')
         fbw = maya.cmds.getAttr(cam_shp + '.horizontalFilmAperture') * 25.4
         fbh = maya.cmds.getAttr(cam_shp + '.verticalFilmAperture') * 25.4
         aov = math.degrees(2.0 * math.atan(fbw * (0.5 / f)))
-        scale = math.tan(aov * 0.5 * math.pi / 180.0)
-        sx = scale * 2.0
-        sy = scale * 2.0 * (fbh/fbw)
-        maya.cmds.setAttr(mkr_grp + '.scaleX', sx)
-        maya.cmds.setAttr(mkr_grp + '.scaleY', sy)
 
         # Set Camera Anim
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=start, value=-(aov/2),
@@ -168,8 +160,6 @@ class TestSolve(test_api_utils.APITestCase):
                               inTangentType='linear', outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=5, value=1,
                               inTangentType='linear', outTangentType='linear')
-
-        maya.cmds.parent(marker_tfm, mkr_grp, relative=True)
 
         # Create Sphere
         sph_tfm, shp_node = maya.cmds.polySphere()
@@ -262,6 +252,8 @@ class TestSolve(test_api_utils.APITestCase):
             for i, attr in enumerate(['tx', 'ty', 'tz', 'rx', 'ry', 'rz']):
                 value = cam_data[key][i]
                 maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame, value=value)
+        maya.cmds.setKeyframe(cam_shp, attribute='focalLength', time=start, value=14.0)
+        maya.cmds.setKeyframe(cam_shp, attribute='focalLength', time=end, value=14.0)
 
         # Create image plane
         imgpl = maya.cmds.imagePlane(
@@ -287,15 +279,11 @@ class TestSolve(test_api_utils.APITestCase):
         mkr_grp = maya.cmds.createNode('transform',
                                        name='markerGroup',
                                        parent=cam_tfm)
-        f = maya.cmds.getAttr(cam_shp + '.focalLength')
-        fbw = maya.cmds.getAttr(cam_shp + '.horizontalFilmAperture') * 25.4
-        fbh = maya.cmds.getAttr(cam_shp + '.verticalFilmAperture') * 25.4
-        aov = math.degrees(2.0 * math.atan(fbw * (0.5 / f)))
-        scale = math.tan(aov * 0.5 * math.pi / 180.0)
-        sx = scale * 2.0
-        sy = scale * 2.0 * (fbh/fbw)
-        maya.cmds.setAttr(mkr_grp + '.scaleX', sx)
-        maya.cmds.setAttr(mkr_grp + '.scaleY', sy)
+        mkr_scl = maya.cmds.createNode('mmMarkerScale')
+        maya.cmds.connectAttr(cam_shp + '.focalLength', mkr_scl + '.focalLength')
+        maya.cmds.connectAttr(cam_shp + '.cameraAperture', mkr_scl + '.cameraAperture')
+        maya.cmds.connectAttr(cam_shp + '.filmOffset', mkr_scl + '.filmOffset')
+        maya.cmds.connectAttr(mkr_scl + '.outScale', mkr_grp + '.scale')
 
         # Bundle Group
         bnd_grp = maya.cmds.createNode('transform', name='bundleGroup')
@@ -416,88 +404,139 @@ class TestSolve(test_api_utils.APITestCase):
         # Frames
         prim = [0, 22, 41]
         sec = [3, 8, 12, 27, 33, 38]
+
+        # prim = [33, 41]  # <<< TESTING
+        # sec = []         # <<< TESTING
+
+        # frm_list = []
+        # frame_grps = []
+        # last_grp = 0
+        # for f in xrange(start, end+1):
+        #     tags = ['normal']
+        #     if f in prim:
+        #         tags = ['primary']
+        #         last_grp += 1
+        #     if f in sec:
+        #         tags = ['secondary']
+        #         last_grp += 1
+        #     if 'normal' in tags:
+        #         grp = 'group_' + str(last_grp)
+        #         tags.append(grp)
+        #         frame_grps.append(grp)
+        #     frm = api.Frame(f, tags=tags)
+        #     frm_list.append(frm)
+
+        ########## TESTING
+        prim = [0, 3, 8, 12, 22, 27, 33, 38, 41]
         frm_list = []
-        frame_grps = []
-        last_grp = 0
-        for f in xrange(start, end+1):
-            tags = ['normal']
-            if f in prim:
-                tags = ['primary']
-                last_grp += 1
-            if f in sec:
-                tags = ['secondary']
-                last_grp += 1
-            if 'normal' in tags:
-                grp = 'group_' + str(last_grp)
-                tags.append(grp)
-                frame_grps.append(grp)
-            frm = api.Frame(f, tags=tags)
-            frm_list.append(frm)
+        frm = api.Frame(0, tags=['primary', '1'])
+        frm_list.append(frm)
+
+        frm = api.Frame(3, tags=['primary', '1', '2'])
+        frm_list.append(frm)
+
+        frm = api.Frame(8, tags=['primary', '2', '3'])
+        frm_list.append(frm)
+
+        frm = api.Frame(12, tags=['primary', '3', '4'])
+        frm_list.append(frm)
+
+        frm = api.Frame(22, tags=['primary', '4', '5'])
+        frm_list.append(frm)
+
+        frm = api.Frame(27, tags=['primary', '5', '6'])
+        frm_list.append(frm)
+
+        frm = api.Frame(33, tags=['primary', '6', '7'])
+        frm_list.append(frm)
+
+        frm = api.Frame(38, tags=['primary', '7', '8'])
+        frm_list.append(frm)
+
+        frm = api.Frame(41, tags=['primary', '8'])
+        frm_list.append(frm)
 
         sol_list = []
 
-        # primary frames only
-        sol1 = api.Solver()
-        sol1.set_max_iterations(100)
-        sol1.set_delta(-0.1)
-        sol1.set_solver_type(api.SOLVER_TYPE_LEVMAR)
-        sol1.set_attributes_use_animated(True)
-        sol1.set_attributes_use_static(True)
-        sol1.set_frames_use_tags(['primary'])
-        sol1.set_verbose(True)
-        sol1.set_frame_list(frm_list)
-        sol_list.append(sol1)
+        # solve each groups
+        for i in range(1, 9):
+            sol = api.Solver()
+            sol.set_max_iterations(100)
+            sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
+            sol.set_attributes_use_animated(True)
+            sol.set_attributes_use_static(True)
+            sol.set_frames_use_tags([str(i)])
+            sol.set_verbose(True)
+            sol.set_frame_list(frm_list)
+            sol_list.append(sol)
+
+        # # primary frames only
+        # sol1 = api.Solver()
+        # sol1.set_max_iterations(10)
+        # # sol1.set_delta(-0.1)
+        # sol1.set_solver_type(api.SOLVER_TYPE_LEVMAR)
+        # sol1.set_attributes_use_animated(True)
+        # sol1.set_attributes_use_static(True)
+        # sol1.set_frames_use_tags(['primary'])
+        # sol1.set_verbose(True)
+        # sol1.set_frame_list(frm_list)
+        # sol_list.append(sol1)
 
         # primary and secondary frames only
         sol2 = api.Solver()
-        sol2.set_max_iterations(10)
-        sol2.set_delta(-0.5)
-        sol2.set_solver_type(api.SOLVER_TYPE_SPLM)
+        sol2.set_max_iterations(100)
+        # sol2.set_delta(-0.5)
+        sol2.set_solver_type(api.SOLVER_TYPE_LEVMAR)
         sol2.set_attributes_use_animated(True)
         sol2.set_attributes_use_static(True)
         sol2.set_frames_use_tags(['primary', 'secondary'])
         sol2.set_verbose(True)
         sol2.set_frame_list(frm_list)
         sol_list.append(sol2)
-        sol_list.append(sol2)
-        sol_list.append(sol2)
+        # sol_list.append(sol2)
+        # sol_list.append(sol2)
 
-        # Solve all animated attributes for all frames other than primary or secondary.
-        for grp in frame_grps:
-            for frm in frm_list:
-                frame_tags = frm.get_tags()
-                if grp not in frame_tags:
-                    continue
-                sol = api.Solver()
-                sol.set_max_iterations(100)
-                sol.set_delta(-0.1)
-                sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
-                sol.set_attributes_use_animated(True)
-                sol.set_attributes_use_static(False)
-                sol.set_frames_use_tags([])
-                sol.set_verbose(True)
-                sol.set_frame_list([frm])
-                sol_list.append(sol)
+        # # Solve all animated attributes for all frames other than primary or secondary.
+        # for grp in frame_grps:
+        #     for frm in frm_list:
+        #         frame_tags = frm.get_tags()
+        #         if grp not in frame_tags:
+        #             continue
+        #         sol = api.Solver()
+        #         sol.set_max_iterations(1)
+        #         # sol.set_delta(-0.1)
+        #         sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
+        #         sol.set_attributes_use_animated(True)
+        #         sol.set_attributes_use_static(False)
+        #         sol.set_frames_use_tags([])
+        #         sol.set_verbose(True)
+        #         sol.set_frame_list([frm])
+        #         sol_list.append(sol)
 
-        # brute force solve all frames
-        sol = api.Solver()
-        sol.set_max_iterations(10)
-        sol.set_solver_type(api.SOLVER_TYPE_SPLM)
-        sol.set_delta(-0.1)
-        sol.set_attributes_use_animated(True)
-        sol.set_attributes_use_static(True)
-        sol.set_frames_use_tags(['primary', 'secondary', 'normal'])
-        sol.set_verbose(True)
-        sol.set_frame_list(frm_list)
-        sol_list.append(sol)
+        # # brute force solve all frames
+        # sol = api.Solver()
+        # sol.set_max_iterations(1)
+        # sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
+        # # sol.set_delta(-0.1)
+        # sol.set_attributes_use_animated(True)
+        # sol.set_attributes_use_static(True)
+        # sol.set_frames_use_tags(['primary', 'secondary', 'normal'])
+        # sol.set_verbose(True)
+        # sol.set_frame_list(frm_list)
+        # sol_list.append(sol)
 
         # Collection
-        col = api.Collection()
-        col.create('mySolverCollection')
-        col.add_solver_list(sol_list)
+        col_fg = api.Collection()
+        col_fg.create('mySolverCollection_FG')
+        col_fg.add_solver_list(sol_list)
+
+        # col_bg = api.Collection()
+        # col_bg.create('mySolverCollection_BG')
+        # col_bg.add_solver_list(sol_list)
 
         # Add markers
-        col.add_marker_list(mkr_fg_list)
+        col_fg.add_marker_list(mkr_list)
+        # col_bg.add_marker_list(mkr_bg_list)
 
         # Attributes
         attr_cam_tx = api.Attribute(cam_tfm + '.tx')
@@ -506,21 +545,36 @@ class TestSolve(test_api_utils.APITestCase):
         attr_cam_rx = api.Attribute(cam_tfm + '.rx')
         attr_cam_ry = api.Attribute(cam_tfm + '.ry')
         attr_cam_rz = api.Attribute(cam_tfm + '.rz')
-        col.add_attribute(attr_cam_tx)
-        col.add_attribute(attr_cam_ty)
-        col.add_attribute(attr_cam_tz)
-        col.add_attribute(attr_cam_rx)
-        col.add_attribute(attr_cam_ry)
-        col.add_attribute(attr_cam_rz)
-        for mkr in mkr_fg_list:
+        attr_cam_focal = api.Attribute(cam_shp + '.focalLength')
+        attr_cam_focal.set_min_value(10.0)
+        attr_cam_focal.set_max_value(20.0)
+        col_fg.add_attribute(attr_cam_tx)
+        col_fg.add_attribute(attr_cam_ty)
+        col_fg.add_attribute(attr_cam_tz)
+        col_fg.add_attribute(attr_cam_rx)
+        col_fg.add_attribute(attr_cam_ry)
+        col_fg.add_attribute(attr_cam_rz)
+        col_fg.add_attribute(attr_cam_focal)
+
+        for mkr in mkr_list:
             bnd = mkr.get_bundle()
             bnd_node = bnd.get_node()
             attr_tx = api.Attribute(bnd_node + '.tx')
             attr_ty = api.Attribute(bnd_node + '.ty')
             attr_tz = api.Attribute(bnd_node + '.tz')
-            col.add_attribute(attr_tx)
-            col.add_attribute(attr_ty)
-            col.add_attribute(attr_tz)
+            col_fg.add_attribute(attr_tx)
+            col_fg.add_attribute(attr_ty)
+            col_fg.add_attribute(attr_tz)
+
+        # for mkr in mkr_bg_list:
+        #     bnd = mkr.get_bundle()
+        #     bnd_node = bnd.get_node()
+        #     attr_tx = api.Attribute(bnd_node + '.tx')
+        #     attr_ty = api.Attribute(bnd_node + '.ty')
+        #     attr_tz = api.Attribute(bnd_node + '.tz')
+        #     col_bg.add_attribute(attr_tx)
+        #     col_bg.add_attribute(attr_ty)
+        #     col_bg.add_attribute(attr_tz)
 
         # save the output
         path = self.get_data_path('test_solve_opera_house_before.ma')
@@ -528,15 +582,15 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
-        results = col.execute()
+        results = col_fg.execute()
+        # results = col_bg.execute()
 
         # Ensure the values are correct
         for res in results:
             success = res.get_success()
             err = res.get_final_error()
-            # assert self.approx_equal(err, 0.0, eps=0.001)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
+            print 'success', success
+            print 'err', err
 
         # save the output
         path = self.get_data_path('test_solve_opera_house_after.ma')

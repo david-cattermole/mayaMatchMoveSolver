@@ -47,8 +47,8 @@ class TestSolver3(solverUtils.SolverTestCase):
             (marker_tfm, cam_shp, bundle_tfm),
         )
         node_attrs = [
-            (cam_tfm + '.rx'),
-            (cam_tfm + '.ry'),
+            (cam_tfm + '.rx', 'None', 'None'),
+            (cam_tfm + '.ry', 'None', 'None'),
         ]
         frames = [
             (1),
@@ -72,6 +72,11 @@ class TestSolver3(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         assert self.approx_equal(maya.cmds.getAttr(cam_tfm+'.rx'), math.degrees(0.129855))
         assert self.approx_equal(maya.cmds.getAttr(cam_tfm+'.ry'), math.degrees(-0.565297))
+
+        # save the output
+        path = self.get_data_path('solver_test3_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
 
 
 if __name__ == '__main__':

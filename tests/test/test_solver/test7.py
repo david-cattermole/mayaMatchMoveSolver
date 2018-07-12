@@ -52,6 +52,10 @@ class TestSolver7(solverUtils.SolverTestCase):
                              type='transform', long=True)
         for node in nodes:
             markerTfm = node
+            maya.cmds.addAttr(markerTfm, longName='enable', at='byte',
+                              minValue=0, maxValue=1, defaultValue=True)
+            maya.cmds.addAttr(markerTfm, longName='weight', at='double',
+                              minValue=0.0, defaultValue=1.0)
             camTfm = maya.cmds.listRelatives(node,
                                              parent=True,
                                              type='transform',
@@ -66,26 +70,28 @@ class TestSolver7(solverUtils.SolverTestCase):
 
         # Get Attrs
         node_attrs = [
-            (cameras[0][0] + '.tx'),
-            (cameras[0][0] + '.ty'),
-            (cameras[0][0] + '.tz'),
-            (cameras[0][0] + '.rx'),
-            (cameras[0][0] + '.ry'),
-            (cameras[0][0] + '.rz'),
+            (cameras[0][0] + '.tx', 'None', 'None'),
+            (cameras[0][0] + '.ty', 'None', 'None'),
+            (cameras[0][0] + '.tz', 'None', 'None'),
+            (cameras[0][0] + '.rx', 'None', 'None'),
+            (cameras[0][0] + '.ry', 'None', 'None'),
+            (cameras[0][0] + '.rz', 'None', 'None'),
+            # (cameras[0][1] + '.focalLength', 'None', 'None'),
 
-            (cameras[1][0] + '.tx'),
-            (cameras[1][0] + '.ty'),
-            (cameras[1][0] + '.tz'),
-            (cameras[1][0] + '.rx'),
-            (cameras[1][0] + '.ry'),
-            (cameras[1][0] + '.rz'),
+            (cameras[1][0] + '.tx', 'None', 'None'),
+            (cameras[1][0] + '.ty', 'None', 'None'),
+            (cameras[1][0] + '.tz', 'None', 'None'),
+            (cameras[1][0] + '.rx', 'None', 'None'),
+            (cameras[1][0] + '.ry', 'None', 'None'),
+            (cameras[1][0] + '.rz', 'None', 'None'),
+            # (cameras[1][1] + '.focalLength', 'None', 'None'),
         ]
         frames = [1]
 
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-        camera=cameras,
+            camera=cameras,
             marker=markers,
             attr=node_attrs,
             frame=frames,
@@ -98,6 +104,11 @@ class TestSolver7(solverUtils.SolverTestCase):
 
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
+
+        # save the output
+        path = self.get_data_path('solver_test7_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
 
 
 if __name__ == '__main__':

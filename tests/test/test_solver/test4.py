@@ -57,8 +57,8 @@ class TestSolver4(solverUtils.SolverTestCase):
         )
         # NOTE: All dynamic attributes must have a keyframe before starting to solve.
         node_attrs = [
-            (cam_tfm + '.rx'),
-            (cam_tfm + '.ry'),
+            (cam_tfm + '.rx', 'None', 'None'),
+            (cam_tfm + '.ry', 'None', 'None'),
         ]
         frames = []
         for f in range(start, end+1):
@@ -80,6 +80,11 @@ class TestSolver4(solverUtils.SolverTestCase):
 
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
+
+        # save the output
+        path = self.get_data_path('solver_test4_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
 
 
 if __name__ == '__main__':

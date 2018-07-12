@@ -66,19 +66,19 @@ class TestSolver8(solverUtils.SolverTestCase):
 
         # Get Attrs
         node_attrs = [
-            (cameras[0][0] + '.tx'),
-            (cameras[0][0] + '.ty'),
-            (cameras[0][0] + '.tz'),
-            (cameras[0][0] + '.rx'),
-            (cameras[0][0] + '.ry'),
-            (cameras[0][0] + '.rz'),
+            (cameras[0][0] + '.tx', 'None', 'None'),
+            (cameras[0][0] + '.ty', 'None', 'None'),
+            (cameras[0][0] + '.tz', 'None', 'None'),
+            (cameras[0][0] + '.rx', 'None', 'None'),
+            (cameras[0][0] + '.ry', 'None', 'None'),
+            (cameras[0][0] + '.rz', 'None', 'None'),
 
-            (cameras[1][0] + '.tx'),
-            (cameras[1][0] + '.ty'),
-            (cameras[1][0] + '.tz'),
-            (cameras[1][0] + '.rx'),
-            (cameras[1][0] + '.ry'),
-            (cameras[1][0] + '.rz'),
+            (cameras[1][0] + '.tx', 'None', 'None'),
+            (cameras[1][0] + '.ty', 'None', 'None'),
+            (cameras[1][0] + '.tz', 'None', 'None'),
+            (cameras[1][0] + '.rx', 'None', 'None'),
+            (cameras[1][0] + '.ry', 'None', 'None'),
+            (cameras[1][0] + '.rz', 'None', 'None'),
         ]
         frames = [1]
 
@@ -98,6 +98,11 @@ class TestSolver8(solverUtils.SolverTestCase):
 
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
+
+        # save the output
+        path = self.get_data_path('solver_test8_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
 
 
 if __name__ == '__main__':

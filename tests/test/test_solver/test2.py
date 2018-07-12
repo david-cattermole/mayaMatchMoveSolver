@@ -58,12 +58,12 @@ class TestSolver2(solverUtils.SolverTestCase):
             (marker2_tfm, cam_shp, bundle2_tfm),
         )
         node_attrs = [
-            (group_tfm + '.tx'),
-            (group_tfm + '.ty'),
-            (group_tfm + '.tz'),
-            (group_tfm + '.sx'),
-            (group_tfm + '.ry'),
-            (group_tfm + '.rz'),
+            (group_tfm + '.tx', 'None', 'None'),
+            (group_tfm + '.ty', 'None', 'None'),
+            (group_tfm + '.tz', 'None', 'None'),
+            (group_tfm + '.sx', 'None', 'None'),
+            (group_tfm + '.ry', 'None', 'None'),
+            (group_tfm + '.rz', 'None', 'None'),
         ]
         frames = [
             (1),
@@ -92,6 +92,10 @@ class TestSolver2(solverUtils.SolverTestCase):
         # assert approx_equal(maya.cmds.getAttr(group_tfm+'.ry'), math.degrees(3.18648))
         # assert approx_equal(maya.cmds.getAttr(group_tfm+'.rz'), math.degrees(-0.374883))
 
+        # save the output
+        path = self.get_data_path('solver_test2_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
 
 
 if __name__ == '__main__':

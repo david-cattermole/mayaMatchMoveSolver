@@ -177,9 +177,10 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
             // NOTE: Interestingly, using an x, y and distance error measurement
             // seems to allow at least some scenes to converge much faster;
             // ~20 iterations compared to ~160 iterations.
-            // TODO: dx, dy and d are all in world units. We should shift them
-            // into 'image space', so that we can refer to the error in
-            // terms of pixels.
+            // TODO: According to the Ceres solver 'circle_fit.cc' example, using
+            // the 'sqrt' distance error function is a bad idea as it will
+            // introduce non-linearities, we are better off using something
+            // like 'x*x - y*y'. It would be best to test this detail.
             double dx = fabs(mkr_mpos.x - bnd_mpos.x) * ((right - left) * ud->imageWidth);
             double dy = fabs(mkr_mpos.y - bnd_mpos.y) * ((right - left) * ud->imageWidth);
             double d = distance_2d(mkr_mpos, bnd_mpos) * ((right - left) * ud->imageWidth);

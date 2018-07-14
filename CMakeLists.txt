@@ -105,8 +105,8 @@ if (USE_ATLAS)
     endif()
     target_link_libraries(${CMD_NAME}
             lapack
-            f77blas
-            atlas
+            # f77blas
+            satlas
             )
 endif()
 
@@ -134,9 +134,10 @@ if (USE_SUITE_SPARSE)
     target_link_libraries(${CMD_NAME}
             suitesparseconfig
             amd
-            ldl
+            # ldl
             cholmod
-            umfpack)
+            # umfpack
+            )
 endif()
 
 # Sparse LevMar

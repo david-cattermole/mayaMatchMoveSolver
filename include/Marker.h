@@ -84,5 +84,6 @@ typedef MarkerList::iterator MarkerListIt;
 typedef std::shared_ptr<Marker> MarkerPtr;
 typedef std::vector<std::shared_ptr<Marker> > MarkerPtrList;
 typedef MarkerPtrList::iterator MarkerPtrListIt;
+typedef MarkerPtrList::const_iterator MarkerPtrListCIt;
 
 #endif // MAYA_MM_SOLVER_MARKER_H

@@ -95,6 +95,7 @@ MStatus Attr::setAttrName(MString value) {
 }
 
 MObject Attr::getObject() {
+    // Get the MObject for the underlying node.
     MString name = Attr::getNodeName();
     getAsObject(name, m_object);
     return m_object;

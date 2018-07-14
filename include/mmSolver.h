@@ -56,13 +56,44 @@
 #define ERRORS_PER_MARKER 3
 
 
+typedef std::vector<std::vector<bool> > BoolList2D;
+typedef std::pair<int, int> IndexPair;
+typedef std::vector<std::pair<int, int> > IndexPairList;
+
+
 inline
-double distance_2d(MPoint a, MPoint b)
-{
+double distance_2d(MPoint a, MPoint b) {
     double dx = (a.x - b.x);
     double dy = (a.y - b.y);
     return sqrt((dx * dx) + (dy * dy));
 }
+
+
+int countUpNumberOfErrors(MarkerPtrList markerList,
+                          MTimeArray frameList,
+                          MarkerPtrList &validMarkerList,
+                          std::vector<MPoint> markerPosList,
+                          IndexPairList &errorToMarkerList,
+                          MStatus &status);
+
+
+int countUpNumberOfUnknownParameters(AttrPtrList attrList,
+                                     MTimeArray frameList,
+                                     AttrPtrList &camStaticAttrList,
+                                     AttrPtrList &camAnimAttrList,
+                                     AttrPtrList &staticAttrList,
+                                     AttrPtrList &animAttrList,
+                                     IndexPairList &paramToAttrList,
+                                     MStatus &status);
+
+
+void findMarkerToAttrRelationship(MarkerPtrList validMarkerList,
+                                  AttrPtrList camStaticAttrList,
+                                  AttrPtrList camAnimAttrList,
+                                  AttrPtrList staticAttrList,
+                                  AttrPtrList animAttrList,
+                                  BoolList2D &markerToAttrMapping,
+                                  MStatus &status);
 
 
 bool solve(int iterMax,

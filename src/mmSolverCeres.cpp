@@ -171,6 +171,10 @@ ReprojectionErrorFunctor::operator()(double const* const* parameters,
             // TODO: dx, dy and d are all in world units. We should shift them
             // into 'image space', so that we can refer to the error in
             // terms of pixels.
+            // TODO: According to the Ceres solver 'circle_fit.cc' example, using
+            // the 'sqrt' distance error function is a bad idea as it will
+            // introduce non-linearities, we are better off using something
+            // like 'x*x - y*y'. It would be best to test this detail.
             double dx = fabs(mkr_mpos.x - bnd_mpos.x);
             double dy = fabs(mkr_mpos.y - bnd_mpos.y);
             double d = distance_2d(mkr_mpos, bnd_mpos);
@@ -201,5 +205,123 @@ ReprojectionErrorFunctor::operator()(double const* const* parameters,
     return true;
 }
 
+#if 0  // Turn off experiential Ceres solver cost function
+MarkerBundleCameraCostFunctor::MarkerBundleCameraCostFunctor(MarkerBundleCameraData &data) {
+    m_data = data;
+};
+
+bool
+MarkerBundleCameraCostFunctor::operator()(double const* const* parameters,
+                                          double* residuals) const {
 
 
+
+    // This function calculates the errors.
+    // TODO: Create a template to evaluate in both LevMar and Ceres.
+
+    register int i = 0;
+    register bool verbose = false;
+
+    MarkerBundleCameraData *ud = const_cast<MarkerBundleCameraData*>(&m_data);
+
+    // Create the variable names the same as LevMar.
+    int m = 69; // number of parameters/unknowns
+    const double* p = parameters[0];
+    verbose = ud->verbose;
+
+    // Set Parameter
+    MStatus status;
+    {
+        MTime currentFrame = MAnimControl::currentTime();
+        for (i = 0; i < m; ++i) {
+            std::pair<int, int> attrPair = ud->paramToAttrList[i];
+            AttrPtr attr = ud->attrList[attrPair.first];
+
+            // Get frame time
+            MTime frame = currentFrame;
+            if (attrPair.second != -1) {
+                frame = ud->frameList[attrPair.second];
+            }
+
+            attr->setValue(p[i], frame, *ud->dgmod, *ud->curveChange);
+        }
+
+        // Commit changed data into Maya
+        ud->dgmod->doIt();
+
+        // Invalidate the Camera Matrix cache.
+        // In future we might be able to auto-detect if the camera will change based on
+        // the current solve and not invalidate the cache but for now we cannot take the
+        // risk of an incorrect solve; we clear the cache.
+        ud->camera->clearWorldProjMatrixCache();
+    }
+
+    // Measure Errors
+    double error_avg = 0.0;
+    double error_max = -0.0;
+    double error_min = std::numeric_limits<double>::max();
+    {
+
+#if FORCE_TRIGGER_EVAL == 1
+        {
+            MPoint pos;
+            status = ud->marker->getPos(pos, ud->frame + 1);
+            CHECK_MSTATUS(status);
+        }
+#endif
+
+        MMatrix cameraWorldProjectionMatrix;
+        MPoint mkr_mpos = ud->marker_pos;
+        MPoint bnd_mpos;
+
+        MarkerPtr marker = ud->marker;
+        MTime frame = ud->frame;
+
+        CameraPtr camera = marker->getCamera();
+        status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
+        CHECK_MSTATUS(status);
+
+        BundlePtr bnd = marker->getBundle();
+
+//        // TODO: If we convert these points into normalised image-space
+//        // then we can pre-compute the marker positions, this might have
+//        // a signficant performance improvement.
+//        status = marker->getPos(mkr_mpos, frame);
+//        CHECK_MSTATUS(status);
+//        mkr_mpos = mkr_mpos * cameraWorldProjectionMatrix;
+//        mkr_mpos.cartesianize();
+
+//        if (mkr_mpos == ud->marker_pos) {
+//            INFO("mkr_mpos is equal!");
+//        } else {
+//            INFO("mkr_mpos is NOT equal!");
+//            INFO("pos1 = " << mkr_mpos.x << ", " << mkr_mpos.y << ", " << mkr_mpos.z);
+//            INFO("pos2 = " << ud->marker_pos.x << ", " << ud->marker_pos.y << ", " << ud->marker_pos.z);
+//        }
+
+        status = bnd->getPos(bnd_mpos, frame);
+        CHECK_MSTATUS(status);
+        bnd_mpos = bnd_mpos * cameraWorldProjectionMatrix;
+        bnd_mpos.cartesianize();
+
+        // NOTE: Interestingly, using an x, y and distance error measurement
+        // seems to allow at least some scenes to converge much faster;
+        // ~20 iterations compared to ~160 iterations.
+        // TODO: dx, dy and d are all in world units. We should shift them
+        // into 'image space', so that we can refer to the error in
+        // terms of pixels.
+        double dx = fabs(mkr_mpos.x - bnd_mpos.x);
+        double dy = fabs(mkr_mpos.y - bnd_mpos.y);
+        double d = distance_2d(mkr_mpos, bnd_mpos);
+
+        residuals[0] = dx;  // X error
+        residuals[1] = dy;  // Y error
+        residuals[2] = d;   // Distance error
+
+        error_avg += d;
+        if (d > error_max) { error_max = d; }
+        if (d < error_min) { error_min = d; }
+    }
+    return true;
+}
+#endif

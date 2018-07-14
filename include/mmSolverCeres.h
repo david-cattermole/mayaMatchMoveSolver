@@ -35,7 +35,7 @@
 #include <ceres/ceres.h>
 
 
-// The user data given to levmar.
+// The user data given to ceres.
 struct CeresSolverData {
     // Solver Objects.
     CameraPtrList cameraList;
@@ -57,6 +57,7 @@ struct CeresSolverData {
     int iterMax;
     int solverType;
     bool isJacobianCalculation;
+    double imageWidth;
 
     // Error Thresholds.
     double tau;
@@ -107,6 +108,63 @@ private:
     CeresSolverData m_solverData;
 };
 
+#if 0  // Turn off unfinished impementation of Ceres MarkerBundleCamera solver.
+// Defines a triplet of Marker, Bundle and Camera.
+struct MarkerBundleCameraData {
+    // Solver Objects.
+    CameraPtr camera;
+    MPoint marker_pos;
+    MarkerPtr marker;
+    BundlePtr bundle;
+    AttrPtrList attrList;
+    MTime frame;      // Time to solve
+    MTimeArray frameList;  // Times to solve
+
+    // Relational mapping indexes.
+    std::vector<std::pair<int, int> > paramToAttrList;
+    // std::vector<std::pair<int, int> > errorToMarkerList;
+
+    // Internal Solver Data.
+    int numParameters;
+    int numErrors;
+//    std::vector<double> errorList;
+//    int iterNum;
+//    int jacIterNum;
+//    int iterMax;
+//    int solverType;
+//    bool isJacobianCalculation;
+
+    // Storing changes for undo/redo.
+    MDGModifier *dgmod;
+    MAnimCurveChange *curveChange;
+
+//    // Allow user to cancel the solve.
+//    MComputation *computation;
+
+    // Verbosity.
+    bool verbose;
+};
+
+
+class MarkerBundleCameraCostFunctor {
+public:
+    explicit MarkerBundleCameraCostFunctor(MarkerBundleCameraData &data);
+
+    bool operator()(double const* const* parameters,
+                    double* residuals) const;
+
+// Factory to hide the construction of the CostFunction object from
+// the client code.
+    static ceres::DynamicNumericDiffCostFunction<MarkerBundleCameraCostFunctor, ceres::CENTRAL>* create(MarkerBundleCameraData &data) {
+        ceres::DynamicNumericDiffCostFunction<MarkerBundleCameraCostFunctor, ceres::CENTRAL>* cost_function =
+                new ceres::DynamicNumericDiffCostFunction<MarkerBundleCameraCostFunctor, ceres::CENTRAL>(new MarkerBundleCameraCostFunctor(data));
+        return cost_function;
+    }
+
+private:
+    MarkerBundleCameraData m_data;
+};
+#endif
 
 
 #endif // MAYA_MM_SOLVER_CERES_H

@@ -6,21 +6,21 @@ There are also Linux shell scripts to automate most of the compiling of external
 
 ## Build Environment
 
-The below processes were tested on a CentOS 6.x Linux distribution.
+The below processes were tested on a CentOS 7.x Linux distribution.
 
 These are the versions of various software tested:
 
 | Software     | Version |
 | ------------ | ----------- |
-| OS | CentOS 6.9 |
-| Linux Kernel | Linux 2.6.32-696.16.1.el6.x86_64 | 
-| GCC | gcc (GCC) 4.4.7 20120313 (Red Hat 4.4.7-18) |
-| LDD | ldd (GNU libc) 2.12 |
+| OS | CentOS 7.x |
+| Linux Kernel | 3.10.0-862.3.3.el7.x86_64 | 
+| GCC | gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-28) |
+| LDD | ldd (GNU libc) 2.17 |
 | CMake | 2.8.12.2 *(see note below)* |
-| Autodesk Maya | Autodesk Maya 2016 SP6 |
-| Autodesk Maya API | 201614 |
+| Autodesk Maya | Autodesk Maya 2017 Update5 |
+| Autodesk Maya API | 201780 |
 
-NOTE: If compiling the 'Full Mode', you will require a newer version of CMake. The CMake version 3.6.3 has been confirmed to work. The default CMake in the CentOS 6 repository is not sufficient to build the `metis` sub-component of `SuiteSparse`. However for the 'Simple Method', CMake 2.6 is sufficient.
+NOTE: If compiling the 'Full Mode', you will require a newer version of CMake. The CMake version 3.6.3 has been confirmed to work. The default CMake in the CentOS 7 repository is not sufficient to build the `metis` sub-component of `SuiteSparse`. However for the 'Simple Method', CMake 2.6 is sufficient.
 
 ## Simple Method
 
@@ -44,7 +44,7 @@ $ build_with_levmar.sh
 
 - C++ compiler ([GCC](https://gcc.gnu.org/), Clang, VC++, etc)
 - [CMake 2.8+](https://cmake.org/)
-- [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
+- [Autodesk Maya 2017+](https://www.autodesk.com.au/products/maya/overview)
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
 
 ### Install mmSolver Python API
@@ -79,7 +79,6 @@ $ cd <project root>
 $ sh runTests.sh
 ```
 
-
 ## Full Method with ATLAS
 
 This section is for compiling with the free and open-source library ATLAS.
@@ -88,7 +87,7 @@ This method will use both the `levmar`, `sparselm` and `ceres` algorithms, as we
 
 ### Build Script
 
-Note: This will assume the `atlas` is installed via yum on CentOS 6.x. If you wish to build your own custom atlas library it is an undocumented exercise for the user. On CentOS 6.x you may install `atlas` with the following command:
+Note: This will assume the `atlas` is installed via yum on CentOS 7.x. If you wish to build your own custom atlas library it is an undocumented exercise for the user. On CentOS 7.x you may install `atlas` with the following command:
 ```commandline
 $ yum install atlas.x86_64 atlas-devel.x86_64
 $ yum install lapack64.x86_64 lapack64-devel.x86_64
@@ -105,7 +104,7 @@ $ bash build_with_atlas.sh
 
 - C++ compiler ([GCC](https://gcc.gnu.org/), Clang, VC++, etc)
 - [CMake 3.6+](https://cmake.org/)
-- [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
+- [Autodesk Maya 2017+](https://www.autodesk.com.au/products/maya/overview)
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
 - [ATLAS 3.8.4](http://math-atlas.sourceforge.net/)
 - [SuiteSparse 5.0.0](http://faculty.cse.tamu.edu/davis/suitesparse.html)
@@ -129,8 +128,8 @@ $ cmake -DCMAKE_BUILD_TYPE=Release \
         -DUSE_SUITE_SPARSE=1 \
         -DUSE_ATLAS=1 \
         -DUSE_MKL=0 \
-        -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2016/include \
-        -DMAYA_LIB_PATH=/usr/autodesk/maya2016/lib \
+        -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2017/include \
+        -DMAYA_LIB_PATH=/usr/autodesk/maya2017/lib \
         -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
         -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
         -DATLAS_LIB_PATH=${PROJECT_ROOT}/external/lib \
@@ -164,7 +163,7 @@ $ bash build_with_intel_mkl.sh
 
 - C++ compiler ([GCC](https://gcc.gnu.org/), Clang, VC++, etc)
 - [CMake 3.6+](https://cmake.org/)
-- [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
+- [Autodesk Maya 2017+](https://www.autodesk.com.au/products/maya/overview)
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
 - [Intel Math Kernel Library (MLK)](https://software.intel.com/en-us/mkl)
 - [SuiteSparse 5.0.0](http://faculty.cse.tamu.edu/davis/suitesparse.html)
@@ -188,8 +187,8 @@ $ cmake -DCMAKE_BUILD_TYPE=Release \
         -DUSE_ATLAS=0 \
         -DUSE_SUITE_SPARSE=1 \
         -DUSE_MKL=1 \
-        -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2016/include \
-        -DMAYA_LIB_PATH=/usr/autodesk/maya2016/lib \
+        -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2017/include \
+        -DMAYA_LIB_PATH=/usr/autodesk/maya2017/lib \
         -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
         -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
         -DMKL_LIB_PATH=/opt/intel/mkl/lib/intel64 \

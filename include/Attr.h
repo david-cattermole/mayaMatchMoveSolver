@@ -97,5 +97,6 @@ typedef AttrList::iterator AttrListIt;
 typedef std::shared_ptr<Attr> AttrPtr;
 typedef std::vector<std::shared_ptr<Attr> > AttrPtrList;
 typedef AttrPtrList::iterator AttrPtrListIt;
+typedef AttrPtrList::const_iterator AttrPtrListCIt;
 
 #endif //MAYA_MM_SOLVER_ATTR_H

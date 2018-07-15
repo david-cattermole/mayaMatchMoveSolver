@@ -1,5 +1,18 @@
 """
 Test querying DG relationship information between Markers and Attributes.
+
+# Here is some WIP Python code to detect input/outputs:
+import maya.OpenMaya as OpenMaya
+import mmSolver._api as mmapi
+obj = mmapi.utils.get_as_object('Track_02_MKR')
+it = OpenMaya.MItDependencyGraph(obj, OpenMaya.MFn.kInvalid, OpenMaya.MItDependencyGraph.kUpstream)
+while not it.isDone():
+    # print it
+    cur = it.currentItem()
+    depNodeFn = OpenMaya.MFnDependencyNode(cur)
+    nodePath = depNodeFn.name()
+    print nodePath
+    it.next()
 """
 
 import os
@@ -292,8 +305,26 @@ class TestMarkerAttrMapping(solverUtils.SolverTestCase):
             assert multDivide2 not in r
         assert len(ret) == 106
 
+        # Test again, with the refactored API function.
+        ret = mmapi.find_attrs_affecting_transform(bnd_node)
+        assert (multDivide + '.input1X') in ret
+        assert (dummy + '.translateX') in ret
+        assert (dummy + '.rotateY') in ret
+        assert (dummy + '.translateY') not in ret
+        for r in ret:
+            assert multDivide2 not in r
+        assert len(ret) == 106
+
         # Test getting the affect mapping between markers and attrs.
         ret = find_marker_attr_mapping(mkr_list, attr_list)
+        expected = [
+            [True, True, True, True, True, True, False, True, True, False],
+            [True, True, True, True, True, True, True, False, False, False]
+        ]
+        assert ret == expected
+
+        # Test getting the affect mapping between markers and attrs.
+        ret = mmapi.find_marker_attr_mapping(mkr_list, attr_list)
         expected = [
             [True, True, True, True, True, True, False, True, True, False],
             [True, True, True, True, True, True, True, False, False, False]

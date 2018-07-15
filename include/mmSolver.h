@@ -26,31 +26,9 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-// The different solver types to choose from:
+// The different solver types to choose from. Currently only 'levmar' is supported.
 // Dense LM solver
 #define SOLVER_TYPE_LEVMAR 0
-
-//// Sparse LM Solver
-//#define SOLVER_TYPE_LEVMAR_SPARSE 1
-
-//// Default Ceres options
-//#define SOLVER_TYPE_CERES 2
-//
-//// For small problems (< 100 parameters)
-//#define SOLVER_TYPE_CERES_TRUST_REGION_DENSE_QR 3
-//
-//// For general sparse problems (many non-zero values in the Jacobian)
-//#define SOLVER_TYPE_CERES_TRUST_REGION_SPARSE_NORMAL_CHOLESKY 4
-//
-//// For Bundle Adjustments with ~100 cameras.
-//#define SOLVER_TYPE_CERES_TRUST_REGION_DENSE_SCHUR 5
-//
-//// For Bundle Adjustments with ~100 cameras, with sparse support.
-//#define SOLVER_TYPE_CERES_TRUST_REGION_SPARSE_SCHUR 6
-//
-//// For huge Bundle Adjustments with +1000 cameras.
-//#define SOLVER_TYPE_CERES_TRUST_REGION_ITERATIVE_SCHUR 7
-
 
 // The number of errors that are measured per-marker.
 #define ERRORS_PER_MARKER 3
@@ -76,7 +54,6 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
                           IndexPairList &errorToMarkerList,
                           MStatus &status);
 
-
 int countUpNumberOfUnknownParameters(AttrPtrList attrList,
                                      MTimeArray frameList,
                                      AttrPtrList &camStaticAttrList,
@@ -86,15 +63,16 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
                                      IndexPairList &paramToAttrList,
                                      MStatus &status);
 
-
-void findMarkerToAttrRelationship(MarkerPtrList validMarkerList,
-                                  AttrPtrList camStaticAttrList,
-                                  AttrPtrList camAnimAttrList,
-                                  AttrPtrList staticAttrList,
-                                  AttrPtrList animAttrList,
-                                  BoolList2D &markerToAttrMapping,
-                                  MStatus &status);
-
+void findErrorToUnknownRelationship(MarkerPtrList markerList,
+                                    AttrPtrList attrList,
+                                    MTimeArray frameList,
+                                    int numParameters,
+                                    int numErrors,
+                                    IndexPairList paramToAttrList,
+                                    IndexPairList errorToMarkerList,
+                                    BoolList2D &markerToAttrMapping,
+                                    BoolList2D &errorToParamMapping,
+                                    MStatus &status);
 
 bool solve(int iterMax,
            double tau,

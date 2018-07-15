@@ -35,7 +35,7 @@ Attr::Attr() :
         m_animated(-1),
         m_connected(-1),
         m_isFreeToChange(-1),
-        m_minValue(std::numeric_limits<double>::min()),
+        m_minValue(-std::numeric_limits<double>::max()),
         m_maxValue(std::numeric_limits<double>::max()) {
 }
 
@@ -361,7 +361,6 @@ MStatus Attr::setValue(double value, const MTime &time,
     bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
-//    double x = 0;
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -377,8 +376,6 @@ MStatus Attr::setValue(double value, const MTime &time,
         } else {
             curveFn.addKeyframe(time, value, &animChange);
         }
-//        x = curveFn.evaluate(time, &status);
-//        assert(x == value);
     } else if (connected) {
         // TODO: What do we do??? Just error?
         MString name = Attr::getName();
@@ -389,8 +386,6 @@ MStatus Attr::setValue(double value, const MTime &time,
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         dgmod.newPlugValueDouble(plug, value);
-//        x = plug.asDouble();
-//        assert(x == value);
     }
     status = MS::kSuccess;
     return status;

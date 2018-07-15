@@ -31,6 +31,11 @@ from mmSolver._api.excep import (
     NotEnoughMarkers,
 )
 
+from mmSolver._api.nodeaffects import (
+    find_attrs_affecting_transform,
+    find_marker_attr_mapping,
+)
+
 # Utility functions that the user is allowed to use.
 from mmSolver._api.utils import (
     get_long_name,

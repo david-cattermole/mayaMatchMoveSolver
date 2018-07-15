@@ -1,34 +1,6 @@
 /*
  * Sets up the Bundle Adjustment data and sends it off to the bundling algorithm.
  *
- * TODO: Detect inputs and outputs for marker-bundle relationships. For each
- * marker, get the bundle, then find all the attributes that affect the bundle
- * (and it's parent nodes). If the bundle cannot be affected by any attribute
- * in the solver, print a warning and remove it from the solve list.
- * This relationship building will be the basis for the Ceres
- * residual/parameter block creation. Note we do not need to worry about time
- * in our relationship building, connections cannot be made at different
- * times (and if they did, that would be stupid). This relationship building
- * could mean we only need to measure a limited number of bundles, hence
- * improving performance.
- *
- * There are special cases for detecting inputs/outputs between markers and attributes.
- * - Any transform node/attribute above the marker in the DAG that affects the world transform.
- * - Cameras; transform attributes and focal length will affect all markers
- *
- * # Here is some WIP Python code to detect input/outputs:
- * import maya.OpenMaya as OpenMaya
- * import mmSolver._api as mmapi
- * obj = mmapi.utils.get_as_object('Track_02_MKR')
- * it = OpenMaya.MItDependencyGraph(obj, OpenMaya.MFn.kInvalid, OpenMaya.MItDependencyGraph.kUpstream)
- * while not it.isDone():
- *     # print it
- *     cur = it.currentItem()
- *     depNodeFn = OpenMaya.MFnDependencyNode(cur)
- *     nodePath = depNodeFn.name()
- *     print nodePath
- *     it.next()
- *
  */
 
 #include <mmSolver.h>
@@ -52,6 +24,7 @@
 #include <utilities/stringUtils.h>
 
 // Maya
+#include <maya/MGlobal.h>
 #include <maya/MPoint.h>
 #include <maya/MVector.h>
 #include <maya/MString.h>
@@ -80,11 +53,10 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
                           MStatus &status) {
     // Count up number of errors
     // For each marker on each frame that it is valid, we add ERRORS_PER_MARKER errors.
-    register int i = 0;
-    register int j = 0;
+    int i = 0;
+    int j = 0;
 
-    int num_errors = 0;
-
+    int numErrors = 0;
     for (MarkerPtrListIt mit = markerList.begin(); mit != markerList.end(); ++mit) {
         MarkerPtr marker = *mit;
         for (j = 0; j < (int) frameList.length(); ++j) {
@@ -99,9 +71,11 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
             if ((enable == true) && (weight > 0.0)) {
+                // First index is into 'markerList'
+                // Second index is into 'frameList'
                 IndexPair markerPair(i, j);
                 errorToMarkerList.push_back(markerPair);
-                num_errors += ERRORS_PER_MARKER;
+                numErrors += ERRORS_PER_MARKER;
 
                 validMarkerList.push_back(marker);
 
@@ -120,42 +94,25 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
         }
         i++;
     }
-    return num_errors;
+    return numErrors;
 }
 
 
-/*
- * TODO: Answer this question: 'for each marker, determine which attributes
- * can affect it's bundle.'
- *
- * Detect inputs and outputs for marker-bundle relationships. For each
- * marker, get the bundle, then find all the attributes that affect the bundle
- * (and it's parent nodes). If the bundle cannot be affected by any attribute
- * in the solver, print a warning and remove it from the solve list.
- * This relationship building will be the basis for the Ceres
- * residual/parameter block creation. Note we do not need to worry about time
- * in our relationship building, connections cannot be made at different
- * times (and if they did, that would be stupid). This relationship building
- * could mean we only need to measure a limited number of bundles, hence
- * improving performance.
- *
- * There are special cases for detecting inputs/outputs between markers and attributes.
- * - Any transform node/attribute above the marker in the DAG that affects the world transform.
- * - Cameras; transform attributes and focal length will affect all markers
- */
 int countUpNumberOfUnknownParameters(AttrPtrList attrList,
                                      MTimeArray frameList,
                                      AttrPtrList &camStaticAttrList,
                                      AttrPtrList &camAnimAttrList,
                                      AttrPtrList &staticAttrList,
                                      AttrPtrList &animAttrList,
+                                     std::vector<double> &paramLowerBoundList,
+                                     std::vector<double> &paramUpperBoundList,
+                                     std::vector<double> &paramWeightList,
                                      IndexPairList &paramToAttrList,
                                      MStatus &status) {
     // Count up number of unknown parameters
-    register int i = 0;      // index of marker
-    register int j = 0;      // index of frame
-
-    int m = 0;
+    int i = 0;      // index of marker
+    int j = 0;      // index of frame
+    int numUnknowns = 0;
 
     // int k = 0;  // index of errorToMarkerList
     for (AttrPtrListIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
@@ -188,12 +145,22 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
         }
 
         if (attr->isAnimated()) {
-            m += frameList.length();
+            numUnknowns += frameList.length();
             for (j = 0; j < (int) frameList.length(); ++j) {
                 // first index is into 'attrList'
                 // second index is into 'frameList'
                 IndexPair attrPair(i, j);
                 paramToAttrList.push_back(attrPair);
+
+                // Min / max parameter bounds.
+                double minValue = attr->getMinimumValue();
+                double maxValue = attr->getMaximumValue();
+                paramLowerBoundList.push_back(minValue);
+                paramUpperBoundList.push_back(maxValue);
+
+                // TODO: Get a weight value from the attribute. Currently
+                // weights are not supported in the Maya mmSolver command.
+                paramWeightList.push_back(1.0);
             }
 
             if (attrIsPartOfCamera) {
@@ -202,11 +169,21 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
                 animAttrList.push_back(attr);
             }
         } else if (attr->isFreeToChange()) {
-            ++m;
+            ++numUnknowns;
             // first index is into 'attrList'
             // second index is into 'frameList', '-1' means a static value.
             IndexPair attrPair(i, -1);
             paramToAttrList.push_back(attrPair);
+
+            // Min / max parameter bounds.
+            double minValue = attr->getMinimumValue();
+            double maxValue = attr->getMaximumValue();
+            paramLowerBoundList.push_back(minValue);
+            paramUpperBoundList.push_back(maxValue);
+
+            // TODO: Get a weight value from the attribute. Currently
+            // weights are not supported in the Maya mmSolver command.
+            paramWeightList.push_back(1.0);
 
             if (attrIsPartOfCamera) {
                 camStaticAttrList.push_back(attr);
@@ -216,82 +193,172 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
         }
         i++;
     }
-    return m;
+    return numUnknowns;
 }
 
 
-void findMarkerToAttrRelationship(MarkerPtrList validMarkerList,
-                                  AttrPtrList camStaticAttrList,
-                                  AttrPtrList camAnimAttrList,
-                                  AttrPtrList staticAttrList,
-                                  AttrPtrList animAttrList,
-                                  BoolList2D &markerToAttrMapping,
-                                  MStatus &status) {
-    register int i = 0;      // index of marker
-    register int j = 0;      // index of frame
+/*
+ * TODO: Answer this question: 'for each marker, determine which attributes
+ * can affect it's bundle.'
+ *
+ * Detect inputs and outputs for marker-bundle relationships. For each
+ * marker, get the bundle, then find all the attributes that affect the bundle
+ * (and it's parent nodes). If the bundle cannot be affected by any attribute
+ * in the solver, print a warning and remove it from the solve list.
+ *
+ * This relationship building will be the basis for the Ceres
+ * residual/parameter block creation. Note we do not need to worry about time
+ * in our relationship building, connections cannot be made at different
+ * times (and if they did, that would be stupid). This relationship building
+ * could mean we only need to measure a limited number of bundles, hence
+ * improving performance.
+ *
+ * There are special cases for detecting inputs/outputs between markers and attributes.
+ * - Any transform node/attribute above the marker in the DAG that affects the world transform.
+ * - Cameras; transform attributes and focal length will affect all markers
+ *
+ */
+void findErrorToParameterRelationship(MarkerPtrList markerList,
+                                      AttrPtrList attrList,
+                                      MTimeArray frameList,
+                                      int numParameters,
+                                      int numErrors,
+                                      IndexPairList paramToAttrList,
+                                      IndexPairList errorToMarkerList,
+                                      BoolList2D &markerToAttrMapping,
+                                      BoolList2D &errorToParamMapping,
+                                      MStatus &status) {
+    int i, j;
 
-    markerToAttrMapping.resize(validMarkerList.size());
+    // Command execution options
+    bool display = false;  // print out what happens in the python command.
+    bool undoable = false;  // we won't modify the scene in any way, only make queries.
+    MString cmd = "";
+    MStringArray result1;
+    MStringArray result2;
 
-    for (MarkerPtrListCIt mit = validMarkerList.begin(); mit != validMarkerList.end(); ++mit) {
+    // Calculate the relationship between attributes and markers.
+    markerToAttrMapping.resize(markerList.size());
+    i = 0;      // index of marker
+    j = 0;      // index of attribute
+    for (MarkerPtrListCIt mit = markerList.begin(); mit != markerList.end(); ++mit) {
         MarkerPtr marker = *mit;
-        std::vector<bool> attrMapping;
-
         CameraPtr cam = marker->getCamera();
+        BundlePtr bundle = marker->getBundle();
 
-        // TODO: Recurse above camera transform in DAG, add all transforms to the list.
-        MObjectArray camTfmObjs;
-        camTfmObjs.append(cam->getTransformObject());
+        // Get node names.
+        const char *markerName = marker->getNodeName().asChar();
+        const char *camName = cam->getTransformNodeName().asChar();
+        const char *bundleName = bundle->getNodeName().asChar();
 
-        MObject camTfmObj = cam->getTransformObject();
-        MObject camShpObj = cam->getShapeObject();
-        // TODO: If 'attr' is on camTfmObj or camShpObj, save the relationship
-        // between the marker and attr. These attrs should go into a special
-        // block of parameters, these camera attrs will affect all attrs.
+        // Find list of plug names that are affected by the bundle.
+        cmd += "import mmSolver.api as mmapi;";
+        cmd += "mmapi.find_attrs_affecting_transform(";
+        cmd += "\"";
+        cmd += bundleName;
+        cmd += "\"";
+        cmd += ");";
+        status = MGlobal::executePythonCommand(cmd, result1, display, undoable);
+        INFO("Python result1 num: " << result1.length());
 
-        for (AttrPtrListCIt ait = camStaticAttrList.begin(); ait != camStaticAttrList.end(); ++ait) {
+        // Find list of plug names that are affected by the marker (and camera projection matrix).
+        cmd = "";
+        cmd += "import mmSolver.api as mmapi;";
+        cmd += "mmapi.find_attrs_affecting_transform(";
+        cmd += "\"";
+        cmd += markerName;
+        cmd += "\", ";
+        cmd += "cam_tfm=\"";
+        cmd += camName;
+        cmd += "\"";
+        cmd += ");";
+        status = MGlobal::executePythonCommand(cmd, result2, display, undoable);
+        INFO("Python result2 num: " << result2.length());
+
+        // Determine if the marker can affect the attribute.
+        MString affectedPlugName;
+        markerToAttrMapping[i].resize(attrList.size(), false);
+        for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
             AttrPtr attr = *ait;
-            // markerToAttrMapping
+
+            // Get attribute full path.
+            MPlug plug = attr->getPlug();
+            MObject attrNode = plug.node();
+            MFnDagNode attrFnDagNode(attrNode);
+            MString attrNodeName = attrFnDagNode.fullPathName();
+            MString attrAttrName = plug.partialName(false, true, true, false, false, true);
+            MString attrName = attrNodeName + "." + attrAttrName;
+
+            // Bundle affects attribute
+            for (int k = 0; k < result1.length(); ++k) {
+                affectedPlugName = result1[k];
+                if (attrName == affectedPlugName) {
+                    markerToAttrMapping[i][j] = true;
+                    break;
+                }
+            }
+
+            // Marker (or camera) affects attribute
+            for (int k = 0; k < result2.length(); ++k) {
+                affectedPlugName = result2[k];
+                if (attrName == affectedPlugName) {
+                    markerToAttrMapping[i][j] = true;
+                    break;
+                }
+            }
+
+            ++j;
+        }
+        ++i;
+    }
+
+    /*
+    // Calculate the relationship between errors and parameters.
+    int markerIndex = 0;
+    int attrIndex = 0;
+    int frameIndex = 0;
+    IndexPair markerIndexPair;
+    IndexPair attrIndexPair;
+    errorToParamMapping.resize(numErrors);
+    i = 0;      // index of error
+    j = 0;      // index of parameter
+    for (i = 0; i < numErrors;) {
+        markerIndexPair = errorToMarkerList[i];
+        markerIndex = markerIndexPair.first;
+        MarkerPtr marker = markerList[markerIndex];
+        CameraPtr cam = marker->getCamera();
+        BundlePtr bundle = marker->getBundle();
+
+        // Get node names.
+        const char *markerName = marker->getNodeName().asChar();
+        const char *camName = cam->getTransformNodeName().asChar();
+        const char *bundleName = bundle->getNodeName().asChar();
+        INFO("Marker: " << markerName);
+
+        // Determine if the marker can affect the attribute.
+        errorToParamMapping[i].resize(numParameters, false);
+        for (j = 0; i < numParameters;) {
+            attrIndexPair = paramToAttrList[j];
+            attrIndex = attrIndexPair.first;
+            frameIndex = attrIndexPair.second;
+            AttrPtr attr = attrList[attrIndex];
+            MTime frame = frameList[frameIndex];
+            const char *attrName = attr->getName().asChar();
+
+            bool markerAffectsAttr = markerToAttrMapping[markerIndex][attrIndex];
+
+            INFO("Attr: " << attrName);
+            INFO("Frame: " << frame.asUnits(MTime::uiUnit()));
+            INFO("i=" << i << " | j=" << j << " : " << markerAffectsAttr << " ");
+            ++j;
         }
 
-        // TODO: Find the attributes that affect this marker. If we cannot
-        // detect any attributes, print a warning and drop the marker from
-        // the list???
-
-        // For each attribute, loop over all markers, find the camera, if
-        // the attribute is on the camera, add the relationship. Next, find
-        // the bundle from the marker, check if the attribute is on the
-        // bundle, if so add the relationship, if not, continue. Now look
-        // at the node above the bundle, check if the attribute is on the
-        // node, continue until we reach the root world node.
-        //
-        // NOTE: We can also use MFnDependencyNode::getAffectedAttributes
-        // and MFnDependencyNode::getAffectedByAttributes to detect which
-        // attributes are actually affecting the matrix or world matrix
-        // of a transform node, etc.
-
-
-        // TODO: Look up the graph
-//        MObject attrNodeObj = attr->getObject();
-//        MItDependencyGraph dgIt(
-//                attrNodeObj,
-//                MFn::kInvalid, // all node types
-//                MItDependencyGraph::kUpstream // From destination to source
-//        );
-//        while (!dgIt.isDone(&status)) {
-//            CHECK_MSTATUS(status);
-//
-//            MObject item = dgIt.currentItem(&status);
-//            CHECK_MSTATUS(status);
-//
-//            MFnDependencyNode depNodeFn = MFnDependencyNode(item);
-//            // nodePath = depNodeFn.name()
-//            // depNodeFn.getAffectedAttributes()
-//            // depNodeFn.
-//
-//        }
-
-        i++;
+        // Increment by the number of errors each marker writes.
+        i += ERRORS_PER_MARKER;
     }
+     */
+
+    return;
 }
 
 
@@ -312,8 +379,8 @@ bool solve(int iterMax,
            MComputation &computation,
            bool verbose,
            MStringArray &outResult) {
-    register int i = 0;
-    register int j = 0;
+    int i = 0;
+    int j = 0;
     MStatus status;
     int ret = true;
     int profileCategory = MProfiler::getCategoryIndex("mmSolver");
@@ -323,7 +390,8 @@ bool solve(int iterMax,
     IndexPairList paramToAttrList;
     IndexPairList errorToMarkerList;
 
-    // Cache out the marker positions in screen-space
+    // Cache out the marker positions in screen-space, so we don't need to query
+    // them during solving.
     std::vector<MPoint> markerPosList;
 
     // Errors and parameters as used by the solver.
@@ -333,7 +401,8 @@ bool solve(int iterMax,
     // Number of unknown parameters.
     int m = 0;
 
-    // Number of measurement errors. (Must be less than or equal to number of unknown parameters).
+    // Number of measurement errors.
+    // (Must be less than or equal to number of unknown parameters).
     int n = 0;
 
     // Count up number of errors
@@ -352,6 +421,9 @@ bool solve(int iterMax,
     AttrPtrList camAnimAttrList;
     AttrPtrList staticAttrList;
     AttrPtrList animAttrList;
+    std::vector<double> paramLowerBoundList;
+    std::vector<double> paramUpperBoundList;
+    std::vector<double> paramWeightList;
     m = countUpNumberOfUnknownParameters(
             attrList,
             frameList,
@@ -359,21 +431,44 @@ bool solve(int iterMax,
             camAnimAttrList,
             staticAttrList,
             animAttrList,
+            paramLowerBoundList,
+            paramUpperBoundList,
+            paramWeightList,
             paramToAttrList,
             status
     );
+    INFO("camStaticAttrList.size() = " << camStaticAttrList.size());
+    INFO("camAnimAttrList.size() = " << camAnimAttrList.size());
+    INFO("staticAttrList.size() = " << staticAttrList.size());
+    INFO("animAttrList.size() = " << animAttrList.size());
+    assert(paramLowerBoundList.size() == m);
+    assert(paramUpperBoundList.size() == m);
+    assert(paramWeightList.size() == m);
 
-//    // Which markers affect which attributes?
-//    BoolList2D markerToAttrMapping;
-//    findMarkerToAttrRelationship(
-//            validMarkerList,
-//            camStaticAttrList,
-//            camAnimAttrList,
-//            staticAttrList,
-//            animAttrList,
-//            markerToAttrMapping,
-//            status
-//    );
+    // Which markers affect which attributes?
+    BoolList2D markerToAttrMapping;
+    BoolList2D errorToParamMapping;
+    findErrorToParameterRelationship(
+            markerList,
+            attrList,
+            frameList,
+            m,  // Number of parameters.
+            n,  // Number of errors.
+            paramToAttrList,
+            errorToMarkerList,
+            markerToAttrMapping,
+            errorToParamMapping,
+            status
+    );
+    // INFO("markerToAttrMapping.size() = " << markerToAttrMapping.size());
+    for (i = 0; i < markerToAttrMapping.size(); ++i) {
+        // INFO("i = " << i);
+        // INFO("markerToAttrMapping[" << i << "].size() = " << markerToAttrMapping[i].size());
+        for (j = 0; j < markerToAttrMapping[i].size(); ++j) {
+            // INFO("j = " << j);
+            INFO("mkr=" << i << " : attr=" << j << " | " << markerToAttrMapping[i][j]);
+        }
+    }
 
     VRB("Number of Parameters; m=" << m);
     VRB("Number of Errors; n=" << n);
@@ -421,21 +516,6 @@ bool solve(int iterMax,
 //         VRB("-> " << paramList[i]);
 //     }
 
-    // Box constraint: lower, upper and diagonal scaling.
-//    std::vector<double> paramLowerBoundList(1);
-//    std::vector<double> paramUpperBoundList(1);
-//    paramLowerBoundList.resize((unsigned long) m, std::numeric_limits<double>::min());
-//    paramUpperBoundList.resize((unsigned long) m, std::numeric_limits<double>::max());
-
-//    std::vector<double> paramWeightList(1);
-//    paramWeightList.resize((unsigned long) m, 1.0);
-
-    double max_pos = std::numeric_limits<double>::max();
-    double max_neg = -max_pos;
-    std::vector<double> paramLowerBoundList(m, max_neg);
-    std::vector<double> paramUpperBoundList(m, max_pos);
-    std::vector<double> paramWeightList(m, 1.0);
-
     VRB("Solving...");
     VRB("Solver Type=" << solverType);
     VRB("Maximum Iterations=" << iterMax);
@@ -457,7 +537,7 @@ bool solve(int iterMax,
     // Solving Objects.
     struct LevMarSolverData userData;
     userData.cameraList = cameraList;
-    userData.markerList = markerList;
+    userData.markerList = markerList;  // TODO: Can we replace this with valid marker list?
     userData.bundleList = bundleList;
     userData.attrList = attrList;
     userData.frameList = frameList;
@@ -825,4 +905,3 @@ bool solve(int iterMax,
     // return frame-based information. The UI could then graph this information.
     return ret != -1;
 }
-

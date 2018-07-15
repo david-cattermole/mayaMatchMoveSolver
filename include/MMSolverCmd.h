@@ -71,15 +71,15 @@
 
 #define EPSILON1_FLAG           "-e1"
 #define EPSILON1_FLAG_LONG      "-epsilon1"
-#define EPSILON1_DEFAULT_VALUE  1E-12
+#define EPSILON1_DEFAULT_VALUE  1E-6 // 1E-12
 
 #define EPSILON2_FLAG           "-e2"
 #define EPSILON2_FLAG_LONG      "-epsilon2"
-#define EPSILON2_DEFAULT_VALUE  1E-12
+#define EPSILON2_DEFAULT_VALUE  1E-6 // 1E-12
 
 #define EPSILON3_FLAG           "-e3"
 #define EPSILON3_FLAG_LONG      "-epsilon3"
-#define EPSILON3_DEFAULT_VALUE  1E-12
+#define EPSILON3_DEFAULT_VALUE  1E-6 // 1E-12
 
 #define DELTA_FLAG           "-dt"
 #define DELTA_FLAG_LONG      "-delta"

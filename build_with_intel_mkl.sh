@@ -31,8 +31,6 @@ rm -R --force ${PROJECT_ROOT}/external/include/glog
 
 
 # Build the external dependencies
-bash external/build_glog.sh
-bash external/build_gflags.sh
 bash external/build_mkl.sh
 bash external/build_levmar_with_mkl.sh
 

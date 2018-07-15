@@ -17,7 +17,7 @@ class Marker(object):
     The 2D Marker object.
     """
     def __init__(self, name=None):
-        if isinstance(name, (str, unicode)):
+        if isinstance(name, basestring):
             dag = api_utils.get_as_dag_path(name)
             self._mfn = OpenMaya.MFnDagNode(dag)
         else:

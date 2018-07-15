@@ -73,7 +73,7 @@ def get_as_plug(node_attr):
 
 
 def get_object_type(node):
-    assert isinstance(node, (str, unicode))
+    assert isinstance(node, basestring)
     assert maya.cmds.objExists(node)
 
     node_type = maya.cmds.nodeType(node)
@@ -167,14 +167,20 @@ def get_marker_group_above_node(node):
 
 
 def convert_valid_maya_name(name):
-    assert isinstance(name, (str, unicode))
+    assert isinstance(name, basestring)
     for char in BAD_MAYA_CHARS:
         name.replace(char, '_')
     return name
 
 
 def get_marker_name(name):
-    assert isinstance(name, (str, unicode))
+    """
+    Create a name for a marker object, using 'name' as the base identifier.
+
+    :param name: Name of object.
+    :return: Name for the marker.
+    """
+    assert isinstance(name, basestring)
     name = convert_valid_maya_name(name)
     if MARKER_NAME_SUFFIX.lower() not in name.lower():
         name += MARKER_NAME_SUFFIX
@@ -182,7 +188,13 @@ def get_marker_name(name):
 
 
 def get_bundle_name(name):
-    assert isinstance(name, (str, unicode))
+    """
+    Create a name for a bundle object, using 'name' as the base identifier.
+
+    :param name: Name of object.
+    :return: Name for the bundle.
+    """
+    assert isinstance(name, basestring)
     name = convert_valid_maya_name(name)
     if BUNDLE_NAME_SUFFIX.lower() not in name.lower():
         name += BUNDLE_NAME_SUFFIX
@@ -194,7 +206,7 @@ def undo_chunk(func):
     Undo/Redo Chunk Decorator.
 
     Puts the wrapped 'func' into a single Maya Undo action.
-    If 'func' raises and exception, we close the cunk.
+    If 'func' raises and exception, we close the chunk.
     """
     @wraps(func)
     def _func(*args, **kwargs):

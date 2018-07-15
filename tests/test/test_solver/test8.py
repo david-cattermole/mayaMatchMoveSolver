@@ -89,7 +89,7 @@ class TestSolver8(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             frame=frames,
-            solverType=2,  # ceres solver
+            solverType=0,  # was using ceres solver.
             iterations=1000,
             verbose=True,
         )

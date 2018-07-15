@@ -4,23 +4,8 @@
 
 #include <mmSolverLevMar.h>
 
-#ifndef HAVE_SPLM
-#error "HAVE_SPLM were not defined."
-#endif
-
-#ifdef HAVE_SPLM
-#if HAVE_SPLM == 0
-#warning "HAVE_SPLM was not given."
-#endif
-#endif
-
 // Lev-Mar
 #include <levmar.h>  // dlevmar_dif
-
-// Sparse Lev-Mar
-#if HAVE_SPLM == 1
-#include <splm.h>    // sparselm_difccs
-#endif
 
 // STL
 #include <ctime>     // time

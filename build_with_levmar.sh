@@ -33,14 +33,12 @@ mkdir -p build
 cd build
 rm --force -R *
 cmake -DCMAKE_BUILD_TYPE=Release \
+      -DUSE_ATLAS=0 \
+      -DUSE_MKL=0 \
       -DMAYA_INCLUDE_PATH=${MAYA_INCLUDE_PATH} \
       -DMAYA_LIB_PATH=${MAYA_LIB_PATH} \
       -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
       -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
-      -DHAVE_SPLM=0 \
-      -DHAVE_CERES=0 \
-      -DUSE_ATLAS=0 \
-      -DUSE_MKL=0 \
       ..
 make clean
 make -j${CPU_NUM}

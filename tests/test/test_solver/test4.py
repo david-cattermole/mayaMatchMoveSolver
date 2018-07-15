@@ -71,7 +71,7 @@ class TestSolver4(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             frame=frames,
-            solverType=1,
+            solverType=0,  # was using sparse levmar
             iterations=100,
             verbose=True,
         )

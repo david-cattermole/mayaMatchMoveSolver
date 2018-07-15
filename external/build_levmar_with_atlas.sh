@@ -21,6 +21,7 @@ patch -i ./external/patches/levmar-2.6_atlas_Makefile.patch ./external/working/l
 cd ./external/working/levmar-2.6/
 make clean
 make -j${CPU_NUM} LAPACKLIBS_PATH=../../../external/lib LAPACK_INCLUDE_DIR=../../../external/include
+./lmdemo  # Run test
 cd ../../../
 
 

@@ -16,6 +16,7 @@ patch -i ./external/patches/levmar-2.6_mkl_Makefile.patch ./external/working/lev
 cd ./external/working/levmar-2.6/
 make clean
 make -j${CPU_NUM}
+./lmdemo  # Run test
 cd ../../../
 
 # Copy

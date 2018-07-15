@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 # Compile Flags, Release flags come from the Autodesk Maya build scripts.
 set(CMAKE_CXX_FLAGS_DEBUG "-std=c++0x -O0 -g -Wall")
 set(CMAKE_C_FLAGS_RELEASE "-std=c++0x -DBits64_ -m64 -DUNIX -D_BOOL -DLINUX -DFUNCPROTO -D_GNU_SOURCE -DLINUX_64 -fPIC -fno-strict-aliasing -DREQUIRE_IOSTREAM -O3 -Wall -Wno-multichar -Wno-comment -Wno-sign-compare -funsigned-char -pthread -fopenmp")
+# '-ftemplate-depth-27', rather than '25' is required to compile under GCC 4.8.5.
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wno-deprecated -Wno-reorder -ftemplate-depth-27 -fno-gnu-keywords")
 
 # Maya SDK
@@ -17,13 +18,12 @@ set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH "Levmar include director
 set(LEVMAR_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
 
 # ATLAS
-set(USE_ATLAS ON CACHE BOOLEAN "Should we use ATLAS with Lev-Mar?")
+set(USE_ATLAS OFF CACHE BOOLEAN "Should we use ATLAS with Lev-Mar?")
 set(ATLAS_LIB_PATH "/usr/lib64/atlas" CACHE PATH "ATLAS library directory")
 
 # Intel Math Kernel Library
-set(USE_MKL ON CACHE BOOLEAN "Should we use MKL?")
+set(USE_MKL OFF CACHE BOOLEAN "Should we use MKL?")
 set(MKL_LIB_PATH "/opt/intel/mkl/lib/intel64" CACHE PATH "Intel MKL library directory")
-
 
 # Source
 set(SOURCE_FILES
@@ -85,8 +85,7 @@ if (USE_ATLAS)
     endif()
     target_link_libraries(${CMD_NAME}
             lapack
-            f77blas
-            satlas  # serial compiled library.
+            satlas  # serial compiled library, not threaded
             )
 endif()
 

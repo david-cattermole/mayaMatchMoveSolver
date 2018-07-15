@@ -24,6 +24,7 @@ patch -i ./external/patches/levmar-2.6_nodeps_levmar.h.in.patch ./external/worki
 cd ./external/working/levmar-2.6/
 make clean
 make liblevmar.a -j${CPU_NUM}
+./lmdemo  # Run test
 cd ../../../
 
 

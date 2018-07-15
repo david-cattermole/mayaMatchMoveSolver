@@ -31,7 +31,7 @@
 -                                            # http://www.intel.com/cd/software/products/asmo-na/eng/perflib/mkl/index.htm
 -                                            # check the MKL link line advisor for more information:
 -                                            # http://software.intel.com/en-us/articles/intel-mkl-link-line-advisor/
-+LAPACKLIBS=-L$(LAPACKLIBS_PATH) -llapack -lcblas -lf77blas -latlas
++LAPACKLIBS=-L$(LAPACKLIBS_PATH) -llapack -lblas -lsatlas
  
  LIBS=$(LAPACKLIBS)
  

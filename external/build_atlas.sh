@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# NOTE: This script is for CentOS 7.x, and assumes the base package 'atlas' has
-# been installed.
-# This script will not "build" ATLAS, but simply copy the libraries from the system location
+# NOTE: This script is for CentOS 7.x, and assumes the base packages 'atlas',
+# 'lapack' and 'blas' has been installed.
+#
+# This script will not "build" ATLAS, but simply copy the libraries from the
+# system location
 
 
 # Build

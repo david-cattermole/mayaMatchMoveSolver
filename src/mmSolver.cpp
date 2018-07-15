@@ -75,7 +75,7 @@
 int countUpNumberOfErrors(MarkerPtrList markerList,
                           MTimeArray frameList,
                           MarkerPtrList &validMarkerList,
-                          std::vector<MPoint> markerPosList,
+                          std::vector<MPoint> &markerPosList,
                           IndexPairList &errorToMarkerList,
                           MStatus &status) {
     // Count up number of errors
@@ -205,7 +205,7 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
             ++m;
             // first index is into 'attrList'
             // second index is into 'frameList', '-1' means a static value.
-            std::pair<int, int> attrPair(i, -1);
+            IndexPair attrPair(i, -1);
             paramToAttrList.push_back(attrPair);
 
             if (attrIsPartOfCamera) {
@@ -324,8 +324,8 @@ bool solve(int iterMax,
     IndexPairList errorToMarkerList;
 
     // Cache out the marker positions in screen-space
-
     std::vector<MPoint> markerPosList;
+
     // Errors and parameters as used by the solver.
     std::vector<double> errorList(1);
     std::vector<double> paramList(1);
@@ -399,7 +399,7 @@ bool solve(int iterMax,
     MTime currentFrame = MAnimControl::currentTime();
     i = 0;
     for (i = 0; i < m; ++i) {
-        std::pair<int, int> attrPair = paramToAttrList[i];
+        IndexPair attrPair = paramToAttrList[i];
         AttrPtr attr = attrList[attrPair.first];
 
         // Get frame time
@@ -421,7 +421,21 @@ bool solve(int iterMax,
 //         VRB("-> " << paramList[i]);
 //     }
 
-    // no Jacobian, caller allocates work memory, covariance estimated
+    // Box constraint: lower, upper and diagonal scaling.
+//    std::vector<double> paramLowerBoundList(1);
+//    std::vector<double> paramUpperBoundList(1);
+//    paramLowerBoundList.resize((unsigned long) m, std::numeric_limits<double>::min());
+//    paramUpperBoundList.resize((unsigned long) m, std::numeric_limits<double>::max());
+
+//    std::vector<double> paramWeightList(1);
+//    paramWeightList.resize((unsigned long) m, 1.0);
+
+    double max_pos = std::numeric_limits<double>::max();
+    double max_neg = -max_pos;
+    std::vector<double> paramLowerBoundList(m, max_neg);
+    std::vector<double> paramUpperBoundList(m, max_pos);
+    std::vector<double> paramWeightList(m, 1.0);
+
     VRB("Solving...");
     VRB("Solver Type=" << solverType);
     VRB("Maximum Iterations=" << iterMax);
@@ -522,15 +536,15 @@ bool solve(int iterMax,
         // Allocate a memory block for both 'work' and 'covar', so that
         // the block is close together in physical memory.
         double *work, *covar;
-        work = (double *) malloc((LM_DIF_WORKSZ(m, n) + m * m) * sizeof(double));
+        work = (double *) malloc((LM_BC_DIF_WORKSZ(m, n) + m * m) * sizeof(double));
         if (!work) {
             ERR("Memory allocation request failed.");
             return false;
         }
-        covar = work + LM_DIF_WORKSZ(m, n);
+        covar = work + LM_BC_DIF_WORKSZ(m, n);
 
-        // TODO: Replace with box-constraint levmar function; 'dlevmar_bc_dif'.
-        ret = dlevmar_dif(
+        // Solve!
+        ret = dlevmar_bc_dif(
 
                 // Function to call (input only)
                 // Function must be of the structure:
@@ -553,6 +567,18 @@ bool solve(int iterMax,
 
                 // Measurement Vector Dimension (input only)
                 n,
+
+                // vector of lower bounds. If NULL, no lower bounds apply
+                &paramLowerBoundList[0],
+//                NULL,
+
+                // vector of upper bounds. If NULL, no upper bounds apply (input only)
+                &paramUpperBoundList[0],
+//                NULL,
+
+                // diagonal scaling constants. NULL implies no scaling (input only)
+                &paramWeightList[0],
+//                NULL,
 
                 // Maximum Number of Iterations (input only)
                 iterMax,
@@ -625,7 +651,7 @@ bool solve(int iterMax,
     // Set the solved parameters
     VRB("Setting Parameters...");
     for (i = 0; i < m; ++i) {
-        std::pair<int, int> attrPair = paramToAttrList[i];
+        IndexPair attrPair = paramToAttrList[i];
         AttrPtr attr = attrList[attrPair.first];
 
         // Get frame time

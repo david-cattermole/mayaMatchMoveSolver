@@ -85,7 +85,7 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
 
         MTime currentFrame = MAnimControl::currentTime();
         for (i = 0; i < m; ++i) {
-            std::pair<int, int> attrPair = ud->paramToAttrList[i];
+            IndexPair attrPair = ud->paramToAttrList[i];
             AttrPtr attr = ud->attrList[attrPair.first];
 
             // Get frame time
@@ -124,7 +124,7 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
         {
             MPoint pos;
             i = 0;
-            std::pair<int, int> markerPair = ud->errorToMarkerList[i];
+            IndexPair markerPair = ud->errorToMarkerList[i];
             MarkerPtr marker = ud->markerList[markerPair.first];
             MTime frame = ud->frameList[markerPair.second];
             status = marker->getPos(pos, frame + 1);
@@ -136,7 +136,7 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
         MPoint mkr_mpos;
         MPoint bnd_mpos;
         for (i = 0; i < (n / ERRORS_PER_MARKER); ++i) {
-            std::pair<int, int> markerPair = ud->errorToMarkerList[i];
+            IndexPair markerPair = ud->errorToMarkerList[i];
             MarkerPtr marker = ud->markerList[markerPair.first];
             MTime frame = ud->frameList[markerPair.second];
 

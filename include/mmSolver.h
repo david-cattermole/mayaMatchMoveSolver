@@ -72,7 +72,7 @@ double distance_2d(MPoint a, MPoint b) {
 int countUpNumberOfErrors(MarkerPtrList markerList,
                           MTimeArray frameList,
                           MarkerPtrList &validMarkerList,
-                          std::vector<MPoint> markerPosList,
+                          std::vector<MPoint> &markerPosList,
                           IndexPairList &errorToMarkerList,
                           MStatus &status);
 

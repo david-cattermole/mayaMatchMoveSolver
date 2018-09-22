@@ -46,11 +46,11 @@
 
 
 int countUpNumberOfErrors(MarkerPtrList markerList,
-			  MTimeArray frameList,
-			  MarkerPtrList &validMarkerList,
-			  std::vector<MPoint> &markerPosList,
-			  IndexPairList &errorToMarkerList,
-			  MStatus &status) {
+                          MTimeArray frameList,
+                          MarkerPtrList &validMarkerList,
+                          std::vector<MPoint> &markerPosList,
+                          IndexPairList &errorToMarkerList,
+                          MStatus &status) {
     // Count up number of errors
     // For each marker on each frame that it is valid, we add ERRORS_PER_MARKER errors.
     int i = 0;
@@ -58,139 +58,139 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
 
     int numErrors = 0;
     for (MarkerPtrListIt mit = markerList.begin(); mit != markerList.end(); ++mit) {
-	MarkerPtr marker = *mit;
-	for (j = 0; j < (int) frameList.length(); ++j) {
-	    MTime frame = frameList[j];
+        MarkerPtr marker = *mit;
+        for (j = 0; j < (int) frameList.length(); ++j) {
+            MTime frame = frameList[j];
 
-	    bool enable = false;
-	    status = marker->getEnable(enable, frame);
-	    CHECK_MSTATUS_AND_RETURN_IT(status);
+            bool enable = false;
+            status = marker->getEnable(enable, frame);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	    double weight = 0.0;
-	    status = marker->getWeight(weight, frame);
-	    CHECK_MSTATUS_AND_RETURN_IT(status);
+            double weight = 0.0;
+            status = marker->getWeight(weight, frame);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	    if ((enable == true) && (weight > 0.0)) {
-		// First index is into 'markerList'
-		// Second index is into 'frameList'
-		IndexPair markerPair(i, j);
-		errorToMarkerList.push_back(markerPair);
-		numErrors += ERRORS_PER_MARKER;
+            if ((enable == true) && (weight > 0.0)) {
+                // First index is into 'markerList'
+                // Second index is into 'frameList'
+                IndexPair markerPair(i, j);
+                errorToMarkerList.push_back(markerPair);
+                numErrors += ERRORS_PER_MARKER;
 
-		validMarkerList.push_back(marker);
+                validMarkerList.push_back(marker);
 
-		// Get Marker Position.
-		MMatrix cameraWorldProjectionMatrix;
-		CameraPtr camera = marker->getCamera();
-		status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
-		CHECK_MSTATUS(status);
-		MPoint marker_pos;
-		status = marker->getPos(marker_pos, frame);
-		CHECK_MSTATUS(status);
-		marker_pos = marker_pos * cameraWorldProjectionMatrix;
-		marker_pos.cartesianize();
-		markerPosList.push_back(marker_pos);
-	    }
-	}
-	i++;
+                // Get Marker Position.
+                MMatrix cameraWorldProjectionMatrix;
+                CameraPtr camera = marker->getCamera();
+                status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
+                CHECK_MSTATUS(status);
+                MPoint marker_pos;
+                status = marker->getPos(marker_pos, frame);
+                CHECK_MSTATUS(status);
+                marker_pos = marker_pos * cameraWorldProjectionMatrix;
+                marker_pos.cartesianize();
+                markerPosList.push_back(marker_pos);
+            }
+        }
+        i++;
     }
     return numErrors;
 }
 
 
 int countUpNumberOfUnknownParameters(AttrPtrList attrList,
-				     MTimeArray frameList,
-				     AttrPtrList &camStaticAttrList,
-				     AttrPtrList &camAnimAttrList,
-				     AttrPtrList &staticAttrList,
-				     AttrPtrList &animAttrList,
-				     std::vector<double> &paramLowerBoundList,
-				     std::vector<double> &paramUpperBoundList,
-				     std::vector<double> &paramWeightList,
-				     IndexPairList &paramToAttrList,
-				     MStatus &status) {
+                                     MTimeArray frameList,
+                                     AttrPtrList &camStaticAttrList,
+                                     AttrPtrList &camAnimAttrList,
+                                     AttrPtrList &staticAttrList,
+                                     AttrPtrList &animAttrList,
+                                     std::vector<double> &paramLowerBoundList,
+                                     std::vector<double> &paramUpperBoundList,
+                                     std::vector<double> &paramWeightList,
+                                     IndexPairList &paramToAttrList,
+                                     MStatus &status) {
     // Count up number of unknown parameters
     int i = 0;      // index of marker
     int j = 0;      // index of frame
     int numUnknowns = 0;
 
     for (AttrPtrListIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
-	AttrPtr attr = *ait;
-	MObject nodeObj = attr->getObject();
-	bool attrIsPartOfCamera = false;
+        AttrPtr attr = *ait;
+        MObject nodeObj = attr->getObject();
+        bool attrIsPartOfCamera = false;
 
-	MFnDependencyNode dependNode(nodeObj);
-	if (nodeObj.apiType() == MFn::kTransform) {
-	    MFnDagNode dagNode(nodeObj);
-	    for (int k = 0; k < dagNode.childCount(); ++k) {
-		MObject childObj = dagNode.child(k, &status);
-		CHECK_MSTATUS(status);
-		if (childObj.apiType() == MFn::kCamera) {
-		    attrIsPartOfCamera = true;
-		}
-	    }
+        MFnDependencyNode dependNode(nodeObj);
+        if (nodeObj.apiType() == MFn::kTransform) {
+            MFnDagNode dagNode(nodeObj);
+            for (int k = 0; k < dagNode.childCount(); ++k) {
+                MObject childObj = dagNode.child(k, &status);
+                CHECK_MSTATUS(status);
+                if (childObj.apiType() == MFn::kCamera) {
+                    attrIsPartOfCamera = true;
+                }
+            }
 
-	    // // TODO: Look up affected attributes to make sure the
-	    // // attribute really does belong to the camera and will
-	    // // affect the solve.
-	    // MObjectArray attrObjs;
-	    // MString worldMatrixAttrName = "worldMatrix";
-	    // MObject attributeObj = dependNode.attribute(worldMatrixAttrName, &status);
-	    // CHECK_MSTATUS(status);
-	    // dependNode.getAffectedAttributes(attributeObj, attrObjs);
+            // // TODO: Look up affected attributes to make sure the
+            // // attribute really does belong to the camera and will
+            // // affect the solve.
+            // MObjectArray attrObjs;
+            // MString worldMatrixAttrName = "worldMatrix";
+            // MObject attributeObj = dependNode.attribute(worldMatrixAttrName, &status);
+            // CHECK_MSTATUS(status);
+            // dependNode.getAffectedAttributes(attributeObj, attrObjs);
 
-	} else if (nodeObj.apiType() == MFn::kCamera) {
-	    attrIsPartOfCamera = true;
-	}
+        } else if (nodeObj.apiType() == MFn::kCamera) {
+            attrIsPartOfCamera = true;
+        }
 
-	if (attr->isAnimated()) {
-	    numUnknowns += frameList.length();
-	    for (j = 0; j < (int) frameList.length(); ++j) {
-		// first index is into 'attrList'
-		// second index is into 'frameList'
-		IndexPair attrPair(i, j);
-		paramToAttrList.push_back(attrPair);
+        if (attr->isAnimated()) {
+            numUnknowns += frameList.length();
+            for (j = 0; j < (int) frameList.length(); ++j) {
+                // first index is into 'attrList'
+                // second index is into 'frameList'
+                IndexPair attrPair(i, j);
+                paramToAttrList.push_back(attrPair);
 
-		// Min / max parameter bounds.
-		double minValue = attr->getMinimumValue();
-		double maxValue = attr->getMaximumValue();
-		paramLowerBoundList.push_back(minValue);
-		paramUpperBoundList.push_back(maxValue);
+                // Min / max parameter bounds.
+                double minValue = attr->getMinimumValue();
+                double maxValue = attr->getMaximumValue();
+                paramLowerBoundList.push_back(minValue);
+                paramUpperBoundList.push_back(maxValue);
 
-		// TODO: Get a weight value from the attribute. Currently
-		// weights are not supported in the Maya mmSolver command.
-		paramWeightList.push_back(1.0);
-	    }
+                // TODO: Get a weight value from the attribute. Currently
+                // weights are not supported in the Maya mmSolver command.
+                paramWeightList.push_back(1.0);
+            }
 
-	    if (attrIsPartOfCamera) {
-		camAnimAttrList.push_back(attr);
-	    } else {
-		animAttrList.push_back(attr);
-	    }
-	} else if (attr->isFreeToChange()) {
-	    ++numUnknowns;
-	    // first index is into 'attrList'
-	    // second index is into 'frameList', '-1' means a static value.
-	    IndexPair attrPair(i, -1);
-	    paramToAttrList.push_back(attrPair);
+            if (attrIsPartOfCamera) {
+                camAnimAttrList.push_back(attr);
+            } else {
+                animAttrList.push_back(attr);
+            }
+        } else if (attr->isFreeToChange()) {
+            ++numUnknowns;
+            // first index is into 'attrList'
+            // second index is into 'frameList', '-1' means a static value.
+            IndexPair attrPair(i, -1);
+            paramToAttrList.push_back(attrPair);
 
-	    // Min / max parameter bounds.
-	    double minValue = attr->getMinimumValue();
-	    double maxValue = attr->getMaximumValue();
-	    paramLowerBoundList.push_back(minValue);
-	    paramUpperBoundList.push_back(maxValue);
+            // Min / max parameter bounds.
+            double minValue = attr->getMinimumValue();
+            double maxValue = attr->getMaximumValue();
+            paramLowerBoundList.push_back(minValue);
+            paramUpperBoundList.push_back(maxValue);
 
-	    // TODO: Get a weight value from the attribute. Currently
-	    // weights are not supported in the Maya mmSolver command.
-	    paramWeightList.push_back(1.0);
+            // TODO: Get a weight value from the attribute. Currently
+            // weights are not supported in the Maya mmSolver command.
+            paramWeightList.push_back(1.0);
 
-	    if (attrIsPartOfCamera) {
-		camStaticAttrList.push_back(attr);
-	    } else {
-		staticAttrList.push_back(attr);
-	    }
-	}
-	i++;
+            if (attrIsPartOfCamera) {
+                camStaticAttrList.push_back(attr);
+            } else {
+                staticAttrList.push_back(attr);
+            }
+        }
+        i++;
     }
     return numUnknowns;
 }
@@ -218,15 +218,15 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
  *
  */
 void findErrorToParameterRelationship(MarkerPtrList markerList,
-				      AttrPtrList attrList,
-				      MTimeArray frameList,
-				      int numParameters,
-				      int numErrors,
-				      IndexPairList paramToAttrList,
-				      IndexPairList errorToMarkerList,
-				      BoolList2D &markerToAttrMapping,
-				      BoolList2D &errorToParamMapping,
-				      MStatus &status) {
+                                      AttrPtrList attrList,
+                                      MTimeArray frameList,
+                                      int numParameters,
+                                      int numErrors,
+                                      IndexPairList paramToAttrList,
+                                      IndexPairList errorToMarkerList,
+                                      BoolList2D &markerToAttrMapping,
+                                      BoolList2D &errorToParamMapping,
+                                      MStatus &status) {
     int i, j;
 
     // Command execution options
@@ -241,74 +241,74 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
     i = 0;      // index of marker
     j = 0;      // index of attribute
     for (MarkerPtrListCIt mit = markerList.begin(); mit != markerList.end(); ++mit) {
-	MarkerPtr marker = *mit;
-	CameraPtr cam = marker->getCamera();
-	BundlePtr bundle = marker->getBundle();
+        MarkerPtr marker = *mit;
+        CameraPtr cam = marker->getCamera();
+        BundlePtr bundle = marker->getBundle();
 
-	// Get node names.
-	const char *markerName = marker->getNodeName().asChar();
-	const char *camName = cam->getTransformNodeName().asChar();
-	const char *bundleName = bundle->getNodeName().asChar();
+        // Get node names.
+        const char *markerName = marker->getNodeName().asChar();
+        const char *camName = cam->getTransformNodeName().asChar();
+        const char *bundleName = bundle->getNodeName().asChar();
 
-	// Find list of plug names that are affected by the bundle.
-	cmd += "import mmSolver.api as mmapi;";
-	cmd += "mmapi.find_attrs_affecting_transform(";
-	cmd += "\"";
-	cmd += bundleName;
-	cmd += "\"";
-	cmd += ");";
-	status = MGlobal::executePythonCommand(cmd, result1, display, undoable);
-	INFO("Python result1 num: " << result1.length());
+        // Find list of plug names that are affected by the bundle.
+        cmd += "import mmSolver.api as mmapi;";
+        cmd += "mmapi.find_attrs_affecting_transform(";
+        cmd += "\"";
+        cmd += bundleName;
+        cmd += "\"";
+        cmd += ");";
+        status = MGlobal::executePythonCommand(cmd, result1, display, undoable);
+        INFO("Python result1 num: " << result1.length());
 
-	// Find list of plug names that are affected by the marker (and camera projection matrix).
-	cmd = "";
-	cmd += "import mmSolver.api as mmapi;";
-	cmd += "mmapi.find_attrs_affecting_transform(";
-	cmd += "\"";
-	cmd += markerName;
-	cmd += "\", ";
-	cmd += "cam_tfm=\"";
-	cmd += camName;
-	cmd += "\"";
-	cmd += ");";
-	status = MGlobal::executePythonCommand(cmd, result2, display, undoable);
-	INFO("Python result2 num: " << result2.length());
+        // Find list of plug names that are affected by the marker (and camera projection matrix).
+        cmd = "";
+        cmd += "import mmSolver.api as mmapi;";
+        cmd += "mmapi.find_attrs_affecting_transform(";
+        cmd += "\"";
+        cmd += markerName;
+        cmd += "\", ";
+        cmd += "cam_tfm=\"";
+        cmd += camName;
+        cmd += "\"";
+        cmd += ");";
+        status = MGlobal::executePythonCommand(cmd, result2, display, undoable);
+        INFO("Python result2 num: " << result2.length());
 
-	// Determine if the marker can affect the attribute.
-	MString affectedPlugName;
-	markerToAttrMapping[i].resize(attrList.size(), false);
-	for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
-	    AttrPtr attr = *ait;
+        // Determine if the marker can affect the attribute.
+        MString affectedPlugName;
+        markerToAttrMapping[i].resize(attrList.size(), false);
+        for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
+            AttrPtr attr = *ait;
 
-	    // Get attribute full path.
-	    MPlug plug = attr->getPlug();
-	    MObject attrNode = plug.node();
-	    MFnDagNode attrFnDagNode(attrNode);
-	    MString attrNodeName = attrFnDagNode.fullPathName();
-	    MString attrAttrName = plug.partialName(false, true, true, false, false, true);
-	    MString attrName = attrNodeName + "." + attrAttrName;
+            // Get attribute full path.
+            MPlug plug = attr->getPlug();
+            MObject attrNode = plug.node();
+            MFnDagNode attrFnDagNode(attrNode);
+            MString attrNodeName = attrFnDagNode.fullPathName();
+            MString attrAttrName = plug.partialName(false, true, true, false, false, true);
+            MString attrName = attrNodeName + "." + attrAttrName;
 
-	    // Bundle affects attribute
-	    for (int k = 0; k < result1.length(); ++k) {
-		affectedPlugName = result1[k];
-		if (attrName == affectedPlugName) {
-		    markerToAttrMapping[i][j] = true;
-		    break;
-		}
-	    }
+            // Bundle affects attribute
+            for (int k = 0; k < result1.length(); ++k) {
+                affectedPlugName = result1[k];
+                if (attrName == affectedPlugName) {
+                    markerToAttrMapping[i][j] = true;
+                    break;
+                }
+            }
 
-	    // Marker (or camera) affects attribute
-	    for (int k = 0; k < result2.length(); ++k) {
-		affectedPlugName = result2[k];
-		if (attrName == affectedPlugName) {
-		    markerToAttrMapping[i][j] = true;
-		    break;
-		}
-	    }
+            // Marker (or camera) affects attribute
+            for (int k = 0; k < result2.length(); ++k) {
+                affectedPlugName = result2[k];
+                if (attrName == affectedPlugName) {
+                    markerToAttrMapping[i][j] = true;
+                    break;
+                }
+            }
 
-	    ++j;
-	}
-	++i;
+            ++j;
+        }
+        ++i;
     }
 
     // Calculate the relationship between errors and parameters.
@@ -336,63 +336,63 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
     i = 0;      // index of error
     j = 0;      // index of parameter
     for (i = 0; i < (numErrors / ERRORS_PER_MARKER); ++i) {
-	INFO("i=" << i
-	     << " numErrors=" << numErrors
-	     << " errorToMarkerList.size()=" << errorToMarkerList.size());
-	markerIndexPair = errorToMarkerList[i];
-	markerIndex = markerIndexPair.first;
-	markerFrameIndex = markerIndexPair.second;
-	INFO("markerIndex=" << markerIndex);
-	INFO("markerFrameIndex=" << markerFrameIndex);
+        INFO("i=" << i
+                  << " numErrors=" << numErrors
+                  << " errorToMarkerList.size()=" << errorToMarkerList.size());
+        markerIndexPair = errorToMarkerList[i];
+        markerIndex = markerIndexPair.first;
+        markerFrameIndex = markerIndexPair.second;
+        INFO("markerIndex=" << markerIndex);
+        INFO("markerFrameIndex=" << markerFrameIndex);
 
-	MarkerPtr marker = markerList[markerIndex];
-	CameraPtr cam = marker->getCamera();
-	BundlePtr bundle = marker->getBundle();
-	MTime markerFrame = frameList[markerFrameIndex];
+        MarkerPtr marker = markerList[markerIndex];
+        CameraPtr cam = marker->getCamera();
+        BundlePtr bundle = marker->getBundle();
+        MTime markerFrame = frameList[markerFrameIndex];
 
-	// Get node names.
-	const char *markerName = marker->getNodeName().asChar();
-	const char *camName = cam->getTransformNodeName().asChar();
-	const char *bundleName = bundle->getNodeName().asChar();
-	INFO("Marker: " << markerName);
-	INFO("MarkerFrame: " << markerFrame.asUnits(MTime::uiUnit()));
+        // Get node names.
+        const char *markerName = marker->getNodeName().asChar();
+        const char *camName = cam->getTransformNodeName().asChar();
+        const char *bundleName = bundle->getNodeName().asChar();
+        INFO("Marker: " << markerName);
+        INFO("MarkerFrame: " << markerFrame.asUnits(MTime::uiUnit()));
 
-	// Determine if the marker can affect the attribute.
-	errorToParamMapping[i].resize(numParameters, false);
-	for (j = 0; j < numParameters; ++j) {
-	    INFO("j=" << j
-		 << " numParameters=" << numParameters
-		 << " paramToAttrList.size()=" << paramToAttrList.size());
-	    attrIndexPair = paramToAttrList[j];
-	    attrIndex = attrIndexPair.first;
-	    attrFrameIndex = attrIndexPair.second;
-	    INFO("attrIndex=" << attrIndex);
-	    INFO("attrFrameIndex=" << attrFrameIndex);
+        // Determine if the marker can affect the attribute.
+        errorToParamMapping[i].resize(numParameters, false);
+        for (j = 0; j < numParameters; ++j) {
+            INFO("j=" << j
+                      << " numParameters=" << numParameters
+                      << " paramToAttrList.size()=" << paramToAttrList.size());
+            attrIndexPair = paramToAttrList[j];
+            attrIndex = attrIndexPair.first;
+            attrFrameIndex = attrIndexPair.second;
+            INFO("attrIndex=" << attrIndex);
+            INFO("attrFrameIndex=" << attrFrameIndex);
 
-	    // If the attrFrameIndex is -1, then the attribute is static,
-	    // not animated.
-	    AttrPtr attr = attrList[attrIndex];
-	    MTime attrFrame(-1.0, MTime::uiUnit());
-	    if (attrFrameIndex >= 0) {
-		attrFrame = frameList[attrFrameIndex];
-	    }
-	    const char *attrName = attr->getName().asChar();
-	    INFO("Attr: " << attrName);
-	    INFO("AttrFrame: " << attrFrame.asUnits(MTime::uiUnit()));
+            // If the attrFrameIndex is -1, then the attribute is static,
+            // not animated.
+            AttrPtr attr = attrList[attrIndex];
+            MTime attrFrame(-1.0, MTime::uiUnit());
+            if (attrFrameIndex >= 0) {
+                attrFrame = frameList[attrFrameIndex];
+            }
+            const char *attrName = attr->getName().asChar();
+            INFO("Attr: " << attrName);
+            INFO("AttrFrame: " << attrFrame.asUnits(MTime::uiUnit()));
 
-	    bool markerAffectsAttr = markerToAttrMapping[markerIndex][attrIndex];
-	    if (markerAffectsAttr == false) {
-		errorToParamMapping[i][j] = markerAffectsAttr;
-		continue;
-	    }
+            bool markerAffectsAttr = markerToAttrMapping[markerIndex][attrIndex];
+            if (markerAffectsAttr == false) {
+                errorToParamMapping[i][j] = markerAffectsAttr;
+                continue;
+            }
 
-	    bool paramAffectsError = true;
-	    // TODO: Compute 'paramAffectsError' value.
-	    errorToParamMapping[i][j] = paramAffectsError;
+            bool paramAffectsError = true;
+            // TODO: Compute 'paramAffectsError' value.
+            errorToParamMapping[i][j] = paramAffectsError;
 
-	    INFO("i=" << i << " | j=" << j
-		 << " : " << paramAffectsError);
-	}
+            INFO("i=" << i << " | j=" << j
+                      << " : " << paramAffectsError);
+        }
     }
 
     return;
@@ -400,22 +400,22 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
 
 
 bool solve(int iterMax,
-	   double tau,
-	   double eps1,
-	   double eps2,
-	   double eps3,
-	   double delta,
-	   int solverType,
-	   CameraPtrList cameraList,
-	   MarkerPtrList markerList,
-	   BundlePtrList bundleList,
-	   AttrPtrList attrList,
-	   MTimeArray frameList,
-	   MDGModifier &dgmod,
-	   MAnimCurveChange &curveChange,
-	   MComputation &computation,
-	   bool verbose,
-	   MStringArray &outResult) {
+           double tau,
+           double eps1,
+           double eps2,
+           double eps3,
+           double delta,
+           int solverType,
+           CameraPtrList cameraList,
+           MarkerPtrList markerList,
+           BundlePtrList bundleList,
+           AttrPtrList attrList,
+           MTimeArray frameList,
+           MDGModifier &dgmod,
+           MAnimCurveChange &curveChange,
+           MComputation &computation,
+           bool verbose,
+           MStringArray &outResult) {
     int i = 0;
     int j = 0;
     MStatus status;
@@ -445,12 +445,12 @@ bool solve(int iterMax,
     // Count up number of errors
     MarkerPtrList validMarkerList;
     n = countUpNumberOfErrors(
-	    markerList,
-	    frameList,
-	    validMarkerList,
-	    markerPosList,
-	    errorToMarkerList,
-	    status
+            markerList,
+            frameList,
+            validMarkerList,
+            markerPosList,
+            errorToMarkerList,
+            status
     );
 
     // Count up number of unknown parameters
@@ -462,17 +462,17 @@ bool solve(int iterMax,
     std::vector<double> paramUpperBoundList;
     std::vector<double> paramWeightList;
     m = countUpNumberOfUnknownParameters(
-	    attrList,
-	    frameList,
-	    camStaticAttrList,
-	    camAnimAttrList,
-	    staticAttrList,
-	    animAttrList,
-	    paramLowerBoundList,
-	    paramUpperBoundList,
-	    paramWeightList,
-	    paramToAttrList,
-	    status
+            attrList,
+            frameList,
+            camStaticAttrList,
+            camAnimAttrList,
+            staticAttrList,
+            animAttrList,
+            paramLowerBoundList,
+            paramUpperBoundList,
+            paramWeightList,
+            paramToAttrList,
+            status
     );
     INFO("camStaticAttrList.size() = " << camStaticAttrList.size());
     INFO("camAnimAttrList.size() = " << camAnimAttrList.size());
@@ -486,25 +486,25 @@ bool solve(int iterMax,
     BoolList2D markerToAttrMapping;
     BoolList2D errorToParamMapping;
     findErrorToParameterRelationship(
-	    markerList,
-	    attrList,
-	    frameList,
-	    m,  // Number of parameters.
-	    n,  // Number of errors.
-	    paramToAttrList,
-	    errorToMarkerList,
-	    markerToAttrMapping,
-	    errorToParamMapping,
-	    status
+            markerList,
+            attrList,
+            frameList,
+            m,  // Number of parameters.
+            n,  // Number of errors.
+            paramToAttrList,
+            errorToMarkerList,
+            markerToAttrMapping,
+            errorToParamMapping,
+            status
     );
     // INFO("markerToAttrMapping.size() = " << markerToAttrMapping.size());
     for (i = 0; i < markerToAttrMapping.size(); ++i) {
-	// INFO("i = " << i);
-	// INFO("markerToAttrMapping[" << i << "].size() = " << markerToAttrMapping[i].size());
-	for (j = 0; j < markerToAttrMapping[i].size(); ++j) {
-	    // INFO("j = " << j);
-	    INFO("mkr=" << i << " : attr=" << j << " | " << markerToAttrMapping[i][j]);
-	}
+        // INFO("i = " << i);
+        // INFO("markerToAttrMapping[" << i << "].size() = " << markerToAttrMapping[i].size());
+        for (j = 0; j < markerToAttrMapping[i].size(); ++j) {
+            // INFO("j = " << j);
+            INFO("mkr=" << i << " : attr=" << j << " | " << markerToAttrMapping[i][j]);
+        }
     }
 
     VRB("Number of Parameters; m=" << m);
@@ -531,20 +531,20 @@ bool solve(int iterMax,
     MTime currentFrame = MAnimControl::currentTime();
     i = 0;
     for (i = 0; i < m; ++i) {
-	IndexPair attrPair = paramToAttrList[i];
-	AttrPtr attr = attrList[attrPair.first];
+        IndexPair attrPair = paramToAttrList[i];
+        AttrPtr attr = attrList[attrPair.first];
 
-	// Get frame time
-	MTime frame = currentFrame;
-	if (attrPair.second != -1) {
-	    frame = frameList[attrPair.second];
-	}
+        // Get frame time
+        MTime frame = currentFrame;
+        if (attrPair.second != -1) {
+            frame = frameList[attrPair.second];
+        }
 
-	double value;
-	status = attr->getValue(value, frame);
-	CHECK_MSTATUS_AND_RETURN(status, false);
+        double value;
+        status = attr->getValue(value, frame);
+        CHECK_MSTATUS_AND_RETURN(status, false);
 
-	paramList[i] = value;
+        paramList[i] = value;
     }
 
 //     // Initial Parameters
@@ -636,129 +636,129 @@ bool solve(int iterMax,
 
     if (solverType == SOLVER_TYPE_LEVMAR) {
 
-	// TODO: Define a jacobian function to calculate the jacobian
-	// matrix explicitly.
-	// TODO: Determine a function that will 'guess' the 'delta' value
-	// for the jacobian function parameters. We could experiment with
-	// distance from camera, or simply based on a general look up
-	// tables. For 'angle' based attributes, use 1 or 5 degrees, for distance use 1cm, or 1,000cm when the transform is far away from the camera.
-	// TODO: Use the Maya DG graph structure to determine the sparsity
-	// structure, a relation of cause and effect; which attributes
-	// affect which markers.
-	// TODO: Add 'Box Constraint' variant of levmar. Lower/upper
-	// bounds is set based on the Attribute parameters given, or
-	// if none are given, default to the double minimum and maximum
-	// limits.
+        // TODO: Define a jacobian function to calculate the jacobian
+        // matrix explicitly.
+        // TODO: Determine a function that will 'guess' the 'delta' value
+        // for the jacobian function parameters. We could experiment with
+        // distance from camera, or simply based on a general look up
+        // tables. For 'angle' based attributes, use 1 or 5 degrees, for distance use 1cm, or 1,000cm when the transform is far away from the camera.
+        // TODO: Use the Maya DG graph structure to determine the sparsity
+        // structure, a relation of cause and effect; which attributes
+        // affect which markers.
+        // TODO: Add 'Box Constraint' variant of levmar. Lower/upper
+        // bounds is set based on the Attribute parameters given, or
+        // if none are given, default to the double minimum and maximum
+        // limits.
 
-	// Allocate a memory block for both 'work' and 'covar', so that
-	// the block is close together in physical memory.
-	double *work, *covar;
-	work = (double *) malloc((LM_BC_DIF_WORKSZ(m, n) + m * m) * sizeof(double));
-	if (!work) {
-	    ERR("Memory allocation request failed.");
-	    return false;
-	}
-	covar = work + LM_BC_DIF_WORKSZ(m, n);
+        // Allocate a memory block for both 'work' and 'covar', so that
+        // the block is close together in physical memory.
+        double *work, *covar;
+        work = (double *) malloc((LM_BC_DIF_WORKSZ(m, n) + m * m) * sizeof(double));
+        if (!work) {
+            ERR("Memory allocation request failed.");
+            return false;
+        }
+        covar = work + LM_BC_DIF_WORKSZ(m, n);
 
-	// Solve!
-	ret = dlevmar_bc_dif(
+        // Solve!
+        ret = dlevmar_bc_dif(
 
-		// Function to call (input only)
-		// Function must be of the structure:
-		//   func(double *params, double *x, int m, int n, void *data)
-		levmarSolveFunc,
+                // Function to call (input only)
+                // Function must be of the structure:
+                //   func(double *params, double *x, int m, int n, void *data)
+                levmarSolveFunc,
 
-		// Parameters (input and output)
-		// Should be filled with initial estimate, will be filled
-		// with output parameters
-		&paramList[0],
+                // Parameters (input and output)
+                // Should be filled with initial estimate, will be filled
+                // with output parameters
+                &paramList[0],
 
-		// Measurement Vector (input only)
-		// NULL implies a zero vector
-		// NULL,
-		&errorList[0],
+                // Measurement Vector (input only)
+                // NULL implies a zero vector
+                // NULL,
+                &errorList[0],
 
-		// Parameter Vector Dimension (input only)
-		// (i.e. #unknowns)
-		m,
+                // Parameter Vector Dimension (input only)
+                // (i.e. #unknowns)
+                m,
 
-		// Measurement Vector Dimension (input only)
-		n,
+                // Measurement Vector Dimension (input only)
+                n,
 
-		// vector of lower bounds. If NULL, no lower bounds apply
-		&paramLowerBoundList[0],
+                // vector of lower bounds. If NULL, no lower bounds apply
+                &paramLowerBoundList[0],
 //                NULL,
 
-		// vector of upper bounds. If NULL, no upper bounds apply (input only)
-		&paramUpperBoundList[0],
+                // vector of upper bounds. If NULL, no upper bounds apply (input only)
+                &paramUpperBoundList[0],
 //                NULL,
 
-		// diagonal scaling constants. NULL implies no scaling (input only)
-		&paramWeightList[0],
+                // diagonal scaling constants. NULL implies no scaling (input only)
+                &paramWeightList[0],
 //                NULL,
 
-		// Maximum Number of Iterations (input only)
-		iterMax,
+                // Maximum Number of Iterations (input only)
+                iterMax,
 
-		// Minimisation options (input only)
-		// opts[0] = tau      (scale factor for initialTransform mu)
-		// opts[1] = epsilon1 (stopping threshold for ||J^T e||_inf)
-		// opts[2] = epsilon2 (stopping threshold for ||Dp||_2)
-		// opts[3] = epsilon3 (stopping threshold for ||e||_2)
-		// opts[4] = delta    (step used in difference approximation to the Jacobian)
-		//
-		// If \delta<0, the Jacobian is approximated with central differences
-		// which are more accurate (but slower!) compared to the forward
-		// differences employed by default.
-		// Set to NULL for defaults to be used.
-		opts,
+                // Minimisation options (input only)
+                // opts[0] = tau      (scale factor for initialTransform mu)
+                // opts[1] = epsilon1 (stopping threshold for ||J^T e||_inf)
+                // opts[2] = epsilon2 (stopping threshold for ||Dp||_2)
+                // opts[3] = epsilon3 (stopping threshold for ||e||_2)
+                // opts[4] = delta    (step used in difference approximation to the Jacobian)
+                //
+                // If \delta<0, the Jacobian is approximated with central differences
+                // which are more accurate (but slower!) compared to the forward
+                // differences employed by default.
+                // Set to NULL for defaults to be used.
+                opts,
 
-		// Output Information (output only)
-		// information regarding the minimization.
-		// info[0] = ||e||_2 at initialTransform params.
-		// info[1-4] = (all computed at estimated params)
-		//  [
-		//   ||e||_2,
-		//   ||J^T e||_inf,
-		//   ||Dp||_2,
-		//   \mu/max[J^T J]_ii
-		//  ]
-		// info[5] = number of iterations,
-		// info[6] = reason for terminating:
-		//   1 - stopped by small gradient J^T e
-		//   2 - stopped by small Dp
-		//   3 - stopped by iterMax
-		//   4 - singular matrix. Restart from current params with increased \mu
-		//   5 - no further error reduction is possible. Restart with increased mu
-		//   6 - stopped by small ||e||_2
-		//   7 - stopped by invalid (i.e. NaN or Inf) "func" refPoints; a user error
-		// info[7] = number of function evaluations
-		// info[8] = number of Jacobian evaluations
-		// info[9] = number linear systems solved (number of attempts for reducing error)
-		//
-		// Set to NULL if don't care
-		info,
+                // Output Information (output only)
+                // information regarding the minimization.
+                // info[0] = ||e||_2 at initialTransform params.
+                // info[1-4] = (all computed at estimated params)
+                //  [
+                //   ||e||_2,
+                //   ||J^T e||_inf,
+                //   ||Dp||_2,
+                //   \mu/max[J^T J]_ii
+                //  ]
+                // info[5] = number of iterations,
+                // info[6] = reason for terminating:
+                //   1 - stopped by small gradient J^T e
+                //   2 - stopped by small Dp
+                //   3 - stopped by iterMax
+                //   4 - singular matrix. Restart from current params with increased \mu
+                //   5 - no further error reduction is possible. Restart with increased mu
+                //   6 - stopped by small ||e||_2
+                //   7 - stopped by invalid (i.e. NaN or Inf) "func" refPoints; a user error
+                // info[7] = number of function evaluations
+                // info[8] = number of Jacobian evaluations
+                // info[9] = number linear systems solved (number of attempts for reducing error)
+                //
+                // Set to NULL if don't care
+                info,
 
-		// Working Data (input only)
-		// working memory, allocated internally if NULL. If !=NULL, it is assumed to
-		// point to a memory chunk at least LM_DIF_WORKSZ(m, n)*sizeof(double) bytes
-		// long
-		work,
+                // Working Data (input only)
+                // working memory, allocated internally if NULL. If !=NULL, it is assumed to
+                // point to a memory chunk at least LM_DIF_WORKSZ(m, n)*sizeof(double) bytes
+                // long
+                work,
 
-		// Covariance matrix (output only)
-		// Covariance matrix corresponding to LS solution; Assumed to point to a mxm matrix.
-		// Set to NULL if not needed.
-		covar,
+                // Covariance matrix (output only)
+                // Covariance matrix corresponding to LS solution; Assumed to point to a mxm matrix.
+                // Set to NULL if not needed.
+                covar,
 
-		// Custom Data for 'func' (input only)
-		// pointer to possibly needed additional data, passed uninterpreted to func.
-		// Set to NULL if not needed
-		(void *) &userData);
+                // Custom Data for 'func' (input only)
+                // pointer to possibly needed additional data, passed uninterpreted to func.
+                // Set to NULL if not needed
+                (void *) &userData);
 
-	free(work);
+        free(work);
     } else {
-	ERR("Solver type is expected to be a levmar variant. solverType=" << solverType);
-	return false;
+        ERR("Solver type is expected to be a levmar variant. solverType=" << solverType);
+        return false;
     }
 
     solveBenchTicks.stop();
@@ -768,18 +768,18 @@ bool solve(int iterMax,
     // Set the solved parameters
     VRB("Setting Parameters...");
     for (i = 0; i < m; ++i) {
-	IndexPair attrPair = paramToAttrList[i];
-	AttrPtr attr = attrList[attrPair.first];
+        IndexPair attrPair = paramToAttrList[i];
+        AttrPtr attr = attrList[attrPair.first];
 
-	// Get frame time
-	MTime frame = currentFrame;
-	if (attrPair.second != -1) {
-	    frame = frameList[attrPair.second];
-	}
+        // Get frame time
+        MTime frame = currentFrame;
+        if (attrPair.second != -1) {
+            frame = frameList[attrPair.second];
+        }
 
-	double value = paramList[i];
-	status = attr->setValue(value, frame, dgmod, curveChange);
-	CHECK_MSTATUS(status);
+        double value = paramList[i];
+        status = attr->setValue(value, frame, dgmod, curveChange);
+        CHECK_MSTATUS(status);
     }
     dgmod.doIt();  // Commit changed data into Maya
 
@@ -787,7 +787,7 @@ bool solve(int iterMax,
 
     VRB("Results:");
     VRB("Solver returned " << ret << " in " << (int) info[5]
-			   << " iterations");
+                           << " iterations");
 
     int reasonNum = (int) info[6];
     VRB("Reason: " << reasons[reasonNum]);
@@ -806,10 +806,10 @@ bool solve(int iterMax,
     double errorMax = -0.0;
     double err = 0.0;
     for (i = 0; i < n; ++i) {
-	err = userData.errorList[i];
-	errorAvg += userData.errorList[i];
-	if (err < errorMin) { errorMin = err; }
-	if (err > errorMax) { errorMax = err; }
+        err = userData.errorList[i];
+        errorAvg += userData.errorList[i];
+        if (err < errorMin) { errorMin = err; }
+        if (err > errorMax) { errorMax = err; }
     }
     errorAvg /= (double) n;
 
@@ -828,19 +828,19 @@ bool solve(int iterMax,
     VRB("Attempts for reducing error: " << info[9]);
 
     if (verbose) {
-	solveBenchTimer.print("Solve Time", 1);
-	funcBenchTimer.print("Func Time", 1);
-	jacBenchTimer.print("Jacobian Time", 1);
-	paramBenchTimer.print("Param Time", (uint) userData.iterNum);
-	errorBenchTimer.print("Error Time", (uint) userData.iterNum);
-	funcBenchTimer.print("Func Time", (uint) userData.iterNum);
+        solveBenchTimer.print("Solve Time", 1);
+        funcBenchTimer.print("Func Time", 1);
+        jacBenchTimer.print("Jacobian Time", 1);
+        paramBenchTimer.print("Param Time", (uint) userData.iterNum);
+        errorBenchTimer.print("Error Time", (uint) userData.iterNum);
+        funcBenchTimer.print("Func Time", (uint) userData.iterNum);
 
-	solveBenchTicks.print("Solve Ticks", 1);
-	funcBenchTicks.print("Func Ticks", 1);
-	jacBenchTicks.print("Jacobian Ticks", 1);
-	paramBenchTicks.print("Param Ticks", (uint) userData.iterNum);
-	errorBenchTicks.print("Error Ticks", (uint) userData.iterNum);
-	funcBenchTicks.print("Func Ticks", (uint) userData.iterNum);
+        solveBenchTicks.print("Solve Ticks", 1);
+        funcBenchTicks.print("Func Ticks", 1);
+        jacBenchTicks.print("Jacobian Ticks", 1);
+        paramBenchTicks.print("Param Ticks", (uint) userData.iterNum);
+        errorBenchTicks.print("Error Ticks", (uint) userData.iterNum);
+        funcBenchTicks.print("Func Ticks", (uint) userData.iterNum);
     }
 
     // Add all the data into the output string from the Maya command.
@@ -855,8 +855,8 @@ bool solve(int iterMax,
 
     resultStr = "solver_parameter_list=";
     for (i = 0; i < m; ++i) {
-	resultStr += string::numberToString<double>(paramList[i]);
-	resultStr += " ";
+        resultStr += string::numberToString<double>(paramList[i]);
+        resultStr += " ";
     }
     outResult.append(MString(resultStr.c_str()));
 
@@ -865,9 +865,9 @@ bool solve(int iterMax,
     // to the user to diagnose problems.
     resultStr = "error_final_list=";
     for (i = 0; i < n; ++i) {
-	err = userData.errorList[i];
-	resultStr += string::numberToString<double>(err);
-	resultStr += " ";
+        err = userData.errorList[i];
+        resultStr += string::numberToString<double>(err);
+        resultStr += " ";
     }
     outResult.append(MString(resultStr.c_str()));
 

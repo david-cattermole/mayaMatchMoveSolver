@@ -123,7 +123,8 @@ Attribute that will be solved.
 
 # Commands
 
-The command named 'mmSolver' is the primary command used to perform a solve. 
+The command named 'mmSolver' is the primary command used to perform a
+solve.
 
 ## Command Flags
 
@@ -160,7 +161,8 @@ mmSolver
     -iterations 1000;
 ```
 
-Here is a table of command flags, as currently specified in the command. 
+Here is a table of command flags, as currently specified in the
+command.
 
 | Flag              | Type                   | Description | Default Value |
 | ----------------- | ---------------------- | ----------- | ------------- |
@@ -175,4 +177,6 @@ Here is a table of command flags, as currently specified in the command.
 
 The `mmSolver` command will return a list of strings.
 
-The list of strings has a specific structure and stores all the data from the core solver engines, so the user can do whatever they wish to. 
+The list of strings has a specific structure and stores all the data
+from the core solver engines, so the user can do whatever they wish
+to.

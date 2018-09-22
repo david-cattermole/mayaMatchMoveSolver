@@ -79,6 +79,9 @@ $ cd <project root>
 $ sh runTests.sh
 ```
 
+For more information about testing, see the Testing section in
+[DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
+
 ## Full Method with ATLAS
 
 This section is for compiling with the free and open-source library ATLAS.
@@ -250,3 +253,6 @@ After all parts of the `mmSolver` are installed and can be found by Maya, try ru
 $ cd <project root>
 $ sh runTests.sh
 ```
+
+For more information about testing, see the Testing section in
+[DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).

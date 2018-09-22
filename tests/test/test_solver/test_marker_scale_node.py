@@ -17,7 +17,7 @@ import maya.cmds
 import test.test_solver.solverutils as solverUtils
 
 
-@unittest.skip
+# @unittest.skip
 class TestMarkerScaleNode(solverUtils.SolverTestCase):
 
     @staticmethod

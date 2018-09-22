@@ -1,22 +1,7 @@
 """
 Test querying DG relationship information between Markers and Attributes.
-
-# Here is some WIP Python code to detect input/outputs:
-import maya.OpenMaya as OpenMaya
-import mmSolver._api as mmapi
-obj = mmapi.utils.get_as_object('Track_02_MKR')
-it = OpenMaya.MItDependencyGraph(obj, OpenMaya.MFn.kInvalid, OpenMaya.MItDependencyGraph.kUpstream)
-while not it.isDone():
-    # print it
-    cur = it.currentItem()
-    depNodeFn = OpenMaya.MFnDependencyNode(cur)
-    nodePath = depNodeFn.name()
-    print nodePath
-    it.next()
 """
 
-import os
-import time
 import unittest
 
 try:
@@ -70,7 +55,6 @@ def find_attrs_affecting_transform(bnd_node, cam_tfm=None):
     :param cam_tfm: Optional, the camera that should be considered.
     :return:
     """
-
     # TODO: Refactor and clean up. Split into multiple functions.
 
     # get all the parents above this bundle

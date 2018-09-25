@@ -7,6 +7,9 @@ import abc
 
 
 def float_is_equal(x, y):
+    """
+    Check the two float numbers match.
+    """
     # float equality
     if x == y:
         return True
@@ -262,11 +265,22 @@ class MarkerData(object):
 
 
 class LoaderBase(object):
+    """
+    Base class for all format loaders.
+    """
     __metaclass__ = abc.ABCMeta
 
     name = None
     file_exts = None
 
+    # optional arguments and default values.
+    args = None
+
     @abc.abstractmethod
-    def parse(self, file_path):
+    def parse(self, file_path, **kwargs):
+        """
+        Parse the given file path.
+
+        Inherit from LoaderBase and override this method.
+        """
         return

@@ -16,8 +16,10 @@ import mmSolver.tools.loadmarker.formatmanager as fmtmgr
 import mmSolver.tools.loadmarker.formats
 
 
-def read(file_path):
-    # assert start_frame is None or isinstance(start_frame, int)
+def read(file_path, **kwargs):
+    """
+    Read a file path, find the format parser based on the file extension.
+    """
     if not isinstance(file_path, (str, unicode)):
         return None
     if not os.path.isfile(file_path):
@@ -39,7 +41,7 @@ def read(file_path):
         return None
 
     file_format_obj = file_format_class()
-    mkr_data_list = file_format_obj.parse(file_path)
+    mkr_data_list = file_format_obj.parse(file_path, **kwargs)
     return mkr_data_list
 
 

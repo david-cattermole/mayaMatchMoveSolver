@@ -13,8 +13,9 @@ class LoaderRZ2(interface.LoaderBase):
 
     name = 'MatchMover TrackPoints (.rz2)'
     file_exts = ['.rz2']
+    args = []
 
-    def parse(self, file_path):
+    def parse(self, file_path, **kwargs):
         mkr_data_list = []
 
         f = open(file_path, 'r')
@@ -50,24 +51,6 @@ class LoaderRZ2(interface.LoaderBase):
         if range_regex is None:
             return mkr_data_list
         range_grps = range_regex.groups()
-
-        # # TODO: Should we have a start_frame argument, which allows us to
-        # specify the start_frame when loading into Maya?
-
-        # Get start, end and by frame.
-        # file_start_frame = int(range_grps[0])
-        # file_end_frame = int(range_grps[1])
-        # file_by_frame = int(range_grps[2])
-        # if start_frame is None:
-        #     start_frame = file_start_frame
-        #     end_frame = file_end_frame
-        #     by_frame = file_by_frame
-        # else:
-        #     # re-orient the frame range by the given start_frame.
-        #     start_frame = start_frame
-        #     end_frame = start_frame + (file_end_frame - file_start_frame)
-        #     by_frame = file_by_frame
-
         start_frame = int(range_grps[0])
         end_frame = int(range_grps[1])
         by_frame = int(range_grps[2])

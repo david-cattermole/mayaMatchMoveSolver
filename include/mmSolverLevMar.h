@@ -72,6 +72,7 @@ struct LevMarSolverData {
     std::vector<std::pair<int, int> > paramToAttrList;
     std::vector<std::pair<int, int> > errorToMarkerList;
     std::vector<MPoint> markerPosList;
+    BoolList2D errorToParamMapping;
 
     // Internal Solver Data.
     std::vector<double> errorList;
@@ -112,5 +113,11 @@ struct LevMarSolverData {
 
 
 void levmarSolveFunc(double *p, double *x, int m, int n, void *data);
+
+void levmarSolveJacFunc(double *p, double *x, int m, int n, void *data);
+
+void levmarSolveOptimiseFunc(double *p, double *x, int m, int n, void *data);
+
+void levmarSolveJacOptimiseFunc(double *p, double *x, int m, int n, void *data);
 
 #endif // MAYA_MM_SOLVER_LEVMAR_H

@@ -1,9 +1,7 @@
 """
-Test multi-camera solving on a single frame.
+Test 'one-frame lineup' camera solving on a single frame.
 """
 
-import os
-import math
 import time
 import unittest
 
@@ -76,15 +74,7 @@ class TestSolver7(solverUtils.SolverTestCase):
             (cameras[0][0] + '.rx', 'None', 'None'),
             (cameras[0][0] + '.ry', 'None', 'None'),
             (cameras[0][0] + '.rz', 'None', 'None'),
-            # (cameras[0][1] + '.focalLength', 'None', 'None'),
-
-            (cameras[1][0] + '.tx', 'None', 'None'),
-            (cameras[1][0] + '.ty', 'None', 'None'),
-            (cameras[1][0] + '.tz', 'None', 'None'),
-            (cameras[1][0] + '.rx', 'None', 'None'),
-            (cameras[1][0] + '.ry', 'None', 'None'),
-            (cameras[1][0] + '.rz', 'None', 'None'),
-            # (cameras[1][1] + '.focalLength', 'None', 'None'),
+            # (cameras[0][1] + '.focalLength', '10.0', '100.0'),
         ]
         frames = [1]
 
@@ -97,6 +87,7 @@ class TestSolver7(solverUtils.SolverTestCase):
             frame=frames,
             solverType=0,
             iterations=1000,
+            # delta=0.0001,
             verbose=True,
         )
         e = time.time()

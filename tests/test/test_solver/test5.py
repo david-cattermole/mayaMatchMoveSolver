@@ -1,10 +1,10 @@
 """
 Testing a single point nodal camera solve across time.
-This script calls the solver for each frame, rather than solving all frames together.
+
+This script calls the solver for each frame, rather than solving all
+frames together.
 """
 
-import os
-import math
 import time
 import unittest
 
@@ -29,7 +29,7 @@ class TestSolver5(solverUtils.SolverTestCase):
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateX', time=start, value=-2.0)
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateX', time=end, value=2.0)
@@ -70,7 +70,7 @@ class TestSolver5(solverUtils.SolverTestCase):
                 camera=cameras,
                 marker=markers,
                 attr=node_attrs,
-                iterations=100,
+                iterations=10,
                 solverType=0,
                 frame=(f),
                 verbose=True,

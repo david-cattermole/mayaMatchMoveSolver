@@ -2,8 +2,6 @@
 Semi-Complex hierarchy and object-space utilising solve.
 """
 
-import os
-import math
 import time
 import unittest
 

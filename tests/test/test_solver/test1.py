@@ -66,6 +66,7 @@ class TestSolver1(solverUtils.SolverTestCase):
             iterations=1000,
             solverType=0,
             frame=frames,
+            delta=0.001,
             verbose=True,
         )
         e = time.time()

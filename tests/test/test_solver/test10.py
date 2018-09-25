@@ -23,8 +23,8 @@ class TestSolver10(solverUtils.SolverTestCase):
     def test_init(self):
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
-        maya.cmds.setAttr(cam_tfm + '.tx',  0.0)
-        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.tx', 0.0)
+        maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
 
         # Marker Group

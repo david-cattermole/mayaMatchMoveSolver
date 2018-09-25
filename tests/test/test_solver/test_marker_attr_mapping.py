@@ -100,7 +100,10 @@ def find_attrs_affecting_transform(bnd_node, cam_tfm=None):
                 continue
 
             # Get plugs connected to this attribute, recursively
-            conn_attrs = maya.cmds.listConnections(node_attr, source=True, destination=False, plugs=True) or []
+            conn_attrs = maya.cmds.listConnections(node_attr, 
+                                                   source=True, 
+                                                   destination=False, 
+                                                   plugs=True) or []
             while len(conn_attrs) > 0:
                 node_attr = conn_attrs.pop()
                 node_attr = get_full_path_plug(node_attr)
@@ -137,7 +140,7 @@ def find_marker_attr_mapping(mkr_list, attr_list):
     mapping = []
     for i, mkr in enumerate(mkr_list):
         # Initialise mapping list size.
-        tmp = [ False ] * len(attr_list)
+        tmp = [False] * len(attr_list)
         mapping.append(tmp)
 
         bnd = mkr.get_bundle()
@@ -168,7 +171,7 @@ class TestMarkerAttrMapping(solverUtils.SolverTestCase):
                                          name='camA_shp',
                                          parent=cam_tfm_a)
         maya.cmds.setAttr(cam_tfm_a + '.tx', -1.0)
-        maya.cmds.setAttr(cam_tfm_a + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm_a + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm_a + '.tz', -5.0)
         cam_a = mmapi.Camera(shape=cam_shp_a)
 
@@ -180,7 +183,7 @@ class TestMarkerAttrMapping(solverUtils.SolverTestCase):
                                          name='camB_shp',
                                          parent=cam_tfm_b)
         maya.cmds.setAttr(cam_tfm_b + '.tx', 1.0)
-        maya.cmds.setAttr(cam_tfm_b + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm_b + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm_b + '.tz', -5.0)
         cam_b = mmapi.Camera(shape=cam_shp_b)
 
@@ -239,6 +242,7 @@ class TestMarkerAttrMapping(solverUtils.SolverTestCase):
         maya.cmds.setAttr(marker_tfm + '.tx', 0.0)
 
         maya.cmds.setAttr(marker_tfm + '.ty', 0.0)
+
         # Marker B
         mkr_b = mmapi.Marker().create_node(cam=cam_b, bnd=bnd)
         marker_tfm = mkr_b.get_node()
@@ -307,7 +311,7 @@ class TestMarkerAttrMapping(solverUtils.SolverTestCase):
         ]
         assert ret == expected
 
-        # Test getting the affect mapping between markers and attrs.
+        # Test again, with the refactored API function.
         ret = mmapi.find_marker_attr_mapping(mkr_list, attr_list)
         expected = [
             [True, True, True, True, True, True, False, True, True, False],

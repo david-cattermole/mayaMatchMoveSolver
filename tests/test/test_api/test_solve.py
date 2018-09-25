@@ -63,7 +63,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Solver
         sol = api.Solver()
-        sol.set_max_iterations(1000)
+        sol.set_max_iterations(10)
         sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
         sol.set_verbose(True)
         sol.set_frame_list(frm_list)
@@ -399,140 +399,121 @@ class TestSolve(test_api_utils.APITestCase):
     #         maya.cmds.setAttr(bnd_node + '.tx', pos[0])
     #         maya.cmds.setAttr(bnd_node + '.ty', pos[1])
     #         maya.cmds.setAttr(bnd_node + '.tz', pos[2])
-    #         maya.cmds.parent(bnd_node, bgrp, relative=True)
+    #         bnd_node = maya.cmds.parent(bnd_node, bgrp, relative=True)[0]
+    #         maya.cmds.setAttr(bnd_node + '.tx', lock=True)
+    #         maya.cmds.setAttr(bnd_node + '.ty', lock=True)
+    #         maya.cmds.setAttr(bnd_node + '.tz', lock=True)
     #
     #     # Frames
     #     # prim = [0, 22, 41]
     #     # sec = [3, 8, 12, 27, 33, 38]
     #     # prim = [0, 3, 8, 12, 22, 27, 33, 38, 41]
     #     frm_list = []
-    #     frm = api.Frame(0, tags=['primary', '1'])
+    #     frm = api.Frame(0, tags=['primary', '1', 'single001'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(3, tags=['primary', '1', '2'])
+    #     frm = api.Frame(3, tags=['primary', '1', '2', 'single002'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(8, tags=['primary', '2', '3'])
+    #     frm = api.Frame(8, tags=['primary', '2', '3', 'single003'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(12, tags=['primary', '3', '4'])
+    #     frm = api.Frame(12, tags=['primary', '3', '4', 'single004'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(22, tags=['primary', '4', '5'])
+    #     frm = api.Frame(22, tags=['primary', '4', '5', 'single005'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(27, tags=['primary', '5', '6'])
+    #     frm = api.Frame(27, tags=['primary', '5', '6', 'single006'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(33, tags=['primary', '6', '7'])
+    #     frm = api.Frame(33, tags=['primary', '6', '7', 'single007'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(38, tags=['primary', '7', '8'])
+    #     frm = api.Frame(38, tags=['primary', '7', '8', 'single008'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(41, tags=['primary', '8'])
+    #     frm = api.Frame(41, tags=['primary', '8', 'single009'])
     #     frm_list.append(frm)
     #
     #     sol_list = []
     #
-    #     # solve each groups
+    #     # solve each frame
     #     for i in range(1, 9):
     #         sol = api.Solver()
     #         sol.set_max_iterations(10)
-    #         sol1.set_delta(-1.0)
+    #         sol.set_delta(-0.01)
+    #         sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
+    #         sol.set_attributes_use_animated(True)
+    #         sol.set_attributes_use_static(True)
+    #         sol.set_frames_use_tags(['single00' + str(i+1)])
+    #         sol.set_verbose(True)
+    #         sol.set_frame_list(frm_list)
+    #         sol_list.append(sol)
+    #
+    #     # solve each group
+    #     for i in range(1, 9):
+    #         sol = api.Solver()
+    #         sol.set_max_iterations(10)
+    #         sol.set_delta(-0.01)
     #         sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #         sol.set_attributes_use_animated(True)
     #         sol.set_attributes_use_static(True)
     #         sol.set_frames_use_tags([str(i)])
-    #         sol.set_verbose(False)
+    #         sol.set_verbose(True)
     #         sol.set_frame_list(frm_list)
     #         sol_list.append(sol)
     #
-    #     # # primary frames only
-    #     # sol1 = api.Solver()
-    #     # sol1.set_max_iterations(10)
-    #     # # sol1.set_delta(-0.1)
-    #     # sol1.set_solver_type(api.SOLVER_TYPE_LEVMAR)
-    #     # sol1.set_attributes_use_animated(True)
-    #     # sol1.set_attributes_use_static(True)
-    #     # sol1.set_frames_use_tags(['primary'])
-    #     # sol1.set_verbose(True)
-    #     # sol1.set_frame_list(frm_list)
-    #     # sol_list.append(sol1)
+    #     # # solve each frame
+    #     # for i in range(0, 41):
+    #     #     sol = api.Solver()
+    #     #     sol.set_max_iterations(10)
+    #     #     sol.set_delta(-0.01)
+    #     #     sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
+    #     #     sol.set_attributes_use_animated(True)
+    #     #     sol.set_attributes_use_static(True)
+    #     #     sol.set_verbose(True)
+    #     #     frm = api.Frame(i)
+    #     #     sol.set_frame_list([frm])
+    #     #     sol_list.append(sol)
     #
-    #     # # primary and secondary frames only
-    #     # sol2 = api.Solver()
-    #     # sol2.set_max_iterations(100)
-    #     # # sol2.set_delta(-0.5)
-    #     # sol2.set_solver_type(api.SOLVER_TYPE_LEVMAR)
-    #     # sol2.set_attributes_use_animated(True)
-    #     # sol2.set_attributes_use_static(True)
-    #     # sol2.set_frames_use_tags(['primary', 'secondary'])
-    #     # sol2.set_verbose(True)
-    #     # sol2.set_frame_list(frm_list)
-    #     # sol_list.append(sol2)
-    #     # # sol_list.append(sol2)
-    #     # # sol_list.append(sol2)
-    #
-    #     # # Solve all animated attributes for all frames other than primary or secondary.
-    #     # for grp in frame_grps:
-    #     #     for frm in frm_list:
-    #     #         frame_tags = frm.get_tags()
-    #     #         if grp not in frame_tags:
-    #     #             continue
-    #     #         sol = api.Solver()
-    #     #         sol.set_max_iterations(1)
-    #     #         # sol.set_delta(-0.1)
-    #     #         sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
-    #     #         sol.set_attributes_use_animated(True)
-    #     #         sol.set_attributes_use_static(False)
-    #     #         sol.set_frames_use_tags([])
-    #     #         sol.set_verbose(True)
-    #     #         sol.set_frame_list([frm])
-    #     #         sol_list.append(sol)
-    #
-    #     # # brute force solve all frames
+    #     # # All primary frames together
     #     # sol = api.Solver()
-    #     # sol.set_max_iterations(1)
+    #     # sol.set_max_iterations(10)
+    #     # sol.set_delta(-0.01)
     #     # sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
-    #     # # sol.set_delta(-0.1)
     #     # sol.set_attributes_use_animated(True)
     #     # sol.set_attributes_use_static(True)
-    #     # sol.set_frames_use_tags(['primary', 'secondary', 'normal'])
-    #     # sol.set_verbose(True)
+    #     # sol.set_frames_use_tags(['primary'])
+    #     # sol.set_verbose(False)
     #     # sol.set_frame_list(frm_list)
     #     # sol_list.append(sol)
     #
     #     # Collection
-    #     col_fg = api.Collection()
-    #     col_fg.create('mySolverCollection_FG')
-    #     col_fg.add_solver_list(sol_list)
-    #
-    #     col_bg = api.Collection()
-    #     col_bg.create('mySolverCollection_BG')
-    #     col_bg.add_solver_list(sol_list)
+    #     col = api.Collection()
+    #     col.create('mySolverCollection')
+    #     col.add_solver_list(sol_list)
     #
     #     # Add markers
-    #     col_fg.add_marker_list(mkr_list)
-    #     col_bg.add_marker_list(mkr_bg_list)
+    #     col.add_marker_list(mkr_fg_list)
     #
     #     # Attributes
     #     attr_cam_tx = api.Attribute(cam_tfm + '.tx')
     #     attr_cam_ty = api.Attribute(cam_tfm + '.ty')
     #     attr_cam_tz = api.Attribute(cam_tfm + '.tz')
-    #     attr_cam_rx = api.Attribute(cam_tfm + '.rx')
-    #     attr_cam_ry = api.Attribute(cam_tfm + '.ry')
-    #     attr_cam_rz = api.Attribute(cam_tfm + '.rz')
-    #     attr_cam_focal = api.Attribute(cam_shp + '.focalLength')
-    #     attr_cam_focal.set_min_value(10.0)
-    #     attr_cam_focal.set_max_value(20.0)
-    #     col_fg.add_attribute(attr_cam_tx)
-    #     col_fg.add_attribute(attr_cam_ty)
-    #     col_fg.add_attribute(attr_cam_tz)
-    #     col_fg.add_attribute(attr_cam_rx)
-    #     col_fg.add_attribute(attr_cam_ry)
-    #     col_fg.add_attribute(attr_cam_rz)
-    #     col_fg.add_attribute(attr_cam_focal)
+    #     # attr_cam_rx = api.Attribute(cam_tfm + '.rx')
+    #     # attr_cam_ry = api.Attribute(cam_tfm + '.ry')
+    #     # attr_cam_rz = api.Attribute(cam_tfm + '.rz')
+    #     # attr_cam_focal = api.Attribute(cam_shp + '.focalLength')
+    #     # attr_cam_focal.set_min_value(10.0)
+    #     # attr_cam_focal.set_max_value(20.0)
+    #     col.add_attribute(attr_cam_tx)
+    #     col.add_attribute(attr_cam_ty)
+    #     col.add_attribute(attr_cam_tz)
+    #     # col.add_attribute(attr_cam_rx)
+    #     # col.add_attribute(attr_cam_ry)
+    #     # col.add_attribute(attr_cam_rz)
+    #     # col.add_attribute(attr_cam_focal)
     #
     #     # for mkr in mkr_list:
     #     #     bnd = mkr.get_bundle()
@@ -540,19 +521,9 @@ class TestSolve(test_api_utils.APITestCase):
     #     #     attr_tx = api.Attribute(bnd_node + '.tx')
     #     #     attr_ty = api.Attribute(bnd_node + '.ty')
     #     #     attr_tz = api.Attribute(bnd_node + '.tz')
-    #     #     col_fg.add_attribute(attr_tx)
-    #     #     col_fg.add_attribute(attr_ty)
-    #     #     col_fg.add_attribute(attr_tz)
-    #
-    #     for mkr in mkr_bg_list:
-    #         bnd = mkr.get_bundle()
-    #         bnd_node = bnd.get_node()
-    #         attr_tx = api.Attribute(bnd_node + '.tx')
-    #         attr_ty = api.Attribute(bnd_node + '.ty')
-    #         attr_tz = api.Attribute(bnd_node + '.tz')
-    #         col_bg.add_attribute(attr_tx)
-    #         col_bg.add_attribute(attr_ty)
-    #         col_bg.add_attribute(attr_tz)
+    #     #     col.add_attribute(attr_tx)
+    #     #     col.add_attribute(attr_ty)
+    #     #     col.add_attribute(attr_tz)
     #
     #     # save the output
     #     path = self.get_data_path('test_solve_opera_house_before.ma')
@@ -560,8 +531,7 @@ class TestSolve(test_api_utils.APITestCase):
     #     maya.cmds.file(save=True, type='mayaAscii', force=True)
     #
     #     # Run solver!
-    #     results = col_fg.execute()
-    #     # results = col_bg.execute()
+    #     results = col.execute()
     #
     #     # Ensure the values are correct
     #     for res in results:

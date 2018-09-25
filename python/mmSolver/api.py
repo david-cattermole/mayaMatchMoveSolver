@@ -34,6 +34,7 @@ from mmSolver._api.excep import (
 from mmSolver._api.nodeaffects import (
     find_attrs_affecting_transform,
     find_marker_attr_mapping,
+    find_marker_attr_mapping_raw,
 )
 
 # Utility functions that the user is allowed to use.
@@ -81,4 +82,7 @@ __all__ = [
     'get_marker_name',
     'get_bundle_name',
     'create_anim_curve_node',
+    'find_attrs_affecting_transform',
+    'find_marker_attr_mapping',
+    'find_marker_attr_mapping_raw',
 ]

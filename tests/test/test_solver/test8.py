@@ -23,7 +23,7 @@ class TestSolver8(solverUtils.SolverTestCase):
 
     def test_init(self):
         # Open File Path
-        scenePath = self.get_data_path('solver_test7.ma')
+        scenePath = self.get_data_path('solver_test8.ma')
         maya.cmds.file(scenePath,
                        open=True,
                        force=True,
@@ -48,21 +48,16 @@ class TestSolver8(solverUtils.SolverTestCase):
 
         # Get Markers
         markers = []
-        nodes = maya.cmds.ls('|cam_tfm*|marker_tfm*',
-                             type='transform', long=True)
-        for node in nodes:
-            markerTfm = node
-            camTfm = maya.cmds.listRelatives(node,
-                                             parent=True,
-                                             type='transform',
-                                             fullPath=True)[0]
-            camShape = maya.cmds.listRelatives(camTfm, children=True,
-                                               type='camera',
-                                               fullPath=True)[0]
-            bundleName = markerTfm.rpartition('|')[-1]
-            bundleName = bundleName.replace('marker', 'bundle')
-            bundleTfm = maya.cmds.ls(bundleName, type='transform')[0]
-            markers.append((markerTfm, camShape, bundleTfm))
+
+        for camTfm, camShape in cameras:
+            nodes = maya.cmds.ls(camTfm + '|marker_tfm*',
+                                 type='transform', long=True)
+            for node in nodes:
+                markerTfm = node
+                name = markerTfm.rpartition('|')[-1]
+                bundleName = '|cam_bundles|' + name.replace('marker_tfm', 'bundle_tfm')
+                bundleTfm = maya.cmds.ls(bundleName, type='transform')[0]
+                markers.append((markerTfm, camShape, bundleTfm))
 
         # Get Attrs
         node_attrs = [
@@ -91,6 +86,7 @@ class TestSolver8(solverUtils.SolverTestCase):
             frame=frames,
             solverType=0,  # was using ceres solver.
             iterations=1000,
+            # delta=0.0001,
             verbose=True,
         )
         e = time.time()

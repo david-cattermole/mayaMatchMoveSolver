@@ -2,8 +2,6 @@
 Testing a single point nodal camera solve across time.
 """
 
-import os
-import math
 import time
 import unittest
 
@@ -23,12 +21,14 @@ class TestSolver4(solverUtils.SolverTestCase):
 
     def test_init(self):
         start = 1
-        end = 100
+        end = 10
 
+        # TODO: Make sure to tangents to auto, in case the Maya user contains 
+        #  preferences to change this behaviour.
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateX', time=start, value=-2.0)
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateX', time=end, value=2.0)
@@ -72,7 +72,11 @@ class TestSolver4(solverUtils.SolverTestCase):
             attr=node_attrs,
             frame=frames,
             solverType=0,  # was using sparse levmar
-            iterations=100,
+            iterations=10,
+            delta=0.0001,
+            # epsilon1=0.001,
+            # epsilon2=0.001,
+            # epsilon3=0.001,
             verbose=True,
         )
         e = time.time()

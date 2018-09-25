@@ -5,9 +5,8 @@
 
 #include <mmSolver.h>
 
-
 // Lev-Mar
-#include <levmar.h>  // dlevmar_bc_dif
+#include <levmar.h>  // dlevmar_bc_dir, dlevmar_bc_der 
 
 
 // STL
@@ -22,6 +21,7 @@
 // Utils
 #include <utilities/debugUtils.h>
 #include <utilities/stringUtils.h>
+#include <utilities/numberUtils.h>
 
 // Maya
 #include <maya/MGlobal.h>
@@ -117,8 +117,8 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
     for (AttrPtrListIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
         AttrPtr attr = *ait;
         MObject nodeObj = attr->getObject();
-        bool attrIsPartOfCamera = false;
 
+        bool attrIsPartOfCamera = false;
         MFnDependencyNode dependNode(nodeObj);
         if (nodeObj.apiType() == MFn::kTransform) {
             MFnDagNode dagNode(nodeObj);
@@ -129,15 +129,6 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
                     attrIsPartOfCamera = true;
                 }
             }
-
-            // // TODO: Look up affected attributes to make sure the
-            // // attribute really does belong to the camera and will
-            // // affect the solve.
-            // MObjectArray attrObjs;
-            // MString worldMatrixAttrName = "worldMatrix";
-            // MObject attributeObj = dependNode.attribute(worldMatrixAttrName, &status);
-            // CHECK_MSTATUS(status);
-            // dependNode.getAffectedAttributes(attributeObj, attrObjs);
 
         } else if (nodeObj.apiType() == MFn::kCamera) {
             attrIsPartOfCamera = true;
@@ -189,6 +180,9 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
             } else {
                 staticAttrList.push_back(attr);
             }
+        } else {
+            const char *attrName = attr->getName().asChar();
+            ERR("attr is not animated or free: " << attrName);
         }
         i++;
     }
@@ -197,8 +191,12 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
 
 
 /*
- * TODO: Answer this question: 'for each marker, determine which attributes
- * can affect it's bundle.'
+ * Use the Maya DG graph structure to determine the
+ * sparsity structure, a relation of cause and effect; which
+ * attributes affect which markers.
+ *
+ * Answer this question: 'for each marker, determine which
+ * attributes can affect it's bundle.'
  *
  * Detect inputs and outputs for marker-bundle relationships. For each
  * marker, get the bundle, then find all the attributes that affect the bundle
@@ -212,9 +210,14 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
  * could mean we only need to measure a limited number of bundles, hence
  * improving performance.
  *
- * There are special cases for detecting inputs/outputs between markers and attributes.
- * - Any transform node/attribute above the marker in the DAG that affects the world transform.
- * - Cameras; transform attributes and focal length will affect all markers
+ * There are special cases for detecting inputs/outputs between
+ * markers and attributes.
+ *
+ * - Any transform node/attribute above the marker in the DAG that
+ *   affects the world transform.
+ *
+ * - Cameras; transform attributes and focal length will affect all
+ *   markers
  *
  */
 void findErrorToParameterRelationship(MarkerPtrList markerList,
@@ -230,8 +233,10 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
     int i, j;
 
     // Command execution options
-    bool display = false;  // print out what happens in the python command.
-    bool undoable = false;  // we won't modify the scene in any way, only make queries.
+    bool display = false;  // print out what happens in the python
+    // command.
+    bool undoable = false;  // we won't modify the scene in any way,
+    // only make queries.
     MString cmd = "";
     MStringArray result1;
     MStringArray result2;
@@ -239,7 +244,6 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
     // Calculate the relationship between attributes and markers.
     markerToAttrMapping.resize(markerList.size());
     i = 0;      // index of marker
-    j = 0;      // index of attribute
     for (MarkerPtrListCIt mit = markerList.begin(); mit != markerList.end(); ++mit) {
         MarkerPtr marker = *mit;
         CameraPtr cam = marker->getCamera();
@@ -251,16 +255,19 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
         const char *bundleName = bundle->getNodeName().asChar();
 
         // Find list of plug names that are affected by the bundle.
+        cmd = "";
         cmd += "import mmSolver.api as mmapi;";
         cmd += "mmapi.find_attrs_affecting_transform(";
         cmd += "\"";
         cmd += bundleName;
         cmd += "\"";
         cmd += ");";
+        DBG("Running: " + cmd);
         status = MGlobal::executePythonCommand(cmd, result1, display, undoable);
-        INFO("Python result1 num: " << result1.length());
+        DBG("Python result1 num: " << result1.length());
 
-        // Find list of plug names that are affected by the marker (and camera projection matrix).
+        // Find list of plug names that are affected by the marker
+        // (and camera projection matrix).
         cmd = "";
         cmd += "import mmSolver.api as mmapi;";
         cmd += "mmapi.find_attrs_affecting_transform(";
@@ -271,10 +278,12 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
         cmd += camName;
         cmd += "\"";
         cmd += ");";
+        DBG("Running: " + cmd);
         status = MGlobal::executePythonCommand(cmd, result2, display, undoable);
-        INFO("Python result2 num: " << result2.length());
+        DBG("Python result2 num: " << result2.length());
 
         // Determine if the marker can affect the attribute.
+        j = 0;      // index of attribute
         MString affectedPlugName;
         markerToAttrMapping[i].resize(attrList.size(), false);
         for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
@@ -305,7 +314,6 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
                     break;
                 }
             }
-
             ++j;
         }
         ++i;
@@ -313,18 +321,19 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
 
     // Calculate the relationship between errors and parameters.
     /*
-     * TODO: For each error, work out which parameters can affect it. The
-     * parameters may be static or animated and thereby each parameter may
-     * affect one or more errors. A single parameter will affect a range of
-     * time values, a static parameter affects all time values, but a dynamic
-     * parameter will be split into many parameters at different frames, each
-     * of those dynamic parameters will only affect a small number of errors.
-     * Our goal is to compute a boolean for each error and parameter
-     * combination, if the boolean is true the relationship is positive, if
-     * false, the computation is skipped and the error returned is zero.
-     * This combination is only relevant if the markerToAttrMapping is
-     * already true, otherwise we can assume such error/parameter combinations
-     * will not be required.
+     * For each error, work out which parameters can affect
+     * it. The parameters may be static or animated and thereby each
+     * parameter may affect one or more errors. A single parameter
+     * will affect a range of time values, a static parameter affects
+     * all time values, but a dynamic parameter will be split into
+     * many parameters at different frames, each of those dynamic
+     * parameters will only affect a small number of errors. Our goal
+     * is to compute a boolean for each error and parameter
+     * combination, if the boolean is true the relationship is
+     * positive, if false, the computation is skipped and the error
+     * returned is zero.  This combination is only relevant if the
+     * markerToAttrMapping is already true, otherwise we can assume
+     * such error/parameter combinations will not be required.
      */
     int markerIndex = 0;
     int markerFrameIndex = 0;
@@ -333,17 +342,13 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
     IndexPair markerIndexPair;
     IndexPair attrIndexPair;
     errorToParamMapping.resize(numErrors);
+
     i = 0;      // index of error
     j = 0;      // index of parameter
     for (i = 0; i < (numErrors / ERRORS_PER_MARKER); ++i) {
-        INFO("i=" << i
-                  << " numErrors=" << numErrors
-                  << " errorToMarkerList.size()=" << errorToMarkerList.size());
         markerIndexPair = errorToMarkerList[i];
         markerIndex = markerIndexPair.first;
         markerFrameIndex = markerIndexPair.second;
-        INFO("markerIndex=" << markerIndex);
-        INFO("markerFrameIndex=" << markerFrameIndex);
 
         MarkerPtr marker = markerList[markerIndex];
         CameraPtr cam = marker->getCamera();
@@ -354,51 +359,52 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
         const char *markerName = marker->getNodeName().asChar();
         const char *camName = cam->getTransformNodeName().asChar();
         const char *bundleName = bundle->getNodeName().asChar();
-        INFO("Marker: " << markerName);
-        INFO("MarkerFrame: " << markerFrame.asUnits(MTime::uiUnit()));
 
         // Determine if the marker can affect the attribute.
         errorToParamMapping[i].resize(numParameters, false);
         for (j = 0; j < numParameters; ++j) {
-            INFO("j=" << j
-                      << " numParameters=" << numParameters
-                      << " paramToAttrList.size()=" << paramToAttrList.size());
             attrIndexPair = paramToAttrList[j];
             attrIndex = attrIndexPair.first;
             attrFrameIndex = attrIndexPair.second;
-            INFO("attrIndex=" << attrIndex);
-            INFO("attrFrameIndex=" << attrFrameIndex);
 
-            // If the attrFrameIndex is -1, then the attribute is static,
-            // not animated.
+            // If the attrFrameIndex is -1, then the attribute is
+            // static, not animated.
             AttrPtr attr = attrList[attrIndex];
             MTime attrFrame(-1.0, MTime::uiUnit());
             if (attrFrameIndex >= 0) {
                 attrFrame = frameList[attrFrameIndex];
             }
             const char *attrName = attr->getName().asChar();
-            INFO("Attr: " << attrName);
-            INFO("AttrFrame: " << attrFrame.asUnits(MTime::uiUnit()));
 
             bool markerAffectsAttr = markerToAttrMapping[markerIndex][attrIndex];
-            if (markerAffectsAttr == false) {
-                errorToParamMapping[i][j] = markerAffectsAttr;
-                continue;
+            bool paramAffectsError = markerAffectsAttr;
+            if (paramAffectsError == true) {
+                // Time based mapping information.
+                // Only markers on the current frame can affect the current attribute.
+                if (attrFrameIndex >= 0) {
+                    paramAffectsError = false;
+                    if (number::floatApproxEqual(markerFrame.value(), attrFrame.value())) {
+                        paramAffectsError = true;
+                    }
+                } else {
+                    paramAffectsError = true;
+                }
             }
-
-            bool paramAffectsError = true;
-            // TODO: Compute 'paramAffectsError' value.
             errorToParamMapping[i][j] = paramAffectsError;
-
-            INFO("i=" << i << " | j=" << j
-                      << " : " << paramAffectsError);
         }
     }
 
     return;
 }
 
-
+/*! Solve everything!
+ *
+ * This function is responsible for taking the given cameras, markers,
+ * bundles and solver options, and modifying the current Maya scene,
+ * saving changes in the 'dgmod' variable, and returning the results
+ * in the outResult.
+ *
+ */
 bool solve(int iterMax,
            double tau,
            double eps1,
@@ -427,8 +433,8 @@ bool solve(int iterMax,
     IndexPairList paramToAttrList;
     IndexPairList errorToMarkerList;
 
-    // Cache out the marker positions in screen-space, so we don't need to query
-    // them during solving.
+    // Cache out the marker positions in screen-space, so we don't
+    // need to query them during solving.
     std::vector<MPoint> markerPosList;
 
     // Errors and parameters as used by the solver.
@@ -474,17 +480,15 @@ bool solve(int iterMax,
             paramToAttrList,
             status
     );
-    INFO("camStaticAttrList.size() = " << camStaticAttrList.size());
-    INFO("camAnimAttrList.size() = " << camAnimAttrList.size());
-    INFO("staticAttrList.size() = " << staticAttrList.size());
-    INFO("animAttrList.size() = " << animAttrList.size());
     assert(paramLowerBoundList.size() == m);
     assert(paramUpperBoundList.size() == m);
     assert(paramWeightList.size() == m);
+    assert(m >= attrList.size());
 
     // Which markers affect which attributes?
     BoolList2D markerToAttrMapping;
     BoolList2D errorToParamMapping;
+#if USE_EXPERIMENTAL_SOLVER == 1
     findErrorToParameterRelationship(
             markerList,
             attrList,
@@ -497,15 +501,7 @@ bool solve(int iterMax,
             errorToParamMapping,
             status
     );
-    // INFO("markerToAttrMapping.size() = " << markerToAttrMapping.size());
-    for (i = 0; i < markerToAttrMapping.size(); ++i) {
-        // INFO("i = " << i);
-        // INFO("markerToAttrMapping[" << i << "].size() = " << markerToAttrMapping[i].size());
-        for (j = 0; j < markerToAttrMapping[i].size(); ++j) {
-            // INFO("j = " << j);
-            INFO("mkr=" << i << " : attr=" << j << " | " << markerToAttrMapping[i][j]);
-        }
-    }
+#endif
 
     VRB("Number of Parameters; m=" << m);
     VRB("Number of Errors; n=" << n);
@@ -583,6 +579,7 @@ bool solve(int iterMax,
     userData.paramToAttrList = paramToAttrList;
     userData.errorToMarkerList = errorToMarkerList;
     userData.markerPosList = markerPosList;
+    userData.errorToParamMapping = errorToParamMapping;
 
     // Solver Aux data
     userData.errorList = errorList;
@@ -636,19 +633,12 @@ bool solve(int iterMax,
 
     if (solverType == SOLVER_TYPE_LEVMAR) {
 
-        // TODO: Define a jacobian function to calculate the jacobian
-        // matrix explicitly.
-        // TODO: Determine a function that will 'guess' the 'delta' value
-        // for the jacobian function parameters. We could experiment with
-        // distance from camera, or simply based on a general look up
-        // tables. For 'angle' based attributes, use 1 or 5 degrees, for distance use 1cm, or 1,000cm when the transform is far away from the camera.
-        // TODO: Use the Maya DG graph structure to determine the sparsity
-        // structure, a relation of cause and effect; which attributes
-        // affect which markers.
-        // TODO: Add 'Box Constraint' variant of levmar. Lower/upper
-        // bounds is set based on the Attribute parameters given, or
-        // if none are given, default to the double minimum and maximum
-        // limits.
+        // TODO: Determine a function that will 'guess' the 'delta'
+        // value for the jacobian function parameters. We could
+        // experiment with distance from camera, or simply based on a
+        // general look up tables. For 'angle' based attributes, use 1
+        // or 5 degrees, for distance use 1cm, or 1,000cm when the
+        // transform is far away from the camera.
 
         // Allocate a memory block for both 'work' and 'covar', so that
         // the block is close together in physical memory.
@@ -661,12 +651,127 @@ bool solve(int iterMax,
         covar = work + LM_BC_DIF_WORKSZ(m, n);
 
         // Solve!
-        ret = dlevmar_bc_dif(
+#if USE_EXPERIMENTAL_SOLVER == 1
 
+#if USE_ANALYTIC_JACOBIAN == 1
+        ret = dlevmar_bc_der(
+#else
+        ret = dlevmar_bc_dif(
+#endif
+                
+        // Function to call (input only)
+        // Function must be of the structure:
+        //   func(double *params, double *x, int m, int n, void *data)
+        levmarSolveOptimiseFunc,
+
+#if USE_ANALYTIC_JACOBIAN == 1
+            // Jacobian Function to call (input only)
+            // Function must be of the structure:
+            //   func(double *params, double *x, int m, int n, void *data)
+            levmarSolveJacOptimiseFunc,
+#endif
+
+            // Parameters (input and output)
+            // Should be filled with initial estimate, will be filled
+            // with output parameters
+            &paramList[0],
+
+            // Measurement Vector (input only)
+            // NULL implies a zero vector
+            // NULL,
+            &errorList[0],
+
+            // Parameter Vector Dimension (input only)
+            // (i.e. #unknowns)
+            m,
+
+            // Measurement Vector Dimension (input only)
+            n,
+
+            // vector of lower bounds. If NULL, no lower bounds apply
+            &paramLowerBoundList[0],
+
+            // vector of upper bounds. If NULL, no upper bounds apply (input only)
+            &paramUpperBoundList[0],
+
+            // diagonal scaling constants. NULL implies no scaling (input only)
+            &paramWeightList[0],
+
+            // Maximum Number of Iterations (input only)
+            iterMax,
+
+            // Minimisation options (input only)
+            // opts[0] = tau      (scale factor for initialTransform mu)
+            // opts[1] = epsilon1 (stopping threshold for ||J^T e||_inf)
+            // opts[2] = epsilon2 (stopping threshold for ||Dp||_2)
+            // opts[3] = epsilon3 (stopping threshold for ||e||_2)
+            // opts[4] = delta    (step used in difference approximation to the Jacobian)
+            //
+            // If \delta<0, the Jacobian is approximated with central differences
+            // which are more accurate (but slower!) compared to the forward
+            // differences employed by default.
+            // Set to NULL for defaults to be used.
+            opts,
+
+            // Output Information (output only)
+            // information regarding the minimization.
+            // info[0] = ||e||_2 at initialTransform params.
+            // info[1-4] = (all computed at estimated params)
+            //  [
+            //   ||e||_2,
+            //   ||J^T e||_inf,
+            //   ||Dp||_2,
+            //   \mu/max[J^T J]_ii
+            //  ]
+            // info[5] = number of iterations,
+            // info[6] = reason for terminating:
+            //   1 - stopped by small gradient J^T e
+            //   2 - stopped by small Dp
+            //   3 - stopped by iterMax
+            //   4 - singular matrix. Restart from current params with increased \mu
+            //   5 - no further error reduction is possible. Restart with increased mu
+            //   6 - stopped by small ||e||_2
+            //   7 - stopped by invalid (i.e. NaN or Inf) "func" refPoints; a user error
+            // info[7] = number of function evaluations
+            // info[8] = number of Jacobian evaluations
+            // info[9] = number linear systems solved (number of attempts for reducing error)
+            //
+            // Set to NULL if don't care
+            info,
+
+            // Working Data (input only)
+            // working memory, allocated internally if NULL. If !=NULL, it is assumed to
+            // point to a memory chunk at least LM_DIF_WORKSZ(m, n)*sizeof(double) bytes
+            // long
+            work,
+
+            // Covariance matrix (output only)
+            // Covariance matrix corresponding to LS solution; Assumed to point to a mxm matrix.
+            // Set to NULL if not needed.
+            covar,
+
+            // Custom Data for 'func' (input only)
+            // pointer to possibly needed additional data, passed uninterpreted to func.
+            // Set to NULL if not needed
+            (void *) &userData);
+#else
+
+#if USE_ANALYTIC_JACOBIAN == 1
+        ret = dlevmar_bc_der(
+#else
+        ret = dlevmar_bc_dif(
+#endif
                 // Function to call (input only)
                 // Function must be of the structure:
                 //   func(double *params, double *x, int m, int n, void *data)
                 levmarSolveFunc,
+
+#if USE_ANALYTIC_JACOBIAN == 1
+        // Jacobian Function to call (input only)
+        // Function must be of the structure:
+        //   func(double *params, double *x, int m, int n, void *data)
+        levmarSolveJacFunc,
+#endif
 
                 // Parameters (input and output)
                 // Should be filled with initial estimate, will be filled
@@ -687,15 +792,12 @@ bool solve(int iterMax,
 
                 // vector of lower bounds. If NULL, no lower bounds apply
                 &paramLowerBoundList[0],
-//                NULL,
 
                 // vector of upper bounds. If NULL, no upper bounds apply (input only)
                 &paramUpperBoundList[0],
-//                NULL,
 
                 // diagonal scaling constants. NULL implies no scaling (input only)
                 &paramWeightList[0],
-//                NULL,
 
                 // Maximum Number of Iterations (input only)
                 iterMax,
@@ -754,6 +856,7 @@ bool solve(int iterMax,
                 // pointer to possibly needed additional data, passed uninterpreted to func.
                 // Set to NULL if not needed
                 (void *) &userData);
+#endif
 
         free(work);
     } else {

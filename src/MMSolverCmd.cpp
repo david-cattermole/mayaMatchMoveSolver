@@ -1,5 +1,9 @@
 /*
  * Command for running mmSolver.
+ *
+ * TODO: Add a 'finite differencing' flag, which controls whether we
+ * use 'forward' or 'central' differencing to compute the jacobian.
+ * 
  */
 
 
@@ -462,4 +466,3 @@ MStatus MMSolverCmd::undoIt() {
     m_dgmod.undoIt();
     return status;
 }
-

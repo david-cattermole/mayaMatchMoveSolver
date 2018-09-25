@@ -1,5 +1,13 @@
 /*
- * Attribute class holds functions for getting and setting an attribute, as well as state information.
+ * Attribute class holds functions for getting and setting an
+ * attribute, as well as state information.
+ * 
+ * TODO: Add a 'virtual offset' value for each attribute. This
+ * 'virtual offset' is used to offset all values to and from this
+ * attribute. For example this can be used to re-center values around
+ * an origin point, such as a rotation angle that will center around
+ * the value +360 to avoid inconsistent values if 0.0 is used as the
+ * 'center'.
  */
 
 // STL

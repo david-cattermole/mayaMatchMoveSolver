@@ -1,5 +1,7 @@
 /*
- * Uses Non-Linear Least Squares algorithm from levmar library to calculate attribute values based on 2D-to-3D error measurements through a pinhole camera.
+ * Uses Non-Linear Least Squares algorithm from levmar library to
+ * calculate attribute values based on 2D-to-3D error measurements
+ * through a pinhole camera.
  */
 
 
@@ -20,24 +22,34 @@
 #include <maya/MDGModifier.h>
 #include <maya/MComputation.h>
 
-//
+// MM Solver
 #include <Camera.h>
 #include <Marker.h>
 #include <Bundle.h>
 #include <Attr.h>
 
-// The different solver types to choose from. Currently only 'levmar' is supported.
-// Dense LM solver
-#define SOLVER_TYPE_LEVMAR 0
+// The different solver types to choose from. Currently only 'levmar'
+// is supported.
+#define SOLVER_TYPE_LEVMAR 0  // Dense LM solver
 
-// The number of errors that are measured per-marker.
-#define ERRORS_PER_MARKER 3
+// The number of errors that are measured per-marker.  
+//
+// This can be a value of 2 or 3. 3 was used used in the past with
+// success, but tests now prove 2 to reduce error with less
+// iterations, and is significantly faster overall.
+#define ERRORS_PER_MARKER 2
+
+// Use experimental 'optimised' solver function.
+#define USE_EXPERIMENTAL_SOLVER 0
+
+// Use manually created jacobian function.
+#define USE_ANALYTIC_JACOBIAN 0
+
 
 
 typedef std::vector<std::vector<bool> > BoolList2D;
 typedef std::pair<int, int> IndexPair;
 typedef std::vector<std::pair<int, int> > IndexPairList;
-
 
 inline
 double distance_2d(MPoint a, MPoint b) {
@@ -45,7 +57,6 @@ double distance_2d(MPoint a, MPoint b) {
     double dy = (a.y - b.y);
     return sqrt((dx * dx) + (dy * dy));
 }
-
 
 int countUpNumberOfErrors(MarkerPtrList markerList,
                           MTimeArray frameList,

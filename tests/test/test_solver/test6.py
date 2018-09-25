@@ -1,10 +1,10 @@
 """
 Testing a single point nodal camera solve across time.
-This script calls the solver multiple times in different ways, the aim is to reduce the slowness while maintaining static value solving.
+
+This script calls the solver multiple times in different ways, the aim
+is to reduce the slowness while maintaining static value solving.
 """
 
-import os
-import math
 import time
 import unittest
 
@@ -68,9 +68,9 @@ class TestSolver6(solverUtils.SolverTestCase):
         ]
 
         framesList = [
-            [ (start), (mid), (end) ],
-            [ (start), (25), (mid), (75), (end) ],
-            [ (start), (12), (25), (37), (mid), (62), (75), (87), (end) ],
+            [(start), (mid), (end)],
+            [(start), (25), (mid), (75), (end)],
+            [(start), (12), (25), (37), (mid), (62), (75), (87), (end)],
         ]
         print 'framesList:', framesList
         allFrames = []
@@ -88,41 +88,42 @@ class TestSolver6(solverUtils.SolverTestCase):
                 camera=cameras,
                 marker=markers,
                 attr=node_attrs,
-                iterations=100,
+                iterations=10,
                 solverType=0,
+                delta=0.00001,
                 frame=frames,
                 verbose=True,
             )
             results.append(result)
 
-        # Solve between primary frames
-        for frames in framesList:
-            for i in range(len(frames)-1):
-                betweenFrames = []
-                for j in range(frames[i]+1, frames[i+1]):
-                    result = maya.cmds.mmSolver(
-                        camera=cameras,
-                        marker=markers,
-                        attr=node_attrs,
-                        iterations=100,
-                        solverType=0,
-                        frame=[j],
-                        verbose=True,
-                    )
-                    results.append(result)
-                # betweenFrames = []
-                # for j in range(frames[i]+1, frames[i+1]):
-                #     betweenFrames.append(j)
-                # result = maya.cmds.mmSolver(
-                #     camera=cameras,
-                #     marker=markers,
-                #     attr=node_attrs,
-                #     iterations=100,
-                #     solverType=0,
-                #     frame=betweenFrames,
-                #     verbose=True,
-                # )
-                # results.append(result)
+        # # Solve between primary frames
+        # for frames in framesList:
+        #     for i in range(len(frames)-1):
+        #         betweenFrames = []
+        #         for j in range(frames[i]+1, frames[i+1]):
+        #             result = maya.cmds.mmSolver(
+        #                 camera=cameras,
+        #                 marker=markers,
+        #                 attr=node_attrs,
+        #                 iterations=10,
+        #                 solverType=0,
+        #                 frame=[j],
+        #                 verbose=True,
+        #             )
+        #             results.append(result)
+        #         # betweenFrames = []
+        #         # for j in range(frames[i]+1, frames[i+1]):
+        #         #     betweenFrames.append(j)
+        #         # result = maya.cmds.mmSolver(
+        #         #     camera=cameras,
+        #         #     marker=markers,
+        #         #     attr=node_attrs,
+        #         #     iterations=10,
+        #         #     solverType=0,
+        #         #     frame=betweenFrames,
+        #         #     verbose=True,
+        #         # )
+        #         # results.append(result)
 
         # # Global Solve
         # result = maya.cmds.mmSolver(

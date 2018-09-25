@@ -83,7 +83,7 @@
 
 #define DELTA_FLAG           "-dt"
 #define DELTA_FLAG_LONG      "-delta"
-#define DELTA_DEFAULT_VALUE  (-1E-03) // -1E-06
+#define DELTA_DEFAULT_VALUE  (1E-04) // -1E-06
 
 #define VERBOSE_FLAG           "-v"
 #define VERBOSE_FLAG_LONG      "-verbose"

@@ -2,7 +2,6 @@
 Animation utilities.
 """
 
-import sys
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaAnim as OpenMayaAnim
@@ -18,7 +17,34 @@ def create_anim_curve_node(times, values,
                            undo_cache=None):
     """
     Create an animCurve using the Maya API
+
+
+    :param times: Time values for the animCurve
+    :type times: list
+
+    :param values: Values for the animCurve.
+    :type values: list
+
+    :param node_attr: The 'plug' to connect the animCurve to.
+    :type node_attr: str
+
+    :param tangent_in_type: The "in" tangent type for keyframes.
+    :param tangent_out_type: The "out" tangent type for keyframes.
+    :param anim_type: The type of animation curve node.
+    :param undo_cache: The Maya AnimCurve Undo Cache data structure.
+    :return:
     """
+    if not isinstance(times, list):
+        raise ValueError('times must be a list or sequence type.')
+    if not isinstance(values, list):
+        raise ValueError('times must be a list or sequence type.')
+    if len(times) == 0:
+        raise ValueError('times must have 1 or more values.')
+    if len(values) == 0:
+        raise ValueError('values must have 1 or more values.')
+    if len(times) != len(values):
+        raise ValueError('Number of times and values does not match.')
+
     # create anim curve
     animfn = OpenMayaAnim.MFnAnimCurve()
     if node_attr is None:
@@ -38,9 +64,9 @@ def create_anim_curve_node(times, values,
     # Copy the times into an MTimeArray and the values into an MDoubleArray.
     time_array = OpenMaya.MTimeArray()
     value_array = OpenMaya.MDoubleArray()
-    for i in xrange(len(times)):
-        time_array.append(OpenMaya.MTime(times[i], OpenMaya.MTime.uiUnit()))
-        value_array.append(values[i])
+    for time, value in zip(times, values):
+        time_array.append(OpenMaya.MTime(time, OpenMaya.MTime.uiUnit()))
+        value_array.append(value)
 
     # force a default undo cache
     if not undo_cache:

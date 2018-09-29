@@ -6,6 +6,20 @@ import sys
 import abc
 
 
+class ParserWarning(Warning):
+    """
+    Raised when a format parser needs to warn about non-error conditions.
+    """
+    pass
+
+
+class ParserError(Exception):
+    """
+    Raised when a format parser cannot continue.
+    """
+    pass
+
+
 def float_is_equal(x, y):
     """
     Check the two float numbers match.
@@ -37,7 +51,6 @@ def get_closest_frame(frame, value):
 
     Returns the closest frame in the dict value.
     """
-    # TODO: This function is quite slow, it should be improved.
     keys = value.keys()
     int_keys = list()
     for key in keys:
@@ -214,7 +227,9 @@ class KeyframeData(object):
 class MarkerData(object):
     def __init__(self):
         self._name = None  # None or str or unicode
-        self._colour = None  # the colour of the point
+        self._group_name = None  # None or str or unicode
+        self._id = None  # None or int
+        self._color = None  # the colour of the point
         self._x = KeyframeData()
         self._y = KeyframeData()
         self._enable = KeyframeData()
@@ -226,11 +241,23 @@ class MarkerData(object):
     def set_name(self, value):
         self._name = value
 
-    def get_colour(self):
-        return self._colour
+    def get_id(self):
+        return self._id
 
-    def set_colour(self, value):
-        self._colour = value
+    def set_id(self, value):
+        self._id = value
+
+    def get_group_name(self):
+        return self._group_name
+
+    def set_group_name(self, value):
+        self._group_name = value
+
+    def get_color(self):
+        return self._color
+
+    def set_color(self, value):
+        self._color = value
 
     def get_x(self):
         return self._x
@@ -257,11 +284,13 @@ class MarkerData(object):
         self._weight = value
 
     name = property(get_name, set_name)
+    id = property(get_id, set_id)
     x = property(get_x, set_x)
     y = property(get_y, set_y)
     enable = property(get_enable, set_enable)
     weight = property(get_weight, set_weight)
-    colour = property(get_colour, set_colour)
+    group_name = property(get_group_name, set_group_name)
+    color = property(get_color, set_color)
 
 
 class LoaderBase(object):

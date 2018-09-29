@@ -167,6 +167,8 @@ def get_marker_group_above_node(node):
 
 
 def convert_valid_maya_name(name):
+    # TODO: Use Maya API namespace validator?
+    # TODO: name could start with a number; this should be prefixed.
     assert isinstance(name, basestring)
     for char in BAD_MAYA_CHARS:
         name.replace(char, '_')

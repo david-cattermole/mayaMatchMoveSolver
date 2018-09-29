@@ -5,9 +5,7 @@ This test is the same as 'test.test_solver.test1' except this test uses the
 Python API. It's a basic example of how to use the API.
 """
 
-import os
 import math
-import time
 import unittest
 
 try:
@@ -19,7 +17,7 @@ import maya.cmds
 
 import mmSolver.api as api
 import test.test_api.apiutils as test_api_utils
-import mmSolver.tools.loadmarker.readfile as marker_read
+# import mmSolver.tools.loadmarker.mayareadfile as marker_read
 
 
 # @unittest.skip

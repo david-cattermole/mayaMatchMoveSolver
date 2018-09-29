@@ -44,9 +44,12 @@ The dictionary looks like this::
 """
 
 import json
+import mmSolver.logger
 import mmSolver.tools.loadmarker.interface as interface
 import mmSolver.tools.loadmarker.formatmanager as fmtmgr
 import mmSolver.tools.loadmarker.constant as const
+
+LOG = mmSolver.logger.get_logger()
 
 
 def determine_format_version(file_path):
@@ -93,7 +96,7 @@ def parse_v1(file_path):
         num_frames = int(lines[idx])
         if num_frames <= 0:
             msg = 'point has no data: %r'
-            print(msg % mkr_name)
+            LOG.warning(msg, mkr_name)
             continue
 
         # Frame data parsing

@@ -24,8 +24,11 @@ Simple file with 1 2D track and 1 frame of data::
 
 """
 
+import mmSolver.logger
 import mmSolver.tools.loadmarker.interface as interface
 import mmSolver.tools.loadmarker.formatmanager as fmtmgr
+
+LOG = mmSolver.logger.get_logger()
 
 
 class Loader3DETXT(interface.LoaderBase):
@@ -91,7 +94,7 @@ class Loader3DETXT(interface.LoaderBase):
             num_frames = int(lines[idx])
             if num_frames <= 0:
                 msg = 'point has no data: %r'
-                print(msg % mkr_name)
+                LOG.warning(msg, mkr_name)
                 continue
 
             # Frame data parsing

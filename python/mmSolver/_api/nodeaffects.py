@@ -158,17 +158,10 @@ def find_marker_attr_mapping_raw(mkr_list, attr_list):
         mkr_node = mkr[0]
         bnd_node = mkr[2]
         cam_node = maya.cmds.listRelatives(mkr[1], parent=True)[0]
-        # mkr_plugs = find_attrs_affecting_transform(mkr_node, cam_tfm=cam_node)
         mkr_plugs = []
         bnd_plugs = find_attrs_affecting_transform(bnd_node)
         plugs = list(set(mkr_plugs + bnd_plugs))
         for j, attr_name in enumerate(attr_list):
-            # print 'attr_name', attr_name
-            # attr = maya.cmds.attributeName(attr_name, long=True)
             attr_name = _get_full_path_plug(attr_name)
             mapping[i][j] = attr_name in plugs
-            # if mapping[i][j] is True:
-            #     print 'attr_name in plugs:', attr_name
-            # if mapping[i][j] is False:
-            #     print 'attr_name not in plugs:', attr_name
     return mapping

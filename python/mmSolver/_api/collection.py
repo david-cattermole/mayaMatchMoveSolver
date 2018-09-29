@@ -11,6 +11,7 @@ import pprint
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
+import mmSolver.logger
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
 import mmSolver._api.solveresult as solveresult
@@ -18,6 +19,9 @@ import mmSolver._api.solver as solver
 import mmSolver._api.marker as marker
 import mmSolver._api.attribute as attribute
 import mmSolver._api.sethelper as sethelper
+
+
+LOGGER = mmSolver.logger.get_logger()
 
 
 class Collection(object):
@@ -498,9 +502,9 @@ class Collection(object):
         # TODO: epsilon2 argument
         # TODO: epsilon3 argument
 
-        # print 'kwargs:', repr(kwargs)
-        print 'kwargs:'
-        pprint.pprint(kwargs)
+        msg = 'kwargs:\n' + pprint.pformat(kwargs)
+        print(msg)
+        LOGGER.info(msg)
         return kwargs
 
     def _compile(self):

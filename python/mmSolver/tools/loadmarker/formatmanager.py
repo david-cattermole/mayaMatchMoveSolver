@@ -18,8 +18,8 @@ class FormatManager(object):
     def get_formats(self):
         format_list = []
         for key in self.__formats:
-            format = self.__formats[key]
-            format_list.append(format)
+            fmt = self.__formats[key]
+            format_list.append(fmt)
         return format_list
 
 

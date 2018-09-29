@@ -2,9 +2,9 @@
 Reads a Matchmover rz2 file.
 """
 
+import os
 import re
 
-import mmSolver.api as mmapi
 import mmSolver.tools.loadmarker.interface as interface
 import mmSolver.tools.loadmarker.formatmanager as fmtmgr
 
@@ -16,23 +16,30 @@ class LoaderRZ2(interface.LoaderBase):
     args = []
 
     def parse(self, file_path, **kwargs):
-        mkr_data_list = []
+        if not isinstance(file_path, basestring):
+            raise TypeError('file_path is not a string: %r' % file_path)
+        if not os.path.isfile(file_path):
+            raise OSError('File path does not exist: %s' % file_path)
 
+        mkr_data_list = []
         f = open(file_path, 'r')
         text = f.read()
         f.close()
 
         idx = text.find('imageSequence')
         if idx == -1:
-            return mkr_data_list
+            msg = "Could not get 'imageSequence' index from: %r"
+            raise interface.ParserError(msg % text)
 
         start_idx = text.find('{', idx+1)
         if start_idx == -1:
-            return mkr_data_list
+            msg = 'Could not get the starting index from: %r'
+            raise interface.ParserError(msg % text)
 
         end_idx = text.find('}', start_idx+1)
         if end_idx == -1:
-            return mkr_data_list
+            msg = 'Could not get the ending index from: %r'
+            raise interface.ParserError(msg % text)
 
         imgseq = text[start_idx+1:end_idx]
         imgseq = imgseq.strip()
@@ -43,13 +50,15 @@ class LoaderRZ2(interface.LoaderBase):
         # Get path
         imgseq_path = re.search(r'.*f\(\s\"(.*)\"\s\).*', imgseq)
         if imgseq_path is None:
-            return mkr_data_list
+            msg = 'Could not get the image sequence path from: %r'
+            raise interface.ParserError(msg % imgseq)
         imgseq_path = imgseq_path.groups()
 
         # Get frame range
         range_regex = re.search(r'.*b\(\s(\d*)\s(\d*)\s(\d*)\s\)', imgseq)
         if range_regex is None:
-            return mkr_data_list
+            msg = 'Could not get the frame range from: %r'
+            raise interface.ParserError(msg % imgseq)
         range_grps = range_regex.groups()
         start_frame = int(range_grps[0])
         end_frame = int(range_grps[1])

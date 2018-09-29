@@ -12,7 +12,7 @@ import mmSolver.api as mmapi
 import mmSolver.tools.loadmarker.interface as interface
 import mmSolver.tools.loadmarker.formatmanager as fmtmgr
 
-# Used to force importing of formats, to not remove.
+# Used to force importing of formats, to not remove this line.
 import mmSolver.tools.loadmarker.formats
 
 
@@ -20,10 +20,12 @@ def read(file_path, **kwargs):
     """
     Read a file path, find the format parser based on the file extension.
     """
-    if not isinstance(file_path, (str, unicode)):
-        return None
-    if not os.path.isfile(file_path):
-        return None
+    if isinstance(file_path, (str, unicode)) is False:
+        msg = 'file path must be a string, got %r'
+        raise TypeError(msg % type(file_path))
+    if os.path.isfile(file_path) is False:
+        msg = 'file path does not exist; %r'
+        raise OSError(msg % file_path)
 
     file_format_class = None
     mgr = fmtmgr.get_format_manager()
@@ -38,7 +40,8 @@ def read(file_path, **kwargs):
                 file_format_class = fmt
                 break
     if file_format_class is None:
-        return None
+        msg = 'No file formats found for file path: %r'
+        raise RuntimeError(msg % file_path)
 
     file_format_obj = file_format_class()
     mkr_data_list = file_format_obj.parse(file_path, **kwargs)
@@ -49,8 +52,13 @@ def __create_node(mkr_data, cam, with_bundles):
     """
     Create a Marker object from a MarkerData object.
     """
-    assert isinstance(mkr_data, interface.MarkerData)
-    assert isinstance(with_bundles, bool)
+    if isinstance(mkr_data, interface.MarkerData) is False:
+        msg = 'mkr_data must be of type: %r'
+        raise TypeError(msg % interface.MarkerData.__name__)
+    if isinstance(with_bundles, bool) is False:
+        msg = 'with_bundles must be of type: %r'
+        raise TypeError(msg % bool.__name__)
+
     name = mkr_data.get_name()
     mkr_name = mmapi.get_marker_name(name)
     bnd_name = mmapi.get_bundle_name(name)
@@ -62,7 +70,9 @@ def __create_node(mkr_data, cam, with_bundles):
 
 
 def __set_attr_keyframes(node, attr_name, keyframes):
-    assert isinstance(keyframes, interface.KeyframeData)
+    if isinstance(keyframes, interface.KeyframeData) is False:
+        msg = 'keyframes must be type %r'
+        raise TypeError(msg % interface.KeyframeData.__name__)
     times, values = keyframes.get_times_and_values()
     node_attr = node + '.' + attr_name
     animFn = mmapi.create_anim_curve_node(times, values, node_attr)

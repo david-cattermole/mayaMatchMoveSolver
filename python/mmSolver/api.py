@@ -1,5 +1,11 @@
 """
 Controls the user-facing API.
+
+..todo:: This API should only be importable in Maya. Importing this
+    module in 3DEqualizer or any other software  should not error
+    and should return only the functionallity that is supported
+    in that software package.
+
 """
 
 # All the objects for the user API.

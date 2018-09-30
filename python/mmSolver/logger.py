@@ -7,6 +7,19 @@ import inspect
 
 
 def get_logger():
+    """
+    Returns a Logger object for logging events.
+
+    Example usage::
+
+        import mmSolver.logger
+        LOG = mmSolver.logger.get_logger()
+        LOG.info('hello world')
+        LOG.warning('be careful everyone')
+        LOG.error('some thing bad has happened')
+
+    :return: a Logger object.
+    """
     # The calling module name, in module hierarchy.
     # Source: https://gist.github.com/techtonik/2151727
     stack = inspect.stack()
@@ -17,6 +30,5 @@ def get_logger():
     module = inspect.getmodule(parentframe)
     module_name = module.__name__
 
-    # Logging module.
     return logging.getLogger(module_name)
 

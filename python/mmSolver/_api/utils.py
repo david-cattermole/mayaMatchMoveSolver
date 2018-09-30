@@ -6,19 +6,7 @@ from functools import wraps
 
 import maya.cmds
 import maya.OpenMaya as OpenMaya
-
-
-# list of characters that are not supported in maya for node names.
-# Note, only ':' and '_' are not in the list.
-BAD_MAYA_CHARS = [
-    ' ', '#', '-', '@', '!', '$', '%', '^', '&', '*',
-    '+', '=', '/', '\\', '~', '`', '.', ',', '?', ';', '|'
-    '(', ')', '[', ']', '{', '}', '<', '>'
-    '\'', '\"'
-]
-
-MARKER_NAME_SUFFIX = '_MKR'
-BUNDLE_NAME_SUFFIX = '_BND'
+import mmSolver._api.constant as const
 
 
 def get_long_name(node):
@@ -170,7 +158,7 @@ def convert_valid_maya_name(name):
     # TODO: Use Maya API namespace validator?
     # TODO: name could start with a number; this should be prefixed.
     assert isinstance(name, basestring)
-    for char in BAD_MAYA_CHARS:
+    for char in const.BAD_MAYA_CHARS:
         name.replace(char, '_')
     return name
 
@@ -184,8 +172,8 @@ def get_marker_name(name):
     """
     assert isinstance(name, basestring)
     name = convert_valid_maya_name(name)
-    if MARKER_NAME_SUFFIX.lower() not in name.lower():
-        name += MARKER_NAME_SUFFIX
+    if const.MARKER_NAME_SUFFIX.lower() not in name.lower():
+        name += const.MARKER_NAME_SUFFIX
     return name
 
 
@@ -198,8 +186,8 @@ def get_bundle_name(name):
     """
     assert isinstance(name, basestring)
     name = convert_valid_maya_name(name)
-    if BUNDLE_NAME_SUFFIX.lower() not in name.lower():
-        name += BUNDLE_NAME_SUFFIX
+    if const.BUNDLE_NAME_SUFFIX.lower() not in name.lower():
+        name += const.BUNDLE_NAME_SUFFIX
     return name
 
 

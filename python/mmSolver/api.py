@@ -15,18 +15,11 @@ from mmSolver._api.marker import Marker
 from mmSolver._api.markergroup import MarkerGroup
 from mmSolver._api.attribute import (
     Attribute,
-    ATTR_STATE_INVALID,
-    ATTR_STATE_STATIC,
-    ATTR_STATE_ANIMATED,
-    ATTR_STATE_LOCKED
 )
 from mmSolver._api.collection import Collection
 from mmSolver._api.frame import Frame
 from mmSolver._api.solver import (
     Solver,
-    SOLVER_TYPE_LEVMAR,
-    SOLVER_TYPE_SPLM,
-    SOLVER_TYPE_CERES
 )
 from mmSolver._api.solveresult import SolveResult
 from mmSolver._api.excep import (
@@ -35,6 +28,16 @@ from mmSolver._api.excep import (
     AlreadyLinked,
     AlreadyUnlinked,
     NotEnoughMarkers,
+)
+from mmSolver._api.constant import (
+    ATTR_STATE_INVALID,
+    ATTR_STATE_STATIC,
+    ATTR_STATE_ANIMATED,
+    ATTR_STATE_LOCKED,
+
+    SOLVER_TYPE_LEVMAR,
+    # SOLVER_TYPE_SPLM,
+    # SOLVER_TYPE_CERES,
 )
 
 from mmSolver._api.nodeaffects import (
@@ -65,22 +68,28 @@ __all__ = [
     'MarkerGroup',
 
     'Attribute',
-    'ATTR_STATE_INVALID',
-    'ATTR_STATE_STATIC',
-    'ATTR_STATE_ANIMATED',
-    'ATTR_STATE_LOCKED',
 
     'Collection',
     'Frame',
 
     'Solver',
-    'SOLVER_TYPE_LEVMAR',
-    'SOLVER_TYPE_SPLM',
-    'SOLVER_TYPE_CERES',
-
     'SolveResult',
 
-    # functions
+    # Constants
+    'ATTR_STATE_INVALID',
+    'ATTR_STATE_STATIC',
+    'ATTR_STATE_ANIMATED',
+    'ATTR_STATE_LOCKED',
+    'SOLVER_TYPE_LEVMAR',
+
+    # Exceptions
+    'MMException',
+    'NotValid',
+    'AlreadyLinked',
+    'AlreadyUnlinked',
+    'NotEnoughMarkers',
+
+    # Functions
     'get_long_name',
     'get_object_type',
     'undo_chunk',

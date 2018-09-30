@@ -9,7 +9,6 @@ import json
 import pprint
 
 import maya.cmds
-import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 import mmSolver._api.utils as api_utils

@@ -1,5 +1,9 @@
+"""
+Defines a MarkerGroup node.
+"""
+
 import maya.cmds
-from maya import OpenMaya as OpenMaya
+import maya.OpenMaya as OpenMaya
 
 import mmSolver._api.camera as camera
 import mmSolver._api.utils as api_utils

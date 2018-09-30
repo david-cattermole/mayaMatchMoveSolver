@@ -1,5 +1,9 @@
+"""
+3D Bundle objects.
+"""
+
 import maya.cmds
-from maya import OpenMaya as OpenMaya
+import maya.OpenMaya as OpenMaya
 
 import mmSolver._api.utils as api_utils
 import mmSolver._api.marker
@@ -107,11 +111,3 @@ class Bundle(object):
             mkr = mmSolver._api.marker.Marker(name=conn)
             mkr_list.append(mkr)
         return mkr_list
-
-
-
-
-
-
-
-

@@ -6,12 +6,7 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaAnim as OpenMayaAnim
 import mmSolver._api.utils as api_utils
-
-
-ATTR_STATE_INVALID = 0
-ATTR_STATE_STATIC = 1
-ATTR_STATE_ANIMATED = 2
-ATTR_STATE_LOCKED = 3
+import mmSolver._api.constant as const
 
 
 class Attribute(object):
@@ -85,13 +80,13 @@ class Attribute(object):
         return name
 
     def get_state(self):
-        state = ATTR_STATE_INVALID
+        state = const.ATTR_STATE_INVALID
 
         check_parents = True
         check_children = True
         free = self._plug.isFreeToChange(check_parents, check_children)
         if free != OpenMaya.MPlug.kFreeToChange:
-            state = ATTR_STATE_LOCKED
+            state = const.ATTR_STATE_LOCKED
             return state
 
         check_parents = False
@@ -102,21 +97,21 @@ class Attribute(object):
         for i in xrange(animPlugs.length()):
             plug = animPlugs[i]
             if self._plug.name() == plug.name():
-                state = ATTR_STATE_ANIMATED
+                state = const.ATTR_STATE_ANIMATED
 
-        if state == ATTR_STATE_INVALID:
-            state = ATTR_STATE_STATIC
+        if state == const.ATTR_STATE_INVALID:
+            state = const.ATTR_STATE_STATIC
 
         return state
 
     def is_static(self):
-        return self.get_state() == ATTR_STATE_STATIC
+        return self.get_state() == const.ATTR_STATE_STATIC
 
     def is_animated(self):
-        return self.get_state() == ATTR_STATE_ANIMATED
+        return self.get_state() == const.ATTR_STATE_ANIMATED
 
     def is_locked(self):
-        return self.get_state() == ATTR_STATE_LOCKED
+        return self.get_state() == const.ATTR_STATE_LOCKED
 
     def get_min_value(self):
         return self._min_value

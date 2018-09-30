@@ -7,11 +7,6 @@ import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
 
 
-SOLVER_TYPE_LEVMAR = 0
-SOLVER_TYPE_SPLM = 1
-SOLVER_TYPE_CERES = 2
-
-
 class Solver(object):
     """
     Solver; the options for how a solver should be executed.

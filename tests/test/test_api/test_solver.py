@@ -10,6 +10,7 @@ import maya.cmds
 
 import test.test_api.apiutils as test_api_utils
 import mmSolver._api.solver as solver
+import mmSolver._api.constant as const
 
 
 # @unittest.skip
@@ -24,7 +25,7 @@ class TestSolver(test_api_utils.APITestCase):
         self.assertEqual(x.get_name(), name)
 
         x = solver.Solver()
-        x.set_solver_type(solver.SOLVER_TYPE_LEVMAR)
+        x.set_solver_type(const.SOLVER_TYPE_LEVMAR)
         x_data = x.get_data()
         y = solver.Solver(data=x_data)
         y_data = y.get_data()

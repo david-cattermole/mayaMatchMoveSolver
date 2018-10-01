@@ -72,7 +72,9 @@ struct LevMarSolverData {
     std::vector<std::pair<int, int> > paramToAttrList;
     std::vector<std::pair<int, int> > errorToMarkerList;
     std::vector<MPoint> markerPosList;
+ #if USE_EXPERIMENTAL_SOLVER == 1
     BoolList2D errorToParamMapping;
+ #endif
 
     // Internal Solver Data.
     std::vector<double> errorList;

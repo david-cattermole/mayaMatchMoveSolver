@@ -12,6 +12,7 @@ import test.test_api.apiutils as test_api_utils
 import mmSolver._api.utils as api_utils
 import mmSolver._api.attribute as attribute
 import mmSolver._api.marker as marker
+import mmSolver._api.constant as const
 
 
 # @unittest.skip
@@ -56,10 +57,10 @@ class TestAttribute(test_api_utils.APITestCase):
         rz_state = rz.get_state()
 
         # test returned states.
-        self.assertEqual(tx_state, attribute.ATTR_STATE_LOCKED)
-        self.assertEqual(rx_state, attribute.ATTR_STATE_STATIC)
-        self.assertEqual(ry_state, attribute.ATTR_STATE_ANIMATED)
-        self.assertEqual(rz_state, attribute.ATTR_STATE_LOCKED)
+        self.assertEqual(tx_state, const.ATTR_STATE_LOCKED)
+        self.assertEqual(rx_state, const.ATTR_STATE_STATIC)
+        self.assertEqual(ry_state, const.ATTR_STATE_ANIMATED)
+        self.assertEqual(rz_state, const.ATTR_STATE_LOCKED)
 
         # test 'is_*' functions.
         self.assertEqual(tx.is_locked(), True)

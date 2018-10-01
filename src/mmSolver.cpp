@@ -486,9 +486,9 @@ bool solve(int iterMax,
     assert(m >= attrList.size());
 
     // Which markers affect which attributes?
+#if USE_EXPERIMENTAL_SOLVER == 1
     BoolList2D markerToAttrMapping;
     BoolList2D errorToParamMapping;
-#if USE_EXPERIMENTAL_SOLVER == 1
     findErrorToParameterRelationship(
             markerList,
             attrList,
@@ -579,7 +579,9 @@ bool solve(int iterMax,
     userData.paramToAttrList = paramToAttrList;
     userData.errorToMarkerList = errorToMarkerList;
     userData.markerPosList = markerPosList;
+ #if USE_EXPERIMENTAL_SOLVER == 1
     userData.errorToParamMapping = errorToParamMapping;
+ #endif
 
     // Solver Aux data
     userData.errorList = errorList;

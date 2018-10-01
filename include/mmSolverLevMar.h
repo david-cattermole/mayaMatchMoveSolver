@@ -78,6 +78,7 @@ struct LevMarSolverData {
 
     // Internal Solver Data.
     std::vector<double> errorList;
+    std::vector<double> errorDistanceList;
     int iterNum;
     int jacIterNum;
     int iterMax;

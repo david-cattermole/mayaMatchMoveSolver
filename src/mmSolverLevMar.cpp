@@ -171,7 +171,8 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
             // be best to test this detail.
             double dx = fabs(mkr_mpos.x - bnd_mpos.x) * ((right - left) * ud->imageWidth);
             double dy = fabs(mkr_mpos.y - bnd_mpos.y) * ((right - left) * ud->imageWidth);
-            double d = fabs(dx) + fabs(dy);
+            // double d = fabs(dx) + fabs(dy);
+            double d = distance_2d(mkr_mpos, bnd_mpos) * ((right - left) * ud->imageWidth);
 
             x[(i * ERRORS_PER_MARKER) + 0] = dx;  // X error
             x[(i * ERRORS_PER_MARKER) + 1] = dy;  // Y error
@@ -185,6 +186,7 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
             ud->errorList[(i * ERRORS_PER_MARKER) + 2] = d;
 #endif
 
+            ud->errorDistanceList[i] = d;
             error_avg += d;
             if (d > error_max) { error_max = d; }
             if (d < error_min) { error_min = d; }

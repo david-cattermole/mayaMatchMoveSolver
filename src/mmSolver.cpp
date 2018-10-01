@@ -509,6 +509,11 @@ bool solve(int iterMax,
     paramList.resize((unsigned long) m, 0);
     errorList.resize((unsigned long) n, 0);
 
+    // Error distance measurement - fur end users to read.
+    std::vector<double> errorDistanceList;
+    errorDistanceList.resize((unsigned long) n / ERRORS_PER_MARKER, 0);
+    assert(errorToMarkerList.size() == errorDistanceList.size());
+
     // Debug timers
     debug::TimestampBenchmark errorBenchTimer = debug::TimestampBenchmark();
     debug::TimestampBenchmark paramBenchTimer = debug::TimestampBenchmark();
@@ -585,6 +590,7 @@ bool solve(int iterMax,
 
     // Solver Aux data
     userData.errorList = errorList;
+    userData.errorDistanceList = errorDistanceList;
     userData.iterNum = 0;
     userData.jacIterNum = 0;
     userData.iterMax = iterMax;
@@ -912,7 +918,7 @@ bool solve(int iterMax,
     double err = 0.0;
     for (i = 0; i < n; ++i) {
         err = userData.errorList[i];
-        errorAvg += userData.errorList[i];
+        errorAvg += userData.errorDistanceList[i / ERRORS_PER_MARKER];
         if (err < errorMin) { errorMin = err; }
         if (err > errorMax) { errorMax = err; }
     }
@@ -1042,8 +1048,27 @@ bool solve(int iterMax,
     resultStr = "ticks_error=" + string::numberToString<debug::Ticks>(paramBenchTicks.get_ticks());
     outResult.append(MString(resultStr.c_str()));
 
-    // TODO: Compute the errors of all markers so we can add it to a vector
-    // and return it to the user. This vector should be resized so we can
-    // return frame-based information. The UI could then graph this information.
+//    // TODO: Compute the errors of all markers so we can add it to a vector
+//    // and return it to the user. This vector should be resized so we can
+//    // return frame-based information. The UI could then graph this information.
+//    for (i = 0; i < (n / ERRORS_PER_MARKER); ++i) {
+//        VRB("i: " << i);
+//
+//        IndexPair markerPair = userData.errorToMarkerList[i];
+//        VRB("markerPair: " << markerPair.first << " | " << markerPair.second);
+//        MarkerPtr marker = userData.markerList[markerPair.first];
+//        MTime frame = userData.frameList[markerPair.second];
+//        double d = userData.errorDistanceList[i];
+//        VRB("d: " << d);
+//
+//        resultStr = "error_per_marker_frame=";
+//        resultStr += marker->getNodeName().asChar();
+//        resultStr += "<:>";
+//        resultStr += frame.asUnits(MTime::uiUnit());
+//        resultStr += "<:>";
+//        resultStr += string::numberToString<double>(d);
+//
+//        outResult.append(MString(resultStr.c_str()));
+//    }
     return ret != -1;
 }

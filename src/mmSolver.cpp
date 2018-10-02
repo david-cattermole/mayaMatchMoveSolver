@@ -980,24 +980,6 @@ bool solve(int iterMax,
     resultStr = "reason_num=" + string::numberToString<int>(reasonNum);
     outResult.append(MString(resultStr.c_str()));
 
-    resultStr = "solver_parameter_list=";
-    for (i = 0; i < m; ++i) {
-        resultStr += string::numberToString<double>(paramList[i]);
-        resultStr += " ";
-    }
-    outResult.append(MString(resultStr.c_str()));
-
-    // TODO: Create a list of frames and produce an error
-    // per-frame. This information will eventually be given
-    // to the user to diagnose problems.
-    resultStr = "error_final_list=";
-    for (i = 0; i < n; ++i) {
-        err = userData.errorList[i];
-        resultStr += string::numberToString<double>(err);
-        resultStr += " ";
-    }
-    outResult.append(MString(resultStr.c_str()));
-
     resultStr = "error_initial=" + string::numberToString<double>(info[0]);
     outResult.append(MString(resultStr.c_str()));
 
@@ -1064,11 +1046,25 @@ bool solve(int iterMax,
     resultStr = "ticks_error=" + string::numberToString<debug::Ticks>(paramBenchTicks.get_ticks());
     outResult.append(MString(resultStr.c_str()));
 
+    resultStr = "solve_parameter_list=";
+    for (i = 0; i < m; ++i) {
+        resultStr += string::numberToString<double>(paramList[i]);
+        resultStr += CMD_RESULT_SPLIT_CHAR;
+    }
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "solve_error_list=";
+    for (i = 0; i < n; ++i) {
+        err = userData.errorList[i];
+        resultStr += string::numberToString<double>(err);
+        resultStr += CMD_RESULT_SPLIT_CHAR;
+    }
+    outResult.append(MString(resultStr.c_str()));
+
     // Marker-Frame-Error relationship
     typedef std::pair<int, double> ErrorPair;
     typedef std::map<int, ErrorPair> TimeErrorMapping;
     typedef TimeErrorMapping::iterator TimeErrorMappingIt;
-    typedef TimeErrorMapping::const_iterator TimeErrorMappingCIt;
     TimeErrorMapping frameErrorMapping;
     TimeErrorMappingIt ait; // = frameErrorMapping.end();
     for (i = 0; i < (n / ERRORS_PER_MARKER); ++i) {
@@ -1091,11 +1087,11 @@ bool solve(int iterMax,
         }
         frameErrorMapping.insert(std::pair<int, ErrorPair>(markerPair.second, pair));
 
-        resultStr = "error_per_marker_frame=";
+        resultStr = "error_per_marker_per_frame=";
         resultStr += markerName;
-        resultStr += "<:>";
+        resultStr += CMD_RESULT_SPLIT_CHAR;
         resultStr += string::numberToString<double>(frame.asUnits(MTime::uiUnit()));
-        resultStr += "<:>";
+        resultStr += CMD_RESULT_SPLIT_CHAR;
         resultStr += string::numberToString<double>(d);
         outResult.append(MString(resultStr.c_str()));
     }
@@ -1104,14 +1100,19 @@ bool solve(int iterMax,
         int frameIndex = mit->first;
         MTime frame = userData.frameList[frameIndex];
         ait = frameErrorMapping.find(frameIndex);
-        ErrorPair pair = ait->second;
-
-        double num = pair.first;
-        double d = pair.second;
+        double num = 0;
+        double d = 0;
+        if (ait != frameErrorMapping.end()) {
+            ErrorPair pair = ait->second;
+            num = pair.first;
+            d = pair.second;
+        } else {
+            continue;
+        }
 
         resultStr = "error_per_frame=";
         resultStr += string::numberToString<double>(frame.asUnits(MTime::uiUnit()));
-        resultStr += "<:>";
+        resultStr += CMD_RESULT_SPLIT_CHAR;
         resultStr += string::numberToString<double>(d / num);
         outResult.append(MString(resultStr.c_str()));
     }

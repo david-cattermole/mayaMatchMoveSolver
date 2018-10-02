@@ -576,7 +576,6 @@ class Collection(object):
         :return: List of SolveResults
         :rtype: list of solveresult.SolverResult
         """
-
         # Check for validity
         solres_list = []
         if self.is_valid() is False:

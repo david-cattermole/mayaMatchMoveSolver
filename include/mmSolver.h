@@ -47,10 +47,13 @@
 // Use manually created jacobian function.
 #define USE_ANALYTIC_JACOBIAN 0
 
+#define CMD_RESULT_SPLIT_CHAR "#"
+
 
 typedef std::vector<std::vector<bool> > BoolList2D;
 typedef std::pair<int, int> IndexPair;
 typedef std::vector<std::pair<int, int> > IndexPairList;
+
 
 inline
 double distance_2d(MPoint a, MPoint b) {

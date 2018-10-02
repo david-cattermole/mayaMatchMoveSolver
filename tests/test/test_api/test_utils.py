@@ -2,8 +2,6 @@
 Test functions for API utils module.
 """
 
-import sys
-import os
 import unittest
 
 import maya.cmds
@@ -166,6 +164,7 @@ class TestUtils(test_api_utils.APITestCase):
         node = api_utils.get_long_name(node)
         above_mkr_grp = api_utils.get_marker_group_above_node(node)
         self.assertEqual(above_mkr_grp, mkr_grp)
+
 
 if __name__ == '__main__':
     prog = unittest.main()

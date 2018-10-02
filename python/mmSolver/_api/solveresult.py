@@ -31,7 +31,12 @@ class SolveResult(object):
             value = splt[-1]
             if not key:
                 continue
-            self._data[key] = value
+            if key in ['error_per_marker_frame']:
+                if key not in self._data:
+                    self._data[key] = []
+                self._data[key].append(value)
+            else:
+                self._data[key] = value
 
         # Command Success or not? Did the solver fail?
         self._success = None
@@ -42,6 +47,11 @@ class SolveResult(object):
 
         # Errors
         # TODO: Create a list of errors, per-marker, per-frame, so we can
+        # allowing graph the errors and detecting problems.
+        self._per_marker_frame_error = None
+
+        # Errors
+        # TODO: Create a list of errors, per-frame, so we can
         # allowing graph the errors and detecting problems.
         self._per_frame_error = None
 
@@ -67,6 +77,9 @@ class SolveResult(object):
         self._timer_jacobian_sec = None
         self._timer_jacobian_tick = None
 
+        import pprint
+        print 'solver result data:', pprint.pformat(data)
+
     def get_collection_name(self):
         return self._data.get('collection_name')
 
@@ -91,8 +104,13 @@ class SolveResult(object):
     def get_final_min_error(self):
         return self._data.get('error_final_minimum')
 
-    # def get_per_frame_error(self):
-    #     pass
+    def get_per_marker_frame_error(self):
+        # TODO: Return per-frame information in a simple and useful way.
+        return self._data.get('error_per_marker_frame')
+
+    def get_per_frame_error(self):
+        # TODO: Return per-frame information in a simple and useful way.
+        return self._data.get('error_per_frame')
 
     def get_reason_for_stopping(self):
         return self._data.get('reason_string')

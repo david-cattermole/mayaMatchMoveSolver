@@ -67,7 +67,28 @@ class TestSolver2(solverUtils.SolverTestCase):
             (1),
         ]
 
-        # Run solver!
+        # Run solver, with more attributes than markers; We expect an error.
+        s = time.time()
+        result = maya.cmds.mmSolver(
+            camera=cameras,
+            marker=markers,
+            attr=node_attrs,
+            iterations=1000,
+            solverType=0,
+            frame=frames,
+            verbose=True,
+        )
+        e = time.time()
+        print 'total time:', e - s
+        self.assertEqual(result[0], 'success=0')
+
+        # Run solver! (with less attributes)
+        node_attrs = [
+            (group_tfm + '.tx', 'None', 'None'),
+            (group_tfm + '.ty', 'None', 'None'),
+            (group_tfm + '.sx', 'None', 'None'),
+            (group_tfm + '.rz', 'None', 'None'),
+        ]
         s = time.time()
         result = maya.cmds.mmSolver(
             camera=cameras,
@@ -83,12 +104,6 @@ class TestSolver2(solverUtils.SolverTestCase):
 
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
-        # assert approx_equal(maya.cmds.getAttr(group_tfm+'.tx'), 1.47797)
-        # assert approx_equal(maya.cmds.getAttr(group_tfm+'.ty'), 0.894038)
-        # assert approx_equal(maya.cmds.getAttr(group_tfm+'.tz'), -32.9307)
-        # assert approx_equal(maya.cmds.getAttr(group_tfm+'.sx'), 1.00556)
-        # assert approx_equal(maya.cmds.getAttr(group_tfm+'.ry'), math.degrees(3.18648))
-        # assert approx_equal(maya.cmds.getAttr(group_tfm+'.rz'), math.degrees(-0.374883))
 
         # save the output
         path = self.get_data_path('solver_test2_after.ma')

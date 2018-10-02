@@ -5,6 +5,7 @@ This test is the same as 'test.test_solver.test1' except this test uses the
 Python API. It's a basic example of how to use the API.
 """
 
+import pprint
 import math
 import unittest
 
@@ -205,6 +206,12 @@ class TestSolve(test_api_utils.APITestCase):
         for res in results:
             success = res.get_success()
             err = res.get_final_error()
+            print('error stats: ' + pprint.pformat(res.get_error_stats()))
+            print('timer stats: ' + pprint.pformat(res.get_timer_stats()))
+            print('solver stats: ' + pprint.pformat(res.get_solver_stats()))
+            print('frame error list: ' + pprint.pformat(dict(res.get_frame_error_list())))
+            print('marker error list: ' + pprint.pformat(dict(res.get_marker_error_list())))
+
             # self.assertTrue(success)
             # self.assertGreater(0.001, err)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)

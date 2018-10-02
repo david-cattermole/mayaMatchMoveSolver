@@ -64,11 +64,11 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
 
             bool enable = false;
             status = marker->getEnable(enable, frame);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            CHECK_MSTATUS_AND_RETURN(status, numErrors);
 
             double weight = 0.0;
             status = marker->getWeight(weight, frame);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            CHECK_MSTATUS_AND_RETURN(status, numErrors);
 
             if ((enable == true) && (weight > 0.0)) {
                 // First index is into 'markerList'
@@ -425,6 +425,7 @@ bool solve(int iterMax,
     int i = 0;
     int j = 0;
     MStatus status;
+    std::string resultStr;
     int ret = true;
     int profileCategory = MProfiler::getCategoryIndex("mmSolver");
     MProfilingScope profilingScope(profileCategory, MProfiler::kColorC_L3, "solve");
@@ -505,7 +506,15 @@ bool solve(int iterMax,
 
     VRB("Number of Parameters; m=" << m);
     VRB("Number of Errors; n=" << n);
-    assert(m <= n);
+    if (m > n) {
+        ERR("Solver failure; cannot solve for more attributes (\"parameters\") "
+            << "than number of markers (\"errors\"). "
+            << "parameters=" << m
+            << "errors =" << n);
+        resultStr = "success=0";
+        outResult.append(MString(resultStr.c_str()));
+        return false;
+    }
     paramList.resize((unsigned long) m, 0);
     errorList.resize((unsigned long) n, 0);
 
@@ -528,7 +537,7 @@ bool solve(int iterMax,
     debug::CPUBenchmark jacBenchTicks = debug::CPUBenchmark();
 
     // Set Initial parameters
-    VRB("Set Initial parameters");
+    VRB("Set Initial parameters...");
     MTime currentFrame = MAnimControl::currentTime();
     i = 0;
     for (i = 0; i < m; ++i) {
@@ -543,16 +552,21 @@ bool solve(int iterMax,
 
         double value;
         status = attr->getValue(value, frame);
-        CHECK_MSTATUS_AND_RETURN(status, false);
+        CHECK_MSTATUS(status);
+        if (status != MS::kSuccess) {
+            resultStr = "success=0";
+            outResult.append(MString(resultStr.c_str()));
+            return false;
+        }
 
         paramList[i] = value;
     }
 
-//     // Initial Parameters
-//     VRB("Initial Parameters: ");
-//     for (i = 0; i < m; ++i) {
-//         VRB("-> " << paramList[i]);
-//     }
+     // Initial Parameters
+     VRB("Initial Parameters: ");
+     for (i = 0; i < m; ++i) {
+         VRB("-> " << paramList[i]);
+     }
 
     VRB("Solving...");
     VRB("Solver Type=" << solverType);
@@ -654,6 +668,8 @@ bool solve(int iterMax,
         work = (double *) malloc((LM_BC_DIF_WORKSZ(m, n) + m * m) * sizeof(double));
         if (!work) {
             ERR("Memory allocation request failed.");
+            resultStr = "success=0";
+            outResult.append(MString(resultStr.c_str()));
             return false;
         }
         covar = work + LM_BC_DIF_WORKSZ(m, n);
@@ -869,6 +885,8 @@ bool solve(int iterMax,
         free(work);
     } else {
         ERR("Solver type is expected to be a levmar variant. solverType=" << solverType);
+        resultStr = "success=0";
+        outResult.append(MString(resultStr.c_str()));
         return false;
     }
 
@@ -893,8 +911,6 @@ bool solve(int iterMax,
         CHECK_MSTATUS(status);
     }
     dgmod.doIt();  // Commit changed data into Maya
-
-    std::string resultStr;
 
     VRB("Results:");
     VRB("Solver returned " << ret << " in " << (int) info[5]
@@ -964,24 +980,6 @@ bool solve(int iterMax,
     resultStr = "reason_num=" + string::numberToString<int>(reasonNum);
     outResult.append(MString(resultStr.c_str()));
 
-    resultStr = "solver_parameter_list=";
-    for (i = 0; i < m; ++i) {
-        resultStr += string::numberToString<double>(paramList[i]);
-        resultStr += " ";
-    }
-    outResult.append(MString(resultStr.c_str()));
-
-    // TODO: Create a list of frames and produce an error
-    // per-frame. This information will eventually be given
-    // to the user to diagnose problems.
-    resultStr = "error_final_list=";
-    for (i = 0; i < n; ++i) {
-        err = userData.errorList[i];
-        resultStr += string::numberToString<double>(err);
-        resultStr += " ";
-    }
-    outResult.append(MString(resultStr.c_str()));
-
     resultStr = "error_initial=" + string::numberToString<double>(info[0]);
     outResult.append(MString(resultStr.c_str()));
 
@@ -1048,27 +1046,75 @@ bool solve(int iterMax,
     resultStr = "ticks_error=" + string::numberToString<debug::Ticks>(paramBenchTicks.get_ticks());
     outResult.append(MString(resultStr.c_str()));
 
-//    // TODO: Compute the errors of all markers so we can add it to a vector
-//    // and return it to the user. This vector should be resized so we can
-//    // return frame-based information. The UI could then graph this information.
-//    for (i = 0; i < (n / ERRORS_PER_MARKER); ++i) {
-//        VRB("i: " << i);
-//
-//        IndexPair markerPair = userData.errorToMarkerList[i];
-//        VRB("markerPair: " << markerPair.first << " | " << markerPair.second);
-//        MarkerPtr marker = userData.markerList[markerPair.first];
-//        MTime frame = userData.frameList[markerPair.second];
-//        double d = userData.errorDistanceList[i];
-//        VRB("d: " << d);
-//
-//        resultStr = "error_per_marker_frame=";
-//        resultStr += marker->getNodeName().asChar();
-//        resultStr += "<:>";
-//        resultStr += frame.asUnits(MTime::uiUnit());
-//        resultStr += "<:>";
-//        resultStr += string::numberToString<double>(d);
-//
-//        outResult.append(MString(resultStr.c_str()));
-//    }
+    resultStr = "solve_parameter_list=";
+    for (i = 0; i < m; ++i) {
+        resultStr += string::numberToString<double>(paramList[i]);
+        resultStr += CMD_RESULT_SPLIT_CHAR;
+    }
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "solve_error_list=";
+    for (i = 0; i < n; ++i) {
+        err = userData.errorList[i];
+        resultStr += string::numberToString<double>(err);
+        resultStr += CMD_RESULT_SPLIT_CHAR;
+    }
+    outResult.append(MString(resultStr.c_str()));
+
+    // Marker-Frame-Error relationship
+    typedef std::pair<int, double> ErrorPair;
+    typedef std::map<int, ErrorPair> TimeErrorMapping;
+    typedef TimeErrorMapping::iterator TimeErrorMappingIt;
+    TimeErrorMapping frameErrorMapping;
+    TimeErrorMappingIt ait; // = frameErrorMapping.end();
+    for (i = 0; i < (n / ERRORS_PER_MARKER); ++i) {
+        IndexPair markerPair = userData.errorToMarkerList[i];
+        MarkerPtr marker = userData.markerList[markerPair.first];
+        MTime frame = userData.frameList[markerPair.second];
+        const char *markerName = marker->getNodeName().asChar();
+        double d = userData.errorDistanceList[i];
+
+        ait = frameErrorMapping.find(markerPair.second);
+        ErrorPair pair;
+        if (ait != frameErrorMapping.end()) {
+            pair = ait->second;
+            pair.first += 1;
+            pair.second += d;
+            frameErrorMapping.erase(ait);
+        } else {
+            pair.first = 1;
+            pair.second = d;
+        }
+        frameErrorMapping.insert(std::pair<int, ErrorPair>(markerPair.second, pair));
+
+        resultStr = "error_per_marker_per_frame=";
+        resultStr += markerName;
+        resultStr += CMD_RESULT_SPLIT_CHAR;
+        resultStr += string::numberToString<double>(frame.asUnits(MTime::uiUnit()));
+        resultStr += CMD_RESULT_SPLIT_CHAR;
+        resultStr += string::numberToString<double>(d);
+        outResult.append(MString(resultStr.c_str()));
+    }
+
+    for (TimeErrorMappingIt mit = frameErrorMapping.begin(); mit != frameErrorMapping.end(); ++mit) {
+        int frameIndex = mit->first;
+        MTime frame = userData.frameList[frameIndex];
+        ait = frameErrorMapping.find(frameIndex);
+        double num = 0;
+        double d = 0;
+        if (ait != frameErrorMapping.end()) {
+            ErrorPair pair = ait->second;
+            num = pair.first;
+            d = pair.second;
+        } else {
+            continue;
+        }
+
+        resultStr = "error_per_frame=";
+        resultStr += string::numberToString<double>(frame.asUnits(MTime::uiUnit()));
+        resultStr += CMD_RESULT_SPLIT_CHAR;
+        resultStr += string::numberToString<double>(d / num);
+        outResult.append(MString(resultStr.c_str()));
+    }
     return ret != -1;
 }

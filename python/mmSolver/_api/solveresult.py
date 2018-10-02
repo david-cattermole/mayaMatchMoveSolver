@@ -41,12 +41,6 @@ class SolveResult(object):
         data = parse_command_result(cmd_data)
         # print 'data:', pprint.pformat(dict(data))
 
-        # Command Success or not? Did the solver fail?
-        self._success = bool(data.get('success', None))
-
-        key_msg = 'Key cannot be found in solver return value:'
-        key_msg += ' key=%r'
-
         # Solver statistics
         name_keys = [
             ('success', 'success', bool),
@@ -59,9 +53,7 @@ class SolveResult(object):
         ]
         self._solver_stats = {}
         for name, key, typ in name_keys:
-            if key not in data.keys():
-                raise KeyError(key_msg % key)
-            value = data.get(key)
+            value = data[key]
             self._solver_stats[name] = typ(value[0])
 
         # Error statistics
@@ -77,9 +69,7 @@ class SolveResult(object):
         ]
         self._error_stats = {}
         for name, key, typ in name_keys:
-            if key not in data.keys():
-                raise KeyError(key_msg % key)
-            value = data.get(key)
+            value = data[key]
             self._error_stats[name] = typ(value[0])
 
         # Timer statistics
@@ -97,50 +87,47 @@ class SolveResult(object):
         ]
         self._timer_stats = {}
         for name, key, typ in name_keys:
-            if key not in data.keys():
-                raise KeyError(key_msg % key)
-            value = data.get(key)
+            value = data[key]
             self._timer_stats[name] = typ(value[0])
 
         # List of errors, per-marker, per-frame.
         # Allows graphing the errors and detecting problems.
         self._per_marker_per_frame_error = collections.defaultdict(dict)
         key = 'error_per_marker_per_frame'
-        if key not in data.keys():
-            raise KeyError(key_msg % key)
-        values = data.get(key)
+        values = data[key]
         for value in values:
             mkr = str(value[0])
             t = float(value[1])
             v = float(value[2])
             self._per_marker_per_frame_error[mkr][t] = v
 
-        # Errors per frame average
+        # Errors per frame
         # Allows graphing the errors and detecting problems.
         self._per_frame_error = {}
         key = 'error_per_frame'
-        if key not in data.keys():
-            raise KeyError(key_msg % key)
-        values = data.get(key)
+        values = data[key]
         for value in values:
             t = float(value[0])
             v = float(value[1])
             self._per_frame_error[t] = v
 
     def get_success(self):
-        return self._success
+        """
+        Command Success or not? Did the solver fail?
+        """
+        return self._solver_stats.get('success')
 
     def get_final_error(self):
         return self._error_stats.get('final')
 
     def get_error_stats(self):
-        return self._error_stats
+        return self._error_stats.copy()
 
     def get_timer_stats(self):
-        return self._timer_stats
+        return self._timer_stats.copy()
 
     def get_solver_stats(self):
-        return self._solver_stats
+        return self._solver_stats.copy()
 
     def get_frame_error_list(self):
         return self._per_frame_error.copy()

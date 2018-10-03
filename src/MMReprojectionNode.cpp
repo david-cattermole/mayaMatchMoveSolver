@@ -93,20 +93,33 @@ MString MMReprojectionNode::nodeName() {
 MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
     MStatus status = MS::kUnknownParameter;
 
-    if ((plug == a_outCoord) || (plug == a_outCoordX) || (plug == a_outCoordY) ||
-        (plug == a_outNormCoord) || (plug == a_outNormCoordX) || (plug == a_outNormCoordY) ||
-        (plug == a_outPixel) || (plug == a_outPixelX) || (plug == a_outPixelY) ||
-        (plug == a_outInsideFrustum) ||
-        (plug == a_outPoint) || (plug == a_outPointX) || (plug == a_outPointY) || (plug == a_outPointZ) ||
-        (plug == a_outWorldPoint) || (plug == a_outWorldPointX) || (plug == a_outWorldPointY) ||
-        (plug == a_outWorldPointZ) ||
-        (plug == a_outMatrix) || (plug == a_outWorldMatrix) ||
-        (plug == a_outCameraProjectionMatrix) || (plug == a_outInverseCameraProjectionMatrix) ||
-        (plug == a_outWorldCameraProjectionMatrix) || (plug == a_outWorldInverseCameraProjectionMatrix) ||
-        (plug == a_outPan) || (plug == a_outHorizontalPan) || (plug == a_outVerticalPan)) {
-
-
-
+    if ((plug == a_outCoord)
+        || (plug == a_outCoordX)
+        || (plug == a_outCoordY)
+        || (plug == a_outNormCoord)
+        || (plug == a_outNormCoordX)
+        || (plug == a_outNormCoordY)
+        || (plug == a_outPixel)
+        || (plug == a_outPixelX)
+        || (plug == a_outPixelY)
+        || (plug == a_outInsideFrustum)
+        || (plug == a_outPoint)
+        || (plug == a_outPointX)
+        || (plug == a_outPointY)
+        || (plug == a_outPointZ)
+        || (plug == a_outWorldPoint)
+        || (plug == a_outWorldPointX)
+        || (plug == a_outWorldPointY)
+        || (plug == a_outWorldPointZ)
+        || (plug == a_outMatrix)
+        || (plug == a_outWorldMatrix)
+        || (plug == a_outCameraProjectionMatrix)
+        || (plug == a_outInverseCameraProjectionMatrix)
+        || (plug == a_outWorldCameraProjectionMatrix)
+        || (plug == a_outWorldInverseCameraProjectionMatrix)
+        || (plug == a_outPan)
+        || (plug == a_outHorizontalPan)
+        || (plug == a_outVerticalPan)) {
         // Get Data Handles
         MDataHandle tfmMatrixHandle = data.inputValue(a_transformWorldMatrix, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -218,8 +231,7 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Camera World Projection Matrix
-        // TODO: The camera matrix is wrong. The coordinates are correct, as long as we leave the camera at identity.
-        MMatrix camWorldProjMatrix = camMatrix * camProjMatrix;
+        MMatrix camWorldProjMatrix = camMatrix.inverse() * camProjMatrix;
 
         // Convert to screen-space
         tfmMatrix = tfmMatrix * camWorldProjMatrix;

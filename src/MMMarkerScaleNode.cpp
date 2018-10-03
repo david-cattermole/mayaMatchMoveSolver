@@ -53,8 +53,14 @@ MString MMMarkerScaleNode::nodeName() {
 MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
     MStatus status = MS::kUnknownParameter;
 
-    if ((plug == a_outTranslate) || (plug == a_outTranslateX) || (plug == a_outTranslateY) || (plug == a_outTranslateZ) ||
-        (plug == a_outScale) || (plug == a_outScaleX) || (plug == a_outScaleY) || (plug == a_outScaleZ)) {
+    if ((plug == a_outTranslate)
+        || (plug == a_outTranslateX)
+        || (plug == a_outTranslateY)
+        || (plug == a_outTranslateZ)
+        || (plug == a_outScale)
+        || (plug == a_outScaleX)
+        || (plug == a_outScaleY)
+        || (plug == a_outScaleZ)) {
         // Get Data Handles
         MDataHandle focalLengthHandle = data.inputValue(a_focalLength);
         MDataHandle filmBackXHandle = data.inputValue(a_horizontalFilmAperture);

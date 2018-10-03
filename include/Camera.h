@@ -92,31 +92,39 @@ MStatus applyFilmFitLogic(
     /*
      * 'Film Fit', from the Maya command documentation...
      *
-     * This describes how the digital image (in pixels) relates to the film back. Since the film back is defined
-     * in terms of real numbers with some arbitrary film aspect, and the digital image is defined in integer pixels
-     * with an equally arbitrary (and different) resolution, relating the two can get complicated.
+     * This describes how the digital image (in pixels) relates to the
+     * film back. Since the film back is defined in terms of real
+     * numbers with some arbitrary film aspect, and the digital image
+     * is defined in integer pixels with an equally arbitrary (and
+     * different) resolution, relating the two can get complicated.
      * There are 4 choices:
      *
      * Horizontal
-     * In this case the digital image is made to fit the film back exactly in the horizontal direction. This then
-     * gives each pixel a horizontal size = (film back width) / (horizontal resolution). The pixel height
-     * is then = (pixel width) / (pixel aspect ratio). Now that the pixel has a size, resolution gives us a
-     * complete image. That image will match the film back exactly in width. It will almost never match in
-     * height, either being too tall or too short. By playing with the numbers you can get it pretty close
-     * though.
+     * In this case the digital image is made to fit the film back
+     * exactly in the horizontal direction. This then gives each pixel
+     * a horizontal size = (film back width) / (horizontal
+     * resolution). The pixel height is then = (pixel width) / (pixel
+     * aspect ratio). Now that the pixel has a size, resolution gives
+     * us a complete image. That image will match the film back
+     * exactly in width. It will almost never match in height, either
+     * being too tall or too short. By playing with the numbers you
+     * can get it pretty close though.
      *
-     * vertical
-     * This is the same idea as horizontal fit, only applied vertically. Thus the digital image will match the
-     * film back exactly in height, but miss in width.
+     * Vertical
+     * This is the same idea as horizontal fit, only applied
+     * vertically. Thus the digital image will match the film back
+     * exactly in height, but miss in width.
      *
-     * fill
-     * This is a convenience item. The system calculates both horizontal and vertical fits and then applies the
-     * one that makes the digital image larger than the film back.
+     * Fill
+     * This is a convenience item. The system calculates both
+     * horizontal and vertical fits and then applies the one that
+     * makes the digital image larger than the film back.
      *
-     * overscan
-     * Overscanning the film gate in the camera view allows us to choreograph action outside of the frustum from
-     * within the camera view without having to resort to a dolly or zoom. This feature is also essential for
-     * animating image planes.
+     * Overscan
+     * Overscanning the film gate in the camera view allows us to
+     * choreograph action outside of the frustum from within the
+     * camera view without having to resort to a dolly or zoom. This
+     * feature is also essential for animating image planes.
      *
      * Also look at scratchapixel:
      * https://www.scratchapixel.com/lessons/3d-basic-rendering/3d-viewing-pinhole-camera/implementing-virtual-pinhole-camera

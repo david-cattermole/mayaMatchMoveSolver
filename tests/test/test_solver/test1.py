@@ -2,7 +2,6 @@
 Solve a single non-animated bundle to the screen-space location of a bundle.
 """
 
-import os
 import time
 import unittest
 

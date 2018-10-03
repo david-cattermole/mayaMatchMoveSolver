@@ -2,8 +2,6 @@
 Test the mmMarkerScale node for correctness.
 """
 
-import os
-import time
 import unittest
 
 try:
@@ -15,6 +13,7 @@ import maya.cmds
 
 
 import test.test_solver.solverutils as solverUtils
+import mmSolver._api.utils as api_utils
 
 
 # @unittest.skip
@@ -30,36 +29,25 @@ class TestMarkerScaleNode(solverUtils.SolverTestCase):
         return cam_tfm, cam_shp
 
     def test_marker_scale_node(self):
-        # Reprojection node
         node = maya.cmds.createNode('mmMarkerScale')
+ 
+        maya.cmds.setAttr(node + '.focalLength', 35)
+        maya.cmds.setAttr(node + '.horizontalFilmAperture', 36.0 / 25.4)
+        maya.cmds.setAttr(node + '.verticalFilmAperture', 24.0 / 25.4)
+        maya.cmds.setAttr(node + '.horizontalFilmOffset', 0.0)
+        maya.cmds.setAttr(node + '.verticalFilmOffset', 0.0)
+        maya.cmds.setAttr(node + '.depth', 1.0)
 
-        cam_tfm = cam.get_transform_node()
-        cam_shp = cam.get_shape_node()
+        scale = maya.cmds.getAttr(node + '.outScale')
+        assert self.approx_equal(scale[0], 1.0285693714285713)
+        assert self.approx_equal(scale[1], 0.6857129142857141)
+        assert self.approx_equal(scale[2], 1.0)
 
-        mkr_grp = maya.cmds.createNode('mmMarkerGroupTransform',
-                                       name=name, parent=cam_tfm)
-        mkr_scl = maya.cmds.createNode('mmMarkerScale')
-        self.set_node(mkr_grp)
+        translate = maya.cmds.getAttr(node + '.outTranslate')
+        assert self.approx_equal(translate[0], 0.0)
+        assert self.approx_equal(translate[1], 0.0)
+        assert self.approx_equal(translate[2], 0.0)
 
-        # Add attr and connect depth
-        maya.cmds.addAttr(mkr_grp, longName='depth', at='double', minValue=0.0,
-                          defaultValue=1.0)
-        maya.cmds.setAttr(mkr_grp + '.depth', keyable=True)
-        maya.cmds.connectAttr(mkr_grp + '.depth', mkr_scl + '.depth')
-
-        # Connect camera attributes
-        maya.cmds.connectAttr(cam_shp + '.focalLength', mkr_scl + '.focalLength')
-        maya.cmds.connectAttr(cam_shp + '.cameraAperture', mkr_scl + '.cameraAperture')
-        maya.cmds.connectAttr(cam_shp + '.filmOffset', mkr_scl + '.filmOffset')
-
-        # Connect marker scale to marker group
-        maya.cmds.connectAttr(mkr_scl + '.outScale', mkr_grp + '.scale')
-        maya.cmds.connectAttr(mkr_scl + '.outTranslate', mkr_grp + '.translate')
-
-        # save the output
-        path = self.get_data_path('reprojection_node_test.ma')
-        maya.cmds.file(rename=path)
-        maya.cmds.file(save=True, type='mayaAscii', force=True)
         return
 
 

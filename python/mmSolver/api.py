@@ -1,7 +1,7 @@
 """
 Controls the user-facing API.
 
-..todo:: This API should only be importable in Maya. Importing this
+.. todo:: This API should only be importable in Maya. Importing this
     module in 3DEqualizer or any other software  should not error
     and should return only the functionallity that is supported
     in that software package.
@@ -13,14 +13,10 @@ from mmSolver._api.camera import Camera
 from mmSolver._api.bundle import Bundle
 from mmSolver._api.marker import Marker
 from mmSolver._api.markergroup import MarkerGroup
-from mmSolver._api.attribute import (
-    Attribute,
-)
+from mmSolver._api.attribute import Attribute
 from mmSolver._api.collection import Collection
 from mmSolver._api.frame import Frame
-from mmSolver._api.solver import (
-    Solver,
-)
+from mmSolver._api.solver import Solver
 from mmSolver._api.solveresult import SolveResult
 from mmSolver._api.excep import (
     MMException,

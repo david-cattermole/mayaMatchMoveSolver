@@ -41,6 +41,7 @@ Required:
 Optional:
 - [ATLAS 3.8.4](http://math-atlas.sourceforge.net/)
 - [Intel Math Kernel Library (MLK)](https://software.intel.com/en-us/mkl)
+- [Qt.py](https://github.com/mottosso/Qt.py)
 
 ## Building Overview
 

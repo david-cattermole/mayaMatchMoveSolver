@@ -1,5 +1,5 @@
 """
-Test multi-camera solving on a single frame, using Ceres solver.
+Test multi-camera solving on a single frame.
 """
 
 import os
@@ -84,7 +84,7 @@ class TestSolver8(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             frame=frames,
-            solverType=0,  # was using ceres solver.
+            solverType=0,
             iterations=1000,
             # delta=0.0001,
             verbose=True,

@@ -1,5 +1,7 @@
 """
 The information returned from a solve.
+
+TODO: Make a function to combine a list of SolveResults into a single SolveResult, with some values averaged or added (as required)
 """
 
 import collections
@@ -12,6 +14,15 @@ SPLIT_SEP_CHAR = '#'
 
 
 def parse_command_result(cmd_result):
+    """
+    Convert results from the mmSolver command into python data structure.
+
+    :param cmd_result: 'mmSolver' command result.
+    :type cmd_result: list of str
+
+    :return: dict with keys and values for each entry in the result.
+    :rtype: dict
+    """
     data = collections.defaultdict(list)
     for res in cmd_result:
         assert isinstance(res, (str, unicode))

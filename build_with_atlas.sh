@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-
-
-# Use a different CMake
-PATH=/opt/jetbrains/clion-2017.3/bin/cmake/bin:${PATH}
+# Build with ATLAS library.
 
 
 # Maya directories
@@ -22,10 +19,6 @@ CPU_NUM=`nproc --all`
 rm -R --force ${PROJECT_ROOT}/external/lib/lib*.so*
 rm -R --force ${PROJECT_ROOT}/external/lib/lib*.a*
 rm -R --force ${PROJECT_ROOT}/external/include/*.h*
-rm -R --force ${PROJECT_ROOT}/external/include/ceres
-rm -R --force ${PROJECT_ROOT}/external/include/Eigen
-rm -R --force ${PROJECT_ROOT}/external/include/gflags
-rm -R --force ${PROJECT_ROOT}/external/include/glog
 
 
 # Build the external dependencies
@@ -36,6 +29,7 @@ bash external/build_levmar_with_atlas.sh
 # Build plugin
 mkdir -p build
 cd build
+rm --force -R *
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DUSE_ATLAS=1 \
       -DUSE_MKL=0 \

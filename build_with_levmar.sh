@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Builds the Maya plug-in with levmar.
 
+
 # Maya directories
 MAYA_INCLUDE_PATH=/usr/autodesk/maya2017/include
 MAYA_LIB_PATH=/usr/autodesk/maya2017/lib
@@ -18,14 +19,11 @@ CPU_NUM=`nproc --all`
 rm -R --force ${PROJECT_ROOT}/external/lib/lib*.so*
 rm -R --force ${PROJECT_ROOT}/external/lib/lib*.a*
 rm -R --force ${PROJECT_ROOT}/external/include/*.h*
-rm -R --force ${PROJECT_ROOT}/external/include/ceres
-rm -R --force ${PROJECT_ROOT}/external/include/Eigen
-rm -R --force ${PROJECT_ROOT}/external/include/gflags
-rm -R --force ${PROJECT_ROOT}/external/include/glog
 
 
 # Build the external dependencies
 bash external/build_levmar_with_nodeps.sh
+
 
 
 # Build plugin

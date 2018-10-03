@@ -39,14 +39,15 @@ class TestMarkerScaleNode(solverUtils.SolverTestCase):
         maya.cmds.setAttr(node + '.depth', 1.0)
 
         scale = maya.cmds.getAttr(node + '.outScale')
-        assert self.approx_equal(scale[0], 1.0285693714285713)
-        assert self.approx_equal(scale[1], 0.6857129142857141)
-        assert self.approx_equal(scale[2], 1.0)
+        assert self.approx_equal(scale[0][0], 1.0285714285714285)
+        assert self.approx_equal(scale[0][1], 0.6857129142857141)
+        assert self.approx_equal(scale[0][2], 1.0)
 
         translate = maya.cmds.getAttr(node + '.outTranslate')
-        assert self.approx_equal(translate[0], 0.0)
-        assert self.approx_equal(translate[1], 0.0)
-        assert self.approx_equal(translate[2], 0.0)
+        print translate
+        assert self.approx_equal(translate[0][0], 0.0)
+        assert self.approx_equal(translate[0][1], 0.0)
+        assert self.approx_equal(translate[0][2], 0.0)
 
         return
 

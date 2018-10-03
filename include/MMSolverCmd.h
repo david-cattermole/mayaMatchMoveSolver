@@ -122,7 +122,7 @@ private:
     double m_epsilon2;  // Stopping threshold for ||Dp||_2
     double m_epsilon3;  // Stopping threshold for ||e||_2
     double m_delta;     // Step used in difference approximation to the Jacobian
-    int m_solverType;   // Solver type to use; 0=levmar, 1=splm (sparse levmar).
+    int m_solverType;   // Solver type to use; 0=levmar.
     bool m_verbose;
 
     // Objects

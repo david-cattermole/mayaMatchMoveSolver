@@ -41,11 +41,6 @@
 // iterations, and is significantly faster overall.
 #define ERRORS_PER_MARKER 2
 
-// Use experimental 'optimised' solver function.
-#define USE_EXPERIMENTAL_SOLVER 0
-
-// Use manually created jacobian function.
-#define USE_ANALYTIC_JACOBIAN 0
 
 #define CMD_RESULT_SPLIT_CHAR "#"
 

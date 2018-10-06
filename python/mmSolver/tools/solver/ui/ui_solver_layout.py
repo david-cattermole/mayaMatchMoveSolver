@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/media/share/Users/catte/dev/mayaMatchMoveSolver/python/mmSolver/tools/solver/ui/solver_window.ui'
+# Form implementation generated from reading ui file '/media/share/Users/catte/dev/mayaMatchMoveSolver/python/mmSolver/tools/solver/ui/solver_layout.ui'
 #
-# Created: Wed Oct  3 23:03:03 2018
+# Created: Sat Oct  6 01:06:35 2018
 #      by: pyside2-uic  running on PySide2 2.0.0~alpha0
 #
 # WARNING! All changes made in this file will be lost!
@@ -25,11 +25,19 @@ class Ui_Form(object):
         self.collection_label = QtWidgets.QLabel(Form)
         self.collection_label.setObjectName("collection_label")
         self.collection_layout.addWidget(self.collection_label)
-        self.collection_comboBox = QtWidgets.QComboBox(Form)
-        self.collection_comboBox.setObjectName("collection_comboBox")
-        self.collection_layout.addWidget(self.collection_comboBox)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.collectionName_comboBox = QtWidgets.QComboBox(Form)
+        self.collectionName_comboBox.setObjectName("collectionName_comboBox")
+        self.collection_layout.addWidget(self.collectionName_comboBox)
+        spacerItem1 = QtWidgets.QSpacerItem(120, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         self.collection_layout.addItem(spacerItem1)
+        self.collectionAdd_toolButton = QtWidgets.QToolButton(Form)
+        self.collectionAdd_toolButton.setObjectName("collectionAdd_toolButton")
+        self.collection_layout.addWidget(self.collectionAdd_toolButton)
+        self.collectionRemove_toolButton = QtWidgets.QToolButton(Form)
+        self.collectionRemove_toolButton.setObjectName("collectionRemove_toolButton")
+        self.collection_layout.addWidget(self.collectionRemove_toolButton)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.collection_layout.addItem(spacerItem2)
         self.verticalLayout_4.addLayout(self.collection_layout)
         self.objectAttribute_layout = QtWidgets.QHBoxLayout()
         self.objectAttribute_layout.setObjectName("objectAttribute_layout")
@@ -109,21 +117,21 @@ class Ui_Form(object):
         self.frames_layout = QtWidgets.QHBoxLayout()
         self.frames_layout.setSpacing(1)
         self.frames_layout.setObjectName("frames_layout")
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
-        self.frames_layout.addItem(spacerItem2)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        self.frames_layout.addItem(spacerItem3)
         self.frames_label = QtWidgets.QLabel(self.solver_frame)
         self.frames_label.setObjectName("frames_label")
         self.frames_layout.addWidget(self.frames_label)
         self.frames_lineEdit = QtWidgets.QLineEdit(self.solver_frame)
         self.frames_lineEdit.setObjectName("frames_lineEdit")
         self.frames_layout.addWidget(self.frames_lineEdit)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.frames_layout.addItem(spacerItem3)
+        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.frames_layout.addItem(spacerItem4)
         self.verticalLayout_7.addLayout(self.frames_layout)
         self.emptySpace_layout = QtWidgets.QHBoxLayout()
         self.emptySpace_layout.setObjectName("emptySpace_layout")
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.emptySpace_layout.addItem(spacerItem4)
+        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.emptySpace_layout.addItem(spacerItem5)
         self.verticalLayout_7.addLayout(self.emptySpace_layout)
         self.solver_layout.addWidget(self.solver_frame)
         self.verticalLayout_4.addLayout(self.solver_layout)
@@ -134,6 +142,8 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(QtWidgets.QApplication.translate("Form", "Form", None, -1))
         self.collection_label.setText(QtWidgets.QApplication.translate("Form", "Collection", None, -1))
+        self.collectionAdd_toolButton.setText(QtWidgets.QApplication.translate("Form", "+", None, -1))
+        self.collectionRemove_toolButton.setText(QtWidgets.QApplication.translate("Form", "-", None, -1))
         self.object_label.setText(QtWidgets.QApplication.translate("Form", "Objects", None, -1))
         self.objectAdd_toolButton.setText(QtWidgets.QApplication.translate("Form", "+", None, -1))
         self.objectRemove_toolButton.setText(QtWidgets.QApplication.translate("Form", "-", None, -1))

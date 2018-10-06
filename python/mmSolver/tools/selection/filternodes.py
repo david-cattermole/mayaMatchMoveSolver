@@ -8,7 +8,7 @@ import mmSolver.api as mmapi
 
 def get_nodes(nodes):
     """
-    Create Markers for all given MarkerData objects
+    Return nodes sorted into mmSolver-specific categories.
     """
     assert isinstance(nodes, (list, tuple))
     result = {

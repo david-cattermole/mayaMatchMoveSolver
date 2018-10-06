@@ -49,7 +49,37 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="collection_comboBox"/>
+      <widget class="QComboBox" name="collectionName_comboBox"/>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Preferred</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>120</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QToolButton" name="collectionAdd_toolButton">
+       <property name="text">
+        <string>+</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="collectionRemove_toolButton">
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_27">

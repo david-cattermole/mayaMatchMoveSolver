@@ -1,52 +1,116 @@
 # Solver Design
 
-Many users of MatchMove software find that by understanding how the underlying processes of the software work they are able to obtain better results by utilising the software as it's intended to work. 
- 
+Many users of MatchMove software find that by understanding how the underlying
+processes of the software work they are able to obtain better results by
+utilising the software as it's intended to work.
+
 This document tries to answer that question;
 > _How does the MM Solver work?_
 
 # How does the solver work?
 
-The solver inside MM Solver is an _optimisation_ solver. The solver attempts to optimise the _measured error_ with various _unknown parameter_ values. The solver's purpose is to find the parameter values which minimise the _measured error_.
+The solver inside MM Solver is an _optimisation_ solver. The solver attempts to
+optimise the _measured error_ with various _unknown parameter_ values. The
+solver's purpose is to find the parameter values which minimise the _measured
+error_.
 
-The process of applying an _optimisation_ solver to 3D perspective cameras, 2D points and 3D points is called Bundle Adjustment (BA). BA is traditionally the last step of MatchMove and Photogrammetry solvers where the paramters of 3D points (Bundles) and cameras are solved to produce a 3D Scene with the least possible error. 
+The process of applying an _optimisation_ solver to 3D perspective cameras, 2D
+points and 3D points is called Bundle Adjustment (BA). BA is traditionally the
+last step of MatchMove and Photogrammetry solvers where the parameter of 3D
+points (Bundles) and cameras are solved to produce a 3D Scene with the least
+possible error.
 
 ## Attributes 
 
-In the MM Solver, we refer to _unknown parameters_ as Attributes. Attributes are the the Maya attributes that are allowed to be modified inside the solver. Maya attributes that are not added into the solver will still be used, but cannot be modified.
+In the MM Solver, we refer to _unknown parameters_ as Attributes. Attributes
+are the the Maya attributes that are allowed to be modified inside the solver.
+Maya attributes that are not added into the solver will still be used, but
+cannot be modified.
 
-The Attributes modified in the MM Solver may be ***any*** attribute in Maya. Likewise the attributes may be in any space required, for example; object-space, world-space or normal/vertex space. The only requirement is that the Attribute modifies the _Bundle_ position (see below for detail on _Bundles_). _Bundle_ positions may be modified indirectly using hierarchies or rigs of Maya transform nodes. The true power of the solver comes from the evaluation environment, Maya, and the node networks/hierarchies created by the MatchMove artist.  
+The Attributes modified in the MM Solver may be ***any*** attribute in Maya.
+Likewise the attributes may be in any space required, for example;
+object-space, world-space or normal/vertex space. The only requirement is that
+the Attribute modifies the _Bundle_ position (see below for detail on
+_Bundles_). _Bundle_ positions may be modified indirectly using hierarchies or
+rigs of Maya transform nodes. The true power of the solver comes from the
+evaluation environment, Maya, and the node networks/hierarchies created by the
+MatchMove artist.
 
-Like Maya attributes, MM Solver Attributes can also change over-time using an _animated_ curve, or just have a single _static_ value, or they can be be _locked_. _Locked_ attributes cannot be modified by Maya and therefore cannot be modified in the solver either. Due to underlying solving algorithm only floating-point attribute values can be solved. Commonly solved Attributes are 3D translate and rotate axes.
+Like Maya attributes, MM Solver Attributes can also change over-time using an
+_animated_ curve, or just have a single _static_ value, or they can be be
+_locked_. _Locked_ attributes cannot be modified by Maya and therefore cannot
+be modified in the solver either. Due to underlying solving algorithm only
+floating-point attribute values can be solved. Commonly solved Attributes are
+3D translate and rotate axes.
 
 ## Markers and Bundles
 
-_Markers_ and _Bundles_ are used to compute the _measured error_ inside the solver. The word _Marker_ is used to describe a 2D point on an image plane, and _Bundle_ to describe the 3D Point.
+_Markers_ and _Bundles_ are used to compute the _measured error_ inside the
+solver. The word _Marker_ is used to describe a 2D point on an image plane, and
+_Bundle_ to describe the 3D Point.
  
- _Markers_ have had different names in various MatchMove software applications; Track, feature, 2D point, etc. For the purposes of MM Solver name _Marker_ is used for the tracking markers placed on the set of a film production. _Bundles_ are named as such because they represent a bundle of light forming on the imaging sensor.
+ _Markers_ have had different names in various MatchMove software applications;
+ Track, feature, 2D point, etc. For the purposes of MM Solver name _Marker_ is
+ used for the tracking markers placed on the set of a film production.
+ _Bundles_ are named as such because they represent a bundle of light forming
+ on the imaging sensor.
 
-_Markers_ and _Bundles_ are linked together. The _Marker_ is the representation of the _Bundle_ from a camera's point of view. There may be multiple 2D _Marker_ representations of the same 3D _Bundle_. 
+_Markers_ and _Bundles_ are linked together. The _Marker_ is the representation
+of the _Bundle_ from a camera's point of view. There may be multiple 2D
+_Marker_ representations of the same 3D _Bundle_. 
 
-Having known 2D Markers of a 3D Bundle looking through a known perspective _Camera_ we can calculate a 3D _Bundle_ position by moving the _Bundle_ until the difference between all Markers and Bundles is zero when looking through each perspective _Camera_. Another way to say this is that the _measured error_ is the distance between the screen-space re-projected 3D Bundles with the linked 2D Markers.
+Having known 2D Markers of a 3D Bundle looking through a known perspective
+_Camera_ we can calculate a 3D _Bundle_ position by moving the _Bundle_ until
+the difference between all Markers and Bundles is zero when looking through
+each perspective _Camera_. Another way to say this is that the _measured error_
+is the distance between the screen-space re-projected 3D Bundles with the
+linked 2D Markers.
 
 ## Solving
 
-Once the solver has _Attributes_, _Cameras_ and _Markers_ and linked _Bundles_, the solver can start a solve.
+Once the solver has _Attributes_, _Cameras_ and _Markers_ and linked _Bundles_,
+the solver can start a solve.
 
-The solver may only start if some conditions are met, one important condition is the number of Attributes verses the number of Markers or specifically:
-> The number of _measured errors_ must be equal to or greater than the number of _Attribute_ values you're solving.
+The solver may only start if some conditions are met, one important condition
+is the number of Attributes verses the number of Markers or specifically:
+> The number of _measured errors_ must be equal to or greater than the number
+> of _Attribute_ values you're solving.
 
-All 3D MatchMove software has this limitation, MM Solver is no different. There is a minimum number of Markers required to solve for a 3D Camera that can move in 6 degrees of freedom (6 DOF: translate X, Y and Z, rotate X, Y and Z). For MM Solver this number is a ***minimum*** of 3 Markers. 3 Markers are required to solve for 6 attributes. Since each _Marker_ measures 2 errors, screen-space distance to _Bundle_ in X and Y, and you wish to solve for 2 attributes, tilt and pan of a _Camera_ transform; 3 x 2 = 6. To solve for the tilt and pan of a nodal _Camera_ you only need 1 _Marker_. 
+All 3D MatchMove software has this limitation, MM Solver is no different. There
+is a minimum number of Markers required to solve for a 3D Camera that can move
+in 6 degrees of freedom (6 DOF: translate X, Y and Z, rotate X, Y and Z). For
+MM Solver this number is a ***minimum*** of 3 Markers. 3 Markers are required
+to solve for 6 attributes. Since each _Marker_ measures 2 errors, screen-space
+distance to _Bundle_ in X and Y, and you wish to solve for 2 attributes, tilt
+and pan of a _Camera_ transform; 3 x 2 = 6. To solve for the tilt and pan of a
+nodal _Camera_ you only need 1 _Marker_. 
 
-When the user gives a _Marker_ as input for MM Solver, it is assumed to be correct. Some 3D MatchMove software applications use many 2D Markers and filter out the badly tracked points (the _outliers_), MM Solver does not work like this. Badly tracked _Markers_ will affect the solve badly.
+When the user gives a _Marker_ as input for MM Solver, it is assumed to be
+correct. Some 3D MatchMove software applications use many 2D Markers and filter
+out the badly tracked points (the _outliers_), MM Solver does not work like
+this. Badly tracked _Markers_ will affect the solve badly.
 
-This solver is an optimiser and it needs to be provided with an approximation of input attribute values, or in other words; we need to animate the camera(s), and place the bundles in the roughly correct positions. You don't need to do the job of the solver, which is to make the _Cameras_ and _Bundles_ match perfectly, but you are required to at least have _Bundles_ positioned inside the FOV of the camera, and an approximate animation of the camera if you're solving the camera parameters. 
+This solver is an optimiser and it needs to be provided with an approximation
+of input attribute values, or in other words; we need to animate the camera(s),
+and place the bundles in the roughly correct positions. You don't need to do
+the job of the solver, which is to make the _Cameras_ and _Bundles_ match
+perfectly, but you are required to at least have _Bundles_ positioned inside
+the FOV of the camera, and an approximate animation of the camera if you're
+solving the camera parameters. 
 
-The approximate _Camera_ and _Bundle_ positions is why the MM Solver is so different from traditional MatchMove solutions, especially Auto-Tracking 3D MatchMove software; there is no one-click solution.
+The approximate _Camera_ and _Bundle_ positions is why the MM Solver is so
+different from traditional MatchMove solutions, especially Auto-Tracking 3D
+MatchMove software; there is no one-click solution.
 
-But this can be a good thing! Remember the solver is an optimiser and it re-uses the input parameters and refines them rather than re-starting the solve from scratch. This type of solver enables customised, layered solving. For example, you may solve for a small number of individual Attributes with specific sets of _Markers_ and _Bundles_, or you could use it in a similar way to other 3D MatchMove software where all parameters are added into the solver.
+But this can be a good thing! Remember the solver is an optimiser and it
+re-uses the input parameters and refines them rather than re-starting the solve
+from scratch. This type of solver enables customised, layered solving. For
+example, you may solve for a small number of individual Attributes with
+specific sets of _Markers_ and _Bundles_, or you could use it in a similar way
+to other 3D MatchMove software where all parameters are added into the solver.
 
-Due to the inherent refinement nature of the solver, a general process for solving will be:
+Due to the inherent refinement nature of the solver, a general process for
+solving will be:
 1. Add Cameras, Bundles and Markers
 2. Track 2D _Markers_
 3. Place _Cameras_ and _Bundles_ into approximate positions
@@ -56,7 +120,8 @@ Due to the inherent refinement nature of the solver, a general process for solvi
 
 ### Solving Process
 
-Each time you execute a solve the solver goes though a number of steps to perform the optimisation and reduce the error.
+Each time you execute a solve the solver goes though a number of steps to
+perform the optimisation and reduce the error.
 
 This is an overview of the solver's process:
 1. Initialises input data
@@ -69,14 +134,17 @@ This is an overview of the solver's process:
       1. Based on the discovered value/error changes predict better Attribute values
       2. Set all Attribute values with the predicted Attribute values 
       3. Measure the re-projection error.
-      4. Check if the error is low enough, if so stop solving, otherwise repeat the iteration.
+      4. Check if the error is low enough, if so stop solving, otherwise repeat
+         the iteration.
 3. Get solver information
    1. Set attributes values as calculated 
    2. Measure Final Error
    3. Get number of iterations
 4. Return Solver information to the user
 
-The slowest step of the solving process is step 2 as it may be executed hundreds or thousands of times, depending on the number of _Attributes_ and _Markers_ that are in the solve.
+The slowest step of the solving process is step 2 as it may be executed
+hundreds or thousands of times, depending on the number of _Attributes_ and
+_Markers_ that are in the solve.
 
 ### Solving In Time
 

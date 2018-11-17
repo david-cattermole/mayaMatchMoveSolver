@@ -23,7 +23,7 @@ possible error.
 ## Attributes 
 
 In the MM Solver, we refer to _unknown parameters_ as Attributes. Attributes
-are the the Maya attributes that are allowed to be modified inside the solver.
+are the Maya attributes that are allowed to be modified inside the solver.
 Maya attributes that are not added into the solver will still be used, but
 cannot be modified.
 

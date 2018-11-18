@@ -22,7 +22,7 @@ import mmSolver.tools.solver.tool as tool
 import mmSolver.tools.solver.constant as const
 
 
-LOG = mmSolver.logger.get_logger(level='DEBUG')
+LOG = mmSolver.logger.get_logger()
 
 
 class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
@@ -77,19 +77,19 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         # TODO: Add support for table view of Solver steps.
         #  Each step contains a list of frames to compute, a strategy
         #  order to solve the frames in ('sequential', 'all'), and an
-        #  attribute filter to use ('anim' or 'static + anim').  
+        #  attribute filter to use ('anim' or 'static + anim').
         #
         # If 'anim' attribute filter is used then the strategy is
         #  unneeded and will solve each frame individually.
-        # 
+        #
         # A custom right-click menu should be added to the list of
         #  frames; 'add current frame', 'remove current frame', 'set
         #  playback frame range' and 'clear frames'.
-        # 
+        #
         # The ability to add new solver steps should be given with a +
         # and - button at top-right. There should also be buttons to
         # move the selected row up or down.
-        # 
+        #
 
         # Solver Nodes
         self.solver_model = solver_nodes.SolverModel(font=self.font)

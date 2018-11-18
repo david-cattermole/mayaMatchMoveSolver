@@ -8,7 +8,7 @@ import mmSolver.logger
 import mmSolver.tools.selection.filternodes as filternodes
 import mmSolver.tools.loadmarker.formatmanager as formatmanager
 
-LOG = mmSolver.logger.get_logger(level='DEBUG')
+LOG = mmSolver.logger.get_logger()
 
 
 def main(file_path, cam=None, **kwargs):

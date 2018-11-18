@@ -11,7 +11,7 @@ import mmSolver.ui.uiutils as uiutils
 import mmSolver.logger
 
 
-LOG = mmSolver.logger.get_logger(level='DEBUG')
+LOG = mmSolver.logger.get_logger()
 
 
 class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
@@ -309,7 +309,7 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
         node = self._node_list[row]
         if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
             column_index = index.column()
-            attr_name = _getNameFromDict(column_index, 
+            attr_name = _getNameFromDict(column_index,
                     self._column_names,
                     self._node_attr_key)
             value = getattr(node, attr_name, None)
@@ -335,16 +335,16 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
         if role == QtCore.Qt.FontRole:
             if self._font is not None:
                 return self._font
-                
+
     def setData(self, index, value, role=QtCore.Qt.EditRole):
         if index.isValid():
             row = index.row()
-            column = index.column()  
+            column = index.column()
             node = self._node_list[row]
             if node is None:
                 LOG.warning('node is invalid: %r %r %r', index, value, node)
             else:
-                attr_name = _getNameFromDict(column, 
+                attr_name = _getNameFromDict(column,
                     self._column_names,
                     self._node_set_attr_key)
                 if not node.editable():

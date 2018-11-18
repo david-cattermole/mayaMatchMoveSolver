@@ -18,7 +18,7 @@ import mmSolver.tools.solver.ui.solver_layout as solver_layout
 import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
 
 
-LOG = mmSolver.logger.get_logger(level='DEBUG')
+LOG = mmSolver.logger.get_logger()
 UI = None
 
 

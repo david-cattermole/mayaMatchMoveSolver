@@ -12,7 +12,7 @@ import mmSolver.tools.solver.constant as const
 import mmSolver.tools.solver.scene_data as scene_data
 
 
-LOG = mmSolver.logger.get_logger(level='DEBUG')
+LOG = mmSolver.logger.get_logger()
 
 
 def _get_channel_box_ui_name():
@@ -40,13 +40,13 @@ def get_current_frame():
 def get_timeline_range_inner():
     s = maya.cmds.playbackOptions(query=True, minTime=True)
     e = maya.cmds.playbackOptions(query=True, maxTime=True)
-    return int(s), int(e) 
+    return int(s), int(e)
 
 
 def get_timeline_range_outer():
     s = maya.cmds.playbackOptions(query=True, animationStartTime=True)
     e = maya.cmds.playbackOptions(query=True, animationEndTime=True)
-    return int(s), int(e) 
+    return int(s), int(e)
 
 
 def get_markers_from_selection():

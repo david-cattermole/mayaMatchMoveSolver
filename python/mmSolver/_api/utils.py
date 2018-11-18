@@ -66,9 +66,9 @@ def get_object_type(node):
 
     node_type = maya.cmds.nodeType(node)
     shape_nodes = maya.cmds.listRelatives(
-        node, 
-        children=True, 
-        shapes=True, 
+        node,
+        children=True,
+        shapes=True,
         fullPath=True) or []
     shape_node_types = []
     for shape_node in shape_nodes:

@@ -20,7 +20,7 @@ import mmSolver._api.attribute as attribute
 import mmSolver._api.sethelper as sethelper
 
 
-LOG = mmSolver.logger.get_logger('DEBUG')
+LOG = mmSolver.logger.get_logger()
 
 
 class Collection(object):

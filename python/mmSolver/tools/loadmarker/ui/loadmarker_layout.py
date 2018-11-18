@@ -20,7 +20,7 @@ import mmSolver.tools.loadmarker.formatmanager as formatmanager
 import mmSolver.tools.loadmarker.tool as tool
 
 
-LOG = mmSolver.logger.get_logger(level='DEBUG')
+LOG = mmSolver.logger.get_logger()
 
 
 class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):

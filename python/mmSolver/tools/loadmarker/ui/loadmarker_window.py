@@ -25,7 +25,7 @@ import mmSolver.tools.loadmarker.ui.loadmarker_layout as loadmarker_layout
 import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
 
 
-LOG = mmSolver.logger.get_logger(level='DEBUG')
+LOG = mmSolver.logger.get_logger()
 UI = None
 
 
@@ -90,8 +90,8 @@ class LoadMarkerWindow(BaseWindow):
             # the last used camera.
             selected_cameras = [cam]
             self.subForm.updateCameraList(
-                self.subForm.camera_comboBox, 
-                self.subForm.camera_model, 
+                self.subForm.camera_comboBox,
+                self.subForm.camera_model,
                 selected_cameras)
         return
 

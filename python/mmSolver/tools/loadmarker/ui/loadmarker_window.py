@@ -17,7 +17,10 @@ import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
+import mmSolver.api as mmapi
 import mmSolver.ui.uiutils as uiutils
+import mmSolver.tools.loadmarker.constant as const
+import mmSolver.tools.loadmarker.tool as tool
 import mmSolver.tools.loadmarker.ui.loadmarker_layout as loadmarker_layout
 import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
 
@@ -37,11 +40,6 @@ class LoadMarkerWindow(BaseWindow):
 
         self.setWindowTitle('Load Markers - mmSolver')
 
-        # # Menu Bar
-        # self.addMenuBarContents(self.menubar)
-        # self.menubar.show()
-        self.baseHideMenuBar()
-
         # Standard Buttons
         self.baseHideStandardButtons()
         self.applyBtn.show()
@@ -53,26 +51,8 @@ class LoadMarkerWindow(BaseWindow):
         self.helpBtn.clicked.connect(self.help)
 
         # Hide irrelevant stuff
+        self.baseHideMenuBar()
         self.baseHideProgressBar()
-
-    # def addMenuBarContents(self, menubar):
-    #     # Help Menu
-    #     help_menu = QtWidgets.QMenu('Help', menubar)
-    #
-    #     # Launch Help
-    #     launchHelpAction = QtWidgets.QAction('Help...', help_menu)
-    #     launchHelpAction.setStatusTip('Show help.')
-    #     launchHelpAction.triggered.connect(partial(self.launchHelpCB))
-    #
-    #     # Launch About
-    #     launchAboutAction = QtWidgets.QAction('About...', help_menu)
-    #     launchAboutAction.setStatusTip('About this software.')
-    #     launchAboutAction.triggered.connect(partial(self.launchAboutCB))
-    #
-    #     help_menu.addAction(launchHelpAction)
-    #     help_menu.addAction(launchAboutAction)
-    #     menubar.addMenu(help_menu)
-    #     return
 
     def createNewCollectionNodeCB(self):
         LOG.debug('createNewCollectionNodeCB')
@@ -81,15 +61,38 @@ class LoadMarkerWindow(BaseWindow):
         LOG.debug('closeWindowCB')
 
     def apply(self):
-        self.progressBar.show()
-        file_path = self.subForm.getFilePath()
-        LOG.debug('apply: %r', file_path)
-        for i in range(100):
-            self.progressBar.setValue(i)
-            time.sleep(0.01)
-        self.progressBar.hide()
-        # TODO: Load the markers.
-        mkr_list = mayareadfile.read(file_path)
+        LOG.debug('apply')
+        cam = None
+        try:
+            self.progressBar.setValue(0)
+            self.progressBar.show()
+
+            file_path = self.subForm.getFilePath()
+            camera_text = self.subForm.getCameraText()
+            camera_data = self.subForm.getCameraData()
+            self.progressBar.setValue(20)
+
+            mkr_data_list = mayareadfile.read(file_path)
+            self.progressBar.setValue(70)
+
+            if camera_text == const.NEW_CAMERA_VALUE:
+                cam = tool.create_new_camera()
+            else:
+                cam = camera_data
+            self.progressBar.setValue(90)
+
+            LOG.debug('camera data: %r', cam)
+            mayareadfile.create_nodes(mkr_data_list, cam=cam)
+        finally:
+            self.progressBar.setValue(100)
+            self.progressBar.hide()
+            # Update the camera comboBox with the created camera, or
+            # the last used camera.
+            selected_cameras = [cam]
+            self.subForm.updateCameraList(
+                self.subForm.camera_comboBox, 
+                self.subForm.camera_model, 
+                selected_cameras)
         return
 
     def help(self):
@@ -100,7 +103,7 @@ class LoadMarkerWindow(BaseWindow):
 def main(show=True, widthHeight=(800, 400)):
     global UI
 
-    name = 'SolverWindow'
+    name = 'LoadMarkerWindow'
     app, parent = uiutils.getParent()
 
     if UI is not None:

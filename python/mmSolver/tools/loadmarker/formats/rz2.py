@@ -11,7 +11,7 @@ import mmSolver.tools.loadmarker.formatmanager as fmtmgr
 
 class LoaderRZ2(interface.LoaderBase):
 
-    name = 'MatchMover TrackPoints (.rz2)'
+    name = 'MatchMover TrackPoints (*.rz2)'
     file_exts = ['.rz2']
     args = []
 

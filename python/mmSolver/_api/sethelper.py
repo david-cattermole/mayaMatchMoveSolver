@@ -8,14 +8,22 @@ maya.cmds.* so that they support undo/redo correctly.
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
+import mmSolver.logger
 import mmSolver._api.utils as api_utils
+
+
+LOG = mmSolver.logger.get_logger()
 
 
 class SetHelper(object):
     def __init__(self, name=None):
-        if isinstance(name, (str, unicode)):
-            obj = api_utils.get_as_object(name)
-            self._mfn = OpenMaya.MFnSet(obj)
+        if name is not None:
+            if isinstance(name, (str, unicode)):
+                obj = api_utils.get_as_object(name)
+                self._mfn = OpenMaya.MFnSet(obj)
+            else:
+                msg = 'name argument must be a string.'
+                raise TypeError(msg)
         else:
             self._mfn = OpenMaya.MFnSet()
         return
@@ -34,6 +42,13 @@ class SetHelper(object):
         if isinstance(node, (str, unicode)) and len(node) == 0:
             node = None
         return node
+
+    def get_node_uid(self):
+        node = self.get_node()
+        if node is None:
+            return None
+        uids = maya.cmds.ls(node, uuid=True) or []
+        return uids[0]
 
     def set_node(self, name):
         obj = api_utils.get_as_object(name)
@@ -112,8 +127,8 @@ class SetHelper(object):
         return
 
     def member_in_set(self, name):
-        # NOTE: For attributes, you must use a MPlug, as testing with an MObject
-        # only tests the dependency node
+        # NOTE: For attributes, you must use a MPlug, as testing with
+        # an MObject only tests the dependency node
         if '.' in name:
             plug = api_utils.get_as_plug(name)
             ret = self._mfn.isMember(plug)
@@ -127,4 +142,3 @@ class SetHelper(object):
 
     def is_empty(self):
         return len(self.get_all_members()) == 0
-

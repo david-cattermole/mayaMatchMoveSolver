@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/media/share/Users/catte/dev/mayaMatchMoveSolver/python/mmSolver/tools/loadmarker/ui/loadmarker_layout.ui'
 #
-# Created: Sat Oct  6 01:06:35 2018
+# Created: Tue Oct 30 23:15:11 2018
 #      by: pyside2-uic  running on PySide2 2.0.0~alpha0
 #
 # WARNING! All changes made in this file will be lost!
@@ -44,22 +44,38 @@ class Ui_Form(object):
         self.verticalLayout_2.setSpacing(6)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem4)
+        self.camera_label = QtWidgets.QLabel(Form)
+        self.camera_label.setObjectName("camera_label")
+        self.horizontalLayout_4.addWidget(self.camera_label)
+        self.camera_comboBox = QtWidgets.QComboBox(Form)
+        self.camera_comboBox.setObjectName("camera_comboBox")
+        self.horizontalLayout_4.addWidget(self.camera_comboBox)
+        self.cameraUpdate_pushButton = QtWidgets.QPushButton(Form)
+        self.cameraUpdate_pushButton.setObjectName("cameraUpdate_pushButton")
+        self.horizontalLayout_4.addWidget(self.cameraUpdate_pushButton)
+        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem5)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem4)
+        spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem6)
         self.label_3 = QtWidgets.QLabel(Form)
         self.label_3.setObjectName("label_3")
         self.horizontalLayout_3.addWidget(self.label_3)
         self.spinBox_2 = QtWidgets.QSpinBox(Form)
         self.spinBox_2.setObjectName("spinBox_2")
         self.horizontalLayout_3.addWidget(self.spinBox_2)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem5)
+        spacerItem7 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem7)
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)
         self.verticalLayout_4.addLayout(self.verticalLayout_2)
-        spacerItem6 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_4.addItem(spacerItem6)
+        spacerItem8 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_4.addItem(spacerItem8)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -68,5 +84,7 @@ class Ui_Form(object):
         Form.setWindowTitle(QtWidgets.QApplication.translate("Form", "Form", None, -1))
         self.filepath_label.setText(QtWidgets.QApplication.translate("Form", "File Path", None, -1))
         self.filepath_pushButton.setText(QtWidgets.QApplication.translate("Form", "Browse", None, -1))
-        self.label_3.setText(QtWidgets.QApplication.translate("Form", "Label", None, -1))
+        self.camera_label.setText(QtWidgets.QApplication.translate("Form", "Camera", None, -1))
+        self.cameraUpdate_pushButton.setText(QtWidgets.QApplication.translate("Form", "Update", None, -1))
+        self.label_3.setText(QtWidgets.QApplication.translate("Form", "Option", None, -1))
 

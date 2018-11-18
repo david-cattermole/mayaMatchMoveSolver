@@ -41,7 +41,8 @@ from mmSolver._api.utils import (
     undo_chunk,
     convert_valid_maya_name,
     get_marker_name,
-    get_bundle_name
+    get_bundle_name,
+    load_plugin,
 )
 
 # Animation Utility functions that the user is allowed to use.
@@ -50,16 +51,14 @@ from mmSolver._api.animutils import (
 )
 
 __all__ = [
+    # Classes
     'Camera',
     'Bundle',
     'Marker',
     'MarkerGroup',
-
     'Attribute',
-
     'Collection',
     'Frame',
-
     'Solver',
     'SolveResult',
 
@@ -84,5 +83,6 @@ __all__ = [
     'convert_valid_maya_name',
     'get_marker_name',
     'get_bundle_name',
+    'load_plugin',
     'create_anim_curve_node',
 ]

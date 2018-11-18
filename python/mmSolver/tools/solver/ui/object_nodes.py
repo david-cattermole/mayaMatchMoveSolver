@@ -32,7 +32,7 @@ class ObjectNode(nodes.Node):
 
 
 class MarkerNode(ObjectNode):
-    def __init__(self, name, user, desc,
+    def __init__(self, name,
                  data=None,
                  parent=None):
         icon = ':/marker.png'
@@ -43,28 +43,19 @@ class MarkerNode(ObjectNode):
             icon=icon,
             selectable=True,
             editable=False)
-        self._user = user
-        self._desc = desc
         self.typeInfo = 'marker'
-
-    def user(self):
-        return self._user
-
-    def description(self):
-        return self._desc
 
 
 class ObjectModel(uimodels.ItemModel):
     def __init__(self, root, font=None):
         super(ObjectModel, self).__init__(root, font=font)
         self._column_names = {
-            0: 'Object',
-            1: 'User',
-            2: 'Description',
+            0: 'Node',
+            # 1: 'User',
+            # 2: 'Description',
         }
         self._node_attr_key = {
-            'Object': 'name',
-            'User': 'user',
-            'Description': 'description',
+            'Node': 'name',
+            # 'User': 'user',
+            # 'Description': 'description',
         }
-

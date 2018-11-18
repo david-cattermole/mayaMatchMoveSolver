@@ -65,11 +65,15 @@ class Marker(object):
         assert isinstance(name, (str, unicode))
         if cam is not None:
             if mkr_grp is not None:
-                raise excep.NotValid('Cannot specify both camera and marker group, please choose only 1.')
+                msg = 'Cannot specify both camera and marker group, '
+                msg += 'please choose only one.'
+                raise excep.NotValid(msg)
             assert isinstance(cam, camera.Camera)
         if mkr_grp is not None:
             if cam is not None:
-                raise excep.NotValid('Cannot specify both camera and marker group, please choose only 1.')
+                msg = 'Cannot specify both camera and marker group, '
+                msg += 'please choose only one.'
+                raise excep.NotValid(msg)
             assert isinstance(mkr_grp, markergroup.MarkerGroup)
         if bnd is not None:
             assert isinstance(bnd, mmSolver._api.bundle.Bundle)

@@ -39,6 +39,16 @@ class Node(object):
         if parent is not None:
             parent.addChild(self)
 
+    def __repr__(self):
+        result = '<{class_name}('.format(class_name=self.__class__.__name__)
+        result += '{hash} name={name} data={data}'.format(
+            hash=hash(self),
+            name=self.name(),
+            data=self.data()
+        )
+        result += ')>'
+        return result
+
     def name(self):
         return self._name
 
@@ -103,8 +113,8 @@ class Node(object):
     def icon(self):
         assert isinstance(self._iconPath, str)
         if self._icon is None:
-            import qtLearn.uiUtils as uiUtils
-            self._icon = uiUtils.getIcon(self._iconPath)
+            import mmSolver.ui.uiutils as uiutils
+            self._icon = uiutils.getIcon(self._iconPath)
         return self._icon
 
     def addChild(self, child):

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>803</width>
-    <height>755</height>
+    <width>860</width>
+    <height>898</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,7 +52,7 @@
       <widget class="QComboBox" name="collectionName_comboBox"/>
      </item>
      <item>
-      <spacer name="horizontalSpacer_2">
+      <spacer name="horizontalSpacer_5">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -61,23 +61,16 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>120</width>
+         <width>20</width>
          <height>20</height>
         </size>
        </property>
       </spacer>
      </item>
      <item>
-      <widget class="QToolButton" name="collectionAdd_toolButton">
+      <widget class="QPushButton" name="collectionSelect_pushButton">
        <property name="text">
-        <string>+</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="collectionRemove_toolButton">
-       <property name="text">
-        <string>-</string>
+        <string>Select</string>
        </property>
       </widget>
      </item>
@@ -213,12 +206,12 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="solver_layout">
+    <layout class="QVBoxLayout" name="solverOptions_layout">
      <property name="spacing">
       <number>1</number>
      </property>
      <item>
-      <widget class="QFrame" name="solver_frame">
+      <widget class="QFrame" name="solverOptions_frame">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -233,24 +226,18 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QLabel" name="solver_label">
-          <property name="text">
-           <string>Solver</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="frames_layout">
-          <property name="spacing">
-           <number>1</number>
-          </property>
+         <layout class="QHBoxLayout" name="solverTop_layout">
           <item>
-           <spacer name="horizontalSpacer_9">
+           <widget class="QLabel" name="solver_label">
+            <property name="text">
+             <string>Solvers</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Preferred</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -261,21 +248,79 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="frames_label">
+           <widget class="QToolButton" name="solverAdd_toolButton">
             <property name="text">
-             <string>Frames</string>
+             <string>+</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="frames_lineEdit">
+           <widget class="QToolButton" name="solverRemove_toolButton">
             <property name="text">
-             <string>1001-1101</string>
+             <string>-</string>
             </property>
            </widget>
           </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="solver_layout">
+          <property name="spacing">
+           <number>1</number>
+          </property>
           <item>
-           <spacer name="horizontalSpacer_5">
+           <widget class="QTableView" name="solver_tableView"/>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="solverSide_layout">
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QToolButton" name="solverMoveUp_toolButton">
+              <property name="text">
+               <string>△</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="solverMoveDown_toolButton">
+              <property name="text">
+               <string>▽</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="emptySpace02_layout">
+          <item>
+           <spacer name="horizontalSpacer_4">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -290,7 +335,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="emptySpace_layout">
+         <layout class="QHBoxLayout" name="emptySpace01_layout">
           <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">

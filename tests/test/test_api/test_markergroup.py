@@ -49,6 +49,13 @@ class TestMarkerGroup(test_api_utils.APITestCase):
         self.assertEqual(x.get_node(), cam_tfm + '|markerGroup1')
         self.assertTrue(x.is_valid())
 
+    def test_get_camera(self):
+        camA = self.create_camera('myCamera')
+        camA_shp = camA.get_shape_node()
+        x = markergroup.MarkerGroup().create_node(cam=camA)
+        camB_shp = x.get_camera().get_shape_node()
+        self.assertEqual(camA_shp, camB_shp)
+
     def test_create_node(self):
         cam = self.create_camera('myCamera')
         cam_tfm = cam.get_transform_node()

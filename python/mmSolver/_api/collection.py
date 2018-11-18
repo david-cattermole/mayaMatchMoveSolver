@@ -20,7 +20,7 @@ import mmSolver._api.attribute as attribute
 import mmSolver._api.sethelper as sethelper
 
 
-LOGGER = mmSolver.logger.get_logger()
+LOG = mmSolver.logger.get_logger('DEBUG')
 
 
 class Collection(object):
@@ -33,22 +33,38 @@ class Collection(object):
         # re-compile if the user sets a new value, otherwise it's still valid.
         self._kwargs_list = []
 
-        if isinstance(name, (str, unicode)):
-            self.set_node(name)
+        if name is not None:
+            if isinstance(name, (str, unicode)):
+                self.set_node(name)
+            else:
+                msg = 'name argument must be a string.'
+                raise TypeError(msg)
+        return
 
-    def create(self, name):
+    def create_node(self, name):
+        """
+        Collection
+        """
         self._set.create_node(name)
         set_node = self._set.get_node()
 
         # Add 'solver_list' attribute.
         attr_name = 'solver_list'
-        maya.cmds.addAttr(set_node, longName=attr_name, dt='string')
-        maya.cmds.setAttr(set_node + '.' + attr_name, lock=True)
+        maya.cmds.addAttr(
+            set_node,
+            longName=attr_name,
+            dataType='string')
+        maya.cmds.setAttr(
+            set_node + '.' + attr_name,
+            lock=True)
 
-        return set_node
+        return self
 
     def get_node(self):
         return self._set.get_node()
+
+    def get_node_uid(self):
+        return self._set.get_node_uid()
 
     def set_node(self, name):
         self._kwargs_list = []  # reset argument flag cache.
@@ -57,15 +73,30 @@ class Collection(object):
     ############################################################################
 
     def _get_attr_data(self, attr_name):
-        ret = None
+        """
+        Get data from an attribute on the collection node.
+
+        :param attr_name: The name of the attribute to get data form.
+        :type attr_name: str
+
+        :return: List of data arbitrary structures.
+        :rtype: list of dict
+        """
+        ret = []
         set_node = self._set.get_node()
         attrs = maya.cmds.listAttr(set_node)
-        if attr_name in attrs:
-            node_attr = set_node + '.' + attr_name
-            attr_data = maya.cmds.getAttr(node_attr)
-            data = json.loads(attr_data)
-            if isinstance(data, list):
-                ret = data
+        if attr_name not in attrs:
+            msg = 'attr_name not found on node: '
+            msg += 'attr_name={name} node={node}'
+            msg = msg.format(name=attr_name, node=node)
+            raise ValueError(msg)
+        node_attr = set_node + '.' + attr_name
+        attr_data = maya.cmds.getAttr(node_attr)
+        if attr_data is None:
+            return ret
+        data = json.loads(attr_data)
+        if isinstance(data, list):
+            ret = data
         return ret
 
     def _set_attr_data(self, attr_name, data):
@@ -88,17 +119,33 @@ class Collection(object):
     ############################################################################
 
     def _load_solver_list(self):
-        solver_list = None
+        """
+        Get all Solvers from the attribute data on the Collection.
+
+        :return: List of Solver objects.
+        :rtype: list of Solver
+        """
+        solver_list = []
         attr_data = self._get_attr_data('solver_list')
-        if isinstance(attr_data, list):
-            solver_list = []
-            for item in attr_data:
-                if isinstance(attr_data, dict):
-                    sol = solver.Solver(data=item)
-                    solver_list.append(sol)
+        if isinstance(attr_data, list) is False:
+            return solver_list
+        for item in attr_data:
+            if isinstance(item, dict) is False:
+                continue
+            sol = solver.Solver(data=item)
+            solver_list.append(sol)
         return solver_list
 
     def _dump_solver_list(self, solver_list):
+        """
+        Write solver_list to the attribute data on the Collection.
+
+        :param solver_list: The Solvers to be written.
+        :type solver_list: list of Solver
+
+        :return: None
+        :rtype: None
+        """
         assert isinstance(solver_list, list)
         data_list = []
         for sol in solver_list:
@@ -109,6 +156,15 @@ class Collection(object):
         return
 
     def _get_solver_list_names(self, solver_list):
+        """
+        Get the names of solvers in the given list.
+
+        :param solver_list: The Solvers to get names from.
+        :type solver_list: list of Solver
+
+        :return: List of solver names
+        :rtype: list of str
+        """
         ret = []
         for sol in solver_list:
             name = sol.get_name()
@@ -126,8 +182,7 @@ class Collection(object):
         solver_list = None
         if self._solver_list is None:
             self._solver_list = self._load_solver_list()
-        else:
-            solver_list = self._solver_list
+        solver_list = self._solver_list
         return solver_list
 
     def get_solver_list_length(self):
@@ -136,7 +191,7 @@ class Collection(object):
     def add_solver(self, sol):
         assert isinstance(sol, solver.Solver)
         if self._solver_list is None:
-            self._solver_list = []
+            self._solver_list = self._load_solver_list()
         solver_name_list = self._get_solver_list_names(self._solver_list)
         if sol.get_name() not in solver_name_list:
             self._solver_list.append(sol)
@@ -146,7 +201,7 @@ class Collection(object):
     def add_solver_list(self, sol_list):
         assert isinstance(sol_list, list)
         if self._solver_list is None:
-            self._solver_list = []
+            self._solver_list = self._load_solver_list()
         changed = False
         solver_name_list = self._get_solver_list_names(self._solver_list)
         for sol in sol_list:
@@ -161,7 +216,7 @@ class Collection(object):
     def remove_solver(self, sol):
         assert isinstance(sol, solver.Solver)
         if self._solver_list is None:
-            self._solver_list = []
+            self._solver_list = self._load_solver_list()
         solver_name_list = self._get_solver_list_names(self._solver_list)
         if sol.get_name() in solver_name_list:
 
@@ -503,7 +558,7 @@ class Collection(object):
 
         msg = 'kwargs:\n' + pprint.pformat(kwargs)
         print(msg)
-        LOGGER.info(msg)
+        LOG.info(msg)
         return kwargs
 
     def _compile(self):
@@ -513,7 +568,6 @@ class Collection(object):
         :return: list of keyword arguments.
         :rtype: list of dict
         """
-
         # If the class attributes haven't been changed, re-use the previously
         # generated arguments.
         if len(self._kwargs_list) > 0:
@@ -525,8 +579,10 @@ class Collection(object):
 
         # Check Solvers
         sol_list = self.get_solver_list()
-        if len(sol_list) == 0:
-            msg = 'Collection is not valid, no Solvers given; collection={0}'
+        sol_enabled_list = filter(lambda x: x.get_enabled() is True, sol_list)
+        if len(sol_enabled_list) == 0:
+            msg = 'Collection is not valid, no enabled Solvers given; '
+            msg += 'collection={0}'
             msg = msg.format(repr(col_node))
             raise excep.NotValid(msg)
 
@@ -547,12 +603,12 @@ class Collection(object):
         # Compile all the solvers
         for sol in sol_list:
             if sol.get_frame_list_length() == 0:
-                assert False
+                raise excep.NotValid(msg)
             kwargs = self.__compile_solver(sol, mkr_list, attr_list)
             if isinstance(kwargs, dict):
                 kwargs_list.append(kwargs)
             else:
-                assert False
+                raise excep.NotValid(msg)
 
         # Set arguments
         self._kwargs_list = kwargs_list  # save a copy
@@ -579,7 +635,7 @@ class Collection(object):
         # Check for validity
         solres_list = []
         if self.is_valid() is False:
-            maya.cmds.warning('collection not valid', self.get_node())
+            LOG.warning('collection not valid', self.get_node())
             return solres_list
 
         kwargs_list = self._compile()

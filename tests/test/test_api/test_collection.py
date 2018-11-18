@@ -14,29 +14,38 @@ import maya.cmds
 import test.test_api.apiutils as test_api_utils
 import mmSolver._api.utils as api_utils
 import mmSolver._api.solver as solver
+import mmSolver._api.frame as frame
+import mmSolver._api.camera as camera
 import mmSolver._api.marker as marker
+import mmSolver._api.bundle as bundle
 import mmSolver._api.attribute as attribute
 import mmSolver._api.collection as collection
+import mmSolver._api.excep as excep
 
 
 # @unittest.skip
 class TestCollection(test_api_utils.APITestCase):
     def test_init(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
         y = collection.Collection('mySolve')
+        z = collection.Collection(name='mySolve')
         self.assertTrue(maya.cmds.objExists(x.get_node()))
         self.assertTrue(maya.cmds.objExists(y.get_node()))
+        self.assertTrue(maya.cmds.objExists(z.get_node()))
         self.assertEqual(x.get_node(), y.get_node())
+        self.assertEqual(x.get_node(), z.get_node())
+
+        self.assertRaises(TypeError, collection.Collection, ['mySolve'])
 
     def test_create(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
         self.assertTrue(maya.cmds.objExists(x.get_node()))
 
     def test_get_node(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
         node = x.get_node()
         self.assertIsInstance(node, (str, unicode))
         self.assertGreater(len(node), 0)
@@ -44,10 +53,10 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_set_node(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         y = collection.Collection()
-        y.create('myOtherSolve')
+        y.create_node('myOtherSolve')
 
         z = collection.Collection()
         z.set_node(x.get_node())
@@ -58,7 +67,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_get_solver_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         sol1 = solver.Solver()
         x.add_solver(sol1)
@@ -67,9 +76,18 @@ class TestCollection(test_api_utils.APITestCase):
         self.assertIsInstance(sol_list, list)
         self.assertEqual(sol1.get_data(), sol_list[0].get_data())
 
+        # Re-create the collection asset from the original node and ensure
+        # everything still matches.
+        x_node = x.get_node()
+        y = collection.Collection(name=x_node)
+        sol_list = y.get_solver_list()
+        self.assertIsInstance(sol_list, list)
+        self.assertEqual(len(sol_list), 1)
+        self.assertEqual(sol1.get_data(), sol_list[0].get_data())
+
     def test_add_solver(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         sol1 = solver.Solver()
         x.add_solver(sol1)
@@ -85,9 +103,17 @@ class TestCollection(test_api_utils.APITestCase):
         self.assertEqual(sol3.get_data(), sol_list2[1].get_data())
         self.assertIsInstance(sol_list2, list)
 
+        # Start from a new class.
+        x_node = x.get_node()
+        y = collection.Collection(name=x_node)
+        sol4 = solver.Solver()
+        y.add_solver(sol4)
+        sol_list3 = y.get_solver_list()
+        self.assertEqual(len(sol_list3), 3)
+
     def test_add_solver_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         sol_list0 = []
         for i in xrange(10):
@@ -109,7 +135,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_remove_solver(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         sol_list1 = []
         for i in xrange(10):
@@ -124,7 +150,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_remove_solver_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         sol_list1 = []
         for i in xrange(10):
@@ -138,7 +164,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_set_solver_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         sol_list1 = []
         for i in xrange(10):
@@ -154,7 +180,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_get_marker_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         self.assertEqual(x.get_marker_list_length(), 0)
 
@@ -180,7 +206,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_get_marker_list_length(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
         self.assertEqual(x.get_marker_list_length(), 0)
 
         mkr = marker.Marker().create_node()
@@ -189,7 +215,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_add_marker(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         name = 'myMarker1'
         mkr = marker.Marker().create_node(name=name)
@@ -205,7 +231,9 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_add_marker_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
+
+        x.add_marker_list([])
 
         name = 'myMarker1'
         mkr_list = []
@@ -226,7 +254,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_remove_marker(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         name = 'myMarker1'
         mkr = marker.Marker().create_node(name=name)
@@ -246,7 +274,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_remove_marker_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         name = 'myMarker1'
         mkr_list = []
@@ -269,7 +297,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_set_marker_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         attr_list = []
         mkr_list = []
@@ -296,7 +324,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_clear_marker_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         attr_list = []
         mkr_list = []
@@ -317,7 +345,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_get_attribute_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         self.assertEqual(x.get_attribute_list_length(), 0)
 
@@ -341,7 +369,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_get_attribute_list_length(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
         self.assertEqual(x.get_attribute_list_length(), 0)
 
         node = maya.cmds.createNode('transform')
@@ -351,7 +379,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_add_attribute(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         node = maya.cmds.createNode('transform')
         attr = attribute.Attribute(node=node, attr='translateX')
@@ -368,7 +396,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_add_attribute_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         attr_list = []
         for i in xrange(10):
@@ -390,7 +418,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_remove_attribute(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         node = maya.cmds.createNode('transform')
         attr = attribute.Attribute(node=node, attr='translateX')
@@ -402,7 +430,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_remove_attribute_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         attr_list = []
         for i in xrange(10):
@@ -425,7 +453,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_set_attribute_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         attr_list = []
         for i in xrange(10):
@@ -446,7 +474,7 @@ class TestCollection(test_api_utils.APITestCase):
 
     def test_clear_attribute_list(self):
         x = collection.Collection()
-        x.create('mySolve')
+        x.create_node('mySolve')
 
         attr_list = []
         for i in xrange(10):
@@ -458,6 +486,40 @@ class TestCollection(test_api_utils.APITestCase):
         self.assertEqual(x.get_attribute_list_length(), 10)
         x.clear_attribute_list()
         self.assertEqual(x.get_attribute_list_length(), 0)
+
+    def test_is_valid(self):
+        """
+        Collection validation.
+        Once all pieces are connected, the collection is valid.
+        """
+        x = collection.Collection()
+        x.create_node('myCollection')
+        self.assertFalse(x.is_valid())
+
+        # Solver
+        sol = solver.Solver()
+        x.add_solver(sol)
+        self.assertFalse(x.is_valid())
+
+        # Solver (with frame)
+        f = frame.Frame(1)
+        sol.add_frame(f)
+        self.assertFalse(x.is_valid())
+
+        # Marker / Bundle
+        cam_tfm = maya.cmds.createNode('transform', name='camera1')
+        cam_shp = maya.cmds.createNode('camera', name='cameraShape1')
+        cam = camera.Camera(shape=cam_shp)
+        bnd = bundle.Bundle().create_node()
+        mkr = marker.Marker().create_node(cam=cam, bnd=bnd)
+        x.add_marker(mkr)
+        self.assertFalse(x.is_valid())
+
+        # Attribute
+        node = bnd.get_node()
+        attr = attribute.Attribute(node=node, attr='translateX')
+        x.add_attribute(attr)
+        self.assertTrue(x.is_valid())
 
 
 if __name__ == '__main__':

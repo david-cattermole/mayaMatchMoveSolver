@@ -60,6 +60,19 @@ class MarkerGroup(object):
 
     ############################################################################
 
+    def get_camera(self):
+        mkr_node = self.get_node()
+
+        cam_tfm, cam_shp = api_utils.get_camera_above_node(mkr_node)
+
+        # Make the camera object.
+        cam = None
+        if cam_tfm is not None and cam_shp is not None:
+            cam = camera.Camera(transform=cam_tfm, shape=cam_shp)
+        return cam
+
+    ############################################################################
+
     def create_node(self, name='markerGroup1', cam=None):
         assert isinstance(name, (str, unicode))
         assert isinstance(cam, camera.Camera)

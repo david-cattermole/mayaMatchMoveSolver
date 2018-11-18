@@ -5,6 +5,7 @@ Solver related functions.
 import uuid
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
+import mmSolver._api.constant as const
 
 
 class Solver(object):
@@ -12,7 +13,7 @@ class Solver(object):
     Solver; the options for how a solver should be executed.
     """
     def __init__(self, name=None, data=None):
-        self._data = {}
+        self._data = const.SOLVER_DATA_DEFAULT.copy()
         if isinstance(data, dict):
             self.set_data(data)
         if isinstance(name, (str, unicode, uuid.UUID)):
@@ -51,10 +52,31 @@ class Solver(object):
 
     ############################################################################
 
+    def get_enabled(self):
+        """
+        Flags this solver should not be used for solving.
+        :rtype: bool
+        """
+        return self._data.get('enabled')
+
+    def set_enabled(self, value):
+        """
+        Set if this solver be used?
+
+        :param value: The enabled value.
+        :type value: bool
+        """
+        if isinstance(value, bool) is False:
+            raise TypeError('Expected bool value type.')
+        self._data['enabled'] = value
+        return
+
     def get_max_iterations(self):
         return self._data.get('max_iterations')
 
     def set_max_iterations(self, value):
+        if isinstance(value, int) is False:
+            raise TypeError('Expected int value type.')
         self._data['max_iterations'] = value
         return
 
@@ -82,6 +104,8 @@ class Solver(object):
         return self._data.get('verbose')
 
     def set_verbose(self, value):
+        if isinstance(value, bool) is False:
+            raise TypeError('Expected bool value type.')
         self._data['verbose'] = value
 
     ############################################################################
@@ -111,10 +135,10 @@ class Solver(object):
 
     def get_frame_list(self):
         """
-        Get frame objects attached to the collection.
+        Get frame objects attached to the solver.
 
         :return: frame objects.
-        :rtype: list of frame.frame
+        :rtype: list of frame.Frame
         """
         frame_list_data = self._data.get('frame_list')
         if frame_list_data is None:

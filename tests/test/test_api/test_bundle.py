@@ -32,24 +32,6 @@ class TestBundle(test_api_utils.APITestCase):
         self.assertEqual(z_node, y_node)
         self.assertEqual(z_node, '|myBundle1')
 
-    # def test_get_node(self):
-    #     pass
-    #
-    # def test_set_node(self):
-    #     pass
-    #
-    # def test_create_node(self):
-    #     pass
-    #
-    # def test_delete_node(self):
-    #     pass
-    #
-    # def test_get_node_colour(self):
-    #     pass
-    #
-    # def test_set_node_colour(self):
-    #     pass
-
     def test_get_marker_list(self):
         x = bundle.Bundle().create_node(name='myBundle1')
         mkr_list1 = x.get_marker_list()

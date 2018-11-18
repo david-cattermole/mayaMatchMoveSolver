@@ -21,7 +21,6 @@ class Camera(object):
             self.set_shape_node(shape)
         elif transform is not None:
             self.set_transform_node(transform)
-
         return
 
     def get_transform_node(self):
@@ -44,6 +43,19 @@ class Camera(object):
         if isinstance(node, (str, unicode)) and len(node) == 0:
             node = None
         return node
+
+    def get_transform_uid(self):
+        """
+        Get the camera transform unique identifier.
+
+        :return: The camera transform UUID or None
+        :rtype: None or str or unicode
+        """
+        node = self.get_transform_node()
+        if node is None:
+            return None
+        uid = maya.cmds.ls(node, uuid=True) or []
+        return uid[0]
 
     def set_transform_node(self, name):
         assert isinstance(name, (str, unicode))
@@ -94,6 +106,19 @@ class Camera(object):
         if isinstance(node, (str, unicode)) and len(node) == 0:
             node = None
         return node
+
+    def get_shape_uid(self):
+        """
+        Get the camera shape unique identifier.
+
+        :return: The camera shape UUID or None
+        :rtype: None or str or unicode
+        """
+        node = self.get_shape_node()
+        if node is None:
+            return None
+        uids = maya.cmds.ls(node, uuid=True) or []
+        return uids[0]
 
     def set_shape_node(self, name):
         assert isinstance(name, (str, unicode))

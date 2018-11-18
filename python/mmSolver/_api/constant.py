@@ -2,6 +2,13 @@
 Constant values used in the API.
 """
 
+
+# Plug-in names
+PLUGIN_NAMES = [
+    'mmSolver'
+]
+
+
 # Maya node suffixes
 MARKER_NAME_SUFFIX = '_MKR'
 BUNDLE_NAME_SUFFIX = '_BND'
@@ -15,6 +22,12 @@ BAD_MAYA_CHARS = [
     '(', ')', '[', ']', '{', '}', '<', '>'
     '\'', '\"'
 ]
+
+
+# Solver objects.
+SOLVER_DATA_DEFAULT = {
+    'enabled': True,
+}
 
 
 # Solver Types

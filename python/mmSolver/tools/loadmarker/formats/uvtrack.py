@@ -200,7 +200,7 @@ def parse_v2(file_path):
 
 class LoaderUVTrack(interface.LoaderBase):
 
-    name = 'UV Track Points (.uv)'
+    name = 'UV Track Points (*.uv)'
     file_exts = ['.uv']
     args = []
 

@@ -64,7 +64,7 @@ def create_example_solve_scene():
 
     # Collection
     col = api.Collection()
-    col.create('mySolveCollection')
+    col.create_node('mySolveCollection')
     col.add_solver(sol)
     col.add_marker(mkr)
     col.add_attribute(attr_tx)

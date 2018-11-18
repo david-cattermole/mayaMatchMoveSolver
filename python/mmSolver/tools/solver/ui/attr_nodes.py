@@ -28,11 +28,21 @@ class PlugNode(nodes.Node):
             editable=editable,
             checkable=checkable,
             neverHasChildren=neverHasChildren)
-        self.typeInfo = 'version'
+        self.typeInfo = 'plug'
+
+
+    def state(self):
+        return ''
+
+    def minValue(self):
+        return ''
+
+    def maxValue(self):
+        return ''
 
 
 class AttrNode(PlugNode):
-    def __init__(self, name, user, desc,
+    def __init__(self, name,
                  data=None,
                  parent=None):
         icon = ':/attr.png'
@@ -43,15 +53,71 @@ class AttrNode(PlugNode):
             icon=icon,
             selectable=True,
             editable=False)
-        self._user = user
-        self._desc = desc
-        self.typeInfo = 'marker'
+        self.typeInfo = 'attr'
 
-    def user(self):
-        return self._user
+    def state(self):
+        d = self.data().get('data')
+        state = 'Invalid'
+        if d is None:
+            return invalid_state
+        if d.is_static() is True:
+            return 'Static'
+        if d.is_animated() is True:
+            return 'Animated'
+        if d.is_locked() is True:
+            return 'Locked'
+        return invalid_state
 
-    def description(self):
-        return self._desc
+    def minValue(self):
+        d = self.data().get('data')
+        if d is None:
+            return ''
+        v = d.get_min_value()
+        if v is None:
+            return ''
+        return str(v)
+
+    def maxValue(self):
+        d = self.data().get('data')
+        if d is None:
+            return ''
+        v = d.get_max_value()
+        if v is None:
+            return ''
+        return str(v)
+
+    def mayaNodeName(self):
+        return 'node'
+
+    def mayaAttrName(self):
+        return 'attr'
+
+    def mayaPlug(self):
+        return None
+
+
+class MayaNode(PlugNode):
+    def __init__(self, name,
+                 data=None,
+                 parent=None):
+        icon = ':/node.png'
+        super(MayaNode, self).__init__(
+            name,
+            data=data,
+            parent=parent,
+            icon=icon,
+            selectable=True,
+            editable=False)
+        self.typeInfo = 'node'
+
+    def mayaNodeName(self):
+        return 'node'
+
+    def mayaAttrName(self):
+        return 'attr'
+
+    def mayaPlug(self):
+        return None
 
 
 class AttrModel(uimodels.ItemModel):
@@ -59,13 +125,15 @@ class AttrModel(uimodels.ItemModel):
         super(AttrModel, self).__init__(root, font=font)
         self._column_names = {
             0: 'Attr',
-            1: 'User',
-            2: 'Description',
+            1: 'State',
+            2: 'Min',
+            3: 'Max',
         }
         self._node_attr_key = {
             'Attr': 'name',
-            'User': 'user',
-            'Description': 'description',
+            'State': 'state',
+            'Min': 'minValue',
+            'Max': 'maxValue',
         }
 
 

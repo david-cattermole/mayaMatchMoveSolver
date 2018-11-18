@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/media/share/Users/catte/dev/mayaMatchMoveSolver/python/mmSolver/ui/base.ui'
 #
-# Created: Wed Oct  3 23:03:03 2018
+# Created: Tue Oct 30 23:15:12 2018
 #      by: pyside2-uic  running on PySide2 2.0.0~alpha0
 #
 # WARNING! All changes made in this file will be lost!

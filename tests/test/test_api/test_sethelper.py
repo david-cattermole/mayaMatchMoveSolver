@@ -29,6 +29,8 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertEqual(x.get_all_members(), [])
         self.assertTrue(maya.cmds.objExists(x.get_node()))
 
+        self.assertRaises(TypeError, sethelper.SetHelper, [])
+
     def test_get_node(self):
         name = 'mySet'
         node = maya.cmds.sets(name=name)

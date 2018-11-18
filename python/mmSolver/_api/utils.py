@@ -65,7 +65,11 @@ def get_object_type(node):
     assert maya.cmds.objExists(node)
 
     node_type = maya.cmds.nodeType(node)
-    shape_nodes = maya.cmds.listRelatives(node, children=True, shapes=True) or []
+    shape_nodes = maya.cmds.listRelatives(
+        node, 
+        children=True, 
+        shapes=True, 
+        fullPath=True) or []
     shape_node_types = []
     for shape_node in shape_nodes:
         shape_node_type = maya.cmds.nodeType(shape_node)
@@ -76,15 +80,15 @@ def get_object_type(node):
     if '.' in node:
         object_type = 'attribute'
 
-    elif ((node_type == 'transform') and
-            ('locator' in shape_node_types) and
-            ('enable' in attrs) and
-            ('weight' in attrs) and
-            ('bundle' in attrs)):
+    elif ((node_type == 'transform')
+          and ('locator' in shape_node_types)
+          and ('enable' in attrs)
+          and ('weight' in attrs)
+          and ('bundle' in attrs)):
         object_type = 'marker'
 
     elif ((node_type == 'transform') and
-            ('camera' in shape_node_types)):
+          ('camera' in shape_node_types)):
         object_type = 'camera'
 
     elif node_type == 'camera':
@@ -95,6 +99,10 @@ def get_object_type(node):
 
     elif node_type == 'transform':
         object_type = 'bundle'
+
+    elif ((node_type == 'objectSet')
+          and ('solver_list' in attrs)):
+        object_type = 'collection'
 
     return object_type
 
@@ -141,8 +149,8 @@ def get_marker_group_above_node(node):
     :return: String of marker group found, or None.
     :rtype: str or unicode
     """
-    # TODO: This function may be called many times, we should look into
-    # caching some of this computation.
+    # TODO: This function may be called many times, we should look
+    # into caching some of this computation.
     mkr_grp_node = None
     dag = get_as_dag_path(node)
     while dag.length() != 0:
@@ -160,6 +168,8 @@ def convert_valid_maya_name(name):
     assert isinstance(name, basestring)
     for char in const.BAD_MAYA_CHARS:
         name.replace(char, '_')
+    if name[0].isdigit():
+        name = 'marker_' + name
     return name
 
 
@@ -189,6 +199,17 @@ def get_bundle_name(name):
     if const.BUNDLE_NAME_SUFFIX.lower() not in name.lower():
         name += const.BUNDLE_NAME_SUFFIX
     return name
+
+
+def load_plugin():
+    """
+    Load the mmSolver plugin.
+
+    :return:
+    """
+    for name in const.PLUGIN_NAMES:
+        maya.cmds.loadPlugin(name, quiet=True)
+    return
 
 
 def undo_chunk(func):

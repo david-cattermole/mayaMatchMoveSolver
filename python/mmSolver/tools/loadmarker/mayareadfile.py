@@ -48,7 +48,7 @@ def read(file_path, **kwargs):
     return mkr_data_list
 
 
-def __create_node(mkr_data, cam, with_bundles):
+def __create_node(mkr_data, cam, mkr_grp, with_bundles):
     """
     Create a Marker object from a MarkerData object.
     """
@@ -63,9 +63,10 @@ def __create_node(mkr_data, cam, with_bundles):
     mkr_name = mmapi.get_marker_name(name)
     bnd_name = mmapi.get_bundle_name(name)
     bnd = None
+    mmapi.load_plugin()
     if with_bundles is True:
         bnd = mmapi.Bundle().create_node(bnd_name)
-    mkr = mmapi.Marker().create_node(name=mkr_name, cam=cam, bnd=bnd)
+    mkr = mmapi.Marker().create_node(name=mkr_name, cam=cam, mkr_grp=mkr_grp, bnd=bnd)
     return mkr
 
 
@@ -131,18 +132,26 @@ def __set_node_data(mkr, mkr_data):
     return mkr
 
 
-def create_nodes(mkr_data_list, cam=None, with_bundles=True):
+def create_nodes(mkr_data_list, cam=None, mkr_grp=None, with_bundles=True):
     """
     Create Markers for all given MarkerData objects
     """
+    selected_nodes = maya.cmds.ls(sl=True, long=True) or []
+    mkr_nodes = []
     mkr_list = []
     for mkr_data in mkr_data_list:
         # Create the nodes
-        mkr = __create_node(mkr_data, cam, with_bundles)
+        mkr = __create_node(mkr_data, cam, mkr_grp, with_bundles)
+        mkr_nodes.append(mkr.get_node())
         if mkr is not None:
             # Set attributes and add into list
             __set_node_data(mkr, mkr_data)
             mkr_list.append(mkr)
+    if len(mkr_nodes) > 0:
+        maya.cmds.select(mkr_nodes, replace=True)
+    else:
+        # maya.cmds.select(selected_nodes, clear=True)
+        maya.cmds.select(selected_nodes, replace=True)
     return mkr_list
 
 

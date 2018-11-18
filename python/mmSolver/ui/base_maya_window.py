@@ -101,9 +101,6 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
         return True
 
 
-
-
-
 def delete():
     # TODO: Is this deprecated???
     global WINDOW

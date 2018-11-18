@@ -33,7 +33,7 @@ LOG = mmSolver.logger.get_logger()
 
 class Loader3DETXT(interface.LoaderBase):
 
-    name = '3DEqualizer Track Points (.txt)'
+    name = '3DEqualizer Track Points (*.txt)'
     file_exts = ['.txt']
     args = [
         ('image_width', None),

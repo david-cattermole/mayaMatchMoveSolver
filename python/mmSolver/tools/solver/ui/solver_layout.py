@@ -51,6 +51,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.object_treeView.setModel(self.object_filterModel)
         self.object_treeView.setSortingEnabled(True)
         self.object_treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)
+        self.object_treeView.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.object_selModel = self.object_treeView.selectionModel()
         self.object_selModel.currentChanged.connect(self.objectNodeCurrentChanged)
 
@@ -67,6 +68,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.attribute_treeView.setModel(self.attribute_filterModel)
         self.attribute_treeView.setSortingEnabled(True)
         self.attribute_treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)
+        self.attribute_treeView.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.attribute_selModel = self.attribute_treeView.selectionModel()
         self.attribute_selModel.currentChanged.connect(self.attrNodeCurrentChanged)
 
@@ -238,7 +240,16 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
     def objectRemoveClicked(self):
         LOG.debug('objectRemoveClicked')
-        # TODO: Write this.
+        col = tool.get_active_collection()
+        if col is None:
+            return
+        ui_nodes = tool.get_selected_ui_nodes(
+            self.object_treeView,
+            self.object_filterModel
+        )
+        nodes = tool.convert_ui_nodes_to_nodes(ui_nodes, 'marker')
+        tool.remove_markers_from_collection(nodes, col)
+        self.updateObjectModel()
         return
 
     def attrAddClicked(self):
@@ -260,7 +271,16 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
     def attrRemoveClicked(self):
         LOG.debug('attrRemoveClicked')
-        # TODO: Write this.
+        col = tool.get_active_collection()
+        if col is None:
+            return
+        ui_nodes = tool.get_selected_ui_nodes(
+            self.attribute_treeView,
+            self.attribute_filterModel
+        )
+        nodes = tool.convert_ui_nodes_to_nodes(ui_nodes, 'data')
+        tool.remove_attr_from_collection(nodes, col)
+        self.updateAttributeModel()
         return
 
     def solverAddClicked(self):
@@ -273,7 +293,20 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
     def solverRemoveClicked(self):
         LOG.debug('solverRemoveClicked')
-        # TODO: Write this.
+        col = tool.get_active_collection()
+        if col is None:
+            return
+        ui_nodes = tool.get_selected_ui_table_row(
+            self.solver_tableView,
+            self.solver_model,
+            self.solver_filterModel
+        )
+        sol_nodes = tool.convert_ui_nodes_to_nodes(ui_nodes, 'solver_node')
+        col_nodes = tool.convert_ui_nodes_to_nodes(ui_nodes, 'collection_node')
+        assert len(sol_nodes) == len(col_nodes)
+        for sol, col in zip(sol_nodes, col_nodes):
+            tool.remove_solver_from_collection(sol, col)
+        self.updateSolverModel()
         return
 
     def solverMoveUpClicked(self):
@@ -285,10 +318,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         LOG.debug('solverMoveDownClicked')
         # TODO: Write this.
         return
-
-    def getFrameList(self):
-        LOG.debug('getFrameList')
-        return '' # self.frames_lineEdit.text()
 
     @QtCore.Slot(int)
     def collectionIndexChanged(self, index):

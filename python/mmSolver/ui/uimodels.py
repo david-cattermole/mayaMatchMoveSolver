@@ -108,6 +108,8 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
     def flags(self, index):
         v = QtCore.Qt.NoItemFlags
         node = index.internalPointer()
+        if node is None:
+            return v
         if node.enabled():
             v = v | QtCore.Qt.ItemIsEnabled
         if node.checkable():
@@ -170,99 +172,6 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
             success = parentNode.removeChild(position)
         self.endRemoveRows()
         return success
-
-
-class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
-    def __init__(self,
-                 stringDataList=None,
-                 font=None,
-                 parent=None):
-        super(StringDataListModel, self).__init__(parent)
-        self._stringDataList = []
-        self._font = font
-        if stringDataList is not None:
-            self.setStringDataList(stringDataList)
-
-    def stringDataList(self):
-        string_data_list = []
-        for string, data in self._stringDataList:
-            string_data_list.append((string, data))
-        return string_data_list
-
-    def setStringDataList(self, stringDataList):
-        rowCount = self.rowCount()
-        self.removeRows(0, rowCount)
-        self.insertRows(0, len(stringDataList))
-        for i, (string, data) in enumerate(stringDataList):
-            index = self.index(i)
-            self.setData(index, string, role=QtCore.Qt.DisplayRole)
-            self.setData(index, data, role=QtCore.Qt.UserRole)
-        self._stringDataList = list(stringDataList)
-        return
-
-    def headerData(self, section, orientation, role):
-        if role == QtCore.Qt.DisplayRole:
-            return 'Name'
-        elif role == QtCore.Qt.EditRole:
-            return 'Name'
-        elif role == QtCore.Qt.UserRole:
-            return 'Data'
-        return None
-
-    def data(self, index, role=QtCore.Qt.DisplayRole):
-        if not index.isValid():
-            return None
-        if index.row() > len(self._stringDataList):
-            return None
-        if role in [QtCore.Qt.DisplayRole, QtCore.Qt.EditRole]:
-            v = self._stringDataList[index.row()]
-            if isinstance(v, (tuple, list)) and len(v) == 2:
-                return v[0]
-        elif role in [QtCore.Qt.UserRole]:
-            v = self._stringDataList[index.row()]
-            if isinstance(v, (tuple, list)) and len(v) == 2:
-                return v[1]
-        return None
-
-    def flags(self, index):
-        flags = super(StringDataListModel, self).flags(index)
-        if index.isValid():
-            flags |= QtCore.Qt.ItemIsEditable
-        return flags
-
-    def insertRows(self, row, count, parent=QtCore.QModelIndex()):
-        self.beginInsertRows(QtCore.QModelIndex(), row, row + count - 1)
-        self._stringDataList[row:row] = [('', None)] * count
-        self.endInsertRows()
-        return True
-
-    def removeRows(self, row, count, parent=QtCore.QModelIndex()):
-        self.beginRemoveRows(QtCore.QModelIndex(), row, row + count - 1)
-        del self._stringDataList[row:row + count]
-        self.endRemoveRows()
-        return True
-
-    def rowCount(self, parent=QtCore.QModelIndex()):
-        return len(self._stringDataList)
-
-    def setData(self, index, value, role=QtCore.Qt.EditRole):
-        if not index.isValid():
-            return False
-        if role in [QtCore.Qt.DisplayRole, QtCore.Qt.EditRole]:
-            v = self._stringDataList[index.row()]
-            v = (value, v[1])
-            self._stringDataList[index.row()] = value
-        elif role in [QtCore.Qt.UserRole]:
-            v = self._stringDataList[index.row()]
-            v = (v[0], value)
-            self._stringDataList[index.row()] = value
-        if role in [QtCore.Qt.DisplayRole,
-                    QtCore.Qt.EditRole,
-                    QtCore.Qt.UserRole]:
-            self.dataChanged.emit(index, index)
-        else:
-            return False
-        return True
 
 
 def _getNameFromDict(index, names_dict, lookup_dict):
@@ -493,4 +402,98 @@ class SortFilterProxyModel(QtCore.QSortFilterProxyModel, uiutils.QtInfoMixin):
                 if pattern in path:
                     result = True
         return result
+
+
+class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
+    def __init__(self,
+                 stringDataList=None,
+                 font=None,
+                 parent=None):
+        super(StringDataListModel, self).__init__(parent)
+        self._stringDataList = []
+        self._font = font
+        if stringDataList is not None:
+            self.setStringDataList(stringDataList)
+
+    def stringDataList(self):
+        string_data_list = []
+        for string, data in self._stringDataList:
+            string_data_list.append((string, data))
+        return string_data_list
+
+    def setStringDataList(self, stringDataList):
+        rowCount = self.rowCount()
+        self.removeRows(0, rowCount)
+        self.insertRows(0, len(stringDataList))
+        for i, (string, data) in enumerate(stringDataList):
+            index = self.index(i)
+            self.setData(index, string, role=QtCore.Qt.DisplayRole)
+            self.setData(index, data, role=QtCore.Qt.UserRole)
+        self._stringDataList = list(stringDataList)
+        return
+
+    def headerData(self, section, orientation, role):
+        if role == QtCore.Qt.DisplayRole:
+            return 'Name'
+        elif role == QtCore.Qt.EditRole:
+            return 'Name'
+        elif role == QtCore.Qt.UserRole:
+            return 'Data'
+        return None
+
+    def data(self, index, role=QtCore.Qt.DisplayRole):
+        if not index.isValid():
+            return None
+        if index.row() > len(self._stringDataList):
+            return None
+        if role in [QtCore.Qt.DisplayRole, QtCore.Qt.EditRole]:
+            v = self._stringDataList[index.row()]
+            if isinstance(v, (tuple, list)) and len(v) == 2:
+                return v[0]
+        elif role in [QtCore.Qt.UserRole]:
+            v = self._stringDataList[index.row()]
+            if isinstance(v, (tuple, list)) and len(v) == 2:
+                return v[1]
+        return None
+
+    def flags(self, index):
+        flags = super(StringDataListModel, self).flags(index)
+        if index.isValid():
+            flags |= QtCore.Qt.ItemIsEditable
+        return flags
+
+    def insertRows(self, row, count, parent=QtCore.QModelIndex()):
+        self.beginInsertRows(QtCore.QModelIndex(), row, row + count - 1)
+        self._stringDataList[row:row] = [('', None)] * count
+        self.endInsertRows()
+        return True
+
+    def removeRows(self, row, count, parent=QtCore.QModelIndex()):
+        self.beginRemoveRows(QtCore.QModelIndex(), row, row + count - 1)
+        del self._stringDataList[row:row + count]
+        self.endRemoveRows()
+        return True
+
+    def rowCount(self, parent=QtCore.QModelIndex()):
+        return len(self._stringDataList)
+
+    def setData(self, index, value, role=QtCore.Qt.EditRole):
+        if not index.isValid():
+            return False
+        if role in [QtCore.Qt.DisplayRole, QtCore.Qt.EditRole]:
+            v = self._stringDataList[index.row()]
+            v = (value, v[1])
+            self._stringDataList[index.row()] = value
+        elif role in [QtCore.Qt.UserRole]:
+            v = self._stringDataList[index.row()]
+            v = (v[0], value)
+            self._stringDataList[index.row()] = value
+        if role in [QtCore.Qt.DisplayRole,
+                    QtCore.Qt.EditRole,
+                    QtCore.Qt.UserRole]:
+            self.dataChanged.emit(index, index)
+        else:
+            return False
+        return True
+
 

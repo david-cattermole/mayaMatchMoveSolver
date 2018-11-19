@@ -255,8 +255,9 @@ class SolverWindow(BaseWindow):
 
     def apply(self):
         self.progressBar.show()
-        frame_list = self.subForm.getFrameList()
-        LOG.debug('apply: %r', frame_list)
+        # frame_list = self.subForm.getFrameList()
+        # LOG.debug('apply: %r', frame_list)
+        LOG.debug('apply')
         for i in range(100):
             self.progressBar.setValue(i)
             time.sleep(0.01)

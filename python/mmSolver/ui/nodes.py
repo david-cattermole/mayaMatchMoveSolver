@@ -54,7 +54,7 @@ class Node(object):
 
     def setName(self, name):
         self._name = name
-        
+
     def toolTip(self):
         return self._toolTip
 
@@ -135,6 +135,8 @@ class Node(object):
         return True
 
     def child(self, row):
+        if row >= len(self._children):
+            return None
         result = self._children[row]
         return result
 
@@ -144,7 +146,10 @@ class Node(object):
     def children(self):
         nodes = []
         for i in range(self.childCount()):
-            nodes.append(self.child(i))
+            child = self.child(i)
+            if child is None:
+                continue
+            nodes.append(child)
         return nodes
 
     def parent(self):

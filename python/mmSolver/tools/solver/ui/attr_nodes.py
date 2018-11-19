@@ -30,14 +30,16 @@ class PlugNode(nodes.Node):
             neverHasChildren=neverHasChildren)
         self.typeInfo = 'plug'
 
-
     def state(self):
+        # TODO: Get the state.
         return ''
 
     def minValue(self):
+        # TODO: Get the min value.
         return ''
 
     def maxValue(self):
+        # TODO: Get the max value.
         return ''
 
 

@@ -43,7 +43,7 @@ class Collection(object):
 
     def create_node(self, name):
         """
-        Collection
+        Create a collection set node.
         """
         self._set.create_node(name)
         set_node = self._set.get_node()

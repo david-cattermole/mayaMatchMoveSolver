@@ -191,6 +191,7 @@ def create_marker():
 def convert_to_marker():
     raise NotImplementedError
 
+
 def add_markers_to_collection(mkr_list, col):
     if isinstance(col, mmapi.Collection) is False:
         msg = 'col argument must be a Collection: %r'
@@ -219,6 +220,56 @@ def remove_attr_from_collection(attr_list, col):
     return col.remove_attribute_list(attr_list)
 
 
+def get_selected_ui_nodes(tree_view, filter_model):
+    node_list = []
+    sel_model = tree_view.selectionModel()
+    selection = sel_model.selection()
+    index_list = selection.indexes()
+    for idx in index_list:
+        if idx.isValid() is False:
+            continue
+        idx_map = filter_model.mapToSource(idx)
+        ui_node = idx_map.internalPointer()
+        if ui_node is None:
+            continue
+        node_list.append(ui_node)
+    return node_list
+
+
+def get_selected_ui_table_row(tree_view, model, filter_model):
+    node_list = []
+    sel_model = tree_view.selectionModel()
+    selection = sel_model.selection()
+    index_list = selection.indexes()
+    all_node_list = model.nodeList()
+    for idx in index_list:
+        if idx.isValid() is False:
+            continue
+        idx_map = filter_model.mapToSource(idx)
+        row = idx.row()
+        ui_node = all_node_list[row]
+        if ui_node is None:
+            continue
+        node_list.append(ui_node)
+    return node_list
+
+
+def convert_ui_nodes_to_nodes(ui_nodes, key):
+    nodes = []
+    for ui_node in ui_nodes:
+        # LOG.debug('ui_node: %r', ui_node)
+        node_data = ui_node.data()
+        if node_data is None:
+            continue
+        # LOG.debug('node_data: %s', node_data)
+        mkr_node = node_data.get(key)
+        if mkr_node is None:
+            continue
+        # LOG.debug('mkr_node: %s', mkr_node)
+        nodes.append(mkr_node)
+    return nodes
+
+
 def create_solver():
     sol = mmapi.Solver()
     start, end = get_timeline_range_inner()
@@ -237,7 +288,7 @@ def add_solver_to_collection(sol, col):
     return col.add_solver(sol)
 
 
-def remove_solver_from_collecton(sol, col):
+def remove_solver_from_collection(sol, col):
     return col.remove_solver(sol)
 
 

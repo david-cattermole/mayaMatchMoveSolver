@@ -99,8 +99,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.solver_filterModel.setSourceModel(self.solver_model)
         self.solver_filterModel.setDynamicSortFilter(False)
         self.solver_tableView.setModel(self.solver_filterModel)
-        self.solver_tableView.setSortingEnabled(True)
-        self.solver_tableView.sortByColumn(0, QtCore.Qt.AscendingOrder)
+        self.solver_tableView.setSortingEnabled(False)
+        # self.solver_tableView.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.solver_selModel = self.solver_tableView.selectionModel()
         # self.solver_selModel.currentChanged.connect(self.solverNodeCurrentChanged)
 
@@ -200,8 +200,10 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
     def renameCollectionNode(self):
         LOG.debug('renameCollectionNode')
         col = tool.get_active_collection()
-        # TODO: Prompt for a new name.
-        new_name = 'my_new_name1'
+        node_name = col.get_node()
+        title = 'Rename Collection node'
+        msg = 'Enter new node name'
+        new_name = tool.prompt_for_new_node_name(title, msg, node_name)
         tool.rename_collection(col, new_name)
         self.populateUi()
         return
@@ -224,7 +226,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
     def objectAddClicked(self):
         LOG.debug('objectAddClicked')
         mkr_list = tool.get_markers_from_selection()
-        LOG.debug('mkr_list: %r', mkr_list)
         if len(mkr_list) == 0:
             msg = 'Please select objects, found no markers.'
             LOG.warning(msg)
@@ -255,7 +256,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
     def attrAddClicked(self):
         LOG.debug('attrAddClicked')
         attr_list = tool.get_selected_maya_attributes()
-        LOG.debug('attr_list: %r', attr_list)
         if len(attr_list) == 0:
             msg = 'Please select attributes in the channel box, none where found.'
             LOG.warning(msg)
@@ -293,9 +293,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
     def solverRemoveClicked(self):
         LOG.debug('solverRemoveClicked')
-        col = tool.get_active_collection()
-        if col is None:
-            return
         ui_nodes = tool.get_selected_ui_table_row(
             self.solver_tableView,
             self.solver_model,
@@ -312,6 +309,10 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
     def solverMoveUpClicked(self):
         LOG.debug('solverMoveUpClicked')
         # TODO: Write this.
+        #  1 - get all UI nodes
+        #  2 - get selected UI node.
+        #  3 - get index of selected UI node
+        #  4 - move it up by one
         return
 
     def solverMoveDownClicked(self):
@@ -337,30 +338,27 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
     @QtCore.Slot(QtCore.QModelIndex, QtCore.QModelIndex)
     def objectNodeCurrentChanged(self, index, prevIndex):
-        # TODO: Look up the Maya node from the data at index, then add
-        # it to the selection.
+        """
+        Look up the Maya node from the data at index, then add it to the
+        selection.
+        """
         # TODO: Based on the Maya selection key modifiers, we should
         # add to the current selection, or toggle, as needed.
-        if not index.isValid():
+        ui_node = tool.get_ui_node_from_index(index, self.object_filterModel)
+        if ui_node is None:
             return
-        index_map = self.object_filterModel.mapToSource(index)
-        node = index_map.internalPointer()
-        if node is None:
-            return
-        node_data = node.data()
-        if node_data is None:
-            return
+        nodes = tool.convert_ui_nodes_to_nodes([ui_node], 'marker')
+        maya_nodes = map(lambda x: x.get_node(), nodes)
+        tool.set_scene_selection(maya_nodes)
         return
 
     @QtCore.Slot(QtCore.QModelIndex, QtCore.QModelIndex)
     def attrNodeCurrentChanged(self, index, prevIndex):
-        if not index.isValid():
+        ui_node = tool.get_ui_node_from_index(index, self.attribute_filterModel)
+        if ui_node is None:
             return
-        index_map = self.attribute_filterModel.mapToSource(index)
-        node = index_map.internalPointer()
-        if node is None:
-            return
-        nodeData = node.data()
-        if nodeData is None:
-            return
+        nodes = tool.convert_ui_nodes_to_nodes([ui_node], 'data')
+        maya_nodes = map(lambda x: x.get_node(), nodes)
+        tool.set_scene_selection(maya_nodes)
         return
+

@@ -32,6 +32,11 @@ def _get_selected_attributes():
     return attrs
 
 
+def set_scene_selection(nodes):
+    maya.cmds.select(nodes, replace=True)
+    return
+
+
 def get_current_frame():
     time = maya.cmds.currentTime(query=True)
     return int(time)
@@ -47,6 +52,11 @@ def get_timeline_range_outer():
     s = maya.cmds.playbackOptions(query=True, animationStartTime=True)
     e = maya.cmds.playbackOptions(query=True, animationEndTime=True)
     return int(s), int(e)
+
+
+def prompt_for_new_node_name(title, message, text):
+    # TODO: Make this work, use a Maya prompt command.
+    return 'my_new_name1'
 
 
 def get_markers_from_selection():
@@ -87,13 +97,10 @@ def get_selected_maya_attributes():
     nodes = maya.cmds.ls(sl=True, long=True)
     attr_list = []
     for n in nodes:
-        LOG.debug('node: %r', n)
         for a in attrs:
-            LOG.debug('attr: %r', a)
             attr = mmapi.Attribute(node=n, attr=a)
             if attr.get_name() is not None:
                 attr_list.append(attr)
-    LOG.debug('attr_list: %r', attr_list)
     return attr_list
 
 
@@ -102,11 +109,9 @@ def get_active_collection():
     if uid is None:
         return None
     nodes = maya.cmds.ls(uid, long=True) or []
-    # LOG.debug('get_active_collection node: %r', nodes)
     col = None
     if len(nodes) > 0:
         col = mmapi.Collection(name=nodes[0])
-        # LOG.debug('get_active_collection col: %r', col)
     return col
 
 
@@ -220,16 +225,21 @@ def remove_attr_from_collection(attr_list, col):
     return col.remove_attribute_list(attr_list)
 
 
+def get_ui_node_from_index(idx, filter_model):
+    if idx.isValid() is False:
+        return None
+    idx_map = filter_model.mapToSource(idx)
+    ui_node = idx_map.internalPointer()
+    return ui_node
+
+
 def get_selected_ui_nodes(tree_view, filter_model):
     node_list = []
     sel_model = tree_view.selectionModel()
     selection = sel_model.selection()
     index_list = selection.indexes()
     for idx in index_list:
-        if idx.isValid() is False:
-            continue
-        idx_map = filter_model.mapToSource(idx)
-        ui_node = idx_map.internalPointer()
+        ui_node = get_ui_node_from_index(idx, filter_model)
         if ui_node is None:
             continue
         node_list.append(ui_node)
@@ -298,6 +308,7 @@ def create_frame_list_from_int_list(int_list):
 
 def compile_collection(col):
     LOG.debug('compile_collection: %r', col)
+    # TODO: Get all solvers, make sure it all works.
     raise NotImplementedError
 
 

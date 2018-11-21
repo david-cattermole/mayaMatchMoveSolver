@@ -282,6 +282,8 @@ def convert_ui_nodes_to_nodes(ui_nodes, key):
 
 def create_solver():
     sol = mmapi.Solver()
+    sol.set_max_iterations(10)
+    sol.set_verbose(True)
     start, end = get_timeline_range_inner()
     for f in xrange(start, end + 1):
         frm = mmapi.Frame(f)
@@ -308,13 +310,13 @@ def create_frame_list_from_int_list(int_list):
 
 def compile_collection(col):
     LOG.debug('compile_collection: %r', col)
-    # TODO: Get all solvers, make sure it all works.
-    raise NotImplementedError
+    return col.is_valid()
 
 
-def execute_solver(col):
+def execute_collection(col):
     LOG.debug('execute_solver: %r', col)
-    raise NotImplementedError
+    col.execute()
+    return
 
 
 def get_log_level():

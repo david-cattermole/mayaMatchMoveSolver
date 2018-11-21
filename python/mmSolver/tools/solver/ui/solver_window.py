@@ -41,6 +41,9 @@ class SolverWindow(BaseWindow):
 
         # Standard Buttons
         self.baseHideStandardButtons()
+        # TODO: every time the currently active collection changes, we should
+        # compile the collection and set the enabled state of the applyBtn, so
+        # the user can only solve when the collection is valid.
         self.applyBtn.show()
         self.helpBtn.show()
         self.closeBtn.show()
@@ -258,18 +261,20 @@ class SolverWindow(BaseWindow):
         # frame_list = self.subForm.getFrameList()
         # LOG.debug('apply: %r', frame_list)
         LOG.debug('apply')
-        for i in range(100):
-            self.progressBar.setValue(i)
-            time.sleep(0.01)
-        self.progressBar.hide()
+        # for i in range(100):
+        #     self.progressBar.setValue(i)
+        #     time.sleep(0.01)
+        # self.progressBar.hide()
         # TODO: Get all UI elements, and launch solve.
         # Should we create 'tool' function?
         # How should we pass the data to the tool function?
-
         col = tool.get_active_collection()
         ok = tool.compile_collection(col)
-        if ok is True:
-            tool.execute_solver(col)
+        if ok is not True:
+            msg = 'Cannot execute solver, collection is not valid.'
+            msg += 'collection=%r'
+            LOG.warning(msg, col)
+        tool.execute_collection(col)
         return
 
     def help(self):

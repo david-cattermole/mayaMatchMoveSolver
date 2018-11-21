@@ -13,6 +13,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
+import mmSolver._api.constant as const
 import mmSolver._api.solveresult as solveresult
 import mmSolver._api.solver as solver
 import mmSolver._api.marker as marker
@@ -542,9 +543,20 @@ class Collection(object):
         kwargs['attr'] = attrs
         kwargs['frame'] = frames
 
-        kwargs['solverType'] = sol.get_solver_type()
-        kwargs['iterations'] = sol.get_max_iterations()
-        kwargs['verbose'] = sol.get_verbose()
+        solver_type = sol.get_solver_type()
+        if solver_type is not None:
+            kwargs['solverType'] = solver_type
+        else:
+            kwargs['solverType'] = const.SOLVER_TYPE_LEVMAR
+
+        iterations = sol.get_max_iterations()
+        if iterations is not None:
+            kwargs['iterations'] = iterations
+
+        verbose = sol.get_verbose()
+        if verbose is not None:
+            kwargs['verbose'] = verbose
+
         delta = sol.get_delta()
         if delta is not None:
             kwargs['delta'] = delta
@@ -601,7 +613,7 @@ class Collection(object):
             raise excep.NotValid(msg)
 
         # Compile all the solvers
-        for sol in sol_list:
+        for sol in sol_enabled_list:
             if sol.get_frame_list_length() == 0:
                 raise excep.NotValid(msg)
             kwargs = self.__compile_solver(sol, mkr_list, attr_list)
@@ -627,7 +639,8 @@ class Collection(object):
         Compile the collection, then pass that data to the 'mmSolver' command.
 
         The mmSolver command will return a list of strings, which will then be
-        passed to the SolveResult class so the user can query the raw data using an interface.
+        passed to the SolveResult class so the user can query the raw data
+        using an interface.
 
         :return: List of SolveResults
         :rtype: list of solveresult.SolverResult

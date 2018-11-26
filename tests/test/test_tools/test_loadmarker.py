@@ -54,7 +54,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
     def test_loadmarker_uvtrack_format(self):
         """
         Test loading markers using the '.uv' format.
-        
+
         TODO: Make sure to test both formats, format 1 and 2.
         """
         mkr_data_list = []
@@ -97,8 +97,8 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         mkr_data_list = []
         paths = [
             (self.get_data_path('3de_v4', 'loadmarker_corners.txt'), (1920.0, 1080.0)),
-            (self.get_data_path('3de_v4', '3de_export_cube.txt'), (1920.0, 1080.0)),
-            (self.get_data_path('3de_v4', 'FB1880_man_v05.txt'), (1920.0, 1080.0)),
+            # (self.get_data_path('3de_v4', '3de_export_cube.txt'), (1920.0, 1080.0)),
+            # (self.get_data_path('3de_v4', 'FB1880_man_v05.txt'), (1920.0, 1080.0)),
         ]
         for path, res in paths:
             print('Reading... %r' % path)

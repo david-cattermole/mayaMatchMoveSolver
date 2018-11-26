@@ -38,6 +38,26 @@ def getMayaMainWindow():
     return window
 
 
+def isValidQtObject(obj):
+    """
+    Does a Python object contain a valid Qt reference pointer?
+    """
+    v = None
+    host = getHostApplication()
+    if host == 'standalone':
+        raise NotImplementedError
+    elif host == 'maya':
+        try:
+            from shiboken2 import isValid
+        except ImportError:
+            from shiboken import isValid
+        v = isValid(obj)
+    else:
+        raise NotImplementedError
+    assert isinstance(v, bool) is True
+    return v
+
+
 def getParent():
     host = getHostApplication()
 
@@ -50,7 +70,8 @@ def getParent():
     elif host == 'maya':
         parent = getMayaMainWindow()
     else:
-        assert False
+        msg = 'Host application is not valid: host=%r'
+        raise ValueError(msg % host)
     return app, parent
 
 
@@ -60,11 +81,9 @@ def getBaseWindow():
     host = getHostApplication()
     if host == 'standalone':
         import mmSolver.ui.base_standalone_window as baseModule
-        # reload(baseModule)
         BaseWindow = baseModule.BaseStandaloneWindow
     elif host == 'maya':
         import mmSolver.ui.base_maya_window as baseModule
-        # reload(baseModule)
         BaseWindow = baseModule.BaseMayaWindow
     else:
         print('Warning: Unknown application host, %r' % host)

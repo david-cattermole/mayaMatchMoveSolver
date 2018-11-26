@@ -1,5 +1,5 @@
 """
-
+The main window for the 'Solver' tool.
 """
 
 import sys
@@ -289,18 +289,20 @@ class SolverWindow(BaseWindow):
 def main(show=True, widthHeight=(800, 600)):
     global UI
 
+    valid = uiutils.isValidQtObject(UI)
+    if UI is not None and valid is True:
+        UI.close()
+
     name = 'SolverWindow'
     app, parent = uiutils.getParent()
-
-    if UI is not None:
-        UI.close()
     UI = SolverWindow(parent=parent, name=name)
     if not UI:
         return UI
     if show:
         UI.show()
 
-    if widthHeight:
+    if ((isinstance(widthHeight, (tuple, list)) is True)
+         and (len(widthHeight) == 2)):
         pos = UI.pos()
         UI.setGeometry(pos.x(), pos.y(), widthHeight[0], widthHeight[1])
 

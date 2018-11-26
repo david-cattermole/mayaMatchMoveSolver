@@ -2,16 +2,11 @@
 The Solver layout, the contents of the main solver window.
 """
 
-import sys
-import time
-from functools import partial
-
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
-import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.tools.solver.ui.attr_nodes as attr_nodes
 import mmSolver.tools.solver.ui.object_nodes as object_nodes
@@ -19,7 +14,6 @@ import mmSolver.tools.solver.ui.solver_nodes as solver_nodes
 import mmSolver.tools.solver.ui.ui_solver_layout as ui_solver_layout
 import mmSolver.tools.solver.ui.convert_to_ui as convert_to_ui
 import mmSolver.tools.solver.tool as tool
-import mmSolver.tools.solver.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
@@ -155,7 +149,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if col is None:
             return
         mkr_list = tool.get_markers_from_collection(col)
-        root = convert_to_ui.markersToObjectNodes(mkr_list)
+        root = convert_to_ui.markersToUINodes(mkr_list)
         model.setRootNode(root)
         return
 
@@ -164,7 +158,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if col is None:
             return
         attr_list = tool.get_attributes_from_collection(col)
-        root = convert_to_ui.attributesToAttrNodes(attr_list)
+        root = convert_to_ui.attributesToUINodes(attr_list)
         model.setRootNode(root)
         return
 
@@ -172,8 +166,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         col = tool.get_active_collection()
         if col is None:
             return
-        sol_list = tool.get_solvers_from_collection(col)
-        node_list = convert_to_ui.solversToSolverNodes(sol_list, col)
+        step_list = tool.get_solver_steps_from_collection(col)
+        node_list = convert_to_ui.solverStepsToUINodes(step_list, col)
         self.solver_model.setNodeList(node_list)
         return
 
@@ -286,8 +280,12 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
     def solverAddClicked(self):
         LOG.debug('solverAddClicked')
         col = tool.get_active_collection()
-        sol = tool.create_solver()
-        tool.add_solver_to_collection(sol, col)
+        if col is None:
+            msg = 'Cannot add Solver Step, active collection is invalid,'
+            LOG.warning(msg)
+            return
+        step = tool.create_solver_step()
+        tool.add_solver_step_to_collection(col, step)
         self.updateSolverModel()
         return
 
@@ -298,11 +296,12 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             self.solver_model,
             self.solver_filterModel
         )
-        sol_nodes = tool.convert_ui_nodes_to_nodes(ui_nodes, 'solver_node')
+        names = map(lambda x: x.name(), ui_nodes)
         col_nodes = tool.convert_ui_nodes_to_nodes(ui_nodes, 'collection_node')
-        assert len(sol_nodes) == len(col_nodes)
-        for sol, col in zip(sol_nodes, col_nodes):
-            tool.remove_solver_from_collection(sol, col)
+        assert len(names) == len(col_nodes)
+        for name, col in zip(names, col_nodes):
+            step = tool.get_named_solver_step_from_collection(col, name)
+            tool.remove_solver_step_from_collection(col, step)
         self.updateSolverModel()
         return
 
@@ -344,6 +343,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         """
         # TODO: Based on the Maya selection key modifiers, we should
         # add to the current selection, or toggle, as needed.
+        # TODO: When an object node tree item is selected, the attr nodes tree
+        # view must all be deselected.
         ui_node = tool.get_ui_node_from_index(index, self.object_filterModel)
         if ui_node is None:
             return

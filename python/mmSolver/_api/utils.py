@@ -3,6 +3,7 @@ Utility functions for Maya API.
 """
 
 from functools import wraps
+import json
 
 import maya.cmds
 import maya.OpenMaya as OpenMaya
@@ -230,3 +231,64 @@ def undo_chunk(func):
             maya.cmds.undoInfo(closeChunk=True)
             maya.cmds.undo()
     return _func
+
+
+def get_data_on_node_attr(node_name, attr_name):
+    """
+    Get data from an node attribute.
+
+    :param node_name: Node to get data from.
+    :type node_name: str
+
+    :param attr_name: The name of the attribute to get data from.
+    :type attr_name: str
+
+    :return: Arbitrary Plain-Old-Data data structures.
+    :rtype: list of dict
+    """
+    ret = []
+    attrs = maya.cmds.listAttr(node_name)
+    if attr_name not in attrs:
+        msg = 'attr_name not found on node: '
+        msg += 'attr_name={name} node={node}'
+        msg = msg.format(name=attr_name, node=node_name)
+        raise ValueError(msg)
+    node_attr = node_name + '.' + attr_name
+    attr_data = maya.cmds.getAttr(node_attr)
+    if attr_data is None:
+        return ret
+    data = json.loads(attr_data)
+    if isinstance(data, list):
+        ret = data
+    return ret
+
+
+def set_data_on_node_attr(node_name, attr_name, data):
+    """
+    Set arbitrary Plain-Old-Data onto a node.attr path.
+
+    :param node_name: Node to store data on.
+    :type node_name: str
+
+    :param attr_name: Attribute name to store data with.
+    :type attr_name: str
+
+    :param data: The data to store.
+    :type data: list or dict
+
+    ;return: Nothing.
+    :rtype: None
+    """
+    assert isinstance(attr_name, (str, unicode))
+    assert isinstance(data, (list, dict))
+    node_attr = node_name + '.' + attr_name
+
+    new_attr_data = json.dumps(data)
+    old_attr_data = maya.cmds.getAttr(node_attr)
+    if old_attr_data == new_attr_data:
+        return  # no change is needed.
+
+    maya.cmds.setAttr(node_attr, lock=False)
+    maya.cmds.setAttr(node_attr, new_attr_data, type='string')
+    maya.cmds.setAttr(node_attr, lock=True)
+    return

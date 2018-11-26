@@ -1,15 +1,18 @@
 """
-Solver tool.
+Solver tool functions - everything the solver tool can do.
 """
 
-import json
+import uuid
+
 import maya.cmds
 import maya.mel
+
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.selection.filternodes as filternodes
 import mmSolver.tools.solver.constant as const
 import mmSolver.tools.solver.scene_data as scene_data
+import mmSolver.tools.solver.solver_step as solver_step
 
 
 LOG = mmSolver.logger.get_logger()
@@ -136,7 +139,10 @@ def get_collections():
 def create_collection():
     col = mmapi.Collection().create_node('collection1')
     sol = create_solver()
-    col.add_solver(sol)
+    add_solver_to_collection(sol, col)
+    ensure_solver_steps_attr_exists(col)
+    step = create_solver_step()
+    add_solver_step_to_collection(col, step)
     return col
 
 
@@ -267,15 +273,12 @@ def get_selected_ui_table_row(tree_view, model, filter_model):
 def convert_ui_nodes_to_nodes(ui_nodes, key):
     nodes = []
     for ui_node in ui_nodes:
-        # LOG.debug('ui_node: %r', ui_node)
         node_data = ui_node.data()
         if node_data is None:
             continue
-        # LOG.debug('node_data: %s', node_data)
         mkr_node = node_data.get(key)
         if mkr_node is None:
             continue
-        # LOG.debug('mkr_node: %s', mkr_node)
         nodes.append(mkr_node)
     return nodes
 
@@ -304,18 +307,124 @@ def remove_solver_from_collection(sol, col):
     return col.remove_solver(sol)
 
 
+def create_solver_step():
+    data = const.SOLVER_STEP_DATA_DEFAULT.copy()
+
+    data['name'] = str(uuid.uuid4())
+
+    start, end = get_timeline_range_inner()
+    frame_list = list(xrange(start, end + 1))
+    data['frame_list'] = frame_list
+
+    step = solver_step.SolverStep(data=data)
+    return step
+
+
+def ensure_solver_steps_attr_exists(col):
+    node = col.get_node()
+    attr_name = const.SOLVER_STEP_ATTR
+    attrs = maya.cmds.listAttr(node)
+    if attr_name in attrs:
+        return
+    maya.cmds.addAttr(
+        node,
+        longName=attr_name,
+        dataType='string'
+    )
+    maya.cmds.setAttr(
+        node + '.' + attr_name,
+        lock=True
+    )
+    return
+
+
+def get_solver_steps_from_collection(col):
+    """
+    Load all steps from collection.
+    """
+    node = col.get_node()
+    ensure_solver_steps_attr_exists(col)
+    data_list = mmapi.get_data_on_node_attr(node, const.SOLVER_STEP_ATTR)
+    step_list = map(lambda x: solver_step.SolverStep(x), data_list)
+    return step_list
+
+
+def get_named_solver_step_from_collection(col, name):
+    step_list = get_solver_steps_from_collection(col)
+    name_list = map(lambda x: x.get_name(), step_list)
+    if name not in name_list:
+        return None
+    idx = name_list.index(name)
+    return step_list[idx]
+
+
+def set_named_solver_step_to_collection(col, step):
+    name = step.get_name()
+    step_list = get_solver_steps_from_collection(col)
+    name_list = map(lambda x: x.get_name(), step_list)
+    if name not in name_list:
+        raise ValueError
+    idx = list(name_list).index(name)
+    step_list.pop(idx)
+    step_list.insert(idx, step)
+    set_solver_step_list_to_collection(col, step_list)
+    return
+
+
+def add_solver_step_to_collection(col, step):
+    step_list = get_solver_steps_from_collection(col)
+    name_list = map(lambda x: x.get_name(), step_list)
+    name = step.get_name()
+    if name in name_list:
+        raise ValueError
+    step_list.insert(0, step)  # new step pushed onto the front.
+    set_solver_step_list_to_collection(col, step_list)
+    return
+
+
+def remove_solver_step_from_collection(col, step):
+    step_list = get_solver_steps_from_collection(col)
+    name_list = map(lambda x: x.get_name(), step_list)
+    name = step.get_name()
+    if name not in name_list:
+        raise ValueError
+    idx = list(name_list).index(name)
+    step_list.pop(idx)
+    set_solver_step_list_to_collection(col, step_list)
+    return
+
+
+def set_solver_step_list_to_collection(col, step_list):
+    node = col.get_node()
+    data_list = map(lambda x: x.get_data(), step_list)
+    ensure_solver_steps_attr_exists(col)
+    mmapi.set_data_on_node_attr(node, const.SOLVER_STEP_ATTR, data_list)
+    compile_solvers(col)
+    return
+
+
 def create_frame_list_from_int_list(int_list):
     return map(lambda x: mmapi.Frame(x), int_list)
 
 
+def compile_solvers(col):
+    sol_list = []
+    step_list = get_solver_steps_from_collection(col)
+    for step in step_list:
+        tmp_list = step.compile()
+        sol_list += tmp_list
+    col.set_solver_list(sol_list)
+    return
+
+
 def compile_collection(col):
-    LOG.debug('compile_collection: %r', col)
+    compile_solvers(col)
     return col.is_valid()
 
 
-def execute_collection(col):
-    LOG.debug('execute_solver: %r', col)
-    col.execute()
+def execute_collection(col, prog_fn=None):
+    LOG.debug('execute_collection: col=%r prog_fn=%r', col, prog_fn)
+    col.execute(prog_fn=prog_fn)
     return
 
 
@@ -330,3 +439,4 @@ def gui():
     :return:
     """
     pass
+

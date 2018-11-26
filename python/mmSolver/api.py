@@ -43,6 +43,8 @@ from mmSolver._api.utils import (
     get_marker_name,
     get_bundle_name,
     load_plugin,
+    get_data_on_node_attr,
+    set_data_on_node_attr,
 )
 
 # Animation Utility functions that the user is allowed to use.
@@ -85,4 +87,6 @@ __all__ = [
     'get_bundle_name',
     'load_plugin',
     'create_anim_curve_node',
+    'get_data_on_node_attr',
+    'set_data_on_node_attr',
 ]

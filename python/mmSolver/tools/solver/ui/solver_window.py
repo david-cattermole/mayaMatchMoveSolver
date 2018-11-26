@@ -274,7 +274,11 @@ class SolverWindow(BaseWindow):
             msg = 'Cannot execute solver, collection is not valid.'
             msg += 'collection=%r'
             LOG.warning(msg, col)
-        tool.execute_collection(col)
+        tool.execute_collection(
+            col,
+            prog_fn=self.progressBar.setValue
+        )
+        self.progressBar.hide()
         return
 
     def help(self):

@@ -7,6 +7,7 @@ maya.cmds.* so that they support undo/redo correctly.
 
 import json
 import pprint
+import uuid
 
 import maya.cmds
 
@@ -83,37 +84,24 @@ class Collection(object):
         :return: List of data arbitrary structures.
         :rtype: list of dict
         """
-        ret = []
         set_node = self._set.get_node()
-        attrs = maya.cmds.listAttr(set_node)
-        if attr_name not in attrs:
-            msg = 'attr_name not found on node: '
-            msg += 'attr_name={name} node={node}'
-            msg = msg.format(name=attr_name, node=node)
-            raise ValueError(msg)
-        node_attr = set_node + '.' + attr_name
-        attr_data = maya.cmds.getAttr(node_attr)
-        if attr_data is None:
-            return ret
-        data = json.loads(attr_data)
-        if isinstance(data, list):
-            ret = data
-        return ret
+        return api_utils.get_data_on_node_attr(set_node, attr_name)
 
     def _set_attr_data(self, attr_name, data):
-        assert isinstance(attr_name, (str, unicode))
-        assert isinstance(data, (list, dict))
+        """
+        Set arbitrary data onto a collection node.
+
+        :param attr_name: Attribute name to store data with.
+        :type attr_name: str
+
+        :param data: The data to store.
+        :type data: list or dict
+
+        ;return: Nothing.
+        :rtype: None
+        """
         set_node = self._set.get_node()
-        node_attr = set_node + '.' + attr_name
-
-        new_attr_data = json.dumps(data)
-        old_attr_data = maya.cmds.getAttr(node_attr)
-        if old_attr_data == new_attr_data:
-            return  # no change is needed.
-
-        maya.cmds.setAttr(node_attr, lock=False)
-        maya.cmds.setAttr(node_attr, new_attr_data, type='string')
-        maya.cmds.setAttr(node_attr, lock=True)
+        api_utils.set_data_on_node_attr(set_node, attr_name, data)
         self._kwargs_list = []  # reset argument flag cache.
         return
 
@@ -477,12 +465,17 @@ class Collection(object):
             min_value = attr.get_min_value()
             max_value = attr.get_max_value()
             if min_value is None:
-                if maya.cmds.attributeQuery(attr_name,
-                                            node=node_name,
-                                            minExists=True):
-                    min_value = maya.cmds.attributeQuery(attr_name,
-                                                         node=node_name,
-                                                         minimum=True)
+                min_exists = maya.cmds.attributeQuery(
+                    attr_name,
+                    node=node_name,
+                    minExists=True,
+                )
+                if min_exists:
+                    min_value = maya.cmds.attributeQuery(
+                        attr_name,
+                        node=node_name,
+                        minimum=True,
+                    )
                     if len(min_value) == 1:
                         min_value = min_value[0]
                     else:
@@ -492,12 +485,17 @@ class Collection(object):
                         raise excep.NotValid(msg)
 
             if max_value is None:
-                if maya.cmds.attributeQuery(attr_name,
-                                            node=node_name,
-                                            maxExists=True):
-                    max_value = maya.cmds.attributeQuery(attr_name,
-                                                         node=node_name,
-                                                         maximum=True)
+                max_exists = maya.cmds.attributeQuery(
+                    attr_name,
+                    node=node_name,
+                    maxExists=True,
+                )
+                if max_exists is True:
+                    max_value = maya.cmds.attributeQuery(
+                        attr_name,
+                        node=node_name,
+                        maximum=True,
+                    )
                     if len(max_value) == 1:
                         max_value = max_value[0]
                     else:
@@ -620,6 +618,9 @@ class Collection(object):
             if isinstance(kwargs, dict):
                 kwargs_list.append(kwargs)
             else:
+                msg = 'Collection is not valid, failed to compile solver;'
+                msg += ' collection={0}'
+                msg = msg.format(repr(col_node))
                 raise excep.NotValid(msg)
 
         # Set arguments
@@ -634,7 +635,7 @@ class Collection(object):
             ret = False
         return ret
 
-    def execute(self):
+    def execute(self, prog_fn=None):
         """
         Compile the collection, then pass that data to the 'mmSolver' command.
 
@@ -645,15 +646,41 @@ class Collection(object):
         :return: List of SolveResults
         :rtype: list of solveresult.SolverResult
         """
-        # Check for validity
-        solres_list = []
-        if self.is_valid() is False:
-            LOG.warning('collection not valid', self.get_node())
-            return solres_list
+        undo_state = maya.cmds.undoInfo(query=True, state=True)
+        undo_id = 'mmSolver.api.collection.execute: ' + str(uuid.uuid4())
+        try:
+            if undo_state is True:
+                maya.cmds.undoInfo(openChunk=True, chunkName=undo_id)
+            if prog_fn is not None:
+                prog_fn(0)
 
-        kwargs_list = self._compile()
-        for kwargs in kwargs_list:
-            solve_data = maya.cmds.mmSolver(**kwargs)
-            solres = solveresult.SolveResult(solve_data)
-            solres_list.append(solres)
+            # Check for validity
+            solres_list = []
+            if self.is_valid() is False:
+                LOG.warning('collection not valid: %r', self.get_node())
+                return solres_list
+            if prog_fn is not None:
+                prog_fn(1)
+
+            kwargs_list = self._compile()
+            if prog_fn is not None:
+                prog_fn(2)
+
+            # Run Solver...
+            start = 2
+            total = len(kwargs_list) - 1
+            for i, kwargs in enumerate(kwargs_list):
+                solve_data = maya.cmds.mmSolver(**kwargs)
+                if prog_fn is not None:
+                    ratio = float(i) / float(total)
+                    percent = float(start) + (ratio * (100.0 - start))
+                    prog_fn(int(percent))
+                solres = solveresult.SolveResult(solve_data)
+                solres_list.append(solres)
+        except RuntimeError as e:
+            solres_list = []
+            LOG.error(e)
+        finally:
+            if undo_state is True:
+                maya.cmds.undoInfo(closeChunk=True, chunkName=undo_id)
         return solres_list

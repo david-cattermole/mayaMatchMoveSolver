@@ -491,7 +491,7 @@ class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
         if role in [QtCore.Qt.DisplayRole,
                     QtCore.Qt.EditRole,
                     QtCore.Qt.UserRole]:
-            self.dataChanged.emit(index, index)
+            self.dataChanged.emit(index, index, [role])
         else:
             return False
         return True

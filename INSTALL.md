@@ -239,9 +239,9 @@ To install into our home directory maya `plug-ins` directory (which is
 automatically on the `MAYA_PLUG_IN_PATH`), simply run these commands:
 
 ```commandline
-$ cd <project root>
 $ mkdir ~/maya/<maya version>/plug-ins
-$ cp mmSolver.so ~/maya/<maya version>/plug-ins
+$ cd <project root>
+$ cp build/mmSolver.so ~/maya/<maya version>/plug-ins
 ```
 
 Because we're using a number of third-party libraries, we need to make

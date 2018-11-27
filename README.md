@@ -20,7 +20,7 @@ attributes.
 Using arbitrary solving attributes makes the solver extremely
 flexible; any floating-point attribute in Maya can be adjusted to
 reduce 2D-to-3D reprojection error. Use Maya's DG and DAG nodes to
-setup complex constraints and find the best solution to whatever
+setup complex constraints and find the best solution to any
 MatchMove solve you need.
 
 ## Use Cases
@@ -44,30 +44,39 @@ MatchMove solve you need.
   - Spinning ("busy") cursor is shown when solving.
   - Ability to cancel out of solve before it's completed (partially
     solved parameters will be lost).
+  - Multi-camera solving (photogrammetry).
+  - 2D-to-3D error weighting.
+  - Marker 'validity' support - frames where markers are occluded.
   
 - Python API
-  - Work in progress API.
+  - Object-Oriented Helper classes to create node networks and store
+    the data structure inside a Maya scene.
+  - Allows storage of multiple 'collections' of solver arguments in
+    one Maya scene file.
+  - Creates Maya nodes to represent Markers and Bundles.
+  -
 
 - User Tools
-  - None
+  - Solver GUI
+    - Supports creation of mmSolver arguments using a GUI.
+  - Load Marker GUI
+    - Supports 3DEqualizer *.txt, MatchMover *.rz2 and custom *.uv
+      file formats.
 
 ## Planned Features
 
 - Solver Plug-in
-  - Multi-camera solving (photogrammetry) - only a single camera is
-    currently supported.
-  - 2D-to-3D error weighting.
   - Evaluation of complex character rigs for soft-deformation.
-  - Optimised multi-frame solving - research into faster (smarter)
-    multi-frame solving.
-  - Marker 'validity' support - frames where markers are occluded.
   - Smoothness / Jerkiness error metric to enable the solver reduce
     bumpy solves, especially for multi-frame solves.
   - Sparse curve solving - solving attributes at only specific frames,
     rather than per-frame.
+  - Error weighting based on un-realistic Center-Of-Mass trajectory
+    velocities.
   
 - Python API
-  - Simple object oriented API for setting up and running solves.
+  - Returning, storing and parsing output data from a mmSolve
+    execution.
 
 - User Tools
   - GUI to select camera and object channels to solve.
@@ -78,8 +87,8 @@ MatchMove solve you need.
       points.
   - Tool to project 2D markers onto polygons, creating associated
     static or animated locators.
-  - Tool to import 2D markers to Maya, reading 3DE or pfTrack, etc. 2D
-    tracking files.
+  - Graphing Solve information including errors per-frame, solve
+    time taken, etc.
 
 Note: Due to the complexity of integrating Lens Distortion into Maya
 and the MM Solver, Lens Distortion is not handled by this solver. It

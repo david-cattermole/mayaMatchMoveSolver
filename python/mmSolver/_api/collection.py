@@ -634,7 +634,7 @@ class Collection(object):
             ret = False
         return ret
 
-    def execute(self, prog_fn=None, refresh=True):
+    def execute(self, prog_fn=None, refresh=False):
         """
         Compile the collection, then pass that data to the 'mmSolver' command.
 
@@ -679,9 +679,8 @@ class Collection(object):
                 solres = solveresult.SolveResult(solve_data)
                 solres_list.append(solres)
                 if refresh is True:
-                    # Update Maya time if single frame is being solved.
                     frame = kwargs.get('frame')
-                    if frame is not None and len(frame) == 1:
+                    if frame is not None and len(frame) > 0:
                         maya.cmds.currentTime(
                             frame[0],
                             edit=True,
@@ -690,6 +689,8 @@ class Collection(object):
                     maya.cmds.refresh()
         except:
             solres_list = []
+            # TODO: If we have failed, should we attempt to clean up the mess
+            # and undo the entire undo chunk?
             raise
         finally:
             if prog_fn is not None:

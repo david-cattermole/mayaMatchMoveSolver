@@ -9,21 +9,31 @@ import mmSolver.tools.solver.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
+def _gen_two_frame_fwd(int_list):
+    end = len(int_list) - 1
+    batch_list = []
+    for i in range(end):
+        s = i
+        e = i + 2
+        tmp_list = int_list[s:e]
+        frm_list = []
+        for j, num in enumerate(tmp_list):
+            frm = mmapi.Frame(num)
+            frm_list.append(frm)
+        batch_list.append(frm_list)
+    return batch_list
 
 def _solve_anim_attrs(max_iter_num, verbose, int_list):
     sol_list = []
-    frm_list = map(lambda x: mmapi.Frame(x), int_list)
-    for frm in frm_list:
+
+    # frm_list = map(lambda x: mmapi.Frame(x), int_list)
+    batch_list = _gen_two_frame_fwd(int_list)
+
+    for frm_list in batch_list:
         sol = mmapi.Solver()
         sol.set_max_iterations(max_iter_num)
-        sol.set_delta(-1e-2)
-        sol.set_tau_factor(1e-3)
         sol.set_verbose(verbose)
-
-        sol.add_frame(frm)
-        frm2 = mmapi.Frame(frm.get_number() + 1)
-        sol.add_frame(frm2)
-
+        sol.set_frame_list(frm_list)
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(False)
         sol_list.append(sol)
@@ -46,18 +56,7 @@ def _solve_all_attrs(max_iter_num, verbose, int_list, strategy):
         return sol_list
 
     if strategy == const.STRATEGY_TWO_FRAMES_FWD:
-        end = len(int_list) - 1
-        batch_list = []
-        for i in range(end):
-            s = i
-            e = i + 2
-            tmp_list = int_list[s:e]
-            frm_list = []
-            for j, num in enumerate(tmp_list):
-                frm = mmapi.Frame(num)
-                frm_list.append(frm)
-            batch_list.append(frm_list)
-
+        batch_list = _gen_two_frame_fwd(int_list)
         for frm_list in batch_list:
             sol = mmapi.Solver()
             sol.set_max_iterations(max_iter_num)

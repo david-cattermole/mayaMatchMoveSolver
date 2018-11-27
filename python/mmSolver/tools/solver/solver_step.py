@@ -16,8 +16,14 @@ def _solve_anim_attrs(max_iter_num, verbose, int_list):
     for frm in frm_list:
         sol = mmapi.Solver()
         sol.set_max_iterations(max_iter_num)
+        sol.set_delta(-1e-2)
+        sol.set_tau_factor(1e-3)
         sol.set_verbose(verbose)
+
         sol.add_frame(frm)
+        frm2 = mmapi.Frame(frm.get_number() + 1)
+        sol.add_frame(frm2)
+
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(False)
         sol_list.append(sol)

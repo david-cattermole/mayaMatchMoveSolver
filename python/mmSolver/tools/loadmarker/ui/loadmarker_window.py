@@ -1,16 +1,14 @@
 """
+Window for the Load Marker tool.
 
 Usage::
 
-   import mmSolver.tools.solver.ui.solver_window as solver_window;
-   reload(solver_window)
-   solver_window.main()
+   import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
+   loadmarker_window.main()
 
 """
 
 import sys
-import time
-from functools import partial
 
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
@@ -103,18 +101,20 @@ class LoadMarkerWindow(BaseWindow):
 def main(show=True, widthHeight=(800, 400)):
     global UI
 
+    valid = uiutils.isValidQtObject(UI)
+    if UI is not None and valid is True:
+        UI.close()
+
     name = 'LoadMarkerWindow'
     app, parent = uiutils.getParent()
-
-    if UI is not None:
-        UI.close()
     UI = LoadMarkerWindow(parent=parent, name=name)
     if not UI:
         return UI
     if show:
         UI.show()
 
-    if widthHeight:
+    if ((isinstance(widthHeight, (tuple, list)) is True)
+         and (len(widthHeight) == 2)):
         pos = UI.pos()
         UI.setGeometry(pos.x(), pos.y(), widthHeight[0], widthHeight[1])
 

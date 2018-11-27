@@ -24,6 +24,10 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         super(SolverLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
+        # Store the parent window class, so we can set the applyBtn enabled
+        # state.
+        self._parentClass = parent
+
         # Collection Combo Box.
         self.collectionName_model = uimodels.StringDataListModel()
         self.collectionName_comboBox.setModel(self.collectionName_model)
@@ -94,7 +98,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.solver_filterModel.setDynamicSortFilter(False)
         self.solver_tableView.setModel(self.solver_filterModel)
         self.solver_tableView.setSortingEnabled(False)
-        # self.solver_tableView.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.solver_selModel = self.solver_tableView.selectionModel()
         # self.solver_selModel.currentChanged.connect(self.solverNodeCurrentChanged)
 
@@ -112,6 +115,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateObjectModel()
         self.updateAttributeModel()
         self.updateSolverModel()
+        self.updateSolveValidState()
         return
 
     def updateCollectionModel(self):
@@ -133,6 +137,20 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
     def updateSolverModel(self):
         self.populateSolverModel(self.solver_model)
+        return
+
+    def updateSolveValidState(self):
+        v = True
+        col = tool.get_active_collection()
+        if col is None:
+            v = False
+        else:
+            v = tool.compile_collection(col)
+        assert isinstance(v, bool) is True
+        LOG.debug('updateSolveValidState v: %r', v)
+        if self._parentClass is not None:
+            self._parentClass.applyBtn.setEnabled(v)
+            LOG.debug('updateSolveValidState set enabled: %r', v)
         return
 
     def populateCollectionModel(self, model):
@@ -198,7 +216,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         title = 'Rename Collection node'
         msg = 'Enter new node name'
         new_name = tool.prompt_for_new_node_name(title, msg, node_name)
-        tool.rename_collection(col, new_name)
+        if new_name is not None:
+            tool.rename_collection(col, new_name)
         self.populateUi()
         return
 
@@ -231,6 +250,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         tool.add_markers_to_collection(mkr_list, col)
         self.updateObjectModel()
+        self.updateSolveValidState()
         return
 
     def objectRemoveClicked(self):
@@ -245,6 +265,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         nodes = tool.convert_ui_nodes_to_nodes(ui_nodes, 'marker')
         tool.remove_markers_from_collection(nodes, col)
         self.updateObjectModel()
+        self.updateSolveValidState()
         return
 
     def attrAddClicked(self):
@@ -261,6 +282,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         tool.add_attributes_to_collection(attr_list, col)
         self.updateAttributeModel()
+        self.updateSolveValidState()
         return
 
     def attrRemoveClicked(self):
@@ -275,6 +297,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         nodes = tool.convert_ui_nodes_to_nodes(ui_nodes, 'data')
         tool.remove_attr_from_collection(nodes, col)
         self.updateAttributeModel()
+        self.updateSolveValidState()
         return
 
     def solverAddClicked(self):
@@ -287,6 +310,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         step = tool.create_solver_step()
         tool.add_solver_step_to_collection(col, step)
         self.updateSolverModel()
+        self.updateSolveValidState()
         return
 
     def solverRemoveClicked(self):
@@ -303,6 +327,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             step = tool.get_named_solver_step_from_collection(col, name)
             tool.remove_solver_step_from_collection(col, step)
         self.updateSolverModel()
+        self.updateSolveValidState()
         return
 
     def solverMoveUpClicked(self):
@@ -312,11 +337,13 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         #  2 - get selected UI node.
         #  3 - get index of selected UI node
         #  4 - move it up by one
+        raise NotImplementedError
         return
 
     def solverMoveDownClicked(self):
         LOG.debug('solverMoveDownClicked')
         # TODO: Write this.
+        raise NotImplementedError
         return
 
     @QtCore.Slot(int)
@@ -333,6 +360,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         tool.set_active_collection(data)
         self.updateObjectModel()
         self.updateAttributeModel()
+        self.updateSolverModel()
+        self.updateSolveValidState()
         return
 
     @QtCore.Slot(QtCore.QModelIndex, QtCore.QModelIndex)

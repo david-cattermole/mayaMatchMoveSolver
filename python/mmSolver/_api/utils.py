@@ -8,6 +8,10 @@ import json
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 import mmSolver._api.constant as const
+import mmSolver.logger
+
+
+LOG = mmSolver.logger.get_logger()
 
 
 def get_long_name(node):
@@ -208,8 +212,13 @@ def load_plugin():
 
     :return:
     """
+    msg = 'Could not load plug-in %r!'
     for name in const.PLUGIN_NAMES:
-        maya.cmds.loadPlugin(name, quiet=True)
+        try:
+            maya.cmds.loadPlugin(name, quiet=True)
+        except RuntimeError, e:
+            LOG.error(msg, name)
+            raise e
     return
 
 

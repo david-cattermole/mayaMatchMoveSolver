@@ -58,8 +58,19 @@ def get_timeline_range_outer():
 
 
 def prompt_for_new_node_name(title, message, text):
-    # TODO: Make this work, use a Maya prompt command.
-    return 'my_new_name1'
+    name = None
+    result = maya.cmds.promptDialog(
+        title=title,
+        message=message,
+        text=text,
+        button=['OK', 'Cancel'],
+        defaultButton='OK',
+        cancelButton='Cancel',
+        dismissString='Cancel',
+    )
+    if result == 'OK':
+        name = maya.cmds.promptDialog(query=True, text=True)
+    return name
 
 
 def get_markers_from_selection():
@@ -353,6 +364,8 @@ def get_named_solver_step_from_collection(col, name):
     step_list = get_solver_steps_from_collection(col)
     name_list = map(lambda x: x.get_name(), step_list)
     if name not in name_list:
+        msg = 'SolverStep %r could not be found in all steps: %r'
+        LOG.warning(msg, name, name_list)
         return None
     idx = name_list.index(name)
     return step_list[idx]
@@ -383,6 +396,10 @@ def add_solver_step_to_collection(col, step):
 
 
 def remove_solver_step_from_collection(col, step):
+    if step is None:
+        msg = 'Cannot remove SolverStep, step is invalid.'
+        LOG.warning(msg)
+        return
     step_list = get_solver_steps_from_collection(col)
     name_list = map(lambda x: x.get_name(), step_list)
     name = step.get_name()
@@ -407,7 +424,7 @@ def create_frame_list_from_int_list(int_list):
     return map(lambda x: mmapi.Frame(x), int_list)
 
 
-def compile_solvers(col):
+def compile_solvers(col, prog_fn=None):
     sol_list = []
     step_list = get_solver_steps_from_collection(col)
     for step in step_list:
@@ -417,9 +434,9 @@ def compile_solvers(col):
     return
 
 
-def compile_collection(col):
-    compile_solvers(col)
-    return col.is_valid()
+def compile_collection(col, prog_fn=None):
+    compile_solvers(col, prog_fn=prog_fn)
+    return col.is_valid(prog_fn=prog_fn)
 
 
 def execute_collection(col, prog_fn=None):

@@ -17,6 +17,12 @@ TRUE_WORDS = ['1', 'y', 't', 'yes', 'on', 'ya', 'yeah', 'true']
 
 # Solver Step Strategies
 STRATEGY_TWO_FRAMES_FWD = 'two_frames_fwd'
+# # Accumulate the frame numbers...
+# # 1,2,3,4, becomes...
+# # 1 and 2
+# # 1, 2 and 3,
+# # 1, 2, 3, and 4
+# STRATEGY_TWO_FRAMES_FWD_ACCUM = 'two_frames_fwd_accum'
 STRATEGY_ALL_FRAMES_AT_ONCE = 'all_frames_at_once'
 STRATEGY_LIST = [
     STRATEGY_TWO_FRAMES_FWD,
@@ -31,17 +37,6 @@ STRATEGY_LABEL_LIST = [
 ]
 
 # Solver Step Attribute Filters
-# ATTR_FILTER_ANIM_ONLY = 'anim_only'
-# ATTR_FILTER_STATIC_AND_ANIM = 'static_and_anim'
-# ATTR_FILTER_STATIC_ONLY = 'static_only'
-# ATTR_FILTER_NO_ATTRS = 'no_attributes'
-# ATTR_FILTER_LIST = [
-#     ATTR_FILTER_ANIM_ONLY,
-#     ATTR_FILTER_STATIC_AND_ANIM,
-#     ATTR_FILTER_STATIC_ONLY,
-#     ATTR_FILTER_NO_ATTRS,
-# ]
-
 ATTR_FILTER_ANIM_ONLY_LABEL = 'Animated Only'
 ATTR_FILTER_STATIC_AND_ANIM_LABEL = 'Static + Animated'
 ATTR_FILTER_STATIC_ONLY_LABEL = 'Static Only'

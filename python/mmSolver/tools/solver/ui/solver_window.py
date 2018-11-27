@@ -3,7 +3,6 @@ The main window for the 'Solver' tool.
 """
 
 import sys
-import time
 from functools import partial
 
 import Qt.QtCore as QtCore
@@ -41,9 +40,6 @@ class SolverWindow(BaseWindow):
 
         # Standard Buttons
         self.baseHideStandardButtons()
-        # TODO: every time the currently active collection changes, we should
-        # compile the collection and set the enabled state of the applyBtn, so
-        # the user can only solve when the collection is valid.
         self.applyBtn.show()
         self.helpBtn.show()
         self.closeBtn.show()
@@ -257,28 +253,27 @@ class SolverWindow(BaseWindow):
         LOG.debug('launchAboutCB')
 
     def apply(self):
-        self.progressBar.show()
-        # frame_list = self.subForm.getFrameList()
-        # LOG.debug('apply: %r', frame_list)
         LOG.debug('apply')
-        # for i in range(100):
-        #     self.progressBar.setValue(i)
-        #     time.sleep(0.01)
-        # self.progressBar.hide()
-        # TODO: Get all UI elements, and launch solve.
-        # Should we create 'tool' function?
-        # How should we pass the data to the tool function?
-        col = tool.get_active_collection()
-        ok = tool.compile_collection(col)
-        if ok is not True:
-            msg = 'Cannot execute solver, collection is not valid.'
-            msg += 'collection=%r'
-            LOG.warning(msg, col)
-        tool.execute_collection(
-            col,
-            prog_fn=self.progressBar.setValue
-        )
-        self.progressBar.hide()
+        try:
+            prog_fn=self.progressBar.setValue(0)
+            self.progressBar.show()
+            col = tool.get_active_collection()
+            if col is None:
+                msg = 'No active collection.'
+                LOG.error(msg)
+            ok = tool.compile_collection(col)
+            if ok is not True:
+                msg = 'Cannot execute solver, collection is not valid.'
+                msg += 'collection=%r'
+                LOG.warning(msg, col)
+            else:
+                tool.execute_collection(
+                    col,
+                    prog_fn=self.progressBar.setValue
+                )
+        finally:
+            self.progressBar.setValue(100)
+            self.progressBar.hide()
         return
 
     def help(self):

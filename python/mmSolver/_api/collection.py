@@ -399,7 +399,7 @@ class Collection(object):
 
     ############################################################################
 
-    def __compile_solver(self, sol, mkr_list, attr_list):
+    def __compile_solver(self, sol, mkr_list, attr_list, prog_fn=None):
         """
         Compiles data given into flags for a single run of 'mmSolver'.
 
@@ -567,11 +567,10 @@ class Collection(object):
         # TODO: epsilon3 argument
 
         msg = 'kwargs:\n' + pprint.pformat(kwargs)
-        print(msg)
-        LOG.info(msg)
+        LOG.debug(msg)
         return kwargs
 
-    def _compile(self):
+    def _compile(self, prog_fn=None):
         """
         Take the data in this class and compile it into keyword argument flags.
 
@@ -627,15 +626,15 @@ class Collection(object):
         self._kwargs_list = kwargs_list  # save a copy
         return self._kwargs_list
 
-    def is_valid(self):
+    def is_valid(self, prog_fn=None):
         try:
-            self._compile()
+            self._compile(prog_fn=None)
             ret = True
         except excep.NotValid:
             ret = False
         return ret
 
-    def execute(self, prog_fn=None):
+    def execute(self, prog_fn=None, refresh=True):
         """
         Compile the collection, then pass that data to the 'mmSolver' command.
 
@@ -646,6 +645,8 @@ class Collection(object):
         :return: List of SolveResults
         :rtype: list of solveresult.SolverResult
         """
+        # Ensure the plug-in is loaded, so we fail before trying to run.
+        api_utils.load_plugin()
         undo_state = maya.cmds.undoInfo(query=True, state=True)
         undo_id = 'mmSolver.api.collection.execute: ' + str(uuid.uuid4())
         try:
@@ -668,7 +669,7 @@ class Collection(object):
 
             # Run Solver...
             start = 2
-            total = len(kwargs_list) - 1
+            total = len(kwargs_list)
             for i, kwargs in enumerate(kwargs_list):
                 solve_data = maya.cmds.mmSolver(**kwargs)
                 if prog_fn is not None:
@@ -677,10 +678,22 @@ class Collection(object):
                     prog_fn(int(percent))
                 solres = solveresult.SolveResult(solve_data)
                 solres_list.append(solres)
-        except RuntimeError as e:
+                if refresh is True:
+                    # Update Maya time if single frame is being solved.
+                    frame = kwargs.get('frame')
+                    if frame is not None and len(frame) == 1:
+                        maya.cmds.currentTime(
+                            frame[0],
+                            edit=True,
+                            update=True
+                        )
+                    maya.cmds.refresh()
+        except:
             solres_list = []
-            LOG.error(e)
+            raise
         finally:
+            if prog_fn is not None:
+                prog_fn(100)
             if undo_state is True:
                 maya.cmds.undoInfo(closeChunk=True, chunkName=undo_id)
         return solres_list

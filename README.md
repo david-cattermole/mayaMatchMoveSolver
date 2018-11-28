@@ -1,14 +1,18 @@
 # Maya MatchMove Solver (MM Solver)
 
-A Solver for matchmove (MM) related tasks.
+An error minimisation solver for MatchMove (MM) related tasks
+utilising Maya's DG and DAG architecture, allowing solving of
+complex constraints driven by 2D-to-3D re-projection deviation.
 
-This tool is currently in development, and is not considered stable
-yet. Do not use this in production.
+This tool currently lacks user-friendly tools, but the API and
+Plug-in command is nearing stability.
+
+Please do not use this in production, yet.
 
 ## What Is It?
 
-The aim of this project is to provide an optimising / minimising
-non-linear least squares solver to aid in complex matchmoving tasks
+The aim of this project is to provide an minimising non-linear
+least squares solver to aid in complex matchmoving tasks
 inside Autodesk Maya. This tool is not intended as a
 one-click-solution; this tool is for advanced users.
 
@@ -33,7 +37,7 @@ MatchMove solve you need.
 - Reconstruction of multi-camera shooting environments
   (photogrammetry).
 
-## Current Features
+## Features
 
 - Solver Plug-in
   - Minimising residual error between 2D and 3D positions.
@@ -54,7 +58,6 @@ MatchMove solve you need.
   - Allows storage of multiple 'collections' of solver arguments in
     one Maya scene file.
   - Creates Maya nodes to represent Markers and Bundles.
-  -
 
 - User Tools
   - Solver GUI
@@ -63,58 +66,25 @@ MatchMove solve you need.
     - Supports 3DEqualizer *.txt, MatchMover *.rz2 and custom *.uv
       file formats.
 
-## Planned Features
-
-- Solver Plug-in
-  - Evaluation of complex character rigs for soft-deformation.
-  - Smoothness / Jerkiness error metric to enable the solver reduce
-    bumpy solves, especially for multi-frame solves.
-  - Sparse curve solving - solving attributes at only specific frames,
-    rather than per-frame.
-  - Error weighting based on un-realistic Center-Of-Mass trajectory
-    velocities.
-  
-- Python API
-  - Returning, storing and parsing output data from a mmSolve
-    execution.
-
-- User Tools
-  - GUI to select camera and object channels to solve.
-    - GUI to link/unlink 2D markers and 3D bundles.
-  - 2D markers can either be locators or special objects that look
-    like 2D tracks with pattern/search boxes.
-    - Dynamic lines to visually connect the display of the 2D and 3D
-      points.
-  - Tool to project 2D markers onto polygons, creating associated
-    static or animated locators.
-  - Graphing Solve information including errors per-frame, solve
-    time taken, etc.
-
-Note: Due to the complexity of integrating Lens Distortion into Maya
-and the MM Solver, Lens Distortion is not handled by this solver. It
-is possible to be added later, but for now such a feature is out of
-the scope of this project.
+For a list of future features please see
+[TODO.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/TODO.md).
 
 ## Documentation
 
-The documentation has been split into [Tool
-Usage](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/USAGE.md)
-and [Script
-API](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/API.md).
-
-Additionally some of the low-level design is documented in
-[DESIGN.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DESIGN.md).
-
-If you're interested in contributing to the Maya MatchMove Solver
-project, please see the conventions and information in
-[DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
-
-The documentation is lacking at this time.
+- [Tool Documentation](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/USAGE.md)
+- [Python API](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/API.md)
+- [Solver Design Concepts](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DESIGN.md)
 
 ## Building and Installation
 
 For building and installation follow the instructions in
 [INSTALL.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL.md).
+
+## Contributing
+
+If you're interested in contributing to the Maya MatchMove Solver
+project, please see the conventions and information in
+[DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
 
 ## Known Bugs 
 

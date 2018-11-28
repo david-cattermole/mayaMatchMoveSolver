@@ -32,7 +32,9 @@
 #include <mayaUtils.h>
 #include <Attr.h>
 
-#define USE_DG_CONTEXT 1
+// Turning USE_DG_CONTEXT on seems to slow down running the test suite by
+// approximately 33% (inside 'mayapy', without a GUI).
+#define USE_DG_CONTEXT 0
 
 Attr::Attr() :
         m_nodeName(""),

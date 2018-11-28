@@ -25,10 +25,7 @@ def _gen_two_frame_fwd(int_list):
 
 def _solve_anim_attrs(max_iter_num, verbose, int_list):
     sol_list = []
-
-    # frm_list = map(lambda x: mmapi.Frame(x), int_list)
     batch_list = _gen_two_frame_fwd(int_list)
-
     for frm_list in batch_list:
         sol = mmapi.Solver()
         sol.set_max_iterations(max_iter_num)

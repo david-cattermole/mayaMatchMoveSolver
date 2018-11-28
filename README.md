@@ -71,7 +71,7 @@ For a list of future features please see
 
 ## Documentation
 
-- [Tool Documentation](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/USAGE.md)
+- [Tool Documentation](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/TOOLS.md)
 - [Python API](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/API.md)
 - [Solver Design Concepts](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DESIGN.md)
 

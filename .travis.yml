@@ -1,3 +1,13 @@
+language: python
+python:
+    - "2.7"
+
+sudo: false
+cache: pip
+
+install: "pip install sphinx~=1.5.3"
+script: cd docs && make html && cd ..
+
 deploy:
     provider: pages
     skip-cleanup: true
@@ -6,3 +16,4 @@ deploy:
     on:
         branch: master
     project-name: mayaMatchMoveSolver
+    local-dir: "./docs/build"

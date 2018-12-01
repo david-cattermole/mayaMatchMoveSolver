@@ -203,7 +203,13 @@ strategy for animated and static attributes is **All Frames**
 - Three Frames (Forward / Backward)
 - All Frames (Brute-force)
 
-In practise, a mixture of multiple strategies may be the best approach.
+In practice, a mixture of multiple strategies may be the best approach.
+
+Primary Frames / Root Frames.
+
+1. Extending the baseline
+2. Hierarchical merging of sub-sequences
+3. Incremental bundle adjustment
 
 ## Frequently Asked Questions
 
@@ -214,6 +220,10 @@ _MM Solver_ evaluates all _Marker_ and _Bundle_ screen-space errors
  space. Solving is performed directly on _Attribute_ values.
 
 > How can I use a DAG hierarchy to reduce the number of _Attributes_?
+
+**To be written**
+
+> How can I make my solves faster?
 
 **To be written**
 

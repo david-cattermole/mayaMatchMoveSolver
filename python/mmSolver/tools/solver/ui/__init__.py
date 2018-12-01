@@ -1,5 +1,5 @@
 """
-Qt UI.
+Qt UI for Solver tool.
 """
 
 

@@ -6,10 +6,7 @@ sudo: false
 cache: pip
 
 install: "pip install sphinx~=1.5.3"
-script:
-    cd docs && make html && cd ..
-    mkdir -p docs/build/html
-    touch docs/build/html/.nojekyll
+script: cd docs && make html && touch build/html/.nojekyll
 
 deploy:
     provider: pages

@@ -2,6 +2,8 @@
 Solver tool functions - everything the solver tool can do.
 """
 
+import pprint
+import time
 import uuid
 
 import maya.cmds
@@ -137,6 +139,36 @@ def set_active_collection(col):
     return
 
 
+def get_refresh_viewport_state():
+    value = scene_data.get_scene_data(const.SCENE_DATA_REFRESH_VIEWPORT)
+    if value is None:
+        value = const.SCENE_DATA_REFRESH_VIEWPORT_DEFAULT
+    return value
+
+
+def set_refresh_viewport_state(value):
+    if isinstance(value, bool) is False:
+        msg = 'value cannot be %r; %r is not bool'
+        raise TypeError(msg % (type(value), value))
+    scene_data.set_scene_data(const.SCENE_DATA_REFRESH_VIEWPORT, value)
+    return
+
+
+def get_log_level():
+    value = scene_data.get_scene_data(const.SCENE_DATA_LOG_LEVEL)
+    if value is None:
+        value = const.SCENE_DATA_LOG_LEVEL_DEFAULT
+    return value
+
+
+def set_log_level(value):
+    if isinstance(value, basestring) is False:
+        msg = 'value cannot be %r; %r is not a string'
+        raise TypeError(msg % (type(value), value))
+    scene_data.set_scene_data(const.SCENE_DATA_LOG_LEVEL, value)
+    return
+
+
 def get_collections():
     nodes = maya.cmds.ls(type='objectSet', long=True) or []
     node_categories = filternodes.get_nodes(nodes)
@@ -204,14 +236,6 @@ def select_collection(col):
     maya.cmds.select(node, ne=True)
     LOG.debug('select_collection select')
     return
-
-
-def create_marker():
-    raise NotImplementedError
-
-
-def convert_to_marker():
-    raise NotImplementedError
 
 
 def add_markers_to_collection(mkr_list, col):
@@ -416,44 +440,74 @@ def set_solver_step_list_to_collection(col, step_list):
     data_list = map(lambda x: x.get_data(), step_list)
     ensure_solver_steps_attr_exists(col)
     mmapi.set_data_on_node_attr(node, const.SOLVER_STEP_ATTR, data_list)
-    compile_solvers(col)
-    return
-
-
-def create_frame_list_from_int_list(int_list):
-    return map(lambda x: mmapi.Frame(x), int_list)
-
-
-def compile_solvers(col, prog_fn=None):
-    sol_list = []
-    step_list = get_solver_steps_from_collection(col)
-    for step in step_list:
-        tmp_list = step.compile()
-        sol_list += tmp_list
+    sol_list = compile_solvers_from_steps(step_list)
     col.set_solver_list(sol_list)
     return
 
 
+def compile_solvers_from_steps(step_list, prog_fn=None):
+    """
+    Compile the solver steps attached to Collection into solvers.
+    """
+    sol_list = []
+    for i, step in enumerate(step_list):
+        tmp_list = step.compile()
+        sol_list += tmp_list
+        if prog_fn is not None:
+            ratio = float(i) / len(step_list)
+            percent = int(ratio * 100.0)
+            prog_fn(percent)
+    return sol_list
+
+
 def compile_collection(col, prog_fn=None):
-    compile_solvers(col, prog_fn=prog_fn)
+    step_list = get_solver_steps_from_collection(col)
+    sol_list = compile_solvers_from_steps(step_list, prog_fn=prog_fn)
+    col.set_solver_list(sol_list)
     return col.is_valid(prog_fn=prog_fn)
 
 
-def execute_collection(col, prog_fn=None):
-    LOG.debug('execute_collection: col=%r prog_fn=%r', col, prog_fn)
-    col.execute(prog_fn=prog_fn)
+def execute_collection(col, log_level=None, refresh=False, prog_fn=None):
+    """
+    Execute the entire collection; Solvers, Markers, Bundles, etc.
+    """
+    msg = 'execute_collection: col=%r verbose=%r refresh=%r prog_fn=%r'
+    LOG.debug(msg, col, refresh, prog_fn)
+
+    log = LOG
+    verbose = False
+    if log_level in const.LOG_LEVEL_LIST:
+        if log_level == const.LOG_LEVEL_VERBOSE:
+            log_level = const.LOG_LEVEL_INFO
+            verbose = True
+        log_level = log_level.upper()
+        mmSolver.logger.get_logger(log_level)
+    else:
+        msg = 'log_level value is invalid; value=%r'
+        raise ValueError(msg % log_level)
+
+    s = time.time()
+    solres_list = col.execute(
+        verbose=verbose,
+        refresh=refresh,
+        prog_fn=prog_fn
+    )
+    e = time.time()
+
+    frame_error_list = mmapi.merge_frame_error_list(solres_list)
+    frame_error_txt = pprint.pformat(dict(frame_error_list))
+    log.debug('Per-Frame Errors:\n%s', frame_error_txt)
+
+    timer_stats = mmapi.combine_timer_stats(solres_list)
+    timer_stats_txt = pprint.pformat(dict(timer_stats))
+    log.debug('Timer Statistics:\n%s', timer_stats_txt)
+
+    avg_error = mmapi.get_average_frame_error_list(frame_error_list)
+    log.info('Average Error: %.3f pixels', avg_error)
+
+    max_frame_error = mmapi.get_max_frame_error(frame_error_list)
+    log.info('Max Frame Error: %.3f pixels at frame %s', max_frame_error[1], max_frame_error[0])
+
+    log.info('Total Time: %.3f seconds', e - s)
     return
-
-
-def get_log_level():
-    # TODO: Is the log-level stored per-collection?
-    # TODO: Store and re-load the log level.
-    return 'info'
-
-def gui():
-    """
-    Open the Window.
-    :return:
-    """
-    pass
 

@@ -1,3 +1,6 @@
+"""
+Common tools for manipulating selection, specific to mmSolver.
+"""
 
 import maya.cmds
 
@@ -7,6 +10,12 @@ import mmSolver.tools.selection.convert as convert_selection
 
 
 def swap_between_selected_markers_and_bundles():
+    """
+    Toggles the selection of Markers and Bundles.
+
+    If a marker is selected, the attached bundle will be selected and
+    vice versa.
+    """
     sel = maya.cmds.ls(sl=True, long=True)
     if len(sel) == 0:
         return
@@ -34,6 +43,9 @@ def swap_between_selected_markers_and_bundles():
 
 
 def select_both_markers_and_bundles():
+    """
+    Get the connected Markers and bundles, and select them.
+    """
     sel = maya.cmds.ls(sl=True, long=True)
     if len(sel) == 0:
         return

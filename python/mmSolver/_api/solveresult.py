@@ -46,11 +46,10 @@ class SolveResult(object):
     data.
     """
     def __init__(self, cmd_data):
-        assert isinstance(cmd_data, list)
-        # import pprint
-        # print 'solver result data:', pprint.pformat(cmd_data)
+        if isinstance(cmd_data, list) is False:
+            msg = 'cmd_data is of type %r, not expected list.'
+            raise TypeError(msg % type(cmd_data))
         data = parse_command_result(cmd_data)
-        # print 'data:', pprint.pformat(dict(data))
 
         # Solver statistics
         name_keys = [
@@ -150,3 +149,72 @@ class SolveResult(object):
         elif marker_node in self._per_marker_per_frame_error:
             v = self._per_marker_per_frame_error.get(marker_node)
         return v
+
+
+def combine_timer_stats(solres_list):
+    """
+    Combine Timer statistics into one set.
+    """
+    stats_list = collections.defaultdict(float)
+    for solres in solres_list:
+        msg = 'solres must be a SolveResult object.'
+        if isinstance(solres, SolveResult) is False:
+            raise TypeError(msg % 'a')
+        stats = solres.get_timer_stats()
+        for k, v in stats.items():
+            if stats_list.get(k) is None:
+                if isinstance(v, int):
+                    stats_list[k] = 0
+                elif isinstance(v, float):
+                    stats_list[k] = 0.0
+            if isinstance(v, (int, float)):
+                stats_list[k] += v
+    return stats_list
+
+
+def merge_frame_error_list(solres_list):
+    """
+    Combine a 'frame_error_list' from a list of SolveResult objects.
+
+    The 'solres_list' is assumed to represent sequential solver
+    executions; The order of this list is important.
+    """
+    error_list = collections.defaultdict(float)
+    for solres in solres_list:
+        msg = 'solres must be a SolveResult object.'
+        if isinstance(solres, SolveResult) is False:
+            raise TypeError(msg % 'a')
+        err_list = solres.get_frame_error_list()
+        for k, v in err_list.items():
+            error_list[k] = v
+    return error_list
+
+
+def get_average_frame_error_list(frame_error_list):
+    """
+    Get the average error for the frame error list given.
+    """
+    error = 0.0
+    total = 0
+    for k, v in frame_error_list.items():
+        error += v
+        total += 1
+    error = error / total
+    return error
+
+
+def get_max_frame_error(frame_error_list):
+    """
+    Get the frame and error combination for the frame error list given.
+
+    :returns: The frame and error with the maximum amount of error.
+    :rtype: (int, float)
+    """
+    frame = None
+    error = -0.0
+    assert len(frame_error_list) > 0
+    for k, v in frame_error_list.items():
+        if v > error:
+            frame = k
+            error = v
+    return (frame, error)

@@ -17,7 +17,13 @@ from mmSolver._api.attribute import Attribute
 from mmSolver._api.collection import Collection
 from mmSolver._api.frame import Frame
 from mmSolver._api.solver import Solver
-from mmSolver._api.solveresult import SolveResult
+from mmSolver._api.solveresult import (
+    SolveResult,
+    combine_timer_stats,
+    merge_frame_error_list,
+    get_average_frame_error_list,
+    get_max_frame_error,
+)
 from mmSolver._api.excep import (
     MMException,
     NotValid,
@@ -89,4 +95,8 @@ __all__ = [
     'create_anim_curve_node',
     'get_data_on_node_attr',
     'set_data_on_node_attr',
+    'combine_timer_stats',
+    'merge_frame_error_list',
+    'get_average_frame_error_list',
+    'get_max_frame_error',
 ]

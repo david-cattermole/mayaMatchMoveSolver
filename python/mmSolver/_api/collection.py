@@ -577,6 +577,9 @@ class Collection(object):
         :return: list of keyword arguments.
         :rtype: list of dict
         """
+        # TODO: Cache the compiled result internally to speed up
+        # 'is_valid' then '_compile' calls.
+
         # If the class attributes haven't been changed, re-use the previously
         # generated arguments.
         if len(self._kwargs_list) > 0:
@@ -634,7 +637,7 @@ class Collection(object):
             ret = False
         return ret
 
-    def execute(self, prog_fn=None, refresh=False):
+    def execute(self, verbose=False, refresh=False, prog_fn=None):
         """
         Compile the collection, then pass that data to the 'mmSolver' command.
 
@@ -660,17 +663,20 @@ class Collection(object):
             if self.is_valid() is False:
                 LOG.warning('collection not valid: %r', self.get_node())
                 return solres_list
+            kwargs_list = self._compile()
             if prog_fn is not None:
                 prog_fn(1)
 
-            kwargs_list = self._compile()
-            if prog_fn is not None:
-                prog_fn(2)
-
             # Run Solver...
-            start = 2
+            start = 0
             total = len(kwargs_list)
             for i, kwargs in enumerate(kwargs_list):
+                # HACK: Overriding the verbosity, irrespective of what
+                # the solver verbosity value is set to.
+                if verbose is True:
+                    kwargs['verbose'] = True
+
+                # Run Solver Maya plug-in command
                 solve_data = maya.cmds.mmSolver(**kwargs)
                 if prog_fn is not None:
                     ratio = float(i) / float(total)
@@ -678,6 +684,11 @@ class Collection(object):
                     prog_fn(int(percent))
                 solres = solveresult.SolveResult(solve_data)
                 solres_list.append(solres)
+
+                if solres.get_success() is False:
+                    LOG.error('Solver failed!!!')
+
+                # Refresh the Viewport.
                 if refresh is True:
                     frame = kwargs.get('frame')
                     if frame is not None and len(frame) > 0:

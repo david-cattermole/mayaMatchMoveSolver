@@ -23,6 +23,7 @@ def _gen_two_frame_fwd(int_list):
         batch_list.append(frm_list)
     return batch_list
 
+
 def _solve_anim_attrs(max_iter_num, int_list):
     sol_list = []
     batch_list = _gen_two_frame_fwd(int_list)
@@ -34,6 +35,21 @@ def _solve_anim_attrs(max_iter_num, int_list):
         sol.set_attributes_use_static(False)
         sol_list.append(sol)
     return sol_list
+
+
+# def _solve_anim_attrs(max_iter_num, int_list):
+#     sol_list = []
+#     for f in int_list:
+#         frm = mmapi.Frame(f)
+#         frm_list = [frm]
+#
+#         sol = mmapi.Solver()
+#         sol.set_max_iterations(max_iter_num)
+#         sol.set_frame_list(frm_list)
+#         sol.set_attributes_use_animated(True)
+#         sol.set_attributes_use_static(False)
+#         sol_list.append(sol)
+#     return sol_list
 
 
 def _solve_static_attrs(max_iter_num, int_list, strategy):
@@ -169,4 +185,3 @@ class SolverStep(object):
         else:
             raise ValueError('We should not get here')
         return sol_list
-

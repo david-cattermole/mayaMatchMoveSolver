@@ -13,8 +13,11 @@ import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.tools.solver.tool as tool
+import mmSolver.tools.solver.constant as const
 import mmSolver.tools.solver.ui.solver_layout as solver_layout
 import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
+import mmSolver.tools.selection.tools as selection_tool
+import mmSolver.tools.cameraaim as cameraaim_tool
 
 
 LOG = mmSolver.logger.get_logger()
@@ -106,11 +109,38 @@ class SolverWindow(BaseWindow):
         loadMarkerAction.triggered.connect(partial(self.loadMarkerCB))
         tools_menu.addAction(loadMarkerAction)
 
+        tools_menu.addSeparator()
+
+        # Camera Aim
+        aimAtCameraAction = QtWidgets.QAction('Aim at Camera', tools_menu)
+        aimAtCameraAction.setStatusTip('Aim at Camera.')
+        aimAtCameraAction.triggered.connect(partial(self.aimAtCameraCB))
+        tools_menu.addAction(aimAtCameraAction)
+
+        tools_menu.addSeparator()
+
         # Toogle Marker / Bundle selection
         toggleMarkerBundleSelection = QtWidgets.QAction('Toggle Marker / Bundle Selection', tools_menu)
         toggleMarkerBundleSelection.setStatusTip('Select connected Markers, or Bundles.')
         toggleMarkerBundleSelection.triggered.connect(partial(self.toggleMarkerBundleSelectionCB))
         tools_menu.addAction(toggleMarkerBundleSelection)
+
+        # Select Marker / Bundle
+        selectBothMarkerBundle = QtWidgets.QAction('Select Marker / Bundle', tools_menu)
+        selectBothMarkerBundle.setStatusTip('Select the connected Markers and Bundles.')
+        selectBothMarkerBundle.triggered.connect(partial(self.selectBothMarkersAndBundlesCB))
+        tools_menu.addAction(selectBothMarkerBundle)
+
+        tools_menu.addSeparator()
+
+        # Refresh Viewport During Solve
+        refresh_value = tool.get_refresh_viewport_state()
+        refreshAction = QtWidgets.QAction('Refresh Viewport', tools_menu)
+        refreshAction.setStatusTip('Refresh the viewport while Solving.')
+        refreshAction.setCheckable(True)
+        refreshAction.setChecked(refresh_value)
+        refreshAction.toggled.connect(type(self).refreshActionToggledCB)
+        tools_menu.addAction(refreshAction)
 
         menubar.addMenu(tools_menu)
 
@@ -164,18 +194,18 @@ class SolverWindow(BaseWindow):
         log_actionGroup.addAction(logDebugAction)
 
         log_level = tool.get_log_level()
-        if log_level == 'error':
+        if log_level == const.LOG_LEVEL_ERROR:
             logErrorAction.setChecked(True)
-        elif log_level == 'warning':
+        elif log_level == const.LOG_LEVEL_WARNING:
             logWarningAction.setChecked(True)
-        elif log_level == 'info':
+        elif log_level == const.LOG_LEVEL_INFO:
             logInfoAction.setChecked(True)
-        elif log_level == 'verbose':
+        elif log_level == const.LOG_LEVEL_VERBOSE:
             logVerboseAction.setChecked(True)
-        elif log_level == 'debug':
+        elif log_level == const.LOG_LEVEL_DEBUG:
             logDebugAction.setChecked(True)
         else:
-            LOG.warning('Invalid log level given: ' % log_level)
+            LOG.warning('Invalid log level given: %r' % log_level)
 
         menubar.addMenu(log_menu)
 
@@ -199,18 +229,23 @@ class SolverWindow(BaseWindow):
 
     def logErrorCB(self):
         LOG.debug('logErrorCB')
+        tool.set_log_level(const.LOG_LEVEL_ERROR)
 
     def logWarningCB(self):
         LOG.debug('logWarningCB')
+        tool.set_log_level(const.LOG_LEVEL_WARNING)
 
     def logInfoCB(self):
         LOG.debug('logInfoCB')
+        tool.set_log_level(const.LOG_LEVEL_INFO)
 
     def logVerboseCB(self):
         LOG.debug('logVerboseCB')
+        tool.set_log_level(const.LOG_LEVEL_VERBOSE)
 
     def logDebugCB(self):
         LOG.debug('logDebugCB')
+        tool.set_log_level(const.LOG_LEVEL_DEBUG)
 
     def createNewCollectionNodeCB(self):
         LOG.debug('createNewCollectionNodeCB')
@@ -229,21 +264,40 @@ class SolverWindow(BaseWindow):
 
     def createMarkerCB(self):
         LOG.debug('createMarkerCB')
-        tool.create_marker()
+        raise NotImplementedError
 
     def convertToMarkerCB(self):
         LOG.warning('convertToMarkerCB')
-        tool.convert_to_marker()
+        raise NotImplementedError
 
     def loadMarkerCB(self):
+        """
+        Open a UI where we can paste a file path in and press "ok". The UI
+        could also show the point data before loading the file.
+        """
         LOG.debug('loadMarkerCB')
-        # TODO: Open a UI where we can paste a file path in and press
-        # "ok". The UI could also show the point data before loading
-        # the file.
         loadmarker_window.main()
+
+    def aimAtCameraCB(self):
+        """
+        Open a UI where we can paste a file path in and press "ok". The UI
+        could also show the point data before loading the file.
+        """
+        LOG.debug('aimAtCameraCB')
+        cameraaim_tool.aim_at_camera()
 
     def toggleMarkerBundleSelectionCB(self):
         LOG.warning('toggleMarkerBundleSelectionCB')
+        selection_tool.swap_between_selected_markers_and_bundles()
+
+    def selectBothMarkersAndBundlesCB(self):
+        LOG.warning('selectBothMarkersAndBundlesCB')
+        selection_tool.select_both_markers_and_bundles()
+
+    @staticmethod
+    def refreshActionToggledCB(value):
+        LOG.warning('refreshActionToggledCB: %r', value)
+        tool.set_refresh_viewport_state(value)
 
     def launchHelpCB(self):
         LOG.debug('launchHelpCB')
@@ -255,7 +309,10 @@ class SolverWindow(BaseWindow):
     def apply(self):
         LOG.debug('apply')
         try:
-            prog_fn=self.progressBar.setValue(0)
+            refresh_state = tool.get_refresh_viewport_state()
+            log_level = tool.get_log_level()
+
+            self.progressBar.setValue(0)
             self.progressBar.show()
             col = tool.get_active_collection()
             if col is None:
@@ -269,6 +326,8 @@ class SolverWindow(BaseWindow):
             else:
                 tool.execute_collection(
                     col,
+                    log_level=log_level,
+                    refresh=refresh_state,
                     prog_fn=self.progressBar.setValue
                 )
         finally:

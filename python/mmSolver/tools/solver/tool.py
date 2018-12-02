@@ -486,6 +486,7 @@ def execute_collection(col, log_level=None, refresh=False, prog_fn=None):
         msg = 'log_level value is invalid; value=%r'
         raise ValueError(msg % log_level)
 
+    # Execute the solve.
     s = time.time()
     solres_list = col.execute(
         verbose=verbose,
@@ -506,7 +507,10 @@ def execute_collection(col, log_level=None, refresh=False, prog_fn=None):
     log.info('Average Error: %.3f pixels', avg_error)
 
     max_frame_error = mmapi.get_max_frame_error(frame_error_list)
-    log.info('Max Frame Error: %.3f pixels at frame %s', max_frame_error[1], max_frame_error[0])
+    log.info('Max Frame Error: %.3f pixels at frame %s', 
+             max_frame_error[1], 
+             int(max_frame_error[0])
+    )
 
     log.info('Total Time: %.3f seconds', e - s)
     return

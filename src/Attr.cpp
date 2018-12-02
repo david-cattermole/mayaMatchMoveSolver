@@ -32,7 +32,9 @@
 #include <mayaUtils.h>
 #include <Attr.h>
 
-#define USE_DG_CONTEXT 1
+// Turning USE_DG_CONTEXT on seems to slow down running the test suite by
+// approximately 33% (inside 'mayapy', without a GUI).
+#define USE_DG_CONTEXT_IN_GUI 1
 
 Attr::Attr() :
         m_nodeName(""),
@@ -244,6 +246,10 @@ MStatus Attr::getValue(bool &value, const MTime &time) {
     bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
+    MGlobal::MMayaState state = MGlobal::mayaState(&status);
+    bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -252,7 +258,7 @@ MStatus Attr::getValue(bool &value, const MTime &time) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         value = (bool) trunc(curveValue);
     } else if (connected) {
-        if (USE_DG_CONTEXT) {
+        if (use_dg_ctx == true) {
             MDGContext ctx(time);
             value = plug.asBool(ctx, &status);
         } else {
@@ -273,6 +279,10 @@ MStatus Attr::getValue(int &value, const MTime &time) {
     bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
+    MGlobal::MMayaState state = MGlobal::mayaState(&status);
+    bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -281,7 +291,7 @@ MStatus Attr::getValue(int &value, const MTime &time) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         value = (int) curveValue;
     } else if (connected) {
-        if (USE_DG_CONTEXT) {
+        if (use_dg_ctx == true) {
             MDGContext ctx(time);
             value = plug.asBool(ctx, &status);
         } else {
@@ -302,11 +312,15 @@ MStatus Attr::getValue(double &value, const MTime &time) {
     bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
+    MGlobal::MMayaState state = MGlobal::mayaState(&status);
+    bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+
     if (animated) {
         MFnAnimCurve curveFn(plug);
         curveFn.evaluate(time, value);
     } else if (connected) {
-        if (USE_DG_CONTEXT) {
+        if (use_dg_ctx == true) {
             MDGContext ctx(time);
             value = plug.asDouble(ctx, &status);
         } else {
@@ -323,9 +337,13 @@ MStatus Attr::getValue(MMatrix &value, const MTime &time) {
     MStatus status;
     MPlug plug = Attr::getPlug();
 
+    MGlobal::MMayaState state = MGlobal::mayaState(&status);
+    bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+
     // Do we change the behaviour for a dynamic attribute?
     MObject matrixObj;
-    if (USE_DG_CONTEXT) {
+    if (use_dg_ctx == true) {
         MDGContext ctx(time);
         matrixObj = plug.asMObject(ctx, &status);
     } else {
@@ -421,4 +439,4 @@ void Attr::setMaximumValue(double value) {
 }
 
 
-#undef USE_DG_CONTEXT
+#undef USE_DG_CONTEXT_IN_GUI

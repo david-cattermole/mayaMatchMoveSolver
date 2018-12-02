@@ -60,19 +60,21 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
     ud->funcBenchTicks->start();
     ud->computation->setProgress(ud->iterNum);
     verbose = ud->verbose;
-    if (ud->isJacobianCalculation == false) {
-        // We're not using INFO macro because we don't want a new-line
-        // created.
-        std::cout << "Solve " << ++ud->iterNum;
-    } else {
-        INFO("Solve Jacobian " << ++ud->jacIterNum);
+    if (verbose == true) {
+        if (ud->isJacobianCalculation == false) {
+            // We're not using INFO macro because we don't want a new-line
+            // created.
+            std::cout << "Eval " << ++ud->iterNum;
+        } else {
+            std::cout << "Eval Jacobian " << ++ud->jacIterNum;
+        }
     }
 
     int profileCategory = MProfiler::getCategoryIndex("mmSolver");
     MProfilingScope iterScope(profileCategory, MProfiler::kColorC_L1, "iteration");
 
     if (ud->computation->isInterruptRequested()) {
-        WRN("User wants to cancel the solve!");
+        WRN("User wants to cancel the evalutation!");
         // This is an ugly hack to force levmar to stop computing. We give
         // a NaN value which causes levmar detect it and quit the loop.
         for (i = 0; i < n; ++i) {
@@ -171,7 +173,6 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
             // be best to test this detail.
             double dx = fabs(mkr_mpos.x - bnd_mpos.x) * ((right - left) * ud->imageWidth);
             double dy = fabs(mkr_mpos.y - bnd_mpos.y) * ((right - left) * ud->imageWidth);
-            // double d = fabs(dx) + fabs(dy);
             double d = distance_2d(mkr_mpos, bnd_mpos) * ((right - left) * ud->imageWidth);
 
             x[(i * ERRORS_PER_MARKER) + 0] = dx;  // X error
@@ -199,7 +200,7 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
 
     if (ud->isJacobianCalculation == false) {
         error_avg *= 1.0 / (n / ERRORS_PER_MARKER);
-        INFO(" | error avg=" << error_avg << " min=" << error_min << " max=" << error_max);
+        VRB(" | error avg=" << error_avg << " min=" << error_min << " max=" << error_max);
     }
     return;
 }

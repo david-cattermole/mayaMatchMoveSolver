@@ -23,13 +23,12 @@ def _gen_two_frame_fwd(int_list):
         batch_list.append(frm_list)
     return batch_list
 
-def _solve_anim_attrs(max_iter_num, verbose, int_list):
+def _solve_anim_attrs(max_iter_num, int_list):
     sol_list = []
     batch_list = _gen_two_frame_fwd(int_list)
     for frm_list in batch_list:
         sol = mmapi.Solver()
         sol.set_max_iterations(max_iter_num)
-        sol.set_verbose(verbose)
         sol.set_frame_list(frm_list)
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(False)
@@ -37,13 +36,13 @@ def _solve_anim_attrs(max_iter_num, verbose, int_list):
     return sol_list
 
 
-def _solve_static_attrs(max_iter_num, verbose, int_list, strategy):
+def _solve_static_attrs(max_iter_num, int_list, strategy):
     sol_list = []
     raise NotImplementedError
     return sol_list
 
 
-def _solve_all_attrs(max_iter_num, verbose, int_list, strategy):
+def _solve_all_attrs(max_iter_num, int_list, strategy):
     LOG.debug('strategy: %r', strategy)
     sol_list = []
 
@@ -57,7 +56,6 @@ def _solve_all_attrs(max_iter_num, verbose, int_list, strategy):
         for frm_list in batch_list:
             sol = mmapi.Solver()
             sol.set_max_iterations(max_iter_num)
-            sol.set_verbose(verbose)
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(True)
             sol.set_frame_list(frm_list)
@@ -67,7 +65,6 @@ def _solve_all_attrs(max_iter_num, verbose, int_list, strategy):
         frm_list = map(lambda x: mmapi.Frame(x), int_list)
         sol = mmapi.Solver()
         sol.set_max_iterations(max_iter_num)
-        sol.set_verbose(verbose)
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(True)
         sol.set_frame_list(frm_list)
@@ -146,7 +143,6 @@ class SolverStep(object):
         if enabled is not True:
             return sol_list
         max_iter_num = 10
-        verbose = True
         use_anim_attrs = self.get_use_anim_attrs()
         use_static_attrs = self.get_use_static_attrs()
         strategy = self.get_strategy()
@@ -156,20 +152,17 @@ class SolverStep(object):
         elif use_anim_attrs is True and use_static_attrs is False:
             sol_list = _solve_anim_attrs(
                 max_iter_num,
-                verbose,
                 int_list,
             )
         elif use_anim_attrs is False and use_static_attrs is True:
             sol_list = _solve_static_attrs(
                 max_iter_num,
-                verbose,
                 int_list,
                 strategy,
             )
         elif use_anim_attrs is True and use_static_attrs is True:
             sol_list = _solve_all_attrs(
                 max_iter_num,
-                verbose,
                 int_list,
                 strategy,
             )

@@ -17,7 +17,8 @@ import mmSolver.tools.solver.constant as const
 import mmSolver.tools.solver.ui.solver_layout as solver_layout
 import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
 import mmSolver.tools.selection.tools as selection_tool
-import mmSolver.tools.cameraaim as cameraaim_tool
+import mmSolver.tools.cameraaim.tool as cameraaim_tool
+import mmSolver.tools.createmarker.tool as createmarker_tool
 
 
 LOG = mmSolver.logger.get_logger()
@@ -97,11 +98,12 @@ class SolverWindow(BaseWindow):
         createMarkerAction.triggered.connect(partial(self.createMarkerCB))
         tools_menu.addAction(createMarkerAction)
 
-        # Convert to Marker
-        convertToMarkerAction = QtWidgets.QAction('Convert to Marker...', tools_menu)
-        convertToMarkerAction.setStatusTip('Convert the selection to Markers.')
-        convertToMarkerAction.triggered.connect(partial(self.convertToMarkerCB))
-        tools_menu.addAction(convertToMarkerAction)
+        # TODO: Write this tool and add it back into the menu.
+        # # Convert to Marker
+        # convertToMarkerAction = QtWidgets.QAction('Convert to Marker...', tools_menu)
+        # convertToMarkerAction.setStatusTip('Convert the selection to Markers.')
+        # convertToMarkerAction.triggered.connect(partial(self.convertToMarkerCB))
+        # tools_menu.addAction(convertToMarkerAction)
 
         # Load Markers
         loadMarkerAction = QtWidgets.QAction('Load Marker...', tools_menu)
@@ -264,7 +266,7 @@ class SolverWindow(BaseWindow):
 
     def createMarkerCB(self):
         LOG.debug('createMarkerCB')
-        raise NotImplementedError
+        createmarker_tool.create_marker()
 
     def convertToMarkerCB(self):
         LOG.warning('convertToMarkerCB')

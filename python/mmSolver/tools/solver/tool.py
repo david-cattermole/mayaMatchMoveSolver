@@ -504,14 +504,14 @@ def execute_collection(col, log_level=None, refresh=False, prog_fn=None):
     log.debug('Timer Statistics:\n%s', timer_stats_txt)
 
     avg_error = mmapi.get_average_frame_error_list(frame_error_list)
-    log.info('Average Error: %.3f pixels', avg_error)
+    log.info('Average Error: %.2f pixels', avg_error)
 
     max_frame_error = mmapi.get_max_frame_error(frame_error_list)
-    log.info('Max Frame Error: %.3f pixels at frame %s', 
-             max_frame_error[1], 
-             int(max_frame_error[0])
+    log.info(
+        'Max Frame Error: %.2f pixels at frame %s',
+        max_frame_error[1],
+        int(max_frame_error[0])
     )
 
     log.info('Total Time: %.3f seconds', e - s)
     return
-

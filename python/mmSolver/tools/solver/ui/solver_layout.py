@@ -74,7 +74,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.attributeAdd_toolButton.clicked.connect(self.attrAddClicked)
         self.attributeRemove_toolButton.clicked.connect(self.attrRemoveClicked)
 
-        # TODO: Add support for table view of Solver steps.
+        # Add support for table view of Solver steps.
         #  Each step contains a list of frames to compute, a strategy
         #  order to solve the frames in ('sequential', 'all'), and an
         #  attribute filter to use ('anim' or 'static + anim').
@@ -99,7 +99,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.solver_tableView.setModel(self.solver_filterModel)
         self.solver_tableView.setSortingEnabled(False)
         self.solver_selModel = self.solver_tableView.selectionModel()
-        # self.solver_selModel.currentChanged.connect(self.solverNodeCurrentChanged)
 
         # Solver Add and Remove buttons
         self.solverAdd_toolButton.clicked.connect(self.solverAddClicked)

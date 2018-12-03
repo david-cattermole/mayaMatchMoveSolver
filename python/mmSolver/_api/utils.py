@@ -167,14 +167,17 @@ def get_marker_group_above_node(node):
     return mkr_grp_node
 
 
-def convert_valid_maya_name(name):
+def convert_valid_maya_name(name, prefix=None):
     # TODO: Use Maya API namespace validator?
     # TODO: name could start with a number; this should be prefixed.
     assert isinstance(name, basestring)
     for char in const.BAD_MAYA_CHARS:
         name.replace(char, '_')
     if name[0].isdigit():
-        name = 'marker_' + name
+        # Add suffix
+        if prefix is None:
+            prefix = 'prefix'
+        name = prefix + '_' + name
     return name
 
 
@@ -186,7 +189,7 @@ def get_marker_name(name):
     :return: Name for the marker.
     """
     assert isinstance(name, basestring)
-    name = convert_valid_maya_name(name)
+    name = convert_valid_maya_name(name, prefix='marker')
     if const.MARKER_NAME_SUFFIX.lower() not in name.lower():
         name += const.MARKER_NAME_SUFFIX
     return name
@@ -200,7 +203,7 @@ def get_bundle_name(name):
     :return: Name for the bundle.
     """
     assert isinstance(name, basestring)
-    name = convert_valid_maya_name(name)
+    name = convert_valid_maya_name(name, prefix='bundle')
     if const.BUNDLE_NAME_SUFFIX.lower() not in name.lower():
         name += const.BUNDLE_NAME_SUFFIX
     return name

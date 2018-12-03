@@ -58,10 +58,25 @@ class Marker(object):
 
     def create_node(self,
                     name='marker1',
-                    colour=None,
+                    # colour=None,
                     cam=None,
                     mkr_grp=None,
                     bnd=None):
+        """
+        Create a marker node network.
+
+        :param name: Name of the marker to create.
+        :type name: str
+
+        :param cam: The camera to create the marker underneath.
+        :type cam: Camera
+
+        :param mkr_grp: The marker group to create the marker underneath.
+        :type mkr_grp: MarkerGroup
+
+        :param bnd: The bundle to attach to the newly created marker.
+        :type bnd: Bundle
+        """
         assert isinstance(name, (str, unicode))
         if cam is not None:
             if mkr_grp is not None:
@@ -77,8 +92,8 @@ class Marker(object):
             assert isinstance(mkr_grp, markergroup.MarkerGroup)
         if bnd is not None:
             assert isinstance(bnd, mmSolver._api.bundle.Bundle)
-        if colour is not None:
-            assert isinstance(colour, str)
+        # if colour is not None:
+        #     assert isinstance(colour, str)
 
         # Transform
         tfm = maya.cmds.createNode('transform', name=name)

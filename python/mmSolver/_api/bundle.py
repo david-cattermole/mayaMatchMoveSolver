@@ -58,12 +58,12 @@ class Bundle(object):
     ############################################################################
 
     def create_node(self,
-                    name='bundle1',
-                    colour=None):
+                    name='bundle1'):
+                    # colour=None):
         assert isinstance(name, (str, unicode))
-        if colour is not None:
-            assert isinstance(colour, str)
-            # TODO: Look up the colour value from a string.
+        # if colour is not None:
+        #     assert isinstance(colour, str)
+        #     # TODO: Look up the colour value from a string.
 
         # Transform
         tfm = maya.cmds.createNode('transform', name=name)

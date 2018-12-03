@@ -38,10 +38,13 @@ Required:
 - [Autodesk Maya 2017+](https://www.autodesk.com.au/products/maya/overview)
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
 
+Required for GUI:
+- [Qt.py](https://github.com/mottosso/Qt.py)
+
 Optional:
 - [ATLAS 3.8.4](http://math-atlas.sourceforge.net/)
 - [Intel Math Kernel Library (MLK)](https://software.intel.com/en-us/mkl)
-- [Qt.py](https://github.com/mottosso/Qt.py)
+
 
 ## Building Overview
 
@@ -67,7 +70,6 @@ the dependencies you want to use:
 | build_with_levmar.sh    | levmar            |
 | build_with_atlas.sh     | levmar, ATLAS     |
 | build_with_intel_mkl.sh | levmar, Intel MKL |
-|                         |                   |
 
 #### Build Script (with levmar)
 
@@ -135,7 +137,7 @@ For those needing or wanting to compile the ``mmSolver`` Maya plug-in
 manually you can do it easily using the following commands.
 
 | CMake Option         | Description                                |
-| -------------------- | ----------------------------               |
+| -------------------- | ------------------------------------------ |
 | USE_ATLAS            | Use ATLAS libraries?                       |
 | USE_MKL              | Use Intel MKL libraries?                   |
 | MAYA_INCLUDE_PATH    | Directory to the Maya header include files |

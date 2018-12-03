@@ -218,9 +218,11 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
         node = self._node_list[row]
         if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
             column_index = index.column()
-            attr_name = _getNameFromDict(column_index,
-                    self._column_names,
-                    self._node_attr_key)
+            attr_name = _getNameFromDict(
+                column_index,
+                self._column_names,
+                self._node_attr_key
+            )
             value = getattr(node, attr_name, None)
             if value is not None:
                 value = value()
@@ -253,9 +255,11 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
             if node is None:
                 LOG.warning('node is invalid: %r %r %r', index, value, node)
             else:
-                attr_name = _getNameFromDict(column,
+                attr_name = _getNameFromDict(
+                    column,
                     self._column_names,
-                    self._node_set_attr_key)
+                    self._node_set_attr_key
+                )
                 if not node.editable():
                     LOG.warning('setData not editable: %r %r %r', index, value, node)
                     return False
@@ -290,7 +294,7 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
                 return self._column_names.get(section, 'Column')
         elif orientation == QtCore.Qt.Vertical:
             if role == QtCore.Qt.DisplayRole:
-                return '#' + str(section)
+                return '#' + str(section + 1)
         return
 
     def flags(self, index):

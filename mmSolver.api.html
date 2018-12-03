@@ -175,7 +175,7 @@ Markers are attached to cameras.</p>
 
 <dl class="method">
 <dt id="mmSolver.api.Bundle.create_node">
-<code class="descname">create_node</code><span class="sig-paren">(</span><em>name='bundle1'</em>, <em>colour=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Bundle.create_node" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_node</code><span class="sig-paren">(</span><em>name='bundle1'</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Bundle.create_node" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -220,8 +220,23 @@ Markers are attached to cameras.</p>
 
 <dl class="method">
 <dt id="mmSolver.api.Marker.create_node">
-<code class="descname">create_node</code><span class="sig-paren">(</span><em>name='marker1'</em>, <em>colour=None</em>, <em>cam=None</em>, <em>mkr_grp=None</em>, <em>bnd=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.create_node" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">create_node</code><span class="sig-paren">(</span><em>name='marker1'</em>, <em>cam=None</em>, <em>mkr_grp=None</em>, <em>bnd=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.create_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a marker node network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; Name of the marker to create.</li>
+<li><strong>cam</strong> (<a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) &#8211; The camera to create the marker underneath.</li>
+<li><strong>mkr_grp</strong> (<a class="reference internal" href="#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a>) &#8211; The marker group to create the marker underneath.</li>
+<li><strong>bnd</strong> (<a class="reference internal" href="#mmSolver.api.Bundle" title="mmSolver.api.Bundle"><em>Bundle</em></a>) &#8211; The bundle to attach to the newly created marker.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.Marker.delete_node">
@@ -837,7 +852,7 @@ data.</p>
 
 <dl class="function">
 <dt id="mmSolver.api.convert_valid_maya_name">
-<code class="descclassname">mmSolver.api.</code><code class="descname">convert_valid_maya_name</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.convert_valid_maya_name" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.api.</code><code class="descname">convert_valid_maya_name</code><span class="sig-paren">(</span><em>name</em>, <em>prefix=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.convert_valid_maya_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">

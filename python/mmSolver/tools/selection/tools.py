@@ -4,9 +4,13 @@ Common tools for manipulating selection, specific to mmSolver.
 
 import maya.cmds
 
+import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.selection.filternodes as filter_nodes
 import mmSolver.tools.selection.convert as convert_selection
+
+
+LOG = mmSolver.logger.get_logger()
 
 
 def swap_between_selected_markers_and_bundles():
@@ -18,6 +22,7 @@ def swap_between_selected_markers_and_bundles():
     """
     sel = maya.cmds.ls(sl=True, long=True)
     if len(sel) == 0:
+        LOG.warning('Select a node.')
         return
 
     node_filtered = filter_nodes.get_nodes(sel)
@@ -48,6 +53,7 @@ def select_both_markers_and_bundles():
     """
     sel = maya.cmds.ls(sl=True, long=True)
     if len(sel) == 0:
+        LOG.warning('Select a node.')
         return
 
     node_filtered = filter_nodes.get_nodes(sel)

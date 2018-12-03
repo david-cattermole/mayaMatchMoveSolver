@@ -60,6 +60,7 @@ def get_camera_nodes(nodes):
 #     filter_nodes = get_nodes(nodes)
 #     return filter_nodes.get('attribute', [])
 
+
 def get_collection_nodes(nodes):
     filter_nodes = get_nodes(nodes)
     return filter_nodes.get('collection', [])

@@ -91,7 +91,15 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
                 return False
             if role == QtCore.Qt.EditRole:
                 node.setName(value)
-            self.dataChanged.emit(index, index, [role])
+
+            # Emit Data Changed.
+            if Qt.__binding__ in ['PySide', 'PyQt4']:
+                self.dataChanged.emit(index, index)
+            elif Qt.__binding__ in ['PySide2', 'PyQt5']:
+                self.dataChanged.emit(index, index, [role])
+            else:
+                msg = 'Qt binding not supported: %s' % Qt.__binding__
+                raise ValueError(msg)
             return True
         LOG.warning('setData not valid: %r %r', index, value)
         return False
@@ -267,7 +275,15 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
                     func = getattr(node, attr_name, None)
                     if func is not None:
                         func(value)
-            self.dataChanged.emit(index, index, [role])
+
+            # Emit Data Changed.
+            if Qt.__binding__ in ['PySide', 'PyQt4']:
+                self.dataChanged.emit(index, index)
+            elif Qt.__binding__ in ['PySide2', 'PyQt5']:
+                self.dataChanged.emit(index, index, [role])
+            else:
+                msg = 'Qt binding not supported: %s' % Qt.__binding__
+                raise ValueError(msg)
             return True
         LOG.warning('setData not valid: %r %r', index, value)
         return False
@@ -492,10 +508,18 @@ class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
             v = self._stringDataList[index.row()]
             v = (v[0], value)
             self._stringDataList[index.row()] = value
-        if role in [QtCore.Qt.DisplayRole,
-                    QtCore.Qt.EditRole,
-                    QtCore.Qt.UserRole]:
-            self.dataChanged.emit(index, index, [role])
+
+            # Emit Data Changed.
+            if Qt.__binding__ in ['PySide', 'PyQt4']:
+                self.dataChanged.emit(index, index)
+            elif Qt.__binding__ in ['PySide2', 'PyQt5']:
+                if role in [QtCore.Qt.DisplayRole,
+                            QtCore.Qt.EditRole,
+                            QtCore.Qt.UserRole]:
+                    self.dataChanged.emit(index, index, [role])
+            else:
+                msg = 'Qt binding not supported: %s' % Qt.__binding__
+                raise ValueError(msg)
         else:
             return False
         return True

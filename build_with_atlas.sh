@@ -3,8 +3,9 @@
 
 
 # Maya directories
-MAYA_INCLUDE_PATH=/usr/autodesk/maya2017/include
-MAYA_LIB_PATH=/usr/autodesk/maya2017/lib
+MAYA_VERSION=2017
+MAYA_INCLUDE_PATH=/usr/autodesk/maya${MAYA_VERSION}/include
+MAYA_LIB_PATH=/usr/autodesk/maya${MAYA_VERSION}/lib
 
 
 # The root of this project.

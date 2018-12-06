@@ -1,19 +1,22 @@
 # Building and Install
 
 Building mmSolver can be fairly simple or complex, depending if you
-want to use ATLAS or Intel MKL to speed up computation. 
+want to use ATLAS or Intel MKL to speed up computation.
 For testing the tool, you may use the "Simple Method".
 
 There are Linux shell scripts to automate most of the compiling
 of external dependencies. You may edit these scripts for your
-system. There are patches required for different builds and 
+system. There are patches required for different builds and
 are stored in `./external/patches/`.
 
 ## Build Environment
 
 The below processes were tested on a CentOS 7.x Linux distribution.
 
-These are the versions of various software tested:
+These are the versions of various software tested together.
+
+
+Maya 2017:
 
 | Software          | Version                                     |
 | ------------      | -----------                                 |
@@ -22,20 +25,34 @@ These are the versions of various software tested:
 | GCC               | gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-28) |
 | LDD               | ldd (GNU libc) 2.17                         |
 | CMake             | 2.8.12.2                                    |
-| Autodesk Maya     | Autodesk Maya 2017 Update5                  |
+| Autodesk Maya     | Autodesk Maya 2017 Update 5                 |
 | Autodesk Maya API | 201780                                      |
+
+
+Maya 2016:
+
+| Software          | Version                                     |
+| ------------      | -----------                                 |
+| OS                | CentOS 7.x                                  |
+| Linux Kernel      | 3.10.0-862.3.3.el7.x86_64                   |
+| GCC               | gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-28) |
+| LDD               | ldd (GNU libc) 2.17                         |
+| CMake             | 2.8.12.2                                    |
+| Autodesk Maya     | Autodesk Maya 2016 Service Pack 6           |
+| Autodesk Maya API | 201614                                      |
+
 
 NOTE: Other operating systems have not been tested, but may work
 without modification or with only minor modifications.
 
 ##  Dependencies
 
-These projects are needed for building the ``mmSolver`` project. 
+These projects are needed for building the ``mmSolver`` project.
 
 Required:
 - C++ compiler ([GCC](https://gcc.gnu.org/), Clang, VC++, etc)
 - [CMake 2.8+](https://cmake.org/)
-- [Autodesk Maya 2017+](https://www.autodesk.com.au/products/maya/overview)
+- [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
 
 Required for GUI:
@@ -78,7 +95,7 @@ these commmand:
 ```commandline
 $ cd <project root>
 $ bash external/download_all_archives.sh
-$ build_with_levmar.sh 
+$ build_with_levmar.sh
 ```
 
 #### Build Script (with levmar and ATLAS)
@@ -101,7 +118,7 @@ $ yum install atlas.x86_64 atlas-devel.x86_64
 $ yum install lapack64.x86_64 lapack64-devel.x86_64
 ```
 
-To build with ATLAS, run these command: 
+To build with ATLAS, run these command:
 ```commandline
 $ cd <project root>
 $ bash external/download_all_archives.sh
@@ -119,12 +136,12 @@ software, Using a third-party maths library is recommended by the
 Intel MKL must be installed manually, this build script will not
 install it for you. You will need to sign up, download and install
 from the [Intel MKL website](https://software.intel.com/en-us/mkl).
- 
+
 The instructions below assume Intel MKL is installed under
 `/opt/intel/mkl`, you will need to modify the scripts if this location
 is not correct on your system.
 
-To build with Intel MKL, run these command: 
+To build with Intel MKL, run these command:
 ```commandline
 $ cd <project root>
 $ bash external/download_all_archives.sh
@@ -168,7 +185,7 @@ $ cmake -DCMAKE_BUILD_TYPE=Release \
 $ make -j4
 ```
 
-You can read any of the build scripts to find out how they work. 
+You can read any of the build scripts to find out how they work.
 The build scripts can be found in `<project root>/build_with_*.sh` and `<project root>/external/*.sh`.
 
 Once the plug-in is built successfully, continue on to the section
@@ -214,8 +231,24 @@ $ cd <project root>
 $ sh runTests.sh
 ```
 
+This will find and use the currently available 'mayapy' executable,
+please make sure 'mayapy' is on your PATH.
+
 For more information about testing, see the Testing section in
 [DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
+
+## Compile Qt .ui files
+
+To use the GUIs in the mmSolver tools, you must compile the *.ui files
+for your version of Qt (Qt4 or Qt5).
+
+```commandline
+$ cd <project root>
+$ mayapy compileUI.py
+```
+
+This will find and use the currently available 'mayapy' executable,
+please make sure 'mayapy' is on your PATH.
 
 ## Install Common Files
 

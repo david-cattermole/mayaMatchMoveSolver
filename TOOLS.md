@@ -7,6 +7,12 @@ workflow.
 ## Solver
 This UI is designed to allow all aspects of the mmSolver command
 
+To open the Solver run this Python command:
+```python
+import mmSolver.tools.solver.ui.solver_window as solver
+solver.main()
+```
+
 You can add multiple solver "steps", each step is performed going
 downwards, first #0, then #1, #2, etc.
 

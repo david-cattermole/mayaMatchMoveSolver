@@ -25,8 +25,8 @@ Maya 2017:
 | GCC               | gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-28) |
 | LDD               | ldd (GNU libc) 2.17                         |
 | CMake             | 2.8.12.2                                    |
-| Autodesk Maya     | Autodesk Maya 2017 Update 5                 |
-| Autodesk Maya API | 201780                                      |
+| Autodesk Maya     | **Autodesk Maya 2017 Update 5**             |
+| Autodesk Maya API | **201780**                                  |
 
 
 Maya 2016:
@@ -38,8 +38,8 @@ Maya 2016:
 | GCC               | gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-28) |
 | LDD               | ldd (GNU libc) 2.17                         |
 | CMake             | 2.8.12.2                                    |
-| Autodesk Maya     | Autodesk Maya 2016 Service Pack 6           |
-| Autodesk Maya API | 201614                                      |
+| Autodesk Maya     | **Autodesk Maya 2016 Service Pack 6**       |
+| Autodesk Maya API | **201614**                                  |
 
 
 NOTE: Other operating systems have not been tested, but may work
@@ -88,6 +88,12 @@ the dependencies you want to use:
 | build_with_atlas.sh     | levmar, ATLAS     |
 | build_with_intel_mkl.sh | levmar, Intel MKL |
 
+The scripts will assume a default Maya install directory.
+The current scripts use the default symlinked Autodesk Maya install
+path on Linux: ``/usr/autodesk/maya``.
+You will need to edit the build script with your custom Maya include
+and library directories.
+
 #### Build Script (with levmar)
 
 To build without any third-party dependencies other than levmar, run
@@ -95,6 +101,7 @@ these commmand:
 ```commandline
 $ cd <project root>
 $ bash external/download_all_archives.sh
+$ vi build_with_levmar.sh  # Edit path to Maya include / library
 $ build_with_levmar.sh
 ```
 
@@ -122,6 +129,7 @@ To build with ATLAS, run these command:
 ```commandline
 $ cd <project root>
 $ bash external/download_all_archives.sh
+$ vi build_with_atlas.sh  # Edit path to Maya include / library
 $ bash build_with_atlas.sh
 ```
 
@@ -145,6 +153,7 @@ To build with Intel MKL, run these command:
 ```commandline
 $ cd <project root>
 $ bash external/download_all_archives.sh
+$ vi build_with_intel_mkl.sh  # Edit path to Maya include / library
 $ bash build_with_intel_mkl.sh
 ```
 
@@ -164,8 +173,9 @@ manually you can do it easily using the following commands.
 | ATLAS_LIB_PATH       | Directory to ATLAS libraries               |
 | MKL_LIB_PATH         | Directory to Intel MKL libraries           |
 
-Setting ``USE_ATLAS`` and ``USE_MKL`` is an error, both libraries
-provide the same functionallity and both are not needed, only one.
+Setting ``USE_ATLAS`` and ``USE_MKL`` to ``1`` is an error, both
+libraries provide the same functionality and both are not needed,
+only one.
 
 Example command line:
 ```commandline

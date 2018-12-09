@@ -9,6 +9,8 @@ Usage (PySide - Maya):
 $ cd <project root>
 $ mayapy compileUI.py
 
+Note; Different versions of Maya contain different versions of PySide. Maya
+2017 and above contain PySide2 (for Qt5), Maya 2016 contains PySide(1).
 """
 
 import sys
@@ -28,16 +30,28 @@ except ImportError:
 
 
 def compile_file(in_path, out_path):
+    """
+    Compile a .ui file into a .py file.
+
+    :param in_path: Input .ui file path.
+    :type in_path: basestring
+
+    :param out_path: Output .py file path.
+    :type out_path: basestring
+
+    :returns: Nothing.
+    """
     if in_path.endswith('.ui') is False:
-        print('Warning: Skipping', in_path)
+        print('Warning: Skipping %r' % in_path)
         return
     if not os.path.isfile(in_path):
-        print('Warning: Skipping', in_path)
+        print('Warning: Skipping: %r' % in_path)
         return
     in_dir, in_name = os.path.split(in_path)
     out_dir, out_name = os.path.split(out_path)
 
-    print('Compiling:', in_name, '->', out_name)
+    msg = 'Compiling: {0} -> {1}'
+    print(msg.format(in_name, out_name))
     try:
         f = open(out_path, 'w')
         compileUi(in_path, f, False, 4, False)
@@ -49,6 +63,17 @@ def compile_file(in_path, out_path):
 
 
 def compile_directory(in_path_dir, out_path_dir):
+    """
+    Compiles all .ui files in the given directory into .py files.
+
+    :param in_path_dir: Input directory.
+    :type in_path_dir: basestring
+
+    :param out_path_dir: Output directory.
+    :type out_path_dir: basestring
+
+    :returns: Nothing.
+    """
     in_path_dir = os.path.abspath(in_path_dir)
     out_path_dir = os.path.abspath(out_path_dir)
     in_paths = sorted(os.listdir(in_path_dir))
@@ -61,6 +86,7 @@ def compile_directory(in_path_dir, out_path_dir):
         out_name = 'ui_' + in_name.replace('.ui', '.py')
         out_fullpath = os.path.join(out_path_dir, out_name)
         compile_file(in_fullpath, out_fullpath)
+    return
 
 
 if __name__ == '__main__':

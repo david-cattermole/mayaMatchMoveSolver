@@ -19,6 +19,11 @@ import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
 import mmSolver.tools.selection.tools as selection_tool
 import mmSolver.tools.cameraaim.tool as cameraaim_tool
 import mmSolver.tools.createmarker.tool as createmarker_tool
+import mmSolver.tools.convertmarker.tool as convertmarker_tool
+import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
+# import mmSolver.tools.snaponcurve.tool as snaponcurve_tool
+# import mmSolver.tools.surfacerivet.tool as surfacerivet_tool
+# import mmSolver.tools.centertwodee.tool as centertwodee_tool
 
 
 LOG = mmSolver.logger.get_logger()
@@ -33,6 +38,7 @@ class SolverWindow(BaseWindow):
         super(SolverWindow, self).__init__(parent, name=name)
         self.setupUi(self)
         self.addSubForm(solver_layout.SolverLayout)
+        self.setStatusLine(const.STATUS_READY)
 
         # TODO: Dynamically add the current collection name to the
         # title bar.
@@ -289,12 +295,20 @@ class SolverWindow(BaseWindow):
         cameraaim_tool.aim_at_camera()
 
     def toggleMarkerBundleSelectionCB(self):
-        LOG.warning('toggleMarkerBundleSelectionCB')
+        LOG.debug('toggleMarkerBundleSelectionCB')
         selection_tool.swap_between_selected_markers_and_bundles()
 
     def selectBothMarkersAndBundlesCB(self):
-        LOG.warning('selectBothMarkersAndBundlesCB')
+        LOG.debug('selectBothMarkersAndBundlesCB')
         selection_tool.select_both_markers_and_bundles()
+
+    def linkMarkerBundleCB(self):
+        LOG.debug('linkMarkerBundleCB')
+        link_mb_tool.link_marker_bundle()
+
+    def unlinkMarkerBundleCB(self):
+        LOG.debug('unlinkMarkerBundleCB')
+        link_mb_tool.unlink_marker_bundle()
 
     @staticmethod
     def refreshActionToggledCB(value):
@@ -308,8 +322,13 @@ class SolverWindow(BaseWindow):
     def launchAboutCB(self):
         LOG.debug('launchAboutCB')
 
+    def setStatusLine(self, text):
+        self.subForm.setStatusLine(text)
+        return
+
     def apply(self):
         LOG.debug('apply')
+        self.setStatusLine(const.STATUS_EXECUTING)
         try:
             refresh_state = tool.get_refresh_viewport_state()
             log_level = tool.get_log_level()
@@ -319,22 +338,26 @@ class SolverWindow(BaseWindow):
             col = tool.get_active_collection()
             if col is None:
                 msg = 'No active collection.'
+                self.setStatusLine('ERROR: ' + msg)
                 LOG.error(msg)
             ok = tool.compile_collection(col)
             if ok is not True:
                 msg = 'Cannot execute solver, collection is not valid.'
                 msg += 'collection=%r'
+                self.setStatusLine('Warning: ' + msg)
                 LOG.warning(msg, col)
             else:
                 tool.execute_collection(
                     col,
                     log_level=log_level,
                     refresh=refresh_state,
-                    prog_fn=self.progressBar.setValue
+                    prog_fn=self.progressBar.setValue,
+                    status_fn=self.setStatusLine,
                 )
         finally:
             self.progressBar.setValue(100)
             self.progressBar.hide()
+            self.setStatusLine(const.STATUS_FINISHED)
         return
 
     def help(self):
@@ -343,6 +366,10 @@ class SolverWindow(BaseWindow):
 
 
 def main(show=True, widthHeight=(800, 600)):
+    # Force the Plug-in to load.  If the plug-in cannot load, the UI
+    # will not open and an error will be given.
+    tool.ensure_plugin_loaded()
+
     global UI
 
     valid = uiutils.isValidQtObject(UI)

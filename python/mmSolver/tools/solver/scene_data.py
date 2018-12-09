@@ -1,5 +1,5 @@
 """
-Solver tool.
+Solver tool scene data manipulation.
 """
 
 import json

@@ -318,9 +318,23 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="emptySpace02_layout">
+         <layout class="QHBoxLayout" name="solverOverrides_layout">
           <item>
-           <spacer name="horizontalSpacer_4">
+           <widget class="QLabel" name="overrideCurrentFrame_label">
+            <property name="text">
+             <string>Override Current Frame</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="overrideCurrentFrame_checkBox">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_6">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -331,6 +345,24 @@
              </size>
             </property>
            </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="statusLine_layout">
+          <item>
+           <widget class="QLabel" name="statusLine_label">
+            <property name="text">
+             <string>Status.</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>

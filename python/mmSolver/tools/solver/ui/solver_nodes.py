@@ -191,6 +191,12 @@ class SolverStepNode(nodes.Node):
         return
 
     def frames(self):
+        # if the option 'override current frame' is on, we ignore the actual value.
+        col = self.collectionNode()
+        cur_frame = tool.get_override_current_frame_from_collection(col)
+        if cur_frame is True:
+            return 'CURRENT'
+
         n = self.stepNode()
         int_list = n.get_frame_list()
         string = _convertIntListToString(int_list)
@@ -270,8 +276,8 @@ class SolverModel(uimodels.TableModel):
         super(SolverModel, self).__init__(node_list=node_list, font=font)
         self._column_names = {
             0: 'Enabled',
-            1: 'Attributes',
-            2: 'Frames',
+            1: 'Frames',
+            2: 'Attributes',
             3: 'Strategy',
         }
         self._node_attr_key = {

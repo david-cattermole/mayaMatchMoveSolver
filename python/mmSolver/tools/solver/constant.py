@@ -70,7 +70,7 @@ ATTR_FILTER_LABEL_LIST = [
     ATTR_FILTER_NO_ATTRS_LABEL,
 ]
 
-# Solver Step Data
+# Solver Step Data (stored on Collection node)
 SOLVER_STEP_ATTR = 'solver_step_list'
 SOLVER_STEP_DATA_DEFAULT = {
     'name': None,
@@ -81,3 +81,21 @@ SOLVER_STEP_DATA_DEFAULT = {
     'use_static_attrs': False,
 }
 
+# Override Current Frame (stored on Collection node)
+OVERRIDE_CURRENT_FRAME_ATTR = 'override_current_frame'
+
+# Most simple solves converge on a result within 10
+# iterations, but 20 gives a wider range to refine more
+# complex set ups.
+MAX_ITERATION_NUM_DEFAULT_VALUE = 20
+
+# Force the 'central' Auto-Differencing type, because it's
+# more accurate and we can converge on a result faster.
+AUTO_DIFF_TYPE_DEFAULT_VALUE = 1
+
+# List of common status messages.
+STATUS_READY = 'Ready.'
+STATUS_REFRESHING = 'Refreshing UI...'
+STATUS_COMPILING = 'Compiling Solver...'
+STATUS_EXECUTING = 'Executing...'
+STATUS_FINISHED = 'Finished.'

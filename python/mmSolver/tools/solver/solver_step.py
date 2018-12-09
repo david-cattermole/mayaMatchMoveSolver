@@ -1,6 +1,7 @@
 """
 Solver Step - holds data representing a logical solver step.
 """
+import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
@@ -9,7 +10,18 @@ import mmSolver.tools.solver.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
+
 def _gen_two_frame_fwd(int_list):
+    """
+    Given a list of integers, create list of Frame pairs, moving
+    though the original list.
+
+    :param int_list: List of frame numbers.
+    :type int_list: List of int
+
+    :returns: List of integer pairs.
+    :rtype: list of list of Frame
+    """
     end = len(int_list) - 1
     batch_list = []
     for i in range(end):
@@ -24,12 +36,24 @@ def _gen_two_frame_fwd(int_list):
     return batch_list
 
 
-def _solve_anim_attrs(max_iter_num, int_list):
+def _solve_anim_attrs(max_iter_num, auto_diff_type, int_list):
+    """Solve only animated attributes.
+
+    .. todo::
+       Split attributes into groups of markers. By definition
+       of 'animated attributes', each set of animated attributes can
+       only affect the connected attributes. Therefore we should
+       create multiple solvers that filter out specific attributes.
+
+    """
     sol_list = []
-    batch_list = _gen_two_frame_fwd(int_list)
-    for frm_list in batch_list:
+    for f in int_list:
+        frm = mmapi.Frame(f)
+        frm_list = [frm]
+
         sol = mmapi.Solver()
         sol.set_max_iterations(max_iter_num)
+        sol.set_auto_diff_type(auto_diff_type)
         sol.set_frame_list(frm_list)
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(False)
@@ -37,30 +61,9 @@ def _solve_anim_attrs(max_iter_num, int_list):
     return sol_list
 
 
-# def _solve_anim_attrs(max_iter_num, int_list):
-#     sol_list = []
-#     for f in int_list:
-#         frm = mmapi.Frame(f)
-#         frm_list = [frm]
-#
-#         sol = mmapi.Solver()
-#         sol.set_max_iterations(max_iter_num)
-#         sol.set_frame_list(frm_list)
-#         sol.set_attributes_use_animated(True)
-#         sol.set_attributes_use_static(False)
-#         sol_list.append(sol)
-#     return sol_list
-
-
-def _solve_static_attrs(max_iter_num, int_list, strategy):
+def _solve_all_attrs(max_iter_num, auto_diff_type, int_list, strategy):
     sol_list = []
-    raise NotImplementedError
-    return sol_list
-
-
-def _solve_all_attrs(max_iter_num, int_list, strategy):
-    LOG.debug('strategy: %r', strategy)
-    sol_list = []
+    batch_frm_list = []
 
     if len(int_list) == 0:
         msg = 'Cannot compile solver steps, no frames given; %r'
@@ -68,19 +71,18 @@ def _solve_all_attrs(max_iter_num, int_list, strategy):
         return sol_list
 
     if strategy == const.STRATEGY_TWO_FRAMES_FWD:
-        batch_list = _gen_two_frame_fwd(int_list)
-        for frm_list in batch_list:
-            sol = mmapi.Solver()
-            sol.set_max_iterations(max_iter_num)
-            sol.set_attributes_use_animated(True)
-            sol.set_attributes_use_static(True)
-            sol.set_frame_list(frm_list)
-            sol_list.append(sol)
-
+        batch_frm_list = _gen_two_frame_fwd(int_list)
     elif strategy == const.STRATEGY_ALL_FRAMES_AT_ONCE:
         frm_list = map(lambda x: mmapi.Frame(x), int_list)
+        batch_frm_list = [frm_list]
+    else:
+        msg = 'strategy is not supported: strategy=%r'
+        raise ValueError(msg % strategy)
+
+    for frm_list in batch_frm_list:
         sol = mmapi.Solver()
         sol.set_max_iterations(max_iter_num)
+        sol.set_auto_diff_type(auto_diff_type)
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(True)
         sol.set_frame_list(frm_list)
@@ -150,38 +152,73 @@ class SolverStep(object):
         data['use_static_attrs'] = value
         self.set_data(data)
 
-    def compile(self):
+    def compile(self, col, override_current_frame=False):
         """
         Convert Solver Step into a list of Solvers.
+
+        :param col: The collection this solver step belongs to.
+        :type col: Collection
+
+        :returns: List of solvers compiled from this solver step.
+        :rtype: list of Solver
         """
         sol_list = []
         enabled = self.get_enabled()
         if enabled is not True:
             return sol_list
-        max_iter_num = 10
-        use_anim_attrs = self.get_use_anim_attrs()
-        use_static_attrs = self.get_use_static_attrs()
+
+        # Default Solver values
+        max_iter_num = const.MAX_ITERATION_NUM_DEFAULT_VALUE
+        auto_diff_type = const.AUTO_DIFF_TYPE_DEFAULT_VALUE
+
         strategy = self.get_strategy()
         int_list = self.get_frame_list()
-        if use_anim_attrs is False and use_static_attrs is False:
-            pass
-        elif use_anim_attrs is True and use_static_attrs is False:
+
+        # If the option 'override current frame' is on, we ignore the
+        # frames given and override with the current frame number.
+        if override_current_frame is True:
+            time = maya.cmds.currentTime(query=True)
+            cur_frame = int(time)
+            int_list = [cur_frame]
+
+        # Use number of different attributes later on to switch strategies.
+        attr_list = col.get_attribute_list()
+        attrs_anim_num = 0
+        attrs_static_num = 0
+        for attr in attr_list:
+            if attr.is_animated():
+                attrs_anim_num += 1
+            if attr.is_static():
+                attrs_static_num += 1
+
+        # If there are no static attributes, the solver will consider
+        # "use_static_attrs" to be off. The same as
+        use_anim_attrs = self.get_use_anim_attrs() and attrs_anim_num > 0
+        use_static_attrs = self.get_use_static_attrs() and attrs_static_num > 0
+        if use_anim_attrs is True and use_static_attrs is False:
+            # Solve only animated attributes.
             sol_list = _solve_anim_attrs(
                 max_iter_num,
+                auto_diff_type,
                 int_list,
             )
-        elif use_anim_attrs is False and use_static_attrs is True:
-            sol_list = _solve_static_attrs(
-                max_iter_num,
-                int_list,
-                strategy,
-            )
-        elif use_anim_attrs is True and use_static_attrs is True:
+        elif ((use_anim_attrs is True and use_static_attrs is True)
+              or (use_anim_attrs is False and use_static_attrs is True)):
+            # Solve static attributes, as well as animated attributes.
             sol_list = _solve_all_attrs(
                 max_iter_num,
+                auto_diff_type,
                 int_list,
                 strategy,
             )
+        elif use_anim_attrs is False and use_static_attrs is False:
+            msg = 'No attributes will be solved: '
+            msg += 'use_static_attrs=%r, use_anim_attrs=%r'
+            msg = msg % (use_static_attrs, use_anim_attrs)
+            raise ValueError(msg)
         else:
-            raise ValueError('We should not get here')
+            msg = 'We should not get here: '
+            msg += 'use_static_attrs=%r, use_anim_attrs=%r'
+            msg = msg % (use_static_attrs, use_anim_attrs)
+            raise ValueError(msg)
         return sol_list

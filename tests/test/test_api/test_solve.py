@@ -25,6 +25,9 @@ import test.test_api.apiutils as test_api_utils
 class TestSolve(test_api_utils.APITestCase):
 
     def test_init(self):
+        """
+        Single Frame solve.
+        """
         # Camera
         cam_tfm = maya.cmds.createNode('transform',
                                        name='cam_tfm')
@@ -212,13 +215,128 @@ class TestSolve(test_api_utils.APITestCase):
             print('frame error list: ' + pprint.pformat(dict(res.get_frame_error_list())))
             print('marker error list: ' + pprint.pformat(dict(res.get_marker_error_list())))
 
-            # self.assertTrue(success)
+            self.assertTrue(success)
             # self.assertGreater(0.001, err)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
 
         # save the output
         path = self.get_data_path('test_solve_marker_enabled_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+    def test_per_frame(self):
+        """
+        Solve animated values, per-frame.
+        """
+        # Camera
+        cam_tfm = maya.cmds.createNode('transform',
+                                       name='cam_tfm')
+        cam_shp = maya.cmds.createNode('camera',
+                                       name='cam_shp',
+                                       parent=cam_tfm)
+        maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
+        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
+        cam = api.Camera(shape=cam_shp)
+
+        # Bundle
+        bnd = api.Bundle().create_node()
+        bundle_tfm = bnd.get_node()
+        maya.cmds.setAttr(bundle_tfm + '.tx', 5.5)
+        maya.cmds.setAttr(bundle_tfm + '.ty', 6.4)
+        maya.cmds.setAttr(bundle_tfm + '.tz', -25.0)
+        assert api.get_object_type(bundle_tfm) == 'bundle'
+        maya.cmds.setKeyframe(bundle_tfm,
+                              attribute='translateX',
+                              time=1, value=5.5,
+                              inTangentType='linear',
+                              outTangentType='linear')
+        maya.cmds.setKeyframe(bundle_tfm,
+                              attribute='translateY',
+                              time=1, value=6.4,
+                              inTangentType='linear',
+                              outTangentType='linear')
+        maya.cmds.setKeyframe(bundle_tfm,
+                              attribute='translateZ',
+                              time=1, value=-25.0,
+                              inTangentType='linear',
+                              outTangentType='linear')
+
+        # Marker
+        mkr = api.Marker().create_node(cam=cam, bnd=bnd)
+        marker_tfm = mkr.get_node()
+        assert api.get_object_type(marker_tfm) == 'marker'
+        # maya.cmds.setAttr(marker_tfm + '.tx', 0.0)
+        # maya.cmds.setAttr(marker_tfm + '.ty', 0.0)
+        maya.cmds.setKeyframe(marker_tfm,
+                              attribute='translateX',
+                              time=1, value=-0.5,
+                              inTangentType='linear',
+                              outTangentType='linear')
+        maya.cmds.setKeyframe(marker_tfm,
+                              attribute='translateX',
+                              time=5, value=0.5,
+                              inTangentType='linear',
+                              outTangentType='linear')
+        maya.cmds.setKeyframe(marker_tfm,
+                              attribute='translateY',
+                              time=1, value=-0.5,
+                              inTangentType='linear',
+                              outTangentType='linear')
+        maya.cmds.setKeyframe(marker_tfm,
+                              attribute='translateY',
+                              time=5, value=0.5,
+                              inTangentType='linear',
+                              outTangentType='linear')
+
+        # Attributes
+        attr_tx = api.Attribute(bundle_tfm + '.tx')
+        attr_ty = api.Attribute(bundle_tfm + '.ty')
+
+        # Frames
+        frm_list = [
+            api.Frame(1),
+            api.Frame(2),
+            api.Frame(3),
+            api.Frame(4),
+            api.Frame(5),
+        ]
+
+        # Solver
+        sol_list = []
+        for frm in frm_list:
+            sol = api.Solver()
+            sol.set_max_iterations(10)
+            sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
+            sol.set_verbose(True)
+            sol.set_frame_list([frm])
+            sol_list.append(sol)
+
+        # Collection
+        col = api.Collection()
+        col.create_node('mySolveCollection')
+        col.add_solver_list(sol_list)
+        col.add_marker(mkr)
+        col.add_attribute(attr_tx)
+        col.add_attribute(attr_ty)
+
+        # save the output
+        path = self.get_data_path('test_solve_per_frame_before.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+        
+        # Run solver!
+        results = col.execute()
+
+        # Ensure the values are correct
+        for res in results:
+            success = res.get_success()
+            err = res.get_final_error()
+            self.assertTrue(success)
+
+        # save the output
+        path = self.get_data_path('test_solve_per_frame_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -447,7 +565,7 @@ class TestSolve(test_api_utils.APITestCase):
     #     for i in range(1, 9):
     #         sol = api.Solver()
     #         sol.set_max_iterations(10)
-    #         sol.set_delta(-0.01)
+    #         sol.set_delta_factor(-0.01)
     #         sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #         sol.set_attributes_use_animated(True)
     #         sol.set_attributes_use_static(True)
@@ -460,7 +578,7 @@ class TestSolve(test_api_utils.APITestCase):
     #     for i in range(1, 9):
     #         sol = api.Solver()
     #         sol.set_max_iterations(10)
-    #         sol.set_delta(-0.01)
+    #         sol.set_delta_factor(-0.01)
     #         sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #         sol.set_attributes_use_animated(True)
     #         sol.set_attributes_use_static(True)
@@ -473,7 +591,7 @@ class TestSolve(test_api_utils.APITestCase):
     #     # for i in range(0, 41):
     #     #     sol = api.Solver()
     #     #     sol.set_max_iterations(10)
-    #     #     sol.set_delta(-0.01)
+    #     #     sol.set_delta_factor(-0.01)
     #     #     sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #     #     sol.set_attributes_use_animated(True)
     #     #     sol.set_attributes_use_static(True)
@@ -485,7 +603,7 @@ class TestSolve(test_api_utils.APITestCase):
     #     # # All primary frames together
     #     # sol = api.Solver()
     #     # sol.set_max_iterations(10)
-    #     # sol.set_delta(-0.01)
+    #     # sol.set_delta_factor(-0.01)
     #     # sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #     # sol.set_attributes_use_animated(True)
     #     # sol.set_attributes_use_static(True)

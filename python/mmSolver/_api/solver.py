@@ -80,11 +80,22 @@ class Solver(object):
         self._data['max_iterations'] = value
         return
 
-    def get_delta(self):
+    def get_delta_factor(self):
         return self._data.get('delta')
 
-    def set_delta(self, value):
+    def set_delta_factor(self, value):
         self._data['delta'] = value
+        return
+
+    def get_auto_diff_type(self):
+        return self._data.get('auto_diff_type')
+
+    def set_auto_diff_type(self, value):
+        if value not in const.AUTO_DIFF_TYPE_LIST:
+            msg = 'auto_diff_type must be one of %r; value=%r'
+            msg = msg % (const.AUTO_DIFF_TYPE_LIST, value)
+            raise ValueError(msg)
+        self._data['auto_diff_type'] = value
         return
 
     def get_tau_factor(self):
@@ -92,6 +103,27 @@ class Solver(object):
 
     def set_tau_factor(self, value):
         self._data['tau_factor'] = value
+        return
+
+    def get_gradient_error_factor(self):
+        return self._data.get('gradient_error')
+
+    def set_gradient_error_factor(self, value):
+        self._data['gradient_error'] = value
+        return
+
+    def get_parameter_error_factor(self):
+        return self._data.get('parameter_error')
+
+    def set_parameter_error_factor(self, value):
+        self._data['parameter_error'] = value
+        return
+
+    def get_error_factor(self):
+        return self._data.get('error')
+
+    def set_error_factor(self, value):
+        self._data['error'] = value
         return
 
     def get_solver_type(self):

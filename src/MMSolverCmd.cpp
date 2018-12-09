@@ -1,9 +1,5 @@
 /*
  * Command for running mmSolver.
- *
- * TODO: Add a 'finite differencing' flag, which controls whether we
- * use 'forward' or 'central' differencing to compute the jacobian.
- * 
  */
 
 
@@ -71,6 +67,7 @@ MSyntax MMSolverCmd::newSyntax() {
     syntax.addFlag(EPSILON2_FLAG, EPSILON2_FLAG_LONG, MSyntax::kDouble);
     syntax.addFlag(EPSILON3_FLAG, EPSILON3_FLAG_LONG, MSyntax::kDouble);
     syntax.addFlag(DELTA_FLAG, DELTA_FLAG_LONG, MSyntax::kDouble);
+    syntax.addFlag(AUTO_DIFF_TYPE_FLAG, AUTO_DIFF_TYPE_FLAG_LONG, MSyntax::kUnsigned);
     syntax.addFlag(SOLVER_TYPE_FLAG, SOLVER_TYPE_FLAG_LONG, MSyntax::kUnsigned);
     syntax.addFlag(ITERATIONS_FLAG, ITERATIONS_FLAG_LONG, MSyntax::kUnsigned);
     syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG, MSyntax::kBoolean);
@@ -346,6 +343,14 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     }
     // DBG("m_delta=" << m_delta);
 
+    // Get 'Auto Differencing Type'
+    m_autoDiffType = AUTO_DIFF_TYPE_DEFAULT_VALUE;
+    if (argData.isFlagSet(AUTO_DIFF_TYPE_FLAG)) {
+        status = argData.getFlagArgument(AUTO_DIFF_TYPE_FLAG, 0, m_autoDiffType);
+        CHECK_MSTATUS(status);
+    }
+    // DBG("m_autoDiffType=" << m_autoDiffType);
+
     // Get 'Solver Type'
     m_solverType = SOLVER_TYPE_DEFAULT_VALUE;
     if (argData.isFlagSet(SOLVER_TYPE_FLAG)) {
@@ -391,7 +396,8 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
     assert(m_frameList.length() > 0);
 
-    // Don't store each individial edits, just store the combination of edits.
+    // Don't store each individial edits, just store the combination
+    // of edits.
     m_curveChange.setInteractive(true);
 
     MStringArray outResult;
@@ -402,6 +408,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
             m_epsilon2,
             m_epsilon3,
             m_delta,
+            m_autoDiffType,
             m_solverType,
             m_cameraList,
             m_markerList,

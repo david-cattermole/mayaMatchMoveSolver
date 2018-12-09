@@ -22,6 +22,9 @@ import test.test_solver.solverutils as solverUtils
 class TestSolver3(solverUtils.SolverTestCase):
 
     def test_init(self):
+        """
+        Solve nodal camera on a single frame
+        """
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
@@ -60,7 +63,7 @@ class TestSolver3(solverUtils.SolverTestCase):
             camera=cameras,
             marker=markers,
             attr=node_attrs,
-            iterations=100,
+            iterations=10,
             solverType=0,
             frame=frames,
             verbose=True,

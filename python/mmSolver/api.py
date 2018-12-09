@@ -30,6 +30,7 @@ from mmSolver._api.excep import (
     AlreadyLinked,
     AlreadyUnlinked,
     NotEnoughMarkers,
+    SolverNotAvailable,
 )
 from mmSolver._api.constant import (
     ATTR_STATE_INVALID,
@@ -38,6 +39,10 @@ from mmSolver._api.constant import (
     ATTR_STATE_LOCKED,
 
     SOLVER_TYPE_LEVMAR,
+
+    AUTO_DIFF_TYPE_FORWARD,
+    AUTO_DIFF_TYPE_CENTRAL,
+    AUTO_DIFF_TYPE_LIST,
 )
 
 # Utility functions that the user is allowed to use.
@@ -51,6 +56,8 @@ from mmSolver._api.utils import (
     load_plugin,
     get_data_on_node_attr,
     set_data_on_node_attr,
+    get_value_on_node_attr,
+    set_value_on_node_attr,
 )
 
 # Animation Utility functions that the user is allowed to use.
@@ -76,6 +83,9 @@ __all__ = [
     'ATTR_STATE_ANIMATED',
     'ATTR_STATE_LOCKED',
     'SOLVER_TYPE_LEVMAR',
+    'AUTO_DIFF_TYPE_FORWARD',
+    'AUTO_DIFF_TYPE_CENTRAL',
+    'AUTO_DIFF_TYPE_LIST',
 
     # Exceptions
     'MMException',
@@ -83,6 +93,7 @@ __all__ = [
     'AlreadyLinked',
     'AlreadyUnlinked',
     'NotEnoughMarkers',
+    'SolverNotAvailable',
 
     # Functions
     'get_long_name',
@@ -95,6 +106,8 @@ __all__ = [
     'create_anim_curve_node',
     'get_data_on_node_attr',
     'set_data_on_node_attr',
+    'get_value_on_node_attr',
+    'set_value_on_node_attr',
     'combine_timer_stats',
     'merge_frame_error_list',
     'get_average_frame_error_list',

@@ -6,7 +6,7 @@
 #include <mmSolver.h>
 
 // Lev-Mar
-#include <levmar.h>  // dlevmar_bc_dir, dlevmar_bc_der 
+#include <levmar.h>  // dlevmar_bc_dir, dlevmar_bc_der
 
 
 // STL
@@ -204,6 +204,7 @@ bool solve(int iterMax,
            double eps2,
            double eps3,
            double delta,
+           int autoDiffType,
            int solverType,
            CameraPtrList cameraList,
            MarkerPtrList markerList,
@@ -222,6 +223,14 @@ bool solve(int iterMax,
     int ret = true;
     int profileCategory = MProfiler::getCategoryIndex("mmSolver");
     MProfilingScope profilingScope(profileCategory, MProfiler::kColorC_L3, "solve");
+
+    // Change the sign of the delta
+    double delta_factor = std::abs(delta);
+    if (autoDiffType == 1) {
+        // Central Differencing (to use forward differing the delta
+        // must be a positive number)
+        delta_factor *= -1;
+    }
 
     // Indexing maps
     IndexPairList paramToAttrList;
@@ -284,7 +293,7 @@ bool solve(int iterMax,
     if (m > n) {
         ERR("Solver failure; cannot solve for more attributes (\"parameters\") "
             << "than number of markers (\"errors\"). "
-            << "parameters=" << m
+            << "parameters=" << m << " "
             << "errors =" << n);
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
@@ -350,7 +359,8 @@ bool solve(int iterMax,
     VRB("Epsilon1=" << eps1);
     VRB("Epsilon2=" << eps2);
     VRB("Epsilon3=" << eps3);
-    VRB("Delta=" << delta);
+    VRB("Delta=" << fabs(delta_factor));
+    VRB("Auto Differencing Type=" << autoDiffType);
     computation.setProgressRange(0, iterMax);
     computation.beginComputation();
 
@@ -388,7 +398,7 @@ bool solve(int iterMax,
     userData.eps1 = eps1;
     userData.eps2 = eps2;
     userData.eps3 = eps3;
-    userData.delta = delta;
+    userData.delta = delta_factor;
     userData.solverType = solverType;
 
     // Timers
@@ -423,7 +433,7 @@ bool solve(int iterMax,
     opts[1] = eps1;
     opts[2] = eps2;
     opts[3] = eps3;
-    opts[4] = delta;
+    opts[4] = delta_factor;
 
     if (solverType == SOLVER_TYPE_LEVMAR) {
 

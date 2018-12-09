@@ -10,6 +10,7 @@ import pprint
 import uuid
 
 import maya.cmds
+import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 import mmSolver._api.utils as api_utils
@@ -324,9 +325,6 @@ class Collection(object):
         for member in members:
             object_type = api_utils.get_object_type(member)
             if object_type == 'attribute':
-                # TODO: Store the min/max values of the attribute in the
-                # collection node, then get the data back when we turn it
-                # back into an Attribute class.
                 attr = attribute.Attribute(name=member)
                 result.append(attr)
         return result
@@ -412,7 +410,11 @@ class Collection(object):
         :param attr_list: Attributes to solve for
         :type attr_list: list of attribute.Attribute
 
-        :return:
+        :param prog_fn: Progress Function, with signature f(int)
+        :type prog_fn: function
+
+        :return: The keyword arguments for the mmSolver command.
+        :rtype: None or dict
         """
         assert isinstance(sol, solver.Solver)
         assert isinstance(mkr_list, list)
@@ -555,22 +557,35 @@ class Collection(object):
         if verbose is not None:
             kwargs['verbose'] = verbose
 
-        delta = sol.get_delta()
-        if delta is not None:
-            kwargs['delta'] = delta
+        delta_factor = sol.get_delta_factor()
+        if delta_factor is not None:
+                kwargs['delta'] = delta_factor
+
+        auto_diff_type = sol.get_auto_diff_type()
+        if auto_diff_type is not None:
+            kwargs['autoDiffType'] = auto_diff_type
 
         tau_factor = sol.get_tau_factor()
         if tau_factor is not None:
             kwargs['tauFactor'] = tau_factor
-        # TODO: epsilon1 argument
-        # TODO: epsilon2 argument
-        # TODO: epsilon3 argument
+
+        gradient_error_factor = sol.get_gradient_error_factor()
+        if gradient_error_factor is not None:
+            kwargs['epsilon1'] = gradient_error_factor
+
+        parameter_error_factor = sol.get_parameter_error_factor()
+        if parameter_error_factor is not None:
+            kwargs['epsilon2'] = parameter_error_factor
+
+        error_factor = sol.get_error_factor()
+        if error_factor is not None:
+            kwargs['epsilon3'] = error_factor
 
         msg = 'kwargs:\n' + pprint.pformat(kwargs)
         LOG.debug(msg)
         return kwargs
 
-    def _compile(self, prog_fn=None):
+    def _compile(self, prog_fn=None, status_fn=None):
         """
         Take the data in this class and compile it into keyword argument flags.
 
@@ -629,15 +644,100 @@ class Collection(object):
         self._kwargs_list = kwargs_list  # save a copy
         return self._kwargs_list
 
-    def is_valid(self, prog_fn=None):
+    def is_valid(self, prog_fn=None, status_fn=None):
         try:
-            self._compile(prog_fn=None)
+            self._compile(prog_fn=None, status_fn=None)
             ret = True
         except excep.NotValid:
             ret = False
         return ret
 
-    def execute(self, verbose=False, refresh=False, prog_fn=None):
+    @staticmethod
+    def __set_progress(prog_fn, value):
+        if prog_fn is not None:
+            prog_fn(int(value))
+        return
+
+    @staticmethod
+    def __set_status(status_fn, text):
+        if status_fn is not None:
+            status_fn(str(text))
+        return
+
+    @staticmethod
+    def __is_single_frame(kwargs):
+        """
+        Logic to determine if the solver arguments will solve a single
+        frame or not.
+        """
+        has_one_frame = len(kwargs.get('frame')) is 1
+        is_interactive = maya.cmds.about(query=True, batch=True) is False
+        return has_one_frame and is_interactive
+
+    @staticmethod
+    def __disconnect_animcurves(kwargs):
+        # HACK: Disconnect animCurves from animated attributes,
+        # then re-connect afterward. This is to solve a Maya bug,
+        # which will not solve values on a single frame.
+        f = kwargs.get('frame')[0]
+        maya.cmds.currentTime(f, edit=True, update=False)
+
+        save_node_attrs = []
+        attrs = kwargs.get('attr') or []
+        for attr_name, min_val, max_val in attrs:
+            attr_obj = attribute.Attribute(attr_name)
+            if attr_obj.is_animated() is False:
+                continue
+
+            in_plug_name = None
+            out_plug_name = attr_name
+            plug = api_utils.get_as_plug(attr_name)
+            isDest = plug.isDestination()
+            if isDest:
+                connPlugs = OpenMaya.MPlugArray()
+                asDest = True  # get the source plugs on the other end of 'plug'.
+                asSrc = False
+                plug.connectedTo(connPlugs, asDest, asSrc)
+                for i, conn in enumerate(connPlugs):
+                    connPlug = connPlugs[i]
+                    connObj = connPlug.node()
+                    if connObj.hasFn(OpenMaya.MFn.kAnimCurve):
+                        # dependsNode = OpenMaya.MFnDependencyNode(connObj)
+                        # animCurveName = dependsNode.name()
+                        in_plug_name = connPlug.name()
+                        break
+            if in_plug_name is not None:
+                save_node_attrs.append((in_plug_name, out_plug_name))
+                if maya.cmds.isConnected(in_plug_name, out_plug_name) is True:
+                    maya.cmds.disconnectAttr(in_plug_name, out_plug_name)
+                else:
+                    LOG.error('Nodes are not connected. This is WRONG.')
+        return save_node_attrs
+
+    @staticmethod
+    def __reconnect_animcurves(kwargs, save_node_attrs):
+        f = kwargs.get('frame')[0]
+        maya.cmds.currentTime(f, edit=True, update=False)
+
+        # Re-connect animCurves, and set the solved values.
+        for in_plug_name, out_plug_name in save_node_attrs:
+            if maya.cmds.isConnected(in_plug_name, out_plug_name) is False:
+                v = maya.cmds.getAttr(out_plug_name)
+                maya.cmds.connectAttr(in_plug_name, out_plug_name)
+                attr_obj = attribute.Attribute(name=out_plug_name)
+                tangent_type = 'linear'
+                maya.cmds.setKeyframe(
+                    attr_obj.get_node(),
+                    attribute=attr_obj.get_attr(),
+                    time=f, value=v,
+                    inTangentType=tangent_type,
+                    outTangentType=tangent_type,
+                )
+            else:
+                LOG.error('Nodes are connected. This is WRONG.')
+        return
+
+    def execute(self, verbose=False, refresh=False, prog_fn=None, status_fn=None):
         """
         Compile the collection, then pass that data to the 'mmSolver' command.
 
@@ -650,13 +750,17 @@ class Collection(object):
         """
         # Ensure the plug-in is loaded, so we fail before trying to run.
         api_utils.load_plugin()
+
+        # Save current frame, to revert to later on.
+        cur_frame = maya.cmds.currentTime(query=True)
+
         undo_state = maya.cmds.undoInfo(query=True, state=True)
         undo_id = 'mmSolver.api.collection.execute: ' + str(uuid.uuid4())
         try:
             if undo_state is True:
                 maya.cmds.undoInfo(openChunk=True, chunkName=undo_id)
-            if prog_fn is not None:
-                prog_fn(0)
+            self.__set_progress(prog_fn, 0)
+            self.__set_status(status_fn, 'Solver Initializing...')
 
             # Check for validity
             solres_list = []
@@ -664,39 +768,57 @@ class Collection(object):
                 LOG.warning('collection not valid: %r', self.get_node())
                 return solres_list
             kwargs_list = self._compile()
-            if prog_fn is not None:
-                prog_fn(1)
+            self.__set_progress(prog_fn, 1)
 
             # Run Solver...
             start = 0
             total = len(kwargs_list)
             for i, kwargs in enumerate(kwargs_list):
+                frame = kwargs.get('frame')
+                if frame is None or len(frame) == 0:
+                    raise excep.NotValid
+
                 # HACK: Overriding the verbosity, irrespective of what
                 # the solver verbosity value is set to.
                 if verbose is True:
                     kwargs['verbose'] = True
 
+                # HACK for single frame solves.
+                save_node_attrs = []
+                is_single_frame = self.__is_single_frame(kwargs)
+                if is_single_frame is True:
+                    save_node_attrs = self.__disconnect_animcurves(kwargs)
+
                 # Run Solver Maya plug-in command
+                self.__set_status(status_fn, 'Evaluating frames %r' % frame)
                 solve_data = maya.cmds.mmSolver(**kwargs)
-                if prog_fn is not None:
-                    ratio = float(i) / float(total)
-                    percent = float(start) + (ratio * (100.0 - start))
-                    prog_fn(int(percent))
+
+                # Revert special HACK for single frame solves
+                if is_single_frame is True:
+                    self.__reconnect_animcurves(kwargs, save_node_attrs)
+
+                # Create SolveResult.
                 solres = solveresult.SolveResult(solve_data)
                 solres_list.append(solres)
 
+                # Update progress
+                ratio = float(i) / float(total)
+                percent = float(start) + (ratio * (100.0 - start))
+                self.__set_progress(prog_fn, int(percent))
+
                 if solres.get_success() is False:
-                    LOG.error('Solver failed!!!')
+                    msg = 'Solver failed!!!'
+                    self.__set_status(status_fn, 'ERROR:' + msg)
+                    LOG.error(msg)
 
                 # Refresh the Viewport.
                 if refresh is True:
-                    frame = kwargs.get('frame')
-                    if frame is not None and len(frame) > 0:
-                        maya.cmds.currentTime(
-                            frame[0],
-                            edit=True,
-                            update=True
-                        )
+                    self.__set_status(status_fn, 'Refresh Viewport...')
+                    maya.cmds.currentTime(
+                        frame[0],
+                        edit=True,
+                        update=True
+                    )
                     maya.cmds.refresh()
         except:
             solres_list = []
@@ -704,8 +826,9 @@ class Collection(object):
             # and undo the entire undo chunk?
             raise
         finally:
-            if prog_fn is not None:
-                prog_fn(100)
+            self.__set_progress(prog_fn, 100)
+
             if undo_state is True:
                 maya.cmds.undoInfo(closeChunk=True, chunkName=undo_id)
+            maya.cmds.currentTime(cur_frame, edit=True, update=True)
         return solres_list

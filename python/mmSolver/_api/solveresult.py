@@ -51,6 +51,11 @@ class SolveResult(object):
             raise TypeError(msg % type(cmd_data))
         data = parse_command_result(cmd_data)
 
+        # Common warning in this function.
+        msg = 'mmSolver data is incomplete, '
+        msg += 'a solver error may have occurred: '
+        msg += 'name={0} key={1} typ={2} value={3}'
+
         # Solver statistics
         name_keys = [
             ('success', 'success', bool),
@@ -63,7 +68,10 @@ class SolveResult(object):
         ]
         self._solver_stats = {}
         for name, key, typ in name_keys:
-            value = data[key]
+            value = data.get(key)
+            if value is None or len(value) == 0:
+                LOG.warning(msg.format(name, key, typ, value))
+                continue
             self._solver_stats[name] = typ(value[0])
 
         # Error statistics
@@ -79,7 +87,10 @@ class SolveResult(object):
         ]
         self._error_stats = {}
         for name, key, typ in name_keys:
-            value = data[key]
+            value = data.get(key)
+            if value is None or len(value) == 0:
+                LOG.warning(msg.format(name, key, typ, value))
+                continue
             self._error_stats[name] = typ(value[0])
 
         # Timer statistics
@@ -97,29 +108,39 @@ class SolveResult(object):
         ]
         self._timer_stats = {}
         for name, key, typ in name_keys:
-            value = data[key]
+            value = data.get(key)
+            if value is None or len(value) == 0:
+                LOG.warning(msg.format(name, key, typ, value))
+                continue
             self._timer_stats[name] = typ(value[0])
 
         # List of errors, per-marker, per-frame.
         # Allows graphing the errors and detecting problems.
         self._per_marker_per_frame_error = collections.defaultdict(dict)
         key = 'error_per_marker_per_frame'
-        values = data[key]
-        for value in values:
-            mkr = str(value[0])
-            t = float(value[1])
-            v = float(value[2])
-            self._per_marker_per_frame_error[mkr][t] = v
+        values = data.get(key)
+        if values is None or len(values) == 0:
+            LOG.warning(msg.format(name, key, typ, values))
+        else:
+            for value in values:
+                mkr = str(value[0])
+                t = float(value[1])
+                v = float(value[2])
+                self._per_marker_per_frame_error[mkr][t] = v
 
         # Errors per frame
         # Allows graphing the errors and detecting problems.
         self._per_frame_error = {}
         key = 'error_per_frame'
-        values = data[key]
-        for value in values:
-            t = float(value[0])
-            v = float(value[1])
-            self._per_frame_error[t] = v
+        values = data.get(key)
+        if values is None or len(values) == 0:
+            LOG.warning(msg.format(name, key, typ, value))
+        else:
+            for value in values:
+                t = float(value[0])
+                v = float(value[1])
+                self._per_frame_error[t] = v
+        return
 
     def get_success(self):
         """

@@ -23,8 +23,8 @@ class TestSolver4(solverUtils.SolverTestCase):
         start = 1
         end = 10
 
-        # TODO: Make sure to tangents to auto, in case the Maya user contains 
-        #  preferences to change this behaviour.
+        # TODO: Make sure to set tangents to auto, in case the Maya
+        #  user contains preferences to change this behaviour.
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
@@ -71,7 +71,7 @@ class TestSolver4(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             frame=frames,
-            solverType=0,  # was using sparse levmar
+            solverType=0,
             iterations=10,
             delta=0.0001,
             # epsilon1=0.001,

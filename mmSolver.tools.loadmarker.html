@@ -58,29 +58,8 @@
   <div class="section" id="module-mmSolver.tools.loadmarker">
 <span id="mmsolver-tools-loadmarker"></span><h1>mmSolver.tools.loadmarker<a class="headerlink" href="#module-mmSolver.tools.loadmarker" title="Permalink to this headline">¶</a></h1>
 <p>Tool to load markers into Maya from various thirdparty file formats.</p>
-<div class="section" id="module-mmSolver.tools.loadmarker.mayareadfile">
-<span id="basics"></span><h2>Basics<a class="headerlink" href="#module-mmSolver.tools.loadmarker.mayareadfile" title="Permalink to this headline">¶</a></h2>
-<p>Module for reading marker files.</p>
-<p>This should be used by end-users, not the internal modules.</p>
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.mayareadfile.read">
-<code class="descclassname">mmSolver.tools.loadmarker.mayareadfile.</code><code class="descname">read</code><span class="sig-paren">(</span><em>file_path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.mayareadfile.read" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read a file path, find the format parser based on the file extension.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.mayareadfile.create_nodes">
-<code class="descclassname">mmSolver.tools.loadmarker.mayareadfile.</code><code class="descname">create_nodes</code><span class="sig-paren">(</span><em>mkr_data_list</em>, <em>cam=None</em>, <em>mkr_grp=None</em>, <em>with_bundles=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.mayareadfile.create_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create Markers for all given MarkerData objects</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.mayareadfile.update_nodes">
-<code class="descclassname">mmSolver.tools.loadmarker.mayareadfile.</code><code class="descname">update_nodes</code><span class="sig-paren">(</span><em>mkr_list</em>, <em>mkr_data_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.mayareadfile.update_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the given mkr_list with data from mkr_data_list.
-The length of both lists must match.</p>
-</dd></dl>
-
+<div class="section" id="basics">
+<h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-mmSolver.tools.loadmarker.formatmanager">
 <span id="advanced"></span><h2>Advanced<a class="headerlink" href="#module-mmSolver.tools.loadmarker.formatmanager" title="Permalink to this headline">¶</a></h2>
@@ -593,7 +572,7 @@ The dictionary looks like this:</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.loadmarker</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.mayareadfile">Basics</a></li>
+<li><a class="reference internal" href="#basics">Basics</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.formatmanager">Advanced</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.formats">Formats</a></li>
 </ul>

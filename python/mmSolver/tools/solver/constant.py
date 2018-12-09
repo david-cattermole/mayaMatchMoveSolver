@@ -2,6 +2,9 @@
 Holds all constant data needed for the solver tool and UI.
 """
 
+# Window Title Bar format.
+WINDOW_TITLE_BAR = 'mmSolver | {0}'
+
 
 # Available log levels for the Solver UI.
 LOG_LEVEL_ERROR = 'error'

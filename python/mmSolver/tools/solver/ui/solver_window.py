@@ -11,16 +11,17 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
-import mmSolver.ui.uimodels as uimodels
-import mmSolver.tools.solver.tool as tool
+import mmSolver.tools.solver.lib.collection as lib_collection
+import mmSolver.tools.solver.lib.state as lib_state
+import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
 import mmSolver.tools.solver.ui.solver_layout as solver_layout
 import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
 import mmSolver.tools.selection.tools as selection_tool
 import mmSolver.tools.cameraaim.tool as cameraaim_tool
 import mmSolver.tools.createmarker.tool as createmarker_tool
-import mmSolver.tools.convertmarker.tool as convertmarker_tool
 import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
+# import mmSolver.tools.convertmarker.tool as convertmarker_tool
 # import mmSolver.tools.snaponcurve.tool as snaponcurve_tool
 # import mmSolver.tools.surfacerivet.tool as surfacerivet_tool
 # import mmSolver.tools.centertwodee.tool as centertwodee_tool
@@ -39,10 +40,6 @@ class SolverWindow(BaseWindow):
         self.setupUi(self)
         self.addSubForm(solver_layout.SolverLayout)
         self.setStatusLine(const.STATUS_READY)
-
-        # TODO: Dynamically add the current collection name to the
-        # title bar.
-        self.setWindowTitle('mmSolver - Solver')
 
         # Menu Bar
         self.addMenuBarContents(self.menubar)
@@ -66,32 +63,40 @@ class SolverWindow(BaseWindow):
         file_menu = QtWidgets.QMenu('File', menubar)
 
         # New Collection
-        newCollectionAction = QtWidgets.QAction('New Collection', file_menu)
-        newCollectionAction.setStatusTip('Create a new Collection node.')
-        newCollectionAction.triggered.connect(partial(self.createNewCollectionNodeCB))
-        file_menu.addAction(newCollectionAction)
+        label = 'New Collection'
+        tooltip = 'Create a new Collection node.'
+        action = QtWidgets.QAction(label, file_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.createNewCollectionNodeCB))
+        file_menu.addAction(action)
 
         # Rename Collection
-        renameCollectionAction = QtWidgets.QAction('Rename Collection', file_menu)
-        renameCollectionAction.setStatusTip('Rename a Collection node.')
-        renameCollectionAction.triggered.connect(partial(self.renameCollectionNodeCB))
-        file_menu.addAction(renameCollectionAction)
+        label = 'Rename Collection'
+        tooltip = 'Rename a Collection node.'
+        action = QtWidgets.QAction(label, file_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.renameCollectionNodeCB))
+        file_menu.addAction(action)
 
         file_menu.addSeparator()
 
         # Remove Collection
-        removeCollectionAction = QtWidgets.QAction('Remove Collection', file_menu)
-        removeCollectionAction.setStatusTip('Remove a Collection node.')
-        removeCollectionAction.triggered.connect(partial(self.removeCollectionNodeCB))
-        file_menu.addAction(removeCollectionAction)
+        label = 'Remove Collection'
+        tooltip = 'Remove a Collection node.'
+        action = QtWidgets.QAction(label, file_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.removeCollectionNodeCB))
+        file_menu.addAction(action)
 
         file_menu.addSeparator()
 
         # Close Window
-        closeWindowAction = QtWidgets.QAction('Close Window', file_menu)
-        closeWindowAction.setStatusTip('Close the mmSolver window.')
-        closeWindowAction.triggered.connect(partial(self.close))
-        file_menu.addAction(closeWindowAction)
+        label = 'Close Window'
+        tooltip = 'Close the mmSolver window.'
+        action = QtWidgets.QAction(label, file_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.close))
+        file_menu.addAction(action)
 
         menubar.addMenu(file_menu)
 
@@ -99,96 +104,119 @@ class SolverWindow(BaseWindow):
         tools_menu = QtWidgets.QMenu('Tools', menubar)
 
         # Create Marker
-        createMarkerAction = QtWidgets.QAction('Create Marker', tools_menu)
-        createMarkerAction.setStatusTip('Create Markers on the selected camera.')
-        createMarkerAction.triggered.connect(partial(self.createMarkerCB))
-        tools_menu.addAction(createMarkerAction)
+        label = 'Create Marker'
+        tooltip = 'Create Markers on the selected camera.'
+        action = QtWidgets.QAction(label, tools_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.createMarkerCB))
+        tools_menu.addAction(action)
 
-        # TODO: Write this tool and add it back into the menu.
         # # Convert to Marker
-        # convertToMarkerAction = QtWidgets.QAction('Convert to Marker...', tools_menu)
-        # convertToMarkerAction.setStatusTip('Convert the selection to Markers.')
-        # convertToMarkerAction.triggered.connect(partial(self.convertToMarkerCB))
-        # tools_menu.addAction(convertToMarkerAction)
+        # label = 'Convert to Marker...'
+        # tooltip = 'Convert the selection to Markers.'
+        # action = QtWidgets.QAction(label, tools_menu)
+        # action.setStatusTip(tooltip)
+        # action.triggered.connect(partial(self.convertToMarkerCB))
+        # tools_menu.addAction(action)
 
         # Load Markers
-        loadMarkerAction = QtWidgets.QAction('Load Marker...', tools_menu)
-        loadMarkerAction.setStatusTip('Load Markers from a file.')
-        loadMarkerAction.triggered.connect(partial(self.loadMarkerCB))
-        tools_menu.addAction(loadMarkerAction)
+        label = 'Load Marker...'
+        tooltip = 'Load Markers from a file.'
+        action = QtWidgets.QAction(label, tools_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.loadMarkerCB))
+        tools_menu.addAction(action)
 
         tools_menu.addSeparator()
 
         # Camera Aim
-        aimAtCameraAction = QtWidgets.QAction('Aim at Camera', tools_menu)
-        aimAtCameraAction.setStatusTip('Aim at Camera.')
-        aimAtCameraAction.triggered.connect(partial(self.aimAtCameraCB))
-        tools_menu.addAction(aimAtCameraAction)
+        label = 'Aim at Camera'
+        tooltip = 'Aim the selected transform nodes at camera.'
+        action = QtWidgets.QAction(label, tools_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.aimAtCameraCB))
+        tools_menu.addAction(action)
 
         tools_menu.addSeparator()
 
         # Toogle Marker / Bundle selection
-        toggleMarkerBundleSelection = QtWidgets.QAction('Toggle Marker / Bundle Selection', tools_menu)
-        toggleMarkerBundleSelection.setStatusTip('Select connected Markers, or Bundles.')
-        toggleMarkerBundleSelection.triggered.connect(partial(self.toggleMarkerBundleSelectionCB))
-        tools_menu.addAction(toggleMarkerBundleSelection)
+        label = 'Toggle Marker <-> Bundle'
+        tooltip = 'Select connected Markers, or Bundles.'
+        action = QtWidgets.QAction(label, tools_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.toggleMarkerBundleSelectionCB))
+        tools_menu.addAction(action)
 
         # Select Marker / Bundle
-        selectBothMarkerBundle = QtWidgets.QAction('Select Marker / Bundle', tools_menu)
-        selectBothMarkerBundle.setStatusTip('Select the connected Markers and Bundles.')
-        selectBothMarkerBundle.triggered.connect(partial(self.selectBothMarkersAndBundlesCB))
-        tools_menu.addAction(selectBothMarkerBundle)
+        label = 'Select Marker + Bundle'
+        tooltip = 'Select the connected Markers and Bundles.'
+        action = QtWidgets.QAction(label, tools_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.selectBothMarkersAndBundlesCB))
+        tools_menu.addAction(action)
 
         tools_menu.addSeparator()
 
         # Refresh Viewport During Solve
-        refresh_value = tool.get_refresh_viewport_state()
-        refreshAction = QtWidgets.QAction('Refresh Viewport', tools_menu)
-        refreshAction.setStatusTip('Refresh the viewport while Solving.')
-        refreshAction.setCheckable(True)
-        refreshAction.setChecked(refresh_value)
-        refreshAction.toggled.connect(type(self).refreshActionToggledCB)
-        tools_menu.addAction(refreshAction)
+        label = 'Refresh Viewport'
+        tooltip = 'Refresh the viewport while Solving.'
+        refresh_value = lib_state.get_refresh_viewport_state()
+        action = QtWidgets.QAction(label, tools_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(refresh_value)
+        action.toggled.connect(type(self).refreshActionToggledCB)
+        tools_menu.addAction(action)
 
         menubar.addMenu(tools_menu)
 
         # Log Menu
-        # This menu depicts a radiobutton allowing the user to choose
+        # This menu depicts a radio button allowing the user to choose
         # how much information is returned to the console (the logging
         # level).
         log_menu = QtWidgets.QMenu('Log', menubar)
 
         # Errors
-        logErrorAction = QtWidgets.QAction('Errors', log_menu)
-        logErrorAction.setStatusTip('Send Errors to the log.')
+        label = 'Errors'
+        tooltip = 'Send Errors to the log.'
+        logErrorAction = QtWidgets.QAction(label, log_menu)
+        logErrorAction.setStatusTip(tooltip)
         logErrorAction.setCheckable(True)
         logErrorAction.triggered.connect(partial(self.logErrorCB))
         log_menu.addAction(logErrorAction)
 
         # Warnings
-        logWarningAction = QtWidgets.QAction('Warnings', log_menu)
-        logWarningAction.setStatusTip('Send Warnings to the log.')
+        label = 'Warnings'
+        tooltip = 'Send Warnings to the log.'
+        logWarningAction = QtWidgets.QAction(label, log_menu)
+        logWarningAction.setStatusTip(tooltip)
         logWarningAction.setCheckable(True)
         logWarningAction.triggered.connect(partial(self.logWarningCB))
         log_menu.addAction(logWarningAction)
 
         # Information
-        logInfoAction = QtWidgets.QAction('Info', log_menu)
-        logInfoAction.setStatusTip('Send Information to the log.')
+        label = 'Info'
+        tooltip = 'Send Information to the log.'
+        logInfoAction = QtWidgets.QAction(label, log_menu)
+        logInfoAction.setStatusTip(tooltip)
         logInfoAction.setCheckable(True)
         logInfoAction.triggered.connect(partial(self.logInfoCB))
         log_menu.addAction(logInfoAction)
 
         # Verbose
-        logVerboseAction = QtWidgets.QAction('Verbose', log_menu)
-        logVerboseAction.setStatusTip('Send Verboses to the log.')
+        label = 'Verbose'
+        tooltip = 'Send Verboses to the log.'
+        logVerboseAction = QtWidgets.QAction(label, log_menu)
+        logVerboseAction.setStatusTip(tooltip)
         logVerboseAction.setCheckable(True)
         logVerboseAction.triggered.connect(partial(self.logVerboseCB))
         log_menu.addAction(logVerboseAction)
 
         # Debug
-        logDebugAction = QtWidgets.QAction('Debug', log_menu)
-        logDebugAction.setStatusTip('Send Debug messages to the log.')
+        label = 'Debug'
+        tooltip = 'Send Debug messages to the log.'
+        logDebugAction = QtWidgets.QAction(label, log_menu)
+        logDebugAction.setStatusTip(tooltip)
         logDebugAction.setCheckable(True)
         logDebugAction.triggered.connect(partial(self.logDebugCB))
         log_menu.addAction(logDebugAction)
@@ -201,7 +229,7 @@ class SolverWindow(BaseWindow):
         log_actionGroup.addAction(logVerboseAction)
         log_actionGroup.addAction(logDebugAction)
 
-        log_level = tool.get_log_level()
+        log_level = lib_state.get_log_level()
         if log_level == const.LOG_LEVEL_ERROR:
             logErrorAction.setChecked(True)
         elif log_level == const.LOG_LEVEL_WARNING:
@@ -221,39 +249,43 @@ class SolverWindow(BaseWindow):
         help_menu = QtWidgets.QMenu('Help', menubar)
 
         # Launch Help
-        launchHelpAction = QtWidgets.QAction('Help...', help_menu)
-        launchHelpAction.setStatusTip('Show help.')
-        launchHelpAction.triggered.connect(partial(self.launchHelpCB))
-        help_menu.addAction(launchHelpAction)
+        label = 'Help...'
+        tooltip = 'Show help.'
+        action = QtWidgets.QAction(label, help_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.launchHelpCB))
+        help_menu.addAction(action)
 
         # Launch About
-        launchAboutAction = QtWidgets.QAction('About...', help_menu)
-        launchAboutAction.setStatusTip('About this software.')
-        launchAboutAction.triggered.connect(partial(self.launchAboutCB))
-        help_menu.addAction(launchAboutAction)
+        label = 'About...'
+        tooltip = 'About this software.'
+        action = QtWidgets.QAction(label, help_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.launchAboutCB))
+        help_menu.addAction(action)
 
         menubar.addMenu(help_menu)
         return
 
     def logErrorCB(self):
         LOG.debug('logErrorCB')
-        tool.set_log_level(const.LOG_LEVEL_ERROR)
+        lib_state.set_log_level(const.LOG_LEVEL_ERROR)
 
     def logWarningCB(self):
         LOG.debug('logWarningCB')
-        tool.set_log_level(const.LOG_LEVEL_WARNING)
+        lib_state.set_log_level(const.LOG_LEVEL_WARNING)
 
     def logInfoCB(self):
         LOG.debug('logInfoCB')
-        tool.set_log_level(const.LOG_LEVEL_INFO)
+        lib_state.set_log_level(const.LOG_LEVEL_INFO)
 
     def logVerboseCB(self):
         LOG.debug('logVerboseCB')
-        tool.set_log_level(const.LOG_LEVEL_VERBOSE)
+        lib_state.set_log_level(const.LOG_LEVEL_VERBOSE)
 
     def logDebugCB(self):
         LOG.debug('logDebugCB')
-        tool.set_log_level(const.LOG_LEVEL_DEBUG)
+        lib_state.set_log_level(const.LOG_LEVEL_DEBUG)
 
     def createNewCollectionNodeCB(self):
         LOG.debug('createNewCollectionNodeCB')
@@ -313,7 +345,7 @@ class SolverWindow(BaseWindow):
     @staticmethod
     def refreshActionToggledCB(value):
         LOG.warning('refreshActionToggledCB: %r', value)
-        tool.set_refresh_viewport_state(value)
+        lib_state.set_refresh_viewport_state(value)
 
     def launchHelpCB(self):
         LOG.debug('launchHelpCB')
@@ -330,24 +362,24 @@ class SolverWindow(BaseWindow):
         LOG.debug('apply')
         self.setStatusLine(const.STATUS_EXECUTING)
         try:
-            refresh_state = tool.get_refresh_viewport_state()
-            log_level = tool.get_log_level()
+            refresh_state = lib_state.get_refresh_viewport_state()
+            log_level = lib_state.get_log_level()
 
             self.progressBar.setValue(0)
             self.progressBar.show()
-            col = tool.get_active_collection()
+            col = lib_state.get_active_collection()
             if col is None:
                 msg = 'No active collection.'
                 self.setStatusLine('ERROR: ' + msg)
                 LOG.error(msg)
-            ok = tool.compile_collection(col)
+            ok = lib_collection.compile_collection(col)
             if ok is not True:
                 msg = 'Cannot execute solver, collection is not valid.'
                 msg += 'collection=%r'
                 self.setStatusLine('Warning: ' + msg)
                 LOG.warning(msg, col)
             else:
-                tool.execute_collection(
+                lib_collection.execute_collection(
                     col,
                     log_level=log_level,
                     refresh=refresh_state,
@@ -368,7 +400,7 @@ class SolverWindow(BaseWindow):
 def main(show=True, widthHeight=(800, 600)):
     # Force the Plug-in to load.  If the plug-in cannot load, the UI
     # will not open and an error will be given.
-    tool.ensure_plugin_loaded()
+    lib_maya_utils.ensure_plugin_loaded()
 
     global UI
 

@@ -10,10 +10,9 @@ import Qt.QtCore as QtCore
 
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.nodes as nodes
-import mmSolver.ui.uiutils as uiutils
 import mmSolver.logger
+import mmSolver.tools.solver.lib.collection as lib_collection
 import mmSolver.tools.solver.constant as const
-import mmSolver.tools.solver.tool as tool
 
 
 LOG = mmSolver.logger.get_logger()
@@ -167,13 +166,13 @@ class SolverStepNode(nodes.Node):
     def stepNode(self):
         col = self.collectionNode()
         name = self.name()
-        n = tool.get_named_solver_step_from_collection(col, name)
+        n = lib_collection.get_named_solver_step_from_collection(col, name)
         return n
 
     def setStepNode(self, node):
         col = self.collectionNode()
         name = self.name()
-        tool.set_named_solver_step_to_collection(col, node)
+        lib_collection.set_named_solver_step_to_collection(col, node)
         return
 
     def stepEnabled(self):
@@ -191,9 +190,10 @@ class SolverStepNode(nodes.Node):
         return
 
     def frames(self):
-        # if the option 'override current frame' is on, we ignore the actual value.
+        # if the option 'override current frame' is on, we ignore the actual
+        # value.
         col = self.collectionNode()
-        cur_frame = tool.get_override_current_frame_from_collection(col)
+        cur_frame = lib_collection.get_override_current_frame_from_collection(col)
         if cur_frame is True:
             return 'CURRENT'
 

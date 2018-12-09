@@ -215,7 +215,7 @@ class SolverStep(object):
             msg = 'No attributes will be solved: '
             msg += 'use_static_attrs=%r, use_anim_attrs=%r'
             msg = msg % (use_static_attrs, use_anim_attrs)
-            raise ValueError(msg)
+            LOG.debug(msg)
         else:
             msg = 'We should not get here: '
             msg += 'use_static_attrs=%r, use_anim_attrs=%r'

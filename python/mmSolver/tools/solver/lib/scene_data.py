@@ -5,7 +5,6 @@ Solver tool scene data manipulation.
 import json
 import maya.cmds
 import mmSolver.logger
-import mmSolver.api as mmapi
 import mmSolver.tools.solver.constant as const
 
 LOG = mmSolver.logger.get_logger()

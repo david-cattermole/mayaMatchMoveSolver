@@ -1,13 +1,9 @@
 """
 Convert mmSolver API objects into UI objects that can be used in Qt models.
-
-
 """
 
-# import collection
 import mmSolver.logger
-import mmSolver.api as mmapi
-import mmSolver.tools.solver.solver_step as solver_step
+import mmSolver.tools.solver.lib.solver_step as solver_step
 import mmSolver.tools.solver.ui.attr_nodes as attr_nodes
 import mmSolver.tools.solver.ui.object_nodes as object_nodes
 import mmSolver.tools.solver.ui.solver_nodes as solver_nodes

@@ -6,6 +6,7 @@ import maya.cmds
 import mmSolver.api as mmapi
 import mmSolver.logger
 import mmSolver.tools.selection.filternodes as filternodes
+import mmSolver.tools.linkmarkerbundle.lib as lib
 
 
 LOG = mmSolver.logger.get_logger()
@@ -14,27 +15,41 @@ LOG = mmSolver.logger.get_logger()
 def link_marker_bundle():
     """
     Select a marker node, and a bundle node, run to link both nodes.
-    :return:
     """
-    raise NotImplementedError
-    # TODO: Get marker and bundle nodes.
-    bundle_name = 'the_bundle_node_name_here'
-    marker_name = 'the_marker_node_name_here'
-    bnd = mmapi.Bundle(name=bundle_name)
-    mkr = mmapi.Marker(name=marker_name)
-    mkr.set_bundle(bnd)
+    sel = maya.cmds.ls(selection=True, long=True) or []
+    mkr_nodes = filternodes.get_marker_nodes(sel)
+    bnd_nodes = filternodes.get_bundle_nodes(sel)
+
+    if len(mkr_nodes) != 1 and len(bnd_nodes) != 1:
+        msg = 'Please select only one Marker and one Bundle.'
+        LOG.warning(msg)
+        return
+    if len(mkr_nodes) != 1:
+        msg = 'Please select only one Marker.'
+        LOG.warning(msg)
+    if len(bnd_nodes) != 1:
+        msg = 'Please select only one Bundle.'
+        LOG.warning(msg)
+    if len(mkr_nodes) != 1 or len(bnd_nodes) != 1:
+        return
+
+    lib.link_marker_bundle(mkr_nodes[0], bnd_nodes[0])
     return
 
 
 def unlink_marker_bundle():
     """
     All selected markers are disconnected from their bundle.
-
-    :return:
     """
-    raise NotImplementedError
-    marker_name = 'the_marker_node_name_here'
-    mkr = mmapi.Marker(name=marker_name)
-    mkr.set_bundle(None)
-    return
+    sel = maya.cmds.ls(selection=True, long=True) or []
+    mkr_nodes = filternodes.get_marker_nodes(sel)
 
+    if len(mkr_nodes) == 1:
+        msg = 'Please select one or more Markers.'
+        LOG.warning(msg)
+        return
+
+    for mkr_node in mkr_nodes:
+        mkr = mmapi.Marker(name=mkr_node)
+        mkr.set_bundle(None)
+    return

@@ -100,7 +100,6 @@ def __set_node_data(mkr, mkr_data):
     mkr_x_data = mkr_data.get_x().get_raw_data()
     mkr_y_data = mkr_data.get_y().get_raw_data()
     for t, v in mkr_x_data.iteritems():
-        # TODO: Work out the factor we need to put the point into camera space.
         mkr_x_data[t] = v - 0.5
     for t, v in mkr_y_data.iteritems():
         mkr_y_data[t] = v - 0.5
@@ -150,7 +149,6 @@ def create_nodes(mkr_data_list, cam=None, mkr_grp=None, with_bundles=True):
     if len(mkr_nodes) > 0:
         maya.cmds.select(mkr_nodes, replace=True)
     else:
-        # maya.cmds.select(selected_nodes, clear=True)
         maya.cmds.select(selected_nodes, replace=True)
     return mkr_list
 

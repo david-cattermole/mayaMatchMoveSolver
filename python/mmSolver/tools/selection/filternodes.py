@@ -1,4 +1,5 @@
 """
+Helpful tools to filter a list of nodes into pre-defined categories.
 """
 
 import maya.cmds

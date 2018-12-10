@@ -69,7 +69,6 @@ class TestMarkerScaleNode(solverUtils.SolverTestCase):
 
         # Camera
         cam_tfm, cam_shp = self.create_camera('camera')
-        # FIXME: Moving the camera makes the calculations incorrect, this must be fixed inside the node.
         maya.cmds.setAttr(cam_tfm + '.translateX', -2.0)
         maya.cmds.setAttr(cam_tfm + '.translateY', 2.0)
         maya.cmds.setAttr(cam_tfm + '.translateZ', 5)

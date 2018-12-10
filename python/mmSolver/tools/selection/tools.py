@@ -20,7 +20,7 @@ def swap_between_selected_markers_and_bundles():
     If a marker is selected, the attached bundle will be selected and
     vice versa.
     """
-    sel = maya.cmds.ls(sl=True, long=True)
+    sel = maya.cmds.ls(sl=True, long=True) or []
     if len(sel) == 0:
         LOG.warning('Select a node.')
         return
@@ -51,7 +51,7 @@ def select_both_markers_and_bundles():
     """
     Get the connected Markers and bundles, and select them.
     """
-    sel = maya.cmds.ls(sl=True, long=True)
+    sel = maya.cmds.ls(sl=True, long=True) or []
     if len(sel) == 0:
         LOG.warning('Select a node.')
         return

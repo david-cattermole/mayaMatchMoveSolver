@@ -139,8 +139,11 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         Dynamically set the current collection name to the title bar.
         """
         col = lib_state.get_active_collection()
+        node = '<Collection>'
+        if col is not None:
+            node = col.get_node()
         title = str(const.WINDOW_TITLE_BAR)
-        title = title.format(col.get_node())
+        title = title.format(node)
         self._parentClass.window().setWindowTitle(title)
 
     def updateCollectionModel(self):
@@ -256,6 +259,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
     def renameCollectionNode(self):
         LOG.debug('renameCollectionNode')
         col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to rename. Skipping rename.')
+            return
         node_name = col.get_node()
         title = 'Rename Collection node'
         msg = 'Enter new node name'
@@ -277,7 +283,16 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         LOG.debug('removeCollectionNode')
         col = lib_state.get_active_collection()
         if col is not None:
+            # FIXME: Solver Steps continue to hold a reference to the
+            # Collection after the collection node is deleted.
+            steps = lib_col.get_solver_steps_from_collection(col)
+            for step in steps:
+                lib_col.remove_solver_step_from_collection(col, step)
             lib_col.delete_collection(col)
+            lib_state.set_active_collection(None)
+        else:
+            LOG.warning('No active collection to delete.')
+            return
 
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
@@ -292,6 +307,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
     def collectionSelectClicked(self):
         LOG.debug('collectionSelectClicked')
         col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to select.')
+            return
         lib_col.select_collection(col)
         self.updateDynamicWindowTitle()
         self.setStatusLine(const.STATUS_READY)
@@ -472,6 +490,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
     @QtCore.Slot(int)
     def overrideCurrentFrameChanged(self, value):
         col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection, cannot override Solver Step.')
+            return
         # 'value' from Qt is expected to be an int, we expect a bool.
         value = bool(value)
         lib_col.set_override_current_frame_on_collection(col, value)

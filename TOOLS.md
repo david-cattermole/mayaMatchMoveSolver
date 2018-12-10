@@ -32,7 +32,11 @@ You can add multiple solver "steps", each step is performed going
 
 When you hit the "solve" button you are performing all of the solve steps.
 
-the 'Override Current Frame' check-box allows the user to temporarily override the time for all Solve Steps with the current frame. The current frame value dynamically updates as the user changes the Maya frame. The original solver frame numbers are always stored and never overwritten.
+The 'Override Current Frame' check-box allows the user to temporarily
+override the time for all Solve Steps with the current frame. The
+current frame value dynamically updates as the user changes the Maya
+frame. The original solver frame numbers are always stored and never
+overwritten.
 
 Each Solver "step" contains:
 
@@ -99,9 +103,11 @@ createmarker_tool.create_marker()
 
 ## Convert to Marker
 
-Converts the selected transform nodes into screen-space Markers, as viewed though the active viewport camera.
+Converts the selected transform nodes into screen-space Markers, as
+viewed though the active viewport camera.
 
-The created markers are named based on the selected transform nodes, and are parented under the active viewport camera.
+The created markers are named based on the selected transform nodes,
+and are parented under the active viewport camera.
 
 Run this Python command:
 ```python
@@ -146,7 +152,9 @@ loadmarker_window.main()
 
 Create a default Bundle node.
 
-If Markers are selected, the Bundle will attempt to attach to it, while adhering to the rule; *a bundle can only have one marker representation for each camera.*
+If Markers are selected, the Bundle will attempt to attach to it,
+while adhering to the rule; *a bundle can only have one marker
+representation for each camera.*
 
 Run this Python command:
 ```python
@@ -158,7 +166,10 @@ createbundle_tool.create_bundle()
 
 Link the selected Marker and Bundle together.
 
-The link will not succeed if the selected Bundle is already connected to a Marker with the same camera, or in other words; A bundle can only have one Marker per-camera. This tool checks and adheres to this requirement.
+The link will not succeed if the selected Bundle is already connected
+to a Marker with the same camera, or in other words; A bundle can only
+have one Marker per-camera. This tool checks and adheres to this
+requirement.
 
 Run this Python command:
 ```python
@@ -178,7 +189,8 @@ link_mb_tool.unlink_marker_bundle()
 
 ## Toggle Marker / Bundle
 
-Select the opposite node, if a Marker is selected, select it's connected Bundle, and vice versa.
+Select the opposite node, if a Marker is selected, select it's
+connected Bundle, and vice-versa.
 
 Run this Python command:
 ```python
@@ -198,7 +210,8 @@ selection_tool.select_both_markers_and_bundles()
 
 ## Center 2D On Selection
 
-Forces the active viewport camera to lock it's center to the currently selected transform node.
+Forces the active viewport camera to lock it's center to the currently
+selected transform node.
 
 A viewport camera can only center on one node at a time.
 
@@ -217,5 +230,3 @@ Run this Python command:
 import mmSolver.tools.cameraaim.tool as cameraaim_tool
 cameraaim_tool.aim_at_camera()
 ```
-
-

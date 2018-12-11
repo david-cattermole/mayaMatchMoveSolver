@@ -433,12 +433,29 @@ class Collection(object):
         cameras = []
         for mkr in mkr_list:
             assert isinstance(mkr, marker.Marker)
-            bnd = mkr.get_bundle()
-            cam = mkr.get_camera()
             mkr_node = mkr.get_node()
+            assert isinstance(mkr_node, basestring)
+            bnd = mkr.get_bundle()
+            if bnd is None:
+                msg = 'Cannot find bundle from marker, skipping; mkr_node={0}'
+                msg = msg.format(repr(mkr_node))
+                LOG.warning(msg)
+                continue
             bnd_node = bnd.get_node()
+            if bnd_node is None:
+                msg = 'Bundle node is invalid, skipping; mkr_node={0}'
+                msg = msg.format(repr(mkr_node))
+                LOG.warning(msg)
+                continue
+            cam = mkr.get_camera()
+            if cam is None:
+                msg = 'Cannot find bundle from marker; mkr=%r'
+                msg = msg.format(mkr.get_node())
+                LOG.warning(msg)
             cam_tfm_node = cam.get_transform_node()
             cam_shp_node = cam.get_shape_node()
+            assert isinstance(cam_tfm_node, basestring)
+            assert isinstance(cam_shp_node, basestring)
             markers.append((mkr_node, cam_shp_node, bnd_node))
             if cam_shp_node not in added_cameras:
                 cameras.append((cam_tfm_node, cam_shp_node))

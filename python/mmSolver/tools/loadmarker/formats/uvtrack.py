@@ -29,7 +29,7 @@ The dictionary looks like this::
         'is_undistorted': bool,
         'points': {
             'name': str,
-            'id': int,
+            'id': int,  # or None
             'set_name': str,
             'per_frame': [
                 {
@@ -53,6 +53,11 @@ LOG = mmSolver.logger.get_logger()
 
 
 def determine_format_version(file_path):
+    """
+    Work out the format version by reading the 'file_path'.
+
+    returns: The format version, must be one of constants.UV_TRACK_FORMAT_VERSION_LIST
+    """
     f = open(file_path)
     try:
         data = json.load(f)
@@ -143,8 +148,9 @@ def parse_v2(file_path):
     """
     Parse the UV file format, using JSON.
 
-    :param file_path:
-    :return:
+    :param file_path: File path to read.
+
+    :return: List of MarkerData objects.
     """
     mkr_data_list = []
     f = open(file_path)
@@ -158,10 +164,10 @@ def parse_v2(file_path):
         # Static point information.
         name = point_data.get('name')
         set_name = point_data.get('set_name')
-        id = point_data.get('id')
+        id_ = point_data.get('id')
         assert isinstance(name, basestring)
         assert isinstance(set_name, basestring)
-        assert isinstance(id, int)
+        assert isinstance(id_, (None, int))
         mkr_data.set_name(name)
         mkr_data.set_group_name(set_name)
         mkr_data.set_id(name)

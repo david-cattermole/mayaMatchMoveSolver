@@ -48,7 +48,10 @@ def main():
         return
 
     # widget default values
-    start_frame = tde4.getCameraFrameOffset(camera)
+    start_frame = 1
+    # Backwards compatibility with 3DE4 Release 2.
+    if uvtrack_format.SUPPORT_CAMERA_FRAME_OFFSET is True:
+        start_frame = tde4.getCameraFrameOffset(camera)
     pattern = '*' + EXT
     undistort = 1
 

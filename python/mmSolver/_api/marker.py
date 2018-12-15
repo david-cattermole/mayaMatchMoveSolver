@@ -132,6 +132,8 @@ class Marker(object):
                           defaultValue=1.0)
         maya.cmds.addAttr(tfm, longName='bundle', at='message')
         maya.cmds.addAttr(tfm, longName='markerName', dt='string')
+        maya.cmds.addAttr(tfm, longName='markerId', at='long',
+                          defaultValue=-1)
 
         maya.cmds.setAttr(tfm + '.enable', keyable=True, channelBox=True)
         maya.cmds.setAttr(tfm + '.weight', keyable=True, channelBox=True)

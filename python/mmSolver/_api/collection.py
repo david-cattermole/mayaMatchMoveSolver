@@ -775,6 +775,7 @@ class Collection(object):
             total = len(kwargs_list)
             for i, kwargs in enumerate(kwargs_list):
                 frame = kwargs.get('frame')
+                self.__set_status(status_fn, 'Evaluating frames %r' % frame)
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
 
@@ -790,7 +791,6 @@ class Collection(object):
                     save_node_attrs = self.__disconnect_animcurves(kwargs)
 
                 # Run Solver Maya plug-in command
-                self.__set_status(status_fn, 'Evaluating frames %r' % frame)
                 solve_data = maya.cmds.mmSolver(**kwargs)
 
                 # Revert special HACK for single frame solves

@@ -12,7 +12,7 @@ import mmSolver.api as mmapi
 import mmSolver.tools.loadmarker.interface as interface
 import mmSolver.tools.loadmarker.formatmanager as fmtmgr
 
-# Used to force importing of formats, to not remove this line.
+# Used to force importing of formats; do not remove this line.
 import mmSolver.tools.loadmarker.formats
 
 
@@ -95,6 +95,14 @@ def __set_node_data(mkr, mkr_data):
     maya.cmds.setAttr(mkr_node + '.markerName', lock=False)
     maya.cmds.setAttr(mkr_node + '.markerName', mkr_name, type='string')
     maya.cmds.setAttr(mkr_node + '.markerName', lock=True)
+
+    # Add marker data ID onto the marker node, to be used
+    # for re-mapping point data regardless of point name.
+    mkr_id = mkr_data.get_id()
+    if mkr_id is not None:
+        maya.cmds.setAttr(mkr_node + '.markerId', lock=False)
+        maya.cmds.setAttr(mkr_node + '.markerId', mkr_id)
+        maya.cmds.setAttr(mkr_node + '.markerId', lock=True)
 
     # Get keyframe data
     mkr_x_data = mkr_data.get_x().get_raw_data()

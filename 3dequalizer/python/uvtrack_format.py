@@ -4,10 +4,30 @@ Generate track data from the given 2D points in 3DEqualizer.
 See ./python/mmSolver/tools/loadmarker/formats/uvtrack.py for details
 of the '.uv' file format.
 """
+# 3DE4.script.hide: true
 
 import json
 import tde4
-import mmSolver.tools.loadmarker.constant as const
+
+
+# UV Track format
+# This is copied from 'mmSolver.tools.loadmarker.constant module',
+UV_TRACK_FORMAT_VERSION_UNKNOWN = -1
+UV_TRACK_FORMAT_VERSION_1 = 1
+UV_TRACK_FORMAT_VERSION_2 = 2
+UV_TRACK_HEADER_VERSION_2 = {
+    'version': UV_TRACK_FORMAT_VERSION_2,
+}
+
+# Preferred UV Track format version (changes the format
+# version used for writing data).
+UV_TRACK_FORMAT_VERSION_PREFERRED = UV_TRACK_FORMAT_VERSION_2
+
+# Do we have support for new features of 3DE tde4 module?
+SUPPORT_PERSISTENT_ID = 'getPointPersistentID' in dir(tde4)
+SUPPORT_CAMERA_FRAME_OFFSET = 'getCameraFrameOffset' in dir(tde4)
+SUPPORT_POINT_WEIGHT_BY_FRAME = 'getPointWeightByFrame' in dir(tde4)
+SUPPORT_CLIPBOARD = 'setClipboardString' in dir(tde4)
 
 
 def generate(point_group, camera, points, fmt=None, **kwargs):
@@ -19,11 +39,11 @@ def generate(point_group, camera, points, fmt=None, **kwargs):
     - start_frame - int - Frame '1' 3DE should be mapped to this value.
     """
     if fmt is None:
-        fmt = const.UV_TRACK_FORMAT_VERSION_2
+        fmt = UV_TRACK_FORMAT_VERSION_PREFERRED
     data = ''
-    if fmt == const.UV_TRACK_FORMAT_VERSION_1:
+    if fmt == UV_TRACK_FORMAT_VERSION_1:
         data = _generate_v1(point_group, camera, points, **kwargs)
-    elif fmt == const.UV_TRACK_FORMAT_VERSION_2:
+    elif fmt == UV_TRACK_FORMAT_VERSION_2:
         data = _generate_v2(point_group, camera, points, **kwargs)
     return data
 
@@ -72,7 +92,14 @@ def _generate_v1(point_group, camera, points, start_frame=None, undistort=False)
             f = frame + frame0
             if undistort is True:
                 v = tde4.removeDistortion2D(camera, frame,  v)
-            weight = tde4.getPointWeightByFrame(point_group, point, camera, frame)
+            weight = 1.0
+            if SUPPORT_POINT_WEIGHT_BY_FRAME is True:
+                weight = tde4.getPointWeightByFrame(
+                    point_group,
+                    point,
+                    camera,
+                    frame
+                )
 
             pos_list.append((f, v))
             weight_list.append((f, weight))
@@ -104,7 +131,7 @@ def _generate_v2(point_group, camera, points, start_frame=None, undistort=None):
     """
     if start_frame is None:
         start_frame = 1001
-    data = const.UV_TRACK_HEADER_VERSION_2.copy()
+    data = UV_TRACK_HEADER_VERSION_2.copy()
     cam_num_frames = tde4.getCameraNoFrames(camera)
 
     if len(points) == 0:
@@ -122,9 +149,13 @@ def _generate_v2(point_group, camera, points, start_frame=None, undistort=None):
 
         # Query point information
         name = tde4.getPointName(point_group, point)
-        uid = tde4.getPointPersistentID(point_group, point)
+        uid = None
+        if SUPPORT_PERSISTENT_ID is True:
+            uid = tde4.getPointPersistentID(point_group, point)
         point_set = tde4.getPointSet(point_group, point)
-        point_set_name = tde4.getSetName(point_group, point_set)
+        point_set_name = None
+        if point_set is not None:
+            point_set_name = tde4.getSetName(point_group, point_set)
         point_data['name'] = name
         point_data['id'] = uid
         point_data['set_name'] = point_set_name
@@ -145,12 +176,14 @@ def _generate_v2(point_group, camera, points, start_frame=None, undistort=None):
             f = frame + frame0
             if undistort is True:
                 pos = tde4.removeDistortion2D(camera, frame,  pos)
-            weight = tde4.getPointWeightByFrame(
-                point_group,
-                point,
-                camera,
-                frame
-            )
+            weight = 1.0
+            if SUPPORT_POINT_WEIGHT_BY_FRAME is True:
+                weight = tde4.getPointWeightByFrame(
+                    point_group,
+                    point,
+                    camera,
+                    frame
+                )
             frame_data = {
                 'frame': f,
                 'pos': pos,

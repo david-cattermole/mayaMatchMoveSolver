@@ -326,3 +326,25 @@ $ sh runTests.sh
 
 For more information about testing, see the Testing section in
 [DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
+
+## Install 3DEqualizer Files
+
+To install the 3DEqualizer (3DE) tools for `mmSolver`, follow the steps below.
+The 3DEqualizer tools are for integration into workflows using 3DEqualizer.
+These tools have been tested with `3DEqualizer4 Release 5`.
+
+Copy the python scripts into the `~/.3dequalizer/py_scripts` directory:
+```commandline
+$ cd <project root>
+$ cp ./3dequalizer/python/* ~/.3dequalizer/py_scripts
+```
+
+Alternatively, you can modify the `PYTHONPATH` environment variable
+before 3DEqualizer starts and add `<project root>/3dequalizer/python/`
+to the list of search paths.
+
+There are currently two 3DEqualizer tools available:
+| File Name                | Tool Name                                      |
+| --------------------     | ------------------------------------------     |
+| copy_track_mmsolver.py   | Copy Undistorted 2D Tracks (Maya MM Solver)... |
+| export_track_mmsolver.py | Export 2D Tracks to Maya MM Solver...          |

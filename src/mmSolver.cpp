@@ -49,6 +49,7 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
                           MTimeArray frameList,
                           MarkerPtrList &validMarkerList,
                           std::vector<MPoint> &markerPosList,
+                          std::vector<double> &markerWeightList,
                           IndexPairList &errorToMarkerList,
                           MStatus &status) {
     // Count up number of errors
@@ -56,6 +57,14 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
     int i = 0;
     int j = 0;
 
+    // For normalising the marker weight per-frame, create a mapping
+    // data structure to use later.
+    typedef std::map<int, double> FrameIndexDoubleMapping;
+    typedef FrameIndexDoubleMapping::iterator FrameIndexDoubleMappingIt;
+    FrameIndexDoubleMapping weightMaxPerFrame;
+    FrameIndexDoubleMappingIt xit;
+
+    // Get all the marker data
     int numErrors = 0;
     for (MarkerPtrListIt mit = markerList.begin(); mit != markerList.end(); ++mit) {
         MarkerPtr marker = *mit;
@@ -79,6 +88,23 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
 
                 validMarkerList.push_back(marker);
 
+                // Add marker weights, into a cached list to be used
+                // during solving for direct look-up.
+                markerWeightList.push_back(weight);
+
+                // Get maximum weight value of all marker weights
+                // per-frame
+                xit = weightMaxPerFrame.find(j);
+                double weight_max = weight;
+                if (xit != weightMaxPerFrame.end()) {
+                    weight_max = xit->second;
+                    if (weight > weight_max) {
+                        weight_max = weight;
+                    }
+                    weightMaxPerFrame.erase(xit);
+                }
+                weightMaxPerFrame.insert(std::pair<int, double>(j, weight_max));
+
                 // Get Marker Position.
                 MMatrix cameraWorldProjectionMatrix;
                 CameraPtr camera = marker->getCamera();
@@ -93,6 +119,27 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
             }
         }
         i++;
+    }
+
+    // Normalise the weights per-frame, using the weight 'max'
+    // computed above.
+    i = 0;
+    typedef IndexPairList::const_iterator IndexPairListCit;
+    IndexPairListCit eit = errorToMarkerList.begin();
+    for (; eit != errorToMarkerList.end(); ++eit) {
+        double weight = markerWeightList[i];
+
+        int markerIndex = eit->first;
+        int frameIndex = eit->second;
+
+        xit = weightMaxPerFrame.find(frameIndex);
+        assert(xit != weightMaxPerFrame.end());
+        double weight_max = xit->second;
+
+        weight = weight / weight_max;
+        DBG("=== weight: " << weight);
+        markerWeightList[i] = weight;
+        ++i;
     }
     return numErrors;
 }
@@ -173,6 +220,7 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
 
             // TODO: Get a weight value from the attribute. Currently
             // weights are not supported in the Maya mmSolver command.
+            // This is not the same as Marker weights.
             paramWeightList.push_back(1.0);
 
             if (attrIsPartOfCamera) {
@@ -240,6 +288,10 @@ bool solve(int iterMax,
     // need to query them during solving.
     std::vector<MPoint> markerPosList;
 
+    // Cache the marker weights, for scaling the marker errors during
+    // solving.
+    std::vector<double> markerWeightList;
+
     // Errors and parameters as used by the solver.
     std::vector<double> errorList(1);
     std::vector<double> paramList(1);
@@ -258,6 +310,7 @@ bool solve(int iterMax,
             frameList,
             validMarkerList,
             markerPosList,
+            markerWeightList,
             errorToMarkerList,
             status
     );
@@ -383,6 +436,7 @@ bool solve(int iterMax,
     userData.paramToAttrList = paramToAttrList;
     userData.errorToMarkerList = errorToMarkerList;
     userData.markerPosList = markerPosList;
+    userData.markerWeightList = markerWeightList;
 
     // Solver Aux data
     userData.errorList = errorList;
@@ -730,7 +784,7 @@ bool solve(int iterMax,
     typedef std::map<int, ErrorPair> TimeErrorMapping;
     typedef TimeErrorMapping::iterator TimeErrorMappingIt;
     TimeErrorMapping frameErrorMapping;
-    TimeErrorMappingIt ait; // = frameErrorMapping.end();
+    TimeErrorMappingIt ait;
     for (i = 0; i < (n / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = userData.errorToMarkerList[i];
         MarkerPtr marker = userData.markerList[markerPair.first];

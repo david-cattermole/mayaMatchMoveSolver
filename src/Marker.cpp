@@ -146,18 +146,26 @@ MStatus Marker::getPos(MPoint &point) {
 
 MStatus Marker::getEnable(bool &value, const MTime &time) {
     MStatus status;
-    // TODO: Workout the marker 'validation' logic.
-    status = m_enable.getValue(value, time);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    value = true;
+    MPlug plug = m_enable.getPlug();
+    if (plug.isNull() == true) {
+        value = true;
+        status = MS::kSuccess;
+    } else {
+        status = m_enable.getValue(value, time);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
     return status;
 }
 
-
 MStatus Marker::getWeight(double &value, const MTime &time) {
     MStatus status;
-    status = m_weight.getValue(value, time);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    value = true;
+    MPlug plug = m_weight.getPlug();
+    if (plug.isNull() == true) {
+        value = 1.0;
+        status = MS::kSuccess;
+    } else {
+        status = m_weight.getValue(value, time);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
     return status;
 }

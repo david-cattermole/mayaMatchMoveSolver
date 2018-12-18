@@ -137,7 +137,6 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
         double weight_max = xit->second;
 
         weight = weight / weight_max;
-        DBG("=== weight: " << weight);
         markerWeightList[i] = weight;
         ++i;
     }

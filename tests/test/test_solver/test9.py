@@ -70,6 +70,10 @@ class TestSolver9(solverUtils.SolverTestCase):
             maya.cmds.setAttr(bundle_tfm + '.ty', 2.4)
             maya.cmds.setAttr(bundle_tfm + '.tz', d)
 
+            # Ensure the far-clip-plane is large enough to see the bundle.
+            if d > 0:
+                maya.cmds.setAttr(cam_shp + '.farClipPlane', d * 1.1)
+
             cameras = (
                 (cam_tfm, cam_shp),
             )

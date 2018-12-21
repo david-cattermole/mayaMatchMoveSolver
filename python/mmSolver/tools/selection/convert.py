@@ -11,7 +11,11 @@ def get_bundles_from_markers(nodes):
     for mkr_node in mkr_nodes:
         mkr = mmapi.Marker(mkr_node)
         bnd = mkr.get_bundle()
+        if bnd is None:
+            continue
         bnd_node = bnd.get_node()
+        if bnd_node is None:
+            continue
         if bnd_node not in bnd_nodes:
             bnd_nodes.append(bnd_node)
     return bnd_nodes

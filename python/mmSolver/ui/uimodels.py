@@ -40,10 +40,13 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         return len(self._column_names.keys())
 
     def rowCount(self, parent=QtCore.QModelIndex()):
+        parentNode = None
         if not parent.isValid():
             parentNode = self._rootNode
         else:
             parentNode = parent.internalPointer()
+        if parentNode is None:
+            return 0
         return parentNode.childCount()
 
     def data(self, index, role):

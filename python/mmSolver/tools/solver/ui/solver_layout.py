@@ -469,8 +469,15 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         )
         if ui_node is None:
             return
-        nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'marker')
-        maya_nodes = map(lambda x: x.get_node(), nodes)
+        # Type info will be 'marker', 'bundle' or 'camera' based on the selected node type.
+        typeInfo = ui_node.typeInfo
+        nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], typeInfo)
+        maya_nodes = []
+        if typeInfo == 'camera':
+            maya_nodes = map(lambda x: x.get_shape_node(), nodes)
+        else:
+            # For bundles and markers
+            maya_nodes = map(lambda x: x.get_node(), nodes)
         lib_maya_utils.set_scene_selection(maya_nodes)
         return
 

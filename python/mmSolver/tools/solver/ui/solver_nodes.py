@@ -139,7 +139,7 @@ class SolverStepNode(nodes.Node):
         if isinstance(name, basestring) is False:
             raise TypeError
         if icon is None:
-            icon = ':/solverStep.png'
+            icon = ':/mmSolver_solverStep.png'
         if isinstance(data, dict) is False:
             data = {}
         data['collection_node'] = col_node

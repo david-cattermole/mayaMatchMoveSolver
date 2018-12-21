@@ -18,7 +18,7 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.tools.loadmarker.constant as const
-import mmSolver.tools.loadmarker.tool as tool
+import mmSolver.tools.loadmarker.lib as lib
 import mmSolver.tools.loadmarker.ui.loadmarker_layout as loadmarker_layout
 import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
 
@@ -68,13 +68,18 @@ class LoadMarkerWindow(BaseWindow):
             file_path = self.subForm.getFilePath()
             camera_text = self.subForm.getCameraText()
             camera_data = self.subForm.getCameraData()
+            width, height = self.subForm.getImageResolution()
             self.progressBar.setValue(20)
 
-            mkr_data_list = mayareadfile.read(file_path)
+            mkr_data_list = mayareadfile.read(
+                file_path,
+                image_width=width,
+                image_height=height
+            )
             self.progressBar.setValue(70)
 
             if camera_text == const.NEW_CAMERA_VALUE:
-                cam = tool.create_new_camera()
+                cam = lib.create_new_camera()
             else:
                 cam = camera_data
             self.progressBar.setValue(90)

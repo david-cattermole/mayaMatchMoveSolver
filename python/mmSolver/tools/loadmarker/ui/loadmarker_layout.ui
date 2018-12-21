@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>870</width>
-    <height>874</height>
+    <width>615</width>
+    <height>413</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,7 +39,7 @@
       </spacer>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="filepath_horizontalLayout">
        <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
@@ -107,10 +107,65 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <layout class="QHBoxLayout" name="fileInfo_horizontalLayout">
+       <item>
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Preferred</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPlainTextEdit" name="fileInfo_plainTextEdit"/>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Preferred</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Preferred</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <layout class="QVBoxLayout" name="loadoptions_verticalLayout">
      <property name="spacing">
       <number>6</number>
      </property>
@@ -118,7 +173,7 @@
       <number>0</number>
      </property>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <layout class="QHBoxLayout" name="camera_horizontalLayout">
        <item>
         <spacer name="horizontalSpacer_7">
          <property name="orientation">
@@ -143,12 +198,35 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="camera_comboBox"/>
+        <spacer name="horizontalSpacer_9">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Minimum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QComboBox" name="camera_comboBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="cameraUpdate_pushButton">
          <property name="text">
-          <string>Update</string>
+          <string>Refresh List</string>
          </property>
         </widget>
        </item>
@@ -171,7 +249,14 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="imageRes_horizontalLayout">
        <item>
         <spacer name="horizontalSpacer_5">
          <property name="orientation">
@@ -189,14 +274,25 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="imageResWidth_label">
          <property name="text">
-          <string>Option</string>
+          <string>Image Resolution</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="spinBox_2"/>
+        <widget class="QSpinBox" name="imageResWidth_spinBox">
+         <property name="maximum">
+          <number>99999</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="imageResHeight_spinBox">
+         <property name="maximum">
+          <number>99999</number>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_6">

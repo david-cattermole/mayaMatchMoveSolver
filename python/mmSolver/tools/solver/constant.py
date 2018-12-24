@@ -35,11 +35,6 @@ SCENE_DATA_LOG_LEVEL = 'log_level'
 SCENE_DATA_LOG_LEVEL_DEFAULT = LOG_LEVEL_INFO
 
 
-# Words recognised as True or False.
-FALSE_WORDS = ['0', 'n', 'f', 'no', 'off', 'nah', 'nope', 'false']
-TRUE_WORDS = ['1', 'y', 't', 'yes', 'on', 'ya', 'yeah', 'true']
-
-
 # Solver Step Strategies
 STRATEGY_TWO_FRAMES_FWD = 'two_frames_fwd'
 # # Accumulate the frame numbers...

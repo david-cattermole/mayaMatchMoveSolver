@@ -6,6 +6,7 @@ import Qt as Qt
 import Qt.QtGui as QtGui
 import Qt.QtCore as QtCore
 
+import mmSolver.ui.converttypes as converttypes
 import mmSolver.ui.nodes as nodes
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.logger
@@ -120,6 +121,7 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         v = QtCore.Qt.NoItemFlags
         node = index.internalPointer()
         if node is None:
+            LOG.warning('flags: node is None')
             return v
         if node.enabled():
             v = v | QtCore.Qt.ItemIsEnabled
@@ -227,7 +229,10 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
             return None
         row = index.row()
         node = self._node_list[row]
-        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
+        roles = [QtCore.Qt.DisplayRole,
+                 QtCore.Qt.EditRole,
+                 QtCore.Qt.CheckStateRole]
+        if role in roles:
             column_index = index.column()
             attr_name = _getNameFromDict(
                 column_index,
@@ -239,10 +244,14 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
                 value = value()
             else:
                 value = None
+            # For check states, we must return a 'CheckState' of
+            # Checked or Unchecked.
+            if role == QtCore.Qt.CheckStateRole:
+                value = converttypes.stringToBoolean(value)
+                value = converttypes.booleanToCheckState(value)
             return value
 
         if role == QtCore.Qt.DecorationRole:
-            # TODO: Can we refactor this similar to the DisplayRole above?
             if index.column() == 0 and node is not None:
                 return node.icon()
 
@@ -265,19 +274,26 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
             node = self._node_list[row]
             if node is None:
                 LOG.warning('node is invalid: %r %r %r', index, value, node)
-            else:
-                attr_name = _getNameFromDict(
-                    column,
-                    self._column_names,
-                    self._node_set_attr_key
-                )
-                if not node.editable():
-                    LOG.warning('setData not editable: %r %r %r', index, value, node)
-                    return False
-                if role == QtCore.Qt.EditRole:
-                    func = getattr(node, attr_name, None)
-                    if func is not None:
-                        func(value)
+                return
+            attr_name = _getNameFromDict(
+                column,
+                self._column_names,
+                self._node_set_attr_key
+            )
+            if not node.editable():
+                LOG.warning('setData not editable: %r %r %r', index, value, node)
+                return False
+
+            if role == QtCore.Qt.EditRole:
+                func = getattr(node, attr_name, None)
+                if func is not None:
+                    func(value)
+            if role == QtCore.Qt.CheckStateRole:
+                func = getattr(node, attr_name, None)
+                if func is not None:
+                    v = converttypes.checkStateToBoolean(value)
+                    v = converttypes.booleanToString(v)
+                    func(v)
 
             # Emit Data Changed.
             if Qt.__binding__ in ['PySide', 'PyQt4']:
@@ -320,19 +336,19 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
         v = QtCore.Qt.NoItemFlags
         row_index = index.row()
         node = self._node_list[row_index]
-        if node is not None:
-            if node.enabled():
-                v = v | QtCore.Qt.ItemIsEnabled
-            if node.checkable():
-                v = v | QtCore.Qt.ItemIsUserCheckable
-            if node.neverHasChildren():
-                v = v | QtCore.Qt.ItemNeverHasChildren
-            if node.selectable():
-                v = v | QtCore.Qt.ItemIsSelectable
-            if node.editable():
-                v = v | QtCore.Qt.ItemIsEditable
-        else:
+        if node is None:
             LOG.warning('flags: node is None')
+            return v
+        if node.enabled():
+            v = v | QtCore.Qt.ItemIsEnabled
+        if node.checkable():
+            v = v | QtCore.Qt.ItemIsUserCheckable
+        if node.neverHasChildren():
+            v = v | QtCore.Qt.ItemNeverHasChildren
+        if node.selectable():
+            v = v | QtCore.Qt.ItemIsSelectable
+        if node.editable():
+            v = v | QtCore.Qt.ItemIsEditable
         return v
 
     def insertRows(self, position, rows, parent=QtCore.QModelIndex()):
@@ -526,5 +542,3 @@ class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
         else:
             return False
         return True
-
-

@@ -1,5 +1,5 @@
 /*
- * TODO: Add marker weight attr, can change per-frame.
+ * Markers - Querying a 2D node (but it's actually a 3D DAG node)
  */
 
 #include <maya/MFnDependencyNode.h>

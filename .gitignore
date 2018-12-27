@@ -14,6 +14,9 @@ precompiled/*
 *.so.*
 *.a
 *.a.*
+*.lib
+*.dll
+*.mll
 
 *.tgz
 *.zip

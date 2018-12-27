@@ -5,15 +5,15 @@
 #ifndef MAYA_MM_SOLVER_CAMERA_H
 #define MAYA_MM_SOLVER_CAMERA_H
 
-
 #include <maya/MStatus.h>
 #include <maya/MObject.h>
 #include <maya/MMatrix.h>
 #include <maya/MString.h>
 #include <maya/MPlug.h>
 
+#include <cmath>
 #include <vector>
-#include <unordered_map>
+#include <unordered_map>  // unordered_map
 #include <memory>
 
 #include <utilities/numberUtils.h>
@@ -48,7 +48,10 @@ MStatus getCameraPlaneScale(
     double aov = 0.0;
     const bool asDegrees = true;
     getAngleOfView(filmBackSize, focalLength, aov, asDegrees);
-    scale = tan(aov * 0.5 * M_PI / 180.0);
+	// Hard-code 'pi' so we don't have cross-platform problems
+	// between Linux and Windows.
+	const double pi = 3.14159265358979323846;
+    scale = tan(aov * 0.5 * pi / 180.0);
     return MS::kSuccess;
 }
 

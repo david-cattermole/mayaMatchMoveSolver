@@ -168,7 +168,7 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
         MFnDependencyNode dependNode(nodeObj);
         if (nodeObj.apiType() == MFn::kTransform) {
             MFnDagNode dagNode(nodeObj);
-            for (int k = 0; k < dagNode.childCount(); ++k) {
+            for (unsigned int k = 0; k < dagNode.childCount(); ++k) {
                 MObject childObj = dagNode.child(k, &status);
                 CHECK_MSTATUS(status);
                 if (childObj.apiType() == MFn::kCamera) {
@@ -476,8 +476,8 @@ bool solve(int iterMax,
     userData.verbose = verbose;
 
     // Options and Info
-    unsigned int optsSize = LM_OPTS_SZ;
-    unsigned int infoSize = LM_INFO_SZ;
+    const unsigned int optsSize = LM_OPTS_SZ;
+    const unsigned int infoSize = LM_INFO_SZ;
     double opts[optsSize];
     double info[infoSize];
 
@@ -675,16 +675,16 @@ bool solve(int iterMax,
         solveBenchTimer.print("Solve Time", 1);
         funcBenchTimer.print("Func Time", 1);
         jacBenchTimer.print("Jacobian Time", 1);
-        paramBenchTimer.print("Param Time", (uint) userData.iterNum);
-        errorBenchTimer.print("Error Time", (uint) userData.iterNum);
-        funcBenchTimer.print("Func Time", (uint) userData.iterNum);
+        paramBenchTimer.print("Param Time", (unsigned int) userData.iterNum);
+        errorBenchTimer.print("Error Time", (unsigned int) userData.iterNum);
+        funcBenchTimer.print("Func Time", (unsigned int) userData.iterNum);
 
         solveBenchTicks.print("Solve Ticks", 1);
         funcBenchTicks.print("Func Ticks", 1);
         jacBenchTicks.print("Jacobian Ticks", 1);
-        paramBenchTicks.print("Param Ticks", (uint) userData.iterNum);
-        errorBenchTicks.print("Error Ticks", (uint) userData.iterNum);
-        funcBenchTicks.print("Func Ticks", (uint) userData.iterNum);
+        paramBenchTicks.print("Param Ticks", (unsigned int) userData.iterNum);
+        errorBenchTicks.print("Error Ticks", (unsigned int) userData.iterNum);
+        funcBenchTicks.print("Func Ticks", (unsigned int) userData.iterNum);
     }
 
     // Add all the data into the output string from the Maya command.

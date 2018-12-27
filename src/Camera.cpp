@@ -11,9 +11,6 @@
 #include <maya/MPoint.h>
 #include <maya/MFnCamera.h>
 
-// TODO: Use this header to re-implement the camera projection
-// matrix, without the Maya API.
-//#include <utilities/cgCameraUtils.h>
 #include <utilities/numberUtils.h>
 
 #include <mayaUtils.h>
@@ -357,12 +354,12 @@ MStatus Camera::getFrustum(
 
     // We assume these are not animated
     double cameraScale = getCameraScaleValue();
-    double near = getNearClipPlaneValue();
+    double nearClip = getNearClipPlaneValue();
 
     computeFrustumCoordinates(focal,
                               filmWidth, filmHeight,
                               filmOffsetX, filmOffsetY,
-                              near, cameraScale,
+                              nearClip, cameraScale,
                               left, right,
                               top, bottom);
     return status;
@@ -399,8 +396,8 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time) {
         double filmOffsetX = 0.0;
         double filmOffsetY = 0.0;
         double cameraScale = 1.0;
-        double near = 0.1;
-        double far = 1000.0;
+        double nearClip = 0.1;
+        double farClip = 1000.0;
 
         // We assume these are animated
         filmWidth = getFilmbackWidthValue(time);
@@ -412,8 +409,8 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time) {
         // We assume that the following attributes won't be animated, but Maya
         // allows them to be animated.
         cameraScale = getCameraScaleValue();
-        near = getNearClipPlaneValue();
-        far = getFarClipPlaneValue();
+        nearClip = getNearClipPlaneValue();
+        farClip = getFarClipPlaneValue();
         filmFit = getFilmFitValue();
         imageWidth = getRenderWidthValue();
         imageHeight = getRenderHeightValue();
@@ -424,7 +421,7 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time) {
                                      filmWidth, filmHeight,
                                      filmOffsetX, filmOffsetY,
                                      imageWidth, imageHeight,
-                                     filmFit, near, far, cameraScale,
+                                     filmFit, nearClip, farClip, cameraScale,
                                      value);
         CHECK_MSTATUS(status);
 #endif

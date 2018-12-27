@@ -1,5 +1,5 @@
 /*
- *
+ * Bundles - objects representing 3D positions can be queried.
  */
 
 #include <maya/MPlug.h>

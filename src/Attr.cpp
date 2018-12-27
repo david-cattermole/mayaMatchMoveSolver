@@ -11,6 +11,7 @@
  */
 
 // STL
+#include <cmath>     // trunc
 #include <cassert>   // assert
 #include <limits>    // numeric_limits<double>::max and min
 
@@ -240,6 +241,11 @@ MString Attr::getAnimCurveName()
     return result;
 }
 
+// Windows MSVC doesn't have 'trunc' function, so we create our own.
+inline double my_trunc(double d){
+    return (d > 0) ? std::floor(d) : std::ceil(d);
+}
+
 MStatus Attr::getValue(bool &value, const MTime &time) {
     MStatus status;
     bool connected = Attr::isConnected();
@@ -256,7 +262,7 @@ MStatus Attr::getValue(bool &value, const MTime &time) {
         double curveValue;
         status = curveFn.evaluate(time, curveValue);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        value = (bool) trunc(curveValue);
+        value = (bool) my_trunc(curveValue);
     } else if (connected) {
         if (use_dg_ctx == true) {
             MDGContext ctx(time);

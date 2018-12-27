@@ -16,7 +16,7 @@
 #include <string>    // string
 #include <vector>    // vector
 #include <cassert>   // assert
-#include <limits>    // double max value
+#include <limits>    // double max value, NaN
 #include <math.h>
 
 // Utils
@@ -78,7 +78,7 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
         // This is an ugly hack to force levmar to stop computing. We give
         // a NaN value which causes levmar detect it and quit the loop.
         for (i = 0; i < n; ++i) {
-            x[i] = NAN;
+			x[i] = std::numeric_limits<double>::quiet_NaN();
         }
         return;
     }

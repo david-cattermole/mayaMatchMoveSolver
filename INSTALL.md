@@ -1,22 +1,26 @@
 # Building and Install
 
 Building mmSolver can be fairly simple or complex, depending if you
-want to use ATLAS or Intel MKL to speed up computation.
-For testing the tool, you may use the "Simple Method".
+want to use ATLAS or Intel MKL to speed up computation and increase
+robustness in solving, for most practical cases, ATLAS or
+Intel MKL are not required. For testing the tool, you may use
+the "Simple Method".
 
-There are Linux shell scripts to automate most of the compiling
-of external dependencies. You may edit these scripts for your
-system. There are patches required for different builds and
-are stored in `./external/patches/`.
+There are Linux shell or Windows Batch scripts to automate most of
+the compiling of external dependencies. You may edit these scripts
+for your system.
 
-## Build Environment
+There are patches required for different builds and are stored
+in `./external/patches/`.
+
+# Build Environment
 
 The below processes were tested on a CentOS 7.x Linux distribution.
+The below processes were tested on Microsoft Windows 10 Pro, with Visual Studio 11 2012.
 
 These are the versions of various software tested together.
 
-
-Maya 2017:
+Maya 2017 on Linux:
 
 | Software          | Version                                     |
 | ------------      | -----------                                 |
@@ -28,8 +32,7 @@ Maya 2017:
 | Autodesk Maya     | **Autodesk Maya 2017 Update 5**             |
 | Autodesk Maya API | **201780**                                  |
 
-
-Maya 2016:
+Maya 2016 on Linux:
 
 | Software          | Version                                     |
 | ------------      | -----------                                 |
@@ -42,15 +45,28 @@ Maya 2016:
 | Autodesk Maya API | **201614**                                  |
 
 
-NOTE: Other operating systems have not been tested, but may work
-without modification or with only minor modifications.
+Maya 2017 on Windows:
 
-##  Dependencies
+| Software          | Version                                     |
+| ------------      | -----------                                 |
+| OS Name           | Microsoft Windows 10 Pro                    |
+| OS Version        | 10.0.17134 Build 17134                      |
+| MSVC              | 17.0.61030.0                                |
+| Visual Studio     | 11.0.61030.00 Update 4 (Visual Studio 2012) |
+| CMake             | 3.12.0                                      |
+| Autodesk Maya     | **Autodesk Maya 2017**                      |
+| Autodesk Maya API | **201700**                                  |
+
+
+NOTE: Other operating systems have not been tested, but may work
+with only minor modifications.
+
+#  Dependencies
 
 These projects are needed for building the ``mmSolver`` project.
 
 Required:
-- C++ compiler ([GCC](https://gcc.gnu.org/), Clang, VC++, etc)
+- C++ compiler ([GCC](https://gcc.gnu.org/), MSVC, etc)
 - [CMake 2.8+](https://cmake.org/)
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
@@ -62,238 +78,117 @@ Optional:
 - [ATLAS 3.8.4](http://math-atlas.sourceforge.net/)
 - [Intel Math Kernel Library (MLK)](https://software.intel.com/en-us/mkl)
 
-
-## Building Overview
+# Building Overview
 
 An overview of the simple method is:
 
-1. Download, unpack, and compile `levmar` with CMake.
-2. Install ATLAS with Package Manager (optional)
-3. Install Intel MKL (optional)
-4. Download, unpack and compile `mmSolver` with CMake.
-5. Copy mmSolver plugin into Maya plug-in directory.
-6. Copy mmSolver python API into Maya scripts directory.
+1. Install ATLAS with Package Manager (optional)
+2. Install Intel MKL (optional)
+3. Download, unpack, and compile `levmar` with Makefile.
+4. Download, unpack, and compile `mmSolver` with CMake.
+5. Copy mmSolver python API into Maya scripts directory.
+6. Copy mmSolver plugin into Maya plug-in directory.
+7. Copy 3DEqualizer python scripts into .3dequalizer home directory.
 
 Only ATLAS **or** Intel MKL is optional. Both libraries are not needed
 together.
 
-### Build Script
+# Build mmSolver Scripts
 
 There are three different scripts to build ``mmSolver`` depending on
 the dependencies you want to use:
 
-| Build Script Name       | Dependencies      |
-| ------------            | -----------       |
-| build_with_levmar.sh    | levmar            |
-| build_with_atlas.sh     | levmar, ATLAS     |
-| build_with_intel_mkl.sh | levmar, Intel MKL |
+| Build Script Name       | Operating System  | Dependencies      |
+| ------------            | -----------       | -----------       |
+| build_with_levmar.sh    | Linux             | levmar            |
+| build_with_levmar.bat   | Windows           | levmar            |
+| build_with_atlas.sh     | Linux             | levmar, ATLAS     |
+| build_with_intel_mkl.sh | Linux             | levmar, Intel MKL |
 
-The scripts will assume a default Maya install directory.
-The current scripts use the default symlinked Autodesk Maya install
-path on Linux: ``/usr/autodesk/maya``.
+The scripts will assume a default Maya install directory
 You will need to edit the build script with your custom Maya include
 and library directories.
 
-#### Build Script (with levmar)
+For details of using these build scripts and building, please see
+[INSTALL_LINUX.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL_LINUX.md) or
+[INSTALL_WINDOWS.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL_WINDOWS.md).
 
-To build without any third-party dependencies other than levmar, run
-these commmand:
-```commandline
-$ cd <project root>
-$ bash external/download_all_archives.sh
-$ vi build_with_levmar.sh  # Edit path to Maya include / library
-$ build_with_levmar.sh
-```
-
-#### Build Script (with levmar and ATLAS)
-
-This section is for compiling with the free and open-source library
-ATLAS.
-
-This method will use the `levmar` algorithm, and `Automatically Tuned
-Linear Algebra Software (ATLAS)` for performance computation and
-stability. `ATLAS` is Free Open Source Software, Using a third-party
-maths library is recommended by the `levmar` project.
-
-This will assume the `atlas` is installed via yum on CentOS 7.x. If
-you wish to build your own custom atlas library it is an undocumented
-exercise for the user. On CentOS 7.x you may install `atlas` with the
-following command (as `root` user):
-
-```commandline
-$ yum install atlas.x86_64 atlas-devel.x86_64
-$ yum install lapack64.x86_64 lapack64-devel.x86_64
-```
-
-To build with ATLAS, run these command:
-```commandline
-$ cd <project root>
-$ bash external/download_all_archives.sh
-$ vi build_with_atlas.sh  # Edit path to Maya include / library
-$ bash build_with_atlas.sh
-```
-
-#### Build Script (with levmar and Intel MKL)
-
-This method will use both the `levmar` algorithm, as well as
-highly-optimised libraries for computation; `Intel Math Kernel
-Libraries (Intel MKL)`. `Intel MKL` is proprietary closed-source
-software, Using a third-party maths library is recommended by the
-`levmar` project.
-
-Intel MKL must be installed manually, this build script will not
-install it for you. You will need to sign up, download and install
-from the [Intel MKL website](https://software.intel.com/en-us/mkl).
-
-The instructions below assume Intel MKL is installed under
-`/opt/intel/mkl`, you will need to modify the scripts if this location
-is not correct on your system.
-
-To build with Intel MKL, run these command:
-```commandline
-$ cd <project root>
-$ bash external/download_all_archives.sh
-$ vi build_with_intel_mkl.sh  # Edit path to Maya include / library
-$ bash build_with_intel_mkl.sh
-```
-
-#### Manually building mmSolver plugin
-
-For those needing or wanting to compile the ``mmSolver`` Maya plug-in
-manually you can do it easily using the following commands.
-
-| CMake Option         | Description                                |
-| -------------------- | ------------------------------------------ |
-| USE_ATLAS            | Use ATLAS libraries?                       |
-| USE_MKL              | Use Intel MKL libraries?                   |
-| MAYA_INCLUDE_PATH    | Directory to the Maya header include files |
-| MAYA_LIB_PATH        | Directory to the Maya library files        |
-| LEVMAR_LIB_PATH      | Directory to levmar library                |
-| LEVMAR_INCLUDE_PATH  | Directory to levmar header includes        |
-| ATLAS_LIB_PATH       | Directory to ATLAS libraries               |
-| MKL_LIB_PATH         | Directory to Intel MKL libraries           |
-
-Setting ``USE_ATLAS`` and ``USE_MKL`` to ``1`` is an error, both
-libraries provide the same functionality and both are not needed,
-only one.
-
-Example command line:
-```commandline
-$ cd <project root>
-$ mkdir build
-$ cd build
-$ cmake -DCMAKE_BUILD_TYPE=Release \
-        -DUSE_ATLAS=0 \
-        -DUSE_MKL=0 \
-        -DMAYA_INCLUDE_PATH=/usr/autodesk/maya2017/include \
-        -DMAYA_LIB_PATH=/usr/autodesk/maya2017/lib \
-        -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
-        -DLEVMAR_INCLUDE_PATH=${PROJECT_ROOT}/external/include \
-        -DATLAS_LIB_PATH=${PROJECT_ROOT}/external/lib \
-        -DMKL_LIB_PATH=/opt/intel/mkl/lib/intel64 \
-        ..
-$ make -j4
-```
-
-You can read any of the build scripts to find out how they work.
-The build scripts can be found in `<project root>/build_with_*.sh` and `<project root>/external/*.sh`.
-
-Once the plug-in is built successfully, continue on to the section
-"Install Common Files" below.
-
-### Install mmSolver Python API
+# Install mmSolver Python Scripts
 
 The `mmSolver` project has a convenience Python API for tool writers,
-which is recommended to be used.  The API must be added to the
-`MAYA_SCRIPT_PATH`.
+which is recommended to be used. The API must be added to the `MAYA_SCRIPT_PATH`
+environment variable.
 
-To install into the home directory maya `scripts` directory, simply
-run these commands:
+We must also compile the `*.ui` files for your version of Maya (either PySide or
+PySide2) in order to use the mmSolver tool GUIs. To compile the `*.ui` files,
+run these commands.
 
-```commandline
-$ cd <project root>
-$ cp -R python/mmSolver ~/maya/<maya version>/scripts
-```
-
-### Install mmSolver plugin
-
-Once the `mmSolver` plugin has been built you will need to place it on
-the `MAYA_PLUG_IN_PATH` environment variable.
-
-To install into our home directory maya `plug-ins` directory (which is
-automatically on the `MAYA_PLUG_IN_PATH`), simply run these commands:
-
-```commandline
-$ mkdir ~/maya/<maya version>/plug-ins
-$ cd <project root>
-$ cp build/mmSolver.so ~/maya/<maya version>/plug-ins
-```
-Replace ``<project root>`` and ``<maya version>`` as required.
-
-### Run Test Suite
-
-After all parts of the `mmSolver` are installed and can be found by
-Maya, try running the test suite to confirm everything is working as
-expected.
-
-```commandline
-$ cd <project root>
-$ sh runTests.sh
-```
-
-This will find and use the currently available 'mayapy' executable,
-please make sure 'mayapy' is on your PATH.
-
-For more information about testing, see the Testing section in
-[DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
-
-## Compile Qt .ui files
-
-To use the GUIs in the mmSolver tools, you must compile the *.ui files
-for your version of Qt (Qt4 or Qt5).
-
+On Linux:
 ```commandline
 $ cd <project root>
 $ mayapy compileUI.py
 ```
 
-This will find and use the currently available 'mayapy' executable,
-please make sure 'mayapy' is on your PATH.
-
-## Install Common Files
-
-### Install mmSolver Python API
-
-The `mmSolver` project has a convenience Python API for tool writers,
-which is recommended. The API must be added to the `MAYA_SCRIPT_PATH`.
-
-To install into our home directory maya `scripts` directory, simply
-run these commands:
-
-```commandline
-$ cd <project root>
-$ cp -R python/mmSolver ~/maya/<maya version>/plug-ins
+On Windows:
+```cmd
+> CD <project root>
+> mayapy compileUI.py
 ```
 
-### Install mmSolver plugin
+These commands use `mayapy`, the Maya Python interpreter. Make sure the use the
+executable with the version of Maya you plan to use mmSolver with.
+
+Now, to install the Python scripts into the home directory's Maya `scripts`
+directory, simply run these commands:
+
+On Linux:
+```commandline
+$ cd <project root>
+$ cp -R python/mmSolver ~/maya/<maya version>/scripts
+```
+
+On Windows:
+```cmd
+> CD <project root>
+> XCOPY python\mmSolver %USERPROFILE%\Documents\maya\<maya version>\scripts /E /Y
+```
+
+NOTE: Replace ``<project root>`` and ``<maya version>`` as required.
+
+# Install mmSolver plugin
 
 Once the `mmSolver` plugin has been built you will need to place it on
-the `MAYA_PLUG_IN_PATH`.
+the `MAYA_PLUG_IN_PATH` environment variable path.
 
 To install into our home directory maya `plug-ins` directory (which is
-automatically on the `MAYA_PLUG_IN_PATH`), simply run these commands:
+automatically on the `MAYA_PLUG_IN_PATH`), simply run these commands...
 
+On Linux:
 ```commandline
 $ mkdir ~/maya/<maya version>/plug-ins
 $ cd <project root>
 $ cp build/mmSolver.so ~/maya/<maya version>/plug-ins
 ```
 
-Because we're using a number of third-party libraries, we need to make
-these libraries available to Maya as the plug-in loads. Below I'll add
-these into `~/maya/<maya version>/lib`, however you may do so however
-you wish.
+On Windows:
+```cmd
+> MKDIR %USERPROFILE%\Documents\maya\<maya version>\plug-ins
+> CD <project root>
+> COPY build/mmSolver.mll %USERPROFILE%\Documents\maya\<maya version>\plug-ins\mmSolver.mll
+```
+Replace ``<project root>`` and ``<maya version>`` as required.
 
+# Install ATLAS / Intel MKL libraries
+
+If you have chosen to compile `mmSolver` with ATLAS or Intel MKL support,
+you must make sure Maya can access those third-party libraries, if you
+have not, you can skip this section. Below I'll add these into
+`~/maya/<maya version>/lib`, however you may do so however you wish.
+
+NOTE: Currently using ATLAS or Intel MKL is untested under Microsoft Windows, and
+instructions are therefore not given.
+
+On Linux:
 ```commandline
 $ cd <project root>
 $ mkdir ~/maya/<maya version>/lib
@@ -313,30 +208,48 @@ libraries. Setting this incorrectly can cause problems of Maya not
 loading correctly or random crashes if libraries conflict with
 internal Maya libraries.
 
-### Run Test Suite
+# Run Test Suite
 
 After all parts of the `mmSolver` are installed and can be found by
 Maya, try running the test suite to confirm everything is working as
 expected.
 
+On Linux run:
 ```commandline
 $ cd <project root>
 $ sh runTests.sh
 ```
 
+On Windows run:
+```cmd
+> CD <project root>
+> CMD /C runTests.bat
+```
+
+This will find and use the currently available 'mayapy' executable,
+please make sure 'mayapy' is on your PATH environment variable.
+
 For more information about testing, see the Testing section in
 [DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
 
-## Install 3DEqualizer Files
+# Install 3DEqualizer Files
 
 To install the 3DEqualizer (3DE) tools for `mmSolver`, follow the steps below.
 The 3DEqualizer tools are for integration into workflows using 3DEqualizer.
 These tools have been tested with `3DEqualizer4 Release 5`.
 
-Copy the python scripts into the `~/.3dequalizer/py_scripts` directory:
+Copy the python scripts into the `~/.3dequalizer/py_scripts` directory.
+
+On Linux:
 ```commandline
 $ cd <project root>
 $ cp ./3dequalizer/python/* ~/.3dequalizer/py_scripts
+```
+
+On Windows:
+```cmd
+> CD <project root>
+> XCOPY 3dequalizer/python/* "%AppData%/.3dequalizer/py_scripts" /Y
 ```
 
 Alternatively, you can modify the `PYTHONPATH` environment variable
@@ -346,5 +259,5 @@ to the list of search paths.
 There are currently two 3DEqualizer tools available:
 | File Name                | Tool Name                                      |
 | --------------------     | ------------------------------------------     |
-| copy_track_mmsolver.py   | Copy Undistorted 2D Tracks (Maya MM Solver)... |
-| export_track_mmsolver.py | Export 2D Tracks to Maya MM Solver...          |
+| copy_track_mmsolver.py   | Copy 2D Tracks (Maya MM Solver)                |
+| export_track_mmsolver.py | Export 2D Tracks (Maya MM Solver)...           |

@@ -30,7 +30,10 @@ void MMMarkerGroupTransformNode::postConstructor() {
     }
 }
 
-MMMarkerGroupTransformNode::~MMMarkerGroupTransformNode() = default;
+MMMarkerGroupTransformNode::~MMMarkerGroupTransformNode() {
+	// Empty function body rather than '= default', to allow compiling 
+	// under Visual Studio 2012.
+};
 
 
 void *MMMarkerGroupTransformNode::creator() {

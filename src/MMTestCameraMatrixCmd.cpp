@@ -5,7 +5,6 @@
  * success = maya.cmds.mmTestCameraMatrix('myCameraTransform', 'myCameraShape')
  */
 
-
 //
 #include <MMTestCameraMatrixCmd.h>
 #include <mayaUtils.h>

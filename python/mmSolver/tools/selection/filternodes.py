@@ -40,8 +40,7 @@ def get_nodes(nodes):
         elif obj_type == mmapi.OBJECT_TYPE_COLLECTION:
             result['collection'].append(node)
         else:
-            msg = 'Object type is unknown: node=%r obj_type=%r'
-            LOG.warning(msg, node, obj_type)
+            result['other'].append(node)
     return result
 
 

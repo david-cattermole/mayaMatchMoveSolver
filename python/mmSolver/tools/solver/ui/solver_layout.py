@@ -106,6 +106,18 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.solver_tableView.setSortingEnabled(False)
         self.solver_selModel = self.solver_tableView.selectionModel()
 
+        # Set up custom widgets for viewing and editing the columns.
+        self.solver_attrFilterDelegate = solver_nodes.AttributeComboBoxDelegate()
+        self.solver_tableView.setItemDelegateForColumn(
+            2,
+            self.solver_attrFilterDelegate,
+        )
+        self.solver_strategyDelegate = solver_nodes.StrategyComboBoxDelegate()
+        self.solver_tableView.setItemDelegateForColumn(
+            3,
+            self.solver_strategyDelegate,
+        )
+
         # Solver Add and Remove buttons
         self.solverAdd_toolButton.clicked.connect(
             self.solverAddClicked

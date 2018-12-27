@@ -5,6 +5,7 @@ Qt models used in Model-View-Controller designs.
 import Qt as Qt
 import Qt.QtGui as QtGui
 import Qt.QtCore as QtCore
+import Qt.QtWidgets as QtWidgets
 
 import mmSolver.ui.converttypes as converttypes
 import mmSolver.ui.nodes as nodes
@@ -211,7 +212,6 @@ def _getNameFromDict(index, names_dict, lookup_dict):
     :returns: The name in 'lookup_dict' referred to by index in
               'names_dict'.
     :rtype: str
-
     """
     if index not in names_dict:
         msg = '{0} was not in {1}'
@@ -387,6 +387,8 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
 
     def flags(self, index):
         v = QtCore.Qt.NoItemFlags
+        if not index.isValid():
+            return v
         row_index = index.row()
         column_index = index.column()
         node = self._node_list[row_index]
@@ -603,3 +605,48 @@ class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
         else:
             return False
         return True
+
+
+class ComboBoxDelegate(QtWidgets.QStyledItemDelegate):
+
+    def __init__(self, parent=None):
+        super(ComboBoxDelegate, self).__init__(parent)
+
+    def getValueList(self):
+        """
+        Sub-class, override this method and return a list of strings for
+        the combo-box values.
+        """
+        raise NotImplementedError
+
+    def createEditor(self, parent, option, index):
+        if not index.isValid():
+            LOG.warning('Invalid index: %r', index)
+            return
+        data = index.data(QtCore.Qt.EditRole)
+        values = self.getValueList()
+        model = QtCore.QStringListModel(values)
+        widget = QtWidgets.QComboBox(parent)
+        widget.setModel(model)
+        return widget
+
+    def setEditorData(self, editor, index):
+        idx = 0  # Default to first index, as fallback.
+        values = self.getValueList()
+        data = index.data(QtCore.Qt.EditRole)
+        if data in values:
+            idx = values.index(data)
+        else:
+            msg = 'data not in values: data=%r values=%r'
+            LOG.warning(msg, data, values)
+
+        editor.blockSignals(True)
+        editor.setCurrentIndex(idx)
+        editor.blockSignals(False)
+        return
+
+    def setModelData(self, editor, model, index):
+        data = index.data(QtCore.Qt.EditRole)
+        value = editor.currentText()
+        model.setData(index, value, QtCore.Qt.EditRole)
+        return

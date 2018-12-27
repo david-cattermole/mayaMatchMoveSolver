@@ -20,6 +20,30 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
+class StrategyComboBoxDelegate(uimodels.ComboBoxDelegate):
+
+    def __init__(self, parent=None):
+        super(StrategyComboBoxDelegate, self).__init__(parent)
+
+    def getValueList(self):
+        values = list(const.STRATEGY_LABEL_LIST)
+        return values
+
+
+class AttributeComboBoxDelegate(uimodels.ComboBoxDelegate):
+
+    def __init__(self, parent=None):
+        super(AttributeComboBoxDelegate, self).__init__(parent)
+
+    def getValueList(self):
+        values = [
+            str(const.ATTR_FILTER_STATIC_AND_ANIM_LABEL),
+            str(const.ATTR_FILTER_ANIM_ONLY_LABEL),
+            str(const.ATTR_FILTER_NO_ATTRS_LABEL),
+        ]
+        return values
+
+
 class SolverStepNode(nodes.Node):
     def __init__(self, name, col_node,
                  parent=None,
@@ -153,8 +177,8 @@ class SolverStepNode(nodes.Node):
             use_static = True
             use_animated = False
         elif const.ATTR_FILTER_NO_ATTRS_LABEL:
-            use_static = True
-            use_animated = True
+            use_static = False
+            use_animated = False
         assert use_static is not None
         assert use_animated is not None
         n = self.stepNode()

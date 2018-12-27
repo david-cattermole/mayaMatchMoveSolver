@@ -166,7 +166,7 @@ def parse_v2(file_path):
         set_name = point_data.get('set_name')
         id_ = point_data.get('id')
         assert isinstance(name, basestring)
-        assert isinstance(set_name, basestring)
+        assert isinstance(set_name, (None, basestring))
         assert isinstance(id_, (None, int))
         mkr_data.set_name(name)
         mkr_data.set_group_name(set_name)

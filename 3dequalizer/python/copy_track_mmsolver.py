@@ -1,6 +1,6 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# 3DE4.script.name:     Copy Undistorted 2D Tracks (Maya MM Solver)...
+# 3DE4.script.name:     Copy 2D Tracks (MM Solver)
 #
 # 3DE4.script.version:  v1.2
 #
@@ -21,7 +21,7 @@ import tde4
 import uvtrack_format
 
 
-TITLE = 'Copy Undistorted 2D Tracks to Maya MM Solver...'
+TITLE = 'Copy 2D Tracks to MM Solver...'
 EXT = '.uv'
 
 

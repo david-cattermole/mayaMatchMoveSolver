@@ -1,6 +1,6 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# 3DE4.script.name:     Export 2D Tracks to Maya MM Solver...
+# 3DE4.script.name:     Export 2D Tracks (MM Solver)...
 #
 # 3DE4.script.version:  v1.2
 #
@@ -9,11 +9,10 @@
 # 3DE4.script.gui:      Object Browser::Context Menu Points
 # 3DE4.script.gui:      Object Browser::Context Menu PGroup
 #
-# 3DE4.script.comment:  Writes undistorted 2D tracking curves (incl.
+# 3DE4.script.comment:  Writes 2D tracking curves (including
 # 3DE4.script.comment:  frame-by-frame weights) of all selected points
-# 3DE4.script.comment:  to an Ascii file.
-# 3DE4.script.comment:  Since the tracks are normalized 0 to 1, they
-# 3DE4.script.comment:  are resolution independent.
+# 3DE4.script.comment:  to a UV Tracks file.
+# 3DE4.script.comment:  All 2D Tracks are resolution independent.
 #
 #
 
@@ -21,7 +20,7 @@ import tde4
 import uvtrack_format
 
 
-TITLE = 'Export 2D Tracks to Maya MM Solver...'
+TITLE = 'Export 2D Tracks to MM Solver...'
 EXT = '.uv'
 
 

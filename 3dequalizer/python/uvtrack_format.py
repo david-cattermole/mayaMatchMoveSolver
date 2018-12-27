@@ -4,7 +4,18 @@ Generate track data from the given 2D points in 3DEqualizer.
 See ./python/mmSolver/tools/loadmarker/formats/uvtrack.py for details
 of the '.uv' file format.
 """
-# 3DE4.script.hide: true
+#
+# 3DE4.script.name:     UV Track Format
+#
+# 3DE4.script.version:  v1.2
+#
+# 3DE4.script.comment:  Generate track data from the given 2D points in
+# 3DE4.script.comment:  3DEqualizer.
+# 3DE4.script.comment:  Files in 'UV Track' format should have file
+# 3DE4.script.comment:  exntension '.uv'.
+#
+# 3DE4.script.hide:     true
+
 
 import json
 import tde4

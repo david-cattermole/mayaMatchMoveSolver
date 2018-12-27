@@ -1,3 +1,6 @@
+"""
+Convert between different types of nodes.
+"""
 
 import maya.cmds
 

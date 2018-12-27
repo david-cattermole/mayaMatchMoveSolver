@@ -185,29 +185,9 @@ class SolverModel(uimodels.TableModel):
             'Strategy': 'setStrategy',
             'Attributes': 'setAttrs',
         }
-
-    def flags(self, index):
-        """
-        Set item flags.
-
-        Makes the first column be checkable, if the node is
-        'checkable'.
-        """
-        v = QtCore.Qt.NoItemFlags
-        row_index = index.row()
-        column_index = index.column()
-        node = self._node_list[row_index]
-        if node is None:
-            LOG.warning('flags: node is None')
-            return v
-        if node.enabled():
-            v = v | QtCore.Qt.ItemIsEnabled
-        if node.checkable() and column_index == 0:
-            v = v | QtCore.Qt.ItemIsUserCheckable
-        if node.neverHasChildren():
-            v = v | QtCore.Qt.ItemNeverHasChildren
-        if node.selectable():
-            v = v | QtCore.Qt.ItemIsSelectable
-        if node.editable():
-            v = v | QtCore.Qt.ItemIsEditable
-        return v
+        self._checkable_column_mapping = {
+            'Enabled': True,
+            'Frames': False,
+            'Strategy': False,
+            'Attributes': False,
+        }

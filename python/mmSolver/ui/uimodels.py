@@ -172,6 +172,7 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         success = None
         for row in range(rows):
             childCount = parentNode.childCount()
+            # TODO: How do we inject an unknown node type here?
             childNode = nodes.Node('untitled' + str(childCount))
             success = parentNode.insertChild(position, childNode)
         self.endInsertRows()
@@ -188,6 +189,30 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
 
 
 def _getNameFromDict(index, names_dict, lookup_dict):
+    """
+    Get the 'name' from an index, using a specific data structure.
+
+    For example::
+       index = 0
+       names_dict = {
+           0: 'Column',
+       }
+       lookup_dict = {
+           'Column': 'name',
+       }
+       x = _getNamefromDict(index, names_dict, lookup_dict)
+       # x equals 'name'
+
+    :param index: Index to look up.
+    :param names_dict: The mapping data, from index to 'second key'.
+    :param lookup_dict: Mapping data structure from 'second key' to
+                        final look up name.
+
+    :returns: The name in 'lookup_dict' referred to by index in
+              'names_dict'.
+    :rtype: str
+
+    """
     if index not in names_dict:
         msg = '{0} was not in {1}'
         msg = msg.format(index, names_dict)
@@ -213,6 +238,9 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
         self._node_set_attr_key = {
             'Column': 'setName',
         }
+        self._checkable_column_mapping = {
+            'Column': True,
+        }
         self._font = font
         self._node_list = []
         if node_list is not None:
@@ -227,11 +255,14 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
     def data(self, index, role):
         if not index.isValid():
             return None
-        row = index.row()
-        node = self._node_list[row]
-        roles = [QtCore.Qt.DisplayRole,
-                 QtCore.Qt.EditRole,
-                 QtCore.Qt.CheckStateRole]
+        row_index = index.row()
+        column_index = index.column()
+        node = self._node_list[row_index]
+        roles = [
+            QtCore.Qt.DisplayRole,
+            QtCore.Qt.EditRole,
+            QtCore.Qt.CheckStateRole,
+        ]
         if role in roles:
             column_index = index.column()
             attr_name = _getNameFromDict(
@@ -244,12 +275,25 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
                 value = value()
             else:
                 value = None
+
             # For check states, we must return a 'CheckState' of
             # Checked or Unchecked.
             if role == QtCore.Qt.CheckStateRole:
-                value = converttypes.stringToBoolean(value)
-                if isinstance(value, bool):
-                    value = converttypes.booleanToCheckState(value)
+                column_checkable = _getNameFromDict(
+                    column_index,
+                    self._column_names,
+                    self._checkable_column_mapping,
+                )
+                if column_checkable is True:
+                    value = converttypes.stringToBoolean(value)
+                    if isinstance(value, bool):
+                        value = converttypes.booleanToCheckState(value)
+                else:
+                    # If the column is not checkable we make sure it's
+                    # not displayed as checkable by returning a
+                    # 'None'
+                    value = None
+
             # value may be bool, string or None type.
             return value
 
@@ -271,14 +315,14 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):
         if index.isValid():
-            row = index.row()
-            column = index.column()
-            node = self._node_list[row]
+            row_index = index.row()
+            column_index = index.column()
+            node = self._node_list[row_index]
             if node is None:
                 LOG.warning('node is invalid: %r %r %r', index, value, node)
                 return
             attr_name = _getNameFromDict(
-                column,
+                column_index,
                 self._column_names,
                 self._node_set_attr_key
             )
@@ -290,12 +334,19 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
                 func = getattr(node, attr_name, None)
                 if func is not None:
                     func(value)
+
             if role == QtCore.Qt.CheckStateRole:
-                func = getattr(node, attr_name, None)
-                if func is not None:
-                    v = converttypes.checkStateToBoolean(value)
-                    v = converttypes.booleanToString(v)
-                    func(v)
+                column_checkable = _getNameFromDict(
+                    column_index,
+                    self._column_names,
+                    self._checkable_column_mapping,
+                )
+                if column_checkable is True:
+                    func = getattr(node, attr_name, None)
+                    if func is not None:
+                        v = converttypes.checkStateToBoolean(value)
+                        v = converttypes.booleanToString(v)
+                        func(v)
 
             # Emit Data Changed.
             if Qt.__binding__ in ['PySide', 'PyQt4']:
@@ -337,6 +388,7 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
     def flags(self, index):
         v = QtCore.Qt.NoItemFlags
         row_index = index.row()
+        column_index = index.column()
         node = self._node_list[row_index]
         if node is None:
             LOG.warning('flags: node is None')
@@ -344,7 +396,13 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
         if node.enabled():
             v = v | QtCore.Qt.ItemIsEnabled
         if node.checkable():
-            v = v | QtCore.Qt.ItemIsUserCheckable
+            column_checkable = _getNameFromDict(
+                column_index,
+                self._column_names,
+                self._checkable_column_mapping,
+            )
+            if column_checkable is True:
+                v = v | QtCore.Qt.ItemIsUserCheckable
         if node.neverHasChildren():
             v = v | QtCore.Qt.ItemNeverHasChildren
         if node.selectable():
@@ -358,7 +416,8 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
         success = None
         for row in range(rows):
             childCount = len(self._node_list)
-            childNode = StepNode('untitled' + str(childCount))
+            # TODO: How do we inject an unknown node type here?
+            childNode = nodes.Node('untitled' + str(childCount))
             success = self._node_list.insert(position, childNode)
         self.endInsertRows()
         return success

@@ -248,7 +248,9 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
             # Checked or Unchecked.
             if role == QtCore.Qt.CheckStateRole:
                 value = converttypes.stringToBoolean(value)
-                value = converttypes.booleanToCheckState(value)
+                if isinstance(value, bool):
+                    value = converttypes.booleanToCheckState(value)
+            # value may be bool, string or None type.
             return value
 
         if role == QtCore.Qt.DecorationRole:

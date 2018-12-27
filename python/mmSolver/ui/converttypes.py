@@ -4,6 +4,11 @@ Conversion functions between various types.
 
 import Qt.QtCore as QtCore
 
+import mmSolver.logger
+
+
+LOG = mmSolver.logger.get_logger()
+
 
 # Words recognised as True or False.
 FALSE_WORDS = ['0', 'n', 'f', 'no', 'off', 'nah', 'nope', 'false']
@@ -21,7 +26,7 @@ def stringToBoolean(value):
         elif value in FALSE_WORDS:
             v = False
         else:
-            return None
+            return False
     else:
         raise TypeError
     return v
@@ -119,7 +124,9 @@ def stringToInteger(value):
 
 
 def booleanToCheckState(value):
-    assert isinstance(value, bool)
+    if isinstance(value, bool) is False:
+        msg = 'value is not bool type: %r'
+        raise TypeError(msg % type(value))
     v = QtCore.Qt.CheckState.Unchecked
     if value is True:
         v = QtCore.Qt.CheckState.Checked

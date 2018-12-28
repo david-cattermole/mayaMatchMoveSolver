@@ -211,10 +211,6 @@ class SolverModel(uimodels.TableModel):
         return column_names
 
     def getGetAttrFuncFromIndex(self, index):
-        row_index = index.row()
-        column_index = index.column()
-        node = self._node_list[row_index]
-        column_names = self.columnNames()
         get_attr_dict = {
             # Column Name to node function name
             'Enabled': 'stepEnabled',
@@ -222,19 +218,9 @@ class SolverModel(uimodels.TableModel):
             'Strategy': 'strategy',
             'Attributes': 'attrs',
         }
-        name = uimodels.getNameFromDict(
-            column_index,
-            column_names,
-            get_attr_dict,
-        )
-        func = getattr(node, name, None)
-        return func
+        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 
     def getSetAttrFuncFromIndex(self, index):
-        row_index = index.row()
-        column_index = index.column()
-        node = self._node_list[row_index]
-        column_names = self.columnNames()
         set_attr_dict = {
             # Column Name to node function name
             'Enabled': 'setStepEnabled',
@@ -242,13 +228,7 @@ class SolverModel(uimodels.TableModel):
             'Strategy': 'setStrategy',
             'Attributes': 'setAttrs',
         }
-        name = uimodels.getNameFromDict(
-            column_index,
-            column_names,
-            set_attr_dict,
-        )
-        func = getattr(node, name, None)
-        return func
+        return self._getSetAttrFuncFromIndex(index, set_attr_dict)
 
     def indexCheckable(self, index):
         row_index = index.row()

@@ -85,3 +85,24 @@ class ObjectModel(uimodels.ItemModel):
         self._node_attr_key = {
             'Node': 'name',
         }
+
+    def defaultNodeType(self):
+        return MarkerNode
+
+    def columnNames(self):
+        column_names = {
+            0: 'Node',
+        }
+        return column_names
+
+    def getGetAttrFuncFromIndex(self, index):
+        get_attr_dict = {
+            'Node': 'name',
+        }
+        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
+
+    def getSetAttrFuncFromIndex(self, index):
+        set_attr_dict = {
+            'Node': 'setName',
+        }
+        return self._getGetAttrFuncFromIndex(index, set_attr_dict)

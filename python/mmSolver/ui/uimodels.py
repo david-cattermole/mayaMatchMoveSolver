@@ -57,14 +57,91 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
     def __init__(self, rootNode, font=None):
         super(ItemModel, self).__init__()
         self._rootNode = None
-        self._column_names = {
-            0: 'Column',
-        }
-        self._node_attr_key = {
-            'Column': 'name',
-        }
         self._font = font
         self.setRootNode(rootNode)
+
+    def defaultNodeType(self):
+        return nodes.Node
+
+    def columnNames(self):
+        column_names = {
+            0: 'Column',
+        }
+        return dict(column_names)
+
+    def getGetAttrFuncFromIndex(self, index):
+        get_attr_dict = {
+            'Column': 'name',
+        }
+        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
+
+    def getSetAttrFuncFromIndex(self, index):
+        set_attr_dict = {
+            'Column': 'setName',
+        }
+        return self._getSetAttrFuncFromIndex(index, set_attr_dict)
+
+    ################################################
+
+    def indexEnabled(self, index):
+        node = index.internalPointer()
+        return node.enabled()
+
+    def indexCheckable(self, index):
+        node = index.internalPointer()
+        return node.checkable()
+
+    def indexSelectable(self, index):
+        node = index.internalPointer()
+        return node.selectable()
+
+    def indexEditable(self, index):
+        node = index.internalPointer()
+        return node.editable()
+
+    def indexIcon(self, index):
+        node = index.internalPointer()
+        if index.column() == 0:
+            return node.icon()
+        return None
+
+    ####################################################
+
+    def _getGetAttrFuncFromIndex(self, index, get_attr_dict):
+        column_index = index.column()
+        column_names = self.columnNames()
+        name = getNameFromDict(
+            column_index,
+            column_names,
+            get_attr_dict,
+        )
+        node = index.internalPointer()
+        func = getattr(node, name, None)
+        return func
+
+    def _getSetAttrFuncFromIndex(self, index, set_attr_dict):
+        column_index = index.column()
+        column_names = self.columnNames()
+        name = getNameFromDict(
+            column_index,
+            column_names,
+            set_attr_dict,
+        )
+        node = index.internalPointer()
+        func = getattr(node, name, None)
+        return func
+
+    def getColumnNameFromIndex(self, index):
+        column_index = index.column()
+        column_names = self.columnNames()
+        column_name = column_names.get(column_index)
+        if column_name is None:
+            msg = 'Column index is not set correctly; '
+            msg += 'index=%r column_names=%r column_name=%r'
+            LOG.warning(msg, index, column_names, column_name)
+        return column_name
+
+    ####################################################
 
     def rootNode(self):
         return self._rootNode
@@ -75,8 +152,22 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         self._rootNode = rootNode
         self.endResetModel()
 
+    def getNode(self, index):
+        node = None
+        if index.isValid():
+            node = index.internalPointer()
+            if node is not None:
+                return node
+        else:
+            # LOG.warning('getNode index is not valid; %r', index)
+            pass
+        return self._rootNode
+
+    ####################################################
+
     def columnCount(self, parent=QtCore.QModelIndex()):
-        return len(self._column_names.keys())
+        column_names = self.columnNames()
+        return len(column_names.keys())
 
     def rowCount(self, parent=QtCore.QModelIndex()):
         parentNode = None
@@ -94,26 +185,13 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         node = index.internalPointer()
 
         if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
-            column_index = index.column()
-            if column_index not in self._column_names:
-                msg = '{0} was not in {1}'
-                msg = msg.format(column_index, self._column_names)
-                raise ValueError(msg)
-            column_name = self._column_names[column_index]
-            if column_name not in self._node_attr_key:
-                msg = '{0} was not in {1}'
-                msg = msg.format(column_name, self._node_attr_key)
-                raise ValueError(msg)
-            attr_name = self._node_attr_key[column_name]
-            value = getattr(node, attr_name, None)
-            if value is not None:
-                value = value()
+            func = self.getGetAttrFuncFromIndex(index)
+            if func is not None:
+                value = func()
             return value
 
         if role == QtCore.Qt.DecorationRole:
-            # TODO: Can we refactor this similar to the DisplayRole above?
-            if index.column() == 0:
-                return node.icon()
+            return self.indexIcon(index)
 
         if role == QtCore.Qt.ToolTipRole:
             return node.toolTip()
@@ -131,11 +209,15 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
             LOG.warning('setData not valid: %r %r', index, value)
             return False
         node = index.internalPointer()
-        if not node.editable():
+
+        if not self.indexEditable():
             LOG.warning('setData not editable: %r %r %r', index, value, node)
             return False
+
         if role == QtCore.Qt.EditRole:
-            node.setName(value)
+            func = self.getSetAttrFuncFromIndex(index)
+            if func is not None:
+                func(value)
 
         # Emit Data Changed.
         if Qt.__binding__ in ['PySide', 'PyQt4']:
@@ -150,7 +232,8 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
     def headerData(self, section, orientation, role):
         if orientation == QtCore.Qt.Horizontal:
             if role == QtCore.Qt.DisplayRole:
-                return self._column_names.get(section, 'Column')
+                column_names = self.columnNames()
+                return column_names.get(section, 'Column')
         elif orientation == QtCore.Qt.Vertical:
             if role == QtCore.Qt.DisplayRole:
                 return 'Row'
@@ -162,16 +245,16 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         if node is None:
             LOG.warning('flags: node is None')
             return v
-        if node.enabled():
+        if self.indexEnabled(index):
             v = v | QtCore.Qt.ItemIsEnabled
-        if node.checkable():
+        if self.indexCheckable(index):
             v = v | QtCore.Qt.ItemIsUserCheckable
+        if self.indexSelectable(index):
+            v = v | QtCore.Qt.ItemIsSelectable
+        if self.indexEditable(index):
+            v = v | QtCore.Qt.ItemIsEditable
         if node.neverHasChildren():
             v = v | QtCore.Qt.ItemNeverHasChildren
-        if node.selectable():
-            v = v | QtCore.Qt.ItemIsSelectable
-        if node.editable():
-            v = v | QtCore.Qt.ItemIsEditable
         return v
 
     def parent(self, index):
@@ -194,25 +277,14 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
             return self.createIndex(row, column, childItem)
         return QtCore.QModelIndex()
 
-    def getNode(self, index):
-        node = None
-        if index.isValid():
-            node = index.internalPointer()
-            if node is not None:
-                return node
-        else:
-            # LOG.warning('getNode index is not valid; %r', index)
-            pass
-        return self._rootNode
-
     def insertRows(self, position, rows, parent=QtCore.QModelIndex()):
         parentNode = self.getNode(parent)
         self.beginInsertRows(parent, position, position + rows - 1)
         success = None
+        nodeType = self.defaultNodeType()
         for row in range(rows):
             childCount = parentNode.childCount()
-            # TODO: How do we inject an unknown node type here?
-            childNode = nodes.Node('untitled' + str(childCount))
+            childNode = nodeType('untitled' + str(childCount))
             success = parentNode.insertChild(position, childNode)
         self.endInsertRows()
         return success
@@ -245,36 +317,16 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
         return dict(column_names)
 
     def getGetAttrFuncFromIndex(self, index):
-        row_index = index.row()
-        column_index = index.column()
-        node = self._node_list[row_index]
-        column_names = self.columnNames()
         get_attr_dict = {
             'Column': 'name',
         }
-        name = getNameFromDict(
-            column_index,
-            column_names,
-            get_attr_dict,
-        )
-        func = getattr(node, name, None)
-        return func
+        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 
     def getSetAttrFuncFromIndex(self, index):
-        row_index = index.row()
-        column_index = index.column()
-        node = self._node_list[row_index]
-        column_names = self.columnNames()
         set_attr_dict = {
             'Column': 'setName',
         }
-        name = getNameFromDict(
-            column_index,
-            column_names,
-            set_attr_dict,
-        )
-        func = getattr(node, name, None)
-        return func
+        return self._getSetAttrFuncFromIndex(index, set_attr_dict)
 
     ################################################
 
@@ -302,6 +354,34 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
         row_index = index.row()
         node = self._node_list[row_index]
         return node.icon()
+
+    ################################################
+
+    def _getGetAttrFuncFromIndex(self, index, get_attr_dict):
+        row_index = index.row()
+        column_index = index.column()
+        node = self._node_list[row_index]
+        column_names = self.columnNames()
+        name = getNameFromDict(
+            column_index,
+            column_names,
+            get_attr_dict,
+        )
+        func = getattr(node, name, None)
+        return func
+
+    def _getSetAttrFuncFromIndex(self, index, set_attr_dict):
+        row_index = index.row()
+        column_index = index.column()
+        node = self._node_list[row_index]
+        column_names = self.columnNames()
+        name = getNameFromDict(
+            column_index,
+            column_names,
+            set_attr_dict,
+        )
+        func = getattr(node, name, None)
+        return func
 
     def getColumnNameFromIndex(self, index):
         column_index = index.column()
@@ -462,9 +542,9 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
     def insertRows(self, position, rows, parent=QtCore.QModelIndex()):
         self.beginInsertRows(parent, position, position + rows - 1)
         success = None
+        nodeType = self.defaultNodeType()
         for row in range(rows):
             childCount = len(self._node_list)
-            nodeType = self.defaultNodeType()
             childNode = nodeType('untitled' + str(childCount))
             success = self._node_list.insert(position, childNode)
         self.endInsertRows()

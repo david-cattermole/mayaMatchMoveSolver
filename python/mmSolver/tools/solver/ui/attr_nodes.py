@@ -125,17 +125,33 @@ class MayaNode(PlugNode):
 class AttrModel(uimodels.ItemModel):
     def __init__(self, root, font=None):
         super(AttrModel, self).__init__(root, font=font)
-        self._column_names = {
+
+    def defaultNodeType(self):
+        return MayaNode
+
+    def columnNames(self):
+        column_names = {
             0: 'Attr',
             1: 'State',
             2: 'Min',
             3: 'Max',
         }
-        self._node_attr_key = {
+        return column_names
+
+    def getGetAttrFuncFromIndex(self, index):
+        get_attr_dict = {
             'Attr': 'name',
             'State': 'state',
             'Min': 'minValue',
             'Max': 'maxValue',
         }
+        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 
-
+    def getSetAttrFuncFromIndex(self, index):
+        set_attr_dict = {
+            'Attr': 'setName',
+            'State': 'setState',
+            'Min': 'setMinValue',
+            'Max': 'setMaxValue',
+        }
+        return self._getSetAttrFuncFromIndex(index, set_attr_dict)

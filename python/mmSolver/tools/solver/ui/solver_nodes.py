@@ -137,7 +137,13 @@ class SolverStepNode(nodes.Node):
         v = n.get_strategy()
         assert v in const.STRATEGY_LIST
         idx = const.STRATEGY_LIST.index(v)
-        value = const.STRATEGY_LABEL_LIST[idx]
+
+        # If we are not solving any static attributes, we show the
+        # solver strategy as 'Per-Frame'
+        use_static = n.get_use_static_attrs()
+        value = const.STRATEGY_PER_FRAME_LABEL
+        if use_static is True:
+            value = const.STRATEGY_LABEL_LIST[idx]
         return value
 
     def setStrategy(self, value):
@@ -191,27 +197,103 @@ class SolverStepNode(nodes.Node):
 class SolverModel(uimodels.TableModel):
     def __init__(self, node_list=None, font=None):
         super(SolverModel, self).__init__(node_list=node_list, font=font)
-        self._column_names = {
+
+    def defaultNodeType(self):
+        return SolverStepNode
+
+    def columnNames(self):
+        column_names = {
             0: 'Enabled',
             1: 'Frames',
             2: 'Attributes',
             3: 'Strategy',
         }
-        self._node_attr_key = {
+        return column_names
+
+    def getGetAttrFuncFromIndex(self, index):
+        row_index = index.row()
+        column_index = index.column()
+        node = self._node_list[row_index]
+        column_names = self.columnNames()
+        get_attr_dict = {
+            # Column Name to node function name
             'Enabled': 'stepEnabled',
             'Frames': 'frames',
             'Strategy': 'strategy',
             'Attributes': 'attrs',
         }
-        self._node_set_attr_key = {
+        name = uimodels.getNameFromDict(
+            column_index,
+            column_names,
+            get_attr_dict,
+        )
+        func = getattr(node, name, None)
+        return func
+
+    def getSetAttrFuncFromIndex(self, index):
+        row_index = index.row()
+        column_index = index.column()
+        node = self._node_list[row_index]
+        column_names = self.columnNames()
+        set_attr_dict = {
+            # Column Name to node function name
             'Enabled': 'setStepEnabled',
             'Frames': 'setFrames',
             'Strategy': 'setStrategy',
             'Attributes': 'setAttrs',
         }
-        self._checkable_column_mapping = {
+        name = uimodels.getNameFromDict(
+            column_index,
+            column_names,
+            set_attr_dict,
+        )
+        func = getattr(node, name, None)
+        return func
+
+    def indexCheckable(self, index):
+        row_index = index.row()
+        column_index = index.column()
+        node = self._node_list[row_index]
+        column_names = self.columnNames()
+        checkable_column_mapping = {
             'Enabled': True,
             'Frames': False,
             'Strategy': False,
             'Attributes': False,
         }
+        checkable = uimodels.getNameFromDict(
+            column_index,
+            column_names,
+            checkable_column_mapping,
+        )
+        return checkable
+
+    def indexEnabled(self, index):
+        row_index = index.row()
+        column_index = index.column()
+        node = self._node_list[row_index]
+        if node.enabled() is False:
+            return False
+        column_names = self.columnNames()
+        column_name = self.getColumnNameFromIndex(index)
+        enabled = False
+        if column_name == 'Enabled':
+            enabled = True
+        else:
+            stepEnabled = node.stepEnabled()
+            stepEnabled = converttypes.stringToBoolean(stepEnabled)
+            if stepEnabled is False:
+                enabled = False
+            else:
+                # The step is enabled!
+                if column_name in ['Frames', 'Attributes']:
+                    enabled = True
+                elif column_name == 'Strategy':
+                    # The 'strategy' column should be disabled if
+                    # 'attrs' is set to use either 'No Attributes' or
+                    # 'Animated Only'.
+                    attrs = node.attrs()
+                    if attrs in [const.ATTR_FILTER_STATIC_ONLY_LABEL,
+                                 const.ATTR_FILTER_STATIC_AND_ANIM_LABEL]:
+                        enabled = True
+        return enabled

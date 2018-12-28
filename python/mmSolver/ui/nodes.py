@@ -16,7 +16,7 @@ class Node(object):
                  checkable=False,
                  neverHasChildren=False):
         if icon is None:
-            icon = ':/Node.png'
+            icon = ':/mmSolver_node.png'
         self._children = []
         self._parent = parent
 

@@ -2,8 +2,16 @@
 Attribute nodes for the mmSolver Window UI.
 """
 
+import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.nodes as nodes
+
+
+LOG = mmSolver.logger.get_logger()
+
+
+DEFAULT_ATTR_MIN_VALUE = '<Unset>'
+DEFAULT_ATTR_MAX_VALUE = '<Unset>'
 
 
 class PlugNode(nodes.Node):
@@ -31,17 +39,18 @@ class PlugNode(nodes.Node):
         self.typeInfo = 'plug'
 
     def state(self):
-        # TODO: Get the state.
         return ''
 
     def minValue(self):
-        # TODO: Get the min value.
         return ''
 
     def maxValue(self):
-        # TODO: Get the max value.
         return ''
 
+STATE_INVALID = 'Invalid'
+STATE_STATIC = 'Static'
+STATE_ANIMATED = 'Animated'
+STATE_LOCKED = 'Locked'
 
 class AttrNode(PlugNode):
     def __init__(self, name,
@@ -59,33 +68,33 @@ class AttrNode(PlugNode):
 
     def state(self):
         d = self.data().get('data')
-        state = 'Invalid'
+        state = STATE_INVALID
         if d is None:
-            return invalid_state
-        if d.is_static() is True:
-            return 'Static'
-        if d.is_animated() is True:
-            return 'Animated'
-        if d.is_locked() is True:
-            return 'Locked'
-        return invalid_state
+            pass
+        elif d.is_static() is True:
+            state = STATE_STATIC
+        elif d.is_animated() is True:
+            state = STATE_ANIMATED
+        elif d.is_locked() is True:
+            state = STATE_LOCKED
+        return state
 
     def minValue(self):
         d = self.data().get('data')
         if d is None:
-            return ''
+            return DEFAULT_ATTR_MIN_VALUE
         v = d.get_min_value()
         if v is None:
-            return ''
+            return DEFAULT_ATTR_MIN_VALUE
         return str(v)
 
     def maxValue(self):
         d = self.data().get('data')
         if d is None:
-            return ''
+            return DEFAULT_ATTR_MAX_VALUE
         v = d.get_max_value()
         if v is None:
-            return ''
+            return DEFAULT_ATTR_MAX_VALUE
         return str(v)
 
     def mayaNodeName(self):

@@ -11,11 +11,14 @@ LOG = mmSolver.logger.get_logger()
 
 
 # Words recognised as True or False.
-FALSE_WORDS = ['0', 'n', 'f', 'no', 'off', 'nah', 'nope', 'false']
 TRUE_WORDS = ['1', 'y', 't', 'yes', 'on', 'ya', 'yeah', 'true']
+FALSE_WORDS = ['0', 'n', 'f', 'no', 'off', 'nah', 'nope', 'false']
 
 
 def stringToBoolean(value):
+    """
+    Convert a string into a boolean value, using list of 'TRUE_WORDS'
+    """
     v = None
     if isinstance(value, bool):
         v = value
@@ -33,11 +36,16 @@ def stringToBoolean(value):
 
 
 def booleanToString(value):
+    """
+    Convert boolean value to a string.
+    """
     return str(value)
 
 
 def stringToIntList(value):
     """
+    Convert a string of integer ranges to a list of integers.
+
     value = '1001-1101'
     value = '1001,1002,1003-1005,1010-1012
     """
@@ -71,6 +79,9 @@ def stringToIntList(value):
 
 
 def intListToString(value):
+    """
+    Convert a list of integers to a string.
+    """
     if isinstance(value, list) is False:
         raise TypeError
     int_list = list(set(value))

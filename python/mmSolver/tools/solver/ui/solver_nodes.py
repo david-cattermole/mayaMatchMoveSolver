@@ -1,5 +1,30 @@
-"""
-Solver nodes for the mmSolver Window UI.
+"""Solver nodes for the mmSolver Window UI.
+
+Solvers are presented to the user as Solver Steps, which is a step of solver functions defined by:
+- Frames
+- Attribute Filter
+- Strategy
+
+'Frames' is the list of frames to compute the strategy on.
+
+'Attribute Filter' provides a method to filter types of attributes
+that will be used in the strategy. For example: Animated Only
+attributes, or Static and Animated attributes.
+
+'Strategy' is a method name for the solvers to be ordered to solve the
+ frames in, for example 'sequentially' or 'all frames at once'.
+
+If 'Animated Only' attribute filter is used then the strategy is
+ unneeded and will solve each frame individually.
+
+The ability to add new solver steps should be given with a + and -
+button at top-right. There should also be buttons to move the selected
+row up or down (NOT DONE).
+
+TODO: A custom right-click menu should be added to the list of frames;
+ 'add current frame', 'remove current frame', 'set playback frame
+ range' and 'clear frames'.
+
 """
 
 import uuid

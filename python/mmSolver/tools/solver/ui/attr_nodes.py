@@ -5,13 +5,10 @@ Attribute nodes for the mmSolver Window UI.
 import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.nodes as nodes
+import mmSolver.tools.solver.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
-
-
-DEFAULT_ATTR_MIN_VALUE = '<Unset>'
-DEFAULT_ATTR_MAX_VALUE = '<Unset>'
 
 
 class PlugNode(nodes.Node):
@@ -47,10 +44,6 @@ class PlugNode(nodes.Node):
     def maxValue(self):
         return ''
 
-STATE_INVALID = 'Invalid'
-STATE_STATIC = 'Static'
-STATE_ANIMATED = 'Animated'
-STATE_LOCKED = 'Locked'
 
 class AttrNode(PlugNode):
     def __init__(self, name,
@@ -68,33 +61,33 @@ class AttrNode(PlugNode):
 
     def state(self):
         d = self.data().get('data')
-        state = STATE_INVALID
+        state = const.ATTR_STATE_INVALID
         if d is None:
             pass
         elif d.is_static() is True:
-            state = STATE_STATIC
+            state = const.ATTR_STATE_STATIC
         elif d.is_animated() is True:
-            state = STATE_ANIMATED
+            state = const.ATTR_STATE_ANIMATED
         elif d.is_locked() is True:
-            state = STATE_LOCKED
+            state = const.ATTR_STATE_LOCKED
         return state
 
     def minValue(self):
         d = self.data().get('data')
         if d is None:
-            return DEFAULT_ATTR_MIN_VALUE
+            return const.ATTR_DEFAULT_MIN_VALUE
         v = d.get_min_value()
         if v is None:
-            return DEFAULT_ATTR_MIN_VALUE
+            return const.ATTR_DEFAULT_MIN_VALUE
         return str(v)
 
     def maxValue(self):
         d = self.data().get('data')
         if d is None:
-            return DEFAULT_ATTR_MAX_VALUE
+            return const.ATTR_DEFAULT_MAX_VALUE
         v = d.get_max_value()
         if v is None:
-            return DEFAULT_ATTR_MAX_VALUE
+            return const.ATTR_DEFAULT_MAX_VALUE
         return str(v)
 
     def mayaNodeName(self):

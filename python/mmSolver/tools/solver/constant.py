@@ -101,3 +101,12 @@ STATUS_REFRESHING = 'Refreshing UI...'
 STATUS_COMPILING = 'Compiling Solver...'
 STATUS_EXECUTING = 'Executing...'
 STATUS_FINISHED = 'Finished.'
+
+
+ATTR_DEFAULT_MIN_VALUE = '<Not Set>'
+ATTR_DEFAULT_MAX_VALUE = '<Not Set>'
+
+ATTR_STATE_INVALID = 'Invalid'
+ATTR_STATE_STATIC = 'Static'
+ATTR_STATE_ANIMATED = 'Animated'
+ATTR_STATE_LOCKED = 'Locked'

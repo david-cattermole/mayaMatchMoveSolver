@@ -57,6 +57,10 @@ from mmSolver._api.constant import (
 # Utility functions that the user is allowed to use.
 from mmSolver._api.utils import (
     get_long_name,
+    get_as_selection_list,
+    get_as_dag_path,
+    get_as_object,
+    get_as_plug,
     get_object_type,
     undo_chunk,
     convert_valid_maya_name,
@@ -114,6 +118,10 @@ __all__ = [
 
     # Functions
     'get_long_name',
+    'get_as_selection_list',
+    'get_as_dag_path',
+    'get_as_object',
+    'get_as_plug',
     'get_object_type',
     'undo_chunk',
     'convert_valid_maya_name',

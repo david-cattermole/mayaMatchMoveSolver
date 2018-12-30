@@ -60,14 +60,26 @@ class SolverWindow(BaseWindow):
         # Hide irrelevant stuff
         self.baseHideProgressBar()
 
+        # Callbacks
+        self.callback_manager = maya_callbacks.CallbackManager()
+
         # Add Maya callbacks for the UI
-        self.callback_ids = maya_callbacks.add_callbacks_new_scene(self)
+        callback_ids = maya_callbacks.add_callbacks_new_scene(self)
+        self.callback_manager.add_node_ids(
+            maya_callbacks.TYPE_NEW_SCENE,
+            None,
+            callback_ids,
+        )
+        return
 
     def __del__(self):
         """
         Release all resources held by the class.
         """
-        maya_callbacks.remove_callbacks_new_scene(self.callback_ids)
+        callback_ids = list(self.callback_manager.get_all_ids())
+        maya_callbacks.remove_callbacks(callback_ids)
+        del self.callback_manager
+        self.callback_manager = maya_callbacks.CallbackManager()
 
     def addMenuBarContents(self, menubar):
         # File Menu

@@ -17,12 +17,12 @@ SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%
 
 :: Remove existing libraries and include headers.
-DEL /S /Q %PROJECT_ROOT%\external\lib\*.dll
-DEL /S /Q %PROJECT_ROOT%\external\lib\*.lib
-DEL /S /Q %PROJECT_ROOT%\external\include\*.h
+DEL /S /Q "%PROJECT_ROOT%\external\lib\*.dll"
+DEL /S /Q "%PROJECT_ROOT%\external\lib\*.lib"
+DEL /S /Q "%PROJECT_ROOT%\external\include\*.h"
 
 :: Build the external dependencies
-CMD /C %PROJECT_ROOT%\external\build_levmar_with_nodeps.bat
+CMD /C "%PROJECT_ROOT%\external\build_levmar_with_nodeps.bat"
 
 :: Build plugin
 MKDIR build
@@ -36,9 +36,18 @@ IF %GENERATE_SOLUTION%==1 (
         -DUSE_MKL=0 ^
         -DMAYA_INCLUDE_PATH=%MAYA_INCLUDE_PATH% ^
         -DMAYA_LIB_PATH=%MAYA_LIB_PATH% ^
-        -DLEVMAR_LIB_PATH=%PROJECT_ROOT%\external\lib\ ^
-        -DLEVMAR_INCLUDE_PATH=%PROJECT_ROOT%\external\include\ ^
+        -DLEVMAR_LIB_PATH="%PROJECT_ROOT%\external\lib\" ^
+        -DLEVMAR_INCLUDE_PATH="%PROJECT_ROOT%\external\include\" ^
         ..
+    :: :: This is for Maya 2018, which uses Visual Studio 2015.
+    :: cmake -G "Visual Studio 14 2015 Win64" -T "v140" ^
+    ::     -DUSE_ATLAS=0 ^
+    ::     -DUSE_MKL=0 ^
+    ::     -DMAYA_INCLUDE_PATH=%MAYA_INCLUDE_PATH% ^
+    ::     -DMAYA_LIB_PATH=%MAYA_LIB_PATH% ^
+    ::     -DLEVMAR_LIB_PATH="%PROJECT_ROOT%\external\lib\" ^
+    ::     -DLEVMAR_INCLUDE_PATH="%PROJECT_ROOT%\external\include\" ^
+    ::     ..
 )  else (
     cmake -G "NMake Makefiles" ^
         -DCMAKE_BUILD_TYPE=Release ^
@@ -46,12 +55,12 @@ IF %GENERATE_SOLUTION%==1 (
         -DUSE_MKL=0 ^
         -DMAYA_INCLUDE_PATH=%MAYA_INCLUDE_PATH% ^
         -DMAYA_LIB_PATH=%MAYA_LIB_PATH% ^
-        -DLEVMAR_LIB_PATH=%PROJECT_ROOT%\external\lib ^
-        -DLEVMAR_INCLUDE_PATH=%PROJECT_ROOT%\external\include ^
+        -DLEVMAR_LIB_PATH="%PROJECT_ROOT%\external\lib" ^
+        -DLEVMAR_INCLUDE_PATH="%PROJECT_ROOT%\external\include" ^
         ..
-    nmake /f Makefile clean
-    nmake /f Makefile all
+    nmake /F Makefile clean
+    nmake /F Makefile all
 )
 
 :: Return back project root directory.
-CHDIR %PROJECT_ROOT%
+CHDIR "%PROJECT_ROOT%"

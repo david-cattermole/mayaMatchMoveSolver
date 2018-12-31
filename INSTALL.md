@@ -15,9 +15,6 @@ in `./external/patches/`.
 
 # Build Environment
 
-The below processes were tested on a CentOS 7.x Linux distribution.
-The below processes were tested on Microsoft Windows 10 Pro, with Visual Studio 11 2012.
-
 These are the versions of various software tested together.
 
 Maya 2017 on Linux:
@@ -93,7 +90,7 @@ An overview of the simple method is:
 Only ATLAS **or** Intel MKL is optional. Both libraries are not needed
 together.
 
-# Build mmSolver Scripts
+# Build Scripts
 
 There are three different scripts to build ``mmSolver`` depending on
 the dependencies you want to use:
@@ -113,7 +110,7 @@ For details of using these build scripts and building, please see
 [INSTALL_LINUX.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL_LINUX.md) or
 [INSTALL_WINDOWS.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL_WINDOWS.md).
 
-# Install mmSolver Python Scripts
+# Install Python Scripts
 
 The `mmSolver` project has a convenience Python API for tool writers,
 which is recommended to be used. The API must be added to the `MAYA_SCRIPT_PATH`
@@ -155,7 +152,7 @@ On Windows:
 
 NOTE: Replace ``<project root>`` and ``<maya version>`` as required.
 
-# Install mmSolver plugin
+# Install plugin
 
 Once the `mmSolver` plugin has been built you will need to place it on
 the `MAYA_PLUG_IN_PATH` environment variable path.
@@ -258,6 +255,6 @@ to the list of search paths.
 
 There are currently two 3DEqualizer tools available:
 | File Name                | Tool Name                                      |
-| --------------------     | ------------------------------------------     |
+| ------------------------ | ---------------------------------------------- |
 | copy_track_mmsolver.py   | Copy 2D Tracks (Maya MM Solver)                |
 | export_track_mmsolver.py | Export 2D Tracks (Maya MM Solver)...           |

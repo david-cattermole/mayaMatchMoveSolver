@@ -5,20 +5,26 @@ Maya MatchMove Solver can be built on Microsoft Windows.
 On Windows the only tested build method is with `levmar` only; ATLAS
 and Intel MKL are untested.
 
-# Download Packages
+# Download Archives
 
-On Windows, you must download the archive packages manually and move
-them into a specific directory. Once these packages are available,
-the build script below will automatically use them as needed.
+You must download the archive packages manually and move them into a
+specific directory. Once these archives are available, the build
+script below will automatically unpack the archives as needed.
 
 - levmar
   - URL: `http://users.ics.forth.gr/~lourakis/levmar/levmar-2.6.tgz`
-  - MD5 hash: 16bc34efa1617219f241eef06427f13f
-  - Archive name: levmar-2.6.tgz
+  - MD5 hash: `16bc34efa1617219f241eef06427f13f`
+  - Archive name: `levmar-2.6.tgz`
+
+The downloaded `levmar-2.6.tgz` archive must be saved into the directory:
+
+```
+<project root>\external\archives\
+```
 
 # Windows Command Prompt
 
-On Windows, all commands in this install guide are assumed to be run
+All commands in this install guide are assumed to be run
 inside a Windows Command Prompt, with Visual Studio environment
 variables set.
 
@@ -36,8 +42,8 @@ on Microsoft Windows.
 
 To build on Windows, run these commands:
 ```cmd
-> CHDIR <project root>
-> notepad build_with_levmar.bat  # Edit path to Maya include / library
+> CD <project root>
+> notepad build_with_levmar.bat  :: Edit path to Maya include / library
 > CMD /C build_with_levmar.bat
 ```
 
@@ -45,6 +51,12 @@ NOTE: `notepad` is only an example, you may use whatever text
 editor you wish.
 
 NOTE: Replace ``<project root>`` as required.
+
+Following the steps above you should have a compiled Maya plug-in.
+
+Next we must install the plug-in and corresponding files, see
+[INSTALL.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL.md)
+ for more details.
 
 # CMake Build Script
 
@@ -62,8 +74,8 @@ Example CMake usage on Windows:
         -DUSE_MKL=0 ^
         -DMAYA_INCLUDE_PATH="C:\Program Files\Autodesk\Maya2017\include" ^
         -DMAYA_LIB_PATH="C:\Program Files\Autodesk\Maya2017\lib" ^
-        -DLEVMAR_LIB_PATH=%CD%\external\lib ^
-        -DLEVMAR_INCLUDE_PATH=%CD%\external\include ^
+        -DLEVMAR_LIB_PATH="<project root>\external\lib" ^
+        -DLEVMAR_INCLUDE_PATH="<project root>\external\include" ^
         ..
 > NMAKE /F Makefile all
 ```
@@ -88,9 +100,3 @@ only one. If `ATLAS` and `Intel MKL` are not required you may set both
 You can read any of the build scripts to find out how they work.
 The build scripts can be found in `<project root>/build_with_*.sh`
 and `<project root>/external/*.sh`.
-
-Following the steps above you should have a compiled Maya plug-in.
-
-Next we must install the plug-in and corresponding files, see
-[INSTALL.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL.md)
- for more details.

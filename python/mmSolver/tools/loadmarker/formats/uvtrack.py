@@ -166,11 +166,11 @@ def parse_v2(file_path):
         set_name = point_data.get('set_name')
         id_ = point_data.get('id')
         assert isinstance(name, basestring)
-        assert isinstance(set_name, (None, basestring))
-        assert isinstance(id_, (None, int))
+        assert set_name is None or isinstance(set_name, basestring)
+        assert id_ is None or isinstance(id_, int)
         mkr_data.set_name(name)
         mkr_data.set_group_name(set_name)
-        mkr_data.set_id(name)
+        mkr_data.set_id(id_)
 
         # Create marker
         frames = []

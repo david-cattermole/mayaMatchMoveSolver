@@ -13,7 +13,23 @@ LOG = mmSolver.logger.get_logger()
 
 def get_nodes(nodes):
     """
-    Return nodes sorted into mmSolver-specific categories.
+    Return nodes sorted into mmSolver-specific object type categories.
+
+    Supported categories are:
+
+    - 'camera'
+    - 'marker'
+    - 'markergroup'
+    - 'bundle'
+    - 'attribute'
+    - 'collection'
+    - 'other'
+
+    :param nodes: Maya nodes to categorise.
+    :type nodes: list of str
+
+    :returns: Dictionary with lists for each object type.
+    :rtype: dict
     """
     assert isinstance(nodes, (list, tuple))
     result = {
@@ -66,4 +82,3 @@ def get_camera_nodes(nodes):
 def get_collection_nodes(nodes):
     filter_nodes = get_nodes(nodes)
     return filter_nodes.get('collection', [])
-

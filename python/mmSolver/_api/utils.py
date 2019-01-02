@@ -136,12 +136,12 @@ def get_object_type(node):
         different values depending on the type. Below lists the
         types and the expected input node type.
 
-        Markers - transform nodes
-        Bundle - transform nodes
-        Attribute - plug path (node.attr)
-        Camera - transform or shape node
-        Marker Group - transform 'mmMarkerGroupTransform' node
-        Collection - set node
+        - Markers - transform nodes
+        - Bundle - transform nodes
+        - Attribute - plug path (node.attr)
+        - Camera - transform or shape node
+        - Marker Group - transform 'mmMarkerGroupTransform' node
+        - Collection - set node
 
     :param node: Maya node path to get type of.
     :type node: str

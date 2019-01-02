@@ -907,15 +907,35 @@ will always have unique node names.</dd>
 <dt id="mmSolver.api.get_object_type">
 <code class="descclassname">mmSolver.api.</code><code class="descname">get_object_type</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_object_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>The canonical function to interpret a node as an MM Solver object type.</p>
+<p>Possible object type values are:
+- OBJECT_TYPE_MARKER
+- OBJECT_TYPE_BUNDLE
+- OBJECT_TYPE_ATTRIBUTE
+- OBJECT_TYPE_CAMERA
+- OBJECT_TYPE_MARKER_GROUP
+- OBJECT_TYPE_COLLECTION
+- OBJECT_TYPE_UNKNOWN</p>
+<dl class="docutils">
+<dt>..note:: Giving a shape or transform of an object may return</dt>
+<dd><p class="first">different values depending on the type. Below lists the
+types and the expected input node type.</p>
+<p class="last">Markers - transform nodes
+Bundle - transform nodes
+Attribute - plug path (node.attr)
+Camera - transform or shape node
+Marker Group - transform &#8216;mmMarkerGroupTransform&#8217; node
+Collection - set node</p>
+</dd>
+</dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Maya node path to get type of.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The object type string.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The object type string; One of the values in OBJECT_TYPE_LIST</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">OBJECT_TYPE_*</td>
 </tr>
 </tbody>
 </table>

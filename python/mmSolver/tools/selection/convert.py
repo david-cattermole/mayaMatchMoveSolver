@@ -9,6 +9,17 @@ import mmSolver.tools.selection.filternodes as filternodes
 
 
 def get_bundles_from_markers(nodes):
+    """
+    Convert Marker nodes into Bundle nodes.
+
+    :param nodes: Maya nodes to convert into Bundles (expected to be
+                  Marker nodes, but other node types will not cause
+                  errors).
+    :type nodes: list of str
+
+    :returns: All Maya nodes connected to Marker nodes as Bundles.
+    :rtype: list of str
+    """
     mkr_nodes = filternodes.get_marker_nodes(nodes)
     bnd_nodes = []
     for mkr_node in mkr_nodes:

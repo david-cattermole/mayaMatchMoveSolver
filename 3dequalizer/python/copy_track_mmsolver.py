@@ -2,7 +2,7 @@
 #
 # 3DE4.script.name:     Copy 2D Tracks (MM Solver)
 #
-# 3DE4.script.version:  v1.2
+# 3DE4.script.version:  v1.3
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Point
 # 3DE4.script.gui:      Object Browser::Context Menu Points
@@ -48,7 +48,7 @@ def main():
         return
 
     # Generate file contents
-    undistort = 1
+    undistort = True
     start_frame = 1
     # Backwards compatibility with 3DE4 Release 2.
     if uvtrack_format.SUPPORT_CAMERA_FRAME_OFFSET is True:
@@ -62,9 +62,9 @@ def main():
     # Write file.
     file_ext = EXT
     f = tempfile.NamedTemporaryFile(
-        mode='w+b', 
-        bufsize=-1, 
-        suffix=file_ext, 
+        mode='w+b',
+        bufsize=-1,
+        suffix=file_ext,
         delete=False
     )
     if f.closed:
@@ -74,7 +74,7 @@ def main():
         return
     f.write(data_str)
     f.close()
-    
+
     # Override the user's clipboard with the temporary file path.
     if uvtrack_format.SUPPORT_CLIPBOARD is True:
         tde4.setClipboardString(f.name)

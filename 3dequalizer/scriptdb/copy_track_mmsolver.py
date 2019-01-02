@@ -2,7 +2,7 @@
 #
 # 3DE4.script.name:     Copy 2D Tracks (MM Solver)
 #
-# 3DE4.script.version:  v1.2
+# 3DE4.script.version:  v1.3
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Point
 # 3DE4.script.gui:      Object Browser::Context Menu Points
@@ -67,7 +67,7 @@ def main():
         return
 
     # Generate file contents
-    undistort = 1
+    undistort = True
     start_frame = 1
     # Backwards compatibility with 3DE4 Release 2.
     if SUPPORT_CAMERA_FRAME_OFFSET is True:
@@ -81,9 +81,9 @@ def main():
     # Write file.
     file_ext = EXT
     f = tempfile.NamedTemporaryFile(
-        mode='w+b', 
-        bufsize=-1, 
-        suffix=file_ext, 
+        mode='w+b',
+        bufsize=-1,
+        suffix=file_ext,
         delete=False
     )
     if f.closed:
@@ -93,7 +93,7 @@ def main():
         return
     f.write(data_str)
     f.close()
-    
+
     # Override the user's clipboard with the temporary file path.
     if SUPPORT_CLIPBOARD is True:
         tde4.setClipboardString(f.name)
@@ -108,9 +108,23 @@ def generate(point_group, camera, points, fmt=None, **kwargs):
     """
     Return a str, ready to be written to a text file.
 
+    :param point_group: The 3DE Point Group containing 'points'
+    :type point_group: str
+
+    :param camera: The 3DE Camera containing 2D 'points' data.
+    :type camera: str
+
+    :param points: The list of 3DE Points representing 2D data to
+                   save.
+    :type points: list of str
+
+    :param fmt: The format to generate, either
+                UV_TRACK_FORMAT_VERSION_1 or UV_TRACK_FORMAT_VERSION_2.
+    :type fmt: None or UV_TRACK_FORMAT_VERSION_*
+
     Supported 'kwargs':
-    - undistort - True or False - The points should be Undistorted?
-    - start_frame - int - Frame '1' 3DE should be mapped to this value.
+    - undistort (True or False) - Should points be undistorted?
+    - start_frame - (int) - Frame '1' 3DE should be mapped to this value.
     """
     if fmt is None:
         fmt = UV_TRACK_FORMAT_VERSION_PREFERRED
@@ -126,11 +140,35 @@ def _generate_v1(point_group, camera, points, start_frame=None, undistort=False)
     """
     Generate the UV file format contents, using a basic ASCII format.
 
+    :param point_group: The 3DE Point Group containing 'points'
+    :type point_group: str
+
+    :param camera: The 3DE Camera containing 2D 'points' data.
+    :type camera: str
+
+    :param points: The list of 3DE Points representing 2D data to
+                   save.
+    :type points: list of str
+
+    :param start_frame: The frame number to be considered at
+                       'first frame'. Defaults to 1001 if
+                       set to None.
+    :type start_frame: None or int
+
+    :param undistort: Should we apply undistortion to the 2D points
+                      data? Yes or no.
+    :type undistort: bool
+
     Each point will store:
     - Point name
     - X, Y position (in UV coordinates, per-frame)
     - Point weight (per-frame)
     """
+    assert isinstance(point_group, basestring)
+    assert isinstance(camera, basestring)
+    assert isinstance(points, (list, tuple))
+    assert start_frame is None or isinstance(start_frame, int)
+    assert isinstance(undistort, bool)
     if start_frame is None:
         start_frame = 1001
     data_str = ''
@@ -192,9 +230,28 @@ def _generate_v1(point_group, camera, points, start_frame=None, undistort=False)
     return data_str
 
 
-def _generate_v2(point_group, camera, points, start_frame=None, undistort=None):
+def _generate_v2(point_group, camera, points, start_frame=None, undistort=False):
     """
     Generate the UV file format contents, using JSON format.
+
+    :param point_group: The 3DE Point Group containing 'points'
+    :type point_group: str
+
+    :param camera: The 3DE Camera containing 2D 'points' data.
+    :type camera: str
+
+    :param points: The list of 3DE Points representing 2D data to
+                   save.
+    :type points: list of str
+
+    :param start_frame: The frame number to be considered at
+                       'first frame'. Defaults to 1001 if
+                       set to None.
+    :type start_frame: None or int
+
+    :param undistort: Should we apply undistortion to the 2D points
+                      data? Yes or no.
+    :type undistort: bool
 
     Each point will store:
     - Point name
@@ -203,6 +260,11 @@ def _generate_v2(point_group, camera, points, start_frame=None, undistort=None):
     - Point Set name
     - Point 'Persistent ID'
     """
+    assert isinstance(point_group, basestring)
+    assert isinstance(camera, basestring)
+    assert isinstance(points, (list, tuple))
+    assert start_frame is None or isinstance(start_frame, int)
+    assert isinstance(undistort, bool)
     if start_frame is None:
         start_frame = 1001
     data = UV_TRACK_HEADER_VERSION_2.copy()
@@ -263,7 +325,7 @@ def _generate_v2(point_group, camera, points, start_frame=None, undistort=None):
                 'pos': pos,
                 'weight': weight
             }
-            point_data['per_frame'].append(frame_data)            
+            point_data['per_frame'].append(frame_data)
             frame += 1
 
         data['points'].append(point_data)

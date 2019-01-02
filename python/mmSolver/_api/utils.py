@@ -123,6 +123,7 @@ def get_object_type(node):
     The canonical function to interpret a node as an MM Solver object type.
 
     Possible object type values are:
+
     - OBJECT_TYPE_MARKER
     - OBJECT_TYPE_BUNDLE
     - OBJECT_TYPE_ATTRIBUTE
@@ -131,7 +132,7 @@ def get_object_type(node):
     - OBJECT_TYPE_COLLECTION
     - OBJECT_TYPE_UNKNOWN
 
-    ..note:: Giving a shape or transform of an object may return
+    .. note:: Giving a shape or transform of an object may return
         different values depending on the type. Below lists the
         types and the expected input node type.
 

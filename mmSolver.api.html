@@ -904,6 +904,24 @@ will always have unique node names.</dd>
 </dd></dl>
 
 <dl class="function">
+<dt id="mmSolver.api.get_as_selection_list">
+<code class="descclassname">mmSolver.api.</code><code class="descname">get_as_selection_list</code><span class="sig-paren">(</span><em>paths</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_as_selection_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a Maya API selection list with the given valid Maya node paths.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paths</strong> (<em>list of str</em>) &#8211; List of Maya node paths.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MSelectionList with valid nodes added to list.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">OpenMaya.MSelectionList</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="mmSolver.api.get_object_type">
 <code class="descclassname">mmSolver.api.</code><code class="descname">get_object_type</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_object_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>The canonical function to interpret a node as an MM Solver object type.</p>
@@ -998,6 +1016,197 @@ types and the expected input node type.</p>
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="mmSolver.api.load_plugin">
+<code class="descclassname">mmSolver.api.</code><code class="descname">load_plugin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.load_plugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the mmSolver plugin.</p>
+<p>Raises a RuntimeError exception if a plug-in cannot be loaded.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.api.get_data_on_node_attr">
+<code class="descclassname">mmSolver.api.</code><code class="descname">get_data_on_node_attr</code><span class="sig-paren">(</span><em>node_name</em>, <em>attr_name</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_data_on_node_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get data from an node attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node_name</strong> (<em>str</em>) &#8211; Node to get data from.</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; The name of the attribute to get data from.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Arbitrary Plain-Old-Data data structures.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.api.set_data_on_node_attr">
+<code class="descclassname">mmSolver.api.</code><code class="descname">set_data_on_node_attr</code><span class="sig-paren">(</span><em>node_name</em>, <em>attr_name</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.set_data_on_node_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set arbitrary Plain-Old-Data onto a node.attr path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node_name</strong> (<em>str</em>) &#8211; Node to store data on.</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; Attribute name to store data with.</li>
+<li><strong>data</strong> (<em>list</em><em> or </em><em>dict</em>) &#8211; The data to store.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>;return: Nothing.
+:rtype: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.api.get_value_on_node_attr">
+<code class="descclassname">mmSolver.api.</code><code class="descname">get_value_on_node_attr</code><span class="sig-paren">(</span><em>node_name</em>, <em>attr_name</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_value_on_node_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get numeric value from an node attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node_name</strong> (<em>str</em>) &#8211; Node to get value from.</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; The name of the attribute to get value from.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A numeric value.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool or float or int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.api.set_value_on_node_attr">
+<code class="descclassname">mmSolver.api.</code><code class="descname">set_value_on_node_attr</code><span class="sig-paren">(</span><em>node_name</em>, <em>attr_name</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.set_value_on_node_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set value onto a node.attr path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node_name</strong> (<em>str</em>) &#8211; Node to store value on.</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; Attribute name to store value with.</li>
+<li><strong>data</strong> (<em>bool</em><em> or </em><em>float</em><em> or </em><em>int</em>) &#8211; The numeric value to store.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>;return: Nothing.
+:rtype: None</p>
+</dd></dl>
+
+</div>
+<div class="section" id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
+<p>There are constants used in mmSolver. These constants represent
+configuration or an enumeration of options. These constants are
+referenced inside the documentation.</p>
+<dl class="attribute">
+<dt id="mmSolver.api.OBJECT_TYPE_UNKNOWN">
+<code class="descclassname">api.</code><code class="descname">OBJECT_TYPE_UNKNOWN</code><a class="headerlink" href="#mmSolver.api.OBJECT_TYPE_UNKNOWN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.OBJECT_TYPE_ATTRIBUTE">
+<code class="descclassname">api.</code><code class="descname">OBJECT_TYPE_ATTRIBUTE</code><a class="headerlink" href="#mmSolver.api.OBJECT_TYPE_ATTRIBUTE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.OBJECT_TYPE_MARKER">
+<code class="descclassname">api.</code><code class="descname">OBJECT_TYPE_MARKER</code><a class="headerlink" href="#mmSolver.api.OBJECT_TYPE_MARKER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.OBJECT_TYPE_CAMERA">
+<code class="descclassname">api.</code><code class="descname">OBJECT_TYPE_CAMERA</code><a class="headerlink" href="#mmSolver.api.OBJECT_TYPE_CAMERA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.OBJECT_TYPE_MARKER_GROUP">
+<code class="descclassname">api.</code><code class="descname">OBJECT_TYPE_MARKER_GROUP</code><a class="headerlink" href="#mmSolver.api.OBJECT_TYPE_MARKER_GROUP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.OBJECT_TYPE_BUNDLE">
+<code class="descclassname">api.</code><code class="descname">OBJECT_TYPE_BUNDLE</code><a class="headerlink" href="#mmSolver.api.OBJECT_TYPE_BUNDLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.OBJECT_TYPE_COLLECTION">
+<code class="descclassname">api.</code><code class="descname">OBJECT_TYPE_COLLECTION</code><a class="headerlink" href="#mmSolver.api.OBJECT_TYPE_COLLECTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.OBJECT_TYPE_LIST">
+<code class="descclassname">api.</code><code class="descname">OBJECT_TYPE_LIST</code><em class="property"> List containing all OBJECT_TYPE_* constant values.</em><a class="headerlink" href="#mmSolver.api.OBJECT_TYPE_LIST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.ATTR_STATE_INVALID">
+<code class="descclassname">api.</code><code class="descname">ATTR_STATE_INVALID</code><a class="headerlink" href="#mmSolver.api.ATTR_STATE_INVALID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.ATTR_STATE_STATIC">
+<code class="descclassname">api.</code><code class="descname">ATTR_STATE_STATIC</code><a class="headerlink" href="#mmSolver.api.ATTR_STATE_STATIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.ATTR_STATE_ANIMATED">
+<code class="descclassname">api.</code><code class="descname">ATTR_STATE_ANIMATED</code><a class="headerlink" href="#mmSolver.api.ATTR_STATE_ANIMATED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.ATTR_STATE_LOCKED">
+<code class="descclassname">api.</code><code class="descname">ATTR_STATE_LOCKED</code><a class="headerlink" href="#mmSolver.api.ATTR_STATE_LOCKED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.SOLVER_TYPE_LEVMAR">
+<code class="descclassname">api.</code><code class="descname">SOLVER_TYPE_LEVMAR</code><a class="headerlink" href="#mmSolver.api.SOLVER_TYPE_LEVMAR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.AUTO_DIFF_TYPE_FORWARD">
+<code class="descclassname">api.</code><code class="descname">AUTO_DIFF_TYPE_FORWARD</code><a class="headerlink" href="#mmSolver.api.AUTO_DIFF_TYPE_FORWARD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.AUTO_DIFF_TYPE_CENTRAL">
+<code class="descclassname">api.</code><code class="descname">AUTO_DIFF_TYPE_CENTRAL</code><a class="headerlink" href="#mmSolver.api.AUTO_DIFF_TYPE_CENTRAL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.api.AUTO_DIFF_TYPE_LIST">
+<code class="descclassname">api.</code><code class="descname">AUTO_DIFF_TYPE_LIST</code><em class="property"> List containing all AUTO_DIFF_TYPE_* constant values.</em><a class="headerlink" href="#mmSolver.api.AUTO_DIFF_TYPE_LIST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 
@@ -1019,6 +1228,7 @@ types and the expected input node type.</p>
 <li><a class="reference internal" href="#collection">Collection</a></li>
 <li><a class="reference internal" href="#solveresult">SolveResult</a></li>
 <li><a class="reference internal" href="#utilities">Utilities</a></li>
+<li><a class="reference internal" href="#constants">Constants</a></li>
 </ul>
 </li>
 </ul>

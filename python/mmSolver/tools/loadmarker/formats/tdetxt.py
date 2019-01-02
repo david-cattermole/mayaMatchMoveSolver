@@ -74,7 +74,7 @@ class Loader3DETXT(interface.LoaderBase):
 
         num_points = int(lines[0])
         if num_points < 1:
-            raise interface.ParserException('No points exist.')
+            raise interface.ParserError('No points exist.')
 
         idx = 1  # Skip the first line
         for i in xrange(num_points):

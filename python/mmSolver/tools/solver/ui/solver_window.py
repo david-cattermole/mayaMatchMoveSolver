@@ -15,6 +15,7 @@ import mmSolver.tools.solver.lib.collection as lib_collection
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
+import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 import mmSolver.tools.solver.ui.solver_layout as solver_layout
 import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
 import mmSolver.tools.selection.tools as selection_tool
@@ -58,6 +59,27 @@ class SolverWindow(BaseWindow):
 
         # Hide irrelevant stuff
         self.baseHideProgressBar()
+
+        # Callbacks
+        self.callback_manager = maya_callbacks.CallbackManager()
+
+        # Add Maya callbacks for the UI
+        callback_ids = maya_callbacks.add_callbacks_new_scene(self)
+        self.callback_manager.add_node_ids(
+            maya_callbacks.TYPE_NEW_SCENE,
+            None,
+            callback_ids,
+        )
+        return
+
+    def __del__(self):
+        """
+        Release all resources held by the class.
+        """
+        callback_ids = list(self.callback_manager.get_all_ids())
+        maya_callbacks.remove_callbacks(callback_ids)
+        del self.callback_manager
+        self.callback_manager = maya_callbacks.CallbackManager()
 
     def addMenuBarContents(self, menubar):
         # File Menu

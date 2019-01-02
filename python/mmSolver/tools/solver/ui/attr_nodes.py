@@ -2,8 +2,13 @@
 Attribute nodes for the mmSolver Window UI.
 """
 
+import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.nodes as nodes
+import mmSolver.tools.solver.constant as const
+
+
+LOG = mmSolver.logger.get_logger()
 
 
 class PlugNode(nodes.Node):
@@ -17,7 +22,7 @@ class PlugNode(nodes.Node):
                  checkable=False,
                  neverHasChildren=False):
         if icon is None:
-            icon = ':/plug.png'
+            icon = ':/mmSolver_plug.png'
         super(PlugNode, self).__init__(
             name,
             data=data,
@@ -31,15 +36,12 @@ class PlugNode(nodes.Node):
         self.typeInfo = 'plug'
 
     def state(self):
-        # TODO: Get the state.
         return ''
 
     def minValue(self):
-        # TODO: Get the min value.
         return ''
 
     def maxValue(self):
-        # TODO: Get the max value.
         return ''
 
 
@@ -47,7 +49,7 @@ class AttrNode(PlugNode):
     def __init__(self, name,
                  data=None,
                  parent=None):
-        icon = ':/attr.png'
+        icon = ':/mmSolver_attr.png'
         super(AttrNode, self).__init__(
             name,
             data=data,
@@ -59,33 +61,33 @@ class AttrNode(PlugNode):
 
     def state(self):
         d = self.data().get('data')
-        state = 'Invalid'
+        state = const.ATTR_STATE_INVALID
         if d is None:
-            return invalid_state
-        if d.is_static() is True:
-            return 'Static'
-        if d.is_animated() is True:
-            return 'Animated'
-        if d.is_locked() is True:
-            return 'Locked'
-        return invalid_state
+            pass
+        elif d.is_static() is True:
+            state = const.ATTR_STATE_STATIC
+        elif d.is_animated() is True:
+            state = const.ATTR_STATE_ANIMATED
+        elif d.is_locked() is True:
+            state = const.ATTR_STATE_LOCKED
+        return state
 
     def minValue(self):
         d = self.data().get('data')
         if d is None:
-            return ''
+            return const.ATTR_DEFAULT_MIN_VALUE
         v = d.get_min_value()
         if v is None:
-            return ''
+            return const.ATTR_DEFAULT_MIN_VALUE
         return str(v)
 
     def maxValue(self):
         d = self.data().get('data')
         if d is None:
-            return ''
+            return const.ATTR_DEFAULT_MAX_VALUE
         v = d.get_max_value()
         if v is None:
-            return ''
+            return const.ATTR_DEFAULT_MAX_VALUE
         return str(v)
 
     def mayaNodeName(self):
@@ -102,7 +104,7 @@ class MayaNode(PlugNode):
     def __init__(self, name,
                  data=None,
                  parent=None):
-        icon = ':/node.png'
+        icon = ':/mmSolver_node.png'
         super(MayaNode, self).__init__(
             name,
             data=data,
@@ -125,17 +127,33 @@ class MayaNode(PlugNode):
 class AttrModel(uimodels.ItemModel):
     def __init__(self, root, font=None):
         super(AttrModel, self).__init__(root, font=font)
-        self._column_names = {
+
+    def defaultNodeType(self):
+        return MayaNode
+
+    def columnNames(self):
+        column_names = {
             0: 'Attr',
             1: 'State',
             2: 'Min',
             3: 'Max',
         }
-        self._node_attr_key = {
+        return column_names
+
+    def getGetAttrFuncFromIndex(self, index):
+        get_attr_dict = {
             'Attr': 'name',
             'State': 'state',
             'Min': 'minValue',
             'Max': 'maxValue',
         }
+        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 
-
+    def getSetAttrFuncFromIndex(self, index):
+        set_attr_dict = {
+            'Attr': 'setName',
+            'State': 'setState',
+            'Min': 'setMinValue',
+            'Max': 'setMaxValue',
+        }
+        return self._getSetAttrFuncFromIndex(index, set_attr_dict)

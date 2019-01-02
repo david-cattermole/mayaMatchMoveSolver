@@ -19,6 +19,19 @@ LOG = mmSolver.logger.get_logger()
 
 
 def get_long_name(node):
+    """
+    Given a valid node path, get the 'full path' node name, or None if invalid.
+
+    note::
+        DG nodes do not have a 'full path' as they do not have hierarchy and
+        will always have unique node names.
+
+    :param node: Maya DG or DAG node path.
+    :type node: str
+
+    :return: Full path node name.
+    :rtype: None or str
+    """
     result = maya.cmds.ls(node, long=True)
     if result and len(result):
         return result[0]
@@ -26,6 +39,15 @@ def get_long_name(node):
 
 
 def get_as_selection_list(paths):
+    """
+    Get a Maya API selection list with the given valid Maya node paths.
+
+    :param paths: List of Maya node paths.
+    :type paths: list of str
+
+    :return: MSelectionList with valid nodes added to list.
+    :rtype: OpenMaya.MSelectionList
+    """
     assert isinstance(paths, list) or isinstance(paths, tuple)
     sel_list = OpenMaya.MSelectionList()
     for node in paths:
@@ -37,6 +59,15 @@ def get_as_selection_list(paths):
 
 
 def get_as_dag_path(node_str):
+    """
+    Convert the given Maya node path into a MDagPath object.
+
+    :param node_str: Maya node path to be converted.
+    :type node_str: str
+
+    :return: MDagPath API object or None if the 'node_str' is invalid.
+    :type: MDagPath or None
+    """
     sel_list = get_as_selection_list([node_str])
     if not sel_list:
         return None
@@ -46,6 +77,15 @@ def get_as_dag_path(node_str):
 
 
 def get_as_object(node_str):
+    """
+    Convert the given Maya node path into a MObject object.
+
+    :param node_str: Maya node path to be converted.
+    :type node_str: str
+
+    :return: MObject API object or None, if conversion failed.
+    :rtype: MObject or None
+    """
     selList = get_as_selection_list([node_str])
     if not selList:
         return None
@@ -58,6 +98,15 @@ def get_as_object(node_str):
 
 
 def get_as_plug(node_attr):
+    """
+    Convert the given 'node.attr' path into a MPlug object.
+
+    :param node_attr: Node attribute string in format 'node.attr'.
+    :type node_attr: str
+
+    :return: MPlug object or None if conversion failed.
+    :type: MPlug or None
+    """
     sel = get_as_selection_list([node_attr])
     plug = None
     if not sel.isEmpty():
@@ -70,6 +119,15 @@ def get_as_plug(node_attr):
 
 
 def get_object_type(node):
+    """
+    The canonical function to interpret a node as an MM Solver object type.
+
+    :param node: Maya node path to get type of.
+    :type node: str
+
+    :return: The object type string.
+    :rtype:
+    """
     assert isinstance(node, basestring)
     assert maya.cmds.objExists(node)
 
@@ -85,33 +143,33 @@ def get_object_type(node):
         shape_node_types.append(shape_node_type)
     attrs = maya.cmds.listAttr(node)
 
-    object_type = 'unknown'
+    object_type = const.OBJECT_TYPE_UNKNOWN
     if '.' in node:
-        object_type = 'attribute'
+        object_type = const.OBJECT_TYPE_ATTRIBUTE
 
     elif ((node_type == 'transform')
           and ('locator' in shape_node_types)
           and ('enable' in attrs)
           and ('weight' in attrs)
           and ('bundle' in attrs)):
-        object_type = 'marker'
+        object_type = const.OBJECT_TYPE_MARKER
 
     elif ((node_type == 'transform') and
           ('camera' in shape_node_types)):
-        object_type = 'camera'
+        object_type = const.OBJECT_TYPE_CAMERA
 
     elif node_type == 'camera':
-        object_type = 'camera'
+        object_type = const.OBJECT_TYPE_CAMERA
 
     elif node_type == 'mmMarkerGroupTransform':
-        object_type = 'markergroup'
+        object_type = const.OBJECT_TYPE_MARKER_GROUP
 
     elif node_type == 'transform':
-        object_type = 'bundle'
+        object_type = const.OBJECT_TYPE_BUNDLE
 
     elif ((node_type == 'objectSet')
           and ('solver_list' in attrs)):
-        object_type = 'collection'
+        object_type = const.OBJECT_TYPE_COLLECTION
 
     return object_type
 
@@ -122,6 +180,7 @@ def get_camera_above_node(node):
 
     :param node: The node name to check above for a camera.
     :type node: str or unicode
+
     :return: Tuple of camera transform and shape nodes, or (None, None)
     :rtype: tuple
     """
@@ -155,6 +214,7 @@ def get_marker_group_above_node(node):
 
     :param node: The node name to check above for a marker group.
     :type node: str or unicode
+
     :return: String of marker group found, or None.
     :rtype: str or unicode
     """
@@ -172,6 +232,13 @@ def get_marker_group_above_node(node):
 
 
 def convert_valid_maya_name(name, prefix=None):
+    """
+    Get a new valid Maya name - canonical function to get valid Maya node names.
+
+    :param name: The name string to validate.
+    :param prefix: Prefix to add to name in case of invalid first character.
+    :return:
+    """
     # TODO: Use Maya API namespace validator?
     # TODO: name could start with a number; this should be prefixed.
     assert isinstance(name, basestring)
@@ -217,13 +284,15 @@ def load_plugin():
     """
     Load the mmSolver plugin.
 
-    :return:
+    Raises a RuntimeError exception if a plug-in cannot be loaded.
+
+    :return: None
     """
     msg = 'Could not load plug-in %r!'
     for name in const.PLUGIN_NAMES:
         try:
             maya.cmds.loadPlugin(name, quiet=True)
-        except RuntimeError, e:
+        except RuntimeError as e:
             LOG.error(msg, name)
             raise e
     return

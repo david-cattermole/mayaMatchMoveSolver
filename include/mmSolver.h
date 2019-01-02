@@ -61,6 +61,7 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
                           MTimeArray frameList,
                           MarkerPtrList &validMarkerList,
                           std::vector<MPoint> &markerPosList,
+                          std::vector<double> &markerWeightList,
                           IndexPairList &errorToMarkerList,
                           MStatus &status);
 

@@ -2,8 +2,7 @@
  * Command for running mmSolver.
  */
 
-
-//
+// Internal
 #include <MMSolverCmd.h>
 #include <mmSolver.h>
 #include <mayaUtils.h>

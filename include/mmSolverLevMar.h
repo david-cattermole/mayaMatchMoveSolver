@@ -72,6 +72,7 @@ struct LevMarSolverData {
     std::vector<std::pair<int, int> > paramToAttrList;
     std::vector<std::pair<int, int> > errorToMarkerList;
     std::vector<MPoint> markerPosList;
+    std::vector<double> markerWeightList;
 
     // Internal Solver Data.
     std::vector<double> errorList;

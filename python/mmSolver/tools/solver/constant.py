@@ -35,12 +35,8 @@ SCENE_DATA_LOG_LEVEL = 'log_level'
 SCENE_DATA_LOG_LEVEL_DEFAULT = LOG_LEVEL_INFO
 
 
-# Words recognised as True or False.
-FALSE_WORDS = ['0', 'n', 'f', 'no', 'off', 'nah', 'nope', 'false']
-TRUE_WORDS = ['1', 'y', 't', 'yes', 'on', 'ya', 'yeah', 'true']
-
-
 # Solver Step Strategies
+STRATEGY_PER_FRAME = 'per_frame'
 STRATEGY_TWO_FRAMES_FWD = 'two_frames_fwd'
 # # Accumulate the frame numbers...
 # # 1,2,3,4, becomes...
@@ -50,13 +46,16 @@ STRATEGY_TWO_FRAMES_FWD = 'two_frames_fwd'
 # STRATEGY_TWO_FRAMES_FWD_ACCUM = 'two_frames_fwd_accum'
 STRATEGY_ALL_FRAMES_AT_ONCE = 'all_frames_at_once'
 STRATEGY_LIST = [
+    STRATEGY_PER_FRAME,
     STRATEGY_TWO_FRAMES_FWD,
     STRATEGY_ALL_FRAMES_AT_ONCE,
 ]
 
+STRATEGY_PER_FRAME_LABEL = 'Per-Frame'
 STRATEGY_TWO_FRAMES_FWD_LABEL = 'Two Frames Fwd'
 STRATEGY_ALL_FRAMES_AT_ONCE_LABEL = 'All Frames'
 STRATEGY_LABEL_LIST = [
+    STRATEGY_PER_FRAME_LABEL,
     STRATEGY_TWO_FRAMES_FWD_LABEL,
     STRATEGY_ALL_FRAMES_AT_ONCE_LABEL,
 ]
@@ -102,3 +101,12 @@ STATUS_REFRESHING = 'Refreshing UI...'
 STATUS_COMPILING = 'Compiling Solver...'
 STATUS_EXECUTING = 'Executing...'
 STATUS_FINISHED = 'Finished.'
+
+
+ATTR_DEFAULT_MIN_VALUE = '<Not Set>'
+ATTR_DEFAULT_MAX_VALUE = '<Not Set>'
+
+ATTR_STATE_INVALID = 'Invalid'
+ATTR_STATE_STATIC = 'Static'
+ATTR_STATE_ANIMATED = 'Animated'
+ATTR_STATE_LOCKED = 'Locked'

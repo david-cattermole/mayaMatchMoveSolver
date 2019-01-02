@@ -5,7 +5,9 @@ Qt models used in Model-View-Controller designs.
 import Qt as Qt
 import Qt.QtGui as QtGui
 import Qt.QtCore as QtCore
+import Qt.QtWidgets as QtWidgets
 
+import mmSolver.ui.converttypes as converttypes
 import mmSolver.ui.nodes as nodes
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.logger
@@ -14,18 +16,132 @@ import mmSolver.logger
 LOG = mmSolver.logger.get_logger()
 
 
+def getNameFromDict(index, names_dict, lookup_dict):
+    """
+    Get the 'name' from an index, using a specific data structure.
+
+    For example::
+       index = 0
+       names_dict = {
+           0: 'Column',
+       }
+       lookup_dict = {
+           'Column': 'name',
+       }
+       x = getNamefromDict(index, names_dict, lookup_dict)
+       # x equals 'name'
+
+    :param index: Index to look up.
+    :param names_dict: The mapping data, from index to 'second key'.
+    :param lookup_dict: Mapping data structure from 'second key' to
+                        final look up name.
+
+    :returns: The name in 'lookup_dict' referred to by index in
+              'names_dict'.
+    :rtype: str
+    """
+    if index not in names_dict:
+        msg = '{0} was not in {1}'
+        msg = msg.format(index, names_dict)
+        raise ValueError(msg)
+    column_name = names_dict[index]
+    if column_name not in lookup_dict:
+        msg = '{0} was not in {1}'
+        msg = msg.format(column_name, names_dict)
+        raise ValueError(msg)
+    attr_name = lookup_dict[column_name]
+    return attr_name
+
+
 class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
     def __init__(self, rootNode, font=None):
         super(ItemModel, self).__init__()
         self._rootNode = None
-        self._column_names = {
-            0: 'Column',
-        }
-        self._node_attr_key = {
-            'Column': 'name',
-        }
         self._font = font
         self.setRootNode(rootNode)
+
+    def defaultNodeType(self):
+        return nodes.Node
+
+    def columnNames(self):
+        column_names = {
+            0: 'Column',
+        }
+        return dict(column_names)
+
+    def getGetAttrFuncFromIndex(self, index):
+        get_attr_dict = {
+            'Column': 'name',
+        }
+        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
+
+    def getSetAttrFuncFromIndex(self, index):
+        set_attr_dict = {
+            'Column': 'setName',
+        }
+        return self._getSetAttrFuncFromIndex(index, set_attr_dict)
+
+    ################################################
+
+    def indexEnabled(self, index):
+        node = index.internalPointer()
+        return node.enabled()
+
+    def indexCheckable(self, index):
+        node = index.internalPointer()
+        return node.checkable()
+
+    def indexSelectable(self, index):
+        node = index.internalPointer()
+        return node.selectable()
+
+    def indexEditable(self, index):
+        node = index.internalPointer()
+        return node.editable()
+
+    def indexIcon(self, index):
+        node = index.internalPointer()
+        if index.column() == 0:
+            return node.icon()
+        return None
+
+    ####################################################
+
+    def _getGetAttrFuncFromIndex(self, index, get_attr_dict):
+        column_index = index.column()
+        column_names = self.columnNames()
+        name = getNameFromDict(
+            column_index,
+            column_names,
+            get_attr_dict,
+        )
+        node = index.internalPointer()
+        func = getattr(node, name, None)
+        return func
+
+    def _getSetAttrFuncFromIndex(self, index, set_attr_dict):
+        column_index = index.column()
+        column_names = self.columnNames()
+        name = getNameFromDict(
+            column_index,
+            column_names,
+            set_attr_dict,
+        )
+        node = index.internalPointer()
+        func = getattr(node, name, None)
+        return func
+
+    def getColumnNameFromIndex(self, index):
+        column_index = index.column()
+        column_names = self.columnNames()
+        column_name = column_names.get(column_index)
+        if column_name is None:
+            msg = 'Column index is not set correctly; '
+            msg += 'index=%r column_names=%r column_name=%r'
+            LOG.warning(msg, index, column_names, column_name)
+        return column_name
+
+    ####################################################
 
     def rootNode(self):
         return self._rootNode
@@ -36,14 +152,31 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         self._rootNode = rootNode
         self.endResetModel()
 
+    def getNode(self, index):
+        node = None
+        if index.isValid():
+            node = index.internalPointer()
+            if node is not None:
+                return node
+        else:
+            # LOG.warning('getNode index is not valid; %r', index)
+            pass
+        return self._rootNode
+
+    ####################################################
+
     def columnCount(self, parent=QtCore.QModelIndex()):
-        return len(self._column_names.keys())
+        column_names = self.columnNames()
+        return len(column_names.keys())
 
     def rowCount(self, parent=QtCore.QModelIndex()):
+        parentNode = None
         if not parent.isValid():
             parentNode = self._rootNode
         else:
             parentNode = parent.internalPointer()
+        if parentNode is None:
+            return 0
         return parentNode.childCount()
 
     def data(self, index, role):
@@ -52,26 +185,13 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         node = index.internalPointer()
 
         if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
-            column_index = index.column()
-            if column_index not in self._column_names:
-                msg = '{0} was not in {1}'
-                msg = msg.format(column_index, self._column_names)
-                raise ValueError(msg)
-            column_name = self._column_names[column_index]
-            if column_name not in self._node_attr_key:
-                msg = '{0} was not in {1}'
-                msg = msg.format(column_name, self._node_attr_key)
-                raise ValueError(msg)
-            attr_name = self._node_attr_key[column_name]
-            value = getattr(node, attr_name, None)
-            if value is not None:
-                value = value()
+            func = self.getGetAttrFuncFromIndex(index)
+            if func is not None:
+                value = func()
             return value
 
         if role == QtCore.Qt.DecorationRole:
-            # TODO: Can we refactor this similar to the DisplayRole above?
-            if index.column() == 0:
-                return node.icon()
+            return self.indexIcon(index)
 
         if role == QtCore.Qt.ToolTipRole:
             return node.toolTip()
@@ -82,32 +202,38 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         if role == QtCore.Qt.FontRole:
             if self._font is not None:
                 return self._font
+        return
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):
-        if index.isValid():
-            node = index.internalPointer()
-            if not node.editable():
-                LOG.warning('setData not editable: %r %r %r', index, value, node)
-                return False
-            if role == QtCore.Qt.EditRole:
-                node.setName(value)
+        if not index.isValid():
+            LOG.warning('setData not valid: %r %r', index, value)
+            return False
+        node = index.internalPointer()
 
-            # Emit Data Changed.
-            if Qt.__binding__ in ['PySide', 'PyQt4']:
-                self.dataChanged.emit(index, index)
-            elif Qt.__binding__ in ['PySide2', 'PyQt5']:
-                self.dataChanged.emit(index, index, [role])
-            else:
-                msg = 'Qt binding not supported: %s' % Qt.__binding__
-                raise ValueError(msg)
-            return True
-        LOG.warning('setData not valid: %r %r', index, value)
-        return False
+        if not self.indexEditable():
+            LOG.warning('setData not editable: %r %r %r', index, value, node)
+            return False
+
+        if role == QtCore.Qt.EditRole:
+            func = self.getSetAttrFuncFromIndex(index)
+            if func is not None:
+                func(value)
+
+        # Emit Data Changed.
+        if Qt.__binding__ in ['PySide', 'PyQt4']:
+            self.dataChanged.emit(index, index)
+        elif Qt.__binding__ in ['PySide2', 'PyQt5']:
+            self.dataChanged.emit(index, index, [role])
+        else:
+            msg = 'Qt binding not supported: %s' % Qt.__binding__
+            raise ValueError(msg)
+        return True
 
     def headerData(self, section, orientation, role):
         if orientation == QtCore.Qt.Horizontal:
             if role == QtCore.Qt.DisplayRole:
-                return self._column_names.get(section, 'Column')
+                column_names = self.columnNames()
+                return column_names.get(section, 'Column')
         elif orientation == QtCore.Qt.Vertical:
             if role == QtCore.Qt.DisplayRole:
                 return 'Row'
@@ -117,17 +243,18 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         v = QtCore.Qt.NoItemFlags
         node = index.internalPointer()
         if node is None:
+            LOG.warning('flags: node is None')
             return v
-        if node.enabled():
+        if self.indexEnabled(index):
             v = v | QtCore.Qt.ItemIsEnabled
-        if node.checkable():
+        if self.indexCheckable(index):
             v = v | QtCore.Qt.ItemIsUserCheckable
+        if self.indexSelectable(index):
+            v = v | QtCore.Qt.ItemIsSelectable
+        if self.indexEditable(index):
+            v = v | QtCore.Qt.ItemIsEditable
         if node.neverHasChildren():
             v = v | QtCore.Qt.ItemNeverHasChildren
-        if node.selectable():
-            v = v | QtCore.Qt.ItemIsSelectable
-        if node.editable():
-            v = v | QtCore.Qt.ItemIsEditable
         return v
 
     def parent(self, index):
@@ -150,24 +277,14 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
             return self.createIndex(row, column, childItem)
         return QtCore.QModelIndex()
 
-    def getNode(self, index):
-        node = None
-        if index.isValid():
-            node = index.internalPointer()
-            if node is not None:
-                return node
-        else:
-            # LOG.warning('getNode index is not valid; %r', index)
-            pass
-        return self._rootNode
-
     def insertRows(self, position, rows, parent=QtCore.QModelIndex()):
         parentNode = self.getNode(parent)
         self.beginInsertRows(parent, position, position + rows - 1)
         success = None
+        nodeType = self.defaultNodeType()
         for row in range(rows):
             childCount = parentNode.childCount()
-            childNode = nodes.Node('untitled' + str(childCount))
+            childNode = nodeType('untitled' + str(childCount))
             success = parentNode.insertChild(position, childNode)
         self.endInsertRows()
         return success
@@ -182,39 +299,105 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         return success
 
 
-def _getNameFromDict(index, names_dict, lookup_dict):
-    if index not in names_dict:
-        msg = '{0} was not in {1}'
-        msg = msg.format(index, names_dict)
-        raise ValueError(msg)
-    column_name = names_dict[index]
-    if column_name not in lookup_dict:
-        msg = '{0} was not in {1}'
-        msg = msg.format(column_name, names_dict)
-        raise ValueError(msg)
-    attr_name = lookup_dict[column_name]
-    return attr_name
-
-
 class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
     def __init__(self, node_list=None, font=None):
         super(TableModel, self).__init__()
-        self._column_names = {
-            0: 'Column',
-        }
-        self._node_attr_key = {
-            'Column': 'name',
-        }
-        self._node_set_attr_key = {
-            'Column': 'setName',
-        }
         self._font = font
         self._node_list = []
         if node_list is not None:
             self._node_list = list(node_list)
 
+    def defaultNodeType(self):
+        return nodes.Node
+
+    def columnNames(self):
+        column_names = {
+            0: 'Column',
+        }
+        return dict(column_names)
+
+    def getGetAttrFuncFromIndex(self, index):
+        get_attr_dict = {
+            'Column': 'name',
+        }
+        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
+
+    def getSetAttrFuncFromIndex(self, index):
+        set_attr_dict = {
+            'Column': 'setName',
+        }
+        return self._getSetAttrFuncFromIndex(index, set_attr_dict)
+
+    ################################################
+
+    def indexEnabled(self, index):
+        row_index = index.row()
+        node = self._node_list[row_index]
+        return node.enabled()
+
+    def indexCheckable(self, index):
+        row_index = index.row()
+        node = self._node_list[row_index]
+        return node.checkable()
+
+    def indexSelectable(self, index):
+        row_index = index.row()
+        node = self._node_list[row_index]
+        return node.selectable()
+
+    def indexEditable(self, index):
+        row_index = index.row()
+        node = self._node_list[row_index]
+        return node.editable()
+
+    def indexIcon(self, index):
+        row_index = index.row()
+        node = self._node_list[row_index]
+        return node.icon()
+
+    ################################################
+
+    def _getGetAttrFuncFromIndex(self, index, get_attr_dict):
+        row_index = index.row()
+        column_index = index.column()
+        node = self._node_list[row_index]
+        column_names = self.columnNames()
+        name = getNameFromDict(
+            column_index,
+            column_names,
+            get_attr_dict,
+        )
+        func = getattr(node, name, None)
+        return func
+
+    def _getSetAttrFuncFromIndex(self, index, set_attr_dict):
+        row_index = index.row()
+        column_index = index.column()
+        node = self._node_list[row_index]
+        column_names = self.columnNames()
+        name = getNameFromDict(
+            column_index,
+            column_names,
+            set_attr_dict,
+        )
+        func = getattr(node, name, None)
+        return func
+
+    def getColumnNameFromIndex(self, index):
+        column_index = index.column()
+        column_names = self.columnNames()
+        column_name = column_names.get(column_index)
+        if column_name is None:
+            msg = 'Column index is not set correctly; '
+            msg += 'index=%r column_names=%r column_name=%r'
+            LOG.warning(msg, index, column_names, column_name)
+        return column_name
+
+    ################################################
+
     def columnCount(self, parent=QtCore.QModelIndex()):
-        return len(self._column_names.keys())
+        column_names = self.columnNames()
+        return len(column_names.keys())
 
     def rowCount(self, parent=QtCore.QModelIndex()):
         return len(self._node_list)
@@ -222,26 +405,39 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
     def data(self, index, role):
         if not index.isValid():
             return None
-        row = index.row()
-        node = self._node_list[row]
-        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
-            column_index = index.column()
-            attr_name = _getNameFromDict(
-                column_index,
-                self._column_names,
-                self._node_attr_key
-            )
-            value = getattr(node, attr_name, None)
-            if value is not None:
-                value = value()
-            else:
-                value = None
+        row_index = index.row()
+        node = self._node_list[row_index]
+        roles = [
+            QtCore.Qt.DisplayRole,
+            QtCore.Qt.EditRole,
+            QtCore.Qt.CheckStateRole,
+        ]
+        if role in roles:
+            get_attr_func = self.getGetAttrFuncFromIndex(index)
+            value = None
+            if get_attr_func is not None:
+                value = get_attr_func()
+
+            # For check states, we must return a 'CheckState' of
+            # Checked or Unchecked.
+            if role == QtCore.Qt.CheckStateRole:
+                index_checkable = self.indexCheckable(index)
+                if index_checkable is True:
+                    value = converttypes.stringToBoolean(value)
+                    if isinstance(value, bool):
+                        value = converttypes.booleanToCheckState(value)
+                else:
+                    # If the column is not checkable we make sure it's
+                    # not displayed as checkable by returning a
+                    # 'None'
+                    value = None
+
+            # value may be bool, string or None type.
             return value
 
         if role == QtCore.Qt.DecorationRole:
-            # TODO: Can we refactor this similar to the DisplayRole above?
             if index.column() == 0 and node is not None:
-                return node.icon()
+                return self.indexIcon(index)
 
         if role == QtCore.Qt.ToolTipRole:
             if node is not None:
@@ -254,39 +450,47 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
         if role == QtCore.Qt.FontRole:
             if self._font is not None:
                 return self._font
+        return
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):
-        if index.isValid():
-            row = index.row()
-            column = index.column()
-            node = self._node_list[row]
-            if node is None:
-                LOG.warning('node is invalid: %r %r %r', index, value, node)
-            else:
-                attr_name = _getNameFromDict(
-                    column,
-                    self._column_names,
-                    self._node_set_attr_key
-                )
-                if not node.editable():
-                    LOG.warning('setData not editable: %r %r %r', index, value, node)
-                    return False
-                if role == QtCore.Qt.EditRole:
-                    func = getattr(node, attr_name, None)
-                    if func is not None:
-                        func(value)
+        if not index.isValid():
+            LOG.warning('setData not valid: %r %r', index, value)
+            return False
+        row_index = index.row()
+        node = self._node_list[row_index]
+        if node is None:
+            LOG.warning('node is invalid: %r %r %r', index, value, node)
+            return False
+        set_attr_func = self.getSetAttrFuncFromIndex(index)
+        if not node.editable():
+            LOG.warning('setData not editable: %r %r %r', index, value, node)
+            return False
 
-            # Emit Data Changed.
-            if Qt.__binding__ in ['PySide', 'PyQt4']:
-                self.dataChanged.emit(index, index)
-            elif Qt.__binding__ in ['PySide2', 'PyQt5']:
-                self.dataChanged.emit(index, index, [role])
-            else:
-                msg = 'Qt binding not supported: %s' % Qt.__binding__
-                raise ValueError(msg)
-            return True
-        LOG.warning('setData not valid: %r %r', index, value)
-        return False
+        if set_attr_func is not None:
+            if role == QtCore.Qt.EditRole:
+                set_attr_func(value)
+
+            if role == QtCore.Qt.CheckStateRole:
+                index_checkable = self.indexCheckable(index)
+                if index_checkable is True:
+                    v = converttypes.checkStateToBoolean(value)
+                    v = converttypes.booleanToString(v)
+                    set_attr_func(v)
+
+        # Changing some data will force entire row to update.
+        columnCount = self.columnCount()
+        index_begin = self.createIndex(row_index, 0, index.internalId)
+        index_end = self.createIndex(row_index, columnCount - 1, index.internalId)
+
+        # Emit Data Changed.
+        if Qt.__binding__ in ['PySide', 'PyQt4']:
+            self.dataChanged.emit(index_begin, index_end)
+        elif Qt.__binding__ in ['PySide2', 'PyQt5']:
+            self.dataChanged.emit(index_begin, index_end, [role])
+        else:
+            msg = 'Qt binding not supported: %s' % Qt.__binding__
+            raise ValueError(msg)
+        return True
 
     def nodeList(self):
         """
@@ -307,7 +511,8 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
     def headerData(self, section, orientation, role):
         if orientation == QtCore.Qt.Horizontal:
             if role == QtCore.Qt.DisplayRole:
-                return self._column_names.get(section, 'Column')
+                column_names = self.columnNames()
+                return column_names.get(section, 'Column')
         elif orientation == QtCore.Qt.Vertical:
             if role == QtCore.Qt.DisplayRole:
                 return '#' + str(section + 1)
@@ -315,29 +520,32 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
 
     def flags(self, index):
         v = QtCore.Qt.NoItemFlags
+        if not index.isValid():
+            return v
         row_index = index.row()
         node = self._node_list[row_index]
-        if node is not None:
-            if node.enabled():
-                v = v | QtCore.Qt.ItemIsEnabled
-            if node.checkable():
-                v = v | QtCore.Qt.ItemIsUserCheckable
-            if node.neverHasChildren():
-                v = v | QtCore.Qt.ItemNeverHasChildren
-            if node.selectable():
-                v = v | QtCore.Qt.ItemIsSelectable
-            if node.editable():
-                v = v | QtCore.Qt.ItemIsEditable
-        else:
+        if node is None:
             LOG.warning('flags: node is None')
+            return v
+        if self.indexEnabled(index):
+            v = v | QtCore.Qt.ItemIsEnabled
+        if self.indexCheckable(index):
+            v = v | QtCore.Qt.ItemIsUserCheckable
+        if self.indexSelectable(index):
+            v = v | QtCore.Qt.ItemIsSelectable
+        if self.indexEditable(index):
+            v = v | QtCore.Qt.ItemIsEditable
+        if node.neverHasChildren():
+            v = v | QtCore.Qt.ItemNeverHasChildren
         return v
 
     def insertRows(self, position, rows, parent=QtCore.QModelIndex()):
         self.beginInsertRows(parent, position, position + rows - 1)
         success = None
+        nodeType = self.defaultNodeType()
         for row in range(rows):
             childCount = len(self._node_list)
-            childNode = StepNode('untitled' + str(childCount))
+            childNode = nodeType('untitled' + str(childCount))
             success = self._node_list.insert(position, childNode)
         self.endInsertRows()
         return success
@@ -349,79 +557,6 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
             success = self._node_list.pop(position)
         self.endRemoveRows()
         return success
-
-
-class SortFilterProxyModel(QtCore.QSortFilterProxyModel, uiutils.QtInfoMixin):
-    def __init__(self):
-        super(SortFilterProxyModel, self).__init__()
-        self._filterTagName = ''
-        self._filterTagValue = ''
-        self._filterTagNodeType = ''
-        # TODO: Support multiple named tags for filtering, currently
-        # only supports 1.
-
-    ############################################################################
-
-    def filterTagName(self):
-        return self._filterTagName
-
-    def setFilterTagName(self, value):
-        self._filterTagName = value
-        self.invalidateFilter()
-
-    def filterTagValue(self):
-        return self._filterTagValue
-
-    def setFilterTagValue(self, value):
-        self._filterTagValue = value
-        self.invalidateFilter()
-
-    def filterTagNodeType(self):
-        return self._filterTagNodeType
-
-    def setFilterTagNodeType(self, value):
-        self._filterTagNodeType = value
-        self.invalidateFilter()
-
-    ############################################################################
-
-    def filterAcceptsRow(self, sourceRow, sourceParent):
-        result = False
-        srcModel = self.sourceModel()
-        column = self.filterKeyColumn()
-        if column < 0:
-            column = 0
-        index = srcModel.index(sourceRow, column, sourceParent)
-        node = index.internalPointer()
-        LOG.debug('filterAcceptsRow: %r', node)
-        return True
-
-        tagName = self.filterTagName()
-        if tagName is None or len(tagName) == 0:
-            return True
-
-        filterNodeType = self.filterTagNodeType()
-        typeInfo = node.typeInfo
-
-        if filterNodeType is None or typeInfo == filterNodeType:
-            tagValue = self.filterTagValue()
-            nodeData = node.data()
-            nodeDataValue = nodeData.get(tagName)
-            if tagValue is None or len(tagValue) == 0:
-                result = True
-            elif nodeDataValue == tagValue:
-                result = True
-            else:
-                result = False
-        else:
-            pattern = self.filterRegExp().pattern()
-            if pattern is None or len(pattern) == 0:
-                result = True
-            else:
-                path = node.allTags()
-                if pattern in path:
-                    result = True
-        return result
 
 
 class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
@@ -508,20 +643,63 @@ class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
             v = self._stringDataList[index.row()]
             v = (v[0], value)
             self._stringDataList[index.row()] = value
-
-            # Emit Data Changed.
-            if Qt.__binding__ in ['PySide', 'PyQt4']:
-                self.dataChanged.emit(index, index)
-            elif Qt.__binding__ in ['PySide2', 'PyQt5']:
-                if role in [QtCore.Qt.DisplayRole,
-                            QtCore.Qt.EditRole,
-                            QtCore.Qt.UserRole]:
-                    self.dataChanged.emit(index, index, [role])
-            else:
-                msg = 'Qt binding not supported: %s' % Qt.__binding__
-                raise ValueError(msg)
         else:
             return False
+
+        # Emit Data Changed.
+        if Qt.__binding__ in ['PySide', 'PyQt4']:
+            self.dataChanged.emit(index, index)
+        elif Qt.__binding__ in ['PySide2', 'PyQt5']:
+            if role in [QtCore.Qt.DisplayRole,
+                        QtCore.Qt.EditRole,
+                        QtCore.Qt.UserRole]:
+                self.dataChanged.emit(index, index, [role])
+        else:
+            msg = 'Qt binding not supported: %s' % Qt.__binding__
+            raise ValueError(msg)
         return True
 
 
+class ComboBoxDelegate(QtWidgets.QStyledItemDelegate):
+
+    def __init__(self, parent=None):
+        super(ComboBoxDelegate, self).__init__(parent)
+
+    def getValueList(self):
+        """
+        Sub-class, override this method and return a list of strings for
+        the combo-box values.
+        """
+        raise NotImplementedError
+
+    def createEditor(self, parent, option, index):
+        if not index.isValid():
+            LOG.warning('Invalid index: %r', index)
+            return
+        data = index.data(QtCore.Qt.EditRole)
+        values = self.getValueList()
+        model = QtCore.QStringListModel(values)
+        widget = QtWidgets.QComboBox(parent)
+        widget.setModel(model)
+        return widget
+
+    def setEditorData(self, editor, index):
+        idx = 0  # Default to first index, as fallback.
+        values = self.getValueList()
+        data = index.data(QtCore.Qt.EditRole)
+        if data in values:
+            idx = values.index(data)
+        else:
+            msg = 'data not in values: data=%r values=%r'
+            LOG.warning(msg, data, values)
+
+        editor.blockSignals(True)
+        editor.setCurrentIndex(idx)
+        editor.blockSignals(False)
+        return
+
+    def setModelData(self, editor, model, index):
+        data = index.data(QtCore.Qt.EditRole)
+        value = editor.currentText()
+        model.setData(index, value, QtCore.Qt.EditRole)
+        return

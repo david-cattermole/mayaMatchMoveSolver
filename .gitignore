@@ -1,19 +1,28 @@
 .idea
+.vs
 #*
 *~
 *.pyc
 cmake-build-*
+*build/*
+*build_*/*
 
 test*.pstat
 test*.txt
+*_after*.ma
+*_before*.ma
 
 old/*
 precompiled/*
+venv/*
 
 *.so
 *.so.*
 *.a
 *.a.*
+*.lib
+*.dll
+*.mll
 
 *.tgz
 *.zip

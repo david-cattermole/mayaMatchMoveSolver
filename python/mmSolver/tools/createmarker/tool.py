@@ -43,6 +43,28 @@ def __get_camera():
     return cam
 
 
+def is_startup_cam(x):
+    """
+    Return True if the given camera node is a 'startupCamera'.
+
+    A startup camera is a camera; 'persp', 'side', 'top', 'front', etc.
+
+    :rtype: bool
+    """
+    return maya.cmds.camera(x, query=True, startupCamera=True) is True
+
+
+def is_not_startup_cam(x):
+    """
+    Return True if the given camera node is NOT a 'startupCamera'.
+
+    A startup camera is a camera; 'persp', 'side', 'top', 'front', etc.
+
+    :rtype: bool
+    """
+    return is_startup_cam(x) is False
+
+
 def create_marker():
     """
     Create a new marker under the current viewport camera, or under
@@ -51,6 +73,7 @@ def create_marker():
     sel = maya.cmds.ls(sl=True, long=True)
     node_filtered = filter_nodes.get_nodes(sel)
     cams = node_filtered['camera']
+    cams = filter(is_not_startup_cam, cams)
     mkr_grps = node_filtered['markergroup']
 
     cam = None
@@ -64,6 +87,10 @@ def create_marker():
         node = __get_camera()
         if node is None:
             msg = 'Please activate a viewport to get a camera.'
+            LOG.error(msg)
+            return
+        if is_startup_cam(node) is True:
+            msg = "Cannot create Markers in 'persp' camera."
             LOG.error(msg)
             return
         if maya.cmds.nodeType(node) == 'transform':

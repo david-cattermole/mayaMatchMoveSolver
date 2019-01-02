@@ -1,8 +1,8 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# 3DE4.script.name:     Copy 2D Tracks (Maya MM Solver)...
+# 3DE4.script.name:     Copy 2D Tracks (MM Solver)
 #
-# 3DE4.script.version:  v1.2
+# 3DE4.script.version:  v1.3
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Point
 # 3DE4.script.gui:      Object Browser::Context Menu Points
@@ -11,6 +11,7 @@
 # 3DE4.script.comment:  Copies the selected 2D track points to a temporary
 # 3DE4.script.comment:  file and puts the file path on the Operating
 # 3DE4.script.comment:  System's clipboard.
+# 3DE4.script.comment:  2D track points are undistorted!
 #
 #
 
@@ -20,7 +21,7 @@ import tde4
 import uvtrack_format
 
 
-TITLE = 'Copy 2D Tracks to Maya MM Solver...'
+TITLE = 'Copy 2D Tracks to MM Solver...'
 EXT = '.uv'
 
 
@@ -47,8 +48,11 @@ def main():
         return
 
     # Generate file contents
-    undistort = 1
-    start_frame = tde4.getCameraFrameOffset(camera)
+    undistort = True
+    start_frame = 1
+    # Backwards compatibility with 3DE4 Release 2.
+    if uvtrack_format.SUPPORT_CAMERA_FRAME_OFFSET is True:
+        start_frame = tde4.getCameraFrameOffset(camera)
     data_str = uvtrack_format.generate(
         point_group, camera, points,
         start_frame=start_frame,
@@ -58,9 +62,9 @@ def main():
     # Write file.
     file_ext = EXT
     f = tempfile.NamedTemporaryFile(
-        mode='w+b', 
-        bufsize=-1, 
-        suffix=file_ext, 
+        mode='w+b',
+        bufsize=-1,
+        suffix=file_ext,
         delete=False
     )
     if f.closed:
@@ -70,9 +74,14 @@ def main():
         return
     f.write(data_str)
     f.close()
-    
+
     # Override the user's clipboard with the temporary file path.
-    tde4.setClipboardString(f.name)
+    if uvtrack_format.SUPPORT_CLIPBOARD is True:
+        tde4.setClipboardString(f.name)
+    else:
+        # Cannot set the clipboard, so we'll print to the Python Console
+        # and the user can copy it. Pretty bad workaround.
+        print f.name
     return
 
 

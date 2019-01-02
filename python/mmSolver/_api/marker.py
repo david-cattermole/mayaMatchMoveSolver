@@ -5,11 +5,15 @@ Marker and the related objects, Camera and Bundle.
 import maya.OpenMaya as OpenMaya
 import maya.cmds
 
+import mmSolver.logger
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
 import mmSolver._api.bundle
 import mmSolver._api.camera as camera
 import mmSolver._api.markergroup as markergroup
+
+
+LOG = mmSolver.logger.get_logger()
 
 
 class Marker(object):
@@ -18,8 +22,13 @@ class Marker(object):
     """
     def __init__(self, name=None):
         if isinstance(name, basestring):
-            dag = api_utils.get_as_dag_path(name)
-            self._mfn = OpenMaya.MFnDagNode(dag)
+            try:
+                dag = api_utils.get_as_dag_path(name)
+                self._mfn = OpenMaya.MFnDagNode(dag)
+            except RuntimeError as e:
+                msg = 'Given Marker node name is invalid: name=%r'
+                LOG.error(msg, name)
+                raise e
         else:
             self._mfn = OpenMaya.MFnDagNode()
         return
@@ -132,6 +141,8 @@ class Marker(object):
                           defaultValue=1.0)
         maya.cmds.addAttr(tfm, longName='bundle', at='message')
         maya.cmds.addAttr(tfm, longName='markerName', dt='string')
+        maya.cmds.addAttr(tfm, longName='markerId', at='long',
+                          defaultValue=-1)
 
         maya.cmds.setAttr(tfm + '.enable', keyable=True, channelBox=True)
         maya.cmds.setAttr(tfm + '.weight', keyable=True, channelBox=True)

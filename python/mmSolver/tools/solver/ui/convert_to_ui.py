@@ -13,17 +13,52 @@ LOG = mmSolver.logger.get_logger()
 
 
 def markersToUINodes(mkr_list):
-    # TODO: Get related objects such as camera and marker group
-    # and create ObjectNodes for each type.
+    """
+    Convert a list of markers into a hierarchy to show the user.
+    """
     root = object_nodes.ObjectNode('root')
+    cam_nodes_store = {}
     for mkr in mkr_list:
-        name = mkr.get_node()
-        name = name.rpartition('|')[-1]
-        mkr_grp = mkr.get_marker_group()
+        mkr_name = mkr.get_node()
+        mkr_name = mkr_name.rpartition('|')[-1]
         cam = mkr.get_camera()
-        LOG.debug('mkr node: %r', name)
-        data = {'marker': mkr}
-        object_nodes.MarkerNode(name, data=data, parent=root)
+        bnd = mkr.get_bundle()
+
+        # Get camera
+        cam_shp_node = cam.get_shape_node()
+        cam_name = cam.get_shape_node()
+        cam_name = cam_name.rpartition('|')[-1]
+        cam_node = None
+        if cam_shp_node not in cam_nodes_store:
+            data = {
+                'marker': mkr,
+                'camera': cam,
+            }
+            cam_node = object_nodes.CameraNode(cam_name, data=data, parent=root)
+            cam_nodes_store[cam_shp_node] = cam_node
+        else:
+            cam_node = cam_nodes_store[cam_shp_node]
+        assert cam_node is not None
+
+        # The marker.
+        data = {
+            'marker': mkr,
+            'camera': cam,
+        }
+        mkr_node = object_nodes.MarkerNode(mkr_name, data=data, parent=cam_node)
+
+        # Get Bundle under marker.
+        if bnd is None:
+            continue
+        bnd_name = bnd.get_node()
+        bnd_name = bnd_name.rpartition('|')[-1]
+        data = {
+            'marker': mkr,
+            'bundle': bnd,
+            'camera': cam,
+        }
+        assert mkr_node is not None
+        bnd_node = object_nodes.BundleNode(bnd_name, data=data, parent=mkr_node)
     return root
 
 
@@ -51,4 +86,3 @@ def solverStepsToUINodes(step_list, col):
         node = solver_nodes.SolverStepNode(name, col)
         node_list.append(node)
     return node_list
-

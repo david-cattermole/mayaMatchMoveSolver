@@ -16,7 +16,7 @@
 #include <string>    // string
 #include <vector>    // vector
 #include <cassert>   // assert
-#include <limits>    // double max value
+#include <limits>    // double max value, NaN
 #include <math.h>
 
 // Utils
@@ -78,7 +78,7 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
         // This is an ugly hack to force levmar to stop computing. We give
         // a NaN value which causes levmar detect it and quit the loop.
         for (i = 0; i < n; ++i) {
-            x[i] = NAN;
+			x[i] = std::numeric_limits<double>::quiet_NaN();
         }
         return;
     }
@@ -159,7 +159,10 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
 
             BundlePtr bnd = marker->getBundle();
 
-            mkr_mpos = ud->markerPosList[i];  // Use pre-computed marker position
+            // Use pre-computed marker position and weight
+            mkr_mpos = ud->markerPosList[i];
+            double mkr_weight = ud->markerWeightList[i];
+            mkr_weight = std::sqrt(mkr_weight);
 
             status = bnd->getPos(bnd_mpos, frame);
             CHECK_MSTATUS(status);
@@ -175,15 +178,15 @@ void levmarSolveFunc(double *p, double *x, int m, int n, void *data) {
             double dy = fabs(mkr_mpos.y - bnd_mpos.y) * ((right - left) * ud->imageWidth);
             double d = distance_2d(mkr_mpos, bnd_mpos) * ((right - left) * ud->imageWidth);
 
-            x[(i * ERRORS_PER_MARKER) + 0] = dx;  // X error
-            x[(i * ERRORS_PER_MARKER) + 1] = dy;  // Y error
+            x[(i * ERRORS_PER_MARKER) + 0] = dx * mkr_weight;  // X error
+            x[(i * ERRORS_PER_MARKER) + 1] = dy * mkr_weight;  // Y error
 
             ud->errorList[(i * ERRORS_PER_MARKER) + 0] = dx;
             ud->errorList[(i * ERRORS_PER_MARKER) + 1] = dy;
 
 #if ERRORS_PER_MARKER == 3
             // d = distance_2d(mkr_mpos, bnd_mpos) * ((right - left) * ud->imageWidth);
-            x[(i * ERRORS_PER_MARKER) + 2] = d;   // Distance error
+            x[(i * ERRORS_PER_MARKER) + 2] = d * mkr_weight;   // Distance error
             ud->errorList[(i * ERRORS_PER_MARKER) + 2] = d;
 #endif
 

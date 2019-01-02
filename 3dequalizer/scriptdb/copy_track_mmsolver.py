@@ -1,24 +1,27 @@
-"""
-Generate track data from the given 2D points in 3DEqualizer.
-
-See ./python/mmSolver/tools/loadmarker/formats/uvtrack.py for details
-of the '.uv' file format.
-"""
+# -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# 3DE4.script.name:     UV Track Format
+# 3DE4.script.name:     Copy 2D Tracks (MM Solver)
 #
 # 3DE4.script.version:  v1.3
 #
-# 3DE4.script.comment:  Generate track data from the given 2D points in
-# 3DE4.script.comment:  3DEqualizer.
-# 3DE4.script.comment:  Files in 'UV Track' format should have file
-# 3DE4.script.comment:  extension '.uv'.
+# 3DE4.script.gui:      Object Browser::Context Menu Point
+# 3DE4.script.gui:      Object Browser::Context Menu Points
+# 3DE4.script.gui:      Object Browser::Context Menu PGroup
 #
-# 3DE4.script.hide:     true
+# 3DE4.script.comment:  Copies the selected 2D track points to a temporary
+# 3DE4.script.comment:  file and puts the file path on the Operating
+# 3DE4.script.comment:  System's clipboard.
+# 3DE4.script.comment:  2D track points are undistorted!
+#
 
 
 import json
+import tempfile
 import tde4
+
+
+TITLE = 'Copy 2D Tracks to MM Solver...'
+EXT = '.uv'
 
 
 # UV Track format
@@ -39,6 +42,66 @@ SUPPORT_PERSISTENT_ID = 'getPointPersistentID' in dir(tde4)
 SUPPORT_CAMERA_FRAME_OFFSET = 'getCameraFrameOffset' in dir(tde4)
 SUPPORT_POINT_WEIGHT_BY_FRAME = 'getPointWeightByFrame' in dir(tde4)
 SUPPORT_CLIPBOARD = 'setClipboardString' in dir(tde4)
+
+
+def main():
+    camera = tde4.getCurrentCamera()
+    point_group = tde4.getCurrentPGroup()
+    if camera is None or point_group is None:
+        msg = 'There is no current Point Group or Camera.'
+        tde4.postQuestionRequester(TITLE, msg, 'Ok')
+        return
+
+    # check if context menu has been used, and retrieve point...
+    point = tde4.getContextMenuObject()
+    if point is not None:
+        # retrieve point's parent pgroup (not necessarily being the current one!)...
+        point_group = tde4.getContextMenuParentObject()
+        points = tde4.getPointList(point_group, 1)
+    else:
+        # otherwise use regular selection...
+        points = tde4.getPointList(point_group, 1)
+    if len(points) == 0:
+        msg = 'There are no selected points.'
+        tde4.postQuestionRequester(TITLE, msg, 'Ok')
+        return
+
+    # Generate file contents
+    undistort = True
+    start_frame = 1
+    # Backwards compatibility with 3DE4 Release 2.
+    if SUPPORT_CAMERA_FRAME_OFFSET is True:
+        start_frame = tde4.getCameraFrameOffset(camera)
+    data_str = generate(
+        point_group, camera, points,
+        start_frame=start_frame,
+        undistort=undistort
+    )
+
+    # Write file.
+    file_ext = EXT
+    f = tempfile.NamedTemporaryFile(
+        mode='w+b',
+        bufsize=-1,
+        suffix=file_ext,
+        delete=False
+    )
+    if f.closed:
+        msg = "Error: Couldn't open file.\n%r"
+        msg = msg % f.name
+        tde4.postQuestionRequester(TITLE, msg, 'Ok')
+        return
+    f.write(data_str)
+    f.close()
+
+    # Override the user's clipboard with the temporary file path.
+    if SUPPORT_CLIPBOARD is True:
+        tde4.setClipboardString(f.name)
+    else:
+        # Cannot set the clipboard, so we'll print to the Python Console
+        # and the user can copy it. Pretty bad workaround.
+        print f.name
+    return
 
 
 def generate(point_group, camera, points, fmt=None, **kwargs):
@@ -269,3 +332,7 @@ def _generate_v2(point_group, camera, points, start_frame=None, undistort=False)
 
     data_str = json.dumps(data)
     return data_str
+
+
+if __name__ == '__main__':
+    main()

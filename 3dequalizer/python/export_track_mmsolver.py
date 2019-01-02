@@ -1,19 +1,18 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# 3DE4.script.name:     Export 2D Tracks to Maya MM Solver...
+# 3DE4.script.name:     Export 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version:  v1.2
+# 3DE4.script.version:  v1.3
 #
 # 3DE4.script.gui:      Main Window::3DE4::File::Export
 # 3DE4.script.gui:      Object Browser::Context Menu Point
 # 3DE4.script.gui:      Object Browser::Context Menu Points
 # 3DE4.script.gui:      Object Browser::Context Menu PGroup
 #
-# 3DE4.script.comment:  Writes undistorted 2D tracking curves (incl.
+# 3DE4.script.comment:  Writes 2D tracking curves (including
 # 3DE4.script.comment:  frame-by-frame weights) of all selected points
-# 3DE4.script.comment:  to an Ascii file.
-# 3DE4.script.comment:  Since the tracks are normalized 0 to 1, they
-# 3DE4.script.comment:  are resolution independent.
+# 3DE4.script.comment:  to a UV Tracks file.
+# 3DE4.script.comment:  All 2D Tracks are resolution independent.
 #
 #
 
@@ -21,7 +20,7 @@ import tde4
 import uvtrack_format
 
 
-TITLE = 'Export 2D Tracks to Maya MM Solver...'
+TITLE = 'Export 2D Tracks to MM Solver...'
 EXT = '.uv'
 
 
@@ -48,8 +47,12 @@ def main():
         return
 
     # widget default values
-    start_frame = tde4.getCameraFrameOffset(camera)
+    start_frame = 1
+    # Backwards compatibility with 3DE4 Release 2.
+    if uvtrack_format.SUPPORT_CAMERA_FRAME_OFFSET is True:
+        start_frame = tde4.getCameraFrameOffset(camera)
     pattern = '*' + EXT
+    # Undistortion default is 'On'.
     undistort = 1
 
     # GUI
@@ -62,11 +65,9 @@ def main():
         # Query GUI Widgets
         path = tde4.getWidgetValue(req, 'file_browser_widget')
         start_frame = tde4.getWidgetValue(req, 'start_frame_widget')
+        start_frame = int(start_frame)
         undistort = tde4.getWidgetValue(req, 'undistort_widget')
-        if (path is None 
-            or start_frame is None 
-            or undistort is None):
-            pass
+        undistort = bool(undistort)
 
         # Generate file contents
         data_str = uvtrack_format.generate(

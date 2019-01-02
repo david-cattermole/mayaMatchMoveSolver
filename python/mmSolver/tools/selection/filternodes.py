@@ -5,6 +5,10 @@ Helpful tools to filter a list of nodes into pre-defined categories.
 import maya.cmds
 
 import mmSolver.api as mmapi
+import mmSolver.logger
+
+
+LOG = mmSolver.logger.get_logger()
 
 
 def get_nodes(nodes):
@@ -23,18 +27,20 @@ def get_nodes(nodes):
     }
     for node in nodes:
         obj_type = mmapi.get_object_type(node)
-        if obj_type == 'marker':
+        if obj_type == mmapi.OBJECT_TYPE_MARKER:
             result['marker'].append(node)
-        elif obj_type == 'markergroup':
+        elif obj_type == mmapi.OBJECT_TYPE_MARKER_GROUP:
             result['markergroup'].append(node)
-        elif obj_type == 'bundle':
+        elif obj_type == mmapi.OBJECT_TYPE_BUNDLE:
             result['bundle'].append(node)
-        elif obj_type == 'camera':
+        elif obj_type == mmapi.OBJECT_TYPE_CAMERA:
             result['camera'].append(node)
-        elif obj_type == 'attribute':
+        elif obj_type == mmapi.OBJECT_TYPE_ATTRIBUTE:
             result['attribute'].append(node)
-        elif obj_type == 'collection':
+        elif obj_type == mmapi.OBJECT_TYPE_COLLECTION:
             result['collection'].append(node)
+        else:
+            result['other'].append(node)
     return result
 
 
@@ -55,11 +61,6 @@ def get_bundle_nodes(nodes):
 def get_camera_nodes(nodes):
     filter_nodes = get_nodes(nodes)
     return filter_nodes.get('camera', [])
-
-
-# def get_attribute_nodes(nodes):
-#     filter_nodes = get_nodes(nodes)
-#     return filter_nodes.get('attribute', [])
 
 
 def get_collection_nodes(nodes):

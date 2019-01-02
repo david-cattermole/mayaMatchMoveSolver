@@ -9,9 +9,20 @@
 #include <iomanip>  // setfill, setw
 #include <string>   // string
 
-// Linux Specific Functions
-#include <sys/time.h>  // gettimeofday
-#include <sys/types.h> // uint32_t, uint64_t, etc
+#ifdef _WIN32
+    #include <intrin.h>
+    #include <Windows.h>  // GetSystemTime
+    #ifdef max
+        // On Windows max is defined as a macro, but this
+        // conflicts with the C++ standard, so we undef it after
+        // including it in 'Windows.h'.
+        #undef max
+    #endif
+#else
+    // Linux Specific Functions
+    #include <sys/time.h>  // gettimeofday
+    #include <sys/types.h> // uint32_t, uint64_t, etc
+#endif
 
 // Debug defines...
 //#ifndef NDEBUG
@@ -35,8 +46,9 @@ namespace debug {
     // http://stackoverflow.com/questions/13772567/get-cpu-cycle-count
 #ifdef _WIN32
     //  Windows
-#include <intrin.h>
-  uint64_t rdtsc(){
+    #pragma intrinsic(__rdtsc)
+	static inline
+	DWORD64 rdtsc(){
       return __rdtsc();
   }
 
@@ -52,8 +64,7 @@ namespace debug {
 
 #endif
 
-
-    // Get time of day with high accuracy.
+    // Get time of day with high accuracy, on both Windows and Linux.
     //
     // http://stackoverflow.com/questions/1861294/how-to-calculate-execution-time-of-a-code-snippet-in-cw
     typedef unsigned long long Timestamp;
@@ -61,9 +72,32 @@ namespace debug {
     // Get the current time - used for profiling and debug.
     inline
     Timestamp get_timestamp() {
-        struct timeval now;
-        gettimeofday(&now, NULL);
-        return now.tv_usec + (Timestamp) now.tv_sec * 1000000;
+#ifdef _WIN32
+      // Windows
+      FILETIME ft;
+      LARGE_INTEGER li;
+
+      // Get the amount of 100 nano seconds intervals elapsed since
+      // January 1, 1601 (UTC) and copy it to a LARGE_INTEGER
+      // structure.
+      GetSystemTimeAsFileTime(&ft);
+      li.LowPart = ft.dwLowDateTime;
+      li.HighPart = ft.dwHighDateTime;
+
+      uint64 ret = li.QuadPart;
+      // Convert from file time to UNIX epoch time.
+      ret -= 116444736000000000LL;
+      // From 100 nano seconds (10^-7) to 1 millisecond (10^-3)
+      // intervals
+      ret /= 10000;
+
+      return ret;
+#else
+      // For Linux
+      struct timeval now;
+      gettimeofday(&now, NULL);
+      return now.tv_usec + (Timestamp) now.tv_sec * 1000000;
+#endif
     }
 
     // CPU Clock-cycle timing.
@@ -104,7 +138,7 @@ namespace debug {
             return ticktimeTotal += rdtsc() - ticktime;
         }
 
-        Ticks get_ticks(uint loopNums = 0) {
+        Ticks get_ticks(unsigned int loopNums = 0) {
             Ticks total = ticktimeTotal;
             if (loopNums > 0) {
                 total /= loopNums;
@@ -112,7 +146,7 @@ namespace debug {
             return total;
         }
 
-        void print(std::string heading, uint loopNums = 0) {
+        void print(std::string heading, unsigned int loopNums = 0) {
             Ticks ticks = get_ticks(loopNums);
             if (loopNums <= 1) {
                 std::cout << heading << " Ticks: ";
@@ -145,7 +179,7 @@ namespace debug {
             return timestampTotal += get_timestamp() - timestamp;
         }
 
-        double get_seconds(uint loopNums = 0) {
+        double get_seconds(unsigned int loopNums = 0) {
             double secs = (double) (timestampTotal / 1000000.0L);
             if (loopNums > 0) {
                 secs /= loopNums;
@@ -153,11 +187,11 @@ namespace debug {
             return secs;
         }
 
-        void print(std::string heading, uint loopNums = 0) {
+        void print(std::string heading, unsigned int loopNums = 0) {
             return printInSec(heading, loopNums);
         }
 
-        void printInSec(std::string heading, uint loopNums = 0) {
+        void printInSec(std::string heading, unsigned int loopNums = 0) {
             double secs = get_seconds(loopNums);
             if (loopNums <= 1) {
                 std::cout << heading << " Time: ";

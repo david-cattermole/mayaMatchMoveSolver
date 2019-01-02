@@ -1,5 +1,30 @@
-"""
-Solver nodes for the mmSolver Window UI.
+"""Solver nodes for the mmSolver Window UI.
+
+Solvers are presented to the user as Solver Steps, which is a step of solver functions defined by:
+- Frames
+- Attribute Filter
+- Strategy
+
+'Frames' is the list of frames to compute the strategy on.
+
+'Attribute Filter' provides a method to filter types of attributes
+that will be used in the strategy. For example: Animated Only
+attributes, or Static and Animated attributes.
+
+'Strategy' is a method name for the solvers to be ordered to solve the
+ frames in, for example 'sequentially' or 'all frames at once'.
+
+If 'Animated Only' attribute filter is used then the strategy is
+ unneeded and will solve each frame individually.
+
+The ability to add new solver steps should be given with a + and -
+button at top-right. There should also be buttons to move the selected
+row up or down (NOT DONE).
+
+TODO: A custom right-click menu should be added to the list of frames;
+ 'add current frame', 'remove current frame', 'set playback frame
+ range' and 'clear frames'.
+
 """
 
 import uuid
@@ -7,8 +32,10 @@ import uuid
 import Qt as Qt
 import Qt.QtGui as QtGui
 import Qt.QtCore as QtCore
+import Qt.QtWidgets as QtWidgets
 
 import mmSolver.ui.uimodels as uimodels
+import mmSolver.ui.converttypes as converttypes
 import mmSolver.ui.nodes as nodes
 import mmSolver.logger
 import mmSolver.tools.solver.lib.collection as lib_collection
@@ -18,112 +45,28 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def _convertStringToBoolean(value):
-    v = None
-    if isinstance(value, bool):
-        v = value
-    elif isinstance(value, basestring):
-        value = value.strip().lower()
-        if value in const.TRUE_WORDS:
-            v = True
-        elif value in const.FALSE_WORDS:
-            v = False
-        else:
-            return None
-    else:
-        raise TypeError
-    return v
+class StrategyComboBoxDelegate(uimodels.ComboBoxDelegate):
+
+    def __init__(self, parent=None):
+        super(StrategyComboBoxDelegate, self).__init__(parent)
+
+    def getValueList(self):
+        values = list(const.STRATEGY_LABEL_LIST)
+        return values
 
 
-def _convertBooleanToString(value):
-    return str(value)
+class AttributeComboBoxDelegate(uimodels.ComboBoxDelegate):
 
+    def __init__(self, parent=None):
+        super(AttributeComboBoxDelegate, self).__init__(parent)
 
-def _convertStringToIntList(value):
-    """
-    value = '1001-1101'
-    value = '1001,1002,1003-1005,1010-1012
-    """
-    if isinstance(value, basestring) is False:
-        raise TypeError
-    value = value.strip()
-    int_list = []
-    for v in value.split(','):
-        v = v.strip()
-        if v.isdigit() is True:
-            i = int(v)
-            int_list.append(i)
-        if '-' not in v:
-            continue
-
-        dash_split = v.split('-')
-        dash_split = filter(lambda x: x.isdigit(), dash_split)
-        if len(dash_split) > 1:
-            # Even if the user adds more than 1 dash character, we only take
-            # the first two.
-            s = int(dash_split[0])
-            e = int(dash_split[1])
-            if s == e:
-                int_list.append(s)
-                continue
-            if s < e:
-                int_list += list(range(s, e + 1))
-    int_list = list(set(int_list))
-    int_list = list(sorted(int_list))
-    return int_list
-
-
-def _convertIntListToString(value):
-    if isinstance(value, list) is False:
-        raise TypeError
-    int_list = list(set(value))
-    int_list = list(sorted(int_list))
-    grps = []
-    start = -1
-    end = -1
-    prev = -1
-    for i, num in enumerate(int_list):
-        first = i == 0
-        last = (i + 1) == len(int_list)
-        if first is True:
-            # Start a new group.
-            start = num
-            end = num
-        if (prev + 1) != num:
-            # End old group.
-            end = prev
-            if end != -1:
-                grps.append((start, end))
-            # New group
-            start = num
-            end = num
-        if last is True: 
-            # Close off final group.
-            end = num
-            if end != -1:
-                grps.append((start, end))
-        prev = num
-
-    string_list = []
-    for grp in grps:
-        s, e = grp
-        if s == e:
-            string_list.append(str(s))
-        else:
-            string_list.append('{0}-{1}'.format(s, e))
-    return ','.join(string_list)
-
-
-def _convertStringToStrategy(value):
-    return value
-
-
-def _convertStringToAttrFilter(value):
-    return value
-
-
-def _convertStringToInteger(value):
-    return int(value)
+    def getValueList(self):
+        values = [
+            str(const.ATTR_FILTER_STATIC_AND_ANIM_LABEL),
+            str(const.ATTR_FILTER_ANIM_ONLY_LABEL),
+            str(const.ATTR_FILTER_NO_ATTRS_LABEL),
+        ]
+        return values
 
 
 class SolverStepNode(nodes.Node):
@@ -134,12 +77,12 @@ class SolverStepNode(nodes.Node):
                  enabled=True,
                  editable=True,
                  selectable=True,
-                 checkable=False,
+                 checkable=True,
                  neverHasChildren=False):
         if isinstance(name, basestring) is False:
             raise TypeError
         if icon is None:
-            icon = ':/solverStep.png'
+            icon = ':/mmSolver_solverStep.png'
         if isinstance(data, dict) is False:
             data = {}
         data['collection_node'] = col_node
@@ -171,17 +114,16 @@ class SolverStepNode(nodes.Node):
 
     def setStepNode(self, node):
         col = self.collectionNode()
-        name = self.name()
         lib_collection.set_named_solver_step_to_collection(col, node)
         return
 
     def stepEnabled(self):
         n = self.stepNode()
         v = n.get_enabled()
-        return _convertBooleanToString(v)
+        return converttypes.booleanToString(v)
 
     def setStepEnabled(self, value):
-        v = _convertStringToBoolean(value)
+        v = converttypes.stringToBoolean(value)
         if v is None:
             return
         n = self.stepNode()
@@ -199,11 +141,11 @@ class SolverStepNode(nodes.Node):
 
         n = self.stepNode()
         int_list = n.get_frame_list()
-        string = _convertIntListToString(int_list)
+        string = converttypes.intListToString(int_list)
         return string
 
     def setFrames(self, value):
-        int_list = _convertStringToIntList(value)
+        int_list = converttypes.stringToIntList(value)
         n = self.stepNode()
         n.set_frame_list(int_list)
         self.setStepNode(n)
@@ -220,7 +162,13 @@ class SolverStepNode(nodes.Node):
         v = n.get_strategy()
         assert v in const.STRATEGY_LIST
         idx = const.STRATEGY_LIST.index(v)
-        value = const.STRATEGY_LABEL_LIST[idx]
+
+        # If we are not solving any static attributes, we show the
+        # solver strategy as 'Per-Frame'
+        use_static = n.get_use_static_attrs()
+        value = const.STRATEGY_PER_FRAME_LABEL
+        if use_static is True:
+            value = const.STRATEGY_LABEL_LIST[idx]
         return value
 
     def setStrategy(self, value):
@@ -260,8 +208,8 @@ class SolverStepNode(nodes.Node):
             use_static = True
             use_animated = False
         elif const.ATTR_FILTER_NO_ATTRS_LABEL:
-            use_static = True
-            use_animated = True
+            use_static = False
+            use_animated = False
         assert use_static is not None
         assert use_animated is not None
         n = self.stepNode()
@@ -274,22 +222,83 @@ class SolverStepNode(nodes.Node):
 class SolverModel(uimodels.TableModel):
     def __init__(self, node_list=None, font=None):
         super(SolverModel, self).__init__(node_list=node_list, font=font)
-        self._column_names = {
+
+    def defaultNodeType(self):
+        return SolverStepNode
+
+    def columnNames(self):
+        column_names = {
             0: 'Enabled',
             1: 'Frames',
             2: 'Attributes',
             3: 'Strategy',
         }
-        self._node_attr_key = {
+        return column_names
+
+    def getGetAttrFuncFromIndex(self, index):
+        get_attr_dict = {
+            # Column Name to node function name
             'Enabled': 'stepEnabled',
             'Frames': 'frames',
             'Strategy': 'strategy',
             'Attributes': 'attrs',
         }
-        self._node_set_attr_key = {
+        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
+
+    def getSetAttrFuncFromIndex(self, index):
+        set_attr_dict = {
+            # Column Name to node function name
             'Enabled': 'setStepEnabled',
             'Frames': 'setFrames',
             'Strategy': 'setStrategy',
             'Attributes': 'setAttrs',
         }
+        return self._getSetAttrFuncFromIndex(index, set_attr_dict)
 
+    def indexCheckable(self, index):
+        row_index = index.row()
+        column_index = index.column()
+        node = self._node_list[row_index]
+        column_names = self.columnNames()
+        checkable_column_mapping = {
+            'Enabled': True,
+            'Frames': False,
+            'Strategy': False,
+            'Attributes': False,
+        }
+        checkable = uimodels.getNameFromDict(
+            column_index,
+            column_names,
+            checkable_column_mapping,
+        )
+        return checkable
+
+    def indexEnabled(self, index):
+        row_index = index.row()
+        column_index = index.column()
+        node = self._node_list[row_index]
+        if node.enabled() is False:
+            return False
+        column_names = self.columnNames()
+        column_name = self.getColumnNameFromIndex(index)
+        enabled = False
+        if column_name == 'Enabled':
+            enabled = True
+        else:
+            stepEnabled = node.stepEnabled()
+            stepEnabled = converttypes.stringToBoolean(stepEnabled)
+            if stepEnabled is False:
+                enabled = False
+            else:
+                # The step is enabled!
+                if column_name in ['Frames', 'Attributes']:
+                    enabled = True
+                elif column_name == 'Strategy':
+                    # The 'strategy' column should be disabled if
+                    # 'attrs' is set to use either 'No Attributes' or
+                    # 'Animated Only'.
+                    attrs = node.attrs()
+                    if attrs in [const.ATTR_FILTER_STATIC_ONLY_LABEL,
+                                 const.ATTR_FILTER_STATIC_AND_ANIM_LABEL]:
+                        enabled = True
+        return enabled

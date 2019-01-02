@@ -20,6 +20,7 @@ import mmSolver.tools.solver.ui.solver_nodes as solver_nodes
 import mmSolver.tools.solver.ui.ui_solver_layout as ui_solver_layout
 import mmSolver.tools.solver.ui.convert_to_ui as convert_to_ui
 import mmSolver.tools.solver.constant as const
+import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 
 
 LOG = mmSolver.logger.get_logger()
@@ -32,7 +33,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         # Store the parent window class, so we can set the applyBtn enabled
         # state.
-        self._parentClass = parent
+        self._parentObject = parent
 
         # Collection Combo Box.
         self.collectionName_model = uimodels.StringDataListModel()
@@ -80,23 +81,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.attributeAdd_toolButton.clicked.connect(self.attrAddClicked)
         self.attributeRemove_toolButton.clicked.connect(self.attrRemoveClicked)
 
-        # Add support for table view of Solver steps.
-        #  Each step contains a list of frames to compute, a strategy
-        #  order to solve the frames in ('sequential', 'all'), and an
-        #  attribute filter to use ('anim' or 'static + anim').
-        #
-        # If 'anim' attribute filter is used then the strategy is
-        #  unneeded and will solve each frame individually.
-        #
-        # A custom right-click menu should be added to the list of
-        #  frames; 'add current frame', 'remove current frame', 'set
-        #  playback frame range' and 'clear frames'.
-        #
-        # The ability to add new solver steps should be given with a +
-        # and - button at top-right. There should also be buttons to
-        # move the selected row up or down.
-        #
-
         # Solver Nodes
         self.solver_model = solver_nodes.SolverModel(font=self.font)
         self.solver_filterModel = QtCore.QSortFilterProxyModel()
@@ -105,6 +89,18 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.solver_tableView.setModel(self.solver_filterModel)
         self.solver_tableView.setSortingEnabled(False)
         self.solver_selModel = self.solver_tableView.selectionModel()
+
+        # Set up custom widgets for viewing and editing the columns.
+        self.solver_attrFilterDelegate = solver_nodes.AttributeComboBoxDelegate()
+        self.solver_tableView.setItemDelegateForColumn(
+            2,
+            self.solver_attrFilterDelegate,
+        )
+        self.solver_strategyDelegate = solver_nodes.StrategyComboBoxDelegate()
+        self.solver_tableView.setItemDelegateForColumn(
+            3,
+            self.solver_strategyDelegate,
+        )
 
         # Solver Add and Remove buttons
         self.solverAdd_toolButton.clicked.connect(
@@ -144,7 +140,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             node = col.get_node()
         title = str(const.WINDOW_TITLE_BAR)
         title = title.format(node)
-        self._parentClass.window().setWindowTitle(title)
+        self._parentObject.window().setWindowTitle(title)
 
     def updateCollectionModel(self):
         self.setStatusLine(const.STATUS_REFRESHING)
@@ -181,8 +177,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         else:
             v = lib_col.compile_collection(col)
         assert isinstance(v, bool) is True
-        if self._parentClass is not None:
-            self._parentClass.applyBtn.setEnabled(v)
+        if self._parentObject is not None:
+            self._parentObject.applyBtn.setEnabled(v)
         return
 
     def populateCollectionModel(self, model):
@@ -208,6 +204,18 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if col is None:
             return
         attr_list = lib_attr.get_attributes_from_collection(col)
+
+        # Add Callbacks
+        #
+        # When querying attributes, we must make sure they have a Maya
+        # callback attached to the node to update the UI.
+        callback_manager = self.getCallbackManager()
+        if callback_manager is not None:
+            lib_attr.add_callbacks_to_attributes(
+                attr_list,
+                self.updateAttributeModel,
+                callback_manager
+            )
         root = convert_to_ui.attributesToUINodes(attr_list)
         model.setRootNode(root)
         return
@@ -240,6 +248,20 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             if find != -1:
                 return i
         return 0
+
+    def getCallbackManager(self):
+        """
+        Get the Callback Manager from the Solver Window, or None.
+
+        :return: Get the attached CallbackManager class, otherwise
+                 None if CallbackManager cannot be found.
+        :rtype: None or CallbackManager
+        """
+        callback_manager = None
+        parentObject = getattr(self, '_parentObject', None)
+        if parentObject is not None:
+            callback_manager = getattr(parentObject, 'callback_manager', None)
+        return callback_manager
 
     def createNewCollectionNode(self):
         LOG.debug('createNewCollectionNode')
@@ -362,6 +384,16 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             LOG.warning(msg)
             return
         lib_attr.add_attributes_to_collection(attr_list, col)
+
+        # Add Callbacks
+        callback_manager = self.getCallbackManager()
+        if callback_manager is not None:
+            lib_attr.add_callbacks_to_attributes(
+                attr_list,
+                self.updateAttributeModel,
+                callback_manager,
+            )
+
         self.updateAttributeModel()
         self.updateSolveValidState()
         self.setStatusLine(const.STATUS_READY)
@@ -376,8 +408,17 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             self.attribute_treeView,
             self.attribute_filterModel
         )
-        nodes = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'data')
-        lib_attr.remove_attr_from_collection(nodes, col)
+        attr_list = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'data')
+        lib_attr.remove_attr_from_collection(attr_list, col)
+
+        # Remove Callbacks
+        callback_manager = self.getCallbackManager()
+        if callback_manager is not None:
+            lib_attr.remove_callbacks_from_attributes(
+                attr_list,
+                callback_manager
+            )
+
         self.updateAttributeModel()
         self.updateSolveValidState()
         self.setStatusLine(const.STATUS_READY)
@@ -469,8 +510,15 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         )
         if ui_node is None:
             return
-        nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'marker')
-        maya_nodes = map(lambda x: x.get_node(), nodes)
+        # Type info will be 'marker', 'bundle' or 'camera' based on the selected node type.
+        typeInfo = ui_node.typeInfo
+        nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], typeInfo)
+        maya_nodes = []
+        if typeInfo == 'camera':
+            maya_nodes = map(lambda x: x.get_shape_node(), nodes)
+        else:
+            # For bundles and markers
+            maya_nodes = map(lambda x: x.get_node(), nodes)
         lib_maya_utils.set_scene_selection(maya_nodes)
         return
 

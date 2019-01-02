@@ -110,6 +110,9 @@ def get_markers_from_selection():
 
 
 def get_selected_maya_attributes():
+    # TODO: This function does not selected get attributes from
+    # selected 'shape' node attributes, only the top 'transform'
+    # section. We should support both.
     attrs = _get_selected_attributes()
     nodes = maya.cmds.ls(sl=True, long=True)
     attr_list = []

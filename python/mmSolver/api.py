@@ -1,9 +1,9 @@
 """
 Controls the user-facing API.
 
-.. todo:: This API should only be importable in Maya. Importing this
+.. todo:: This API should not only be importable in Maya. Importing this
     module in 3DEqualizer or any other software  should not error
-    and should return only the functionallity that is supported
+    and should return only the functionality that is supported
     in that software package.
 
 """
@@ -33,6 +33,15 @@ from mmSolver._api.excep import (
     SolverNotAvailable,
 )
 from mmSolver._api.constant import (
+    OBJECT_TYPE_UNKNOWN,
+    OBJECT_TYPE_ATTRIBUTE,
+    OBJECT_TYPE_MARKER,
+    OBJECT_TYPE_CAMERA,
+    OBJECT_TYPE_MARKER_GROUP,
+    OBJECT_TYPE_BUNDLE,
+    OBJECT_TYPE_COLLECTION,
+    OBJECT_TYPE_LIST,
+
     ATTR_STATE_INVALID,
     ATTR_STATE_STATIC,
     ATTR_STATE_ANIMATED,
@@ -48,6 +57,10 @@ from mmSolver._api.constant import (
 # Utility functions that the user is allowed to use.
 from mmSolver._api.utils import (
     get_long_name,
+    get_as_selection_list,
+    get_as_dag_path,
+    get_as_object,
+    get_as_plug,
     get_object_type,
     undo_chunk,
     convert_valid_maya_name,
@@ -78,6 +91,14 @@ __all__ = [
     'SolveResult',
 
     # Constants
+    'OBJECT_TYPE_UNKNOWN',
+    'OBJECT_TYPE_ATTRIBUTE',
+    'OBJECT_TYPE_MARKER',
+    'OBJECT_TYPE_CAMERA',
+    'OBJECT_TYPE_MARKER_GROUP',
+    'OBJECT_TYPE_BUNDLE',
+    'OBJECT_TYPE_COLLECTION',
+    'OBJECT_TYPE_LIST',
     'ATTR_STATE_INVALID',
     'ATTR_STATE_STATIC',
     'ATTR_STATE_ANIMATED',
@@ -97,6 +118,10 @@ __all__ = [
 
     # Functions
     'get_long_name',
+    'get_as_selection_list',
+    'get_as_dag_path',
+    'get_as_object',
+    'get_as_plug',
     'get_object_type',
     'undo_chunk',
     'convert_valid_maya_name',

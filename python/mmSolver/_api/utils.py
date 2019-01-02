@@ -122,11 +122,31 @@ def get_object_type(node):
     """
     The canonical function to interpret a node as an MM Solver object type.
 
+    Possible object type values are:
+    - OBJECT_TYPE_MARKER
+    - OBJECT_TYPE_BUNDLE
+    - OBJECT_TYPE_ATTRIBUTE
+    - OBJECT_TYPE_CAMERA
+    - OBJECT_TYPE_MARKER_GROUP
+    - OBJECT_TYPE_COLLECTION
+    - OBJECT_TYPE_UNKNOWN
+
+    ..note:: Giving a shape or transform of an object may return
+        different values depending on the type. Below lists the
+        types and the expected input node type.
+
+        Markers - transform nodes
+        Bundle - transform nodes
+        Attribute - plug path (node.attr)
+        Camera - transform or shape node
+        Marker Group - transform 'mmMarkerGroupTransform' node
+        Collection - set node
+
     :param node: Maya node path to get type of.
     :type node: str
 
-    :return: The object type string.
-    :rtype:
+    :return: The object type string; One of the values in OBJECT_TYPE_LIST
+    :rtype: OBJECT_TYPE_*
     """
     assert isinstance(node, basestring)
     assert maya.cmds.objExists(node)

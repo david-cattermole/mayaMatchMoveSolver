@@ -245,7 +245,7 @@ class Collection(object):
         members = self._set.get_all_members(flatten=False, full_path=True)
         for member in members:
             object_type = api_utils.get_object_type(member)
-            if object_type == 'marker':
+            if object_type == const.OBJECT_TYPE_MARKER:
                 mkr = marker.Marker(member)
                 result.append(mkr)
         return result
@@ -310,7 +310,7 @@ class Collection(object):
         rm_list = []
         for member in members:
             object_type = api_utils.get_object_type(member)
-            if object_type == 'marker':
+            if object_type == const.OBJECT_TYPE_MARKER:
                 rm_list.append(member)
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)
@@ -324,7 +324,7 @@ class Collection(object):
         members = self._set.get_all_members(flatten=False, full_path=True)
         for member in members:
             object_type = api_utils.get_object_type(member)
-            if object_type == 'attribute':
+            if object_type == const.OBJECT_TYPE_ATTRIBUTE:
                 attr = attribute.Attribute(name=member)
                 result.append(attr)
         return result
@@ -388,7 +388,7 @@ class Collection(object):
         rm_list = []
         for member in members:
             object_type = api_utils.get_object_type(member)
-            if object_type == 'attribute':
+            if object_type == const.OBJECT_TYPE_ATTRIBUTE:
                 rm_list.append(member)
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)

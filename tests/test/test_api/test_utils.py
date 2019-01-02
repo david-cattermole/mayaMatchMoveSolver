@@ -10,6 +10,7 @@ import maya.OpenMaya as OpenMaya
 import test.test_api.apiutils as test_api_utils
 import mmSolver._api.utils as api_utils
 import mmSolver._api.marker as marker
+import mmSolver._api.constant as const
 
 
 # @unittest.skip
@@ -115,31 +116,46 @@ class TestUtils(test_api_utils.APITestCase):
         self.assertEqual(plug.asDouble(), 3.147)
 
     def test_get_object_type(self):
+        """
+        Test getting string object types from a given Maya node.
+
+        TODO: Does not provide a 'collection' example.
+        """
         cam_tfm = maya.cmds.createNode('transform')
         cam_tfm = api_utils.get_long_name(cam_tfm)
         cam_shp = maya.cmds.createNode('camera', parent=cam_tfm)
         cam_shp = api_utils.get_long_name(cam_shp)
         tfm_obj_type = api_utils.get_object_type(cam_tfm)
         shp_obj_type = api_utils.get_object_type(cam_shp)
-        self.assertEqual(tfm_obj_type, 'camera')
-        self.assertEqual(shp_obj_type, 'camera')
+        self.assertEqual(tfm_obj_type, const.OBJECT_TYPE_CAMERA)
+        self.assertEqual(shp_obj_type, const.OBJECT_TYPE_CAMERA)
 
         mkr = marker.Marker().create_node()
         mkr_node = mkr.get_node()
         obj_type = api_utils.get_object_type(mkr_node)
-        self.assertEqual(obj_type, 'marker')
+        self.assertEqual(obj_type, const.OBJECT_TYPE_MARKER)
+
+        # Marker shape node must also return as OBJECT_TYPE_MARKER
+        mkr_shp_node = maya.cmds.listRelatives(mkr_node, shapes=True)[0]
+        obj_type = api_utils.get_object_type(mkr_shp_node)
+        self.assertEqual(obj_type, const.OBJECT_TYPE_UNKNOWN)
 
         node = maya.cmds.createNode('mmMarkerGroupTransform')
         obj_type = api_utils.get_object_type(node)
-        self.assertEqual(obj_type, 'markergroup')
+        self.assertEqual(obj_type, const.OBJECT_TYPE_MARKER_GROUP)
 
-        node = maya.cmds.createNode('transform')
-        obj_type = api_utils.get_object_type(node)
-        self.assertEqual(obj_type, 'bundle')
+        bnd_node = maya.cmds.createNode('transform')
+        bnd_shp_node = maya.cmds.createNode('locator', parent=bnd_node)
+        obj_type = api_utils.get_object_type(bnd_node)
+        self.assertEqual(obj_type, const.OBJECT_TYPE_BUNDLE)
 
+        # Giving a shape will not work.
+        obj_type = api_utils.get_object_type(bnd_shp_node)
+        self.assertEqual(obj_type, const.OBJECT_TYPE_UNKNOWN)
+ 
         node_attr = node + '.scaleX'
         obj_type = api_utils.get_object_type(node_attr)
-        self.assertEqual(obj_type, 'attribute')
+        self.assertEqual(obj_type, const.OBJECT_TYPE_ATTRIBUTE)
 
     def test_get_camera_above_node(self):
         root = maya.cmds.createNode('transform')

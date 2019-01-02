@@ -7,6 +7,7 @@ import maya.OpenMaya as OpenMaya
 
 import mmSolver._api.camera as camera
 import mmSolver._api.utils as api_utils
+import mmSolver._api.constant as const
 
 
 class MarkerGroup(object):
@@ -46,7 +47,7 @@ class MarkerGroup(object):
     def set_node(self, name):
         assert isinstance(name, (str, unicode))
         assert maya.cmds.objExists(name)
-        assert api_utils.get_object_type(name) == 'markergroup'
+        assert api_utils.get_object_type(name) == const.OBJECT_TYPE_MARKER_GROUP
 
         self._mfn_tfm = None
         tfm_dag = api_utils.get_as_dag_path(name)

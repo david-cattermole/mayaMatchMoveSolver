@@ -15,7 +15,7 @@ class Attribute(object):
     """
     def __init__(self, name=None, node=None, attr=None):
         if isinstance(name, (str, unicode)):
-            assert api_utils.get_object_type(name) == 'attribute'
+            assert api_utils.get_object_type(name) == const.OBJECT_TYPE_ATTRIBUTE
             part = name.partition('.')
             node = part[0]
             attr = part[-1]

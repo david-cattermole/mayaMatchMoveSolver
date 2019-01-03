@@ -7,7 +7,7 @@ of the '.uv' file format.
 #
 # 3DE4.script.name:     UV Track Format
 #
-# 3DE4.script.version:  v1.3
+# 3DE4.script.version:  v1.4
 #
 # 3DE4.script.comment:  Generate track data from the given 2D points in
 # 3DE4.script.comment:  3DEqualizer.
@@ -136,7 +136,20 @@ def _generate_v1(point_group, camera, points, start_frame=None, undistort=False)
                 # No valid data here.
                 frame += 1
                 continue
-            num_valid_frame += 1  # number of points with valid positions
+
+            # Does the 2D point go outside the camera FOV? Is that ok?
+            valid = tde4.isPointPos2DValid(
+                point_group,
+                point,
+                camera,
+                frame
+            )
+            if valid == 0:
+                # No valid data here.
+                frame += 1
+                continue
+            # Number of points with valid positions
+            num_valid_frame += 1
 
             f = frame + frame0
             if undistort is True:
@@ -242,6 +255,18 @@ def _generate_v2(point_group, camera, points, start_frame=None, undistort=False)
         )
         for pos in pos_block:
             if pos[0] == -1.0 or pos[1] == -1.0:
+                # No valid data here.
+                frame += 1
+                continue
+
+            # Does the 2D point go outside the camera FOV? Is that ok?
+            valid = tde4.isPointPos2DValid(
+                point_group,
+                point,
+                camera,
+                frame
+            )
+            if valid == 0:
                 # No valid data here.
                 frame += 1
                 continue

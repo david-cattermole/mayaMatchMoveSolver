@@ -257,16 +257,22 @@ def convert_valid_maya_name(name, prefix=None):
     Get a new valid Maya name - canonical function to get valid Maya node names.
 
     :param name: The name string to validate.
+    :type name: str
+
     :param prefix: Prefix to add to name in case of invalid first character.
-    :return:
+    :type prefix: str or None
+
+    :return: A valid Maya node name.
+    :rtype: str
     """
     # TODO: Use Maya API namespace validator?
     # TODO: name could start with a number; this should be prefixed.
     assert isinstance(name, basestring)
+    assert prefix is None or isinstance(prefix, basestring)
     for char in const.BAD_MAYA_CHARS:
         name.replace(char, '_')
     if name[0].isdigit():
-        # Add suffix
+        # Add prefix
         if prefix is None:
             prefix = 'prefix'
         name = prefix + '_' + name
@@ -448,3 +454,10 @@ def set_value_on_node_attr(node_name, attr_name, data):
     maya.cmds.setAttr(node_attr, data)
     maya.cmds.setAttr(node_attr, lock=True)
     return
+
+
+def colour_name_to_rgb(name):
+    """
+    Convert a string name into RGB values.
+    """
+    raise NotImplementedError

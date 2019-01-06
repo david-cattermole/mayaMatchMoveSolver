@@ -2,7 +2,12 @@
 mmSolver - Maya MatchMove Solver
 ================================
 
-Welcome to mmSolver!
+Welcome to `mmSolver`! `mmSolver` is a Bundle Adjustment solver for
+Autodesk Maya, for solving MatchMove tasks by adjusting Maya
+attributes.
+
+This documentation is for the GitHub project_, and focuses technical
+scripting, plug-in command and node details.
 
 Contents:
 +++++++++
@@ -12,6 +17,8 @@ Contents:
 
    introduction
    tutorial
+   nodes
+   commands
    mmSolver.tools
    mmSolver.api
    mmSolver.logger
@@ -25,3 +32,4 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. _project: https://github.com/david-cattermole/mayaMatchMoveSolver

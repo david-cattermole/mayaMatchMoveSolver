@@ -41,9 +41,7 @@ MatchMove solve you need.
 
 - Solver Plug-in
   - Minimising residual error between 2D and 3D positions.
-  - Single-frame and multi-frame solving is supported.
-  - Dense or Sparse Levenberg-Marquardt solving types for different
-    types of solves.
+  - Per-frame, single-frame and multi-frame solving is supported.
   - Full Undo/redo support.
   - Spinning ("busy") cursor is shown when solving.
   - Ability to cancel out of solve before it's completed (partially

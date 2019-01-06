@@ -21,6 +21,7 @@ def getNameFromDict(index, names_dict, lookup_dict):
     Get the 'name' from an index, using a specific data structure.
 
     For example::
+
        index = 0
        names_dict = {
            0: 'Column',

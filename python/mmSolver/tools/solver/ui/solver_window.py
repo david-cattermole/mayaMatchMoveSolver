@@ -123,6 +123,49 @@ class SolverWindow(BaseWindow):
 
         menubar.addMenu(file_menu)
 
+        # View Menu
+        view_menu = QtWidgets.QMenu('View', menubar)
+        
+        label = 'Center 2D on Selection'
+        tooltip = 'Visually center the 2D viewport on the selected node'
+        action = QtWidgets.QAction(label, tools_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.centerTwoDeeCB))
+        view_menu.addAction(action)
+
+        # label = 'Set Colour'
+        # tooltip = 'Set the colour for a large group of characters.'
+        # action = QtWidgets.QAction(label, tools_menu)
+        # action.setStatusTip(tooltip)
+        # action.triggered.connect(partial(self.centerTwoDeeCB))
+        # view_menu.addAction(action)
+
+        view_menu.addSeparator()
+
+        # Show Marker / Bundle Colours in Outliner?
+        label = 'Colours in Outliner?'
+        tooltip = 'Show Marker / Bundle Colours in Outliner?'
+        refresh_value = None
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        # action.setChecked(refresh_value)
+        # action.toggled.connect(type(self).refreshActionToggledCB)
+        view_menu.addAction(action)
+
+        # Refresh Viewport During Solve
+        label = 'Refresh Viewport'
+        tooltip = 'Refresh the viewport while Solving.'
+        refresh_value = lib_state.get_refresh_viewport_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(refresh_value)
+        action.toggled.connect(type(self).refreshActionToggledCB)
+        view_menu.addAction(action)
+
+        menubar.addMenu(view_menu)
+        
         # Tools Menu
         tools_menu = QtWidgets.QMenu('Tools', menubar)
 
@@ -154,6 +197,16 @@ class SolverWindow(BaseWindow):
 
         # Create Bundle
         label = 'Create Bundle'
+        tooltip = 'Create a default Bundle node.'
+        action = QtWidgets.QAction(label, tools_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.createBundleCB))
+        tools_menu.addAction(action)
+
+        tools_menu.addSeparator()
+
+        # Auto-Rename Markers / Bundles
+        label = 'Auto-Rename Markers / Bundles'
         tooltip = 'Create a default Bundle node.'
         action = QtWidgets.QAction(label, tools_menu)
         action.setStatusTip(tooltip)
@@ -204,26 +257,6 @@ class SolverWindow(BaseWindow):
         action = QtWidgets.QAction(label, tools_menu)
         action.setStatusTip(tooltip)
         action.triggered.connect(partial(self.aimAtCameraCB))
-        tools_menu.addAction(action)
-
-        label = 'Center 2D on Selection'
-        tooltip = 'Visually center the 2D viewport on the selected node'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.centerTwoDeeCB))
-        tools_menu.addAction(action)
-
-        tools_menu.addSeparator()
-
-        # Refresh Viewport During Solve
-        label = 'Refresh Viewport'
-        tooltip = 'Refresh the viewport while Solving.'
-        refresh_value = lib_state.get_refresh_viewport_state()
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(refresh_value)
-        action.toggled.connect(type(self).refreshActionToggledCB)
         tools_menu.addAction(action)
 
         menubar.addMenu(tools_menu)

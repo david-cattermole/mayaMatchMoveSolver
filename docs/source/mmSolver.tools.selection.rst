@@ -1,16 +1,17 @@
 mmSolver.tools.selection
 ========================
 
-.. automodule:: mmSolver.tools.selection
-   :members:
-   :undoc-members:
+This package contains all selection tools related to solver, marker, and bundle.
+
+Tools
++++++
 
 .. automodule:: mmSolver.tools.selection.tools
    :members:
    :undoc-members:
 
 Convert
-++++++
++++++++
 
 The :mod:`mmSolver.tools.selection.convert` module provides functions
 to convert between various node types. Currently the following

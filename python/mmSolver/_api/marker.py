@@ -19,8 +19,17 @@ LOG = mmSolver.logger.get_logger()
 class Marker(object):
     """
     The 2D Marker object.
+
+    A Marker defines a wrapper around a Maya node that contains 2D
+    information, in a camera's screen-space.
     """
     def __init__(self, name=None):
+        """
+        Initialize a Marker, give a name to connect to an existing Maya node.
+
+        :param name: The Maya node name to connect to.
+        :type name: None or str
+        """
         if isinstance(name, basestring):
             try:
                 dag = api_utils.get_as_dag_path(name)
@@ -55,6 +64,15 @@ class Marker(object):
         return node
 
     def set_node(self, name):
+        """
+        Change the underlying Maya node that this Marker class will manipulate.
+
+        :param name: The existing Maya node name.
+        :type name: str
+
+        :returns: Nothing.
+        :rtype: None
+        """
         assert isinstance(name, (str, unicode))
         dag = api_utils.get_as_dag_path(name)
         try:
@@ -72,7 +90,7 @@ class Marker(object):
                     mkr_grp=None,
                     bnd=None):
         """
-        Create a marker node network.
+        Create a marker node network from scratch.
 
         :param name: Name of the marker to create.
         :type name: str
@@ -166,19 +184,36 @@ class Marker(object):
         return self
 
     def delete_node(self):
+        """
+        Remove the Maya node (and all data) of this Marker object.
+        """
         node = self.get_node()
         maya.cmds.delete(node)
         return self
 
     ############################################################################
 
-    # def get_node_colour(self):
-    #     pass
+    # def get_colour_rgb(self):
+    #     """
+    #     Get the current wire-frame colour of the object.
+    #     """
+    #     node = self.get_node()
+    #     node_attr = '{0}.{1}'.format(node, 'wireColorRGB')
+    #     # node_attr = '{0}.{1}'.format(node, 'outlinerColor')
+    #     v = maya.cmds.getAttr(node_attr)
+    #     return v
 
-    # def set_node_colour(self, name):
-    #     # TODO: should we allow RGB values directly?
-    #     # TODO: Look up the colour value from a string.
-    #     pass
+    # def set_colour_rgb(self, rgb):
+    #     """
+    #     Change the Wireframe colour of the given Marker.
+    #
+    #     http://help.autodesk.com/cloudhelp/2016/ENU/Maya-Tech-Docs/CommandsPython/color.html
+    #     """
+    #     node = self.get_node()
+    #     node_attr = '{0}.{1}'.format(node, 'wireColorRGB')
+    #     # node_attr = '{0}.{1}'.format(node, 'outlinerColor')
+    #     v = maya.cmds.setAttr(node_attr, rgb)
+    #     return
 
     ############################################################################
 
@@ -203,6 +238,16 @@ class Marker(object):
         return
 
     def _link_to_bundle(self, bnd):
+        """
+        Connect a Bundle to the Marker.
+
+        A Marker may only have one connected Bundle object.
+
+        :param bnd: The Bundle to connect to.
+        :type bnd: Bundle
+
+        :returns: None.
+        """
         # output message to marker.bundle attr
         assert isinstance(bnd, mmSolver._api.bundle.Bundle)
 
@@ -219,7 +264,7 @@ class Marker(object):
         if attr_name not in attr_names:
             maya.cmds.addAttr(mkr_node, longName=attr_name, at='message')
 
-        src = bnd_node+'.message'
+        src = bnd_node + '.message'
         dst = mkr_node + '.' + attr_name
         if not maya.cmds.isConnected(src, dst):
             maya.cmds.connectAttr(src, dst)
@@ -231,10 +276,14 @@ class Marker(object):
         return
 
     def _unlink_from_bundle(self):
+        """
+        Remove the connection between the connected Bundle and Marker.
+
+        :returns: None
+        """
         bnd = self.get_bundle()
         mkr_node = self.get_node()
         bnd_node = bnd.get_node()
-
         src = bnd_node + '.message'
         dst = mkr_node + '.bundle'
         if maya.cmds.isConnected(src, dst):
@@ -244,6 +293,13 @@ class Marker(object):
     ############################################################################
 
     def get_camera(self):
+        """
+        Get the camera connected implicitly with the Marker.
+
+        :returns: Camera API object, or None if Marker does not have a
+                  Camera.
+        :rtype: None or Camera
+        """
         mkr_node = self.get_node()
 
         cam_tfm, cam_shp = api_utils.get_camera_above_node(mkr_node)
@@ -255,6 +311,20 @@ class Marker(object):
         return cam
 
     def set_camera(self, cam):
+        """
+        Connect this Marker to the given camera.
+
+        Connecting Markers to cameras happens by parenting a Marker
+        under a Camera's Marker Group.
+
+        .. note:: If the `cam` argument is None, the Marker is
+            disconnected from any camera.
+
+        :param cam: The camera to connect this Marker to.
+        :type cam: None or Camera
+
+        :returns: None
+        """
         if cam is None:
             self._unlink_from_camera()
         elif isinstance(cam, camera.Camera):
@@ -265,6 +335,11 @@ class Marker(object):
         """
         Parent a marker under the marker group which is under the given camera.
         If there is no marker group, one is created.
+
+        :param cam: The camera to connect this Marker to.
+        :type cam: None or Camera
+
+        :returns: None
         """
         assert isinstance(cam, camera.Camera)
 
@@ -308,6 +383,8 @@ class Marker(object):
     def _unlink_from_camera(self):
         """
         Re-parent the current marker to the world; it will live under no camera.
+
+        :returns: None
         """
         mkr_node = self.get_node()
         cam = self.get_camera()
@@ -325,11 +402,17 @@ class Marker(object):
         # Move the marker under the world root, don't modify the marker in
         # any way otherwise (so we use 'relative' flag).
         maya.cmds.parent(mkr_node, relative=True, world=True)
-        pass
+        return
 
     ############################################################################
 
     def get_marker_group(self):
+        """
+        Get the marker group that implicitly connected to this Marker.
+
+        :returns: Marker group object.
+        :rtype: MarkerGroup or None
+        """
         mkr_node = self.get_node()
 
         mkr_grp_node = api_utils.get_marker_group_above_node(mkr_node)
@@ -341,6 +424,15 @@ class Marker(object):
         return mkr_grp
 
     def set_marker_group(self, mkr_grp):
+        """
+        Set the MarkerGroup for this Marker, or None to unlink the Marker.
+
+        :param mkr_grp: Marker group object to link to this Marker.
+        :type mkr_grp: MarkerGroup or None
+
+        :return: Nothing.
+        :rtype: None
+        """
         if mkr_grp is None:
             self._unlink_from_marker_group()
         elif isinstance(mkr_grp, markergroup.MarkerGroup):

@@ -175,7 +175,7 @@ def ensure_override_current_frame_attr_exists(col):
     none exists already.
 
     :param col: The Collection to create the attribute on.
-    :param col: Collection
+    :type col: Collection
 
     :rtype: None
     """
@@ -215,7 +215,7 @@ def ensure_solver_steps_attr_exists(col):
     already.
 
     :param col: The Collection to create the attribute on.
-    :param col: Collection
+    :type col: Collection
 
     :rtype: None
     """
@@ -241,7 +241,7 @@ def get_solver_steps_from_collection(col):
     Load all steps from collection.
 
     :param col: The Collection to query.
-    :param col: Collection
+    :type col: Collection
 
     :rtype: list of SolverStep
     """

@@ -41,9 +41,7 @@ MatchMove solve you need.
 
 - Solver Plug-in
   - Minimising residual error between 2D and 3D positions.
-  - Single-frame and multi-frame solving is supported.
-  - Dense or Sparse Levenberg-Marquardt solving types for different
-    types of solves.
+  - Per-frame, single-frame and multi-frame solving is supported.
   - Full Undo/redo support.
   - Spinning ("busy") cursor is shown when solving.
   - Ability to cancel out of solve before it's completed (partially
@@ -73,10 +71,8 @@ For a list of future features please see
 
 - [Documentation Home Page](https://david-cattermole.github.io/mayaMatchMoveSolver/)
 
-Old Documenation files:
+Old Documentation files:
 - [Tool Documentation](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/TOOLS.md)
-- [Python API](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/API.md)
-- [Solver Design Concepts](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DESIGN.md)
 
 ## Building and Installation
 

@@ -435,8 +435,8 @@ def set_value_on_node_attr(node_name, attr_name, data):
     return
 
 
-def colour_name_to_rgb(name):
-    """
-    Convert a string name into RGB values.
-    """
-    raise NotImplementedError
+# def colour_name_to_rgb(name):
+#     """
+#     Convert a string name into RGB values.
+#     """
+#     raise NotImplementedError

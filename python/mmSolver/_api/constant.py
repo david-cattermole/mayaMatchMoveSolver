@@ -67,8 +67,3 @@ AUTO_DIFF_TYPE_LIST = [
     AUTO_DIFF_TYPE_FORWARD,
     AUTO_DIFF_TYPE_CENTRAL,
 ]
-
-
-# Default node Colours for Markers and bundles.
-MARKER_COLOUR_RGB = (1.0, 0.0, 0.0)
-BUNDLE_COLOUR_RGB = (0.0, 1.0, 0.0)

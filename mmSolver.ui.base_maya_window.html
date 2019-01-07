@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mmSolver.ui.base_maya_window &#8212; mmSolver 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.ui.converttypes" href="mmSolver.ui.converttypes.html" />
+    <link rel="prev" title="mmSolver.ui" href="mmSolver.ui.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.converttypes.html" title="mmSolver.ui.converttypes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.html" title="mmSolver.ui"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.ui.html" accesskey="U">mmSolver.ui</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-mmSolver.ui.base_maya_window">
+<span id="mmsolver-ui-base-maya-window"></span><h1>mmSolver.ui.base_maya_window<a class="headerlink" href="#module-mmSolver.ui.base_maya_window" title="Permalink to this headline">¶</a></h1>
+<p>The base window for usage inside Maya.</p>
+<p>All windows inside Maya should sub-class from BaseMayaWindow.</p>
+<p>Run the default MayaBaseWindow:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.ui.base_maya_window</span>
+<span class="n">reload</span><span class="p">(</span><span class="n">mmSolver</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">base_maya_window</span><span class="p">)</span>
+<span class="n">mmSolver</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">base_maya_window</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Using the module:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.myTool.ui.ui_myTool</span> <span class="k">as</span> <span class="nn">ui_myTool</span>
+<span class="kn">import</span> <span class="nn">mmSolver.ui.base_maya_window</span> <span class="k">as</span> <span class="nn">base_maya_window</span>
+
+<span class="k">class</span> <span class="nc">MyToolLayout</span><span class="p">(</span><span class="n">QWidget</span><span class="p">,</span> <span class="n">ui_myTool</span><span class="o">.</span><span class="n">Ui_Widget</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MyToolLayout</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyToolWindow</span><span class="p">(</span><span class="n">baseMayaWindow</span><span class="o">.</span><span class="n">BaseMayaWindow</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MyToolWindow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="n">subLayout</span><span class="o">=</span><span class="n">MyToolLayout</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s1">&#39;Re-Parent&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">applyBtn</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="s1">&#39;apply&#39;</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="mmSolver.ui.base_maya_window.getMayaMainWindow">
+<code class="descclassname">mmSolver.ui.base_maya_window.</code><code class="descname">getMayaMainWindow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.base_maya_window.getMayaMainWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.ui.base_maya_window.findWidget">
+<code class="descclassname">mmSolver.ui.base_maya_window.</code><code class="descname">findWidget</code><span class="sig-paren">(</span><em>name</em>, <em>clsTyp</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.base_maya_window.findWidget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.ui.base_maya_window.delete">
+<code class="descclassname">mmSolver.ui.base_maya_window.</code><code class="descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.base_maya_window.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.ui.base_maya_window.create">
+<code class="descclassname">mmSolver.ui.base_maya_window.</code><code class="descname">create</code><span class="sig-paren">(</span><em>show=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.base_maya_window.create" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.ui.base_maya_window.BaseMayaWindow">
+<code class="descclassname">mmSolver.ui.base_maya_window.</code><code class="descname">BaseMayaWindow</code><a class="headerlink" href="#mmSolver.ui.base_maya_window.BaseMayaWindow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.ui.html"
+                        title="previous chapter">mmSolver.ui</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.ui.converttypes.html"
+                        title="next chapter">mmSolver.ui.converttypes</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.ui.base_maya_window.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.converttypes.html" title="mmSolver.ui.converttypes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.html" title="mmSolver.ui"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.ui.html" >mmSolver.ui</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, David Cattermole.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

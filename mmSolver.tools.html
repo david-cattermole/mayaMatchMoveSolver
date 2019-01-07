@@ -26,8 +26,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="mmSolver.tools.loadmarker" href="mmSolver.tools.loadmarker.html" />
-    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
+    <link rel="next" title="mmSolver.tools.solver" href="mmSolver.tools.solver.html" />
+    <link rel="prev" title="Commands" href="commands.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -40,10 +40,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="mmSolver.tools.loadmarker.html" title="mmSolver.tools.loadmarker"
+          <a href="mmSolver.tools.solver.html" title="mmSolver.tools.solver"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="tutorial.html" title="Tutorial"
+          <a href="commands.html" title="Commands"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1 documentation</a> &#187;</li> 
       </ul>
@@ -58,6 +58,15 @@
 <span id="mmsolver-tools"></span><h1>mmSolver.tools<a class="headerlink" href="#module-mmSolver.tools" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.solver.html">mmSolver.tools.solver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html#tool">Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.constant">Constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.maya_callbacks">Maya Callbacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html#library">Library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html#user-interface">User Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html#ui-node-abstractions">UI Node Abstractions</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.loadmarker.html">mmSolver.tools.loadmarker</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker.mayareadfile">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker.formatmanager">Advanced</a></li>
@@ -65,21 +74,19 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.selection.html">mmSolver.tools.selection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.selection.html#module-mmSolver.tools.selection.tools">Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.selection.html#convert">Convert</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.selection.html#module-mmSolver.tools.selection.filternodes">Filter Nodes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.solver.html">mmSolver.tools.solver</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html#tool">Tool</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html#scene-data">Scene Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html#solver-step">Solver Step</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.constant">Constant</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html#user-interface">User Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html#ui-node-abstractions">UI Node Abstractions</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.centertwodee.html">mmSolver.tools.centertwodee</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.createbundle.html">mmSolver.tools.createbundle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.createmarker.html">mmSolver.tools.createmarker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.convertmarker.html">mmSolver.tools.convertmarker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.linkmarkerbundle.html">mmSolver.tools.linkmarkerbundle</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.cameraaim.html">mmSolver.tools.cameraaim</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.surfacerivet.html">mmSolver.tools.surfacerivet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.snaponcurve.html">mmSolver.tools.snaponcurve</a></li>
 </ul>
 </div>
 </div>
@@ -91,11 +98,11 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="tutorial.html"
-                        title="previous chapter">Tutorial</a></p>
+  <p class="topless"><a href="commands.html"
+                        title="previous chapter">Commands</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="mmSolver.tools.loadmarker.html"
-                        title="next chapter">mmSolver.tools.loadmarker</a></p>
+  <p class="topless"><a href="mmSolver.tools.solver.html"
+                        title="next chapter">mmSolver.tools.solver</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -127,10 +134,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="mmSolver.tools.loadmarker.html" title="mmSolver.tools.loadmarker"
+          <a href="mmSolver.tools.solver.html" title="mmSolver.tools.solver"
              >next</a> |</li>
         <li class="right" >
-          <a href="tutorial.html" title="Tutorial"
+          <a href="commands.html" title="Commands"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1 documentation</a> &#187;</li> 
       </ul>

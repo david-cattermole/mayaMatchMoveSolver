@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Commands &#8212; mmSolver 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.tools" href="mmSolver.tools.html" />
+    <link rel="prev" title="Nodes" href="nodes.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.html" title="mmSolver.tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="nodes.html" title="Nodes"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="commands">
+<h1>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="mmsolver-command">
+<h2><code class="docutils literal"><span class="pre">mmSolver</span></code> Command<a class="headerlink" href="#mmsolver-command" title="Permalink to this headline">¶</a></h2>
+<p>The command named <code class="docutils literal"><span class="pre">mmSolver</span></code> is the primary command used to perform a
+solve.</p>
+<div class="section" id="flags">
+<h3>Flags<a class="headerlink" href="#flags" title="Permalink to this headline">¶</a></h3>
+<p>The command can be run in both MEL and Python.</p>
+<p>Here is a table of command flags, as currently specified in the command.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="21%" />
+<col width="46%" />
+<col width="13%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Flag</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+<th class="head">Default Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-camera (-c)</td>
+<td>string, string</td>
+<td>Camera transform and shape nodes</td>
+<td>None</td>
+</tr>
+<tr class="row-odd"><td>-marker (-m)</td>
+<td>string, string, string</td>
+<td>Marker, Camera, Bundle</td>
+<td>None</td>
+</tr>
+<tr class="row-even"><td>-attr (-a)</td>
+<td>string, string, string</td>
+<td>Node attribute, min value and max value</td>
+<td>None</td>
+</tr>
+<tr class="row-odd"><td>-frame (-f)</td>
+<td>long int</td>
+<td>Frame number to solve with</td>
+<td>1</td>
+</tr>
+<tr class="row-even"><td>-solverType (-st)</td>
+<td>unsigned int</td>
+<td>Type of solver to use; 0=levmar</td>
+<td>0</td>
+</tr>
+<tr class="row-odd"><td>-iterations (-it)</td>
+<td>unsigned int</td>
+<td>Maximum number of iterations</td>
+<td>20</td>
+</tr>
+<tr class="row-even"><td>-tauFactor (-t)</td>
+<td>double</td>
+<td>Initial Damping Factor</td>
+<td>1E-03</td>
+</tr>
+<tr class="row-odd"><td>-epsilon1 (-e1)</td>
+<td>double</td>
+<td>Acceptable gradient change</td>
+<td>1E-06</td>
+</tr>
+<tr class="row-even"><td>-epsilon2 (-e2)</td>
+<td>double</td>
+<td>Acceptable parameter change</td>
+<td>1E-06</td>
+</tr>
+<tr class="row-odd"><td>-epsilon3 (-e3)</td>
+<td>double</td>
+<td>Acceptable error</td>
+<td>1E-06</td>
+</tr>
+<tr class="row-even"><td>-delta (-dt)</td>
+<td>double</td>
+<td>Change to the guessed parameters each iteration</td>
+<td>1E-04</td>
+</tr>
+<tr class="row-odd"><td>-autoDiffType (-adt)</td>
+<td>unsigned int</td>
+<td>Auto-differencing type 0=forward 1=central</td>
+<td>1 (central)</td>
+</tr>
+<tr class="row-even"><td>-verbose (-v)</td>
+<td>bool</td>
+<td>Prints more information</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="return">
+<h3>Return<a class="headerlink" href="#return" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">mmSolver</span></code> command will return a list of strings.</p>
+<p>The list of strings has a specific structure and stores all the data
+from the core solver engines, so the user can do whatever they wish to.</p>
+</div>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<p>Python Example:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolver</span><span class="p">(</span>
+    <span class="n">camera</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;cameraShape1&#39;</span><span class="p">),</span>
+    <span class="n">marker</span><span class="o">=</span><span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;marker1&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle1&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;marker2&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle2&#39;</span><span class="p">),</span>
+    <span class="p">),</span>
+    <span class="n">attr</span><span class="o">=</span><span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;node.attr&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;bundle1.tx&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;bundle1.ty&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;bundle1.tz&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+    <span class="p">),</span>
+    <span class="n">frame</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">24</span><span class="p">,),</span>
+    <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="code text highlight-default"><div class="highlight"><pre><span></span><span class="n">mmSolver</span>
+    <span class="o">-</span><span class="n">camera</span> <span class="s2">&quot;camera1&quot;</span> <span class="s2">&quot;cameraShape1&quot;</span>
+    <span class="o">-</span><span class="n">marker</span> <span class="s2">&quot;marker1&quot;</span> <span class="s2">&quot;camera1&quot;</span> <span class="s2">&quot;bundle1&quot;</span>
+    <span class="o">-</span><span class="n">marker</span> <span class="s2">&quot;marker2&quot;</span> <span class="s2">&quot;camera1&quot;</span> <span class="s2">&quot;bundle2&quot;</span>
+    <span class="o">-</span><span class="n">attr</span> <span class="s2">&quot;node.attr&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span>
+    <span class="o">-</span><span class="n">attr</span> <span class="s2">&quot;bundle1.tx&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span>
+    <span class="o">-</span><span class="n">attr</span> <span class="s2">&quot;bundle1.ty&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span>
+    <span class="o">-</span><span class="n">attr</span> <span class="s2">&quot;bundle1.tz&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span>
+    <span class="o">-</span><span class="n">frame</span> <span class="mi">1</span>
+    <span class="o">-</span><span class="n">frame</span> <span class="mi">12</span>
+    <span class="o">-</span><span class="n">frame</span> <span class="mi">24</span>
+    <span class="o">-</span><span class="n">iterations</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mmtestcameramatrix-command">
+<h2><code class="docutils literal"><span class="pre">mmTestCameraMatrix</span></code> Command<a class="headerlink" href="#mmtestcameramatrix-command" title="Permalink to this headline">¶</a></h2>
+<p>This command is used for internal tests only, it has no practical use
+for users.</p>
+<p>Python Example:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">cam_tfm</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cam_tfm&#39;</span><span class="p">)</span>
+<span class="n">cam_shp</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;camera&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cam_shp&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">cam_tfm</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmTestCameraMatrix</span><span class="p">(</span><span class="n">cam_tfm</span><span class="p">,</span> <span class="n">cam_shp</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Commands</a><ul>
+<li><a class="reference internal" href="#mmsolver-command"><code class="docutils literal"><span class="pre">mmSolver</span></code> Command</a><ul>
+<li><a class="reference internal" href="#flags">Flags</a></li>
+<li><a class="reference internal" href="#return">Return</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmtestcameramatrix-command"><code class="docutils literal"><span class="pre">mmTestCameraMatrix</span></code> Command</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="nodes.html"
+                        title="previous chapter">Nodes</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.tools.html"
+                        title="next chapter">mmSolver.tools</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/commands.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.html" title="mmSolver.tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="nodes.html" title="Nodes"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, David Cattermole.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

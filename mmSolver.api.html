@@ -27,7 +27,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mmSolver.logger" href="mmSolver.logger.html" />
-    <link rel="prev" title="mmSolver.tools.surfacerivet" href="mmSolver.tools.surfacerivet.html" /> 
+    <link rel="prev" title="mmSolver.tools.snaponcurve" href="mmSolver.tools.snaponcurve.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -43,7 +43,7 @@
           <a href="mmSolver.logger.html" title="mmSolver.logger"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="mmSolver.tools.surfacerivet.html" title="mmSolver.tools.surfacerivet"
+          <a href="mmSolver.tools.snaponcurve.html" title="mmSolver.tools.snaponcurve"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1 documentation</a> &#187;</li> 
       </ul>
@@ -54,9 +54,123 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-mmSolver.api">
-<span id="mmsolver-api"></span><h1>mmSolver.api<a class="headerlink" href="#module-mmSolver.api" title="Permalink to this headline">¶</a></h1>
-<p>Controls the user-facing API.</p>
+  <div class="section" id="mmsolver-api">
+<h1>mmSolver.api<a class="headerlink" href="#mmsolver-api" title="Permalink to this headline">¶</a></h1>
+<p>By convention the mmSolver.api functions are expected to be imported into the alias <cite>mmapi</cite>, examples assume this is done.</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+<span class="kn">import</span> <span class="nn">mmSolver.api</span> <span class="k">as</span> <span class="nn">mmapi</span>
+<span class="n">mmapi</span><span class="o">.</span><span class="n">load_plugin</span><span class="p">()</span>  <span class="c1"># Force load the mmSolver plug-in.</span>
+</pre></div>
+</div>
+<div class="section" id="object-overview">
+<h2>Object Overview<a class="headerlink" href="#object-overview" title="Permalink to this headline">¶</a></h2>
+<p><img alt="API Classes Image" src="https://raw.githubusercontent.com/david-cattermole/mayaMatchMoveSolver/master/design/api/api_classes_overview.png" /></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="84%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Class</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Marker</td>
+<td>2D point to determine screen-space features</td>
+</tr>
+<tr class="row-odd"><td>Bundle</td>
+<td>3D point to determine real-location of 2D feature</td>
+</tr>
+<tr class="row-even"><td>Attribute</td>
+<td>Attribute that will be solved</td>
+</tr>
+<tr class="row-odd"><td>Camera</td>
+<td>Camera to view the world</td>
+</tr>
+<tr class="row-even"><td>Frame</td>
+<td>Point in time</td>
+</tr>
+<tr class="row-odd"><td>Solver</td>
+<td>Options that describe how the solving algorithm will run</td>
+</tr>
+<tr class="row-even"><td>Collection</td>
+<td>A set of Markers and Attributes to use during solving</td>
+</tr>
+<tr class="row-odd"><td>SolveResult</td>
+<td>Output of the solver; Details of what happened in a solve</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Here is a example of how to use the <code class="docutils literal"><span class="pre">mmSolver</span></code> Python API.
+First a <code class="docutils literal"><span class="pre">Camera</span></code>, <code class="docutils literal"><span class="pre">Bundle</span></code> and <code class="docutils literal"><span class="pre">Marker</span></code> are created, these
+are used to define the re-projection and perspective.
+Next, <code class="docutils literal"><span class="pre">Attributes</span></code>, <code class="docutils literal"><span class="pre">Solvers</span></code> and <code class="docutils literal"><span class="pre">Frames</span></code> must be created.
+All API objects are then added into the <code class="docutils literal"><span class="pre">Collection</span></code>, and the collection
+is executed.
+Finally, a <code class="docutils literal"><span class="pre">SolverResult</span></code> is returned from the executed Collection and
+an be used to check the Solver output (for example, did an error occur?).</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Camera</span>
+<span class="n">cam_tfm</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span>
+                               <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cam_tfm&#39;</span><span class="p">)</span>
+<span class="n">cam_shp</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;camera&#39;</span><span class="p">,</span>
+                               <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cam_shp&#39;</span><span class="p">,</span>
+                               <span class="n">parent</span><span class="o">=</span><span class="n">cam_tfm</span><span class="p">)</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="n">cam_tfm</span> <span class="o">+</span> <span class="s1">&#39;.tx&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="n">cam_tfm</span> <span class="o">+</span> <span class="s1">&#39;.ty&#39;</span><span class="p">,</span>  <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="n">cam_tfm</span> <span class="o">+</span> <span class="s1">&#39;.tz&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">)</span>
+
+<span class="c1"># Bundle</span>
+<span class="n">bundle_tfm</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span>
+                                  <span class="n">name</span><span class="o">=</span><span class="s1">&#39;bundle_tfm&#39;</span><span class="p">)</span>
+<span class="n">bundle_shp</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;locator&#39;</span><span class="p">,</span>
+                                  <span class="n">name</span><span class="o">=</span><span class="s1">&#39;bundle_shp&#39;</span><span class="p">,</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="n">bundle_tfm</span><span class="p">)</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="n">bundle_tfm</span> <span class="o">+</span> <span class="s1">&#39;.tx&#39;</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">)</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="n">bundle_tfm</span> <span class="o">+</span> <span class="s1">&#39;.ty&#39;</span><span class="p">,</span> <span class="mf">6.4</span><span class="p">)</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="n">bundle_tfm</span> <span class="o">+</span> <span class="s1">&#39;.tz&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mf">25.0</span><span class="p">)</span>
+<span class="n">bnd</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Bundle</span><span class="p">(</span><span class="n">bundle_tfm</span><span class="p">)</span>
+
+<span class="c1"># Marker</span>
+<span class="n">marker_tfm</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span>
+                                  <span class="n">name</span><span class="o">=</span><span class="s1">&#39;marker_tfm&#39;</span><span class="p">,</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="n">cam_tfm</span><span class="p">)</span>
+<span class="n">marker_shp</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;locator&#39;</span><span class="p">,</span>
+                                  <span class="n">name</span><span class="o">=</span><span class="s1">&#39;marker_shp&#39;</span><span class="p">,</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="n">marker_tfm</span><span class="p">)</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="n">marker_tfm</span> <span class="o">+</span> <span class="s1">&#39;.tx&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">)</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="n">marker_tfm</span> <span class="o">+</span> <span class="s1">&#39;.ty&#39;</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">)</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="n">marker_tfm</span> <span class="o">+</span> <span class="s1">&#39;.tz&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">mkr</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Marker</span><span class="p">(</span><span class="n">marker_tfm</span><span class="p">)</span>
+<span class="n">mkr</span><span class="o">.</span><span class="n">set_bundle</span><span class="p">(</span><span class="n">bnd</span><span class="p">)</span>
+
+<span class="c1"># Attributes</span>
+<span class="n">attr_tx</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Attribute</span><span class="p">(</span><span class="n">bundle_tfm</span> <span class="o">+</span> <span class="s1">&#39;.tx&#39;</span><span class="p">)</span>
+<span class="n">attr_ty</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Attribute</span><span class="p">(</span><span class="n">bundle_tfm</span> <span class="o">+</span> <span class="s1">&#39;.ty&#39;</span><span class="p">)</span>
+
+<span class="c1"># Solver</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Solver</span><span class="p">()</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">set_verbose</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">add_frame</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sol</span><span class="o">.</span><span class="n">set_frame_list</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="c1"># Collection</span>
+<span class="n">col</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Collection</span><span class="p">()</span>
+<span class="n">col</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;mySolveCollection&#39;</span><span class="p">)</span>
+<span class="n">col</span><span class="o">.</span><span class="n">set_solver</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
+<span class="n">col</span><span class="o">.</span><span class="n">add_marker</span><span class="p">(</span><span class="n">marker_tfm</span><span class="p">)</span>
+<span class="n">col</span><span class="o">.</span><span class="n">add_attribute</span><span class="p">(</span><span class="n">attr_tx</span><span class="p">)</span>
+<span class="n">col</span><span class="o">.</span><span class="n">add_attribute</span><span class="p">(</span><span class="n">attr_ty</span><span class="p">)</span>
+
+<span class="c1"># Run solver!</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+<span class="nb">print</span> <span class="s1">&#39;Solve Error:&#39;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">get_error</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="camera">
 <h2>Camera<a class="headerlink" href="#camera" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -191,12 +305,15 @@ Markers are attached to cameras.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="marker-markergroup">
-<h2>Marker &amp; MarkerGroup<a class="headerlink" href="#marker-markergroup" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="marker">
+<h2>Marker<a class="headerlink" href="#marker" title="Permalink to this headline">¶</a></h2>
+<p>2D point to determine screen-space features.</p>
 <dl class="class">
 <dt id="mmSolver.api.Marker">
 <em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">Marker</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker" title="Permalink to this definition">¶</a></dt>
 <dd><p>The 2D Marker object.</p>
+<p>A Marker defines a wrapper around a Maya node that contains 2D
+information, in a camera&#8217;s screen-space.</p>
 <dl class="method">
 <dt id="mmSolver.api.Marker.get_node">
 <code class="descname">get_node</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.get_node" title="Permalink to this definition">¶</a></dt>
@@ -216,12 +333,25 @@ Markers are attached to cameras.</p>
 <dl class="method">
 <dt id="mmSolver.api.Marker.set_node">
 <code class="descname">set_node</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.set_node" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Change the underlying Maya node that this Marker class will manipulate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) &#8211; The existing Maya node name.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nothing.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.Marker.create_node">
 <code class="descname">create_node</code><span class="sig-paren">(</span><em>name='marker1'</em>, <em>cam=None</em>, <em>mkr_grp=None</em>, <em>bnd=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.create_node" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a marker node network.</p>
+<dd><p>Create a marker node network from scratch.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -241,7 +371,8 @@ Markers are attached to cameras.</p>
 <dl class="method">
 <dt id="mmSolver.api.Marker.delete_node">
 <code class="descname">delete_node</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.delete_node" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove the Maya node (and all data) of this Marker object.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.Marker.get_bundle">
@@ -256,25 +387,83 @@ Markers are attached to cameras.</p>
 <dl class="method">
 <dt id="mmSolver.api.Marker.get_camera">
 <code class="descname">get_camera</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.get_camera" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the camera connected implicitly with the Marker.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Camera API object, or None if Marker does not have a
+Camera.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None or <a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera">Camera</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.Marker.set_camera">
 <code class="descname">set_camera</code><span class="sig-paren">(</span><em>cam</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.set_camera" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Connect this Marker to the given camera.</p>
+<p>Connecting Markers to cameras happens by parenting a Marker
+under a Camera&#8217;s Marker Group.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If the <cite>cam</cite> argument is None, the Marker is
+disconnected from any camera.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cam</strong> (<em>None</em><em> or </em><a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) &#8211; The camera to connect this Marker to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.Marker.get_marker_group">
 <code class="descname">get_marker_group</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.get_marker_group" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the marker group that implicitly connected to this Marker.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Marker group object.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup">MarkerGroup</a> or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.Marker.set_marker_group">
 <code class="descname">set_marker_group</code><span class="sig-paren">(</span><em>mkr_grp</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.set_marker_group" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the MarkerGroup for this Marker, or None to unlink the Marker.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mkr_grp</strong> (<a class="reference internal" href="#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a><em> or </em><em>None</em>) &#8211; Marker group object to link to this Marker.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nothing.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
+</div>
+<div class="section" id="markergroup">
+<h2>MarkerGroup<a class="headerlink" href="#markergroup" title="Permalink to this headline">¶</a></h2>
+<p>A group containing Marker nodes.</p>
 <dl class="class">
 <dt id="mmSolver.api.MarkerGroup">
 <em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">MarkerGroup</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.MarkerGroup" title="Permalink to this definition">¶</a></dt>
@@ -320,6 +509,7 @@ Markers are attached to cameras.</p>
 </div>
 <div class="section" id="attribute">
 <h2>Attribute<a class="headerlink" href="#attribute" title="Permalink to this headline">¶</a></h2>
+<p>Attribute that will be solved.</p>
 <dl class="class">
 <dt id="mmSolver.api.Attribute">
 <em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">Attribute</code><span class="sig-paren">(</span><em>name=None</em>, <em>node=None</em>, <em>attr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute" title="Permalink to this definition">¶</a></dt>
@@ -922,6 +1112,60 @@ will always have unique node names.</dd>
 </dd></dl>
 
 <dl class="function">
+<dt id="mmSolver.api.get_as_dag_path">
+<code class="descclassname">mmSolver.api.</code><code class="descname">get_as_dag_path</code><span class="sig-paren">(</span><em>node_str</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_as_dag_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the given Maya node path into a MDagPath object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_str</strong> (<em>str</em>) &#8211; Maya node path to be converted.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MDagPath API object or None if the &#8216;node_str&#8217; is invalid.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">MDagPath or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.api.get_as_object">
+<code class="descclassname">mmSolver.api.</code><code class="descname">get_as_object</code><span class="sig-paren">(</span><em>node_str</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_as_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the given Maya node path into a MObject object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_str</strong> (<em>str</em>) &#8211; Maya node path to be converted.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MObject API object or None, if conversion failed.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">MObject or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.api.get_as_plug">
+<code class="descclassname">mmSolver.api.</code><code class="descname">get_as_plug</code><span class="sig-paren">(</span><em>node_attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_as_plug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the given &#8216;node.attr&#8217; path into a MPlug object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_attr</strong> (<em>str</em>) &#8211; Node attribute string in format &#8216;node.attr&#8217;.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MPlug object or None if conversion failed.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">MPlug or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="mmSolver.api.get_object_type">
 <code class="descclassname">mmSolver.api.</code><code class="descname">get_object_type</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_object_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>The canonical function to interpret a node as an MM Solver object type.</p>
@@ -972,12 +1216,15 @@ types and the expected input node type.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> &#8211; The name string to validate.</li>
-<li><strong>prefix</strong> &#8211; Prefix to add to name in case of invalid first character.</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; The name string to validate.</li>
+<li><strong>prefix</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; Prefix to add to name in case of invalid first character.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A valid Maya node name.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
 </td>
 </tr>
 </tbody>
@@ -1219,9 +1466,12 @@ referenced inside the documentation.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.api</a><ul>
+<li><a class="reference internal" href="#object-overview">Object Overview</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
 <li><a class="reference internal" href="#camera">Camera</a></li>
 <li><a class="reference internal" href="#bundle">Bundle</a></li>
-<li><a class="reference internal" href="#marker-markergroup">Marker &amp; MarkerGroup</a></li>
+<li><a class="reference internal" href="#marker">Marker</a></li>
+<li><a class="reference internal" href="#markergroup">MarkerGroup</a></li>
 <li><a class="reference internal" href="#attribute">Attribute</a></li>
 <li><a class="reference internal" href="#frame">Frame</a></li>
 <li><a class="reference internal" href="#solver">Solver</a></li>
@@ -1234,8 +1484,8 @@ referenced inside the documentation.</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="mmSolver.tools.surfacerivet.html"
-                        title="previous chapter">mmSolver.tools.surfacerivet</a></p>
+  <p class="topless"><a href="mmSolver.tools.snaponcurve.html"
+                        title="previous chapter">mmSolver.tools.snaponcurve</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="mmSolver.logger.html"
                         title="next chapter">mmSolver.logger</a></p>
@@ -1273,7 +1523,7 @@ referenced inside the documentation.</p>
           <a href="mmSolver.logger.html" title="mmSolver.logger"
              >next</a> |</li>
         <li class="right" >
-          <a href="mmSolver.tools.surfacerivet.html" title="mmSolver.tools.surfacerivet"
+          <a href="mmSolver.tools.snaponcurve.html" title="mmSolver.tools.snaponcurve"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1 documentation</a> &#187;</li> 
       </ul>

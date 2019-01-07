@@ -1,0 +1,515 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Nodes &#8212; mmSolver 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Commands" href="commands.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="commands.html" title="Commands"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="nodes">
+<h1>Nodes<a class="headerlink" href="#nodes" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal"><span class="pre">mmSolver</span></code> project defines a number of custom nodes used to help
+the solve and workflow.
+The nodes are documented below.</p>
+<div class="section" id="mmmarkergrouptransform-node">
+<h2><code class="docutils literal"><span class="pre">mmMarkerGroupTransform</span></code> Node<a class="headerlink" href="#mmmarkergrouptransform-node" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">mmMarkerGroupTransform</span></code> is a custom transform node and is used to
+group marker objects underneath.</p>
+<p><code class="docutils literal"><span class="pre">mmMarkerGroupTransform</span></code> does not define any custom attributes.</p>
+<p>This node is intended to be used with the <code class="docutils literal"><span class="pre">mmMarkerScale</span></code> node.</p>
+</div>
+<div class="section" id="mmmarkerscale-node">
+<h2><code class="docutils literal"><span class="pre">mmMarkerScale</span></code> Node<a class="headerlink" href="#mmmarkerscale-node" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">mmMarkerScale</span></code> is used to compute scale and translate values
+for a transform.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="35%" />
+<col width="44%" />
+<col width="9%" />
+<col width="12%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Attribute Name</th>
+<th class="head">Description</th>
+<th class="head">Input</th>
+<th class="head">Output</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>focalLength</td>
+<td>Camera focal length (mm)</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>cameraAperture</td>
+<td>Aperture parent attribute</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>horizontalFilmAperture</td>
+<td>Width of aperture (inches)</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>verticalFilmApertre</td>
+<td>Height of aperture (inches)</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>filmOffset</td>
+<td>Aperture offset parent attribute</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>horizontalFilmOffset</td>
+<td>Width of offset (inches)</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>verticalFilmOffset</td>
+<td>Heigth of offset (inches)</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>depth</td>
+<td>Depth of the scale plane</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>outTranslate</td>
+<td>Translate parent attribute</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outTranslateX</td>
+<td>Translate X in camera-space</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outTranslateY</td>
+<td>Translate Y in camera-space</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outTranslateZ</td>
+<td>Translate Z in camera-space</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outScale</td>
+<td>Scale parent attribute</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outScaleX</td>
+<td>Scale X in camera-space</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outScaleY</td>
+<td>Scale Y in camera-space</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outScaleZ</td>
+<td>Scale Z in camera-space</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="mmreprojection-node">
+<h2><code class="docutils literal"><span class="pre">mmReprojection</span></code> Node<a class="headerlink" href="#mmreprojection-node" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">mmReprojection</span></code> node computes the screen-space position of an
+input <code class="docutils literal"><span class="pre">transformWorldMatrix</span></code> attribute.
+A Maya camera node must be connected to the camera attributes.
+The camera is used for all camera/screen-space values.
+The node can be used to feed into a camera display pan, effectively
+centering the screen.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="61%" />
+<col width="5%" />
+<col width="6%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Attribute Name</th>
+<th class="head">Description</th>
+<th class="head">Input</th>
+<th class="head">Output</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>transformWorldMatrix</td>
+<td>The matrix of the input transform to compute, matrix is expected to be in world-space.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>cameraWorldMatrix</td>
+<td>The camera transform matrix.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>applyMatrix</td>
+<td>Apply a screen-space matrix to the transform matrix.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>overrideScreenX</td>
+<td>Override the screen-space transform coordinate in X?</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>overrideScreenY</td>
+<td>Override the screen-space transform coordinate in Y?</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>overrideScreenZ</td>
+<td>Override the screen-space transform coordinate in Z?</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>screenX</td>
+<td>Used for the screen-space point, in X (left-right).</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>screenY</td>
+<td>Used for the screen-space point, in Y (up-down).</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>screenZ</td>
+<td>Used for the screen-space point, in Z (depth).</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>depthScale</td>
+<td>Multiply the depth screen value.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>focalLength</td>
+<td>The camera focal length.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>cameraAperture</td>
+<td>Camera film back (parent attribute).</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>horizontalFilmAperture</td>
+<td>Camera film back width.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>verticalFilmAperture</td>
+<td>Camera film back height.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>filmOffset</td>
+<td>Camera film offset (parent attribute).</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>horizontalFilmOffset</td>
+<td>Camera film offset width.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>verticalFilmOffset</td>
+<td>Camera film offset height.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>filmFit</td>
+<td>Camera film fit, how the film back maps to the image.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>nearClipPlane</td>
+<td>Camera near clipping plane.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>farClipPlane</td>
+<td>Camera far clipping plane.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>cameraScale</td>
+<td>Camera scale value.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>imageWidth</td>
+<td>The render image width.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>imageHeight</td>
+<td>The render Image height.</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>outCoord</td>
+<td>Output coordinate (parent attribute).</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outCoordX</td>
+<td>Screen-space coordinate in X (-1.0 to 1.0)</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outCoordY</td>
+<td>Screen-space coordinate in Y (-1.0 to 1.0)</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outNormCoord</td>
+<td>Output normalized coordinate (parent attribute).</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outNormCoordX</td>
+<td>Normalized screen-space coordinate in X (0.0 to 1.0; lower-left corner is 0.0, 0.0)</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outNormCoordY</td>
+<td>Normalized screen-space coordinate in Y (0.0 to 1.0; lower-left corner is 0.0, 0.0)</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outPixel</td>
+<td>Output pixel coordinate (parent attribute)</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outPixelX</td>
+<td>Pixel coordinate in X (uses imageWidth and imageHeight)</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outPixelY</td>
+<td>Pixel coordinate in Y (uses imageWidth and imageHeight)</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outInsideFrustum</td>
+<td>Is the point inside the frustum?</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outPoint</td>
+<td>Output point (parent attribute).</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outPointX</td>
+<td>Point in camera-space in X.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outPointY</td>
+<td>Point in camera-space in Y.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outPointZ</td>
+<td>Point in camera-space in Z.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outWorldPoint</td>
+<td>Output point (parent attribute).</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outWorldPointX</td>
+<td>Point in world-space in X.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outWorldPointY</td>
+<td>Point in world-space in Y.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outWorldPointZ</td>
+<td>Point in world-space in Z.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outMatrix</td>
+<td>Output matrix in camera-space.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outWorldMatrix</td>
+<td>Output matrix in world-space.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outCameraProjectionMatrix</td>
+<td>Camera projection matrix in camera-space.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outInverseCameraProjectionMatrix</td>
+<td>Camera projection inverse matrix in camera-space.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outWorldCameraProjectionMatrix</td>
+<td>Camera projection matrix in world-space.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outWorldInverseCameraProjectionMatrix</td>
+<td>Camera projection inverse matrix in world-space.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outPan</td>
+<td>Output Pan attribute</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>outHorizontalPan</td>
+<td>The computed pan value in X.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>outVerticalPan</td>
+<td>The computed pan value in Y.</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Nodes</a><ul>
+<li><a class="reference internal" href="#mmmarkergrouptransform-node"><code class="docutils literal"><span class="pre">mmMarkerGroupTransform</span></code> Node</a></li>
+<li><a class="reference internal" href="#mmmarkerscale-node"><code class="docutils literal"><span class="pre">mmMarkerScale</span></code> Node</a></li>
+<li><a class="reference internal" href="#mmreprojection-node"><code class="docutils literal"><span class="pre">mmReprojection</span></code> Node</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="previous chapter">Tutorial</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="commands.html"
+                        title="next chapter">Commands</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/nodes.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="commands.html" title="Commands"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, David Cattermole.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

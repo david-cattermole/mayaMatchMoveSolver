@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mmSolver.ui.uimodels &#8212; mmSolver 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.ui.uiutils" href="mmSolver.ui.uiutils.html" />
+    <link rel="prev" title="mmSolver.ui.nodes" href="mmSolver.ui.nodes.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.uiutils.html" title="mmSolver.ui.uiutils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.nodes.html" title="mmSolver.ui.nodes"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.ui.html" accesskey="U">mmSolver.ui</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-mmSolver.ui.uimodels">
+<span id="mmsolver-ui-uimodels"></span><h1>mmSolver.ui.uimodels<a class="headerlink" href="#module-mmSolver.ui.uimodels" title="Permalink to this headline">¶</a></h1>
+<p>Qt models used in Model-View-Controller designs.</p>
+<dl class="function">
+<dt id="mmSolver.ui.uimodels.getNameFromDict">
+<code class="descclassname">mmSolver.ui.uimodels.</code><code class="descname">getNameFromDict</code><span class="sig-paren">(</span><em>index</em>, <em>names_dict</em>, <em>lookup_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.getNameFromDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the &#8216;name&#8217; from an index, using a specific data structure.</p>
+<p>For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">names_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;Column&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">lookup_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Column&#39;</span><span class="p">:</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">getNamefromDict</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">names_dict</span><span class="p">,</span> <span class="n">lookup_dict</span><span class="p">)</span>
+<span class="c1"># x equals &#39;name&#39;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>index</strong> &#8211; Index to look up.</li>
+<li><strong>names_dict</strong> &#8211; The mapping data, from index to &#8216;second key&#8217;.</li>
+<li><strong>lookup_dict</strong> &#8211; Mapping data structure from &#8216;second key&#8217; to
+final look up name.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The name in &#8216;lookup_dict&#8217; referred to by index in
+&#8216;names_dict&#8217;.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.ui.uimodels.ItemModel">
+<code class="descclassname">mmSolver.ui.uimodels.</code><code class="descname">ItemModel</code><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.ui.uimodels.TableModel">
+<code class="descclassname">mmSolver.ui.uimodels.</code><code class="descname">TableModel</code><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.ui.uimodels.StringDataListModel">
+<code class="descclassname">mmSolver.ui.uimodels.</code><code class="descname">StringDataListModel</code><a class="headerlink" href="#mmSolver.ui.uimodels.StringDataListModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.ui.uimodels.ComboBoxDelegate">
+<code class="descclassname">mmSolver.ui.uimodels.</code><code class="descname">ComboBoxDelegate</code><a class="headerlink" href="#mmSolver.ui.uimodels.ComboBoxDelegate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.ui.nodes.html"
+                        title="previous chapter">mmSolver.ui.nodes</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.ui.uiutils.html"
+                        title="next chapter">mmSolver.ui.uiutils</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.ui.uimodels.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.uiutils.html" title="mmSolver.ui.uiutils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.nodes.html" title="mmSolver.ui.nodes"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.ui.html" >mmSolver.ui</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, David Cattermole.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

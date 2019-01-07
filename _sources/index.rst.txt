@@ -17,12 +17,14 @@ Contents:
 
    introduction
    tutorial
+   solver_design
    nodes
    commands
    mmSolver.tools
    mmSolver.api
    mmSolver.logger
    mmSolver.ui
+   references
 
 
 Indices and tables

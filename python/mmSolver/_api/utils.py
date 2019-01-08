@@ -370,7 +370,7 @@ def get_marker_name(name, prefix=None, suffix=None):
     :type name: str or None
 
     :param name: Suffix of the marker, added to the name. If None, a
-                 default name is added.  
+                 default name is added.
     :type name: str or None
 
     :return: Name for the marker.
@@ -385,7 +385,7 @@ def get_marker_name(name, prefix=None, suffix=None):
         suffix = const.MARKER_NAME_SUFFIX
     if suffix.lower() not in name.lower():
         name += suffix
-    name = convert_valid_maya_name(name, prefix=prefix)
+    name = convert_valid_maya_name(name, prefix=prefix, auto_add_num=False)
     return name
 
 
@@ -402,7 +402,7 @@ def get_bundle_name(name, prefix=None, suffix=None):
     :type name: str or None
 
     :param name: Suffix of the bundle, added to the name. If None, a
-                 default name is added.  
+                 default name is added.
     :type name: str or None
 
     :return: Name for the bundle.
@@ -417,7 +417,7 @@ def get_bundle_name(name, prefix=None, suffix=None):
         suffix = const.BUNDLE_NAME_SUFFIX
     if suffix.lower() not in name.lower():
         name += suffix
-    name = convert_valid_maya_name(name, prefix=prefix)
+    name = convert_valid_maya_name(name, prefix=prefix, auto_add_num=False)
     return name
 
 

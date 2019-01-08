@@ -259,6 +259,11 @@ class TestUtils(test_api_utils.APITestCase):
         self.assertEqual(name3, 'marker_03_MKR')
         self.assertEqual(node3, name3)
 
+        name = api_utils.get_marker_name('TopLeft')
+        node = maya.cmds.createNode('transform', name=name)
+        self.assertEqual(name, 'TopLeft_MKR')
+        self.assertEqual(node, name)
+
     def test_get_bundle_name(self):
         name1 = api_utils.get_bundle_name('01')
         node1 = maya.cmds.createNode('transform', name=name1)

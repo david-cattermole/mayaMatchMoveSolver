@@ -181,6 +181,100 @@ class TestUtils(test_api_utils.APITestCase):
         above_mkr_grp = api_utils.get_marker_group_above_node(node)
         self.assertEqual(above_mkr_grp, mkr_grp)
 
+    def test_convert_valid_maya_name__case_normal(self):
+        """
+        Incrementing numbers at the end of a node name.
+        """
+        name1 = 'my_node_01'
+        node1 = maya.cmds.createNode('transform', name=name1)
+        
+        name2 = api_utils.convert_valid_maya_name(name1)
+        node2 = maya.cmds.createNode('transform', name=name2)
+        self.assertEqual(name2, 'my_node_02')
+        self.assertEqual(node2, name2)
+        
+        name3 = api_utils.convert_valid_maya_name(name2)
+        node3 = maya.cmds.createNode('transform', name=name3)
+        self.assertEqual(name3, 'my_node_03')
+        self.assertEqual(node3, name3)
+        return
+
+    def test_convert_valid_maya_name__case_mid_name(self):
+        """
+        Incrementing numbers in the middle of a node name.
+        """
+        name1 = 'my_node_01_MKR'
+        node1 = maya.cmds.createNode('transform', name=name1)
+        
+        name2 = api_utils.convert_valid_maya_name(name1)
+        node2 = maya.cmds.createNode('transform', name=name2)
+        self.assertEqual(name2, 'my_node_02_MKR')
+        self.assertEqual(node2, name2)
+        
+        name3 = api_utils.convert_valid_maya_name(name2)
+        node3 = maya.cmds.createNode('transform', name=name3)
+        self.assertEqual(name3, 'my_node_03_MKR')
+        self.assertEqual(node3, name3)
+        return
+    
+    def test_convert_valid_maya_name__case_two_numbers(self):
+        """
+        There are two numbers, only the last one should be incremented.
+        """
+        name1 = 'my_node_001_001'
+        node1 = maya.cmds.createNode('transform', name=name1)
+    
+        name2 = api_utils.convert_valid_maya_name(name1)
+        node2 = maya.cmds.createNode('transform', name=name2)
+        self.assertEqual(name2, 'my_node_001_002')
+        self.assertEqual(node2, name2)
+    
+    def test_convert_valid_maya_name__case_no_number(self):
+        """
+        There is no number in the node name, it should
+        """
+        name1 = 'my_node'
+        node1 = maya.cmds.createNode('transform', name=name1)
+        self.assertTrue(maya.cmds.objExists(node1))
+        self.assertEqual(node1, 'my_node')
+    
+        name2 = api_utils.convert_valid_maya_name(name1)
+        node2 = maya.cmds.createNode('transform', name=name2)
+        self.assertEqual(name2, 'my_node_001')
+        self.assertEqual(node2, name2)
+        
+    def test_get_marker_name(self):
+        name1 = api_utils.get_marker_name('01')
+        node1 = maya.cmds.createNode('transform', name=name1)
+        self.assertEqual(name1, 'marker_01_MKR')
+        self.assertEqual(node1, name1)
+
+        name2 = api_utils.get_marker_name('01')
+        node2 = maya.cmds.createNode('transform', name=name2)
+        self.assertEqual(name2, 'marker_02_MKR')
+        self.assertEqual(node2, name2)
+
+        name3 = api_utils.get_marker_name('01')
+        node3 = maya.cmds.createNode('transform', name=name3)
+        self.assertEqual(name3, 'marker_03_MKR')
+        self.assertEqual(node3, name3)
+
+    def test_get_bundle_name(self):
+        name1 = api_utils.get_bundle_name('01')
+        node1 = maya.cmds.createNode('transform', name=name1)
+        self.assertEqual(name1, 'bundle_01_BND')
+        self.assertEqual(node1, name1)
+
+        name2 = api_utils.get_bundle_name('01')
+        node2 = maya.cmds.createNode('transform', name=name2)
+        self.assertEqual(name2, 'bundle_02_BND')
+        self.assertEqual(node2, name2)
+
+        name3 = api_utils.get_bundle_name('01')
+        node3 = maya.cmds.createNode('transform', name=name3)
+        self.assertEqual(name3, 'bundle_03_BND')
+        self.assertEqual(node3, name3)
+
 
 if __name__ == '__main__':
     prog = unittest.main()

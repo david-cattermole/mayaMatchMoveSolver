@@ -8,6 +8,7 @@ this module.
 
 from functools import wraps
 import json
+import re
 
 import maya.cmds
 import maya.OpenMaya as OpenMaya
@@ -252,9 +253,30 @@ def get_marker_group_above_node(node):
     return mkr_grp_node
 
 
-def convert_valid_maya_name(name, prefix=None):
+def convert_valid_maya_name(name,
+                            prefix=None,
+                            auto_add_num=True,
+                            auto_add_num_padding=3,
+                            auto_inc=True,
+                            auto_inc_try_limit=999):
     """
     Get a new valid Maya name - canonical function to get valid Maya node names.
+
+    Examples of auto-adding a number suffix::
+
+       >>> convert_valid_maya_name('name')
+       name_001
+       >>> convert_valid_maya_name('name', auto_add_num_padding=4)
+       name_0001
+
+    Examples of auto-incrementing::
+
+       >>> convert_valid_maya_name('name_01')
+       name_02
+       >>> convert_valid_maya_name('name_001')
+       name_002
+       >>> convert_valid_maya_name('001')
+       prefix_002
 
     :param name: The name string to validate.
     :type name: str
@@ -262,48 +284,140 @@ def convert_valid_maya_name(name, prefix=None):
     :param prefix: Prefix to add to name in case of invalid first character.
     :type prefix: str or None
 
+    :param auto_add_num: If given a node with no number in it, should
+                         we add a number automatically?
+    :type auto_add_num: bool
+
+    :param auto_add_num_padding: Padding of the number to add,
+                                 2 = '01', 3 = '001', 4 = '0001'.
+    :type auto_add_num_padding: int
+
+    :param auto_inc: Should we auto-increment the number in the name?
+    :type auto_inc: bool
+
+    :param auto_inc_try_limit: When trying to find a non-existing Maya
+                               node name, how many times can we
+                               increment until we give up?  :type
+    auto_inc_try_limit: int
+
     :return: A valid Maya node name.
     :rtype: str
     """
-    # TODO: Use Maya API namespace validator?
-    # TODO: name could start with a number; this should be prefixed.
     assert isinstance(name, basestring)
     assert prefix is None or isinstance(prefix, basestring)
+    assert isinstance(auto_add_num, bool)
+    assert isinstance(auto_add_num_padding, int)
+    assert isinstance(auto_inc, bool)
+    assert isinstance(auto_inc_try_limit, int)
+
+    # Ensure no unsupported characters are used in the node name.
     for char in const.BAD_MAYA_CHARS:
         name.replace(char, '_')
+
+    # Add prefix, if the first letter is a digit (which Maya doesn't
+    # allow.)
+    #
+    # NOTE: name could start with a number; this should be prefixed.
     if name[0].isdigit():
-        # Add prefix
         if prefix is None:
             prefix = 'prefix'
         name = prefix + '_' + name
+
+    # Add a number suffix if no number is already added to the
+    # node name, add a number.
+    if auto_add_num is True:
+        splits = []
+        contents = re.split('([0-9]+)', name)
+        has_digit = len(contents) > 1
+        if has_digit is False:
+            new_number = '1'.zfill(auto_add_num_padding)
+            contents.append('_')
+            contents.append(new_number)
+        name = ''.join(contents)
+
+    # Auto-increment a number in the name given.
+    if auto_inc is True:
+        i = 0
+        limit = auto_inc_try_limit
+        while i <= limit and maya.cmds.objExists(name):
+            splits = []
+            contents = re.split('([0-9]+)', name)
+
+            # Increment the number.
+            incremented = False
+            for content in reversed(contents):
+                if content.isdigit() is True and incremented is False:
+                    size = len(content)
+                    num = int(content) + 1
+                    content = str(num).zfill(size)
+                    incremented = True
+                splits.append(content)
+            name = ''.join(reversed(splits))
+            i = i + 1
     return name
 
 
-def get_marker_name(name):
+def get_marker_name(name, prefix=None, suffix=None):
     """
-    Create a name for a marker object, using 'name' as the base identifier.
+    Create a name for a marker object, using 'name' as the base
+    identifier.
 
     :param name: Name of object.
+    :type name: str
+
+    :param name: Prefix of the marker, if a number is the first
+                 letter. If None, a default name is added.
+    :type name: str or None
+
+    :param name: Suffix of the marker, added to the name. If None, a
+                 default name is added.  
+    :type name: str or None
+
     :return: Name for the marker.
+    :rtype: str
     """
     assert isinstance(name, basestring)
-    name = convert_valid_maya_name(name, prefix='marker')
-    if const.MARKER_NAME_SUFFIX.lower() not in name.lower():
-        name += const.MARKER_NAME_SUFFIX
+    assert prefix is None or isinstance(prefix, basestring)
+    assert suffix is None or isinstance(suffix, basestring)
+    if prefix is None:
+        prefix = const.MARKER_NAME_PREFIX
+    if suffix is None:
+        suffix = const.MARKER_NAME_SUFFIX
+    if suffix.lower() not in name.lower():
+        name += suffix
+    name = convert_valid_maya_name(name, prefix=prefix)
     return name
 
 
-def get_bundle_name(name):
+def get_bundle_name(name, prefix=None, suffix=None):
     """
-    Create a name for a bundle object, using 'name' as the base identifier.
+    Create a name for a bundle object, using 'name' as the base
+    identifier.
 
     :param name: Name of object.
+    :type name: str
+
+    :param name: Prefix of the bundle, if a number is the first
+                 letter. If None, a default name is added.
+    :type name: str or None
+
+    :param name: Suffix of the bundle, added to the name. If None, a
+                 default name is added.  
+    :type name: str or None
+
     :return: Name for the bundle.
+    :rtype: str
     """
     assert isinstance(name, basestring)
-    name = convert_valid_maya_name(name, prefix='bundle')
-    if const.BUNDLE_NAME_SUFFIX.lower() not in name.lower():
-        name += const.BUNDLE_NAME_SUFFIX
+    assert prefix is None or isinstance(prefix, basestring)
+    assert suffix is None or isinstance(suffix, basestring)
+    if prefix is None:
+        prefix = const.BUNDLE_NAME_PREFIX
+    if suffix is None:
+        suffix = const.BUNDLE_NAME_SUFFIX
+    if suffix.lower() not in name.lower():
+        name += suffix
+    name = convert_valid_maya_name(name, prefix=prefix)
     return name
 
 

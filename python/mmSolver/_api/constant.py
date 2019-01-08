@@ -9,8 +9,10 @@ PLUGIN_NAMES = [
 ]
 
 
-# Maya node suffixes
+# Maya node prefixes and suffixes
+MARKER_NAME_PREFIX = 'marker'
 MARKER_NAME_SUFFIX = '_MKR'
+BUNDLE_NAME_PREFIX = 'bundle'
 BUNDLE_NAME_SUFFIX = '_BND'
 
 

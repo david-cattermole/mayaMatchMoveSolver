@@ -55,19 +55,26 @@
 <p>Welcome to <cite>mmSolver</cite>! <cite>mmSolver</cite> is a Bundle Adjustment solver for
 Autodesk Maya, for solving MatchMove tasks by adjusting Maya
 attributes.</p>
-<p>This documentation is for the GitHub <a class="reference external" href="https://github.com/david-cattermole/mayaMatchMoveSolver">project</a>, and focuses technical
-scripting, plug-in command and node details.</p>
-<div class="section" id="contents">
-<h2>Contents:<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+<p>This documentation is for the GitHub <a class="reference external" href="https://github.com/david-cattermole/mayaMatchMoveSolver">project</a>, and details the tools,
+solver design, python scripting, plug-in command and node details.</p>
+<div class="section" id="topics">
+<h2>Topics<a class="headerlink" href="#topics" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="solver_design.html#how-does-the-solver-work">How does the solver work?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solver_design.html#solving-process">Solving Process</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solver_design.html#general-solving-concepts">General Solving Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solver_design.html#frequently-asked-questions">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#solver-ui">Solver UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#create-marker">Create Marker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#convert-to-marker">Convert to Marker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#load-markers">Load Markers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#create-bundle">Create Bundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#link-marker-bundle">Link Marker + Bundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#unlink-marker-from-all-bundles">Unlink Marker from all Bundles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#toggle-marker-bundle">Toggle Marker / Bundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#select-marker-bundle">Select Marker + Bundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#center-2d-on-selection">Center 2D On Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#aim-at-camera">Aim at Camera</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="nodes.html">Nodes</a><ul>
@@ -81,6 +88,21 @@ scripting, plug-in command and node details.</p>
 <li class="toctree-l2"><a class="reference internal" href="commands.html#mmtestcameramatrix-command"><code class="docutils literal"><span class="pre">mmTestCameraMatrix</span></code> Command</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="solver_design.html#how-does-the-solver-work">How does the solver work?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solver_design.html#solving-process">Solving Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solver_design.html#general-solving-concepts">General Solving Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solver_design.html#frequently-asked-questions">Frequently Asked Questions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">Related Books and Papers</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="scripting">
+<h2>Scripting<a class="headerlink" href="#scripting" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html">mmSolver.tools.solver</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.loadmarker.html">mmSolver.tools.loadmarker</a></li>
@@ -120,7 +142,6 @@ scripting, plug-in command and node details.</p>
 <li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html">mmSolver.ui.uiutils</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">Related Books and Papers</a></li>
 </ul>
 </div>
 </div>
@@ -143,7 +164,8 @@ scripting, plug-in command and node details.</p>
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver - Maya MatchMove Solver</a><ul>
-<li><a class="reference internal" href="#contents">Contents:</a></li>
+<li><a class="reference internal" href="#topics">Topics</a></li>
+<li><a class="reference internal" href="#scripting">Scripting</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>

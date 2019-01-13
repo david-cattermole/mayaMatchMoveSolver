@@ -3,12 +3,21 @@
 
 
 # Maya directories
-MAYA_INCLUDE_PATH=/usr/autodesk/maya/include
-MAYA_LIB_PATH=/usr/autodesk/maya/lib
+MAYA_VERSION=2017
+MAYA_INCLUDE_PATH=/usr/autodesk/maya2017/include
+MAYA_LIB_PATH=/usr/autodesk/maya2017/lib
 
 
 # The root of this project.
 PROJECT_ROOT=`pwd`
+
+# Where to install the module?
+#
+# The "$HOME/maya/2017/modules" directory is automatically searched
+# for Maya module (.mod) files. Therefore we can install directly.
+#
+# INSTALL_MODULE_DIR=${PROJECT_ROOT}/modules
+INSTALL_MODULE_DIR=~/maya/2017/modules
 
 
 # Number of CPUs
@@ -31,8 +40,10 @@ mkdir -p build
 cd build
 rm --force -R *
 cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=${INSTALL_MODULE_DIR} \
       -DUSE_ATLAS=0 \
       -DUSE_MKL=1 \
+      -DMAYA_VERSION=${MAYA_VERSION} \
       -DMAYA_INCLUDE_PATH=${MAYA_INCLUDE_PATH} \
       -DMAYA_LIB_PATH=${MAYA_LIB_PATH} \
       -DLEVMAR_LIB_PATH=${PROJECT_ROOT}/external/lib \
@@ -42,4 +53,9 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       ..
 make clean
 make -j${CPU_NUM}
+make install
 
+
+# # For developers, make packages ready to distribute to others.
+# make package
+# make package_source

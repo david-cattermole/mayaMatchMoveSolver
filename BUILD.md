@@ -58,7 +58,7 @@ Maya 2017 on Windows:
 NOTE: Other operating systems have not been tested, but may work
 with only minor modifications.
 
-#  Dependencies
+# Dependencies
 
 These projects are needed for building the ``mmSolver`` project.
 
@@ -68,7 +68,7 @@ Required:
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
 
-Required for GUI:
+Required for GUI support:
 - [Qt.py](https://github.com/mottosso/Qt.py)
 
 Optional:
@@ -79,44 +79,81 @@ Optional:
 
 An overview of the simple method is:
 
-1. Install ATLAS with Package Manager (optional)
-2. Install Intel MKL (optional)
-3. Download, unpack, and compile `levmar` with Makefile.
-4. Download, unpack, and compile `mmSolver` with CMake.
-5. Copy mmSolver python API into Maya scripts directory.
-6. Copy mmSolver plugin into Maya plug-in directory.
-7. Copy 3DEqualizer python scripts into .3dequalizer home directory.
+1. Compile Qt .ui files.
+2. Build Documentation
+3. Edit `build_with_*` script.
+4. Install optional dependancies
+   1. Install ATLAS with Package Manager (optional)
+   2. Install Intel MKL (optional)
+5. Run `build_with_...` script.
+6. Copy 3DEqualizer python scripts into .3dequalizer home directory.
 
-Only ATLAS **or** Intel MKL is optional. Both libraries are not needed
+*Note:* Only ATLAS **or** Intel MKL is optional. Both libraries are not needed
 together.
 
-# Build Scripts
+Below lists all the commands run in an example session, following the
+above sections. The text editors `vi` and `notepad` are used as
+example only, any text editor may be used.
 
-There are three different scripts to build ``mmSolver`` depending on
-the dependencies you want to use:
+On Linux:
+```commandline
+$ cd <project root>
 
-| Build Script Name       | Operating System  | Dependencies      |
-| ------------            | -----------       | -----------       |
-| build_with_levmar.sh    | Linux             | levmar            |
-| build_with_levmar.bat   | Windows           | levmar            |
-| build_with_atlas.sh     | Linux             | levmar, ATLAS     |
-| build_with_intel_mkl.sh | Linux             | levmar, Intel MKL |
+# Build Qt .ui files
+$ mayapy compileUI.py
 
-The scripts will assume a default Maya install directory
-You will need to edit the build script with your custom Maya include
-and library directories.
+# Build documentation
+$ cd docs
+$ make html
+$ cd ..
+l
+# Download levmar
+$ bash external/download_all_archives.sh
 
-For details of using these build scripts and building, please see
-[INSTALL_LINUX.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL_LINUX.md) or
-[INSTALL_WINDOWS.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL_WINDOWS.md).
+# Edit variables as needed.
+$ vi build_with_levmar.sh
 
-# Install Python Scripts
+# Build plug-in and module
+$ build_with_levmar.sh
 
-The `mmSolver` project has a convenience Python API for tool writers,
-which is recommended to be used. The API must be added to the `MAYA_SCRIPT_PATH`
-environment variable.
+# Run tests (with 'mayapy')
+$ sh runTests.sh
 
-We must also compile the `*.ui` files for your version of Maya (either PySide or
+# Install 3DE scripts
+$ cp ./3dequalizer/scriptdb/* ~/.3dequalizer/py_scripts
+```
+
+On Windows:
+```cmd
+> CD <project root>
+
+:: Compile Qt .ui files
+> mayapy compileUI.py
+
+:: Build Documentation
+> CD docs
+> CMD /C make.bat html
+> CD ..
+
+:: Download levmar manually
+
+:: Edit variables as needed
+> notepad build_with_levmar.bat
+
+:: Build plug-in and module
+> CMD /C build_with_levmar.bat
+
+:: Run tests (with 'mayapy')
+> notepad runTests.bat  :: Edit path to mayapy if needed
+> CMD /C runTests.bat
+
+:: Install 3DE scripts
+> XCOPY 3dequalizer/scriptdb/* "%AppData%/.3dequalizer/py_scripts" /Y
+```
+
+# Compile Qt UI files
+
+We must compile the `*.ui` files for your version of Maya (either PySide or
 PySide2) in order to use the mmSolver tool GUIs. To compile the `*.ui` files,
 run these commands.
 
@@ -135,45 +172,48 @@ On Windows:
 These commands use `mayapy`, the Maya Python interpreter. Make sure the use the
 executable with the version of Maya you plan to use mmSolver with.
 
-Now, to install the Python scripts into the home directory's Maya `scripts`
-directory, simply run these commands:
-
-On Linux:
-```commandline
-$ cd <project root>
-$ cp -R python/mmSolver ~/maya/<maya version>/scripts
-```
-
-On Windows:
-```cmd
-> CD <project root>
-> XCOPY python\mmSolver %USERPROFILE%\Documents\maya\<maya version>\scripts /E /Y
-```
-
 NOTE: Replace ``<project root>`` and ``<maya version>`` as required.
 
-# Install plugin
+# Build Documentation
 
-Once the `mmSolver` plugin has been built you will need to place it on
-the `MAYA_PLUG_IN_PATH` environment variable path.
+mmSolver comes with a set of documentation, and Sphinx building
+scripts to automate HTML page generation. It is recommended to build
+the HTML documentation, however it is optional.
 
-To install into our home directory maya `plug-ins` directory (which is
-automatically on the `MAYA_PLUG_IN_PATH`), simply run these commands...
+Once the documentation is built, it will be installed automatically
+into the Maya Module (next section).
 
 On Linux:
 ```commandline
-$ mkdir ~/maya/<maya version>/plug-ins
-$ cd <project root>
-$ cp build/mmSolver.so ~/maya/<maya version>/plug-ins
+$ cd <project root>/docs
+$ make html
 ```
 
 On Windows:
 ```cmd
-> MKDIR %USERPROFILE%\Documents\maya\<maya version>\plug-ins
-> CD <project root>
-> COPY build/mmSolver.mll %USERPROFILE%\Documents\maya\<maya version>\plug-ins\mmSolver.mll
+> CD <project root>/docs
+> CMD /C make.bat html
 ```
-Replace ``<project root>`` and ``<maya version>`` as required.
+
+# Build Plug-In (and Maya Module)
+
+To build the Plug-In
+
+There are three different scripts to build ``mmSolver`` depending on
+the dependencies you want to use:
+
+| Build Script Name       | Operating System | Dependencies      |
+| ------------            | -----------      | -----------       |
+| build_with_levmar.sh    | Linux            | levmar            |
+| build_with_levmar.bat   | Windows          | levmar            |
+| build_with_atlas.sh     | Linux            | levmar, ATLAS     |
+| build_with_intel_mkl.sh | Linux            | levmar, Intel MKL |
+
+For details of using these build scripts and building the plug-in,
+please see
+[BUILD_LINUX.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD_LINUX.md)
+or
+[BUILD_WINDOWS.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD_WINDOWS.md).
 
 # Install ATLAS / Intel MKL libraries
 
@@ -240,21 +280,22 @@ Copy the python scripts into the `~/.3dequalizer/py_scripts` directory.
 On Linux:
 ```commandline
 $ cd <project root>
-$ cp ./3dequalizer/python/* ~/.3dequalizer/py_scripts
+$ cp ./3dequalizer/scriptdb/* ~/.3dequalizer/py_scripts
 ```
 
 On Windows:
 ```cmd
 > CD <project root>
-> XCOPY 3dequalizer/python/* "%AppData%/.3dequalizer/py_scripts" /Y
+> XCOPY 3dequalizer/scriptdb/* "%AppData%/.3dequalizer/py_scripts" /Y
 ```
 
 Alternatively, you can modify the `PYTHONPATH` environment variable
-before 3DEqualizer starts and add `<project root>/3dequalizer/python/`
+before 3DEqualizer starts and add `<project root>/3dequalizer/scriptdb/`
 to the list of search paths.
 
 There are currently two 3DEqualizer tools available:
+
 | File Name                | Tool Name                                      |
 | ------------------------ | ---------------------------------------------- |
-| copy_track_mmsolver.py   | Copy 2D Tracks (Maya MM Solver)                |
-| export_track_mmsolver.py | Export 2D Tracks (Maya MM Solver)...           |
+| copy_track_mmsolver.py   | Copy 2D Tracks (MM Solver)                     |
+| export_track_mmsolver.py | Export 2D Tracks (MM Solver)...                |

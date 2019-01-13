@@ -1,10 +1,20 @@
 cmake_minimum_required(VERSION 2.8)
+
+# Project configuration.
 project(mayaMatchMoveSolver)
-set(CMD_NAME mmSolver)
-set(CMAKE_CXX_STANDARD 11)
+set(PROJECT_VERSION_MAJOR 0)
+set(PROJECT_VERSION_MINOR 1)
+set(PROJECT_VERSION_PATCH 0)
+set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
+set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
+set(PROJECT_AUTHOR "David Cattermole")
+
+set(PLUGIN_NAME mmSolver)
 
 # Compile Flags, Release flags come from the Autodesk Maya build
 # scripts (and Visual Studio project files).
+set(CMAKE_CXX_STANDARD 11)
 if (MSVC)
     # For Visual Studio 11 2012
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GS /W3 /Zc:wchar_t /Zi /fp:precise /WX- /Zc:forScope /GR /Gd /EHsc")
@@ -35,8 +45,9 @@ else()
 endif()
 
 # Maya SDK
-set(MAYA_INCLUDE_PATH "/usr/autodesk/maya2017/include" CACHE PATH "Maya include directory")
-set(MAYA_LIB_PATH "/usr/autodesk/maya2017/lib" CACHE PATH "Maya library directory")
+set(MAYA_VERSION "2017" CACHE STRING "Maya version number")
+set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH "Maya include directory")
+set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH "Maya library directory")
 
 # Lev-Mar
 set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH "Levmar include directory")
@@ -49,6 +60,25 @@ set(ATLAS_LIB_PATH "/usr/lib64/atlas" CACHE PATH "ATLAS library directory")
 # Intel Math Kernel Library
 set(USE_MKL OFF CACHE BOOLEAN "Should we use MKL?")
 set(MKL_LIB_PATH "/opt/intel/mkl/lib/intel64" CACHE PATH "Intel MKL library directory")
+
+# Module paths
+if (UNIX)
+    set(MODULE_OS_NAME linux)
+elseif(MSVC)
+    set(MODULE_OS_NAME win64)
+else()
+    message(FATAL_ERROR "Only Linux and Windows are supported.")
+endif()
+
+set(MODULE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
+set(MODULE_FULL_NAME "${MODULE_NAME}-maya${MAYA_VERSION}-${MODULE_OS_NAME}")
+set(MODULE_BUILD_DIR "${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}")
+
+# Create Module Description file.
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/modules/mayaMatchMoveSolver.mod
+        ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_FULL_NAME}.mod
+        @ONLY)
 
 # Source
 set(SOURCE_FILES
@@ -93,8 +123,8 @@ link_directories(
 )
 
 # 'mmSolver' maya plugin library
-add_library(${CMD_NAME} SHARED ${SOURCE_FILES})
-target_link_libraries(${CMD_NAME}
+add_library(${PLUGIN_NAME} SHARED ${SOURCE_FILES})
+target_link_libraries(${PLUGIN_NAME}
         OpenMaya
         OpenMayaAnim
         Foundation
@@ -102,7 +132,7 @@ target_link_libraries(${CMD_NAME}
 
 # On Linux the 'm' library is required.
 if (UNIX)
-    target_link_libraries(${CMD_NAME} m)
+    target_link_libraries(${PLUGIN_NAME} m)
 endif()
 
 # Atlas
@@ -113,7 +143,7 @@ if (USE_ATLAS)
     link_directories(
         ${ATLAS_LIB_PATH}
         )
-    target_link_libraries(${CMD_NAME}
+    target_link_libraries(${PLUGIN_NAME}
             lapack
             satlas  # serial compiled library, not threaded
             )
@@ -127,7 +157,7 @@ if (USE_MKL)
     link_directories(
         ${MKL_LIB_PATH}
         )
-    target_link_libraries(${CMD_NAME}
+    target_link_libraries(${PLUGIN_NAME}
             mkl_core
             mkl_def
             mkl_gf_lp64
@@ -138,13 +168,107 @@ if (USE_MKL)
             mkl_sequential)
 endif()
 
-set_target_properties(${CMD_NAME} PROPERTIES
-        PREFIX "" # no 'lib' prefix to .so files
+# no 'lib' prefix to .so files
+set_target_properties(${PLUGIN_NAME} PROPERTIES
+        PREFIX ""
         )
 
 # On Windows, the Maya Plug-In file extension is '.mll', not '.dll'.
 if (WIN32)
-    set_target_properties(${CMD_NAME} PROPERTIES
+    set_target_properties(${PLUGIN_NAME} PROPERTIES
         SUFFIX ".mll"
         )
 endif()
+
+# Output to the Module plug-ins directory.
+#
+# On Windows, the Plug-In is treated as a 'RUNTIME' type,
+# on Linux, it's a 'LIBRARY' type.
+set_target_properties(${PLUGIN_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${MODULE_FULL_NAME}"
+        LIBRARY_OUTPUT_DIRECTORY "${MODULE_FULL_NAME}"
+        ARCHIVE_OUTPUT_DIRECTORY "${MODULE_FULL_NAME}"
+        )
+
+# Install the Module Description file.
+install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_FULL_NAME}.mod
+        DESTINATION "./")
+
+# Install the Plug-In.
+install(TARGETS ${PLUGIN_NAME}
+        RUNTIME DESTINATION "${MODULE_FULL_NAME}/plug-ins"
+        LIBRARY DESTINATION "${MODULE_FULL_NAME}/plug-ins")
+
+# Install Python API and tools
+install(DIRECTORY "python/"
+        DESTINATION "${MODULE_FULL_NAME}/python"
+        FILES_MATCHING PATTERN "*.py")
+
+# Install MEL scripts.
+install(DIRECTORY "mel/"
+        DESTINATION "${MODULE_FULL_NAME}/scripts"
+        FILES_MATCHING PATTERN "*.mel")
+install(DIRECTORY "mel/AETemplates/"
+        DESTINATION "${MODULE_FULL_NAME}/scripts/AETemplates"
+        FILES_MATCHING PATTERN "*.mel")
+
+# Install 3DEqualizer scripts.
+install(DIRECTORY "3dequalizer/scriptdb/"
+        DESTINATION "${MODULE_FULL_NAME}/3dequalizer"
+        FILES_MATCHING PATTERN "*.py")
+
+# Install Icons.
+install(DIRECTORY "icons/"
+        DESTINATION "${MODULE_FULL_NAME}/icons"
+        FILES_MATCHING PATTERN "*.png"
+        PATTERN "icons/edit" EXCLUDE
+        PATTERN "icons/library" EXCLUDE)
+install(DIRECTORY "icons/"
+        DESTINATION "${MODULE_FULL_NAME}/icons"
+        FILES_MATCHING PATTERN "*.svg"
+        PATTERN "icons/edit" EXCLUDE
+        PATTERN "icons/library" EXCLUDE)
+
+# Install Documentation
+install(DIRECTORY "docs/build/html/"
+        DESTINATION "${MODULE_FULL_NAME}/docs/html")
+install(FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/TOOLS.md
+        DESTINATION "${MODULE_FULL_NAME}/docs")
+
+# Install misc files
+install(FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
+        ${CMAKE_CURRENT_SOURCE_DIR}/README.md
+        DESTINATION "${MODULE_FULL_NAME}/")
+
+set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
+set(CPACK_PACKAGE_VENDOR "${PROJECT_AUTHOR}")
+set(CPACK_PACKAGE_CONTACT "cattermole91@gmail.com")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+set(CPACK_PACKAGE_FILE_NAME "${MODULE_FULL_NAME}")
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 1)
+# Put the packages into the source directory, so that when we run
+# another build, it's not removed as part of the clean up.
+SET(CPACK_OUTPUT_FILE_PREFIX "../packages")
+if (WIN32 AND NOT UNIX)
+    # .zip file for Windows.
+    set(CPACK_GENERATOR "ZIP")
+elseif (UNIX AND NOT WIN32)
+    # .tar.gz for Linux.
+    set(CPACK_GENERATOR "TGZ")
+endif()
+
+# TODO: Set up proper 'source' package file inclusion rules.
+# # set(CPACK_SOURCE_GENERATOR "TGZ")
+# # set(CPACK_SOURCE_PACKAGE_FILE_NAME "${MODULE_NAME}-Source")
+
+# Use CPack (part of CMake) to generate the packages...
+# If 'CPack' is not included, the 'packages' target will not be generated.
+include(CPack)

@@ -76,8 +76,12 @@ Old Documentation files:
 
 ## Building and Installation
 
-For building and installation follow the instructions in
+If you have a 'mayaMatchMoveSolver' archive package and need to
+install it, follow the instructions in
 [INSTALL.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL.md).
+
+To build (compile) the plug-in follow the steps in
+[BUILD.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md).
 
 ## Contributing
 

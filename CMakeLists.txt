@@ -205,10 +205,13 @@ install(DIRECTORY "python/"
         DESTINATION "${MODULE_FULL_NAME}/python"
         FILES_MATCHING PATTERN "*.py")
 
-# Install MEL scripts.
+# Install Maya MEL and Python scripts.
 install(DIRECTORY "mel/"
         DESTINATION "${MODULE_FULL_NAME}/scripts"
         FILES_MATCHING PATTERN "*.mel")
+install(DIRECTORY "mel/"
+        DESTINATION "${MODULE_FULL_NAME}/scripts"
+        FILES_MATCHING PATTERN "*.py")
 install(DIRECTORY "mel/AETemplates/"
         DESTINATION "${MODULE_FULL_NAME}/scripts/AETemplates"
         FILES_MATCHING PATTERN "*.mel")

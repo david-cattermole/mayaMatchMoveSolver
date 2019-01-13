@@ -70,6 +70,8 @@ def create_marker():
     Create a new marker under the current viewport camera, or under
     the selected camera, if a camera is selected.
     """
+    mmapi.load_plugin()
+
     sel = maya.cmds.ls(sl=True, long=True)
     node_filtered = filter_nodes.get_nodes(sel)
     cams = node_filtered['camera']

@@ -158,6 +158,7 @@ def convert_to_marker():
         LOG.warning('Please select one or more transform nodes.')
         return
 
+    mmapi.load_plugin()
     try:
         # Turn off Maya UI
         maya.mel.eval('paneLayout -e -manage false $gMainPane')

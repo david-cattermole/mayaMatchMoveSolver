@@ -4,6 +4,7 @@ The Center 2D tool.
 
 import maya.cmds
 import mmSolver.logger
+import mmSolver.api as mmapi
 
 
 LOG = mmSolver.logger.get_logger()
@@ -37,9 +38,9 @@ def __get_camera():
         cam = maya.cmds.modelEditor(model_ed, query=True, camera=True)
     if maya.cmds.nodeType(cam) == 'transform':
         shps = maya.cmds.listRelatives(
-            cam, 
-            children=True, 
-            shapes=True, 
+            cam,
+            children=True,
+            shapes=True,
             fullPath=True
         ) or []
         if len(shps) > 0:
@@ -116,6 +117,8 @@ def center_two_dee():
     """
     Center the selected transform onto the camera view.
     """
+    mmapi.load_plugin()
+
     cam_shp = __get_camera()
     if cam_shp is None:
         LOG.warning('Please select an active viewport to get a camera.')

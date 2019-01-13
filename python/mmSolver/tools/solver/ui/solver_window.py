@@ -17,7 +17,7 @@ import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
 import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 import mmSolver.tools.solver.ui.solver_layout as solver_layout
-import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
+import mmSolver.tools.loadmarker.tool as loadmarker_tool
 import mmSolver.tools.selection.tools as selection_tool
 import mmSolver.tools.cameraaim.tool as cameraaim_tool
 import mmSolver.tools.createmarker.tool as createmarker_tool
@@ -378,7 +378,7 @@ class SolverWindow(BaseWindow):
         could also show the point data before loading the file.
         """
         LOG.debug('loadMarkerCB')
-        loadmarker_window.main()
+        loadmarker_tool.open_window()
 
     def createBundleCB(self):
         """

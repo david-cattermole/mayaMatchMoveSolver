@@ -6,6 +6,7 @@ import collections
 import maya.OpenMaya as OpenMaya
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.ui.uiutils as uiutils
 
 
 TYPE_NEW_SCENE = 'new_scene'
@@ -265,7 +266,9 @@ def new_scene_func(clientData):
     :rtype: None
     """
     try:
-        clientData.close()
+        valid = uiutils.isValidQtObject(clientData)
+        if clientData is not None and valid is True:
+            clientData.close()
     except RuntimeError:
         msg = 'New Maya Scene callback failed to close UI: ui=%r'
         LOG.warning(msg, clientData)

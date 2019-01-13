@@ -31,7 +31,5 @@ venv/*
 *.tar
 
 external/working/levmar*
-external/working/sparselm*
-external/working/SuiteSparse*
 external/include/*.h*
 external/include/*atlas*

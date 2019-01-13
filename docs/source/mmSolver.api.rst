@@ -207,52 +207,35 @@ configuration or an enumeration of options. These constants are
 referenced inside the documentation.
 
 .. autoattribute:: mmSolver.api.OBJECT_TYPE_UNKNOWN
-   :annotation:
 
 .. autoattribute:: mmSolver.api.OBJECT_TYPE_ATTRIBUTE
-   :annotation:
 
 .. autoattribute:: mmSolver.api.OBJECT_TYPE_MARKER
-   :annotation:
 
 .. autoattribute:: mmSolver.api.OBJECT_TYPE_CAMERA
-   :annotation:
 
 .. autoattribute:: mmSolver.api.OBJECT_TYPE_MARKER_GROUP
-   :annotation:
 
 .. autoattribute:: mmSolver.api.OBJECT_TYPE_BUNDLE
-   :annotation:
 
 .. autoattribute:: mmSolver.api.OBJECT_TYPE_COLLECTION
-   :annotation:
 
 .. autoattribute:: mmSolver.api.OBJECT_TYPE_LIST
-   :annotation: List containing all OBJECT_TYPE_* constant values.
 
 .. autoattribute:: mmSolver.api.ATTR_STATE_INVALID
-   :annotation:
 
 .. autoattribute:: mmSolver.api.ATTR_STATE_STATIC
-   :annotation:
 
 .. autoattribute:: mmSolver.api.ATTR_STATE_ANIMATED
-   :annotation:
 
 .. autoattribute:: mmSolver.api.ATTR_STATE_LOCKED
-   :annotation:
 
 .. autoattribute:: mmSolver.api.SOLVER_TYPE_LEVMAR
-   :annotation:
 
 .. autoattribute:: mmSolver.api.AUTO_DIFF_TYPE_FORWARD
-   :annotation:
 
 .. autoattribute:: mmSolver.api.AUTO_DIFF_TYPE_CENTRAL
-   :annotation:
 
 .. autoattribute:: mmSolver.api.AUTO_DIFF_TYPE_LIST
-   :annotation: List containing all AUTO_DIFF_TYPE_* constant values.
-
 
 .. |API Classes Image| image:: https://raw.githubusercontent.com/david-cattermole/mayaMatchMoveSolver/master/design/api/api_classes_overview.png

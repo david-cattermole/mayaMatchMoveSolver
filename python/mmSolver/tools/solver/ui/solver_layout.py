@@ -177,8 +177,16 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         else:
             v = lib_col.compile_collection(col)
         assert isinstance(v, bool) is True
-        if self._parentObject is not None:
-            self._parentObject.applyBtn.setEnabled(v)
+
+        # TODO: Sometimes the apply button is falsely disabled,
+        #   therefore we shouldn't disable it until it's fixed.
+        # # if self._parentObject is not None:
+        # #     self._parentObject.applyBtn.setEnabled(v)
+                
+        if v is True:
+            self.setStatusLine(const.STATUS_READY)
+        else:
+            self.setStatusLine(const.STATUS_SOLVER_NOT_VALID)
         return
 
     def populateCollectionModel(self, model):

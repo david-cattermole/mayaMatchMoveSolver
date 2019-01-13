@@ -99,6 +99,7 @@ AUTO_DIFF_TYPE_DEFAULT_VALUE = 1
 STATUS_READY = 'Ready.'
 STATUS_REFRESHING = 'Refreshing UI...'
 STATUS_COMPILING = 'Compiling Solver...'
+STATUS_SOLVER_NOT_VALID = 'Solver Not Valid!'
 STATUS_EXECUTING = 'Executing...'
 STATUS_FINISHED = 'Finished.'
 

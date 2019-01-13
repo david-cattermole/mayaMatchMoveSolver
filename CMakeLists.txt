@@ -233,9 +233,6 @@ install(DIRECTORY "icons/"
 # Install Documentation
 install(DIRECTORY "docs/build/html/"
         DESTINATION "${MODULE_FULL_NAME}/docs/html")
-install(FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/TOOLS.md
-        DESTINATION "${MODULE_FULL_NAME}/docs")
 
 # Install misc files
 install(FILES

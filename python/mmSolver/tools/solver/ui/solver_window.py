@@ -326,49 +326,39 @@ class SolverWindow(BaseWindow):
         return
 
     def logErrorCB(self):
-        LOG.debug('logErrorCB')
         lib_state.set_log_level(const.LOG_LEVEL_ERROR)
 
     def logWarningCB(self):
-        LOG.debug('logWarningCB')
         lib_state.set_log_level(const.LOG_LEVEL_WARNING)
 
     def logInfoCB(self):
-        LOG.debug('logInfoCB')
         lib_state.set_log_level(const.LOG_LEVEL_INFO)
 
     def logVerboseCB(self):
-        LOG.debug('logVerboseCB')
         lib_state.set_log_level(const.LOG_LEVEL_VERBOSE)
 
     def logDebugCB(self):
-        LOG.debug('logDebugCB')
         lib_state.set_log_level(const.LOG_LEVEL_DEBUG)
 
     def createNewCollectionNodeCB(self):
-        LOG.debug('createNewCollectionNodeCB')
         self.subForm.createNewCollectionNode()
         return
 
     def renameCollectionNodeCB(self):
-        LOG.debug('renameCollectionNodeCB')
         self.subForm.renameCollectionNode()
         return
 
     def removeCollectionNodeCB(self):
-        LOG.debug('removeCollectionNodeCB')
         self.subForm.removeCollectionNode()
         return
 
     def createMarkerCB(self):
-        LOG.debug('createMarkerCB')
         createmarker_tool.create_marker()
 
     def convertToMarkerCB(self):
         """
         Converts all selected transform nodes into markers.
         """
-        LOG.debug('convertToMarkerCB')
         convertmarker_tool.convert_to_marker()
         return
 
@@ -377,44 +367,36 @@ class SolverWindow(BaseWindow):
         Open a UI where we can paste a file path in and press "ok". The UI
         could also show the point data before loading the file.
         """
-        LOG.debug('loadMarkerCB')
         loadmarker_tool.open_window()
 
     def createBundleCB(self):
         """
         Create a Bundle node, attached to the selected markers.
         """
-        LOG.debug('createBundleCB')
         createbundle_tool.create_bundle()
 
     def aimAtCameraCB(self):
         """
         Aim the selected nodes at the viewport camera.
         """
-        LOG.debug('aimAtCameraCB')
         cameraaim_tool.aim_at_camera()
 
     def centerTwoDeeCB(self):
         """
         Center the viewport on the selected node.
         """
-        LOG.debug('centerTwoDeeCB')
         centertwodee_tool.center_two_dee()
 
     def toggleMarkerBundleSelectionCB(self):
-        LOG.debug('toggleMarkerBundleSelectionCB')
         selection_tool.swap_between_selected_markers_and_bundles()
 
     def selectBothMarkersAndBundlesCB(self):
-        LOG.debug('selectBothMarkersAndBundlesCB')
         selection_tool.select_both_markers_and_bundles()
 
     def linkMarkerBundleCB(self):
-        LOG.debug('linkMarkerBundleCB')
         link_mb_tool.link_marker_bundle()
 
     def unlinkMarkerBundleCB(self):
-        LOG.debug('unlinkMarkerBundleCB')
         link_mb_tool.unlink_marker_bundle()
 
     @staticmethod
@@ -423,18 +405,16 @@ class SolverWindow(BaseWindow):
         lib_state.set_refresh_viewport_state(value)
 
     def launchHelpCB(self):
-        LOG.debug('launchHelpCB')
         self.help()
 
     def launchAboutCB(self):
-        LOG.debug('launchAboutCB')
+        LOG.info('Launch About... not yet.')
 
     def setStatusLine(self, text):
         self.subForm.setStatusLine(text)
         return
 
     def apply(self):
-        LOG.debug('apply')
         self.setStatusLine(const.STATUS_EXECUTING)
         try:
             refresh_state = lib_state.get_refresh_viewport_state()
@@ -468,7 +448,6 @@ class SolverWindow(BaseWindow):
         return
 
     def help(self):
-        LOG.debug('help')
         return
 
 

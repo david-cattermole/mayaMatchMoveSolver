@@ -28,14 +28,15 @@ def create_shelf(parent=None, name=None):
     If a shelf with 'name' is already exists, the exising shelf will
     be deleted, and re-created under the 'parent' argument given.
 
-    :return: Shelf UI path.
-    :rtype: str
+    :return: Shelf UI path, or None if cannot be found.
+    :rtype: str or None
     """
     assert name is not None
     assert parent is not None
     assert isinstance(name, basestring)
     assert isinstance(parent, basestring)
-    assert len(parent) > 0
+    if len(parent) == 0:
+        return None
     shelf = str(name)
     exists = maya.cmds.shelfLayout(shelf, exists=True)
     if exists:

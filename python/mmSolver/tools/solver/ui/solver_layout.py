@@ -20,7 +20,6 @@ import mmSolver.tools.solver.ui.solver_nodes as solver_nodes
 import mmSolver.tools.solver.ui.ui_solver_layout as ui_solver_layout
 import mmSolver.tools.solver.ui.convert_to_ui as convert_to_ui
 import mmSolver.tools.solver.constant as const
-import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 
 
 LOG = mmSolver.logger.get_logger()
@@ -182,7 +181,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         #   therefore we shouldn't disable it until it's fixed.
         # # if self._parentObject is not None:
         # #     self._parentObject.applyBtn.setEnabled(v)
-                
+
         if v is True:
             self.setStatusLine(const.STATUS_READY)
         else:
@@ -272,7 +271,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return callback_manager
 
     def createNewCollectionNode(self):
-        LOG.debug('createNewCollectionNode')
         col = lib_col.create_collection()
         lib_state.set_active_collection(col)
 
@@ -287,7 +285,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def renameCollectionNode(self):
-        LOG.debug('renameCollectionNode')
         col = lib_state.get_active_collection()
         if col is None:
             LOG.warning('No active collection to rename. Skipping rename.')
@@ -310,7 +307,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def removeCollectionNode(self):
-        LOG.debug('removeCollectionNode')
         col = lib_state.get_active_collection()
         if col is not None:
             # FIXME: Solver Steps continue to hold a reference to the
@@ -335,7 +331,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def collectionSelectClicked(self):
-        LOG.debug('collectionSelectClicked')
         col = lib_state.get_active_collection()
         if col is None:
             LOG.warning('No active collection to select.')
@@ -346,7 +341,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def objectAddClicked(self):
-        LOG.debug('objectAddClicked')
         mkr_list = lib_maya_utils.get_markers_from_selection()
         if len(mkr_list) == 0:
             msg = 'Please select objects, found no markers.'
@@ -358,13 +352,26 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             LOG.warning(msg)
             return
         lib_marker.add_markers_to_collection(mkr_list, col)
-        self.updateObjectModel()
-        self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
+
+        def update_func():
+            self.updateObjectModel()
+            self.updateSolveValidState()
+            self.setStatusLine(const.STATUS_READY)
+            return
+
+        # Add Callbacks
+        callback_manager = self.getCallbackManager()
+        if callback_manager is not None:
+            lib_marker.add_callbacks_to_markers(
+                mkr_list,
+                update_func,
+                callback_manager
+            )
+
+        update_func()
         return
 
     def objectRemoveClicked(self):
-        LOG.debug('objectRemoveClicked')
         col = lib_state.get_active_collection()
         if col is None:
             return
@@ -374,13 +381,21 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         )
         nodes = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'marker')
         lib_marker.remove_markers_from_collection(nodes, col)
+
+        # Remove Callbacks
+        callback_manager = self.getCallbackManager()
+        if callback_manager is not None:
+            lib_marker.remove_callbacks_from_markers(
+                nodes,
+                callback_manager
+            )
+
         self.updateObjectModel()
         self.updateSolveValidState()
         self.setStatusLine(const.STATUS_READY)
         return
 
     def attrAddClicked(self):
-        LOG.debug('attrAddClicked')
         attr_list = lib_maya_utils.get_selected_maya_attributes()
         if len(attr_list) == 0:
             msg = 'Please select attributes in the channel box, none where found.'
@@ -393,22 +408,25 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         lib_attr.add_attributes_to_collection(attr_list, col)
 
+        def update_func():
+            self.updateAttributeModel()
+            self.updateSolveValidState()
+            self.setStatusLine(const.STATUS_READY)
+            return
+
         # Add Callbacks
         callback_manager = self.getCallbackManager()
         if callback_manager is not None:
             lib_attr.add_callbacks_to_attributes(
                 attr_list,
-                self.updateAttributeModel,
+                update_func,
                 callback_manager,
             )
 
-        self.updateAttributeModel()
-        self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
+        update_func()
         return
 
     def attrRemoveClicked(self):
-        LOG.debug('attrRemoveClicked')
         col = lib_state.get_active_collection()
         if col is None:
             return
@@ -433,7 +451,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def solverAddClicked(self):
-        LOG.debug('solverAddClicked')
         col = lib_state.get_active_collection()
         if col is None:
             msg = 'Cannot add Solver Step, active collection is invalid,'
@@ -447,7 +464,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def solverRemoveClicked(self):
-        LOG.debug('solverRemoveClicked')
         ui_nodes = lib_uiquery.get_selected_ui_table_row(
             self.solver_tableView,
             self.solver_model,
@@ -465,7 +481,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def solverMoveUpClicked(self):
-        LOG.debug('solverMoveUpClicked')
         # TODO: Write this.
         #  1 - get all UI nodes
         #  2 - get selected UI node.
@@ -475,7 +490,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def solverMoveDownClicked(self):
-        LOG.debug('solverMoveDownClicked')
         # TODO: Write this.
         raise NotImplementedError
         return

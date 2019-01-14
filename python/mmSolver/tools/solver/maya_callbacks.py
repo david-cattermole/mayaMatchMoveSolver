@@ -10,10 +10,14 @@ import mmSolver.ui.uiutils as uiutils
 
 
 TYPE_NEW_SCENE = 'new_scene'
-TYPE_ATTRIBUTE  = 'attribute'
+TYPE_ATTRIBUTE = 'attribute'
+TYPE_COLLECTION = 'collection'
+TYPE_MARKER = 'marker'
 TYPE_LIST = [
     TYPE_NEW_SCENE,
     TYPE_ATTRIBUTE,
+    TYPE_MARKER,
+    TYPE_COLLECTION,
 ]
 
 
@@ -159,7 +163,7 @@ def add_callbacks_attribute(node_uuid, node_path, update_func):
     clientData = (node_uuid, update_func)
     callback_id = OpenMaya.MNodeMessage.addNameChangedCallback(
         node_mobj,
-        attribute_node_name_changd_func,
+        node_name_changed_func,
         clientData,
     )
     callback_ids.append(callback_id)
@@ -168,7 +172,51 @@ def add_callbacks_attribute(node_uuid, node_path, update_func):
     clientData = (node_uuid, update_func)
     callback_id = OpenMaya.MNodeMessage.addNodeDestroyedCallback(
         node_mobj,
-        attribute_node_deleted_func,
+        node_deleted_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+    return callback_ids
+
+
+def add_callbacks_to_collection(node_uuid, node_path, update_func):
+    """
+    Add all callbacks for a node from a 'Collection' class.
+    """
+    callback_ids = []
+    node_mobj = mmapi.get_as_object(node_path)
+
+    clientData = (node_uuid, update_func)
+    callback_id = OpenMaya.MObjectSetMessage.addSetMembersModifiedCallback(
+        node_mobj,
+        membership_change_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+    return callback_ids
+
+
+def add_callbacks_to_marker(node_uuid, node_path, update_func):
+    """
+    Add all callbacks for a node from a 'Marker' class.
+    """
+    callback_ids = []
+    node_mobj = mmapi.get_as_object(node_path)
+
+    # Node Name Change
+    clientData = (node_uuid, update_func)
+    callback_id = OpenMaya.MNodeMessage.addNameChangedCallback(
+        node_mobj,
+        node_name_changed_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+
+    # Node Has Been Deleted
+    clientData = (node_uuid, update_func)
+    callback_id = OpenMaya.MNodeMessage.addNodeDestroyedCallback(
+        node_mobj,
+        node_deleted_func,
         clientData,
     )
     callback_ids.append(callback_id)
@@ -213,7 +261,7 @@ def attribute_changed_func(callback_msg, plugA, plugB, clientData):
     return
 
 
-def attribute_node_name_changd_func(node, prevName, clientData):
+def node_name_changed_func(node, prevName, clientData):
     """
     Callback triggered after a node is renamed.
 
@@ -236,7 +284,7 @@ def attribute_node_name_changd_func(node, prevName, clientData):
     return
 
 
-def attribute_node_deleted_func(clientData):
+def node_deleted_func(clientData):
     """
     Callback triggered after a node is deleted.
 
@@ -247,6 +295,13 @@ def attribute_node_deleted_func(clientData):
     :return: Nothing.
     :rtype: None
     """
+    node_uuid = clientData[0]
+    update_func = clientData[1]
+    update_func()
+    return
+
+
+def membership_change_func(node_obj, clientData):
     node_uuid = clientData[0]
     update_func = clientData[1]
     update_func()

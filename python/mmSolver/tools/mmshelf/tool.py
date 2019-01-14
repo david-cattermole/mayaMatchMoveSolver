@@ -21,6 +21,8 @@ def build_shelf():
         parent=shelf_parent,
         name=shelf_name
     )
+    if shelf is None:
+        return
 
     # Solver UI
     name = 'Solver'

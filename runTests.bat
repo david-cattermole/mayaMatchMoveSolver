@@ -1,6 +1,8 @@
 @echo off
 SETLOCAL
 
-:: Run Maya based tests (if 'mayapy' exists)
+:: Run Maya based tests
+::
+:: Edit the path to 'mayapy.exe' as needed for your Maya version.
 echo Starting Maya test...
-mayapy ./tests/runTests.py %*
+"C:\Program Files\Autodesk\Maya2017\bin\mayapy.exe" ./tests/runTests.py %*

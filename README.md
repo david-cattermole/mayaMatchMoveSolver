@@ -69,10 +69,9 @@ For a list of future features please see
 
 ## Documentation
 
-- [Documentation Home Page](https://david-cattermole.github.io/mayaMatchMoveSolver/)
-
-Old Documentation files:
-- [Tool Documentation](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/TOOLS.md)
+For all written tutorials, documentation of Tools, Python API 
+and Maya Plug-In features, take a look at the 
+[Documentation Home Page](https://david-cattermole.github.io/mayaMatchMoveSolver/).
 
 ## Building and Installation
 

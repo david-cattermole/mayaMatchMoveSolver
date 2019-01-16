@@ -128,7 +128,7 @@ On Windows:
 > CD <project root>
 
 :: Compile Qt .ui files
-> mayapy compileUI.py
+> "C:\Program Files\Autodesk\Maya2017\bin\mayapy.exe" compileUI.py
 
 :: Build Documentation
 > CD docs
@@ -275,7 +275,26 @@ To install the 3DEqualizer (3DE) tools for `mmSolver`, follow the steps below.
 The 3DEqualizer tools are for integration into workflows using 3DEqualizer.
 These tools have been tested with `3DEqualizer4 Release 5`.
 
-Copy the python scripts into the `~/.3dequalizer/py_scripts` directory.
+There are currently two 3DEqualizer tools available:
+
+| File Name                | Tool Name                                      |
+| ------------------------ | ---------------------------------------------- |
+| copy_track_mmsolver.py   | Copy 2D Tracks (MM Solver)                     |
+| export_track_mmsolver.py | Export 2D Tracks (MM Solver)...                |
+
+## Script Database
+
+For 3DEqualizer versions supporting the online 
+[Script Database](https://www.3dequalizer.com/?site=scriptdb), you may 
+install the latest tools via the menu '3DE4 > Python > ScriptDB Installer'.
+
+See this [video tutorial](https://www.youtube.com/watch?v=gVr_Fo1xh0E) for 
+an example of installing scripts with ScriptDB. 
+
+## Home Directory
+
+Alternatively, you may install scripts manually by copying the 3DEqualizer python 
+scripts in `<project root>/3dequalizer/scriptdb` into the `~/.3dequalizer/py_scripts` directory.
 
 On Linux:
 ```commandline
@@ -288,14 +307,3 @@ On Windows:
 > CD <project root>
 > XCOPY 3dequalizer/scriptdb/* "%AppData%/.3dequalizer/py_scripts" /Y
 ```
-
-Alternatively, you can modify the `PYTHONPATH` environment variable
-before 3DEqualizer starts and add `<project root>/3dequalizer/scriptdb/`
-to the list of search paths.
-
-There are currently two 3DEqualizer tools available:
-
-| File Name                | Tool Name                                      |
-| ------------------------ | ---------------------------------------------- |
-| copy_track_mmsolver.py   | Copy 2D Tracks (MM Solver)                     |
-| export_track_mmsolver.py | Export 2D Tracks (MM Solver)...                |

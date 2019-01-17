@@ -17,6 +17,7 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.ui.uiutils as uiutils
+import mmSolver.ui.helputils as helputils
 import mmSolver.tools.loadmarker.constant as const
 import mmSolver.tools.loadmarker.lib as lib
 import mmSolver.tools.loadmarker.ui.loadmarker_layout as loadmarker_layout
@@ -52,14 +53,7 @@ class LoadMarkerWindow(BaseWindow):
         self.baseHideMenuBar()
         self.baseHideProgressBar()
 
-    def createNewCollectionNodeCB(self):
-        LOG.debug('createNewCollectionNodeCB')
-
-    def closeWindowCB(self):
-        LOG.debug('closeWindowCB')
-
     def apply(self):
-        LOG.debug('apply')
         cam = None
         try:
             self.progressBar.setValue(0)
@@ -84,7 +78,6 @@ class LoadMarkerWindow(BaseWindow):
                 cam = camera_data
             self.progressBar.setValue(90)
 
-            LOG.debug('camera data: %r', cam)
             mayareadfile.create_nodes(mkr_data_list, cam=cam)
         finally:
             self.progressBar.setValue(100)
@@ -99,7 +92,7 @@ class LoadMarkerWindow(BaseWindow):
         return
 
     def help(self):
-        LOG.debug('help')
+        helputils.open_help_in_browser(page='tools.html#load-markers')
         return
 
 

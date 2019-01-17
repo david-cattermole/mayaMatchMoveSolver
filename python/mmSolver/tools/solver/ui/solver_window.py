@@ -11,6 +11,7 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
+import mmSolver.ui.helputils as helputils
 import mmSolver.tools.solver.lib.collection as lib_collection
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
@@ -448,6 +449,7 @@ class SolverWindow(BaseWindow):
         return
 
     def help(self):
+        helputils.open_help_in_browser(page='tools.html#solver-ui')
         return
 
 

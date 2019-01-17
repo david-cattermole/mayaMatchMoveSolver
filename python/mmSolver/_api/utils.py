@@ -607,10 +607,3 @@ def set_node_wire_colour_rgb(node, rgb):
         # Reset to default wireframe colour.
         maya.cmds.color(node)
     return
-
-
-# def colour_name_to_rgb(name):
-#     """
-#     Convert a string name into RGB values.
-#     """
-#     raise NotImplementedError

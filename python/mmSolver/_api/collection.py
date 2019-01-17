@@ -598,8 +598,8 @@ class Collection(object):
         if error_factor is not None:
             kwargs['epsilon3'] = error_factor
 
-        msg = 'kwargs:\n' + pprint.pformat(kwargs)
-        LOG.debug(msg)
+        # msg = 'kwargs:\n' + pprint.pformat(kwargs)
+        # LOG.debug(msg)
         return kwargs
 
     def _compile(self, prog_fn=None, status_fn=None):

@@ -195,8 +195,56 @@ the a change is made.</li>
 </dd></dl>
 
 <dl class="function">
+<dt id="mmSolver.tools.solver.maya_callbacks.add_callbacks_to_marker_group">
+<code class="descclassname">mmSolver.tools.solver.maya_callbacks.</code><code class="descname">add_callbacks_to_marker_group</code><span class="sig-paren">(</span><em>node_uuid</em>, <em>node_path</em>, <em>update_func</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.maya_callbacks.add_callbacks_to_marker_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add all callbacks for a node from a &#8216;MarkerGroup&#8217; class.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.maya_callbacks.add_callbacks_to_bundle">
+<code class="descclassname">mmSolver.tools.solver.maya_callbacks.</code><code class="descname">add_callbacks_to_bundle</code><span class="sig-paren">(</span><em>node_uuid</em>, <em>node_path</em>, <em>update_func</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.maya_callbacks.add_callbacks_to_bundle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add all callbacks for a node from a &#8216;Bundle&#8217; class.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.maya_callbacks.add_callbacks_to_camera">
+<code class="descclassname">mmSolver.tools.solver.maya_callbacks.</code><code class="descname">add_callbacks_to_camera</code><span class="sig-paren">(</span><em>node_uuid</em>, <em>node_path</em>, <em>update_func</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.maya_callbacks.add_callbacks_to_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add all callbacks for a node from a &#8216;Marker&#8217; class.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="mmSolver.tools.solver.maya_callbacks.attribute_changed_func">
 <code class="descclassname">mmSolver.tools.solver.maya_callbacks.</code><code class="descname">attribute_changed_func</code><span class="sig-paren">(</span><em>callback_msg</em>, <em>plugA</em>, <em>plugB</em>, <em>clientData</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.maya_callbacks.attribute_changed_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback triggered when an event happens to an attribute on a node.</p>
+<p>One callback handles many attributes and event types for one node.
+The callback is linked to the node, not the attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>callback_msg</strong> (<em>OpenMaya.MNodeMessage.AttributeMessage</em>) &#8211; The type of callback message.</li>
+<li><strong>plugA</strong> (<em>OpenMaya.MPlug</em>) &#8211; First plug related to callback.</li>
+<li><strong>plugB</strong> (<em>OpenMaya.MPlug</em>) &#8211; Second plug related to callback, may not be used if
+not relevant to callback type.</li>
+<li><strong>clientData</strong> (<em>(</em><em>str</em><em>, </em><em>function</em><em>)</em>) &#8211; Custom data given to the function. Expected to
+be a tuple of length 2: (node_uuid, update_func)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Nothing.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.maya_callbacks.attribute_connection_changed_func">
+<code class="descclassname">mmSolver.tools.solver.maya_callbacks.</code><code class="descname">attribute_connection_changed_func</code><span class="sig-paren">(</span><em>callback_msg</em>, <em>plugA</em>, <em>plugB</em>, <em>clientData</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.maya_callbacks.attribute_connection_changed_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback triggered when an event happens to an attribute on a node.</p>
 <p>One callback handles many attributes and event types for one node.
 The callback is linked to the node, not the attribute.</p>
@@ -253,7 +301,7 @@ be a tuple of length 2: (node_uuid, update_func)</li>
 <dl class="function">
 <dt id="mmSolver.tools.solver.maya_callbacks.node_deleted_func">
 <code class="descclassname">mmSolver.tools.solver.maya_callbacks.</code><code class="descname">node_deleted_func</code><span class="sig-paren">(</span><em>clientData</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.maya_callbacks.node_deleted_func" title="Permalink to this definition">¶</a></dt>
-<dd><p>Callback triggered after a node is deleted.</p>
+<dd><p>Callback triggered <em>after</em> a node is deleted.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -530,32 +578,107 @@ already.</p>
 <dl class="function">
 <dt id="mmSolver.tools.solver.lib.maya_utils.ensure_plugin_loaded">
 <code class="descclassname">mmSolver.tools.solver.lib.maya_utils.</code><code class="descname">ensure_plugin_loaded</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.maya_utils.ensure_plugin_loaded" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads all plug-ins required for Solver tool.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">mmapi.SolverNotAvailable</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.tools.solver.lib.maya_utils.set_scene_selection">
 <code class="descclassname">mmSolver.tools.solver.lib.maya_utils.</code><code class="descname">set_scene_selection</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.maya_utils.set_scene_selection" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The Maya scene selection is replaced with <cite>nodes</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list of str</em>) &#8211; Nodes to set as selected.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nothing.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.tools.solver.lib.maya_utils.get_current_frame">
 <code class="descclassname">mmSolver.tools.solver.lib.maya_utils.</code><code class="descname">get_current_frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.maya_utils.get_current_frame" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the current Maya frame number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Frame number</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.tools.solver.lib.maya_utils.get_timeline_range_inner">
 <code class="descclassname">mmSolver.tools.solver.lib.maya_utils.</code><code class="descname">get_timeline_range_inner</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.maya_utils.get_timeline_range_inner" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the &#8216;inner&#8217; frame range.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Tuple of start and end frame numbers.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(int, int)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.tools.solver.lib.maya_utils.get_timeline_range_outer">
 <code class="descclassname">mmSolver.tools.solver.lib.maya_utils.</code><code class="descname">get_timeline_range_outer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.maya_utils.get_timeline_range_outer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the &#8216;outer&#8217; frame range.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Tuple of start and end frame numbers.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(int, int)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.tools.solver.lib.maya_utils.prompt_for_new_node_name">
 <code class="descclassname">mmSolver.tools.solver.lib.maya_utils.</code><code class="descname">prompt_for_new_node_name</code><span class="sig-paren">(</span><em>title</em>, <em>message</em>, <em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.maya_utils.prompt_for_new_node_name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Ask the user for a new node name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>title</strong> (<em>str</em>) &#8211; Dialog box window title.</li>
+<li><strong>message</strong> (<em>str</em>) &#8211; Read-only text to show the user, for making a
+decision.</li>
+<li><strong>text</strong> (<em>str</em>) &#8211; The initial text to prompt the user as a starting
+point.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">New node name, or None if user cancelled.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.tools.solver.lib.maya_utils.get_markers_from_selection">
@@ -574,7 +697,20 @@ already.</p>
 <dl class="function">
 <dt id="mmSolver.tools.solver.lib.maya_utils.get_selected_maya_attributes">
 <code class="descclassname">mmSolver.tools.solver.lib.maya_utils.</code><code class="descname">get_selected_maya_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.maya_utils.get_selected_maya_attributes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the currently selected attributes from the Channel Box.</p>
+<p>This function uses Maya ChannelBox logic to get the objects, which
+is based on the selection, but may be doing more complex logic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of Attribute objects for all nodes in the Channel Box.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of Attribute</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 <div class="section" id="module-mmSolver.tools.solver.lib.scene_data">

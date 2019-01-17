@@ -1,8 +1,11 @@
 """
 The frame number that the solver will solve on.
 
-TODO: We could add named 'tags' to a frame, this would be very flexible when
-creating function callbacks for inclusion/exclusion of frames.
+Each Frame has a list of unlimited 'tags', this is very flexible when
+creating function callbacks for inclusion/exclusion of frames in a
+solve. For example, you can tag different frames for different solvers,
+so that frame 1, 11 and 21 are solved by a slower solver, and
+frames 1 to 21 are solved with a faster solver.
 """
 
 import maya.cmds
@@ -12,8 +15,48 @@ import mmSolver._api.excep as excep
 
 
 class Frame(object):
-    def __init__(self, value, tags=None,
-                 primary=False, secondary=False):
+    """
+    Hold a time value with tags meta-data.
+
+    Example usage::
+
+        >>> frmA = mmapi.Frame(1)
+        >>> frmA.get_number()
+        1
+        >>> frmA.get_tags()
+        ['normal']
+        >>> frmB = mmapi.Frame(10, primary=True)
+        >>> frmB.get_number()
+        10
+        >>> frmB.get_tags()
+        ['primary']
+        >>> frmC = mmapi.Frame(20, tags=['custom'], primary=True)
+        >>> frmC.get_number()
+        20
+        >>> frmC.get_tags()
+        ['custom', 'primary']
+
+    """
+    def __init__(self,
+                 value,
+                 tags=None,
+                 primary=False,
+                 secondary=False):
+        """
+        Initialise a Frame object to hold a frame value and tags.
+
+        :param value: The frame number.
+        :type value: int or float
+
+        :param tags: List of string values accocated with this frame number.
+        :type tags: [str, ... ] or None
+
+        :param primary: Is this frame 'primary'?
+        :type primary: bool
+
+        :param secondary: Is this frame 'secondary'?
+        :type secondary: bool
+        """
         assert isinstance(value, (float, int))
         assert tags is None or isinstance(tags, list)
         self._number = value
@@ -35,12 +78,40 @@ class Frame(object):
         return
 
     def get_data(self):
+        """
+        Get the data of this Frame, both number and tags.
+
+        Data structure returned is::
+           
+            {
+                'number': int or float, 
+                'tags': list of strs,
+            }
+
+        :return: Data structure.
+        :rtype: dict
+        """
         return {
             'number': self.get_number(),
             'tags': self.get_tags(),
         }
 
     def set_data(self, value):
+        """
+        Set the internal frame data using once function call.
+
+        Expected data structure is::
+           
+            {
+                'number': int or float, 
+                'tags': list of strs,
+            }
+
+        :param value: Data structure with both 'number' and 'tags' keys.
+        :type value: dict
+
+        :return: None
+        """
         assert isinstance(value, dict)
 
         num = value.get('number')
@@ -56,25 +127,63 @@ class Frame(object):
 
         self.set_number(num)
         self.set_tags(tags)
+        return
 
     def get_number(self):
-        # TODO: Should we convert _number to an int or float before returning?
+        """
+        Get the frame number.
+
+        :return: The frame number.
+        :rtype: int or float
+        """
+        # TODO: Should we convert _number to an int or float before
+        #  returning?
         return self._number
 
     def set_number(self, value):
+        """
+        Set the frame number.
+
+        :param value: the frame number.
+        :type value: int or float
+
+        :return: None
+        """
         assert isinstance(value, (int, float))
         self._number = value
         return
 
     def get_tags(self):
+        """
+        Get list of tags associated with this Frame.
+
+        :return: List of tags.
+        :rtype: [str, ... ]
+        """
         return self._tags
 
     def set_tags(self, value):
+        """
+        Set the tags explicitly.
+
+        :param value: List of tags to set.
+        :type value: list
+
+        :return: None
+        """
         assert isinstance(value, list)
         self._tags = value
         return
 
     def add_tag(self, value):
+        """
+        Add a tag to the list of (internally stored) tags.
+
+        :param value: Tag name to add.
+        :type value: str
+
+        :return: None
+        """
         assert isinstance(value, str)
         self._tags.append(value)
         return

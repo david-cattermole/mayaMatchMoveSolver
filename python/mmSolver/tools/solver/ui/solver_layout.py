@@ -108,12 +108,17 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.solverRemove_toolButton.clicked.connect(
             self.solverRemoveClicked
         )
-        self.solverMoveUp_toolButton.clicked.connect(
-            self.solverMoveUpClicked
-        )
-        self.solverMoveDown_toolButton.clicked.connect(
-            self.solverMoveDownClicked
-        )
+
+        # TODO: Write functions for Move Up/Down buttons. Until then,
+        #       we'll hide the buttons to avoid confusion.
+        self.solverMoveUp_toolButton.setVisible(False)
+        self.solverMoveDown_toolButton.setVisible(False)
+        # self.solverMoveUp_toolButton.clicked.connect(
+        #     self.solverMoveUpClicked
+        # )
+        # self.solverMoveDown_toolButton.clicked.connect(
+        #     self.solverMoveDownClicked
+        # )
 
         # Override Current Frame
         self.overrideCurrentFrame_checkBox.stateChanged.connect(

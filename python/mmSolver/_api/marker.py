@@ -22,6 +22,17 @@ class Marker(object):
 
     A Marker defines a wrapper around a Maya node that contains 2D
     information, in a camera's screen-space.
+
+    Example usage::
+
+        >>> mkr = mmapi.Marker(node='myNode')
+        >>> mkr.get_node()
+        '|myNode'
+        >>> bnd = mmapi.Bundle().create_node(name='myBundle1')
+        >>> mkr = mmapi.Marker().create_node(name='myMarker1', bnd=bnd)
+        >>> mkr.get_node()
+        '|myMarker1'
+
     """
     def __init__(self, name=None):
         """
@@ -107,6 +118,9 @@ class Marker(object):
 
         :param bnd: The bundle to attach to the newly created marker.
         :type bnd: Bundle
+
+        :return: Marker object with newly created node.
+        :rtype: Marker
         """
         assert isinstance(name, (str, unicode))
         if cam is not None:
@@ -198,6 +212,9 @@ class Marker(object):
     def delete_node(self):
         """
         Remove the Maya node (and all data) of this Marker object.
+
+        :return: This Marker object, with Maya node removed.
+        :rtype: Marker
         """
         node = self.get_node()
         maya.cmds.delete(node)

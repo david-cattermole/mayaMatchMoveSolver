@@ -12,8 +12,40 @@ import mmSolver._api.constant as const
 class Attribute(object):
     """
     The Attribute - A variable, or set of variables over time to solve.
+
+    Example usage::
+
+        >>> node = maya.cmds.createNode('transform', name='myNode')
+        >>> attr = mmapi.Attribute(node=node, attr='tx')
+        >>> attr.get_node()
+        '|myNode'
+        >>> attr.get_attr()
+        'translateX'
+        >>> attr.get_attr(long_name=False)
+        'tx'
+        >>> attr.get_name()
+        '|myNode.translateX'
+        >>> attr.get_state()
+        1  # 1 == ATTR_STATE_STATIC
+
     """
     def __init__(self, name=None, node=None, attr=None):
+        """
+        Initialise an Attribute object.
+
+        Attribute can use a 'name', or 'node' and 'attr'.
+
+        A 'name' is a string of both node and attribute path; `node.attr`.
+
+        :param name: Node and attribute path as a single string: 'node.attr'
+        :type name: str
+
+        :param node: DG Maya node path.
+        :type node: str
+
+        :param attr: Long or short attribute name.
+        :type attr: str
+        """
         if isinstance(name, (str, unicode)):
             assert api_utils.get_object_type(name) == const.OBJECT_TYPE_ATTRIBUTE
             part = name.partition('.')

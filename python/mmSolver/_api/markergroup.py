@@ -16,6 +16,12 @@ class MarkerGroup(object):
     """
 
     def __init__(self, name=None):
+        """
+        Initialize the MarkerGroup with the given Maya node's 'name'.
+
+        :param name: Maya node name to attach to.
+        :type name: str or None
+        """
         self._mfn_tfm = None
         if name is not None:
             self.set_node(name)
@@ -23,7 +29,7 @@ class MarkerGroup(object):
 
     def get_node(self):
         """
-        Get the markerGroup node.
+        Get the MarkerGroup node.
 
         :return: The markerGroup node or None
         :rtype: None or str or unicode
@@ -44,13 +50,19 @@ class MarkerGroup(object):
             node = None
         return node
 
-    def set_node(self, name):
-        assert isinstance(name, (str, unicode))
-        assert maya.cmds.objExists(name)
-        assert api_utils.get_object_type(name) == const.OBJECT_TYPE_MARKER_GROUP
+    def set_node(self, node):
+        """
+        Set the MarkerGroup to use this Maya node.
+
+        :param node: Maya node path.
+        :type node: str
+        """
+        assert isinstance(node, (str, unicode))
+        assert maya.cmds.objExists(node)
+        assert api_utils.get_object_type(node) == const.OBJECT_TYPE_MARKER_GROUP
 
         self._mfn_tfm = None
-        tfm_dag = api_utils.get_as_dag_path(name)
+        tfm_dag = api_utils.get_as_dag_path(node)
         if tfm_dag is not None:
             assert maya.cmds.nodeType(tfm_dag.fullPathName()) == 'mmMarkerGroupTransform'
             self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
@@ -62,6 +74,12 @@ class MarkerGroup(object):
     ############################################################################
 
     def get_camera(self):
+        """
+        Get the attached camera node.
+
+        :return: Camera node or None.
+        :rtype: Camera or None
+        """
         mkr_node = self.get_node()
 
         cam_tfm, cam_shp = api_utils.get_camera_above_node(mkr_node)
@@ -75,6 +93,17 @@ class MarkerGroup(object):
     ############################################################################
 
     def create_node(self, name='markerGroup1', cam=None):
+        """
+        Create a MarkerGroup node network.
+
+        :param name: The newly created node's name.
+        :type name: str
+
+        :param cam: The camera to attach to.
+        :type cam: Camera
+
+        :return: MarkerGroup object with node set as newly created node.
+        """
         assert isinstance(name, (str, unicode))
         assert isinstance(cam, camera.Camera)
 
@@ -91,6 +120,12 @@ class MarkerGroup(object):
                           defaultValue=1.0)
         maya.cmds.setAttr(mkr_grp + '.depth', keyable=True)
         maya.cmds.connectAttr(mkr_grp + '.depth', mkr_scl + '.depth')
+
+        # Add attr and connect overscan
+        maya.cmds.addAttr(mkr_grp, longName='overscan', at='double', minValue=0.0,
+                          defaultValue=1.0)
+        maya.cmds.setAttr(mkr_grp + '.overscan', keyable=True)
+        maya.cmds.connectAttr(mkr_grp + '.overscan', mkr_scl + '.overscan')
 
         # Connect camera attributes
         maya.cmds.connectAttr(cam_shp + '.focalLength', mkr_scl + '.focalLength')
@@ -116,6 +151,12 @@ class MarkerGroup(object):
     ############################################################################
 
     def is_valid(self):
+        """
+        Check if this object's internal Maya representation is valid or not.
+
+        :return: True or False, is this MarkerGroup valid?
+        :rtype: bool
+        """
         tfm = self.get_node()
         if (tfm is None) or (maya.cmds.objExists(tfm) is False):
             return False

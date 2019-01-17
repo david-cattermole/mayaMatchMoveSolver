@@ -8,9 +8,35 @@ class Camera(object):
     """
     The Camera to view the world and compute re-projection error;
     Markers are attached to cameras.
+
+    Example usage::
+
+        >>> cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
+        >>> cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
+        >>> cam = mmapi.Camera(shape=cam_shp)
+        >>> cam.get_transform_node()
+        '|cam_tfm'
+        >>> cam.get_shape_node()
+        '|cam_tfm|cam_shp'
+
     """
 
     def __init__(self, transform=None, shape=None):
+        """
+        Initialise a Camera object.
+
+        Give either a transform or shape node and the object will find
+        the other node.
+
+        If no 'transform' or 'shape' is given, the Camera is
+        uninitialized.
+
+        :param transform: The camera transform node.
+        :type transform: None or str
+
+        :param shape: The camera shape node.
+        :type shape: None or str
+        """
         self._mfn_tfm = None
         self._mfn_shp = None
 
@@ -148,6 +174,13 @@ class Camera(object):
     ############################################################################
 
     def is_valid(self):
+        """
+        Is this Camera object valid?
+        Does the Camera have both transform and shape nodes and they both exist?
+
+        :return: True or False, is this Camera object valid?
+        :rtype: bool
+        """
         cam_tfm = self.get_transform_node()
         cam_shp = self.get_shape_node()
         if ((cam_tfm is None) or
@@ -156,4 +189,3 @@ class Camera(object):
                 (maya.cmds.objExists(cam_shp) is False)):
             return False
         return True
-

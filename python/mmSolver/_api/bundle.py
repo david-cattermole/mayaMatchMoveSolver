@@ -16,8 +16,28 @@ LOG = mmSolver.logger.get_logger()
 class Bundle(object):
     """
     The 3D Bundle object.
+
+    A Bundle is named 'Bundle' as it represents bundles of light
+    forming on an imaging sensor.
+
+    Example usage::
+
+        >>> bnd = mmapi.Bundle(node='myNode')
+        >>> bnd.get_node()
+        '|myNode'
+        >>> bnd = mmapi.Bundle().create_node(name='myBundle1')
+        >>> bnd.get_node()
+        '|myBundle1'
+
     """
+
     def __init__(self, node=None):
+        """
+        Create a Bundle object initialised with 'node'.
+
+        :param node: Maya node to attach this object to.
+        :type node: str
+        """
         if node is not None:
             assert isinstance(node, (str, unicode))
             assert maya.cmds.objExists(node)
@@ -50,6 +70,14 @@ class Bundle(object):
         return node
 
     def set_node(self, node):
+        """
+        This Bundle object will affect the given 'node'.
+
+        :param node: Node to set to.
+        :type node: str
+
+        :return: Nothing.
+        """
         assert isinstance(node, (str, unicode))
         assert maya.cmds.objExists(node)
         dag = api_utils.get_as_dag_path(node)
@@ -116,6 +144,12 @@ class Bundle(object):
         return self
 
     def delete_node(self):
+        """
+        Remove the Maya node (and all data) of this Bundle object.
+
+        :return: This Bundle object, with Maya node removed.
+        :rtype: Bundle
+        """
         node = self.get_node()
         maya.cmds.delete(node)
         return self
@@ -172,6 +206,12 @@ class Bundle(object):
     ############################################################################
 
     def get_marker_list(self):
+        """
+        Get the list of Markers attached to this bundle.
+
+        :return: List of Marker objects.
+        :rtype: Marker
+        """
         node = self.get_node()
         node_attr = node + '.message'
         conns = maya.cmds.listConnections(node_attr) or []

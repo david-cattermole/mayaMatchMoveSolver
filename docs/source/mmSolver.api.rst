@@ -48,33 +48,25 @@ an be used to check the Solver output (for example, did an error occur?).
    cam_shp = maya.cmds.createNode('camera',
                                   name='cam_shp',
                                   parent=cam_tfm)
+   cam = mmapi.Camera(shape=cam_shp)
    maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
    maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
    maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
 
    # Bundle
-   bundle_tfm = maya.cmds.createNode('transform',
-                                     name='bundle_tfm')
-   bundle_shp = maya.cmds.createNode('locator',
-                                     name='bundle_shp',
-                                     parent=bundle_tfm)
+   bnd = mmapi.Bundle().create_node()
+   bundle_tfm = bnd.get_node()
    maya.cmds.setAttr(bundle_tfm + '.tx', 5.5)
    maya.cmds.setAttr(bundle_tfm + '.ty', 6.4)
    maya.cmds.setAttr(bundle_tfm + '.tz', -25.0)
-   bnd = mmapi.Bundle(bundle_tfm)
 
    # Marker
-   marker_tfm = maya.cmds.createNode('transform',
-                                     name='marker_tfm',
-                                     parent=cam_tfm)
-   marker_shp = maya.cmds.createNode('locator',
-                                     name='marker_shp',
-                                     parent=marker_tfm)
+   mkr = mmapi.Marker().create_node()
    maya.cmds.setAttr(marker_tfm + '.tx', -2.5)
    maya.cmds.setAttr(marker_tfm + '.ty', 1.3)
    maya.cmds.setAttr(marker_tfm + '.tz', -10)
-   mkr = mmapi.Marker(marker_tfm)
    mkr.set_bundle(bnd)
+   mkr.set_camera(bnd)
 
    # Attributes
    attr_tx = mmapi.Attribute(bundle_tfm + '.tx')
@@ -104,6 +96,7 @@ Camera
 .. autoclass:: mmSolver.api.Camera
    :members:
    :undoc-members:
+   :special-members: __init__
 
 Bundle
 ++++++
@@ -111,6 +104,7 @@ Bundle
 .. autoclass:: mmSolver.api.Bundle
    :members:
    :undoc-members:
+   :special-members: __init__
 
 Marker
 ++++++
@@ -120,7 +114,7 @@ Marker
 .. autoclass:: mmSolver.api.Marker
    :members:
    :undoc-members:
-
+   :special-members: __init__
 
 MarkerGroup
 +++++++++++
@@ -130,6 +124,7 @@ A group containing Marker nodes.
 .. autoclass:: mmSolver.api.MarkerGroup
    :members:
    :undoc-members:
+   :special-members: __init__
 
 Attribute
 +++++++++
@@ -139,6 +134,7 @@ Attribute that will be solved.
 .. autoclass:: mmSolver.api.Attribute
    :members:
    :undoc-members:
+   :special-members: __init__
 
 Frame
 +++++
@@ -146,6 +142,7 @@ Frame
 .. autoclass:: mmSolver.api.Frame
    :members:
    :undoc-members:
+   :special-members: __init__
 
 Solver
 ++++++
@@ -153,6 +150,7 @@ Solver
 .. autoclass:: mmSolver.api.Solver
    :members:
    :undoc-members:
+   :special-members: __init__
 
 Collection
 ++++++++++
@@ -160,6 +158,7 @@ Collection
 .. autoclass:: mmSolver.api.Collection
    :members:
    :undoc-members:
+   :special-members: __init__
 
 SolveResult
 +++++++++++
@@ -167,6 +166,7 @@ SolveResult
 .. autoclass:: mmSolver.api.SolveResult
    :members:
    :undoc-members:
+   :special-members: __init__
 
 Utilities
 +++++++++

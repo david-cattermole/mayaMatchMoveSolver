@@ -199,6 +199,105 @@ def add_callbacks_to_collection(node_uuid, node_path, update_func):
 def add_callbacks_to_marker(node_uuid, node_path, update_func):
     """
     Add all callbacks for a node from a 'Marker' class.
+
+    .. todo::
+
+        - Add callback when parenting changes (marker may
+          not live under camera anymore), specific to marker
+          objects.
+
+    """
+    callback_ids = []
+    node_mobj = mmapi.get_as_object(node_path)
+
+    # Attribute Changed (if a marker/bundle relationship is changed.)
+    clientData = (node_uuid, update_func)
+    callback_id = OpenMaya.MNodeMessage.addAttributeChangedCallback(
+        node_mobj,
+        attribute_connection_changed_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+
+    # Node Name Change
+    clientData = (node_uuid, update_func)
+    callback_id = OpenMaya.MNodeMessage.addNameChangedCallback(
+        node_mobj,
+        node_name_changed_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+
+    # Node Has Been Deleted
+    # TODO: This callback does not seem to be doing anything.
+    clientData = (node_uuid, update_func)
+    callback_id = OpenMaya.MNodeMessage.addNodeDestroyedCallback(
+        node_mobj,
+        node_deleted_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+    return callback_ids
+
+
+def add_callbacks_to_marker_group(node_uuid, node_path, update_func):
+    """
+    Add all callbacks for a node from a 'MarkerGroup' class.
+    """
+    callback_ids = []
+    node_mobj = mmapi.get_as_object(node_path)
+
+    # Node Has Been Deleted
+    # TODO: This callback does not seem to be doing anything.
+    clientData = (node_uuid, update_func)
+    callback_id = OpenMaya.MNodeMessage.addNodeDestroyedCallback(
+        node_mobj,
+        node_deleted_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+    return callback_ids
+
+
+def add_callbacks_to_bundle(node_uuid, node_path, update_func):
+    """
+    Add all callbacks for a node from a 'Bundle' class.
+    """
+    callback_ids = []
+    node_mobj = mmapi.get_as_object(node_path)
+
+    # Attribute Changed (if a marker/bundle relationship is changed.)
+    clientData = (node_uuid, update_func)
+    callback_id = OpenMaya.MNodeMessage.addAttributeChangedCallback(
+        node_mobj,
+        attribute_connection_changed_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+
+    # Node Name Change
+    clientData = (node_uuid, update_func)
+    callback_id = OpenMaya.MNodeMessage.addNameChangedCallback(
+        node_mobj,
+        node_name_changed_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+
+    # Node Has Been Deleted
+    clientData = (node_uuid, update_func)
+    callback_id = OpenMaya.MNodeMessage.addNodeDestroyedCallback(
+        node_mobj,
+        node_deleted_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+    return callback_ids
+
+
+def add_callbacks_to_camera(node_uuid, node_path, update_func):
+    """
+    Add all callbacks for a node from a 'Marker' class.
     """
     callback_ids = []
     node_mobj = mmapi.get_as_object(node_path)
@@ -250,13 +349,46 @@ def attribute_changed_func(callback_msg, plugA, plugB, clientData):
     node_uuid = clientData[0]
     update_func = clientData[1]
     if (callback_msg & OpenMaya.MNodeMessage.kConnectionMade
+            or callback_msg & OpenMaya.MNodeMessage.kConnectionBroken
+            or callback_msg & OpenMaya.MNodeMessage.kAttributeLocked
+            or callback_msg & OpenMaya.MNodeMessage.kAttributeUnlocked
+            or callback_msg & OpenMaya.MNodeMessage.kAttributeKeyable
+            or callback_msg & OpenMaya.MNodeMessage.kAttributeUnkeyable
+            or callback_msg & OpenMaya.MNodeMessage.kAttributeRemoved
+            or callback_msg & OpenMaya.MNodeMessage.kAttributeRenamed):
+        update_func()
+    return
+
+
+def attribute_connection_changed_func(callback_msg, plugA, plugB, clientData):
+    """
+    Callback triggered when an event happens to an attribute on a node.
+
+    One callback handles many attributes and event types for one node.
+    The callback is linked to the node, not the attribute.
+
+    :param callback_msg: The type of callback message.
+    :type callback_msg: OpenMaya.MNodeMessage.AttributeMessage
+
+    :param plugA: First plug related to callback.
+    :type plugA: OpenMaya.MPlug
+
+    :param plugB: Second plug related to callback, may not be used if
+                  not relevant to callback type.
+    :type plugB: OpenMaya.MPlug
+
+    :param clientData: Custom data given to the function. Expected to
+                       be a tuple of length 2: (node_uuid, update_func)
+    :type clientData: (str, function)
+
+    :return: Nothing.
+    :rtype: None
+    """
+    node_uuid = clientData[0]
+    update_func = clientData[1]
+    if (callback_msg & OpenMaya.MNodeMessage.kConnectionMade
         or callback_msg & OpenMaya.MNodeMessage.kConnectionBroken
-        or callback_msg & OpenMaya.MNodeMessage.kAttributeLocked
-        or callback_msg & OpenMaya.MNodeMessage.kAttributeUnlocked
-        or callback_msg & OpenMaya.MNodeMessage.kAttributeKeyable
-        or callback_msg & OpenMaya.MNodeMessage.kAttributeUnkeyable
-        or callback_msg & OpenMaya.MNodeMessage.kAttributeRemoved
-        or callback_msg & OpenMaya.MNodeMessage.kAttributeRenamed):
+        or callback_msg & OpenMaya.MNodeMessage.kAttributeRemoved):
         update_func()
     return
 
@@ -286,7 +418,7 @@ def node_name_changed_func(node, prevName, clientData):
 
 def node_deleted_func(clientData):
     """
-    Callback triggered after a node is deleted.
+    Callback triggered *after* a node is deleted.
 
     :param clientData: Custom data given to the function. Expected to
                        be a tuple of length 2: (node_uuid, update_func)
@@ -303,6 +435,7 @@ def node_deleted_func(clientData):
 
 def membership_change_func(node_obj, clientData):
     node_uuid = clientData[0]
+    LOG.warning('membership_changed: %r', node_uuid)
     update_func = clientData[1]
     update_func()
     return

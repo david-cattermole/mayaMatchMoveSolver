@@ -57,9 +57,6 @@ def remove_callbacks_from_attributes(attr_list, callback_manager):
             continue
         node_uuid = node_uuids[0]
         if callback_manager.type_has_node(callback_type, node_uuid) is False:
-            msg = 'Node does not have callback type assigned: '
-            msg += 'callback_type=%r node_path=%r'
-            LOG.warning(msg, callback_type, node_path)
             continue
         callback_manager.remove_type_node_ids(
             callback_type,

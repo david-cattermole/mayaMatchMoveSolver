@@ -8,6 +8,7 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
+import mmSolver.ui.uiutils as uiutils
 import mmSolver.tools.solver.lib.attr as lib_attr
 import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.lib.state as lib_state
@@ -242,6 +243,12 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def setStatusLine(self, text):
+        valid = uiutils.isValidQtObject(self)
+        if valid is False:
+            return
+        valid = uiutils.isValidQtObject(self.statusLine_label)
+        if valid is False:
+            return
         self.statusLine_label.setText(text)
         return
 

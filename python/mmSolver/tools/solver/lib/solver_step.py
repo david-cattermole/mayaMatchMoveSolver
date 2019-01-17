@@ -212,10 +212,11 @@ class SolverStep(object):
                 strategy,
             )
         elif use_anim_attrs is False and use_static_attrs is False:
-            msg = 'No attributes will be solved: '
-            msg += 'use_static_attrs=%r, use_anim_attrs=%r'
-            msg = msg % (use_static_attrs, use_anim_attrs)
-            LOG.debug(msg)
+            pass
+            # msg = 'No attributes will be solved: '
+            # msg += 'use_static_attrs=%r, use_anim_attrs=%r'
+            # msg = msg % (use_static_attrs, use_anim_attrs)
+            # LOG.debug(msg)
         else:
             msg = 'We should not get here: '
             msg += 'use_static_attrs=%r, use_anim_attrs=%r'

@@ -57,15 +57,11 @@ def rename_collection(col, new_name):
 
 
 def delete_collection(col):
-    LOG.debug('delete_collection: %r', col)
     if col is None:
         return
     node = col.get_node()
-    LOG.debug('delete_collection1: %r', node)
     node = str(node)
-    LOG.debug('delete_collection2: %r', node)
     del col
-    LOG.debug('delete_collection3: %r', node)
     maya.cmds.delete(node)
     return
 
@@ -75,14 +71,11 @@ def select_collection(col):
     Select the collection node, not the members of the collection node.
     """
     if col is None:
-        LOG.debug('no collection given, cannot select: %r', col)
         return
     node_uid = col.get_node_uid()
-    LOG.debug('select_collection node_uid=%r', node_uid)
     if node_uid is None:
         return
     nodes = maya.cmds.ls(node_uid)
-    LOG.debug('select_collection nodes=%r', nodes)
     if nodes is None:
         return
 

@@ -85,7 +85,7 @@ class Marker(object):
 
     def create_node(self,
                     name='marker1',
-                    # colour=None,
+                    colour=None,
                     cam=None,
                     mkr_grp=None,
                     bnd=None):
@@ -94,6 +94,10 @@ class Marker(object):
 
         :param name: Name of the marker to create.
         :type name: str
+
+        :param colour: Colour of marker as R, G and B.
+                       'None' will leave as default.
+        :type colour: (float, float, float) or None
 
         :param cam: The camera to create the marker underneath.
         :type cam: Camera
@@ -119,8 +123,9 @@ class Marker(object):
             assert isinstance(mkr_grp, markergroup.MarkerGroup)
         if bnd is not None:
             assert isinstance(bnd, mmSolver._api.bundle.Bundle)
-        # if colour is not None:
-        #     assert isinstance(colour, str)
+        if colour is not None:
+            assert isinstance(colour, (tuple, list))
+            assert len(colour) == 3
 
         # Transform
         tfm = maya.cmds.createNode('transform', name=name)
@@ -169,6 +174,13 @@ class Marker(object):
 
         self.set_node(tfm)
 
+        # Set Colour (default is red)
+        if colour is not None:
+            self.set_colour_rgb(colour)
+        else:
+            red = (1.0, 0.0, 0.0)
+            self.set_colour_rgb(red)
+
         # Link to Camera
         if cam is not None:
             self.set_camera(cam)
@@ -193,27 +205,52 @@ class Marker(object):
 
     ############################################################################
 
-    # def get_colour_rgb(self):
-    #     """
-    #     Get the current wire-frame colour of the object.
-    #     """
-    #     node = self.get_node()
-    #     node_attr = '{0}.{1}'.format(node, 'wireColorRGB')
-    #     # node_attr = '{0}.{1}'.format(node, 'outlinerColor')
-    #     v = maya.cmds.getAttr(node_attr)
-    #     return v
+    def get_colour_rgb(self):
+        """
+        Get the current wire-frame colour of the Marker.
 
-    # def set_colour_rgb(self, rgb):
-    #     """
-    #     Change the Wireframe colour of the given Marker.
-    #
-    #     http://help.autodesk.com/cloudhelp/2016/ENU/Maya-Tech-Docs/CommandsPython/color.html
-    #     """
-    #     node = self.get_node()
-    #     node_attr = '{0}.{1}'.format(node, 'wireColorRGB')
-    #     # node_attr = '{0}.{1}'.format(node, 'outlinerColor')
-    #     v = maya.cmds.setAttr(node_attr, rgb)
-    #     return
+        :returns: Tuple of red, green and blue, or None if colour
+                  cannot be found.
+        :rtype: (float, float, float) or None
+        """
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return
+        shps = maya.cmds.listRelatives(node, shapes=True) or []
+        if len(shps) == 0:
+            msg = 'Could not find shape to get colour. node=%r shps=%r'
+            LOG.warning(msg, node, shps)
+            return
+        shp = shps[0]
+        v = api_utils.get_node_wire_colour_rgb(shp)
+        return v
+
+    def set_colour_rgb(self, rgb):
+        """
+        Change the Wireframe colour of the Marker.
+
+        :param rgb: Colour as R, G, B; Or None to reset to default colour.
+        :type rgb: tuple
+
+        :return: Nothing.
+        :rtype: None
+        """
+        assert rgb is None or isinstance(rgb, (tuple, list))
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return
+        shps = maya.cmds.listRelatives(node, shapes=True) or []
+        if len(shps) == 0:
+            msg = 'Could not find shape to set colour. node=%r shps=%r'
+            LOG.warning(msg, node, shps)
+            return
+        shp = shps[0]
+        api_utils.set_node_wire_colour_rgb(shp, rgb)
+        return
 
     ############################################################################
 

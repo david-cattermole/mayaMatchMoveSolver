@@ -22,15 +22,48 @@ class TestBundle(test_api_utils.APITestCase):
         self.assertEqual(x_node, None)
 
         # Create nodes
+        y = bundle.Bundle().create_node()
+        y_node = y.get_node()
+        self.assertTrue(maya.cmds.objExists(y_node))
+        self.assertEqual(y_node, '|bundle1')
+
+        # Create nodes (again, with explicit node name)
         y = bundle.Bundle().create_node(name='myBundle1')
         y_node = y.get_node()
         self.assertTrue(maya.cmds.objExists(y_node))
         self.assertEqual(y_node, '|myBundle1')
 
+        # Set Node via __init__
         z = bundle.Bundle(node=y_node)
         z_node = z.get_node()
         self.assertEqual(z_node, y_node)
         self.assertEqual(z_node, '|myBundle1')
+
+        # Set Node via set_node
+        x.set_node(y_node)
+        x_node = x.get_node()
+        self.assertEqual(x_node, y_node)
+
+    def test_set_colour_rgb(self):
+        """
+        Set wireframe colour of the bundle.
+        """
+        green = (0.0, 1.0, 0.0)
+        blue = (0.0, 0.0, 1.0)
+
+        x = bundle.Bundle()
+        x_rgb = x.get_colour_rgb()
+        self.assertEqual(x_rgb, None)
+
+        # Create nodes
+        y = bundle.Bundle().create_node(name='myBundle1')
+        y_rgb = y.get_colour_rgb()
+        self.assertEqual(y_rgb, green)
+
+        y.set_colour_rgb(blue)
+        y_rgb = y.get_colour_rgb()
+        self.assertEqual(y_rgb, blue)
+        return
 
     def test_get_marker_list(self):
         x = bundle.Bundle().create_node(name='myBundle1')

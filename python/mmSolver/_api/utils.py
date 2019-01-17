@@ -570,6 +570,45 @@ def set_value_on_node_attr(node_name, attr_name, data):
     return
 
 
+def get_node_wire_colour_rgb(node):
+    """
+    Get the current wire-frame colour of the node.
+
+    The 'node' is assumed to a DAG node (capable of having a wireframe
+    colour).
+
+    :param node: Maya node path to get wireframe colour from.
+    :type node: str
+
+    :returns: Tuple of red, green and blue.
+    :rtype: (float, float, float)
+    """
+    assert maya.cmds.objExists(node) is True
+    node_attr = '{0}.{1}'.format(node, 'wireColorRGB')
+    value = maya.cmds.getAttr(node_attr)[0]
+    return value
+
+
+def set_node_wire_colour_rgb(node, rgb):
+    """
+    Change the Wireframe colour of the node.
+
+    :param rgb: Colour as R, G, B; Or None to reset to default colour.
+    :type rgb: tuple
+
+    :return: Nothing.
+    :rtype: None
+    """
+    assert rgb is None or isinstance(rgb, (tuple, list))
+    if isinstance(rgb, (tuple, list)):
+        assert len(rgb) == 3
+        maya.cmds.color(node, rgbColor=rgb)
+    else:
+        # Reset to default wireframe colour.
+        maya.cmds.color(node)
+    return
+
+
 # def colour_name_to_rgb(name):
 #     """
 #     Convert a string name into RGB values.

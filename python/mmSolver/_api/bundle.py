@@ -5,8 +5,12 @@
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
+import mmSolver.logger
 import mmSolver._api.utils as api_utils
 import mmSolver._api.marker
+
+
+LOG = mmSolver.logger.get_logger()
 
 
 class Bundle(object):
@@ -58,12 +62,25 @@ class Bundle(object):
     ############################################################################
 
     def create_node(self,
-                    name='bundle1'):
-                    # colour=None):
+                    name='bundle1',
+                    colour=None):
+        """
+        Create a Bundle.
+
+        :param name: The name of the newly created Bundle.
+        :type name: str
+
+        :param colour: Colour of bundle as R, G and B.
+                       'None' will leave as default.
+        :type colour: (float, float, float) or None
+
+        :return: Bundle object attached to newly created node.
+        :rtype: Bundle
+        """
         assert isinstance(name, (str, unicode))
-        # if colour is not None:
-        #     assert isinstance(colour, str)
-        #     # TODO: Look up the colour value from a string.
+        if colour is not None:
+            assert isinstance(colour, (tuple, list))
+            assert len(colour) == 3
 
         # Transform
         tfm = maya.cmds.createNode('transform', name=name)
@@ -83,6 +100,13 @@ class Bundle(object):
         maya.cmds.setAttr(shp + '.localScaleZ', 0.1)
 
         self.set_node(tfm)
+
+        # Set Colour (default is green)
+        if colour is not None:
+            self.set_colour_rgb(colour)
+        else:
+            green = (0.0, 1.0, 0.0)
+            self.set_colour_rgb(green)
         return self
 
     def delete_node(self):
@@ -92,13 +116,52 @@ class Bundle(object):
 
     ############################################################################
 
-    # def get_node_colour(self):
-    #     pass
+    def get_colour_rgb(self):
+        """
+        Get the current wire-frame colour of the Bundle.
 
-    # def set_node_colour(self, name):
-    #     # TODO: should we allow RGB values directly?
-    #     # TODO: Look up the colour value from a string.
-    #     pass
+        :returns: Tuple of red, green and blue, or None if colour
+                  cannot be found.
+        :rtype: (float, float, float) or None
+        """
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return None
+        shps = maya.cmds.listRelatives(node, shapes=True) or []
+        if len(shps) == 0:
+            msg = 'Could not find shape to get colour. node=%r shps=%r'
+            LOG.warning(msg, node, shps)
+            return None
+        shp = shps[0]
+        v = api_utils.get_node_wire_colour_rgb(shp)
+        return v
+
+    def set_colour_rgb(self, rgb):
+        """
+        Change the Wireframe colour of the Bundle.
+
+        :param rgb: Colour as R, G, B; Or None to reset to default colour.
+        :type rgb: tuple
+
+        :return: Nothing.
+        :rtype: None
+        """
+        assert rgb is None or isinstance(rgb, (tuple, list))
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return
+        shps = maya.cmds.listRelatives(node, shapes=True) or []
+        if len(shps) == 0:
+            msg = 'Could not find shape to set colour. node=%r shps=%r'
+            LOG.warning(msg, node, shps)
+            return
+        shp = shps[0]
+        api_utils.set_node_wire_colour_rgb(shp, rgb)
+        return
 
     ############################################################################
 

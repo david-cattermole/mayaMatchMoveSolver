@@ -131,6 +131,28 @@ class TestMarker(test_api_utils.APITestCase):
         self.assertTrue(maya.cmds.objExists(node3))
         self.assertEqual(node1, node3)
 
+    def test_set_colour_rgb(self):
+        """
+        Set wireframe colour of the marker.
+        """
+        red = (1.0, 0.0, 0.0)
+        green = (0.0, 1.0, 0.0)
+        blue = (0.0, 0.0, 1.0)
+
+        x = marker.Marker()
+        x_rgb = x.get_colour_rgb()
+        self.assertEqual(x_rgb, None)
+
+        # Create nodes
+        y = marker.Marker().create_node(name='myMarker1')
+        y_rgb = y.get_colour_rgb()
+        self.assertEqual(y_rgb, red)
+
+        y.set_colour_rgb(blue)
+        y_rgb = y.get_colour_rgb()
+        self.assertEqual(y_rgb, blue)
+        return
+
     def test_get_bundle(self):
         x = marker.Marker().create_node()
         bnd0 = x.get_bundle()

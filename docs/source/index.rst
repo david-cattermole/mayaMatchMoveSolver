@@ -16,7 +16,6 @@ Topics
    :maxdepth: 2
 
    introduction
-   tutorial
    tools
    nodes
    commands

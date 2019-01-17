@@ -27,7 +27,7 @@ def build_shelf():
     # Solver UI
     name = 'Solver'
     tooltip = 'Open the MM Solver window.'
-    icon = None
+    icon = 'menuIconWindow.png'
     cmd = (
         'import mmSolver.tools.solver.tool;'
         'mmSolver.tools.solver.tool.open_window();'
@@ -43,9 +43,9 @@ def build_shelf():
     shelfutils.create_shelf_separator(parent=shelf)
 
     # Create Marker
-    name = 'MKR +'
+    name = 'Create'
     tooltip = 'Create Marker.'
-    icon = None
+    icon = 'createMarker_32x32.png'
     cmd = (
         'import mmSolver.tools.createmarker.tool;'
         'mmSolver.tools.createmarker.tool.create_marker();'
@@ -61,10 +61,60 @@ def build_shelf():
     # Load Marker
     name = 'Load...'
     tooltip = 'Load Marker.'
-    icon = None
+    icon = 'menuIconFile.png'
     cmd = (
         'import mmSolver.tools.loadmarker.tool;'
         'mmSolver.tools.loadmarker.tool.open_window();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # Create Bundle
+    name = 'Create'
+    tooltip = 'Create Bundle.'
+    icon = 'createBundle_32x32.png'
+    cmd = (
+        'import mmSolver.tools.createbundle.tool;'
+        'mmSolver.tools.createbundle.tool.create_bundle();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    shelfutils.create_shelf_separator(parent=shelf)
+
+    # Link Marker + Bundle
+    name = 'Link'
+    tooltip = 'Link the selected Marker and Bundle together.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;'
+        'link_mb_tool.link_marker_bundle();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # Unlink Marker from Bundle
+    name = 'Unlink'
+    tooltip = 'Unlink all selected Markers from their Bundle.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;'
+        'link_mb_tool.unlink_marker_bundle();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,

@@ -409,7 +409,8 @@ class SolverWindow(BaseWindow):
         self.help()
 
     def launchAboutCB(self):
-        LOG.info('Launch About... not yet.')
+# LOG.info('Launch About... not yet.')
+        self.help()
 
     def setStatusLine(self, text):
         self.subForm.setStatusLine(text)
@@ -449,7 +450,8 @@ class SolverWindow(BaseWindow):
         return
 
     def help(self):
-        helputils.open_help_in_browser(page='tools.html#solver-ui')
+        src = helputils.get_help_source()
+        helputils.open_help_in_browser(page='tools.html#solver-ui', help_source=src)
         return
 
 

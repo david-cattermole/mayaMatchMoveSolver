@@ -106,7 +106,7 @@ $ mayapy compileUI.py
 $ cd docs
 $ make html
 $ cd ..
-l
+
 # Download levmar
 $ bash external/download_all_archives.sh
 

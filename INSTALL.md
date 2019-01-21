@@ -7,8 +7,8 @@ page on the GitHub [project page](https://github.com/david-cattermole/mayaMatchM
 
 | Operating System  | Maya Version(s)           |
 | ----------------- | ------------------------- |
-| Linux             | Maya 2016, 2017, 2018     |
-| Windows           | Maya 2017                 |
+| Linux             | Maya 2016, 2017           |
+| Windows           | Maya 2016, 2017, 2018     |
 | Mac OSX           | *Not Currently Supported* |
 
 Download the archive format (`.zip` or `.tar.gz`) for your Maya

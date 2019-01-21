@@ -69,7 +69,7 @@ Required:
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
 
 Required for GUI support:
-- [Qt.py](https://github.com/mottosso/Qt.py)
+- [Qt.py 0.6.9](https://github.com/mottosso/Qt.py/releases/tag/0.6.9)
 
 Optional:
 - [ATLAS 3.8.4](http://math-atlas.sourceforge.net/)

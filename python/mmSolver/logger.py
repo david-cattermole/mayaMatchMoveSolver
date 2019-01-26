@@ -16,7 +16,7 @@ def get_logger(level=None):
         LOG = mmSolver.logger.get_logger()
         LOG.info('hello world')
         LOG.warning('be careful everyone')
-        LOG.error('some thing bad has happened')
+        LOG.error('something bad has happened')
 
     :param level: Set the level for the newly created Logger object.
     :type level: str or None

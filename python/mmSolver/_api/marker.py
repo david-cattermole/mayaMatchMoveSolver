@@ -25,7 +25,7 @@ class Marker(object):
 
     Example usage::
 
-        >>> mkr = mmapi.Marker(node='myNode')
+        >>> mkr = mmapi.Marker(name='myNode')
         >>> mkr.get_node()
         '|myNode'
         >>> bnd = mmapi.Bundle().create_node(name='myBundle1')
@@ -34,6 +34,7 @@ class Marker(object):
         '|myMarker1'
 
     """
+
     def __init__(self, name=None):
         """
         Initialize a Marker, give a name to connect to an existing Maya node.

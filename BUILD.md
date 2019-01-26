@@ -153,13 +153,19 @@ On Windows:
 > notepad build_with_levmar.bat
 
 :: Build Maya plug-in, create module and install to home directory.
-:: Note: Edit build_with_levmar.bat and remove 'nmake /F Makefile install' to stop automatic installation.
+::
+:: Note: Edit build_with_levmar.bat and remove 'nmake /F Makefile install'
+:: to stop automatic installation.
 > CMD /C build_with_levmar.bat
 
 :: Run tests (with 'mayapy')
 :: Edit path to mayapy if needed (in your prefered text editor)
+::
+:: Note 'cmd.exe' is very slow printing text to the console, therefore
+:: redirecting to a log file ('> file.log' below) will improve performance
+:: of the test suite greatly.
 > notepad runTests.bat
-> CMD /C runTests.bat
+> CMD /C runTests.bat > tests.log
 
 :: Install 3DE scripts (or install via ScriptDB)
 > XCOPY 3dequalizer\scriptdb\* "%AppData%\.3dequalizer\py_scripts" /Y
@@ -194,7 +200,7 @@ mmSolver comes with a set of documentation, and Sphinx building
 scripts to automate HTML page generation. It is recommended to build
 the HTML documentation, however it is optional.
 
-To build the documentation, you will need to install both 
+To build the documentation, you will need to install both
 [Python](https://www.python.org/) and
 [Sphinx](http://www.sphinx-doc.org/en/master/usage/installation.html).
 

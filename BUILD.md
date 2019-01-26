@@ -63,13 +63,24 @@ with only minor modifications.
 These projects are needed for building the ``mmSolver`` project.
 
 Required:
-- C++ compiler ([GCC](https://gcc.gnu.org/), MSVC, etc)
+- C++ compiler
+  - Linux (depending on Maya version)
+    - [GCC 4.4.7](https://gcc.gnu.org/) (Maya 2016 and 2017)
+    - [GCC 4.8.3](https://gcc.gnu.org/) (Maya 2018)
+    - [GCC 6.3.1](https://gcc.gnu.org/) (Maya 2019)
+  - Windows
+    - [Visual Studio 2012 update 5 (MSVC 11.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2016 and 2017)
+    - [Visual Studio 2015 update 3 (MSVC 14.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2018 and 2019)
 - [CMake 2.8+](https://cmake.org/)
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
 
-Required for GUI support:
+Optional (**required for GUI support**):
 - [Qt.py 0.6.9](https://github.com/mottosso/Qt.py/releases/tag/0.6.9)
+
+Optional (**required for building documentation**):
+- [Python 2.7.x](https://www.python.org/)
+- [Sphinx 1.8.3+](http://www.sphinx-doc.org/en/master/index.html)
 
 Optional:
 - [ATLAS 3.8.4](http://math-atlas.sourceforge.net/)
@@ -102,24 +113,25 @@ $ cd <project root>
 # Build Qt .ui files
 $ mayapy compileUI.py
 
-# Build documentation
+# Build Documentation (with Python and Sphinx)
 $ cd docs
 $ make html
 $ cd ..
 
-# Download levmar
+# Download levmar to "<project root>/external/archives/"
 $ bash external/download_all_archives.sh
 
-# Edit variables as needed.
+# Edit variables as needed (in your prefered text editor).
 $ vi build_with_levmar.sh
 
-# Build plug-in and module
+# Build Maya plug-in, create module and install to home directory.
+# Note: Edit build_with_levmar.bat and remove 'make install' to stop automatic installation.
 $ build_with_levmar.sh
 
 # Run tests (with 'mayapy')
 $ sh runTests.sh
 
-# Install 3DE scripts
+# Install 3DE scripts (or install via ScriptDB)
 $ cp ./3dequalizer/scriptdb/* ~/.3dequalizer/py_scripts
 ```
 
@@ -130,32 +142,34 @@ On Windows:
 :: Compile Qt .ui files
 > "C:\Program Files\Autodesk\Maya2017\bin\mayapy.exe" compileUI.py
 
-:: Build Documentation
+:: Build Documentation (with Python and Sphinx)
 > CD docs
 > CMD /C make.bat html
 > CD ..
 
-:: Download levmar manually
+:: User must download levmar *manually* to "<project root>/external/archives/"
 
-:: Edit variables as needed
+:: Edit variables as needed (in your prefered text editor).
 > notepad build_with_levmar.bat
 
-:: Build plug-in and module
+:: Build Maya plug-in, create module and install to home directory.
+:: Note: Edit build_with_levmar.bat and remove 'nmake /F Makefile install' to stop automatic installation.
 > CMD /C build_with_levmar.bat
 
 :: Run tests (with 'mayapy')
-> notepad runTests.bat  :: Edit path to mayapy if needed
+:: Edit path to mayapy if needed (in your prefered text editor)
+> notepad runTests.bat
 > CMD /C runTests.bat
 
-:: Install 3DE scripts
-> XCOPY 3dequalizer/scriptdb/* "%AppData%/.3dequalizer/py_scripts" /Y
+:: Install 3DE scripts (or install via ScriptDB)
+> XCOPY 3dequalizer\scriptdb\* "%AppData%\.3dequalizer\py_scripts" /Y
 ```
 
 # Compile Qt UI files
 
-We must compile the `*.ui` files for your version of Maya (either PySide or
-PySide2) in order to use the mmSolver tool GUIs. To compile the `*.ui` files,
-run these commands.
+We must compile the `*.ui` files for your version of Maya (either
+PySide or PySide2) in order to use the mmSolver tool GUIs. To compile
+the `*.ui` files, run these commands.
 
 On Linux:
 ```commandline
@@ -180,8 +194,18 @@ mmSolver comes with a set of documentation, and Sphinx building
 scripts to automate HTML page generation. It is recommended to build
 the HTML documentation, however it is optional.
 
-Once the documentation is built, it will be installed automatically
-into the Maya Module (next section).
+To build the documentation, you will need to install both 
+[Python](https://www.python.org/) and
+[Sphinx](http://www.sphinx-doc.org/en/master/usage/installation.html).
+
+On Linux, Python is likely already installed, however you can install
+it on CentOS Linux with this command line:
+```commandline
+$ yum install python python-sphinx
+```
+
+After Sphinx is installed (and Python is on your PATH environment
+variable), you can build the documentation with the following command line:
 
 On Linux:
 ```commandline
@@ -194,6 +218,14 @@ On Windows:
 > CD <project root>/docs
 > CMD /C make.bat html
 ```
+
+If this documentation build is successful, it will be installed
+automatically into the Maya Module (in the next section).
+
+*Note:* Sphinx will likely list a number of 'errors' while building
+the documentation, this means the automatic tools failed to find
+documentation. This is normal. A majority of the documentation will be
+present.
 
 # Build Plug-In (and Maya Module)
 
@@ -264,7 +296,7 @@ On Windows run:
 ```
 
 This will find and use the currently available 'mayapy' executable,
-please make sure 'mayapy' is on your PATH environment variable.
+please make sure 'mayapy' is on your ``PATH`` environment variable.
 
 For more information about testing, see the Testing section in
 [DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
@@ -284,16 +316,16 @@ There are currently two 3DEqualizer tools available:
 
 ## Script Database
 
-For 3DEqualizer versions supporting the online 
-[Script Database](https://www.3dequalizer.com/?site=scriptdb), you may 
+For 3DEqualizer versions supporting the online
+[Script Database](https://www.3dequalizer.com/?site=scriptdb), you may
 install the latest tools via the menu '3DE4 > Python > ScriptDB Installer'.
 
-See this [video tutorial](https://www.youtube.com/watch?v=gVr_Fo1xh0E) for 
-an example of installing scripts with ScriptDB. 
+See this [video tutorial](https://www.youtube.com/watch?v=gVr_Fo1xh0E) for
+an example of installing scripts with ScriptDB.
 
 ## Home Directory
 
-Alternatively, you may install scripts manually by copying the 3DEqualizer python 
+Alternatively, you may install scripts manually by copying the 3DEqualizer python
 scripts in `<project root>/3dequalizer/scriptdb` into the `~/.3dequalizer/py_scripts` directory.
 
 On Linux:

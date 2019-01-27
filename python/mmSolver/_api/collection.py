@@ -563,8 +563,6 @@ class Collection(object):
         solver_type = sol.get_solver_type()
         if solver_type is not None:
             kwargs['solverType'] = solver_type
-        else:
-            kwargs['solverType'] = const.SOLVER_TYPE_LEVMAR
 
         iterations = sol.get_max_iterations()
         if iterations is not None:
@@ -576,7 +574,7 @@ class Collection(object):
 
         delta_factor = sol.get_delta_factor()
         if delta_factor is not None:
-                kwargs['delta'] = delta_factor
+            kwargs['delta'] = delta_factor
 
         auto_diff_type = sol.get_auto_diff_type()
         if auto_diff_type is not None:

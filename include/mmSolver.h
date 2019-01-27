@@ -32,7 +32,11 @@
 
 // The different solver types to choose from. Currently only 'levmar'
 // is supported.
-#define SOLVER_TYPE_LEVMAR 0  // Dense LM solver
+#define SOLVER_TYPE_LEVMAR 0  // Dense LM solver using 'levmar',
+#define SOLVER_TYPE_CMINPACK_LM 1  // Dense LM solver using 'cminpack' library.
+
+// Enable the Maya profiling data collection.
+#define MAYA_PROFILE 1
 
 // The number of errors that are measured per-marker.  
 //
@@ -92,6 +96,7 @@ bool solve(int iterMax,
            double eps3,
            double delta,
            int autoDiffType,
+           int autoParamScale,
            int solverType,
            CameraPtrList cameraList,
            MarkerPtrList markerList,

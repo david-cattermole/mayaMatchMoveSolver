@@ -58,7 +58,6 @@ def create_example_solve_scene():
     # Solver
     sol = api.Solver()
     sol.set_max_iterations(10)
-    sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     sol.set_verbose(True)
     sol.set_frame_list(frm_list)
 

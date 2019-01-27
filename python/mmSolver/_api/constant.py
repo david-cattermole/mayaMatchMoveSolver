@@ -53,6 +53,7 @@ SOLVER_DATA_DEFAULT = {
 
 # Solver Types
 SOLVER_TYPE_LEVMAR = 0
+SOLVER_TYPE_CMINPACK_LM = 1
 
 
 # Attribute States

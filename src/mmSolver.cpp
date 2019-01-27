@@ -6,8 +6,14 @@
 #include <mmSolver.h>
 
 // Lev-Mar
+#ifdef USE_SOLVER_LEVMAR
 #include <levmar.h>  // dlevmar_bc_dir, dlevmar_bc_der
+#endif // USE_SOLVER_LEVMAR
 
+// CMinpack
+// #ifdef USE_SOLVER_CMINPACK
+#include <cminpack.h>  //
+// #endif // USE_SOLVER_CMINPACK
 
 // STL
 #include <ctime>     // time
@@ -41,7 +47,10 @@
 #include <maya/MComputation.h>
 #include <maya/MProfiler.h>
 
+// Local
 #include <mmSolverLevMar.h>
+#include <mmSolverCMinpack.h>
+#include <mmSolverFunc.h>  // SolveData
 #include <mayaUtils.h>
 
 
@@ -52,8 +61,10 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
                           std::vector<double> &markerWeightList,
                           IndexPairList &errorToMarkerList,
                           MStatus &status) {
-    // Count up number of errors
-    // For each marker on each frame that it is valid, we add ERRORS_PER_MARKER errors.
+    // Count up number of errors.
+    //
+    // For each marker on each frame that it is valid, we add
+    // ERRORS_PER_MARKER errors.
     int i = 0;
     int j = 0;
 
@@ -252,6 +263,7 @@ bool solve(int iterMax,
            double eps3,
            double delta,
            int autoDiffType,
+           int autoParamScale,
            int solverType,
            CameraPtrList cameraList,
            MarkerPtrList markerList,
@@ -267,15 +279,22 @@ bool solve(int iterMax,
     int j = 0;
     MStatus status;
     std::string resultStr;
-    int ret = true;
+    int ret = 1;
+
+#ifdef MAYA_PROFILE
     int profileCategory = MProfiler::getCategoryIndex("mmSolver");
-    MProfilingScope profilingScope(profileCategory, MProfiler::kColorC_L3, "solve");
+    MProfilingScope profilingScope(profileCategory,
+                                   MProfiler::kColorC_L3,
+                                   "solve");
+#endif
 
     // Change the sign of the delta
     double delta_factor = std::abs(delta);
     if (autoDiffType == 1) {
-        // Central Differencing (to use forward differing the delta
-        // must be a positive number)
+        // Central Differencing
+        //
+        // To use forward differing the delta must be a positive
+        // number, so we make 'delta_factor' negative.
         delta_factor *= -1;
     }
 
@@ -296,15 +315,15 @@ bool solve(int iterMax,
     std::vector<double> paramList(1);
 
     // Number of unknown parameters.
-    int m = 0;
+    int numberOfParameters = 0;
 
     // Number of measurement errors.
     // (Must be less than or equal to number of unknown parameters).
-    int n = 0;
+    int numberOfErrors = 0;
 
     // Count up number of errors
     MarkerPtrList validMarkerList;
-    n = countUpNumberOfErrors(
+    numberOfErrors = countUpNumberOfErrors(
             markerList,
             frameList,
             validMarkerList,
@@ -322,7 +341,7 @@ bool solve(int iterMax,
     std::vector<double> paramLowerBoundList;
     std::vector<double> paramUpperBoundList;
     std::vector<double> paramWeightList;
-    m = countUpNumberOfUnknownParameters(
+    numberOfParameters = countUpNumberOfUnknownParameters(
             attrList,
             frameList,
             camStaticAttrList,
@@ -335,28 +354,28 @@ bool solve(int iterMax,
             paramToAttrList,
             status
     );
-    assert(paramLowerBoundList.size() == m);
-    assert(paramUpperBoundList.size() == m);
-    assert(paramWeightList.size() == m);
-    assert(m >= attrList.size());
+    assert(paramLowerBoundList.size() == numberOfParameters);
+    assert(paramUpperBoundList.size() == numberOfParameters);
+    assert(paramWeightList.size() == numberOfParameters);
+    assert(numberOfParameters >= attrList.size());
 
-    VRB("Number of Parameters; m=" << m);
-    VRB("Number of Errors; n=" << n);
-    if (m > n) {
+    VRB("Number of Parameters; numberOfParameters=" << numberOfParameters);
+    VRB("Number of Errors; numberOfErrors=" << numberOfErrors);
+    if (numberOfParameters > numberOfErrors) {
         ERR("Solver failure; cannot solve for more attributes (\"parameters\") "
             << "than number of markers (\"errors\"). "
-            << "parameters=" << m << " "
-            << "errors =" << n);
+            << "parameters=" << numberOfParameters << " "
+            << "errors =" << numberOfErrors);
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
         return false;
     }
-    paramList.resize((unsigned long) m, 0);
-    errorList.resize((unsigned long) n, 0);
+    paramList.resize((unsigned long) numberOfParameters, 0);
+    errorList.resize((unsigned long) numberOfErrors, 0);
 
     // Error distance measurement - fur end users to read.
     std::vector<double> errorDistanceList;
-    errorDistanceList.resize((unsigned long) n / ERRORS_PER_MARKER, 0);
+    errorDistanceList.resize((unsigned long) numberOfErrors / ERRORS_PER_MARKER, 0);
     assert(errorToMarkerList.size() == errorDistanceList.size());
 
     // Debug timers
@@ -376,7 +395,7 @@ bool solve(int iterMax,
     VRB("Set Initial parameters...");
     MTime currentFrame = MAnimControl::currentTime();
     i = 0;
-    for (i = 0; i < m; ++i) {
+    for (i = 0; i < numberOfParameters; ++i) {
         IndexPair attrPair = paramToAttrList[i];
         AttrPtr attr = attrList[attrPair.first];
 
@@ -400,7 +419,7 @@ bool solve(int iterMax,
 
      // Initial Parameters
      VRB("Initial Parameters: ");
-     for (i = 0; i < m; ++i) {
+     for (i = 0; i < numberOfParameters; ++i) {
          VRB("-> " << paramList[i]);
      }
 
@@ -413,8 +432,13 @@ bool solve(int iterMax,
     VRB("Epsilon3=" << eps3);
     VRB("Delta=" << fabs(delta_factor));
     VRB("Auto Differencing Type=" << autoDiffType);
+
+    // MComputation helper.
+    bool showProgressBar = true;
+    bool isInterruptable = true;
+    bool useWaitCursor = true;
     computation.setProgressRange(0, iterMax);
-    computation.beginComputation();
+    computation.beginComputation(showProgressBar, isInterruptable, useWaitCursor);
 
     // Determine the solver type, levmar, sparse levmar or ceres, etc.
     assert(solverType == SOLVER_TYPE_LEVMAR);
@@ -424,7 +448,7 @@ bool solve(int iterMax,
     solveBenchTicks.start();
 
     // Solving Objects.
-    struct LevMarSolverData userData;
+    struct SolverData userData;
     userData.cameraList = cameraList;
     userData.markerList = markerList;  // TODO: Can we replace this with valid marker list?
     userData.bundleList = bundleList;
@@ -443,8 +467,12 @@ bool solve(int iterMax,
     userData.iterNum = 0;
     userData.jacIterNum = 0;
     userData.iterMax = iterMax;
-    userData.isJacobianCalculation = false;
     userData.imageWidth = 2048.0;  // TODO: Get actual image plane resolution.
+
+    // Type of Call
+    userData.isJacobianCall = false;
+    userData.isNormalCall = true;
+    userData.isPrintCall = false;
 
     // Solver Errors Thresholds
     userData.tau = tau;
@@ -476,19 +504,103 @@ bool solve(int iterMax,
     userData.verbose = verbose;
 
     // Options and Info
-    const unsigned int optsSize = LM_OPTS_SZ;
-    const unsigned int infoSize = LM_INFO_SZ;
-    double opts[optsSize];
-    double info[infoSize];
+#ifdef USE_SOLVER_LEVMAR
+    const unsigned int levmar_optsSize = LM_OPTS_SZ;
+    const unsigned int levmar_infoSize = LM_INFO_SZ;
+    double levmar_opts[levmar_optsSize];
+    double levmar_info[levmar_infoSize];
 
     // Options
-    opts[0] = tau;
-    opts[1] = eps1;
-    opts[2] = eps2;
-    opts[3] = eps3;
-    opts[4] = delta_factor;
+    levmar_opts[0] = tau;
+    levmar_opts[1] = eps1;
+    levmar_opts[2] = eps2;
+    levmar_opts[3] = eps3;
+    levmar_opts[4] = delta_factor;
+
+#endif // USE_SOLVER_LEVMAR
+
+#ifdef USE_SOLVER_CMINPACK
+
+    // Output jacobian matrix
+    std::vector<double> jacobianList(1);
+    jacobianList.resize((unsigned long) numberOfParameters * numberOfErrors, 0);
+
+    int cminpack_info = 0;
+
+    // defines a permutation matrix p such that jac*p = q*r, where
+    // jac is the final calculated Jacobian, q is orthogonal (not
+    // stored), and r is upper triangular with diagonal elements
+    // of nonincreasing magnitude
+    //
+    // Integer output array.
+    std::vector<int> ipvtList(1);
+    ipvtList.resize((unsigned long) numberOfParameters, 0);
+
+    // An output array of length numberOfErrors which contains the first numberOfErrors
+    // elements of the vector (q transpose)*fvec.
+    std::vector<double> qtfList(1);
+    qtfList.resize((unsigned long) numberOfParameters, 0);
+
+    // Working arrays.
+    std::vector<double> wa1List(1);
+    std::vector<double> wa2List(1);
+    std::vector<double> wa3List(1);
+    std::vector<double> wa4List(1);
+    wa1List.resize((unsigned long) numberOfParameters, 0);
+    wa2List.resize((unsigned long) numberOfParameters, 0);
+    wa3List.resize((unsigned long) numberOfParameters, 0);
+    wa4List.resize((unsigned long) numberOfErrors, 0);
+
+    // Leading matrix size of jacobian
+    int ldfjac = numberOfErrors;
+    if (numberOfParameters >= numberOfErrors) {
+      ldfjac = numberOfParameters;
+    }
+
+    // set ftol and xtol to the square root of the machine
+    // and gtol to zero. unless high solutions are
+    // required, these are the recommended settings.
+
+    // double ftol = sqrt(__cminpack_func__(dpmpar)(1));
+    // double xtol = sqrt(__cminpack_func__(dpmpar)(1));
+    // double gtol = 0.;
+
+    // Use user-given values
+    double cminpack_ftol = eps1;
+    double cminpack_xtol = eps2;
+    double cminpack_gtol = eps3;
+
+    // Delta
+    double cminpack_epsfcn = delta_factor;
+
+    // auto-scaling parameters ON is mode=1, auto-weighting OFF is
+    // mode=2.
+    int cminpack_mode = 2; // Off
+    if (autoParamScale == 1) {
+      cminpack_mode = 1; // On
+    }
+
+    double cminpack_factor = tau;
+    int cminpack_nprint = 0;  // 0 == don't print anything.
+
+    // Number of calls
+    int cminpack_calls = 0;
+
+    // Final error
+    double cminpack_fnorm = 0.0;
+#endif
 
     if (solverType == SOLVER_TYPE_LEVMAR) {
+
+#ifndef USE_SOLVER_LEVMAR
+
+        ERR("Solver Type is not supported by this compiled plug-in. "
+            << "solverType=" << solverType);
+        resultStr = "success=0";
+        outResult.append(MString(resultStr.c_str()));
+        return false;
+
+#else // USE_SOLVER_LEVMAR is defined.
 
         // TODO: Determine a function that will 'guess' the 'delta'
         // value for the jacobian function parameters. We could
@@ -500,21 +612,21 @@ bool solve(int iterMax,
         // Allocate a memory block for both 'work' and 'covar', so that
         // the block is close together in physical memory.
         double *work, *covar;
-        work = (double *) malloc((LM_BC_DIF_WORKSZ(m, n) + m * m) * sizeof(double));
+        work = (double *) malloc((LM_BC_DIF_WORKSZ(numberOfParameters, numberOfErrors) + numberOfParameters * numberOfParameters) * sizeof(double));
         if (!work) {
             ERR("Memory allocation request failed.");
             resultStr = "success=0";
             outResult.append(MString(resultStr.c_str()));
             return false;
         }
-        covar = work + LM_BC_DIF_WORKSZ(m, n);
+        covar = work + LM_BC_DIF_WORKSZ(numberOfParameters, numberOfErrors);
 
         // Solve!
         ret = dlevmar_bc_dif(
                 // Function to call (input only)
                 // Function must be of the structure:
-                //   func(double *params, double *x, int m, int n, void *data)
-                levmarSolveFunc,
+                //   func(double *params, double *x, int numberOfParameters, int numberOfErrors, void *data)
+                solveFunc_levmar,
 
                 // Parameters (input and output)
                 // Should be filled with initial estimate, will be filled
@@ -527,10 +639,10 @@ bool solve(int iterMax,
 
                 // Parameter Vector Dimension (input only)
                 // (i.e. #unknowns)
-                m,
+                numberOfParameters,
 
                 // Measurement Vector Dimension (input only)
-                n,
+                numberOfErrors,
 
                 // vector of lower bounds. If NULL, no lower bounds apply
                 &paramLowerBoundList[0],
@@ -555,7 +667,7 @@ bool solve(int iterMax,
                 // which are more accurate (but slower!) compared to the forward
                 // differences employed by default.
                 // Set to NULL for defaults to be used.
-                opts,
+                levmar_opts,
 
                 // Output Information (output only)
                 // information regarding the minimization.
@@ -581,11 +693,11 @@ bool solve(int iterMax,
                 // info[9] = number linear systems solved (number of attempts for reducing error)
                 //
                 // Set to NULL if don't care
-                info,
+                levmar_info,
 
                 // Working Data (input only)
                 // working memory, allocated internally if NULL. If !=NULL, it is assumed to
-                // point to a memory chunk at least LM_DIF_WORKSZ(m, n)*sizeof(double) bytes
+                // point to a memory chunk at least LM_DIF_WORKSZ(numberOfParameters, numberOfErrors)*sizeof(double) bytes
                 // long
                 work,
 
@@ -600,8 +712,109 @@ bool solve(int iterMax,
                 (void *) &userData);
 
         free(work);
+
+#endif // USE_SOLVER_LEVMAR
+
+    } else if (solverType == SOLVER_TYPE_CMINPACK_LM) {
+
+#ifndef USE_SOLVER_CMINPACK
+
+        ERR("Solver Type is not supported by this compiled plug-in. "
+            << "solverType=" << solverType);
+        resultStr = "success=0";
+        outResult.append(MString(resultStr.c_str()));
+        return false;
+
+#else // USE_SOLVER_CMINPACK is defined.
+
+        cminpack_info = __cminpack_func__(lmdif)(
+               // Function to call
+               solveFunc_cminpack_lm,
+
+               // Input user data.
+               (void *) &userData,
+
+               // Number of errors.
+               numberOfErrors,
+
+               // Number of parameters.
+               numberOfParameters,
+
+               // parameters
+               &paramList[0],
+
+               // errors
+               &errorList[0],
+
+               // Tolerance to stop solving.
+               cminpack_ftol, cminpack_xtol, cminpack_gtol,
+
+               // Iteration maximum
+               iterMax,
+
+               // Delta (how much to shift parameters when calculating
+               // jacobian).
+               cminpack_epsfcn,
+
+               // Weight list (diagonal scaling)
+               &paramWeightList[0],
+
+               // Auto-parameter scaling mode
+               cminpack_mode,
+
+               // Tau factor (scale factor for initialTransform mu)
+               cminpack_factor,
+
+               // Should we print at each iteration?
+               cminpack_nprint,
+
+               // 'nfev' is an integer output variable set to the
+               // number of calls to 'fcn'.
+               &cminpack_calls,
+
+               // 'fjac' is an output numberOfParameters by n
+               // array. The upper n by n submatrix of fjac contains
+               // an upper triangular matrix r with diagonal elements
+               // of nonincreasing magnitude.
+               &jacobianList[0],
+
+               // 'ldfjac' is a positive integer input variable not
+               // less than numberOfParameters which specifies the
+               // leading dimension of the array fjac.
+               ldfjac,
+
+               // 'ipvt' is an integer output array of length n. ipvt
+               // defines a permutation matrix p such that jac*p =
+               // q*r, where jac is the final calculated Jacobian, q
+               // is orthogonal (not stored), and r is upper
+               // triangular with diagonal elements of nonincreasing
+               // magnitude. Column j of p is column ipvt(j) of the
+               // identity matrix
+               &ipvtList[0],
+
+               // 'qtf' is an output array of length n which contains
+               // the first n elements of the vector `(q transpose) *
+               // fvec`.
+               &qtfList[0],
+
+               // Working memory arrays
+               &wa1List[0],
+               &wa2List[0],
+               &wa3List[0],
+               &wa4List[0]);
+        cminpack_fnorm = __cminpack_func__(enorm)(numberOfErrors, &errorList[0]);
+        ret = userData.iterNum;
+
+        // ERR("Solver Type is not supported properly yet. "
+        //             << "solverType=" << solverType);
+        // resultStr = "success=0";
+        // outResult.append(MString(resultStr.c_str()));
+        // return false;
+
+#endif // USE_SOLVER_CMINPACK
+
     } else {
-        ERR("Solver type is expected to be levmar. solverType=" << solverType);
+        ERR("Solver Type is invalid. solverType=" << solverType);
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
         return false;
@@ -613,7 +826,7 @@ bool solve(int iterMax,
 
     // Set the solved parameters
     VRB("Setting Parameters...");
-    for (i = 0; i < m; ++i) {
+    for (i = 0; i < numberOfParameters; ++i) {
         IndexPair attrPair = paramToAttrList[i];
         AttrPtr attr = attrList[attrPair.first];
 
@@ -629,109 +842,176 @@ bool solve(int iterMax,
     }
     dgmod.doIt();  // Commit changed data into Maya
 
-    VRB("Results:");
-    VRB("Solver returned " << ret << " in " << (int) info[5]
-                           << " iterations");
-
-    int reasonNum = (int) info[6];
-    VRB("Reason: " << reasons[reasonNum]);
-    VRB("Reason number: " << info[6]);
-    VRB("");
-
-//        VRB("Solved Parameters:");
-//        for (i = 0; i < m; ++i) {
-//            VRB("-> " << paramList[i]);
-//        }
-
     // Compute the average error based on the error values
     // the solve function last computed.
     double errorAvg = 0;
     double errorMin = std::numeric_limits<double>::max();
     double errorMax = -0.0;
     double err = 0.0;
-    for (i = 0; i < n; ++i) {
+    for (i = 0; i < numberOfErrors; ++i) {
         err = userData.errorList[i];
         errorAvg += userData.errorDistanceList[i / ERRORS_PER_MARKER];
         if (err < errorMin) { errorMin = err; }
         if (err > errorMax) { errorMax = err; }
     }
-    errorAvg /= (double) n;
+    errorAvg /= (double) numberOfErrors;
 
-    VRB(std::endl << std::endl << "Solve Information:");
-    VRB("Initial Error: " << info[0]);
-    VRB("Final Error: " << info[1]);
-    VRB("Average Error: " << errorAvg);
-    VRB("J^T Error: " << info[2]);
-    VRB("Dp Error: " << info[3]);
-    VRB("Max Error: " << info[4]);
+    // VRB("Solved Parameters:");
+    // for (i = 0; i < numberOfParameters; ++i) {
+    //     VRB("-> " << paramList[i]);
+    // }
 
-    VRB("Iterations: " << info[5]);
-    VRB("Termination Reason: " << reasons[reasonNum]);
-    VRB("Function Evaluations: " << info[7]);
-    VRB("Jacobian Evaluations: " << info[8]);
-    VRB("Attempts for reducing error: " << info[9]);
+#ifdef USE_SOLVER_LEVMAR
+
+    if (solverType == SOLVER_TYPE_LEVMAR) {
+      VRB("Results:");
+      VRB("Solver returned " << ret << " in " << (int) levmar_info[5]
+          << " iterations");
+
+      int reasonNum = (int) levmar_info[6];
+      VRB("Reason: " << levmarReasons[reasonNum]);
+      VRB("Reason number: " << levmar_info[6]);
+      VRB("");
+
+      VRB(std::endl << std::endl << "Solve Information:");
+      // VRB("Initial Error: " << levmar_info[0]);
+      // VRB("Final Error: " << levmar_info[1]);
+      VRB("Maximum Error: " << errorMax);
+      VRB("Average Error: " << errorAvg);
+      VRB("Minimum Error: " << errorMin);
+      // VRB("J^T Error: " << levmar_info[2]);
+      // VRB("Dp Error: " << levmar_info[3]);
+      // VRB("Max Error: " << levmar_info[4]);
+
+      VRB("Iterations: " << levmar_info[5]);
+      VRB("Termination Reason: " << levmarReasons[reasonNum]);
+      VRB("Function Evaluations: " << levmar_info[7]);
+      VRB("Jacobian Evaluations: " << levmar_info[8]);
+      // VRB("Attempts for reducing error: " << levmar_info[9]);
+
+      // Add all the data into the output string from the Maya command.
+      resultStr = "success=" + string::numberToString<int>((bool) ret);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "reason_string=" + levmarReasons[reasonNum];
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "reason_num=" + string::numberToString<int>(reasonNum);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "error_initial=" + string::numberToString<double>(levmar_info[0]);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "error_final=" + string::numberToString<double>(levmar_info[1]);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "error_final_average=" + string::numberToString<double>(errorAvg);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "error_final_maximum=" + string::numberToString<double>(errorMax);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "error_final_minimum=" + string::numberToString<double>(errorMin);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "error_jt=" + string::numberToString<double>(levmar_info[2]);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "error_dp=" + string::numberToString<double>(levmar_info[3]);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "error_maximum=" + string::numberToString<double>(levmar_info[4]);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "iteration_num=" + string::numberToString<int>((int) levmar_info[5]);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "iteration_function_num=" + string::numberToString<int>((int) levmar_info[7]);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "iteration_jacobian_num=" + string::numberToString<int>((int) levmar_info[8]);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "iteration_attempt_num=" + string::numberToString<int>((int) levmar_info[9]);
+      outResult.append(MString(resultStr.c_str()));
+    }
+
+#endif // USE_SOLVER_LEVMAR
+
+#ifdef USE_SOLVER_CMINPACK
+
+    if (solverType == SOLVER_TYPE_CMINPACK_LM) {
+      VRB("Results:");
+      VRB("Solver returned " << ret << " in " << cminpack_calls
+          << " iterations");
+
+      int reasonNum = cminpack_info;
+      VRB("Reason: " << cminpackReasons[reasonNum]);
+      VRB("Reason number: " << reasonNum);
+      VRB("");
+
+      VRB(std::endl << std::endl << "Solve Information:");
+      // VRB("Initial Error: " << cminpack_info[0]);
+      // VRB("Final Error: " << cminpack_fnorm);
+      VRB("Maximum Error: " << errorMax);
+      VRB("Average Error: " << errorAvg);
+      VRB("Minimum Error: " << errorMin);
+
+      VRB("Iterations: " << cminpack_calls);
+      VRB("Termination Reason: " << cminpackReasons[reasonNum]);
+      VRB("Function Evaluations: " << userData.iterNum);
+      VRB("Jacobian Evaluations: " << userData.jacIterNum);
+
+      // Add all the data into the output string from the Maya command.
+      resultStr = "success=" + string::numberToString<int>(static_cast<bool>(ret));
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "reason_string=" + cminpackReasons[reasonNum];
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "reason_num=" + string::numberToString<int>(reasonNum);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "error_final=" + string::numberToString<double>(cminpack_fnorm);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "error_final_average=" + string::numberToString<double>(errorAvg);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "error_final_maximum=" + string::numberToString<double>(errorMax);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "error_final_minimum=" + string::numberToString<double>(errorMin);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "iteration_num=" + string::numberToString<int>((int) cminpack_calls);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "iteration_function_num=" + string::numberToString<int>((int) userData.iterNum);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "iteration_jacobian_num=" + string::numberToString<int>((int) (int) userData.jacIterNum);
+      outResult.append(MString(resultStr.c_str()));
+    }
+
+#endif // USE_SOLVER_CMINPACK
 
     if (verbose) {
+        unsigned int total_num = userData.iterNum + userData.jacIterNum;
         solveBenchTimer.print("Solve Time", 1);
         funcBenchTimer.print("Func Time", 1);
         jacBenchTimer.print("Jacobian Time", 1);
-        paramBenchTimer.print("Param Time", (unsigned int) userData.iterNum);
-        errorBenchTimer.print("Error Time", (unsigned int) userData.iterNum);
-        funcBenchTimer.print("Func Time", (unsigned int) userData.iterNum);
+        paramBenchTimer.print("Param Time", total_num);
+        errorBenchTimer.print("Error Time", total_num);
+        funcBenchTimer.print("Func Time", total_num);
 
         solveBenchTicks.print("Solve Ticks", 1);
         funcBenchTicks.print("Func Ticks", 1);
         jacBenchTicks.print("Jacobian Ticks", 1);
-        paramBenchTicks.print("Param Ticks", (unsigned int) userData.iterNum);
-        errorBenchTicks.print("Error Ticks", (unsigned int) userData.iterNum);
-        funcBenchTicks.print("Func Ticks", (unsigned int) userData.iterNum);
+        paramBenchTicks.print("Param Ticks", total_num);
+        errorBenchTicks.print("Error Ticks", total_num);
+        funcBenchTicks.print("Func Ticks", total_num);
     }
-
-    // Add all the data into the output string from the Maya command.
-    resultStr = "success=" + string::numberToString<int>((bool) ret);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "reason_string=" + reasons[reasonNum];
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "reason_num=" + string::numberToString<int>(reasonNum);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "error_initial=" + string::numberToString<double>(info[0]);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "error_final=" + string::numberToString<double>(info[1]);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "error_final_average=" + string::numberToString<double>(errorAvg);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "error_final_maximum=" + string::numberToString<double>(errorMax);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "error_final_minimum=" + string::numberToString<double>(errorMin);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "error_jt=" + string::numberToString<double>(info[2]);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "error_dp=" + string::numberToString<double>(info[3]);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "error_maximum=" + string::numberToString<double>(info[4]);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "iteration_num=" + string::numberToString<int>((int) info[5]);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "iteration_function_num=" + string::numberToString<int>((int) info[7]);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "iteration_jacobian_num=" + string::numberToString<int>((int) info[8]);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "iteration_attempt_num=" + string::numberToString<int>((int) info[9]);
-    outResult.append(MString(resultStr.c_str()));
 
     resultStr = "timer_solve=" + string::numberToString<double>(solveBenchTimer.get_seconds());
     outResult.append(MString(resultStr.c_str()));
@@ -764,14 +1044,14 @@ bool solve(int iterMax,
     outResult.append(MString(resultStr.c_str()));
 
     resultStr = "solve_parameter_list=";
-    for (i = 0; i < m; ++i) {
+    for (i = 0; i < numberOfParameters; ++i) {
         resultStr += string::numberToString<double>(paramList[i]);
         resultStr += CMD_RESULT_SPLIT_CHAR;
     }
     outResult.append(MString(resultStr.c_str()));
 
     resultStr = "solve_error_list=";
-    for (i = 0; i < n; ++i) {
+    for (i = 0; i < numberOfErrors; ++i) {
         err = userData.errorList[i];
         resultStr += string::numberToString<double>(err);
         resultStr += CMD_RESULT_SPLIT_CHAR;
@@ -784,7 +1064,7 @@ bool solve(int iterMax,
     typedef TimeErrorMapping::iterator TimeErrorMappingIt;
     TimeErrorMapping frameErrorMapping;
     TimeErrorMappingIt ait;
-    for (i = 0; i < (n / ERRORS_PER_MARKER); ++i) {
+    for (i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = userData.errorToMarkerList[i];
         MarkerPtr marker = userData.markerList[markerPair.first];
         MTime frame = userData.frameList[markerPair.second];

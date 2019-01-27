@@ -21,7 +21,7 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver3(solverUtils.SolverTestCase):
 
-    def test_init(self):
+    def do_solve(self, solver_name, solver_index):
         """
         Solve nodal camera on a single frame
         """
@@ -56,6 +56,11 @@ class TestSolver3(solverUtils.SolverTestCase):
         frames = [
             (1),
         ]
+        
+        # save the output
+        path = self.get_data_path('solver_test3_%s_before.ma' % solver_name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
         s = time.time()
@@ -64,22 +69,36 @@ class TestSolver3(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             iterations=10,
-            solverType=0,
+            solverType=solver_index,
             frame=frames,
             verbose=True,
         )
         e = time.time()
         print 'total time:', e - s
 
-        # Ensure the values are correct
-        self.assertEqual(result[0], 'success=1')
-        assert self.approx_equal(maya.cmds.getAttr(cam_tfm+'.rx'), math.degrees(0.129855))
-        assert self.approx_equal(maya.cmds.getAttr(cam_tfm+'.ry'), math.degrees(-0.565297))
-
         # save the output
-        path = self.get_data_path('solver_test3_after.ma')
+        path = self.get_data_path('solver_test3_%s_after.ma' % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+        
+        # Ensure the values are correct
+        self.assertEqual(result[0], 'success=1')
+        rx = maya.cmds.getAttr(cam_tfm+'.rx')
+        ry = maya.cmds.getAttr(cam_tfm+'.ry')
+        assert self.approx_equal(rx, 7.43790257882, eps=0.01)
+        assert self.approx_equal(ry, -32.3908666703, eps=0.01)
+
+    def test_init_levmar(self):
+        """
+        Solve nodal camera on a single frame, using levmar.
+        """        
+        self.do_solve('levmar', 0)
+
+    def test_init_cminpack_lm(self):
+        """
+        Solve nodal camera on a single frame, using cminpack_lm
+        """        
+        self.do_solve('cminpack_lm', 1)
 
 
 if __name__ == '__main__':

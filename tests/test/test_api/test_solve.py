@@ -185,7 +185,7 @@ class TestSolve(test_api_utils.APITestCase):
         # Solver
         sol = api.Solver()
         sol.set_max_iterations(1000)
-        sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
+        sol.set_solver_type(api.SOLVER_TYPE_CMINPACK_LM)
         sol.set_verbose(True)
         sol.set_frame_list(frm_list)
 
@@ -308,7 +308,7 @@ class TestSolve(test_api_utils.APITestCase):
         for frm in frm_list:
             sol = api.Solver()
             sol.set_max_iterations(10)
-            sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
+            sol.set_solver_type(api.SOLVER_TYPE_CMINPACK_LM)
             sol.set_verbose(True)
             sol.set_frame_list([frm])
             sol_list.append(sol)

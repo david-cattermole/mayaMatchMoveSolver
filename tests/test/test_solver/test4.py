@@ -19,7 +19,7 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver4(solverUtils.SolverTestCase):
 
-    def test_init(self):
+    def do_solve(self, solver_name, solver_index):
         start = 1
         end = 10
 
@@ -64,6 +64,11 @@ class TestSolver4(solverUtils.SolverTestCase):
         for f in range(start, end+1):
             frames.append(f)
 
+        # save the output
+        path = self.get_data_path('solver_test4_%s_before.ma' % solver_name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
@@ -71,24 +76,26 @@ class TestSolver4(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             frame=frames,
-            solverType=0,
+            solverType=solver_index,
             iterations=10,
-            delta=0.0001,
-            # epsilon1=0.001,
-            # epsilon2=0.001,
-            # epsilon3=0.001,
             verbose=True,
         )
         e = time.time()
         print 'total time:', e - s
 
-        # Ensure the values are correct
-        self.assertEqual(result[0], 'success=1')
-
         # save the output
-        path = self.get_data_path('solver_test4_after.ma')
+        path = self.get_data_path('solver_test4_%s_after.ma' % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        # Ensure the values are correct
+        self.assertEqual(result[0], 'success=1')
+        
+    def test_init_levmar(self):
+        self.do_solve('levmar', 0)
+
+    def test_init_cminpack_lm(self):
+        self.do_solve('cminpack_lm', 1)
 
 
 if __name__ == '__main__':

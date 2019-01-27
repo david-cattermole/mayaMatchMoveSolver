@@ -71,7 +71,6 @@ class TestSolver5(solverUtils.SolverTestCase):
                 marker=markers,
                 attr=node_attrs,
                 iterations=10,
-                solverType=0,
                 frame=(f),
                 verbose=True,
             )
@@ -79,15 +78,15 @@ class TestSolver5(solverUtils.SolverTestCase):
         e = time.time()
         print 'total time:', e - s
 
-        # Ensure the values are correct
-        for result in results:
-            self.assertEqual(result[0], 'success=1')
-
         # save the output
         path = self.get_data_path('solver_test5_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
-
+        
+        # Ensure the values are correct
+        for result in results:
+            self.assertEqual(result[0], 'success=1')
+        return
 
 if __name__ == '__main__':
     prog = unittest.main()

@@ -10,6 +10,7 @@
 // STL
 #include <cmath>
 #include <cassert>
+#include <cstdlib>  // getenv
 
 // Utils
 #include <utilities/debugUtils.h>
@@ -57,19 +58,34 @@ MSyntax MMSolverCmd::newSyntax() {
     syntax.enableEdit(false);
 
     // Flags
-    syntax.addFlag(CAMERA_FLAG, CAMERA_FLAG_LONG, MSyntax::kString, MSyntax::kString);
-    syntax.addFlag(MARKER_FLAG, MARKER_FLAG_LONG, MSyntax::kString, MSyntax::kString, MSyntax::kString);
-    syntax.addFlag(ATTR_FLAG, ATTR_FLAG_LONG, MSyntax::kString, MSyntax::kString, MSyntax::kString);
-    syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG, MSyntax::kLong);
-    syntax.addFlag(TAU_FLAG, TAU_FLAG_LONG, MSyntax::kDouble);
-    syntax.addFlag(EPSILON1_FLAG, EPSILON1_FLAG_LONG, MSyntax::kDouble);
-    syntax.addFlag(EPSILON2_FLAG, EPSILON2_FLAG_LONG, MSyntax::kDouble);
-    syntax.addFlag(EPSILON3_FLAG, EPSILON3_FLAG_LONG, MSyntax::kDouble);
-    syntax.addFlag(DELTA_FLAG, DELTA_FLAG_LONG, MSyntax::kDouble);
-    syntax.addFlag(AUTO_DIFF_TYPE_FLAG, AUTO_DIFF_TYPE_FLAG_LONG, MSyntax::kUnsigned);
-    syntax.addFlag(SOLVER_TYPE_FLAG, SOLVER_TYPE_FLAG_LONG, MSyntax::kUnsigned);
-    syntax.addFlag(ITERATIONS_FLAG, ITERATIONS_FLAG_LONG, MSyntax::kUnsigned);
-    syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(CAMERA_FLAG, CAMERA_FLAG_LONG,
+                   MSyntax::kString, MSyntax::kString);
+    syntax.addFlag(MARKER_FLAG, MARKER_FLAG_LONG,
+                   MSyntax::kString, MSyntax::kString, MSyntax::kString);
+    syntax.addFlag(ATTR_FLAG, ATTR_FLAG_LONG,
+                   MSyntax::kString, MSyntax::kString, MSyntax::kString);
+    syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG,
+                   MSyntax::kLong);
+    syntax.addFlag(TAU_FLAG, TAU_FLAG_LONG,
+                   MSyntax::kDouble);
+    syntax.addFlag(EPSILON1_FLAG, EPSILON1_FLAG_LONG,
+                   MSyntax::kDouble);
+    syntax.addFlag(EPSILON2_FLAG, EPSILON2_FLAG_LONG,
+                   MSyntax::kDouble);
+    syntax.addFlag(EPSILON3_FLAG, EPSILON3_FLAG_LONG,
+                   MSyntax::kDouble);
+    syntax.addFlag(DELTA_FLAG, DELTA_FLAG_LONG,
+                   MSyntax::kDouble);
+    syntax.addFlag(AUTO_DIFF_TYPE_FLAG, AUTO_DIFF_TYPE_FLAG_LONG,
+                   MSyntax::kUnsigned);
+    syntax.addFlag(AUTO_PARAM_SCALE_FLAG, AUTO_PARAM_SCALE_FLAG_LONG,
+                   MSyntax::kUnsigned);
+    syntax.addFlag(SOLVER_TYPE_FLAG, SOLVER_TYPE_FLAG_LONG,
+                   MSyntax::kUnsigned);
+    syntax.addFlag(ITERATIONS_FLAG, ITERATIONS_FLAG_LONG,
+                   MSyntax::kUnsigned);
+    syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG,
+                   MSyntax::kBoolean);
 
     // We can use marker and attr flags more than once.
     syntax.makeFlagMultiUse(CAMERA_FLAG);
@@ -89,6 +105,13 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     MArgDatabase argData(syntax(), args, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
+    // Get 'Verbose'
+    m_verbose = VERBOSE_DEFAULT_VALUE;
+    if (argData.isFlagSet(VERBOSE_FLAG)) {
+        status = argData.getFlagArgument(VERBOSE_FLAG, 0, m_verbose);
+        CHECK_MSTATUS(status);
+    }
+
     m_cameraList.clear();
     m_markerList.clear();
     m_bundleList.clear();
@@ -103,7 +126,8 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgumentList(CAMERA_FLAG, i, cameraArgs);
         if (status == MStatus::kSuccess) {
             if (cameraArgs.length() != 2) {
-                ERR("Camera argument list must have 2 arguments; \"cameraTransform\", \"cameraShape\".");
+                ERR("Camera argument list must have 2 arguments; "
+                    << "\"cameraTransform\", \"cameraShape\".");
                 continue;
             }
 
@@ -121,10 +145,6 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
             camera->setTransformNodeName(cameraTransform);
             camera->setShapeNodeName(cameraShape);
             m_cameraList.push_back(camera);
-
-            // DBG("Camera = " << i);
-            // DBG("  Transform = " << camera->getTransformNodeName());
-            // DBG("  Shape = " << camera->getShapeNodeName());
         }
     }
 
@@ -138,24 +158,22 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgumentList(MARKER_FLAG, i, markerArgs);
         if (status == MStatus::kSuccess) {
             if (markerArgs.length() != 3) {
-                ERR("Marker argument list must have 3 arguments; \"marker\", \"cameraShape\",  \"bundle\".");
+                ERR("Marker argument list must have 3 arguments; "
+                  << "\"marker\", \"cameraShape\",  \"bundle\".");
                 continue;
             }
 
             markerName = markerArgs.asString(0, &status);
-            // DBG("markerName=" << markerName);
             CHECK_MSTATUS_AND_RETURN_IT(status);
             status = nodeExistsAndIsType(markerName, MFn::Type::kTransform);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
             cameraName = markerArgs.asString(1, &status);
-            // DBG("cameraName=" << cameraName);
             CHECK_MSTATUS_AND_RETURN_IT(status);
             status = nodeExistsAndIsType(cameraName, MFn::Type::kCamera);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
             bundleName = markerArgs.asString(2, &status);
-            // DBG("bundleName=" << bundleName);
             CHECK_MSTATUS_AND_RETURN_IT(status);
             status = nodeExistsAndIsType(bundleName, MFn::Type::kTransform);
             CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -174,7 +192,9 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
                             << "camera=" << cameraName << " "
                             << "bundle=" << bundleName);
             }
-            // TODO: Print warnings if any of the following attributes on the camera are animated/connected:
+            // TODO: Print warnings if any of the following attributes
+            // on the camera are animated/connected:
+            //
             // - camera.horizontalFilmAperture
             // - camera.verticalFilmAperture
             // - camera.nearClippingPlane
@@ -197,7 +217,8 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
             // Marker
             for (unsigned int j = 0; j < m_markerList.size(); ++j) {
                 if (m_markerList[j]->getNodeName() == markerName) {
-                    ERR("Marker name cannot be specified more than once. markerName=" << markerName);
+                    ERR("Marker name cannot be specified more than once. "
+                        << "markerName=" << markerName);
                 }
             }
             MarkerPtr marker = MarkerPtr(new Marker());
@@ -208,11 +229,6 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
             m_markerList.push_back(marker);
             m_bundleList.push_back(bundle);
 
-            // DBG("Marker = " << i);
-            // DBG("  Camera = " << cameraName << " : " << camera->getTransformNodeName() << " : "
-            //                   << camera->getShapeNodeName());
-            // DBG("  Marker = " << markerName << " : " << marker->getNodeName());
-            // DBG("  Bundle = " << bundleName << " : " << bundle->getNodeName());
         }
     }
 
@@ -224,11 +240,14 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgumentList(ATTR_FLAG, i, attrArgs);
         if (status == MStatus::kSuccess) {
             if (attrArgs.length() != 3) {
-                ERR("Attribute argument list must have 3 argument; \"node.attribute\", \"min\", \"max\".");
+                ERR("Attribute argument list must have 3 argument; "
+                    << "\"node.attribute\", \"min\", \"max\".");
                 continue;
             }
 
-            // TODO: Print errors and exit with failure if any of the following attributes are detected:
+            // TODO: Print errors and exit with failure if any of the
+            // following attributes are detected:
+            //
             // - camera.horizontalFilmAperture
             // - camera.verticalFilmAperture
             // - camera.nearClippingPlane
@@ -256,13 +275,6 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
             m_attrList.push_back(attr);
 
             MPlug attrPlug = attr->getPlug();
-            // DBG("Attr = " << i << " : "
-            //               << attr->getName() << " : "
-            //               << attr->getNodeName() << " : "
-            //               << attr->isAnimated() << " : "
-            //               << attr->getMinimumValue() << " : "
-            //               << attr->getMaximumValue() << " : "
-            //               << attrPlug.name());
         }
     }
 
@@ -283,7 +295,6 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
 
             MTime frame = MTime((double) value, unit);
             m_frameList.append(frame);
-            // DBG("Frame = " << i << " : " << frame << " : " << value);
         }
     }
 
@@ -294,78 +305,105 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         return status;
     }
 
-    // Get 'Iterations'
-    m_iterations = ITERATIONS_DEFAULT_VALUE;
-    if (argData.isFlagSet(ITERATIONS_FLAG)) {
-        status = argData.getFlagArgument(ITERATIONS_FLAG, 0, m_iterations);
-        CHECK_MSTATUS(status);
+    // Determine the default solver.
+    m_solverType = SOLVER_TYPE_DEFAULT_VALUE;
+    const char* default_solver_ptr = std::getenv("MMSOLVER_DEFAULT_SOLVER");
+    if (default_solver_ptr != nullptr) {
+        // The memory may change under our feet, we copy the data into a
+        // string for save keeping.
+        std::string default_solver(default_solver_ptr);
+        if (default_solver == "cminpack_lm") {
+            m_solverType = SOLVER_TYPE_CMINPACK_LM;
+        } else if (default_solver == "levmar") {
+            m_solverType = SOLVER_TYPE_LEVMAR;
+        } else {
+            ERR("MMSOLVER_DEFAULT_SOLVER environment variable is invalid. "
+                << "Value may be \"cminpack_lm\" or \"levmar\"; "
+                << "value=" << default_solver);
+        }
     }
-    // DBG("m_iterations=" << m_iterations);
-
-    // Get 'Tau'
-    m_tau = TAU_DEFAULT_VALUE;
-    if (argData.isFlagSet(TAU_FLAG)) {
-        status = argData.getFlagArgument(TAU_FLAG, 0, m_tau);
-        CHECK_MSTATUS(status);
-    }
-    // DBG("m_tau=" << m_tau);
-
-    // Get 'Epsilon1'
-    m_epsilon1 = EPSILON1_DEFAULT_VALUE;
-    if (argData.isFlagSet(EPSILON1_FLAG)) {
-        status = argData.getFlagArgument(EPSILON1_FLAG, 0, m_epsilon1);
-        CHECK_MSTATUS(status);
-    }
-    // DBG("m_epsilon1=" << m_epsilon1);
-
-    // Get 'Epsilon2'
-    m_epsilon2 = EPSILON2_DEFAULT_VALUE;
-    if (argData.isFlagSet(EPSILON2_FLAG)) {
-        status = argData.getFlagArgument(EPSILON2_FLAG, 0, m_epsilon2);
-        CHECK_MSTATUS(status);
-    }
-    // DBG("m_epsilon2=" << m_epsilon2);
-
-    // Get 'Epsilon3'
-    m_epsilon3 = EPSILON3_DEFAULT_VALUE;
-    if (argData.isFlagSet(EPSILON3_FLAG)) {
-        status = argData.getFlagArgument(EPSILON3_FLAG, 0, m_epsilon3);
-        CHECK_MSTATUS(status);
-    }
-    // DBG("m_epsilon3=" << m_epsilon3);
-
-    // Get 'Delta'
-    m_delta = DELTA_DEFAULT_VALUE;
-    if (argData.isFlagSet(DELTA_FLAG)) {
-        status = argData.getFlagArgument(DELTA_FLAG, 0, m_delta);
-        CHECK_MSTATUS(status);
-    }
-    // DBG("m_delta=" << m_delta);
-
-    // Get 'Auto Differencing Type'
-    m_autoDiffType = AUTO_DIFF_TYPE_DEFAULT_VALUE;
-    if (argData.isFlagSet(AUTO_DIFF_TYPE_FLAG)) {
-        status = argData.getFlagArgument(AUTO_DIFF_TYPE_FLAG, 0, m_autoDiffType);
-        CHECK_MSTATUS(status);
-    }
-    // DBG("m_autoDiffType=" << m_autoDiffType);
 
     // Get 'Solver Type'
-    m_solverType = SOLVER_TYPE_DEFAULT_VALUE;
     if (argData.isFlagSet(SOLVER_TYPE_FLAG)) {
         status = argData.getFlagArgument(SOLVER_TYPE_FLAG, 0, m_solverType);
         CHECK_MSTATUS(status);
     }
-    // DBG("m_solverType=" << m_solverType);
 
-    // Get 'Verbose'
-    m_verbose = VERBOSE_DEFAULT_VALUE;
-    if (argData.isFlagSet(VERBOSE_FLAG)) {
-        status = argData.getFlagArgument(VERBOSE_FLAG, 0, m_verbose);
+    // Set defaults based on solver type chosen.
+    if (m_solverType == SOLVER_TYPE_CMINPACK_LM) {
+        m_iterations = CMINPACK_LM_ITERATIONS_DEFAULT_VALUE;
+        m_tau = CMINPACK_LM_TAU_DEFAULT_VALUE;
+        m_epsilon1 = CMINPACK_LM_EPSILON1_DEFAULT_VALUE;
+        m_epsilon2 = CMINPACK_LM_EPSILON2_DEFAULT_VALUE;
+        m_epsilon3 = CMINPACK_LM_EPSILON3_DEFAULT_VALUE;
+        m_delta = CMINPACK_LM_DELTA_DEFAULT_VALUE;
+        m_autoDiffType = CMINPACK_LM_AUTO_DIFF_TYPE_DEFAULT_VALUE;
+        m_autoParamScale = CMINPACK_LM_AUTO_PARAM_SCALE_DEFAULT_VALUE;
+    } else if (m_solverType == SOLVER_TYPE_LEVMAR) {
+        m_iterations = LEVMAR_ITERATIONS_DEFAULT_VALUE;
+        m_tau = LEVMAR_TAU_DEFAULT_VALUE;
+        m_epsilon1 = LEVMAR_EPSILON1_DEFAULT_VALUE;
+        m_epsilon2 = LEVMAR_EPSILON2_DEFAULT_VALUE;
+        m_epsilon3 = LEVMAR_EPSILON3_DEFAULT_VALUE;
+        m_delta = LEVMAR_DELTA_DEFAULT_VALUE;
+        m_autoDiffType = LEVMAR_AUTO_DIFF_TYPE_DEFAULT_VALUE;
+        m_autoParamScale = LEVMAR_AUTO_PARAM_SCALE_DEFAULT_VALUE;
+    } else {
+        ERR("Solver Type is invalid. "
+            << "Value may be 0 or 1 (0 == levmar, 1 == cminpack_lm);"
+            << "value=" << m_solverType);
+        status = MS::kFailure;
+        status.perror("Solver Type is invalid. Value may be 0 or 1 (0 == levmar, 1 == cminpack_lm).");
+        return status;
+    }
+
+    // Get 'Iterations'
+    if (argData.isFlagSet(ITERATIONS_FLAG)) {
+        status = argData.getFlagArgument(ITERATIONS_FLAG, 0, m_iterations);
         CHECK_MSTATUS(status);
     }
-    // DBG("m_verbose=" << m_verbose);
 
+    // Get 'Tau'
+    if (argData.isFlagSet(TAU_FLAG)) {
+        status = argData.getFlagArgument(TAU_FLAG, 0, m_tau);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Epsilon1'
+    if (argData.isFlagSet(EPSILON1_FLAG)) {
+        status = argData.getFlagArgument(EPSILON1_FLAG, 0, m_epsilon1);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Epsilon2'
+    if (argData.isFlagSet(EPSILON2_FLAG)) {
+        status = argData.getFlagArgument(EPSILON2_FLAG, 0, m_epsilon2);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Epsilon3'
+    if (argData.isFlagSet(EPSILON3_FLAG)) {
+        status = argData.getFlagArgument(EPSILON3_FLAG, 0, m_epsilon3);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Delta'
+    if (argData.isFlagSet(DELTA_FLAG)) {
+        status = argData.getFlagArgument(DELTA_FLAG, 0, m_delta);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Auto Differencing Type'
+    if (argData.isFlagSet(AUTO_DIFF_TYPE_FLAG)) {
+        status = argData.getFlagArgument(AUTO_DIFF_TYPE_FLAG, 0, m_autoDiffType);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Auto Parameter Scaling'
+    if (argData.isFlagSet(AUTO_PARAM_SCALE_FLAG)) {
+        status = argData.getFlagArgument(AUTO_PARAM_SCALE_FLAG, 0, m_autoParamScale);
+        CHECK_MSTATUS(status);
+    }
     return status;
 }
 
@@ -385,10 +423,9 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
 //                     error is caught using a "catch" statement.
 //
     MStatus status = MStatus::kSuccess;
-    // DBG("MMSolverCmd::doIt()");
 
     // Mouse cursor spinning...
-    MGlobal::executeCommand("waitCursor -state on;");
+    // MGlobal::executeCommand("waitCursor -state on;");
 
     // Read all the flag arguments.
     status = parseArgs(args);
@@ -408,6 +445,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
             m_epsilon3,
             m_delta,
             m_autoDiffType,
+            m_autoParamScale,
             m_solverType,
             m_cameraList,
             m_markerList,
@@ -427,7 +465,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     }
 
     // Mouse cursor back to normal.
-    MGlobal::executeCommand("waitCursor -state off;");
+    // MGlobal::executeCommand("waitCursor -state off;");
     return status;
 }
 
@@ -446,7 +484,6 @@ MStatus MMSolverCmd::redoIt() {
 //                     likely cause the undo queue to be purged
 //
     MStatus status;
-    // DBG("MMSolverCmd::redoIt()");
     m_dgmod.doIt();
     m_curveChange.redoIt();
     return status;
@@ -467,7 +504,6 @@ MStatus MMSolverCmd::undoIt() {
 //                     likely cause the undo queue to be purged
 //
     MStatus status;
-    // DBG("MMSolverCmd::undoIt()");
     m_curveChange.undoIt();
     m_dgmod.undoIt();
     return status;

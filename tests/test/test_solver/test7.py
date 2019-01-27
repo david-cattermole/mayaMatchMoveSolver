@@ -85,21 +85,19 @@ class TestSolver7(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             frame=frames,
-            solverType=0,
             iterations=1000,
-            # delta=0.0001,
             verbose=True,
         )
         e = time.time()
         print 'total time:', e - s
 
-        # Ensure the values are correct
-        self.assertEqual(result[0], 'success=1')
-
         # save the output
         path = self.get_data_path('solver_test7_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+        
+        # Ensure the values are correct
+        self.assertEqual(result[0], 'success=1')
 
 
 if __name__ == '__main__':

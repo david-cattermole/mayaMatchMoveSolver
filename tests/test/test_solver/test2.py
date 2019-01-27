@@ -67,6 +67,11 @@ class TestSolver2(solverUtils.SolverTestCase):
             (1),
         ]
 
+        # save the output
+        path = self.get_data_path('solver_test2_before.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
         # Run solver, with more attributes than markers; We expect an error.
         s = time.time()
         result = maya.cmds.mmSolver(
@@ -74,7 +79,6 @@ class TestSolver2(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             iterations=1000,
-            solverType=0,
             frame=frames,
             verbose=True,
         )
@@ -95,20 +99,19 @@ class TestSolver2(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             iterations=1000,
-            solverType=0,
             frame=frames,
             verbose=True,
         )
         e = time.time()
         print 'total time:', e - s
 
-        # Ensure the values are correct
-        self.assertEqual(result[0], 'success=1')
-
         # save the output
         path = self.get_data_path('solver_test2_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+        
+        # Ensure the values are correct
+        self.assertEqual(result[0], 'success=1')
 
 
 if __name__ == '__main__':

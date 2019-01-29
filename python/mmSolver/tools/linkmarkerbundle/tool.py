@@ -39,12 +39,12 @@ def link_marker_bundle():
 
 def unlink_marker_bundle():
     """
-    All selected markers are disconnected from their bundle.
+    All selected markers are disconnected from their respective bundle.
     """
     sel = maya.cmds.ls(selection=True, long=True) or []
     mkr_nodes = filternodes.get_marker_nodes(sel)
 
-    if len(mkr_nodes) == 1:
+    if len(mkr_nodes) == 0:
         msg = 'Please select one or more Markers.'
         LOG.warning(msg)
         return

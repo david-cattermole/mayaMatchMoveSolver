@@ -20,7 +20,12 @@ class TestHelpUtils(test_api_utils.APITestCase):
     def test_get_help_base_location(self):
         src = helputils.get_help_source()
         url = helputils.get_help_base_location(help_source=src)
-        assert isinstance(url, (str, unicode))
+        msg = (
+            'The help URL cannot be found! '
+            'Did you build and install documentation?'
+            'url=%r'
+        )
+        assert isinstance(url, (str, unicode)), msg
 
 
 if __name__ == '__main__':

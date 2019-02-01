@@ -2,7 +2,7 @@
 #
 # 3DE4.script.name:     Copy 2D Tracks (MM Solver)
 #
-# 3DE4.script.version:  v1.4
+# 3DE4.script.version:  v1.5
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Point
 # 3DE4.script.gui:      Object Browser::Context Menu Points
@@ -11,7 +11,15 @@
 # 3DE4.script.comment:  Copies the selected 2D track points to a temporary
 # 3DE4.script.comment:  file and puts the file path on the Operating
 # 3DE4.script.comment:  System's clipboard.
+# 3DE4.script.comment:
 # 3DE4.script.comment:  2D track points are undistorted!
+# 3DE4.script.comment:
+# 3DE4.script.comment:  To use the file with MM Solver in Maya, open the
+# 3DE4.script.comment:  Load Markers UI in Maya, the UI will
+# 3DE4.script.comment:  automatically read the Operating System's
+# 3DE4.script.comment:  clipboard and add it into the file path field.
+# 3DE4.script.comment:
+# 3DE4.script.comment:  All 2D Tracks are resolution independent.
 #
 #
 

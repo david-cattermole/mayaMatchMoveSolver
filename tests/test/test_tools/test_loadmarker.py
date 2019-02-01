@@ -62,6 +62,8 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             self.get_data_path('uvtrack', 'cameraTrackRnD.uv'),
             self.get_data_path('uvtrack', 'stA.uv'),
             self.get_data_path('uvtrack', 'stA_with_emptyMarker.uv'),
+            self.get_data_path('uvtrack', 'eye_fmt1_v001.uv'),
+            self.get_data_path('uvtrack', 'eye_fmt2_v001.uv'),
         ]
         for path in paths:
             print('Reading... %r' % path)

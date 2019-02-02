@@ -1472,9 +1472,9 @@ using an interface.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of SolveResults</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of SolveResults from the executed collection.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of solveresult.SolverResult</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">[SolverResult, .]</td>
 </tr>
 </tbody>
 </table>
@@ -1533,6 +1533,83 @@ data.</p>
 <code class="descname">get_marker_error_list</code><span class="sig-paren">(</span><em>marker_node=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolveResult.get_marker_error_list" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.api.combine_timer_stats">
+<code class="descclassname">mmSolver.api.</code><code class="descname">combine_timer_stats</code><span class="sig-paren">(</span><em>solres_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.combine_timer_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine Timer statistics into one set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>solres_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><em>SolveResult</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of SolveResult to combine together.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A map of time statistics, accumulated over all runs
+of the Solver.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.api.merge_frame_error_list">
+<code class="descclassname">mmSolver.api.</code><code class="descname">merge_frame_error_list</code><span class="sig-paren">(</span><em>solres_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.merge_frame_error_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine a &#8216;frame_error_list&#8217; from a list of SolveResult objects.</p>
+<p>The &#8216;solres_list&#8217; is assumed to represent sequential solver
+executions; The order of this list is important, because only
+the last solved error value is used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>solres_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><em>SolveResult</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of SolveResult to merge together.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Mapping of frame number to error values.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.api.get_average_frame_error_list">
+<code class="descclassname">mmSolver.api.</code><code class="descname">get_average_frame_error_list</code><span class="sig-paren">(</span><em>frame_error_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_average_frame_error_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the average error for the frame error map given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>frame_error_list</strong> (<em>{float: float}</em>) &#8211; Mapping of frame and error deviation.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Average error across all frames.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.api.get_max_frame_error">
+<code class="descclassname">mmSolver.api.</code><code class="descname">get_max_frame_error</code><span class="sig-paren">(</span><em>frame_error_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_max_frame_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the frame and error combination for the frame error map given.</p>
+<p>If frame_error_list given is empty, the returned frame will be None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>frame_error_list</strong> (<em>{float: float}</em>) &#8211; Mapping of frame and error deviation.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The frame and error with the maximum amount of error.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(float or None, float)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -1887,6 +1964,36 @@ default name is added.</li>
 </table>
 <p>;return: Nothing.
 :rtype: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.api.is_solver_running">
+<code class="descclassname">mmSolver.api.</code><code class="descname">is_solver_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.is_solver_running" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current state of the mmSolver command; is it running?</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">State of mmSolver running.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.api.set_solver_running">
+<code class="descclassname">mmSolver.api.</code><code class="descname">set_solver_running</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.set_solver_running" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current state of the mmSolver command; is it running?</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) &#8211; Value of the solver running, True or False.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

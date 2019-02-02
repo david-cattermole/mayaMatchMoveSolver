@@ -207,6 +207,10 @@ Utilities
 
 .. autofunction:: mmSolver.api.set_value_on_node_attr
 
+.. autofunction:: mmSolver.api.is_solver_running
+
+.. autofunction:: mmSolver.api.set_solver_running
+
 Constants
 +++++++++
 

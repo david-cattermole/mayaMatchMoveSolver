@@ -159,12 +159,18 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
     def updateObjectModel(self):
         self.setStatusLine(const.STATUS_REFRESHING)
         self.populateObjectModel(self.object_model)
+        valid = uiutils.isValidQtObject(self.object_treeView)
+        if valid is False:
+            return
         self.object_treeView.expandAll()
         return
 
     def updateAttributeModel(self):
         self.setStatusLine(const.STATUS_REFRESHING)
         self.populateAttributeModel(self.attribute_model)
+        valid = uiutils.isValidQtObject(self.attribute_treeView)
+        if valid is False:
+            return
         self.attribute_treeView.expandAll()
         return
 
@@ -227,6 +233,12 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         attr_list = lib_attr.get_attributes_from_collection(col)
 
+        def update_func():
+            if uiutils.isValidQtObject(self) is False:
+                return
+            self.updateAttributeModel()
+            return
+
         # Add Callbacks
         #
         # When querying attributes, we must make sure they have a Maya
@@ -235,7 +247,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if callback_manager is not None:
             lib_attr.add_callbacks_to_attributes(
                 attr_list,
-                self.updateAttributeModel,
+                update_func,
                 callback_manager
             )
         root = convert_to_ui.attributesToUINodes(attr_list)

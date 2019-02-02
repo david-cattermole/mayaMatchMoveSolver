@@ -168,6 +168,14 @@ SolveResult
    :undoc-members:
    :special-members: __init__
 
+.. autofunction:: mmSolver.api.combine_timer_stats
+
+.. autofunction:: mmSolver.api.merge_frame_error_list
+
+.. autofunction:: mmSolver.api.get_average_frame_error_list
+
+.. autofunction:: mmSolver.api.get_max_frame_error
+
 Utilities
 +++++++++
 
@@ -198,6 +206,10 @@ Utilities
 .. autofunction:: mmSolver.api.get_value_on_node_attr
 
 .. autofunction:: mmSolver.api.set_value_on_node_attr
+
+.. autofunction:: mmSolver.api.is_solver_running
+
+.. autofunction:: mmSolver.api.set_solver_running
 
 Constants
 +++++++++

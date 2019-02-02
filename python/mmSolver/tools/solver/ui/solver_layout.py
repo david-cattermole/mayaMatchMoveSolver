@@ -195,6 +195,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def populateCollectionModel(self, model):
+        valid = uiutils.isValidQtObject(model)
+        if valid is False:
+            return
         cols = lib_col.get_collections()
         string_data_list = []
         for col in cols:
@@ -204,6 +207,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def populateObjectModel(self, model):
+        valid = uiutils.isValidQtObject(model)
+        if valid is False:
+            return
         col = lib_state.get_active_collection()
         if col is None:
             return
@@ -213,6 +219,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def populateAttributeModel(self, model):
+        valid = uiutils.isValidQtObject(model)
+        if valid is False:
+            return
         col = lib_state.get_active_collection()
         if col is None:
             return
@@ -234,6 +243,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def populateSolverModel(self, model):
+        valid = uiutils.isValidQtObject(model)
+        if valid is False:
+            return
         col = lib_state.get_active_collection()
         if col is None:
             return
@@ -256,6 +268,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         """
         Get the index for the 'currently selected' collection.
         """
+        valid = uiutils.isValidQtObject(model)
+        if valid is False:
+            return
         if col is None:
             return 0
         active_node = col.get_node()
@@ -366,6 +381,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_marker.add_markers_to_collection(mkr_list, col)
 
         def update_func():
+            if uiutils.isValidQtObject(self) is False:
+                return
             self.updateObjectModel()
             self.updateSolveValidState()
             self.setStatusLine(const.STATUS_READY)
@@ -421,6 +438,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_attr.add_attributes_to_collection(attr_list, col)
 
         def update_func():
+            if uiutils.isValidQtObject(self) is False:
+                return
             self.updateAttributeModel()
             self.updateSolveValidState()
             self.setStatusLine(const.STATUS_READY)

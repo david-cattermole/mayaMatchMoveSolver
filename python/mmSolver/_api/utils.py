@@ -17,6 +17,7 @@ import mmSolver.logger
 
 
 LOG = mmSolver.logger.get_logger()
+MM_SOLVER_IS_RUNNING = False
 
 
 def get_long_name(node):
@@ -606,4 +607,28 @@ def set_node_wire_colour_rgb(node, rgb):
     else:
         # Reset to default wireframe colour.
         maya.cmds.color(node)
+    return
+
+
+def is_solver_running():
+    """
+    Get the current state of the mmSolver command; is it running?
+
+    :returns: State of mmSolver running.
+    :rtype: bool
+    """
+    global MM_SOLVER_IS_RUNNING
+    return MM_SOLVER_IS_RUNNING
+
+
+def set_solver_running(value):
+    """
+    Get the current state of the mmSolver command; is it running?
+
+    :param value: Value of the solver running, True or False.
+    :type value: bool
+    """
+    assert isinstance(value, bool)
+    global MM_SOLVER_IS_RUNNING
+    MM_SOLVER_IS_RUNNING = value
     return

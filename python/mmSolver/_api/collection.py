@@ -5,8 +5,7 @@ Any queries use the Maya Python API, but modifications are handled with
 maya.cmds.* so that they support undo/redo correctly.
 """
 
-import json
-import pprint
+# import pprint
 import uuid
 
 import maya.cmds
@@ -762,8 +761,8 @@ class Collection(object):
         passed to the SolveResult class so the user can query the raw data
         using an interface.
 
-        :return: List of SolveResults
-        :rtype: list of solveresult.SolverResult
+        :return: List of SolveResults from the executed collection.
+        :rtype: [SolverResult, ..]
         """
         # Ensure the plug-in is loaded, so we fail before trying to run.
         api_utils.load_plugin()
@@ -778,6 +777,7 @@ class Collection(object):
                 maya.cmds.undoInfo(openChunk=True, chunkName=undo_id)
             self.__set_progress(prog_fn, 0)
             self.__set_status(status_fn, 'Solver Initializing...')
+            api_utils.set_solver_running(True)
 
             # Check for validity
             solres_list = []
@@ -844,6 +844,7 @@ class Collection(object):
             raise
         finally:
             self.__set_progress(prog_fn, 100)
+            api_utils.set_solver_running(False)
 
             if undo_state is True:
                 maya.cmds.undoInfo(closeChunk=True, chunkName=undo_id)

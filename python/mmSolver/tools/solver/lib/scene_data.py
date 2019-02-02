@@ -23,7 +23,8 @@ def _get_scene_data_node():
     if maya.cmds.objExists(node_name) is False:
         node = maya.cmds.createNode(
             node_type,
-            name=node_name
+            name=node_name,
+            skipSelect=True,
         )
 
     # Ensure attribute exists.

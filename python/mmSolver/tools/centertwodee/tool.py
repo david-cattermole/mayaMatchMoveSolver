@@ -72,11 +72,23 @@ def __connect_camera_and_transform(cam_tfm, cam_shp, tfm):
     maya.cmds.connectAttr(cam_shp + '.cameraScale', node + '.cameraScale')
 
     # Connect render settings attributes
-    maya.cmds.connectAttr('defaultResolution.width', node + '.imageWidth')
-    maya.cmds.connectAttr('defaultResolution.height', node + '.imageHeight')
+    resolution_factor = 10000.0
+    mult_node = maya.cmds.createNode('multiplyDivide')
+    maya.cmds.setAttr(mult_node + '.input2X', resolution_factor)
+    maya.cmds.setAttr(mult_node + '.input2Y', resolution_factor)
+    maya.cmds.connectAttr(cam_shp + '.horizontalFilmAperture', mult_node + '.input1X')
+    maya.cmds.connectAttr(cam_shp + '.verticalFilmAperture', mult_node + '.input1Y')
+    maya.cmds.connectAttr(mult_node + '.outputX', node + '.imageWidth')
+    maya.cmds.connectAttr(mult_node + '.outputY', node + '.imageHeight')
 
     # Connect Pan to camera.pan
     maya.cmds.connectAttr(node + '.outPan', cam_shp + '.pan')
+
+    # Turn on 'Pan/Zoom'
+    plug = cam_shp + '.panZoomEnabled'
+    locked = maya.cmds.getAttr(plug, lock=True)
+    if locked is False:
+        maya.cmds.setAttr(plug, True)
     return node
 
 
@@ -92,6 +104,18 @@ def __find_reprojection_nodes(cam_tfm, cam_shp):
         exactType=True,
         skipConversionNodes=True
     ) or []
+    # Get connected MultiplyDivide nodes connected.
+    for node in list(nodes):
+        mult_nodes = maya.cmds.listConnections(
+            node + '.imageWidth', 
+            node + '.imageHeight',
+            source=True,
+            destination=False,
+            type='multiplyDivide',
+            exactType=True,
+            skipConversionNodes=True
+        ) or []
+        nodes += mult_nodes
     return nodes
 
 
@@ -100,16 +124,21 @@ def __remove_reprojection(cam_tfm, cam_shp):
     Find the mmReprojection node and delete it.
     """
     nodes = __find_reprojection_nodes(cam_tfm, cam_shp)
-    for node in nodes:
-        maya.cmds.delete(node)
+    for node in reversed(nodes):
+        if node.objExists(node) is True:
+            maya.cmds.delete(node)
 
     attrs = [
-        cam_shp + '.horizontalPan',
-        cam_shp + '.verticalPan',
+        (cam_shp + '.horizontalPan', 0.0),
+        (cam_shp + '.verticalPan', 0.0),
+        (cam_shp + '.zoom', 1.0),
+        (cam_shp + '.panZoomEnabled', False),
     ]
-    for attr in attrs:
+    for attr, value in attrs:
+        # TODO: Check if the node is referenced or not. That will
+        # dictate if we can unlock or not.
         maya.cmds.setAttr(attr, lock=False)
-        maya.cmds.setAttr(attr, 0.0)
+        maya.cmds.setAttr(attr, value)
     return
 
 

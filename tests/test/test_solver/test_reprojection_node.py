@@ -2,13 +2,9 @@
 Test the mmReprojection node for correctness.
 """
 
+import math
 import unittest
 
-try:
-    import maya.standalone
-    maya.standalone.initialize()
-except RuntimeError:
-    pass
 import maya.cmds
 
 
@@ -17,7 +13,7 @@ import mmSolver._api.utils as api_utils
 
 
 # @unittest.skip
-class TestMarkerScaleNode(solverUtils.SolverTestCase):
+class TestReprojectionNode(solverUtils.SolverTestCase):
 
     @staticmethod
     def create_camera(name):
@@ -29,20 +25,45 @@ class TestMarkerScaleNode(solverUtils.SolverTestCase):
         return cam_tfm, cam_shp
 
     @staticmethod
-    def print_node(node):
-        outCoord = maya.cmds.getAttr(node + '.outCoord')
-        outNormCoord = maya.cmds.getAttr(node + '.outNormCoord')
-        outPixel = maya.cmds.getAttr(node + '.outPixel')
-        outInsideFrustum = maya.cmds.getAttr(node + '.outInsideFrustum')
-        outPoint = maya.cmds.getAttr(node + '.outPoint')
-        outWorldPoint = maya.cmds.getAttr(node + '.outWorldPoint')
-        outMatrix = maya.cmds.getAttr(node + '.outMatrix')
-        outWorldMatrix = maya.cmds.getAttr(node + '.outWorldMatrix')
-        outCameraProjectionMatrix = maya.cmds.getAttr(node + '.outCameraProjectionMatrix')
-        outInverseCameraProjectionMatrix = maya.cmds.getAttr(node + '.outInverseCameraProjectionMatrix')
-        outWorldCameraProjectionMatrix = maya.cmds.getAttr(node + '.outWorldCameraProjectionMatrix')
-        outWorldInverseCameraProjectionMatrix = maya.cmds.getAttr(node + '.outWorldInverseCameraProjectionMatrix')
-        outPan = maya.cmds.getAttr(node + '.outPan')
+    def query_output_attrs(node):
+        data = {}
+        attrs = [
+            'outCoord',
+            'outNormCoord',
+            'outPixel',
+            'outInsideFrustum',
+            'outPoint',
+            'outWorldPoint',
+            'outMatrix',
+            'outWorldMatrix',
+            'outCameraProjectionMatrix',
+            'outInverseCameraProjectionMatrix',
+            'outWorldCameraProjectionMatrix',
+            'outWorldInverseCameraProjectionMatrix',
+            'outPan',
+        ]
+        for attr in attrs:
+            plug = '{0}.{1}'.format(node, attr)
+            value = maya.cmds.getAttr(plug)
+            data[attr] = value
+        return data
+
+    @staticmethod
+    def print_node(data):
+        outCoord = data.get('outCoord')
+        outNormCoord = data.get('outNormCoord')
+        outPixel = data.get('outPixel')
+        outInsideFrustum = data.get('outInsideFrustum')
+        outPoint = data.get('outPoint')
+        outWorldPoint = data.get('outWorldPoint')
+        outMatrix = data.get('outMatrix')
+        outWorldMatrix = data.get('outWorldMatrix')
+        outCameraProjectionMatrix = data.get('outCameraProjectionMatrix')
+        outInverseCameraProjectionMatrix = data.get('outInverseCameraProjectionMatrix')
+        outWorldCameraProjectionMatrix = data.get('outWorldCameraProjectionMatrix')
+        outWorldInverseCameraProjectionMatrix = data.get('outWorldInverseCameraProjectionMatrix')
+        outPan = data.get('outPan')
+        print '=== Printing Node ==='
         print 'outCoord', outCoord
         print 'outNormCoord', outNormCoord
         print 'outPixel', outPixel
@@ -60,6 +81,21 @@ class TestMarkerScaleNode(solverUtils.SolverTestCase):
         print '-' * 5
         print 'outPan', outPan
         print '-' * 40
+
+    def check_values(self, data):
+        print '=== Testing Node Values ==='
+        for key, value in data.items():
+            print 'attr', repr(key), 'value', repr(value)
+            if isinstance(value, (list, tuple)):
+                for v1 in value:
+                    if isinstance(v1, (list, tuple)):
+                        for v2 in v1:
+                            self.assertFalse(math.isnan(v2))
+                    else:
+                        self.assertFalse(math.isnan(v1))
+            else:
+                self.assertFalse(math.isnan(value))
+        return
 
     def test_reprojection_node(self):
         maya.cmds.loadPlugin('matrixNodes')  # for decomposeMatrix node.
@@ -177,11 +213,14 @@ class TestMarkerScaleNode(solverUtils.SolverTestCase):
         maya.cmds.connectAttr(node + '.outPoint', out_world_pnt_tfm + '.translate')
 
         # Query output
-        self.print_node(node)
+        data = self.query_output_attrs(node)
+        self.check_values(data)
+        self.print_node(data)
 
         # Change Depth Scale and query again.
         maya.cmds.setAttr(node + '.depthScale', 10.0)
-        self.print_node(node)
+        data = self.query_output_attrs(node)
+        self.print_node(data)
 
         # save the output
         path = self.get_data_path('reprojection_node_test.ma')

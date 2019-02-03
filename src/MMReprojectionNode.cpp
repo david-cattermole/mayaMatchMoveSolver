@@ -2,8 +2,6 @@
  * Computes reprojection from 3D space into 2D camera-space.
  */
 
-#include <MMReprojectionNode.h>
-
 #include <maya/MPlug.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
@@ -22,7 +20,8 @@
 
 #include <nodeTypeIds.h>
 
-#include <Camera.h>
+#include <MMReprojectionNode.h>
+#include <Camera.h>  // getProjectionMatrix, computeFrustumCoordinates
 
 
 MTypeId MMReprojectionNode::m_id(MM_REPROJECTION_TYPE_ID);
@@ -157,9 +156,13 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         short filmFit = filmFitHandle.asShort();
 
-        MDataHandle nearClipPlaneHandle = data.inputValue(a_nearClipPlane, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-        double nearClipPlane = nearClipPlaneHandle.asDouble();
+        // MDataHandle nearClipPlaneHandle = data.inputValue(a_nearClipPlane, &status);
+        // CHECK_MSTATUS_AND_RETURN_IT(status);
+        // double nearClipPlane = nearClipPlaneHandle.asDouble();
+
+        // TODO: near clip plane forced to 0.1, otherwise reprojection
+        // does't work. Why? No idea.
+        double nearClipPlane_const = 0.1;  
 
         MDataHandle farClipPlaneHandle = data.inputValue(a_farClipPlane, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -171,11 +174,11 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
 
         MDataHandle imageWidthHandle = data.inputValue(a_imageWidth, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        int imageWidth = imageWidthHandle.asInt();
+        double imageWidth = imageWidthHandle.asDouble();
 
         MDataHandle imageHeightHandle = data.inputValue(a_imageHeight, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        int imageHeight = imageHeightHandle.asInt();
+        double imageHeight = imageHeightHandle.asDouble();
 
         MDataHandle overrideScreenXHandle = data.inputValue(a_overrideScreenX, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -214,7 +217,7 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
                 focalLength,
                 horizontalFilmAperture, verticalFilmAperture,
                 horizontalFilmOffset, verticalFilmOffset,
-                nearClipPlane, cameraScale,
+                nearClipPlane_const, cameraScale,
                 left, right, top, bottom);
 
         // Get Camera Projection Matrix
@@ -225,7 +228,7 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
                 horizontalFilmOffset, verticalFilmOffset,
                 imageWidth, imageHeight,
                 filmFit,
-                nearClipPlane, farClipPlane,
+                nearClipPlane_const, farClipPlane,
                 cameraScale,
                 camProjMatrix);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -569,7 +572,7 @@ MStatus MMReprojectionNode::initialize() {
         // Image Width
         a_imageWidth = numericAttr.create(
                 "imageWidth", "iw",
-                MFnNumericData::kInt, 1920);
+                MFnNumericData::kDouble, 1920.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_imageWidth));
@@ -577,7 +580,7 @@ MStatus MMReprojectionNode::initialize() {
         // Image Height
         a_imageHeight = numericAttr.create(
                 "imageHeight", "ih",
-                MFnNumericData::kInt, 1080);
+                MFnNumericData::kDouble, 1080.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_imageHeight));

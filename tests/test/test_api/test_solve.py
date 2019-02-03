@@ -9,16 +9,14 @@ import pprint
 import math
 import unittest
 
-try:
-    import maya.standalone
-    maya.standalone.initialize()
-except RuntimeError:
-    pass
 import maya.cmds
 
-import mmSolver.api as api
+import mmSolver.logger
+import mmSolver.api as mmapi
 import test.test_api.apiutils as test_api_utils
-# import mmSolver.tools.loadmarker.mayareadfile as marker_read
+
+
+LOG = mmSolver.logger.get_logger()
 
 
 # @unittest.skip
@@ -37,41 +35,40 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
         maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
-        cam = api.Camera(shape=cam_shp)
+        cam = mmapi.Camera(shape=cam_shp)
 
         # Bundle
-        bnd = api.Bundle().create_node()
+        bnd = mmapi.Bundle().create_node()
         bundle_tfm = bnd.get_node()
         maya.cmds.setAttr(bundle_tfm + '.tx', 5.5)
         maya.cmds.setAttr(bundle_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundle_tfm + '.tz', -25.0)
-        assert api.get_object_type(bundle_tfm) == 'bundle'
+        assert mmapi.get_object_type(bundle_tfm) == 'bundle'
 
         # Marker
-        mkr = api.Marker().create_node(cam=cam, bnd=bnd)
+        mkr = mmapi.Marker().create_node(cam=cam, bnd=bnd)
         marker_tfm = mkr.get_node()
-        assert api.get_object_type(marker_tfm) == 'marker'
+        assert mmapi.get_object_type(marker_tfm) == 'marker'
         maya.cmds.setAttr(marker_tfm + '.tx', 0.0)
         maya.cmds.setAttr(marker_tfm + '.ty', 0.0)
 
         # Attributes
-        attr_tx = api.Attribute(bundle_tfm + '.tx')
-        attr_ty = api.Attribute(bundle_tfm + '.ty')
+        attr_tx = mmapi.Attribute(bundle_tfm + '.tx')
+        attr_ty = mmapi.Attribute(bundle_tfm + '.ty')
 
         # Frames
         frm_list = [
-            api.Frame(1, primary=True)
+            mmapi.Frame(1, primary=True)
         ]
 
         # Solver
-        sol = api.Solver()
+        sol = mmapi.Solver()
         sol.set_max_iterations(10)
-        sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
         sol.set_verbose(True)
         sol.set_frame_list(frm_list)
 
         # Collection
-        col = api.Collection()
+        col = mmapi.Collection()
         col.create_node('mySolveCollection')
         col.add_solver(sol)
         col.add_marker(mkr)
@@ -120,15 +117,15 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
         maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
-        cam = api.Camera(shape=cam_shp)
+        cam = mmapi.Camera(shape=cam_shp)
 
         # Bundle
-        bnd = api.Bundle().create_node()
+        bnd = mmapi.Bundle().create_node()
         bundle_tfm = bnd.get_node()
         maya.cmds.setAttr(bundle_tfm + '.tx', 5.5)
         maya.cmds.setAttr(bundle_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundle_tfm + '.tz', -25.0)
-        assert api.get_object_type(bundle_tfm) == 'bundle'
+        assert mmapi.get_object_type(bundle_tfm) == 'bundle'
 
         # calculate angle of view (AOV)
         f = maya.cmds.getAttr(cam_shp + '.focalLength')
@@ -143,9 +140,9 @@ class TestSolve(test_api_utils.APITestCase):
                               inTangentType='linear', outTangentType='linear')
 
         # Marker
-        mkr = api.Marker().create_node(cam=cam, bnd=bnd)
+        mkr = mmapi.Marker().create_node(cam=cam, bnd=bnd)
         marker_tfm = mkr.get_node()
-        assert api.get_object_type(marker_tfm) == 'marker'
+        assert mmapi.get_object_type(marker_tfm) == 'marker'
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-0.5,
                               inTangentType='linear', outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=0.5,
@@ -170,27 +167,26 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.setAttr(sph_tfm + '.tz', -25.0)
 
         # Attributes
-        attr_tx = api.Attribute(bundle_tfm + '.tx')
-        attr_ty = api.Attribute(bundle_tfm + '.ty')
+        attr_tx = mmapi.Attribute(bundle_tfm + '.tx')
+        attr_ty = mmapi.Attribute(bundle_tfm + '.ty')
 
         # Frames
         frm_list = [
-            api.Frame(1, primary=True),
-            api.Frame(2, primary=True),
-            api.Frame(3, primary=True),
-            api.Frame(4, primary=True),
-            api.Frame(5, primary=True)
+            mmapi.Frame(1, primary=True),
+            mmapi.Frame(2, primary=True),
+            mmapi.Frame(3, primary=True),
+            mmapi.Frame(4, primary=True),
+            mmapi.Frame(5, primary=True)
         ]
 
         # Solver
-        sol = api.Solver()
+        sol = mmapi.Solver()
         sol.set_max_iterations(1000)
-        sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
         sol.set_verbose(True)
         sol.set_frame_list(frm_list)
 
         # Collection
-        col = api.Collection()
+        col = mmapi.Collection()
         col.create_node('mySolveCollection')
         col.add_solver(sol)
         col.add_marker(mkr)
@@ -238,15 +234,15 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
         maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
-        cam = api.Camera(shape=cam_shp)
+        cam = mmapi.Camera(shape=cam_shp)
 
         # Bundle
-        bnd = api.Bundle().create_node()
+        bnd = mmapi.Bundle().create_node()
         bundle_tfm = bnd.get_node()
         maya.cmds.setAttr(bundle_tfm + '.tx', 5.5)
         maya.cmds.setAttr(bundle_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundle_tfm + '.tz', -25.0)
-        assert api.get_object_type(bundle_tfm) == 'bundle'
+        assert mmapi.get_object_type(bundle_tfm) == 'bundle'
         maya.cmds.setKeyframe(bundle_tfm,
                               attribute='translateX',
                               time=1, value=5.5,
@@ -264,9 +260,9 @@ class TestSolve(test_api_utils.APITestCase):
                               outTangentType='linear')
 
         # Marker
-        mkr = api.Marker().create_node(cam=cam, bnd=bnd)
+        mkr = mmapi.Marker().create_node(cam=cam, bnd=bnd)
         marker_tfm = mkr.get_node()
-        assert api.get_object_type(marker_tfm) == 'marker'
+        assert mmapi.get_object_type(marker_tfm) == 'marker'
         # maya.cmds.setAttr(marker_tfm + '.tx', 0.0)
         # maya.cmds.setAttr(marker_tfm + '.ty', 0.0)
         maya.cmds.setKeyframe(marker_tfm,
@@ -291,30 +287,29 @@ class TestSolve(test_api_utils.APITestCase):
                               outTangentType='linear')
 
         # Attributes
-        attr_tx = api.Attribute(bundle_tfm + '.tx')
-        attr_ty = api.Attribute(bundle_tfm + '.ty')
+        attr_tx = mmapi.Attribute(bundle_tfm + '.tx')
+        attr_ty = mmapi.Attribute(bundle_tfm + '.ty')
 
         # Frames
         frm_list = [
-            api.Frame(1),
-            api.Frame(2),
-            api.Frame(3),
-            api.Frame(4),
-            api.Frame(5),
+            mmapi.Frame(1),
+            mmapi.Frame(2),
+            mmapi.Frame(3),
+            mmapi.Frame(4),
+            mmapi.Frame(5),
         ]
 
         # Solver
         sol_list = []
         for frm in frm_list:
-            sol = api.Solver()
+            sol = mmapi.Solver()
             sol.set_max_iterations(10)
-            sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
             sol.set_verbose(True)
             sol.set_frame_list([frm])
             sol_list.append(sol)
 
         # Collection
-        col = api.Collection()
+        col = mmapi.Collection()
         col.create_node('mySolveCollection')
         col.add_solver_list(sol_list)
         col.add_marker(mkr)
@@ -325,7 +320,7 @@ class TestSolve(test_api_utils.APITestCase):
         path = self.get_data_path('test_solve_per_frame_before.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
-        
+
         # Run solver!
         results = col.execute()
 
@@ -337,6 +332,153 @@ class TestSolve(test_api_utils.APITestCase):
 
         # save the output
         path = self.get_data_path('test_solve_per_frame_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+    def test_stA_refine_good_solve(self):
+        """
+        Test file based on 3DEqualizer 'stA' image sequence.
+
+        The Maya file loaded contains a good 3DEqualizer solve.  This
+        test tests the solver to ensure it produces good results,
+        given an already good solution.
+
+        The 'stA' image sequence has a frame range of 0 to 94.
+        """
+        start_frame = 0
+        end_frame = 94
+
+        path = self.get_data_path('scenes', 'stA', 'stA.ma')
+        ok = maya.cmds.file(path, open=True, ignoreVersion=True, force=True)
+        assert isinstance(ok, (str, unicode))
+
+        # Camera
+        cam_name = 'stA_1_1Shape1'
+        cam = mmapi.Camera(shape=cam_name)
+        cam_tfm_node = cam.get_transform_node()
+        cam_shp_node = cam.get_shape_node()
+
+        # Marker Group
+        mkr_grp_name = 'markerGroup1'
+        mkr_grp = mmapi.MarkerGroup(name=mkr_grp_name)
+        mkr_grp_node = mkr_grp.get_node()
+
+        # Markers
+        mkr_list = []
+        bnd_list = []
+        mkr_nodes = maya.cmds.listRelatives(
+            mkr_grp_node,
+            children=True,
+            shapes=False) or []
+        for node in mkr_nodes:
+            if node.endswith('_MKR') is False:
+                continue
+            assert mmapi.get_object_type(node) == 'marker'
+            mkr = mmapi.Marker(name=node)
+            bnd = mkr.get_bundle()
+            mkr_list.append(mkr)
+            bnd_list.append(bnd)
+        assert len(mkr_list) > 0
+        assert len(bnd_list) > 0
+
+        # Attributes
+        attr_list = []
+        for bnd in bnd_list:
+            bnd_node = bnd.get_node()
+            attr_tx = mmapi.Attribute(node=bnd_node, attr='tx')
+            attr_ty = mmapi.Attribute(node=bnd_node, attr='ty')
+            attr_tz = mmapi.Attribute(node=bnd_node, attr='tz')
+            attr_list.append(attr_tx)
+            attr_list.append(attr_ty)
+            attr_list.append(attr_tz)
+        attr_tx = mmapi.Attribute(node=cam_tfm_node, attr='tx')
+        attr_ty = mmapi.Attribute(node=cam_tfm_node, attr='ty')
+        attr_tz = mmapi.Attribute(node=cam_tfm_node, attr='tz')
+        attr_rx = mmapi.Attribute(node=cam_tfm_node, attr='rx')
+        attr_ry = mmapi.Attribute(node=cam_tfm_node, attr='ry')
+        attr_rz = mmapi.Attribute(node=cam_tfm_node, attr='rz')
+        attr_fl = mmapi.Attribute(node=cam_shp_node, attr='focalLength')
+        attr_list.append(attr_tx)
+        attr_list.append(attr_ty)
+        attr_list.append(attr_tz)
+        attr_list.append(attr_rx)
+        attr_list.append(attr_ry)
+        attr_list.append(attr_rz)
+        attr_list.append(attr_fl)
+
+        # Frames
+        frm_list = []
+        all_frames = range(start_frame, end_frame + 1, 1)
+        for f in all_frames:
+            prim = ((float(f) % 20.0) == 0) \
+                   or (f == start_frame) \
+                   or (f == end_frame)
+            sec = prim is not True
+            frm = mmapi.Frame(f, primary=prim, secondary=sec)
+            frm_list.append(frm)
+
+        # Solvers
+        #
+        # Global solve with every 10th frame (and start/end frames)
+        sol_list = []
+        sol = mmapi.Solver()
+        sol.set_verbose(True)
+        sol.set_max_iterations(10)
+        sol.set_frames_use_tags(['primary'])
+        sol.set_attributes_use_static(True)
+        sol.set_attributes_use_animated(True)
+        sol.set_frame_list(frm_list)
+        sol_list.append(sol)
+
+        # Per-frame solvers
+        for frm in frm_list:
+            sol = mmapi.Solver()
+            sol.set_verbose(True)
+            sol.set_max_iterations(10)
+            sol.set_frames_use_tags(['primary', 'secondary'])
+            sol.set_attributes_use_static(False)
+            sol.set_attributes_use_animated(True)
+            sol.add_frame(frm)
+            sol_list.append(sol)
+
+        # Collection
+        col = mmapi.Collection()
+        col.create_node('mySolveCollection')
+        col.add_solver_list(sol_list)
+        col.add_marker_list(mkr_list)
+        col.add_attribute_list(attr_list)
+
+        # save the output
+        path = self.get_data_path('test_solve_stA_refine_before.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        # Run solver!
+        LOG.warning('Running Solver Test... (it may take some time to finish).')
+        results = col.execute()
+
+        # Ensure the values are correct
+        for res in results:
+            success = res.get_success()
+            err = res.get_final_error()
+            print 'final error', err
+            self.assertTrue(success)
+            self.assertTrue(isinstance(err, float))
+            # frm_err_list = res.get_frame_error_list()
+
+        # Check the final error values
+        frm_err_list = mmapi.merge_frame_error_list(results)
+
+        avg_err = mmapi.get_average_frame_error_list(frm_err_list)
+        print 'avg error', avg_err
+        self.assertLess(avg_err, 1.0)
+
+        max_err_frm, max_err_val = mmapi.get_max_frame_error(frm_err_list)
+        print 'max error frame and value:', max_err_frm, max_err_val
+        self.assertLess(max_err_val, 1.0)
+
+        # save the output
+        path = self.get_data_path('test_solve_stA_refine_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -362,7 +504,7 @@ class TestSolve(test_api_utils.APITestCase):
     #     maya.cmds.setAttr(cam_shp + '.focalLength', 14)
     #     maya.cmds.setAttr(cam_shp + '.horizontalFilmAperture', 5.4187 / 25.4)
     #     maya.cmds.setAttr(cam_shp + '.verticalFilmAperture', 4.0640 / 25.4)
-    #     cam = api.Camera(shape=cam_shp)
+    #     cam = mmapi.Camera(shape=cam_shp)
     #
     #     # Set Camera Keyframes
     #     cam_data = {
@@ -532,41 +674,40 @@ class TestSolve(test_api_utils.APITestCase):
     #     # sec = [3, 8, 12, 27, 33, 38]
     #     # prim = [0, 3, 8, 12, 22, 27, 33, 38, 41]
     #     frm_list = []
-    #     frm = api.Frame(0, tags=['primary', '1', 'single001'])
+    #     frm = mmapi.Frame(0, tags=['primary', '1', 'single001'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(3, tags=['primary', '1', '2', 'single002'])
+    #     frm = mmapi.Frame(3, tags=['primary', '1', '2', 'single002'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(8, tags=['primary', '2', '3', 'single003'])
+    #     frm = mmapi.Frame(8, tags=['primary', '2', '3', 'single003'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(12, tags=['primary', '3', '4', 'single004'])
+    #     frm = mmapi.Frame(12, tags=['primary', '3', '4', 'single004'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(22, tags=['primary', '4', '5', 'single005'])
+    #     frm = mmapi.Frame(22, tags=['primary', '4', '5', 'single005'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(27, tags=['primary', '5', '6', 'single006'])
+    #     frm = mmapi.Frame(27, tags=['primary', '5', '6', 'single006'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(33, tags=['primary', '6', '7', 'single007'])
+    #     frm = mmapi.Frame(33, tags=['primary', '6', '7', 'single007'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(38, tags=['primary', '7', '8', 'single008'])
+    #     frm = mmapi.Frame(38, tags=['primary', '7', '8', 'single008'])
     #     frm_list.append(frm)
     #
-    #     frm = api.Frame(41, tags=['primary', '8', 'single009'])
+    #     frm = mmapi.Frame(41, tags=['primary', '8', 'single009'])
     #     frm_list.append(frm)
     #
     #     sol_list = []
     #
     #     # solve each frame
     #     for i in range(1, 9):
-    #         sol = api.Solver()
+    #         sol = mmapi.Solver()
     #         sol.set_max_iterations(10)
     #         sol.set_delta_factor(-0.01)
-    #         sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #         sol.set_attributes_use_animated(True)
     #         sol.set_attributes_use_static(True)
     #         sol.set_frames_use_tags(['single00' + str(i+1)])
@@ -576,10 +717,9 @@ class TestSolve(test_api_utils.APITestCase):
     #
     #     # solve each group
     #     for i in range(1, 9):
-    #         sol = api.Solver()
+    #         sol = mmapi.Solver()
     #         sol.set_max_iterations(10)
     #         sol.set_delta_factor(-0.01)
-    #         sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #         sol.set_attributes_use_animated(True)
     #         sol.set_attributes_use_static(True)
     #         sol.set_frames_use_tags([str(i)])
@@ -589,22 +729,20 @@ class TestSolve(test_api_utils.APITestCase):
     #
     #     # # solve each frame
     #     # for i in range(0, 41):
-    #     #     sol = api.Solver()
+    #     #     sol = mmapi.Solver()
     #     #     sol.set_max_iterations(10)
     #     #     sol.set_delta_factor(-0.01)
-    #     #     sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #     #     sol.set_attributes_use_animated(True)
     #     #     sol.set_attributes_use_static(True)
     #     #     sol.set_verbose(True)
-    #     #     frm = api.Frame(i)
+    #     #     frm = mmapi.Frame(i)
     #     #     sol.set_frame_list([frm])
     #     #     sol_list.append(sol)
     #
     #     # # All primary frames together
-    #     # sol = api.Solver()
+    #     # sol = mmapi.Solver()
     #     # sol.set_max_iterations(10)
     #     # sol.set_delta_factor(-0.01)
-    #     # sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #     # sol.set_attributes_use_animated(True)
     #     # sol.set_attributes_use_static(True)
     #     # sol.set_frames_use_tags(['primary'])
@@ -613,7 +751,7 @@ class TestSolve(test_api_utils.APITestCase):
     #     # sol_list.append(sol)
     #
     #     # Collection
-    #     col = api.Collection()
+    #     col = mmapi.Collection()
     #     col.create('mySolverCollection')
     #     col.add_solver_list(sol_list)
     #
@@ -621,13 +759,13 @@ class TestSolve(test_api_utils.APITestCase):
     #     col.add_marker_list(mkr_fg_list)
     #
     #     # Attributes
-    #     attr_cam_tx = api.Attribute(cam_tfm + '.tx')
-    #     attr_cam_ty = api.Attribute(cam_tfm + '.ty')
-    #     attr_cam_tz = api.Attribute(cam_tfm + '.tz')
-    #     # attr_cam_rx = api.Attribute(cam_tfm + '.rx')
-    #     # attr_cam_ry = api.Attribute(cam_tfm + '.ry')
-    #     # attr_cam_rz = api.Attribute(cam_tfm + '.rz')
-    #     # attr_cam_focal = api.Attribute(cam_shp + '.focalLength')
+    #     attr_cam_tx = mmapi.Attribute(cam_tfm + '.tx')
+    #     attr_cam_ty = mmapi.Attribute(cam_tfm + '.ty')
+    #     attr_cam_tz = mmapi.Attribute(cam_tfm + '.tz')
+    #     # attr_cam_rx = mmapi.Attribute(cam_tfm + '.rx')
+    #     # attr_cam_ry = mmapi.Attribute(cam_tfm + '.ry')
+    #     # attr_cam_rz = mmapi.Attribute(cam_tfm + '.rz')
+    #     # attr_cam_focal = mmapi.Attribute(cam_shp + '.focalLength')
     #     # attr_cam_focal.set_min_value(10.0)
     #     # attr_cam_focal.set_max_value(20.0)
     #     col.add_attribute(attr_cam_tx)
@@ -641,9 +779,9 @@ class TestSolve(test_api_utils.APITestCase):
     #     # for mkr in mkr_list:
     #     #     bnd = mkr.get_bundle()
     #     #     bnd_node = bnd.get_node()
-    #     #     attr_tx = api.Attribute(bnd_node + '.tx')
-    #     #     attr_ty = api.Attribute(bnd_node + '.ty')
-    #     #     attr_tz = api.Attribute(bnd_node + '.tz')
+    #     #     attr_tx = mmapi.Attribute(bnd_node + '.tx')
+    #     #     attr_ty = mmapi.Attribute(bnd_node + '.ty')
+    #     #     attr_tz = mmapi.Attribute(bnd_node + '.tz')
     #     #     col.add_attribute(attr_tx)
     #     #     col.add_attribute(attr_ty)
     #     #     col.add_attribute(attr_tz)

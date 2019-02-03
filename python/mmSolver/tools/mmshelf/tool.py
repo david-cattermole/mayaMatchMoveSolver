@@ -173,4 +173,20 @@ def build_shelf():
         icon=icon,
         cmd=cmd,
     )
+
+    # Ray Cast Marker
+    name = 'Ray Cast'
+    tooltip = 'Ray Cast Marker .'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.raycastmarker.tool ;'
+        'mmSolver.tools.raycastmarker.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
     return

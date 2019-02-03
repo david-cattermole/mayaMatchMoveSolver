@@ -7,6 +7,9 @@ import maya.OpenMaya as OpenMaya
 import maya.OpenMayaAnim as OpenMayaAnim
 import mmSolver._api.utils as api_utils
 import mmSolver._api.constant as const
+import mmSolver.logger
+
+LOG = mmSolver.logger.get_logger()
 
 
 class Attribute(object):
@@ -57,9 +60,12 @@ class Attribute(object):
         if isinstance(node, (str, unicode)) and isinstance(attr, (str, unicode)):
             assert maya.cmds.objExists(node)
             # Long and short names must be checked.
-            attr_list_long = maya.cmds.listAttr(node, shortNames=False)
-            attr_list_short = maya.cmds.listAttr(node, shortNames=True)
-            assert attr in (attr_list_long + attr_list_short)
+            attr_list_long = maya.cmds.listAttr(node, shortNames=False) or []
+            attr_list_short = maya.cmds.listAttr(node, shortNames=True) or []
+            if attr not in (attr_list_long + attr_list_short):
+                msg = 'Attribute not found on node. node=%r attr=%r'
+                LOG.error(msg, node, attr)
+                raise RuntimeError(msg)
 
             node_attr = node + '.' + attr
             plug = api_utils.get_as_plug(node_attr)

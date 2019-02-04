@@ -166,6 +166,7 @@ def main():
     else:
         meshes = maya.cmds.ls(type='mesh', visible=True) or []
 
+    bndls = []
     for node in selected_markers:
         mkr = mmapi.Marker(name=node)
         bnd = mkr.get_bundle()
@@ -189,6 +190,7 @@ def main():
             max_dist=MAX_DIST,
         )
         if hit_point is None:
+            LOG.warning('%s didn\'t hit on the mesh' % node)
             continue
 
         bnd_node = bnd.get_node()
@@ -211,4 +213,7 @@ def main():
         for plug_name in plugs:
             value = plug_lock_state.get(plug_name)
             maya.cmds.setAttr(plug_name, lock=value)
+
+        bndls.append(bnd_node)
+    maya.cmds.select(bndls)
     return

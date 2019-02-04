@@ -175,8 +175,8 @@ def build_shelf():
     )
 
     # Ray Cast Marker
-    name = 'Ray Cast'
-    tooltip = 'Ray Cast Marker .'
+    name = 'RCM'
+    tooltip = 'Ray Cast Marker.'
     icon = None
     cmd = (
         'import mmSolver.tools.raycastmarker.tool ;'

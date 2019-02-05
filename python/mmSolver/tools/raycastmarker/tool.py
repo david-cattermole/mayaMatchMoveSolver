@@ -4,14 +4,12 @@ This is a Ray cast Markers tool.
 
 import maya.cmds
 import maya.OpenMaya as OpenMaya
-# import mmSolver.tools.raycastmarker.lib as raycast_lib
+import mmSolver.utils.raytrace as raytrace_utils
 import mmSolver.tools.selection.filternodes as filternodes
 import mmSolver.api as mmapi
 import mmSolver.logger
 
 LOG = mmSolver.logger.get_logger()
-
-MAX_DIST = 9999999999.0
 
 
 def __get_camera_direction_to_point(camera_node, point_node):
@@ -46,89 +44,6 @@ def __get_camera_direction_to_point(camera_node, point_node):
     return x, y, z
 
 
-def intersect(source,
-              direction,
-              mesh_nodes,
-              test_both_directions=False,
-              max_dist=None,
-              tolerance=None):
-    """
-    Get the intersection point on meshes given a source point and direction
-
-    :param source: Origin point of the ray projection.
-    :type source: [float, float, float]
-
-    :param direction: The direction the ray will travel.
-
-    :param mesh_nodes: Mesh nodes
-
-    :param test_both_directions: testing ray direction both sides;
-                                 default is False.
-    :type test_both_directions: bool
-
-    :param max_dist: The maximum distance the ray will travel before
-                     stopping; default is 99999999999.0.
-    :type max_dist: float
-
-    :param tolerance: The minimum ray trace tolerance; default is 0.0001.
-    :type tolerance: float
-
-    :return: The closest world space intersection, over all mesh nodes
-             given, or None if no point was found.
-    :rtype: maya.OpenMaya.MFloatPoint or None
-    """
-    assert isinstance(mesh_nodes, (list, tuple))
-    if max_dist is None:
-        max_dist = 99999999999.0
-    if tolerance is None:
-        tolerance = 0.0001
-    if len(mesh_nodes) == 0:
-        LOG.warning('No mesh objects found in the scene')
-        return
-
-    source_pt = OpenMaya.MFloatPoint(source[0], source[1], source[2])
-    direction_vec = OpenMaya.MFloatVector(direction[0], direction[1], direction[2])
-
-    hit_points = []
-    for mesh in mesh_nodes:
-        sel = OpenMaya.MSelectionList()
-        dag = OpenMaya.MDagPath()
-        sel.add(mesh)
-        sel.getDagPath(0, dag)
-        mesh_fn = OpenMaya.MFnMesh(dag)
-        hit_pt = OpenMaya.MFloatPoint()
-        hit = mesh_fn.closestIntersection(
-            source_pt,
-            direction_vec,
-            None,
-            None,
-            False,
-            OpenMaya.MSpace.kWorld,
-            max_dist,
-            test_both_directions,
-            None,
-            hit_pt,
-            None,
-            None,
-            None,
-            None,
-            None,
-            tolerance)
-        if hit is True:
-            hit_points.append(hit_pt)
-
-    # Get the closest hit point.
-    closest_point = None
-    min_dist = max_dist
-    for point in hit_points:
-        dist = source_pt.distanceTo(point)
-        if dist < min_dist:
-            min_dist = dist
-            closest_point = point
-    assert closest_point is None or isinstance(closest_point, OpenMaya.MFloatPoint)
-    return closest_point
-
-
 def main():
     """
     Ray casts selected markers bundles on mesh from the associated camera.
@@ -147,12 +62,12 @@ def main():
     """
     selection = maya.cmds.ls(selection=True) or []
     if not selection:
-        LOG.warning('Please select a marker to rayCast')
+        LOG.warning('Please select a marker to rayCast.')
         return
 
     selected_markers = filternodes.get_marker_nodes(selection)
     if not selected_markers:
-        LOG.warning('No markers found in the selection list')
+        LOG.warning('No markers found in the selection list.')
         return
 
     meshes = []
@@ -161,12 +76,13 @@ def main():
         type='mesh',
         dagObjects=True,
         noIntermediate=True) or []
-    if selected_meshes:
+    if len(selected_meshes) > 0:
         meshes = selected_meshes
     else:
         meshes = maya.cmds.ls(type='mesh', visible=True) or []
 
-    bndls = []
+    max_dist = 9999999999.0
+    bnd_nodes = []
     for node in selected_markers:
         mkr = mmapi.Marker(name=node)
         bnd = mkr.get_bundle()
@@ -182,15 +98,15 @@ def main():
             worldSpace=True
         )
 
-        hit_point = intersect(
+        hit_point = raytrace_utils.closest_intersect(
             origin_point,
             direction,
             meshes,
             test_both_directions=True,
-            max_dist=MAX_DIST,
+            max_dist=max_dist,
         )
         if hit_point is None:
-            LOG.warning('%s didn\'t hit on the mesh' % node)
+            LOG.warning('%s didn\'t hit the mesh.' % node)
             continue
 
         bnd_node = bnd.get_node()
@@ -213,7 +129,10 @@ def main():
         for plug_name in plugs:
             value = plug_lock_state.get(plug_name)
             maya.cmds.setAttr(plug_name, lock=value)
-
-        bndls.append(bnd_node)
-    maya.cmds.select(bndls)
+        bnd_nodes.append(bnd_node)
+        
+    if len(bnd_nodes) > 0:
+        maya.cmds.select(bnd_nodes)
+    else:
+        maya.cmds.select(selection)
     return

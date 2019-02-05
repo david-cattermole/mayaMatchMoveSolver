@@ -45,9 +45,20 @@ if sys.version_info[0] == 2:
 
 def smooth(smooth_type, value_array, width):
     """
-    Run a Smoothing function, of any type.
+    Run a Smoothing function, of any type, just pass a 'smooth type' in.
 
-    Just pass a smoothType in.
+    :param smooth_type: Type of smoothing operation.
+    :tyoe smooth_type: SMOOTH_TYPE_*
+
+    :param value_array: Input data to smooth.
+    :type value_array: [float, ..]
+
+    :param width: The width to smooth over. Values above 1.0 will
+                  perform smoothing. 1.0 or below has no effect.
+    :type width: float
+
+    :returns: Smoothed copy of 'value_array', using the 'smooth_type', given.
+    :rtype: [float, ..]
     """
     new_array = None
     if smooth_type == const.SMOOTH_TYPE_AVERAGE:
@@ -69,16 +80,19 @@ def average_smooth(value_array, width):
     """
     Average Smooth Function
 
-    Uses standard python functions only.
+    .. note::
+
+        Uses standard python functions only.
 
     :param value_array: Input data to smooth.
-    :type value_array: list of float
+    :type value_array: [float, ..]
 
     :param width: The width to smooth over. Values above 1.0 will
                   perform smoothing. 1.0 or below has no effect.
     :type width: float
 
     :returns: Smoothed copy of 'value_array'.
+    :rtype: [float, ..]
     """
     sigma_val = (width-1.0)
     if sigma_val <= 0.0:
@@ -133,16 +147,19 @@ def gaussian_smooth(value_array, width):
     """
     Gaussian Smooth Function.
 
-    Uses standard python functions only.
+    .. note::
+
+        Uses standard python functions only.
 
     :param value_array: Input data to smooth.
-    :type value_array: list of float
+    :type value_array: [float, ..]
 
     :param width: The width to smooth over. Values above 1.0 will perform
                   smoothing. 1.0 or below has no effect.
     :type width: float
 
     :returns: Smoothed copy of 'value_array'.
+    :rtype: [float, ..]
     """
     sigma_val = (width-1.0)*0.5
     if sigma_val <= 0.0:
@@ -181,7 +198,7 @@ def _generate_window_raw(n, filtr=None):
                   'triangle' or 'box'. Default filter is 'gaussian'.
     :type filtr: str
 
-    :returns: A list of float numbers, list is length 'n'.
+    :returns: A [float, ..] numbers, list is length 'n'.
     """
     if filtr is None:
         filtr = 'gaussian'
@@ -221,10 +238,10 @@ def _fft_convolve_raw(signal, window):
     Uses standard python functions only.
 
     :param signal: The input signal to be convolved
-    :type signal: list of float
+    :type signal: [float, ..]
 
     :param window: The window to be multiplied over each value in 'signal'.
-    :type window: list of float
+    :type window: [float, ..]
 
     :returns: Modified copy of 'signal'.
     """
@@ -249,7 +266,7 @@ def _fourier_smooth_raw(data, width, filtr=None):
     Uses standard python functions only.
 
     :param data: Input data to smooth.
-    :type data: list of float
+    :type data: [float, ..]
 
     :param width: The width to smooth over. Values above 1.0 will perform
                   smoothing. 1.0 or below has no effect.
@@ -339,7 +356,7 @@ def _fourier_smooth_numpy(data, width, filtr=None):
     Uses the numpy module.
 
     :param data: Input data to smooth.
-    :type data: list of float
+    :type data: [float, ..]
 
     :param width: The width to smooth over. Values above 1.0 will perform
                   smoothing. 1.0 or below has no effect.
@@ -390,7 +407,7 @@ def fourier_smooth(value_array, width, filtr=None):
     Fourier Smooth Function.
 
     :param value_array: Input data to smooth.
-    :type value_array: list of float
+    :type value_array: [float, ..]
 
     :param width: The width to smooth over. Values above 1.0 will perform
                   smoothing. 1.0 or below has no effect.

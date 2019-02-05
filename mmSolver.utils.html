@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mmSolver.utils &#8212; mmSolver 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="mmSolver.ui.uiutils" href="mmSolver.ui.uiutils.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.uiutils.html" title="mmSolver.ui.uiutils"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="mmsolver-utils">
+<h1>mmSolver.utils<a class="headerlink" href="#mmsolver-utils" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal"><span class="pre">utils</span></code> sub-package.</p>
+<div class="section" id="module-mmSolver.utils.smooth">
+<span id="smooth"></span><h2>Smooth<a class="headerlink" href="#module-mmSolver.utils.smooth" title="Permalink to this headline">¶</a></h2>
+<p>Generic data smoothing.</p>
+<p>This module is software agnostic and should not rely on any thirdparty software,
+however if numpy is available, an numpy-accelerated code-path will be used.</p>
+<p>Smoothing functions supported:</p>
+<ul class="simple">
+<li>Average</li>
+<li>Gaussian (blur smoothing)</li>
+<li>Fourier (frequency smoothing)</li>
+</ul>
+<p>Example usage:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.utils.smooth</span> <span class="k">as</span> <span class="nn">smooth</span>
+<span class="kn">import</span> <span class="nn">mmSolver.utils.constant</span> <span class="k">as</span> <span class="nn">const</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">20000.0</span><span class="p">]</span>
+<span class="n">width</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="n">new_data</span> <span class="o">=</span> <span class="n">smooth</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="n">const</span><span class="o">.</span><span class="n">SMOOTH_TYPE_AVERAGE</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="mmSolver.utils.smooth.smooth">
+<code class="descclassname">mmSolver.utils.smooth.</code><code class="descname">smooth</code><span class="sig-paren">(</span><em>smooth_type</em>, <em>value_array</em>, <em>width</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.smooth.smooth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a Smoothing function, of any type, just pass a &#8216;smooth type&#8217; in.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>smooth_type</strong> &#8211; Type of smoothing operation.</li>
+<li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; Input data to smooth.</li>
+<li><strong>width</strong> (<em>float</em>) &#8211; The width to smooth over. Values above 1.0 will
+perform smoothing. 1.0 or below has no effect.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Tyoe smooth_type:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first">SMOOTH_TYPE_*</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed copy of &#8216;value_array&#8217;, using the &#8216;smooth_type&#8217;, given.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[float, .]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.smooth.average_smooth">
+<code class="descclassname">mmSolver.utils.smooth.</code><code class="descname">average_smooth</code><span class="sig-paren">(</span><em>value_array</em>, <em>width</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.smooth.average_smooth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Average Smooth Function</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Uses standard python functions only.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; Input data to smooth.</li>
+<li><strong>width</strong> (<em>float</em>) &#8211; The width to smooth over. Values above 1.0 will
+perform smoothing. 1.0 or below has no effect.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed copy of &#8216;value_array&#8217;.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[float, .]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.smooth.gaussian_smooth">
+<code class="descclassname">mmSolver.utils.smooth.</code><code class="descname">gaussian_smooth</code><span class="sig-paren">(</span><em>value_array</em>, <em>width</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.smooth.gaussian_smooth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gaussian Smooth Function.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Uses standard python functions only.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; Input data to smooth.</li>
+<li><strong>width</strong> (<em>float</em>) &#8211; The width to smooth over. Values above 1.0 will perform
+smoothing. 1.0 or below has no effect.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed copy of &#8216;value_array&#8217;.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[float, .]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.smooth.fourier_smooth">
+<code class="descclassname">mmSolver.utils.smooth.</code><code class="descname">fourier_smooth</code><span class="sig-paren">(</span><em>value_array</em>, <em>width</em>, <em>filtr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.smooth.fourier_smooth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fourier Smooth Function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; Input data to smooth.</li>
+<li><strong>width</strong> (<em>float</em>) &#8211; The width to smooth over. Values above 1.0 will perform
+smoothing. 1.0 or below has no effect.</li>
+<li><strong>filtr</strong> (<em>str</em>) &#8211; Type of frequency-space smoothing filter, &#8216;gaussian&#8217;,
+&#8216;triangle&#8217; or &#8216;box&#8217;. Default filter is &#8216;gaussian&#8217;.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Smoothed copy of &#8216;value_array&#8217;.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.utils.raytrace">
+<span id="raytrace"></span><h2>Raytrace<a class="headerlink" href="#module-mmSolver.utils.raytrace" title="Permalink to this headline">¶</a></h2>
+<p>Raytracing functions.</p>
+<dl class="function">
+<dt id="mmSolver.utils.raytrace.closest_intersect">
+<code class="descclassname">mmSolver.utils.raytrace.</code><code class="descname">closest_intersect</code><span class="sig-paren">(</span><em>source</em>, <em>direction</em>, <em>mesh_nodes</em>, <em>test_both_directions=False</em>, <em>max_dist=None</em>, <em>tolerance=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.raytrace.closest_intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the closest intersection point on meshes given a source point
+and direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) &#8211; Origin point of the ray projection.</li>
+<li><strong>direction</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) &#8211; The direction the ray will travel.</li>
+<li><strong>mesh_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Mesh nodes</li>
+<li><strong>test_both_directions</strong> (<em>bool</em>) &#8211; testing ray direction both sides;
+default is False.</li>
+<li><strong>max_dist</strong> (<em>float</em>) &#8211; The maximum distance the ray will travel before
+stopping; default is RAYTRACE_MAX_DIST.</li>
+<li><strong>tolerance</strong> (<em>float</em>) &#8211; The minimum ray trace tolerance; default is
+RAYTRACE_EPSILON.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The closest world space intersection, over all mesh nodes
+given, or None if no point was found.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">maya.OpenMaya.MFloatPoint or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.utils</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.utils.smooth">Smooth</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.raytrace">Raytrace</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.ui.uiutils.html"
+                        title="previous chapter">mmSolver.ui.uiutils</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.utils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.uiutils.html" title="mmSolver.ui.uiutils"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, David Cattermole.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

@@ -142,7 +142,7 @@ def __remove_reprojection(cam_tfm, cam_shp):
     return
 
 
-def center_two_dee():
+def main():
     """
     Center the selected transform onto the camera view.
     """
@@ -176,3 +176,7 @@ def center_two_dee():
     if len(save_sel) > 0:
         maya.cmds.select(save_sel, replace=True)
     return
+
+
+def center_two_dee():
+    main()

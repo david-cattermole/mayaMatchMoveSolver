@@ -174,12 +174,46 @@ def build_shelf():
         cmd=cmd,
     )
 
+    shelfutils.create_shelf_separator(parent=shelf)
+
+    # Triangulate Bundle (current frame)
+    name = 'Frnt'
+    tooltip = 'Push in Front.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.triangulate.tool;'
+        'mmSolver.tools.triangulate.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # # Triangulate Bundle (multiple frames)
+    # name = 'Frnt'
+    # tooltip = 'Push in Front.'
+    # icon = None
+    # cmd = (
+    #     'import mmSolver.tools.triangulate.tool;'
+    #     'mmSolver.tools.triangulate.tool.main();'
+    # )
+    # shelfutils.create_shelf_button(
+    #     parent=shelf,
+    #     name=name,
+    #     tooltip=tooltip,
+    #     icon=icon,
+    #     cmd=cmd,
+    # )
+
     # Ray Cast Marker
     name = 'RCM'
     tooltip = 'Ray Cast Marker.'
     icon = None
     cmd = (
-        'import mmSolver.tools.raycastmarker.tool ;'
+        'import mmSolver.tools.raycastmarker.tool;'
         'mmSolver.tools.raycastmarker.tool.main();'
     )
     shelfutils.create_shelf_button(

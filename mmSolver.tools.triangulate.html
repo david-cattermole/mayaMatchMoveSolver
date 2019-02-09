@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mmSolver.tools.triangulate &#8212; mmSolver 0.2.0rc documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2.0rc',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.tools.raycastmarker" href="mmSolver.tools.raycastmarker.html" />
+    <link rel="prev" title="mmSolver.tools.cameraaim" href="mmSolver.tools.cameraaim.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.raycastmarker.html" title="mmSolver.tools.raycastmarker"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.cameraaim.html" title="mmSolver.tools.cameraaim"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.0rc documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-mmSolver.tools.triangulate">
+<span id="mmsolver-tools-triangulate"></span><h1>mmSolver.tools.triangulate<a class="headerlink" href="#module-mmSolver.tools.triangulate" title="Permalink to this headline">¶</a></h1>
+<p>Move a bundle in front of the camera.</p>
+<div class="section" id="module-mmSolver.tools.triangulate.tool">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.triangulate.tool" title="Permalink to this headline">¶</a></h2>
+<p>Position Bundle under the Marker, in screen-space.</p>
+<dl class="function">
+<dt id="mmSolver.tools.triangulate.tool.main">
+<code class="descclassname">mmSolver.tools.triangulate.tool.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.triangulate.tool.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triangulate Bundle on current-frame</p>
+<p>Perform a reprojection of the selected bundle (or bundle connected
+to the selected marker), at the current frame.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select markers or connected bundles (or both).</li>
+<li>Run tool.</li>
+<li>Bundle is triangulated in TX, TY and TZ.</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If a Bundle has locked attributes, they will be unlocked and
+then relocked.</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.tools.triangulate.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.triangulate.lib" title="Permalink to this headline">¶</a></h2>
+<p>Position Bundle under the Marker, in screen-space.</p>
+<dl class="function">
+<dt id="mmSolver.tools.triangulate.lib.current_frame">
+<code class="descclassname">mmSolver.tools.triangulate.lib.</code><code class="descname">current_frame</code><span class="sig-paren">(</span><em>mkr_list</em>, <em>relock=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.triangulate.lib.current_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triangulate Marker&#8217;s Bundle on current-frame</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) &#8211; Markers to have Bundles triangulated.</li>
+<li><strong>relock</strong> (<em>bool</em>) &#8211; If True any bundle translate attributes will be
+unlocked, changed then relocked.  then relocked.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of Bundle</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Bundle" title="mmSolver.api.Bundle">Bundle</a>, .]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.triangulate</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.triangulate.tool">Tools</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.triangulate.lib">Library</a></li>
+<li><a class="reference internal" href="#constants">Constants</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.tools.cameraaim.html"
+                        title="previous chapter">mmSolver.tools.cameraaim</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.tools.raycastmarker.html"
+                        title="next chapter">mmSolver.tools.raycastmarker</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.triangulate.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.raycastmarker.html" title="mmSolver.tools.raycastmarker"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.cameraaim.html" title="mmSolver.tools.cameraaim"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.0rc documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, David Cattermole.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

@@ -16,6 +16,9 @@ mmSolver.tools
    mmSolver.tools.convertmarker
    mmSolver.tools.linkmarkerbundle
    mmSolver.tools.cameraaim
+   mmSolver.tools.triangulate
+   mmSolver.tools.raycastmarker
 
 ..   mmSolver.tools.surfacerivet
      mmSolver.tools.snaponcurve
+     mmSolver.tools.channelsensitivity

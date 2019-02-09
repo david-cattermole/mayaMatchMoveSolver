@@ -58,6 +58,54 @@
   <div class="section" id="module-mmSolver.tools.createmarker">
 <span id="mmsolver-tools-createmarker"></span><h1>mmSolver.tools.createmarker<a class="headerlink" href="#module-mmSolver.tools.createmarker" title="Permalink to this headline">¶</a></h1>
 <p>Create a marker on a camera, from scratch.</p>
+<div class="section" id="module-mmSolver.tools.createmarker.tool">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.createmarker.tool" title="Permalink to this headline">¶</a></h2>
+<p>The Create Marker tool.</p>
+<dl class="function">
+<dt id="mmSolver.tools.createmarker.tool.is_startup_cam">
+<code class="descclassname">mmSolver.tools.createmarker.tool.</code><code class="descname">is_startup_cam</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createmarker.tool.is_startup_cam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the given camera node is a &#8216;startupCamera&#8217;.</p>
+<p>A startup camera is a camera; &#8216;persp&#8217;, &#8216;side&#8217;, &#8216;top&#8217;, &#8216;front&#8217;, etc.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.createmarker.tool.is_not_startup_cam">
+<code class="descclassname">mmSolver.tools.createmarker.tool.</code><code class="descname">is_not_startup_cam</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createmarker.tool.is_not_startup_cam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the given camera node is NOT a &#8216;startupCamera&#8217;.</p>
+<p>A startup camera is a camera; &#8216;persp&#8217;, &#8216;side&#8217;, &#8216;top&#8217;, &#8216;front&#8217;, etc.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.createmarker.tool.create_marker">
+<code class="descclassname">mmSolver.tools.createmarker.tool.</code><code class="descname">create_marker</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createmarker.tool.create_marker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new marker under the current viewport camera, or under
+the selected camera, if a camera is selected.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="library">
+<h2>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-mmSolver.tools.createmarker.constant">
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.createmarker.constant" title="Permalink to this headline">¶</a></h2>
+<p>Contains constant values for the Create Marker tool.</p>
+</div>
 </div>
 
 
@@ -66,6 +114,16 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.createmarker</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.createmarker.tool">Tools</a></li>
+<li><a class="reference internal" href="#library">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.createmarker.constant">Constants</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="mmSolver.tools.createbundle.html"
                         title="previous chapter">mmSolver.tools.createbundle</a></p>

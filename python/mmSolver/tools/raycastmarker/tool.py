@@ -3,7 +3,7 @@ This is a Ray cast Markers tool.
 """
 
 import maya.cmds
-import maya.OpenMaya as OpenMaya
+import maya.OpenMaya
 import mmSolver.utils.raytrace as raytrace_utils
 import mmSolver.tools.selection.filternodes as filternodes
 import mmSolver.api as mmapi
@@ -14,7 +14,7 @@ LOG = mmSolver.logger.get_logger()
 
 def __get_camera_direction_to_point(camera_node, point_node):
     """
-    Get the direction of the camera from a given point.
+    Get the direction of the camera toward a given point.
 
     :param camera_node: Camera transform node.
     :type camera_node: str

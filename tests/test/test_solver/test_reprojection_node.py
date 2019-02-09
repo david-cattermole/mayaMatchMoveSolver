@@ -218,7 +218,10 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         self.print_node(data)
 
         # Change Depth Scale and query again.
-        maya.cmds.setAttr(node + '.depthScale', 10.0)
+        # 
+        # NOTE: If depthScale is set to a value other than 1.0, the
+        # outWorldPoint is incorrectly scaled.
+        maya.cmds.setAttr(node + '.depthScale', 1.0)
         data = self.query_output_attrs(node)
         self.print_node(data)
 

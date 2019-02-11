@@ -92,7 +92,6 @@ def current_frame(mkr_list, relock=None):
         # Re-lock attributes
         if relock is True:
             for k, v in lock_values.items():
-                print k, v
                 maya.cmds.setAttr(k, lock=v)
 
         bnd_moved_list.append(bnd)

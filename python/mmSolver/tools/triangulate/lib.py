@@ -30,6 +30,7 @@ def current_frame(mkr_list, relock=None):
         relock = True
     assert isinstance(relock, bool) is True
 
+    attrs = ['translateX', 'translateY', 'translateZ']
     bnd_moved_list = []
     for mkr in mkr_list:
         bnd = mkr.get_bundle()

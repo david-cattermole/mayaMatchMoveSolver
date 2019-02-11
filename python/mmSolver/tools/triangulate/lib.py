@@ -3,18 +3,17 @@ Position Bundle under the Marker, in screen-space.
 """
 
 import maya.cmds
-import maya.OpenMaya as OpenMaya
+import maya.OpenMaya
 
 import mmSolver.logger
-import mmSolver.api as mmapi
-
 
 LOG = mmSolver.logger.get_logger()
 
 
 def current_frame(mkr_list, relock=None):
     """
-    Triangulate Marker's Bundle on current-frame
+    Re-project Marker's Bundle underneath the Marker in screen-space,
+    on the current-frame.
 
     :param mkr_list: Markers to have Bundles triangulated.
     :type mkr_list: [Marker, ..]
@@ -30,6 +29,7 @@ def current_frame(mkr_list, relock=None):
         relock = True
     assert isinstance(relock, bool) is True
 
+    attrs = ['translateX', 'translateY', 'translateZ']
     bnd_moved_list = []
     for mkr in mkr_list:
         bnd = mkr.get_bundle()

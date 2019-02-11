@@ -177,12 +177,12 @@ def build_shelf():
     shelfutils.create_shelf_separator(parent=shelf)
 
     # Triangulate Bundle (current frame)
-    name = 'Frnt'
-    tooltip = 'Push in Front.'
+    name = 'RePrj'
+    tooltip = 'Reproject Bundle on top of Marker.'
     icon = None
     cmd = (
-        'import mmSolver.tools.triangulate.tool;'
-        'mmSolver.tools.triangulate.tool.main();'
+        'import mmSolver.tools.reprojectbundle.tool;'
+        'mmSolver.tools.reprojectbundle.tool.main();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,

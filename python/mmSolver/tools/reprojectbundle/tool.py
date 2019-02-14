@@ -7,7 +7,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.selection.filternodes as filternodes
-import mmSolver.tools.triangulate.lib as lib
+import mmSolver.tools.reprojectbundle.lib as lib
 
 
 LOG = mmSolver.logger.get_logger()

@@ -223,4 +223,22 @@ def build_shelf():
         icon=icon,
         cmd=cmd,
     )
+
+    shelfutils.create_shelf_separator(parent=shelf)
+
+    # Channel sensitivity UI
+    name = 'ChSen'
+    tooltip = 'Channel sensitivity UI.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.channelsen.tool;'
+        'mmSolver.tools.channelsen.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
     return

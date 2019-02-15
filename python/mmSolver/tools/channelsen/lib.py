@@ -24,7 +24,7 @@ def get_value():
     return current_value
 
 
-def set_value(sensitivity):
+def set_value(sensitivity=None):
     """
     Set channel sensitivity value
     :param sensitivity: A possible value to set channel sensitivity
@@ -36,22 +36,14 @@ def set_value(sensitivity):
     global_variable = __channelbox_global_variable()
     cmd = 'channelBoxSettings useManips 1;'
     maya.mel.eval(cmd)
-    maya.cmds.channelBox(global_variable,
-                         speed=current_value*sensitivity,
-                         edit=True)
-
-    return
-
-
-def set_default_value():
-    """
-    Set current channel sensitivity to default value
-    :return: None
-    """
-    global_variable = __channelbox_global_variable()
-    maya.cmds.channelBox(global_variable,
-                         speed=1.0,
-                         edit=True)
+    if sensitivity:
+        maya.cmds.channelBox(global_variable,
+                             speed=current_value*sensitivity,
+                             edit=True)
+    else:
+        maya.cmds.channelBox(global_variable,
+                             speed=1.0,
+                             edit=True)
     return
 
 

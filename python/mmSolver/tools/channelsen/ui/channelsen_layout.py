@@ -62,7 +62,7 @@ class ChannelSenLayout(QtWidgets.QWidget, ui_channelsen_layout.Ui_Form):
 
     def defaultValueClicked(self):
         # Make the channel box sensitivity default value.
-        lib.set_default_value()
+        lib.set_value()
         value = lib.get_value()
         # ... and update the UI.
         self.setSensitivityText(str(value))

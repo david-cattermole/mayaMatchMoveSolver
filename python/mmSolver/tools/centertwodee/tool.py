@@ -119,6 +119,17 @@ def __reset_pan_zoom(cam_tfm, cam_shp):
 def main():
     """
     Center the selected transform onto the camera view.
+
+    .. todo::
+
+        - Allow 2D Center on selected vertices.
+
+        - Support Stereo-camera setups (center both cameras, and ensure
+          both have the same zoom).
+
+        - Allow centering on multiple objects at once. We will center
+          on the middle of all transforms.
+
     """
     mmapi.load_plugin()
 
@@ -140,12 +151,28 @@ def main():
     nodes = maya.cmds.ls(
         selection=True,
         long=True,
-        type='transform'
+        type='transform',
     ) or []
 
+    # Filter out selected imagePlanes.
+    nodes_tmp = list(nodes)
+    nodes = []
+    for node in nodes_tmp:
+        shps = maya.cmds.listRelatives(
+            node,
+            shapes=True,
+            fullPath=True,
+            type='imagePlane') or []
+        if len(shps) == 0:
+            nodes.append(node)
+
     if len(nodes) == 0:
+        msg = 'No objects selected, removing 2D centering.'
+        LOG.warning(msg)
         __remove_reprojection(cam_tfm, cam_shp)
     elif len(nodes) == 1:
+        msg = 'Applying 2D centering to %r'
+        LOG.warning(msg, nodes)
         reproj_nodes = __find_reprojection_nodes(cam_tfm, cam_shp)
         if len(reproj_nodes) > 0:
             maya.cmds.delete(reproj_nodes)

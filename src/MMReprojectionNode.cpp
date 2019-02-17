@@ -120,11 +120,13 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         || (plug == a_outHorizontalPan)
         || (plug == a_outVerticalPan)) {
         // Get Data Handles
-        MDataHandle tfmMatrixHandle = data.inputValue(a_transformWorldMatrix, &status);
+        MDataHandle tfmMatrixHandle = data.inputValue(a_transformWorldMatrix,
+                                                      &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMatrix tfmMatrix = tfmMatrixHandle.asMatrix();
 
-        MDataHandle camMatrixHandle = data.inputValue(a_cameraWorldMatrix, &status);
+        MDataHandle camMatrixHandle = data.inputValue(a_cameraWorldMatrix,
+                                                      &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMatrix camMatrix = camMatrixHandle.asMatrix();
 
@@ -136,19 +138,23 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double focalLength = focalLengthHandle.asDouble();
 
-        MDataHandle horizontalFilmApertureHandle = data.inputValue(a_horizontalFilmAperture, &status);
+        MDataHandle horizontalFilmApertureHandle = data.inputValue(a_horizontalFilmAperture,
+                                                                   &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double horizontalFilmAperture = horizontalFilmApertureHandle.asDouble();
 
-        MDataHandle verticalFilmApertureHandle = data.inputValue(a_verticalFilmAperture, &status);
+        MDataHandle verticalFilmApertureHandle = data.inputValue(a_verticalFilmAperture,
+                                                                 &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double verticalFilmAperture = verticalFilmApertureHandle.asDouble();
 
-        MDataHandle horizontalFilmOffsetHandle = data.inputValue(a_horizontalFilmOffset, &status);
+        MDataHandle horizontalFilmOffsetHandle = data.inputValue(a_horizontalFilmOffset,
+                                                                 &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double horizontalFilmOffset = horizontalFilmOffsetHandle.asDouble();
 
-        MDataHandle verticalFilmOffsetHandle = data.inputValue(a_verticalFilmOffset, &status);
+        MDataHandle verticalFilmOffsetHandle = data.inputValue(a_verticalFilmOffset,
+                                                               &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double verticalFilmOffset = verticalFilmOffsetHandle.asDouble();
 
@@ -156,15 +162,17 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         short filmFit = filmFitHandle.asShort();
 
-        // MDataHandle nearClipPlaneHandle = data.inputValue(a_nearClipPlane, &status);
+        // MDataHandle nearClipPlaneHandle = data.inputValue(a_nearClipPlane,
+        //                                                   &status);
         // CHECK_MSTATUS_AND_RETURN_IT(status);
         // double nearClipPlane = nearClipPlaneHandle.asDouble();
 
         // TODO: near clip plane forced to 0.1, otherwise reprojection
         // does't work. Why? No idea.
-        double nearClipPlane_const = 0.1;  
+        double nearClipPlane_const = 0.1;
 
-        MDataHandle farClipPlaneHandle = data.inputValue(a_farClipPlane, &status);
+        MDataHandle farClipPlaneHandle = data.inputValue(a_farClipPlane,
+                                                         &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double farClipPlane = farClipPlaneHandle.asDouble();
 
@@ -180,15 +188,18 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double imageHeight = imageHeightHandle.asDouble();
 
-        MDataHandle overrideScreenXHandle = data.inputValue(a_overrideScreenX, &status);
+        MDataHandle overrideScreenXHandle = data.inputValue(a_overrideScreenX,
+                                                            &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         bool overrideScreenX = overrideScreenXHandle.asDouble();
 
-        MDataHandle overrideScreenYHandle = data.inputValue(a_overrideScreenY, &status);
+        MDataHandle overrideScreenYHandle = data.inputValue(a_overrideScreenY,
+                                                            &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         bool overrideScreenY = overrideScreenYHandle.asDouble();
 
-        MDataHandle overrideScreenZHandle = data.inputValue(a_overrideScreenZ, &status);
+        MDataHandle overrideScreenZHandle = data.inputValue(a_overrideScreenZ,
+                                                            &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         bool overrideScreenZ = overrideScreenZHandle.asDouble();
 
@@ -257,22 +268,31 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         tfmMatrix *= depthScale;
 
         // Get (screen-space) point
-        MPoint pos(tfmMatrix[3][0], tfmMatrix[3][1], tfmMatrix[3][2], tfmMatrix[3][3]);
+        MPoint pos(tfmMatrix[3][0],
+                   tfmMatrix[3][1],
+                   tfmMatrix[3][2],
+                   tfmMatrix[3][3]);
         pos.cartesianize();
         MPoint coord(pos.x,
                      pos.y,
-                     0.0, 1.0);
+                     0.0,
+                     1.0);
 
         // Is the point inside the frustum of the camera?
         bool insideFrustum = true;
-        if ((coord.x < -1.0) || (coord.x > 1.0) || (coord.y < -1.0) || (coord.y > 1.0))
-        {
+        if ((coord.x < -1.0)
+            || (coord.x > 1.0)
+            || (coord.y < -1.0)
+            || (coord.y > 1.0)) {
             insideFrustum = false;
         }
 
         // Convert back to world space
         MMatrix worldTfmMatrix = tfmMatrix * camWorldProjMatrix.inverse();
-        MPoint worldPos(worldTfmMatrix[3][0], worldTfmMatrix[3][1], worldTfmMatrix[3][2], 1.0);
+        MPoint worldPos(worldTfmMatrix[3][0],
+                        worldTfmMatrix[3][1],
+                        worldTfmMatrix[3][2],
+                        1.0);
 
         // Output Coordinates (-1.0 to 1.0; lower-left corner is -1.0, -1.0)
         MDataHandle outCoordXHandle = data.outputValue(a_outCoordX);
@@ -282,7 +302,8 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         outCoordXHandle.setClean();
         outCoordYHandle.setClean();
 
-        // Output Normalised Coordinates (0.0 to 1.0; lower-left corner is 0.0, 0.0)
+        // Output Normalised Coordinates (0.0 to 1.0; lower-left
+        // corner is 0.0, 0.0)
         MDataHandle outNormCoordXHandle = data.outputValue(a_outNormCoordX);
         MDataHandle outNormCoordYHandle = data.outputValue(a_outNormCoordY);
         outNormCoordXHandle.setDouble((coord.x + 1.0) * 0.5);
@@ -290,7 +311,8 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         outNormCoordXHandle.setClean();
         outNormCoordYHandle.setClean();
 
-        // Output Pixel Coordinates (0.0 to width; 0.0 to height; lower-left corner is 0.0, 0.0)
+        // Output Pixel Coordinates (0.0 to width; 0.0 to height;
+        // lower-left corner is 0.0, 0.0)
         MDataHandle outPixelXHandle = data.outputValue(a_outPixelX);
         MDataHandle outPixelYHandle = data.outputValue(a_outPixelY);
         outPixelXHandle.setDouble((coord.x + 1.0) * 0.5 * imageWidth);
@@ -298,7 +320,8 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         outPixelXHandle.setClean();
         outPixelYHandle.setClean();
 
-        // Output 'Inside Frustum'; is the input matrix inside the camera frustrum or not?
+        // Output 'Inside Frustum'; is the input matrix inside the
+        // camera frustrum or not?
         MDataHandle outInsideFrustumHandle = data.outputValue(a_outInsideFrustum);
         outInsideFrustumHandle.setBool(insideFrustum);
         outInsideFrustumHandle.setClean();
@@ -354,7 +377,8 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         outWorldCameraProjectionMatrixHandle.setClean();
 
         // Output World Inverse Camera Projection Matrix
-        MDataHandle outWorldInverseCameraProjectionMatrixHandle = data.outputValue(a_outWorldInverseCameraProjectionMatrix);
+        MDataHandle outWorldInverseCameraProjectionMatrixHandle = data.outputValue(
+                a_outWorldInverseCameraProjectionMatrix);
         outWorldInverseCameraProjectionMatrixHandle.setMMatrix(camWorldProjMatrix.inverse());
         outWorldInverseCameraProjectionMatrixHandle.setClean();
 
@@ -362,7 +386,7 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         MDataHandle outHorizontalPanHandle = data.outputValue(a_outHorizontalPan);
         MDataHandle outVerticalPanHandle = data.outputValue(a_outVerticalPan);
         outHorizontalPanHandle.setDouble(coord.x * 0.5 * horizontalFilmAperture);
-        outVerticalPanHandle.setDouble(coord.y  * 0.5 * verticalFilmAperture);
+        outVerticalPanHandle.setDouble(coord.y * 0.5 * verticalFilmAperture);
         outHorizontalPanHandle.setClean();
         outVerticalPanHandle.setClean();
 

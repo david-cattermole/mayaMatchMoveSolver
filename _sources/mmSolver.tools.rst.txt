@@ -18,7 +18,7 @@ mmSolver.tools
    mmSolver.tools.cameraaim
    mmSolver.tools.triangulate
    mmSolver.tools.raycastmarker
+   mmSolver.tools.channelsen
 
 ..   mmSolver.tools.surfacerivet
      mmSolver.tools.snaponcurve
-     mmSolver.tools.channelsensitivity

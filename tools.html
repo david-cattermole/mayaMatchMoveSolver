@@ -118,20 +118,21 @@ string shown.</p>
 <p>This is a filter of the attributes used in the solve step.</p>
 <p>You may type into this field either one of these options:</p>
 <ul class="simple">
-<li>“Animated Only” - Use only the animated attributes</li>
-<li>“Static + Animated” - Use the static and animated attributes</li>
+<li>&#8220;Animated Only&#8221; - Use only the animated attributes</li>
+<li>&#8220;Static + Animated&#8221; - Use the static and animated attributes</li>
 </ul>
 </div>
 <div class="section" id="strategy">
 <h4>Strategy<a class="headerlink" href="#strategy" title="Permalink to this headline">¶</a></h4>
 <p>This is the “solving strategy”; how the frames and attributes are
 ordered in the solving process.</p>
-<p>There are two currently supported strategies:</p>
+<p>There are three currently supported strategies:</p>
 <ul class="simple">
-<li>“Two Frames Fwd” - Each pair of sequential frames are solved
+<li>&#8220;Per-Frame&#8221; - Each frame is solved one-by-one.</li>
+<li>&#8220;Two Frames Fwd&#8221; - Each pair of sequential frames are solved
 together; frame 1 and 2, then 2 and 3, then 3 and 4, etc.</li>
-<li>“All Frames” - All numbers are solved together, at once (also called
-a “global solve”).</li>
+<li>&#8220;All Frames&#8221; - All frame numbers are solved together, at once (also
+called a “global solve”).</li>
 </ul>
 <p>If the “Animated Only” attribute filter is currently used, then the
 strategies above are unused and instead we loop over the frames
@@ -142,10 +143,15 @@ is the fastest method, but cannot solve Static attributes.</p>
 </div>
 <div class="section" id="create-marker">
 <h2>Create Marker<a class="headerlink" href="#create-marker" title="Permalink to this headline">¶</a></h2>
-<p>Create a default Marker node.</p>
+<p>Create a default Marker node under the active viewport&#8217;s camera.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Default Maya cameras (such as <code class="docutils literal"><span class="pre">persp</span></code>, <code class="docutils literal"><span class="pre">top</span></code>, <code class="docutils literal"><span class="pre">front</span></code>, etc)
+are not supported.</p>
+</div>
 <p>Run this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createmarker.tool</span> <span class="k">as</span> <span class="nn">createmarker_tool</span>
-<span class="n">createmarker_tool</span><span class="o">.</span><span class="n">create_marker</span><span class="p">()</span>
+<span class="n">createmarker_tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -157,7 +163,7 @@ viewed though the active viewport camera.</p>
 are parented under the active viewport camera.</p>
 <p>Run this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.convertmarker.tool</span> <span class="k">as</span> <span class="nn">convertmarker_tool</span>
-<span class="n">convertmarker_tool</span><span class="o">.</span><span class="n">convert_to_marker</span><span class="p">()</span>
+<span class="n">convertmarker_tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -197,7 +203,7 @@ adhering to the rule; <em>a bundle can only have one marker representation
 for each camera.</em></p>
 <p>Run this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createbundle.tool</span> <span class="k">as</span> <span class="nn">createbundle_tool</span>
-<span class="n">createbundle_tool</span><span class="o">.</span><span class="n">create_bundle</span><span class="p">()</span>
+<span class="n">createbundle_tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -248,7 +254,7 @@ selected transform node.</p>
 <p>A viewport camera can only center on one node at a time.</p>
 <p>Run this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.centertwodee.tool</span> <span class="k">as</span> <span class="nn">centertwodee_tool</span>
-<span class="n">centertwodee_tool</span><span class="o">.</span><span class="n">center_two_dee</span><span class="p">()</span>
+<span class="n">centertwodee_tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -257,12 +263,12 @@ selected transform node.</p>
 <p>Aim the selected transform nodes toward the active viewport camera.</p>
 <p>Run this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.cameraaim.tool</span> <span class="k">as</span> <span class="nn">cameraaim_tool</span>
-<span class="n">cameraaim_tool</span><span class="o">.</span><span class="n">aim_at_camera</span><span class="p">()</span>
+<span class="n">cameraaim_tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="channel-sensitivity">
-<h2>Channel sensitivity<a class="headerlink" href="#channel-sensitivity" title="Permalink to this headline">¶</a></h2>
+<h2>Channel Sensitivity<a class="headerlink" href="#channel-sensitivity" title="Permalink to this headline">¶</a></h2>
 <p>Channel sensitivity tool helps you to change the value of sensitivity
 of channel slider setting.</p>
 <p>Run this Python command:</p>
@@ -304,7 +310,7 @@ of channel slider setting.</p>
 <li><a class="reference internal" href="#select-marker-bundle">Select Marker + Bundle</a></li>
 <li><a class="reference internal" href="#center-2d-on-selection">Center 2D On Selection</a></li>
 <li><a class="reference internal" href="#aim-at-camera">Aim at Camera</a></li>
-<li><a class="reference internal" href="#channel-sensitivity">Channel sensitivity</a></li>
+<li><a class="reference internal" href="#channel-sensitivity">Channel Sensitivity</a></li>
 </ul>
 </li>
 </ul>

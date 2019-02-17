@@ -75,5 +75,6 @@ class ChannelSenLayout(QtWidgets.QWidget, ui_channelsen_layout.Ui_Form):
         text = str(value)
         if isinstance(value, (float, int)):
             text = '{0:= .3g}'.format(value)
+        text = 'Value: ' + text
         self.sensitivity_label.setText(text)
         return

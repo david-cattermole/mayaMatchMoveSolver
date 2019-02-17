@@ -94,6 +94,7 @@ if __name__ == '__main__':
     # All compiled .py files are placed in the same directory as the
     # .ui file.
     paths = [
+        './python/mmSolver/tools/channelsen/ui',
         './python/mmSolver/tools/loadmarker/ui',
         './python/mmSolver/tools/solver/ui',
         './python/mmSolver/ui',

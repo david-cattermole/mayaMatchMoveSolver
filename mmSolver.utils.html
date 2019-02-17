@@ -53,6 +53,113 @@
   <div class="section" id="mmsolver-utils">
 <h1>mmSolver.utils<a class="headerlink" href="#mmsolver-utils" title="Permalink to this headline">¶</a></h1>
 <p>The <code class="docutils literal"><span class="pre">utils</span></code> sub-package.</p>
+<div class="section" id="module-mmSolver.utils.node">
+<span id="node"></span><h2>Node<a class="headerlink" href="#module-mmSolver.utils.node" title="Permalink to this headline">¶</a></h2>
+<p>Utilities built around Maya nodes and node paths.</p>
+<dl class="function">
+<dt id="mmSolver.utils.node.get_node_full_path">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_node_full_path</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_node_full_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.node_is_referenced">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">node_is_referenced</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.node_is_referenced" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the node given referenced (from a referenced file)?</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> &#8211; Node to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True or False, is it referenced?</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.set_attr">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">set_attr</code><span class="sig-paren">(</span><em>plug</em>, <em>value</em>, <em>relock=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.set_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a numeric attribute to a value.</p>
+<p>Optionally unlocks and re-locks the plugs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>plug</strong> &#8211; Node.Attr to set.</li>
+<li><strong>value</strong> &#8211; The ne value to set.</li>
+<li><strong>relock</strong> &#8211; If the plug was already locked, should we set the new
+value, then re-lock afterward?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.utils.camera">
+<span id="camera"></span><h2>Camera<a class="headerlink" href="#module-mmSolver.utils.camera" title="Permalink to this headline">¶</a></h2>
+<p>Camera related functions.</p>
+<dl class="function">
+<dt id="mmSolver.utils.camera.get_camera">
+<code class="descclassname">mmSolver.utils.camera.</code><code class="descname">get_camera</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.get_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get both transform and shape node of a camera.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> &#8211; Part of the camera node, must be either a transform or</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.utils.viewport">
+<span id="viewport"></span><h2>Viewport<a class="headerlink" href="#module-mmSolver.utils.viewport" title="Permalink to this headline">¶</a></h2>
+<p>Utilities for setting and querying viewport related information.</p>
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_active_model_editor">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_active_model_editor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_active_model_editor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the active model editor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_viewport_camera">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_viewport_camera</code><span class="sig-paren">(</span><em>model_editor</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_viewport_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the camera from the model editor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>model_editor</strong> (<em>str</em>) &#8211; The viewport model editor to get the camera from.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Camera transform and camera shape nodes.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(str, str) or (None, None)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 <div class="section" id="module-mmSolver.utils.smooth">
 <span id="smooth"></span><h2>Smooth<a class="headerlink" href="#module-mmSolver.utils.smooth" title="Permalink to this headline">¶</a></h2>
 <p>Generic data smoothing.</p>
@@ -222,6 +329,40 @@ given, or None if no point was found.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-mmSolver.utils.constant">
+<span id="constant"></span><h2>Constant<a class="headerlink" href="#module-mmSolver.utils.constant" title="Permalink to this headline">¶</a></h2>
+<p>Constant values for utilities.</p>
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.SMOOTH_TYPE_AVERAGE">
+<code class="descclassname">constant.</code><code class="descname">SMOOTH_TYPE_AVERAGE</code><em class="property"> = 'average'</em><a class="headerlink" href="#mmSolver.utils.constant.SMOOTH_TYPE_AVERAGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.SMOOTH_TYPE_GAUSSIAN">
+<code class="descclassname">constant.</code><code class="descname">SMOOTH_TYPE_GAUSSIAN</code><em class="property"> = 'gaussian'</em><a class="headerlink" href="#mmSolver.utils.constant.SMOOTH_TYPE_GAUSSIAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.SMOOTH_TYPE_FOURIER">
+<code class="descclassname">constant.</code><code class="descname">SMOOTH_TYPE_FOURIER</code><em class="property"> = 'fourier'</em><a class="headerlink" href="#mmSolver.utils.constant.SMOOTH_TYPE_FOURIER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.SMOOTH_TYPES">
+<code class="descclassname">constant.</code><code class="descname">SMOOTH_TYPES</code><em class="property"> = ['average', 'gaussian', 'fourier']</em><a class="headerlink" href="#mmSolver.utils.constant.SMOOTH_TYPES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.RAYTRACE_MAX_DIST">
+<code class="descclassname">constant.</code><code class="descname">RAYTRACE_MAX_DIST</code><em class="property"> = 9999999999.0</em><a class="headerlink" href="#mmSolver.utils.constant.RAYTRACE_MAX_DIST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.RAYTRACE_EPSILON">
+<code class="descclassname">constant.</code><code class="descname">RAYTRACE_EPSILON</code><em class="property"> = 0.0001</em><a class="headerlink" href="#mmSolver.utils.constant.RAYTRACE_EPSILON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 </div>
 
 
@@ -233,8 +374,12 @@ given, or None if no point was found.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.utils</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.utils.node">Node</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.camera">Camera</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.viewport">Viewport</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.smooth">Smooth</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.raytrace">Raytrace</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.constant">Constant</a></li>
 </ul>
 </li>
 </ul>

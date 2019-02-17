@@ -11,6 +11,23 @@ import Qt.QtWidgets as QtWidgets
 
 
 def getHostApplication():
+    """
+    Get the name of the application we are currently running inside of.
+
+    Supported hosts to check for are::
+
+        - 'standalone' (outside any host application)
+
+        - 'maya' (Autodesk Maya)
+
+        - 'nuke' (The Foundry Nuke)
+
+        - 'houdini' (SideFX Houdini)
+
+    :return: The application name, or None if the application could not
+             be recognised.
+    :rtype: str or None
+    """
     result = None
     appName = QtWidgets.QApplication.applicationName()
     if appName is None or len(appName) == 0:
@@ -28,19 +45,36 @@ def getHostApplication():
 
 
 def getMayaMainWindow():
+    """
+    Get the Maya application QWidget window.
+
+    .. note::
+
+        For Maya only.
+
+    :return: The Maya main window, as a Qt Widget object.
+    :rtype: QWidget
+    """
     try:
         from shiboken2 import wrapInstance
     except ImportError:
         from shiboken import wrapInstance
     from maya import OpenMayaUI as omui
-    windowPtr = omui.MQtUtil.mainWindow()
-    window = wrapInstance(long(windowPtr), QtWidgets.QWidget)
+    window_ptr = omui.MQtUtil.mainWindow()
+    window = wrapInstance(long(window_ptr), QtWidgets.QWidget)
     return window
 
 
 def isValidQtObject(obj):
     """
-    Does a Python object contain a valid Qt reference pointer?
+    Does the Python object given contain a valid Qt reference pointer?
+
+    Only supports host 'maya'.
+
+    :param obj: Qt class object.
+
+    :returns: Is the given object valid in C++?
+    :rtype: bool
     """
     v = None
     host = getHostApplication()
@@ -59,6 +93,13 @@ def isValidQtObject(obj):
 
 
 def getParent():
+    """
+    Get the parent Qt QApplication object.
+
+    Only supports hosts 'standalone' and 'maya'.
+
+    :return: Qt object for the top level parent object.
+    """
     host = getHostApplication()
 
     # try running outside of maya
@@ -76,6 +117,17 @@ def getParent():
 
 
 def getBaseWindow():
+    """
+    Get pre-defined preset "Base Window" for the currently running host.
+
+    This function allows dynamic look-up of the intended window for all
+    custom UIs to be built around.
+
+    Only supports hosts 'standalone' and 'maya'.
+
+    :return: The module and class to be used.
+    :rtype: (module, class)
+    """
     BaseWindow = None
     baseModule = None
     host = getHostApplication()
@@ -91,6 +143,17 @@ def getBaseWindow():
 
 
 def getFont(name=None):
+    """
+    Create a Qt font, using a name containing hints/keywords.
+
+    :param name: Font name to create. Can contain multiple sub-strings.
+                 Supported sub-strings are 'normal', 'small',
+                 'mediumlarge', 'large', 'monospace', 'bold', 'italic'.
+    :type name: str
+
+    :return: Qt QFont object, with names used to set the font.
+    :rtype: QFont
+    """
     font = QtGui.QFont()
     name = name.lower()
     if 'normal' in name:
@@ -117,18 +180,40 @@ def getFont(name=None):
 
 
 def getIcon(path):
+    """
+    Creates an Qt Icon from a resource path.
+
+    :param path: Resource file path.
+    :type path: str
+
+    :return: Qt Icon object.
+    :rtype: QIcon
+    """
     assert isinstance(path, str)
     icon = QtGui.QIcon(QtGui.QPixmap(path))
     return icon
 
 
-def setWindowWidthHeight(ui, widthHeight):
+def setWindowWidthHeight(ui, width_height):
+    """
+    Set a window's width and height.
+
+    :param ui: Qt Window UI to set.
+    :type ui: QWidget
+
+    :param width_height: Width and height to set.
+    :type width_height: (int, int)
+    """
     pos = ui.pos()
-    ui.setGeometry(pos.x(), pos.y(), widthHeight[0], widthHeight[1])
-    return None
+    ui.setGeometry(pos.x(), pos.y(), width_height[0], width_height[1])
+    return
 
 
 class QtInfoMixin(object):
+    """
+    Mix-in class to provide simple functions for checking Qt versions.
+    """
+
     def __init__(self):
         super(QtInfoMixin, self).__init__()
         self.qtInitVersion()

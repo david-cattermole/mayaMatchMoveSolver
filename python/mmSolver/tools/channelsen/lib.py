@@ -1,5 +1,5 @@
 """
-The Channel Sensitivitiy tool - user facing.
+The Channel Sensitivity tool - user facing.
 """
 
 import maya.cmds

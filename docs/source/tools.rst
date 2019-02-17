@@ -273,7 +273,7 @@ Run this Python command:
    import mmSolver.tools.cameraaim.tool as cameraaim_tool
    cameraaim_tool.main()
 
-Channel sensitivity
+Channel Sensitivity
 -------------------
 
 Channel sensitivity tool helps you to change the value of sensitivity
@@ -283,6 +283,6 @@ Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.channelsen.tool as tool
-   tool.main()
+    import mmSolver.tools.channelsen.tool as tool
+    tool.main()
 

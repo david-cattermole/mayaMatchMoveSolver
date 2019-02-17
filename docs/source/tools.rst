@@ -277,6 +277,6 @@ Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.channelsensitivity.tool as tool
+   import mmSolver.tools.channelsen.tool as tool
    tool.main()
 

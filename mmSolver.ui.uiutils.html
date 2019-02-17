@@ -61,48 +61,164 @@
 <dl class="function">
 <dt id="mmSolver.ui.uiutils.getHostApplication">
 <code class="descclassname">mmSolver.ui.uiutils.</code><code class="descname">getHostApplication</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getHostApplication" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the name of the application we are currently running inside of.</p>
+<p>Supported hosts to check for are:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="s1">&#39;standalone&#39;</span> <span class="p">(</span><span class="n">outside</span> <span class="nb">any</span> <span class="n">host</span> <span class="n">application</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="s1">&#39;maya&#39;</span> <span class="p">(</span><span class="n">Autodesk</span> <span class="n">Maya</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="s1">&#39;nuke&#39;</span> <span class="p">(</span><span class="n">The</span> <span class="n">Foundry</span> <span class="n">Nuke</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="s1">&#39;houdini&#39;</span> <span class="p">(</span><span class="n">SideFX</span> <span class="n">Houdini</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The application name, or None if the application could not
+be recognised.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.ui.uiutils.getMayaMainWindow">
 <code class="descclassname">mmSolver.ui.uiutils.</code><code class="descname">getMayaMainWindow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getMayaMainWindow" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the Maya application QWidget window.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For Maya only.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The Maya main window, as a Qt Widget object.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">QWidget</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.ui.uiutils.isValidQtObject">
 <code class="descclassname">mmSolver.ui.uiutils.</code><code class="descname">isValidQtObject</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.isValidQtObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Does a Python object contain a valid Qt reference pointer?</p>
+<dd><p>Does the Python object given contain a valid Qt reference pointer?</p>
+<p>Only supports host &#8216;maya&#8217;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>obj</strong> &#8211; Qt class object.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Is the given object valid in C++?</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.ui.uiutils.getParent">
 <code class="descclassname">mmSolver.ui.uiutils.</code><code class="descname">getParent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getParent" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the parent Qt QApplication object.</p>
+<p>Only supports hosts &#8216;standalone&#8217; and &#8216;maya&#8217;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Qt object for the top level parent object.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.ui.uiutils.getBaseWindow">
 <code class="descclassname">mmSolver.ui.uiutils.</code><code class="descname">getBaseWindow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getBaseWindow" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get pre-defined preset &#8220;Base Window&#8221; for the currently running host.</p>
+<p>This function allows dynamic look-up of the intended window for all
+custom UIs to be built around.</p>
+<p>Only supports hosts &#8216;standalone&#8217; and &#8216;maya&#8217;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The module and class to be used.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(module, class)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.ui.uiutils.getFont">
 <code class="descclassname">mmSolver.ui.uiutils.</code><code class="descname">getFont</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getFont" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Create a Qt font, using a name containing hints/keywords.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) &#8211; Font name to create. Can contain multiple sub-strings.
+Supported sub-strings are &#8216;normal&#8217;, &#8216;small&#8217;,
+&#8216;mediumlarge&#8217;, &#8216;large&#8217;, &#8216;monospace&#8217;, &#8216;bold&#8217;, &#8216;italic&#8217;.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Qt QFont object, with names used to set the font.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">QFont</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.ui.uiutils.getIcon">
 <code class="descclassname">mmSolver.ui.uiutils.</code><code class="descname">getIcon</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getIcon" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Creates an Qt Icon from a resource path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) &#8211; Resource file path.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Qt Icon object.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">QIcon</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.ui.uiutils.setWindowWidthHeight">
-<code class="descclassname">mmSolver.ui.uiutils.</code><code class="descname">setWindowWidthHeight</code><span class="sig-paren">(</span><em>ui</em>, <em>widthHeight</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.setWindowWidthHeight" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descclassname">mmSolver.ui.uiutils.</code><code class="descname">setWindowWidthHeight</code><span class="sig-paren">(</span><em>ui</em>, <em>width_height</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.setWindowWidthHeight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a window&#8217;s width and height.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ui</strong> (<em>QWidget</em>) &#8211; Qt Window UI to set.</li>
+<li><strong>width_height</strong> (<em>(</em><em>int</em><em>, </em><em>int</em><em>)</em>) &#8211; Width and height to set.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="class">
 <dt id="mmSolver.ui.uiutils.QtInfoMixin">
 <em class="property">class </em><code class="descclassname">mmSolver.ui.uiutils.</code><code class="descname">QtInfoMixin</code><a class="headerlink" href="#mmSolver.ui.uiutils.QtInfoMixin" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Mix-in class to provide simple functions for checking Qt versions.</p>
+<dl class="method">
 <dt id="mmSolver.ui.uiutils.QtInfoMixin.qtInitVersion">
 <code class="descname">qtInitVersion</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.QtInfoMixin.qtInitVersion" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>

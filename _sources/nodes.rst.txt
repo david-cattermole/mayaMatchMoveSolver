@@ -32,6 +32,7 @@ for a transform.
   horizontalFilmOffset     Width of offset (inches)           Yes     No
   verticalFilmOffset       Heigth of offset (inches)          Yes     No
   depth                    Depth of the scale plane           Yes     No
+  overscan                 Overscan factor of the plane       Yes     No
   outTranslate             Translate parent attribute         No      Yes
   outTranslateX            Translate X in camera-space        No      Yes
   outTranslateY            Translate Y in camera-space        No      Yes

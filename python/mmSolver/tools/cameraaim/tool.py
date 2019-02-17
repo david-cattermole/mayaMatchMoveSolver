@@ -42,11 +42,6 @@ def __get_camera():
     return cam
 
 
-def aim_at_camera():
-    warnings.warn("Use 'main' function instead.")
-    main()
-
-
 def main():
     """
     Aims the selected transforms at the active viewport's camera
@@ -64,3 +59,8 @@ def main():
 
     lib.aim_at_target(sel, cam, remove_after=True)
     return
+
+
+def aim_at_camera():
+    warnings.warn("Use 'main' function instead.")
+    main()

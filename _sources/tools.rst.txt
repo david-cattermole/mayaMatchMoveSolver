@@ -266,3 +266,17 @@ Run this Python command:
 
    import mmSolver.tools.cameraaim.tool as cameraaim_tool
    cameraaim_tool.aim_at_camera()
+
+Channel sensitivity
+-------------------
+
+Channel sensitivity tool helps you to change the value of sensitivity
+of channel slider setting.
+
+Run this Python command:
+
+.. code:: python
+
+   import mmSolver.tools.channelsen.tool as tool
+   tool.main()
+

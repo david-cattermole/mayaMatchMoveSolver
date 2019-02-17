@@ -48,7 +48,7 @@ def build_shelf():
     icon = 'createMarker_32x32.png'
     cmd = (
         'import mmSolver.tools.createmarker.tool;'
-        'mmSolver.tools.createmarker.tool.create_marker();'
+        'mmSolver.tools.createmarker.tool.main();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,
@@ -80,7 +80,7 @@ def build_shelf():
     icon = 'createBundle_32x32.png'
     cmd = (
         'import mmSolver.tools.createbundle.tool;'
-        'mmSolver.tools.createbundle.tool.create_bundle();'
+        'mmSolver.tools.createbundle.tool.main();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,
@@ -132,7 +132,7 @@ def build_shelf():
     icon = None
     cmd = (
         'import mmSolver.tools.centertwodee.tool;'
-        'mmSolver.tools.centertwodee.tool.center_two_dee();'
+        'mmSolver.tools.centertwodee.tool.main();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,

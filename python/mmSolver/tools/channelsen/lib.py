@@ -3,8 +3,8 @@ The Channel Sensitivitiy tool - user facing.
 """
 
 import maya.cmds
-import mmSolver.logger
 import maya.mel
+import mmSolver.logger
 
 
 LOG = mmSolver.logger.get_logger()
@@ -17,33 +17,28 @@ def get_value():
     :return: Current channel sensitivity value
     :rtype: float
     """
-    global_variable = __channelbox_global_variable()
-    current_value = maya.cmds.channelBox(global_variable,
-                                         speed=True,
-                                         query=True)
-    return current_value
+    channel_box = __channelbox_global_variable()
+    value = maya.cmds.channelBox(channel_box,
+                                 query=True,
+                                 speed=True)
+    return value
 
 
-def set_value(sensitivity=None):
+def set_value(value):
     """
-    Set channel sensitivity value
-    :param sensitivity: A possible value to set channel sensitivity
-    value
-    :type: str or float or int
+    Set channel sensitivity value.
+
+    :param value: A possible value to set channel sensitivity
+                  value
     :return: None
     """
-    current_value = get_value()
-    global_variable = __channelbox_global_variable()
+    channel_box = __channelbox_global_variable()
     cmd = 'channelBoxSettings useManips 1;'
     maya.mel.eval(cmd)
-    if sensitivity:
-        maya.cmds.channelBox(global_variable,
-                             speed=current_value*sensitivity,
-                             edit=True)
-    else:
-        maya.cmds.channelBox(global_variable,
-                             speed=1.0,
-                             edit=True)
+
+    maya.cmds.channelBox(channel_box,
+                         edit=True,
+                         speed=value)
     return
 
 

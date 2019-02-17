@@ -4,11 +4,8 @@ window.
 """
 
 import Qt.QtWidgets as QtWidgets
-
-
 import mmSolver.logger
-import mmSolver.tools.channelsen.ui.ui_channelsen_layout\
-    as ui_channelsen_layout
+import mmSolver.tools.channelsen.ui.ui_channelsen_layout as ui_channelsen_layout
 import mmSolver.tools.channelsen.lib as lib
 
 
@@ -46,28 +43,29 @@ class ChannelSenLayout(QtWidgets.QWidget, ui_channelsen_layout.Ui_Form):
 
     def upValueClicked(self):
         # Make increase the channel box sensitivity
-        sensitivity = 10
-        lib.set_value(sensitivity)
         value = lib.get_value()
+        value *= 10
+        lib.set_value(value)
         # ... and update the UI.
         self.setSensitivityText(str(value))
 
     def downValueClicked(self):
         # Make decrease the channel box sensitivity
-        sensitivity = 0.1
-        lib.set_value(sensitivity)
         value = lib.get_value()
+        value *= 0.1
+        lib.set_value(value)
         # ... and update the UI.
         self.setSensitivityText(str(value))
 
     def defaultValueClicked(self):
         # Make the channel box sensitivity default value.
-        lib.set_value()
-        value = lib.get_value()
+        value = 1.0
+        lib.set_value(value)
         # ... and update the UI.
         self.setSensitivityText(str(value))
-    
+
     def setSensitivityText(self, value):
         # Set the 'self.sensitivity_label' using the sensitivity value.
-        self.sensitivity_label.setText(value)
+        text = '%s' % value
+        self.sensitivity_label.setText(text)
         return

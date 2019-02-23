@@ -177,12 +177,12 @@ def build_shelf():
     shelfutils.create_shelf_separator(parent=shelf)
 
     # Triangulate Bundle (current frame)
-    name = 'RePrj'
-    tooltip = 'Reproject Bundle on top of Marker.'
+    name = 'Frnt'
+    tooltip = 'Push in Front.'
     icon = None
     cmd = (
-        'import mmSolver.tools.reprojectbundle.tool;'
-        'mmSolver.tools.reprojectbundle.tool.main();'
+        'import mmSolver.tools.triangulate.tool;'
+        'mmSolver.tools.triangulate.tool.main();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,
@@ -226,7 +226,7 @@ def build_shelf():
 
     shelfutils.create_shelf_separator(parent=shelf)
 
-    # Channel sensitivity UI
+    # Triangulate Bundle (current frame)
     name = 'ChSen'
     tooltip = 'Channel sensitivity UI.'
     icon = None
@@ -241,4 +241,20 @@ def build_shelf():
         icon=icon,
         cmd=cmd,
     )
+
+    name = 'TglBnd'
+    tooltip = 'Toggles bundle lock .'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.togglebundlelock.tool as tglbndlock;'
+        'tglbndlock.toggle_bundle_lock();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
     return

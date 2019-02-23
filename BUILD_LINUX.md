@@ -102,6 +102,12 @@ You can read any of the build scripts to find out how they work.
 The build scripts can be found in `<project root>/build_with_*.sh`
 and `<project root>/external/*.sh`.
 
+If you are new to building Maya plug-ins using CMake, we recommend 
+watching these videos by Chad Vernon:
+
+* [Compiling Maya Plug-ins with CMake (Part 1)](https://www.youtube.com/watch?v=2mUOt_F2ywo)
+* [Compiling Maya Plug-ins with CMake (Part 2)](https://www.youtube.com/watch?v=C56N5KgDaTg)
+
 # Building Packages
 
 For developers wanting to produce a pre-compiled archive "package",

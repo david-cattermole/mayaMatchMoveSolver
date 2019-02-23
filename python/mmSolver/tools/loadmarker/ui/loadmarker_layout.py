@@ -30,7 +30,9 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.camera_comboBox.setModel(self.camera_model)
 
         # Camera update.
-        self.cameraUpdate_pushButton.clicked.connect(self.cameraUpdateClicked)
+        self.cameraUpdate_pushButton.clicked.connect(
+            self.cameraUpdateClicked
+        )
 
         # Set default image resolution values
         w, h = lib.get_default_image_resolution()
@@ -42,19 +44,31 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.imageResHeight_spinBox.setMaximum(99999)
 
         # File path browse.
-        self.filepath_pushButton.clicked.connect(self.filePathBrowseClicked)
+        self.filepath_pushButton.clicked.connect(
+            self.filePathBrowseClicked
+        )
 
         # Get the file path from the clipboard.
-        clippy = QtGui.QClipboard()
-        text = str(clippy.text()).strip()
-        if lib.is_valid_file_path(text):
-            self.setFilePath(text)
+        try:
+            clippy = QtGui.QClipboard()
+            text = str(clippy.text()).strip()
+            if lib.is_valid_file_path(text):
+                self.setFilePath(text)
+        except Exception as e:
+            msg = 'Could not get file path from clipboard.'
+            LOG.warning(msg)
+            LOG.info(str(e))
 
-        # Update the 'Image Resolution' enable state when the file patch changes.
-        self.filepath_lineEdit.editingFinished.connect(self.updateImageResEnabledState)
+        # Update the 'Image Resolution' enable state when the file
+        # patch changes.
+        self.filepath_lineEdit.editingFinished.connect(
+            self.updateImageResEnabledState
+        )
 
         # Update the 'File Info' when the file patch changes
-        self.filepath_lineEdit.editingFinished.connect(self.updateFileInfoText)
+        self.filepath_lineEdit.editingFinished.connect(
+            self.updateFileInfoText
+        )
 
         # Populate the UI with data
         self.populateUi()

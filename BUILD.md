@@ -111,7 +111,7 @@ On Linux:
 $ cd <project root>
 
 # Build Qt .ui files
-$ mayapy compileUI.py
+$ /usr/autodesk/mayaVERSION/bin/mayapy compileUI.py
 
 # Build Documentation (with Python and Sphinx)
 $ cd docs
@@ -129,7 +129,7 @@ $ vi build_with_levmar.sh
 $ build_with_levmar.sh
 
 # Run tests (with 'mayapy')
-$ sh runTests.sh
+$ /usr/autodesk/mayaVERSION/bin/mayapy tests/runTests.py
 
 # Install 3DE scripts (or install via ScriptDB)
 $ cp ./3dequalizer/scriptdb/* ~/.3dequalizer/py_scripts
@@ -140,7 +140,7 @@ On Windows:
 > CD <project root>
 
 :: Compile Qt .ui files
-> "C:\Program Files\Autodesk\Maya2017\bin\mayapy.exe" compileUI.py
+> "C:\Program Files\Autodesk\MayaVERSION\bin\mayapy.exe" compileUI.py
 
 :: Build Documentation (with Python and Sphinx)
 > CD docs
@@ -159,13 +159,11 @@ On Windows:
 > CMD /C build_with_levmar.bat
 
 :: Run tests (with 'mayapy')
-:: Edit path to mayapy if needed (in your prefered text editor)
 ::
 :: Note 'cmd.exe' is very slow printing text to the console, therefore
 :: redirecting to a log file ('> file.log' below) will improve performance
 :: of the test suite greatly.
-> notepad runTests.bat
-> CMD /C runTests.bat > tests.log
+> "C:\Program Files\Autodesk\MayaVERSION\bin\mayapy" tests\runTests.py > tests.log
 
 :: Install 3DE scripts (or install via ScriptDB)
 > XCOPY 3dequalizer\scriptdb\* "%AppData%\.3dequalizer\py_scripts" /Y
@@ -253,36 +251,6 @@ please see
 or
 [BUILD_WINDOWS.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD_WINDOWS.md).
 
-# Install ATLAS / Intel MKL libraries
-
-If you have chosen to compile `mmSolver` with ATLAS or Intel MKL support,
-you must make sure Maya can access those third-party libraries, if you
-have not, you can skip this section. Below I'll add these into
-`~/maya/<maya version>/lib`, however you may do so however you wish.
-
-NOTE: Currently using ATLAS or Intel MKL is untested under Microsoft Windows, and
-instructions are therefore not given.
-
-On Linux:
-```commandline
-$ cd <project root>
-$ mkdir ~/maya/<maya version>/lib
-$ cp -R external/lib/* ~/maya/<maya version>/lib
-```
-
-You will need to add `~/maya/<maya version>/lib` onto your
-`LD_LIBRARY_PATH` environment variable. For example if you use the
-'bash' shell, you add this command into your `~/.bashrc` file.
-
-```bash
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:~/maya/<maya version>/lib
-```
-Be careful editing ``LD_LIBRARY_PATH``! This environment variable is
-important and affects how all software in the shell will find
-libraries. Setting this incorrectly can cause problems of Maya not
-loading correctly or random crashes if libraries conflict with
-internal Maya libraries.
-
 # Run Test Suite
 
 After all parts of the `mmSolver` are installed and can be found by
@@ -292,17 +260,21 @@ expected.
 On Linux run:
 ```commandline
 $ cd <project root>
-$ sh runTests.sh
+$ /usr/autodesk/mayaVERSION/bin/mayapy tests/runTests.py
 ```
 
 On Windows run:
 ```cmd
 > CD <project root>
-> CMD /C runTests.bat
+> "C:\Program Files\Autodesk\MayaVERSION\bin\mayapy" tests\runTests.py > tests.log
 ```
 
-This will find and use the currently available 'mayapy' executable,
-please make sure 'mayapy' is on your ``PATH`` environment variable.
+Make sure you use the same Maya version 'mayapy' for testing as you
+have build for.
+
+On Windows, 'cmd.exe' is very slow printing text to the console,
+therefore redirecting to a log file ('> file.log' below) will improve
+performance of the test suite greatly.
 
 For more information about testing, see the Testing section in
 [DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).

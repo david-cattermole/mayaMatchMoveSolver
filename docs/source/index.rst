@@ -32,7 +32,8 @@ Scripting
    mmSolver.tools
    mmSolver.api
    mmSolver.logger
-   mmSolver.ui              
+   mmSolver.ui
+   mmSolver.utils
 
 
 Indices and tables

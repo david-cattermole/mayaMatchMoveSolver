@@ -58,10 +58,12 @@ MStatus getCameraPlaneScale(
 
 inline
 MStatus computeFrustumCoordinates(
-        const double focalLength, // millimetres
-        const double filmBackWidth, const double filmBackHeight,  // inches
-        const double filmOffsetX, const double filmOffsetY,  // inches
-        const double nearClipPlane, // centimetres
+        const double focalLength,     // millimetres
+        const double filmBackWidth,   // inches
+        const double filmBackHeight,  // inches
+        const double filmOffsetX,     // inches
+        const double filmOffsetY,     // inches
+        const double nearClipPlane,   // centimetres
         const double cameraScale,
         double &left, double &right,
         double &top, double &bottom) {
@@ -229,10 +231,13 @@ MStatus computeProjectionMatrix(
 
 inline
 MStatus getProjectionMatrix(
-        const double focalLength, // millimetres
-        const double filmBackWidth, const double filmBackHeight,  // inches
-        const double filmOffsetX, const double filmOffsetY,  // inches
-        const int imageWidth, const int imageHeight,  // pixels
+        const double focalLength,     // millimetres
+        const double filmBackWidth,   // inches
+        const double filmBackHeight,  // inches
+        const double filmOffsetX,     // inches
+        const double filmOffsetY,     // inches
+        const double imageWidth,      // pixels
+        const double imageHeight,     // pixels
         const int filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
         const double nearClipPlane,
         const double farClipPlane,

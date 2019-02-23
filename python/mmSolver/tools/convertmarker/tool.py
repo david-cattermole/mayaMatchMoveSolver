@@ -2,8 +2,11 @@
 The Convert to Marker tool.
 """
 
+import warnings
+
 import maya.cmds
 import maya.mel
+
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
@@ -137,7 +140,7 @@ def __get_timeline_range_inner():
     return int(s), int(e)
 
 
-def convert_to_marker():
+def main():
     """
     Center the selected transform onto the camera view.
     """
@@ -185,3 +188,8 @@ def convert_to_marker():
     finally:
         maya.mel.eval('paneLayout -e -manage true $gMainPane')  # turn on Maya UI
     return
+
+
+def convert_to_marker():
+    warnings.warn("Use 'main' function instead.")
+    main()

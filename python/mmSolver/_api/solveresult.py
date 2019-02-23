@@ -1,7 +1,10 @@
 """
 The information returned from a solve.
 
-TODO: Make a function to combine a list of SolveResults into a single SolveResult, with some values averaged or added (as required)
+.. todo:: 
+    Make a function to combine a list of SolveResults into a single
+    SolveResult, with some values averaged or added (as required)
+
 """
 
 import collections
@@ -175,12 +178,20 @@ class SolveResult(object):
 def combine_timer_stats(solres_list):
     """
     Combine Timer statistics into one set.
+
+    :param solres_list: List of SolveResult to combine together.
+    :type solres_list: [SolveResult, ..]
+
+    :returns: A map of time statistics, accumulated over all runs
+              of the Solver.
+    :rtype: dict
     """
+    assert isinstance(solres_list, (list, tuple))
     stats_list = collections.defaultdict(float)
+    msg = 'solres must be a SolveResult object: solres=%r'
     for solres in solres_list:
-        msg = 'solres must be a SolveResult object.'
         if isinstance(solres, SolveResult) is False:
-            raise TypeError(msg % 'a')
+            raise TypeError(msg % solres)
         stats = solres.get_timer_stats()
         for k, v in stats.items():
             if stats_list.get(k) is None:
@@ -198,42 +209,63 @@ def merge_frame_error_list(solres_list):
     Combine a 'frame_error_list' from a list of SolveResult objects.
 
     The 'solres_list' is assumed to represent sequential solver
-    executions; The order of this list is important.
+    executions; The order of this list is important, because only
+    the last solved error value is used.
+
+    :param solres_list: List of SolveResult to merge together.
+    :type solres_list: [SolveResult, ..]
+
+    :returns: Mapping of frame number to error values.
+    :rtype: dict
     """
-    error_list = collections.defaultdict(float)
+    assert isinstance(solres_list, (list, tuple))
+    frame_error_list = collections.defaultdict(float)
+    msg = 'solres must be a SolveResult object: solres=%r'
     for solres in solres_list:
-        msg = 'solres must be a SolveResult object.'
         if isinstance(solres, SolveResult) is False:
-            raise TypeError(msg % 'a')
-        err_list = solres.get_frame_error_list()
-        for k, v in err_list.items():
-            error_list[k] = v
-    return error_list
+            raise TypeError(msg % solres)
+        frm_err_list = solres.get_frame_error_list()
+        for k, v in frm_err_list.items():
+            frame_error_list[k] = v
+    return frame_error_list
 
 
 def get_average_frame_error_list(frame_error_list):
     """
-    Get the average error for the frame error list given.
+    Get the average error for the frame error map given.
+
+    :param frame_error_list: Mapping of frame and error deviation.
+    :type frame_error_list: {float: float}
+
+    :returns: Average error across all frames.
+    :rtype: float
     """
+    assert isinstance(frame_error_list, dict)
     error = 0.0
     total = 0
     for k, v in frame_error_list.items():
         error += v
         total += 1
-    error = error / total
+    if total > 0:
+        error = error / total
     return error
 
 
 def get_max_frame_error(frame_error_list):
     """
-    Get the frame and error combination for the frame error list given.
+    Get the frame and error combination for the frame error map given.
+
+    If frame_error_list given is empty, the returned frame will be None.
+
+    :param frame_error_list: Mapping of frame and error deviation.
+    :type frame_error_list: {float: float}
 
     :returns: The frame and error with the maximum amount of error.
-    :rtype: (int, float)
+    :rtype: (float or None, float)
     """
+    assert isinstance(frame_error_list, dict)
     frame = None
     error = -0.0
-    assert len(frame_error_list) > 0
     for k, v in frame_error_list.items():
         if v > error:
             frame = k

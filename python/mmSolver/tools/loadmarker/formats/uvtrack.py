@@ -157,6 +157,10 @@ def parse_v2(file_path):
     data = json.load(f)
     f.close()
 
+    msg = (
+        'Per-frame tracking data was not found on marker, skipping. '
+        'name=%r'
+    )
     points = data.get('points', [])
     for point_data in points:
         mkr_data = interface.MarkerData()
@@ -172,9 +176,13 @@ def parse_v2(file_path):
         mkr_data.set_group_name(set_name)
         mkr_data.set_id(id_)
 
+        per_frame = point_data.get('per_frame', [])
+        if len(per_frame) == 0:
+            LOG.warning(msg, name)
+            continue
+
         # Create marker
         frames = []
-        per_frame = point_data.get('per_frame', [])
         for frame_data in per_frame:
             frame_num = frame_data.get('frame')
             assert frame_num is not None

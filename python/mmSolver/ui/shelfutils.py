@@ -97,7 +97,6 @@ def create_shelf_button(parent=None,
         image1 = str(icon)
     if isinstance(cmd, basestring):
         command = str(cmd)
-        doubleClickCommand = str(cmd)
     if cmdLanguage is None:
         sourceType = 'python'
     elif isinstance(cmdLanguage, basestring):
@@ -115,7 +114,6 @@ def create_shelf_button(parent=None,
         imageOverlayLabel=imageOverlayLabel,
         sourceType=sourceType,
         command=command,
-        doubleClickCommand=doubleClickCommand,
         noDefaultPopup=True,
         preventOverride=True,
     )

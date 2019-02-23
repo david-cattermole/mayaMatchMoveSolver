@@ -2,8 +2,10 @@
 Aim the selected transform nodes at the current viewport's camera.
 """
 
+import warnings
 import maya.cmds
 import mmSolver.logger
+import mmSolver.tools.cameraaim.lib as lib
 
 
 LOG = mmSolver.logger.get_logger()
@@ -40,7 +42,7 @@ def __get_camera():
     return cam
 
 
-def aim_at_camera():
+def main():
     """
     Aims the selected transforms at the active viewport's camera
     transform node.
@@ -55,19 +57,10 @@ def aim_at_camera():
         LOG.warning('Please select an active viewport to get a camera.')
         return
 
-    for node in sel:
-        for attr in ['rx', 'ry', 'rz']:
-            maya.cmds.setAttr(node + '.' + attr, lock=False)
-        aim = maya.cmds.aimConstraint(
-            cam,
-            node,
-            offset=(0, 0, 0),
-            weight=1.0,
-            aimVector=(1, 0, 0),
-            upVector=(0, 1, 0),
-            worldUpType='vector',
-            worldUpVector=(0, 1, 0)
-        )
-        if maya.cmds.objExists(aim[0]):
-            maya.cmds.delete(aim[0])
+    lib.aim_at_target(sel, cam, remove_after=True)
     return
+
+
+def aim_at_camera():
+    warnings.warn("Use 'main' function instead.")
+    main()

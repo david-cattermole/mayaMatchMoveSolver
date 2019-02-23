@@ -31,9 +31,7 @@ import mmSolver.tools.centertwodee.tool as centertwodee_tool
 
 
 LOG = mmSolver.logger.get_logger()
-UI = None
-
-
+MM_SOLVER_SOLVER_UI = None
 baseModule, BaseWindow = uiutils.getBaseWindow()
 
 
@@ -409,7 +407,7 @@ class SolverWindow(BaseWindow):
         self.help()
 
     def launchAboutCB(self):
-# LOG.info('Launch About... not yet.')
+        # LOG.info('Launch About... not yet.')
         self.help()
 
     def setStatusLine(self, text):
@@ -460,26 +458,26 @@ def main(show=True, widthHeight=(800, 600)):
     # will not open and an error will be given.
     lib_maya_utils.ensure_plugin_loaded()
 
-    global UI
+    global MM_SOLVER_SOLVER_UI
 
-    valid = uiutils.isValidQtObject(UI)
-    if UI is not None and valid is True:
-        UI.close()
+    valid = uiutils.isValidQtObject(MM_SOLVER_SOLVER_UI)
+    if MM_SOLVER_SOLVER_UI is not None and valid is True:
+        MM_SOLVER_SOLVER_UI.close()
 
     name = 'SolverWindow'
     app, parent = uiutils.getParent()
-    UI = SolverWindow(parent=parent, name=name)
-    if not UI:
-        return UI
+    MM_SOLVER_SOLVER_UI = SolverWindow(parent=parent, name=name)
+    if not MM_SOLVER_SOLVER_UI:
+        return MM_SOLVER_SOLVER_UI
     if show:
-        UI.show()
+        MM_SOLVER_SOLVER_UI.show()
 
     if ((isinstance(widthHeight, (tuple, list)) is True)
          and (len(widthHeight) == 2)):
-        pos = UI.pos()
-        UI.setGeometry(pos.x(), pos.y(), widthHeight[0], widthHeight[1])
+        pos = MM_SOLVER_SOLVER_UI.pos()
+        MM_SOLVER_SOLVER_UI.setGeometry(pos.x(), pos.y(), widthHeight[0], widthHeight[1])
 
     # Enter Qt application main loop
     if app is not None:
         sys.exit(app.exec_())
-    return UI
+    return MM_SOLVER_SOLVER_UI

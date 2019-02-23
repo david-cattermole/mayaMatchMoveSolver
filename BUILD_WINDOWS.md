@@ -106,6 +106,7 @@ Example CMake usage on Windows:
 | -------------------- | ------------------------------------------- |
 | CMAKE_BUILD_TYPE     | The type of build (`Release`, `Debug`, etc) |
 | CMAKE_INSTALL_PREFIX | Location to install the Maya module.        |
+| MAYA_VERSION         | Maya version to build for.                  |
 | MAYA_INCLUDE_PATH    | Directory to the Maya header include files  |
 | MAYA_LIB_PATH        | Directory to the Maya library files         |
 | LEVMAR_INCLUDE_PATH  | Directory to levmar header includes         |

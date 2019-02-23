@@ -63,10 +63,12 @@ def select_both_markers_and_bundles():
     mkr_nodes = []
     bnd_nodes = []
     if num_marker >= num_bundle:
-        bnd_nodes = convert_selection.get_bundles_from_markers(node_filtered['marker'])
+        nodes = node_filtered['marker']
+        bnd_nodes = convert_selection.get_bundles_from_markers(nodes)
         mkr_nodes = convert_selection.get_markers_from_bundles(bnd_nodes)
     else:
-        mkr_nodes = convert_selection.get_markers_from_bundles(node_filtered['bundle'])
+        nodes = node_filtered['bundle']
+        mkr_nodes = convert_selection.get_markers_from_bundles(nodes)
         bnd_nodes = convert_selection.get_bundles_from_markers(mkr_nodes)
 
     new_sel = []

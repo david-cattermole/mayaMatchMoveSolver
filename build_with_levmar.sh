@@ -40,6 +40,7 @@ cd build
 rm --force -R *
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=${INSTALL_MODULE_DIR} \
+      -DUSE_GPL_LEVMAR=1 \
       -DUSE_ATLAS=0 \
       -DUSE_MKL=0 \
       -DMAYA_VERSION=${MAYA_VERSION} \
@@ -54,5 +55,5 @@ make install
 
 
 # # For developers, make packages ready to distribute to others.
-make package
-# make package_source
+# make package
+

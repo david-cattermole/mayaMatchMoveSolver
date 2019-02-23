@@ -12,7 +12,7 @@ LOG = mmSolver.logger.get_logger()
 
 def toggle_bundle_lock():
     """
-    Toggles selected bundle lock state
+    Toggles selected bundle lock state.
     :return: None
     """
 

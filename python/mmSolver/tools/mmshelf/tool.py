@@ -48,7 +48,7 @@ def build_shelf():
     icon = 'createMarker_32x32.png'
     cmd = (
         'import mmSolver.tools.createmarker.tool;'
-        'mmSolver.tools.createmarker.tool.create_marker();'
+        'mmSolver.tools.createmarker.tool.main();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,
@@ -80,7 +80,7 @@ def build_shelf():
     icon = 'createBundle_32x32.png'
     cmd = (
         'import mmSolver.tools.createbundle.tool;'
-        'mmSolver.tools.createbundle.tool.create_bundle();'
+        'mmSolver.tools.createbundle.tool.main();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,
@@ -132,7 +132,7 @@ def build_shelf():
     icon = None
     cmd = (
         'import mmSolver.tools.centertwodee.tool;'
-        'mmSolver.tools.centertwodee.tool.center_two_dee();'
+        'mmSolver.tools.centertwodee.tool.main();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,
@@ -177,12 +177,12 @@ def build_shelf():
     shelfutils.create_shelf_separator(parent=shelf)
 
     # Triangulate Bundle (current frame)
-    name = 'Frnt'
-    tooltip = 'Push in Front.'
+    name = 'RePrj'
+    tooltip = 'Reproject Bundle on top of Marker.'
     icon = None
     cmd = (
-        'import mmSolver.tools.triangulate.tool;'
-        'mmSolver.tools.triangulate.tool.main();'
+        'import mmSolver.tools.reprojectbundle.tool;'
+        'mmSolver.tools.reprojectbundle.tool.main();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,
@@ -226,7 +226,7 @@ def build_shelf():
 
     shelfutils.create_shelf_separator(parent=shelf)
 
-    # Triangulate Bundle (current frame)
+    # Channel sensitivity UI
     name = 'ChSen'
     tooltip = 'Channel sensitivity UI.'
     icon = None
@@ -243,7 +243,7 @@ def build_shelf():
     )
 
     name = 'TglBnd'
-    tooltip = 'Toggles bundle lock .'
+    tooltip = 'Toggles bundle lock state.'
     icon = None
     cmd = (
         'import mmSolver.tools.togglebundlelock.tool as tglbndlock;'
@@ -256,5 +256,4 @@ def build_shelf():
         icon=icon,
         cmd=cmd,
     )
-
     return

@@ -111,6 +111,7 @@ def parse_v1(file_path):
         while j > 0:
             idx += 1
             line = lines[idx]
+            line = line.strip()
             if len(line) == 0:
                 # Have we reached the end of the file?
                 break

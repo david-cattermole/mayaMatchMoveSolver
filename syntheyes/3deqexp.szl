@@ -1,0 +1,45 @@
+//SIZZLEX .txt 3D Equalizer Export
+@[
+
+// Export all the tracker paths for the currently-selected object
+// dev by Goran Kocov (2011)
+
+obj = Scene.activeObj
+shot = obj.shot
+start = shot.start
+stop = shot.stop
+imwid = shot.width
+imhei = shot.height
+
+// bias = -(start-1)
+bias = 0
+
+counter = 0
+for (tk in obj.trk)
+	counter = counter + 1
+end
+printf("%.0f", counter)
+
+printf("%.0f\n", trknum)
+
+for (tk in obj.trk)
+	counter = 0
+    if (!tk.isExported)
+	continue
+    end
+    tk.nm "\n"
+    printf("3\n")
+    for (frame = start; frame <= stop; frame++)
+	if (tk.valid)
+		counter = counter + 1
+	end
+    end
+	printf("%.0f\n", counter)
+    for (frame = start; frame <= stop; frame++)
+	if (tk.valid)
+		counter = counter + 1
+	    printf("%.0f %.3f %.3f\n",
+		frame+bias, (imwid-1)*0.5*(tk.u+1)+0.5, (imhei-1)*0.5*(1-tk.v)+0.5)
+	end
+    end
+end

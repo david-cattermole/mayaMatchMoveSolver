@@ -1,13 +1,18 @@
 """
 Compiles *.ui files, and saves the generated files alongside them.
 
+The command may use the embedded paths if no path is given, or it may use an
+input file to find the directory.
+
 Usage (PyQt4):
 $ cd <project root>
 $ python compileUI.py
+$ python compileUI.py /path/to/file.ui
 
 Usage (PySide - Maya):
 $ cd <project root>
 $ mayapy compileUI.py
+$ mayapy compileUI.py /path/to/file.ui
 
 Note; Different versions of Maya contain different versions of PySide. Maya
 2017 and above contain PySide2 (for Qt5), Maya 2016 contains PySide(1).
@@ -90,15 +95,26 @@ def compile_directory(in_path_dir, out_path_dir):
 
 
 if __name__ == '__main__':
-    # Compile all the .ui files in the following paths.
-    # All compiled .py files are placed in the same directory as the
-    # .ui file.
-    paths = [
-        './python/mmSolver/tools/channelsen/ui',
-        './python/mmSolver/tools/loadmarker/ui',
-        './python/mmSolver/tools/solver/ui',
-        './python/mmSolver/ui',
-    ]
+    args = sys.argv[1:]
+    paths = []
+    if len(args) > 0:
+        for arg in args:
+            if os.path.isfile(arg):
+                path = os.path.dirname(arg)
+                paths.append(path)
+            elif os.path.isdir(arg):
+                paths.append(arg)
+    else:
+        # Compile all the .ui files in the following paths.
+        # All compiled .py files are placed in the same directory as the
+        # .ui file.
+        paths = [
+            './python/mmSolver/tools/channelsen/ui',
+            './python/mmSolver/tools/loadmarker/ui',
+            './python/mmSolver/tools/solver/ui',
+            './python/mmSolver/ui',
+        ]
     for path in paths:
+        assert os.path.isdir(path) is True
         compile_directory(path, path)
     exit()

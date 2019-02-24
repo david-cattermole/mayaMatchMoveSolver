@@ -11,9 +11,9 @@
 #endif // USE_SOLVER_LEVMAR
 
 // CMinpack
-// #ifdef USE_SOLVER_CMINPACK
-#include <cminpack.h>  //
-// #endif // USE_SOLVER_CMINPACK
+#ifdef USE_SOLVER_CMINPACK
+#include <cminpack.h>  // lmdif
+#endif // USE_SOLVER_CMINPACK
 
 // STL
 #include <ctime>     // time

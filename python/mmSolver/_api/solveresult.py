@@ -73,7 +73,7 @@ class SolveResult(object):
         for name, key, typ in name_keys:
             value = data.get(key)
             if value is None or len(value) == 0:
-                LOG.warning(msg.format(name, key, typ, value))
+                LOG.debug(msg.format(name, key, typ, value))
                 continue
             self._solver_stats[name] = typ(value[0])
 
@@ -92,7 +92,7 @@ class SolveResult(object):
         for name, key, typ in name_keys:
             value = data.get(key)
             if value is None or len(value) == 0:
-                LOG.warning(msg.format(name, key, typ, value))
+                LOG.debug(msg.format(name, key, typ, value))
                 continue
             self._error_stats[name] = typ(value[0])
 
@@ -113,7 +113,7 @@ class SolveResult(object):
         for name, key, typ in name_keys:
             value = data.get(key)
             if value is None or len(value) == 0:
-                LOG.warning(msg.format(name, key, typ, value))
+                LOG.debug(msg.format(name, key, typ, value))
                 continue
             self._timer_stats[name] = typ(value[0])
 
@@ -123,7 +123,7 @@ class SolveResult(object):
         key = 'error_per_marker_per_frame'
         values = data.get(key)
         if values is None or len(values) == 0:
-            LOG.warning(msg.format('', key, 'None', values))
+            LOG.debug(msg.format('', key, 'None', values))
         else:
             for value in values:
                 mkr = str(value[0])
@@ -137,7 +137,7 @@ class SolveResult(object):
         key = 'error_per_frame'
         values = data.get(key)
         if values is None or len(values) == 0:
-            LOG.warning(msg.format('', key, 'None', values))
+            LOG.debug.format('', key, 'None', values)
         else:
             for value in values:
                 t = float(value[0])

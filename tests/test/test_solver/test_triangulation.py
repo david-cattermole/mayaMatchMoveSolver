@@ -123,7 +123,6 @@ class TestTriangulation(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             frame=frames,
-            solverType=0,
             iterations=10,
             verbose=True,
         )

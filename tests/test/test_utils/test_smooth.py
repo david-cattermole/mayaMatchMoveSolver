@@ -4,8 +4,8 @@ Test functions for API utils module.
 
 import unittest
 
-import maya.cmds
-import maya.OpenMaya as OpenMaya
+# import maya.cmds
+# import maya.OpenMaya as OpenMaya
 
 import test.test_utils.utilsutils as test_utils
 import mmSolver.utils.smooth as smooth_utils

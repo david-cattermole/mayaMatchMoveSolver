@@ -12,7 +12,7 @@ The file format looks like this::
     string  # Name of point
     int     # Color of the point
     int     # Number of frames
-    int float float float  # Frame, X position, Y position, Point Weight
+    int float float  # Frame, X position, Y position
 
 Simple file with 1 2D track and 1 frame of data::
 
@@ -20,7 +20,7 @@ Simple file with 1 2D track and 1 frame of data::
     My Point Name
     0
     1
-    1 1920.0 1080.0 1.0
+    1 1920.0 1080.0
 
 """
 
@@ -72,14 +72,16 @@ class Loader3DETXT(interface.LoaderBase):
             raise OSError('No contents in the file: %s' % file_path)
         mkr_data_list = []
 
-        num_points = int(lines[0])
+        line = lines[0]
+        line = line.strip()
+        num_points = int(line)
         if num_points < 1:
             raise interface.ParserError('No points exist.')
 
         idx = 1  # Skip the first line
         for i in xrange(num_points):
-            mkr_name = lines[idx]
-            mkr_name = mkr_name.strip()
+            line = lines[idx]
+            mkr_name = line.strip()
 
             # Create marker
             mkr_data = interface.MarkerData()
@@ -87,12 +89,17 @@ class Loader3DETXT(interface.LoaderBase):
 
             # Get point color
             idx += 1
-            mkr_color = int(lines[idx])
+            line = lines[idx]
+            line = line.strip()
+            mkr_color = int(line)
             mkr_data.set_color(mkr_color)
 
             idx += 1
-            num_frames = int(lines[idx])
+            line = lines[idx]
+            line = line.strip()
+            num_frames = int(line)
             if num_frames <= 0:
+                idx += 1
                 msg = 'point has no data: %r'
                 LOG.warning(msg, mkr_name)
                 continue
@@ -103,6 +110,7 @@ class Loader3DETXT(interface.LoaderBase):
             while j > 0:
                 idx += 1
                 line = lines[idx]
+                line = line.strip()
                 if len(line) == 0:
                     # Have we reached the end of the file?
                     break
@@ -110,7 +118,7 @@ class Loader3DETXT(interface.LoaderBase):
                 split = line.split()
                 if len(split) != 3:
                     # We should not get here
-                    msg = 'File invalid, there must be 4 numbers in line: %r'
+                    msg = 'File invalid, there must be 3 numbers in line: %r'
                     raise interface.ParserError(msg % line)
                 frame = int(split[0])
                 mkr_u = float(split[1]) * inv_image_width

@@ -28,7 +28,7 @@ For ``.txt`` format you will need to enter the Width / Height of the input
 format.
 
 
-.. figure:: images/loadMarkers.png
+.. figure:: images/tools_loadmarker_overview.png
     :alt: Load Markers UI
     :align: center
     :width: 66%

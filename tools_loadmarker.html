@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Load Markers &#8212; mmSolver 0.2.0rc documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2.0rc',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Nodes" href="nodes.html" />
+    <link rel="prev" title="Solver UI" href="tools_solver_ui.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nodes.html" title="Nodes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tools_solver_ui.html" title="Solver UI"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.0rc documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" accesskey="U">Tools</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="load-markers">
+<span id="load-markers-ref"></span><h1>Load Markers<a class="headerlink" href="#load-markers" title="Permalink to this headline">¶</a></h1>
+<p>The Load Markers UI allows loading of <code class="docutils literal"><span class="pre">.uv</span></code> (mmSolver), <code class="docutils literal"><span class="pre">.txt</span></code>
+(3DEqualizer4), <code class="docutils literal"><span class="pre">.rz2</span></code> (Autodesk MatchMover) formated files.</p>
+<p>When opening the UI, the contents of the user’s clipboard is
+queried. If the clipboard is a valid file path, it will be
+automatically pasted into the “File Path”, so you won’t need to
+“Browse” for the file.</p>
+<p>In 3DEqualizer, the &#8220;Copy 2D Tracks (MM Solver)&#8221; is designed to copy
+the selected 2D points to a temporary file path and then place that
+file path on the clipboard automatically. Once the file path is on the
+clipboard, just open the Maya Load Marker tool and the path will be
+read automatically.</p>
+<p>The &#8220;Camera&#8221; list contains all the cameras currently in the Maya
+scene. If no cameras are available (persp, front, top, left do not
+count), the default option is to create a new camera. The &#8220;Update&#8221;
+button refreshes the &#8220;Camera&#8221; list without needing to close and
+re-open the UI.</p>
+<p>Once a file path is given, press the “Load” button.
+For <code class="docutils literal"><span class="pre">.txt</span></code> format you will need to enter the Width / Height of the input
+format.</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="_images/tools_loadmarker_overview.png"><img alt="Load Markers UI" src="_images/tools_loadmarker_overview.png" style="width: 66%;" /></a>
+<p class="caption"><span class="caption-text">Load Markers UI</span></p>
+</div>
+<div class="section" id="python-function">
+<h2>Python Function<a class="headerlink" href="#python-function" title="Permalink to this headline">¶</a></h2>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.loadmarker.ui.loadmarker_window</span> <span class="k">as</span> <span class="nn">loadmarker_window</span>
+<span class="n">loadmarker_window</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Load Markers</a><ul>
+<li><a class="reference internal" href="#python-function">Python Function</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tools_solver_ui.html"
+                        title="previous chapter">Solver UI</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="nodes.html"
+                        title="next chapter">Nodes</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tools_loadmarker.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nodes.html" title="Nodes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tools_solver_ui.html" title="Solver UI"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.0rc documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, David Cattermole.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

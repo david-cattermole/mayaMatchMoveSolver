@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Nodes" href="nodes.html" />
+    <link rel="next" title="Solver UI" href="tools_solver_ui.html" />
     <link rel="prev" title="Introduction" href="introduction.html" /> 
   </head>
   <body role="document">
@@ -40,7 +40,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="nodes.html" title="Nodes"
+          <a href="tools_solver_ui.html" title="Solver UI"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="introduction.html" title="Introduction"
@@ -56,90 +56,15 @@
             
   <div class="section" id="tools">
 <h1>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h1>
-<p>Most users will use the tools listed below to control and manipulate the
-MM Solver. There are also utilities to help the MM Solver workflow.</p>
-<div class="section" id="solver-ui">
-<h2>Solver UI<a class="headerlink" href="#solver-ui" title="Permalink to this headline">¶</a></h2>
-<p>This UI is designed to allow all aspects of the mmSolver command.</p>
-<p>To open the Solver run this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
-<span class="n">solver</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="figure" id="id2">
-<img alt="Solver UI" src="https://raw.githubusercontent.com/david-cattermole/mayaMatchMoveSolver/master/design/ui/mmSolver.png" />
-<p class="caption"><span class="caption-text">Solver UI</span></p>
-</div>
-<div class="section" id="objects">
-<h3>Objects<a class="headerlink" href="#objects" title="Permalink to this headline">¶</a></h3>
-<p>This section of the UI displays the marker objects that will be used for
-solving.</p>
-</div>
-<div class="section" id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
-<p>This section of the UI shows the Attributes that will be used for
-solving.</p>
-</div>
-<div class="section" id="solver-steps">
-<h3>Solver Steps<a class="headerlink" href="#solver-steps" title="Permalink to this headline">¶</a></h3>
-<p>You can add multiple solver “steps”, each step is performed going
-<strong>downwards</strong>, first #1, then #2, #3, etc.</p>
-<p>When you hit the “solve” button you are performing all of the solve
-steps.</p>
-<p>The ‘Override Current Frame’ check-box allows the user to temporarily
-override the time for all Solve Steps with the current frame. The
-current frame value dynamically updates as the user changes the Maya
-frame. The original solver frame numbers are always stored and never
-overwritten.</p>
-<p>Each Solver “step” contains:</p>
-<ul class="simple">
-<li>Enabled</li>
-<li>Frames</li>
-<li>Attributes</li>
-<li>Strategy</li>
+<p>Most users will use the tools listed below to control and manipulate
+the MM Solver. There are also utilities to help the MM Solver
+workflow.</p>
+<p>Pages dedicated to specific tools:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tools_solver_ui.html">Solver UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools_loadmarker.html">Load Markers</a></li>
 </ul>
-<div class="section" id="enabled">
-<h4>Enabled<a class="headerlink" href="#enabled" title="Permalink to this headline">¶</a></h4>
-<p>Should we use the solver step or not?</p>
-<p>This is a text input (currently), type “yes”, or “no”, “y” or “n”, or
-“true” or “false” (and other common english words), to set the state.</p>
-</div>
-<div class="section" id="frames">
-<h4>Frames<a class="headerlink" href="#frames" title="Permalink to this headline">¶</a></h4>
-<p>This is the list of frames to solve.</p>
-<p>The frame numbers can be entered as “#-#” to define a range, or
-“#,#,#,#” to define a list of individual frame numbers.</p>
-<p>Examples are “1,10,20,30,40,50” or “10-20,30,40-50”.</p>
-<p>Once text is entered the UI will evaluate the list and re-create the
-string shown.</p>
-</div>
-<div class="section" id="attributes-1">
-<span id="id1"></span><h4>Attributes<a class="headerlink" href="#attributes-1" title="Permalink to this headline">¶</a></h4>
-<p>This is a filter of the attributes used in the solve step.</p>
-<p>You may type into this field either one of these options:</p>
-<ul class="simple">
-<li>&#8220;Animated Only&#8221; - Use only the animated attributes</li>
-<li>&#8220;Static + Animated&#8221; - Use the static and animated attributes</li>
-</ul>
-</div>
-<div class="section" id="strategy">
-<h4>Strategy<a class="headerlink" href="#strategy" title="Permalink to this headline">¶</a></h4>
-<p>This is the “solving strategy”; how the frames and attributes are
-ordered in the solving process.</p>
-<p>There are three currently supported strategies:</p>
-<ul class="simple">
-<li>&#8220;Per-Frame&#8221; - Each frame is solved one-by-one.</li>
-<li>&#8220;Two Frames Fwd&#8221; - Each pair of sequential frames are solved
-together; frame 1 and 2, then 2 and 3, then 3 and 4, etc.</li>
-<li>&#8220;All Frames&#8221; - All frame numbers are solved together, at once (also
-called a “global solve”).</li>
-</ul>
-<p>If the “Animated Only” attribute filter is currently used, then the
-strategies above are unused and instead we loop over the frames
-sequentially and solve each frame independent of any other frame. This
-is the fastest method, but cannot solve Static attributes.</p>
-</div>
-</div>
 </div>
 <div class="section" id="create-marker">
 <h2>Create Marker<a class="headerlink" href="#create-marker" title="Permalink to this headline">¶</a></h2>
@@ -164,34 +89,6 @@ are parented under the active viewport camera.</p>
 <p>Run this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.convertmarker.tool</span> <span class="k">as</span> <span class="nn">convertmarker_tool</span>
 <span class="n">convertmarker_tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="load-markers">
-<h2>Load Markers<a class="headerlink" href="#load-markers" title="Permalink to this headline">¶</a></h2>
-<p>The Load Markers UI allows loading of .txt, .uv and .rz2 files.</p>
-<p>When opening the UI, the contents of the user’s clipboard is queried and
-if it looks like a file path, it will be automatically pasted into the
-“File Path”, so you won’t need to “Browse” for the file. In 3DEqualizer,
-I have a script designed to copy the selected 2D points to a temporary
-file path and then place that file path on the clipboard automatically.
-This would be my recommended workflow with 3DEqualizer.</p>
-<p>The “Camera” list contains all the cameras currently in the Maya scene.
-If no cameras are available (persp, front, top, left do not count), the
-default option is to “”. The “Update” button refreshes the “Camera” list
-without needing to close and re-open the UI.</p>
-<p>Once a file path is given, press the “Load” button.</p>
-<div class="figure" id="id3">
-<img alt="Load Markers UI" src="https://raw.githubusercontent.com/david-cattermole/mayaMatchMoveSolver/master/design/ui/loadMarkers.png" />
-<p class="caption"><span class="caption-text">Load Markers UI</span></p>
-</div>
-<p>For .txt, unfortunately the resolution is not yet given, and so you’ll
-need to scale the animation curves manually. The “Option” value is
-intended to become the resolution Width / Height for the .txt format,
-but is not yet connected up.</p>
-<p>Run this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.loadmarker.ui.loadmarker_window</span> <span class="k">as</span> <span class="nn">loadmarker_window</span>
-<span class="n">loadmarker_window</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -252,6 +149,32 @@ Bundle, and vice-versa.</p>
 <p>Forces the active viewport camera to lock it’s center to the currently
 selected transform node.</p>
 <p>A viewport camera can only center on one node at a time.</p>
+<p>Usage (to <em>apply</em> centering effect):</p>
+<ol class="arabic simple">
+<li>Select transform node.</li>
+<li>Activate a 3D viewport.</li>
+<li>Run tool.<ul>
+<li>The active viewport camera will be centerd on the selected
+transform node.</li>
+</ul>
+</li>
+<li>Use the Pan/Zoom tool (default hotkey is &#8216;&#8217; key), to zoom in and
+out. Play the Maya file and use the centered view as needed.</li>
+</ol>
+<p>Usage (to <em>remove</em> centering effect):</p>
+<ol class="arabic simple">
+<li>Activate a 3D viewport.</li>
+<li>Deselect all nodes.</li>
+</ol>
+<ol class="arabic simple" start="2">
+<li>Run tool.<ul>
+<li>The active viewport will no longer center on an object, but will
+not reset the view.</li>
+<li>To reset the viewport camera, turn off Pan/Zoom on the viewport
+camera (default hotkey is &#8216;&#8217; key).</li>
+</ul>
+</li>
+</ol>
 <p>Run this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.centertwodee.tool</span> <span class="k">as</span> <span class="nn">centertwodee_tool</span>
 <span class="n">centertwodee_tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
@@ -288,21 +211,8 @@ of channel slider setting.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Tools</a><ul>
-<li><a class="reference internal" href="#solver-ui">Solver UI</a><ul>
-<li><a class="reference internal" href="#objects">Objects</a></li>
-<li><a class="reference internal" href="#attributes">Attributes</a></li>
-<li><a class="reference internal" href="#solver-steps">Solver Steps</a><ul>
-<li><a class="reference internal" href="#enabled">Enabled</a></li>
-<li><a class="reference internal" href="#frames">Frames</a></li>
-<li><a class="reference internal" href="#attributes-1">Attributes</a></li>
-<li><a class="reference internal" href="#strategy">Strategy</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li><a class="reference internal" href="#create-marker">Create Marker</a></li>
 <li><a class="reference internal" href="#convert-to-marker">Convert to Marker</a></li>
-<li><a class="reference internal" href="#load-markers">Load Markers</a></li>
 <li><a class="reference internal" href="#create-bundle">Create Bundle</a></li>
 <li><a class="reference internal" href="#link-marker-bundle">Link Marker + Bundle</a></li>
 <li><a class="reference internal" href="#unlink-marker-from-all-bundles">Unlink Marker from all Bundles</a></li>
@@ -319,8 +229,8 @@ of channel slider setting.</p>
   <p class="topless"><a href="introduction.html"
                         title="previous chapter">Introduction</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="nodes.html"
-                        title="next chapter">Nodes</a></p>
+  <p class="topless"><a href="tools_solver_ui.html"
+                        title="next chapter">Solver UI</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -352,7 +262,7 @@ of channel slider setting.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="nodes.html" title="Nodes"
+          <a href="tools_solver_ui.html" title="Solver UI"
              >next</a> |</li>
         <li class="right" >
           <a href="introduction.html" title="Introduction"

@@ -13,13 +13,13 @@ To open the Solver run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.solver.tool as solver
-   solver.open_window()
+    import mmSolver.tools.solver.tool as solver
+    solver.open_window()
 
 .. figure:: https://raw.githubusercontent.com/david-cattermole/mayaMatchMoveSolver/master/design/ui/mmSolver.png
-   :alt: Solver UI
+    :alt: Solver UI
 
-   Solver UI
+    Solver UI
 
 Objects
 ~~~~~~~
@@ -85,8 +85,8 @@ This is a filter of the attributes used in the solve step.
 
 You may type into this field either one of these options:
 
--  “Animated Only” - Use only the animated attributes
--  “Static + Animated” - Use the static and animated attributes
+-  "Animated Only" - Use only the animated attributes
+-  "Static + Animated" - Use the static and animated attributes
 
 Strategy
 ^^^^^^^^
@@ -94,13 +94,15 @@ Strategy
 This is the “solving strategy”; how the frames and attributes are
 ordered in the solving process.
 
-There are two currently supported strategies:
+There are three currently supported strategies:
 
--  “Two Frames Fwd” - Each pair of sequential frames are solved
+-  "Per-Frame" - Each frame is solved one-by-one.
+
+-  "Two Frames Fwd" - Each pair of sequential frames are solved
    together; frame 1 and 2, then 2 and 3, then 3 and 4, etc.
 
--  “All Frames” - All numbers are solved together, at once (also called
-   a “global solve”).
+-  "All Frames" - All frame numbers are solved together, at once (also
+   called a “global solve”).
 
 If the “Animated Only” attribute filter is currently used, then the
 strategies above are unused and instead we loop over the frames
@@ -110,14 +112,18 @@ is the fastest method, but cannot solve Static attributes.
 Create Marker
 -------------
 
-Create a default Marker node.
+Create a default Marker node under the active viewport's camera.
+
+.. note::
+    Default Maya cameras (such as ``persp``, ``top``, ``front``, etc)
+    are not supported.
 
 Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.createmarker.tool as createmarker_tool
-   createmarker_tool.create_marker()
+    import mmSolver.tools.createmarker.tool as createmarker_tool
+    createmarker_tool.main()
 
 Convert to Marker
 -----------------
@@ -132,8 +138,8 @@ Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.convertmarker.tool as convertmarker_tool
-   convertmarker_tool.convert_to_marker()
+    import mmSolver.tools.convertmarker.tool as convertmarker_tool
+    convertmarker_tool.main()
 
 Load Markers
 ------------
@@ -155,9 +161,9 @@ without needing to close and re-open the UI.
 Once a file path is given, press the “Load” button.
 
 .. figure:: https://raw.githubusercontent.com/david-cattermole/mayaMatchMoveSolver/master/design/ui/loadMarkers.png
-   :alt: Load Markers UI
+    :alt: Load Markers UI
 
-   Load Markers UI
+    Load Markers UI
 
 For .txt, unfortunately the resolution is not yet given, and so you’ll
 need to scale the animation curves manually. The “Option” value is
@@ -168,8 +174,8 @@ Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
-   loadmarker_window.main()
+    import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
+    loadmarker_window.main()
 
 Create Bundle
 -------------
@@ -184,8 +190,8 @@ Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.createbundle.tool as createbundle_tool
-   createbundle_tool.create_bundle()
+    import mmSolver.tools.createbundle.tool as createbundle_tool
+    createbundle_tool.main()
 
 Link Marker + Bundle
 --------------------
@@ -200,8 +206,8 @@ Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
-   link_mb_tool.link_marker_bundle()
+    import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
+    link_mb_tool.link_marker_bundle()
 
 Unlink Marker from all Bundles
 ------------------------------
@@ -212,8 +218,8 @@ Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
-   link_mb_tool.unlink_marker_bundle()
+    import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
+    link_mb_tool.unlink_marker_bundle()
 
 Toggle Marker / Bundle
 ----------------------
@@ -225,8 +231,8 @@ Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.selection.tools as selection_tool
-   selection_tool.swap_between_selected_markers_and_bundles()
+    import mmSolver.tools.selection.tools as selection_tool
+    selection_tool.swap_between_selected_markers_and_bundles()
 
 Select Marker + Bundle
 ----------------------
@@ -237,8 +243,8 @@ Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.selection.tools as selection_tool
-   selection_tool.select_both_markers_and_bundles()
+    import mmSolver.tools.selection.tools as selection_tool
+    selection_tool.select_both_markers_and_bundles()
 
 Center 2D On Selection
 ----------------------
@@ -252,8 +258,8 @@ Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.centertwodee.tool as centertwodee_tool
-   centertwodee_tool.center_two_dee()
+    import mmSolver.tools.centertwodee.tool as centertwodee_tool
+    centertwodee_tool.main()
 
 Aim at Camera
 -------------
@@ -265,9 +271,9 @@ Run this Python command:
 .. code:: python
 
    import mmSolver.tools.cameraaim.tool as cameraaim_tool
-   cameraaim_tool.aim_at_camera()
+   cameraaim_tool.main()
 
-Channel sensitivity
+Channel Sensitivity
 -------------------
 
 Channel sensitivity tool helps you to change the value of sensitivity
@@ -277,6 +283,33 @@ Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.channelsen.tool as tool
-   tool.main()
+    import mmSolver.tools.channelsen.tool as tool
+    tool.main()
 
+Toggle bundle lock state
+-------------------
+
+Toggle bundle lock state will toggle lock state of the selected bundle,
+if any of the bundles translate attributes are locked, running
+this tool will unlock all of selected bundles, and running the tool
+again will lock all of them.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.togglebundlelock.tool as tglbndlock
+    tglbndlock.toggle_bundle_lock()
+
+Average marker
+-------------------
+
+Average marker tool will create a new marker having average position
+from the selected markers, this tool need at least two markers selected
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.averagemarker.tool
+    mmSolver.tools.averagemarker.tool.average_marker()

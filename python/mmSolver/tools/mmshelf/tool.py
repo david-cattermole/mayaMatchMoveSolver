@@ -226,6 +226,24 @@ def build_shelf():
 
     shelfutils.create_shelf_separator(parent=shelf)
 
+    # Average Marker
+    name = 'AvgMkr'
+    tooltip = 'Average marker from selection  .'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.averagemarker.tool;'
+        'mmSolver.tools.averagemarker.tool.average_marker();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    shelfutils.create_shelf_separator(parent=shelf)
+
     # Channel sensitivity UI
     name = 'ChSen'
     tooltip = 'Channel sensitivity UI.'
@@ -242,6 +260,7 @@ def build_shelf():
         cmd=cmd,
     )
 
+    # Toggle bundle lock
     name = 'TglBnd'
     tooltip = 'Toggles bundle lock state.'
     icon = None

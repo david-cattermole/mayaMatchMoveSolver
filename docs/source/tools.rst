@@ -142,7 +142,7 @@ Usage (to *remove* centering effect):
 
 2) Deselect all nodes.
 
-2) Run tool.
+3) Run tool.
 
    - The active viewport will no longer center on an object, but will
      not reset the view.

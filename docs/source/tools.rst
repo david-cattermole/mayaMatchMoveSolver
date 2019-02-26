@@ -130,7 +130,7 @@ Usage (to *apply* centering effect):
 
 3) Run tool.
    
-   - The active viewport camera will be centerd on the selected
+   - The active viewport camera will be centered on the selected
      transform node.
 
 4) Use the Pan/Zoom tool (default hotkey is '\' key), to zoom in and

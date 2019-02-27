@@ -28,6 +28,14 @@ def create_shelf(parent=None, name=None):
     If a shelf with 'name' is already exists, the exising shelf will
     be deleted, and re-created under the 'parent' argument given.
 
+    :param parent: What layout will this shelf be placed under?
+    :type parent: str
+
+    :param name: Name (label) of the shelf displayed to the user.
+                 The value should only contain characters A-Z
+                 (or a-z) and underscores '_'.
+    :type name: str
+
     :return: Shelf UI path, or None if cannot be found.
     :rtype: str or None
     """
@@ -71,6 +79,32 @@ def create_shelf_button(parent=None,
                         cmdLanguage=None):
     """
     Create a shelf button.
+
+    :param parent: What should this control be placed under?
+    :type parent: str
+
+    :param name: Name (label) of the shelf button. Should be under
+                 seven characters long.
+    :type name: str
+
+    :param tooltip: The text shown to the user when hovering the mouse
+                    over the shelf button.
+    :type tooltip: str
+
+    :param icon: Choose the image to display on the shelf button.
+                 Should be 32x32 pixels.
+    :type icon: str
+
+    :param cmd: The command text to run when the shelf button is
+                pressed.
+    :type cmd: str
+
+    :param cmdLanguage: What language is 'cmd' argument in? 'python'
+                        or 'mel'?
+    :type cmdLanguage: str
+
+    :returns: Maya button UI control path.
+    :rtype: str
     """
     assert parent is not None
     assert isinstance(parent, basestring)
@@ -102,7 +136,7 @@ def create_shelf_button(parent=None,
     elif isinstance(cmdLanguage, basestring):
         sourceType = str(cmdLanguage)
     else:
-        msg = 'cmdLanguage must be None or str: cmdLanguag=%r'
+        msg = 'cmdLanguage must be None or str: cmdLanguage=%r'
         LOG.error(msg, cmdLanguage)
         raise ValueError(msg, cmdLanguage)
 
@@ -122,7 +156,13 @@ def create_shelf_button(parent=None,
 
 def create_shelf_separator(parent=None):
     """
-    Create a shelf button.
+    Create a shelf button separator.
+
+    :param parent: What should this control be placed under?
+    :type parent: str
+
+    :returns: Maya separator UI control path.
+    :rtype: str
     """
     assert parent is not None
     assert isinstance(parent, basestring)

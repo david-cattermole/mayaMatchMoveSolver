@@ -241,4 +241,19 @@ def build_shelf():
         icon=icon,
         cmd=cmd,
     )
+
+    name = 'TglBnd'
+    tooltip = 'Toggles bundle lock state.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.togglebundlelock.tool as tglbndlock;'
+        'tglbndlock.toggle_bundle_lock();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
     return

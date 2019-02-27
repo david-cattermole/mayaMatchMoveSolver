@@ -18,7 +18,7 @@ attributes.
 
 Using arbitrary solving attributes makes the solver extremely
 flexible; any floating-point attribute in Maya can be adjusted to
-reduce 2D-to-3D reprojection error. Use Maya's DG and DAG nodes to
+reduce 2D-to-3D re-projection error. Use Maya's DG and DAG nodes to
 setup complex constraints and find the best solution to any
 MatchMove solve you need.
 
@@ -62,7 +62,7 @@ MatchMove solve you need.
   - Options to tune the required solver iterations and error
     thresholds.
   - Minimising residual error between 2D and 3D positions.
-  - Solvig translate, rotate, scale and any custom floating point
+  - Solving translate, rotate, scale and any custom floating point
     values, including camera focal length.
   - Static and animated attribute solving.
   - Per-frame, single-frame and multi-frame solving is supported.

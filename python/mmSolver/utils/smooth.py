@@ -62,11 +62,11 @@ def smooth(smooth_type, value_array, width):
     """
     new_array = None
     if smooth_type == const.SMOOTH_TYPE_AVERAGE:
-        new_array = average_smooth(width, value_array)
+        new_array = average_smooth(value_array, width)
     elif smooth_type == const.SMOOTH_TYPE_GAUSSIAN:
-        new_array = gaussian_smooth(width, value_array)
+        new_array = gaussian_smooth(value_array, width)
     elif smooth_type == const.SMOOTH_TYPE_FOURIER:
-        new_array = fourier_smooth(width, value_array)
+        new_array = fourier_smooth(value_array, width)
     else:
         msg = (
             'smoothType argument is invalid, '

@@ -10,6 +10,37 @@ import mmSolver.tools.mmshelf.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
+def _create_bundle_tools_menu(menu):
+    # Reproject a Bundle
+    name = 'Reproject Bundle'
+    tooltip = 'Reproject Bundle on top of Marker.'
+    cmd = (
+        'import mmSolver.tools.reprojectbundle.tool;'
+        'mmSolver.tools.reprojectbundle.tool.main();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
+
+    # Ray Cast Marker
+    name = 'Ray-Cast Marker'
+    tooltip = 'Ray Cast Marker onto geometry.'
+    cmd = (
+        'import mmSolver.tools.raycastmarker.tool;'
+        'mmSolver.tools.raycastmarker.tool.main();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
+    return
+
+
 def build_shelf():
     """
     Build the 'mmSolver' shelf.
@@ -175,6 +206,25 @@ def build_shelf():
     )
 
     shelfutils.create_shelf_separator(parent=shelf)
+
+    # Bundle Tools
+    name = 'Tool'
+    tooltip = 'Bundle Tools.'
+    icon = 'createBundle_32x32.png'
+    cmd = 'pass'
+    btn = shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # Create Menu Pop-Up (for both left and right mouse buttons)
+    menu_lmb = shelfutils.create_popup_menu(parent=btn, button=1)
+    menu_rmb = shelfutils.create_popup_menu(parent=btn, button=3)
+    _create_bundle_tools_menu(menu_lmb)
+    _create_bundle_tools_menu(menu_rmb)
 
     # Triangulate Bundle (current frame)
     name = 'RePrj'

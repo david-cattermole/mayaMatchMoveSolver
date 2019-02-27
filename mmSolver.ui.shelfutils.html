@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mmSolver.ui.shelfutils &#8212; mmSolver 0.2.0rc documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2.0rc',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.0rc documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-mmSolver.ui.shelfutils">
+<span id="mmsolver-ui-shelfutils"></span><h1>mmSolver.ui.shelfutils<a class="headerlink" href="#module-mmSolver.ui.shelfutils" title="Permalink to this headline">¶</a></h1>
+<p>Functions to create Maya shelves and buttons.</p>
+<dl class="function">
+<dt id="mmSolver.ui.shelfutils.get_shelves_parent">
+<code class="descclassname">mmSolver.ui.shelfutils.</code><code class="descname">get_shelves_parent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.get_shelves_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Maya UI path to the parent of all shelves in Maya.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Maya UI path of shelf parent layout.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.ui.shelfutils.create_shelf">
+<code class="descclassname">mmSolver.ui.shelfutils.</code><code class="descname">create_shelf</code><span class="sig-paren">(</span><em>parent=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_shelf" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Re-)Create a shelf.</p>
+<p>If a shelf with &#8216;name&#8217; is already exists, the exising shelf will
+be deleted, and re-created under the &#8216;parent&#8217; argument given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>parent</strong> (<em>str</em>) &#8211; What layout will this shelf be placed under?</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; Name (label) of the shelf displayed to the user.
+The value should only contain characters A-Z
+(or a-z) and underscores &#8216;_&#8217;.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Shelf UI path, or None if cannot be found.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.ui.shelfutils.create_shelf_button">
+<code class="descclassname">mmSolver.ui.shelfutils.</code><code class="descname">create_shelf_button</code><span class="sig-paren">(</span><em>parent=None</em>, <em>name=None</em>, <em>tooltip=None</em>, <em>icon=None</em>, <em>cmd=None</em>, <em>cmdLanguage=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_shelf_button" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a shelf button.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>parent</strong> (<em>str</em>) &#8211; What should this control be placed under?</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; Name (label) of the shelf button. Should be under
+seven characters long.</li>
+<li><strong>tooltip</strong> (<em>str</em>) &#8211; The text shown to the user when hovering the mouse
+over the shelf button.</li>
+<li><strong>icon</strong> (<em>str</em>) &#8211; Choose the image to display on the shelf button.
+Should be 32x32 pixels.</li>
+<li><strong>cmd</strong> (<em>str</em>) &#8211; The command text to run when the shelf button is
+pressed.</li>
+<li><strong>cmdLanguage</strong> (<em>str</em>) &#8211; What language is &#8216;cmd&#8217; argument in? &#8216;python&#8217;
+or &#8216;mel&#8217;?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Maya button UI control path.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.ui.shelfutils.create_shelf_separator">
+<code class="descclassname">mmSolver.ui.shelfutils.</code><code class="descname">create_shelf_separator</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_shelf_separator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a shelf button separator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parent</strong> (<em>str</em>) &#8211; What should this control be placed under?</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Maya separator UI control path.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.ui.shelfutils.create_popup_menu">
+<code class="descclassname">mmSolver.ui.shelfutils.</code><code class="descname">create_popup_menu</code><span class="sig-paren">(</span><em>parent=None</em>, <em>button=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_popup_menu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Pop-Up menu (for a shelf button).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>parent</strong> (<em>str</em>) &#8211; What should this control be placed under?</li>
+<li><strong>button</strong> (<em>str</em>) &#8211; Which mouse button should active this pop-up menu?
+1=left, 2=middle, 3=right mouse button.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Maya popup menu UI control path.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.ui.shelfutils.create_menu_item">
+<code class="descclassname">mmSolver.ui.shelfutils.</code><code class="descname">create_menu_item</code><span class="sig-paren">(</span><em>parent=None</em>, <em>name=None</em>, <em>tooltip=None</em>, <em>cmd=None</em>, <em>cmdLanguage=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_menu_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Menu Item on a menu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>parent</strong> (<em>str</em>) &#8211; Which menu should this menu item be placed under?</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; Name (label) of the menu item button.</li>
+<li><strong>tooltip</strong> (<em>str</em>) &#8211; The text shown to the user in the status line, when
+the user has the mouse over the menu item.</li>
+<li><strong>cmd</strong> (<em>str</em>) &#8211; The command text to run when the menu item is pressed.</li>
+<li><strong>cmdLanguage</strong> (<em>str</em>) &#8211; What language is &#8216;cmd&#8217; argument in? &#8216;python&#8217;
+or &#8216;mel&#8217;?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Maya menu item UI control path.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.ui.shelfutils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.0rc documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, David Cattermole.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

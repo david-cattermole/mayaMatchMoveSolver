@@ -218,13 +218,21 @@ Run this Python command:
     import mmSolver.tools.channelsen.tool as tool
     tool.main()
 
-Toggle bundle lock state
--------------------
+Toggle Bundle Lock State
+------------------------
 
-Toggle bundle lock state will toggle lock state of the selected bundle,
-if any of the bundles translate attributes are locked, running
-this tool will unlock all of selected bundles, and running the tool
-again will lock all of them.
+Toggle bundle lock state will toggle lock state of the selected
+bundle's attributes, if any of the bundles translate attributes are
+locked, running this tool will unlock all attributes on the selected
+bundles, and running the tool again will lock all attributes.
+
+Usage:
+
+1) Select bundle nodes.
+
+2) Run tool.
+   - The selected bundle node attributes will be toggled between
+     locked and unlocked.
 
 Run this Python command:
 
@@ -233,11 +241,19 @@ Run this Python command:
     import mmSolver.tools.togglebundlelock.tool as tglbndlock
     tglbndlock.toggle_bundle_lock()
 
-Average marker
--------------------
+Average Marker
+--------------
 
-Average marker tool will create a new marker having average position
-from the selected markers, this tool need at least two markers selected
+Average Marker tool will create a new Marker with an averaged position
+between all the selected Markers.
+
+This tool must have at least two Markers selected.
+
+Usage:
+
+1) Select 1 or more Marker nodes.
+2) Run tool.
+   - A third Marker node will be created between all others.
 
 Run this Python command:
 

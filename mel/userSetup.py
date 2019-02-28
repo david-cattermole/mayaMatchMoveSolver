@@ -16,7 +16,7 @@ import mmSolver.logger
 LOG = mmSolver.logger.get_logger()
 
 
-def create_shelf():
+def mmsolver_create_shelf():
     """
     Build the mmSolver shelf.
     """
@@ -24,19 +24,39 @@ def create_shelf():
     mmSolver.tools.mmshelf.tool.build_shelf()
 
 
-def startup():
+def mmsolver_create_menu():
+    """
+    Build the mmSolver menu.
+    """
+    import mmSolver.tools.mmmenu.tool
+    mmSolver.tools.mmmenu.tool.build_menu()
+
+
+def mmsolver_startup():
+    """
+    Responsible for starting up mmSolver.
+    """
     LOG.info('MM Solver Startup...')
 
     # Only run GUI code when the Maya interactive GUI opens.
     is_batch_mode = maya.cmds.about(batch=True)
     LOG.debug('Batch Mode: %r', is_batch_mode)
     if is_batch_mode is False:
+        # Create Menu.
+        build_shelf = bool(os.environ.get('MMSOLVER_CREATE_MENU', False))
+        LOG.debug('Build Menu: %r', build_shelf)
+        if bool(build_shelf) is True:
+            maya.utils.executeDeferred(mmsolver_create_menu)
 
         # Create Shelf.
-        build_shelf = os.environ.get('MMSOLVER_CREATE_SHELF', False)
+        build_shelf = bool(os.environ.get('MMSOLVER_CREATE_SHELF', False))
         LOG.debug('Build Shelf: %r', build_shelf)
         if bool(build_shelf) is True:
-            maya.utils.executeDeferred(create_shelf)
+            maya.utils.executeDeferred(mmsolver_create_shelf)
+    return
+
 
 # Run Start up Function after Maya has loaded.
-maya.utils.executeDeferred(startup)
+load_at_startup = bool(os.environ.get('MMSOLVER_LOAD_AT_STARTUP', True))
+if load_at_startup is True:
+    maya.utils.executeDeferred(mmsolver_startup)

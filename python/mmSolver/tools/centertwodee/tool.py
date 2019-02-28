@@ -2,54 +2,17 @@
 The Center 2D tool.
 """
 
+import warnings
+
 import maya.cmds
+
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.utils.node as node_utils
+import mmSolver.utils.viewport as viewport_utils
 
 
 LOG = mmSolver.logger.get_logger()
-
-
-def __get_model_editor():
-    """
-    Get the active model editor.
-    """
-    the_panel = maya.cmds.getPanel(withFocus=1)
-    panel_type = maya.cmds.getPanel(typeOf=the_panel)
-
-    if panel_type != 'modelPanel':
-        return None
-
-    model_ed = maya.cmds.modelPanel(the_panel, modelEditor=1, query=1)
-    return model_ed
-
-
-def __get_camera():
-    """
-    Get the camera from the active model editor
-
-    :returns: Camera shape node name or None.
-    :rtype: None or basestring
-    """
-    model_ed = __get_model_editor()
-    cam = None
-    cam_shp = None
-    if model_ed is not None:
-        cam = maya.cmds.modelEditor(model_ed, query=True, camera=True)
-    if maya.cmds.nodeType(cam) == 'transform':
-        shps = maya.cmds.listRelatives(
-            cam,
-            children=True,
-            shapes=True,
-            fullPath=True
-        ) or []
-        if len(shps) > 0:
-            cam_shp = shps[0]
-    elif maya.cmds.nodeType(cam) == 'camera':
-        cam_shp = maya.cmds.ls(cam, long=True)[0]
-    else:
-        LOG.error('Should not get here: cam=%r' % cam)
-    return cam_shp
 
 
 def __connect_camera_and_transform(cam_tfm, cam_shp, tfm):
@@ -125,34 +88,62 @@ def __remove_reprojection(cam_tfm, cam_shp):
     """
     nodes = __find_reprojection_nodes(cam_tfm, cam_shp)
     for node in reversed(nodes):
-        if node.objExists(node) is True:
+        if maya.cmds.objExists(node) is True:
             maya.cmds.delete(node)
+    return
 
-    attrs = [
+
+def __reset_pan_zoom(cam_tfm, cam_shp):
+    """
+    Reset the Pan/Zoom camera settings.
+
+    :param cam_tfm: Camera transform node
+    :type cam_tfm: str
+
+    :param cam_shp: Camera shape node.
+    :type cam_shp: str
+
+    :rtype: None
+    """
+    plugs = [
         (cam_shp + '.horizontalPan', 0.0),
         (cam_shp + '.verticalPan', 0.0),
         (cam_shp + '.zoom', 1.0),
         (cam_shp + '.panZoomEnabled', False),
     ]
-    for attr, value in attrs:
-        # TODO: Check if the node is referenced or not. That will
-        # dictate if we can unlock or not.
-        maya.cmds.setAttr(attr, lock=False)
-        maya.cmds.setAttr(attr, value)
+    for plug, value in plugs:
+        node_utils.set_attr(plug, value, relock=True)
     return
 
 
 def main():
     """
     Center the selected transform onto the camera view.
+
+    .. todo::
+
+        - Allow 2D Center on selected vertices.
+
+        - Support Stereo-camera setups (center both cameras, and ensure
+          both have the same zoom).
+
+        - Allow centering on multiple objects at once. We will center
+          on the middle of all transforms.
+
     """
     mmapi.load_plugin()
 
-    cam_shp = __get_camera()
-    if cam_shp is None:
-        LOG.warning('Please select an active viewport to get a camera.')
+    model_editor = viewport_utils.get_active_model_editor()
+    if model_editor is None:
+        msg = 'Please select an active 3D viewport.'
+        LOG.warning(msg)
         return
-    cam_tfm = maya.cmds.listRelatives(cam_shp, parent=True)[0]
+
+    cam_tfm, cam_shp = viewport_utils.get_viewport_camera(model_editor)
+    if cam_shp is None:
+        msg = 'Please select an active 3D viewport to get a camera.'
+        LOG.warning(msg)
+        return
 
     save_sel = maya.cmds.ls(selection=True, long=True) or []
 
@@ -160,11 +151,28 @@ def main():
     nodes = maya.cmds.ls(
         selection=True,
         long=True,
-        type='transform'
+        type='transform',
     ) or []
+
+    # Filter out selected imagePlanes.
+    nodes_tmp = list(nodes)
+    nodes = []
+    for node in nodes_tmp:
+        shps = maya.cmds.listRelatives(
+            node,
+            shapes=True,
+            fullPath=True,
+            type='imagePlane') or []
+        if len(shps) == 0:
+            nodes.append(node)
+
     if len(nodes) == 0:
+        msg = 'No objects selected, removing 2D centering.'
+        LOG.warning(msg)
         __remove_reprojection(cam_tfm, cam_shp)
     elif len(nodes) == 1:
+        msg = 'Applying 2D centering to %r'
+        LOG.warning(msg, nodes)
         reproj_nodes = __find_reprojection_nodes(cam_tfm, cam_shp)
         if len(reproj_nodes) > 0:
             maya.cmds.delete(reproj_nodes)
@@ -179,4 +187,5 @@ def main():
 
 
 def center_two_dee():
+    warnings.warn("Use 'main' function instead.")
     main()

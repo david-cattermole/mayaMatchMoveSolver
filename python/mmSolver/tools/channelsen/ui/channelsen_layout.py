@@ -35,37 +35,46 @@ class ChannelSenLayout(QtWidgets.QWidget, ui_channelsen_layout.Ui_Form):
         """
         Update the UI for the first time the class is created.
         """
-        # Query the channel box sensitivity (using a "lib." function).
         value = lib.get_value()
-        # Set the text of the label.
-        self.setSensitivityText(str(value))
+        self.setSensitivityText(value)
         return
 
     def upValueClicked(self):
-        # Make increase the channel box sensitivity
+        """
+        Increase the channel box sensitivity.
+        """
         value = lib.get_value()
         value *= 10
         lib.set_value(value)
-        # ... and update the UI.
-        self.setSensitivityText(str(value))
+        self.setSensitivityText(value)
 
     def downValueClicked(self):
-        # Make decrease the channel box sensitivity
+        """
+        Decrease the channel box sensitivity
+        """
         value = lib.get_value()
         value *= 0.1
         lib.set_value(value)
-        # ... and update the UI.
-        self.setSensitivityText(str(value))
+        self.setSensitivityText(value)
 
     def defaultValueClicked(self):
-        # Make the channel box sensitivity default value.
+        """
+        Make the channel box sensitivity default value.
+        """
         value = 1.0
         lib.set_value(value)
-        # ... and update the UI.
-        self.setSensitivityText(str(value))
+        self.setSensitivityText(value)
 
     def setSensitivityText(self, value):
-        # Set the 'self.sensitivity_label' using the sensitivity value.
-        text = '%s' % value
+        """
+        Set the 'self.sensitivity_label' using the sensitivity value.
+
+        :param value: Sensitivity float value to set to.
+        :type value: float or str
+        """
+        text = str(value)
+        if isinstance(value, (float, int)):
+            text = '{0:= .3g}'.format(value)
+        text = 'Value: ' + text
         self.sensitivity_label.setText(text)
         return

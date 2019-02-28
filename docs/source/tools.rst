@@ -1,14 +1,16 @@
 Tools
 =====
 
-Most users will use the tools listed below to control and manipulate the
-MM Solver. There are also utilities to help the MM Solver workflow.
+Most users will use the tools listed below to control and manipulate
+the MM Solver. There are also utilities to help the MM Solver
+workflow.
 
-Solver UI
----------
+Pages dedicated to specific tools:
 
-This UI is designed to allow all aspects of the mmSolver command.
+.. toctree::
+   :maxdepth: 1
 
+<<<<<<< HEAD
 To open the Solver run this Python command:
 
 .. code:: python
@@ -108,6 +110,8 @@ If the “Animated Only” attribute filter is currently used, then the
 strategies above are unused and instead we loop over the frames
 sequentially and solve each frame independent of any other frame. This
 is the fastest method, but cannot solve Static attributes.
+   tools_solver_ui
+   tools_loadmarker
 
 Create Marker
 -------------
@@ -253,6 +257,34 @@ Forces the active viewport camera to lock it’s center to the currently
 selected transform node.
 
 A viewport camera can only center on one node at a time.
+
+Usage (to *apply* centering effect):
+
+1) Select transform node.
+
+2) Activate a 3D viewport.
+
+3) Run tool.
+   
+   - The active viewport camera will be centered on the selected
+     transform node.
+
+4) Use the Pan/Zoom tool (default hotkey is '\' key), to zoom in and
+   out. Play the Maya file and use the centered view as needed.
+
+Usage (to *remove* centering effect):
+
+1) Activate a 3D viewport.
+
+2) Deselect all nodes.
+
+3) Run tool.
+
+   - The active viewport will no longer center on an object, but will
+     not reset the view.
+
+   - To reset the viewport camera, turn off Pan/Zoom on the viewport
+     camera (default hotkey is '\' key).
 
 Run this Python command:
 

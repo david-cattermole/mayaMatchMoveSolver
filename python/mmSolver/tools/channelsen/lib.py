@@ -1,5 +1,5 @@
 """
-The Channel Sensitivitiy tool - user facing.
+The Channel Sensitivity tool - user facing.
 """
 
 import maya.cmds
@@ -18,6 +18,8 @@ def get_value():
     :rtype: float
     """
     channel_box = __channelbox_global_variable()
+    if channel_box is None:
+        LOG.warning('Channel Box was not found, cannot set sensitivity.')
     value = maya.cmds.channelBox(channel_box,
                                  query=True,
                                  speed=True)
@@ -33,8 +35,16 @@ def set_value(value):
     :return: None
     """
     channel_box = __channelbox_global_variable()
-    cmd = 'channelBoxSettings useManips 1;'
-    maya.mel.eval(cmd)
+    if channel_box is None:
+        LOG.warning('Channel Box was not found, cannot set sensitivity.')
+
+    # Maya 2017 doesn't have a channel box sensitivity icon, but Maya
+    # 2016 and 2018 does. Lets just check rather than hard-code
+    # version-specific behaviour.
+    button_exists = maya.cmds.control('cbManipsButton', exists=True)
+    if button_exists is True:
+        cmd = 'channelBoxSettings useManips 1;'
+        maya.mel.eval(cmd)
 
     maya.cmds.channelBox(channel_box,
                          edit=True,

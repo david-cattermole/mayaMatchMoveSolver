@@ -2,6 +2,8 @@
 The Create Marker tool.
 """
 
+import warnings
+
 import maya.cmds
 
 import mmSolver.logger
@@ -65,7 +67,7 @@ def is_not_startup_cam(x):
     return is_startup_cam(x) is False
 
 
-def create_marker():
+def main():
     """
     Create a new marker under the current viewport camera, or under
     the selected camera, if a camera is selected.
@@ -135,3 +137,8 @@ def create_marker():
 
     maya.cmds.select(mkr.get_node(), replace=True)
     return
+
+
+def create_marker():
+    warnings.warn("Use 'main' function instead.")
+    main()

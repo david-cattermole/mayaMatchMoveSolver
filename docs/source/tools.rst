@@ -344,4 +344,4 @@ Run this Python command:
 .. code:: python
 
     import mmSolver.tools.averagemarker.tool
-    mmSolver.tools.averagemarker.tool.average_marker()
+    mmSolver.tools.averagemarker.tool.main()

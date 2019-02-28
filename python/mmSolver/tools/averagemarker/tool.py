@@ -6,13 +6,13 @@ import maya.cmds
 import mmSolver.tools.selection.filternodes as filternodes
 import mmSolver.logger
 import mmSolver.tools.createmarker.tool
-import maya.mel
 import mmSolver.api as mmapi
+import mmSolver.tools.averagemarker.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 
 
-def average_marker():
+def main():
     """
     Averages marker position from selected markers.
     :return: None
@@ -43,55 +43,20 @@ def average_marker():
     new_bnd = mmapi.Bundle().create_node(name=bnd_name)
     # connecting bundle to the marker
     new_mkr.set_bundle(new_bnd)
+
     # getting first frame and last frame from the selected markers
-    first_frame = []
-    last_frame = []
-    for marker in selected_markers:
-        plugs = [
-            '%s.translateX' % marker,
-            '%s.translateY' % marker,
-        ]
-        plug_lock_state = {}
-        for plug_name in plugs:
-            value = maya.cmds.getAttr(plug_name, lock=True)
-            plug_lock_state[plug_name] = value
-            maya.cmds.setAttr(plug_name, lock=False)
-
-        first = maya.cmds.findKeyframe(marker, which='first')
-        first_frame.append(first)
-
-        last = maya.cmds.findKeyframe(marker, which='last')
-        last_frame.append(last)
-
-        for plug_name in plugs:
-            value = plug_lock_state.get(plug_name)
-            maya.cmds.setAttr(plug_name, lock=value)
-
-    start_frame = max(first_frame)
-    end_frame = min(last_frame)
+    start_frame, end_frame = lib.__get_markers_start_end_frames(
+                                                    selected_markers)
 
     # Running average from selected markers for giving frame range
-    for frame in range(int(start_frame), int(end_frame) + 1):
-        count = len(selected_markers)
-        sums = [0, 0]
-
-        for item in selected_markers:
-            pos_x = maya.cmds.getAttr('%s.translateX' % item,
-                                      time=frame)
-
-            pos_y = maya.cmds.getAttr('%s.translateY' % item,
-                                      time=frame)
-            sums[0] += pos_x
-            sums[1] += pos_y
-            center = [sums[0] / count, sums[1] / count]
-
-            maya.cmds.setKeyframe('%s.translateX' % new_mkr_node,
-                                  v=center[0], time=frame)
-
-            maya.cmds.setKeyframe('%s.translateY' % new_mkr_node,
-                                  v=center[1], time=frame)
+    lib.__set_average_marker_position(selected_markers,
+                                      start_frame,
+                                      end_frame,
+                                      new_mkr_node)
 
     maya.cmds.select(new_mkr_node)
     # dgdirty for Channel box value update
     maya.cmds.dgdirty(new_mkr_node)
     return None
+
+

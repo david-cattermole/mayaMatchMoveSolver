@@ -282,7 +282,7 @@ def build_shelf():
     icon = None
     cmd = (
         'import mmSolver.tools.averagemarker.tool;'
-        'mmSolver.tools.averagemarker.tool.average_marker();'
+        'mmSolver.tools.averagemarker.tool.main();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,

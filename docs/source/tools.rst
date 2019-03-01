@@ -10,7 +10,6 @@ Pages dedicated to specific tools:
 .. toctree::
    :maxdepth: 1
 
-<<<<<<< HEAD
 To open the Solver run this Python command:
 
 .. code:: python
@@ -319,7 +318,7 @@ Run this Python command:
     tool.main()
 
 Toggle bundle lock state
--------------------
+------------------------
 
 Toggle bundle lock state will toggle lock state of the selected bundle,
 if any of the bundles translate attributes are locked, running
@@ -334,7 +333,7 @@ Run this Python command:
     tglbndlock.toggle_bundle_lock()
 
 Average marker
--------------------
+--------------
 
 Average marker tool will create a new marker having average position
 from the selected markers, this tool need at least two markers selected
@@ -345,3 +344,17 @@ Run this Python command:
 
     import mmSolver.tools.averagemarker.tool
     mmSolver.tools.averagemarker.tool.main()
+
+Duplicate marker
+----------------
+
+Duplicate marker tool will create a new markers having same position
+from the selected markers, this tool will duplicate on all selected
+markers.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.duplicatemarker.tool
+    mmSolver.tools.duplicatemarker.tool.main()

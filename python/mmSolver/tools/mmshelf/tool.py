@@ -278,7 +278,7 @@ def build_shelf():
 
     # Average Marker
     name = 'AvgMkr'
-    tooltip = 'Average marker from selection  .'
+    tooltip = 'Average marker from selection.'
     icon = None
     cmd = (
         'import mmSolver.tools.averagemarker.tool;'

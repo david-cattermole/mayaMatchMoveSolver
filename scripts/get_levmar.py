@@ -1,5 +1,5 @@
 """
-Get the CMinpack source code.
+Get the LevMar source code.
 """
 
 import sys

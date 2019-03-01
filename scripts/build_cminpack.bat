@@ -3,15 +3,15 @@ SETLOCAL
 :: Builds the cminpack shared library.
 
 :: The root of this project.
-SET ROOT=%CD%
+SET THIS_DIR=%~dp0
+SET ROOT=%THIS_DIR%..\external\
 ECHO Package Root: %ROOT%
+CHDIR %ROOT%
 
 SET INSTALL_DIR="%ROOT%\install\cminpack"
 
-:: Extract CMinpack, then delete the 'examples' directory, because
-:: they fail to compile
-python get_cminpack.py "%ROOT%\archives" "%ROOT%\working" "%ROOT%\patches"
-:: DEL /S /Q "%ROOT%\working\cminpack-1.3.6\examples"
+:: Extract LevMar
+python "%THIS_DIR%get_cminpack.py" "%ROOT%\archives" "%ROOT%\working" "%ROOT%\patches"
 
 :: Build plugin
 MKDIR build

@@ -3,13 +3,15 @@ SETLOCAL
 :: Build LevMar library without any dependencies.
 
 :: The root of this project.
-SET ROOT=%CD%
+SET THIS_DIR=%~dp0
+SET ROOT=%THIS_DIR%..\external\
 ECHO Package Root: %ROOT%
+CHDIR %ROOT%
 
 SET INSTALL_DIR="%ROOT%\install\levmar"
 
-:: Extract LevMar, then delete the examples, because they fail to compile
-python get_levmar.py "%ROOT%\archives" "%ROOT%\working" "%ROOT%\patches"
+:: Extract LevMar
+python "%THIS_DIR%get_levmar.py" "%ROOT%\archives" "%ROOT%\working" "%ROOT%\patches"
 
 :: Build Library
 MKDIR build

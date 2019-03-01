@@ -15,10 +15,11 @@ set(LEVMAR_EXTRACTED_FILE "${WORKING_DIR}/levmar-2.6")
 
 
 # Extract CMinpack
+set(PY_SCRIPT "${CMAKE_SOURCE_DIR}/../scripts/get_cminpack.py")
 add_custom_command(
     OUTPUT ${CMINPACK_EXTRACTED_FILE}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMINPACK_EXTRACTED_FILE}
-    COMMAND python get_cminpack.py ${ARCHIVES_DIR} ${WORKING_DIR} ${PATCHES_DIR}
+    COMMAND python ${PY_SCRIPT} ${ARCHIVES_DIR} ${WORKING_DIR} ${PATCHES_DIR}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     DEPENDS ${CMINPACK_DOWNLOAD_FILE}
     )
@@ -30,10 +31,11 @@ add_custom_target(
 
 
 # Extract Levmar
+set(PY_SCRIPT "${CMAKE_SOURCE_DIR}/../scripts/get_levmar.py")
 add_custom_command(
         OUTPUT ${LEVMAR_EXTRACTED_FILE}
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${LEVMAR_EXTRACTED_FILE}
-        COMMAND python get_levmar.py ${ARCHIVES_DIR} ${WORKING_DIR} ${PATCHES_DIR}
+        COMMAND python ${PY_SCRIPT} ${ARCHIVES_DIR} ${WORKING_DIR} ${PATCHES_DIR}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         DEPENDS ${LEVMAR_DOWNLOAD_FILE}
 )

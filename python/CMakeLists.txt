@@ -6,7 +6,7 @@ function (add_ui_compile
         name
         input_file
         output_file)
-    set(EXEC_SCRIPT ${CMAKE_SOURCE_DIR}/compileUI.py)
+    set(EXEC_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/compileUI.py)
     add_custom_command(
             OUTPUT ${output_file}
             COMMAND ${MAYA_PYTHON_EXECUTABLE} ${EXEC_SCRIPT} ${input_file}

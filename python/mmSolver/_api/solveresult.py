@@ -137,7 +137,7 @@ class SolveResult(object):
         key = 'error_per_frame'
         values = data.get(key)
         if values is None or len(values) == 0:
-            LOG.debug.format('', key, 'None', values)
+            LOG.debug(msg.format('', key, 'None', values))
         else:
             for value in values:
                 t = float(value[0])

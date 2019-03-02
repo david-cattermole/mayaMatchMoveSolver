@@ -38,10 +38,14 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         # Collection Combo Box.
         self.collectionName_model = uimodels.StringDataListModel()
         self.collectionName_comboBox.setModel(self.collectionName_model)
-        self.collectionName_comboBox.currentIndexChanged.connect(self.collectionIndexChanged)
+        self.collectionName_comboBox.currentIndexChanged.connect(
+            self.collectionIndexChanged
+        )
 
         # Collection Select
-        self.collectionSelect_pushButton.clicked.connect(self.collectionSelectClicked)
+        self.collectionSelect_pushButton.clicked.connect(
+            self.collectionSelectClicked
+        )
 
         # Object Nodes
         # TODO: Perhaps we should remove a tree view and research how
@@ -58,11 +62,17 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.object_treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.object_treeView.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.object_selModel = self.object_treeView.selectionModel()
-        self.object_selModel.currentChanged.connect(self.objectNodeCurrentChanged)
+        self.object_selModel.currentChanged.connect(
+            self.objectNodeCurrentChanged
+        )
 
         # Object Add and Remove buttons
-        self.objectAdd_toolButton.clicked.connect(self.objectAddClicked)
-        self.objectRemove_toolButton.clicked.connect(self.objectRemoveClicked)
+        self.objectAdd_toolButton.clicked.connect(
+            self.objectAddClicked
+        )
+        self.objectRemove_toolButton.clicked.connect(
+            self.objectRemoveClicked
+        )
 
         # Attr Nodes
         root = attr_nodes.PlugNode('root')
@@ -75,11 +85,17 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.attribute_treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.attribute_treeView.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.attribute_selModel = self.attribute_treeView.selectionModel()
-        self.attribute_selModel.currentChanged.connect(self.attrNodeCurrentChanged)
+        self.attribute_selModel.currentChanged.connect(
+            self.attrNodeCurrentChanged
+        )
 
         # Attr Add and Remove buttons
-        self.attributeAdd_toolButton.clicked.connect(self.attrAddClicked)
-        self.attributeRemove_toolButton.clicked.connect(self.attrRemoveClicked)
+        self.attributeAdd_toolButton.clicked.connect(
+            self.attrAddClicked
+        )
+        self.attributeRemove_toolButton.clicked.connect(
+            self.attrRemoveClicked
+        )
 
         # Solver Nodes
         self.solver_model = solver_nodes.SolverModel(font=self.font)

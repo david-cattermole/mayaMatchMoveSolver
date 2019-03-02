@@ -1,27 +1,25 @@
 """
 This tool duplicates markers from selected markers.
 """
+
 import maya.cmds
-import mmSolver.tools.selection.filternodes as filternodes
+
 import mmSolver.logger
-import mmSolver.tools.createmarker.tool
 import mmSolver.api as mmapi
+
+import mmSolver.tools.selection.filternodes as filternodes
 import mmSolver.tools.duplicatemarker.lib as lib
 import mmSolver.tools.duplicatemarker.constant as const
-
 
 LOG = mmSolver.logger.get_logger()
 
 
 def main():
     """
-    Main function runs duplicate marker on all selected markers
-    :return: None
+    Main function runs duplicate marker on all selected markers.
     """
-
-    selection = maya.cmds.ls(sl=True)
+    selection = maya.cmds.ls(selection=True, long=True) or []
     selected_markers = filternodes.get_marker_nodes(selection)
-
     if not selected_markers:
         LOG.warning('Please select markers')
         return
@@ -46,8 +44,10 @@ def main():
         new_bnd = mmapi.Bundle().create_node(name=bnd_name)
         # connecting bundle to the marker
         new_mkr.set_bundle(new_bnd)
+
         # running duplicate
         lib.__copy_key_frames(marker, new_mkr_node)
+
         # set lock state on newly created markers
         lib.__set_lock_state(new_mkr_node, mkr_attrs, lock_value)
         new_mkr_nodes.append(new_mkr_node)

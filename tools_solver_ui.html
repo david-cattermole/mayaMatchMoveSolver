@@ -25,7 +25,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Load Markers" href="tools_loadmarker.html" />
+    <link rel="prev" title="Tools" href="tools.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -37,7 +39,14 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.0rc documentation</a> &#187;</li> 
+        <li class="right" >
+          <a href="tools_loadmarker.html" title="Load Markers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tools.html" title="Tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.0rc documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" accesskey="U">Tools</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -125,9 +134,26 @@ is the fastest method, but cannot solve Static attributes.</p>
 </div>
 <div class="section" id="python-function">
 <h3>Python Function<a class="headerlink" href="#python-function" title="Permalink to this headline">¶</a></h3>
-<p>To open the Solver run this Python command:</p>
+<p>The commands below are available for this tool, and allow hotkeys or
+custom buttons to be run.</p>
+<p>Open the Solver UI window:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
 <span class="n">solver</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Run the solve, just as if the user presses the &#8220;Solve&#8221; button in the UI:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">run_solve_on_current_frame</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Run the solve, with the &#8220;Override Current Frame&#8221; checkbox turned <em>on</em>:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">run_solve_on_current_frame</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Run the solve, with the &#8220;Override Current Frame&#8221; checkbox turned <em>off</em>:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">run_solve_on_all_frames</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -157,6 +183,12 @@ is the fastest method, but cannot solve Static attributes.</p>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tools.html"
+                        title="previous chapter">Tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tools_loadmarker.html"
+                        title="next chapter">Load Markers</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -187,7 +219,14 @@ is the fastest method, but cannot solve Static attributes.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.0rc documentation</a> &#187;</li> 
+        <li class="right" >
+          <a href="tools_loadmarker.html" title="Load Markers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tools.html" title="Tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.0rc documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

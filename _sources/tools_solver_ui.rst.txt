@@ -105,9 +105,33 @@ is the fastest method, but cannot solve Static attributes.
 Python Function
 ^^^^^^^^^^^^^^^
 
-To open the Solver run this Python command:
+The commands below are available for this tool, and allow hotkeys or
+custom buttons to be run.
+
+Open the Solver UI window:
 
 .. code:: python
 
     import mmSolver.tools.solver.tool as solver
     solver.open_window()
+
+Run the solve, just as if the user presses the "Solve" button in the UI:
+
+.. code:: python
+
+    import mmSolver.tools.solver.tool as solver
+    solver.run_solve_on_current_frame()
+
+Run the solve, with the "Override Current Frame" checkbox turned *on*:
+
+.. code:: python
+
+    import mmSolver.tools.solver.tool as solver
+    solver.run_solve_on_current_frame()
+
+Run the solve, with the "Override Current Frame" checkbox turned *off*:
+
+.. code:: python
+
+    import mmSolver.tools.solver.tool as solver
+    solver.run_solve_on_all_frames()

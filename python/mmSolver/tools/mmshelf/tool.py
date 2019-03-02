@@ -278,11 +278,27 @@ def build_shelf():
 
     # Average Marker
     name = 'AvgMkr'
-    tooltip = 'Average marker from selection  .'
+    tooltip = 'Average marker from selection.'
     icon = None
     cmd = (
         'import mmSolver.tools.averagemarker.tool;'
         'mmSolver.tools.averagemarker.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # Duplicate Marker
+    name = 'DupMkr'
+    tooltip = 'Duplicate marker from selection.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.duplicatemarker.tool;'
+        'mmSolver.tools.duplicatemarker.tool.main();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,

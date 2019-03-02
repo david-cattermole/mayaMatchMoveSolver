@@ -453,4 +453,6 @@ include(CPack)
 
 add_subdirectory(python)
 add_subdirectory(docs)
+
+enable_testing()
 add_subdirectory(tests)

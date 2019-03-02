@@ -147,6 +147,15 @@ def log_solve_results(log, solres_list, total_time=None):
 
 
 def get_override_current_frame_from_collection(col):
+    """
+    Get the value of 'Override Current Frame', from a Collection.
+
+    :param col: The Collection to query.
+    :type col: Collection
+    
+    :returns: True or False.
+    :rtype: bool
+    """
     node = col.get_node()
     ensure_override_current_frame_attr_exists(col)
     value = mmapi.get_value_on_node_attr(node, const.OVERRIDE_CURRENT_FRAME_ATTR)
@@ -155,9 +164,18 @@ def get_override_current_frame_from_collection(col):
 
 
 def set_override_current_frame_on_collection(col, value):
+    """
+    Set the value of 'Override Current Frame' on a Collection.
+
+    :param col: The Collection to change.
+    :type col: Collection
+
+    :param value: Value to set to.
+    :type value: bool
+    """
+    assert isinstance(value, bool)
     ensure_override_current_frame_attr_exists(col)
     node = col.get_node()
-    assert isinstance(value, bool)
     mmapi.set_value_on_node_attr(node, const.OVERRIDE_CURRENT_FRAME_ATTR, value)
     return
 
@@ -169,8 +187,6 @@ def ensure_override_current_frame_attr_exists(col):
 
     :param col: The Collection to create the attribute on.
     :type col: Collection
-
-    :rtype: None
     """
     node = col.get_node()
     default_value = False
@@ -325,6 +341,15 @@ def compile_solvers_from_steps(col, step_list, prog_fn=None):
 def compile_collection(col, prog_fn=None):
     """
     Compiles, checks and validates the collection, ready for a solve.
+
+    :param col: Collection to execute.
+    :type col: Collection
+
+    :param prog_fn: Progress function that is called each time progress 
+                    is made. The function should take a single 'int' 
+                    argument, and the integer is expected to be a 
+                    percentage value, between 0 and 100.
+    :type prog_fn: None or function
     """
     step_list = get_solver_steps_from_collection(col)
     sol_list = compile_solvers_from_steps(col, step_list, prog_fn=prog_fn)
@@ -339,10 +364,34 @@ def execute_collection(col,
                        status_fn=None):
     """
     Execute the entire collection; Solvers, Markers, Bundles, etc.
+
+    :param col: Collection to execute.
+    :type col: Collection
+
+    :param log_level: Logging level to print out.
+    :type log_level: None or str
+
+    :param refresh: Should we refresh the viewport?
+    :type refresh: bool
+
+    :param prog_fn: A function called with an 'int' argument, to
+                    display progress information to the user. The
+                    integer is expected to be between 0 and 100 (and
+                    is read as a percentage).
+    :type prog_fn: None or function
+
+    :param status_fn: A function called with an 'str' argument, to display
+                      status information to the user.
+    :type status_fn: None or function
     """
     msg = 'execute_collection: '
     msg += 'col=%r log_level=%r refresh=%r prog_fn=%r status_fn=%r'
     LOG.debug(msg, col, log_level, refresh, prog_fn, status_fn)
+
+    assert isinstance(refresh, bool)
+    assert log_level is None or isinstance(log_level, str)
+    assert prog_fn is None or hasattr(prog_fn, '__call__')
+    assert status_fn is None or hasattr(status_fn, '__call__')
 
     log = LOG
     verbose = False
@@ -371,3 +420,68 @@ def execute_collection(col,
     log_solve_results(log, solres_list, total_time=e-s)
     return
 
+
+def run_solve_ui(col, refresh_state, log_level, window):
+    """
+    Run the active "solve" (UI state information), and update the UI.
+
+    This is a UI focused function. Calling this function with the
+    'window' argument set will update the UI and show progress to the
+    user.
+
+    If the UI window is not given, the solve still runs, but does not
+    update the UI.
+
+    :param col: The active collection to solve.
+    :type col: Collection
+
+    :param refresh_state: Should we update the viewport while solving?
+    :type refresh_state: bool
+
+    :param log_level: How much information should we print out;a
+                      'error', 'warning', 'info', 'verbose' or 'debug'.
+    :type log_level: str
+
+    :param window: The SolverWindow object for the UI.
+    :type window: SolverWindow or None
+    """
+    if window is not None:
+        window.setStatusLine(const.STATUS_EXECUTING)
+
+    try:
+        if window is not None:
+            window.progressBar.setValue(0)
+            window.progressBar.show()
+
+        if col is None:
+            msg = 'No active collection.'
+            if window is not None:
+                window.setStatusLine('ERROR: ' + msg)
+            LOG.error(msg)
+        ok = compile_collection(col)
+        if ok is not True:
+            msg = 'Cannot execute solver, collection is not valid.'
+            msg += 'collection=%r'
+            if window is not None:
+                window.setStatusLine('Warning: ' + msg)
+            LOG.warning(msg, col)
+        else:
+            prog_fn = LOG.warning
+            status_fn = LOG.warning
+            if window is not None:
+                prog_fn = window.progressBar.setValue
+                status_fn = window.setStatusLine
+            
+            execute_collection(
+                col,
+                log_level=log_level,
+                refresh=refresh_state,
+                prog_fn=prog_fn,
+                status_fn=status_fn,
+            )
+    finally:
+        if window is not None:
+            window.progressBar.setValue(100)
+            window.progressBar.hide()
+            window.setStatusLine(const.STATUS_FINISHED)
+    return

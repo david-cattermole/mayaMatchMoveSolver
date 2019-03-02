@@ -106,6 +106,7 @@ Example CMake usage on Windows:
 | -------------------- | ------------------------------------------- |
 | CMAKE_BUILD_TYPE     | The type of build (`Release`, `Debug`, etc) |
 | CMAKE_INSTALL_PREFIX | Location to install the Maya module.        |
+| MAYA_VERSION         | Maya version to build for.                  |
 | MAYA_INCLUDE_PATH    | Directory to the Maya header include files  |
 | MAYA_LIB_PATH        | Directory to the Maya library files         |
 | LEVMAR_INCLUDE_PATH  | Directory to levmar header includes         |
@@ -123,6 +124,12 @@ only one. If `ATLAS` and `Intel MKL` are not required you may set both
 You can read any of the build scripts to find out how they work.
 The build scripts can be found in `<project root>/build_with_*.sh`
 and `<project root>/external/*.sh`.
+
+If you are new to building Maya plug-ins using CMake, we recommend 
+watching these videos by Chad Vernon:
+
+* [Compiling Maya Plug-ins with CMake (Part 1)](https://www.youtube.com/watch?v=2mUOt_F2ywo)
+* [Compiling Maya Plug-ins with CMake (Part 2)](https://www.youtube.com/watch?v=C56N5KgDaTg)
 
 # Building Packages
 

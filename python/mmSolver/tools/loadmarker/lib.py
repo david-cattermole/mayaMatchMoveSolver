@@ -86,7 +86,17 @@ def get_cameras():
 
 
 def get_file_path_format(text):
+    """
+    Look up the Format from the file path.
+
+    :param text: File path text.
+
+    :returns: Format for the file path, or None if not found.
+    :rtype: None or Format
+    """
     format_ = None
+    if isinstance(text, (str, unicode)) is False:
+        return format_
     if os.path.isfile(text) is False:
         return format_
     fmt_mgr = formatmanager.get_format_manager()
@@ -103,6 +113,16 @@ def get_file_path_format(text):
 
 
 def is_valid_file_path(text):
+    """
+    Is the given text a file path we can load as a marker?
+
+    :param text: A possible file path string.
+    :type text: str
+
+    :returns: File path validity.
+    :rtype: bool
+    """
+    assert isinstance(text, (str, unicode))
     fmt = get_file_path_format(text)
     valid = fmt is not None
     return valid
@@ -113,8 +133,10 @@ def get_file_info(file_path):
     Get the file path information.
 
     :param file_path: The marker file path to get info for.
+    :type file_path: str
 
-    :return
+    :return Dictionary of various information about the given
+            file path.
     :rtype: dict
     """
     info = {

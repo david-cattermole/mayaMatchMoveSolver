@@ -70,11 +70,39 @@ def __create_node(mkr_data, cam, mkr_grp, with_bundles):
     return mkr
 
 
-def __set_attr_keyframes(node, attr_name, keyframes):
+def __set_attr_keyframes(node, attr_name, keyframes,
+                         before_value=None,
+                         after_value=None):
+    """
+    Set keyframes on a node.attribute, from a KeyframeData instance.
+
+    :param before_value: Value to set before the first keyframe.
+    :param after_value: Value to set after the first keyframe.
+
+    :returns: Maya API MFnAnimCurve object.
+    :rtype: OpenMaya.MFnAnimCurve
+    """
     if isinstance(keyframes, interface.KeyframeData) is False:
         msg = 'keyframes must be type %r'
         raise TypeError(msg % interface.KeyframeData.__name__)
     times, values = keyframes.get_times_and_values()
+    assert len(times) == len(values)
+
+    # Set an extra value before/after the first/last keyframe.
+    if len(times) > 0:
+        if before_value is not None:
+            start_time = times[0]
+            times = [start_time - 1] + times
+            values = [before_value] + values
+        if after_value is not None:
+            end_time = times[-1]
+            times = times + [end_time + 1]
+            values = values + [after_value]
+
+    # TODO: Reduce keyframes, if we can, we don't need per-frame
+    # keyframes if the data is the same. Change the times/values just
+    # before we set the keyframes
+
     node_attr = node + '.' + attr_name
     animFn = mmapi.create_anim_curve_node(times, values, node_attr)
     return animFn
@@ -116,9 +144,6 @@ def __set_node_data(mkr, mkr_data):
     mkr_enable = mkr_data.get_enable()
     mkr_weight = mkr_data.get_weight()
 
-    # TODO: Reduce keyframes, if we can, we don't need per-frame keyframes if
-    # the data is the same.
-
     # Unlock
     maya.cmds.setAttr(mkr_node + '.translateX', lock=False)
     maya.cmds.setAttr(mkr_node + '.translateY', lock=False)
@@ -128,7 +153,9 @@ def __set_node_data(mkr, mkr_data):
     # Set keyframes.
     __set_attr_keyframes(mkr_node, 'translateX', mkr_x)
     __set_attr_keyframes(mkr_node, 'translateY', mkr_y)
-    __set_attr_keyframes(mkr_node, 'enable', mkr_enable)
+    __set_attr_keyframes(mkr_node, 'enable', mkr_enable,
+                         before_value=False,
+                         after_value=False)
     __set_attr_keyframes(mkr_node, 'weight', mkr_weight)
 
     # Lock

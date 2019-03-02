@@ -54,13 +54,16 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
     def test_loadmarker_uvtrack_format(self):
         """
         Test loading markers using the '.uv' format.
-
-        TODO: Make sure to test both formats, format 1 and 2.
         """
         mkr_data_list = []
         paths = [
             self.get_data_path('uvtrack', 'test_v1.uv'),
             self.get_data_path('uvtrack', 'loadmarker_corners.uv'),
+            self.get_data_path('uvtrack', 'cameraTrackRnD.uv'),
+            self.get_data_path('uvtrack', 'stA.uv'),
+            self.get_data_path('uvtrack', 'stA_with_emptyMarker.uv'),
+            self.get_data_path('uvtrack', 'eye_fmt1_v001.uv'),
+            self.get_data_path('uvtrack', 'eye_fmt2_v001.uv'),
         ]
         for path in paths:
             print('Reading... %r' % path)

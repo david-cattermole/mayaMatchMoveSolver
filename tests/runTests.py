@@ -41,7 +41,12 @@ if __name__ == '__main__':
             suites.append(s)
         final_suite = unittest.TestSuite()
         final_suite.addTests(suites)
-    unittest.TextTestRunner().run(final_suite)
+    runner = unittest.TextTestRunner()
+    results = runner.run(final_suite)
 
     if maya.cmds.about(batch=True):
-        maya.cmds.quit(force=True)
+        if results.wasSuccessful() is True:
+            maya.cmds.quit(force=True)
+        else:
+            print >> sys.stderr, "Tests failed!"
+            exit(1)

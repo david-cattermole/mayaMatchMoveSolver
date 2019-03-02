@@ -35,7 +35,7 @@
 #include <mayaUtils.h>
 
 #include <mmSolverFunc.h>  // solveFunc, SolverData
-#include <mmSolverCminpack.h>
+#include <mmSolverCMinpack.h>
 
 
 // 'data' is a pointer to a user data that was passed to 'lmdif'.

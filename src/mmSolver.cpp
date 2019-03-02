@@ -11,9 +11,9 @@
 #endif // USE_SOLVER_LEVMAR
 
 // CMinpack
-// #ifdef USE_SOLVER_CMINPACK
-#include <cminpack.h>  //
-// #endif // USE_SOLVER_CMINPACK
+#ifdef USE_SOLVER_CMINPACK
+#include <cminpack.h>  // lmdif
+#endif // USE_SOLVER_CMINPACK
 
 // STL
 #include <ctime>     // time
@@ -439,9 +439,6 @@ bool solve(int iterMax,
     bool useWaitCursor = true;
     computation.setProgressRange(0, iterMax);
     computation.beginComputation(showProgressBar, isInterruptable, useWaitCursor);
-
-    // Determine the solver type, levmar, sparse levmar or ceres, etc.
-    assert(solverType == SOLVER_TYPE_LEVMAR);
 
     // Start Solving
     solveBenchTimer.start();

@@ -2,7 +2,7 @@
 #
 # 3DE4.script.name:     Export 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version:  v1.4
+# 3DE4.script.version:  v1.5
 #
 # 3DE4.script.gui:      Main Window::3DE4::File::Export
 # 3DE4.script.gui:      Object Browser::Context Menu Point
@@ -12,6 +12,10 @@
 # 3DE4.script.comment:  Writes 2D tracking curves (including
 # 3DE4.script.comment:  frame-by-frame weights) of all selected points
 # 3DE4.script.comment:  to a UV Tracks file.
+# 3DE4.script.comment:
+# 3DE4.script.comment:  To use the file with MM Solver in Maya, open the
+# 3DE4.script.comment:  Load Markers UI in Maya to load the .uv file.
+# 3DE4.script.comment:
 # 3DE4.script.comment:  All 2D Tracks are resolution independent.
 #
 #

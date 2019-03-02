@@ -52,83 +52,6 @@ For the next steps, see
 [BUILD.md]([[https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md]])
  for more details.
 
-# Build with levmar and ATLAS
-
-After the build script variables are set, you can now run the build
-script.
-
-This section is for compiling with the free and open-source library
-`ATLAS`.
-
-This method will use the `levmar` algorithm, and `Automatically Tuned
-Linear Algebra Software (ATLAS)` for performance computation and
-stability. `ATLAS` is Free Open Source Software, Using a third-party
-maths library is recommended by the `levmar` project.
-
-This will assume `atlas` is installed via yum on CentOS 7.x. If you
-wish to build your own custom `atlas` library it is an undocumented
-exercise for the user. On CentOS 7.x you may install `atlas` with the
-following command (as `root` user):
-
-```commandline
-$ yum install atlas.x86_64 atlas-devel.x86_64
-$ yum install lapack64.x86_64 lapack64-devel.x86_64
-```
-
-After ATLAS has been installed, you may build `mmSolver`
-with ATLAS using these commands:
-```commandline
-$ cd <project root>
-$ bash external/download_all_archives.sh  # Download archives (only required once)
-$ bash build_with_atlas.sh
-```
-
-NOTE: Replace ``<project root>`` as required.
-
-Following the steps above you should have the Maya plug-in compiled,
-and installed into your
-`~/maya/MAYA_VERSION/modules` directory.
-
-For the next steps, see
-[BUILD.md]([[https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md]])
- for more details.
-
-# Build with levmar and Intel MKL
-
-After the build script variables are set, you can now run the build
-script.
-
-This method will use both the `levmar` algorithm, as well as
-highly-optimised libraries for computation; `Intel Math Kernel
-Libraries (Intel MKL)`. `Intel MKL` is proprietary closed-source
-software. Using a third-party maths library is recommended by the
-`levmar` project.
-
-Intel MKL must be installed manually, this build script will not
-install it for you. You will need to sign up, download and install
-from the [Intel MKL website](https://software.intel.com/en-us/mkl).
-
-The instructions below assume Intel MKL is installed under
-`/opt/intel/mkl`, you will need to modify the scripts if this location
-is not correct on your system.
-
-To build with `Intel MKL`, run these command:
-```commandline
-$ cd <project root>
-$ bash external/download_all_archives.sh  # Download archives (only required once)
-$ bash build_with_intel_mkl.sh
-```
-
-NOTE: Replace ``<project root>`` as required.
-
-Following the steps above you should have the Maya plug-in compiled,
-and installed into your
-`~/maya/MAYA_VERSION/modules` directory.
-
-For the next steps, see
-[BUILD.md]([[https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md]])
- for more details.
-
 # CMake Build Script
 
 For those needing or wanting to compile the ``mmSolver`` Maya plug-in
@@ -178,6 +101,12 @@ only one. If `ATLAS` and `Intel MKL` are not required you may set both
 You can read any of the build scripts to find out how they work.
 The build scripts can be found in `<project root>/build_with_*.sh`
 and `<project root>/external/*.sh`.
+
+If you are new to building Maya plug-ins using CMake, we recommend 
+watching these videos by Chad Vernon:
+
+* [Compiling Maya Plug-ins with CMake (Part 1)](https://www.youtube.com/watch?v=2mUOt_F2ywo)
+* [Compiling Maya Plug-ins with CMake (Part 2)](https://www.youtube.com/watch?v=C56N5KgDaTg)
 
 # Building Packages
 

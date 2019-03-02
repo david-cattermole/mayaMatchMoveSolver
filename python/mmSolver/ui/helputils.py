@@ -56,7 +56,8 @@ def get_help_base_location(help_source=None):
                         (but not the source itself.)
 
     :return: URL able to be opened by a web-browser, expected to point
-    to a .html file, on a network, or on the local file system.
+             to a .html file, on a network, or on the local file
+             system.
     :rtype: str
 
     """
@@ -65,9 +66,21 @@ def get_help_base_location(help_source=None):
     if help_source == HELP_SOURCE_LOCAL:
         url = os.environ.get(ENV_VAR_NAME_LOCATION, None)
         if url is None:
+            msg = (
+                'The help URL cannot be found from environment variables,'
+                'Your mmSolver installation may be incorrect?'
+                ' name=%r value=%r'
+            )
+            LOG.warning(msg, ENV_VAR_NAME_LOCATION, url)
             return None
         url = os.path.join(url, 'docs/html/')
         if os.path.isdir(url) is False:
+            msg = (
+                'The help URL cannot be found! '
+                'Your installation may be missing documentation. '
+                'url=%r'
+            )
+            LOG.warning(msg, url)
             return None
     elif help_source == HELP_SOURCE_INTERNET:
         url = str(WEB_SITE_HELP_LOCATION)

@@ -72,6 +72,8 @@ from mmSolver._api.utils import (
     set_data_on_node_attr,
     get_value_on_node_attr,
     set_value_on_node_attr,
+    is_solver_running,
+    set_solver_running,
 )
 
 # Animation Utility functions that the user is allowed to use.
@@ -135,6 +137,8 @@ __all__ = [
     'set_data_on_node_attr',
     'get_value_on_node_attr',
     'set_value_on_node_attr',
+    'is_solver_running',
+    'set_solver_running',
     'combine_timer_stats',
     'merge_frame_error_list',
     'get_average_frame_error_list',

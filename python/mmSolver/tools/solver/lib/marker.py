@@ -54,36 +54,50 @@ def add_callbacks_to_markers(mkr_list, update_func, callback_manager):
     for mkr_obj in mkr_list:
         # Marker
         mkr_node_path = mkr_obj.get_node()
-        _add_callback_to_any_node(callback_manager, callback_type,
-                                  mkr_node_path, maya_callbacks.add_callbacks_to_marker,
-                                  update_func)
+        _add_callback_to_any_node(
+            callback_manager,
+            callback_type,
+            mkr_node_path,
+            maya_callbacks.add_callbacks_to_marker,
+            update_func)
 
         # Bundle
         bnd_obj = mkr_obj.get_bundle()
         bnd_node_path = bnd_obj.get_node()
-        _add_callback_to_any_node(callback_manager, callback_type,
-                                  bnd_node_path, maya_callbacks.add_callbacks_to_bundle,
-                                  update_func)
+        _add_callback_to_any_node(
+            callback_manager,
+            callback_type,
+            bnd_node_path,
+            maya_callbacks.add_callbacks_to_bundle,
+            update_func)
 
         # Marker Group
         mkrgrp_obj = mkr_obj.get_marker_group()
         mkrgrp_node_path = mkrgrp_obj.get_node()
-        _add_callback_to_any_node(callback_manager, callback_type,
-                                  mkrgrp_node_path, maya_callbacks.add_callbacks_to_marker_group,
-                                  update_func)
+        _add_callback_to_any_node(
+            callback_manager,
+            callback_type,
+            mkrgrp_node_path,
+            maya_callbacks.add_callbacks_to_marker_group,
+            update_func)
 
         # Camera Transform
         cam_obj = mkr_obj.get_camera()
         cam_tfm_node_path = cam_obj.get_transform_node()
-        _add_callback_to_any_node(callback_manager, callback_type,
-                                  cam_tfm_node_path, maya_callbacks.add_callbacks_to_camera,
-                                  update_func)
+        _add_callback_to_any_node(
+            callback_manager,
+            callback_type,
+            cam_tfm_node_path, maya_callbacks.add_callbacks_to_camera,
+            update_func)
 
         # Camera Shape
         cam_shp_node_path = cam_obj.get_shape_node()
-        _add_callback_to_any_node(callback_manager, callback_type,
-                                  cam_shp_node_path, maya_callbacks.add_callbacks_to_camera,
-                                  update_func)
+        _add_callback_to_any_node(
+            callback_manager,
+            callback_type,
+            cam_shp_node_path,
+            maya_callbacks.add_callbacks_to_camera,
+            update_func)
     return
 
 
@@ -113,7 +127,8 @@ def remove_callbacks_from_markers(mkr_list, callback_manager):
                 LOG.warning(msg, node_path, node_uuids)
                 continue
             node_uuid = node_uuids[0]
-            if callback_manager.type_has_node(callback_type, node_uuid) is False:
+            have_type = callback_manager.type_has_node(callback_type, node_uuid)
+            if have_type is False:
                 continue
             callback_manager.remove_type_node_ids(
                 callback_type,

@@ -346,6 +346,8 @@ def attribute_changed_func(callback_msg, plugA, plugB, clientData):
     :return: Nothing.
     :rtype: None
     """
+    if mmapi.is_solver_running() is True:
+        return
     node_uuid = clientData[0]
     update_func = clientData[1]
     if (callback_msg & OpenMaya.MNodeMessage.kConnectionMade

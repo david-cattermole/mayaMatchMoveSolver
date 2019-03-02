@@ -2,6 +2,8 @@
 The Create Bundle tool.
 """
 
+import warnings
+
 import maya.cmds
 
 import mmSolver.logger
@@ -13,7 +15,7 @@ import mmSolver.tools.linkmarkerbundle.lib as linkmarkerbundle_lib
 LOG = mmSolver.logger.get_logger()
 
 
-def create_bundle():
+def main():
     """
     Create a new Bundle, attached to the selected Marker (if a Marker
     is selected)
@@ -35,3 +37,8 @@ def create_bundle():
 
     maya.cmds.select(bnd.get_node(), replace=True)
     return
+
+
+def create_bundle():
+    warnings.warn("Use 'main' function instead.")
+    main()

@@ -28,6 +28,14 @@ def create_shelf(parent=None, name=None):
     If a shelf with 'name' is already exists, the exising shelf will
     be deleted, and re-created under the 'parent' argument given.
 
+    :param parent: What layout will this shelf be placed under?
+    :type parent: str
+
+    :param name: Name (label) of the shelf displayed to the user.
+                 The value should only contain characters A-Z
+                 (or a-z) and underscores '_'.
+    :type name: str
+
     :return: Shelf UI path, or None if cannot be found.
     :rtype: str or None
     """
@@ -71,6 +79,32 @@ def create_shelf_button(parent=None,
                         cmdLanguage=None):
     """
     Create a shelf button.
+
+    :param parent: What should this control be placed under?
+    :type parent: str
+
+    :param name: Name (label) of the shelf button. Should be under
+                 seven characters long.
+    :type name: str
+
+    :param tooltip: The text shown to the user when hovering the mouse
+                    over the shelf button.
+    :type tooltip: str
+
+    :param icon: Choose the image to display on the shelf button.
+                 Should be 32x32 pixels.
+    :type icon: str
+
+    :param cmd: The command text to run when the shelf button is
+                pressed.
+    :type cmd: str
+
+    :param cmdLanguage: What language is 'cmd' argument in? 'python'
+                        or 'mel'?
+    :type cmdLanguage: str
+
+    :returns: Maya button UI control path.
+    :rtype: str
     """
     assert parent is not None
     assert isinstance(parent, basestring)
@@ -97,13 +131,12 @@ def create_shelf_button(parent=None,
         image1 = str(icon)
     if isinstance(cmd, basestring):
         command = str(cmd)
-        doubleClickCommand = str(cmd)
     if cmdLanguage is None:
         sourceType = 'python'
     elif isinstance(cmdLanguage, basestring):
         sourceType = str(cmdLanguage)
     else:
-        msg = 'cmdLanguage must be None or str: cmdLanguag=%r'
+        msg = 'cmdLanguage must be None or str: cmdLanguage=%r'
         LOG.error(msg, cmdLanguage)
         raise ValueError(msg, cmdLanguage)
 
@@ -115,7 +148,6 @@ def create_shelf_button(parent=None,
         imageOverlayLabel=imageOverlayLabel,
         sourceType=sourceType,
         command=command,
-        doubleClickCommand=doubleClickCommand,
         noDefaultPopup=True,
         preventOverride=True,
     )
@@ -124,7 +156,13 @@ def create_shelf_button(parent=None,
 
 def create_shelf_separator(parent=None):
     """
-    Create a shelf button.
+    Create a shelf button separator.
+
+    :param parent: What should this control be placed under?
+    :type parent: str
+
+    :returns: Maya separator UI control path.
+    :rtype: str
     """
     assert parent is not None
     assert isinstance(parent, basestring)
@@ -134,3 +172,91 @@ def create_shelf_separator(parent=None):
         horizontal=False
     )
     return control
+
+
+def create_popup_menu(parent=None,
+                      button=None):
+    """
+    Create a Pop-Up menu (for a shelf button).
+
+    :param parent: What should this control be placed under?
+    :type parent: str
+
+    :param button: Which mouse button should active this pop-up menu?
+                   1=left, 2=middle, 3=right mouse button.
+    :type button: str
+
+    :returns: Maya popup menu UI control path.
+    :rtype: str
+    """
+    assert parent is not None
+    assert isinstance(parent, basestring)
+    if button is None:
+        button = 3
+    assert isinstance(button, int)
+    menu = maya.cmds.popupMenu(
+        parent=parent,
+        button=button)
+    return menu
+
+
+def create_menu_item(parent=None,
+                     name=None,
+                     tooltip=None,
+                     cmd=None,
+                     cmdLanguage=None):
+    """
+    Create a Menu Item on a menu.
+
+    :param parent: Which menu should this menu item be placed under?
+    :type parent: str
+
+    :param name: Name (label) of the menu item button.
+    :type name: str
+
+    :param tooltip: The text shown to the user in the status line, when
+                    the user has the mouse over the menu item.
+    :type tooltip: str
+
+    :param cmd: The command text to run when the menu item is pressed.
+    :type cmd: str
+
+    :param cmdLanguage: What language is 'cmd' argument in? 'python'
+                        or 'mel'?
+    :type cmdLanguage: str
+
+    :returns: Maya menu item UI control path.
+    :rtype: str
+    """
+    assert parent is not None
+    assert isinstance(parent, basestring)
+    assert name is None or isinstance(name, basestring)
+    assert tooltip is None or isinstance(tooltip, basestring)
+    assert cmd is None or isinstance(cmd, basestring)
+
+    label = 'label'
+    annotation = ''
+    sourceType = 'python'
+    command = None
+    if isinstance(name, basestring):
+        label = str(name)
+    if isinstance(cmd, basestring):
+        command = str(cmd)
+    if cmdLanguage is None:
+        sourceType = 'python'
+    elif isinstance(cmdLanguage, basestring):
+        sourceType = str(cmdLanguage)
+    else:
+        msg = 'cmdLanguage must be None or str: cmdLanguage=%r'
+        LOG.error(msg, cmdLanguage)
+        raise ValueError(msg, cmdLanguage)
+
+    item = maya.cmds.menuItem(
+        parent=parent,
+        label=label,
+        annotation=annotation,
+        command=cmd,
+        sourceType=sourceType,
+
+    )
+    return item

@@ -440,9 +440,6 @@ bool solve(int iterMax,
     computation.setProgressRange(0, iterMax);
     computation.beginComputation(showProgressBar, isInterruptable, useWaitCursor);
 
-    // Determine the solver type, levmar, sparse levmar or ceres, etc.
-    assert(solverType == SOLVER_TYPE_LEVMAR);
-
     // Start Solving
     solveBenchTimer.start();
     solveBenchTicks.start();

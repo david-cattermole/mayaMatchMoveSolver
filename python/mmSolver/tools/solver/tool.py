@@ -12,7 +12,8 @@ LOG = mmSolver.logger.get_logger()
 
 
 def run_solve(override_current_frame=None):
-    """Run the solver for the active collection.
+    """
+    Run the solver for the active collection.
 
     If the Solver UI is found, the window will update and show
     progress messages.

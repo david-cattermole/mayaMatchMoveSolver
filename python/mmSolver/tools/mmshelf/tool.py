@@ -266,6 +266,23 @@ def build_shelf():
         'import mmSolver.tools.raycastmarker.tool;'
         'mmSolver.tools.raycastmarker.tool.main();'
     )
+
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # screen-space Z
+    name = 'ATC'
+    tooltip = 'screen-space Z.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.screenzmanipulator.tool;'
+        'mmSolver.tools.screenzmanipulator.tool.main();'
+    )
     shelfutils.create_shelf_button(
         parent=shelf,
         name=name,

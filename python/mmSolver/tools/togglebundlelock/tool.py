@@ -13,18 +13,11 @@ LOG = mmSolver.logger.get_logger()
 def toggle_bundle_lock():
     """
     Toggles selected bundle lock state.
-    :return: None
     """
-
-    selection = maya.cmds.ls(sl=True, long=True) or []
-    if not selection:
-        LOG.warning('Please select bundle\'s to lock or unlock')
-        return
-
+    selection = maya.cmds.ls(selection=True, long=True) or []
     selected_bundles = filternodes.get_bundle_nodes(selection)
-
-    if not selected_bundles:
-        LOG.warning('Please select bundle\'s to lock or unlock')
+    if len(selected_bundles) > 0:
+        LOG.warning("Please select bundle's to lock or unlock")
         return
 
     attrs = const.ATTRS
@@ -33,15 +26,12 @@ def toggle_bundle_lock():
         for attr in attrs:
             bundle_attrs.append('%s.%s' % (bundle, attr))
 
-    is_locked = []
+    is_locked = False
     for attr in bundle_attrs:
         if maya.cmds.getAttr(attr, lock=True):
             is_locked = True
 
     for attr in bundle_attrs:
-        if is_locked:
-            maya.cmds.setAttr(attr, lock=False)
-        else:
-            maya.cmds.setAttr(attr, lock=True)
+        lock_value = not is_locked
+        maya.cmds.setAttr(attr, lock=lock_value)
     return
-

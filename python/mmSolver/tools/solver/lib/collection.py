@@ -420,7 +420,7 @@ def execute_collection(col,
     LOG.debug(msg, col, log_level, refresh, prog_fn, status_fn)
 
     assert isinstance(refresh, bool)
-    assert log_level is None or isinstance(log_level, str)
+    assert log_level is None or isinstance(log_level, (str, unicode))
     assert prog_fn is None or hasattr(prog_fn, '__call__')
     assert status_fn is None or hasattr(status_fn, '__call__')
 

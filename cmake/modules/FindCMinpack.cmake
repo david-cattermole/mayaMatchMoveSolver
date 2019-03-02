@@ -12,7 +12,7 @@ find_path(CMINPACK_INCLUDE_DIR cminpack.h
 )
 # message("CMINPACK_INCLUDE_DIR = ${CMINPACK_INCLUDE_DIR}")
 
-find_library(CMINPACK_LIBRARY cminpack cminpack_s
+find_library(CMINPACK_LIBRARY libcminpack.so.1 libcminpack_s cminpack cminpack_s
     HINTS
         ${CMINPACK_ROOT}
         /usr/lib
@@ -20,6 +20,7 @@ find_library(CMINPACK_LIBRARY cminpack cminpack_s
     PATH_SUFFIXES
         bin/
         lib/
+        lib64/
 )
 # message("CMINPACK_LIBRARY = ${CMINPACK_LIBRARY}")
 

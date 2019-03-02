@@ -298,6 +298,23 @@ elseif (WIN32)
     set_target_properties(mmSolver PROPERTIES SUFFIX ".mll")
 endif()
 
+# HACK: On Linux, LD_LIBRARY_PATH cannot be modified at runtime (on
+# Windows it can), therefore the .mod files *can* change
+# LD_LIBRARY_PATH, but the changes are not used by 'ld.so', which
+# resolves the library path. Therefore, to make sure the the libraries
+# in <module root>/lib are searched for libraries, we add a relative
+# directory 'RPATH' to the library which tells the library resolution
+# to search in the 'lib' directory inside the module root. Note: Linux
+# does not allow run-time changes for security reasons.
+if(UNIX)
+    # We must escape the '$' symbol to make sure it is passed to the
+    # compiler.
+    set_target_properties(mmSolver PROPERTIES
+         BUILD_WITH_INSTALL_RPATH ON
+         INSTALL_RPATH "\$ORIGIN/../lib"
+    )
+endif()
+
 # Output to the Module plug-ins directory.
 #
 # On Windows, the Plug-In is treated as a 'RUNTIME' type,

@@ -62,14 +62,17 @@ ENDIF(HAVE_PLASMA)
 
 # levmar library source files
 IF(BUILD_SHARED_LIBS)
-  CMAKE_MINIMUM_REQUIRED(VERSION 3.4.3)
   ADD_LIBRARY(levmar SHARED
     lm.c Axb.c misc.c lmlec.c lmbc.c lmblec.c lmbleic.c
     levmar.h misc.h compiler.h
   )
-  SET_TARGET_PROPERTIES(levmar
-        PROPERTIES
-          WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  IF(WIN32)
+    CMAKE_MINIMUM_REQUIRED(VERSION 3.4.3)
+    SET_TARGET_PROPERTIES(levmar
+          PROPERTIES
+            WINDOWS_EXPORT_ALL_SYMBOLS ON
+    )
+  ENDIF()
 ELSE()
   ADD_LIBRARY(levmar STATIC
     lm.c Axb.c misc.c lmlec.c lmbc.c lmblec.c lmbleic.c

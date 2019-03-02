@@ -94,7 +94,7 @@ def run_solve_on_all_frames():
     """
     Run the solver, forcing 'Override Current Frame' off.
     """
-    run_solve(override_current_frame=True)
+    run_solve(override_current_frame=False)
     return
 
 

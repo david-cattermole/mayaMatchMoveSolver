@@ -23,6 +23,12 @@ LOG = mmSolver.logger.get_logger()
 
 
 def get_collections():
+    """
+    Get all Collection objects defined in the scene.
+
+    :returns: A list of Collection objects.
+    :rtype: [Collection, ..]
+    """
     nodes = maya.cmds.ls(type='objectSet', long=True) or []
     node_categories = filter_nodes.get_nodes(nodes)
     cols = []
@@ -33,6 +39,12 @@ def get_collections():
 
 
 def create_collection():
+    """
+    Create a new Collection in the scene.
+
+    :returns: A new Collection object.
+    :rtype: Collection
+    """
     col = mmapi.Collection().create_node('collection1')
     sol = solver_utils.create_solver()
     solver_utils.add_solver_to_collection(sol, col)
@@ -43,6 +55,15 @@ def create_collection():
 
 
 def rename_collection(col, new_name):
+    """
+    Rename a Collection node name.
+
+    :param col: Collection object to rename.
+    :type col: Collection
+
+    :param new_name: The new name to rename the Collection to.
+    :type new_name: str
+    """
     if col is None:
         msg = 'rename_collection: Can not rename, collection invalid.'
         LOG.warning(msg)
@@ -57,6 +78,12 @@ def rename_collection(col, new_name):
 
 
 def delete_collection(col):
+    """
+    Delete a Collection object (and underlying Maya node).
+    
+    :param col: The Collection object to delete.
+    :type col: Collection
+    """
     if col is None:
         return
     node = col.get_node()
@@ -69,6 +96,9 @@ def delete_collection(col):
 def select_collection(col):
     """
     Select the collection node, not the members of the collection node.
+
+    :param col: The Collection object to select.
+    :type col: Collection
     """
     if col is None:
         return
@@ -94,8 +124,6 @@ def select_collection(col):
             pass
     OpenMaya.MGlobal.setActiveSelectionList(sel_list)
     return
-
-######################
 
 
 def set_solver_results_on_collection(col, solres_list):
@@ -206,6 +234,9 @@ def ensure_override_current_frame_attr_exists(col):
 
 
 def create_solver_step():
+    """
+    Create a SolverStep object and return it.
+    """
     data = const.SOLVER_STEP_DATA_DEFAULT.copy()
 
     data['name'] = str(uuid.uuid4())

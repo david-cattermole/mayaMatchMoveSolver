@@ -1,6 +1,16 @@
 @ECHO OFF
 SETLOCAL
-:: Builds the Maya plug-in with cminpack.
+:: Builds the Maya MatchMove Solver project.
+
+:: Maya directories
+::
+:: If you're not using Maya 2017 or have a non-standard install location,
+:: set these variables here.
+::
+:: Note: Do not enclose the MAYA_VERSION in quotes, it will
+::       lead to tears.
+SET MAYA_VERSION=2017
+SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2017"
 
 :: Clear all build information before re-compiling.
 :: Turn this off when wanting to make small changes and recompile.
@@ -16,16 +26,6 @@ SET GENERATE_SOLUTION=0
 :: WARNING: Would you like to use GPL-licensed code? If so you will
 :: not be able to distribute
 SET WITH_GPL_CODE=0
-
-:: Maya directories
-::
-:: If you're not using Maya 2017 or have a non-standard install location,
-:: set these variables here.
-::
-:: Note: Do not enclose the MAYA_VERSION in quotes, it will
-::       lead to tears.
-SET MAYA_VERSION=2017
-SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2017"
 
 :: The root of this project.
 SET PROJECT_ROOT=%CD%

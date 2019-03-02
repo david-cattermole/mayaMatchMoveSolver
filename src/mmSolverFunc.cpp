@@ -1,5 +1,5 @@
 /*
- *
+ * The universal solving function, works with any solver.
  */
 
 // cminpack
@@ -43,7 +43,7 @@
 // Local solvers
 #include <mmSolver.h>
 #include <mmSolverFunc.h>
-#include <mmSolverCminpack.h>
+#include <mmSolverCMinpack.h>
 #include <mmSolverLevMar.h>
 
 #define FABS(x)     (((x)>=0)? (x) : -(x))

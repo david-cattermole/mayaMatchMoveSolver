@@ -1,3 +1,5 @@
+# Maya MatchMoveSolver build script.
+#
 cmake_minimum_required(VERSION 2.8)
 
 # Project configuration.
@@ -179,8 +181,6 @@ set(SOURCE_FILES
         src/MMSolverCmd.cpp
         src/pluginMain.cpp
 )
-
-
 
 # Find external packages
 find_package(Maya REQUIRED)

@@ -238,3 +238,18 @@ Run this Python command:
 
     import mmSolver.tools.duplicatemarker.tool
     mmSolver.tools.duplicatemarker.tool.main()
+
+Screen z manipulator
+----------------
+
+Aims the move manipulator tool at the active viewport camera.
+After aiming the move tool at the camera, the screen-space Z axis is
+highlighted, ready to be middle-click dragged
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.screenzmanipulator.tool
+    mmSolver.tools.screenzmanipulator.tool.main()
+

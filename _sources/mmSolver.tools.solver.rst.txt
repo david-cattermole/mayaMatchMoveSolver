@@ -13,13 +13,6 @@ Tool
    :members:
    :undoc-members:
 
-Constant
-++++++++
-
-.. automodule:: mmSolver.tools.solver.constant
-   :members:
-   :undoc-members:
-
 Maya Callbacks
 ++++++++++++++
 
@@ -138,5 +131,12 @@ Convert to UI
 -------------
 
 .. automodule:: mmSolver.tools.solver.ui.convert_to_ui
+   :members:
+   :undoc-members:
+
+Constant
+++++++++
+
+.. automodule:: mmSolver.tools.solver.constant
    :members:
    :undoc-members:

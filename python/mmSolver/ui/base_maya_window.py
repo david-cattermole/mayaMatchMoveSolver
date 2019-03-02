@@ -100,6 +100,11 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
         self.optionsLayout.addWidget(self.subForm)
         return True
 
+    def getSubForm(self):
+        """
+        Return an instance to the parented SubForm object.
+        """
+        return self.subForm
 
 def delete():
     # TODO: Is this deprecated???
@@ -116,15 +121,18 @@ def delete():
     WINDOW = None
     return
 
+#     WINDOW = None
+#     return
 
-def create(show=True):
-    # TODO: Is this deprecated???
-    global WINDOW
-    delete()
 
-    name = 'BaseMayaWindow'
-    WINDOW = BaseMayaWindow(name=name)
-    if show:
-        WINDOW.show()
+# def create(show=True):
+#     # TODO: Is this deprecated???
+#     global WINDOW
+#     delete()
 
-    return WINDOW
+#     name = 'BaseMayaWindow'
+#     WINDOW = BaseMayaWindow(name=name)
+#     if show:
+#         WINDOW.show()
+
+#     return WINDOW

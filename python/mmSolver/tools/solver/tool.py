@@ -60,7 +60,7 @@ def run_solve(override_current_frame=None):
         else:
             # The function should operate on the currently active
             # collection, so we don't need to pass a collection.
-            layout.setOverrideCurrentFrame(override_current_frame)
+            layout.setOverrideCurrentFrame(col, override_current_frame)
 
     # Run Solver
     lib_col.run_solve_ui(
@@ -78,7 +78,7 @@ def run_solve(override_current_frame=None):
                 prev_value
             )
         else:
-            layout.setOverrideCurrentFrame(prev_value)
+            layout.setOverrideCurrentFrame(col, prev_value)
     return
 
 

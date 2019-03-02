@@ -195,8 +195,7 @@ Usage:
 1) Select bundle nodes.
 
 2) Run tool.
-   - The selected bundle node attributes will be toggled between
-     locked and unlocked.
+   - The selected bundle node attributes will be toggled between locked and unlocked.
 
 Run this Python command:
 

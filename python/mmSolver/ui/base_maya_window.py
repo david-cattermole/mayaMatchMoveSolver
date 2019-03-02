@@ -3,12 +3,6 @@ The base window for usage inside Maya.
 
 All windows inside Maya should sub-class from BaseMayaWindow.
 
-Run the default MayaBaseWindow::
-
-    import mmSolver.ui.base_maya_window
-    reload(mmSolver.ui.base_maya_window)
-    mmSolver.ui.base_maya_window.create()
-
 Using the module::
 
     import mmSolver.tools.myTool.ui.ui_myTool as ui_myTool
@@ -100,31 +94,8 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
         self.optionsLayout.addWidget(self.subForm)
         return True
 
-
-def delete():
-    # TODO: Is this deprecated???
-    global WINDOW
-    if WINDOW is None:
-        return
-
-    name = 'BaseMayaWindow'
-    WINDOW = findWidget(name, QtWidgets.QWidget)
-    if WINDOW:
-        # window.close()  # or .deleteLater() ?
-        WINDOW.deleteLater()
-
-    WINDOW = None
-    return
-
-
-def create(show=True):
-    # TODO: Is this deprecated???
-    global WINDOW
-    delete()
-
-    name = 'BaseMayaWindow'
-    WINDOW = BaseMayaWindow(name=name)
-    if show:
-        WINDOW.show()
-
-    return WINDOW
+    def getSubForm(self):
+        """
+        Return an instance to the parented SubForm object.
+        """
+        return self.subForm

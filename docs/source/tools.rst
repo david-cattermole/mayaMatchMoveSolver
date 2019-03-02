@@ -10,8 +10,8 @@ Pages dedicated to specific tools:
 .. toctree::
     :maxdepth: 1
 
-    tools_solver_ui
-    tools_loadmarker
+   tools_solver_ui
+   tools_loadmarker
 
 Create Marker
 -------------
@@ -44,42 +44,6 @@ Run this Python command:
 
     import mmSolver.tools.convertmarker.tool as convertmarker_tool
     convertmarker_tool.main()
-
-Load Markers
-------------
-
-The Load Markers UI allows loading of .txt, .uv and .rz2 files.
-
-When opening the UI, the contents of the user’s clipboard is queried and
-if it looks like a file path, it will be automatically pasted into the
-“File Path”, so you won’t need to “Browse” for the file. In 3DEqualizer,
-I have a script designed to copy the selected 2D points to a temporary
-file path and then place that file path on the clipboard automatically.
-This would be my recommended workflow with 3DEqualizer.
-
-The “Camera” list contains all the cameras currently in the Maya scene.
-If no cameras are available (persp, front, top, left do not count), the
-default option is to “”. The “Update” button refreshes the “Camera” list
-without needing to close and re-open the UI.
-
-Once a file path is given, press the “Load” button.
-
-.. figure:: https://raw.githubusercontent.com/david-cattermole/mayaMatchMoveSolver/master/design/ui/loadMarkers.png
-    :alt: Load Markers UI
-
-    Load Markers UI
-
-For .txt, unfortunately the resolution is not yet given, and so you’ll
-need to scale the animation curves manually. The “Option” value is
-intended to become the resolution Width / Height for the .txt format,
-but is not yet connected up.
-
-Run this Python command:
-
-.. code:: python
-
-    import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
-    loadmarker_window.main()
 
 Create Bundle
 -------------
@@ -231,8 +195,7 @@ Usage:
 1) Select bundle nodes.
 
 2) Run tool.
-   - The selected bundle node attributes will be toggled between
-     locked and unlocked.
+   - The selected bundle node attributes will be toggled between locked and unlocked.
 
 Run this Python command:
 
@@ -261,3 +224,17 @@ Run this Python command:
 
     import mmSolver.tools.averagemarker.tool
     mmSolver.tools.averagemarker.tool.main()
+
+Duplicate marker
+----------------
+
+Duplicate marker tool will create a new markers having same position
+from the selected markers, this tool will duplicate on all selected
+markers.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.duplicatemarker.tool
+    mmSolver.tools.duplicatemarker.tool.main()

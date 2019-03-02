@@ -292,6 +292,22 @@ def build_shelf():
         cmd=cmd,
     )
 
+    # Duplicate Marker
+    name = 'DupMkr'
+    tooltip = 'Duplicate marker from selection.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.duplicatemarker.tool;'
+        'mmSolver.tools.duplicatemarker.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
     shelfutils.create_shelf_separator(parent=shelf)
 
     # Channel sensitivity UI

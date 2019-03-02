@@ -72,5 +72,9 @@ def main():
         lib.__set_lock_state(new_mkr_node, mkr_attrs, lock_value)
         new_mkr_nodes.append(new_mkr_node)
 
-    maya.cmds.select(new_mkr_nodes)
+    if len(new_mkr_nodes) > 0:
+        maya.cmds.select(new_mkr_nodes, replace=True)
+    else:
+        # Restore the original selection.
+        maya.cmds.select(selection, replace=True)
     return

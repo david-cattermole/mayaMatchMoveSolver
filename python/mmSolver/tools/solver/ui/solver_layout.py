@@ -309,6 +309,25 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             callback_manager = getattr(parentObject, 'callback_manager', None)
         return callback_manager
 
+    def setOverrideCurrentFrame(self, col, value):
+        """
+        Set the override status for the collection given.
+
+        Updates the relevant UI components with the new data.
+
+        :param col: The Collection to set.
+        :type col: Collection
+        
+        :param value: Should we override the current frame? Yes or No.
+        :type value: bool
+        """
+        assert isinstance(value, bool)
+        lib_col.set_override_current_frame_on_collection(col, value)
+        self.updateSolverModel()
+        self.updateSolveValidState()
+        self.setStatusLine(const.STATUS_READY)
+        return
+    
     def createNewCollectionNode(self):
         col = lib_col.create_collection()
         lib_state.set_active_collection(col)
@@ -608,8 +627,5 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         # 'value' from Qt is expected to be an int, we expect a bool.
         value = bool(value)
-        lib_col.set_override_current_frame_on_collection(col, value)
-        self.updateSolverModel()
-        self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
+        self.setOverrideCurrentFrame(col, value)
         return

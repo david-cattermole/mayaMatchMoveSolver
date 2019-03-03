@@ -145,9 +145,16 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMSolverTypeCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
-    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), MMMarkerScaleNode::m_id, status);
-    DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(), MMReprojectionNode::m_id, status);
-    DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(), MMMarkerGroupTransformNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), 
+                    MMMarkerScaleNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(), 
+                    MMReprojectionNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(), 
+                    MMMarkerGroupTransformNode::m_id, status);
+
     // DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     // DEREGISTER_COMMAND(plugin, MMTriangulateCmd::cmdName(), status);
     // DEREGISTER_COMMAND(plugin, MMMarkerScaleCmd::cmdName(), status);

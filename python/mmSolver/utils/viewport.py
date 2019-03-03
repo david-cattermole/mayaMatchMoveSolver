@@ -3,7 +3,6 @@ Utilities for setting and querying viewport related information.
 """
 import maya.cmds
 import mmSolver.logger
-import mmSolver.utils.node as node_utils
 import mmSolver.utils.camera as camera_utils
 
 LOG = mmSolver.logger.get_logger()

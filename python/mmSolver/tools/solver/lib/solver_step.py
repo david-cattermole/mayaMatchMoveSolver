@@ -37,7 +37,8 @@ def _gen_two_frame_fwd(int_list):
 
 
 def _solve_anim_attrs(max_iter_num, auto_diff_type, int_list):
-    """Solve only animated attributes.
+    """
+    Solve only animated attributes.
 
     .. todo::
        Split attributes into groups of markers. By definition
@@ -159,6 +160,10 @@ class SolverStep(object):
         :param col: The collection this solver step belongs to.
         :type col: Collection
 
+        :param override_current_frame: Forces the solve to only use
+                                       the current frame.
+        :type override_current_frame: bool
+
         :returns: List of solvers compiled from this solver step.
         :rtype: list of Solver
         """
@@ -172,14 +177,16 @@ class SolverStep(object):
         auto_diff_type = const.AUTO_DIFF_TYPE_DEFAULT_VALUE
 
         strategy = self.get_strategy()
-        int_list = self.get_frame_list()
 
         # If the option 'override current frame' is on, we ignore the
         # frames given and override with the current frame number.
+        int_list = []
         if override_current_frame is True:
             time = maya.cmds.currentTime(query=True)
             cur_frame = int(time)
             int_list = [cur_frame]
+        else:
+            int_list = self.get_frame_list()
 
         # Use number of different attributes later on to switch strategies.
         attr_list = col.get_attribute_list()
@@ -192,7 +199,7 @@ class SolverStep(object):
                 attrs_static_num += 1
 
         # If there are no static attributes, the solver will consider
-        # "use_static_attrs" to be off. The same as
+        # "use_static_attrs" to be off. 
         use_anim_attrs = self.get_use_anim_attrs() and attrs_anim_num > 0
         use_static_attrs = self.get_use_static_attrs() and attrs_static_num > 0
         if use_anim_attrs is True and use_static_attrs is False:

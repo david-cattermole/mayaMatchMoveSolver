@@ -48,51 +48,14 @@ set(CMINPACK_ROOT "/usr/local" CACHE PATH "CMinpack directory")
 #        "cminpack libraries to link")
 
 
-## BLAS
+## Extra Libraries
 #set(USE_BLAS OFF CACHE BOOLEAN "Should we use BLAS?")
 #set(BLAS_INCLUDE_PATH "/usr/include/blas" CACHE PATH "BLAS library directory")
 #set(BLAS_LIB_PATH "/usr/lib64/blas" CACHE PATH "BLAS library directory")
 #set(BLAS_LIB_NAMES
-#        "blas"
+#        ""
 #        CACHE STRING
 #        "BLAS libraries to link")
-
-## f2c (library libf2c)
-#set(USE_F2C OFF CACHE BOOLEAN "Should we use F2C?")
-#set(F2C_INCLUDE_PATH "/usr/include" CACHE PATH "F2C include directory")
-#set(F2C_LIB_PATH "/usr/lib64" CACHE PATH "F2C library directory")
-#set(F2C_LIB_NAMES
-#        "libf2c"
-#        CACHE STRING
-#        "f2c libraries to link")
-
-## LAPACK
-#set(USE_LAPACK OFF CACHE BOOLEAN "Should we use LAPACK?")
-#set(LAPACK_INCLUDE_PATH "/usr/include/lapack" CACHE PATH "LAPACK include directory")
-#set(LAPACK_LIB_PATH "/usr/lib64/lapack" CACHE PATH "LAPACK library directory")
-#set(LAPACK_LIB_NAMES
-#        "lapack"
-#        CACHE STRING
-#        "LAPACKlibraries to link")
-
-## ATLAS
-#set(USE_ATLAS OFF CACHE BOOLEAN "Should we use ATLAS?")
-#set(ATLAS_LIB_PATH "/usr/lib64/atlas" CACHE PATH "ATLAS library directory")
-#set(ATLAS_LIB_NAMES
-#        "lapack satlas" #  'satlas' means serial compiled library, not threaded"
-#        CACHE STRING
-#        "ATLAS libraries to link")
-
-## Intel Math Kernel Library
-#set(USE_MKL OFF CACHE BOOLEAN "Should we use MKL?")
-#set(MKL_LIB_PATH
-#        "/opt/intel/mkl/lib/intel64"
-#        CACHE PATH
-#        "Intel MKL library directory")
-#set(MKL_LIB_NAMES
-#        "mkl_core mkl_def mkl_gf_lp64 mkl_gnu_thread mkl_intel_lp64 mkl_intel_thread mkl_mc mkl_sequential"
-#        CACHE STRING
-#        "Intel MKL libraries to link")
 
 
 # Default Solver to use.
@@ -188,6 +151,7 @@ find_package(LevMar)
 find_package(CMinpack)
 
 # Compile Flags.
+#
 # Release flags come from the Autodesk Maya build scripts (and
 # Visual Studio project files).
 if (MSVC)
@@ -219,7 +183,6 @@ else()
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-deprecated -Wno-reorder -ftemplate-depth-35 -fno-gnu-keywords")
 endif()
 
-
 function (add_target_link_library_names target names)
     string(STRIP ${names} names_strip)
     string(REPLACE " " ";" names_list ${names_strip})
@@ -240,7 +203,6 @@ target_link_libraries(mmSolver
         ${MAYA_Foundation_LIBRARY}
 )
 
-
 if (USE_GPL_LEVMAR)
     message(WARNING
             "'levmar' library is licensed under GNU GPL and therefore this library "
@@ -256,31 +218,6 @@ if (USE_CMINPACK)
     target_link_libraries(mmSolver ${CMINPACK_LIBRARIES})
     add_definitions(-DUSE_SOLVER_CMINPACK)
 endif()
-
-#if (USE_F2C)
-#    add_target_link_library_names(mmSolver ${F2C_LIB_NAMES})
-#    #        ${F2C_INCLUDE_PATH}
-#endif()
-
-## Atlas
-#if (USE_ATLAS)
-#    if(USE_MKL)
-#        message(FATAL_ERROR "Cannot use both Atlas and Intel MKL, please change USE_MKL or USE_ATLAS to OFF.")
-#    endif()
-#    add_target_link_library_names(mmSolver ${ATLAS_LIB_NAMES})
-#    #        ${ATLAS_INCLUDE_PATH}
-#    #        ${BLAS_INCLUDE_PATH}
-#    #        ${LAPACK_INCLUDE_PATH}
-#endif()
-
-## Intel MKL
-#if (USE_MKL)
-#    if(USE_ATLAS)
-#        message(FATAL_ERROR "Cannot use both Atlas and Intel MKL, please change USE_MKL or USE_ATLAS to OFF.")
-#    endif()
-#    add_target_link_library_names(mmSolver ${MKL_LIB_NAMES})
-#    #        ${MKL_INCLUDE_PATH}
-#endif()
 
 # On Linux the 'm' library is required.
 if (UNIX)
@@ -373,36 +310,6 @@ if(USE_GPL_LEVMAR AND LEVMAR_FOUND)
     endif()
 endif()
 
-#if(USE_BLAS)
-#    install(DIRECTORY "${BLAS_LIB_PATH}/"
-#            DESTINATION "${MODULE_FULL_NAME}/lib"
-#            FILES_MATCHING PATTERN "*.dll" PATTERN "*.so")
-#endif()
-#
-#if(USE_LAPACK)
-#    install(DIRECTORY "${LAPACK_LIB_PATH}/"
-#            DESTINATION "${MODULE_FULL_NAME}/lib"
-#            FILES_MATCHING PATTERN "*.dll" PATTERN "*.so")
-#endif()
-#
-#if(USE_MKL)
-#    install(DIRECTORY "${MKL_LIB_PATH}/"
-#            DESTINATION "${MODULE_FULL_NAME}/lib"
-#            FILES_MATCHING PATTERN "*.dll" PATTERN "*.so")
-#endif()
-#
-#if(USE_ATLAS)
-#    install(DIRECTORY "${ATLAS_LIB_PATH}/"
-#            DESTINATION "${MODULE_FULL_NAME}/lib"
-#            FILES_MATCHING PATTERN "*.dll" PATTERN "*.so")
-#endif()
-#
-#if(USE_F2C)
-#    install(DIRECTORY "${F2C_LIB_PATH}/"
-#            DESTINATION "${MODULE_FULL_NAME}/lib"
-#            FILES_MATCHING PATTERN "*.dll" PATTERN "*.so")
-#endif()
-
 # Install Python API and tools
 install(DIRECTORY "python/"
         DESTINATION "${MODULE_FULL_NAME}/python"
@@ -447,6 +354,7 @@ install(FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/README.md
         DESTINATION "${MODULE_FULL_NAME}/")
 
+# Package Configuration.
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
 set(CPACK_PACKAGE_VENDOR "${PROJECT_AUTHOR}")

@@ -20,7 +20,7 @@ def main():
     selection = maya.cmds.ls(selection=True, long=True) or []
     selected_markers = filternodes.get_marker_nodes(selection)
     if len(selected_markers) < 2:
-        LOG.warning('Please select more than 2 markers')
+        LOG.warning('Please select more than 1 marker')
         return
 
     mkr_selection = selected_markers[0]

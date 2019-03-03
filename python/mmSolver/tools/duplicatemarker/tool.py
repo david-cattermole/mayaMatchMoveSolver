@@ -36,12 +36,14 @@ def main():
     for marker in selected_markers:
         # Get Marker's name
         mkr = mmapi.Marker(name=marker)
+        # old_mkr_node is expected to be a long name.
         old_mkr_node = mkr.get_node()
         if old_mkr_node is None:
             LOG.warning('Invalid Marker, skipping duplicate.')
             continue
-        mkr_name = old_mkr_node.rpartition('|')
-        mkr_name = 'dup' + mkr_name.capitalize()
+        mkr_name = old_mkr_node.rpartition('|')[-1]
+        mkr_name = mkr_name[0].upper() + mkr_name[1:]
+        mkr_name = 'dup' + mkr_name
 
         # Get Bundles's name
         bnd_name = 'dupBundle1'
@@ -50,8 +52,9 @@ def main():
             pass
         else:
             bnd_node = bnd.get_node()
-            bnd_name = bnd_node.rpartition('|')
-            bnd_name = 'dup' + bnd_name.capitalize()
+            bnd_name = bnd_node.rpartition('|')[-1]
+            bnd_name = bnd_name[0].upper() + bnd_name[1:]
+            bnd_name = 'dup' + bnd_name
 
         # get attrs lock state
         lock_value = lib.__get_lock_state(marker, mkr_attrs)

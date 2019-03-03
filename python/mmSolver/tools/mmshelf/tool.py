@@ -11,9 +11,23 @@ LOG = mmSolver.logger.get_logger()
 
 
 def _create_bundle_tools_menu(menu):
-    # Reproject a Bundle
-    name = 'Reproject Bundle'
-    tooltip = 'Reproject Bundle on top of Marker.'
+    # Toggle bundle lock
+    name = 'Toggle Bundle Lock-State'
+    tooltip = 'Toggle the Bundle node attribute Lock State.'
+    cmd = (
+        'import mmSolver.tools.togglebundlelock.tool as tglbndlock;'
+        'tglbndlock.toggle_bundle_lock();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
+
+    # Re-Project a Bundle
+    name = 'Re-Project Bundle'
+    tooltip = 'Re-Project Bundle on top of Marker.'
     cmd = (
         'import mmSolver.tools.reprojectbundle.tool;'
         'mmSolver.tools.reprojectbundle.tool.main();'
@@ -25,12 +39,72 @@ def _create_bundle_tools_menu(menu):
         cmd=cmd,
     )
 
+    # # Triangulate Bundle (multiple frames)
+    # name = 'Triangulate Bundle'
+    # tooltip = 'Use Marker to triangulate a 3D position for Bundle.'
+    # cmd = (
+    #     'import mmSolver.tools.triangulate.tool;'
+    #     'mmSolver.tools.triangulate.tool.main();'
+    # )
+    # shelfutils.create_menu_item(
+    #     parent=menu,
+    #     name=name,
+    #     tooltip=tooltip,
+    #     cmd=cmd,
+    # )
+
     # Ray Cast Marker
     name = 'Ray-Cast Marker'
     tooltip = 'Ray Cast Marker onto geometry.'
     cmd = (
         'import mmSolver.tools.raycastmarker.tool;'
         'mmSolver.tools.raycastmarker.tool.main();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
+
+    # Aim At Camera Screen-Space Z
+    name = 'Aim At Camera (Screen Z)'
+    tooltip = 'Screen-space Z.'
+    cmd = (
+        'import mmSolver.tools.screenzmanipulator.tool;'
+        'mmSolver.tools.screenzmanipulator.tool.main();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
+
+    return
+
+
+def _create_marker_tools_menu(menu):
+    # Duplicate Marker
+    name = 'Duplicate Marker'
+    tooltip = 'Duplicate marker from selection.'
+    cmd = (
+        'import mmSolver.tools.duplicatemarker.tool;'
+        'mmSolver.tools.duplicatemarker.tool.main();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
+
+    # Average Marker
+    name = 'Average Markers'
+    tooltip = 'Average marker from selection.'
+    cmd = (
+        'import mmSolver.tools.averagemarker.tool;'
+        'mmSolver.tools.averagemarker.tool.main();'
     )
     shelfutils.create_menu_item(
         parent=menu,
@@ -89,6 +163,22 @@ def build_shelf():
         cmd=cmd,
     )
 
+    # Convert to Marker
+    name = 'Convrt'
+    tooltip = 'Convert 3D Transform to Marker.'
+    icon = 'createMarker_32x32.png'
+    cmd = (
+        'import mmSolver.tools.convertmarker.tool;'
+        'mmSolver.tools.convertmarker.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
     # Load Marker
     name = 'Load...'
     tooltip = 'Load Marker.'
@@ -120,6 +210,96 @@ def build_shelf():
         icon=icon,
         cmd=cmd,
     )
+
+    shelfutils.create_shelf_separator(parent=shelf)
+
+    # Center 2D on Selected
+    name = 'Center'
+    tooltip = 'Center 2D on Selected.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.centertwodee.tool;'
+        'mmSolver.tools.centertwodee.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # Swap Markers / Bundles
+    name = 'M / B'
+    tooltip = 'Toggle Markers Bundles.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.selection.tools as selection_tool;'
+        'selection_tool.swap_between_selected_markers_and_bundles();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # Select Markers and Bundles
+    name = 'M + B'
+    tooltip = 'Select Markers and Bundles.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.selection.tools as selection_tool;'
+        'selection_tool.select_both_markers_and_bundles();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    shelfutils.create_shelf_separator(parent=shelf)
+
+    # Marker Tools
+    name = 'Tool'
+    tooltip = 'Marker Tools.'
+    icon = 'createMarker_32x32.png'
+    cmd = 'pass'
+    btn = shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # Create Menu Pop-Up (for both left and right mouse buttons)
+    menu_lmb = shelfutils.create_popup_menu(parent=btn, button=1)
+    menu_rmb = shelfutils.create_popup_menu(parent=btn, button=3)
+    _create_marker_tools_menu(menu_lmb)
+    _create_marker_tools_menu(menu_rmb)
+
+    # Bundle Tools
+    name = 'Tool'
+    tooltip = 'Bundle Tools.'
+    icon = 'createBundle_32x32.png'
+    cmd = 'pass'
+    btn = shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # Create Menu Pop-Up (for both left and right mouse buttons)
+    menu_lmb = shelfutils.create_popup_menu(parent=btn, button=1)
+    menu_rmb = shelfutils.create_popup_menu(parent=btn, button=3)
+    _create_bundle_tools_menu(menu_lmb)
+    _create_bundle_tools_menu(menu_rmb)
 
     shelfutils.create_shelf_separator(parent=shelf)
 
@@ -157,176 +337,6 @@ def build_shelf():
 
     shelfutils.create_shelf_separator(parent=shelf)
 
-    # Center 2D on Selected
-    name = 'Center'
-    tooltip = 'Center 2D on Selected.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.centertwodee.tool;'
-        'mmSolver.tools.centertwodee.tool.main();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    # Swap Markers / Bundles
-    name = 'M<>B'
-    tooltip = 'Toggle Markers Bundles.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.selection.tools as selection_tool;'
-        'selection_tool.swap_between_selected_markers_and_bundles();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    # Select Markers and Bundles
-    name = 'M+B'
-    tooltip = 'Select Markers and Bundles.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.selection.tools as selection_tool;'
-        'selection_tool.select_both_markers_and_bundles();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    shelfutils.create_shelf_separator(parent=shelf)
-
-    # Bundle Tools
-    name = 'Tool'
-    tooltip = 'Bundle Tools.'
-    icon = 'createBundle_32x32.png'
-    cmd = 'pass'
-    btn = shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    # Create Menu Pop-Up (for both left and right mouse buttons)
-    menu_lmb = shelfutils.create_popup_menu(parent=btn, button=1)
-    menu_rmb = shelfutils.create_popup_menu(parent=btn, button=3)
-    _create_bundle_tools_menu(menu_lmb)
-    _create_bundle_tools_menu(menu_rmb)
-
-    # Triangulate Bundle (current frame)
-    name = 'RePrj'
-    tooltip = 'Reproject Bundle on top of Marker.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.reprojectbundle.tool;'
-        'mmSolver.tools.reprojectbundle.tool.main();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    # # Triangulate Bundle (multiple frames)
-    # name = 'Frnt'
-    # tooltip = 'Push in Front.'
-    # icon = None
-    # cmd = (
-    #     'import mmSolver.tools.triangulate.tool;'
-    #     'mmSolver.tools.triangulate.tool.main();'
-    # )
-    # shelfutils.create_shelf_button(
-    #     parent=shelf,
-    #     name=name,
-    #     tooltip=tooltip,
-    #     icon=icon,
-    #     cmd=cmd,
-    # )
-
-    # Ray Cast Marker
-    name = 'RCM'
-    tooltip = 'Ray Cast Marker.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.raycastmarker.tool;'
-        'mmSolver.tools.raycastmarker.tool.main();'
-    )
-
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    # screen-space Z
-    name = 'ATC'
-    tooltip = 'screen-space Z.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.screenzmanipulator.tool;'
-        'mmSolver.tools.screenzmanipulator.tool.main();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    shelfutils.create_shelf_separator(parent=shelf)
-
-    # Average Marker
-    name = 'AvgMkr'
-    tooltip = 'Average marker from selection.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.averagemarker.tool;'
-        'mmSolver.tools.averagemarker.tool.main();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    # Duplicate Marker
-    name = 'DupMkr'
-    tooltip = 'Duplicate marker from selection.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.duplicatemarker.tool;'
-        'mmSolver.tools.duplicatemarker.tool.main();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    shelfutils.create_shelf_separator(parent=shelf)
-
     # Channel sensitivity UI
     name = 'ChSen'
     tooltip = 'Channel sensitivity UI.'
@@ -334,22 +344,6 @@ def build_shelf():
     cmd = (
         'import mmSolver.tools.channelsen.tool;'
         'mmSolver.tools.channelsen.tool.main();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    # Toggle bundle lock
-    name = 'TglBnd'
-    tooltip = 'Toggles bundle lock state.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.togglebundlelock.tool as tglbndlock;'
-        'tglbndlock.toggle_bundle_lock();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,

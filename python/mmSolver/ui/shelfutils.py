@@ -184,7 +184,7 @@ def create_popup_menu(parent=None,
 
     :param button: Which mouse button should active this pop-up menu?
                    1=left, 2=middle, 3=right mouse button.
-    :type button: str
+    :type button: int
 
     :returns: Maya popup menu UI control path.
     :rtype: str

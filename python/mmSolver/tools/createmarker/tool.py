@@ -8,41 +8,11 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.utils.viewport as utils_viewport
 import mmSolver.tools.selection.filternodes as filter_nodes
 
 
 LOG = mmSolver.logger.get_logger()
-
-
-def __get_model_editor():
-    """
-    Get the active model editor.
-    """
-    the_panel = maya.cmds.getPanel(withFocus=1)
-    panel_type = maya.cmds.getPanel(typeOf=the_panel)
-
-    if panel_type != 'modelPanel':
-        return None
-
-    model_ed = maya.cmds.modelPanel(the_panel, modelEditor=1, query=1)
-    return model_ed
-
-
-def __get_camera():
-    """
-    Get the camera from the active model editor
-    """
-    model_ed = __get_model_editor()
-    cam = None
-    if model_ed is not None:
-        cam = maya.cmds.modelEditor(model_ed, query=True, camera=True)
-    if maya.cmds.nodeType(cam) == 'camera':
-        cam = maya.cmds.listRelatives(cam, parent=True) or []
-        if len(cam) > 0:
-            cam = cam[0]
-        else:
-            cam = None
-    return cam
 
 
 def is_startup_cam(x):
@@ -83,14 +53,23 @@ def main():
     cam = None
     mkr_grp = None
     if len(cams) > 0 and len(mkr_grps) > 0:
-        msg = 'Please select a camera or marker group; '
-        msg += 'both node types are selected.'
+        msg = (
+            'Please select a camera or marker group; '
+            'both node types are selected.'
+        )
         LOG.error(msg)
 
     elif len(cams) == 0 and len(mkr_grps) == 0:
-        node = __get_camera()
+        # Create a Marker under the active viewport camera.
+        model_editor = utils_viewport.get_active_model_editor()
+        if model_editor is None:
+            msg = 'Please select an active 3D viewport.'
+            LOG.warning(msg)
+            return
+        cam_tfm, cam_shp = utils_viewport.get_viewport_camera(model_editor)
+        node = cam_shp
         if node is None:
-            msg = 'Please activate a viewport to get a camera.'
+            msg = 'Please select an active viewport to get a camera.'
             LOG.error(msg)
             return
         if is_startup_cam(node) is True:
@@ -106,6 +85,7 @@ def main():
             return
 
     elif len(cams) > 0 and len(mkr_grps) == 0:
+        # Create a Marker under the selected camera.
         node = cams[0]
         if maya.cmds.nodeType(node) == 'transform':
             cam = mmapi.Camera(transform=node)
@@ -116,6 +96,7 @@ def main():
             return
 
     elif len(cams) == 0 and len(mkr_grps) > 0:
+        # Create a marker under the first selected Marker Group.
         node = mkr_grps[0]
         mkr_grp = mmapi.MarkerGroup(name=node)
 

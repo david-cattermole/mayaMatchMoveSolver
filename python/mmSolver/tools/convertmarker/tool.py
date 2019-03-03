@@ -9,53 +9,12 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.utils.viewport as utils_viewport
 import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
 import mmSolver.tools.loadmarker.interface as loadmkr_interface
 
 
 LOG = mmSolver.logger.get_logger()
-
-
-def __get_model_editor():
-    """
-    Get the active model editor.
-    """
-    the_panel = maya.cmds.getPanel(withFocus=1)
-    panel_type = maya.cmds.getPanel(typeOf=the_panel)
-
-    if panel_type != 'modelPanel':
-        return None
-
-    model_ed = maya.cmds.modelPanel(the_panel, modelEditor=1, query=1)
-    return model_ed
-
-
-def __get_camera():
-    """
-    Get the camera from the active model editor
-
-    :returns: Camera shape node name or None.
-    :rtype: None or basestring
-    """
-    model_ed = __get_model_editor()
-    cam = None
-    cam_shp = None
-    if model_ed is not None:
-        cam = maya.cmds.modelEditor(model_ed, query=True, camera=True)
-    if maya.cmds.nodeType(cam) == 'transform':
-        shps = maya.cmds.listRelatives(
-            cam,
-            children=True,
-            shapes=True,
-            fullPath=True
-        ) or []
-        if len(shps) > 0:
-            cam_shp = shps[0]
-    elif maya.cmds.nodeType(cam) == 'camera':
-        cam_shp = maya.cmds.ls(cam, long=True)[0]
-    else:
-        LOG.error('Should not get here: cam=%r' % cam)
-    return cam_shp
 
 
 def __connect_transform_to_reprojection(tfm, reproj):
@@ -84,12 +43,25 @@ def __create_reprojection_node(cam_tfm, cam_shp):
     # Force the image width and height to be the same aspect as the
     # film back.
     mult_node = maya.cmds.createNode('multiplyDivide')
-    maya.cmds.connectAttr(cam_shp + '.horizontalFilmAperture', mult_node + '.input1X')
-    maya.cmds.connectAttr(cam_shp + '.verticalFilmAperture', mult_node + '.input1Y')
+
+    src = cam_shp + '.horizontalFilmAperture'
+    dst = mult_node + '.input1X'
+    maya.cmds.connectAttr(src, dst)
+
+    src = cam_shp + '.verticalFilmAperture'
+    dst = mult_node + '.input1Y'
+    maya.cmds.connectAttr(src, dst)
+
     maya.cmds.setAttr(mult_node + '.input2X', 10000.0)
     maya.cmds.setAttr(mult_node + '.input2Y', 10000.0)
-    maya.cmds.connectAttr(mult_node + '.outputX', node + '.imageWidth')
-    maya.cmds.connectAttr(mult_node + '.outputY', node + '.imageHeight')
+
+    src = mult_node + '.outputX'
+    dst = node + '.imageWidth'
+    maya.cmds.connectAttr(src, dst)
+
+    src = mult_node + '.outputY'
+    dst = node + '.imageHeight'
+    maya.cmds.connectAttr(src, dst)
     return node
 
 
@@ -145,11 +117,16 @@ def main():
     Center the selected transform onto the camera view.
     """
     # Get camera
-    cam_shp = __get_camera()
+    model_editor = utils_viewport.get_active_model_editor()
+    if model_editor is None:
+        msg = 'Please select an active 3D viewport.'
+        LOG.warning(msg)
+        return
+
+    cam_tfm, cam_shp = utils_viewport.get_viewport_camera(model_editor)
     if cam_shp is None:
         LOG.warning('Please select an active viewport to get a camera.')
         return
-    cam_tfm = maya.cmds.listRelatives(cam_shp, parent=True)[0]
 
     # Get transforms
     nodes = maya.cmds.ls(
@@ -173,7 +150,7 @@ def main():
             cam_shp,
             nodes,
             start_frame,
-            end_frame
+            end_frame,
         )
 
         cam = mmapi.Camera(shape=cam_shp)

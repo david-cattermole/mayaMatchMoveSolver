@@ -16,7 +16,7 @@ def toggle_bundle_lock():
     """
     selection = maya.cmds.ls(selection=True, long=True) or []
     selected_bundles = filternodes.get_bundle_nodes(selection)
-    if len(selected_bundles) > 0:
+    if not len(selected_bundles) > 0:
         LOG.warning("Please select bundle's to lock or unlock")
         return
 

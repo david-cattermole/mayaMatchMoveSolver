@@ -23,6 +23,7 @@
 #include <vector>    // vector
 #include <cassert>   // assert
 #include <limits>    // double max value
+#include <cstdlib>   // getenv
 
 // Utils
 #include <utilities/debugUtils.h>
@@ -52,6 +53,41 @@
 #include <mmSolverCMinpack.h>
 #include <mmSolverFunc.h>  // SolveData
 #include <mayaUtils.h>
+
+
+// Determine the default solver.
+int getSolverTypeDefault() {
+    int solverType = SOLVER_TYPE_DEFAULT_VALUE;
+    const char* default_solver_ptr = std::getenv("MMSOLVER_DEFAULT_SOLVER");
+    if (default_solver_ptr != nullptr) {
+        // The memory may change under our feet, we copy the data into a
+        // string for save keeping.
+        std::string default_solver(default_solver_ptr);
+        if (default_solver == "cminpack_lm") {
+            solverType = SOLVER_TYPE_CMINPACK_LM;
+        } else if (default_solver == "levmar") {
+            solverType = SOLVER_TYPE_LEVMAR;
+        } else {
+            ERR("MMSOLVER_DEFAULT_SOLVER environment variable is invalid. "
+                        << "Value may be \"cminpack_lm\" or \"levmar\"; "
+                        << "value=" << default_solver);
+        }
+    }
+    return solverType;
+}
+
+
+std::vector<int> getSolverTypes() {
+    std::vector<int> solverTypes;
+#ifdef USE_SOLVER_LEVMAR
+    solverTypes.push_back(SOLVER_TYPE_LEVMAR);
+#endif
+
+#ifdef USE_SOLVER_CMINPACK
+    solverTypes.push_back(SOLVER_TYPE_CMINPACK_LM);
+#endif
+    return solverTypes;
+}
 
 
 int countUpNumberOfErrors(MarkerPtrList markerList,

@@ -70,8 +70,6 @@
 // will try before giving up.
 #define ITERATIONS_FLAG           "-it"
 #define ITERATIONS_FLAG_LONG      "-iterations"
-// Note solver types are defined in "mmSolver.h".
-#define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LM
 
 // Initial Damping Factor.
 //

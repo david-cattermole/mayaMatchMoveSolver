@@ -1,5 +1,5 @@
 /*
- * Uses Non-Linear Least Squares algorithm from levmar library to
+ * Uses Non-Linear Least Squares algorithm to
  * calculate attribute values based on 2D-to-3D error measurements
  * through a pinhole camera.
  */
@@ -30,10 +30,12 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-// The different solver types to choose from. Currently only 'levmar'
-// is supported.
+// The different solver types to choose from.
 #define SOLVER_TYPE_LEVMAR 0  // Dense LM solver using 'levmar',
 #define SOLVER_TYPE_CMINPACK_LM 1  // Dense LM solver using 'cminpack' library.
+
+// The default solver to use, if all solvers are available.
+#define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LM
 
 // Enable the Maya profiling data collection.
 #define MAYA_PROFILE 1
@@ -60,6 +62,10 @@ double distance_2d(MPoint a, MPoint b) {
     double dy = (a.y - b.y);
     return sqrt((dx * dx) + (dy * dy));
 }
+
+int getSolverTypeDefault();
+
+std::vector<int> getSolverTypes();
 
 int countUpNumberOfErrors(MarkerPtrList markerList,
                           MTimeArray frameList,

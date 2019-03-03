@@ -305,25 +305,8 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         return status;
     }
 
-    // Determine the default solver.
-    m_solverType = SOLVER_TYPE_DEFAULT_VALUE;
-    const char* default_solver_ptr = std::getenv("MMSOLVER_DEFAULT_SOLVER");
-    if (default_solver_ptr != nullptr) {
-        // The memory may change under our feet, we copy the data into a
-        // string for save keeping.
-        std::string default_solver(default_solver_ptr);
-        if (default_solver == "cminpack_lm") {
-            m_solverType = SOLVER_TYPE_CMINPACK_LM;
-        } else if (default_solver == "levmar") {
-            m_solverType = SOLVER_TYPE_LEVMAR;
-        } else {
-            ERR("MMSOLVER_DEFAULT_SOLVER environment variable is invalid. "
-                << "Value may be \"cminpack_lm\" or \"levmar\"; "
-                << "value=" << default_solver);
-        }
-    }
-
     // Get 'Solver Type'
+    m_solverType = getSolverTypeDefault();
     if (argData.isFlagSet(SOLVER_TYPE_FLAG)) {
         status = argData.getFlagArgument(SOLVER_TYPE_FLAG, 0, m_solverType);
         CHECK_MSTATUS(status);

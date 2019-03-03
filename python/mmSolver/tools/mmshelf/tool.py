@@ -12,8 +12,8 @@ LOG = mmSolver.logger.get_logger()
 
 def _create_bundle_tools_menu(menu):
     # Toggle bundle lock
-    name = 'Toggles bundle lock state.'
-    tooltip = 'Toggles bundle lock state.'
+    name = 'Toggle Bundle Lock-State'
+    tooltip = 'Toggle the Bundle node attribute Lock State.'
     cmd = (
         'import mmSolver.tools.togglebundlelock.tool as tglbndlock;'
         'tglbndlock.toggle_bundle_lock();'
@@ -52,7 +52,6 @@ def _create_bundle_tools_menu(menu):
     #     tooltip=tooltip,
     #     cmd=cmd,
     # )
-
 
     # Ray Cast Marker
     name = 'Ray-Cast Marker'
@@ -165,7 +164,7 @@ def build_shelf():
     )
 
     # Convert to Marker
-    name = 'Convert'
+    name = 'Convrt'
     tooltip = 'Convert 3D Transform to Marker.'
     icon = 'createMarker_32x32.png'
     cmd = (
@@ -203,40 +202,6 @@ def build_shelf():
     cmd = (
         'import mmSolver.tools.createbundle.tool;'
         'mmSolver.tools.createbundle.tool.main();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    shelfutils.create_shelf_separator(parent=shelf)
-
-    # Link Marker + Bundle
-    name = 'Link'
-    tooltip = 'Link the selected Marker and Bundle together.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;'
-        'link_mb_tool.link_marker_bundle();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    # Unlink Marker from Bundle
-    name = 'Unlink'
-    tooltip = 'Unlink all selected Markers from their Bundle.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;'
-        'link_mb_tool.unlink_marker_bundle();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,

@@ -51,7 +51,7 @@ CPU_NUM=`nproc --all`
 # Build mmSolver project
 mkdir -p build
 cd build
-if ${FRESH_BUILD}; then
+if [ ${FRESH_BUILD} -eq 1 ]; then
     rm --force -R *
 fi
 cmake -DCMAKE_BUILD_TYPE=Release \

@@ -129,6 +129,7 @@ set(SOURCE_FILES
         include/MMMarkerGroupTransformNode.h
         include/MMTestCameraMatrixCmd.h
         include/MMSolverCmd.h
+        include/MMSolverTypeCmd.h
         src/mmSolver.cpp
         src/mmSolverFunc.cpp
         src/mmSolverLevMar.cpp
@@ -142,6 +143,7 @@ set(SOURCE_FILES
         src/MMMarkerGroupTransformNode.cpp
         src/MMTestCameraMatrixCmd.cpp
         src/MMSolverCmd.cpp
+        src/MMSolverTypeCmd.cpp
         src/pluginMain.cpp
 )
 

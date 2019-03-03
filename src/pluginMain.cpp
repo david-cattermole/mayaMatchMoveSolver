@@ -9,6 +9,7 @@
 
 // TODO: Add entry points for mmReprojection cmd and node, mmMarkerScale cmd and mmTriangulate cmd.
 #include <MMSolverCmd.h>
+#include <MMSolverTypeCmd.h>
 #include <MMTestCameraMatrixCmd.h>
 #include <MMMarkerScaleNode.h>
 #include <MMReprojectionNode.h>
@@ -78,6 +79,13 @@ MStatus initializePlugin(MObject obj) {
                      MMSolverCmd::creator,
                      MMSolverCmd::newSyntax,
                      status);
+
+    REGISTER_COMMAND(plugin,
+                     MMSolverTypeCmd::cmdName(),
+                     MMSolverTypeCmd::creator,
+                     MMSolverTypeCmd::newSyntax,
+                     status);
+
     REGISTER_COMMAND(plugin,
                      MMTestCameraMatrixCmd::cmdName(),
                      MMTestCameraMatrixCmd::creator,
@@ -135,6 +143,7 @@ MStatus uninitializePlugin(MObject obj) {
     MFnPlugin plugin(obj);
 
     DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, MMSolverTypeCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
     DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), MMMarkerScaleNode::m_id, status);
     DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(), MMReprojectionNode::m_id, status);

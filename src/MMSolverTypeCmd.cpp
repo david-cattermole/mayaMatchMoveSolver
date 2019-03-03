@@ -29,11 +29,6 @@
 #include <maya/MPlug.h>
 #include <maya/MFnDependencyNode.h>
 
-//// Internal Objects
-//#include <Marker.h>
-//#include <Bundle.h>
-//#include <Camera.h>
-
 
 MMSolverTypeCmd::~MMSolverTypeCmd() {}
 
@@ -65,6 +60,7 @@ MSyntax MMSolverTypeCmd::newSyntax() {
     syntax.enableEdit(false);
 
     // Flags
+    syntax.addFlag(DEFAULT_FLAG, DEFAULT_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(LIST_FLAG, LIST_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(NAME_FLAG, NAME_FLAG_LONG, MSyntax::kString);
     syntax.addFlag(INDEX_FLAG, INDEX_FLAG_LONG, MSyntax::kUnsigned);
@@ -88,6 +84,13 @@ MStatus MMSolverTypeCmd::parseArgs(const MArgList &args) {
         return status;
     }
 
+    // Get 'default'
+    m_default = false;
+    if (argData.isFlagSet(DEFAULT_FLAG)) {
+        status = argData.getFlagArgument(DEFAULT_FLAG, 0, m_default);
+        CHECK_MSTATUS(status);
+    }
+
     // Get 'list'
     m_list = false;
     if (argData.isFlagSet(LIST_FLAG)) {
@@ -95,10 +98,16 @@ MStatus MMSolverTypeCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS(status);
     }
 
-    // Default switches based on 'list' flag.
+    if ((m_list == true && m_default == true)
+       || (m_list == false && m_default == false)) {
+        status = MS::kFailure;
+        return status;
+    }
+
+    // Default switches
     m_name = false;
     m_index = false;
-    if (m_list == true) {
+    if (m_list == true || m_default == true) {
         m_name = true;
         m_index = true;
     }
@@ -116,24 +125,10 @@ MStatus MMSolverTypeCmd::parseArgs(const MArgList &args) {
     }
 
     // Must have 'name' or 'index' flag, otherwise we don't print anything.
-    if (m_list == true && m_name == false && m_index == false) {
+    if (m_name == false && m_index == false) {
         status = MS::kFailure;
         return status;
     }
-
-    // // Get 'Verbose'
-    // m_verbose = VERBOSE_DEFAULT_VALUE;
-    // if (argData.isFlagSet(VERBOSE_FLAG)) {
-    //     status = argData.getFlagArgument(VERBOSE_FLAG, 0, m_verbose);
-    //     CHECK_MSTATUS(status);
-    // }
-
-
-    // // Get 'Solver Type'
-    // if (argData.isFlagSet(SOLVER_TYPE_FLAG)) {
-    //     status = argData.getFlagArgument(SOLVER_TYPE_FLAG, 0, m_solverType);
-    //     CHECK_MSTATUS(status);
-    // }
     return status;
 }
 
@@ -159,6 +154,7 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_list == true) {
+        // Get List of Solver Types
         std::vector<SolverTypePair> solverTypes = getSolverTypes();
         std::vector<SolverTypePair>::const_iterator cit;
 
@@ -190,8 +186,28 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
 
             MMSolverTypeCmd::setResult(outResult);
         }
-    }
+    } else if (m_default == true) {
+        // Get Default Solver Type
+        SolverTypePair solverType = getSolverTypeDefault();
 
+        if (m_name == true) {
+            MString outResult = "";
+            int index = solverType.first;
+            std::string name = solverType.second;
+
+            if (m_index == true) {
+                std::string index_string = string::numberToString<int>(index);
+                outResult += MString(index_string.c_str());
+                outResult += "=";
+            }
+            outResult += name.c_str();
+
+            MMSolverTypeCmd::setResult(outResult);
+        } else if (m_name == false && m_index == true) {
+            int outResult = solverType.first;
+            MMSolverTypeCmd::setResult(outResult);
+        }
+    }
 
     return status;
 }

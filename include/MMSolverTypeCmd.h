@@ -61,15 +61,16 @@
 #define INDEX_FLAG           "-i"
 #define INDEX_FLAG_LONG      "-index"
 
-// // Default Solver Type
-// #define DEFAULT_SOLVER_TYPE_FLAG           "-df"
-// #define DEFAULT_SOLVER_TYPE_FLAG_LONG      "-default"
+// Solver Type Default
+#define DEFAULT_FLAG           "-df"
+#define DEFAULT_FLAG_LONG      "-default"
 
 
 class MMSolverTypeCmd : public MPxCommand {
 public:
 
     MMSolverTypeCmd() {
+        m_default = false;
         m_list = false;
         m_name = false;
         m_index = false;
@@ -91,6 +92,7 @@ public:
 private:
     MStatus parseArgs( const MArgList& args );
 
+    bool  m_default;
     bool  m_list;
     bool  m_name;
     bool  m_index;

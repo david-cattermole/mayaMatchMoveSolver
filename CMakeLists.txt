@@ -337,30 +337,39 @@ install(TARGETS mmSolver
 # Install dynamic libraries
 if(USE_CMINPACK AND CMINPACK_FOUND)
     if(WIN32)
-      if(EXISTS ${CMINPACK_LIBRARY_DLL})
-          install(FILES ${CMINPACK_LIBRARY_DLL}
-                  DESTINATION "${MODULE_FULL_NAME}/lib/")
-      else()
-          install(FILES ${CMINPACK_LIBRARY}
-                  DESTINATION "${MODULE_FULL_NAME}/lib/")
-      endif()
+        if(EXISTS ${CMINPACK_LIBRARY_DLL})
+            install(FILES ${CMINPACK_LIBRARY_DLL}
+                    DESTINATION "${MODULE_FULL_NAME}/lib/")
+        else()
+            install(FILES ${CMINPACK_LIBRARY}
+                    DESTINATION "${MODULE_FULL_NAME}/lib/")
+        endif()
     elseif(UNIX)
-      install(FILES ${CMINPACK_LIBRARY}
-              DESTINATION "${MODULE_FULL_NAME}/lib/")
+        # Install both symlink and real library
+        get_filename_component(ABS_CMINPACK_LIBRARY ${CMINPACK_LIBRARY} REALPATH)
+        install(FILES ${CMINPACK_LIBRARY}
+                DESTINATION "${MODULE_FULL_NAME}/lib/")
+        install(FILES ${ABS_CMINPACK_LIBRARY}
+                DESTINATION "${MODULE_FULL_NAME}/lib/")
     endif()
 endif()
+
 if(USE_GPL_LEVMAR AND LEVMAR_FOUND)
     if(WIN32)
-      if(EXISTS ${LEVMAR_LIBRARY_DLL})
-          install(FILES ${LEVMAR_LIBRARY_DLL}
-                  DESTINATION "${MODULE_FULL_NAME}/lib/")
-      else()
-          install(FILES ${LEVMAR_LIBRARY}
-                  DESTINATION "${MODULE_FULL_NAME}/lib/")
-      endif()
+        if(EXISTS ${LEVMAR_LIBRARY_DLL})
+            install(FILES ${LEVMAR_LIBRARY_DLL}
+                    DESTINATION "${MODULE_FULL_NAME}/lib/")
+        else()
+            install(FILES ${LEVMAR_LIBRARY}
+                    DESTINATION "${MODULE_FULL_NAME}/lib/")
+        endif()
     elseif(UNIX)
-      install(FILES ${LEVMAR_LIBRARY}
-              DESTINATION "${MODULE_FULL_NAME}/lib/")
+        # Install both symlink and real library
+        get_filename_component(ABS_LEVMAR_LIBRARY ${LEVMAR_LIBRARY} REALPATH)
+        install(FILES ${LEVMAR_LIBRARY}
+                DESTINATION "${MODULE_FULL_NAME}/lib/")
+        install(FILES ${ABS_LEVMAR_LIBRARY}
+                DESTINATION "${MODULE_FULL_NAME}/lib/")
     endif()
 endif()
 

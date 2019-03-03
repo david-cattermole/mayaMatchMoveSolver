@@ -5,8 +5,7 @@ highlighted, ready to be middle-click dragged.
 """
 import maya.cmds
 import mmSolver.logger
-from mmSolver.utils.viewport import get_active_model_editor, \
-    get_viewport_camera
+import mmSolver.utils.viewport as utils_viewport
 import mmSolver.tools.screenzmanipulator.constant as const
 
 LOG = mmSolver.logger.get_logger()
@@ -21,7 +20,6 @@ def screen_space_z(camera_tfm):
     :type camera_tfm: str
     :return: None
     """
-
     if not camera_tfm:
         LOG.warning('Please select a viewport')
         return
@@ -30,7 +28,7 @@ def screen_space_z(camera_tfm):
                                    worldSpace=True,
                                    query=True,
                                    translation=True)
-    maya.cmds.manipMoveContext('Move',
+    maya.cmds.manipMoveContext(const.MANIP_CONTEXT,
                                edit=True,
                                mode=6,
                                activeHandle=0,
@@ -48,21 +46,22 @@ def main():
         LOG.warning('Please select a object.')
         return
 
-    active_model_editor = get_active_model_editor()
+    active_model_editor = utils_viewport.get_active_model_editor()
     if not active_model_editor:
         LOG.warning('Please select a viewport.')
         return
 
-    camera_tfm = get_viewport_camera(active_model_editor)[0]
-
+    camera_tfm = utils_viewport.get_viewport_camera(active_model_editor)[0]
     if not camera_tfm:
         LOG.warning('Please select a viewport.')
         return
     manip_context = const.MANIP_CONTEXT
 
-    move_manip_mode = maya.cmds.manipMoveContext(manip_context,
-                                                 query=True,
-                                                 mode=True)
+    move_manip_mode = maya.cmds.manipMoveContext(
+        manip_context,
+        query=True,
+        mode=True
+    )
 
     manip_move_super_context = const.MANIP_MOVE_SUPER_CONTEXT
     maya.cmds.setToolTo(manip_move_super_context)
@@ -71,15 +70,21 @@ def main():
     move_manip_world = const.MOVE_MANIP_MODE_WORLD
     move_manip_custom = const.MOVE_MANIP_MODE_CUSTOM
 
-    if move_manip_mode == move_manip_object or\
-            move_manip_mode == move_manip_world:
-        maya.cmds.manipMoveContext(manip_context, edit=True,
-                                   mode=move_manip_custom)
+    if (move_manip_mode == move_manip_object
+        or move_manip_mode == move_manip_world):
+        maya.cmds.manipMoveContext(
+            manip_context,
+            edit=True,
+            mode=move_manip_custom
+        )
         screen_space_z(camera_tfm)
         LOG.warning('manipMoveContext to ScreenZ')
 
-    elif move_manip_mode == 6:
-        maya.cmds.manipMoveContext(manip_context, edit=True,
-                                   mode=move_manip_object)
+    elif move_manip_mode == move_manip_custom:
+        maya.cmds.manipMoveContext(
+            manip_context,
+            edit=True,
+            mode=move_manip_object
+        )
         LOG.warning('manipMoveContext to Object')
     return

@@ -401,13 +401,13 @@ class Collection(object):
         Compiles data given into flags for a single run of 'mmSolver'.
 
         :param sol: The solver to compile
-        :type sol: solver.Solver
+        :type sol: Solver
 
         :param mkr_list: Markers to measure
-        :type mkr_list: list of marker.Marker
+        :type mkr_list: list of Marker
 
         :param attr_list: Attributes to solve for
-        :type attr_list: list of attribute.Attribute
+        :type attr_list: list of Attribute
 
         :param prog_fn: Progress Function, with signature f(int)
         :type prog_fn: function
@@ -448,7 +448,7 @@ class Collection(object):
                 continue
             cam = mkr.get_camera()
             if cam is None:
-                msg = 'Cannot find bundle from marker; mkr=%r'
+                msg = 'Cannot find camera from marker; mkr={0}'
                 msg = msg.format(mkr.get_node())
                 LOG.warning(msg)
             cam_tfm_node = cam.get_transform_node()
@@ -460,8 +460,10 @@ class Collection(object):
                 cameras.append((cam_tfm_node, cam_shp_node))
                 added_cameras.append(cam_shp_node)
         if len(markers) == 0:
+            LOG.warning('No Markers found!')
             return None
         if len(cameras) == 0:
+            LOG.warning('No Cameras found!')
             return None
 
         # Get Attributes
@@ -532,6 +534,7 @@ class Collection(object):
             if use is True:
                 attrs.append((name, str(min_value), str(max_value)))
         if len(attrs) == 0:
+            LOG.warning('No Attributes found!')
             return None
 
         # Get Frames
@@ -552,6 +555,7 @@ class Collection(object):
             if use is True:
                 frames.append(num)
         if len(frames) == 0:
+            LOG.warning('No Frames found!')
             return None
 
         kwargs['marker'] = markers
@@ -620,7 +624,8 @@ class Collection(object):
 
         # Check Solvers
         sol_list = self.get_solver_list()
-        sol_enabled_list = filter(lambda x: x.get_enabled() is True, sol_list)
+        sol_enabled_list = [sol for sol in sol_list 
+                            if sol.get_enabled() is True]
         if len(sol_enabled_list) == 0:
             msg = 'Collection is not valid, no enabled Solvers given; '
             msg += 'collection={0}'
@@ -780,7 +785,7 @@ class Collection(object):
             # Check for validity
             solres_list = []
             if self.is_valid() is False:
-                LOG.warning('collection not valid: %r', self.get_node())
+                LOG.warning('Collection not valid: %r', self.get_node())
                 return solres_list
             kwargs_list = self._compile()
             self.__set_progress(prog_fn, 1)

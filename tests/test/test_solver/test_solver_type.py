@@ -30,20 +30,33 @@ class TestMMSolverType(solverUtils.SolverTestCase):
         """
         Test listing solver types works.
         """
-        a_list = maya.cmds.mmSolverType(query=True, list=True)
+        a_list = maya.cmds.mmSolverType(
+            query=True,
+            list=True,
+        )
         assert len(a_list) > 0
         for solver_type in a_list:
             assert '=' in solver_type
             assert isinstance(solver_type, (str, unicode))
 
-        b_list = maya.cmds.mmSolverType(query=True, list=True, name=True, index=False)
+        b_list = maya.cmds.mmSolverType(
+            query=True,
+            list=True,
+            name=True,
+            index=False,
+        )
         assert len(b_list) > 0
         assert len(a_list) == len(b_list)
         for solver_name in b_list:
             assert '=' not in solver_name
             assert isinstance(solver_name, (str, unicode))
 
-        c_list = maya.cmds.mmSolverType(query=True, list=True, name=False, index=True)
+        c_list = maya.cmds.mmSolverType(
+            query=True,
+            list=True,
+            name=False,
+            index=True,
+        )
         assert len(c_list) > 0
         assert len(a_list) == len(c_list)
         for solver_index in c_list:

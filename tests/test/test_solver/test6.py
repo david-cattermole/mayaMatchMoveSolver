@@ -23,6 +23,10 @@ import test.test_solver.solverutils as solverUtils
 class TestSolver6(solverUtils.SolverTestCase):
 
     def do_solve(self, solver_name, solver_index):
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            self.assertTrue(False, msg)
+
         start = 1
         end = 100
         mid = start + ((end - start) / 2)

@@ -61,24 +61,70 @@ def get_nodes(nodes):
 
 
 def get_marker_nodes(nodes):
+    """
+    Filter the given 'nodes' by only the Marker nodes.
+
+    :param nodes: List of nodes to query.
+    :type nodes: list or str
+
+    :returns: A list of Marker nodes, or empty list if no Marker nodes.
+    :rtype: list
+    """
     filter_nodes = get_nodes(nodes)
     return filter_nodes.get('marker', [])
 
 
 def get_marker_group_nodes(nodes):
+    """
+    Filter the given 'nodes' by only the MarkerGroup nodes.
+
+    :param nodes: List of nodes to query.
+    :type nodes: list or str
+
+    :returns: A list of MarkerGroup nodes, or empty list if no MarkerGroup nodes.
+    :rtype: list
+    """
     filter_nodes = get_nodes(nodes)
     return filter_nodes.get('markergroup', [])
 
+
 def get_bundle_nodes(nodes):
+    """
+    Filter the given 'nodes' by only the Bundle nodes.
+
+    :param nodes: List of nodes to query.
+    :type nodes: list or str
+
+    :returns: A list of Bundle nodes, or empty list if no Bundle nodes.
+    :rtype: list
+    """
     filter_nodes = get_nodes(nodes)
     return filter_nodes.get('bundle', [])
 
 
 def get_camera_nodes(nodes):
+    """
+    Filter the given 'nodes' by only the camera nodes.
+
+    :param nodes: List of nodes to query.
+    :type nodes: list or str
+
+    :returns: A list of camera nodes, or empty list if no camera nodes.
+    :rtype: list
+    """
     filter_nodes = get_nodes(nodes)
     return filter_nodes.get('camera', [])
 
 
 def get_collection_nodes(nodes):
+    """
+    Filter the given 'nodes' by only the Collection nodes.
+
+    :param nodes: List of nodes to query.
+    :type nodes: list or str
+
+    :returns: A list of Collection nodes, or empty list if no Collection nodes.
+    :rtype: list
+    """
     filter_nodes = get_nodes(nodes)
     return filter_nodes.get('collection', [])

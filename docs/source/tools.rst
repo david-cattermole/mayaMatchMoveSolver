@@ -8,7 +8,7 @@ workflow.
 Pages dedicated to specific tools:
 
 .. toctree::
-   :maxdepth: 1
+    :maxdepth: 1
 
    tools_solver_ui
    tools_loadmarker
@@ -181,4 +181,75 @@ Run this Python command:
 
     import mmSolver.tools.channelsen.tool as tool
     tool.main()
+
+Toggle Bundle Lock State
+------------------------
+
+Toggle bundle lock state will toggle lock state of the selected
+bundle's attributes, if any of the bundles translate attributes are
+locked, running this tool will unlock all attributes on the selected
+bundles, and running the tool again will lock all attributes.
+
+Usage:
+
+1) Select bundle nodes.
+
+2) Run tool.
+   - The selected bundle node attributes will be toggled between locked and unlocked.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.togglebundlelock.tool as tglbndlock
+    tglbndlock.toggle_bundle_lock()
+
+Average Marker
+--------------
+
+Average Marker tool will create a new Marker with an averaged position
+between all the selected Markers.
+
+This tool must have at least two Markers selected.
+
+Usage:
+
+1) Select 1 or more Marker nodes.
+2) Run tool.
+   - A third Marker node will be created between all others.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.averagemarker.tool
+    mmSolver.tools.averagemarker.tool.main()
+
+Duplicate marker
+----------------
+
+Duplicate marker tool will create a new markers having same position
+from the selected markers, this tool will duplicate on all selected
+markers.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.duplicatemarker.tool
+    mmSolver.tools.duplicatemarker.tool.main()
+
+Screen z manipulator
+----------------
+
+Aims the move manipulator tool at the active viewport camera.
+After aiming the move tool at the camera, the screen-space Z axis is
+highlighted, ready to be middle-click dragged
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.screenzmanipulator.tool
+    mmSolver.tools.screenzmanipulator.tool.main()
 

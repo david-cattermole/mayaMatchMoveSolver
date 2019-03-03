@@ -362,6 +362,57 @@ def build_shelf():
         'import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;'
         'link_mb_tool.unlink_marker_bundle();'
     )
+
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # screen-space Z
+    name = 'ATC'
+    tooltip = 'screen-space Z.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.screenzmanipulator.tool;'
+        'mmSolver.tools.screenzmanipulator.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    shelfutils.create_shelf_separator(parent=shelf)
+
+    # Average Marker
+    name = 'AvgMkr'
+    tooltip = 'Average marker from selection.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.averagemarker.tool;'
+        'mmSolver.tools.averagemarker.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # Duplicate Marker
+    name = 'DupMkr'
+    tooltip = 'Duplicate marker from selection.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.duplicatemarker.tool;'
+        'mmSolver.tools.duplicatemarker.tool.main();'
+    )
     shelfutils.create_shelf_button(
         parent=shelf,
         name=name,
@@ -387,4 +438,23 @@ def build_shelf():
         icon=icon,
         cmd=cmd,
     )
+<<<<<<< HEAD
+=======
+
+    # Toggle bundle lock
+    name = 'TglBnd'
+    tooltip = 'Toggles bundle lock state.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.togglebundlelock.tool as tglbndlock;'
+        'tglbndlock.toggle_bundle_lock();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+>>>>>>> master
     return

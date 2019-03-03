@@ -415,36 +415,10 @@ class SolverWindow(BaseWindow):
         return
 
     def apply(self):
-        self.setStatusLine(const.STATUS_EXECUTING)
-        try:
-            refresh_state = lib_state.get_refresh_viewport_state()
-            log_level = lib_state.get_log_level()
-
-            self.progressBar.setValue(0)
-            self.progressBar.show()
-            col = lib_state.get_active_collection()
-            if col is None:
-                msg = 'No active collection.'
-                self.setStatusLine('ERROR: ' + msg)
-                LOG.error(msg)
-            ok = lib_collection.compile_collection(col)
-            if ok is not True:
-                msg = 'Cannot execute solver, collection is not valid.'
-                msg += 'collection=%r'
-                self.setStatusLine('Warning: ' + msg)
-                LOG.warning(msg, col)
-            else:
-                lib_collection.execute_collection(
-                    col,
-                    log_level=log_level,
-                    refresh=refresh_state,
-                    prog_fn=self.progressBar.setValue,
-                    status_fn=self.setStatusLine,
-                )
-        finally:
-            self.progressBar.setValue(100)
-            self.progressBar.hide()
-            self.setStatusLine(const.STATUS_FINISHED)
+        refresh_state = lib_state.get_refresh_viewport_state()
+        log_level = lib_state.get_log_level()
+        col = lib_state.get_active_collection()
+        lib_collection.run_solve_ui(col, refresh_state, log_level, self)
         return
 
     def help(self):
@@ -453,31 +427,68 @@ class SolverWindow(BaseWindow):
         return
 
 
+def get_window_instance():
+    """
+    Get the currently running instance of the Solver window.
+
+    :returns: An object of SolverWindow, or None.
+    :rtype: SolverWindow or None
+    """
+    global MM_SOLVER_SOLVER_UI
+    valid = uiutils.isValidQtObject(MM_SOLVER_SOLVER_UI)
+    if MM_SOLVER_SOLVER_UI is None or valid is False:
+        return None
+    return MM_SOLVER_SOLVER_UI
+
+
+def __set_window_instance(window):
+    """
+    Set the stored instance of the Solver window.
+    """
+    global MM_SOLVER_SOLVER_UI
+    valid = uiutils.isValidQtObject(MM_SOLVER_SOLVER_UI)
+    if valid is True:
+        MM_SOLVER_SOLVER_UI = window
+    return
+
+
 def main(show=True, widthHeight=(800, 600)):
+    """
+    Open the Solver UI window.
+
+    :param show: Should we show the window?
+    :type show: bool
+
+    :param widthHeight: Width and height of the window to open.
+    :type widthHeight: int, int
+
+    :returns: A new solver window, or None if the window cannot be 
+              opened.
+    :rtype: SolverWindow or None.
+    """
     # Force the Plug-in to load.  If the plug-in cannot load, the UI
     # will not open and an error will be given.
     lib_maya_utils.ensure_plugin_loaded()
 
-    global MM_SOLVER_SOLVER_UI
-
-    valid = uiutils.isValidQtObject(MM_SOLVER_SOLVER_UI)
-    if MM_SOLVER_SOLVER_UI is not None and valid is True:
-        MM_SOLVER_SOLVER_UI.close()
+    win = get_window_instance()
+    if win is not None:
+        win.close()
 
     name = 'SolverWindow'
     app, parent = uiutils.getParent()
-    MM_SOLVER_SOLVER_UI = SolverWindow(parent=parent, name=name)
-    if not MM_SOLVER_SOLVER_UI:
-        return MM_SOLVER_SOLVER_UI
-    if show:
-        MM_SOLVER_SOLVER_UI.show()
+    win = SolverWindow(parent=parent, name=name)
+    __set_window_instance(win)
+    if not win:
+        return win
+    if show is True:
+        win.show()
 
     if ((isinstance(widthHeight, (tuple, list)) is True)
          and (len(widthHeight) == 2)):
-        pos = MM_SOLVER_SOLVER_UI.pos()
-        MM_SOLVER_SOLVER_UI.setGeometry(pos.x(), pos.y(), widthHeight[0], widthHeight[1])
+        pos = win.pos()
+        win.setGeometry(pos.x(), pos.y(), widthHeight[0], widthHeight[1])
 
     # Enter Qt application main loop
     if app is not None:
         sys.exit(app.exec_())
-    return MM_SOLVER_SOLVER_UI
+    return win

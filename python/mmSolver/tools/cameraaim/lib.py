@@ -12,7 +12,6 @@ LOG = mmSolver.logger.get_logger()
 def aim_at_target(nodes, target, remove_after=None):
     """
     Aims the selected transforms at the target transform node.
-
     """
     assert maya.cmds.nodeType(target) == 'transform'
     assert isinstance(nodes, (list, tuple))
@@ -20,9 +19,13 @@ def aim_at_target(nodes, target, remove_after=None):
         remove_after = True
     constraint_list = []
     for node in nodes:
+        msg = 'Node has locked rotation attributes, skipping.'
         for attr in ['rx', 'ry', 'rz']:
-            # TODO: Check if the node is referenced or not.
-            maya.cmds.setAttr(node + '.' + attr, lock=False)
+            plug = node + '.' + attr
+            locked = maya.cmds.getAttr(plug, lock=True)
+            if locked is True:
+                LOG.warning(msg, node)
+                continue
         aim = maya.cmds.aimConstraint(
             target,
             node,

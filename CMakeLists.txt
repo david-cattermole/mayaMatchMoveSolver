@@ -78,19 +78,37 @@ set(MODULE_BUILD_DIR "${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}")
 
 # Set a default solver
 set(DEFAULT_SOLVER "${PREFERRED_SOLVER}")
-if ((USE_CMINPACK EQUAL 1) AND (USE_GNU_LEVMAR EQUAL 0))
+if ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
     if (NOT (DEFAULT_SOLVER EQUAL "cminpack_lm"))
-        message(WARNING "Preferred solver cannot be used because it's not enabled.")
+        message(WARNING 
+          "Preferred solver cannot be used because it's not enabled."
+          "preferred=${PREFERRED_SOLVER} "
+          "default=${DEFAULT_SOLVER} "
+          "use_cminpack=${USE_CMINPACK} "
+          "use_gpl_levmar=${USE_GPL_LEVMAR}"
+          )
         set(DEFAULT_SOLVER "cminpack_lm")
     endif()
-elseif ((USE_GNU_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 0))
-    set(DEFAULT_SOLVER "levmar")
+elseif ((USE_GPL_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 0))
     if (NOT (DEFAULT_SOLVER EQUAL "levmar"))
-        message(WARNING "Preferred solver cannot be used because it's not enabled.")
+        message(WARNING 
+          "Preferred solver cannot be used because it's not enabled. "
+          "preferred=${PREFERRED_SOLVER} "
+          "default=${DEFAULT_SOLVER} "
+          "use_cminpack=${USE_CMINPACK} "
+          "use_gpl_levmar=${USE_GPL_LEVMAR}"
+        )
         set(DEFAULT_SOLVER "levmar")
     endif()
+else()
+    message(FATAL_ERROR
+      " Solver is not available! "
+      "preferred=${PREFERRED_SOLVER} "
+      "default=${DEFAULT_SOLVER} "
+      "use_cminpack=${USE_CMINPACK} "
+      "use_gpl_levmar=${USE_GPL_LEVMAR}"
+    )
 endif()
-
 
 # Create Module Description file.
 if (UNIX)

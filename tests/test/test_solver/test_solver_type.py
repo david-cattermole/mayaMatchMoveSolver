@@ -56,7 +56,41 @@ class TestMMSolverType(solverUtils.SolverTestCase):
         """
         # Not asking for a name or index is an error.
         with self.assertRaises(RuntimeError):
-            maya.cmds.mmSolverType(query=True, list=True, name=False, index=False)
+            maya.cmds.mmSolverType(
+                query=True,
+                list=True,
+                name=False,
+                index=False)
+        return
+
+    def test_get_default(self):
+        """
+        Test getting the default solver type.
+        """
+        solver_type = maya.cmds.mmSolverType(
+            query=True,
+            default=True,
+        )
+        assert '=' in solver_type
+        assert isinstance(solver_type, (str, unicode))
+
+        solver_name = maya.cmds.mmSolverType(
+            query=True,
+            default=True,
+            name=True,
+            index=False,
+        )
+        assert len(solver_name) < len(solver_type)
+        assert '=' not in solver_name
+        assert isinstance(solver_name, (str, unicode))
+
+        solver_index = maya.cmds.mmSolverType(
+            query=True,
+            default=True,
+            name=False,
+            index=True,
+        )
+        assert isinstance(solver_index, (long, int))
         return
 
 

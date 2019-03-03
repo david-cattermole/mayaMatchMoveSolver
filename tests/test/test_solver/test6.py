@@ -25,7 +25,7 @@ class TestSolver6(solverUtils.SolverTestCase):
     def do_solve(self, solver_name, solver_index):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
-            self.assertTrue(False, msg)
+            raise unittest.SkipTest(msg)
 
         start = 1
         end = 100

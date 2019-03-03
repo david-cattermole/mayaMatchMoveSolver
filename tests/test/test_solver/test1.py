@@ -20,6 +20,10 @@ import test.test_solver.solverutils as solverUtils
 class TestSolver1(solverUtils.SolverTestCase):
 
     def do_solve(self, solver_name, solver_index):
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
+
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
@@ -68,7 +72,7 @@ class TestSolver1(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             iterations=1000,
-            solverType=1,  # 1 == cminpack_lm
+            solverType=solver_index,
             frame=frames,
             verbose=True,
         )

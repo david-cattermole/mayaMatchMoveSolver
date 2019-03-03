@@ -306,7 +306,8 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     }
 
     // Get 'Solver Type'
-    m_solverType = getSolverTypeDefault();
+    SolverTypePair solverType = getSolverTypeDefault();
+    m_solverType = solverType.first;
     if (argData.isFlagSet(SOLVER_TYPE_FLAG)) {
         status = argData.getFlagArgument(SOLVER_TYPE_FLAG, 0, m_solverType);
         CHECK_MSTATUS(status);

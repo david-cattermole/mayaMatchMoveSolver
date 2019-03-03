@@ -55,39 +55,61 @@
 #include <mayaUtils.h>
 
 
-// Determine the default solver.
-int getSolverTypeDefault() {
-    int solverType = SOLVER_TYPE_DEFAULT_VALUE;
-    const char* default_solver_ptr = std::getenv("MMSOLVER_DEFAULT_SOLVER");
-    if (default_solver_ptr != nullptr) {
-        // The memory may change under our feet, we copy the data into a
-        // string for save keeping.
-        std::string default_solver(default_solver_ptr);
-        if (default_solver == "cminpack_lm") {
-            solverType = SOLVER_TYPE_CMINPACK_LM;
-        } else if (default_solver == "levmar") {
-            solverType = SOLVER_TYPE_LEVMAR;
-        } else {
-            ERR("MMSOLVER_DEFAULT_SOLVER environment variable is invalid. "
-                        << "Value may be \"cminpack_lm\" or \"levmar\"; "
-                        << "value=" << default_solver);
-        }
-    }
-    return solverType;
-}
-
-
-std::vector<int> getSolverTypes() {
-    std::vector<int> solverTypes;
+// Get a list of all available solver types (index and name).
+//
+// This list may change in different plug-ins, as the compiled
+// dependencies may differ.
+std::vector<SolverTypePair> getSolverTypes() {
+    std::vector<std::pair<int, std::string> > solverTypes;
+    std::pair<int, std::string> solverType;
 #ifdef USE_SOLVER_LEVMAR
-    solverTypes.push_back(SOLVER_TYPE_LEVMAR);
+    solverType.first = SOLVER_TYPE_LEVMAR;
+    solverType.second = SOLVER_TYPE_LEVMAR_NAME;
+    solverTypes.push_back(solverType);
 #endif
 
 #ifdef USE_SOLVER_CMINPACK
-    solverTypes.push_back(SOLVER_TYPE_CMINPACK_LM);
+    solverType.first = SOLVER_TYPE_CMINPACK_LM;
+    solverType.second = SOLVER_TYPE_CMINPACK_LM_NAME;
+    solverTypes.push_back(solverType);
 #endif
     return solverTypes;
 }
+
+
+// Determine the default solver.
+SolverTypePair getSolverTypeDefault() {
+    int solverTypeIndex = SOLVER_TYPE_DEFAULT_VALUE;
+    std::string solverTypeName = "";
+
+    std::vector<SolverTypePair> solverTypes = getSolverTypes();
+
+    const char* defaultSolver_ptr = std::getenv("MMSOLVER_DEFAULT_SOLVER");
+    if (defaultSolver_ptr != nullptr) {
+        // The memory may change under our feet, we copy the data into a
+        // string for save keeping.
+        std::string defaultSolver(defaultSolver_ptr);
+
+        std::vector<SolverTypePair>::const_iterator cit;
+        for (cit = solverTypes.cbegin(); cit != solverTypes.cend(); ++cit){
+            int index = cit->first;
+            std::string name = cit->second;
+
+            if (defaultSolver == name) {
+                solverTypeIndex = index;
+                solverTypeName = name;
+            }
+        }
+        if (solverTypeName == "") {
+            ERR("MMSOLVER_DEFAULT_SOLVER environment variable is invalid. "
+                << "Value may be \"cminpack_lm\" or \"levmar\"; "
+                << "value=" << defaultSolver);
+        }
+    }
+    SolverTypePair solverType(solverTypeIndex, solverTypeName);
+    return solverType;
+}
+
 
 
 int countUpNumberOfErrors(MarkerPtrList markerList,

@@ -30,9 +30,15 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-// The different solver types to choose from.
-#define SOLVER_TYPE_LEVMAR 0  // Dense LM solver using 'levmar',
-#define SOLVER_TYPE_CMINPACK_LM 1  // Dense LM solver using 'cminpack' library.
+// The different solver types to choose from:
+
+// Dense LM solver using 'levmar',
+#define SOLVER_TYPE_LEVMAR 0
+#define SOLVER_TYPE_LEVMAR_NAME "levmar"
+
+// Dense LM solver using 'cminpack' library.
+#define SOLVER_TYPE_CMINPACK_LM 1
+#define SOLVER_TYPE_CMINPACK_LM_NAME "cminpack_lm"
 
 // The default solver to use, if all solvers are available.
 #define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LM
@@ -42,7 +48,7 @@
 
 // The number of errors that are measured per-marker.  
 //
-// This can be a value of 2 or 3. 3 was used used in the past with
+// This can be a value of 2 or 3. 3 was used in the past with
 // success, but tests now prove 2 to reduce error with less
 // iterations, and is significantly faster overall.
 #define ERRORS_PER_MARKER 2
@@ -54,6 +60,7 @@
 typedef std::vector<std::vector<bool> > BoolList2D;
 typedef std::pair<int, int> IndexPair;
 typedef std::vector<std::pair<int, int> > IndexPairList;
+typedef std::pair<int, std::string> SolverTypePair;
 
 
 inline
@@ -63,9 +70,9 @@ double distance_2d(MPoint a, MPoint b) {
     return sqrt((dx * dx) + (dy * dy));
 }
 
-int getSolverTypeDefault();
+std::vector<SolverTypePair> getSolverTypes();
 
-std::vector<int> getSolverTypes();
+SolverTypePair getSolverTypeDefault();
 
 int countUpNumberOfErrors(MarkerPtrList markerList,
                           MTimeArray frameList,

@@ -28,7 +28,7 @@ set(MAYA_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH "Maya install 
 
 # Lev-Mar
 # WARNING: 'Lev-Mar' is GPL licensed and must not be distributed in binary form to anyone.
-set(USE_GPL_LEVMAR OFF CACHE BOOLEAN "Compile with the GPL-licensed Lev-Mar library?")
+set(USE_GPL_LEVMAR 0 CACHE BOOLEAN "Compile with the GPL-licensed Lev-Mar library?")
 set(LEVMAR_ROOT "/usr/local" CACHE PATH "Levmar directory")
 # set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH "Levmar include directory")
 # set(LEVMAR_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
@@ -38,7 +38,7 @@ set(LEVMAR_ROOT "/usr/local" CACHE PATH "Levmar directory")
 #         "Levmar libraries to link")
 
 # CMinpack
-set(USE_CMINPACK OFF CACHE BOOLEAN "Compile with the cminpack library?")
+set(USE_CMINPACK 1 CACHE BOOLEAN "Compile with the cminpack library?")
 set(CMINPACK_ROOT "/usr/local" CACHE PATH "CMinpack directory")
 # set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH "cminpack include directory")
 # set(CMINPACK_LIB_PATH "/usr/local/lib" CACHE PATH "cminpack library directory")

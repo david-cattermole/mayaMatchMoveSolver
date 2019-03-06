@@ -19,7 +19,6 @@ set(output_file ${CMAKE_SOURCE_DIR}/docs/build/html/py-modindex.html)
 add_custom_command(
         OUTPUT ${output_file}
         COMMAND make html
-        # COMMAND cmd.exe /C make.bat html
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs
         DEPENDS ${input_files}
 )

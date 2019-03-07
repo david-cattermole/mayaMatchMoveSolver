@@ -9,6 +9,8 @@ attributes.
 This documentation is for the GitHub project_, and details the tools,
 solver design, python scripting, plug-in command and node details.
 
+If you are new to mmSolver, take a look at the video :ref:`tutorial-heading`.
+
 Topics
 ++++++
 

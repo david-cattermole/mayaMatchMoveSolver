@@ -106,22 +106,18 @@ On Windows:
 
 # Building Dependencies
 
-To build the project we can use the build scripts provided:
+To build the `cminpack` (or `levmar`), we have pre-configured build 
+scripts for Linux and Windows. 
   
-| Build Script Name            | Operating System |
-| ------------                 | -----------      |
-| build_mmSolver_linux.bash    | Linux            |
-| build_mmSolver_windows64.bat | Windows          |
+| Build Script Name     | Operating System |
+| ------------          | -----------      |
+| build_cminpack.bash   | Linux            |
+| build_cminpack.bat    | Windows          |
+| build_levmar.bash     | Linux            |
+| build_levmar.bat      | Windows          |
 
 The build scripts are located in `<project root>/scripts/`.
-
-
-For details of using these build scripts and building the plug-in,
-please see
-[BUILD_LINUX.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD_LINUX.md)
-or
-[BUILD_WINDOWS.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD_WINDOWS.md).
-
+These scripts will automatically install into `<project root>/external/install`.
 
 # Building mmSolver
 
@@ -140,11 +136,11 @@ or
 
 # Compile Qt UI files
 
-The build script will automatically compile the Qt .ui files, however 
-these scripts can also be run manually if needed. 
+The CMake build script will automatically compile the Qt .ui files, 
+however these scripts can also be run manually if needed. 
 
-The Qt Designer `.ui` files must be compiled using your version of 
-Maya (either PySide or PySide2) in order to use the mmSolver tool 
+The Qt Designer `.ui` files must be compiled using the intended version
+of Maya (either PySide or PySide2) in order to use the mmSolver tool 
 GUIs. 
 
 To compile the `*.ui` files, run these commands. 
@@ -175,15 +171,15 @@ NOTE: Replace ``<project root>`` and ``<VERSION>`` as required.
 
 # Build Documentation
 
-The build script will automatically build the documentation, but the 
-steps are documented manually below. 
+The CMake build script will automatically build the documentation, but
+the steps are documented manually below. 
 
 *mmSolver* comes with a set of documentation, and Sphinx building
 scripts to automate HTML page generation. It is recommended to build
-the HTML documentation, however it is optional.
+the HTML documentation, however it is optional for an installation.
 
 To build the documentation, you will need to install both
-[Python](https://www.python.org/) and
+[Python 2.7.x](https://www.python.org/) and
 [Sphinx](http://www.sphinx-doc.org/en/master/usage/installation.html).
 
 On Linux, Python is likely already installed, however you can install
@@ -218,21 +214,8 @@ present.
 # Run Test Suite
 
 If you use the build script, you can automatically run the test suite 
-after compiling and installing.
-
-On Linux run:
-```commandline
-$ cd <project root>/build
-$ cmake
-```
-
-On Windows run:
-```cmd
-> CD <project root>
-> "C:\Program Files\Autodesk\MayaVERSION\bin\mayapy" tests\runTests.py > tests.log
-```
-
-
+after compiling and installing. Make sure to turn on the variable 
+`RUN_TESTS` in the `.bash` or `.bat` scripts.
 
 After all parts of the `mmSolver` are installed and can be found by
 Maya, try running the test suite to confirm everything is working as
@@ -253,7 +236,7 @@ On Windows run:
 Make sure you use the same Maya version 'mayapy' for testing as you
 have build for.
 
-On Windows, 'cmd.exe' is very slow printing text to the console,
+**Note:** On Windows, 'cmd.exe' is very slow printing text to the console,
 therefore redirecting to a log file ('> file.log' below) will improve
 performance of the test suite greatly.
 
@@ -262,9 +245,10 @@ For more information about testing, see the Testing section in
 
 # Install 3DEqualizer Files
 
-To install the 3DEqualizer (3DE) tools for `mmSolver`, follow the steps below.
-The 3DEqualizer tools are for integration into workflows using 3DEqualizer.
-These tools have been tested with `3DEqualizer4 Release 5`.
+To install the 3DEqualizer (3DE) tools for `mmSolver`, follow the 
+steps below. The 3DEqualizer tools are for integration into workflows 
+using 3DEqualizer. These tools have been tested with 
+`3DEqualizer4 Release 5`, but earlier versions.
 
 There are currently two 3DEqualizer tools available:
 
@@ -284,8 +268,9 @@ an example of installing scripts with ScriptDB.
 
 ## Home Directory
 
-Alternatively, you may install scripts manually by copying the 3DEqualizer python
-scripts in `<project root>/3dequalizer/scriptdb` into the `~/.3dequalizer/py_scripts` directory.
+Alternatively, you may install scripts manually by copying the 
+3DEqualizer python scripts in `<project root>/3dequalizer/scriptdb`
+into the `~/.3dequalizer/py_scripts` directory.
 
 On Linux:
 ```commandline
@@ -298,7 +283,6 @@ On Windows:
 > CD <project root>
 > XCOPY 3dequalizer/scriptdb/* "%AppData%/.3dequalizer/py_scripts" /Y
 ```
-
 
 # Build Environment
 
@@ -328,7 +312,6 @@ Maya 2016 on Linux:
 | Autodesk Maya     | **Autodesk Maya 2016 Service Pack 6**       |
 | Autodesk Maya API | **201614**                                  |
 
-
 Maya 2017 on Windows:
 
 | Software          | Version                                     |
@@ -340,7 +323,6 @@ Maya 2017 on Windows:
 | CMake             | 3.12.0                                      |
 | Autodesk Maya     | **Autodesk Maya 2017**                      |
 | Autodesk Maya API | **201700**                                  |
-
 
 Maya 2018 on Windows:
 

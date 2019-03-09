@@ -5,6 +5,9 @@
 
 #include <maya/MFnPlugin.h>
 #include <maya/MPxTransform.h>
+#include <maya/MString.h>
+#include <maya/MStatus.h>
+#include <maya/MObject.h>
 
 
 // TODO: Add entry points for mmReprojection cmd and node, mmMarkerScale cmd and mmTriangulate cmd.
@@ -132,6 +135,19 @@ MStatus initializePlugin(MObject obj) {
     //                  MMMarkerScaleCmd::creator,
     //                  MMMarkerScaleCmd::newSyntax,
     //                  status);
+
+    // TODO: Run the startup function.
+    bool displayEnabled = false;
+    bool undoEnabled = false;
+    MString command;
+    command += "import maya.utils;\n";
+    command += "if 'mmsolver_startup' in dir():\n";
+    command += "    maya.utils.executeDeferred(mmsolver_startup);\n";
+    status = MGlobal::executePythonCommand(
+            command,
+            displayEnabled,
+            undoEnabled
+    );
 
     return status;
 }

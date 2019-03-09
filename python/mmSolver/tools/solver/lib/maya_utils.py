@@ -68,30 +68,6 @@ def get_current_frame():
     return int(time)
 
 
-def get_timeline_range_inner():
-    """
-    Get the 'inner' frame range.
-
-    :return: Tuple of start and end frame numbers.
-    :rtype: (int, int)
-    """
-    s = maya.cmds.playbackOptions(query=True, minTime=True)
-    e = maya.cmds.playbackOptions(query=True, maxTime=True)
-    return int(s), int(e)
-
-
-def get_timeline_range_outer():
-    """
-    Get the 'outer' frame range.
-
-    :return: Tuple of start and end frame numbers.
-    :rtype: (int, int)
-    """
-    s = maya.cmds.playbackOptions(query=True, animationStartTime=True)
-    e = maya.cmds.playbackOptions(query=True, animationEndTime=True)
-    return int(s), int(e)
-
-
 def prompt_for_new_node_name(title, message, text):
     """
     Ask the user for a new node name.

@@ -12,6 +12,8 @@ import maya.OpenMaya as OpenMaya
 import mmSolver.logger
 import mmSolver.api as mmapi
 
+import mmSolver.utils.time as utils_time
+
 import mmSolver.tools.selection.filternodes as filter_nodes
 import mmSolver.tools.solver.lib.solver as solver_utils
 import mmSolver.tools.solver.lib.maya_utils as maya_utils
@@ -241,7 +243,7 @@ def create_solver_step():
 
     data['name'] = str(uuid.uuid4())
 
-    start, end = maya_utils.get_timeline_range_inner()
+    start, end = utils_time.get_maya_timeline_range_inner()
     frame_list = list(xrange(start, end + 1))
     data['frame_list'] = frame_list
 

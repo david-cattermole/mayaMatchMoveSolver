@@ -35,20 +35,25 @@ class Marker(object):
 
     """
 
-    def __init__(self, name=None):
+    def __init__(self, node=None, name=None):
         """
         Initialize a Marker, give a name to connect to an existing Maya node.
 
-        :param name: The Maya node name to connect to.
+        :param node: The Maya node to connect to.
+        :type node: None or str
+
+        :param name: This is a backwards compatible kwarg for 'node'.
         :type name: None or str
         """
-        if isinstance(name, basestring):
+        if name is not None:
+            node = name
+        if isinstance(node, basestring):
             try:
-                dag = api_utils.get_as_dag_path(name)
+                dag = api_utils.get_as_dag_path(node)
                 self._mfn = OpenMaya.MFnDagNode(dag)
             except RuntimeError as e:
                 msg = 'Given Marker node name is invalid: name=%r'
-                LOG.error(msg, name)
+                LOG.error(msg, node)
                 raise e
         else:
             self._mfn = OpenMaya.MFnDagNode()

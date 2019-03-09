@@ -39,3 +39,25 @@ def get_camera(node):
         msg = 'Node type not recognised as a camera! node_type=%r'
         LOG.error(msg, node_type)
     return cam_tfm, cam_shp
+
+
+def is_startup_cam(x):
+    """
+    Return True if the given camera node is a 'startupCamera'.
+
+    A startup camera is a camera; 'persp', 'side', 'top', 'front', etc.
+
+    :rtype: bool
+    """
+    return maya.cmds.camera(x, query=True, startupCamera=True) is True
+
+
+def is_not_startup_cam(x):
+    """
+    Return True if the given camera node is NOT a 'startupCamera'.
+
+    A startup camera is a camera; 'persp', 'side', 'top', 'front', etc.
+
+    :rtype: bool
+    """
+    return is_startup_cam(x) is False

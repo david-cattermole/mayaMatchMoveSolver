@@ -1,5 +1,5 @@
 """
-The Convert to Marker tool.
+The 'Convert to Marker' tool.
 """
 
 import warnings
@@ -9,7 +9,9 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.utils.camera as utils_camera
 import mmSolver.utils.viewport as utils_viewport
+import mmSolver.utils.time as utils_time
 import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
 import mmSolver.tools.loadmarker.interface as loadmkr_interface
 
@@ -106,15 +108,9 @@ def __convert_nodes_to_marker_data_list(cam_tfm, cam_shp,
     return mkr_data_list
 
 
-def __get_timeline_range_inner():
-    s = maya.cmds.playbackOptions(query=True, minTime=True)
-    e = maya.cmds.playbackOptions(query=True, maxTime=True)
-    return int(s), int(e)
-
-
 def main():
     """
-    Center the selected transform onto the camera view.
+    Convert all selected transforms into 2D markers under a camera.
     """
     # Get camera
     model_editor = utils_viewport.get_active_model_editor()
@@ -125,7 +121,10 @@ def main():
 
     cam_tfm, cam_shp = utils_viewport.get_viewport_camera(model_editor)
     if cam_shp is None:
-        LOG.warning('Please select an active viewport to get a camera.')
+        LOG.error('Please select an active viewport to get a camera.')
+        return
+    if utils_camera.is_startup_cam(cam_shp) is True:
+        LOG.error("Cannot create Markers in 'persp' camera.")
         return
 
     # Get transforms
@@ -144,7 +143,7 @@ def main():
         maya.mel.eval('paneLayout -e -manage false $gMainPane')
 
         # Compute the Marker Data.
-        start_frame, end_frame = __get_timeline_range_inner()
+        start_frame, end_frame = utils_time.get_maya_timeline_range_outer()
         mkr_data_list = __convert_nodes_to_marker_data_list(
             cam_tfm,
             cam_shp,
@@ -154,16 +153,20 @@ def main():
         )
 
         cam = mmapi.Camera(shape=cam_shp)
-        mayareadfile.create_nodes(
+        mkr_list = mayareadfile.create_nodes(
             mkr_data_list,
             cam=cam,
             mkr_grp=None,
             with_bundles=True,
         )
+        mkr_nodes = [mkr.get_node() for mkr in mkr_list]
     except:
         raise
     finally:
-        maya.mel.eval('paneLayout -e -manage true $gMainPane')  # turn on Maya UI
+        # Turn on Maya UI
+        maya.mel.eval('paneLayout -e -manage true $gMainPane')
+    if len(mkr_nodes) > 0:
+        maya.cmds.select(mkr_nodes, replace=True)
     return
 
 

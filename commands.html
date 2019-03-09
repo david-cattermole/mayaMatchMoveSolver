@@ -190,6 +190,16 @@ from the core solver engines, so the user can do whatever they wish to.</p>
 </div>
 </div>
 </div>
+<div class="section" id="mmsolvertype-command">
+<h2><code class="docutils literal"><span class="pre">mmSolverType</span></code> Command<a class="headerlink" href="#mmsolvertype-command" title="Permalink to this headline">¶</a></h2>
+<p><cite>mmSolverType</cite> is used to query the current plug-in&#8217;s available
+solvers.</p>
+<p>Python Example:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">solvers</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">default_solver</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="mmtestcameramatrix-command">
 <h2><code class="docutils literal"><span class="pre">mmTestCameraMatrix</span></code> Command<a class="headerlink" href="#mmtestcameramatrix-command" title="Permalink to this headline">¶</a></h2>
 <p>This command is used for internal tests only, it has no practical use
@@ -219,6 +229,7 @@ for users.</p>
 <li><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#mmsolvertype-command"><code class="docutils literal"><span class="pre">mmSolverType</span></code> Command</a></li>
 <li><a class="reference internal" href="#mmtestcameramatrix-command"><code class="docutils literal"><span class="pre">mmTestCameraMatrix</span></code> Command</a></li>
 </ul>
 </li>

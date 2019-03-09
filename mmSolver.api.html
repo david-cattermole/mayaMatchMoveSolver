@@ -459,7 +459,7 @@ cannot be found.</td>
 <p>2D point to determine screen-space features.</p>
 <dl class="class">
 <dt id="mmSolver.api.Marker">
-<em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">Marker</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">Marker</code><span class="sig-paren">(</span><em>node=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker" title="Permalink to this definition">¶</a></dt>
 <dd><p>The 2D Marker object.</p>
 <p>A Marker defines a wrapper around a Maya node that contains 2D
 information, in a camera&#8217;s screen-space.</p>
@@ -475,13 +475,17 @@ information, in a camera&#8217;s screen-space.</p>
 </div>
 <dl class="method">
 <dt id="mmSolver.api.Marker.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>node=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize a Marker, give a name to connect to an existing Maya node.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; The Maya node name to connect to.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; The Maya node to connect to.</li>
+<li><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; This is a backwards compatible kwarg for &#8216;node&#8217;.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>

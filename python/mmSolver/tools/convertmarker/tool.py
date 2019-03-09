@@ -158,7 +158,7 @@ def main():
             mkr_data_list,
             cam=cam,
             mkr_grp=None,
-            with_bundles=False,
+            with_bundles=True,
         )
     except:
         raise

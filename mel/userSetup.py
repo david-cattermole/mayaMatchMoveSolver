@@ -43,20 +43,20 @@ def mmsolver_startup():
     LOG.debug('Batch Mode: %r', is_batch_mode)
     if is_batch_mode is False:
         # Create Menu.
-        build_shelf = bool(os.environ.get('MMSOLVER_CREATE_MENU', False))
-        LOG.debug('Build Menu: %r', build_shelf)
-        if bool(build_shelf) is True:
+        build_menu = bool(int(os.environ.get('MMSOLVER_CREATE_MENU', 1)))
+        LOG.debug('Build Menu: %r', build_menu)
+        if build_menu is True:
             maya.utils.executeDeferred(mmsolver_create_menu)
 
         # Create Shelf.
-        build_shelf = bool(os.environ.get('MMSOLVER_CREATE_SHELF', False))
+        build_shelf = bool(int(os.environ.get('MMSOLVER_CREATE_SHELF', 1)))
         LOG.debug('Build Shelf: %r', build_shelf)
-        if bool(build_shelf) is True:
+        if build_shelf is True:
             maya.utils.executeDeferred(mmsolver_create_shelf)
     return
 
 
 # Run Start up Function after Maya has loaded.
-load_at_startup = bool(os.environ.get('MMSOLVER_LOAD_AT_STARTUP', True))
+load_at_startup = bool(int(os.environ.get('MMSOLVER_LOAD_AT_STARTUP', 1)))
 if load_at_startup is True:
     maya.utils.executeDeferred(mmsolver_startup)

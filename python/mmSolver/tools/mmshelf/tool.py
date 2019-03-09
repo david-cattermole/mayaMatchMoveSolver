@@ -352,4 +352,20 @@ def build_shelf():
         icon=icon,
         cmd=cmd,
     )
+
+    # Smooth Selected Keyframes
+    name = 'Smooth'
+    tooltip = 'Smooth Selected Keyframes.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.smoothkeyframes.tool;'
+        'mmSolver.tools.smoothkeyframes.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
     return

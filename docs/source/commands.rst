@@ -80,6 +80,19 @@ MEL Example:
        -frame 24
        -iterations 10;
 
+``mmSolverType`` Command
+++++++++++++++++++++++++
+
+`mmSolverType` is used to query the current plug-in's available
+solvers.
+
+Python Example:
+
+.. code:: python
+
+   solvers = maya.cmds.mmSolverType(query=True, list=True)
+   default_solver = maya.cmds.mmSolverType(query=True, default=True)
+
 ``mmTestCameraMatrix`` Command
 ++++++++++++++++++++++++++++++
 

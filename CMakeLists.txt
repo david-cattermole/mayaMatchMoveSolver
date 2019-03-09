@@ -330,6 +330,13 @@ if(USE_GPL_LEVMAR AND LEVMAR_FOUND)
     endif()
 endif()
 
+# Install Qt.py, if exists.
+set(QTPY_FILE "${CMAKE_SOURCE_DIR}/external/install/qtpy/Qt.py")
+if(EXISTS ${QTPY_FILE})
+    install(FILES ${QTPY_FILE}
+            DESTINATION "${MODULE_FULL_NAME}/python_qtpy/")
+endif()
+
 # Install Python API and tools
 install(DIRECTORY "python/"
         DESTINATION "${MODULE_FULL_NAME}/python"

@@ -8,4 +8,5 @@ MMSOLVER_HELP_SOURCE = internet
 MMSOLVER_DEFAULT_SOLVER = @DEFAULT_SOLVER@
 MAYA_CUSTOM_TEMPLATE_PATH +:= scripts/AETemplates
 PYTHONPATH +:= python
+PYTHONPATH +:= python_qtpy
 [r] scripts: scripts

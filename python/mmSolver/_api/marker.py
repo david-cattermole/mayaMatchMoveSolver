@@ -80,18 +80,18 @@ class Marker(object):
             node = None
         return node
 
-    def set_node(self, name):
+    def set_node(self, node):
         """
         Change the underlying Maya node that this Marker class will manipulate.
 
-        :param name: The existing Maya node name.
-        :type name: str
+        :param node: The existing Maya node node.
+        :type node: str
 
         :returns: Nothing.
         :rtype: None
         """
-        assert isinstance(name, (str, unicode))
-        dag = api_utils.get_as_dag_path(name)
+        assert isinstance(node, (str, unicode))
+        dag = api_utils.get_as_dag_path(node)
         try:
             self._mfn = OpenMaya.MFnDagNode(dag)
         except RuntimeError:

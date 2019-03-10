@@ -19,33 +19,21 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 # Maya SDK
 set(MAYA_VERSION "2017" CACHE STRING "Maya version number")
 set(MAYA_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH "Maya install directory")
-# set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH "Maya include directory")
-# set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH "Maya library directory")
-# set(MAYA_LIB_NAMES
-#         "OpenMaya OpenMayaAnim Foundation"
-#         CACHE STRING
-#         "Levmar libraries to link")
+set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH "Maya include directory")
+set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH "Maya library directory")
 
 # Lev-Mar
 # WARNING: 'Lev-Mar' is GPL licensed and must not be distributed in binary form to anyone.
 set(USE_GPL_LEVMAR 0 CACHE BOOLEAN "Compile with the GPL-licensed Lev-Mar library?")
 set(LEVMAR_ROOT "/usr/local" CACHE PATH "Levmar directory")
-# set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH "Levmar include directory")
-# set(LEVMAR_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
-# set(LEVMAR_LIB_NAMES
-#         "levmar"
-#         CACHE STRING
-#         "Levmar libraries to link")
+set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH "Levmar include directory")
+set(LEVMAR_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
 
 # CMinpack
 set(USE_CMINPACK 1 CACHE BOOLEAN "Compile with the cminpack library?")
 set(CMINPACK_ROOT "/usr/local" CACHE PATH "CMinpack directory")
-# set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH "cminpack include directory")
-# set(CMINPACK_LIB_PATH "/usr/local/lib" CACHE PATH "cminpack library directory")
-# set(CMINPACK_LIB_NAMES
-#        "cminpack"
-#        CACHE STRING
-#        "cminpack libraries to link")
+set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH "cminpack include directory")
+set(CMINPACK_LIB_PATH "/usr/local/lib" CACHE PATH "cminpack library directory")
 
 
 ## Extra Libraries

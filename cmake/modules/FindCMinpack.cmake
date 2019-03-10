@@ -2,6 +2,7 @@
 
 find_path(CMINPACK_INCLUDE_DIR cminpack.h
     HINTS
+        ${CMINPACK_INCLUDE_PATH}
         ${CMINPACK_ROOT}
         /usr/local/include
         /usr/include
@@ -14,6 +15,7 @@ find_path(CMINPACK_INCLUDE_DIR cminpack.h
 
 find_library(CMINPACK_LIBRARY libcminpack.so.1 libcminpack_s cminpack cminpack_s
     HINTS
+        ${CMINPACK_LIB_PATH}
         ${CMINPACK_ROOT}
         /usr/lib
         /usr/local/lib
@@ -26,6 +28,7 @@ find_library(CMINPACK_LIBRARY libcminpack.so.1 libcminpack_s cminpack cminpack_s
 
 find_path(CMINPACK_LIBRARY_DLL cminpack.dll
     HINTS
+        ${CMINPACK_LIB_PATH}
         ${CMINPACK_ROOT}
         /usr/lib
         /usr/local/lib

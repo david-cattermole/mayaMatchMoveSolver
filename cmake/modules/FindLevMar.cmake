@@ -2,6 +2,7 @@
 
 find_path(LEVMAR_INCLUDE_DIR levmar.h
     HINTS
+        ${LEVMAR_INCLUDE_PATH}
         ${LEVMAR_ROOT}
         /usr/local/include
         /usr/include
@@ -12,6 +13,7 @@ find_path(LEVMAR_INCLUDE_DIR levmar.h
 
 find_library(LEVMAR_LIBRARY levmar
     HINTS
+        ${LEVMAR_LIB_PATH}
         ${LEVMAR_ROOT}
         /usr/local/lib
         /usr/lib
@@ -23,6 +25,7 @@ find_library(LEVMAR_LIBRARY levmar
 if(WIN32)
     find_path(LEVMAR_LIBRARY_DLL levmar.dll
         HINTS
+            ${LEVMAR_LIB_PATH}
             ${LEVMAR_ROOT}
             /usr/local/include
             /usr/include

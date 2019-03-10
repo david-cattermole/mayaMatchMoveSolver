@@ -2,6 +2,7 @@
 Unified logging for the mmSolver package.
 """
 
+import os
 import logging
 import inspect
 
@@ -9,6 +10,10 @@ import inspect
 def get_logger(level=None):
     """
     Returns a Logger object for logging events.
+
+    If the environment variable 'MMSOLVER_DEBUG' is set to '1', and
+    the 'level' kwarg is not given, the mmSolver logger will print
+    debug messages.
 
     Example usage::
 
@@ -36,7 +41,14 @@ def get_logger(level=None):
         module_name = module.__name__
 
     log = logging.getLogger(module_name)
+
+    # Turn on debug logging.
+    if level is None:
+        debug = os.environ.get('MMSOLVER_DEBUG', 0)
+        debug = bool(int(debug))
+        if debug is True:
+            level = 'debug'
+
     if level is not None:
         log.setLevel(level)
     return log
-

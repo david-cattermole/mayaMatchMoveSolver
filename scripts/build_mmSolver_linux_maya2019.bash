@@ -2,8 +2,8 @@
 # Builds the Maya MatchMove Solver project.
 
 # Maya
-MAYA_VERSION=2017
-MAYA_LOCATION=/usr/autodesk/maya2017/
+MAYA_VERSION=2019
+MAYA_LOCATION=/usr/autodesk/maya2019/
 
 # Clear all build information before re-compiling.
 # Turn this off when wanting to make small changes and recompile.
@@ -23,18 +23,19 @@ WITH_GPL_CODE=0
 
 # Where to install the module?
 #
-# The "$HOME/maya/2017/modules" directory is automatically searched
+# The "$HOME/maya/2019/modules" directory is automatically searched
 # for Maya module (.mod) files. Therefore we can install directly.
 #
-# INSTALL_MODULE_DIR=${PROJECT_ROOT}/modules
-INSTALL_MODULE_DIR=${HOME}/maya/2017/modules
+INSTALL_MODULE_DIR=${HOME}/maya/2019/modules
 
 # Build ZIP Package.
 # For developer use. Make ZIP packages ready to distribute to others.
 BUILD_PACKAGE=0
 
+
 # Do not edit below, unless you know what you're doing.
 ###############################################################################
+
 
 # Store the current working directory, to return to.
 CWD=`pwd`

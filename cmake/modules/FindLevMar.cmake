@@ -1,4 +1,19 @@
-# message("LEMVAR ROOT = ${LEVMAR_ROOT}")
+# - levmar finder module
+# This module will look for levmar, using the predefined variable
+# LEVMAR_ROOT. On MS Windows, the DLL is expected to be named
+# 'levmar.dll'.
+#
+# Uses Variables:
+# - LEVMAR_ROOT_PATH - Directory for the levmar install root.
+# - LEVMAR_INCLUDE_PATH - Directory for the header files.
+# - LEVMAR_LIB_PATH - Directory for shared libraries (.so and .dll).
+#
+# Defines Variables:
+# - LEVMAR_FOUND
+# - LEVMAR_LIBRARIES
+# - LEVMAR_LIBRARY_DLL
+# - LEVMAR_INCLUDE_DIRS
+#
 
 find_path(LEVMAR_INCLUDE_DIR levmar.h
     HINTS
@@ -9,7 +24,6 @@ find_path(LEVMAR_INCLUDE_DIR levmar.h
     PATH_SUFFIXES
         include/
 )
-# message("LEVMAR_INCLUDE_DIR = ${LEVMAR_INCLUDE_DIR}")
 
 find_library(LEVMAR_LIBRARY levmar
     HINTS
@@ -20,7 +34,6 @@ find_library(LEVMAR_LIBRARY levmar
     PATH_SUFFIXES
         lib/
 )
-# message("LEVMAR_LIBRARY = ${LEVMAR_LIBRARY}")
 
 if(WIN32)
     find_path(LEVMAR_LIBRARY_DLL levmar.dll
@@ -34,7 +47,6 @@ if(WIN32)
             bin/
             )
     set(LEVMAR_LIBRARY_DLL "${LEVMAR_LIBRARY_DLL}/levmar.dll")
-    # message("LEVMAR_LIBRARY_DLL = ${LEVMAR_LIBRARY_DLL}")
 endif()
 
 

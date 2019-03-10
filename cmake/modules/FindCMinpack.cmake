@@ -1,7 +1,23 @@
-# message("CMINPACK ROOT = ${CMINPACK_ROOT}")
+# - CMinpack finder module
+# This module will look for cminpack, using the predefined variable
+# CMINPACK_ROOT. On MS Windows, the DLL is expected to be named
+# 'cminpack.dll'.
+#
+# Uses Variables:
+# - CMINPACK_ROOT_PATH - Directory for the cminpack install root.
+# - CMINPACK_INCLUDE_PATH - Directory for the header files.
+# - CMINPACK_LIB_PATH - Directory for shared libraries (.so and .dll).
+#
+# Defines Variables:
+# - CMINPACK_FOUND
+# - CMINPACK_LIBRARIES
+# - CMINPACK_LIBRARY_DLL
+# - CMINPACK_INCLUDE_DIRS
+#
 
 find_path(CMINPACK_INCLUDE_DIR cminpack.h
     HINTS
+        ${CMINPACK_INCLUDE_PATH}
         ${CMINPACK_ROOT}
         /usr/local/include
         /usr/include
@@ -10,10 +26,10 @@ find_path(CMINPACK_INCLUDE_DIR cminpack.h
         cminpack-1/
         include/cminpack-1/
 )
-# message("CMINPACK_INCLUDE_DIR = ${CMINPACK_INCLUDE_DIR}")
 
 find_library(CMINPACK_LIBRARY libcminpack.so.1 libcminpack_s cminpack cminpack_s
     HINTS
+        ${CMINPACK_LIB_PATH}
         ${CMINPACK_ROOT}
         /usr/lib
         /usr/local/lib
@@ -22,10 +38,10 @@ find_library(CMINPACK_LIBRARY libcminpack.so.1 libcminpack_s cminpack cminpack_s
         lib/
         lib64/
 )
-# message("CMINPACK_LIBRARY = ${CMINPACK_LIBRARY}")
 
 find_path(CMINPACK_LIBRARY_DLL cminpack.dll
     HINTS
+        ${CMINPACK_LIB_PATH}
         ${CMINPACK_ROOT}
         /usr/lib
         /usr/local/lib
@@ -35,7 +51,6 @@ find_path(CMINPACK_LIBRARY_DLL cminpack.dll
 if(EXISTS ${CMINPACK_LIBRARY_DLL})
     set(CMINPACK_LIBRARY_DLL ${CMINPACK_LIBRARY_DLL}/cminpack.dll)
 endif()
-# message("CMINPACK_LIBRARY_DLL = ${CMINPACK_LIBRARY_DLL}")
 
 if(CMINPACK_INCLUDE_DIR AND CMINPACK_LIBRARY)
     set(CMINPACK_INCLUDE_DIRS ${CMINPACK_INCLUDE_DIR} )

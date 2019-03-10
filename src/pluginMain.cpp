@@ -69,7 +69,7 @@
 
 #undef PLUGIN_COMPANY  // Maya API defines this, we override it.
 #define PLUGIN_COMPANY "MM Solver"
-#define PLUGIN_VERSION "1.0"
+#define PLUGIN_VERSION "0.2.0"
 
 
 // Register with Maya

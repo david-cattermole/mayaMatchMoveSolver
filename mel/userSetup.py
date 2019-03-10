@@ -14,6 +14,7 @@ import mmSolver.logger
 
 
 LOG = mmSolver.logger.get_logger()
+MMSOLVER_STARTED = False
 
 
 def mmsolver_create_shelf():
@@ -37,6 +38,9 @@ def mmsolver_startup():
     Responsible for starting up mmSolver.
     """
     LOG.info('MM Solver Startup...')
+
+    global MMSOLVER_STARTED
+    MMSOLVER_STARTED = True
 
     # Only run GUI code when the Maya interactive GUI opens.
     is_batch_mode = maya.cmds.about(batch=True)

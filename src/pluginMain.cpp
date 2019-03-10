@@ -141,7 +141,8 @@ MStatus initializePlugin(MObject obj) {
     bool undoEnabled = false;
     MString command;
     command += "import maya.utils;\n";
-    command += "if 'mmsolver_startup' in dir():\n";
+    command += "global MMSOLVER_STARTED\n";
+    command += "if 'mmsolver_startup' in dir() and MMSOLVER_STARTED is False:\n";
     command += "    maya.utils.executeDeferred(mmsolver_startup);\n";
     status = MGlobal::executePythonCommand(
             command,

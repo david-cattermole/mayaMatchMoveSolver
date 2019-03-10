@@ -4,6 +4,7 @@ Test functions for API utils module.
 
 import pprint
 import unittest
+import time
 
 import maya.cmds
 
@@ -171,6 +172,41 @@ class TestSolveResult(test_api_utils.APITestCase):
         frm, val = mmapi.get_max_frame_error(frame_error_list)
         assert frm is None or isinstance(frm, float)
         assert isinstance(val, float)
+
+    def test_perfect_solve(self):
+        """
+        Open a file and trigger a solve to get perfect results.
+        Make sure solver results doesn't fail in this case.
+        """
+        # Open the Maya file
+        file_name = 'mmSolverBasicSolveA_triggerMaxFrameErrorTraceback.ma'
+        path = self.get_data_path('scenes', file_name)
+        maya.cmds.file(path, open=True, force=True)
+
+        # Run solver!
+        s = time.time()
+        col = mmapi.Collection(node='collection1')
+        solres_list = col.execute()
+        e = time.time()
+        print 'total time:', e - s
+
+        # save the output
+        path = self.get_data_path('solveresult_testPerfectSolve_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        # Ensure the values are correct
+        solres = solres_list[0]
+        success = solres.get_success()
+        err = solres.get_final_error()
+        frame_error_list = mmapi.merge_frame_error_list([solres])
+        avg_error = mmapi.get_average_frame_error_list(frame_error_list)
+        max_frame_error = mmapi.get_max_frame_error(frame_error_list)
+        self.assertEqual(max_frame_error[0], None)
+        self.assertIsInstance(max_frame_error[1], float)
+        self.assertTrue(success)
+        self.assertGreater(err, 0.0)
+        return
 
 
 if __name__ == '__main__':

@@ -168,7 +168,7 @@ def log_solve_results(log, solres_list, total_time=None):
     log.info(
         'Max Frame Error: %.2f pixels at frame %s',
         max_frame_error[1],
-        int(max_frame_error[0])
+        max_frame_error[0]
     )
 
     if total_time is not None:

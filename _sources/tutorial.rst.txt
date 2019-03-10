@@ -5,6 +5,10 @@ Tutorials
 
 The videos below explain different aspects of mmSolver.
 
+All offical videos can be found on the mmSolver `YouTube Channel
+<https://www.youtube.com/channel/UCndLPvFXd9Os7m9sc2Bbbsw>`_
+
+
 Hierarchical Object Solve
 -------------------------
 

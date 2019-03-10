@@ -82,7 +82,7 @@ def rename_collection(col, new_name):
 def delete_collection(col):
     """
     Delete a Collection object (and underlying Maya node).
-    
+
     :param col: The Collection object to delete.
     :type col: Collection
     """
@@ -137,7 +137,7 @@ def set_solver_results_on_collection(col, solres_list):
     LOG.debug(msg)
 
 
-def log_solve_results(log, solres_list, total_time=None):
+def log_solve_results(log, solres_list, total_time=None, status_fn=None):
     """
     Displays / saves the Solve Results.
 
@@ -153,6 +153,8 @@ def log_solve_results(log, solres_list, total_time=None):
     :returns: Nothing.
     :rtype: None
     """
+    status_str = 'Solved: '
+
     frame_error_list = mmapi.merge_frame_error_list(solres_list)
     frame_error_txt = pprint.pformat(dict(frame_error_list))
     log.debug('Per-Frame Errors:\n%s', frame_error_txt)
@@ -163,6 +165,7 @@ def log_solve_results(log, solres_list, total_time=None):
 
     avg_error = mmapi.get_average_frame_error_list(frame_error_list)
     log.info('Average Error: %.2f pixels', avg_error)
+    status_str += 'avg err=%.2fpx' % avg_error
 
     max_frame_error = mmapi.get_max_frame_error(frame_error_list)
     log.info(
@@ -170,9 +173,15 @@ def log_solve_results(log, solres_list, total_time=None):
         max_frame_error[1],
         max_frame_error[0]
     )
+    status_str += ' | max err=%.2fpx frm=%s' % (max_frame_error[1],
+                                                max_frame_error[0])
 
     if total_time is not None:
         log.info('Total Time: %.3f seconds', total_time)
+        status_str += ' | time %.3fsec' % total_time
+
+    if status_fn is not None:
+        status_fn(status_str)
     return
 
 
@@ -182,7 +191,7 @@ def get_override_current_frame_from_collection(col):
 
     :param col: The Collection to query.
     :type col: Collection
-    
+
     :returns: True or False.
     :rtype: bool
     """
@@ -378,9 +387,9 @@ def compile_collection(col, prog_fn=None):
     :param col: Collection to execute.
     :type col: Collection
 
-    :param prog_fn: Progress function that is called each time progress 
-                    is made. The function should take a single 'int' 
-                    argument, and the integer is expected to be a 
+    :param prog_fn: Progress function that is called each time progress
+                    is made. The function should take a single 'int'
+                    argument, and the integer is expected to be a
                     percentage value, between 0 and 100.
     :type prog_fn: None or function
     """
@@ -450,7 +459,7 @@ def execute_collection(col,
 
     # Display Solver results
     set_solver_results_on_collection(col, solres_list)
-    log_solve_results(log, solres_list, total_time=e-s)
+    log_solve_results(log, solres_list, total_time=e-s, status_fn=status_fn)
     return
 
 
@@ -504,7 +513,7 @@ def run_solve_ui(col, refresh_state, log_level, window):
             if window is not None:
                 prog_fn = window.progressBar.setValue
                 status_fn = window.setStatusLine
-            
+
             execute_collection(
                 col,
                 log_level=log_level,
@@ -516,5 +525,4 @@ def run_solve_ui(col, refresh_state, log_level, window):
         if window is not None:
             window.progressBar.setValue(100)
             window.progressBar.hide()
-            window.setStatusLine(const.STATUS_FINISHED)
     return

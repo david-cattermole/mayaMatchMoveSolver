@@ -646,7 +646,7 @@ class Collection(object):
 
         # Check Solvers
         sol_list = self.get_solver_list()
-        sol_enabled_list = [sol for sol in sol_list 
+        sol_enabled_list = [sol for sol in sol_list
                             if sol.get_enabled() is True]
         if len(sol_enabled_list) == 0:
             msg = 'Collection is not valid, no enabled Solvers given; '
@@ -784,6 +784,52 @@ class Collection(object):
             maya.cmds.dgdirty(update_nodes)
         return
 
+    @staticmethod
+    def __clear_attr_keyframes(kwargs, frames):
+        """
+        Evaluates the animated attributes at 'frames', then deletes the
+        existing animCurves.
+        """
+        frames = list(sorted(frames))
+        attrs = kwargs.get('attr') or []
+        for attr_name, min_val, max_val in attrs:
+            attr_obj = attribute.Attribute(name=attr_name)
+            if not attr_obj.is_animated():
+                continue
+
+            # Get Animation Curve
+            animCurves = maya.cmds.listConnections(
+                attr_name,
+                type='animCurve'
+            ) or []
+            if len(animCurves) == 0:
+                continue
+            animCurve = animCurves[0]
+
+            # Query AnimCurve values that we wish to keep.
+            values = []
+            for f in frames:
+                v = maya.cmds.getAttr(
+                    animCurve + '.output',
+                    time=float(f),
+                )
+                values.append(v)
+
+            # Re-create animCurve.
+            maya.cmds.delete(animCurve)
+            tangent_type = 'linear'
+            for f, v in zip(frames, values):
+                maya.cmds.setKeyframe(
+                    attr_name,
+                    time=f,
+                    value=v,
+                    respectKeyable=False,
+                    minimizeRotation=False,
+                    inTangentType=tangent_type,
+                    outTangentType=tangent_type
+                )
+        return
+
     def execute(self, verbose=False, refresh=False, prog_fn=None, status_fn=None):
         """
         Compile the collection, then pass that data to the 'mmSolver' command.
@@ -820,12 +866,15 @@ class Collection(object):
 
             # Run Solver...
             start = 0
+            # solve_frames = set()
             total = len(kwargs_list)
             for i, kwargs in enumerate(kwargs_list):
                 frame = kwargs.get('frame')
                 self.__set_status(status_fn, 'Evaluating frames %r' % frame)
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
+
+                # solve_frames |= set(frame)
 
                 # HACK: Overriding the verbosity, irrespective of what
                 # the solver verbosity value is set to.
@@ -837,6 +886,9 @@ class Collection(object):
                 is_single_frame = self.__is_single_frame(kwargs)
                 if is_single_frame is True:
                     save_node_attrs = self.__disconnect_animcurves(kwargs)
+                # else:
+                #     # Re-create animCurves on attributes to be solved.
+                #     self.__clear_attr_keyframes(kwargs, solve_frames)
 
                 # Run Solver Maya plug-in command
                 solve_data = maya.cmds.mmSolver(**kwargs)

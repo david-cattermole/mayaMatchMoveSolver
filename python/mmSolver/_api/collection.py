@@ -743,8 +743,6 @@ class Collection(object):
                     connPlug = connPlugs[i]
                     connObj = connPlug.node()
                     if connObj.hasFn(OpenMaya.MFn.kAnimCurve):
-                        # dependsNode = OpenMaya.MFnDependencyNode(connObj)
-                        # animCurveName = dependsNode.name()
                         in_plug_name = connPlug.name()
                         break
             if in_plug_name is not None:
@@ -756,26 +754,34 @@ class Collection(object):
         return save_node_attrs
 
     @staticmethod
-    def __reconnect_animcurves(kwargs, save_node_attrs):
+    def __reconnect_animcurves(kwargs, save_node_attrs, force_dg_update=True):
         f = kwargs.get('frame')[0]
         maya.cmds.currentTime(f, edit=True, update=False)
 
         # Re-connect animCurves, and set the solved values.
+        update_nodes = []
         for in_plug_name, out_plug_name in save_node_attrs:
             if maya.cmds.isConnected(in_plug_name, out_plug_name) is False:
                 v = maya.cmds.getAttr(out_plug_name)
                 maya.cmds.connectAttr(in_plug_name, out_plug_name)
                 attr_obj = attribute.Attribute(name=out_plug_name)
                 tangent_type = 'linear'
+                node = attr_obj.get_node()
                 maya.cmds.setKeyframe(
-                    attr_obj.get_node(),
+                    node,
                     attribute=attr_obj.get_attr(),
                     time=f, value=v,
                     inTangentType=tangent_type,
                     outTangentType=tangent_type,
                 )
+                update_nodes.append(node)
             else:
                 LOG.error('Nodes are connected. This is WRONG.')
+                raise RuntimeError
+
+        # force update of Maya.
+        if force_dg_update is True:
+            maya.cmds.dgdirty(update_nodes)
         return
 
     def execute(self, verbose=False, refresh=False, prog_fn=None, status_fn=None):

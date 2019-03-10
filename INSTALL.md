@@ -14,7 +14,7 @@ page on the GitHub [project page](https://github.com/david-cattermole/mayaMatchM
 Download the archive format (`.zip` or `.tar.gz`) for your Maya
 version and operating system.
 
-# Install Qt.py (Home Environment)
+# Install Qt.py (in a Home Environment)
 
 *Maya MatchMove Solver* uses the very popular
 [Qt.py](https://github.com/mottosso/Qt.py) project for it's 
@@ -22,7 +22,7 @@ version and operating system.
 Starting with mmSolver v0.2.0, `Qt.py` is installed with mmSolver, and
 users do not need to install `Qt.py`.
 
-# Install Qt.py (Professional Environment)
+# Install Qt.py (in a Professional Environment)
  
 Starting with mmSolver v0.2.0, `Qt.py` is installed with mmSolver 
 pre-build packages on GitHub. 
@@ -70,7 +70,7 @@ Editor `# root : MM Solver Startup... #`, and a new shelf will
 automatically be created for you named *mmSolver*.
 
 ***Note:*** Please remove the `<module root>/python_qt` directory, if 
-`Qt.py`, see the above note *Install Qt.py (Professional Environment)*.
+`Qt.py`, see the above note *Install Qt.py (in a Professional Environment)*.
 
 # Project Configuration
 
@@ -88,7 +88,8 @@ which can control mmSolver's behaviour.
 | MMSOLVER_CREATE_MENU     | Un-used currently.                                                                                     |
 | MMSOLVER_HELP_SOURCE     | Prefer 'internet' or 'local' source of help? For users with internet restrictions set this to 'local'. |
 | MMSOLVER_DEFAULT_SOLVER  | (Advanced) The default solver to use in mmSolver; 'cminpack_lm' or 'levmar'.                           |
-| MMSOLVER_LOCATION        | Do not change this variable!                                                                           |
+| MMSOLVER_DEBUG           | (Advanced) Forces mmSolver to print out debug messages. Not for users, for use by developers only.     |
+| MMSOLVER_LOCATION        | Do not change this variable!!!                                                                         |
 
 # Install 3DEqualizer Files
 

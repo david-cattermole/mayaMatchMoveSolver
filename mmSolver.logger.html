@@ -61,6 +61,9 @@
 <dt id="mmSolver.logger.get_logger">
 <code class="descclassname">mmSolver.logger.</code><code class="descname">get_logger</code><span class="sig-paren">(</span><em>level=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.logger.get_logger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a Logger object for logging events.</p>
+<p>If the environment variable &#8216;MMSOLVER_DEBUG&#8217; is set to &#8216;1&#8217;, and
+the &#8216;level&#8217; kwarg is not given, the mmSolver logger will print
+debug messages.</p>
 <p>Example usage:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.logger</span>
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">mmSolver</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>

@@ -65,11 +65,11 @@ set(MODULE_FULL_NAME "${MODULE_NAME}-maya${MAYA_VERSION}-${MODULE_OS_NAME}")
 set(MODULE_BUILD_DIR "${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}")
 
 # Set a default solver
-set(DEFAULT_SOLVER "${PREFERRED_SOLVER}")
+set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
 if ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
-    if (NOT (DEFAULT_SOLVER EQUAL "cminpack_lm"))
+    if (NOT (DEFAULT_SOLVER STREQUAL "cminpack_lm"))
         message(WARNING 
-          "Preferred solver cannot be used because it's not enabled."
+          "Preferred solver cannot be used because it's not enabled. "
           "preferred=${PREFERRED_SOLVER} "
           "default=${DEFAULT_SOLVER} "
           "use_cminpack=${USE_CMINPACK} "
@@ -78,7 +78,7 @@ if ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
         set(DEFAULT_SOLVER "cminpack_lm")
     endif()
 elseif ((USE_GPL_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 0))
-    if (NOT (DEFAULT_SOLVER EQUAL "levmar"))
+    if (NOT (DEFAULT_SOLVER STREQUAL "levmar"))
         message(WARNING 
           "Preferred solver cannot be used because it's not enabled. "
           "preferred=${PREFERRED_SOLVER} "

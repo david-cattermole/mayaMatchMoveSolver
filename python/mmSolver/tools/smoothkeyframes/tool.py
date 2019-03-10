@@ -34,14 +34,14 @@ def main():
             key_attr,
             query=True,
             selected=True
-        ) or []
+        )
         if len(selected_keyframes) < 2:
             msg = (
                 'Please select more than 1 keyframes '
                 '(in the Graph Editor) to smooth.'
             )
             LOG.warning(msg)
-            return
+            continue
 
         value_array = []
         for frame in selected_keyframes:

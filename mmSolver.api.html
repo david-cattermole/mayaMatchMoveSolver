@@ -464,7 +464,7 @@ cannot be found.</td>
 <p>A Marker defines a wrapper around a Maya node that contains 2D
 information, in a camera&#8217;s screen-space.</p>
 <p>Example usage:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mkr</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Marker</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mkr</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Marker</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mkr</span><span class="o">.</span><span class="n">get_node</span><span class="p">()</span>
 <span class="go">&#39;|myNode&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bnd</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Bundle</span><span class="p">()</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;myBundle1&#39;</span><span class="p">)</span>
@@ -509,13 +509,13 @@ information, in a camera&#8217;s screen-space.</p>
 
 <dl class="method">
 <dt id="mmSolver.api.Marker.set_node">
-<code class="descname">set_node</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.set_node" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_node</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.set_node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change the underlying Maya node that this Marker class will manipulate.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) &#8211; The existing Maya node name.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; The existing Maya node node.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nothing.</td>
 </tr>
@@ -696,17 +696,21 @@ disconnected from any camera.</p>
 <p>A group containing Marker nodes.</p>
 <dl class="class">
 <dt id="mmSolver.api.MarkerGroup">
-<em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">MarkerGroup</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.MarkerGroup" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">MarkerGroup</code><span class="sig-paren">(</span><em>node=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.MarkerGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>The MarkerGroup to transform markers into camera-space.</p>
 <dl class="method">
 <dt id="mmSolver.api.MarkerGroup.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.MarkerGroup.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize the MarkerGroup with the given Maya node&#8217;s &#8216;name&#8217;.</p>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>node=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.MarkerGroup.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the MarkerGroup with the given Maya node.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; Maya node name to attach to.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; Maya node to attach to.</li>
+<li><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; This is a backwards compatible kwarg for &#8216;node&#8217;.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1303,11 +1307,25 @@ disconnected from any camera.</p>
 <h2>Collection<a class="headerlink" href="#collection" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="mmSolver.api.Collection">
-<em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">Collection</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">Collection</code><span class="sig-paren">(</span><em>node=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Holds all data needed for a mmSolver run.</p>
+<dl class="method">
 <dt id="mmSolver.api.Collection.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>node=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the Collection with the given Maya node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; Maya node to attach to.</li>
+<li><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; This is a backwards compatible kwarg for &#8216;node&#8217;.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.Collection.create_node">

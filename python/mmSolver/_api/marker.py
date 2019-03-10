@@ -2,6 +2,8 @@
 Marker and the related objects, Camera and Bundle.
 """
 
+import warnings
+
 import maya.OpenMaya as OpenMaya
 import maya.cmds
 
@@ -25,7 +27,7 @@ class Marker(object):
 
     Example usage::
 
-        >>> mkr = mmapi.Marker(name='myNode')
+        >>> mkr = mmapi.Marker(node='myNode')
         >>> mkr.get_node()
         '|myNode'
         >>> bnd = mmapi.Bundle().create_node(name='myBundle1')
@@ -46,6 +48,11 @@ class Marker(object):
         :type name: None or str
         """
         if name is not None:
+            msg = (
+                "mmSolver.api.Marker(name=value), "
+                "'name' is a deprecated flag, use 'node' "
+            )
+            warnings.warn(msg)
             node = name
         if isinstance(node, basestring):
             try:
@@ -434,7 +441,7 @@ class Marker(object):
         if len(mkr_grp_nodes) == 0:
             mkr_grp = markergroup.MarkerGroup().create_node(cam=cam)
         else:
-            mkr_grp = markergroup.MarkerGroup(name=mkr_grp_nodes[0])
+            mkr_grp = markergroup.MarkerGroup(node=mkr_grp_nodes[0])
 
         # Link to Marker Group
         self.set_marker_group(mkr_grp)
@@ -480,7 +487,7 @@ class Marker(object):
         # Make the marker group object.
         mkr_grp = None
         if mkr_grp_node is not None:
-            mkr_grp = markergroup.MarkerGroup(name=mkr_grp_node)
+            mkr_grp = markergroup.MarkerGroup(node=mkr_grp_node)
         return mkr_grp
 
     def set_marker_group(self, mkr_grp):

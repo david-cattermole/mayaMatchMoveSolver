@@ -363,7 +363,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Marker Group
         mkr_grp_name = 'markerGroup1'
-        mkr_grp = mmapi.MarkerGroup(name=mkr_grp_name)
+        mkr_grp = mmapi.MarkerGroup(node=mkr_grp_name)
         mkr_grp_node = mkr_grp.get_node()
 
         # Markers
@@ -377,7 +377,7 @@ class TestSolve(test_api_utils.APITestCase):
             if node.endswith('_MKR') is False:
                 continue
             assert mmapi.get_object_type(node) == 'marker'
-            mkr = mmapi.Marker(name=node)
+            mkr = mmapi.Marker(node=node)
             bnd = mkr.get_bundle()
             mkr_list.append(mkr)
             bnd_list.append(bnd)

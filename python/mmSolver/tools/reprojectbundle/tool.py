@@ -80,7 +80,7 @@ def main():
     have_mkr_nodes = []
     attrs = ['translateX', 'translateY', 'translateZ']
     for mkr_node in mkr_nodes:
-        mkr = mmapi.Marker(name=mkr_node)
+        mkr = mmapi.Marker(node=mkr_node)
         mkr_node_full = mkr.get_node()
         if mkr_node_full in have_mkr_nodes:
             msg = 'Skipping Marker, already have it; mkr=%r'

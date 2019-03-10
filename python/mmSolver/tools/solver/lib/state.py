@@ -29,7 +29,7 @@ def get_active_collection():
     nodes = maya.cmds.ls(uid, long=True) or []
     col = None
     if len(nodes) > 0:
-        col = mmapi.Collection(name=nodes[0])
+        col = mmapi.Collection(node=nodes[0])
     return col
 
 

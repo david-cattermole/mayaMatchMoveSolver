@@ -77,7 +77,7 @@ def main():
     elif len(cams) == 0 and len(mkr_grps) > 0:
         # Create a marker under the first selected Marker Group.
         node = mkr_grps[0]
-        mkr_grp = mmapi.MarkerGroup(name=node)
+        mkr_grp = mmapi.MarkerGroup(node=node)
 
     else:
         LOG.error('Should not get here.')

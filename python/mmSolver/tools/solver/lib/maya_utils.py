@@ -129,7 +129,7 @@ def get_markers_from_selection():
     marker_nodes = list(set(marker_nodes))
     marker_list = []
     for node in marker_nodes:
-        mkr = mmapi.Marker(name=node)
+        mkr = mmapi.Marker(node=node)
         marker_list.append(mkr)
     return marker_list
 

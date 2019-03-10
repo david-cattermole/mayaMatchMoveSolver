@@ -84,7 +84,7 @@ def main():
     max_dist = 9999999999.0
     bnd_nodes = []
     for node in selected_markers:
-        mkr = mmapi.Marker(name=node)
+        mkr = mmapi.Marker(node=node)
         bnd = mkr.get_bundle()
         if bnd is None:
             continue

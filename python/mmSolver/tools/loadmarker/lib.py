@@ -43,7 +43,7 @@ def get_selected_cameras():
             added_cameras.append(shp_node)
 
     for node in objects['marker']:
-        mkr = mmapi.Marker(name=node)
+        mkr = mmapi.Marker(node=node)
         cam = mkr.get_camera()
         if cam is None:
             continue
@@ -53,7 +53,7 @@ def get_selected_cameras():
             added_cameras.append(shp_node)
 
     for node in objects['markergroup']:
-        mkr_grp = mmapi.MarkerGroup(name=node)
+        mkr_grp = mmapi.MarkerGroup(node=node)
         cam = mkr_grp.get_camera()
         if cam is None:
             continue

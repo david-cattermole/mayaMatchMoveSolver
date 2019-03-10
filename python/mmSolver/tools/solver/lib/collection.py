@@ -35,7 +35,7 @@ def get_collections():
     node_categories = filter_nodes.get_nodes(nodes)
     cols = []
     for col_node in node_categories['collection']:
-        col = mmapi.Collection(name=col_node)
+        col = mmapi.Collection(node=col_node)
         cols.append(col)
     return cols
 

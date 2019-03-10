@@ -6,6 +6,7 @@ maya.cmds.* so that they support undo/redo correctly.
 """
 
 # import pprint
+import warnings
 import uuid
 
 import maya.cmds
@@ -26,7 +27,28 @@ LOG = mmSolver.logger.get_logger()
 
 
 class Collection(object):
-    def __init__(self, name=None):
+    """
+    Holds all data needed for a mmSolver run.
+    """
+
+    def __init__(self, node=None, name=None):
+        """
+        Initialize the Collection with the given Maya node.
+
+        :param node: Maya node to attach to.
+        :type node: str or None
+
+        :param name: This is a backwards compatible kwarg for 'node'.
+        :type name: None or str
+        """
+        if name is not None:
+            msg = (
+                "mmSolver.api.Collection(name=value), "
+                "'name' is a deprecated flag, use 'node' "
+            )
+            warnings.warn(msg)
+            node = name
+
         self._set = sethelper.SetHelper()
         self._solver_list = None
 
@@ -35,11 +57,11 @@ class Collection(object):
         # re-compile if the user sets a new value, otherwise it's still valid.
         self._kwargs_list = []
 
-        if name is not None:
-            if isinstance(name, (str, unicode)):
-                self.set_node(name)
+        if node is not None:
+            if isinstance(node, (str, unicode)):
+                self.set_node(node)
             else:
-                msg = 'name argument must be a string.'
+                msg = 'node argument must be a string.'
                 raise TypeError(msg)
         return
 

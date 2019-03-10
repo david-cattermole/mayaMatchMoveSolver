@@ -18,7 +18,7 @@ SET FRESH_BUILD=1
 
 :: Run the Python API and Solver tests inside Maya, after a
 :: successfully build an install process.
-SET RUN_TESTS=1
+SET RUN_TESTS=0
 
 :: Use CMinpack?
 :: CMinpack is the recommended solving library.

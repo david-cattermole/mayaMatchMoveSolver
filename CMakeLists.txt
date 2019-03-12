@@ -36,14 +36,14 @@ set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH "cminpack include dire
 set(CMINPACK_LIB_PATH "/usr/local/lib" CACHE PATH "cminpack library directory")
 
 
-## Extra Libraries
-#set(USE_BLAS OFF CACHE BOOLEAN "Should we use BLAS?")
-#set(BLAS_INCLUDE_PATH "/usr/include/blas" CACHE PATH "BLAS library directory")
-#set(BLAS_LIB_PATH "/usr/lib64/blas" CACHE PATH "BLAS library directory")
-#set(BLAS_LIB_NAMES
-#        ""
-#        CACHE STRING
-#        "BLAS libraries to link")
+# Extra (BLAS) Libraries
+set(USE_BLAS OFF CACHE BOOLEAN "Should we use BLAS?")
+set(BLAS_INCLUDE_PATH "/usr/include/blas" CACHE PATH "BLAS library directory")
+set(BLAS_LIB_PATH "/usr/lib64/blas" CACHE PATH "BLAS library directory")
+set(BLAS_LIB_NAMES
+       ""
+       CACHE STRING
+       "BLAS libraries to link")
 
 
 # Default Solver to use.

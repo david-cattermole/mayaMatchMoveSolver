@@ -204,3 +204,65 @@ def get_selected_maya_attributes():
                 if attr.get_name() is not None:
                     attr_list.append(attr)
     return attr_list
+
+
+def get_selected_node_default_attributes():
+    """
+    Get the attributes on the selected nodes.
+    """
+    attr_list = []
+    sel = maya.cmds.ls(selection=True, long=True) or []
+    if len(sel) == 0:
+        return attr_list
+
+    for node in sel:
+        node_type = maya.cmds.nodeType(node)
+        obj_type = mmapi.get_object_type(node)
+        attr_names = []
+        if obj_type == mmapi.OBJECT_TYPE_BUNDLE:
+            # Default bundle attributes.
+            attr_names = [
+                'translateX',
+                'translateY',
+                'translateZ',
+            ]
+        elif obj_type == mmapi.OBJECT_TYPE_CAMERA:
+            # Camera default attributes, for both transform and
+            # camera nodes.
+            if node_type == 'transform':
+                attr_names = [
+                    'translateX',
+                    'translateY',
+                    'translateZ',
+                    'rotateX',
+                    'rotateY',
+                    'rotateZ',
+                ]
+            elif node_type == 'camera':
+                attr_names = [
+                    'focalLength',
+                ]
+        else:
+            # Fallback - get all logical attributes.
+            attr_names = maya.cmds.listAttr(
+                node,
+                keyable=True,
+                settable=True,
+                scalar=True,
+                shortNames=False,
+            ) or []
+            attr_types = [
+                'doubleLinear',
+                'doubleAngle',
+                'double',
+                'float',
+            ]
+            attr_names = [n for n in attr_names
+                          if maya.cmds.attributeQuery(
+                                  n, node=node,
+                                  attributeType=True) in attr_types]
+
+        for attr_name in attr_names:
+            attr_obj = mmapi.Attribute(node=node, attr=attr_name)
+            attr_list.append(attr_obj)
+    return attr_list

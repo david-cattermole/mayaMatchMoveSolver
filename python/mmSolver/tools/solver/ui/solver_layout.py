@@ -300,7 +300,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if valid is False:
             return
         if col is None:
-            return 0
+            return None
         active_node = col.get_node()
         if active_node is None:
             return 0
@@ -474,7 +474,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
     def attrAddClicked(self):
         attr_list = lib_maya_utils.get_selected_maya_attributes()
         if len(attr_list) == 0:
-            msg = 'Please select attributes in the channel box, none where found.'
+            attr_list = lib_maya_utils.get_selected_node_default_attributes()
+        if len(attr_list) == 0:
+            msg = 'Please select nodes or attributes in the channel box.'
             LOG.warning(msg)
             return
         col = lib_state.get_active_collection()

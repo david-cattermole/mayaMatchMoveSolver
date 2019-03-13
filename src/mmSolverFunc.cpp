@@ -194,7 +194,7 @@ int solveFunc(int numberOfParameters,
                                       "measure errors");
 #endif
 
-        MGlobal::executeCommand("dgdirty -allPlugs;");
+        // MGlobal::executeCommand("dgdirty -allPlugs;");
 
 #if FORCE_TRIGGER_EVAL == 1
         {

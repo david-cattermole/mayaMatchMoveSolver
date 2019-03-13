@@ -264,7 +264,7 @@ def build_shelf():
     shelfutils.create_shelf_separator(parent=shelf)
 
     # Marker Tools
-    name = 'Tool'
+    name = 'MTools'
     tooltip = 'Marker Tools.'
     icon = 'createMarker_32x32.png'
     cmd = 'pass'
@@ -283,7 +283,7 @@ def build_shelf():
     _create_marker_tools_menu(menu_rmb)
 
     # Bundle Tools
-    name = 'Tool'
+    name = 'BTools'
     tooltip = 'Bundle Tools.'
     icon = 'createBundle_32x32.png'
     cmd = 'pass'

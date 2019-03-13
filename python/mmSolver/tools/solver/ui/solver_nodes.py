@@ -51,7 +51,10 @@ class StrategyComboBoxDelegate(uimodels.ComboBoxDelegate):
         super(StrategyComboBoxDelegate, self).__init__(parent)
 
     def getValueList(self):
-        values = list(const.STRATEGY_LABEL_LIST)
+        values = [
+            str(const.STRATEGY_TWO_FRAMES_FWD_LABEL),
+            str(const.STRATEGY_ALL_FRAMES_AT_ONCE_LABEL),
+        ]
         return values
 
 
@@ -64,7 +67,6 @@ class AttributeComboBoxDelegate(uimodels.ComboBoxDelegate):
         values = [
             str(const.ATTR_FILTER_STATIC_AND_ANIM_LABEL),
             str(const.ATTR_FILTER_ANIM_ONLY_LABEL),
-            str(const.ATTR_FILTER_NO_ATTRS_LABEL),
         ]
         return values
 
@@ -119,6 +121,8 @@ class SolverStepNode(nodes.Node):
 
     def stepEnabled(self):
         n = self.stepNode()
+        if n is None:
+            return 'False'
         v = n.get_enabled()
         return converttypes.booleanToString(v)
 
@@ -127,6 +131,8 @@ class SolverStepNode(nodes.Node):
         if v is None:
             return
         n = self.stepNode()
+        if n is None:
+            return
         n.set_enabled(v)
         self.setStepNode(n)
         return
@@ -140,6 +146,8 @@ class SolverStepNode(nodes.Node):
             return 'CURRENT'
 
         n = self.stepNode()
+        if n is None:
+            return '1'
         int_list = n.get_frame_list()
         string = converttypes.intListToString(int_list)
         return string
@@ -147,6 +155,8 @@ class SolverStepNode(nodes.Node):
     def setFrames(self, value):
         int_list = converttypes.stringToIntList(value)
         n = self.stepNode()
+        if n is None:
+            return
         n.set_frame_list(int_list)
         self.setStepNode(n)
         return
@@ -159,6 +169,8 @@ class SolverStepNode(nodes.Node):
         This strategy is only needed for static attribute computation.
         """
         n = self.stepNode()
+        if n is None:
+            return const.STRATEGY_PER_FRAME_LABEL
         v = n.get_strategy()
         assert v in const.STRATEGY_LIST
         idx = const.STRATEGY_LIST.index(v)
@@ -176,15 +188,19 @@ class SolverStepNode(nodes.Node):
         idx = const.STRATEGY_LABEL_LIST.index(value)
         v = const.STRATEGY_LIST[idx]
         n = self.stepNode()
+        if n is None:
+            return
         n.set_strategy(v)
         self.setStepNode(n)
         return
 
     def attrs(self):
+        v = '?'
         n = self.stepNode()
+        if n is None:
+            return v
         use_static = n.get_use_static_attrs()
         use_animated = n.get_use_anim_attrs()
-        v = '?'
         if use_static is True and use_animated is True:
             v = const.ATTR_FILTER_STATIC_AND_ANIM_LABEL
         elif use_static is False and use_animated is True:
@@ -196,25 +212,27 @@ class SolverStepNode(nodes.Node):
         return v
 
     def setAttrs(self, value):
-        use_static = None
-        use_animated = None
+        use_static = False
+        use_animated = True
         if value == const.ATTR_FILTER_STATIC_AND_ANIM_LABEL:
             use_static = True
             use_animated = True
         elif value == const.ATTR_FILTER_ANIM_ONLY_LABEL:
             use_static = False
             use_animated = True
-        elif value == const.ATTR_FILTER_STATIC_ONLY_LABEL:
-            use_static = True
-            use_animated = False
-        elif const.ATTR_FILTER_NO_ATTRS_LABEL:
-            use_static = False
-            use_animated = False
         assert use_static is not None
         assert use_animated is not None
         n = self.stepNode()
+        if n is None:
+            return
         n.set_use_anim_attrs(use_animated)
         n.set_use_static_attrs(use_static)
+        if value == const.ATTR_FILTER_ANIM_ONLY_LABEL:
+            n.set_strategy(const.STRATEGY_PER_FRAME)
+        elif value == const.ATTR_FILTER_STATIC_AND_ANIM_LABEL:
+            temp_strategy = n.get_strategy()
+            if temp_strategy == const.STRATEGY_PER_FRAME:
+                n.set_strategy(const.STRATEGY_ALL_FRAMES_AT_ONCE)
         self.setStepNode(n)
         return
 
@@ -274,6 +292,9 @@ class SolverModel(uimodels.TableModel):
         return checkable
 
     def indexEnabled(self, index):
+        """
+        Control if the given index is enabled or not.
+        """
         row_index = index.row()
         column_index = index.column()
         node = self._node_list[row_index]

@@ -60,6 +60,10 @@ def rename_collection(col, new_name):
     """
     Rename a Collection node name.
 
+    Note: The Collection object stores a pointer to the underlying
+    node. We can change the name without affecting the Collection
+    object..
+
     :param col: Collection object to rename.
     :type col: Collection
 
@@ -126,6 +130,50 @@ def select_collection(col):
             pass
     OpenMaya.MGlobal.setActiveSelectionList(sel_list)
     return
+
+
+def get_previous_collection_and_index(cols, current_col):
+    """
+    Get the previous collection to the current collection, in list of
+    collections.
+
+    :param cols: List of collections.
+    :type cols: [Collection, ..]
+
+    :param current_col: The current collection.
+    :type current_col: Collection
+
+    :returns: Collection and index in 'cols' of the previous collection.
+    :rtype: Collection, int
+    """
+    prev_col = None
+    prev_index = None
+    if len(cols) < 2:
+        return prev_col, prev_index
+    col_names = [col.get_node() for col in cols]
+    current_col_name = current_col.get_node()
+    current_index = col_names.index(current_col_name)
+    prev_index = current_index - 1
+    prev_col = cols[prev_index]
+    return prev_col, prev_index
+
+
+def get_previous_collection(cols, current_col):
+    """
+    Get the previous collection to the current collection, in list of
+    collections.
+
+    :param cols: List of collections.
+    :type cols: [Collection, ..]
+
+    :param current_col: The current collection.
+    :type current_col: Collection
+
+    :returns: The previous Collection in cols relative to current_col.
+    :rtype: Collection
+    """
+    prev_col, prev_index = get_previous_collection_and_index(cols, current_col)
+    return prev_col
 
 
 def set_solver_results_on_collection(col, solres_list):
@@ -291,6 +339,7 @@ def ensure_solver_steps_attr_exists(col):
 
     :rtype: None
     """
+    assert isinstance(col, mmapi.Collection)
     node = col.get_node()
     attr_name = const.SOLVER_STEP_ATTR
     attrs = maya.cmds.listAttr(node)
@@ -317,16 +366,22 @@ def get_solver_steps_from_collection(col):
 
     :rtype: list of SolverStep
     """
+    assert isinstance(col, mmapi.Collection)
+    if col is None:
+        return []
     node = col.get_node()
+    if maya.cmds.objExists(node) is False:
+        return []
     ensure_solver_steps_attr_exists(col)
     data_list = mmapi.get_data_on_node_attr(node, const.SOLVER_STEP_ATTR)
-    step_list = map(lambda x: solver_step.SolverStep(x), data_list)
+    step_list = [solver_step.SolverStep(data) for data in data_list]
     return step_list
 
 
 def get_named_solver_step_from_collection(col, name):
+    assert isinstance(col, mmapi.Collection)
     step_list = get_solver_steps_from_collection(col)
-    name_list = map(lambda x: x.get_name(), step_list)
+    name_list = [step.get_name() for step in step_list]
     if name not in name_list:
         msg = 'SolverStep %r could not be found in all steps: %r'
         LOG.warning(msg, name, name_list)
@@ -336,9 +391,10 @@ def get_named_solver_step_from_collection(col, name):
 
 
 def set_named_solver_step_to_collection(col, step):
+    assert isinstance(col, mmapi.Collection)
     name = step.get_name()
     step_list = get_solver_steps_from_collection(col)
-    name_list = map(lambda x: x.get_name(), step_list)
+    name_list = [step.get_name() for step in step_list]
     if name not in name_list:
         raise ValueError
     idx = list(name_list).index(name)
@@ -349,8 +405,9 @@ def set_named_solver_step_to_collection(col, step):
 
 
 def add_solver_step_to_collection(col, step):
+    assert isinstance(col, mmapi.Collection)
     step_list = get_solver_steps_from_collection(col)
-    name_list = map(lambda x: x.get_name(), step_list)
+    name_list = [step.get_name() for step in step_list]
     name = step.get_name()
     if name in name_list:
         raise ValueError
@@ -360,12 +417,13 @@ def add_solver_step_to_collection(col, step):
 
 
 def remove_solver_step_from_collection(col, step):
+    assert isinstance(col, mmapi.Collection)
     if step is None:
         msg = 'Cannot remove SolverStep, step is invalid.'
         LOG.warning(msg)
         return
     step_list = get_solver_steps_from_collection(col)
-    name_list = map(lambda x: x.get_name(), step_list)
+    name_list = [step.get_name() for step in step_list]
     name = step.get_name()
     if name not in name_list:
         raise ValueError
@@ -377,7 +435,7 @@ def remove_solver_step_from_collection(col, step):
 
 def set_solver_step_list_to_collection(col, step_list):
     node = col.get_node()
-    data_list = map(lambda x: x.get_data(), step_list)
+    data_list = [step.get_data() for step in step_list]
     ensure_solver_steps_attr_exists(col)
     mmapi.set_data_on_node_attr(node, const.SOLVER_STEP_ATTR, data_list)
     sol_list = compile_solvers_from_steps(col, step_list)
@@ -521,6 +579,7 @@ def run_solve_ui(col, refresh_state, log_level, window):
             if window is not None:
                 window.setStatusLine('ERROR: ' + msg)
             LOG.error(msg)
+            return
         ok = compile_collection(col)
         if ok is not True:
             msg = 'Cannot execute solver, collection is not valid.'

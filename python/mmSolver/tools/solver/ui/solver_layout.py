@@ -165,10 +165,13 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
     def updateCollectionModel(self):
         self.setStatusLine(const.STATUS_REFRESHING)
-        col = lib_state.get_active_collection()
         self.populateCollectionModel(self.collectionName_model)
-        index = self.getDefaultCollectionIndex(self.collectionName_model, col)
-        self.collectionName_comboBox.setCurrentIndex(index)
+
+        col = lib_state.get_active_collection()
+        if col is not None:
+            index = self.getDefaultCollectionIndex(self.collectionName_model, col)
+            if index is not None:
+                self.collectionName_comboBox.setCurrentIndex(index)
         self.updateDynamicWindowTitle()
         return
 
@@ -179,6 +182,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if valid is False:
             return
         self.object_treeView.expandAll()
+
+        widgets = [self.object_frame]
+        self.populateWidgetsEnabled(widgets)
         return
 
     def updateAttributeModel(self):
@@ -188,11 +194,18 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if valid is False:
             return
         self.attribute_treeView.expandAll()
+
+        widgets = [self.attribute_frame]
+        self.populateWidgetsEnabled(widgets)
         return
 
     def updateSolverModel(self):
         self.setStatusLine(const.STATUS_REFRESHING)
+        self.populateOverrideCurrentFrame()
         self.populateSolverModel(self.solver_model)
+
+        widgets = [self.solverOptions_frame]
+        self.populateWidgetsEnabled(widgets)
         return
 
     def updateSolveValidState(self):
@@ -233,9 +246,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if valid is False:
             return
         col = lib_state.get_active_collection()
-        if col is None:
-            return
-        mkr_list = lib_marker.get_markers_from_collection(col)
+        mkr_list = []
+        if col is not None:
+            mkr_list = lib_marker.get_markers_from_collection(col)
         root = convert_to_ui.markersToUINodes(mkr_list)
         model.setRootNode(root)
         return
@@ -245,9 +258,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if valid is False:
             return
         col = lib_state.get_active_collection()
-        if col is None:
-            return
-        attr_list = lib_attr.get_attributes_from_collection(col)
+        attr_list = []
+        if col is not None:
+            attr_list = lib_attr.get_attributes_from_collection(col)
 
         def update_func():
             if uiutils.isValidQtObject(self) is False:
@@ -276,10 +289,26 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         col = lib_state.get_active_collection()
         if col is None:
-            return
-        step_list = lib_col.get_solver_steps_from_collection(col)
+            step_list = []
+        else:
+            step_list = lib_col.get_solver_steps_from_collection(col)
         node_list = convert_to_ui.solverStepsToUINodes(step_list, col)
         self.solver_model.setNodeList(node_list)
+        return
+
+    def populateOverrideCurrentFrame(self):
+        cur_frame = False
+        col = lib_state.get_active_collection()
+        if col is not None:
+            cur_frame = lib_col.get_override_current_frame_from_collection(col)
+        self.overrideCurrentFrame_checkBox.setChecked(cur_frame)
+        return
+
+    def populateWidgetsEnabled(self, widgets):
+        col = lib_state.get_active_collection()
+        enabled = col is not None
+        for widget in widgets:
+            widget.setEnabled(enabled)
         return
 
     def setStatusLine(self, text):
@@ -333,7 +362,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         :param col: The Collection to set.
         :type col: Collection
-        
+
         :param value: Should we override the current frame? Yes or No.
         :type value: bool
         """
@@ -343,7 +372,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateSolveValidState()
         self.setStatusLine(const.STATUS_READY)
         return
-    
+
     def createNewCollectionNode(self):
         col = lib_col.create_collection()
         lib_state.set_active_collection(col)
@@ -382,17 +411,19 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
     def removeCollectionNode(self):
         col = lib_state.get_active_collection()
-        if col is not None:
-            # FIXME: Solver Steps continue to hold a reference to the
-            # Collection after the collection node is deleted.
-            steps = lib_col.get_solver_steps_from_collection(col)
-            for step in steps:
-                lib_col.remove_solver_step_from_collection(col, step)
-            lib_col.delete_collection(col)
-            lib_state.set_active_collection(None)
-        else:
+        if col is None:
             LOG.warning('No active collection to delete.')
             return
+
+        cols = lib_col.get_collections()
+        prev_col = lib_col.get_previous_collection(cols, col)
+
+        steps = lib_col.get_solver_steps_from_collection(col)
+        for step in steps:
+            lib_col.remove_solver_step_from_collection(col, step)
+
+        lib_col.delete_collection(col)
+        lib_state.set_active_collection(prev_col)
 
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()

@@ -36,6 +36,7 @@
 #include <maya/MMatrix.h>
 #include <maya/MComputation.h>
 #include <maya/MProfiler.h>
+#include <maya/MGlobal.h>
 
 // Utilities
 #include <mayaUtils.h>
@@ -193,6 +194,8 @@ int solveFunc(int numberOfParameters,
                                       "measure errors");
 #endif
 
+        MGlobal::executeCommand("dgdirty -allPlugs;");
+
 #if FORCE_TRIGGER_EVAL == 1
         {
             MPoint pos;
@@ -213,6 +216,10 @@ int solveFunc(int numberOfParameters,
             MarkerPtr marker = ud->markerList[markerPair.first];
             MTime frame = ud->frameList[markerPair.second];
 
+            // MPoint pos;
+            // status = marker->getPos(pos, frame - 1);
+            // status = marker->getPos(pos, frame + 1);
+
             CameraPtr camera = marker->getCamera();
             status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
             CHECK_MSTATUS(status);
@@ -230,6 +237,8 @@ int solveFunc(int numberOfParameters,
             double mkr_weight = ud->markerWeightList[i];
             mkr_weight = std::sqrt(mkr_weight);
 
+            // status = bnd->getPos(bnd_mpos, frame + 1);
+            // status = bnd->getPos(bnd_mpos, frame - 1);
             status = bnd->getPos(bnd_mpos, frame);
             CHECK_MSTATUS(status);
             bnd_mpos = bnd_mpos * cameraWorldProjectionMatrix;
@@ -284,4 +293,3 @@ int solveFunc(int numberOfParameters,
 // Clean up #define
 #undef FABS
 #undef FORCE_TRIGGER_EVAL
-

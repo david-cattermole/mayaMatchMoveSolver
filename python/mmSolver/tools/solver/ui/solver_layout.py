@@ -303,13 +303,13 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return None
         active_node = col.get_node()
         if active_node is None:
-            return 0
+            return None
         string_data_list = model.stringDataList()
-        for i, (string, data) in enumerate(string_data_list):
-            find = string.find(active_node)
-            if find != -1:
-                return i
-        return 0
+        string_list = [string for string, data in string_data_list]
+        index = None
+        if active_node in string_list:
+            index = string_list.index(active_node)
+        return index
 
     def getCallbackManager(self):
         """

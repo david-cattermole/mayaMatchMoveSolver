@@ -153,7 +153,22 @@ def log_solve_results(log, solres_list, total_time=None, status_fn=None):
     :returns: Nothing.
     :rtype: None
     """
-    status_str = 'Solved: '
+    status_str = ''
+    long_status_str = ''
+
+    # Get Solver success.
+    success = True
+    for solres in solres_list:
+        value = solres.get_success()
+        if value is not True:
+            success = False
+            break
+    if success is True:
+        status_str += 'Solved: '
+        long_status_str += 'Solved: '
+    else:
+        status_str += 'Failed: '
+        long_status_str += 'Failed: '
 
     frame_error_list = mmapi.merge_frame_error_list(solres_list)
     frame_error_txt = pprint.pformat(dict(frame_error_list))
@@ -164,24 +179,30 @@ def log_solve_results(log, solres_list, total_time=None, status_fn=None):
     log.debug('Timer Statistics:\n%s', timer_stats_txt)
 
     avg_error = mmapi.get_average_frame_error_list(frame_error_list)
-    log.info('Average Error: %.2f pixels', avg_error)
-    status_str += 'avg err=%.2fpx' % avg_error
+    status_str += 'avg err %.2fpx' % avg_error
+    long_status_str += 'Average Error %.2fpx' % avg_error
 
     max_frame_error = mmapi.get_max_frame_error(frame_error_list)
+    status_str += ' | max err %.2fpx at %s' % (max_frame_error[1],
+                                               max_frame_error[0])
+    long_status_str += ' | Max Error %.2fpx at %s' % (max_frame_error[1],
+                                                      max_frame_error[0])
+
+    if total_time is not None:
+        log.info('Total Time: %.3f seconds', total_time)
+        status_str += ' | time %.3fsec' % total_time
+        long_status_str += ' | Time %.3fsec' % total_time
+
     log.info(
         'Max Frame Error: %.2f pixels at frame %s',
         max_frame_error[1],
         max_frame_error[0]
     )
-    status_str += ' | max err=%.2fpx frm=%s' % (max_frame_error[1],
-                                                max_frame_error[0])
-
-    if total_time is not None:
-        log.info('Total Time: %.3f seconds', total_time)
-        status_str += ' | time %.3fsec' % total_time
-
+    log.info('Average Error: %.2f pixels', avg_error)
+        
     if status_fn is not None:
         status_fn(status_str)
+    log.warning(long_status_str)
     return
 
 

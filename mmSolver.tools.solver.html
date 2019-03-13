@@ -409,6 +409,9 @@ structures stored must be removed.</p>
 <dt id="mmSolver.tools.solver.lib.collection.rename_collection">
 <code class="descclassname">mmSolver.tools.solver.lib.collection.</code><code class="descname">rename_collection</code><span class="sig-paren">(</span><em>col</em>, <em>new_name</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collection.rename_collection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rename a Collection node name.</p>
+<p>Note: The Collection object stores a pointer to the underlying
+node. We can change the name without affecting the Collection
+object..</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -446,6 +449,56 @@ structures stored must be removed.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection object to select.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collection.get_previous_collection_and_index">
+<code class="descclassname">mmSolver.tools.solver.lib.collection.</code><code class="descname">get_previous_collection_and_index</code><span class="sig-paren">(</span><em>cols</em>, <em>current_col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collection.get_previous_collection_and_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the previous collection to the current collection, in list of
+collections.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cols</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of collections.</li>
+<li><strong>current_col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The current collection.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Collection and index in &#8216;cols&#8217; of the previous collection.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection">Collection</a>, int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collection.get_previous_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collection.</code><code class="descname">get_previous_collection</code><span class="sig-paren">(</span><em>cols</em>, <em>current_col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collection.get_previous_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the previous collection to the current collection, in list of
+collections.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cols</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of collections.</li>
+<li><strong>current_col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The current collection.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The previous Collection in cols relative to current_col.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection">Collection</a></p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -811,6 +864,12 @@ is based on the selection, but may be doing more complex logic.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.maya_utils.get_selected_node_default_attributes">
+<code class="descclassname">mmSolver.tools.solver.lib.maya_utils.</code><code class="descname">get_selected_node_default_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.maya_utils.get_selected_node_default_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attributes on the selected nodes.</p>
 </dd></dl>
 
 </div>

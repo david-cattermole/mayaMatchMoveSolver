@@ -41,6 +41,7 @@ def _solve_anim_attrs(max_iter_num, auto_diff_type, int_list):
     Solve only animated attributes.
 
     .. todo::
+
        Split attributes into groups of markers. By definition
        of 'animated attributes', each set of animated attributes can
        only affect the connected attributes. Therefore we should

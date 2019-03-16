@@ -253,3 +253,16 @@ Run this Python command:
     import mmSolver.tools.screenzmanipulator.tool
     mmSolver.tools.screenzmanipulator.tool.main()
 
+Marker Bundle Renamer
+--------------------
+
+Renames selected markers and bundles connected, takes the input name
+given in prompt window.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.markerbundlerenamer.tool
+    mmSolver.tools.markerbundlerenamer.tool.main()
+

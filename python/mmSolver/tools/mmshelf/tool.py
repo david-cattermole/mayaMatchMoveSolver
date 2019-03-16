@@ -368,4 +368,20 @@ def build_shelf():
         icon=icon,
         cmd=cmd,
     )
+
+    # Marker Bundle Renamer
+    name = 'MBRena'
+    tooltip = 'Rename Selected Marker And Connected Bundles.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.markerbundlerenamer.tool;'
+        'mmSolver.tools.markerbundlerenamer.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
     return

@@ -449,14 +449,16 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def objectAddClicked(self):
-        mkr_list = lib_maya_utils.get_markers_from_selection()
-        if len(mkr_list) == 0:
-            msg = 'Please select objects, found no markers.'
-            LOG.warning(msg)
-            return
         col = lib_state.get_active_collection()
         if col is None:
             msg = 'Cannot add markers, active collection is not defined.'
+            LOG.warning(msg)
+            return
+
+        sel = lib_maya_utils.get_scene_selection()
+        mkr_list = lib_maya_utils.get_markers_from_selection()
+        if len(mkr_list) == 0:
+            msg = 'Please select objects, found no markers.'
             LOG.warning(msg)
             return
         lib_marker.add_markers_to_collection(mkr_list, col)
@@ -479,12 +481,17 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             )
 
         update_func()
+
+        # Restore selection.
+        lib_maya_utils.set_scene_selection(sel)
         return
 
     def objectRemoveClicked(self):
         col = lib_state.get_active_collection()
         if col is None:
             return
+
+        sel = lib_maya_utils.get_scene_selection()
         ui_nodes = lib_uiquery.get_selected_ui_nodes(
             self.object_treeView,
             self.object_filterModel
@@ -503,9 +510,19 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateObjectModel()
         self.updateSolveValidState()
         self.setStatusLine(const.STATUS_READY)
+
+        # Restore selection.
+        lib_maya_utils.set_scene_selection(sel)
         return
 
     def attrAddClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            msg = 'Cannot add attributes, active collection is not defined.'
+            LOG.warning(msg)
+            return
+
+        sel = lib_maya_utils.get_scene_selection()
         attr_list = lib_maya_utils.get_selected_maya_attributes()
         if len(attr_list) == 0:
             attr_list = lib_maya_utils.get_selected_node_default_attributes()
@@ -513,11 +530,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             msg = 'Please select nodes or attributes in the channel box.'
             LOG.warning(msg)
             return
-        col = lib_state.get_active_collection()
-        if col is None:
-            msg = 'Cannot add attributes, active collection is not defined.'
-            LOG.warning(msg)
-            return
+    
         lib_attr.add_attributes_to_collection(attr_list, col)
 
         def update_func():
@@ -538,12 +551,17 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             )
 
         update_func()
+
+        # Restore selection.
+        lib_maya_utils.set_scene_selection(sel)
         return
 
     def attrRemoveClicked(self):
         col = lib_state.get_active_collection()
         if col is None:
             return
+
+        sel = lib_maya_utils.get_scene_selection()
         ui_nodes = lib_uiquery.get_selected_ui_nodes(
             self.attribute_treeView,
             self.attribute_filterModel
@@ -562,6 +580,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateAttributeModel()
         self.updateSolveValidState()
         self.setStatusLine(const.STATUS_READY)
+
+        # Restore selection.
+        lib_maya_utils.set_scene_selection(sel)
         return
 
     def solverAddClicked(self):

@@ -374,14 +374,14 @@ def get_solver_steps_from_collection(col):
         return []
     ensure_solver_steps_attr_exists(col)
     data_list = mmapi.get_data_on_node_attr(node, const.SOLVER_STEP_ATTR)
-    step_list = [solver_step.SolverStep(data) for data in data_list]
+    step_list = [solver_step.SolverStep(d) for d in data_list]
     return step_list
 
 
 def get_named_solver_step_from_collection(col, name):
     assert isinstance(col, mmapi.Collection)
     step_list = get_solver_steps_from_collection(col)
-    name_list = [step.get_name() for step in step_list]
+    name_list = [s.get_name() for s in step_list]
     if name not in name_list:
         msg = 'SolverStep %r could not be found in all steps: %r'
         LOG.warning(msg, name, name_list)
@@ -394,7 +394,7 @@ def set_named_solver_step_to_collection(col, step):
     assert isinstance(col, mmapi.Collection)
     name = step.get_name()
     step_list = get_solver_steps_from_collection(col)
-    name_list = [step.get_name() for step in step_list]
+    name_list = [s.get_name() for s in step_list]
     if name not in name_list:
         raise ValueError
     idx = list(name_list).index(name)
@@ -407,10 +407,10 @@ def set_named_solver_step_to_collection(col, step):
 def add_solver_step_to_collection(col, step):
     assert isinstance(col, mmapi.Collection)
     step_list = get_solver_steps_from_collection(col)
-    name_list = [step.get_name() for step in step_list]
+    name_list = [s.get_name() for s in step_list]
     name = step.get_name()
     if name in name_list:
-        raise ValueError
+        raise ValueError, 'Solver step already exists with that name.'
     step_list.insert(0, step)  # new step pushed onto the front.
     set_solver_step_list_to_collection(col, step_list)
     return
@@ -423,7 +423,7 @@ def remove_solver_step_from_collection(col, step):
         LOG.warning(msg)
         return
     step_list = get_solver_steps_from_collection(col)
-    name_list = [step.get_name() for step in step_list]
+    name_list = [s.get_name() for s in step_list]
     name = step.get_name()
     if name not in name_list:
         raise ValueError
@@ -435,7 +435,7 @@ def remove_solver_step_from_collection(col, step):
 
 def set_solver_step_list_to_collection(col, step_list):
     node = col.get_node()
-    data_list = [step.get_data() for step in step_list]
+    data_list = [s.get_data() for s in step_list]
     ensure_solver_steps_attr_exists(col)
     mmapi.set_data_on_node_attr(node, const.SOLVER_STEP_ATTR, data_list)
     sol_list = compile_solvers_from_steps(col, step_list)

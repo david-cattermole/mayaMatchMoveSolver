@@ -35,6 +35,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         # state.
         self._parentObject = parent
 
+        # Hide the Solve Info line until it's set up. GitHub Issue #56
+        self.solveInfoLine_lineEdit.setVisible(False)
+
         # Collection Combo Box.
         self.collectionName_model = uimodels.StringDataListModel()
         self.collectionName_comboBox.setModel(self.collectionName_model)

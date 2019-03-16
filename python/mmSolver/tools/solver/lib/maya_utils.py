@@ -44,6 +44,18 @@ def _get_channel_box_ui_name():
     return maya.mel.eval(cmd)
 
 
+def get_scene_selection():
+    """Get the currently selected nodes.
+
+    Intended for selection store/restore.
+
+    :return: List of full path node names.
+    :rtype: list of str
+    """
+    sel = maya.cmds.ls(selection=True, long=True) or []
+    return sel
+
+
 def set_scene_selection(nodes):
     """
     The Maya scene selection is replaced with `nodes`.

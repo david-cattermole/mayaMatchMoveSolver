@@ -253,7 +253,7 @@ Run this Python command:
     import mmSolver.tools.screenzmanipulator.tool
     mmSolver.tools.screenzmanipulator.tool.main()
 
-Marker Bundle Renamer
+Marker Bundle Rename
 --------------------
 
 Renames selected markers and bundles connected, takes the input name
@@ -263,6 +263,6 @@ Run this Python command:
 
 .. code:: python
 
-    import mmSolver.tools.markerbundlerenamer.tool
-    mmSolver.tools.markerbundlerenamer.tool.main()
+    import mmSolver.tools.markerbundlerename.tool
+    mmSolver.tools.markerbundlerename.tool.main()
 

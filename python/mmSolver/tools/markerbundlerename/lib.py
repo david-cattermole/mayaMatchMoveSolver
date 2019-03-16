@@ -1,6 +1,7 @@
 """
 This file holds all the helpful functions for markerbundlerename
 """
+import maya.cmds
 
 
 def prompt_for_new_node_name(title, message, text):

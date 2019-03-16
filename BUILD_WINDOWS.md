@@ -10,7 +10,7 @@ On Windows:
 ```cmd
 > CD <project root>
 > scripts\build_cminpack.bat
-> scripts\build_mmSolver_linux_mayaXXXX.bat
+> scripts\build_mmSolver_windows64_mayaXXXX.bat
 ```
 
 Note: Replace XXXX, with the Maya version use build for.
@@ -68,7 +68,7 @@ root>\external\install\qtpy`.
  Run these commands, on Windows:
  ```cmd
  > CD <project root>
- > scripts\build_mmSolver_linux_mayaXXXX.bat
+ > scripts\build_mmSolver_windows64_mayaXXXX.bat
  
  # Run tests (optional but encouraged)
  > CD build

@@ -20,14 +20,11 @@ import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 import mmSolver.tools.solver.ui.solver_layout as solver_layout
 import mmSolver.tools.loadmarker.tool as loadmarker_tool
 import mmSolver.tools.selection.tools as selection_tool
-import mmSolver.tools.cameraaim.tool as cameraaim_tool
 import mmSolver.tools.createmarker.tool as createmarker_tool
 import mmSolver.tools.createbundle.tool as createbundle_tool
 import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
 import mmSolver.tools.convertmarker.tool as convertmarker_tool
-import mmSolver.tools.centertwodee.tool as centertwodee_tool
-# import mmSolver.tools.snaponcurve.tool as snaponcurve_tool
-# import mmSolver.tools.surfacerivet.tool as surfacerivet_tool
+import mmSolver.tools.markerbundlerename.tool as mbrename_tool
 
 
 LOG = mmSolver.logger.get_logger()
@@ -195,22 +192,13 @@ class SolverWindow(BaseWindow):
         action.triggered.connect(partial(self.selectBothMarkersAndBundlesCB))
         tools_menu.addAction(action)
 
-        tools_menu.addSeparator()
-
-        # Camera Aim
-        label = 'Aim at Camera'
-        tooltip = 'Aim the selected transform nodes at camera.'
+        # Rename Marker + Bundle
+        label = 'Rename Markers + Bundles'
+        tooltip = 'Rename the selected Markers and Bundles;'
         action = QtWidgets.QAction(label, tools_menu)
         action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.aimAtCameraCB))
-        tools_menu.addAction(action)
-
-        label = 'Center 2D on Selection'
-        tooltip = 'Visually center the 2D viewport on the selected node'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.centerTwoDeeCB))
-        tools_menu.addAction(action)
+        action.triggered.connect(partial(self.renameMarkerBundleCB))
+        tools_menu.addAction(action)        
 
         tools_menu.addSeparator()
 
@@ -352,13 +340,16 @@ class SolverWindow(BaseWindow):
         return
 
     def createMarkerCB(self):
-        createmarker_tool.create_marker()
+        """
+        Create a Marker under the active viewport camera.
+        """
+        createmarker_tool.main()
 
     def convertToMarkerCB(self):
         """
         Converts all selected transform nodes into markers.
         """
-        convertmarker_tool.convert_to_marker()
+        convertmarker_tool.main()
         return
 
     def loadMarkerCB(self):
@@ -372,25 +363,19 @@ class SolverWindow(BaseWindow):
         """
         Create a Bundle node, attached to the selected markers.
         """
-        createbundle_tool.create_bundle()
-
-    def aimAtCameraCB(self):
-        """
-        Aim the selected nodes at the viewport camera.
-        """
-        cameraaim_tool.aim_at_camera()
-
-    def centerTwoDeeCB(self):
-        """
-        Center the viewport on the selected node.
-        """
-        centertwodee_tool.center_two_dee()
+        createbundle_tool.main()
 
     def toggleMarkerBundleSelectionCB(self):
         selection_tool.swap_between_selected_markers_and_bundles()
 
     def selectBothMarkersAndBundlesCB(self):
         selection_tool.select_both_markers_and_bundles()
+
+    def renameMarkerBundleCB(self):
+        """
+        Rename the selected markers and bundles (with a prompt window).
+        """
+        mbrename_tool.main()
 
     def linkMarkerBundleCB(self):
         link_mb_tool.link_marker_bundle()

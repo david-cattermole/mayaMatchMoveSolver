@@ -17,6 +17,7 @@ mmSolver.tools
    mmSolver.tools.duplicatemarker
    mmSolver.tools.linkmarkerbundle
    mmSolver.tools.loadmarker
+   mmSolver.tools.markerbundlerename
    mmSolver.tools.raycastmarker
    mmSolver.tools.reprojectbundle
    mmSolver.tools.selection

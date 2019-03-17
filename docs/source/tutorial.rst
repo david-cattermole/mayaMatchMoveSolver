@@ -5,8 +5,21 @@ Tutorials
 
 The videos below explain different aspects of mmSolver.
 
-All offical videos can be found on the mmSolver `YouTube Channel
+All official videos can be found on the mmSolver `YouTube Channel
 <https://www.youtube.com/channel/UCndLPvFXd9Os7m9sc2Bbbsw>`_
+
+Introduction
+------------
+
+How to line up a camera with known (surveyed) 3D positions, and solve
+a camera and object track. The video explains the basic usage of
+mmSolver.
+
+This video uses mmSolver v0.2.0 (beta).
+
+.. raw:: html
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/z6lziVV3BcY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 Hierarchical Object Solve

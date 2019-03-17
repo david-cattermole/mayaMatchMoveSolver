@@ -114,6 +114,19 @@ Run this Python command:
     import mmSolver.tools.selection.tools as selection_tool
     selection_tool.select_both_markers_and_bundles()
 
+Marker Bundle Rename
+--------------------
+
+Renames selected markers and bundles connected, takes the input name
+given in prompt window.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.markerbundlerename.tool
+    mmSolver.tools.markerbundlerename.tool.main()
+    
 Center 2D On Selection
 ----------------------
 
@@ -162,12 +175,31 @@ Aim at Camera
 
 Aim the selected transform nodes toward the active viewport camera.
 
+.. note::
+
+   This tool is deprecated. Use the "Screen-Z Manipulator" tool
+   instead.
+
 Run this Python command:
 
 .. code:: python
 
    import mmSolver.tools.cameraaim.tool as cameraaim_tool
    cameraaim_tool.main()
+
+Screen-Z Manipulator
+--------------------
+
+Aims the move manipulator tool at the active viewport camera.
+After aiming the move tool at the camera, the screen-space Z axis is
+highlighted, ready to be middle-click dragged
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.screenzmanipulator.tool
+    mmSolver.tools.screenzmanipulator.tool.main()
 
 Channel Sensitivity
 -------------------
@@ -238,31 +270,4 @@ Run this Python command:
 
     import mmSolver.tools.duplicatemarker.tool
     mmSolver.tools.duplicatemarker.tool.main()
-
-Screen-Z Manipulator
---------------------
-
-Aims the move manipulator tool at the active viewport camera.
-After aiming the move tool at the camera, the screen-space Z axis is
-highlighted, ready to be middle-click dragged
-
-Run this Python command:
-
-.. code:: python
-
-    import mmSolver.tools.screenzmanipulator.tool
-    mmSolver.tools.screenzmanipulator.tool.main()
-
-Marker Bundle Rename
---------------------
-
-Renames selected markers and bundles connected, takes the input name
-given in prompt window.
-
-Run this Python command:
-
-.. code:: python
-
-    import mmSolver.tools.markerbundlerename.tool
-    mmSolver.tools.markerbundlerename.tool.main()
 

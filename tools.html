@@ -159,6 +159,16 @@ Bundle, and vice-versa.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="marker-bundle-rename">
+<h2>Marker Bundle Rename<a class="headerlink" href="#marker-bundle-rename" title="Permalink to this headline">¶</a></h2>
+<p>Renames selected markers and bundles connected, takes the input name
+given in prompt window.</p>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.markerbundlerename.tool</span>
+<span class="n">mmSolver</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">markerbundlerename</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="center-2d-on-selection">
 <h2>Center 2D On Selection<a class="headerlink" href="#center-2d-on-selection" title="Permalink to this headline">¶</a></h2>
 <p>Forces the active viewport camera to lock it’s center to the currently
@@ -197,9 +207,25 @@ camera (default hotkey is &#8216;&#8217; key).</li>
 <div class="section" id="aim-at-camera">
 <h2>Aim at Camera<a class="headerlink" href="#aim-at-camera" title="Permalink to this headline">¶</a></h2>
 <p>Aim the selected transform nodes toward the active viewport camera.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This tool is deprecated. Use the &#8220;Screen-Z Manipulator&#8221; tool
+instead.</p>
+</div>
 <p>Run this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.cameraaim.tool</span> <span class="k">as</span> <span class="nn">cameraaim_tool</span>
 <span class="n">cameraaim_tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="screen-z-manipulator">
+<h2>Screen-Z Manipulator<a class="headerlink" href="#screen-z-manipulator" title="Permalink to this headline">¶</a></h2>
+<p>Aims the move manipulator tool at the active viewport camera.
+After aiming the move tool at the camera, the screen-space Z axis is
+highlighted, ready to be middle-click dragged</p>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenzmanipulator.tool</span>
+<span class="n">mmSolver</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">screenzmanipulator</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -259,27 +285,6 @@ markers.</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="screen-z-manipulator">
-<h2>Screen-Z Manipulator<a class="headerlink" href="#screen-z-manipulator" title="Permalink to this headline">¶</a></h2>
-<p>Aims the move manipulator tool at the active viewport camera.
-After aiming the move tool at the camera, the screen-space Z axis is
-highlighted, ready to be middle-click dragged</p>
-<p>Run this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenzmanipulator.tool</span>
-<span class="n">mmSolver</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">screenzmanipulator</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="marker-bundle-rename">
-<h2>Marker Bundle Rename<a class="headerlink" href="#marker-bundle-rename" title="Permalink to this headline">¶</a></h2>
-<p>Renames selected markers and bundles connected, takes the input name
-given in prompt window.</p>
-<p>Run this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.markerbundlerename.tool</span>
-<span class="n">mmSolver</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">markerbundlerename</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
 </div>
 
 
@@ -298,14 +303,14 @@ given in prompt window.</p>
 <li><a class="reference internal" href="#unlink-marker-from-all-bundles">Unlink Marker from all Bundles</a></li>
 <li><a class="reference internal" href="#toggle-marker-bundle">Toggle Marker / Bundle</a></li>
 <li><a class="reference internal" href="#select-marker-bundle">Select Marker + Bundle</a></li>
+<li><a class="reference internal" href="#marker-bundle-rename">Marker Bundle Rename</a></li>
 <li><a class="reference internal" href="#center-2d-on-selection">Center 2D On Selection</a></li>
 <li><a class="reference internal" href="#aim-at-camera">Aim at Camera</a></li>
+<li><a class="reference internal" href="#screen-z-manipulator">Screen-Z Manipulator</a></li>
 <li><a class="reference internal" href="#channel-sensitivity">Channel Sensitivity</a></li>
 <li><a class="reference internal" href="#toggle-bundle-lock-state">Toggle Bundle Lock State</a></li>
 <li><a class="reference internal" href="#average-marker">Average Marker</a></li>
 <li><a class="reference internal" href="#duplicate-marker">Duplicate marker</a></li>
-<li><a class="reference internal" href="#screen-z-manipulator">Screen-Z Manipulator</a></li>
-<li><a class="reference internal" href="#marker-bundle-rename">Marker Bundle Rename</a></li>
 </ul>
 </li>
 </ul>

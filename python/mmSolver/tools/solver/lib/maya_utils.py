@@ -233,7 +233,7 @@ def get_selected_node_default_attributes():
         attr_names = []
         if obj_type == mmapi.OBJECT_TYPE_BUNDLE:
             # Default bundle attributes.
-            attr_names = [
+            attr_names += [
                 'translateX',
                 'translateY',
                 'translateZ',
@@ -242,7 +242,7 @@ def get_selected_node_default_attributes():
             # Camera default attributes, for both transform and
             # camera nodes.
             if node_type == 'transform':
-                attr_names = [
+                attr_names += [
                     'translateX',
                     'translateY',
                     'translateZ',
@@ -251,12 +251,12 @@ def get_selected_node_default_attributes():
                     'rotateZ',
                 ]
             elif node_type == 'camera':
-                attr_names = [
+                attr_names += [
                     'focalLength',
                 ]
         else:
             # Fallback - get all logical attributes.
-            attr_names = maya.cmds.listAttr(
+            attrs = maya.cmds.listAttr(
                 node,
                 keyable=True,
                 settable=True,
@@ -269,8 +269,8 @@ def get_selected_node_default_attributes():
                 'double',
                 'float',
             ]
-            attr_names = [n for n in attr_names
-                          if maya.cmds.attributeQuery(
+            attr_names += [n for n in attrs
+                           if maya.cmds.attributeQuery(
                                   n, node=node,
                                   attributeType=True) in attr_types]
 

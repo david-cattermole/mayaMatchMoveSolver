@@ -115,6 +115,37 @@ def _create_marker_tools_menu(menu):
     return
 
 
+def _create_link_tools_menu(menu):
+    # Link Marker + Bundle
+    name = 'Link'
+    tooltip = 'Link the selected Marker and Bundle together.'
+    cmd = (
+        'import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;'
+        'link_mb_tool.link_marker_bundle();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
+
+    # Unlink Marker from Bundle
+    name = 'Unlink'
+    tooltip = 'Unlink all selected Markers from their Bundle.'
+    cmd = (
+        'import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;'
+        'link_mb_tool.unlink_marker_bundle();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
+    return
+
+
 def build_shelf():
     """
     Build the 'mmSolver' shelf.
@@ -213,56 +244,6 @@ def build_shelf():
 
     shelfutils.create_shelf_separator(parent=shelf)
 
-    # Center 2D on Selected
-    name = 'Center'
-    tooltip = 'Center 2D on Selected.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.centertwodee.tool;'
-        'mmSolver.tools.centertwodee.tool.main();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    # Swap Markers / Bundles
-    name = 'M / B'
-    tooltip = 'Toggle Markers Bundles.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.selection.tools as selection_tool;'
-        'selection_tool.swap_between_selected_markers_and_bundles();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    # Select Markers and Bundles
-    name = 'M + B'
-    tooltip = 'Select Markers and Bundles.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.selection.tools as selection_tool;'
-        'selection_tool.select_both_markers_and_bundles();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    shelfutils.create_shelf_separator(parent=shelf)
-
     # Marker Tools
     name = 'MTools'
     tooltip = 'Marker Tools.'
@@ -303,13 +284,13 @@ def build_shelf():
 
     shelfutils.create_shelf_separator(parent=shelf)
 
-    # Link Marker + Bundle
-    name = 'Link'
-    tooltip = 'Link the selected Marker and Bundle together.'
+    # Swap Markers / Bundles
+    name = 'M / B'
+    tooltip = 'Toggle Markers Bundles.'
     icon = None
     cmd = (
-        'import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;'
-        'link_mb_tool.link_marker_bundle();'
+        'import mmSolver.tools.selection.tools as selection_tool;'
+        'selection_tool.swap_between_selected_markers_and_bundles();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,
@@ -319,13 +300,13 @@ def build_shelf():
         cmd=cmd,
     )
 
-    # Unlink Marker from Bundle
-    name = 'Unlink'
-    tooltip = 'Unlink all selected Markers from their Bundle.'
+    # Select Markers and Bundles
+    name = 'M + B'
+    tooltip = 'Select Markers and Bundles.'
     icon = None
     cmd = (
-        'import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;'
-        'link_mb_tool.unlink_marker_bundle();'
+        'import mmSolver.tools.selection.tools as selection_tool;'
+        'selection_tool.select_both_markers_and_bundles();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,
@@ -334,8 +315,59 @@ def build_shelf():
         icon=icon,
         cmd=cmd,
     )
+
+    # Marker Bundle Rename
+    name = 'MBRena'
+    tooltip = 'Rename Selected Marker And Connected Bundles.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.markerbundlerename.tool;'
+        'mmSolver.tools.markerbundlerename.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # Marker bundle link and unlink Tools
+    name = 'MBLnk'
+    tooltip = 'Marker bundle link and unlink Tools.'
+    icon = None
+    cmd = 'pass'
+    btn = shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
+
+    # Create Menu Pop-Up (for both left and right mouse buttons)
+    menu_lmb = shelfutils.create_popup_menu(parent=btn, button=1)
+    menu_rmb = shelfutils.create_popup_menu(parent=btn, button=3)
+    _create_link_tools_menu(menu_lmb)
+    _create_link_tools_menu(menu_rmb)
 
     shelfutils.create_shelf_separator(parent=shelf)
+
+    # Center 2D on Selected
+    name = 'Center'
+    tooltip = 'Center 2D on Selected.'
+    icon = None
+    cmd = (
+        'import mmSolver.tools.centertwodee.tool;'
+        'mmSolver.tools.centertwodee.tool.main();'
+    )
+    shelfutils.create_shelf_button(
+        parent=shelf,
+        name=name,
+        tooltip=tooltip,
+        icon=icon,
+        cmd=cmd,
+    )
 
     # Channel sensitivity UI
     name = 'ChSen'
@@ -360,22 +392,6 @@ def build_shelf():
     cmd = (
         'import mmSolver.tools.smoothkeyframes.tool;'
         'mmSolver.tools.smoothkeyframes.tool.main();'
-    )
-    shelfutils.create_shelf_button(
-        parent=shelf,
-        name=name,
-        tooltip=tooltip,
-        icon=icon,
-        cmd=cmd,
-    )
-
-    # Marker Bundle Rename
-    name = 'MBRena'
-    tooltip = 'Rename Selected Marker And Connected Bundles.'
-    icon = None
-    cmd = (
-        'import mmSolver.tools.markerbundlerename.tool;'
-        'mmSolver.tools.markerbundlerename.tool.main();'
     )
     shelfutils.create_shelf_button(
         parent=shelf,

@@ -66,61 +66,6 @@ const std::string cminpackReasons[9] = {
 };
 
 
-// The user data given to cminpack.
-/*
-struct CMinpackSolverData {
-    // Solver Objects.
-    CameraPtrList cameraList;
-    MarkerPtrList markerList;
-    BundlePtrList bundleList;
-    AttrPtrList attrList;
-    MTimeArray frameList;  // Times to solve
-
-    // Relational mapping indexes.
-    std::vector<std::pair<int, int> > paramToAttrList;
-    std::vector<std::pair<int, int> > errorToMarkerList;
-    std::vector<MPoint> markerPosList;
-    std::vector<double> markerWeightList;
-
-    // Internal Solver Data.
-    std::vector<double> errorList;
-    std::vector<double> errorDistanceList;
-    int iterNum;
-    int jacIterNum;
-    int iterMax;
-    int solverType;
-    bool isJacobianCalculation;
-    double imageWidth;
-
-    // Error Thresholds.
-    double tau;
-    double eps1;
-    double eps2;
-    double eps3;
-    double delta;
-
-    // Benchmarks
-    debug::TimestampBenchmark *jacBenchTimer;
-    debug::TimestampBenchmark *funcBenchTimer;
-    debug::TimestampBenchmark *errorBenchTimer;
-    debug::TimestampBenchmark *paramBenchTimer;
-    debug::CPUBenchmark *jacBenchTicks;
-    debug::CPUBenchmark *funcBenchTicks;
-    debug::CPUBenchmark *errorBenchTicks;
-    debug::CPUBenchmark *paramBenchTicks;
-
-    // Storing changes for undo/redo.
-    MDGModifier *dgmod;
-    MAnimCurveChange *curveChange;
-
-    // Allow user to cancel the solve.
-    MComputation *computation;
-
-    // Verbosity.
-    bool verbose;
-};
-*/
-
 int solveFunc_cminpack_lm(void *data,
                           int n,
                           int m,

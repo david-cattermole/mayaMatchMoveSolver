@@ -591,7 +591,7 @@ def run_solve_ui(col, refresh_state, log_level, window):
             prog_fn = LOG.warning
             status_fn = LOG.warning
             if window is not None:
-                prog_fn = window.progressBar.setValue
+                prog_fn = window.setProgressValue
                 status_fn = window.setStatusLine
 
             execute_collection(

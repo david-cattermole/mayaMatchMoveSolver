@@ -397,6 +397,12 @@ class SolverWindow(BaseWindow):
 
     def setStatusLine(self, text):
         self.subForm.setStatusLine(text)
+        QtWidgets.QApplication.processEvents()
+        return
+
+    def setProgressValue(self, value):
+        self.progressBar.setValue(value)
+        QtWidgets.QApplication.processEvents()
         return
 
     def apply(self):
@@ -447,7 +453,7 @@ def main(show=True, widthHeight=(800, 600)):
     :param widthHeight: Width and height of the window to open.
     :type widthHeight: int, int
 
-    :returns: A new solver window, or None if the window cannot be 
+    :returns: A new solver window, or None if the window cannot be
               opened.
     :rtype: SolverWindow or None.
     """

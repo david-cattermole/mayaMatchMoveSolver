@@ -63,6 +63,16 @@ def markersToUINodes(mkr_list):
 
 
 def attributesToUINodes(attr_list):
+    """
+    Convert a list of mmSolver API Attributes into classes to be used
+    in the Solver UI.
+
+    :param attr_list: List of Attributes to convert.
+    :type attr_list: [Attribute, ..]
+
+    :returns: A hiearachy of UI nodes to be viewed in a 'tree view'.
+    :rtype: PlugNode
+    """
     root = attr_nodes.PlugNode('root')
     maya_nodes = dict()
     for attr in attr_list:
@@ -70,7 +80,7 @@ def attributesToUINodes(attr_list):
         a = attr.get_attr()
         maya_node = maya_nodes.get(n)
         if maya_node is None:
-            data = {'data': None}
+            data = {'data': attr}
             maya_node = attr_nodes.MayaNode(n, data=data, parent=root)
             maya_nodes[n] = maya_node
         data = {'data': attr}

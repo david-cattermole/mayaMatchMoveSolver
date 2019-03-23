@@ -122,14 +122,17 @@ def get_markers_from_selection():
     """
     nodes = maya.cmds.ls(long=True, selection=True) or []
     node_categories = filter_nodes.get_nodes(nodes)
-    marker_nodes = list(node_categories['marker'])
+    marker_nodes = node_categories.get('marker', [])
 
-    camera_nodes = list(node_categories['camera'])
+    camera_nodes = node_categories.get('camera', [])
     for node in camera_nodes:
-        tfm_node = None
-        if maya.cmds.nodeType(node) == 'camera':
+        node_type = maya.cmds.nodeType(node)
+        cam = None
+        if node_type == 'transform':
+            cam = mmapi.Camera(transform=node)
+        if node_type == 'camera':
             cam = mmapi.Camera(shape=node)
-            tfm_node = cam.get_transform_node()
+        tfm_node = cam.get_transform_node()
         below_nodes = maya.cmds.ls(tfm_node, dag=True, long=True)
         marker_nodes += filter_nodes.get_marker_nodes(below_nodes)
 

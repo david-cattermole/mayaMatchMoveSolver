@@ -115,20 +115,12 @@ def select_collection(col):
     if nodes is None:
         return
 
-    # BUG: Using Maya 'select' command does not work, it always
-    # selects with 'noExpand=False', regardless of option,
-    # # maya.cmds.select(nodes[0], replace=True, noExpand=True)
-
-    # HACK around above Maya bug:
-    # Get API selection object, and then force the Maya selection to
-    # this node.
-    sel_list = OpenMaya.MSelectionList()
-    for node in nodes:
-        try:
-            sel_list.add(node)
-        except RuntimeError:
-            pass
-    OpenMaya.MGlobal.setActiveSelectionList(sel_list)
+    # Run selection when Maya is idle next, otherwise this fails to
+    # select the objectSet and instead selects the contents of the
+    # objectSet. Issue #23
+    cmd = 'maya.cmds.select(%r, replace=True, noExpand=True)'
+    cmd = cmd % str(nodes[0])
+    maya.cmds.evalDeferred(cmd)
     return
 
 

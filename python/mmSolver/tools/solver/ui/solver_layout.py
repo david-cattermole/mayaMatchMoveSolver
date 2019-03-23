@@ -534,13 +534,15 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         sel = lib_maya_utils.get_scene_selection()
         attr_list = lib_maya_utils.get_selected_maya_attributes()
+        attr_list = lib_maya_utils.input_attributes_filter(attr_list)
         if len(attr_list) == 0:
             attr_list = lib_maya_utils.get_selected_node_default_attributes()
+            attr_list = lib_maya_utils.input_attributes_filter(attr_list)
         if len(attr_list) == 0:
             msg = 'Please select nodes or attributes in the channel box.'
             LOG.warning(msg)
             return
-    
+
         lib_attr.add_attributes_to_collection(attr_list, col)
 
         def update_func():

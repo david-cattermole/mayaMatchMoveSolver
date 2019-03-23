@@ -110,3 +110,9 @@ ATTR_STATE_INVALID = 'Invalid'
 ATTR_STATE_STATIC = 'Static'
 ATTR_STATE_ANIMATED = 'Animated'
 ATTR_STATE_LOCKED = 'Locked'
+
+# Information to filter invalid input attributes from the Solver UI.
+ATTR_INVALID_OBJECT_TYPES = [
+    'imageplane',
+    'marker',
+]

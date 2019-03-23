@@ -8,6 +8,7 @@ import maya.mel
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.selection.filternodes as filter_nodes
+import mmSolver.tools.solver.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
@@ -278,3 +279,23 @@ def get_selected_node_default_attributes():
             attr_obj = mmapi.Attribute(node=node, attr=attr_name)
             attr_list.append(attr_obj)
     return attr_list
+
+
+def input_attributes_filter(attr_list):
+    """
+    Apply logic to remove any non-input attributes from the given list.
+
+    :param attr_list: Attribute list to filter.
+    :type attr_list: [Attribute, ..]
+
+    :returns: List of attributes that are filtered.
+    :rtype: [Attribute, ..]
+    """
+    result = []
+    for attr_obj in attr_list:
+        node = attr_obj.get_node()
+        obj_type = mmapi.get_object_type(node)
+        if obj_type in const.ATTR_INVALID_OBJECT_TYPES:
+            continue
+        result.append(attr_obj)
+    return result

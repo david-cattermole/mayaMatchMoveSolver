@@ -12,10 +12,13 @@ import mmSolver.tools.solver.ui.solver_nodes as solver_nodes
 LOG = mmSolver.logger.get_logger()
 
 
-def markersToUINodes(mkr_list):
+def markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd):
     """
     Convert a list of markers into a hierarchy to show the user.
     """
+    assert isinstance(show_cam, bool)
+    assert isinstance(show_mkr, bool)
+    assert isinstance(show_bnd, bool)
     root = object_nodes.ObjectNode('root')
     cam_nodes_store = {}
     for mkr in mkr_list:
@@ -25,30 +28,37 @@ def markersToUINodes(mkr_list):
         bnd = mkr.get_bundle()
 
         # Get camera
-        cam_shp_node = cam.get_shape_node()
-        cam_name = cam.get_shape_node()
-        cam_name = cam_name.rpartition('|')[-1]
-        cam_node = None
-        if cam_shp_node not in cam_nodes_store:
+        if show_cam is False:
+            cam_node = root
+        else:
+            cam_shp_node = cam.get_shape_node()
+            cam_name = cam.get_shape_node()
+            cam_name = cam_name.rpartition('|')[-1]
+            cam_node = None
+            if cam_shp_node not in cam_nodes_store:
+                data = {
+                    'marker': mkr,
+                    'camera': cam,
+                }
+                cam_node = object_nodes.CameraNode(cam_name, data=data, parent=root)
+                cam_nodes_store[cam_shp_node] = cam_node
+            else:
+                cam_node = cam_nodes_store[cam_shp_node]
+        assert cam_node is not None
+
+        # The marker.
+        mkr_node = cam_node
+        if show_mkr is True:
             data = {
                 'marker': mkr,
                 'camera': cam,
             }
-            cam_node = object_nodes.CameraNode(cam_name, data=data, parent=root)
-            cam_nodes_store[cam_shp_node] = cam_node
-        else:
-            cam_node = cam_nodes_store[cam_shp_node]
-        assert cam_node is not None
-
-        # The marker.
-        data = {
-            'marker': mkr,
-            'camera': cam,
-        }
-        mkr_node = object_nodes.MarkerNode(mkr_name, data=data, parent=cam_node)
+            mkr_node = object_nodes.MarkerNode(mkr_name, data=data, parent=cam_node)
 
         # Get Bundle under marker.
         if bnd is None:
+            continue
+        if show_bnd is False:
             continue
         bnd_name = bnd.get_node()
         bnd_name = bnd_name.rpartition('|')[-1]

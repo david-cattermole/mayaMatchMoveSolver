@@ -305,6 +305,183 @@ def ensure_override_current_frame_attr_exists(col):
     return
 
 
+def get_object_toggle_camera_from_collection(col):
+    """
+    Get the value of 'Objects Toggle Camera', from a Collection.
+
+    :param col: The Collection to query.
+    :type col: Collection
+
+    :returns: True or False.
+    :rtype: bool
+    """
+    node = col.get_node()
+    ensure_object_toggle_camera_attr_exists(col)
+    value = mmapi.get_value_on_node_attr(node, const.OBJECT_TOGGLE_CAMERA_ATTR)
+    assert isinstance(value, bool)
+    return value
+
+
+def set_object_toggle_camera_on_collection(col, value):
+    """
+    Set the value of 'Objects Toggle Camera' on a Collection.
+
+    :param col: The Collection to change.
+    :type col: Collection
+
+    :param value: Value to set to.
+    :type value: bool
+    """
+    assert isinstance(value, bool)
+    ensure_object_toggle_camera_attr_exists(col)
+    node = col.get_node()
+    mmapi.set_value_on_node_attr(node, const.OBJECT_TOGGLE_CAMERA_ATTR, value)
+    return
+
+
+def ensure_object_toggle_camera_attr_exists(col):
+    """
+    Forces the creation of a 'object_toggle_camera' attribute, if
+    none exists already.
+
+    :param col: The Collection to create the attribute on.
+    :type col: Collection
+    """
+    node = col.get_node()
+    default_value = const.OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE
+    attr_name = const.OBJECT_TOGGLE_CAMERA_ATTR
+    attrs = maya.cmds.listAttr(node)
+    if attr_name in attrs:
+        return
+    maya.cmds.addAttr(
+        node,
+        defaultValue=default_value,
+        longName=attr_name,
+        attributeType='bool'
+    )
+    node_attr = node + '.' + attr_name
+    maya.cmds.setAttr(node_attr, lock=True)
+    return
+
+
+def get_object_toggle_marker_from_collection(col):
+    """
+    Get the value of 'Objects Toggle Marker', from a Collection.
+
+    :param col: The Collection to query.
+    :type col: Collection
+
+    :returns: True or False.
+    :rtype: bool
+    """
+    node = col.get_node()
+    ensure_object_toggle_marker_attr_exists(col)
+    value = mmapi.get_value_on_node_attr(node, const.OBJECT_TOGGLE_MARKER_ATTR)
+    assert isinstance(value, bool)
+    return value
+
+
+def set_object_toggle_marker_on_collection(col, value):
+    """
+    Set the value of 'Objects Toggle Marker' on a Collection.
+
+    :param col: The Collection to change.
+    :type col: Collection
+
+    :param value: Value to set to.
+    :type value: bool
+    """
+    assert isinstance(value, bool)
+    ensure_object_toggle_marker_attr_exists(col)
+    node = col.get_node()
+    mmapi.set_value_on_node_attr(node, const.OBJECT_TOGGLE_MARKER_ATTR, value)
+    return
+
+
+def ensure_object_toggle_marker_attr_exists(col):
+    """
+    Forces the creation of a 'object_toggle_marker' attribute, if
+    none exists already.
+
+    :param col: The Collection to create the attribute on.
+    :type col: Collection
+    """
+    node = col.get_node()
+    default_value = const.OBJECT_TOGGLE_MARKER_DEFAULT_VALUE
+    attr_name = const.OBJECT_TOGGLE_MARKER_ATTR
+    attrs = maya.cmds.listAttr(node)
+    if attr_name in attrs:
+        return
+    maya.cmds.addAttr(
+        node,
+        defaultValue=default_value,
+        longName=attr_name,
+        attributeType='bool'
+    )
+    node_attr = node + '.' + attr_name
+    maya.cmds.setAttr(node_attr, lock=True)
+    return
+
+
+def get_object_toggle_bundle_from_collection(col):
+    """
+    Get the value of 'Objects Toggle Bundle', from a Collection.
+
+    :param col: The Collection to query.
+    :type col: Collection
+
+    :returns: True or False.
+    :rtype: bool
+    """
+    node = col.get_node()
+    ensure_object_toggle_bundle_attr_exists(col)
+    value = mmapi.get_value_on_node_attr(node, const.OBJECT_TOGGLE_BUNDLE_ATTR)
+    assert isinstance(value, bool)
+    return value
+
+
+def set_object_toggle_bundle_on_collection(col, value):
+    """
+    Set the value of 'Objects Toggle Bundle' on a Collection.
+
+    :param col: The Collection to change.
+    :type col: Collection
+
+    :param value: Value to set to.
+    :type value: bool
+    """
+    assert isinstance(value, bool)
+    ensure_object_toggle_bundle_attr_exists(col)
+    node = col.get_node()
+    mmapi.set_value_on_node_attr(node, const.OBJECT_TOGGLE_BUNDLE_ATTR, value)
+    return
+
+
+def ensure_object_toggle_bundle_attr_exists(col):
+    """
+    Forces the creation of a 'object_toggle_bundle' attribute, if
+    none exists already.
+
+    :param col: The Collection to create the attribute on.
+    :type col: Collection
+    """
+    node = col.get_node()
+    default_value = const.OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE
+    attr_name = const.OBJECT_TOGGLE_BUNDLE_ATTR
+    attrs = maya.cmds.listAttr(node)
+    if attr_name in attrs:
+        return
+    maya.cmds.addAttr(
+        node,
+        defaultValue=default_value,
+        longName=attr_name,
+        attributeType='bool'
+    )
+    node_attr = node + '.' + attr_name
+    maya.cmds.setAttr(node_attr, lock=True)
+    return
+
+
 def create_solver_step():
     """
     Create a SolverStep object and return it.

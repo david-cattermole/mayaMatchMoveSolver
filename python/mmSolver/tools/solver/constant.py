@@ -111,6 +111,15 @@ ATTR_STATE_STATIC = 'Static'
 ATTR_STATE_ANIMATED = 'Animated'
 ATTR_STATE_LOCKED = 'Locked'
 
+# Toggle Objects (stored on Collection node)
+OBJECT_TOGGLE_CAMERA_ATTR = 'object_toggle_camera'
+OBJECT_TOGGLE_MARKER_ATTR = 'object_toggle_marker'
+OBJECT_TOGGLE_BUNDLE_ATTR = 'object_toggle_bundle'
+
+OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE = True
+OBJECT_TOGGLE_MARKER_DEFAULT_VALUE = True
+OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE = True
+
 # Information to filter invalid input attributes from the Solver UI.
 ATTR_INVALID_OBJECT_TYPES = [
     'imageplane',

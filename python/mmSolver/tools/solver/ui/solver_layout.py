@@ -177,7 +177,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self._parentObject.window().setWindowTitle(title)
 
     def updateCollectionModel(self):
-        self.setStatusLine(const.STATUS_REFRESHING)
         self.populateCollectionModel(self.collectionName_model)
 
         col = lib_state.get_active_collection()
@@ -211,7 +210,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def updateObjectModel(self):
-        self.setStatusLine(const.STATUS_REFRESHING)
         self.populateObjectModel(self.object_model)
         valid = uiutils.isValidQtObject(self.object_treeView)
         if valid is False:
@@ -223,7 +221,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def updateAttributeModel(self):
-        self.setStatusLine(const.STATUS_REFRESHING)
         self.populateAttributeModel(self.attribute_model)
         valid = uiutils.isValidQtObject(self.attribute_treeView)
         if valid is False:
@@ -235,7 +232,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def updateSolverModel(self):
-        self.setStatusLine(const.STATUS_REFRESHING)
         self.populateOverrideCurrentFrame()
         self.populateSolverModel(self.solver_model)
 
@@ -411,7 +407,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_col.set_override_current_frame_on_collection(col, value)
         self.updateSolverModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def createNewCollectionNode(self):
@@ -425,8 +420,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
-
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def renameCollectionNode(self):
@@ -448,8 +441,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
-
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def removeCollectionNode(self):
@@ -520,7 +511,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         lib_col.select_collection(col)
         self.updateDynamicWindowTitle()
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def objectAddClicked(self):
@@ -544,7 +534,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             self.updateObjectToggleButtons()
             self.updateObjectModel()
             self.updateSolveValidState()
-            self.setStatusLine(const.STATUS_READY)
             return
 
         # Add Callbacks
@@ -586,7 +575,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
 
         # Restore selection.
         lib_maya_utils.set_scene_selection(sel)
@@ -617,7 +605,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
                 return
             self.updateAttributeModel()
             self.updateSolveValidState()
-            self.setStatusLine(const.STATUS_READY)
             return
 
         # Add Callbacks
@@ -658,7 +645,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         self.updateAttributeModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
 
         # Restore selection.
         lib_maya_utils.set_scene_selection(sel)
@@ -674,7 +660,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_col.add_solver_step_to_collection(col, step)
         self.updateSolverModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def solverRemoveClicked(self):
@@ -691,7 +676,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             lib_col.remove_solver_step_from_collection(col, step)
         self.updateSolverModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def solverMoveUpClicked(self):
@@ -727,8 +711,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
-
-        self.setStatusLine(const.STATUS_READY)
         return
 
     @QtCore.Slot(QtCore.QModelIndex, QtCore.QModelIndex)

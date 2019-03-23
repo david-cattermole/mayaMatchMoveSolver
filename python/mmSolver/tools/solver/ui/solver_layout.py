@@ -171,10 +171,20 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.populateCollectionModel(self.collectionName_model)
 
         col = lib_state.get_active_collection()
+        if col is None:
+            cols = lib_col.get_collections()
+            if len(cols) > 0:
+                # If there is no active collection, but there are
+                # collections already created, we make sure the first
+                # collection is marked active.
+                col = cols[0]
+                lib_state.set_active_collection(col)
+
         if col is not None:
             index = self.getDefaultCollectionIndex(self.collectionName_model, col)
             if index is not None:
                 self.collectionName_comboBox.setCurrentIndex(index)
+
         self.updateDynamicWindowTitle()
         return
 

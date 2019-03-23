@@ -30,7 +30,7 @@ MM_SOLVER_DATA_ATTR_NAME = 'mmSolver_data'
 # Scene Data keys and default values.
 SCENE_DATA_ACTIVE_COLLECTION_UID = 'active_collection_uid'
 SCENE_DATA_REFRESH_VIEWPORT = 'refresh_viewport_state'
-SCENE_DATA_REFRESH_VIEWPORT_DEFAULT = False
+SCENE_DATA_REFRESH_VIEWPORT_DEFAULT = True
 SCENE_DATA_LOG_LEVEL = 'log_level'
 SCENE_DATA_LOG_LEVEL_DEFAULT = LOG_LEVEL_INFO
 
@@ -102,7 +102,6 @@ STATUS_COMPILING = 'Compiling Solver...'
 STATUS_SOLVER_NOT_VALID = 'Solver Not Valid!'
 STATUS_EXECUTING = 'Executing...'
 STATUS_FINISHED = 'Finished.'
-
 
 ATTR_DEFAULT_MIN_VALUE = '<Not Set>'
 ATTR_DEFAULT_MAX_VALUE = '<Not Set>'

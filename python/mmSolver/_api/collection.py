@@ -844,6 +844,12 @@ class Collection(object):
         # Ensure the plug-in is loaded, so we fail before trying to run.
         api_utils.load_plugin()
 
+        # TODO: If 'refresh' is on change all viewports to 'isolate
+        # selected' on only the markers and bundles being solved. This
+        # will speed up computations, especially per-frame solving as
+        # it will not re-compute any invisible nodes (such as rigs or
+        # image planes).
+        
         # Save current frame, to revert to later on.
         cur_frame = maya.cmds.currentTime(query=True)
 
@@ -866,15 +872,12 @@ class Collection(object):
 
             # Run Solver...
             start = 0
-            # solve_frames = set()
             total = len(kwargs_list)
             for i, kwargs in enumerate(kwargs_list):
                 frame = kwargs.get('frame')
                 self.__set_status(status_fn, 'Evaluating frames %r' % frame)
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
-
-                # solve_frames |= set(frame)
 
                 # HACK: Overriding the verbosity, irrespective of what
                 # the solver verbosity value is set to.
@@ -886,9 +889,6 @@ class Collection(object):
                 is_single_frame = self.__is_single_frame(kwargs)
                 if is_single_frame is True:
                     save_node_attrs = self.__disconnect_animcurves(kwargs)
-                # else:
-                #     # Re-create animCurves on attributes to be solved.
-                #     self.__clear_attr_keyframes(kwargs, solve_frames)
 
                 # Run Solver Maya plug-in command
                 solve_data = maya.cmds.mmSolver(**kwargs)
@@ -913,7 +913,6 @@ class Collection(object):
 
                 # Refresh the Viewport.
                 if refresh is True:
-                    self.__set_status(status_fn, 'Refresh Viewport...')
                     maya.cmds.currentTime(
                         frame[0],
                         edit=True,

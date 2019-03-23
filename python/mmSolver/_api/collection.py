@@ -861,6 +861,16 @@ class Collection(object):
             self.__set_progress(prog_fn, 0)
             self.__set_status(status_fn, 'Solver Initializing...')
             api_utils.set_solver_running(True)
+            
+            # Set the first current time to the frame before current.
+            # This is to help trigger evaluations on the 'current
+            # frame', if the current frame is the same as the first
+            # frame.
+            maya.cmds.currentTime(
+                cur_frame - 1,
+                edit=True,
+                update=True
+            )
 
             # Check for validity
             solres_list = []

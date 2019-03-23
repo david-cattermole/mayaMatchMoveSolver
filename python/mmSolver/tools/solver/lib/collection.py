@@ -585,7 +585,8 @@ def run_solve_ui(col, refresh_state, log_level, window):
             msg = 'Cannot execute solver, collection is not valid.'
             msg += 'collection=%r'
             if window is not None:
-                window.setStatusLine('Warning: ' + msg)
+                status = 'Warning: ' + msg
+                window.setStatusLine(status % col)
             LOG.warning(msg, col)
         else:
             prog_fn = LOG.warning

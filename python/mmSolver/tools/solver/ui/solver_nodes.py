@@ -171,6 +171,10 @@ class SolverStepNode(nodes.Node):
         n = self.stepNode()
         if n is None:
             return const.STRATEGY_PER_FRAME_LABEL
+        col = self.collectionNode()
+        cur_frame = lib_collection.get_override_current_frame_from_collection(col)
+        if cur_frame is True:
+            return const.STRATEGY_PER_FRAME_LABEL
         v = n.get_strategy()
         assert v in const.STRATEGY_LIST
         idx = const.STRATEGY_LIST.index(v)
@@ -304,22 +308,31 @@ class SolverModel(uimodels.TableModel):
         column_name = self.getColumnNameFromIndex(index)
         enabled = False
         if column_name == 'Enabled':
-            enabled = True
+            return True
         else:
             stepEnabled = node.stepEnabled()
             stepEnabled = converttypes.stringToBoolean(stepEnabled)
             if stepEnabled is False:
-                enabled = False
-            else:
-                # The step is enabled!
-                if column_name in ['Frames', 'Attributes']:
-                    enabled = True
-                elif column_name == 'Strategy':
-                    # The 'strategy' column should be disabled if
-                    # 'attrs' is set to use either 'No Attributes' or
-                    # 'Animated Only'.
-                    attrs = node.attrs()
-                    if attrs in [const.ATTR_FILTER_STATIC_ONLY_LABEL,
-                                 const.ATTR_FILTER_STATIC_AND_ANIM_LABEL]:
-                        enabled = True
+                return False
+
+        # The step is enabled!
+        if column_name in ['Frames', 'Attributes']:
+            enabled = True
+        elif column_name == 'Strategy':
+            # The 'strategy' column should be disabled if
+            # 'attrs' is set to use either 'No Attributes' or
+            # 'Animated Only'.
+            attrs = node.attrs()
+            if attrs in [const.ATTR_FILTER_STATIC_ONLY_LABEL,
+                         const.ATTR_FILTER_STATIC_AND_ANIM_LABEL]:
+                enabled = True
+
+        # When 'Override Current Frame' is on, frames and strategy
+        # should be editable.
+        if column_name in ['Frames', 'Strategy']:
+            col = node.collectionNode()
+            cur_frame = lib_collection.get_override_current_frame_from_collection(col)
+            if cur_frame is True:
+                return False
+
         return enabled

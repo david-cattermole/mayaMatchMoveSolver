@@ -11,6 +11,8 @@ test*.pstat
 test*.txt
 *_after*.ma
 *_before*.ma
+*.log
+*.flags
 
 old/*
 precompiled/*

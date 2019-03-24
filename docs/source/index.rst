@@ -13,6 +13,12 @@ the latest install development instructions_.
 
 If you are new to mmSolver, take a look at the video :ref:`tutorial-heading`.
 
+`mmSolver` is licensed under the **GNU LGPL v3 license**, and is Free
+and Open Source Software. Any person may use, copy and distribute the
+software given under the terms of the **GNU LGPL v3 license**. See the
+LICENSE text file distributed with `mmSolver`.
+See the :ref:`licenses-heading` for more detail.
+
 Usage Guide
 +++++++++++
 
@@ -24,6 +30,7 @@ An overview of the features available inside mmSolver.
    introduction
    tutorial
    tools
+   licenses
 
 Technical
 +++++++++

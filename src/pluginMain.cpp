@@ -136,7 +136,7 @@ MStatus initializePlugin(MObject obj) {
     //                  MMMarkerScaleCmd::newSyntax,
     //                  status);
 
-    // TODO: Run the startup function.
+    // Run the Python startup function when the plug-in loads.
     bool displayEnabled = false;
     bool undoEnabled = false;
     MString command;

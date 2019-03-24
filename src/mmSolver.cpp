@@ -465,7 +465,7 @@ bool solve(int iterMax,
             frame = frameList[attrPair.second];
         }
 
-        double value;
+        double value = 0.0;
         status = attr->getValue(value, frame);
         CHECK_MSTATUS(status);
         if (status != MS::kSuccess) {
@@ -898,13 +898,20 @@ bool solve(int iterMax,
         IndexPair attrPair = paramToAttrList[i];
         AttrPtr attr = attrList[attrPair.first];
 
+        double xmin = attr->getMinimumValue();
+        double xmax = attr->getMaximumValue();
+        double value = paramList[i];
+
+        // TODO: Implement proper Box Constraints; Issue #64.
+        value = std::max<double>(value, xmin);
+        value = std::min<double>(value, xmax);
+
         // Get frame time
         MTime frame = currentFrame;
         if (attrPair.second != -1) {
             frame = frameList[attrPair.second];
         }
 
-        double value = paramList[i];
         status = attr->setValue(value, frame, dgmod, curveChange);
         CHECK_MSTATUS(status);
     }

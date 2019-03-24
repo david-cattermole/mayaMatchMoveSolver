@@ -46,8 +46,8 @@ Attr::Attr() :
         m_animated(-1),
         m_connected(-1),
         m_isFreeToChange(-1),
-        m_minValue(-std::numeric_limits<double>::max()),
-        m_maxValue(std::numeric_limits<double>::max()) {
+        m_minValue(-std::numeric_limits<float>::max()),
+        m_maxValue(std::numeric_limits<float>::max()) {
 }
 
 MString Attr::getName() const {

@@ -61,41 +61,6 @@
 
 // Function run by cminpack algorithm to test the input parameters, p,
 // and compute the output errors, x.
-//
-// *** Simulating box constraints (TODO) ***
-//
-// Note that box constraints can easily be simulated in C++ Minpack,
-// using a change of variables in the function (that hint was found in
-// the lmfit documentation).
-//
-// For example, say you want xmin[j] < x[j] < xmax[j], just apply the
-// following change of variable at the beginning of fcn on the
-// variables vector, and also on the computed solution after the
-// optimization was performed:
-//
-//   for (j = 0; j < 3; ++j) {
-//     real xmiddle = (xmin[j]+xmax[j])/2.;
-//     real xwidth = (xmax[j]-xmin[j])/2.;
-//     real th =  tanh((x[j]-xmiddle)/xwidth);
-//     x[j] = xmiddle + th * xwidth;
-//     jacfac[j] = 1. - th * th;
-//   }
-//
-// This change of variables preserves the variables scaling, and is
-// almost the identity near the middle of the interval.
-//
-// Of course, if you use lmder, lmder1, hybrj or hybrj1, the Jacobian
-// must be also consistent with that new function, so the column of
-// the original Jacobian corresponding to x1 must be multiplied by the
-// derivative of the change of variable, i.e jacfac[j].
-//
-// Similarly, each element of the covariance matrix must be multiplied
-// by jacfac[i]*jacfac[j].
-//
-// For examples on how to implement this in practice, see the portions
-// of code delimited by "#ifdef BOX_CONSTRAINTS" in the following
-// source files: tlmderc.c, thybrj.c, tchkderc.c.
-//
 int solveFunc(int numberOfParameters,
               int numberOfErrors,
               const double *parameters,
@@ -184,7 +149,7 @@ int solveFunc(int numberOfParameters,
             double xmax = attr->getMaximumValue();
             double value = parameters[i];
 
-            // TODO: Implement Box Constraints; Issue #64.
+            // TODO: Implement proper Box Constraints; Issue #64.
             value = std::max<double>(value, xmin);
             value = std::min<double>(value, xmax);
 
@@ -196,10 +161,10 @@ int solveFunc(int numberOfParameters,
 
             if (debugIsOpen == true) {
                  debugFile << "i=" << i
-                           << " v=" << parameters[i]
+                           << " v=" << value
                            << std::endl;
             }
-            attr->setValue(parameters[i], frame, *ud->dgmod, *ud->curveChange);
+            attr->setValue(value, frame, *ud->dgmod, *ud->curveChange);
         }
 
         // Commit changed data into Maya

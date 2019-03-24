@@ -171,6 +171,12 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         maya.cmds.setKeyframe(marker_02_tfm, attribute='enable', time=mid, value=0)
         maya.cmds.setKeyframe(marker_02_tfm, attribute='enable', time=end, value=1)
 
+        maya.cmds.keyTangent(marker_02_tfm,
+                             attribute='enable',
+                             inTangentType='linear',
+                             outTangentType='step')
+
+
         cameras = (
             (cam_tfm, cam_shp),
         )

@@ -48,9 +48,9 @@ MStatus getCameraPlaneScale(
     double aov = 0.0;
     const bool asDegrees = true;
     getAngleOfView(filmBackSize, focalLength, aov, asDegrees);
-	// Hard-code 'pi' so we don't have cross-platform problems
-	// between Linux and Windows.
-	const double pi = 3.14159265358979323846;
+    // Hard-code 'pi' so we don't have cross-platform problems
+    // between Linux and Windows.
+    const double pi = 3.14159265358979323846;
     scale = tan(aov * 0.5 * pi / 180.0);
     return MS::kSuccess;
 }
@@ -370,6 +370,14 @@ public:
     MStatus getProjMatrix(MMatrix &value, const MTime &time);
 
     MStatus getProjMatrix(MMatrix &value);
+
+    MStatus getWorldPosition(MPoint &value, const MTime &time);
+
+    MStatus getWorldPosition(MPoint &value);
+
+    MStatus getForwardDirection(MVector &value, const MTime &time);
+
+    MStatus getForwardDirection(MVector &value);
 
     MStatus getWorldProjMatrix(MMatrix &value, const MTime &time);
 

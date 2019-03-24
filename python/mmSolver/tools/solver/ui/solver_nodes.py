@@ -231,12 +231,15 @@ class SolverStepNode(nodes.Node):
             return
         n.set_use_anim_attrs(use_animated)
         n.set_use_static_attrs(use_static)
+
+        strategy = const.STRATEGY_ALL_FRAMES_AT_ONCE
         if value == const.ATTR_FILTER_ANIM_ONLY_LABEL:
-            n.set_strategy(const.STRATEGY_PER_FRAME)
+            strategy = const.STRATEGY_PER_FRAME
         elif value == const.ATTR_FILTER_STATIC_AND_ANIM_LABEL:
-            temp_strategy = n.get_strategy()
-            if temp_strategy == const.STRATEGY_PER_FRAME:
-                n.set_strategy(const.STRATEGY_ALL_FRAMES_AT_ONCE)
+            if n.get_strategy() == const.STRATEGY_PER_FRAME:
+                strategy = const.STRATEGY_ALL_FRAMES_AT_ONCE
+
+        n.set_strategy(strategy)
         self.setStepNode(n)
         return
 

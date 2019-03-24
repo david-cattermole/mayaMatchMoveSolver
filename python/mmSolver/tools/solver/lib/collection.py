@@ -619,8 +619,9 @@ def compile_solvers_from_steps(col, step_list, prog_fn=None):
     use_cur_frame = get_override_current_frame_from_collection(col)
     sol_list = []
     for i, step in enumerate(step_list):
-        tmp_list = step.compile(col, override_current_frame=use_cur_frame)
-        sol_list += tmp_list
+        sol_list += step.compile(
+            col,
+            override_current_frame=use_cur_frame)
         if prog_fn is not None:
             ratio = float(i) / len(step_list)
             percent = int(ratio * 100.0)

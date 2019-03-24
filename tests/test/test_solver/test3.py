@@ -87,8 +87,8 @@ class TestSolver3(solverUtils.SolverTestCase):
         
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
-        rx = maya.cmds.getAttr(cam_tfm+'.rx')
-        ry = maya.cmds.getAttr(cam_tfm+'.ry')
+        rx = maya.cmds.getAttr(cam_tfm + '.rx')
+        ry = maya.cmds.getAttr(cam_tfm + '.ry')
         assert self.approx_equal(rx, 7.43790257882, eps=0.01)
         assert self.approx_equal(ry, -32.3908666703, eps=0.01)
 

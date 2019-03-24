@@ -144,6 +144,11 @@
 #define VERBOSE_FLAG_LONG      "-verbose"
 #define VERBOSE_DEFAULT_VALUE  false
 
+// Write a debug file somewhere
+#define DEBUG_FILE_FLAG           "-df"
+#define DEBUG_FILE_FLAG_LONG      "-debugFile"
+#define DEBUG_FILE_DEFAULT_VALUE  ""
+
 // Default Values for solver option flags
 #define CMINPACK_LM_ITERATIONS_DEFAULT_VALUE  20
 #define CMINPACK_LM_TAU_DEFAULT_VALUE  100.0 // default is 100.0
@@ -201,6 +206,9 @@ private:
     int m_autoDiffType; // Auto Differencing type to use; 0=forward, 1=central.
     int m_autoParamScale; // Auto Parameter Scaling; 0=OFF, 1=ON.
     int m_solverType;   // Solver type to use; 0=levmar, 1=cminpack_lm.
+
+    // Solver printing.
+    MString m_debugFile;
     bool m_verbose;
 
     // Objects

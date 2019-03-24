@@ -1,5 +1,5 @@
 /*
- * 
+ *
  */
 
 
@@ -7,8 +7,10 @@
 #define MAYA_MM_SOLVER_FUNC_H
 
 // STL
-#include <string>  // string
-#include <vector>  // vector
+#include <string>    // string
+#include <vector>    // vector
+#include <iostream>  // cout, cerr, endl
+#include <fstream>   // ofstream
 
 // Utils
 #include <utilities/debugUtils.h>
@@ -88,7 +90,8 @@ struct SolverData {
     MComputation *computation;
 
     // Verbosity.
-    bool verbose;    
+    bool verbose;
+    MString debugFileName;
 };
 
 int solveFunc(int numberOfParameters,

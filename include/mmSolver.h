@@ -119,6 +119,7 @@ bool solve(int iterMax,
            MDGModifier &dgmod,
            MAnimCurveChange &curveChange,
            MComputation &computation,
+           MString &debugFile,
            bool verbose,
            MStringArray &outResult);
 

@@ -86,6 +86,8 @@ MSyntax MMSolverCmd::newSyntax() {
                    MSyntax::kUnsigned);
     syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG,
                    MSyntax::kBoolean);
+    syntax.addFlag(DEBUG_FILE_FLAG, DEBUG_FILE_FLAG_LONG,
+                   MSyntax::kString);
 
     // We can use marker and attr flags more than once.
     syntax.makeFlagMultiUse(CAMERA_FLAG);
@@ -109,6 +111,13 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     m_verbose = VERBOSE_DEFAULT_VALUE;
     if (argData.isFlagSet(VERBOSE_FLAG)) {
         status = argData.getFlagArgument(VERBOSE_FLAG, 0, m_verbose);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Debug File'
+    m_debugFile = DEBUG_FILE_DEFAULT_VALUE;
+    if (argData.isFlagSet(DEBUG_FILE_FLAG)) {
+        status = argData.getFlagArgument(DEBUG_FILE_FLAG, 0, m_debugFile);
         CHECK_MSTATUS(status);
     }
 
@@ -439,6 +448,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
             m_dgmod,
             m_curveChange,
             m_computation,
+            m_debugFile,
             m_verbose,
             outResult
     );

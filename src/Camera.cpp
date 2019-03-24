@@ -440,6 +440,58 @@ MStatus Camera::getProjMatrix(MMatrix &value) {
     return Camera::getProjMatrix(value, time);
 }
 
+
+MStatus Camera::getWorldPosition(MPoint &value, const MTime &time) {
+    MStatus status;
+
+    MTime::Unit unit = MTime::uiUnit();
+    double timeDouble = time.as(unit);
+
+    // Get world matrix at time
+    MMatrix worldMat;
+    status = m_matrix.getValue(worldMat, time);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    // Position
+    value.x = worldMat[3][0];
+    value.y = worldMat[3][1];
+    value.z = worldMat[3][2];
+    value.w = worldMat[3][3];
+    value.cartesianize();
+
+    return status;
+}
+
+MStatus Camera::getWorldPosition(MPoint &value) {
+    MTime time = MAnimControl::currentTime();
+    return Camera::getWorldPosition(value, time);
+}
+
+
+MStatus Camera::getForwardDirection(MVector &value, const MTime &time) {
+    MStatus status;
+
+    MTime::Unit unit = MTime::uiUnit();
+    double timeDouble = time.as(unit);
+
+    // Get world matrix at time
+    MMatrix worldMat;
+    status = m_matrix.getValue(worldMat, time);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    MVector temp(0.0, 0.0, -1.0);
+    value = temp * worldMat;
+    value.normalize();
+
+    return status;
+}
+
+MStatus Camera::getForwardDirection(MVector &value) {
+    MTime time = MAnimControl::currentTime();
+    return Camera::getForwardDirection(value, time);
+}
+
+
 MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time) {
     MStatus status;
 
@@ -448,7 +500,6 @@ MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time) {
     DoubleMatrixMapCIt found = m_worldProjMatrixCache.find(timeDouble);
 
     if (found == m_worldProjMatrixCache.end()) {
-
         // No entry in the cache... lets compute and add it.
 
         // Get world matrix at time

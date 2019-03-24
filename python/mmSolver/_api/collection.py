@@ -5,7 +5,8 @@ Any queries use the Maya Python API, but modifications are handled with
 maya.cmds.* so that they support undo/redo correctly.
 """
 
-# import pprint
+import pprint
+import os
 import warnings
 import uuid
 
@@ -670,10 +671,20 @@ class Collection(object):
             raise excep.NotValid(msg)
 
         # Compile all the solvers
-        for sol in sol_enabled_list:
+        for i, sol in enumerate(sol_enabled_list):
             if sol.get_frame_list_length() == 0:
                 raise excep.NotValid(msg)
             kwargs = self.__compile_solver(sol, mkr_list, attr_list)
+
+            debug_file = maya.cmds.file(query=True, sceneName=True)
+            debug_file = os.path.basename(debug_file)
+            debug_file, ext = os.path.splitext(debug_file)
+            debug_file_path = os.path.join(
+                os.path.abspath('c:\\Users\\catte\\dev\\mayaMatchMoveSolver\\tests\\data'),
+                debug_file + '_' + str(i).zfill(6) + '.log')
+            if len(debug_file) > 0 and debug_file_path is not None:
+                kwargs['debugFile'] = debug_file_path
+
             if isinstance(kwargs, dict):
                 kwargs_list.append(kwargs)
             else:
@@ -1037,6 +1048,13 @@ class Collection(object):
                 self.__set_status(status_fn, 'Evaluating frames %r' % frame)
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
+
+                debug_file_path = kwargs.get('debugFile', None)
+                if debug_file_path is not None:
+                    options_file_path = debug_file_path.replace('.log', '.flags')
+                    text = pprint.pformat(kwargs)
+                    with open(options_file_path, 'w') as file_:
+                        file_.write(text)
 
                 # HACK: Overriding the verbosity, irrespective of what
                 # the solver verbosity value is set to.

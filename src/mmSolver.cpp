@@ -19,6 +19,7 @@
 #include <ctime>     // time
 #include <cmath>     // exp
 #include <iostream>  // cout, cerr, endl
+#include <fstream>   // ofstream
 #include <string>    // string
 #include <vector>    // vector
 #include <cassert>   // assert
@@ -331,6 +332,7 @@ bool solve(int iterMax,
            MDGModifier &dgmod,
            MAnimCurveChange &curveChange,
            MComputation &computation,
+           MString &debugFile,
            bool verbose,
            MStringArray &outResult) {
     int i = 0;
@@ -557,6 +559,17 @@ bool solve(int iterMax,
 
     // Verbosity
     userData.verbose = verbose;
+    userData.debugFileName = debugFile;
+
+    std::ofstream file;
+    if (debugFile.length() > 0) {
+        const char *debugFileNameChar = debugFile.asChar();
+        file.open(debugFileNameChar);
+        if (file.is_open() == true) {
+             file << std::endl;
+             file.close();
+        }
+    }
 
     // Options and Info
 #ifdef USE_SOLVER_LEVMAR

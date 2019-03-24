@@ -10,6 +10,7 @@ import warnings
 import uuid
 
 import maya.cmds
+import maya.mel
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
@@ -830,6 +831,128 @@ class Collection(object):
                 )
         return
 
+    @staticmethod
+    def __get_all_model_panels():
+        """
+        Return a list of all Maya model panels.
+        """
+        model_panels = []
+        is_batch = maya.cmds.about(query=True, batch=True)
+        if is_batch is True:
+            return model_panels
+        panels = maya.cmds.getPanel(allPanels=True)
+        for panel in panels:
+            panel_type = maya.cmds.getPanel(typeOf=panel)
+            if panel_type == 'modelPanel':
+                model_panels.append(panel)
+        return model_panels
+
+    @staticmethod
+    def __get_isolated_nodes(model_panel):
+        """
+        Return nodes that are being isolated for 'model_panel'.
+        """
+        nodes = []
+        state = maya.cmds.isolateSelect(
+            model_panel,
+            query=True,
+            state=True)
+        if state is False:
+            return nodes
+
+        set_node = maya.cmds.isolateSelect(
+            model_panel,
+            query=True,
+            viewObjects=True)
+
+        obj = api_utils.get_as_object(set_node)
+        set_mfn = OpenMaya.MFnSet(obj)
+
+        flatten = False
+        full_path = True
+        sel_list = OpenMaya.MSelectionList()
+        try:
+            set_mfn.getMembers(sel_list, flatten)
+        except RuntimeError:
+            return nodes
+
+        sel_list.getSelectionStrings(nodes)
+        if full_path is True:
+            nodes = maya.cmds.ls(nodes, long=True) or []
+        return nodes
+
+    @staticmethod
+    def __get_image_plane_visibility(model_panel):
+        model_editor = maya.cmds.modelPanel(
+            model_panel,
+            query=True,
+            modelEditor=True)
+        value = maya.cmds.modelEditor(
+            model_editor,
+            query=True,
+            imagePlane=True)
+        return value
+
+    @staticmethod
+    def __set_image_plane_visibility(model_panel, value):
+        model_editor = maya.cmds.modelPanel(
+            model_panel,
+            query=True,
+            modelEditor=True)
+        maya.cmds.modelEditor(
+            model_editor,
+            edit=True,
+            imagePlane=value)
+        return
+
+    @staticmethod
+    def __set_isolated_nodes(model_panel, nodes, enable):
+        """
+        Override the isolate objects on 'model_panel'.
+
+        With an empty list, this function clears the 'model_panel's
+        isolate object list.
+        """
+        model_editor = maya.cmds.modelPanel(
+            model_panel,
+            query=True,
+            modelEditor=True)
+
+        sel = maya.cmds.ls(selection=True, long=True) or []
+        maya.cmds.select(nodes, replace=True)
+
+        cmd = 'enableIsolateSelect("%s", %s);'
+        cmd = cmd % (model_editor, int(enable))
+        maya.mel.eval(cmd)
+
+        cmd = 'doReload("%s");'
+        cmd = cmd % model_editor
+        maya.mel.eval(cmd)
+
+        if len(sel) > 0:
+            maya.cmds.select(sel, replace=True)
+        else:
+            maya.cmds.select(clear=True)
+        return
+
+    @staticmethod
+    def __generate_isolate_nodes(kwargs):
+        nodes = set()
+        attrs = kwargs.get('attr') or []
+        for attr_name, min_val, max_val in attrs:
+            attr_obj = attribute.Attribute(name=attr_name)
+            node = attr_obj.get_node()
+            nodes.add(node)
+        markers = kwargs.get('marker') or []
+        for mkr_node, cam_shp_node, bnd_node in markers:
+            nodes.add(mkr_node)
+            nodes.add(bnd_node)
+        cameras = kwargs.get('camera') or []
+        for cam_tfm_node, cam_shp_node in cameras:
+            nodes.add(cam_tfm_node)
+            nodes.add(cam_shp_node)
+        return nodes
+
     def execute(self, verbose=False, refresh=False, prog_fn=None, status_fn=None):
         """
         Compile the collection, then pass that data to the 'mmSolver' command.
@@ -844,12 +967,26 @@ class Collection(object):
         # Ensure the plug-in is loaded, so we fail before trying to run.
         api_utils.load_plugin()
 
-        # TODO: If 'refresh' is on change all viewports to 'isolate
+        # If 'refresh' is 'on' change all viewports to 'isolate
         # selected' on only the markers and bundles being solved. This
         # will speed up computations, especially per-frame solving as
         # it will not re-compute any invisible nodes (such as rigs or
         # image planes).
-        
+        panel_objs = {}
+        panel_img_pl_vis = {}
+        panels = self.__get_all_model_panels()
+        if refresh is True:
+            for panel in panels:
+                state = maya.cmds.isolateSelect(
+                    panel,
+                    query=True,
+                    state=True)
+                nodes = None
+                if state is True:
+                    nodes = self.__get_isolated_nodes(panel)
+                panel_objs[panel] = nodes
+                panel_img_pl_vis[panel] = self.__get_image_plane_visibility(panel)
+
         # Save current frame, to revert to later on.
         cur_frame = maya.cmds.currentTime(query=True)
 
@@ -861,7 +998,7 @@ class Collection(object):
             self.__set_progress(prog_fn, 0)
             self.__set_status(status_fn, 'Solver Initializing...')
             api_utils.set_solver_running(True)
-            
+
             # Set the first current time to the frame before current.
             # This is to help trigger evaluations on the 'current
             # frame', if the current frame is the same as the first
@@ -879,6 +1016,18 @@ class Collection(object):
                 return solres_list
             kwargs_list = self._compile()
             self.__set_progress(prog_fn, 1)
+
+            # Isolate all nodes used in all of the kwargs to be run.
+            if refresh is True:
+                isolate_nodes = set()
+                for kwargs in kwargs_list:
+                    isolate_nodes |= self.__generate_isolate_nodes(kwargs)
+                if len(isolate_nodes) == 0:
+                    raise excep.NotValid
+                isolate_node_list = list(isolate_nodes)
+                for panel in panels:
+                    self.__set_image_plane_visibility(panel, False)
+                    self.__set_isolated_nodes(panel, isolate_node_list, True)
 
             # Run Solver...
             start = 0
@@ -935,6 +1084,17 @@ class Collection(object):
             # and undo the entire undo chunk?
             raise
         finally:
+            if refresh is True:
+                for panel, objs in panel_objs.items():
+                    if objs is None:
+                        # No original objects, disable 'isolate
+                        # selected' after resetting the objects.
+                        self.__set_isolated_nodes(panel, [], False)
+                        img_pl_vis = panel_img_pl_vis.get(panel, True)
+                        self.__set_image_plane_visibility(panel, img_pl_vis)
+                    else:
+                        self.__set_isolated_nodes(panel, list(objs), True)
+
             self.__set_progress(prog_fn, 100)
             api_utils.set_solver_running(False)
 

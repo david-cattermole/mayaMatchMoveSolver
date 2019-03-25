@@ -38,6 +38,7 @@
 #include <vector>    // vector
 #include <cassert>   // assert
 #include <limits>    // double max value, NaN
+#include <algorithm>  // min, max
 #include <math.h>
 
 // Utils

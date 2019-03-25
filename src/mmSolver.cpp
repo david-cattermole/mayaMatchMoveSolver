@@ -42,6 +42,7 @@
 #include <vector>    // vector
 #include <cassert>   // assert
 #include <limits>    // double max value
+#include <algorithm>  // min, max
 #include <cstdlib>   // getenv
 
 // Utils

@@ -673,6 +673,9 @@ class Collection(object):
         # Compile all the solvers
         for i, sol in enumerate(sol_enabled_list):
             if sol.get_frame_list_length() == 0:
+                msg = 'Collection is not valid, no frames to solve;'
+                msg += ' collection={0}'
+                msg = msg.format(repr(col_node))
                 raise excep.NotValid(msg)
             kwargs = self.__compile_solver(sol, mkr_list, attr_list)
 

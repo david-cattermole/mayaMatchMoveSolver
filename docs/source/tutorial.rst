@@ -20,14 +20,14 @@ These video uses mmSolver v0.2.0 (beta).
 
 .. raw:: html
 
-<   iframe width="560" height="315" src="https://www.youtube.com/embed/SJoNEShPyms" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/SJoNEShPyms" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 *Part 2*
 
 .. raw:: html
 
-<   iframe width="560" height="315" src="https://www.youtube.com/embed/yS1kJJkosqA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/yS1kJJkosqA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 Camera and Object Solve

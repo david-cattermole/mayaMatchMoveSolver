@@ -169,6 +169,44 @@ given in prompt window.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="ray-cast-marker">
+<h2>Ray-Cast Marker<a class="headerlink" href="#ray-cast-marker" title="Permalink to this headline">¶</a></h2>
+<p>Ray casts (project) the selected marker&#8217;s bundle nodes on mesh nodes
+from the associated camera.</p>
+<p>Select markers and mesh objects to ray cast on, if not mesh objects
+tool will ray cast on all visible mesh objects.</p>
+<p>If a bundle translate attribute is locked, it will be unlocked, then
+projected, and then the lock state will be reverted to the original
+value.</p>
+<p>The viewport camera does not need to be active for this tool to
+project. The tool will work on the current frame only.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select Markers</li>
+<li>(Optional) Select Mesh nodes</li>
+<li>Run tool.</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.raycastmarker.tool</span> <span class="k">as</span> <span class="nn">raycast_tool</span>
+<span class="n">raycast_tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="smooth-keyframes">
+<h2>Smooth Keyframes<a class="headerlink" href="#smooth-keyframes" title="Permalink to this headline">¶</a></h2>
+<p>Smooth the selected keyframes in the Graph Editor.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select keyframes in Graph Editor.</li>
+<li>Run tool.</li>
+<li>Keyframe values will be smoothed.</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.smoothkeyframes.tool</span> <span class="k">as</span> <span class="nn">smoothkeys_tool</span>
+<span class="n">smoothkeys_tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="center-2d-on-selection">
 <h2>Center 2D On Selection<a class="headerlink" href="#center-2d-on-selection" title="Permalink to this headline">¶</a></h2>
 <p>Forces the active viewport camera to lock it’s center to the currently
@@ -304,6 +342,8 @@ markers.</p>
 <li><a class="reference internal" href="#toggle-marker-bundle">Toggle Marker / Bundle</a></li>
 <li><a class="reference internal" href="#select-marker-bundle">Select Marker + Bundle</a></li>
 <li><a class="reference internal" href="#marker-bundle-rename">Marker Bundle Rename</a></li>
+<li><a class="reference internal" href="#ray-cast-marker">Ray-Cast Marker</a></li>
+<li><a class="reference internal" href="#smooth-keyframes">Smooth Keyframes</a></li>
 <li><a class="reference internal" href="#center-2d-on-selection">Center 2D On Selection</a></li>
 <li><a class="reference internal" href="#aim-at-camera">Aim at Camera</a></li>
 <li><a class="reference internal" href="#screen-z-manipulator">Screen-Z Manipulator</a></li>

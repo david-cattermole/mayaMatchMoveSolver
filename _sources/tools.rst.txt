@@ -126,6 +126,60 @@ Run this Python command:
 
     import mmSolver.tools.markerbundlerename.tool
     mmSolver.tools.markerbundlerename.tool.main()
+
+Ray-Cast Marker
+---------------
+
+Ray casts (project) the selected marker's bundle nodes on mesh nodes
+from the associated camera.
+
+Select markers and mesh objects to ray cast on, if not mesh objects
+tool will ray cast on all visible mesh objects.
+
+If a bundle translate attribute is locked, it will be unlocked, then
+projected, and then the lock state will be reverted to the original
+value.
+
+The viewport camera does not need to be active for this tool to
+project. The tool will work on the current frame only.
+
+Usage:
+
+1) Select Markers
+
+2) (Optional) Select Mesh nodes
+
+3) Run tool.
+
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.raycastmarker.tool as raycast_tool
+    raycast_tool.main()
+
+Smooth Keyframes
+----------------
+
+Smooth the selected keyframes in the Graph Editor.
+
+Usage:
+
+1) Select keyframes in Graph Editor.
+
+2) Run tool.
+
+3) Keyframe values will be smoothed.
+
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.smoothkeyframes.tool as smoothkeys_tool
+    smoothkeys_tool.main()
+
     
 Center 2D On Selection
 ----------------------

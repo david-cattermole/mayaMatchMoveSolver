@@ -680,7 +680,7 @@ class Collection(object):
             debug_file = os.path.basename(debug_file)
             debug_file, ext = os.path.splitext(debug_file)
             debug_file_path = os.path.join(
-                os.path.abspath('c:\\Users\\catte\\dev\\mayaMatchMoveSolver\\tests\\data'),
+                os.path.expanduser('${HOME}'),
                 debug_file + '_' + str(i).zfill(6) + '.log')
             if len(debug_file) > 0 and debug_file_path is not None:
                 kwargs['debugFile'] = debug_file_path

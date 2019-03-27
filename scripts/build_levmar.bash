@@ -23,7 +23,7 @@ python "${THIS_DIR}/get_levmar.py" "${ROOT}/archives" "${ROOT}/working" "${ROOT}
 # Build Library
 mkdir -p build
 cd build
-rm -R *
+rm --force -R *
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} \

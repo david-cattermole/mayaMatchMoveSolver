@@ -105,7 +105,7 @@ SolverTypePair getSolverTypeDefault() {
     std::vector<SolverTypePair> solverTypes = getSolverTypes();
 
     const char* defaultSolver_ptr = std::getenv("MMSOLVER_DEFAULT_SOLVER");
-    if (defaultSolver_ptr != nullptr) {
+    if (defaultSolver_ptr != NULL) {
         // The memory may change under our feet, we copy the data into a
         // string for save keeping.
         std::string defaultSolver(defaultSolver_ptr);

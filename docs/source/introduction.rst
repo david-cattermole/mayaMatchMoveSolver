@@ -3,7 +3,7 @@ Introduction
 
 The Maya MatchMove Solver (or `mmSolver` for short), is a tool to
 MatchMove cameras and objects in Autodesk Maya. The `mmSolver` takes a
-different approach than most other software (Commerical or Free Open
+different approach than most other software (Commercial or Free Open
 Source Software).
 
 Most other software will calculate a 3D camera or 3D
@@ -22,11 +22,11 @@ and relationships using Autodesk Maya's DAG nodes and connections.
 
 Finally, `mmSolver` also allows solving of *specific attributes* of
 any node, so you can solve only Translate X, Rotate Y or Scale Z
-indepentantly, or any combination of attributes all at the same
+independently, or any combination of attributes all at the same
 time. Even custom attributes are supported. *Animated attributes* can
 be solved as well as *static attributes*, meaning a Camera Translate Z
-attribute may be solved animated while solving the best attribute
-value for the non-animated Camera Focal Length.
+attribute may be solved animated while solving the non-animated
+Camera Focal Length.
 
 `mmSolver` allows all of these features and more!
 

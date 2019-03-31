@@ -188,8 +188,8 @@ class SolveResult(object):
             LOG.debug(msg.format(name, key, 'None', values))
         else:
             for value in values:
-                t = _convert_to(name, key, typ, value, 0)
-                v = _convert_to(name, key, typ, value, 1)
+                t = _convert_to(name, key, float, value, 0)
+                v = _convert_to(name, key, float, value, 1)
                 self._per_frame_error[t] = v
         return
 
@@ -292,10 +292,10 @@ def get_average_frame_error_list(frame_error_list):
     error = 0.0
     total = 0
     for k, v in frame_error_list.items():
-        error += v
+        error += float(v)
         total += 1
     if total > 0:
-        error = error / total
+        error = error / float(total)
     return error
 
 
@@ -309,13 +309,14 @@ def get_max_frame_error(frame_error_list):
     :type frame_error_list: {float: float}
 
     :returns: The frame and error with the maximum amount of error.
-    :rtype: (float or None, float)
+    :rtype: (int or None, float)
     """
     assert isinstance(frame_error_list, dict)
     frame = None
     error = -0.0
     for k, v in frame_error_list.items():
-        if v > error:
-            frame = k
-            error = v
-    return (frame, error)
+        x = float(v)
+        if x > error:
+            frame = int(k)
+            error = x
+    return frame, error

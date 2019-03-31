@@ -190,6 +190,9 @@ def log_solve_results(log, solres_list, total_time=None, status_fn=None):
     :param total_time:
     :type total_time: None or float
 
+    :param status_fn: Function to set the status text.
+    :type status_fn: callable function or None
+
     :returns: Nothing.
     :rtype: None
     """
@@ -222,22 +225,16 @@ def log_solve_results(log, solres_list, total_time=None, status_fn=None):
     status_str += 'avg err %.2fpx' % avg_error
     long_status_str += 'Average Error %.2fpx' % avg_error
 
-    max_frame_error = mmapi.get_max_frame_error(frame_error_list)
-    status_str += ' | max err %.2fpx at %s' % (max_frame_error[1],
-                                               max_frame_error[0])
-    long_status_str += ' | Max Error %.2fpx at %s' % (max_frame_error[1],
-                                                      max_frame_error[0])
+    max_frame, max_error = mmapi.get_max_frame_error(frame_error_list)
+    status_str += ' | max err %.2fpx at %s' % (max_error, max_frame)
+    long_status_str += ' | Max Error %.2fpx at %s' % (max_error, max_frame)
 
     if total_time is not None:
         log.info('Total Time: %.3f seconds', total_time)
         status_str += ' | time %.3fsec' % total_time
         long_status_str += ' | Time %.3fsec' % total_time
 
-    log.info(
-        'Max Frame Error: %.2f pixels at frame %s',
-        max_frame_error[1],
-        max_frame_error[0]
-    )
+    log.info('Max Frame Error: %.2f pixels at frame %s', max_error, max_frame)
     log.info('Average Error: %.2f pixels', avg_error)
         
     if status_fn is not None:

@@ -346,6 +346,11 @@ install(DIRECTORY "3dequalizer/scriptdb/"
         DESTINATION "${MODULE_FULL_NAME}/3dequalizer"
         FILES_MATCHING PATTERN "*.py")
 
+# Install SynthEyes scripts.
+install(DIRECTORY "syntheyes/"
+        DESTINATION "${MODULE_FULL_NAME}/syntheyes"
+        FILES_MATCHING PATTERN "*.szl")
+
 # Install Icons.
 install(DIRECTORY "icons/"
         DESTINATION "${MODULE_FULL_NAME}/icons"

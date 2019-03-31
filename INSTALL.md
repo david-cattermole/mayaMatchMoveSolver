@@ -7,12 +7,16 @@ page on the GitHub [project page](https://github.com/david-cattermole/mayaMatchM
 
 | Operating System  | Maya Version(s)             |
 | ----------------- | --------------------------- |
-| Linux             | Maya 2016, 2017, 2018       |
-| Windows           | Maya 2016, 2017, 2018       |
+| Linux             | Maya 2016, 2017, 2018, 2019 |
+| Windows           | Maya 2016, 2017, 2018, 2019 |
 | Mac OS X          | *Not Currently Supported*   |
 
 Download the archive format (`.zip` or `.tar.gz`) for your Maya
 version and operating system.
+
+For a simple installation, **do not** install from the 
+`Source code (zip)` or `Source code (tar.gz)` archives. These archives 
+are for developers only.
 
 # Install Qt.py (in a Home Environment)
 

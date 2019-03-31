@@ -7,6 +7,7 @@ this module.
 """
 
 from functools import wraps
+import warnings
 import json
 import re
 
@@ -481,6 +482,8 @@ def get_data_on_node_attr(node_name, attr_name):
     :return: Arbitrary Plain-Old-Data data structures.
     :rtype: list of dict
     """
+    msg = 'This is deprecated. Use `mmSolver.utils.config` module'
+    warnings.warn(msg)
     ret = []
     attrs = maya.cmds.listAttr(node_name)
     if attr_name not in attrs:
@@ -514,6 +517,8 @@ def set_data_on_node_attr(node_name, attr_name, data):
     ;return: Nothing.
     :rtype: None
     """
+    msg = 'This is deprecated. Use `mmSolver.utils.config` module'
+    warnings.warn(msg)
     assert isinstance(attr_name, (str, unicode))
     assert isinstance(data, (list, dict))
     node_attr = node_name + '.' + attr_name
@@ -542,6 +547,8 @@ def get_value_on_node_attr(node_name, attr_name):
     :return: A numeric value.
     :rtype: bool or float or int
     """
+    msg = 'This is deprecated. Use `mmSolver.utils.config` module'
+    warnings.warn(msg)
     ret = []
     attrs = maya.cmds.listAttr(node_name)
     if attr_name not in attrs:
@@ -570,6 +577,8 @@ def set_value_on_node_attr(node_name, attr_name, data):
     ;return: Nothing.
     :rtype: None
     """
+    msg = 'This is deprecated. Use `mmSolver.utils.config` module'
+    warnings.warn(msg)
     assert isinstance(attr_name, (str, unicode))
     assert isinstance(data, (bool, float, int))
     node_attr = node_name + '.' + attr_name

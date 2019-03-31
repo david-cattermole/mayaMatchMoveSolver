@@ -47,7 +47,7 @@ following directory on your computer:
 
 On Windows:
 ```
-C:/Users/<Your User Name>/My Documents/maya/<Maya Version>/modules
+C:\Users\<Your User Name>\My Documents\maya\<Maya Version>\modules
 ```
 
 On Linux:
@@ -83,7 +83,7 @@ which can control mmSolver's behaviour.
 
 | Name                     | Description                                                                                            |
 | ------------------------ | ------------------------------------------------------------------------------------------------------ |
-| MMSOLVER_LOAD_AT_STARTUP | Automatically load mmSolver at Maya start-up.                                                          |
+| MMSOLVER_LOAD_AT_STARTUP | Automatically load mmSolver plug-in at Maya start-up.                                                  |
 | MMSOLVER_CREATE_SHELF    | Automatically create a Maya shelf at start-up.                                                         |
 | MMSOLVER_CREATE_MENU     | Un-used currently.                                                                                     |
 | MMSOLVER_HELP_SOURCE     | Prefer 'internet' or 'local' source of help? For users with internet restrictions set this to 'local'. |
@@ -132,3 +132,25 @@ On Windows:
 > CD <module directory>
 > XCOPY 3dequalizer\* "%AppData%\.3dequalizer\py_scripts" /Y
 ```
+
+# Install SynthEyes Files
+
+To install the SynthEyes tools for *mmSolver*, copy the files inside 
+the `<module root>/syntheyes` directory, into the custom SynthEyes 
+script directory.
+
+On Windows:
+```cmd
+> CD <module directory>
+> XCOPY syntheyes\* "%AppData%\SynthEyes\scripts" /Y
+```
+
+For example, this path:
+```
+C:\Users\<Your User Name>\AppData\Roaming\SynthEyes\scripts
+```
+
+The tool can be accessed as a standard export script in the menu 
+`File > Export > Trackers (mmSolver)`. This tool will export all 
+Tracks in the scene as .uv file format, ready to be imported into 
+mmSolver.

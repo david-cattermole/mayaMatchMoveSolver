@@ -14,37 +14,41 @@ stop = shot.stop
 imwid = shot.width
 imhei = shot.height
 
-// bias = -(start-1)
+// Size of one pixel, in UV space.
+onePixelU = 1.0 / imwid
+onePixelV = 1.0 / imhei
+
+// Start frame
 bias = 0
 
 counter = 0
 for (tk in obj.trk)
-	counter = counter + 1
+    counter = counter + 1
 end
 printf("%.0f", counter)
 
 printf("%.0f\n", trknum)
 
 for (tk in obj.trk)
-	counter = 0
+    counter = 0
     if (!tk.isExported)
-	continue
+        continue
     end
     tk.nm "\n"
     for (frame = start; frame <= stop; frame++)
-	if (tk.valid)
-		counter = counter + 1
-	end
+        if (tk.valid)
+            counter = counter + 1
+        end
     end
     printf("%.0f\n", counter)
     for (frame = start; frame <= stop; frame++)
-	if (tk.valid)
-	    counter = counter + 1
-	    printf("%.0f %.9f %.9f %.9f\n",
-		   frame + bias,
-		   (tk.u * 0.5) + 0.5,
-		   (tk.v * -0.5) + 0.5,
-		   1.0)
-	end
+        if (tk.valid)
+            counter = counter + 1
+            printf("%.0f %.9f %.9f %.9f\n",
+               frame + bias,
+               ((tk.u + onePixelU) * 0.5) + 0.5,
+               ((tk.v + onePixelV) * -0.5) + 0.5,
+               1.0)
+        end
     end
 end

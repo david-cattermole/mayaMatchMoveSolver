@@ -22,7 +22,11 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver6(solverUtils.SolverTestCase):
 
-    def test_init(self):
+    def do_solve(self, solver_name, solver_index):
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
+
         start = 1
         end = 100
         mid = start + ((end - start) / 2)
@@ -54,6 +58,11 @@ class TestSolver6(solverUtils.SolverTestCase):
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=3.0)
         maya.cmds.setKeyframe(marker_tfm, attribute='translateY', time=start, value=1.5)
         maya.cmds.setKeyframe(marker_tfm, attribute='translateY', time=end, value=1.3)
+
+        # save the output
+        path = self.get_data_path('solver_test6_%s_before.ma' % solver_name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         cameras = (
             (cam_tfm, cam_shp),
@@ -89,8 +98,7 @@ class TestSolver6(solverUtils.SolverTestCase):
                 marker=markers,
                 attr=node_attrs,
                 iterations=10,
-                solverType=0,
-                delta=0.00001,
+                solverType=solver_index,
                 frame=frames,
                 verbose=True,
             )
@@ -106,7 +114,7 @@ class TestSolver6(solverUtils.SolverTestCase):
         #                 marker=markers,
         #                 attr=node_attrs,
         #                 iterations=10,
-        #                 solverType=0,
+        #                 solverType=solver_index,
         #                 frame=[j],
         #                 verbose=True,
         #             )
@@ -119,7 +127,7 @@ class TestSolver6(solverUtils.SolverTestCase):
         #         #     marker=markers,
         #         #     attr=node_attrs,
         #         #     iterations=10,
-        #         #     solverType=0,
+        #         #     solverType=solver_index,
         #         #     frame=betweenFrames,
         #         #     verbose=True,
         #         # )
@@ -131,7 +139,7 @@ class TestSolver6(solverUtils.SolverTestCase):
         #     marker=markers,
         #     attr=node_attrs,
         #     iterations=10,
-        #     solverType=0,
+        #     solverType=solver_index,
         #     frame=allFrames,
         #     verbose=True,
         # )
@@ -140,17 +148,24 @@ class TestSolver6(solverUtils.SolverTestCase):
         e = time.time()
         print 'total time:', e - s
 
+        # save the output
+        path = self.get_data_path('solver_test6_%s_after.ma' % solver_name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+        
         # Ensure the values are correct
         for i, result in enumerate(results):
             print 'i', i, result[0]
         for result in results:
             print result[0]
             self.assertEqual(result[0], 'success=1')
+        return
 
-        # save the output
-        path = self.get_data_path('solver_test6_after.ma')
-        maya.cmds.file(rename=path)
-        maya.cmds.file(save=True, type='mayaAscii', force=True)
+    def test_init_levmar(self):
+        self.do_solve('levmar', 0)
+
+    def test_init_cminpack_lm(self):
+        self.do_solve('cminpack_lm', 1)
 
 
 if __name__ == '__main__':

@@ -177,6 +177,10 @@ def get_object_type(node):
           and ('bundle' in attrs)):
         object_type = const.OBJECT_TYPE_MARKER
 
+    elif ((node_type == 'transform')
+          and ('locator' in shape_node_types)):
+        object_type = const.OBJECT_TYPE_BUNDLE
+
     elif ((node_type == 'transform') and
           ('camera' in shape_node_types)):
         object_type = const.OBJECT_TYPE_CAMERA
@@ -184,11 +188,15 @@ def get_object_type(node):
     elif node_type == 'camera':
         object_type = const.OBJECT_TYPE_CAMERA
 
+    elif ((node_type == 'transform') and
+          ('imagePlane' in shape_node_types)):
+        object_type = const.OBJECT_TYPE_IMAGE_PLANE
+
+    elif node_type == 'imagePlane':
+        object_type = const.OBJECT_TYPE_IMAGE_PLANE
+
     elif node_type == 'mmMarkerGroupTransform':
         object_type = const.OBJECT_TYPE_MARKER_GROUP
-
-    elif node_type == 'transform':
-        object_type = const.OBJECT_TYPE_BUNDLE
 
     elif ((node_type == 'objectSet')
           and ('solver_list' in attrs)):

@@ -217,6 +217,6 @@ class Bundle(object):
         conns = maya.cmds.listConnections(node_attr) or []
         mkr_list = []
         for conn in conns:
-            mkr = mmSolver._api.marker.Marker(name=conn)
+            mkr = mmSolver._api.marker.Marker(node=conn)
             mkr_list.append(mkr)
         return mkr_list

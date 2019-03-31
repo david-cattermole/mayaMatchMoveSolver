@@ -40,7 +40,7 @@ class TestMarker(test_api_utils.APITestCase):
         y_node = y.get_node()
         self.assertEqual(x_node, y_node)
 
-        z = marker.Marker(name=x_node)
+        z = marker.Marker(node=x_node)
         z_node = z.get_node()
         self.assertEqual(x_node, z_node)
 

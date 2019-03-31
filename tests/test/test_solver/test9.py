@@ -80,7 +80,8 @@ class TestSolver9(solverUtils.SolverTestCase):
             markers = (
                 (marker_tfm, cam_shp, bundle_tfm),
             )
-            # NOTE: All dynamic attributes must have a keyframe before starting to solve.
+            # NOTE: All dynamic attributes must have a keyframe before
+            # starting to solve.
             node_attrs = [
                 (bundle_tfm + '.tx', 'None', 'None'),
                 (bundle_tfm + '.ty', 'None', 'None'),
@@ -98,8 +99,8 @@ class TestSolver9(solverUtils.SolverTestCase):
                     frame=[f],
                     verbose=True,
                 )
-                # # Ensure the values are correct
-                # self.assertEqual(result[0], 'success=1')
+                # Ensure the values are correct
+                self.assertEqual(result[0], 'success=1')
                 # # Stopped by low error
                 # self.assertEqual(result[2], 'reason_num=6')
             e = time.time()

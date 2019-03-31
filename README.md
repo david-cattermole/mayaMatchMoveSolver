@@ -121,7 +121,7 @@ To build (compile) the plug-in follow the steps in
 
 ## License
 
-*Maya MatchMove Solver* is licensed under the
+*Maya MatchMove Solver* (mmSolver) is licensed under the
 [Lesser GNU Public License v3.0](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/LICENSE)
 or *LGPL-3.0* for short.
 This means the project is Free Open Source Software, and will always

@@ -1,4 +1,22 @@
 /*
+ * Copyright (C) 2018, 2019 David Cattermole.
+ *
+ * This file is part of mmSolver.
+ *
+ * mmSolver is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * mmSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+ * ====================================================================
+ *
  * Camera class represents a viewable camera with a projection matrix.
  */
 
@@ -48,9 +66,9 @@ MStatus getCameraPlaneScale(
     double aov = 0.0;
     const bool asDegrees = true;
     getAngleOfView(filmBackSize, focalLength, aov, asDegrees);
-	// Hard-code 'pi' so we don't have cross-platform problems
-	// between Linux and Windows.
-	const double pi = 3.14159265358979323846;
+    // Hard-code 'pi' so we don't have cross-platform problems
+    // between Linux and Windows.
+    const double pi = 3.14159265358979323846;
     scale = tan(aov * 0.5 * pi / 180.0);
     return MS::kSuccess;
 }
@@ -370,6 +388,14 @@ public:
     MStatus getProjMatrix(MMatrix &value, const MTime &time);
 
     MStatus getProjMatrix(MMatrix &value);
+
+    MStatus getWorldPosition(MPoint &value, const MTime &time);
+
+    MStatus getWorldPosition(MPoint &value);
+
+    MStatus getForwardDirection(MVector &value, const MTime &time);
+
+    MStatus getForwardDirection(MVector &value);
 
     MStatus getWorldProjMatrix(MMatrix &value, const MTime &time);
 

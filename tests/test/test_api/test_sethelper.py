@@ -22,7 +22,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         self.assertEqual(x.get_all_members(), [])
 
         node = maya.cmds.sets(name='mySet')
-        x = sethelper.SetHelper(name=node)
+        x = sethelper.SetHelper(node=node)
         self.assertEqual(x.get_node(), node)
         # NOTE: 'Unnamed object set' is the default set node annotation.
         self.assertEqual(x.get_annotation(), 'Unnamed object set')
@@ -34,7 +34,7 @@ class TestSetHelper(test_api_utils.APITestCase):
     def test_get_node(self):
         name = 'mySet'
         node = maya.cmds.sets(name=name)
-        x = sethelper.SetHelper(name=node)
+        x = sethelper.SetHelper(node=node)
         self.assertEqual(x.get_node(), name)
 
     def test_set_node(self):
@@ -42,7 +42,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         name2 = 'myNextSet'
         node1 = maya.cmds.sets(name=name1)
         node2 = maya.cmds.sets(name=name2)
-        x = sethelper.SetHelper(name=node1)
+        x = sethelper.SetHelper(node=node1)
         self.assertEqual(x.get_node(), name1)
         x.set_node(node2)
         self.assertEqual(x.get_node(), name2)

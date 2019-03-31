@@ -30,7 +30,7 @@ MM_SOLVER_DATA_ATTR_NAME = 'mmSolver_data'
 # Scene Data keys and default values.
 SCENE_DATA_ACTIVE_COLLECTION_UID = 'active_collection_uid'
 SCENE_DATA_REFRESH_VIEWPORT = 'refresh_viewport_state'
-SCENE_DATA_REFRESH_VIEWPORT_DEFAULT = False
+SCENE_DATA_REFRESH_VIEWPORT_DEFAULT = True
 SCENE_DATA_LOG_LEVEL = 'log_level'
 SCENE_DATA_LOG_LEVEL_DEFAULT = LOG_LEVEL_INFO
 
@@ -68,8 +68,8 @@ ATTR_FILTER_NO_ATTRS_LABEL = 'No Attributes'
 ATTR_FILTER_LABEL_LIST = [
     ATTR_FILTER_ANIM_ONLY_LABEL,
     ATTR_FILTER_STATIC_AND_ANIM_LABEL,
-    ATTR_FILTER_STATIC_ONLY_LABEL,
-    ATTR_FILTER_NO_ATTRS_LABEL,
+    # ATTR_FILTER_STATIC_ONLY_LABEL,
+    # ATTR_FILTER_NO_ATTRS_LABEL,
 ]
 
 # Solver Step Data (stored on Collection node)
@@ -103,7 +103,6 @@ STATUS_SOLVER_NOT_VALID = 'Solver Not Valid!'
 STATUS_EXECUTING = 'Executing...'
 STATUS_FINISHED = 'Finished.'
 
-
 ATTR_DEFAULT_MIN_VALUE = '<Not Set>'
 ATTR_DEFAULT_MAX_VALUE = '<Not Set>'
 
@@ -111,3 +110,18 @@ ATTR_STATE_INVALID = 'Invalid'
 ATTR_STATE_STATIC = 'Static'
 ATTR_STATE_ANIMATED = 'Animated'
 ATTR_STATE_LOCKED = 'Locked'
+
+# Toggle Objects (stored on Collection node)
+OBJECT_TOGGLE_CAMERA_ATTR = 'object_toggle_camera'
+OBJECT_TOGGLE_MARKER_ATTR = 'object_toggle_marker'
+OBJECT_TOGGLE_BUNDLE_ATTR = 'object_toggle_bundle'
+
+OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE = True
+OBJECT_TOGGLE_MARKER_DEFAULT_VALUE = True
+OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE = False
+
+# Information to filter invalid input attributes from the Solver UI.
+ATTR_INVALID_OBJECT_TYPES = [
+    'imageplane',
+    'marker',
+]

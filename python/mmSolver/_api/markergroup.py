@@ -2,12 +2,18 @@
 Defines a MarkerGroup node.
 """
 
+import warnings
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
+import mmSolver.logger
 import mmSolver._api.camera as camera
 import mmSolver._api.utils as api_utils
 import mmSolver._api.constant as const
+
+
+LOG = mmSolver.logger.get_logger()
 
 
 class MarkerGroup(object):
@@ -15,16 +21,26 @@ class MarkerGroup(object):
     The MarkerGroup to transform markers into camera-space.
     """
 
-    def __init__(self, name=None):
+    def __init__(self, node=None, name=None):
         """
-        Initialize the MarkerGroup with the given Maya node's 'name'.
+        Initialize the MarkerGroup with the given Maya node.
 
-        :param name: Maya node name to attach to.
-        :type name: str or None
+        :param node: Maya node to attach to.
+        :type node: str or None
+
+        :param name: This is a backwards compatible kwarg for 'node'.
+        :type name: None or str
         """
-        self._mfn_tfm = None
         if name is not None:
-            self.set_node(name)
+            msg = (
+                "mmSolver.api.MarkerGroup(name=value), "
+                "'name' is a deprecated flag, use 'node' "
+            )
+            warnings.warn(msg)
+            node = name
+        self._mfn_tfm = None
+        if node is not None:
+            self.set_node(node)
         return
 
     def get_node(self):

@@ -1,13 +1,15 @@
 """
 The information returned from a solve.
 
-.. todo:: 
+.. todo::
+
     Make a function to combine a list of SolveResults into a single
     SolveResult, with some values averaged or added (as required)
 
 """
 
 import collections
+import math
 import mmSolver.logger
 
 
@@ -40,6 +42,53 @@ def parse_command_result(cmd_result):
     return data
 
 
+def _convert_to(name, key, typ, value, index):
+    """
+    Convert data returned from mmSolver into the value it's meant to be.
+
+    :param name: Nice name of the data.
+    :type name: str
+
+    :param key: Internal name of the data.
+    :type key: str
+
+    :param typ: The type object to convert this data into.
+    :type typ: object
+
+    :param typ: The type object to convert this data into.
+    :type typ: object
+
+    :returns: A value of 'typ' kind.
+    """
+    msg = 'mmSolver data is incomplete, '
+    msg += 'a solver error may have occurred: '
+    msg += 'name={0} key={1} typ={2} value={3}'
+
+    if value is None or len(value) == 0:
+        LOG.debug(msg.format(name, key, typ, value))
+        return typ()
+
+    if typ is float and not isinstance(value[index], (str, unicode, float)):
+        return typ()
+
+    if typ is str and not isinstance(value[index], (str, unicode, float, int, bool)):
+        return typ()
+
+    if typ is int:
+        if isinstance(value[index], (str, unicode, float)):
+            value[index] = float(value[index])
+        else:
+            return typ()
+
+    v = typ(value[index])
+
+    if typ is float and (math.isinf(v) or math.isnan(v)):
+        LOG.debug(msg.format(name, key, typ, value))
+        return typ(-1.0)
+
+    return v
+
+
 class SolveResult(object):
     """
     The information returned from a solve.
@@ -69,13 +118,12 @@ class SolveResult(object):
             ('iteration_jacobian_calls', 'iteration_jacobian_num', int),
             ('attempts', 'iteration_attempt_num', int),
         ]
+        index = 0
         self._solver_stats = {}
         for name, key, typ in name_keys:
             value = data.get(key)
-            if value is None or len(value) == 0:
-                LOG.warning(msg.format(name, key, typ, value))
-                continue
-            self._solver_stats[name] = typ(value[0])
+            v = _convert_to(name, key, typ, value, index)
+            self._solver_stats[name] = v
 
         # Error statistics
         name_keys = [
@@ -88,13 +136,12 @@ class SolveResult(object):
             ('jt', 'error_jt', float),
             ('dp', 'error_dp', float),
         ]
+        index = 0
         self._error_stats = {}
         for name, key, typ in name_keys:
             value = data.get(key)
-            if value is None or len(value) == 0:
-                LOG.warning(msg.format(name, key, typ, value))
-                continue
-            self._error_stats[name] = typ(value[0])
+            v = _convert_to(name, key, typ, value, index)
+            self._error_stats[name] = v
 
         # Timer statistics
         name_keys = [
@@ -109,39 +156,40 @@ class SolveResult(object):
             ('parameter_ticks', 'ticks_parameter', int),
             ('error_ticks', 'ticks_error', int),
         ]
+        index = 0
         self._timer_stats = {}
         for name, key, typ in name_keys:
             value = data.get(key)
-            if value is None or len(value) == 0:
-                LOG.warning(msg.format(name, key, typ, value))
-                continue
-            self._timer_stats[name] = typ(value[0])
+            v = _convert_to(name, key, typ, value, index)
+            self._timer_stats[name] = v
 
         # List of errors, per-marker, per-frame.
         # Allows graphing the errors and detecting problems.
         self._per_marker_per_frame_error = collections.defaultdict(dict)
         key = 'error_per_marker_per_frame'
         values = data.get(key)
+        name = ''
         if values is None or len(values) == 0:
-            LOG.warning(msg.format(name, key, typ, values))
+            LOG.debug(msg.format(name, key, 'None', values))
         else:
             for value in values:
-                mkr = str(value[0])
-                t = float(value[1])
-                v = float(value[2])
+                mkr = _convert_to(name, key, str, value, 0)
+                t = _convert_to(name, key, float, value, 1)
+                v = _convert_to(name, key, float, value, 2)
                 self._per_marker_per_frame_error[mkr][t] = v
 
         # Errors per frame
         # Allows graphing the errors and detecting problems.
         self._per_frame_error = {}
+        name = ''
         key = 'error_per_frame'
         values = data.get(key)
         if values is None or len(values) == 0:
-            LOG.warning(msg.format(name, key, typ, value))
+            LOG.debug(msg.format(name, key, 'None', values))
         else:
             for value in values:
-                t = float(value[0])
-                v = float(value[1])
+                t = _convert_to(name, key, typ, value, 0)
+                v = _convert_to(name, key, typ, value, 1)
                 self._per_frame_error[t] = v
         return
 

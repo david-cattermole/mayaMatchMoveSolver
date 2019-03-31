@@ -19,7 +19,11 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver1(solverUtils.SolverTestCase):
 
-    def test_init(self):
+    def do_solve(self, solver_name, solver_index):
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
+
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
@@ -56,6 +60,11 @@ class TestSolver1(solverUtils.SolverTestCase):
             (1),
         ]
 
+        # save the output
+        path = self.get_data_path('solver_test1_%s_before.ma' % solver_name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
@@ -63,23 +72,28 @@ class TestSolver1(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             iterations=1000,
-            solverType=0,
+            solverType=solver_index,
             frame=frames,
-            delta=0.001,
             verbose=True,
         )
         e = time.time()
         print 'total time:', e - s
+        
+        # save the output
+        path = self.get_data_path('solver_test1_%s_after.ma' % solver_name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
         assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
 
-        # save the output
-        path = self.get_data_path('solver_test1_after.ma')
-        maya.cmds.file(rename=path)
-        maya.cmds.file(save=True, type='mayaAscii', force=True)
+    def test_init_levmar(self):
+        self.do_solve('levmar', 0)
+
+    def test_init_cminpack_lm(self):
+        self.do_solve('cminpack_lm', 1)
 
 
 if __name__ == '__main__':

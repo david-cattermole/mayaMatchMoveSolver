@@ -212,8 +212,19 @@ def _generate_window_raw(n, filtr=None):
             window[i] = _gaussian(mean, i, std)
 
     elif filtr == 'triangle':
-        for i in range(n):
-            window[i] = n - i
+        half_n = (n - 1) / 2
+        # Middle index number
+        window[half_n] = n
+
+        # First half of window
+        for i in range(half_n):
+            window[i] = half_n - i
+
+        # Second (rear) half of window.
+        # We must reverse the index
+        for i in range(half_n):
+            index = n - i - 1
+            window[index] = half_n - i
 
     elif filtr == 'box':
         for i in range(n):
@@ -282,7 +293,11 @@ def _fourier_smooth_raw(data, width, filtr=None):
     if sigma_val <= 0.0:
         return data
 
-    n = int(width)  # number of 'frames' to smooth by.
+    # Value must always be odd number.
+    # 1 = 0
+    # 2 = 3
+    # 3 = 5
+    n = ((int(width) - 1) * 2) + 1  # number of 'frames' to smooth by.
 
     # Convert to frequency space.
     x = fft.transform(data, inverse=False)
@@ -338,8 +353,19 @@ def _generate_window_numpy(n, filtr=None):
             window[i] = _gaussian(mean, i, std)
 
     elif filtr == 'triangle':
-        for i in range(n):
-            window[i] = n - i
+        half_n = (n - 1) / 2
+        # Middle index number
+        window[half_n] = n
+
+        # First half of window
+        for i in range(half_n):
+            window[i] = half_n - i
+
+        # Second (rear) half of window.
+        # We must reverse the index
+        for i in range(half_n):
+            index = n - i - 1
+            window[index] = half_n - i
 
     elif filtr == 'box':
         for i in range(n):
@@ -370,11 +396,15 @@ def _fourier_smooth_numpy(data, width, filtr=None):
     """
     assert np is not None
 
-    sigma_val = (width-1.0)*0.5
+    sigma_val = (width - 1.0) * 0.5
     if sigma_val <= 0.0:
         return data
 
-    n = int(width)  # number of 'frames' to smooth by.
+    # Value must always be odd number.
+    # 1 = 0
+    # 2 = 3
+    # 3 = 5
+    n = ((int(width) - 1) * 2) + 1  # number of 'frames' to smooth by.
 
     # Convert to frequency space.
     data = np.array(data)
@@ -389,7 +419,6 @@ def _fourier_smooth_numpy(data, width, filtr=None):
     x = np.convolve(s, window, mode='valid')
     if n % 2 == 1:
         # n is odd
-        print 'odd'
         x = x[n/2:-(n/2)]
     else:
         # n is even

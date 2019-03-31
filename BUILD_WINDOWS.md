@@ -1,26 +1,21 @@
 # Building on Microsoft Windows
 
-Maya MatchMove Solver can be built on Microsoft Windows.
+Maya MatchMove Solver can be built on Microsoft Windows. We have provided a
+Windows Batch build script and CMake script which are configurable and readable.
 
-On Windows the only tested build method is with `levmar` only; ATLAS
-and Intel MKL methods are untested.
+To use the pre-made build scripts, you can use the following commands
+to build the entire project and dependencies:
 
-# Download Archives
-
-You must download the archive packages manually and move them into a
-specific directory. Once these archives are available, the build
-script below will automatically unpack the archives as needed.
-
-- levmar
-  - URL: `http://users.ics.forth.gr/~lourakis/levmar/levmar-2.6.tgz`
-  - MD5 hash: `16bc34efa1617219f241eef06427f13f`
-  - Archive name: `levmar-2.6.tgz`
-
-The downloaded `levmar-2.6.tgz` archive must be saved into the directory:
-
+On Windows:
+```cmd
+> CD <project root>
+> scripts\build_cminpack.bat
+> scripts\build_mmSolver_windows64_mayaXXXX.bat
 ```
-<project root>\external\archives\
-```
+
+Note: Replace XXXX, with the Maya version use build for.
+
+The sections below explain the process in more detail.
 
 # Windows Command Prompt
 
@@ -35,46 +30,90 @@ This will open a Command Prompt for you to type commands below.
 It is *important* you use the `x64` Command Prompt, *not*
 `Developer`, `x86` or `ARM`.
 
-# Edit the Build Scripts
+# Building Dependencies
 
-The build script `build_with_levmar.bat` will assume a default `Maya
-2017` install directory. You will need to edit the build script with
-your custom Maya include and library directories.
+mmSolver has a few dependencies, and are listed in
+[BUILD.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md#dependencies).
 
-For example you will need to set the following variables in the `.bat`
-file:
+`cminpack`, `levmar` and `Qt.py` can be easily downloaded and built
+for mmSolver using build scripts provided in the `<project
+root>\scripts` directory.
 
-| Variable           | Description                             | Example                                                  |
-| ------------       | -----------                             | -----------                                              |
-| MAYA_VERSION       | Maya version to build for.              | `2017`                                                   |
-| MAYA_INCLUDE_PATH  | Location for Maya header (.h) files.    | `C:\Program Files\Autodesk\Maya2017\include`             |
-| MAYA_LIB_PATH      | Location for Maya library (.lib) files. | `C:\Program Files\Autodesk\Maya2017\lib`                 |
-| INSTALL_MODULE_DIR | Directory to install the Maya module.   | `C:\Users\YOUR_USER_NAME\My Documents\maya\2017\modules` |
-
-For developers, you may change the variable `GENERATE_SOLUTION` to
-"1". This will build a Visual Studio solution file, ready to make
-changes and compile interactively inside Visual Studio.
-
-# Build with levmar
-
-Building with only `levmar` is the only supported and tested configuration
-on Microsoft Windows.
-
-To build on Windows, run these commands:
+On Windows:
 ```cmd
 > CD <project root>
-> CMD /C build_with_levmar.bat
+> scripts\build_cminpack.bat
+> scripts\build_qtpy.bat
+> scripts\build_levmar.bat
 ```
 
-NOTE: Replace ``<project root>`` as required.
+If the commands above have worked, you should see the following
+directories under `<project root>\external\install`.
 
-Following the steps above you should have the Maya plug-in compiled,
-and installed into your
-`C:\Users\UserName\My Documents\maya\MAYA_VERSION\modules` directory.
+- cminpack
+- levmar
+- qtpy
 
-For the next steps, see
-[BUILD.md]([[https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md]])
- for more details.
+These dependencies will automatically be found by the mmSolver build
+script and installed.
+
+If you do not want to install `Qt.py` into mmSolver, simply do not use
+the build script and delete the directory `<project
+root>\external\install\qtpy`.
+
+# Build mmSolver
+ 
+ After installing CMinpack, you can now build mmSolver. 
+ 
+ Run these commands, on Windows:
+ ```cmd
+ > CD <project root>
+ > scripts\build_mmSolver_windows64_mayaXXXX.bat
+ 
+ # Run tests (optional but encouraged)
+ > CD build
+ > NMAKE test
+ < CD ..
+ ```
+ 
+ Note: Replace XXXX, with the Maya version use build for.
+ 
+ The build script (using CMake) will perform the following tasks:
+ - Build documentation using Sphinx.
+ - Compile Qt Designer .ui files into a format for Maya's version of
+   Qt (PySide or PySide2).
+ - Create a module (.mod) with configuration options.
+ - Copy all needed files (including dependencies) into a module.
+ 
+ Following the steps above you will have the Maya plug-in compiled, and
+ installed into your `%USERPROFILE%\maya\MAYA_VERSION\modules` directory.
+ 
+ The below sections in this file list more details and how to run
+ different stages of the build manually.
+
+# Customize Build Scripts
+
+The build scripts contain default values for your version of Maya, and
+will work for default installations. If you have a custom install
+path, then you may need to edit the build scripts.
+
+Below lists the variables in the build scripts:
+
+| Variable           | Description                                  |            Example Value |
+| ------------       | -----------                                  |              ----------- |
+| MAYA_VERSION       | Maya version to build for.                   |                   `2017` |
+| MAYA_LOCATION      | Location for Maya header (.h) files.         | `C:\Program Files\Autodesk\Maya2017` |
+| INSTALL_MODULE_DIR | Directory to install the Maya module.        |    `C:\Users\MyUser\Documents\maya\2017\modules` |
+| FRESH_BUILD        | Delete all build files before re-compiling.  |                        1 |
+| RUN_TESTS          | After build, run the test suite inside Maya. |                        0 |
+| WITH_CMINPACK      | Use the CMinpack library for solving.        |                        1 |
+| WITH_GPL_CODE      | Use the levmar library for solving.          |                        0 |
+| BUILD_PACKAGE      | Create an archive file ready to distribute.  |                        0 |
+
+For developers on Windows, you may change the variable 
+`GENERATE_SOLUTION` to "1". This will build a Visual Studio solution 
+file, ready to make changes and compile interactively inside 
+Visual Studio.
 
 # CMake Build Script
 
@@ -86,55 +125,157 @@ Example CMake usage on Windows:
 > CD <project root>
 > MKDIR build
 > CD build
+
+:: Configure make files
 > cmake -G "NMake Makefiles" ^
         -DCMAKE_BUILD_TYPE=Release ^
-        -DCMAKE_INSTALL_PREFIX="C:\Users\MyUser\My Documents\maya\2017\modules" ^
+        -DCMAKE_INSTALL_PREFIX="C:\Users\MyUser\Documents\maya\2017\modules" ^
+        -DUSE_CMINPACK=1 ^
         -DMAYA_VERSION="2017" ^
-        -DMAYA_INCLUDE_PATH="C:\Program Files\Autodesk\Maya2017\include" ^
-        -DMAYA_LIB_PATH="C:\Program Files\Autodesk\Maya2017\lib" ^
-        -DLEVMAR_INCLUDE_PATH="<project root>\external\include" ^
-        -DLEVMAR_LIB_PATH="<project root>\external\lib" ^
-        -DUSE_ATLAS=0 ^
-        -DUSE_MKL=0 ^
+        -DMAYA_LOCATION="C:\Program Files\Autodesk\Maya2017" ^
+        -DCMINPACK_ROOT="project_root\external\install\cminpack" ^
         ..
-> NMAKE /F Makefile all
-> NMAKE /F Makefile install
-> NMAKE /F Makefile package
+
+:: Compile the project (including documentation, and Qt.ui files). 
+> NMAKE all
+
+:: Install to Maya module directory.
+> NMAKE install
+
+:: Create .zip archive.
+> NMAKE package
 ```
 
-| CMake Option         | Description                                 |
-| -------------------- | ------------------------------------------- |
-| CMAKE_BUILD_TYPE     | The type of build (`Release`, `Debug`, etc) |
-| CMAKE_INSTALL_PREFIX | Location to install the Maya module.        |
-| MAYA_VERSION         | Maya version to build for.                  |
-| MAYA_INCLUDE_PATH    | Directory to the Maya header include files  |
-| MAYA_LIB_PATH        | Directory to the Maya library files         |
-| LEVMAR_INCLUDE_PATH  | Directory to levmar header includes         |
-| LEVMAR_LIB_PATH      | Directory to levmar library                 |
-| USE_ATLAS            | Use ATLAS libraries?                        |
-| USE_MKL              | Use Intel MKL libraries?                    |
-| ATLAS_LIB_PATH       | (Unsupported on Windows)                    |
-| MKL_LIB_PATH         | (Unsupported on Windows)                    |
+Common options:
 
-Setting ``USE_ATLAS`` and ``USE_MKL`` to ``1`` is an error, both
-libraries provide the same functionality and both are not needed,
-only one. If `ATLAS` and `Intel MKL` are not required you may set both
-``USE_ATLAS`` and ``USE_MKL`` to ``0``.
+| CMake Option          | Description                                  |
+| --------------------  | -------------------------------------------  |
+| CMAKE_INSTALL_PREFIX  | Location to install the Maya module.         |
+| MAYA_VERSION          | Maya version to build for.                   |
+| MAYA_LOCATION         | Path to Maya install directory               |
+| USE_CMINPACK          | Build with CMinpack? (default = 1)           |
+| CMINPACK_ROOT         | Directory to CMinpack install base directory ||
+| PREFERRED_SOLVER      | Preferred solver; levmar or cminpack_lm.     |
 
-You can read any of the build scripts to find out how they work.
-The build scripts can be found in `<project root>/build_with_*.sh`
-and `<project root>/external/*.sh`.
+Advanced options:
+
+| CMake Option          | Description                                 |
+| --------------------  | ------------------------------------------- |
+| CMAKE_BUILD_TYPE      | The type of build (`Release`, `Debug`, etc) |
+| MAYA_INCLUDE_PATH     | Directory to the Maya header include files  |
+| MAYA_LIB_PATH         | Directory to the Maya library files         |
+| USE_CMINPACK          | Build with CMinpack? (default = 1)          |
+| CMINPACK_INCLUDE_PATH | Directory to CMinpack header includes       |
+| CMINPACK_LIB_PATH     | Directory to CMinpack library               |
+| USE_GPL_CODE          | Build with levmar? (default = 0)            |
+| LEVMAR_INCLUDE_PATH   | Directory to levmar header includes         |
+| LEVMAR_LIB_PATH       | Directory to levmar library                 |
+| PREFERRED_SOLVER      | Preferred solver; levmar or cminpack_lm.    |
+
+*WARNING: 'levmar' is GPL licensed. If used with mmSolver, mmSolver
+must not be distributed in binary form to anyone.*
+
+You can read any of the build scripts to find out how they work. The
+build scripts can be found in `<project root>\scripts\build_*.bat`.
+
+If you are new to building Maya plug-ins using CMake, we recommend 
+watching these videos by Chad Vernon:
+
+* [Compiling Maya Plug-ins with CMake (Part 1)](https://www.youtube.com/watch?v=2mUOt_F2ywo)
+* [Compiling Maya Plug-ins with CMake (Part 2)](https://www.youtube.com/watch?v=C56N5KgDaTg)
 
 # Building Packages
 
 For developers wanting to produce a pre-compiled archive "package",
-simply add the following line, after `nmake /F Makefile install` in
-the `build_with_levmar.bat` build script:
+simply turn on the variable `BUILD_PACKAGE` in the build script, by
+setting it to `1`, then re-run the build script.
 
 ```cmd
-nmake /F Makefile package
+> CD <project root> 
+> scripts\build_mmSolver_windows64_mayaXXXX.bat
 ```
 
-And re-run the `build_with_levmar.bat` script. This will re-compile
-the project, then copy all scripts and plug-ins into a `.zip` file,
-ready for distribution to users.
+This will re-compile mmSolver, then copy all scripts and plug-ins into
+a `.zip` file, ready for distribution to users.
+
+# Compile Qt UI files
+
+The CMake build script will automatically compile the Qt .ui files, 
+however these scripts can also be run manually if needed. 
+
+The Qt Designer `.ui` files must be compiled using the intended version
+of Maya (either PySide or PySide2) in order to use the mmSolver tool 
+GUIs. 
+
+To compile the `*.ui` files, run these commands. 
+
+On Windows:
+```cmd
+> CD <project root>
+> "C:\Program Files\Autodesk\Maya<VERSION>\bin\mayapy.exe" scripts\compileUI.py
+
+:: Or to compile a specific directory:
+> "C:\Program Files\Autodesk\Maya<VERSION>\bin\mayapy.exe" scripts\compileUI.py C:\path\to\dir
+```
+
+These commands use `mayapy`, the Maya Python interpreter. Make sure 
+the use the executable with the version of Maya you are installing to. 
+Using incorrect versions may cause unforeseen errors.
+
+NOTE: Replace ``<project root>`` and ``<VERSION>`` as required.
+
+# Build Documentation
+
+The CMake build script will automatically build the documentation, but
+the steps are documented manually below. 
+
+*mmSolver* comes with a set of documentation, and Sphinx building
+scripts to automate HTML page generation. It is recommended to build
+the HTML documentation, however it is optional for an installation.
+
+To build the documentation, you will need to install both
+[Python 2.7.x](https://www.python.org/) and
+[Sphinx](http://www.sphinx-doc.org/en/master/usage/installation.html).
+
+After Sphinx is installed (and Python is on your PATH environment
+variable), you can build the documentation with the following command line:
+
+On Windows:
+```cmd
+> CD <project root>\docs
+> make html
+```
+
+If this documentation build is successful, it will be installed
+automatically into the Maya Module (when the build script is run).
+
+*Note:* Sphinx will likely list a number of 'errors' while building
+the documentation, this means the automatic tools failed to find
+documentation. This is normal. A majority of the documentation will be
+present.
+
+# Run Test Suite
+
+If you use the build script, you can automatically run the test suite 
+after compiling and installing. Make sure to turn on the variable 
+`RUN_TESTS` in the `.bash` or `.bat` scripts.
+
+After all parts of the `mmSolver` are installed and can be found by
+Maya, try running the test suite to confirm everything is working as
+expected.
+
+On Windows:
+```cmd
+> CD <project root>
+> "C:\Program Files\Autodesk\MayaVERSION\bin\mayapy.exe" tests\runTests.py > tests.log
+```
+
+Make sure you use the same Maya version 'mayapy' for testing as you
+have build for.
+
+**Note:** On Windows, 'cmd.exe' is very slow printing text to the console,
+therefore redirecting to a log file ('> file.log' below) will improve
+performance of the test suite greatly.
+
+For more information about testing, see the Testing section in
+[DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).

@@ -102,20 +102,19 @@ class TestSolver10(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             iterations=1000,
-            solverType=0,
             frame=frames,
             verbose=True,
         )
         e = time.time()
         print 'total time:', e - s
 
-        # Ensure the values are correct
-        self.assertEqual(result[0], 'success=1')
-
         # save the output
         path = self.get_data_path('solver_test10_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+        
+        # Ensure the values are correct
+        self.assertEqual(result[0], 'success=1')
 
 
 if __name__ == '__main__':

@@ -1,5 +1,25 @@
 /*
- * Uses Non-Linear Least Squares algorithm from levmar library to calculate attribute values based on 2D-to-3D error measurements through a pinhole camera.
+ * Copyright (C) 2018, 2019 David Cattermole.
+ *
+ * This file is part of mmSolver.
+ *
+ * mmSolver is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * mmSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+ * ====================================================================
+ *
+ * Uses Non-Linear Least Squares algorithm from levmar library to
+ * calculate attribute values based on 2D-to-3D error measurements
+ * through a pinhole camera.
  */
 
 
@@ -26,12 +46,11 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-//
 #include <mmSolver.h>
 
 
 // Sparse LM or Lev-Mar Termination Reasons:
-const std::string reasons[8] = {
+const std::string levmarReasons[8] = {
         // reason 0
         "No reason, should not get here!",
 
@@ -58,67 +77,10 @@ const std::string reasons[8] = {
         "User canceled",
 };
 
-
-// The user data given to levmar.
-struct LevMarSolverData {
-    // Solver Objects.
-    CameraPtrList cameraList;
-    MarkerPtrList markerList;
-    BundlePtrList bundleList;
-    AttrPtrList attrList;
-    MTimeArray frameList;  // Times to solve
-
-    // Relational mapping indexes.
-    std::vector<std::pair<int, int> > paramToAttrList;
-    std::vector<std::pair<int, int> > errorToMarkerList;
-    std::vector<MPoint> markerPosList;
-    std::vector<double> markerWeightList;
-
-    // Internal Solver Data.
-    std::vector<double> errorList;
-    std::vector<double> errorDistanceList;
-    int iterNum;
-    int jacIterNum;
-    int iterMax;
-    int solverType;
-    bool isJacobianCalculation;
-    double imageWidth;
-
-    // Error Thresholds.
-    double tau;
-    double eps1;
-    double eps2;
-    double eps3;
-    double delta;
-
-    // Benchmarks
-    debug::TimestampBenchmark *jacBenchTimer;
-    debug::TimestampBenchmark *funcBenchTimer;
-    debug::TimestampBenchmark *errorBenchTimer;
-    debug::TimestampBenchmark *paramBenchTimer;
-    debug::CPUBenchmark *jacBenchTicks;
-    debug::CPUBenchmark *funcBenchTicks;
-    debug::CPUBenchmark *errorBenchTicks;
-    debug::CPUBenchmark *paramBenchTicks;
-
-    // Storing changes for undo/redo.
-    MDGModifier *dgmod;
-    MAnimCurveChange *curveChange;
-
-    // Allow user to cancel the solve.
-    MComputation *computation;
-
-    // Verbosity.
-    bool verbose;
-};
-
-
-void levmarSolveFunc(double *p, double *x, int m, int n, void *data);
-
-void levmarSolveJacFunc(double *p, double *x, int m, int n, void *data);
-
-void levmarSolveOptimiseFunc(double *p, double *x, int m, int n, void *data);
-
-void levmarSolveJacOptimiseFunc(double *p, double *x, int m, int n, void *data);
+void solveFunc_levmar(double *p,
+                      double *x,
+                      int m,
+                      int n,
+                      void *data);
 
 #endif // MAYA_MM_SOLVER_LEVMAR_H

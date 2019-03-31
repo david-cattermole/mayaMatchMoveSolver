@@ -8,6 +8,7 @@ import maya.mel
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.selection.filternodes as filter_nodes
+import mmSolver.tools.solver.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
@@ -44,6 +45,18 @@ def _get_channel_box_ui_name():
     return maya.mel.eval(cmd)
 
 
+def get_scene_selection():
+    """Get the currently selected nodes.
+
+    Intended for selection store/restore.
+
+    :return: List of full path node names.
+    :rtype: list of str
+    """
+    sel = maya.cmds.ls(selection=True, long=True) or []
+    return sel
+
+
 def set_scene_selection(nodes):
     """
     The Maya scene selection is replaced with `nodes`.
@@ -66,30 +79,6 @@ def get_current_frame():
     """
     time = maya.cmds.currentTime(query=True)
     return int(time)
-
-
-def get_timeline_range_inner():
-    """
-    Get the 'inner' frame range.
-
-    :return: Tuple of start and end frame numbers.
-    :rtype: (int, int)
-    """
-    s = maya.cmds.playbackOptions(query=True, minTime=True)
-    e = maya.cmds.playbackOptions(query=True, maxTime=True)
-    return int(s), int(e)
-
-
-def get_timeline_range_outer():
-    """
-    Get the 'outer' frame range.
-
-    :return: Tuple of start and end frame numbers.
-    :rtype: (int, int)
-    """
-    s = maya.cmds.playbackOptions(query=True, animationStartTime=True)
-    e = maya.cmds.playbackOptions(query=True, animationEndTime=True)
-    return int(s), int(e)
 
 
 def prompt_for_new_node_name(title, message, text):
@@ -133,14 +122,17 @@ def get_markers_from_selection():
     """
     nodes = maya.cmds.ls(long=True, selection=True) or []
     node_categories = filter_nodes.get_nodes(nodes)
-    marker_nodes = list(node_categories['marker'])
+    marker_nodes = node_categories.get('marker', [])
 
-    camera_nodes = list(node_categories['camera'])
+    camera_nodes = node_categories.get('camera', [])
     for node in camera_nodes:
-        tfm_node = None
-        if maya.cmds.nodeType(node) == 'camera':
+        node_type = maya.cmds.nodeType(node)
+        cam = None
+        if node_type == 'transform':
+            cam = mmapi.Camera(transform=node)
+        if node_type == 'camera':
             cam = mmapi.Camera(shape=node)
-            tfm_node = cam.get_transform_node()
+        tfm_node = cam.get_transform_node()
         below_nodes = maya.cmds.ls(tfm_node, dag=True, long=True)
         marker_nodes += filter_nodes.get_marker_nodes(below_nodes)
 
@@ -153,7 +145,7 @@ def get_markers_from_selection():
     marker_nodes = list(set(marker_nodes))
     marker_list = []
     for node in marker_nodes:
-        mkr = mmapi.Marker(name=node)
+        mkr = mmapi.Marker(node=node)
         marker_list.append(mkr)
     return marker_list
 
@@ -228,3 +220,85 @@ def get_selected_maya_attributes():
                 if attr.get_name() is not None:
                     attr_list.append(attr)
     return attr_list
+
+
+def get_selected_node_default_attributes():
+    """
+    Get the attributes on the selected nodes.
+    """
+    attr_list = []
+    sel = maya.cmds.ls(selection=True, long=True) or []
+    if len(sel) == 0:
+        return attr_list
+
+    for node in sel:
+        node_type = maya.cmds.nodeType(node)
+        obj_type = mmapi.get_object_type(node)
+        attr_names = []
+        if obj_type == mmapi.OBJECT_TYPE_BUNDLE:
+            # Default bundle attributes.
+            attr_names += [
+                'translateX',
+                'translateY',
+                'translateZ',
+            ]
+        elif obj_type == mmapi.OBJECT_TYPE_CAMERA:
+            # Camera default attributes, for both transform and
+            # camera nodes.
+            if node_type == 'transform':
+                attr_names += [
+                    'translateX',
+                    'translateY',
+                    'translateZ',
+                    'rotateX',
+                    'rotateY',
+                    'rotateZ',
+                ]
+            elif node_type == 'camera':
+                attr_names += [
+                    'focalLength',
+                ]
+        else:
+            # Fallback - get all logical attributes.
+            attrs = maya.cmds.listAttr(
+                node,
+                keyable=True,
+                settable=True,
+                scalar=True,
+                shortNames=False,
+            ) or []
+            attr_types = [
+                'doubleLinear',
+                'doubleAngle',
+                'double',
+                'float',
+            ]
+            attr_names += [n for n in attrs
+                           if maya.cmds.attributeQuery(
+                                  n, node=node,
+                                  attributeType=True) in attr_types]
+
+        for attr_name in attr_names:
+            attr_obj = mmapi.Attribute(node=node, attr=attr_name)
+            attr_list.append(attr_obj)
+    return attr_list
+
+
+def input_attributes_filter(attr_list):
+    """
+    Apply logic to remove any non-input attributes from the given list.
+
+    :param attr_list: Attribute list to filter.
+    :type attr_list: [Attribute, ..]
+
+    :returns: List of attributes that are filtered.
+    :rtype: [Attribute, ..]
+    """
+    result = []
+    for attr_obj in attr_list:
+        node = attr_obj.get_node()
+        obj_type = mmapi.get_object_type(node)
+        if obj_type in const.ATTR_INVALID_OBJECT_TYPES:
+            continue
+        result.append(attr_obj)
+    return result

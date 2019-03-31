@@ -18,6 +18,7 @@ class Attribute(object):
 
     Example usage::
 
+        >>> import mmSolver.api as mmapi
         >>> node = maya.cmds.createNode('transform', name='myNode')
         >>> attr = mmapi.Attribute(node=node, attr='tx')
         >>> attr.get_node()

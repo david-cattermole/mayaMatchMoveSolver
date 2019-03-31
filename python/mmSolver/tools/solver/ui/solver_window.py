@@ -20,14 +20,11 @@ import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 import mmSolver.tools.solver.ui.solver_layout as solver_layout
 import mmSolver.tools.loadmarker.tool as loadmarker_tool
 import mmSolver.tools.selection.tools as selection_tool
-import mmSolver.tools.cameraaim.tool as cameraaim_tool
 import mmSolver.tools.createmarker.tool as createmarker_tool
 import mmSolver.tools.createbundle.tool as createbundle_tool
 import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
 import mmSolver.tools.convertmarker.tool as convertmarker_tool
-import mmSolver.tools.centertwodee.tool as centertwodee_tool
-# import mmSolver.tools.snaponcurve.tool as snaponcurve_tool
-# import mmSolver.tools.surfacerivet.tool as surfacerivet_tool
+import mmSolver.tools.markerbundlerename.tool as mbrename_tool
 
 
 LOG = mmSolver.logger.get_logger()
@@ -195,22 +192,13 @@ class SolverWindow(BaseWindow):
         action.triggered.connect(partial(self.selectBothMarkersAndBundlesCB))
         tools_menu.addAction(action)
 
-        tools_menu.addSeparator()
-
-        # Camera Aim
-        label = 'Aim at Camera'
-        tooltip = 'Aim the selected transform nodes at camera.'
+        # Rename Marker + Bundle
+        label = 'Rename Markers + Bundles'
+        tooltip = 'Rename the selected Markers and Bundles;'
         action = QtWidgets.QAction(label, tools_menu)
         action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.aimAtCameraCB))
-        tools_menu.addAction(action)
-
-        label = 'Center 2D on Selection'
-        tooltip = 'Visually center the 2D viewport on the selected node'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.centerTwoDeeCB))
-        tools_menu.addAction(action)
+        action.triggered.connect(partial(self.renameMarkerBundleCB))
+        tools_menu.addAction(action)        
 
         tools_menu.addSeparator()
 
@@ -313,13 +301,13 @@ class SolverWindow(BaseWindow):
         action.triggered.connect(partial(self.launchHelpCB))
         help_menu.addAction(action)
 
-        # Launch About
-        label = 'About...'
-        tooltip = 'About this software.'
-        action = QtWidgets.QAction(label, help_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.launchAboutCB))
-        help_menu.addAction(action)
+        # # Launch About
+        # label = 'About...'
+        # tooltip = 'About this software.'
+        # action = QtWidgets.QAction(label, help_menu)
+        # action.setStatusTip(tooltip)
+        # action.triggered.connect(partial(self.launchAboutCB))
+        # help_menu.addAction(action)
 
         menubar.addMenu(help_menu)
         return
@@ -352,13 +340,16 @@ class SolverWindow(BaseWindow):
         return
 
     def createMarkerCB(self):
-        createmarker_tool.create_marker()
+        """
+        Create a Marker under the active viewport camera.
+        """
+        createmarker_tool.main()
 
     def convertToMarkerCB(self):
         """
         Converts all selected transform nodes into markers.
         """
-        convertmarker_tool.convert_to_marker()
+        convertmarker_tool.main()
         return
 
     def loadMarkerCB(self):
@@ -372,25 +363,19 @@ class SolverWindow(BaseWindow):
         """
         Create a Bundle node, attached to the selected markers.
         """
-        createbundle_tool.create_bundle()
-
-    def aimAtCameraCB(self):
-        """
-        Aim the selected nodes at the viewport camera.
-        """
-        cameraaim_tool.aim_at_camera()
-
-    def centerTwoDeeCB(self):
-        """
-        Center the viewport on the selected node.
-        """
-        centertwodee_tool.center_two_dee()
+        createbundle_tool.main()
 
     def toggleMarkerBundleSelectionCB(self):
         selection_tool.swap_between_selected_markers_and_bundles()
 
     def selectBothMarkersAndBundlesCB(self):
         selection_tool.select_both_markers_and_bundles()
+
+    def renameMarkerBundleCB(self):
+        """
+        Rename the selected markers and bundles (with a prompt window).
+        """
+        mbrename_tool.main()
 
     def linkMarkerBundleCB(self):
         link_mb_tool.link_marker_bundle()
@@ -406,45 +391,25 @@ class SolverWindow(BaseWindow):
     def launchHelpCB(self):
         self.help()
 
-    def launchAboutCB(self):
-        # LOG.info('Launch About... not yet.')
-        self.help()
+    # def launchAboutCB(self):
+    #     # LOG.info('Launch About... not yet.')
+    #     self.help()
 
     def setStatusLine(self, text):
         self.subForm.setStatusLine(text)
+        QtWidgets.QApplication.processEvents()
+        return
+
+    def setProgressValue(self, value):
+        self.progressBar.setValue(value)
+        QtWidgets.QApplication.processEvents()
         return
 
     def apply(self):
-        self.setStatusLine(const.STATUS_EXECUTING)
-        try:
-            refresh_state = lib_state.get_refresh_viewport_state()
-            log_level = lib_state.get_log_level()
-
-            self.progressBar.setValue(0)
-            self.progressBar.show()
-            col = lib_state.get_active_collection()
-            if col is None:
-                msg = 'No active collection.'
-                self.setStatusLine('ERROR: ' + msg)
-                LOG.error(msg)
-            ok = lib_collection.compile_collection(col)
-            if ok is not True:
-                msg = 'Cannot execute solver, collection is not valid.'
-                msg += 'collection=%r'
-                self.setStatusLine('Warning: ' + msg)
-                LOG.warning(msg, col)
-            else:
-                lib_collection.execute_collection(
-                    col,
-                    log_level=log_level,
-                    refresh=refresh_state,
-                    prog_fn=self.progressBar.setValue,
-                    status_fn=self.setStatusLine,
-                )
-        finally:
-            self.progressBar.setValue(100)
-            self.progressBar.hide()
-            self.setStatusLine(const.STATUS_FINISHED)
+        refresh_state = lib_state.get_refresh_viewport_state()
+        log_level = lib_state.get_log_level()
+        col = lib_state.get_active_collection()
+        lib_collection.run_solve_ui(col, refresh_state, log_level, self)
         return
 
     def help(self):
@@ -453,31 +418,68 @@ class SolverWindow(BaseWindow):
         return
 
 
+def get_window_instance():
+    """
+    Get the currently running instance of the Solver window.
+
+    :returns: An object of SolverWindow, or None.
+    :rtype: SolverWindow or None
+    """
+    global MM_SOLVER_SOLVER_UI
+    valid = uiutils.isValidQtObject(MM_SOLVER_SOLVER_UI)
+    if MM_SOLVER_SOLVER_UI is None or valid is False:
+        return None
+    return MM_SOLVER_SOLVER_UI
+
+
+def __set_window_instance(window):
+    """
+    Set the stored instance of the Solver window.
+    """
+    global MM_SOLVER_SOLVER_UI
+    valid = uiutils.isValidQtObject(MM_SOLVER_SOLVER_UI)
+    if valid is True:
+        MM_SOLVER_SOLVER_UI = window
+    return
+
+
 def main(show=True, widthHeight=(800, 600)):
+    """
+    Open the Solver UI window.
+
+    :param show: Should we show the window?
+    :type show: bool
+
+    :param widthHeight: Width and height of the window to open.
+    :type widthHeight: int, int
+
+    :returns: A new solver window, or None if the window cannot be
+              opened.
+    :rtype: SolverWindow or None.
+    """
     # Force the Plug-in to load.  If the plug-in cannot load, the UI
     # will not open and an error will be given.
     lib_maya_utils.ensure_plugin_loaded()
 
-    global MM_SOLVER_SOLVER_UI
-
-    valid = uiutils.isValidQtObject(MM_SOLVER_SOLVER_UI)
-    if MM_SOLVER_SOLVER_UI is not None and valid is True:
-        MM_SOLVER_SOLVER_UI.close()
+    win = get_window_instance()
+    if win is not None:
+        win.close()
 
     name = 'SolverWindow'
     app, parent = uiutils.getParent()
-    MM_SOLVER_SOLVER_UI = SolverWindow(parent=parent, name=name)
-    if not MM_SOLVER_SOLVER_UI:
-        return MM_SOLVER_SOLVER_UI
-    if show:
-        MM_SOLVER_SOLVER_UI.show()
+    win = SolverWindow(parent=parent, name=name)
+    __set_window_instance(win)
+    if not win:
+        return win
+    if show is True:
+        win.show()
 
     if ((isinstance(widthHeight, (tuple, list)) is True)
          and (len(widthHeight) == 2)):
-        pos = MM_SOLVER_SOLVER_UI.pos()
-        MM_SOLVER_SOLVER_UI.setGeometry(pos.x(), pos.y(), widthHeight[0], widthHeight[1])
+        pos = win.pos()
+        win.setGeometry(pos.x(), pos.y(), widthHeight[0], widthHeight[1])
 
     # Enter Qt application main loop
     if app is not None:
         sys.exit(app.exec_())
-    return MM_SOLVER_SOLVER_UI
+    return win

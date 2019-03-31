@@ -5,6 +5,7 @@ This test is the same as 'test.test_solver.test1' except this test uses the
 Python API. It's a basic example of how to use the API.
 """
 
+import time
 import pprint
 import math
 import unittest
@@ -13,14 +14,37 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.tools.solver.lib.collection as lib_col
 import test.test_api.apiutils as test_api_utils
 
 
 LOG = mmSolver.logger.get_logger()
 
 
+
 # @unittest.skip
 class TestSolve(test_api_utils.APITestCase):
+
+    def checkSolveResults(self, solres_list):
+        # Ensure the values are correct
+        for res in solres_list:
+            success = res.get_success()
+            err = res.get_final_error()
+            print 'final error', err
+            self.assertTrue(success)
+            self.assertTrue(isinstance(err, float))
+
+        # Check the final error values
+        frm_err_list = mmapi.merge_frame_error_list(solres_list)
+
+        avg_err = mmapi.get_average_frame_error_list(frm_err_list)
+        print 'avg error', avg_err
+        self.assertLess(avg_err, 1.0)
+
+        max_err_frm, max_err_val = mmapi.get_max_frame_error(frm_err_list)
+        print 'max error frame and value:', max_err_frm, max_err_val
+        self.assertLess(max_err_val, 1.0)
+        return
 
     def test_init(self):
         """
@@ -64,6 +88,7 @@ class TestSolve(test_api_utils.APITestCase):
         # Solver
         sol = mmapi.Solver()
         sol.set_max_iterations(10)
+        sol.set_solver_type(mmapi.SOLVER_TYPE_LEVMAR)
         sol.set_verbose(True)
         sol.set_frame_list(frm_list)
 
@@ -182,6 +207,7 @@ class TestSolve(test_api_utils.APITestCase):
         # Solver
         sol = mmapi.Solver()
         sol.set_max_iterations(1000)
+        sol.set_solver_type(mmapi.SOLVER_TYPE_CMINPACK_LM)
         sol.set_verbose(True)
         sol.set_frame_list(frm_list)
 
@@ -220,6 +246,7 @@ class TestSolve(test_api_utils.APITestCase):
         path = self.get_data_path('test_solve_marker_enabled_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+        return
 
     def test_per_frame(self):
         """
@@ -304,6 +331,7 @@ class TestSolve(test_api_utils.APITestCase):
         for frm in frm_list:
             sol = mmapi.Solver()
             sol.set_max_iterations(10)
+            # sol.set_solver_type(mmapi.SOLVER_TYPE_CMINPACK_LM)
             sol.set_verbose(True)
             sol.set_frame_list([frm])
             sol_list.append(sol)
@@ -324,16 +352,13 @@ class TestSolve(test_api_utils.APITestCase):
         # Run solver!
         results = col.execute()
 
-        # Ensure the values are correct
-        for res in results:
-            success = res.get_success()
-            err = res.get_final_error()
-            self.assertTrue(success)
-
         # save the output
         path = self.get_data_path('test_solve_per_frame_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        self.checkSolveResults(results)
+        return
 
     def test_stA_refine_good_solve(self):
         """
@@ -360,7 +385,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Marker Group
         mkr_grp_name = 'markerGroup1'
-        mkr_grp = mmapi.MarkerGroup(name=mkr_grp_name)
+        mkr_grp = mmapi.MarkerGroup(node=mkr_grp_name)
         mkr_grp_node = mkr_grp.get_node()
 
         # Markers
@@ -374,7 +399,7 @@ class TestSolve(test_api_utils.APITestCase):
             if node.endswith('_MKR') is False:
                 continue
             assert mmapi.get_object_type(node) == 'marker'
-            mkr = mmapi.Marker(name=node)
+            mkr = mmapi.Marker(node=node)
             bnd = mkr.get_bundle()
             mkr_list.append(mkr)
             bnd_list.append(bnd)
@@ -457,31 +482,101 @@ class TestSolve(test_api_utils.APITestCase):
         LOG.warning('Running Solver Test... (it may take some time to finish).')
         results = col.execute()
 
-        # Ensure the values are correct
-        for res in results:
-            success = res.get_success()
-            err = res.get_final_error()
-            print 'final error', err
-            self.assertTrue(success)
-            self.assertTrue(isinstance(err, float))
-            # frm_err_list = res.get_frame_error_list()
-
-        # Check the final error values
-        frm_err_list = mmapi.merge_frame_error_list(results)
-
-        avg_err = mmapi.get_average_frame_error_list(frm_err_list)
-        print 'avg error', avg_err
-        self.assertLess(avg_err, 1.0)
-
-        max_err_frm, max_err_val = mmapi.get_max_frame_error(frm_err_list)
-        print 'max error frame and value:', max_err_frm, max_err_val
-        self.assertLess(max_err_val, 1.0)
-
         # save the output
         path = self.get_data_path('test_solve_stA_refine_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
+        self.checkSolveResults(results)
+        return
+
+    def test_badPerFrameSolve(self):
+        """
+        This file solves wildly, with each frame good, then next bad. The
+        animCurves created are very spikey, but we expect to solve a
+        smooth curve.
+
+        When opening the scene file manually using the GUI, and
+        running the solver, the undo-ing the (bad) result, the
+        timeline is traversed slowly. This shows issue #45.
+        """
+        # Open the Maya file
+        file_name = 'mmSolverBasicSolveA_badSolve01.ma'
+        path = self.get_data_path('scenes', file_name)
+        maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
+
+        # Run solver!
+        s = time.time()
+        col = mmapi.Collection(node='collection1')
+        lib_col.compile_collection(col)
+        solres_list = col.execute()
+        e = time.time()
+        print 'total time:', e - s
+        
+        # save the output
+        path = self.get_data_path('test_solve_badPerFrameSolve_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        self.checkSolveResults(solres_list)
+        return
+
+    def test_allFrameStrategySolve(self):
+        """
+        Solving only a 'all frames' solver step across multiple frames.
+        """
+        # Open the Maya file
+        file_name = 'mmSolverBasicSolveA_badSolve02.ma'
+        path = self.get_data_path('scenes', file_name)
+        maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
+
+        # Run solver!
+        s = time.time()
+        col = mmapi.Collection(node='collection1')
+        lib_col.compile_collection(col)
+        solres_list = col.execute()
+        e = time.time()
+        print 'total time:', e - s
+        
+        # save the output
+        path = self.get_data_path('test_solve_allFrameStrategySolve_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        self.checkSolveResults(solres_list)
+        return
+    
+    def test_solveAllFramesCausesStaticAnimCurves(self):
+        """
+        Solving with the scene file 'mmSolverBasicSolveB_before.ma', was
+        reported to solve as static values, the same as the initial
+        values. The DG did not evaluate some how and the solve was
+        therefore useless.
+
+        GitHub Issue #53.
+        """
+        # Open the Maya file
+        file_name = 'mmSolverBasicSolveB_before.ma'
+        path = self.get_data_path('scenes', file_name)
+        maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
+
+        # Run solver!
+        s = time.time()
+        col = mmapi.Collection(node='collection1')
+        lib_col.compile_collection(col)
+        solres_list = col.execute()
+        e = time.time()
+        print 'total time:', e - s
+
+        # save the output
+        name = 'test_solve_solveAllFramesCausesStaticAnimCurves_after.ma'
+        path = self.get_data_path(name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        self.checkSolveResults(solres_list)
+        return
+    
     # def test_opera_house(self):
     #     start = 0
     #     end = 41
@@ -708,6 +803,7 @@ class TestSolve(test_api_utils.APITestCase):
     #         sol = mmapi.Solver()
     #         sol.set_max_iterations(10)
     #         sol.set_delta_factor(-0.01)
+    #         sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #         sol.set_attributes_use_animated(True)
     #         sol.set_attributes_use_static(True)
     #         sol.set_frames_use_tags(['single00' + str(i+1)])
@@ -720,6 +816,7 @@ class TestSolve(test_api_utils.APITestCase):
     #         sol = mmapi.Solver()
     #         sol.set_max_iterations(10)
     #         sol.set_delta_factor(-0.01)
+    #         sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #         sol.set_attributes_use_animated(True)
     #         sol.set_attributes_use_static(True)
     #         sol.set_frames_use_tags([str(i)])
@@ -732,6 +829,7 @@ class TestSolve(test_api_utils.APITestCase):
     #     #     sol = mmapi.Solver()
     #     #     sol.set_max_iterations(10)
     #     #     sol.set_delta_factor(-0.01)
+    #     #     sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #     #     sol.set_attributes_use_animated(True)
     #     #     sol.set_attributes_use_static(True)
     #     #     sol.set_verbose(True)
@@ -743,6 +841,7 @@ class TestSolve(test_api_utils.APITestCase):
     #     # sol = mmapi.Solver()
     #     # sol.set_max_iterations(10)
     #     # sol.set_delta_factor(-0.01)
+    #     # sol.set_solver_type(api.SOLVER_TYPE_LEVMAR)
     #     # sol.set_attributes_use_animated(True)
     #     # sol.set_attributes_use_static(True)
     #     # sol.set_frames_use_tags(['primary'])

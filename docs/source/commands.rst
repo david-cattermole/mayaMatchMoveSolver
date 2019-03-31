@@ -21,7 +21,7 @@ Flag                  Type                   Description                        
 -marker (-m)          string, string, string Marker, Camera, Bundle                           None
 -attr (-a)            string, string, string Node attribute, min value and max value          None
 -frame (-f)           long int               Frame number to solve with                       1
--solverType (-st)     unsigned int           Type of solver to use; 0=levmar                  0
+-solverType (-st)     unsigned int           Type of solver to use; 0=levmar 1=cminpack_lm    0
 -iterations (-it)     unsigned int           Maximum number of iterations                     20
 -tauFactor (-t)       double                 Initial Damping Factor                           1E-03
 -epsilon1 (-e1)       double                 Acceptable gradient change                       1E-06
@@ -79,6 +79,19 @@ MEL Example:
        -frame 12
        -frame 24
        -iterations 10;
+
+``mmSolverType`` Command
+++++++++++++++++++++++++
+
+`mmSolverType` is used to query the current plug-in's available
+solvers.
+
+Python Example:
+
+.. code:: python
+
+   solvers = maya.cmds.mmSolverType(query=True, list=True)
+   default_solver = maya.cmds.mmSolverType(query=True, default=True)
 
 ``mmTestCameraMatrix`` Command
 ++++++++++++++++++++++++++++++

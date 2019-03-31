@@ -135,8 +135,8 @@ class AttrModel(uimodels.ItemModel):
         column_names = {
             0: 'Attr',
             1: 'State',
-            2: 'Min',
-            3: 'Max',
+            # 2: 'Min',
+            # 3: 'Max',
         }
         return column_names
 
@@ -144,8 +144,8 @@ class AttrModel(uimodels.ItemModel):
         get_attr_dict = {
             'Attr': 'name',
             'State': 'state',
-            'Min': 'minValue',
-            'Max': 'maxValue',
+            # 'Min': 'minValue',
+            # 'Max': 'maxValue',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 
@@ -153,7 +153,7 @@ class AttrModel(uimodels.ItemModel):
         set_attr_dict = {
             'Attr': 'setName',
             'State': 'setState',
-            'Min': 'setMinValue',
-            'Max': 'setMaxValue',
+            # 'Min': 'setMinValue',
+            # 'Max': 'setMaxValue',
         }
         return self._getSetAttrFuncFromIndex(index, set_attr_dict)

@@ -1,14 +1,36 @@
 /*
+ * Copyright (C) 2018, 2019 David Cattermole.
+ *
+ * This file is part of mmSolver.
+ *
+ * mmSolver is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * mmSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+ * ====================================================================
+ *
  * Main Maya plugin entry point.
  */
 
 
 #include <maya/MFnPlugin.h>
 #include <maya/MPxTransform.h>
+#include <maya/MString.h>
+#include <maya/MStatus.h>
+#include <maya/MObject.h>
 
 
 // TODO: Add entry points for mmReprojection cmd and node, mmMarkerScale cmd and mmTriangulate cmd.
 #include <MMSolverCmd.h>
+#include <MMSolverTypeCmd.h>
 #include <MMTestCameraMatrixCmd.h>
 #include <MMMarkerScaleNode.h>
 #include <MMReprojectionNode.h>
@@ -65,7 +87,7 @@
 
 #undef PLUGIN_COMPANY  // Maya API defines this, we override it.
 #define PLUGIN_COMPANY "MM Solver"
-#define PLUGIN_VERSION "1.0"
+#define PLUGIN_VERSION "0.2.0"
 
 
 // Register with Maya
@@ -78,6 +100,13 @@ MStatus initializePlugin(MObject obj) {
                      MMSolverCmd::creator,
                      MMSolverCmd::newSyntax,
                      status);
+
+    REGISTER_COMMAND(plugin,
+                     MMSolverTypeCmd::cmdName(),
+                     MMSolverTypeCmd::creator,
+                     MMSolverTypeCmd::newSyntax,
+                     status);
+
     REGISTER_COMMAND(plugin,
                      MMTestCameraMatrixCmd::cmdName(),
                      MMTestCameraMatrixCmd::creator,
@@ -125,6 +154,20 @@ MStatus initializePlugin(MObject obj) {
     //                  MMMarkerScaleCmd::newSyntax,
     //                  status);
 
+    // Run the Python startup function when the plug-in loads.
+    bool displayEnabled = false;
+    bool undoEnabled = false;
+    MString command;
+    command += "import maya.utils;\n";
+    command += "global MMSOLVER_STARTED\n";
+    command += "if 'mmsolver_startup' in dir() and MMSOLVER_STARTED is False:\n";
+    command += "    maya.utils.executeDeferred(mmsolver_startup);\n";
+    status = MGlobal::executePythonCommand(
+            command,
+            displayEnabled,
+            undoEnabled
+    );
+
     return status;
 }
 
@@ -135,10 +178,18 @@ MStatus uninitializePlugin(MObject obj) {
     MFnPlugin plugin(obj);
 
     DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, MMSolverTypeCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
-    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), MMMarkerScaleNode::m_id, status);
-    DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(), MMReprojectionNode::m_id, status);
-    DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(), MMMarkerGroupTransformNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), 
+                    MMMarkerScaleNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(), 
+                    MMReprojectionNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(), 
+                    MMMarkerGroupTransformNode::m_id, status);
+
     // DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     // DEREGISTER_COMMAND(plugin, MMTriangulateCmd::cmdName(), status);
     // DEREGISTER_COMMAND(plugin, MMMarkerScaleCmd::cmdName(), status);

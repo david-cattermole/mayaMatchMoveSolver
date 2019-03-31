@@ -29,7 +29,7 @@ class TestCollection(test_api_utils.APITestCase):
         x = collection.Collection()
         x.create_node('mySolve')
         y = collection.Collection('mySolve')
-        z = collection.Collection(name='mySolve')
+        z = collection.Collection(node='mySolve')
         self.assertTrue(maya.cmds.objExists(x.get_node()))
         self.assertTrue(maya.cmds.objExists(y.get_node()))
         self.assertTrue(maya.cmds.objExists(z.get_node()))
@@ -79,7 +79,7 @@ class TestCollection(test_api_utils.APITestCase):
         # Re-create the collection asset from the original node and ensure
         # everything still matches.
         x_node = x.get_node()
-        y = collection.Collection(name=x_node)
+        y = collection.Collection(node=x_node)
         sol_list = y.get_solver_list()
         self.assertIsInstance(sol_list, list)
         self.assertEqual(len(sol_list), 1)
@@ -105,7 +105,7 @@ class TestCollection(test_api_utils.APITestCase):
 
         # Start from a new class.
         x_node = x.get_node()
-        y = collection.Collection(name=x_node)
+        y = collection.Collection(node=x_node)
         sol4 = solver.Solver()
         y.add_solver(sol4)
         sol_list3 = y.get_solver_list()

@@ -40,3 +40,20 @@ class SolverTestCase(baseUtils.TestBase):
             maya.cmds.profiler(output=self._mayaProfilerPath)
 
         super(SolverTestCase, self).tearDown()
+
+    def haveSolverType(self, name=None, index=None):
+        has_solver = False
+        kwargs = {
+            'name': False,
+            'index': False,
+        }
+        if name is not None:
+            kwargs['name'] = True
+        elif index is not None:
+            kwargs['index'] = True
+        solverTypes = maya.cmds.mmSolverType(query=True, list=True, **kwargs)
+        if name is not None:
+            has_solver = name in solverTypes
+        if index is not None:
+            has_solver = index in solverTypes
+        return has_solver

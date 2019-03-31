@@ -5,6 +5,8 @@ Any queries use the Maya Python API, but modifications are handled with
 maya.cmds.* so that they support undo/redo correctly.
 """
 
+import warnings
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
@@ -16,13 +18,29 @@ LOG = mmSolver.logger.get_logger()
 
 
 class SetHelper(object):
-    def __init__(self, name=None):
+    def __init__(self, node=None, name=None):
+        """
+        Initialize the SetHelper with the given Maya node.
+
+        :param node: Maya node to attach to.
+        :type node: str or None
+
+        :param name: This is a backwards compatible kwarg for 'node'.
+        :type name: None or str
+        """
         if name is not None:
-            if isinstance(name, (str, unicode)):
-                obj = api_utils.get_as_object(name)
+            msg = (
+                "mmSolver.api.SetHelper(name=value), "
+                "'name' is a deprecated flag, use 'node' "
+            )
+            warnings.warn(msg)
+            node = name
+        if node is not None:
+            if isinstance(node, (str, unicode)):
+                obj = api_utils.get_as_object(node)
                 self._mfn = OpenMaya.MFnSet(obj)
             else:
-                msg = 'name argument must be a string.'
+                msg = 'node argument must be a string.'
                 raise TypeError(msg)
         else:
             self._mfn = OpenMaya.MFnSet()

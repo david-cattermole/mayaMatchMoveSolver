@@ -169,6 +169,23 @@ def __set_node_data(mkr, mkr_data):
 def create_nodes(mkr_data_list, cam=None, mkr_grp=None, with_bundles=True):
     """
     Create Markers for all given MarkerData objects
+
+    :param mkr_data_list: List of MarkerData with data for creating
+                          markers.
+    :type mkr_data_list: [MarkerData, ..]
+
+    :param cam: Camera to create Markers under.
+    :type cam: Camera
+
+    :param mkr_grp: Marker Group, under cam, that the markers will
+                    be created under.
+    :type mkr_grp: MarkerGroup
+
+    :param with_bundles: Create a bundle for each Marker.
+    :type with_bundles: bool
+
+    :returns: List of Markers.
+    :rtype: [Marker, ..]
     """
     selected_nodes = maya.cmds.ls(sl=True, long=True) or []
     mkr_nodes = []

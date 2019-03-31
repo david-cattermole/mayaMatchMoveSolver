@@ -33,16 +33,13 @@ Camera Focal Length.
 Use Cases
 +++++++++
 
-- Solving camera or object transforms based on 2D to 3D
-  positions.
+- Solving camera or object transforms based on 2D to 3D positions.
 
-- Using DAG hierarchies to solve objects in specific spaces (for
-  example object or camera space).
+- Using DAG hierarchies to solve objects in specific spaces (for example object or camera space).
 
 - Generation of 3D positions from 2D screen-space positions.
 
-- Reconstruction of multi-camera shooting environments
-  (photogrammetry).
+- Reconstruction of multi-camera shooting environments (photogrammetry).
 
 Features
 ++++++++
@@ -56,8 +53,7 @@ Features
 
   - Lists Maya Attributes used for solving.
 
-  - Lists individual Solver 'steps' depicting how the Solver will
-    execute.
+  - Lists individual Solver 'steps' depicting how the Solver will execute.
 
   - Supports creation of mmSolver arguments using a GUI.
 
@@ -66,8 +62,8 @@ Features
 - User Tools
 
   - Load 2D Tracks (Markers) from Third-Party software
-    - Supports 3DEqualizer *.txt, MatchMover *.rz2 and custom *.uv
-      file formats.
+
+    - Supports 3DEqualizer *.txt, MatchMover *.rz2 and custom *.uv file formats.
 
   - Convert from 3D Transform Nodes to 2D Markers.
 
@@ -89,13 +85,11 @@ Features
 
   - Maya DG and DAG evaluation support.
 
-  - Options to tune the required solver iterations and error
-    thresholds.
+  - Options to tune the required solver iterations and error thresholds.
 
   - Minimising residual error between 2D and 3D positions.
 
-  - Solving translate, rotate, scale and any custom floating point
-    values, including camera focal length.
+  - Solving translate, rotate, scale and any custom floating point values, including camera focal length.
 
   - Static and animated attribute solving.
 
@@ -112,11 +106,9 @@ Features
 
 - Python API
 
-  - Object-Oriented helper classes to create node networks and store
-    the data structure inside a Maya scene.
+  - Object-Oriented helper classes to create node networks and store the data structure inside a Maya scene.
 
-  - Allows storage of multiple 'collections' of solver arguments in
-    one Maya scene file - all data is stored in the Maya scene file.
+  - Allows storage of multiple 'collections' of solver arguments in one Maya scene file - all data is stored in the Maya scene file.
 
   - Creates Maya nodes to represent Markers and Bundles.
 
@@ -124,4 +116,3 @@ For a list of future features please see the GitHub issues_ page.
 
 .. _issues:
    https://github.com/david-cattermole/mayaMatchMoveSolver/issues
-

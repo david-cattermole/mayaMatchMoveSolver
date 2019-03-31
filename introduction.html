@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Introduction &#8212; mmSolver 0.2.0 documentation</title>
+    <title>Introduction &#8212; mmSolver 0.2.1 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2.0',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="index.html" title="mmSolver - Maya MatchMove Solver"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.1 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -58,7 +58,7 @@
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p>The Maya MatchMove Solver (or <cite>mmSolver</cite> for short), is a tool to
 MatchMove cameras and objects in Autodesk Maya. The <cite>mmSolver</cite> takes a
-different approach than most other software (Commerical or Free Open
+different approach than most other software (Commercial or Free Open
 Source Software).</p>
 <p>Most other software will calculate a 3D camera or 3D
 object track by throwing away the initial camera/object trajectory,
@@ -74,12 +74,94 @@ constraints. <cite>mmSolver</cite> can model all of these types of constraints
 and relationships using Autodesk Maya&#8217;s DAG nodes and connections.</p>
 <p>Finally, <cite>mmSolver</cite> also allows solving of <em>specific attributes</em> of
 any node, so you can solve only Translate X, Rotate Y or Scale Z
-indepentantly, or any combination of attributes all at the same
+independently, or any combination of attributes all at the same
 time. Even custom attributes are supported. <em>Animated attributes</em> can
 be solved as well as <em>static attributes</em>, meaning a Camera Translate Z
-attribute may be solved animated while solving the best attribute
-value for the non-animated Camera Focal Length.</p>
+attribute may be solved animated while solving the non-animated
+Camera Focal Length.</p>
 <p><cite>mmSolver</cite> allows all of these features and more!</p>
+<div class="section" id="use-cases">
+<h2>Use Cases<a class="headerlink" href="#use-cases" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Solving camera or object transforms based on 2D to 3D
+positions.</li>
+<li>Using DAG hierarchies to solve objects in specific spaces (for
+example object or camera space).</li>
+<li>Generation of 3D positions from 2D screen-space positions.</li>
+<li>Reconstruction of multi-camera shooting environments
+(photogrammetry).</li>
+</ul>
+</div>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">Solver User Interface</p>
+<ul class="simple">
+<li>Uses Plug-In to set up and run solver.</li>
+<li>Displays relationships of Cameras, (2D) Markers and (3D) Bundles
+nodes.</li>
+<li>Lists Maya Attributes used for solving.</li>
+<li>Lists individual Solver &#8216;steps&#8217; depicting how the Solver will
+execute.</li>
+<li>Supports creation of mmSolver arguments using a GUI.</li>
+<li>Single-Frame solve override</li>
+</ul>
+</li>
+<li><p class="first">User Tools</p>
+<ul>
+<li><p class="first">Load 2D Tracks (Markers) from Third-Party software
+- Supports 3DEqualizer <a href="#id1"><span class="problematic" id="id2">*</span></a>.txt, MatchMover <a href="#id3"><span class="problematic" id="id4">*</span></a>.rz2 and custom <a href="#id5"><span class="problematic" id="id6">*</span></a>.uv</p>
+<blockquote>
+<div><p>file formats.</p>
+</div></blockquote>
+</li>
+<li><p class="first">Convert from 3D Transform Nodes to 2D Markers.</p>
+</li>
+<li><p class="first">Center Viewport on 3D Transform Node</p>
+</li>
+<li><p class="first">Maya Shelf for quick access to tools</p>
+</li>
+<li><p class="first">Selection tools</p>
+<ul class="simple">
+<li>Toggle Selection between 2D and 3D nodes</li>
+<li>Select connected 2D and 3D nodes</li>
+</ul>
+</li>
+<li><p class="first">Control 2D and 3D node relationships; linking and unlinking nodes.</p>
+</li>
+<li><p class="first">And more...</p>
+</li>
+</ul>
+</li>
+<li><p class="first">Solver Plug-in</p>
+<ul class="simple">
+<li>Maya DG and DAG evaluation support.</li>
+<li>Options to tune the required solver iterations and error
+thresholds.</li>
+<li>Minimising residual error between 2D and 3D positions.</li>
+<li>Solving translate, rotate, scale and any custom floating point
+values, including camera focal length.</li>
+<li>Static and animated attribute solving.</li>
+<li>Per-frame, single-frame and multi-frame solving is supported.</li>
+<li>Multi-camera solving (photogrammetry).</li>
+<li>Marker weights support (force a point to solve with higher weight
+than others).</li>
+<li>Marker &#8216;validity&#8217; support - frames where markers are occluded.</li>
+<li>Full undo/redo support.</li>
+</ul>
+</li>
+<li><p class="first">Python API</p>
+<ul class="simple">
+<li>Object-Oriented helper classes to create node networks and store
+the data structure inside a Maya scene.</li>
+<li>Allows storage of multiple &#8216;collections&#8217; of solver arguments in
+one Maya scene file - all data is stored in the Maya scene file.</li>
+<li>Creates Maya nodes to represent Markers and Bundles.</li>
+</ul>
+</li>
+</ul>
+<p>For a list of future features please see the GitHub <a class="reference external" href="https://github.com/david-cattermole/mayaMatchMoveSolver/issues">issues</a> page.</p>
+</div>
 </div>
 
 
@@ -88,6 +170,15 @@ value for the non-animated Camera Focal Length.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a><ul>
+<li><a class="reference internal" href="#use-cases">Use Cases</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
                         title="previous chapter">mmSolver - Maya MatchMove Solver</a></p>
@@ -130,11 +221,11 @@ value for the non-animated Camera Focal Length.</p>
         <li class="right" >
           <a href="index.html" title="mmSolver - Maya MatchMove Solver"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">mmSolver 0.2.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, David Cattermole.
+        &#169; Copyright 2018, 2019, David Cattermole.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
     </div>
   </body>

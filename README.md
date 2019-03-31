@@ -26,7 +26,7 @@ MatchMove solve you need.
 
 The following releases are below. The latest bug-fix version should
 always be used, where possible. Forward compatibility is maintained
-between point-release versions (0.1 to 0.2), but major version
+between point-release versions (v0.1 to v0.2), but major version
 releases should be considered major and may introduce breaking
 changes.
 

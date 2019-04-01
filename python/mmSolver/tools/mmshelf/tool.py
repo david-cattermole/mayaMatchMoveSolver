@@ -10,6 +10,51 @@ import mmSolver.tools.mmshelf.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
+def _create_solver_menu(menu):
+    # Open Solver...
+    name = 'Open Solver...'
+    tooltip = 'Open the MM Solver window.'
+    cmd = (
+        'import mmSolver.tools.solver.tool;'
+        'mmSolver.tools.solver.tool.open_window();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
+
+    # Run Solver
+    name = 'Run Solver'
+    tooltip = 'Run solver on currently active Collection.'
+    cmd = (
+        'import mmSolver.tools.solver.tool as tool;'
+        'tool.run_solve();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
+
+    # Run Solver on the current frame
+    name = 'Run Solver (Current Frame)'
+    tooltip = 'Run solver on currently active Collection on the current frame.'
+    cmd = (
+        'import mmSolver.tools.solver.tool as tool;'
+        'tool.run_solve_on_current_frame();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
+    return
+
+
 def _create_bundle_tools_menu(menu):
     # Toggle bundle lock
     name = 'Toggle Bundle Lock-State'
@@ -168,13 +213,17 @@ def build_shelf():
         'import mmSolver.tools.solver.tool;'
         'mmSolver.tools.solver.tool.open_window();'
     )
-    shelfutils.create_shelf_button(
+    btn = shelfutils.create_shelf_button(
         parent=shelf,
         name=name,
         tooltip=tooltip,
         icon=icon,
         cmd=cmd,
     )
+
+    # Create Menu Pop-Up (for both left mouse button)
+    menu_rmb = shelfutils.create_popup_menu(parent=btn, button=3)
+    _create_solver_menu(menu_rmb)
 
     shelfutils.create_shelf_separator(parent=shelf)
 

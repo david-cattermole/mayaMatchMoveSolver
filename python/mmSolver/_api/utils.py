@@ -188,6 +188,13 @@ def get_object_type(node):
     elif node_type == 'camera':
         object_type = const.OBJECT_TYPE_CAMERA
 
+    elif ((node_type == 'transform') and
+          ('imagePlane' in shape_node_types)):
+        object_type = const.OBJECT_TYPE_IMAGE_PLANE
+
+    elif node_type == 'imagePlane':
+        object_type = const.OBJECT_TYPE_IMAGE_PLANE
+
     elif node_type == 'mmMarkerGroupTransform':
         object_type = const.OBJECT_TYPE_MARKER_GROUP
 

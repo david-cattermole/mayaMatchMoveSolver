@@ -40,6 +40,10 @@ SET WITH_GPL_CODE=0
 :: SET INSTALL_MODULE_DIR="%PROJECT_ROOT%\modules"
 SET INSTALL_MODULE_DIR="%USERPROFILE%\My Documents\maya\%MAYA_VERSION%\modules"
 
+:: Build ZIP Package.
+:: For developer use. Make ZIP packages ready to distribute to others.
+SET BUILD_PACKAGE=0
+
 
 :: Do not edit below, unless you know what you're doing.
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

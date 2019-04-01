@@ -1,4 +1,22 @@
 /*
+ * Copyright (C) 2018, 2019 David Cattermole.
+ *
+ * This file is part of mmSolver.
+ *
+ * mmSolver is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * mmSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+ * ====================================================================
+ *
  * Command for running mmSolver.
  */
 
@@ -86,6 +104,8 @@ MSyntax MMSolverCmd::newSyntax() {
                    MSyntax::kUnsigned);
     syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG,
                    MSyntax::kBoolean);
+    syntax.addFlag(DEBUG_FILE_FLAG, DEBUG_FILE_FLAG_LONG,
+                   MSyntax::kString);
 
     // We can use marker and attr flags more than once.
     syntax.makeFlagMultiUse(CAMERA_FLAG);
@@ -109,6 +129,13 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     m_verbose = VERBOSE_DEFAULT_VALUE;
     if (argData.isFlagSet(VERBOSE_FLAG)) {
         status = argData.getFlagArgument(VERBOSE_FLAG, 0, m_verbose);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Debug File'
+    m_debugFile = DEBUG_FILE_DEFAULT_VALUE;
+    if (argData.isFlagSet(DEBUG_FILE_FLAG)) {
+        status = argData.getFlagArgument(DEBUG_FILE_FLAG, 0, m_debugFile);
         CHECK_MSTATUS(status);
     }
 
@@ -439,6 +466,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
             m_dgmod,
             m_curveChange,
             m_computation,
+            m_debugFile,
             m_verbose,
             outResult
     );

@@ -14,6 +14,7 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.tools.solver.lib.collection as lib_col
 import test.test_api.apiutils as test_api_utils
 
 
@@ -507,10 +508,11 @@ class TestSolve(test_api_utils.APITestCase):
         # Run solver!
         s = time.time()
         col = mmapi.Collection(node='collection1')
+        lib_col.compile_collection(col)
         solres_list = col.execute()
         e = time.time()
         print 'total time:', e - s
-
+        
         # save the output
         path = self.get_data_path('test_solve_badPerFrameSolve_after.ma')
         maya.cmds.file(rename=path)
@@ -519,6 +521,31 @@ class TestSolve(test_api_utils.APITestCase):
         self.checkSolveResults(solres_list)
         return
 
+    def test_allFrameStrategySolve(self):
+        """
+        Solving only a 'all frames' solver step across multiple frames.
+        """
+        # Open the Maya file
+        file_name = 'mmSolverBasicSolveA_badSolve02.ma'
+        path = self.get_data_path('scenes', file_name)
+        maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
+
+        # Run solver!
+        s = time.time()
+        col = mmapi.Collection(node='collection1')
+        lib_col.compile_collection(col)
+        solres_list = col.execute()
+        e = time.time()
+        print 'total time:', e - s
+        
+        # save the output
+        path = self.get_data_path('test_solve_allFrameStrategySolve_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        self.checkSolveResults(solres_list)
+        return
+    
     def test_solveAllFramesCausesStaticAnimCurves(self):
         """
         Solving with the scene file 'mmSolverBasicSolveB_before.ma', was
@@ -536,6 +563,7 @@ class TestSolve(test_api_utils.APITestCase):
         # Run solver!
         s = time.time()
         col = mmapi.Collection(node='collection1')
+        lib_col.compile_collection(col)
         solres_list = col.execute()
         e = time.time()
         print 'total time:', e - s

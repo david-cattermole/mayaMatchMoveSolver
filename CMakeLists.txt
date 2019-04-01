@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 2.8)
 project(mayaMatchMoveSolver)
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 2)
-set(PROJECT_VERSION_PATCH 0)
+set(PROJECT_VERSION_PATCH 1)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
@@ -345,6 +345,11 @@ install(DIRECTORY "mel/AETemplates/"
 install(DIRECTORY "3dequalizer/scriptdb/"
         DESTINATION "${MODULE_FULL_NAME}/3dequalizer"
         FILES_MATCHING PATTERN "*.py")
+
+# Install SynthEyes scripts.
+install(DIRECTORY "syntheyes/"
+        DESTINATION "${MODULE_FULL_NAME}/syntheyes"
+        FILES_MATCHING PATTERN "*.szl")
 
 # Install Icons.
 install(DIRECTORY "icons/"

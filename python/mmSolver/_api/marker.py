@@ -182,20 +182,20 @@ class Marker(object):
         maya.cmds.setAttr(shp + '.localScaleZ', lock=True)
 
         # Add attrs
-        maya.cmds.addAttr(tfm, longName='enable', at='short',
+        maya.cmds.addAttr(tfm, longName='enable', attributeType='short',
                           minValue=0,
                           maxValue=1,
-                          defaultValue=1)
-        maya.cmds.addAttr(tfm, longName='weight', at='double',
+                          defaultValue=1,
+                          keyable=True)
+        maya.cmds.addAttr(tfm, longName='weight', attributeType='double',
                           minValue=0.0,
-                          defaultValue=1.0)
-        maya.cmds.addAttr(tfm, longName='bundle', at='message')
-        maya.cmds.addAttr(tfm, longName='markerName', dt='string')
-        maya.cmds.addAttr(tfm, longName='markerId', at='long',
+                          defaultValue=1.0,
+                          keyable=True)
+        maya.cmds.addAttr(tfm, longName='bundle', attributeType='message')
+        maya.cmds.addAttr(tfm, longName='markerName', dataType='string')
+        maya.cmds.addAttr(tfm, longName='markerId', attributeType='long',
                           defaultValue=-1)
 
-        maya.cmds.setAttr(tfm + '.enable', keyable=True, channelBox=True)
-        maya.cmds.setAttr(tfm + '.weight', keyable=True, channelBox=True)
         maya.cmds.setAttr(tfm + '.markerName', lock=True)
         maya.cmds.connectAttr(tfm + '.enable', tfm + '.lodVisibility')
 

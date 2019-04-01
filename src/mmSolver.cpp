@@ -1,4 +1,22 @@
 /*
+ * Copyright (C) 2018, 2019 David Cattermole.
+ *
+ * This file is part of mmSolver.
+ *
+ * mmSolver is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * mmSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+ * ====================================================================
+ *
  * Sets up the Bundle Adjustment data and sends it off to the bundling algorithm.
  *
  */
@@ -19,10 +37,12 @@
 #include <ctime>     // time
 #include <cmath>     // exp
 #include <iostream>  // cout, cerr, endl
+#include <fstream>   // ofstream
 #include <string>    // string
 #include <vector>    // vector
 #include <cassert>   // assert
 #include <limits>    // double max value
+#include <algorithm>  // min, max
 #include <cstdlib>   // getenv
 
 // Utils
@@ -85,7 +105,7 @@ SolverTypePair getSolverTypeDefault() {
     std::vector<SolverTypePair> solverTypes = getSolverTypes();
 
     const char* defaultSolver_ptr = std::getenv("MMSOLVER_DEFAULT_SOLVER");
-    if (defaultSolver_ptr != nullptr) {
+    if (defaultSolver_ptr != NULL) {
         // The memory may change under our feet, we copy the data into a
         // string for save keeping.
         std::string defaultSolver(defaultSolver_ptr);
@@ -331,6 +351,7 @@ bool solve(int iterMax,
            MDGModifier &dgmod,
            MAnimCurveChange &curveChange,
            MComputation &computation,
+           MString &debugFile,
            bool verbose,
            MStringArray &outResult) {
     int i = 0;
@@ -463,7 +484,7 @@ bool solve(int iterMax,
             frame = frameList[attrPair.second];
         }
 
-        double value;
+        double value = 0.0;
         status = attr->getValue(value, frame);
         CHECK_MSTATUS(status);
         if (status != MS::kSuccess) {
@@ -557,6 +578,17 @@ bool solve(int iterMax,
 
     // Verbosity
     userData.verbose = verbose;
+    userData.debugFileName = debugFile;
+
+    std::ofstream file;
+    if (debugFile.length() > 0) {
+        const char *debugFileNameChar = debugFile.asChar();
+        file.open(debugFileNameChar);
+        if (file.is_open() == true) {
+             file << std::endl;
+             file.close();
+        }
+    }
 
     // Options and Info
 #ifdef USE_SOLVER_LEVMAR
@@ -885,13 +917,20 @@ bool solve(int iterMax,
         IndexPair attrPair = paramToAttrList[i];
         AttrPtr attr = attrList[attrPair.first];
 
+        double xmin = attr->getMinimumValue();
+        double xmax = attr->getMaximumValue();
+        double value = paramList[i];
+
+        // TODO: Implement proper Box Constraints; Issue #64.
+        value = std::max<double>(value, xmin);
+        value = std::min<double>(value, xmax);
+
         // Get frame time
         MTime frame = currentFrame;
         if (attrPair.second != -1) {
             frame = frameList[attrPair.second];
         }
 
-        double value = paramList[i];
         status = attr->setValue(value, frame, dgmod, curveChange);
         CHECK_MSTATUS(status);
     }

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\catte\dev\mayaMatchMoveSolver\python\mmSolver\ui\base.ui'
+# Form implementation generated from reading ui file '/media/dev/mayaMatchMoveSolver_maya2017Deploy/python/mmSolver/ui/base.ui'
 #
-# Created: Tue Dec 25 23:12:26 2018
+# Created: Tue Mar 26 00:05:03 2019
 #      by: pyside2-uic  running on PySide2 2.0.0~alpha0
 #
 # WARNING! All changes made in this file will be lost!

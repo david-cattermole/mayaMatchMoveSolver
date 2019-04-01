@@ -301,13 +301,13 @@ class SolverWindow(BaseWindow):
         action.triggered.connect(partial(self.launchHelpCB))
         help_menu.addAction(action)
 
-        # Launch About
-        label = 'About...'
-        tooltip = 'About this software.'
-        action = QtWidgets.QAction(label, help_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.launchAboutCB))
-        help_menu.addAction(action)
+        # # Launch About
+        # label = 'About...'
+        # tooltip = 'About this software.'
+        # action = QtWidgets.QAction(label, help_menu)
+        # action.setStatusTip(tooltip)
+        # action.triggered.connect(partial(self.launchAboutCB))
+        # help_menu.addAction(action)
 
         menubar.addMenu(help_menu)
         return
@@ -391,12 +391,18 @@ class SolverWindow(BaseWindow):
     def launchHelpCB(self):
         self.help()
 
-    def launchAboutCB(self):
-        # LOG.info('Launch About... not yet.')
-        self.help()
+    # def launchAboutCB(self):
+    #     # LOG.info('Launch About... not yet.')
+    #     self.help()
 
     def setStatusLine(self, text):
         self.subForm.setStatusLine(text)
+        QtWidgets.QApplication.processEvents()
+        return
+
+    def setProgressValue(self, value):
+        self.progressBar.setValue(value)
+        QtWidgets.QApplication.processEvents()
         return
 
     def apply(self):
@@ -447,7 +453,7 @@ def main(show=True, widthHeight=(800, 600)):
     :param widthHeight: Width and height of the window to open.
     :type widthHeight: int, int
 
-    :returns: A new solver window, or None if the window cannot be 
+    :returns: A new solver window, or None if the window cannot be
               opened.
     :rtype: SolverWindow or None.
     """

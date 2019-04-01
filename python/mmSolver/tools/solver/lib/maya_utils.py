@@ -8,6 +8,7 @@ import maya.mel
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.selection.filternodes as filter_nodes
+import mmSolver.tools.solver.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
@@ -121,14 +122,17 @@ def get_markers_from_selection():
     """
     nodes = maya.cmds.ls(long=True, selection=True) or []
     node_categories = filter_nodes.get_nodes(nodes)
-    marker_nodes = list(node_categories['marker'])
+    marker_nodes = node_categories.get('marker', [])
 
-    camera_nodes = list(node_categories['camera'])
+    camera_nodes = node_categories.get('camera', [])
     for node in camera_nodes:
-        tfm_node = None
-        if maya.cmds.nodeType(node) == 'camera':
+        node_type = maya.cmds.nodeType(node)
+        cam = None
+        if node_type == 'transform':
+            cam = mmapi.Camera(transform=node)
+        if node_type == 'camera':
             cam = mmapi.Camera(shape=node)
-            tfm_node = cam.get_transform_node()
+        tfm_node = cam.get_transform_node()
         below_nodes = maya.cmds.ls(tfm_node, dag=True, long=True)
         marker_nodes += filter_nodes.get_marker_nodes(below_nodes)
 
@@ -278,3 +282,23 @@ def get_selected_node_default_attributes():
             attr_obj = mmapi.Attribute(node=node, attr=attr_name)
             attr_list.append(attr_obj)
     return attr_list
+
+
+def input_attributes_filter(attr_list):
+    """
+    Apply logic to remove any non-input attributes from the given list.
+
+    :param attr_list: Attribute list to filter.
+    :type attr_list: [Attribute, ..]
+
+    :returns: List of attributes that are filtered.
+    :rtype: [Attribute, ..]
+    """
+    result = []
+    for attr_obj in attr_list:
+        node = attr_obj.get_node()
+        obj_type = mmapi.get_object_type(node)
+        if obj_type in const.ATTR_INVALID_OBJECT_TYPES:
+            continue
+        result.append(attr_obj)
+    return result

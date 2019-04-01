@@ -1,4 +1,22 @@
 /*
+ * Copyright (C) 2018, 2019 David Cattermole.
+ *
+ * This file is part of mmSolver.
+ *
+ * mmSolver is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * mmSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+ * ====================================================================
+ *
  * Header for mmSolver Maya command.
  */
 
@@ -144,6 +162,11 @@
 #define VERBOSE_FLAG_LONG      "-verbose"
 #define VERBOSE_DEFAULT_VALUE  false
 
+// Write a debug file somewhere
+#define DEBUG_FILE_FLAG           "-df"
+#define DEBUG_FILE_FLAG_LONG      "-debugFile"
+#define DEBUG_FILE_DEFAULT_VALUE  ""
+
 // Default Values for solver option flags
 #define CMINPACK_LM_ITERATIONS_DEFAULT_VALUE  20
 #define CMINPACK_LM_TAU_DEFAULT_VALUE  100.0 // default is 100.0
@@ -201,6 +224,9 @@ private:
     int m_autoDiffType; // Auto Differencing type to use; 0=forward, 1=central.
     int m_autoParamScale; // Auto Parameter Scaling; 0=OFF, 1=ON.
     int m_solverType;   // Solver type to use; 0=levmar, 1=cminpack_lm.
+
+    // Solver printing.
+    MString m_debugFile;
     bool m_verbose;
 
     // Objects

@@ -23,7 +23,7 @@ python "${THIS_DIR}/get_cminpack.py" "${ROOT}/archives" "${ROOT}/working" "${ROO
 # Build Library
 mkdir -p build
 cd build
-rm -R *
+rm --force -R *
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} \

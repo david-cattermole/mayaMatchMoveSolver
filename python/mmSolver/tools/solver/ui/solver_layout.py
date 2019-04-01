@@ -68,6 +68,15 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.object_selModel.currentChanged.connect(
             self.objectNodeCurrentChanged
         )
+        self.objectToggleCamera_toolButton.clicked.connect(
+            self.objectToggleCameraClicked,
+        )
+        self.objectToggleMarker_toolButton.clicked.connect(
+            self.objectToggleMarkerClicked,
+        )
+        self.objectToggleBundle_toolButton.clicked.connect(
+            self.objectToggleBundleClicked,
+        )
 
         # Object Add and Remove buttons
         self.objectAdd_toolButton.clicked.connect(
@@ -148,6 +157,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         # Populate the UI with data.
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
+        self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateAttributeModel()
         self.updateSolverModel()
@@ -167,19 +177,39 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self._parentObject.window().setWindowTitle(title)
 
     def updateCollectionModel(self):
-        self.setStatusLine(const.STATUS_REFRESHING)
         self.populateCollectionModel(self.collectionName_model)
 
         col = lib_state.get_active_collection()
+        if col is None:
+            cols = lib_col.get_collections()
+            if len(cols) > 0:
+                # If there is no active collection, but there are
+                # collections already created, we make sure the first
+                # collection is marked active.
+                col = cols[0]
+                lib_state.set_active_collection(col)
+
         if col is not None:
             index = self.getDefaultCollectionIndex(self.collectionName_model, col)
             if index is not None:
                 self.collectionName_comboBox.setCurrentIndex(index)
+
         self.updateDynamicWindowTitle()
         return
 
+    def updateObjectToggleButtons(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        show_cam = lib_col.get_object_toggle_camera_from_collection(col)
+        show_mkr = lib_col.get_object_toggle_marker_from_collection(col)
+        show_bnd = lib_col.get_object_toggle_bundle_from_collection(col)
+        self.objectToggleCamera_toolButton.setChecked(show_cam)
+        self.objectToggleMarker_toolButton.setChecked(show_mkr)
+        self.objectToggleBundle_toolButton.setChecked(show_bnd)
+        return
+
     def updateObjectModel(self):
-        self.setStatusLine(const.STATUS_REFRESHING)
         self.populateObjectModel(self.object_model)
         valid = uiutils.isValidQtObject(self.object_treeView)
         if valid is False:
@@ -191,7 +221,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def updateAttributeModel(self):
-        self.setStatusLine(const.STATUS_REFRESHING)
         self.populateAttributeModel(self.attribute_model)
         valid = uiutils.isValidQtObject(self.attribute_treeView)
         if valid is False:
@@ -203,7 +232,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         return
 
     def updateSolverModel(self):
-        self.setStatusLine(const.STATUS_REFRESHING)
         self.populateOverrideCurrentFrame()
         self.populateSolverModel(self.solver_model)
 
@@ -250,9 +278,15 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         col = lib_state.get_active_collection()
         mkr_list = []
+        show_cam = const.OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE
+        show_mkr = const.OBJECT_TOGGLE_MARKER_DEFAULT_VALUE
+        show_bnd = const.OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE
         if col is not None:
             mkr_list = lib_marker.get_markers_from_collection(col)
-        root = convert_to_ui.markersToUINodes(mkr_list)
+            show_cam = lib_col.get_object_toggle_camera_from_collection(col)
+            show_mkr = lib_col.get_object_toggle_marker_from_collection(col)
+            show_bnd = lib_col.get_object_toggle_bundle_from_collection(col)
+        root = convert_to_ui.markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd)
         model.setRootNode(root)
         return
 
@@ -373,7 +407,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_col.set_override_current_frame_on_collection(col, value)
         self.updateSolverModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def createNewCollectionNode(self):
@@ -382,12 +415,11 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
+        self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
-
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def renameCollectionNode(self):
@@ -404,12 +436,11 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
+        self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
-
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def removeCollectionNode(self):
@@ -430,12 +461,47 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
+        self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
+        return
 
-        self.setStatusLine(const.STATUS_READY)
+    def objectToggleCameraClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_object_toggle_camera_from_collection(col)
+        value = not value
+        lib_col.set_object_toggle_camera_on_collection(col, value)
+
+        self.updateObjectModel()
+        return
+
+    def objectToggleMarkerClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_object_toggle_marker_from_collection(col)
+        value = not value
+        lib_col.set_object_toggle_marker_on_collection(col, value)
+
+        self.updateObjectModel()
+        return
+
+    def objectToggleBundleClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_object_toggle_bundle_from_collection(col)
+        value = not value
+        lib_col.set_object_toggle_bundle_on_collection(col, value)
+
+        self.updateObjectModel()
         return
 
     def collectionSelectClicked(self):
@@ -445,7 +511,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         lib_col.select_collection(col)
         self.updateDynamicWindowTitle()
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def objectAddClicked(self):
@@ -466,9 +531,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         def update_func():
             if uiutils.isValidQtObject(self) is False:
                 return
+            self.updateObjectToggleButtons()
             self.updateObjectModel()
             self.updateSolveValidState()
-            self.setStatusLine(const.STATUS_READY)
             return
 
         # Add Callbacks
@@ -507,9 +572,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
                 callback_manager
             )
 
+        self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
 
         # Restore selection.
         lib_maya_utils.set_scene_selection(sel)
@@ -524,13 +589,15 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         sel = lib_maya_utils.get_scene_selection()
         attr_list = lib_maya_utils.get_selected_maya_attributes()
+        attr_list = lib_maya_utils.input_attributes_filter(attr_list)
         if len(attr_list) == 0:
             attr_list = lib_maya_utils.get_selected_node_default_attributes()
+            attr_list = lib_maya_utils.input_attributes_filter(attr_list)
         if len(attr_list) == 0:
             msg = 'Please select nodes or attributes in the channel box.'
             LOG.warning(msg)
             return
-    
+
         lib_attr.add_attributes_to_collection(attr_list, col)
 
         def update_func():
@@ -538,7 +605,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
                 return
             self.updateAttributeModel()
             self.updateSolveValidState()
-            self.setStatusLine(const.STATUS_READY)
             return
 
         # Add Callbacks
@@ -579,7 +645,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         self.updateAttributeModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
 
         # Restore selection.
         lib_maya_utils.set_scene_selection(sel)
@@ -595,7 +660,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_col.add_solver_step_to_collection(col, step)
         self.updateSolverModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def solverRemoveClicked(self):
@@ -612,7 +676,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             lib_col.remove_solver_step_from_collection(col, step)
         self.updateSolverModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def solverMoveUpClicked(self):
@@ -643,12 +706,11 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_state.set_active_collection(data)
 
         self.updateDynamicWindowTitle()
+        self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
-
-        self.setStatusLine(const.STATUS_READY)
         return
 
     @QtCore.Slot(QtCore.QModelIndex, QtCore.QModelIndex)
@@ -667,15 +729,16 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         )
         if ui_node is None:
             return
-        # Type info will be 'marker', 'bundle' or 'camera' based on the selected node type.
+        # Type info will be 'marker', 'bundle' or 'camera' based on
+        # the selected node type.
         typeInfo = ui_node.typeInfo
         nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], typeInfo)
         maya_nodes = []
         if typeInfo == 'camera':
-            maya_nodes = map(lambda x: x.get_shape_node(), nodes)
+            maya_nodes = [x.get_shape_node() for x in nodes]
         else:
             # For bundles and markers
-            maya_nodes = map(lambda x: x.get_node(), nodes)
+            maya_nodes = [x.get_node() for x in nodes]
         lib_maya_utils.set_scene_selection(maya_nodes)
         return
 
@@ -688,7 +751,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if ui_node is None:
             return
         nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'data')
-        maya_nodes = map(lambda x: x.get_node(), nodes)
+        maya_nodes = [x.get_node() for x in nodes]
         lib_maya_utils.set_scene_selection(maya_nodes)
         return
 

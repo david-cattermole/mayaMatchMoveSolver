@@ -1,4 +1,22 @@
 /*
+ * Copyright (C) 2018, 2019 David Cattermole.
+ *
+ * This file is part of mmSolver.
+ *
+ * mmSolver is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * mmSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+ * ====================================================================
+ *
  * The universal solving function, works with any solver.
  */
 
@@ -14,12 +32,13 @@
 
 // STL
 #include <ctime>     // time
-#include <cmath>     // exp
+#include <cmath>     // exp, log
 #include <iostream>  // cout, cerr, endl
 #include <string>    // string
 #include <vector>    // vector
 #include <cassert>   // assert
 #include <limits>    // double max value, NaN
+#include <algorithm>  // min, max
 #include <math.h>
 
 // Utils
@@ -61,41 +80,6 @@
 
 // Function run by cminpack algorithm to test the input parameters, p,
 // and compute the output errors, x.
-//
-// *** Simulating box constraints (TODO) ***
-//
-// Note that box constraints can easily be simulated in C++ Minpack,
-// using a change of variables in the function (that hint was found in
-// the lmfit documentation).
-//
-// For example, say you want xmin[j] < x[j] < xmax[j], just apply the
-// following change of variable at the beginning of fcn on the
-// variables vector, and also on the computed solution after the
-// optimization was performed:
-//
-//   for (j = 0; j < 3; ++j) {
-//     real xmiddle = (xmin[j]+xmax[j])/2.;
-//     real xwidth = (xmax[j]-xmin[j])/2.;
-//     real th =  tanh((x[j]-xmiddle)/xwidth);
-//     x[j] = xmiddle + th * xwidth;
-//     jacfac[j] = 1. - th * th;
-//   }
-//
-// This change of variables preserves the variables scaling, and is
-// almost the identity near the middle of the interval.
-//
-// Of course, if you use lmder, lmder1, hybrj or hybrj1, the Jacobian
-// must be also consistent with that new function, so the column of
-// the original Jacobian corresponding to x1 must be multiplied by the
-// derivative of the change of variable, i.e jacfac[j].
-//
-// Similarly, each element of the covariance matrix must be multiplied
-// by jacfac[i]*jacfac[j].
-//
-// For examples on how to implement this in practice, see the portions
-// of code delimited by "#ifdef BOX_CONSTRAINTS" in the following
-// source files: tlmderc.c, thybrj.c, tchkderc.c.
-//
 int solveFunc(int numberOfParameters,
               int numberOfErrors,
               const double *parameters,
@@ -108,14 +92,36 @@ int solveFunc(int numberOfParameters,
     ud->funcBenchTicks->start();
     ud->computation->setProgress(ud->iterNum);
 
-    if (ud->verbose == true) {
-        if (ud->isNormalCall) {
-            // We're not using INFO macro because we don't want a
-            // new-line created.
-            std::cout << "Eval " << ++ud->iterNum;
-        } else if (ud->isJacobianCall) {
-            std::cout << "Eval Jacobian " << ++ud->jacIterNum;
-        }
+    // Seems heavy we are opening and closing a file each iteration.
+    std::ofstream debugFile;
+    if (ud->debugFileName.length() > 0) {
+        const char *debugFileChar = ud->debugFileName.asChar();
+        debugFile.open(debugFileChar, std::ios_base::app);
+    }
+    bool debugIsOpen = debugFile.is_open();
+
+    if (ud->isNormalCall) {
+         ++ud->iterNum;
+         // We're not using INFO macro because we don't want a
+         // new-line created.
+         if (ud->verbose == true) {
+              std::cout << "Eval " << ud->iterNum;
+         }
+         if (debugIsOpen == true) {
+              debugFile << std::endl
+                        << "iteration normal: " << ud->iterNum
+                        << std::endl;
+         }
+    } else if (ud->isJacobianCall) {
+         ++ud->jacIterNum;
+         if (ud->verbose == true) {
+              std::cout << "Eval Jacobian " << ud->jacIterNum;
+         }
+         if (debugIsOpen == true) {
+              debugFile << std::endl
+                        << "iteration jacobian: " << ud->jacIterNum
+                        << std::endl;
+         }
     }
 
     if (ud->isPrintCall) {
@@ -140,6 +146,8 @@ int solveFunc(int numberOfParameters,
         return SOLVE_FUNC_FAILURE;
     }
 
+    MGlobal::executeCommand("dgdirty -allPlugs -implicit;");
+
     // Set Parameter
     MStatus status;
     {
@@ -156,13 +164,26 @@ int solveFunc(int numberOfParameters,
             IndexPair attrPair = ud->paramToAttrList[i];
             AttrPtr attr = ud->attrList[attrPair.first];
 
+            double xmin = attr->getMinimumValue();
+            double xmax = attr->getMaximumValue();
+            double value = parameters[i];
+
+            // TODO: Implement proper Box Constraints; Issue #64.
+            value = std::max<double>(value, xmin);
+            value = std::min<double>(value, xmax);
+
             // Get frame time
             MTime frame = currentFrame;
             if (attrPair.second != -1) {
                 frame = ud->frameList[attrPair.second];
             }
 
-            attr->setValue(parameters[i], frame, *ud->dgmod, *ud->curveChange);
+            if (debugIsOpen == true) {
+                 debugFile << "i=" << i
+                           << " v=" << value
+                           << std::endl;
+            }
+            attr->setValue(value, frame, *ud->dgmod, *ud->curveChange);
         }
 
         // Commit changed data into Maya
@@ -181,6 +202,8 @@ int solveFunc(int numberOfParameters,
         ud->paramBenchTicks->stop();
     }
 
+    MGlobal::executeCommand("dgdirty -allPlugs -implicit;");
+
     // Measure Errors
     double error_avg = 0.0;
     double error_max = -0.0;
@@ -193,8 +216,6 @@ int solveFunc(int numberOfParameters,
                                       MProfiler::kColorA_L1,
                                       "measure errors");
 #endif
-
-        // MGlobal::executeCommand("dgdirty -allPlugs;");
 
 #if FORCE_TRIGGER_EVAL == 1
         {
@@ -216,13 +237,14 @@ int solveFunc(int numberOfParameters,
             MarkerPtr marker = ud->markerList[markerPair.first];
             MTime frame = ud->frameList[markerPair.second];
 
-            // MPoint pos;
-            // status = marker->getPos(pos, frame - 1);
-            // status = marker->getPos(pos, frame + 1);
-
             CameraPtr camera = marker->getCamera();
             status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
             CHECK_MSTATUS(status);
+
+            MVector cam_dir;
+            MPoint cam_pos;
+            camera->getWorldPosition(cam_pos, frame);
+            camera->getForwardDirection(cam_dir, frame);
 
             double left = 0;
             double right = 0;
@@ -237,12 +259,47 @@ int solveFunc(int numberOfParameters,
             double mkr_weight = ud->markerWeightList[i];
             mkr_weight = std::sqrt(mkr_weight);
 
-            // status = bnd->getPos(bnd_mpos, frame + 1);
-            // status = bnd->getPos(bnd_mpos, frame - 1);
+            MVector bnd_dir;
             status = bnd->getPos(bnd_mpos, frame);
             CHECK_MSTATUS(status);
+            MPoint bnd_mpos_tmp(bnd_mpos);
+            bnd_dir = bnd_mpos_tmp - cam_pos;
+            bnd_dir.normalize();
             bnd_mpos = bnd_mpos * cameraWorldProjectionMatrix;
             bnd_mpos.cartesianize();
+
+            // Is the bundle behind the camera?
+            bool behind_camera = false;
+            double cam_dot_bnd = cam_dir * bnd_dir;
+            // WRN("Camera DOT Bundle: " << cam_dot_bnd);
+            if (cam_dot_bnd < 0.0) {
+                 behind_camera = true;
+            }
+            
+            debugFile << "Bundle: " << bnd->getNodeName()
+                      << std::endl;
+            debugFile << "Cam DOT Bnd: " << cam_dot_bnd
+                      << std::endl;
+            debugFile << "bnd_mpos: "
+                      << bnd_mpos_tmp.x << ", "
+                      << bnd_mpos_tmp.y << ", "
+                      << bnd_mpos_tmp.z
+                      << std::endl;
+            debugFile << "cam_pos: "
+                      << cam_pos.x << ", "
+                      << cam_pos.y << ", "
+                      << cam_pos.z
+                      << std::endl;
+            debugFile << "cam_dir: "
+                      << cam_dir.x << ", "
+                      << cam_dir.y << ", "
+                      << cam_dir.z
+                      << std::endl;
+            debugFile << "bnd_dir: "
+                      << bnd_dir.x << ", "
+                      << bnd_dir.y << ", "
+                      << bnd_dir.z
+                      << std::endl;
 
             // According to the Ceres solver 'circle_fit.cc'
             // example, using the 'sqrt' distance error function is a
@@ -275,6 +332,27 @@ int solveFunc(int numberOfParameters,
     }
     ud->funcBenchTimer->stop();
     ud->funcBenchTicks->stop();
+
+    if (debugIsOpen == true) {
+         for (i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
+              debugFile << "error i=" << i
+                        << " x=" << ud->errorList[(i * ERRORS_PER_MARKER) + 0]
+                        << " y=" << ud->errorList[(i * ERRORS_PER_MARKER) + 1]
+#if ERRORS_PER_MARKER == 3
+                        << " z=" << ud->errorList[(i * ERRORS_PER_MARKER) + 2]
+#endif
+                        << std::endl;
+         }
+         for (i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
+              debugFile << "error dist i=" << i
+                        << " v=" << ud->errorDistanceList[i]
+                        << std::endl;
+         }
+         debugFile << "emin=" << error_min
+                   << " emax=" << error_max
+                   << " eavg=" << error_avg
+                   << std::endl;
+    }
 
     if (ud->verbose == true) {
         if (ud->isNormalCall) {

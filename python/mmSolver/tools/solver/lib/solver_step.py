@@ -75,7 +75,7 @@ def _solve_all_attrs(max_iter_num, auto_diff_type, int_list, strategy):
     if strategy == const.STRATEGY_TWO_FRAMES_FWD:
         batch_frm_list = _gen_two_frame_fwd(int_list)
     elif strategy == const.STRATEGY_ALL_FRAMES_AT_ONCE:
-        frm_list = map(lambda x: mmapi.Frame(x), int_list)
+        frm_list = [mmapi.Frame(x) for x in int_list]
         batch_frm_list = [frm_list]
     else:
         msg = 'strategy is not supported: strategy=%r'

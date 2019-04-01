@@ -8,8 +8,30 @@ The videos below explain different aspects of mmSolver.
 All official videos can be found on the mmSolver `YouTube Channel
 <https://www.youtube.com/channel/UCndLPvFXd9Os7m9sc2Bbbsw>`_
 
-Introduction to mmSolver
-------------------------
+Usage Guide
+-----------
+
+These videos explain the use of the Solver UI, and mmSolver shelf. Many
+features are explored and show examples for how the tools can be used.
+
+These video uses mmSolver v0.2.0 (beta).
+
+*Part 1*
+
+.. raw:: html
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/SJoNEShPyms" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+*Part 2*
+
+.. raw:: html
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/yS1kJJkosqA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+Camera and Object Solve
+-----------------------
 
 How to line up a camera with known (surveyed) 3D positions, and solve
 a camera and object track. The video explains the basic usage of

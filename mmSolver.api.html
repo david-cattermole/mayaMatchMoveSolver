@@ -1799,7 +1799,7 @@ types and the expected input node type.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>name</strong> (<em>str</em>) &#8211; The name string to validate.</li>
 <li><strong>prefix</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; Prefix to add to name in case of invalid first character.</li>
 <li><strong>auto_add_num</strong> (<em>bool</em>) &#8211; If given a node with no number in it, should
@@ -1807,22 +1807,17 @@ we add a number automatically?</li>
 <li><strong>auto_add_num_padding</strong> (<em>int</em>) &#8211; Padding of the number to add,
 2 = &#8216;01&#8217;, 3 = &#8216;001&#8217;, 4 = &#8216;0001&#8217;.</li>
 <li><strong>auto_inc</strong> (<em>bool</em>) &#8211; Should we auto-increment the number in the name?</li>
-<li><strong>auto_inc_try_limit</strong> &#8211; When trying to find a non-existing Maya
+<li><strong>auto_inc_try_limit</strong> (<em>int</em>) &#8211; When trying to find a non-existing Maya
 node name, how many times can we
-increment until we give up?  :type</li>
+increment until we give up?</li>
 </ul>
 </td>
 </tr>
-</tbody>
-</table>
-<p>auto_inc_try_limit: int</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A valid Maya node name.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A valid Maya node name.</p>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
 </tr>
 </tbody>
 </table>

@@ -306,8 +306,8 @@ def convert_valid_maya_name(name,
 
     :param auto_inc_try_limit: When trying to find a non-existing Maya
                                node name, how many times can we
-                               increment until we give up?  :type
-    auto_inc_try_limit: int
+                               increment until we give up?  
+    :type auto_inc_try_limit: int
 
     :return: A valid Maya node name.
     :rtype: str

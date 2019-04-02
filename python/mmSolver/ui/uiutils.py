@@ -61,7 +61,7 @@ def getMayaMainWindow():
         from shiboken import wrapInstance
     from maya import OpenMayaUI as omui
     window_ptr = omui.MQtUtil.mainWindow()
-    window = wrapInstance(long(window_ptr), QtWidgets.QWidget)
+    window = wrapInstance(long(window_ptr), QtWidgets.QMainWindow)
     return window
 
 

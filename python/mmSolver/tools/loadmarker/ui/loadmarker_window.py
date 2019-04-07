@@ -16,7 +16,6 @@ import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
-import mmSolver.api as mmapi
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.tools.loadmarker.constant as const
@@ -38,7 +37,7 @@ class LoadMarkerWindow(BaseWindow):
         self.setupUi(self)
         self.addSubForm(loadmarker_layout.LoadMarkerLayout)
 
-        self.setWindowTitle('Load Markers - mmSolver')
+        self.setWindowTitle(const.WINDOW_TITLE)
 
         # Standard Buttons
         self.baseHideStandardButtons()

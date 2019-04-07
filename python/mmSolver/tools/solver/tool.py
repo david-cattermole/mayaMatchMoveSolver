@@ -103,5 +103,5 @@ def open_window():
     """
     Open the Solver UI window.
     """
-    solver_window.main(show=True)
+    solver_window.main()
     return

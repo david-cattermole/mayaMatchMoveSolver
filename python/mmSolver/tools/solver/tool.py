@@ -42,7 +42,7 @@ def run_solve(override_current_frame=None):
     log_level = lib_state.get_log_level()
 
     layout = None
-    win = solver_window.get_window_instance()
+    win = solver_window.SolverWindow.get_instance()
     if win is None:
         msg = 'Could not get window.'
         LOG.warning(msg)
@@ -103,5 +103,5 @@ def open_window():
     """
     Open the Solver UI window.
     """
-    solver_window.main(show=True)
+    solver_window.main()
     return

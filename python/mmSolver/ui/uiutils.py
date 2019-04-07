@@ -4,10 +4,14 @@ User interface utilities for Qt and Qt based applications.
 
 import sys
 
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
 import Qt
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
+import Qt.QtCompat as QtCompat
 
 
 def getHostApplication():
@@ -55,14 +59,19 @@ def getMayaMainWindow():
     :return: The Maya main window, as a Qt Widget object.
     :rtype: QWidget
     """
-    try:
-        from shiboken2 import wrapInstance
-    except ImportError:
-        from shiboken import wrapInstance
-    from maya import OpenMayaUI as omui
+    import maya.OpenMayaUI as omui
     window_ptr = omui.MQtUtil.mainWindow()
-    window = wrapInstance(long(window_ptr), QtWidgets.QWidget)
+    window = QtCompat.wrapInstance(long(window_ptr), QtWidgets.QMainWindow)
     return window
+
+
+def findControlMayaWidget(name, clsTyp):
+    import maya.OpenMayaUI as omui
+    ptr = omui.MQtUtil.findControl(name)
+    widget = None
+    if ptr:
+        widget = QtCompat.wrapInstance(long(ptr), clsTyp)
+    return widget
 
 
 def isValidQtObject(obj):

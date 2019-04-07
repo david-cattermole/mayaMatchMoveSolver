@@ -3,13 +3,13 @@ Window for the Channel Sensitivity tool.
 
 Usage::
 
-   import mmSolver.tools.channelsen.ui.channelsen_window as
-    channelsen_window
+   import mmSolver.tools.channelsen.ui.channelsen_window as channelsen_window
    channelsen_window.main()
 
 """
 
-import sys
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
 
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
@@ -18,16 +18,17 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
-import mmSolver.tools.channelsen.ui.channelsen_layout\
-    as channelsen_layout
+import mmSolver.tools.channelsen.ui.channelsen_layout as channelsen_layout
 
 
 LOG = mmSolver.logger.get_logger()
-MM_SOLVER_CHAN_SENSE_UI = None
 baseModule, BaseWindow = uiutils.getBaseWindow()
 
 
 class ChannelSenWindow(BaseWindow):
+
+    name = 'ChannelSenWindow'
+
     def __init__(self, parent=None, name=None):
         super(ChannelSenWindow, self).__init__(parent,
                                                name=name)
@@ -54,31 +55,27 @@ class ChannelSenWindow(BaseWindow):
         return
 
 
-def main(show=True, widthHeight=(400, 100)):
-    global MM_SOLVER_CHAN_SENSE_UI
+def main(show=True, auto_raise=True, delete=False):
+    """
+    Open the Channel Sensitivity UI window.
 
-    valid = uiutils.isValidQtObject(MM_SOLVER_CHAN_SENSE_UI)
-    if MM_SOLVER_CHAN_SENSE_UI is not None and valid is True:
-        MM_SOLVER_CHAN_SENSE_UI.close()
+    :param show: Show the UI.
+    :type show: bool
 
-    name = 'ChannelSenWindow'
-    app, parent = uiutils.getParent()
-    MM_SOLVER_CHAN_SENSE_UI = ChannelSenWindow(parent=parent,
-                                               name=name)
-    if not MM_SOLVER_CHAN_SENSE_UI:
-        return MM_SOLVER_CHAN_SENSE_UI
-    if show:
-        MM_SOLVER_CHAN_SENSE_UI.show()
+    :param auto_raise: If the UI is open, raise it to the front?
+    :type auto_raise: bool
 
-    if ((isinstance(widthHeight, (tuple, list)) is True)
-            and (len(widthHeight) == 2)):
-        pos = MM_SOLVER_CHAN_SENSE_UI.pos()
-        MM_SOLVER_CHAN_SENSE_UI.setGeometry(pos.x(),
-                                            pos.y(),
-                                            widthHeight[0],
-                                            widthHeight[1])
+    :param delete: Delete the existing UI and rebuild it? Helpful when
+                   developing the UI in Maya script editor.
+    :type delete: bool
 
-    # Enter Qt application main loop
-    if app is not None:
-        sys.exit(app.exec_())
-    return MM_SOLVER_CHAN_SENSE_UI
+    :returns: A new solver window, or None if the window cannot be
+              opened.
+    :rtype: SolverWindow or None.
+    """
+    win = ChannelSenWindow.open_window(
+        show=show,
+        auto_raise=auto_raise,
+        delete=delete
+    )
+    return win

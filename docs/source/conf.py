@@ -29,6 +29,7 @@ autodoc_mock_imports = [
     'Qt.QtCore',
     'Qt.QtGui',
     'Qt.QtWidgets',
+    'Qt.QtCompat',
     'PySide',
     'PySide2',
     'shiboken',

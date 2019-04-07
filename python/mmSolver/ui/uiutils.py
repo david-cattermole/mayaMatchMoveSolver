@@ -59,10 +59,19 @@ def getMayaMainWindow():
     :return: The Maya main window, as a Qt Widget object.
     :rtype: QWidget
     """
-    from maya import OpenMayaUI as omui
+    import maya.OpenMayaUI as omui
     window_ptr = omui.MQtUtil.mainWindow()
     window = QtCompat.wrapInstance(long(window_ptr), QtWidgets.QMainWindow)
     return window
+
+
+def findControlMayaWidget(name, clsTyp):
+    import maya.OpenMayaUI as omui
+    ptr = omui.MQtUtil.findControl(name)
+    widget = None
+    if ptr:
+        widget = QtCompat.wrapInstance(long(ptr), clsTyp)
+    return widget
 
 
 def isValidQtObject(obj):

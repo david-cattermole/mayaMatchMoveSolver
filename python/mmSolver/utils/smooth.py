@@ -318,9 +318,6 @@ def _fourier_smooth_raw(data, width, filtr=None):
         # n is even
         x = x[(n/2)-1:-(n/2)]
 
-    for i, j in enumerate(x):
-        x[i] = abs(j)
-
     assert len(x) == len(data)
     return x
 
@@ -423,9 +420,6 @@ def _fourier_smooth_numpy(data, width, filtr=None):
     else:
         # n is even
         x = x[(n/2)-1:-(n/2)]
-
-    for i, j in enumerate(x):
-        x[i] = abs(j)
 
     assert len(x) == len(data)
     return x

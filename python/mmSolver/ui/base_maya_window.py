@@ -27,6 +27,9 @@ Using the module::
 
 from maya.app.general.mayaMixin import MayaQWidgetBaseMixin
 
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
 import Qt
 import Qt.QtCore as QtCore
 import Qt.QtWidgets as QtWidgets

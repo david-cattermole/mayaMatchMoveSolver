@@ -31,11 +31,7 @@ from maya.app.general.mayaMixin import MayaQWidgetBaseMixin
 import Qt
 import Qt.QtCore as QtCore
 import Qt.QtWidgets as QtWidgets
-
-try:
-    from shiboken2 import wrapInstance
-except ImportError:
-    from shiboken import wrapInstance
+import Qt.QtCompat as QtCompat
 
 import mmSolver.ui.ui_base as ui_base
 
@@ -44,16 +40,16 @@ WINDOW = None
 
 
 def getMayaMainWindow():
-    mainWindowPtr = omui.MQtUtil.mainWindow()
-    mainWindow = wrapInstance(long(mainWindowPtr), QtWidgets.QWidget)
-    return mainWindow
+    ptr = omui.MQtUtil.mainWindow()
+    window = QtCompat.wrapInstance(long(ptr), QtWidgets.QMainWindow)
+    return window
 
 
 def findWidget(name, clsTyp):
     ptr = omui.MQtUtil.findControl(name)
     widget = None
     if ptr:
-        widget = wrapInstance(long(ptr), clsTyp)
+        widget = QtCompat.wrapInstance(long(ptr), clsTyp)
     return widget
 
 

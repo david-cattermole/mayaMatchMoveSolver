@@ -15,7 +15,7 @@ python "%THIS_DIR%get_qtpy.py" "%ROOT%\archives" "%ROOT%\working" "%ROOT%\patche
 
 :: Copy file to install
 MKDIR "%INSTALL_DIR%"
-COPY /Y /V "%ROOT%\working\Qt.py-0.6.9\Qt.py" "%INSTALL_DIR%\Qt.py"
+COPY /Y /V "%ROOT%\working\Qt.py-1.1.0\Qt.py" "%INSTALL_DIR%\Qt.py"
 
 :: Return back project root directory.
 CHDIR "%ROOT%"

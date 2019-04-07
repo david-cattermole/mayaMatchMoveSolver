@@ -4,16 +4,14 @@ Get the LevMar source code.
 
 import sys
 import os
-import shutil
 import download_unpack
 
 
 def main(archives_dir, working_dir, patches_dir):
-    url = 'https://github.com/mottosso/Qt.py/archive/0.6.9.tar.gz'
-    # user_agent = 'Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
+    url = 'https://github.com/mottosso/Qt.py/archive/1.1.0.tar.gz'
     user_agent = None
-    archive_name = 'Qt.py-0.6.9.tar.gz'
-    name = 'Qt.py-0.6.9'
+    archive_name = 'Qt.py-1.1.0.tar.gz'
+    name = 'Qt.py-1.1.0'
     download_unpack.add_package(
         name,
         archive_name,
@@ -21,11 +19,6 @@ def main(archives_dir, working_dir, patches_dir):
         archives_dir,
         working_dir,
         user_agent=user_agent)
-
-    # Patch the CMake script, to ours, so we can build a shared library.
-    # src = os.path.join(patches_dir, 'levmar', 'CMakeLists.txt')
-    # dst = os.path.join(working_dir, name, 'CMakeLists.txt')
-    # shutil.copy(src, dst)
     return
 
 

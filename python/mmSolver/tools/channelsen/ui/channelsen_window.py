@@ -11,6 +11,9 @@ Usage::
 
 import sys
 
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
@@ -18,8 +21,7 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
-import mmSolver.tools.channelsen.ui.channelsen_layout\
-    as channelsen_layout
+import mmSolver.tools.channelsen.ui.channelsen_layout as channelsen_layout
 
 
 LOG = mmSolver.logger.get_logger()

@@ -3,7 +3,11 @@ The main component of the user interface for the channel sensitivity
 window.
 """
 
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
 import Qt.QtWidgets as QtWidgets
+
 import mmSolver.logger
 import mmSolver.tools.channelsen.ui.ui_channelsen_layout as ui_channelsen_layout
 import mmSolver.tools.channelsen.lib as lib

@@ -5,6 +5,9 @@ The main window for the 'Solver' tool.
 import sys
 from functools import partial
 
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets

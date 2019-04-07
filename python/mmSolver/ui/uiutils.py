@@ -4,6 +4,9 @@ User interface utilities for Qt and Qt based applications.
 
 import sys
 
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
 import Qt
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui

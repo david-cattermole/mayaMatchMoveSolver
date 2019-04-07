@@ -27,13 +27,6 @@ TODO: A custom right-click menu should be added to the list of frames;
 
 """
 
-import uuid
-
-import Qt as Qt
-import Qt.QtGui as QtGui
-import Qt.QtCore as QtCore
-import Qt.QtWidgets as QtWidgets
-
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.converttypes as converttypes
 import mmSolver.ui.nodes as nodes

@@ -31,11 +31,13 @@ import mmSolver.tools.markerbundlerename.tool as mbrename_tool
 
 
 LOG = mmSolver.logger.get_logger()
-MM_SOLVER_SOLVER_UI = None
 baseModule, BaseWindow = uiutils.getBaseWindow()
 
 
 class SolverWindow(BaseWindow):
+
+    name = 'SolverWindow'
+
     def __init__(self, parent=None, name=None):
         super(SolverWindow, self).__init__(parent, name=name)
         self.setupUi(self)
@@ -421,40 +423,19 @@ class SolverWindow(BaseWindow):
         return
 
 
-def get_window_instance():
-    """
-    Get the currently running instance of the Solver window.
-
-    :returns: An object of SolverWindow, or None.
-    :rtype: SolverWindow or None
-    """
-    global MM_SOLVER_SOLVER_UI
-    valid = uiutils.isValidQtObject(MM_SOLVER_SOLVER_UI)
-    if MM_SOLVER_SOLVER_UI is None or valid is False:
-        return None
-    return MM_SOLVER_SOLVER_UI
-
-
-def __set_window_instance(window):
-    """
-    Set the stored instance of the Solver window.
-    """
-    global MM_SOLVER_SOLVER_UI
-    valid = uiutils.isValidQtObject(MM_SOLVER_SOLVER_UI)
-    if valid is True:
-        MM_SOLVER_SOLVER_UI = window
-    return
-
-
-def main(show=True, widthHeight=(800, 600)):
+def main(show=True, auto_raise=True, delete=False):
     """
     Open the Solver UI window.
 
-    :param show: Should we show the window?
+    :param show: Show the UI.
     :type show: bool
 
-    :param widthHeight: Width and height of the window to open.
-    :type widthHeight: int, int
+    :param auto_raise: If the UI is open, raise it to the front?
+    :type auto_raise: bool
+
+    :param delete: Delete the existing UI and rebuild it? Helpful when
+                   developing the UI in Maya script editor.
+    :type delete: bool
 
     :returns: A new solver window, or None if the window cannot be
               opened.
@@ -464,25 +445,9 @@ def main(show=True, widthHeight=(800, 600)):
     # will not open and an error will be given.
     lib_maya_utils.ensure_plugin_loaded()
 
-    win = get_window_instance()
-    if win is not None:
-        win.close()
-
-    name = 'SolverWindow'
-    app, parent = uiutils.getParent()
-    win = SolverWindow(parent=parent, name=name)
-    __set_window_instance(win)
-    if not win:
-        return win
-    if show is True:
-        win.show()
-
-    if ((isinstance(widthHeight, (tuple, list)) is True)
-         and (len(widthHeight) == 2)):
-        pos = win.pos()
-        win.setGeometry(pos.x(), pos.y(), widthHeight[0], widthHeight[1])
-
-    # Enter Qt application main loop
-    if app is not None:
-        sys.exit(app.exec_())
+    win = SolverWindow.open_window(
+        show=show,
+        auto_raise=auto_raise,
+        delete=delete
+    )
     return win

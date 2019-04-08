@@ -17,10 +17,42 @@ Note: Replace XXXX, with the Maya version use build for.
 
 The sections below explain the process in more detail.
 
-# Building Dependencies
+# Installing Dependencies
 
 mmSolver has a few dependencies, and are listed in
 [BUILD.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md#dependencies).
+Install the dependencies using your Linux distribution's package manager.
+
+For example on CentOS 7 we use the `yum` command to install some dependencies:
+```commandline
+$ yum install gcc make cmake python python-sphinx 
+```
+
+To be sure you have the above dependencies installed, run the following in a terminal and you should expect similar output:
+```commandline
+$ cmake --version
+cmake version 2.8.12.2
+
+$ gcc --version
+gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36)
+Copyright (C) 2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ 
+$ make --version
+GNU Make 3.82
+Built for x86_64-redhat-linux-gnu
+Copyright (C) 2010  Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+$ python --version
+Python 2.7.5
+
+```
+
+# Building Dependencies
 
 `cminpack`, `levmar` and `Qt.py` can be easily downloaded and built
 for mmSolver using build scripts provided in the `<project

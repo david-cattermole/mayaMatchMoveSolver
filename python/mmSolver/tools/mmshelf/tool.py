@@ -130,6 +130,19 @@ def _create_bundle_tools_menu(menu):
 
 
 def _create_marker_tools_menu(menu):
+    # Toggle Marker lock
+    name = 'Toggle Marker lock'
+    tooltip = 'Toggles selected marker lock state.'
+    cmd = (
+        'import mmSolver.tools.togglemarkerlock.tool;'
+        'mmSolver.tools.togglemarkerlock.tool.toggle_marker_lock();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
     # Duplicate Marker
     name = 'Duplicate Marker'
     tooltip = 'Duplicate marker from selection.'

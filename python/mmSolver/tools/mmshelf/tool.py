@@ -61,7 +61,7 @@ def _create_bundle_tools_menu(menu):
     tooltip = 'Toggle the Bundle node attribute Lock State.'
     cmd = (
         'import mmSolver.tools.togglebundlelock.tool as tglbndlock;'
-        'tglbndlock.toggle_bundle_lock();'
+        'tglbndlock.main();'
     )
     shelfutils.create_menu_item(
         parent=menu,
@@ -135,7 +135,7 @@ def _create_marker_tools_menu(menu):
     tooltip = 'Toggles selected marker lock state.'
     cmd = (
         'import mmSolver.tools.togglemarkerlock.tool;'
-        'mmSolver.tools.togglemarkerlock.tool.toggle_marker_lock();'
+        'mmSolver.tools.togglemarkerlock.tool.main();'
     )
     shelfutils.create_menu_item(
         parent=menu,

@@ -10,7 +10,7 @@ import mmSolver.tools.togglemarkerlock.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def toggle_marker_lock():
+def main():
     """
     Toggles selected marker lock state.
     """

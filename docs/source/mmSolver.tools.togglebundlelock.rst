@@ -12,13 +12,6 @@ Tools
     :members:
     :undoc-members:
 
-Library
-+++++++
-
-.. automodule:: mmSolver.tools.togglebundlelock.lib
-    :members:
-    :undoc-members:
-
 Constants
 +++++++++
 

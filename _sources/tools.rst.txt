@@ -290,6 +290,32 @@ Run this Python command:
     import mmSolver.tools.togglebundlelock.tool as tglbndlock
     tglbndlock.toggle_bundle_lock()
 
+
+
+Toggle Marker Lock State
+------------------------
+
+Toggle marker lock state will toggle lock state of the selected
+marker's attributes, if any of the marker translate attributes are
+locked, running this tool will unlock translateX, translateX and
+enable attributes on the selected markers, and running the tool again
+will lock same attributes.
+
+Usage:
+
+1) Select marker nodes.
+
+2) Run tool.
+   - The selected marker node attributes will be toggled between locked and unlocked.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.togglemarkerlock.tool as tglmkrlock
+    tglmkrlock.toggle_marker_lock()
+
+
 Average Marker
 --------------
 

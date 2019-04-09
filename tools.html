@@ -295,6 +295,25 @@ bundles, and running the tool again will lock all attributes.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="toggle-marker-lock-state">
+<h2>Toggle Marker Lock State<a class="headerlink" href="#toggle-marker-lock-state" title="Permalink to this headline">¶</a></h2>
+<p>Toggle marker lock state will toggle lock state of the selected
+marker&#8217;s attributes, if any of the marker translate attributes are
+locked, running this tool will unlock translateX, translateX and
+enable attributes on the selected markers, and running the tool again
+will lock same attributes.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select marker nodes.</li>
+<li>Run tool.
+- The selected marker node attributes will be toggled between locked and unlocked.</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.togglemarkerlock.tool</span> <span class="k">as</span> <span class="nn">tglmkrlock</span>
+<span class="n">tglmkrlock</span><span class="o">.</span><span class="n">toggle_marker_lock</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="average-marker">
 <h2>Average Marker<a class="headerlink" href="#average-marker" title="Permalink to this headline">¶</a></h2>
 <p>Average Marker tool will create a new Marker with an averaged position
@@ -349,6 +368,7 @@ markers.</p>
 <li><a class="reference internal" href="#screen-z-manipulator">Screen-Z Manipulator</a></li>
 <li><a class="reference internal" href="#channel-sensitivity">Channel Sensitivity</a></li>
 <li><a class="reference internal" href="#toggle-bundle-lock-state">Toggle Bundle Lock State</a></li>
+<li><a class="reference internal" href="#toggle-marker-lock-state">Toggle Marker Lock State</a></li>
 <li><a class="reference internal" href="#average-marker">Average Marker</a></li>
 <li><a class="reference internal" href="#duplicate-marker">Duplicate marker</a></li>
 </ul>

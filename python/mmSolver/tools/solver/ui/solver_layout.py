@@ -65,8 +65,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.object_treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.object_treeView.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.object_selModel = self.object_treeView.selectionModel()
-        self.object_selModel.currentChanged.connect(
-            self.objectNodeCurrentChanged
+        self.object_selModel.selectionChanged.connect(
+            self.objectNodeSelectionChanged
         )
         self.objectToggleCamera_toolButton.clicked.connect(
             self.objectToggleCameraClicked,
@@ -97,8 +97,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.attribute_treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.attribute_treeView.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.attribute_selModel = self.attribute_treeView.selectionModel()
-        self.attribute_selModel.currentChanged.connect(
-            self.attrNodeCurrentChanged
+        self.attribute_selModel.selectionChanged.connect(
+            self.attrNodeSelectionChanged
         )
 
         # Attr Add and Remove buttons
@@ -713,46 +713,70 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateSolveValidState()
         return
 
-    @QtCore.Slot(QtCore.QModelIndex, QtCore.QModelIndex)
-    def objectNodeCurrentChanged(self, index, prevIndex):
-        """
-        Look up the Maya node from the data at index, then add it to the
-        selection.
-        """
-        # TODO: Based on the Maya selection key modifiers, we should
-        # add to the current selection, or toggle, as needed.
-        # TODO: When an object node tree item is selected, the attr nodes tree
-        # view must all be deselected.
-        ui_node = lib_uiquery.get_ui_node_from_index(
-            index,
-            self.object_filterModel
-        )
-        if ui_node is None:
-            return
-        # Type info will be 'marker', 'bundle' or 'camera' based on
-        # the selected node type.
-        typeInfo = ui_node.typeInfo
-        nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], typeInfo)
+    @staticmethod
+    def __lookupObjectNodes(indexes, model):
         maya_nodes = []
-        if typeInfo == 'camera':
-            maya_nodes = [x.get_shape_node() for x in nodes]
-        else:
-            # For bundles and markers
-            maya_nodes = [x.get_node() for x in nodes]
-        lib_maya_utils.set_scene_selection(maya_nodes)
+        for idx in indexes:
+            ui_node = lib_uiquery.get_ui_node_from_index(idx, model)
+            if ui_node is None:
+                continue
+
+            # Type info will be 'marker', 'bundle' or 'camera' based on
+            # the selected node type.
+            typeInfo = ui_node.typeInfo
+            nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], typeInfo)
+            if typeInfo == 'camera':
+                maya_nodes += [x.get_shape_node() for x in nodes]
+            else:
+                # For bundles and markers
+                maya_nodes += [x.get_node() for x in nodes]
+        return maya_nodes
+
+    @staticmethod
+    def __lookupAttrNodes(indexes, model):
+        maya_nodes = []
+        for idx in indexes:
+            ui_node = lib_uiquery.get_ui_node_from_index(idx, model)
+            if ui_node is None:
+                continue
+
+            nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'data')
+            maya_nodes += [x.get_node() for x in nodes]
+        return maya_nodes
+
+    @QtCore.Slot(QtCore.QItemSelection, QtCore.QItemSelection)
+    def objectNodeSelectionChanged(self, selected, deselected):
+        """
+        Look up the Maya node from the 'selected' nodes, and add them
+        to the Maya selection.
+        """
+        select_indexes = [idx for idx in selected.indexes()]
+        deselect_indexes = [idx for idx in deselected.indexes()]
+
+        select_nodes = self.__lookupObjectNodes(
+            select_indexes,
+            self.object_filterModel)
+        deselect_nodes = self.__lookupObjectNodes(
+            deselect_indexes,
+            self.object_filterModel)
+
+        lib_maya_utils.add_scene_selection(select_nodes)
+        lib_maya_utils.remove_scene_selection(deselect_nodes)
         return
 
-    @QtCore.Slot(QtCore.QModelIndex, QtCore.QModelIndex)
-    def attrNodeCurrentChanged(self, index, prevIndex):
-        ui_node = lib_uiquery.get_ui_node_from_index(
-            index,
-            self.attribute_filterModel
-        )
-        if ui_node is None:
-            return
-        nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'data')
-        maya_nodes = [x.get_node() for x in nodes]
-        lib_maya_utils.set_scene_selection(maya_nodes)
+    @QtCore.Slot(QtCore.QItemSelection, QtCore.QItemSelection)
+    def attrNodeSelectionChanged(self, selected, deselected):
+        select_indexes = [idx for idx in selected.indexes()]
+        deselect_indexes = [idx for idx in deselected.indexes()]
+
+        select_nodes = self.__lookupAttrNodes(
+            select_indexes,
+            self.attribute_filterModel)
+        deselect_nodes = self.__lookupAttrNodes(
+            deselect_indexes,
+            self.attribute_filterModel)
+        lib_maya_utils.add_scene_selection(select_nodes)
+        lib_maya_utils.remove_scene_selection(deselect_nodes)
         return
 
     @QtCore.Slot(int)

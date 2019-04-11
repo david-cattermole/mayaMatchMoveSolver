@@ -119,12 +119,18 @@ class Bundle(object):
         maya.cmds.setAttr(tfm + '.sx', lock=True)
         maya.cmds.setAttr(tfm + '.sy', lock=True)
         maya.cmds.setAttr(tfm + '.sz', lock=True)
+        maya.cmds.setAttr(tfm + '.shxy', lock=True)
+        maya.cmds.setAttr(tfm + '.shxz', lock=True)
+        maya.cmds.setAttr(tfm + '.shyz', lock=True)
         maya.cmds.setAttr(tfm + '.rx', keyable=False)
         maya.cmds.setAttr(tfm + '.ry', keyable=False)
         maya.cmds.setAttr(tfm + '.rz', keyable=False)
         maya.cmds.setAttr(tfm + '.sx', keyable=False)
         maya.cmds.setAttr(tfm + '.sy', keyable=False)
         maya.cmds.setAttr(tfm + '.sz', keyable=False)
+        maya.cmds.setAttr(tfm + '.shxy', keyable=False)
+        maya.cmds.setAttr(tfm + '.shxz', keyable=False)
+        maya.cmds.setAttr(tfm + '.shyz', keyable=False)
 
         # Shape Node
         shp_name = tfm.rpartition('|')[-1] + 'Shape'

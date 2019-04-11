@@ -48,6 +48,15 @@ class Bundle(object):
             self._mfn = OpenMaya.MFnDagNode()
         return
 
+    def __repr__(self):
+        result = '<{class_name}('.format(class_name=self.__class__.__name__)
+        result += '{hash} node={node}'.format(
+            hash=hash(self),
+            node=self.get_node(),
+        )
+        result += ')>'
+        return result
+
     def get_node(self):
         """
         Get the bundle transform node.

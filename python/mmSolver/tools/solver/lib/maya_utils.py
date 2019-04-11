@@ -70,6 +70,32 @@ def set_scene_selection(nodes):
     return
 
 
+def add_scene_selection(nodes):
+    """
+    The Maya scene selection is appended with `nodes`.
+
+    :param nodes: Nodes to set as selected.
+    :type nodes: list of str
+
+    :return: Nothing.
+    """
+    maya.cmds.select(nodes, add=True)
+    return
+
+
+def remove_scene_selection(nodes):
+    """
+    The Maya scene selection is removed with `nodes`.
+
+    :param nodes: Nodes to set as selected.
+    :type nodes: list of str
+
+    :return: Nothing.
+    """
+    maya.cmds.select(nodes, deselect=True)
+    return
+
+
 def get_current_frame():
     """
     Get the current Maya frame number.

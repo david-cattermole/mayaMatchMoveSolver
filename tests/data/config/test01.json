@@ -3,6 +3,6 @@
     "load_at_startup": 1,
     "create_menu": 1,
     "create_shelf": 1,
-    "create_help_source": "local",
+    "help_source": "local",
     "debug": 0
 }

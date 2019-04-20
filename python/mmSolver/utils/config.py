@@ -88,6 +88,25 @@ def write_data(data, file_path):
     pass
 
 
+def exists(data, key):
+    """
+    Does the key exist in data?
+
+    :param data: The name of the config file, or an absolute file
+                      path.
+    :type data: str
+
+    :param key: Hierarchy of keys separated by forward slash to search 
+                for in the config. 
+                For example 'data[arg1][arg2][arg3]'.
+    :type key: str
+
+    :return:
+    :rtype
+    """
+    pass
+
+
 def get_value(data, key, default_value=None):
     """
     Get a value from the config data.
@@ -100,9 +119,8 @@ def get_value(data, key, default_value=None):
     >>> y = get_value(data, 'key/subkey')
     >>> z = get_value(data, 'key/subkey/subsubkey')
 
-    :param file_name: The name of the config file, or an absolute file
-                      path.
-    :type file_name: str
+    :param data: The configuration data, as a Python dict (plain-old-data).
+    :type data: dict
 
     :param key: Hierarchy of keys separated by forward slash to search 
                 for in the config. 
@@ -131,11 +149,9 @@ def set_value(data, key, value):
 
 
 class Config(object):
-
-
     def __init__(self, file_path):
         self.file_path = file_path
-        self.values = {}
+        self._values = {}
         self._autoread = True
         self._autowrite = True
 
@@ -145,22 +161,25 @@ class Config(object):
     def write(self):
         pass
 
-    def get_value(self):
+    def exists(self, key):
+        pass
+    
+    def get_value(self, key, default_value=None):
         pass
 
-    def set_value(self):
+    def set_value(self, key, value):
         pass
 
     def get_autoread(self):
         pass
 
-    def set_autoread(self):
+    def set_autoread(self, value):
         pass
 
     def get_autowrite(self):
         pass
 
-    def set_autowrite(self):
+    def set_autowrite(self, value):
         pass
 
 

@@ -15,6 +15,7 @@ test*.txt
 *_before*.ma
 *.log
 *.flags
+ui_*.py
 
 old/*
 precompiled/*

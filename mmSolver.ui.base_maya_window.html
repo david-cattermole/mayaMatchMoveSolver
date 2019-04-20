@@ -55,34 +55,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-mmSolver.ui.base_maya_window">
-<span id="mmsolver-ui-base-maya-window"></span><h1>mmSolver.ui.base_maya_window<a class="headerlink" href="#module-mmSolver.ui.base_maya_window" title="Permalink to this headline">¶</a></h1>
-<p>The base window for usage inside Maya.</p>
-<p>All windows inside Maya should sub-class from BaseMayaWindow.</p>
-<p>Using the module:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.myTool.ui.ui_myTool</span> <span class="k">as</span> <span class="nn">ui_myTool</span>
-<span class="kn">import</span> <span class="nn">mmSolver.ui.base_maya_window</span> <span class="k">as</span> <span class="nn">base_maya_window</span>
-
-<span class="k">class</span> <span class="nc">MyToolLayout</span><span class="p">(</span><span class="n">QWidget</span><span class="p">,</span> <span class="n">ui_myTool</span><span class="o">.</span><span class="n">Ui_Widget</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">MyToolLayout</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-<span class="k">class</span> <span class="nc">MyToolWindow</span><span class="p">(</span><span class="n">baseMayaWindow</span><span class="o">.</span><span class="n">BaseMayaWindow</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">MyToolWindow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="n">subLayout</span><span class="o">=</span><span class="n">MyToolLayout</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s1">&#39;Re-Parent&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">applyBtn</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span> <span class="s1">&#39;apply&#39;</span>
-</pre></div>
-</div>
-<dl class="attribute">
-<dt id="mmSolver.ui.base_maya_window.BaseMayaWindow">
-<code class="descclassname">mmSolver.ui.base_maya_window.</code><code class="descname">BaseMayaWindow</code><a class="headerlink" href="#mmSolver.ui.base_maya_window.BaseMayaWindow" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+  <div class="section" id="mmsolver-ui-base-maya-window">
+<h1>mmSolver.ui.base_maya_window<a class="headerlink" href="#mmsolver-ui-base-maya-window" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

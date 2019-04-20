@@ -2,6 +2,8 @@
 Contains constant values for the Load Marker tool.
 """
 
+WINDOW_TITLE = 'Load Markers - mmSolver'
+
 # UV Track format
 # Keep this in-sync with the 3DEqualizer exporter 'uvtrack_format.py'
 UV_TRACK_FORMAT_VERSION_UNKNOWN = -1

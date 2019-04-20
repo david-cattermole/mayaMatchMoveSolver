@@ -8,14 +8,14 @@ Usage::
 
 """
 
-import sys
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
 
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
-import mmSolver.api as mmapi
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.tools.loadmarker.constant as const
@@ -25,17 +25,19 @@ import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
 
 
 LOG = mmSolver.logger.get_logger()
-MM_SOLVER_LOAD_MARKER_UI = None
 baseModule, BaseWindow = uiutils.getBaseWindow()
 
 
 class LoadMarkerWindow(BaseWindow):
+
+    name = 'LoadMarkerWindow'
+
     def __init__(self, parent=None, name=None):
         super(LoadMarkerWindow, self).__init__(parent, name=name)
         self.setupUi(self)
         self.addSubForm(loadmarker_layout.LoadMarkerLayout)
 
-        self.setWindowTitle('Load Markers - mmSolver')
+        self.setWindowTitle(const.WINDOW_TITLE)
 
         # Standard Buttons
         self.baseHideStandardButtons()
@@ -95,27 +97,27 @@ class LoadMarkerWindow(BaseWindow):
         return
 
 
-def main(show=True, widthHeight=(800, 400)):
-    global MM_SOLVER_LOAD_MARKER_UI
+def main(show=True, auto_raise=True, delete=False):
+    """
+    Open the Load Marker UI window.
 
-    valid = uiutils.isValidQtObject(MM_SOLVER_LOAD_MARKER_UI)
-    if MM_SOLVER_LOAD_MARKER_UI is not None and valid is True:
-        MM_SOLVER_LOAD_MARKER_UI.close()
+    :param show: Show the UI.
+    :type show: bool
 
-    name = 'LoadMarkerWindow'
-    app, parent = uiutils.getParent()
-    MM_SOLVER_LOAD_MARKER_UI = LoadMarkerWindow(parent=parent, name=name)
-    if not MM_SOLVER_LOAD_MARKER_UI:
-        return MM_SOLVER_LOAD_MARKER_UI
-    if show:
-        MM_SOLVER_LOAD_MARKER_UI.show()
+    :param auto_raise: If the UI is open, raise it to the front?
+    :type auto_raise: bool
 
-    if ((isinstance(widthHeight, (tuple, list)) is True)
-         and (len(widthHeight) == 2)):
-        pos = MM_SOLVER_LOAD_MARKER_UI.pos()
-        MM_SOLVER_LOAD_MARKER_UI.setGeometry(pos.x(), pos.y(), widthHeight[0], widthHeight[1])
+    :param delete: Delete the existing UI and rebuild it? Helpful when
+                   developing the UI in Maya script editor.
+    :type delete: bool
 
-    # Enter Qt application main loop
-    if app is not None:
-        sys.exit(app.exec_())
-    return MM_SOLVER_LOAD_MARKER_UI
+    :returns: A new solver window, or None if the window cannot be
+              opened.
+    :rtype: SolverWindow or None.
+    """
+    win = LoadMarkerWindow.open_window(
+        show=show,
+        auto_raise=auto_raise,
+        delete=delete
+    )
+    return win

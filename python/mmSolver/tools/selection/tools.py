@@ -32,16 +32,10 @@ def swap_between_selected_markers_and_bundles():
 
     if num_marker >= num_bundle:
         bnd_nodes = convert_selection.get_bundles_from_markers(node_filtered['marker'])
-        new_sel += bnd_nodes
-        new_sel += node_filtered['camera']
-        new_sel += node_filtered['collection']
-        new_sel += node_filtered['other']
+        new_sel = bnd_nodes
     else:
         mkr_nodes = convert_selection.get_markers_from_bundles(node_filtered['bundle'])
-        new_sel += mkr_nodes
-        new_sel += node_filtered['camera']
-        new_sel += node_filtered['collection']
-        new_sel += node_filtered['other']
+        new_sel = mkr_nodes
 
     maya.cmds.select(new_sel, replace=True)
     return
@@ -71,12 +65,6 @@ def select_both_markers_and_bundles():
         mkr_nodes = convert_selection.get_markers_from_bundles(nodes)
         bnd_nodes = convert_selection.get_bundles_from_markers(mkr_nodes)
 
-    new_sel = []
-    new_sel += mkr_nodes
-    new_sel += bnd_nodes
-    new_sel += node_filtered['camera']
-    new_sel += node_filtered['collection']
-    new_sel += node_filtered['other']
-
+    new_sel = mkr_nodes + bnd_nodes
     maya.cmds.select(new_sel, replace=True)
     return

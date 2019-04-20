@@ -27,6 +27,15 @@ DATA_THREE = [
 ]
 
 
+# Some random numbers, same as DATA_ONE, but negative numbers.
+DATA_FOUR = [
+    -0.2540983642613156, -0.7831634753872109, -0.002591692790079203,
+    -0.41595045018499655, -0.6360617637325738, -0.11174422210135437,
+    -0.19632980357666963, -0.433340268169374, -0.07028804556375579,
+    -0.24322363800544966
+]
+
+
 # @unittest.skip
 class TestSmooth(test_utils.UtilsTestCase):
     """
@@ -186,6 +195,34 @@ class TestSmooth(test_utils.UtilsTestCase):
         ]
         for a, b in zip(list(x), data):
             self.assertAlmostEqual(a, b)
+        return
+
+    def test_fourier_smooth_four(self):
+        """
+        Test the fourier smoothing function, with data four input.
+
+        .. todo::
+
+            Test with and without Numpy in the same interpreter
+              session; We must get the exact same result!
+
+        """
+        # Smooth and negate DATA_ONE.
+        data = list(DATA_ONE)
+        x = smooth_utils.fourier_smooth(data, 2.0)
+        x_neg = [n * -1.0 for n in x]
+
+        # Smooth DATA_FOUR by two frames, it must match DATA_ONE after
+        # it was smoothed and negated.
+        data = list(DATA_FOUR)
+        y = smooth_utils.fourier_smooth(data, 2.0)
+        self.assertEqual(x_neg, y)
+        same_value = True
+        for i, v in enumerate(y):
+            if x_neg[i] != v:
+                same_value = False
+                break
+        self.assertIs(same_value, True)
         return
 
 

@@ -100,8 +100,9 @@ def parse_v1(file_path):
         idx += 1
         num_frames = int(lines[idx])
         if num_frames <= 0:
-            msg = 'point has no data: %r'
-            LOG.warning(msg, mkr_name)
+            idx += 1
+            msg = 'Point has no data: mkr_name=%r line_num=%r'
+            LOG.warning(msg, mkr_name, idx)
             continue
 
         # Frame data parsing
@@ -110,6 +111,7 @@ def parse_v1(file_path):
         while j > 0:
             idx += 1
             line = lines[idx]
+            line = line.strip()
             if len(line) == 0:
                 # Have we reached the end of the file?
                 break
@@ -117,12 +119,14 @@ def parse_v1(file_path):
             split = line.split()
             if len(split) != 4:
                 # We should not get here
-                msg = 'File invalid, there must be 4 numbers in line: %r'
-                raise interface.ParserError(msg % line)
+                msg = (
+                    'File invalid, there must be 4 numbers in a line'
+                    ' (separated by spaces): line=%r line_num=%r'
+                )
+                raise interface.ParserError(msg % (line, idx))
             frame = int(split[0])
             mkr_u = float(split[1])
             mkr_v = float(split[2])
-            mkr_weight = 1.0
             mkr_weight = float(split[3])
 
             mkr_data.weight.set_value(frame, mkr_weight)

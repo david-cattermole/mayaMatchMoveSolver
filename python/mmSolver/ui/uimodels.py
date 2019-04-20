@@ -2,6 +2,9 @@
 Qt models used in Model-View-Controller designs.
 """
 
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
 import Qt as Qt
 import Qt.QtGui as QtGui
 import Qt.QtCore as QtCore

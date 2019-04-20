@@ -1,37 +1,37 @@
 """
-This tool toggles selected bundle lock state
+This tool toggles selected marker lock state
 """
 
 import maya.cmds
 import mmSolver.logger
 import mmSolver.tools.selection.filternodes as filternodes
-import mmSolver.tools.togglebundlelock.constant as const
+import mmSolver.tools.togglemarkerlock.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
 
 def main():
     """
-    Toggles selected bundle lock state.
+    Toggles selected marker lock state.
     """
     selection = maya.cmds.ls(selection=True, long=True) or []
-    selected_bundles = filternodes.get_bundle_nodes(selection)
-    if len(selected_bundles) == 0:
-        LOG.warning("Please select bundle's to lock or unlock")
+    selected_markers = filternodes.get_marker_nodes(selection)
+    if len(selected_markers) == 0:
+        LOG.warning("Please select marker's to lock or unlock")
         return
 
     attrs = const.ATTRS
-    bundle_attrs = []
-    for bundle in selected_bundles:
+    marker_attrs = []
+    for marker in selected_markers:
         for attr in attrs:
-            bundle_attrs.append('%s.%s' % (bundle, attr))
+            marker_attrs.append('%s.%s' % (marker, attr))
 
     is_locked = False
-    for attr in bundle_attrs:
+    for attr in marker_attrs:
         if maya.cmds.getAttr(attr, lock=True):
             is_locked = True
 
-    for attr in bundle_attrs:
+    for attr in marker_attrs:
         lock_value = not is_locked
         maya.cmds.setAttr(attr, lock=lock_value)
     return

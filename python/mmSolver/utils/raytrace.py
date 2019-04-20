@@ -2,7 +2,6 @@
 Raytracing functions.
 """
 
-import maya.cmds
 import maya.OpenMaya as OpenMaya
 import mmSolver.logger
 import mmSolver.utils.constant as const
@@ -57,7 +56,7 @@ def closest_intersect(source,
         return
 
     source_pt = OpenMaya.MFloatPoint(source[0], source[1], source[2])
-    direction_vec = OpenMaya.MFloatVector(direction[0], direction[1], direction[2])
+    direction_vec = OpenMaya.MFloatVector(*direction)
 
     hit_points = []
     for mesh in mesh_nodes:
@@ -95,5 +94,6 @@ def closest_intersect(source,
         if dist < min_dist:
             min_dist = dist
             closest_point = point
-    assert closest_point is None or isinstance(closest_point, OpenMaya.MFloatPoint)
+    assert closest_point is None or isinstance(closest_point,
+                                               OpenMaya.MFloatPoint)
     return closest_point

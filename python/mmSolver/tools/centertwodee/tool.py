@@ -19,7 +19,16 @@ def __connect_camera_and_transform(cam_tfm, cam_shp, tfm):
     """
     Create a mmReprojection node, then connect it up as needed.
     """
-    node = maya.cmds.createNode('mmReprojection')
+    try:
+        node = maya.cmds.createNode('mmReprojection')
+    except RuntimeError:
+        # Do not force loading the plug-in each time the tool is
+        # run, only if an error happens.
+        mmapi.load_plugin()
+        try:
+            node = maya.cmds.createNode('mmReprojection')
+        except RuntimeError:
+            raise
 
     # Connect transform
     maya.cmds.connectAttr(tfm + '.worldMatrix', node + '.transformWorldMatrix')
@@ -131,8 +140,6 @@ def main():
           on the middle of all transforms.
 
     """
-    mmapi.load_plugin()
-
     model_editor = viewport_utils.get_active_model_editor()
     if model_editor is None:
         msg = 'Please select an active 3D viewport.'

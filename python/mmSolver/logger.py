@@ -24,7 +24,7 @@ def get_logger(level=None):
         LOG.error('something bad has happened')
 
     :param level: Set the level for the newly created Logger object.
-    :type level: str or None
+    :type level: str, int or None
 
     :return: A Logger object.
     """
@@ -47,7 +47,7 @@ def get_logger(level=None):
         debug = os.environ.get('MMSOLVER_DEBUG', 0)
         debug = bool(int(debug))
         if debug is True:
-            level = 'debug'
+            level = logging.DEBUG
 
     if level is not None:
         log.setLevel(level)

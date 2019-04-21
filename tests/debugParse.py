@@ -78,8 +78,8 @@ def generate_plot_value_dots(data, ax):
             x_parm.append(i)
             y_parm.append(v)
             color.append(it_num)
-            s = 0.5 * ((float(it_num) / float(it_num_max)) * 0.75)
-            size.append((s * 10.0) ** 2)
+            s = 0.5 * ((float(it_num) / float(it_num_max)) * 0.5)
+            size.append((s * 12.0) ** 2)
 
     ax.set_title('Parameter Values')
     ax.set_xlabel('Iteration')
@@ -105,7 +105,8 @@ def generate_plot_value_lines(data, ax):
         if it_v['type'] != 'normal':
             continue
         it_num = it_v['number']
-        s = ((float(it_num) / float(it_num_max)) - 0.5)
+        s = (float(it_num) / float(it_num_max)) - (1.0 / float(it_num_max))
+        s = (s - 0.5)
         for i, v in enumerate(it_v['parm']):
             if len(x_parm) < (i + 1):
                 x_parm.append([])
@@ -198,8 +199,10 @@ def main(file_paths):
     for file_path in paths:
         head, ext = os.path.splitext(file_path)
         data = read_log(file_path)
+        if len(data) == 0:
+            continue
 
-        fig, ax = plt.subplots(2, 2, dpi=150)
+        fig, ax = plt.subplots(2, 2, dpi=600)
 
         ax[0][0] = generate_plot_error_min_avg_max(data, ax[0][0])
         ax[0][1] = generate_plot_error_per_iteration(data, ax[0][1])

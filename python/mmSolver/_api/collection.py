@@ -686,10 +686,10 @@ class Collection(object):
                 debug_file = maya.cmds.file(query=True, sceneName=True)
                 debug_file = os.path.basename(debug_file)
                 debug_file, ext = os.path.splitext(debug_file)
-                # TODO: Find a way to set the default directory path.
                 debug_file_path = os.path.join(
-                    os.path.expanduser('~/'),
-                    debug_file + '_' + str(i).zfill(6) + '.log')
+                    os.path.expandvars('${TEMP}'),
+                    debug_file + '_' + str(i).zfill(6) + '.log'
+                )
                 if len(debug_file) > 0 and debug_file_path is not None:
                     kwargs['debugFile'] = debug_file_path
 

@@ -44,6 +44,7 @@ details and features to use.
    nodes
    commands
    solver_design
+   configuration
    references
 
 Scripting

@@ -36,3 +36,6 @@ venv/*
 external/working/levmar*
 external/include/*.h*
 external/include/*atlas*
+
+docs/build/html/*
+docs/build/doctrees/*

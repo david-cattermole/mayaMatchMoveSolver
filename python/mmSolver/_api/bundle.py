@@ -229,7 +229,10 @@ class Bundle(object):
         """
         node = self.get_node()
         node_attr = node + '.message'
-        conns = maya.cmds.listConnections(node_attr) or []
+        conns = maya.cmds.listConnections(
+            node_attr,
+            type='transform',
+            skipConversionNodes=True) or []
         mkr_list = []
         for conn in conns:
             mkr = mmSolver._api.marker.Marker(node=conn)

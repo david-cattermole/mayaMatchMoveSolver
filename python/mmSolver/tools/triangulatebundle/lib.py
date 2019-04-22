@@ -1,5 +1,5 @@
 """
-Position Bundle under the Marker, in screen-space.
+Position Bundle under the Marker.
 """
 
 import maya.cmds
@@ -8,8 +8,6 @@ import maya.OpenMaya
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.utils.node as node_utils
-import mmSolver.utils.viewport as viewport_utils
 import mmSolver.tools.cameraaim.lib as cameraaim_lib
 
 

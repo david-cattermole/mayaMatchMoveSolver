@@ -10,7 +10,7 @@ import mmSolver.tools.togglebundlelock.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def toggle_bundle_lock():
+def main():
     """
     Toggles selected bundle lock state.
     """

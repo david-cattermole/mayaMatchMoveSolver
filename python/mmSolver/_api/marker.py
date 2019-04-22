@@ -2,6 +2,8 @@
 Marker and the related objects, Camera and Bundle.
 """
 
+import warnings
+
 import maya.OpenMaya as OpenMaya
 import maya.cmds
 
@@ -25,7 +27,7 @@ class Marker(object):
 
     Example usage::
 
-        >>> mkr = mmapi.Marker(name='myNode')
+        >>> mkr = mmapi.Marker(node='myNode')
         >>> mkr.get_node()
         '|myNode'
         >>> bnd = mmapi.Bundle().create_node(name='myBundle1')
@@ -46,6 +48,11 @@ class Marker(object):
         :type name: None or str
         """
         if name is not None:
+            msg = (
+                "mmSolver.api.Marker(name=value), "
+                "'name' is a deprecated flag, use 'node' "
+            )
+            warnings.warn(msg)
             node = name
         if isinstance(node, basestring):
             try:
@@ -58,6 +65,15 @@ class Marker(object):
         else:
             self._mfn = OpenMaya.MFnDagNode()
         return
+
+    def __repr__(self):
+        result = '<{class_name}('.format(class_name=self.__class__.__name__)
+        result += '{hash} node={node}'.format(
+            hash=hash(self),
+            node=self.get_node(),
+        )
+        result += ')>'
+        return result
 
     def get_node(self):
         """
@@ -80,18 +96,18 @@ class Marker(object):
             node = None
         return node
 
-    def set_node(self, name):
+    def set_node(self, node):
         """
         Change the underlying Maya node that this Marker class will manipulate.
 
-        :param name: The existing Maya node name.
-        :type name: str
+        :param node: The existing Maya node node.
+        :type node: str
 
         :returns: Nothing.
         :rtype: None
         """
-        assert isinstance(name, (str, unicode))
-        dag = api_utils.get_as_dag_path(name)
+        assert isinstance(node, (str, unicode))
+        dag = api_utils.get_as_dag_path(node)
         try:
             self._mfn = OpenMaya.MFnDagNode(dag)
         except RuntimeError:
@@ -175,20 +191,20 @@ class Marker(object):
         maya.cmds.setAttr(shp + '.localScaleZ', lock=True)
 
         # Add attrs
-        maya.cmds.addAttr(tfm, longName='enable', at='short',
+        maya.cmds.addAttr(tfm, longName='enable', attributeType='short',
                           minValue=0,
                           maxValue=1,
-                          defaultValue=1)
-        maya.cmds.addAttr(tfm, longName='weight', at='double',
+                          defaultValue=1,
+                          keyable=True)
+        maya.cmds.addAttr(tfm, longName='weight', attributeType='double',
                           minValue=0.0,
-                          defaultValue=1.0)
-        maya.cmds.addAttr(tfm, longName='bundle', at='message')
-        maya.cmds.addAttr(tfm, longName='markerName', dt='string')
-        maya.cmds.addAttr(tfm, longName='markerId', at='long',
+                          defaultValue=1.0,
+                          keyable=True)
+        maya.cmds.addAttr(tfm, longName='bundle', attributeType='message')
+        maya.cmds.addAttr(tfm, longName='markerName', dataType='string')
+        maya.cmds.addAttr(tfm, longName='markerId', attributeType='long',
                           defaultValue=-1)
 
-        maya.cmds.setAttr(tfm + '.enable', keyable=True, channelBox=True)
-        maya.cmds.setAttr(tfm + '.weight', keyable=True, channelBox=True)
         maya.cmds.setAttr(tfm + '.markerName', lock=True)
         maya.cmds.connectAttr(tfm + '.enable', tfm + '.lodVisibility')
 
@@ -434,7 +450,7 @@ class Marker(object):
         if len(mkr_grp_nodes) == 0:
             mkr_grp = markergroup.MarkerGroup().create_node(cam=cam)
         else:
-            mkr_grp = markergroup.MarkerGroup(name=mkr_grp_nodes[0])
+            mkr_grp = markergroup.MarkerGroup(node=mkr_grp_nodes[0])
 
         # Link to Marker Group
         self.set_marker_group(mkr_grp)
@@ -480,7 +496,7 @@ class Marker(object):
         # Make the marker group object.
         mkr_grp = None
         if mkr_grp_node is not None:
-            mkr_grp = markergroup.MarkerGroup(name=mkr_grp_node)
+            mkr_grp = markergroup.MarkerGroup(node=mkr_grp_node)
         return mkr_grp
 
     def set_marker_group(self, mkr_grp):

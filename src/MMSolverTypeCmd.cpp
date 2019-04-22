@@ -1,4 +1,22 @@
 /*
+ * Copyright (C) 2018, 2019 David Cattermole.
+ *
+ * This file is part of mmSolver.
+ *
+ * mmSolver is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * mmSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+ * ====================================================================
+ *
  * Command for running mmSolverType.
  *
  * mmSolverType allows the user to:
@@ -78,9 +96,11 @@ MStatus MMSolverTypeCmd::parseArgs(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     bool query = argData.isQuery(&status);
-    CHECK_MSTATUS(status);
+    if (status == MStatus::kFailure) {
+        return status;
+    }
     if (query == false) {
-        status = MS::kFailure;
+        status = MStatus::kFailure;
         return status;
     }
 
@@ -88,19 +108,23 @@ MStatus MMSolverTypeCmd::parseArgs(const MArgList &args) {
     m_default = false;
     if (argData.isFlagSet(DEFAULT_FLAG)) {
         status = argData.getFlagArgument(DEFAULT_FLAG, 0, m_default);
-        CHECK_MSTATUS(status);
+        if (status == MStatus::kFailure) {
+            return status;
+        }
     }
 
     // Get 'list'
     m_list = false;
     if (argData.isFlagSet(LIST_FLAG)) {
         status = argData.getFlagArgument(LIST_FLAG, 0, m_list);
-        CHECK_MSTATUS(status);
+        if (status == MStatus::kFailure) {
+            return status;
+        }
     }
 
     if ((m_list == true && m_default == true)
        || (m_list == false && m_default == false)) {
-        status = MS::kFailure;
+        status = MStatus::kFailure;
         return status;
     }
 
@@ -115,18 +139,22 @@ MStatus MMSolverTypeCmd::parseArgs(const MArgList &args) {
     // Get 'name'
     if (argData.isFlagSet(NAME_FLAG)) {
         status = argData.getFlagArgument(NAME_FLAG, 0, m_name);
-        CHECK_MSTATUS(status);
+        if (status == MStatus::kFailure) {
+            return status;
+        }
     }
 
     // Get 'index'
     if (argData.isFlagSet(INDEX_FLAG)) {
         status = argData.getFlagArgument(INDEX_FLAG, 0, m_index);
-        CHECK_MSTATUS(status);
+        if (status == MStatus::kFailure) {
+            return status;
+        }
     }
 
     // Must have 'name' or 'index' flag, otherwise we don't print anything.
     if (m_name == false && m_index == false) {
-        status = MS::kFailure;
+        status = MStatus::kFailure;
         return status;
     }
     return status;
@@ -142,8 +170,8 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
 //    argList - the argument list that was passes to the command from MEL
 //
 //  Return Value:
-//    MS::kSuccess - command succeeded
-//    MS::kFailure - command failed (returning this value will cause the
+//    MStatus::kSuccess - command succeeded
+//    MStatus::kFailure - command failed (returning this value will cause the
 //                     MEL script that is being run to terminate unless the
 //                     error is caught using a "catch" statement.
 //
@@ -151,7 +179,9 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
 
     // Read all the flag arguments.
     status = parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    if (status == MStatus::kFailure) {
+        return status;
+    }
 
     if (m_list == true) {
         // Get List of Solver Types

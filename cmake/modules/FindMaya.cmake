@@ -46,7 +46,8 @@ if(APPLE)
             "/Applications/Autodesk/maya2011/Maya.app/Contents"
             "/Applications/Autodesk/maya2010/Maya.app/Contents"
     )
-    find_path(MAYA_LIBRARY_DIR libOpenMaya.dylib
+    find_path(MAYA_LIBRARY_DIR
+            libOpenMaya.dylib
         HINTS
             "${MAYA_LOCATION}"
             "$ENV{MAYA_LOCATION}"
@@ -77,6 +78,7 @@ elseif(UNIX)
     find_path(MAYA_LIBRARY_DIR
             libOpenMaya.so
         HINTS
+            "${MAYA_LIB_PATH}"
             "${MAYA_LOCATION}"
             "$ENV{MAYA_LOCATION}"
             "${MAYA_BASE_DIR}"
@@ -123,6 +125,7 @@ elseif(WIN32)
     find_path(MAYA_LIBRARY_DIR
             OpenMaya.lib
         HINTS
+            "${MAYA_LIB_PATH}"
             "${MAYA_LOCATION}"
             "$ENV{MAYA_LOCATION}"
             "${MAYA_BASE_DIR}"
@@ -136,6 +139,7 @@ endif()
 find_path(MAYA_INCLUDE_DIR
         maya/MFn.h
     HINTS
+        "${MAYA_INCLUDE_PATH}"
         "${MAYA_LOCATION}"
         "$ENV{MAYA_LOCATION}"
         "${MAYA_BASE_DIR}"
@@ -149,6 +153,7 @@ find_path(MAYA_INCLUDE_DIR
 find_path(MAYA_LIBRARY_DIR
         OpenMaya
     HINTS
+        "${MAYA_LIB_PATH}"
         "${MAYA_LOCATION}"
         "$ENV{MAYA_LOCATION}"
         "${MAYA_BASE_DIR}"
@@ -204,7 +209,6 @@ foreach(MAYA_LIB
         # Maya's Foundation library and OSX's framework.
         NO_CMAKE_SYSTEM_PATH
     )
-
 
     if (MAYA_${MAYA_LIB}_LIBRARY)
         list(APPEND MAYA_LIBRARIES ${MAYA_${MAYA_LIB}_LIBRARY})

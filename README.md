@@ -22,70 +22,26 @@ reduce 2D-to-3D re-projection error. Use Maya's DG and DAG nodes to
 setup complex constraints and find the best solution to any
 MatchMove solve you need.
 
-## Use Cases
+## Releases
 
-- Solving camera or object transforms based on 2D to 3D
-  positions.
-- Using DAG hierarchies to solve objects in specific spaces (for
-  example object or camera space).
-- Generation of 3D positions from 2D screen-space positions.
-- Reconstruction of multi-camera shooting environments
-  (photogrammetry).
+The following releases are below. The latest bug-fix version should
+always be used, where possible. Forward compatibility is maintained
+between point-release versions (v0.1 to v0.2), but major version
+releases should be considered major and may introduce breaking
+changes.
 
-## Features
+| Releases                                                                              | Description                                 |
+| ------------------------------------------------------------------------------------- | ------------------------------------------- |
+| [v0.2.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.1) | Bug fix release (*recommended*)             |
+| [v0.2.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.0) | Improved solver and tools                   |
+| [v0.1.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.1) | Bug fix release                             |
+| [v0.1.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.0) | Initial release                             |
 
-- Solver User Interface
-  - Uses Plug-In to set up and run solver.
-  - Displays relationships of Cameras, (2D) Markers and (3D) Bundles
-    nodes.
-  - Lists Maya Attributes used for solving.
-  - Lists individual Solver 'steps' depicting how the Solver will
-    execute.
-  - Supports creation of mmSolver arguments using a GUI.
-  - Single-Frame solve override
-
-- User Tools
-  - Load 2D Tracks (Markers) from Third-Party software
-    - Supports 3DEqualizer *.txt, MatchMover *.rz2 and custom *.uv
-      file formats.
-  - Convert from 3D Transform Nodes to 2D Markers.
-  - Center Viewport on 3D Transform Node
-  - Maya Shelf for quick access to tools
-  - Selection tools
-    - Toggle Selection between 2D and 3D nodes
-    - Select connected 2D and 3D nodes
-  - Control 2D and 3D node relationships; linking and unlinking nodes.
-  - And more...
-
-- Solver Plug-in
-  - Maya DG and DAG evaluation support.
-  - Options to tune the required solver iterations and error
-    thresholds.
-  - Minimising residual error between 2D and 3D positions.
-  - Solving translate, rotate, scale and any custom floating point
-    values, including camera focal length.
-  - Static and animated attribute solving.
-  - Per-frame, single-frame and multi-frame solving is supported.
-  - Multi-camera solving (photogrammetry).
-  - Marker weights support (force a point to solve with higher weight
-    than others).
-  - Marker 'validity' support - frames where markers are occluded.
-  - Full undo/redo support.
-
-- Python API
-  - Object-Oriented helper classes to create node networks and store
-    the data structure inside a Maya scene.
-  - Allows storage of multiple 'collections' of solver arguments in
-    one Maya scene file - all data is stored in the Maya scene file.
-  - Creates Maya nodes to represent Markers and Bundles.
-
-For a list of future features please see
-[TODO.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/TODO.md).
 
 ## Documentation
 
-For all written tutorials, documentation of Tools, Python API
-and Maya Plug-In features, take a look at the
+For all tutorials, documentation of Tools, Python API and Maya Plug-In
+features, take a look at the
 [Documentation Home Page](https://david-cattermole.github.io/mayaMatchMoveSolver/).
 
 A copy of the documentation is also installed with *Maya MatchMove
@@ -121,7 +77,7 @@ To build (compile) the plug-in follow the steps in
 
 ## License
 
-*Maya MatchMove Solver* is licensed under the
+*Maya MatchMove Solver* (mmSolver) is licensed under the
 [Lesser GNU Public License v3.0](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/LICENSE)
 or *LGPL-3.0* for short.
 This means the project is Free Open Source Software, and will always

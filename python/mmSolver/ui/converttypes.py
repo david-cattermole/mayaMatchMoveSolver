@@ -2,6 +2,9 @@
 Conversion functions between various types.
 """
 
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
 import Qt.QtCore as QtCore
 
 import mmSolver.logger

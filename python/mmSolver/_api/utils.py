@@ -188,6 +188,13 @@ def get_object_type(node):
     elif node_type == 'camera':
         object_type = const.OBJECT_TYPE_CAMERA
 
+    elif ((node_type == 'transform') and
+          ('imagePlane' in shape_node_types)):
+        object_type = const.OBJECT_TYPE_IMAGE_PLANE
+
+    elif node_type == 'imagePlane':
+        object_type = const.OBJECT_TYPE_IMAGE_PLANE
+
     elif node_type == 'mmMarkerGroupTransform':
         object_type = const.OBJECT_TYPE_MARKER_GROUP
 
@@ -299,8 +306,8 @@ def convert_valid_maya_name(name,
 
     :param auto_inc_try_limit: When trying to find a non-existing Maya
                                node name, how many times can we
-                               increment until we give up?  :type
-    auto_inc_try_limit: int
+                               increment until we give up?  
+    :type auto_inc_try_limit: int
 
     :return: A valid Maya node name.
     :rtype: str

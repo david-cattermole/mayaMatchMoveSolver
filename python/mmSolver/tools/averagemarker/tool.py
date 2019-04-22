@@ -24,7 +24,7 @@ def main():
         return
 
     mkr_selection = selected_markers[0]
-    mkr = mmapi.Marker(name=mkr_selection)
+    mkr = mmapi.Marker(node=mkr_selection)
     # getting camera from the selected marker
     cam_from_mkr = mkr.get_camera()
     mkr_name = mmapi.get_marker_name('avgMarker1')

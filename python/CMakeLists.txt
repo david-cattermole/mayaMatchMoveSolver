@@ -21,22 +21,23 @@ function (add_ui_compile
     add_dependencies(mmSolver compile_ui_${name})
 endfunction()
 
+
 add_ui_compile("base"
-    mmSolver/ui/base.ui
-    mmSolver/ui/ui_base.py
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/ui/base.ui
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/ui/ui_base.py
 )
 
 add_ui_compile("channelsen"
-    mmSolver/tools/channelsen/ui/channelsen_layout.ui
-    mmSolver/tools/channelsen/ui/ui_channelsen_layout.py
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/channelsen/ui/channelsen_layout.ui
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/channelsen/ui/ui_channelsen_layout.py
 )
 
 add_ui_compile("loadmarker"
-    mmSolver/tools/loadmarker/ui/loadmarker_layout.ui
-    mmSolver/tools/loadmarker/ui/ui_loadmarker_layout.py
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/loadmarker/ui/loadmarker_layout.ui
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/loadmarker/ui/ui_loadmarker_layout.py
 )
 
 add_ui_compile("solver"
-    mmSolver/tools/solver/ui/solver_layout.ui
-    mmSolver/tools/solver/ui/ui_solver_layout.py
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/solver/ui/solver_layout.ui
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/solver/ui/ui_solver_layout.py
 )

@@ -50,6 +50,6 @@ def unlink_marker_bundle():
         return
 
     for mkr_node in mkr_nodes:
-        mkr = mmapi.Marker(name=mkr_node)
+        mkr = mmapi.Marker(node=mkr_node)
         mkr.set_bundle(None)
     return

@@ -15,7 +15,7 @@ def link_marker_bundle(mkr_node, bnd_node):
     """
     Try to connect the two marker and bundle nodes.
     """
-    mkr = mmapi.Marker(name=mkr_node)
+    mkr = mmapi.Marker(node=mkr_node)
     bnd = mmapi.Bundle(node=bnd_node)
     cam_from_mkr = mkr.get_camera()
     cam_from_mkr_uid = cam_from_mkr.get_shape_uid()

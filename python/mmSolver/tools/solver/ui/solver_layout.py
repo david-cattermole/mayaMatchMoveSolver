@@ -2,6 +2,9 @@
 The Solver layout, the contents of the main solver window.
 """
 
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
@@ -35,6 +38,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         # state.
         self._parentObject = parent
 
+        # Hide the Solve Info line until it's set up. GitHub Issue #56
+        self.solveInfoLine_lineEdit.setVisible(False)
+
         # Collection Combo Box.
         self.collectionName_model = uimodels.StringDataListModel()
         self.collectionName_comboBox.setModel(self.collectionName_model)
@@ -62,8 +68,17 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.object_treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.object_treeView.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.object_selModel = self.object_treeView.selectionModel()
-        self.object_selModel.currentChanged.connect(
-            self.objectNodeCurrentChanged
+        self.object_selModel.selectionChanged.connect(
+            self.objectNodeSelectionChanged
+        )
+        self.objectToggleCamera_toolButton.clicked.connect(
+            self.objectToggleCameraClicked,
+        )
+        self.objectToggleMarker_toolButton.clicked.connect(
+            self.objectToggleMarkerClicked,
+        )
+        self.objectToggleBundle_toolButton.clicked.connect(
+            self.objectToggleBundleClicked,
         )
 
         # Object Add and Remove buttons
@@ -85,8 +100,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.attribute_treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.attribute_treeView.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.attribute_selModel = self.attribute_treeView.selectionModel()
-        self.attribute_selModel.currentChanged.connect(
-            self.attrNodeCurrentChanged
+        self.attribute_selModel.selectionChanged.connect(
+            self.attrNodeSelectionChanged
         )
 
         # Attr Add and Remove buttons
@@ -145,6 +160,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         # Populate the UI with data.
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
+        self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateAttributeModel()
         self.updateSolverModel()
@@ -164,56 +180,87 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self._parentObject.window().setWindowTitle(title)
 
     def updateCollectionModel(self):
-        self.setStatusLine(const.STATUS_REFRESHING)
-        col = lib_state.get_active_collection()
         self.populateCollectionModel(self.collectionName_model)
-        index = self.getDefaultCollectionIndex(self.collectionName_model, col)
-        self.collectionName_comboBox.setCurrentIndex(index)
+
+        col = lib_state.get_active_collection()
+        if col is None:
+            cols = lib_col.get_collections()
+            if len(cols) > 0:
+                # If there is no active collection, but there are
+                # collections already created, we make sure the first
+                # collection is marked active.
+                col = cols[0]
+                lib_state.set_active_collection(col)
+
+        if col is not None:
+            index = self.getDefaultCollectionIndex(self.collectionName_model, col)
+            if index is not None:
+                self.collectionName_comboBox.setCurrentIndex(index)
+
         self.updateDynamicWindowTitle()
         return
 
+    def updateObjectToggleButtons(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        show_cam = lib_col.get_object_toggle_camera_from_collection(col)
+        show_mkr = lib_col.get_object_toggle_marker_from_collection(col)
+        show_bnd = lib_col.get_object_toggle_bundle_from_collection(col)
+        self.objectToggleCamera_toolButton.setChecked(show_cam)
+        self.objectToggleMarker_toolButton.setChecked(show_mkr)
+        self.objectToggleBundle_toolButton.setChecked(show_bnd)
+        return
+
     def updateObjectModel(self):
-        self.setStatusLine(const.STATUS_REFRESHING)
         self.populateObjectModel(self.object_model)
         valid = uiutils.isValidQtObject(self.object_treeView)
         if valid is False:
             return
         self.object_treeView.expandAll()
+
+        widgets = [self.object_frame]
+        self.populateWidgetsEnabled(widgets)
         return
 
     def updateAttributeModel(self):
-        self.setStatusLine(const.STATUS_REFRESHING)
         self.populateAttributeModel(self.attribute_model)
         valid = uiutils.isValidQtObject(self.attribute_treeView)
         if valid is False:
             return
         self.attribute_treeView.expandAll()
+
+        widgets = [self.attribute_frame]
+        self.populateWidgetsEnabled(widgets)
         return
 
     def updateSolverModel(self):
-        self.setStatusLine(const.STATUS_REFRESHING)
+        self.populateOverrideCurrentFrame()
         self.populateSolverModel(self.solver_model)
+
+        widgets = [self.solverOptions_frame]
+        self.populateWidgetsEnabled(widgets)
         return
 
     def updateSolveValidState(self):
-        self.setStatusLine(const.STATUS_COMPILING)
-        v = True
-        col = lib_state.get_active_collection()
-        if col is None:
-            v = False
-        else:
-            v = lib_col.compile_collection(col)
-        assert isinstance(v, bool) is True
+        # self.setStatusLine(const.STATUS_COMPILING)
+        # v = True
+        # col = lib_state.get_active_collection()
+        # if col is None:
+        #     v = False
+        # else:
+        #     v = lib_col.compile_collection(col)
+        # assert isinstance(v, bool) is True
 
-        # TODO: Sometimes the apply button is falsely disabled,
-        #   therefore we shouldn't disable it until it's fixed.
-        # # if self._parentObject is not None:
-        # #     self._parentObject.applyBtn.setEnabled(v)
+        # # TODO: Sometimes the apply button is falsely disabled,
+        # #   therefore we shouldn't disable it until it's fixed.
+        # # # if self._parentObject is not None:
+        # # #     self._parentObject.applyBtn.setEnabled(v)
 
-        if v is True:
-            self.setStatusLine(const.STATUS_READY)
-        else:
-            self.setStatusLine(const.STATUS_SOLVER_NOT_VALID)
+        # if v is True:
+        #     self.setStatusLine(const.STATUS_READY)
+        # else:
+        #     self.setStatusLine(const.STATUS_SOLVER_NOT_VALID)
         return
 
     def populateCollectionModel(self, model):
@@ -233,10 +280,16 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if valid is False:
             return
         col = lib_state.get_active_collection()
-        if col is None:
-            return
-        mkr_list = lib_marker.get_markers_from_collection(col)
-        root = convert_to_ui.markersToUINodes(mkr_list)
+        mkr_list = []
+        show_cam = const.OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE
+        show_mkr = const.OBJECT_TOGGLE_MARKER_DEFAULT_VALUE
+        show_bnd = const.OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE
+        if col is not None:
+            mkr_list = lib_marker.get_markers_from_collection(col)
+            show_cam = lib_col.get_object_toggle_camera_from_collection(col)
+            show_mkr = lib_col.get_object_toggle_marker_from_collection(col)
+            show_bnd = lib_col.get_object_toggle_bundle_from_collection(col)
+        root = convert_to_ui.markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd)
         model.setRootNode(root)
         return
 
@@ -245,9 +298,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if valid is False:
             return
         col = lib_state.get_active_collection()
-        if col is None:
-            return
-        attr_list = lib_attr.get_attributes_from_collection(col)
+        attr_list = []
+        if col is not None:
+            attr_list = lib_attr.get_attributes_from_collection(col)
 
         def update_func():
             if uiutils.isValidQtObject(self) is False:
@@ -276,10 +329,26 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         col = lib_state.get_active_collection()
         if col is None:
-            return
-        step_list = lib_col.get_solver_steps_from_collection(col)
+            step_list = []
+        else:
+            step_list = lib_col.get_solver_steps_from_collection(col)
         node_list = convert_to_ui.solverStepsToUINodes(step_list, col)
         self.solver_model.setNodeList(node_list)
+        return
+
+    def populateOverrideCurrentFrame(self):
+        cur_frame = False
+        col = lib_state.get_active_collection()
+        if col is not None:
+            cur_frame = lib_col.get_override_current_frame_from_collection(col)
+        self.overrideCurrentFrame_checkBox.setChecked(cur_frame)
+        return
+
+    def populateWidgetsEnabled(self, widgets):
+        col = lib_state.get_active_collection()
+        enabled = col is not None
+        for widget in widgets:
+            widget.setEnabled(enabled)
         return
 
     def setStatusLine(self, text):
@@ -300,16 +369,16 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if valid is False:
             return
         if col is None:
-            return 0
+            return None
         active_node = col.get_node()
         if active_node is None:
-            return 0
+            return None
         string_data_list = model.stringDataList()
-        for i, (string, data) in enumerate(string_data_list):
-            find = string.find(active_node)
-            if find != -1:
-                return i
-        return 0
+        string_list = [string for string, data in string_data_list]
+        index = None
+        if active_node in string_list:
+            index = string_list.index(active_node)
+        return index
 
     def getCallbackManager(self):
         """
@@ -333,7 +402,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         :param col: The Collection to set.
         :type col: Collection
-        
+
         :param value: Should we override the current frame? Yes or No.
         :type value: bool
         """
@@ -341,21 +410,19 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_col.set_override_current_frame_on_collection(col, value)
         self.updateSolverModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
         return
-    
+
     def createNewCollectionNode(self):
         col = lib_col.create_collection()
         lib_state.set_active_collection(col)
 
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
+        self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
-
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def renameCollectionNode(self):
@@ -372,36 +439,72 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
+        self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
-
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def removeCollectionNode(self):
         col = lib_state.get_active_collection()
-        if col is not None:
-            # FIXME: Solver Steps continue to hold a reference to the
-            # Collection after the collection node is deleted.
-            steps = lib_col.get_solver_steps_from_collection(col)
-            for step in steps:
-                lib_col.remove_solver_step_from_collection(col, step)
-            lib_col.delete_collection(col)
-            lib_state.set_active_collection(None)
-        else:
+        if col is None:
             LOG.warning('No active collection to delete.')
             return
 
+        cols = lib_col.get_collections()
+        prev_col = lib_col.get_previous_collection(cols, col)
+
+        steps = lib_col.get_solver_steps_from_collection(col)
+        for step in steps:
+            lib_col.remove_solver_step_from_collection(col, step)
+
+        lib_col.delete_collection(col)
+        lib_state.set_active_collection(prev_col)
+
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
+        self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
+        return
 
-        self.setStatusLine(const.STATUS_READY)
+    def objectToggleCameraClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_object_toggle_camera_from_collection(col)
+        value = not value
+        lib_col.set_object_toggle_camera_on_collection(col, value)
+
+        self.updateObjectModel()
+        return
+
+    def objectToggleMarkerClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_object_toggle_marker_from_collection(col)
+        value = not value
+        lib_col.set_object_toggle_marker_on_collection(col, value)
+
+        self.updateObjectModel()
+        return
+
+    def objectToggleBundleClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_object_toggle_bundle_from_collection(col)
+        value = not value
+        lib_col.set_object_toggle_bundle_on_collection(col, value)
+
+        self.updateObjectModel()
         return
 
     def collectionSelectClicked(self):
@@ -411,18 +514,19 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         lib_col.select_collection(col)
         self.updateDynamicWindowTitle()
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def objectAddClicked(self):
-        mkr_list = lib_maya_utils.get_markers_from_selection()
-        if len(mkr_list) == 0:
-            msg = 'Please select objects, found no markers.'
-            LOG.warning(msg)
-            return
         col = lib_state.get_active_collection()
         if col is None:
             msg = 'Cannot add markers, active collection is not defined.'
+            LOG.warning(msg)
+            return
+
+        sel = lib_maya_utils.get_scene_selection()
+        mkr_list = lib_maya_utils.get_markers_from_selection()
+        if len(mkr_list) == 0:
+            msg = 'Please select objects, found no markers.'
             LOG.warning(msg)
             return
         lib_marker.add_markers_to_collection(mkr_list, col)
@@ -430,9 +534,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         def update_func():
             if uiutils.isValidQtObject(self) is False:
                 return
+            self.updateObjectToggleButtons()
             self.updateObjectModel()
             self.updateSolveValidState()
-            self.setStatusLine(const.STATUS_READY)
             return
 
         # Add Callbacks
@@ -445,12 +549,17 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             )
 
         update_func()
+
+        # Restore selection.
+        lib_maya_utils.set_scene_selection(sel)
         return
 
     def objectRemoveClicked(self):
         col = lib_state.get_active_collection()
         if col is None:
             return
+
+        sel = lib_maya_utils.get_scene_selection()
         ui_nodes = lib_uiquery.get_selected_ui_nodes(
             self.object_treeView,
             self.object_filterModel
@@ -466,22 +575,32 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
                 callback_manager
             )
 
+        self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
+
+        # Restore selection.
+        lib_maya_utils.set_scene_selection(sel)
         return
 
     def attrAddClicked(self):
-        attr_list = lib_maya_utils.get_selected_maya_attributes()
-        if len(attr_list) == 0:
-            msg = 'Please select attributes in the channel box, none where found.'
-            LOG.warning(msg)
-            return
         col = lib_state.get_active_collection()
         if col is None:
             msg = 'Cannot add attributes, active collection is not defined.'
             LOG.warning(msg)
             return
+
+        sel = lib_maya_utils.get_scene_selection()
+        attr_list = lib_maya_utils.get_selected_maya_attributes()
+        attr_list = lib_maya_utils.input_attributes_filter(attr_list)
+        if len(attr_list) == 0:
+            attr_list = lib_maya_utils.get_selected_node_default_attributes()
+            attr_list = lib_maya_utils.input_attributes_filter(attr_list)
+        if len(attr_list) == 0:
+            msg = 'Please select nodes or attributes in the channel box.'
+            LOG.warning(msg)
+            return
+
         lib_attr.add_attributes_to_collection(attr_list, col)
 
         def update_func():
@@ -489,7 +608,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
                 return
             self.updateAttributeModel()
             self.updateSolveValidState()
-            self.setStatusLine(const.STATUS_READY)
             return
 
         # Add Callbacks
@@ -502,12 +620,17 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             )
 
         update_func()
+
+        # Restore selection.
+        lib_maya_utils.set_scene_selection(sel)
         return
 
     def attrRemoveClicked(self):
         col = lib_state.get_active_collection()
         if col is None:
             return
+
+        sel = lib_maya_utils.get_scene_selection()
         ui_nodes = lib_uiquery.get_selected_ui_nodes(
             self.attribute_treeView,
             self.attribute_filterModel
@@ -525,7 +648,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         self.updateAttributeModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
+
+        # Restore selection.
+        lib_maya_utils.set_scene_selection(sel)
         return
 
     def solverAddClicked(self):
@@ -538,7 +663,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_col.add_solver_step_to_collection(col, step)
         self.updateSolverModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def solverRemoveClicked(self):
@@ -555,7 +679,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             lib_col.remove_solver_step_from_collection(col, step)
         self.updateSolverModel()
         self.updateSolveValidState()
-        self.setStatusLine(const.STATUS_READY)
         return
 
     def solverMoveUpClicked(self):
@@ -586,53 +709,77 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_state.set_active_collection(data)
 
         self.updateDynamicWindowTitle()
+        self.updateObjectToggleButtons()
         self.updateObjectModel()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
-
-        self.setStatusLine(const.STATUS_READY)
         return
 
-    @QtCore.Slot(QtCore.QModelIndex, QtCore.QModelIndex)
-    def objectNodeCurrentChanged(self, index, prevIndex):
-        """
-        Look up the Maya node from the data at index, then add it to the
-        selection.
-        """
-        # TODO: Based on the Maya selection key modifiers, we should
-        # add to the current selection, or toggle, as needed.
-        # TODO: When an object node tree item is selected, the attr nodes tree
-        # view must all be deselected.
-        ui_node = lib_uiquery.get_ui_node_from_index(
-            index,
-            self.object_filterModel
-        )
-        if ui_node is None:
-            return
-        # Type info will be 'marker', 'bundle' or 'camera' based on the selected node type.
-        typeInfo = ui_node.typeInfo
-        nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], typeInfo)
+    @staticmethod
+    def __lookupObjectNodes(indexes, model):
         maya_nodes = []
-        if typeInfo == 'camera':
-            maya_nodes = map(lambda x: x.get_shape_node(), nodes)
-        else:
-            # For bundles and markers
-            maya_nodes = map(lambda x: x.get_node(), nodes)
-        lib_maya_utils.set_scene_selection(maya_nodes)
+        for idx in indexes:
+            ui_node = lib_uiquery.get_ui_node_from_index(idx, model)
+            if ui_node is None:
+                continue
+
+            # Type info will be 'marker', 'bundle' or 'camera' based on
+            # the selected node type.
+            typeInfo = ui_node.typeInfo
+            nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], typeInfo)
+            if typeInfo == 'camera':
+                maya_nodes += [x.get_shape_node() for x in nodes]
+            else:
+                # For bundles and markers
+                maya_nodes += [x.get_node() for x in nodes]
+        return maya_nodes
+
+    @staticmethod
+    def __lookupAttrNodes(indexes, model):
+        maya_nodes = []
+        for idx in indexes:
+            ui_node = lib_uiquery.get_ui_node_from_index(idx, model)
+            if ui_node is None:
+                continue
+
+            nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'data')
+            maya_nodes += [x.get_node() for x in nodes]
+        return maya_nodes
+
+    @QtCore.Slot(QtCore.QItemSelection, QtCore.QItemSelection)
+    def objectNodeSelectionChanged(self, selected, deselected):
+        """
+        Look up the Maya node from the 'selected' nodes, and add them
+        to the Maya selection.
+        """
+        select_indexes = [idx for idx in selected.indexes()]
+        deselect_indexes = [idx for idx in deselected.indexes()]
+
+        select_nodes = self.__lookupObjectNodes(
+            select_indexes,
+            self.object_filterModel)
+        deselect_nodes = self.__lookupObjectNodes(
+            deselect_indexes,
+            self.object_filterModel)
+
+        lib_maya_utils.add_scene_selection(select_nodes)
+        lib_maya_utils.remove_scene_selection(deselect_nodes)
         return
 
-    @QtCore.Slot(QtCore.QModelIndex, QtCore.QModelIndex)
-    def attrNodeCurrentChanged(self, index, prevIndex):
-        ui_node = lib_uiquery.get_ui_node_from_index(
-            index,
-            self.attribute_filterModel
-        )
-        if ui_node is None:
-            return
-        nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'data')
-        maya_nodes = map(lambda x: x.get_node(), nodes)
-        lib_maya_utils.set_scene_selection(maya_nodes)
+    @QtCore.Slot(QtCore.QItemSelection, QtCore.QItemSelection)
+    def attrNodeSelectionChanged(self, selected, deselected):
+        select_indexes = [idx for idx in selected.indexes()]
+        deselect_indexes = [idx for idx in deselected.indexes()]
+
+        select_nodes = self.__lookupAttrNodes(
+            select_indexes,
+            self.attribute_filterModel)
+        deselect_nodes = self.__lookupAttrNodes(
+            deselect_indexes,
+            self.attribute_filterModel)
+        lib_maya_utils.add_scene_selection(select_nodes)
+        lib_maya_utils.remove_scene_selection(deselect_nodes)
         return
 
     @QtCore.Slot(int)

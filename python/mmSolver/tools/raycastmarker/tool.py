@@ -37,7 +37,7 @@ def __get_camera_direction_to_point(camera_node, point_node):
         translation=True)
     cam_vec = maya.OpenMaya.MVector(*cam)
     obj_vec = maya.OpenMaya.MVector(*obj)
-    distance = cam_vec - obj_vec
+    distance = obj_vec - cam_vec
     length = maya.OpenMaya.MVector(distance).length()
     direction = distance / length
     x, y, z = direction.x, direction.y, direction.z
@@ -84,7 +84,7 @@ def main():
     max_dist = 9999999999.0
     bnd_nodes = []
     for node in selected_markers:
-        mkr = mmapi.Marker(name=node)
+        mkr = mmapi.Marker(node=node)
         bnd = mkr.get_bundle()
         if bnd is None:
             continue
@@ -102,7 +102,7 @@ def main():
             origin_point,
             direction,
             meshes,
-            test_both_directions=True,
+            test_both_directions=False,
             max_dist=max_dist,
         )
         if hit_point is None:

@@ -48,6 +48,15 @@ class Bundle(object):
             self._mfn = OpenMaya.MFnDagNode()
         return
 
+    def __repr__(self):
+        result = '<{class_name}('.format(class_name=self.__class__.__name__)
+        result += '{hash} node={node}'.format(
+            hash=hash(self),
+            node=self.get_node(),
+        )
+        result += ')>'
+        return result
+
     def get_node(self):
         """
         Get the bundle transform node.
@@ -119,12 +128,18 @@ class Bundle(object):
         maya.cmds.setAttr(tfm + '.sx', lock=True)
         maya.cmds.setAttr(tfm + '.sy', lock=True)
         maya.cmds.setAttr(tfm + '.sz', lock=True)
+        maya.cmds.setAttr(tfm + '.shxy', lock=True)
+        maya.cmds.setAttr(tfm + '.shxz', lock=True)
+        maya.cmds.setAttr(tfm + '.shyz', lock=True)
         maya.cmds.setAttr(tfm + '.rx', keyable=False)
         maya.cmds.setAttr(tfm + '.ry', keyable=False)
         maya.cmds.setAttr(tfm + '.rz', keyable=False)
         maya.cmds.setAttr(tfm + '.sx', keyable=False)
         maya.cmds.setAttr(tfm + '.sy', keyable=False)
         maya.cmds.setAttr(tfm + '.sz', keyable=False)
+        maya.cmds.setAttr(tfm + '.shxy', keyable=False)
+        maya.cmds.setAttr(tfm + '.shxz', keyable=False)
+        maya.cmds.setAttr(tfm + '.shyz', keyable=False)
 
         # Shape Node
         shp_name = tfm.rpartition('|')[-1] + 'Shape'
@@ -217,6 +232,6 @@ class Bundle(object):
         conns = maya.cmds.listConnections(node_attr) or []
         mkr_list = []
         for conn in conns:
-            mkr = mmSolver._api.marker.Marker(name=conn)
+            mkr = mmSolver._api.marker.Marker(node=conn)
             mkr_list.append(mkr)
         return mkr_list

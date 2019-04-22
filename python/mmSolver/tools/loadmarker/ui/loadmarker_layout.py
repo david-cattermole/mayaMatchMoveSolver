@@ -2,6 +2,9 @@
 The main component of the user interface for the loadmarker window.
 """
 
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets

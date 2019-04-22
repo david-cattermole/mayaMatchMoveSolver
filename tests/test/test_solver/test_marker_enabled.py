@@ -171,6 +171,12 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         maya.cmds.setKeyframe(marker_02_tfm, attribute='enable', time=mid, value=0)
         maya.cmds.setKeyframe(marker_02_tfm, attribute='enable', time=end, value=1)
 
+        maya.cmds.keyTangent(marker_02_tfm,
+                             attribute='enable',
+                             inTangentType='linear',
+                             outTangentType='step')
+
+
         cameras = (
             (cam_tfm, cam_shp),
         )
@@ -218,12 +224,12 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         ty_start = maya.cmds.getAttr(grp + '.ty', time=start)
         ty_mid = maya.cmds.getAttr(grp + '.ty', time=mid)
         ty_end = maya.cmds.getAttr(grp + '.ty', time=end)
-        assert self.approx_equal(tx_start, -0.51855463)
-        assert self.approx_equal(tx_mid, -2.3022068)
-        assert self.approx_equal(tx_end, -1.48144697)
-        assert self.approx_equal(ty_start, 1.30993172)
-        assert self.approx_equal(ty_mid, 1.65431512)
-        assert self.approx_equal(ty_end, 2.10503952)
+        assert self.approx_equal(tx_start, -0.51855463, eps=0.001)
+        assert self.approx_equal(tx_mid, -2.30711317518, eps=0.001)
+        assert self.approx_equal(tx_end, -1.48144697, eps=0.001)
+        assert self.approx_equal(ty_start, 1.30993172, eps=0.001)
+        assert self.approx_equal(ty_mid, 1.65458758547, eps=0.001)
+        assert self.approx_equal(ty_end, 2.10503952, eps=0.001)
 
 
 if __name__ == '__main__':

@@ -25,7 +25,7 @@ def main():
         return
 
     mkr_selection = selected_markers[0]
-    mkr = mmapi.Marker(name=mkr_selection)
+    mkr = mmapi.Marker(node=mkr_selection)
     # getting camera from the selected marker
     cam_from_mkr = mkr.get_camera()
 
@@ -35,7 +35,7 @@ def main():
     new_mkr_nodes = []
     for marker in selected_markers:
         # Get Marker's name
-        mkr = mmapi.Marker(name=marker)
+        mkr = mmapi.Marker(node=marker)
         # old_mkr_node is expected to be a long name.
         old_mkr_node = mkr.get_node()
         if old_mkr_node is None:

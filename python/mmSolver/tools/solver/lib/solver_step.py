@@ -41,6 +41,7 @@ def _solve_anim_attrs(max_iter_num, auto_diff_type, int_list):
     Solve only animated attributes.
 
     .. todo::
+
        Split attributes into groups of markers. By definition
        of 'animated attributes', each set of animated attributes can
        only affect the connected attributes. Therefore we should
@@ -74,7 +75,7 @@ def _solve_all_attrs(max_iter_num, auto_diff_type, int_list, strategy):
     if strategy == const.STRATEGY_TWO_FRAMES_FWD:
         batch_frm_list = _gen_two_frame_fwd(int_list)
     elif strategy == const.STRATEGY_ALL_FRAMES_AT_ONCE:
-        frm_list = map(lambda x: mmapi.Frame(x), int_list)
+        frm_list = [mmapi.Frame(x) for x in int_list]
         batch_frm_list = [frm_list]
     else:
         msg = 'strategy is not supported: strategy=%r'

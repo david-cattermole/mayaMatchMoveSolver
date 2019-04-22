@@ -35,6 +35,15 @@ class TestMarkerGroup(test_api_utils.APITestCase):
         self.assertIsInstance(x, markergroup.MarkerGroup)
         self.assertFalse(x.is_valid())
 
+        cam = self.create_camera('camera')
+        cam_tfm = cam.get_transform_node()
+        node = maya.cmds.createNode('mmMarkerGroupTransform',
+                                    name='markerGroup1',
+                                    parent=cam_tfm)
+        y = markergroup.MarkerGroup(node=node)
+        self.assertEqual(y.get_node(), cam_tfm + '|markerGroup1')
+        self.assertTrue(y.is_valid())
+
     def test_set_node(self):
         x = markergroup.MarkerGroup()
         self.assertEqual(x.get_node(), None)

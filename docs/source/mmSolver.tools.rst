@@ -25,7 +25,7 @@ mmSolver.tools
    mmSolver.tools.solver
    mmSolver.tools.togglebundlelock
    mmSolver.tools.togglemarkerlock
+   mmSolver.tools.triangulatebundle
 
 ..   mmSolver.tools.surfacerivet
      mmSolver.tools.snaponcurve
-     mmSolver.tools.triangulate

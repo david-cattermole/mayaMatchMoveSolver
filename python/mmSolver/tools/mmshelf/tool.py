@@ -84,19 +84,19 @@ def _create_bundle_tools_menu(menu):
         cmd=cmd,
     )
 
-    # # Triangulate Bundle (multiple frames)
-    # name = 'Triangulate Bundle'
-    # tooltip = 'Use Marker to triangulate a 3D position for Bundle.'
-    # cmd = (
-    #     'import mmSolver.tools.triangulate.tool;'
-    #     'mmSolver.tools.triangulate.tool.main();'
-    # )
-    # shelfutils.create_menu_item(
-    #     parent=menu,
-    #     name=name,
-    #     tooltip=tooltip,
-    #     cmd=cmd,
-    # )
+    # Triangulate Bundle (multiple frames)
+    name = 'Triangulate Bundle'
+    tooltip = 'Use Marker to triangulate a 3D position for Bundle.'
+    cmd = (
+        'import mmSolver.tools.triangulatebundle.tool;'
+        'mmSolver.tools.triangulatebundle.tool.main();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
 
     # Ray Cast Marker
     name = 'Ray-Cast Marker'

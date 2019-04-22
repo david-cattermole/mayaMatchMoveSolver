@@ -21,14 +21,22 @@ def smooth_animcurve(animcurve, selected_keyframes,
         return
     first_time = int(times[0])
     last_time = int(times[-1])
+    first_time_padded = first_time - (width * 2)
+    last_time_padded = last_time + (width * 2)
 
-    all_times = range(first_time, last_time + 1)
+    all_times = range(first_time_padded, last_time_padded + 1)
     weight_array = [0.0] * len(all_times)
     value_array = [None] * len(all_times)
     plug = animcurve + '.output'
     for i, t in enumerate(all_times):
         value = maya.cmds.getAttr(plug, time=t)
         value_array[i] = value
+        if t < first_time:
+            weight_array[i] = 0.0
+            continue
+        if t > last_time:
+            weight_array[i] = 0.0
+            continue
         if t in selected_keyframes:
             weight_array[i] = 1.0
 

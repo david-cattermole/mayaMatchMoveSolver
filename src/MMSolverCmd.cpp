@@ -106,6 +106,8 @@ MSyntax MMSolverCmd::newSyntax() {
                    MSyntax::kBoolean);
     syntax.addFlag(DEBUG_FILE_FLAG, DEBUG_FILE_FLAG_LONG,
                    MSyntax::kString);
+    syntax.addFlag(PRINT_STATS_FLAG, PRINT_STATS_FLAG_LONG,
+                   MSyntax::kString);
 
     // We can use marker and attr flags more than once.
     syntax.makeFlagMultiUse(CAMERA_FLAG);
@@ -136,6 +138,13 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     m_debugFile = DEBUG_FILE_DEFAULT_VALUE;
     if (argData.isFlagSet(DEBUG_FILE_FLAG)) {
         status = argData.getFlagArgument(DEBUG_FILE_FLAG, 0, m_debugFile);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Print Statistics'
+    m_printStats = PRINT_STATS_DEFAULT_VALUE;
+    if (argData.isFlagSet(PRINT_STATS_FLAG)) {
+        status = argData.getFlagArgument(PRINT_STATS_FLAG, 0, m_printStats);
         CHECK_MSTATUS(status);
     }
 
@@ -467,6 +476,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
             m_curveChange,
             m_computation,
             m_debugFile,
+            m_printStats,
             m_verbose,
             outResult
     );

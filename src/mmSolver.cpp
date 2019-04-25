@@ -352,6 +352,7 @@ bool solve(int iterMax,
            MAnimCurveChange &curveChange,
            MComputation &computation,
            MString &debugFile,
+           MString &printStats,
            bool verbose,
            MStringArray &outResult) {
     int i = 0;
@@ -437,6 +438,17 @@ bool solve(int iterMax,
     assert(paramUpperBoundList.size() == numberOfParameters);
     assert(paramWeightList.size() == numberOfParameters);
     assert(numberOfParameters >= attrList.size());
+
+    if (printStats == PRINT_STATS_MODE_INPUTS) {
+         resultStr = "numberOfParameters=";
+         resultStr += string::numberToString<int>(numberOfParameters);
+         outResult.append(MString(resultStr.c_str()));
+
+         resultStr = "numberOfErrors=";
+         resultStr += string::numberToString<int>(numberOfErrors);
+         outResult.append(MString(resultStr.c_str()));
+         return true;
+    }
 
     VRB("Number of Parameters; numberOfParameters=" << numberOfParameters);
     VRB("Number of Errors; numberOfErrors=" << numberOfErrors);

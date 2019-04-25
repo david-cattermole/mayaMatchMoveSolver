@@ -167,6 +167,11 @@
 #define DEBUG_FILE_FLAG_LONG      "-debugFile"
 #define DEBUG_FILE_DEFAULT_VALUE  ""
 
+// Print Statistics from the solver inputs.
+#define PRINT_STATS_FLAG           "-pst"
+#define PRINT_STATS_FLAG_LONG      "-printStatistics"
+#define PRINT_STATS_DEFAULT_VALUE  ""
+
 // Default Values for solver option flags
 #define CMINPACK_LM_ITERATIONS_DEFAULT_VALUE  20
 #define CMINPACK_LM_TAU_DEFAULT_VALUE  100.0 // default is 100.0
@@ -227,6 +232,7 @@ private:
 
     // Solver printing.
     MString m_debugFile;
+    MString m_printStats;
     bool m_verbose;
 
     // Objects

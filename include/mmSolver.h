@@ -75,6 +75,12 @@
 #define CMD_RESULT_SPLIT_CHAR "#"
 
 
+// Print Statistics for mmSolver command.
+//
+// These are the possible values:
+#define PRINT_STATS_MODE_INPUTS  "inputs"
+
+
 typedef std::vector<std::vector<bool> > BoolList2D;
 typedef std::pair<int, int> IndexPair;
 typedef std::vector<std::pair<int, int> > IndexPairList;
@@ -138,6 +144,7 @@ bool solve(int iterMax,
            MAnimCurveChange &curveChange,
            MComputation &computation,
            MString &debugFile,
+           MString &printStats,
            bool verbose,
            MStringArray &outResult);
 

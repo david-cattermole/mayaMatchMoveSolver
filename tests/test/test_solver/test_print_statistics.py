@@ -69,7 +69,7 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
             solverType=solver_index,
             frame=frames,
             verbose=True,
-            printStatistics='inputs',
+            printStatistics=('inputs', 'affects'),
         )
         num_params = result[0]
         num_errors = result[1]

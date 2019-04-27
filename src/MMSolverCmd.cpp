@@ -114,6 +114,7 @@ MSyntax MMSolverCmd::newSyntax() {
     syntax.makeFlagMultiUse(MARKER_FLAG);
     syntax.makeFlagMultiUse(ATTR_FLAG);
     syntax.makeFlagMultiUse(FRAME_FLAG);
+    syntax.makeFlagMultiUse(PRINT_STATS_FLAG);
 
     return syntax;
 }
@@ -142,10 +143,15 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     }
 
     // Get 'Print Statistics'
-    m_printStats = PRINT_STATS_DEFAULT_VALUE;
-    if (argData.isFlagSet(PRINT_STATS_FLAG)) {
-        status = argData.getFlagArgument(PRINT_STATS_FLAG, 0, m_printStats);
-        CHECK_MSTATUS(status);
+    MString printStats = "";
+    unsigned int printStatsNum = argData.numberOfFlagUses(PRINT_STATS_FLAG);
+    m_printStatsList.clear();
+    for (unsigned int i = 0; i < printStatsNum; ++i) {
+         MString printStatsArg;
+         status = argData.getFlagArgument(PRINT_STATS_FLAG, i, printStatsArg);
+         if (status == MStatus::kSuccess) {
+              m_printStatsList.append(printStatsArg);
+         }
     }
 
     m_cameraList.clear();
@@ -476,7 +482,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
             m_curveChange,
             m_computation,
             m_debugFile,
-            m_printStats,
+            m_printStatsList,
             m_verbose,
             outResult
     );

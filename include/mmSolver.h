@@ -78,7 +78,8 @@
 // Print Statistics for mmSolver command.
 //
 // These are the possible values:
-#define PRINT_STATS_MODE_INPUTS  "inputs"
+#define PRINT_STATS_MODE_INPUTS   "inputs"
+#define PRINT_STATS_MODE_AFFECTS  "affects"
 
 
 typedef std::vector<std::vector<bool> > BoolList2D;
@@ -144,7 +145,7 @@ bool solve(int iterMax,
            MAnimCurveChange &curveChange,
            MComputation &computation,
            MString &debugFile,
-           MString &printStats,
+           MStringArray &printStatsList,
            bool verbose,
            MStringArray &outResult);
 

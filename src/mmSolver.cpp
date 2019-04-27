@@ -352,7 +352,7 @@ bool solve(int iterMax,
            MAnimCurveChange &curveChange,
            MComputation &computation,
            MString &debugFile,
-           MString &printStats,
+           MStringArray &printStatsList,
            bool verbose,
            MStringArray &outResult) {
     int i = 0;
@@ -360,6 +360,21 @@ bool solve(int iterMax,
     MStatus status;
     std::string resultStr;
     int ret = 1;
+
+    bool printStats = false;
+    bool printStatsInput = false;
+    bool printStatsAffects = false;
+    if (printStatsList.length() > 0) {
+         for (i = 0; i < printStatsList.length(); ++i) {
+              if (printStatsList[i] == PRINT_STATS_MODE_INPUTS) {
+                   printStatsInput = true;
+                   printStats = true;
+              } else if (printStatsList[i] == PRINT_STATS_MODE_AFFECTS) {
+                   printStatsAffects = true;
+                   printStats = true;
+              }
+         }
+    }
 
 #ifdef MAYA_PROFILE
     int profileCategory = MProfiler::getCategoryIndex("mmSolver");
@@ -439,7 +454,7 @@ bool solve(int iterMax,
     assert(paramWeightList.size() == numberOfParameters);
     assert(numberOfParameters >= attrList.size());
 
-    if (printStats == PRINT_STATS_MODE_INPUTS) {
+    if (printStatsInput == true) {
          resultStr = "numberOfParameters=";
          resultStr += string::numberToString<int>(numberOfParameters);
          outResult.append(MString(resultStr.c_str()));
@@ -447,6 +462,8 @@ bool solve(int iterMax,
          resultStr = "numberOfErrors=";
          resultStr += string::numberToString<int>(numberOfErrors);
          outResult.append(MString(resultStr.c_str()));
+    }
+    if (printStats == true) {
          return true;
     }
 

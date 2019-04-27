@@ -64,6 +64,15 @@ def getMayaMainWindow():
     return window
 
 
+def findControlMayaWidget(name, clsTyp):
+    import maya.OpenMayaUI as omui
+    ptr = omui.MQtUtil.findControl(name)
+    widget = None
+    if ptr:
+        widget = Qt.QtCompat.wrapInstance(long(ptr), clsTyp)
+    return widget
+
+
 def isValidQtObject(obj):
     """
     Does the Python object given contain a valid Qt reference pointer?

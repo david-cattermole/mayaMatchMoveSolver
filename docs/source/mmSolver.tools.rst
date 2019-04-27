@@ -24,6 +24,7 @@ mmSolver.tools
    mmSolver.tools.smoothkeyframes
    mmSolver.tools.solver
    mmSolver.tools.togglebundlelock
+   mmSolver.tools.togglemarkerlock
 
 ..   mmSolver.tools.surfacerivet
      mmSolver.tools.snaponcurve

@@ -80,20 +80,19 @@ def attributesToUINodes(attr_list):
     :param attr_list: List of Attributes to convert.
     :type attr_list: [Attribute, ..]
 
-    :returns: A hiearachy of UI nodes to be viewed in a 'tree view'.
+    :returns: A hierarchy of UI nodes to be viewed in a 'tree view'.
     :rtype: PlugNode
     """
     root = attr_nodes.PlugNode('root')
     maya_nodes = dict()
     for attr in attr_list:
         n = attr.get_node()
-        a = attr.get_attr()
         maya_node = maya_nodes.get(n)
+        data = {'data': attr}
         if maya_node is None:
-            data = {'data': attr}
             maya_node = attr_nodes.MayaNode(n, data=data, parent=root)
             maya_nodes[n] = maya_node
-        data = {'data': attr}
+        a = attr.get_attr()
         attr_node = attr_nodes.AttrNode(a, data=data, parent=maya_node)
     return root
 

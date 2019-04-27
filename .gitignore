@@ -13,6 +13,7 @@ test*.txt
 *_before*.ma
 *.log
 *.flags
+ui_*.py
 
 old/*
 precompiled/*
@@ -35,3 +36,6 @@ venv/*
 external/working/levmar*
 external/include/*.h*
 external/include/*atlas*
+
+docs/build/html/*
+docs/build/doctrees/*

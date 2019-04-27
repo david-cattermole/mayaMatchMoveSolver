@@ -9,6 +9,7 @@ import pprint
 import os
 import warnings
 import uuid
+import logging
 
 import maya.cmds
 import maya.mel
@@ -679,15 +680,18 @@ class Collection(object):
                 raise excep.NotValid(msg)
             kwargs = self.__compile_solver(sol, mkr_list, attr_list)
 
-            debug_file = maya.cmds.file(query=True, sceneName=True)
-            debug_file = os.path.basename(debug_file)
-            debug_file, ext = os.path.splitext(debug_file)
-            # TODO: Find a way to set the default directory path.
-            debug_file_path = os.path.join(
-                os.path.expanduser('~/'),
-                debug_file + '_' + str(i).zfill(6) + '.log')
-            if len(debug_file) > 0 and debug_file_path is not None:
-                kwargs['debugFile'] = debug_file_path
+            # Add a debug file flag to the mmSolver command, only
+            # triggered during debug mode.
+            if logging.DEBUG >= LOG.getEffectiveLevel():
+                debug_file = maya.cmds.file(query=True, sceneName=True)
+                debug_file = os.path.basename(debug_file)
+                debug_file, ext = os.path.splitext(debug_file)
+                debug_file_path = os.path.join(
+                    os.path.expandvars('${TEMP}'),
+                    debug_file + '_' + str(i).zfill(6) + '.log'
+                )
+                if len(debug_file) > 0 and debug_file_path is not None:
+                    kwargs['debugFile'] = debug_file_path
 
             if isinstance(kwargs, dict):
                 kwargs_list.append(kwargs)

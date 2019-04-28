@@ -575,6 +575,7 @@ bool solve(int iterMax,
 
     // Allow user to exit out of solve.
     userData.computation = &computation;
+    userData.userInterrupted = false;
 
     // Verbosity
     userData.verbose = verbose;
@@ -892,12 +893,6 @@ bool solve(int iterMax,
         cminpack_fnorm = __cminpack_func__(enorm)(numberOfErrors, &errorList[0]);
         ret = userData.iterNum;
 
-        // ERR("Solver Type is not supported properly yet. "
-        //             << "solverType=" << solverType);
-        // resultStr = "success=0";
-        // outResult.append(MString(resultStr.c_str()));
-        // return false;
-
 #endif // USE_SOLVER_CMINPACK
 
     } else {
@@ -1028,6 +1023,9 @@ bool solve(int iterMax,
 
       resultStr = "iteration_attempt_num=" + string::numberToString<int>((int) levmar_info[9]);
       outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "user_interrupted=" + string::numberToString<int>((bool) userData.userInterrupted);
+      outResult.append(MString(resultStr.c_str()));
     }
 
 #endif // USE_SOLVER_LEVMAR
@@ -1085,6 +1083,9 @@ bool solve(int iterMax,
       outResult.append(MString(resultStr.c_str()));
 
       resultStr = "iteration_jacobian_num=" + string::numberToString<int>((int) (int) userData.jacIterNum);
+      outResult.append(MString(resultStr.c_str()));
+
+      resultStr = "user_interrupted=" + string::numberToString<int>((bool) userData.userInterrupted);
       outResult.append(MString(resultStr.c_str()));
     }
 

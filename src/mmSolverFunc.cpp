@@ -143,6 +143,7 @@ int solveFunc(int numberOfParameters,
 
     if (ud->computation->isInterruptRequested()) {
         WRN("User wants to cancel the evalutation!");
+        ud->userInterrupted = true;
         return SOLVE_FUNC_FAILURE;
     }
 

@@ -1486,7 +1486,7 @@ disconnected from any camera.</p>
 
 <dl class="method">
 <dt id="mmSolver.api.Collection.execute">
-<code class="descname">execute</code><span class="sig-paren">(</span><em>verbose=False</em>, <em>refresh=False</em>, <em>prog_fn=None</em>, <em>status_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.execute" title="Permalink to this definition">¶</a></dt>
+<code class="descname">execute</code><span class="sig-paren">(</span><em>verbose=False</em>, <em>refresh=False</em>, <em>force_update=False</em>, <em>prog_fn=None</em>, <em>status_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compile the collection, then pass that data to the &#8216;mmSolver&#8217; command.</p>
 <p>The mmSolver command will return a list of strings, which will then be
 passed to the SolveResult class so the user can query the raw data
@@ -1495,9 +1495,25 @@ using an interface.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of SolveResults from the executed collection.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>verbose</strong> (<em>bool</em>) &#8211; Print extra solver information while a solve is
+running.</li>
+<li><strong>refresh</strong> (<em>bool</em>) &#8211; Should the solver refresh the viewport while
+solving?</li>
+<li><strong>force_update</strong> (<em>bool</em>) &#8211; Force updating the DG network, to help the
+solver in case of a Maya evaluation DG bug.</li>
+<li><strong>prog_fn</strong> (<em>callable</em><em> or </em><em>None</em>) &#8211; The function used report progress messages to
+the user.</li>
+<li><strong>status_fn</strong> (<em>callable</em><em> or </em><em>None</em>) &#8211; The function used to report status messages
+to the user.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">[SolverResult, .]</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of SolveResults from the executed collection.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[SolverResult, .]</p>
+</td>
 </tr>
 </tbody>
 </table>

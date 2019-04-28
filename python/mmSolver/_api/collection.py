@@ -1091,9 +1091,14 @@ class Collection(object):
                 percent = float(start) + (ratio * (100.0 - start))
                 self.__set_progress(prog_fn, int(percent))
 
+                if solres.get_user_interrupted() is True:
+                    msg = 'Canceled by User'
+                    self.__set_status(status_fn, 'WARNING: ' + msg)
+                    LOG.warning(msg)
+                    break
                 if solres.get_success() is False:
                     msg = 'Solver failed!!!'
-                    self.__set_status(status_fn, 'ERROR:' + msg)
+                    self.__set_status(status_fn, 'ERROR: ' + msg)
                     LOG.error(msg)
 
                 # Refresh the Viewport.

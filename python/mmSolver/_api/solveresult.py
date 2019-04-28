@@ -213,6 +213,12 @@ class SolveResult(object):
     def get_final_error(self):
         return self._error_stats.get('final')
 
+    def get_user_interrupted(self):
+        """
+        Did the user purposely cancel the solve?
+        """
+        return self._solver_stats.get('user_interrupted', False)
+    
     def get_error_stats(self):
         return self._error_stats.copy()
 

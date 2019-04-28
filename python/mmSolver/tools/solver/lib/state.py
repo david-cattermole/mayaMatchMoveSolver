@@ -77,6 +77,26 @@ def set_refresh_viewport_state(value):
     return
 
 
+def get_force_dg_update_state():
+    value = scene_data.get_scene_data(
+        const.SCENE_DATA_FORCE_DG_UPDATE
+    )
+    if value is None:
+        value = const.SCENE_DATA_FORCE_DG_UPDATE_DEFAULT
+    return value
+
+
+def set_force_dg_update_state(value):
+    if isinstance(value, bool) is False:
+        msg = 'value cannot be %r; %r is not bool'
+        raise TypeError(msg % (type(value), value))
+    scene_data.set_scene_data(
+        const.SCENE_DATA_FORCE_DG_UPDATE,
+        value
+    )
+    return
+
+
 def get_log_level():
     value = scene_data.get_scene_data(
         const.SCENE_DATA_LOG_LEVEL

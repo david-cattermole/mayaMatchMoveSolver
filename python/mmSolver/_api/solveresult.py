@@ -55,8 +55,12 @@ def _convert_to(name, key, typ, value, index):
     :param typ: The type object to convert this data into.
     :type typ: object
 
-    :param typ: The type object to convert this data into.
-    :type typ: object
+    :param value: The value to convert into 'typ'.
+    :type value: any
+
+    :param index: The index into 'value', used if value has multiple 
+                  values.
+    :type index: int
 
     :returns: A value of 'typ' kind.
     """
@@ -77,6 +81,12 @@ def _convert_to(name, key, typ, value, index):
     if typ is int:
         if isinstance(value[index], (str, unicode, float)):
             value[index] = float(value[index])
+        else:
+            return typ()
+
+    if typ is bool:
+        if isinstance(value[index], (str, unicode, float)):
+            value[index] = int(value[index])
         else:
             return typ()
 
@@ -117,6 +127,7 @@ class SolveResult(object):
             ('iteration_function_calls', 'iteration_function_num', int),
             ('iteration_jacobian_calls', 'iteration_jacobian_num', int),
             ('attempts', 'iteration_attempt_num', int),
+            ('user_interrupted', 'user_interrupted', bool),
         ]
         index = 0
         self._solver_stats = {}

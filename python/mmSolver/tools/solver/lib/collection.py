@@ -648,6 +648,7 @@ def compile_collection(col, prog_fn=None):
 def execute_collection(col,
                        log_level=None,
                        refresh=False,
+                       force_update=False,
                        prog_fn=None,
                        status_fn=None):
     """
@@ -662,6 +663,9 @@ def execute_collection(col,
     :param refresh: Should we refresh the viewport?
     :type refresh: bool
 
+    :param force_update: Should we force-update the Maya DG?
+    :type force_update: bool
+
     :param prog_fn: A function called with an 'int' argument, to
                     display progress information to the user. The
                     integer is expected to be between 0 and 100 (and
@@ -673,10 +677,12 @@ def execute_collection(col,
     :type status_fn: None or function
     """
     msg = 'execute_collection: '
-    msg += 'col=%r log_level=%r refresh=%r prog_fn=%r status_fn=%r'
+    msg += 'col=%r log_level=%r refresh=%r force_update=%r '
+    msg += 'prog_fn=%r status_fn=%r'
     LOG.debug(msg, col, log_level, refresh, prog_fn, status_fn)
 
     assert isinstance(refresh, bool)
+    assert isinstance(force_update, bool)
     assert log_level is None or isinstance(log_level, (str, unicode))
     assert prog_fn is None or hasattr(prog_fn, '__call__')
     assert status_fn is None or hasattr(status_fn, '__call__')
@@ -698,6 +704,7 @@ def execute_collection(col,
     solres_list = col.execute(
         verbose=verbose,
         refresh=refresh,
+        force_update=force_update,
         prog_fn=prog_fn,
         status_fn=status_fn,
     )
@@ -709,7 +716,7 @@ def execute_collection(col,
     return
 
 
-def run_solve_ui(col, refresh_state, log_level, window):
+def run_solve_ui(col, refresh_state, force_update_state, log_level, window):
     """
     Run the active "solve" (UI state information), and update the UI.
 
@@ -725,6 +732,9 @@ def run_solve_ui(col, refresh_state, log_level, window):
 
     :param refresh_state: Should we update the viewport while solving?
     :type refresh_state: bool
+
+    :param force_update_state: Should we forcibly update the DG while solving?
+    :type force_update_state: bool
 
     :param log_level: How much information should we print out;a
                       'error', 'warning', 'info', 'verbose' or 'debug'.
@@ -767,6 +777,7 @@ def run_solve_ui(col, refresh_state, log_level, window):
                 col,
                 log_level=log_level,
                 refresh=refresh_state,
+                force_update=force_update_state,
                 prog_fn=prog_fn,
                 status_fn=status_fn,
             )

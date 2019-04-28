@@ -95,3 +95,29 @@ def set_log_level(value):
         value
     )
     return
+
+
+def get_solver_is_running_state():
+    value = mmapi.is_solver_running()
+    return value
+
+
+def set_solver_is_running_state(value):
+    if isinstance(value, bool) is False:
+        msg = 'value cannot be %r; %r is not bool'
+        raise TypeError(msg % (type(value), value))
+    mmapi.set_solver_running(value)
+    return
+
+
+def get_solver_user_interrupt_state():
+    value = mmapi.get_user_interrupt()
+    return value
+
+
+def set_solver_user_interrupt_state(value):
+    if isinstance(value, bool) is False:
+        msg = 'value cannot be %r; %r is not bool'
+        raise TypeError(msg % (type(value), value))
+    mmapi.set_user_interrupt(value)
+    return

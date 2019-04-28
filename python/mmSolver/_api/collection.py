@@ -1091,8 +1091,11 @@ class Collection(object):
                 percent = float(start) + (ratio * (100.0 - start))
                 self.__set_progress(prog_fn, int(percent))
 
-                if solres.get_user_interrupted() is True:
+                cmd_cancel = solres.get_user_interrupted()
+                gui_cancel = api_utils.get_user_interrupt()
+                if cmd_cancel is True or gui_cancel is True:
                     msg = 'Canceled by User'
+                    api_utils.set_user_interrupt(False)
                     self.__set_status(status_fn, 'WARNING: ' + msg)
                     LOG.warning(msg)
                     break

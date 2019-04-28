@@ -411,6 +411,13 @@ class SolverWindow(BaseWindow):
         return
 
     def apply(self):
+        """
+        Tbis button launches a solve, but can also be used to cancel a solve.
+        """
+        running_state = lib_state.get_solver_is_running_state()
+        if running_state is True:
+            lib_state.set_solver_user_interrupt_state(True)
+            return
         refresh_state = lib_state.get_refresh_viewport_state()
         log_level = lib_state.get_log_level()
         col = lib_state.get_active_collection()

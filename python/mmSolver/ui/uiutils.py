@@ -11,7 +11,6 @@ import Qt
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
-import Qt.QtCompat as QtCompat
 
 
 def getHostApplication():
@@ -61,7 +60,7 @@ def getMayaMainWindow():
     """
     import maya.OpenMayaUI as omui
     window_ptr = omui.MQtUtil.mainWindow()
-    window = QtCompat.wrapInstance(long(window_ptr), QtWidgets.QMainWindow)
+    window = Qt.QtCompat.wrapInstance(long(window_ptr), QtWidgets.QMainWindow)
     return window
 
 
@@ -70,7 +69,7 @@ def findControlMayaWidget(name, clsTyp):
     ptr = omui.MQtUtil.findControl(name)
     widget = None
     if ptr:
-        widget = QtCompat.wrapInstance(long(ptr), clsTyp)
+        widget = Qt.QtCompat.wrapInstance(long(ptr), clsTyp)
     return widget
 
 

@@ -44,6 +44,23 @@ This video uses mmSolver v0.2.0 (beta).
     <iframe width="560" height="315" src="https://www.youtube.com/embed/z6lziVV3BcY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
+Multi-Camera and Object Solve
+-----------------------------
+
+Using mmSolver to solve multiple cameras; solving a shot camera,
+witness camera and object track. We do not need to have shared 2D
+tracking information in order to solve using multiple cameras. The
+demonstration also shows the Smooth Keyframes tool, used to smooth an
+animation curve then re-solve. A single frame camera line-up for
+multiple cameras is also shown.
+
+This video uses mmSolver v0.2.1.
+
+.. raw:: html
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/2tOCVOoPaR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
 Hierarchical Object Solve
 -------------------------
 

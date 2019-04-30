@@ -108,18 +108,15 @@ class TestSolve(test_api_utils.APITestCase):
         # Run solver!
         results = col.execute()
 
-        # Ensure the values are correct
-        for res in results:
-            success = res.get_success()
-            err = res.get_final_error()
-            self.assertTrue(success)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
-
         # save the output
         path = self.get_data_path('test_solve_init_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        # Ensure the values are correct
+        self.checkSolveResults(results)
+        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
+        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
 
     def test_marker_enable(self):
         start = 1

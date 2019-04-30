@@ -5,6 +5,7 @@ Any queries use the Maya Python API, but modifications are handled with
 maya.cmds.* so that they support undo/redo correctly.
 """
 
+import time
 import pprint
 import os
 import warnings
@@ -686,10 +687,10 @@ class Collection(object):
                 debug_file = maya.cmds.file(query=True, sceneName=True)
                 debug_file = os.path.basename(debug_file)
                 debug_file, ext = os.path.splitext(debug_file)
-                # TODO: Find a way to set the default directory path.
                 debug_file_path = os.path.join(
-                    os.path.expanduser('~/'),
-                    debug_file + '_' + str(i).zfill(6) + '.log')
+                    os.path.expandvars('${TEMP}'),
+                    debug_file + '_' + str(i).zfill(6) + '.log'
+                )
                 if len(debug_file) > 0 and debug_file_path is not None:
                     kwargs['debugFile'] = debug_file_path
 
@@ -972,13 +973,38 @@ class Collection(object):
             nodes.add(cam_shp_node)
         return nodes
 
-    def execute(self, verbose=False, refresh=False, prog_fn=None, status_fn=None):
+    def execute(self,
+                verbose=False,
+                refresh=False,
+                force_update=False,
+                prog_fn=None,
+                status_fn=None):
         """
         Compile the collection, then pass that data to the 'mmSolver' command.
 
         The mmSolver command will return a list of strings, which will then be
         passed to the SolveResult class so the user can query the raw data
         using an interface.
+
+        :param verbose: Print extra solver information while a solve is
+                        running.
+        :type verbose: bool
+
+        :param refresh: Should the solver refresh the viewport while
+                        solving?
+        :type refresh: bool
+
+        :param force_update: Force updating the DG network, to help the
+                             solver in case of a Maya evaluation DG bug.
+        :type force_update: bool
+
+        :param prog_fn: The function used report progress messages to
+                        the user.
+        :type prog_fn: callable or None
+
+        :param status_fn: The function used to report status messages
+                          to the user.
+        :type status_fn: callable or None
 
         :return: List of SolveResults from the executed collection.
         :rtype: [SolverResult, ..]
@@ -1018,16 +1044,6 @@ class Collection(object):
             self.__set_status(status_fn, 'Solver Initializing...')
             api_utils.set_solver_running(True)
 
-            # Set the first current time to the frame before current.
-            # This is to help trigger evaluations on the 'current
-            # frame', if the current frame is the same as the first
-            # frame.
-            maya.cmds.currentTime(
-                cur_frame - 1,
-                edit=True,
-                update=True
-            )
-
             # Check for validity
             solres_list = []
             if self.is_valid() is False:
@@ -1037,7 +1053,10 @@ class Collection(object):
             self.__set_progress(prog_fn, 1)
 
             # Isolate all nodes used in all of the kwargs to be run.
+            # Note; This assumes the isolated objects are visible, but
+            # they may be hidden.
             if refresh is True:
+                s = time.time()
                 isolate_nodes = set()
                 for kwargs in kwargs_list:
                     isolate_nodes |= self.__generate_isolate_nodes(kwargs)
@@ -1047,6 +1066,27 @@ class Collection(object):
                 for panel in panels:
                     self.__set_image_plane_visibility(panel, False)
                     self.__set_isolated_nodes(panel, isolate_node_list, True)
+                e = time.time()
+                LOG.debug('Perform Pre-Isolate; time=%r', e - s)
+
+            # Set the first current time to the frame before current.
+            # This is to help trigger evaluations on the 'current
+            # frame', if the current frame is the same as the first
+            # frame.
+            frame_list = []
+            for kwargs in kwargs_list:
+                frame_list += kwargs.get('frame', [])
+            frame_list = list(set(frame_list))
+            is_whole_solve_single_frame = len(frame_list) == 1
+            if is_whole_solve_single_frame is False:
+                s = time.time()
+                maya.cmds.currentTime(
+                    cur_frame - 1,
+                    edit=True,
+                    update=force_update,
+                )
+                e = time.time()
+                LOG.debug('Update previous of current time; time=%r', e - s)
 
             # Run Solver...
             start = 0
@@ -1091,19 +1131,30 @@ class Collection(object):
                 percent = float(start) + (ratio * (100.0 - start))
                 self.__set_progress(prog_fn, int(percent))
 
+                cmd_cancel = solres.get_user_interrupted()
+                gui_cancel = api_utils.get_user_interrupt()
+                if cmd_cancel is True or gui_cancel is True:
+                    msg = 'Canceled by User'
+                    api_utils.set_user_interrupt(False)
+                    self.__set_status(status_fn, 'WARNING: ' + msg)
+                    LOG.warning(msg)
+                    break
                 if solres.get_success() is False:
                     msg = 'Solver failed!!!'
-                    self.__set_status(status_fn, 'ERROR:' + msg)
+                    self.__set_status(status_fn, 'ERROR: ' + msg)
                     LOG.error(msg)
 
                 # Refresh the Viewport.
                 if refresh is True:
+                    s = time.time()
                     maya.cmds.currentTime(
                         frame[0],
                         edit=True,
-                        update=True
+                        update=force_update,
                     )
                     maya.cmds.refresh()
+                    e = time.time()
+                    LOG.debug('Refresh Viewport; time=%r', e - s)
         except:
             solres_list = []
             # TODO: If we have failed, should we attempt to clean up the mess
@@ -1111,6 +1162,7 @@ class Collection(object):
             raise
         finally:
             if refresh is True:
+                s = time.time()
                 for panel, objs in panel_objs.items():
                     if objs is None:
                         # No original objects, disable 'isolate
@@ -1120,6 +1172,8 @@ class Collection(object):
                         self.__set_image_plane_visibility(panel, img_pl_vis)
                     else:
                         self.__set_isolated_nodes(panel, list(objs), True)
+                e = time.time()
+                LOG.debug('Finally; reset isolate selected; time=%r', e - s)
 
             self.__set_progress(prog_fn, 100)
             api_utils.set_solver_running(False)

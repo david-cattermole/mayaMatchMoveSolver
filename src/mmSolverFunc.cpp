@@ -143,6 +143,7 @@ int solveFunc(int numberOfParameters,
 
     if (ud->computation->isInterruptRequested()) {
         WRN("User wants to cancel the evalutation!");
+        ud->userInterrupted = true;
         return SOLVE_FUNC_FAILURE;
     }
 
@@ -333,6 +334,8 @@ int solveFunc(int numberOfParameters,
     ud->funcBenchTimer->stop();
     ud->funcBenchTicks->stop();
 
+    error_avg *= 1.0 / (numberOfErrors / ERRORS_PER_MARKER);
+
     if (debugIsOpen == true) {
          for (i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
               debugFile << "error i=" << i
@@ -356,7 +359,6 @@ int solveFunc(int numberOfParameters,
 
     if (ud->verbose == true) {
         if (ud->isNormalCall) {
-            error_avg *= 1.0 / (numberOfErrors / ERRORS_PER_MARKER);
             std::cout << " | error avg=" << error_avg
                       << " min=" << error_min
                       << " max=" << error_max

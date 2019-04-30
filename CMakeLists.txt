@@ -121,6 +121,11 @@ configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py
         @ONLY)
 
+# Create Python file with some build options baked in.
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h
+        @ONLY)
 
 # Create Python file for documentation sphinx build with some build
 # options baked in.

@@ -36,7 +36,7 @@
 #include <MMMarkerScaleNode.h>
 #include <MMReprojectionNode.h>
 #include <MMMarkerGroupTransformNode.h>
-// #include <MMReprojectionCmd.h>
+#include <MMReprojectionCmd.h>
 
 
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
@@ -107,11 +107,11 @@ MStatus initializePlugin(MObject obj) {
                      MMSolverTypeCmd::newSyntax,
                      status);
 
-    // REGISTER_COMMAND(plugin,
-    //                  MMReprojectionCmd::cmdName(),
-    //                  MMReprojectionCmd::creator,
-    //                  MMReprojectionCmd::newSyntax,
-    //                  status);
+    REGISTER_COMMAND(plugin,
+                     MMReprojectionCmd::cmdName(),
+                     MMReprojectionCmd::creator,
+                     MMReprojectionCmd::newSyntax,
+                     status);
     
     REGISTER_COMMAND(plugin,
                      MMTestCameraMatrixCmd::cmdName(),
@@ -169,7 +169,7 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMSolverTypeCmd::cmdName(), status);
-    // DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
 
     DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), 

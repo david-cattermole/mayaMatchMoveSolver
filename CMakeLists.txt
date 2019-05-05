@@ -154,7 +154,7 @@ set(SOURCE_FILES
         include/MMTestCameraMatrixCmd.h
         include/MMSolverCmd.h
         include/MMSolverTypeCmd.h
-        # include/MMReprojectionCmd.h
+        include/MMReprojectionCmd.h
         src/mmSolver.cpp
         src/mmSolverFunc.cpp
         src/mmSolverLevMar.cpp
@@ -169,7 +169,7 @@ set(SOURCE_FILES
         src/MMTestCameraMatrixCmd.cpp
         src/MMSolverCmd.cpp
         src/MMSolverTypeCmd.cpp
-        # src/MMReprojectionCmd.cpp
+        src/MMReprojectionCmd.cpp
         src/pluginMain.cpp
 )
 

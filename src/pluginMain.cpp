@@ -30,7 +30,6 @@
 // Build-Time constant values.
 #include <buildConstant.h>
 
-// TODO: Add entry points for mmReprojection cmd and node, mmMarkerScale cmd and mmTriangulate cmd.
 #include <MMSolverCmd.h>
 #include <MMSolverTypeCmd.h>
 #include <MMTestCameraMatrixCmd.h>
@@ -38,7 +37,6 @@
 #include <MMReprojectionNode.h>
 #include <MMMarkerGroupTransformNode.h>
 // #include <MMReprojectionCmd.h>
-// #include <MMTriangulateCmd.h>
 
 
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
@@ -109,6 +107,12 @@ MStatus initializePlugin(MObject obj) {
                      MMSolverTypeCmd::newSyntax,
                      status);
 
+    // REGISTER_COMMAND(plugin,
+    //                  MMReprojectionCmd::cmdName(),
+    //                  MMReprojectionCmd::creator,
+    //                  MMReprojectionCmd::newSyntax,
+    //                  status);
+    
     REGISTER_COMMAND(plugin,
                      MMTestCameraMatrixCmd::cmdName(),
                      MMTestCameraMatrixCmd::creator,
@@ -140,22 +144,6 @@ MStatus initializePlugin(MObject obj) {
                        markerGroupClassification,
                        status)
 
-    // REGISTER_COMMAND(plugin,
-    //                  MMReprojectionCmd::cmdName(),
-    //                  MMReprojectionCmd::creator,
-    //                  MMReprojectionCmd::newSyntax,
-    //                  status);
-    // REGISTER_COMMAND(plugin,
-    //                  MMTriangulateCmd::cmdName(),
-    //                  MMTriangulateCmd::creator,
-    //                  MMTriangulateCmd::newSyntax,
-    //                  status);
-    // REGISTER_COMMAND(plugin,
-    //                  MMMarkerScaleCmd::cmdName(),
-    //                  MMMarkerScaleCmd::creator,
-    //                  MMMarkerScaleCmd::newSyntax,
-    //                  status);
-
     // Run the Python startup function when the plug-in loads.
     bool displayEnabled = false;
     bool undoEnabled = false;
@@ -181,6 +169,7 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMSolverTypeCmd::cmdName(), status);
+    // DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
 
     DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), 
@@ -191,10 +180,5 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(), 
                     MMMarkerGroupTransformNode::m_id, status);
-
-    // DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
-    // DEREGISTER_COMMAND(plugin, MMTriangulateCmd::cmdName(), status);
-    // DEREGISTER_COMMAND(plugin, MMMarkerScaleCmd::cmdName(), status);
-
     return status;
 }

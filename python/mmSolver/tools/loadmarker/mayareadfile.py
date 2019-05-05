@@ -162,6 +162,7 @@ def __set_node_data(mkr, mkr_data):
     maya.cmds.setAttr(mkr_node + '.translateX', lock=True)
     maya.cmds.setAttr(mkr_node + '.translateY', lock=True)
     maya.cmds.setAttr(mkr_node + '.enable', lock=True)
+    maya.cmds.setAttr(mkr_node + '.weight', lock=True)
 
     return mkr
 

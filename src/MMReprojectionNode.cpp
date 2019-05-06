@@ -40,6 +40,7 @@
 
 #include <MMReprojectionNode.h>
 #include <Camera.h>  // getProjectionMatrix, computeFrustumCoordinates
+#include <reprojection.h>
 
 
 MTypeId MMReprojectionNode::m_id(MM_REPROJECTION_TYPE_ID);
@@ -187,7 +188,7 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
 
         // TODO: near clip plane forced to 0.1, otherwise reprojection
         // does't work. Why? No idea.
-        double nearClipPlane_const = 0.1;
+        double nearClipPlane = 0.1;
 
         MDataHandle farClipPlaneHandle = data.inputValue(a_farClipPlane,
                                                          &status);
@@ -237,86 +238,81 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double depthScale = depthScaleHandle.asDouble();
 
-        // Use frustum coordinates to calculate coordinates values.
-        double left = 0.0;
-        double right = 0.0;
-        double top = 0.0;
-        double bottom = 0.0;
-        computeFrustumCoordinates(
-                focalLength,
-                horizontalFilmAperture, verticalFilmAperture,
-                horizontalFilmOffset, verticalFilmOffset,
-                nearClipPlane_const, cameraScale,
-                left, right, top, bottom);
+        // Reprojection Outputs
+        double outCoordX;
+        double outCoordY;
+        double outNormCoordX;
+        double outNormCoordY;
+        double outPixelX;
+        double outPixelY;
+        bool outInsideFrustum;
+        double outPointX;
+        double outPointY;
+        double outPointZ;
+        double outWorldPointX;
+        double outWorldPointY;
+        double outWorldPointZ;
+        MMatrix outMatrix;
+        MMatrix outWorldMatrix;
+        MMatrix outCameraProjectionMatrix;
+        MMatrix outInverseCameraProjectionMatrix;
+        MMatrix outWorldCameraProjectionMatrix;
+        MMatrix outWorldInverseCameraProjectionMatrix;
+        double outHorizontalPan;
+        double outVerticalPan;
 
-        // Get Camera Projection Matrix
-        MMatrix camProjMatrix;
-        status = getProjectionMatrix(
+        // Query the reprojection.
+        status = reprojection(
+                tfmMatrix,
+                camMatrix,
+
+                // Camera
                 focalLength,
-                horizontalFilmAperture, verticalFilmAperture,
-                horizontalFilmOffset, verticalFilmOffset,
-                imageWidth, imageHeight,
+                horizontalFilmAperture,
+                verticalFilmAperture,
+                horizontalFilmOffset,
+                verticalFilmOffset,
                 filmFit,
-                nearClipPlane_const, farClipPlane,
+                nearClipPlane,
+                farClipPlane,
                 cameraScale,
-                camProjMatrix);
+
+                // Image
+                imageWidth,
+                imageHeight,
+
+                // Manipulation
+                applyMatrix,
+                overrideScreenX,
+                overrideScreenY,
+                overrideScreenZ,
+                screenX,
+                screenY,
+                screenZ,
+                depthScale,
+
+                // Outputs
+                outCoordX, outCoordY,
+                outNormCoordX, outNormCoordY,
+                outPixelX, outPixelY,
+                outInsideFrustum,
+                outPointX, outPointY, outPointZ,
+                outWorldPointX, outWorldPointY, outWorldPointZ,
+                outMatrix,
+                outWorldMatrix,
+                outCameraProjectionMatrix,
+                outInverseCameraProjectionMatrix,
+                outWorldCameraProjectionMatrix,
+                outWorldInverseCameraProjectionMatrix,
+                outHorizontalPan,
+                outVerticalPan);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-
-        // Camera World Projection Matrix
-        MMatrix camWorldProjMatrix = camMatrix.inverse() * camProjMatrix;
-
-        // Convert to screen-space
-        tfmMatrix = tfmMatrix * camWorldProjMatrix;
-
-        // Do screen-space overrides
-        if (overrideScreenX) {
-            tfmMatrix[3][0] = screenX;
-        }
-        if (overrideScreenY) {
-            tfmMatrix[3][1] = screenY;
-        }
-        if (overrideScreenZ) {
-            tfmMatrix[3][2] = screenZ;
-        }
-
-        // Apply screen-space matrix
-        tfmMatrix = tfmMatrix * applyMatrix;
-
-        // Scale the screen-space depth.
-        tfmMatrix *= depthScale;
-
-        // Get (screen-space) point
-        MPoint pos(tfmMatrix[3][0],
-                   tfmMatrix[3][1],
-                   tfmMatrix[3][2],
-                   tfmMatrix[3][3]);
-        pos.cartesianize();
-        MPoint coord(pos.x,
-                     pos.y,
-                     0.0,
-                     1.0);
-
-        // Is the point inside the frustum of the camera?
-        bool insideFrustum = true;
-        if ((coord.x < -1.0)
-            || (coord.x > 1.0)
-            || (coord.y < -1.0)
-            || (coord.y > 1.0)) {
-            insideFrustum = false;
-        }
-
-        // Convert back to world space
-        MMatrix worldTfmMatrix = tfmMatrix * camWorldProjMatrix.inverse();
-        MPoint worldPos(worldTfmMatrix[3][0],
-                        worldTfmMatrix[3][1],
-                        worldTfmMatrix[3][2],
-                        1.0);
 
         // Output Coordinates (-1.0 to 1.0; lower-left corner is -1.0, -1.0)
         MDataHandle outCoordXHandle = data.outputValue(a_outCoordX);
         MDataHandle outCoordYHandle = data.outputValue(a_outCoordY);
-        outCoordXHandle.setDouble(coord.x);
-        outCoordYHandle.setDouble(coord.y);
+        outCoordXHandle.setDouble(outCoordX);
+        outCoordYHandle.setDouble(outCoordY);
         outCoordXHandle.setClean();
         outCoordYHandle.setClean();
 
@@ -324,8 +320,8 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         // corner is 0.0, 0.0)
         MDataHandle outNormCoordXHandle = data.outputValue(a_outNormCoordX);
         MDataHandle outNormCoordYHandle = data.outputValue(a_outNormCoordY);
-        outNormCoordXHandle.setDouble((coord.x + 1.0) * 0.5);
-        outNormCoordYHandle.setDouble((coord.y + 1.0) * 0.5);
+        outNormCoordXHandle.setDouble(outNormCoordX);
+        outNormCoordYHandle.setDouble(outNormCoordY);
         outNormCoordXHandle.setClean();
         outNormCoordYHandle.setClean();
 
@@ -333,37 +329,35 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         // lower-left corner is 0.0, 0.0)
         MDataHandle outPixelXHandle = data.outputValue(a_outPixelX);
         MDataHandle outPixelYHandle = data.outputValue(a_outPixelY);
-        outPixelXHandle.setDouble((coord.x + 1.0) * 0.5 * imageWidth);
-        outPixelYHandle.setDouble((coord.y + 1.0) * 0.5 * imageHeight);
+        outPixelXHandle.setDouble(outPixelX);
+        outPixelYHandle.setDouble(outPixelY);
         outPixelXHandle.setClean();
         outPixelYHandle.setClean();
 
         // Output 'Inside Frustum'; is the input matrix inside the
         // camera frustrum or not?
         MDataHandle outInsideFrustumHandle = data.outputValue(a_outInsideFrustum);
-        outInsideFrustumHandle.setBool(insideFrustum);
+        outInsideFrustumHandle.setBool(outInsideFrustum);
         outInsideFrustumHandle.setClean();
 
         // Output Point (camera-space)
-        // TODO: This has a strange Z value... find out why.
         MDataHandle outPointXHandle = data.outputValue(a_outPointX);
         MDataHandle outPointYHandle = data.outputValue(a_outPointY);
         MDataHandle outPointZHandle = data.outputValue(a_outPointZ);
-        outPointXHandle.setDouble(pos.x);
-        outPointYHandle.setDouble(pos.y);
-        outPointZHandle.setDouble(pos.z);
+        outPointXHandle.setDouble(outPointX);
+        outPointYHandle.setDouble(outPointY);
+        outPointZHandle.setDouble(outPointZ);
         outPointXHandle.setClean();
         outPointYHandle.setClean();
         outPointZHandle.setClean();
 
         // Output Point (world-space)
-        // TODO: This has a strange Z value... find out why.
         MDataHandle outWorldPointXHandle = data.outputValue(a_outWorldPointX);
         MDataHandle outWorldPointYHandle = data.outputValue(a_outWorldPointY);
         MDataHandle outWorldPointZHandle = data.outputValue(a_outWorldPointZ);
-        outWorldPointXHandle.setDouble(worldPos.x);
-        outWorldPointYHandle.setDouble(worldPos.y);
-        outWorldPointZHandle.setDouble(worldPos.z);
+        outWorldPointXHandle.setDouble(outWorldPointX);
+        outWorldPointYHandle.setDouble(outWorldPointY);
+        outWorldPointZHandle.setDouble(outWorldPointZ);
         outWorldPointXHandle.setClean();
         outWorldPointYHandle.setClean();
         outWorldPointZHandle.setClean();
@@ -371,40 +365,40 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         // Output Matrix (camera-space)
         // TODO: This has a strange translate Z value... find out why.
         MDataHandle outMatrixHandle = data.outputValue(a_outMatrix);
-        outMatrixHandle.setMMatrix(tfmMatrix);
+        outMatrixHandle.setMMatrix(outMatrix);
         outMatrixHandle.setClean();
 
         // Output Matrix (world-space)
         MDataHandle outWorldMatrixHandle = data.outputValue(a_outWorldMatrix);
-        outWorldMatrixHandle.setMMatrix(worldTfmMatrix);
+        outWorldMatrixHandle.setMMatrix(outWorldMatrix);
         outWorldMatrixHandle.setClean();
 
         // Output Camera Projection Matrix
         MDataHandle outCameraProjectionMatrixHandle = data.outputValue(a_outCameraProjectionMatrix);
-        outCameraProjectionMatrixHandle.setMMatrix(camProjMatrix);
+        outCameraProjectionMatrixHandle.setMMatrix(outCameraProjectionMatrix);
         outCameraProjectionMatrixHandle.setClean();
 
         // Output Inverse Camera Projection Matrix
         MDataHandle outInverseCameraProjectionMatrixHandle = data.outputValue(a_outInverseCameraProjectionMatrix);
-        outInverseCameraProjectionMatrixHandle.setMMatrix(camProjMatrix.inverse());
+        outInverseCameraProjectionMatrixHandle.setMMatrix(outInverseCameraProjectionMatrix);
         outInverseCameraProjectionMatrixHandle.setClean();
 
         // Output World Camera Projection Matrix
         MDataHandle outWorldCameraProjectionMatrixHandle = data.outputValue(a_outWorldCameraProjectionMatrix);
-        outWorldCameraProjectionMatrixHandle.setMMatrix(camWorldProjMatrix);
+        outWorldCameraProjectionMatrixHandle.setMMatrix(outWorldCameraProjectionMatrix);
         outWorldCameraProjectionMatrixHandle.setClean();
 
         // Output World Inverse Camera Projection Matrix
         MDataHandle outWorldInverseCameraProjectionMatrixHandle = data.outputValue(
                 a_outWorldInverseCameraProjectionMatrix);
-        outWorldInverseCameraProjectionMatrixHandle.setMMatrix(camWorldProjMatrix.inverse());
+        outWorldInverseCameraProjectionMatrixHandle.setMMatrix(outWorldInverseCameraProjectionMatrix);
         outWorldInverseCameraProjectionMatrixHandle.setClean();
 
         // Output Pan
         MDataHandle outHorizontalPanHandle = data.outputValue(a_outHorizontalPan);
         MDataHandle outVerticalPanHandle = data.outputValue(a_outVerticalPan);
-        outHorizontalPanHandle.setDouble(coord.x * 0.5 * horizontalFilmAperture);
-        outVerticalPanHandle.setDouble(coord.y * 0.5 * verticalFilmAperture);
+        outHorizontalPanHandle.setDouble(outHorizontalPan);
+        outVerticalPanHandle.setDouble(outVerticalPan);
         outHorizontalPanHandle.setClean();
         outVerticalPanHandle.setClean();
 

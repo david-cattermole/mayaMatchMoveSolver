@@ -85,7 +85,9 @@ MSyntax MMReprojectionCmd::newSyntax() {
     // Flags
     syntax.addFlag(CAMERA_FLAG, CAMERA_FLAG_LONG, MSyntax::kString, MSyntax::kString);
     syntax.addFlag(TIME_FLAG, TIME_FLAG_LONG, MSyntax::kDouble);
+    syntax.addFlag(CAM_POINT_FLAG, CAM_POINT_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(WORLD_POINT_FLAG, WORLD_POINT_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(COORD_FLAG, COORD_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(NORM_COORD_FLAG, NORM_COORD_FLAG_LONG, MSyntax::kBoolean);
 
     syntax.makeFlagMultiUse(TIME_FLAG);
@@ -102,6 +104,14 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     MArgDatabase argData(syntax(), args, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
+    // Get Camera Point flag
+    m_asCameraPoint = false;
+    bool cameraPointFlagIsSet = argData.isFlagSet(CAM_POINT_FLAG, &status);
+    if (cameraPointFlagIsSet == true) {
+        status = argData.getFlagArgument(CAM_POINT_FLAG, 0, m_asCameraPoint);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
     // Get World Point flag
     m_asWorldPoint = false;
     bool worldPointFlagIsSet = argData.isFlagSet(WORLD_POINT_FLAG, &status);
@@ -109,6 +119,15 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(WORLD_POINT_FLAG, 0, m_asWorldPoint);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
+
+    // Get Coordinate flag
+    m_asCoordinate = false;
+    bool coordFlagIsSet = argData.isFlagSet(COORD_FLAG, &status);
+    if (coordFlagIsSet == true) {
+        status = argData.getFlagArgument(COORD_FLAG, 0, m_asCoordinate);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
 
     // Get Normalized Coordinate flag
     m_asNormalizedCoordinate = false;
@@ -202,10 +221,9 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
 //                     error is caught using a "catch" statement.
 //
     MStatus status = MStatus::kSuccess;
-    
+
     // Command Outputs
-    MDoubleArray outWorldPointResult;
-    MDoubleArray outNormCoordResult;
+    MDoubleArray outResult;
 
     // Read all the flag arguments.
     status = parseArgs(args);
@@ -231,8 +249,8 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     double cameraScale = 1;
 
     // Image
-    double imageWidth = 1024;
-    double imageHeight = 1024;
+    double imageWidth = 2048;
+    double imageHeight = 1556;
 
     // Manipulation
     MMatrix applyMatrix;
@@ -347,24 +365,29 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
                     outVerticalPan);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            if (m_asWorldPoint == true) {
-                outWorldPointResult.append(outWorldPointX);
-                outWorldPointResult.append(outWorldPointY);
-                outWorldPointResult.append(outWorldPointZ);
+            if (m_asCameraPoint == true) {
+                outResult.append(outPointX);
+                outResult.append(outPointY);
+                outResult.append(outPointZ);
             }
-            if (m_asNormalizedCoordinate == true) {            
-                outNormCoordResult.append(outNormCoordX);
-                outNormCoordResult.append(outNormCoordY);
+            if (m_asWorldPoint == true) {
+                outResult.append(outWorldPointX);
+                outResult.append(outWorldPointY);
+                outResult.append(outWorldPointZ);
+            }
+            if (m_asCoordinate == true) {
+                outResult.append(outCoordX);
+                outResult.append(outCoordY);
+                outResult.append(outPointZ);
+            }
+            if (m_asNormalizedCoordinate == true) {
+                outResult.append(outNormCoordX);
+                outResult.append(outNormCoordY);
+                outResult.append(outPointZ);
             }
         }
     }
-    
-    if (m_asWorldPoint == true) {
-        MMReprojectionCmd::setResult(outWorldPointResult);
-    }
 
-    if (m_asNormalizedCoordinate == true) {
-        MMReprojectionCmd::setResult(outNormCoordResult);
-    }
+    MMReprojectionCmd::setResult(outResult);
     return status;
 }

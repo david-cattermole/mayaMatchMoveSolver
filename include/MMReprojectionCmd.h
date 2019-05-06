@@ -54,11 +54,19 @@
 #define TIME_FLAG_LONG         "-time"
 
 // Query as World Point?
-#define WORLD_POINT_FLAG       "-wp"
+#define CAM_POINT_FLAG       "-cpt"
+#define CAM_POINT_FLAG_LONG  "-asCameraPoint"
+
+// Query as World Point?
+#define WORLD_POINT_FLAG       "-wpt"
 #define WORLD_POINT_FLAG_LONG  "-asWorldPoint"
 
+// Query as Coordinate?
+#define COORD_FLAG       "-cd"
+#define COORD_FLAG_LONG  "-asCoordinate"
+
 // Query as Normalized Coordinate?
-#define NORM_COORD_FLAG       "-nc"
+#define NORM_COORD_FLAG       "-ncd"
 #define NORM_COORD_FLAG_LONG  "-asNormalizedCoordinate"
 
 
@@ -68,7 +76,9 @@ public:
     MMReprojectionCmd() : m_nodeList(),
                           m_camera(),
                           m_timeList(),
+                          m_asCameraPoint(false),
                           m_asWorldPoint(false),
+                          m_asCoordinate(false),
                           m_asNormalizedCoordinate(false) {};
 
     virtual ~MMReprojectionCmd();
@@ -91,7 +101,9 @@ private:
     Camera m_camera;
     MTimeArray m_timeList;
 
+    bool m_asCameraPoint;
     bool m_asWorldPoint;
+    bool m_asCoordinate;
     bool m_asNormalizedCoordinate;
 };
 

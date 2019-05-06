@@ -25,22 +25,27 @@
 #include <MMReprojectionCmd.h>
 #include <mmSolver.h>
 #include <mayaUtils.h>
-#include <Camera.h>  // getProjectionMatrix, computeFrustumCoordinates
+#include <Camera.h>
+#include <reprojection.h>
 
 // STL
 #include <cmath>
 #include <cassert>
-#include <cstdlib>  // getenv
+// #include <cstdlib>  // getenv
 
 // Utils
 #include <utilities/debugUtils.h>
 #include <utilities/stringUtils.h>
 
 // Maya
+#include <maya/MSyntax.h>
+#include <maya/MArgList.h>
+#include <maya/MArgDatabase.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
+#include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
 
 
@@ -177,179 +182,6 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     nodeExistsAndIsType(cameraShape, MFn::Type::kCamera);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     m_camera.setShapeNodeName(cameraShape);
-
-    return status;
-}
-
-inline
-MStatus reprojection(MMatrix tfmMatrix,
-                     MMatrix camMatrix,
-
-                     // Camera
-                     double focalLength,
-                     double horizontalFilmAperture,
-                     double verticalFilmAperture,
-                     double horizontalFilmOffset,
-                     double verticalFilmOffset,
-                     short filmFit,
-                     double nearClipPlane,
-                     double farClipPlane,
-                     double cameraScale,
-
-                     // Image
-                     double imageWidth,
-                     double imageHeight,
-
-                     // Manipulation
-                     MMatrix applyMatrix,
-                     bool overrideScreenX, bool overrideScreenY, bool overrideScreenZ,
-                     double screenX, double screenY, double screenZ,
-                     double depthScale,
-
-                     // Outputs
-                     double &outCoordX, double &outCoordY,
-                     double &outNormCoordX, double &outNormCoordY,
-                     double &outPixelX, double &outPixelY,
-                     bool &outInsideFrustum,
-                     double &outPointX, double &outPointY, double &outPointZ,
-                     double &outWorldPointX, double &outWorldPointY, double &outWorldPointZ,
-                     MMatrix &outMatrix,
-                     MMatrix &outWorldMatrix,
-                     MMatrix &outCameraProjectionMatrix,
-                     MMatrix &outInverseCameraProjectionMatrix,
-                     MMatrix &outWorldCameraProjectionMatrix,
-                     MMatrix &outWorldInverseCameraProjectionMatrix,
-                     double &outHorizontalPan,
-                     double &outVerticalPan) {
-    MStatus status = MStatus::kSuccess;
-
-    // Use frustum coordinates to calculate coordinates values.
-    double left = 0.0;
-    double right = 0.0;
-    double top = 0.0;
-    double bottom = 0.0;
-    computeFrustumCoordinates(
-            focalLength,
-            horizontalFilmAperture, verticalFilmAperture,
-            horizontalFilmOffset, verticalFilmOffset,
-            nearClipPlane, cameraScale,
-            left, right, top, bottom);
-
-    // Get Camera Projection Matrix
-    MMatrix camProjMatrix;
-    status = getProjectionMatrix(
-            focalLength,
-            horizontalFilmAperture, verticalFilmAperture,
-            horizontalFilmOffset, verticalFilmOffset,
-            imageWidth, imageHeight,
-            filmFit,
-            nearClipPlane, farClipPlane,
-            cameraScale,
-            camProjMatrix);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-
-    // Camera World Projection Matrix
-    MMatrix camWorldProjMatrix = camMatrix.inverse() * camProjMatrix;
-
-    // Convert to screen-space
-    tfmMatrix = tfmMatrix * camWorldProjMatrix;
-
-    // Do screen-space overrides
-    if (overrideScreenX) {
-        tfmMatrix[3][0] = screenX;
-    }
-    if (overrideScreenY) {
-        tfmMatrix[3][1] = screenY;
-    }
-    if (overrideScreenZ) {
-        tfmMatrix[3][2] = screenZ;
-    }
-
-    // Apply screen-space matrix
-    tfmMatrix = tfmMatrix * applyMatrix;
-
-    // Scale the screen-space depth.
-    tfmMatrix *= depthScale;
-
-    // Get (screen-space) point
-    MPoint pos(tfmMatrix[3][0],
-               tfmMatrix[3][1],
-               tfmMatrix[3][2],
-               tfmMatrix[3][3]);
-    pos.cartesianize();
-    MPoint coord(pos.x,
-                 pos.y,
-                 0.0,
-                 1.0);
-
-    // Is the point inside the frustum of the camera?
-    bool insideFrustum = true;
-    if ((coord.x < -1.0)
-        || (coord.x > 1.0)
-        || (coord.y < -1.0)
-        || (coord.y > 1.0)) {
-        insideFrustum = false;
-    }
-
-    // Convert back to world space
-    MMatrix worldTfmMatrix = tfmMatrix * camWorldProjMatrix.inverse();
-    MPoint worldPos(worldTfmMatrix[3][0],
-                    worldTfmMatrix[3][1],
-                    worldTfmMatrix[3][2],
-                    1.0);
-
-    // Output Coordinates (-1.0 to 1.0; lower-left corner is -1.0, -1.0)
-    outCoordX = coord.x;
-    outCoordY = coord.y;
-
-    // Output Normalised Coordinates (0.0 to 1.0; lower-left
-    // corner is 0.0, 0.0)
-    outNormCoordX = (coord.x + 1.0) * 0.5;
-    outNormCoordY = (coord.y + 1.0) * 0.5;
-
-    // Output Pixel Coordinates (0.0 to width; 0.0 to height;
-    // lower-left corner is 0.0, 0.0)
-    outPixelX = (coord.x + 1.0) * 0.5 * imageWidth;
-    outPixelY = (coord.y + 1.0) * 0.5 * imageHeight;
-
-    // Output 'Inside Frustum'; is the input matrix inside the
-    // camera frustrum or not?
-    outInsideFrustum = insideFrustum;
-
-    // Output Point (camera-space)
-    // TODO: This has a strange Z value... find out why.
-    outPointX = pos.x;
-    outPointY = pos.y;
-    outPointZ = pos.z;
-
-    // Output Point (world-space)
-    // TODO: This has a strange Z value... find out why.
-    outWorldPointX = worldPos.x;
-    outWorldPointY = worldPos.y;
-    outWorldPointZ = worldPos.z;
-
-    // Output Matrix (camera-space)
-    // TODO: This has a strange translate Z value... find out why.
-    outMatrix = tfmMatrix;
-
-    // Output Matrix (world-space)
-    outWorldMatrix = worldTfmMatrix;
-
-    // Output Camera Projection Matrix
-    outCameraProjectionMatrix = camProjMatrix;
-
-    // Output Inverse Camera Projection Matrix
-    outInverseCameraProjectionMatrix = camProjMatrix.inverse();
-
-    // Output World Camera Projection Matrix
-    outWorldCameraProjectionMatrix = camWorldProjMatrix;
-
-    // Output World Inverse Camera Projection Matrix
-    outWorldInverseCameraProjectionMatrix = camWorldProjMatrix.inverse();
-
-    // Output Pan
-    outHorizontalPan = coord.x * 0.5 * horizontalFilmAperture;
-    outVerticalPan = coord.y * 0.5 * verticalFilmAperture;
 
     return status;
 }

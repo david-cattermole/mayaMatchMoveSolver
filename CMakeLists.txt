@@ -5,8 +5,8 @@ cmake_minimum_required(VERSION 2.8)
 # Project configuration.
 project(mayaMatchMoveSolver)
 set(PROJECT_VERSION_MAJOR 0)
-set(PROJECT_VERSION_MINOR 2)
-set(PROJECT_VERSION_PATCH 2)
+set(PROJECT_VERSION_MINOR 3)
+set(PROJECT_VERSION_PATCH 0)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
@@ -148,6 +148,7 @@ set(SOURCE_FILES
         include/Marker.h
         include/Bundle.h
         include/Attr.h
+        include/reprojection.h
         include/MMMarkerScaleNode.h
         include/MMReprojectionNode.h
         include/MMMarkerGroupTransformNode.h
@@ -163,6 +164,7 @@ set(SOURCE_FILES
         src/Marker.cpp
         src/Bundle.cpp
         src/Attr.cpp
+        src/reprojection.cpp
         src/MMMarkerScaleNode.cpp
         src/MMReprojectionNode.cpp
         src/MMMarkerGroupTransformNode.cpp

@@ -26,7 +26,6 @@
 
 // STL
 #include <cmath>
-#include <vector>
 
 // Maya
 #include <maya/MGlobal.h>
@@ -38,32 +37,11 @@
 #include <maya/MSyntax.h>
 
 #include <maya/MSelectionList.h>
-#include <maya/MDagPath.h>
-#include <maya/MDGModifier.h>
-#include <maya/MDagModifier.h>
-#include <maya/MFnDagNode.h>
-
-#include <maya/MPlug.h>
-#include <maya/MPlugArray.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MComputation.h>
-
-#include <maya/MPoint.h>
-#include <maya/MVector.h>
-#include <maya/MMatrix.h>
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
-#include <maya/MDoubleArray.h>
+#include <maya/MTime.h>
+#include <maya/MTimeArray.h>
 
 // Internal Objects
 #include <Camera.h>
-#include <Marker.h>
-#include <Bundle.h>
-#include <Attr.h>
-
-// Define solvers
-#include <mmSolver.h>
-
 
 // Command arguments and command name:
 

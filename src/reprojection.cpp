@@ -125,13 +125,13 @@ MStatus reprojection(MMatrix tfmMatrix,
     tfmMatrix *= depthScale;
 
     // Get (screen-space) point
-    MPoint pos(tfmMatrix[3][0],
-               tfmMatrix[3][1],
-               tfmMatrix[3][2],
-               tfmMatrix[3][3]);
-    pos.cartesianize();
-    MPoint coord(pos.x,
-                 pos.y,
+    MPoint posScreen(tfmMatrix[3][0],
+                     tfmMatrix[3][1],
+                     tfmMatrix[3][2],
+                     tfmMatrix[3][3]);
+    posScreen.cartesianize();
+    MPoint coord(posScreen.x,
+                 posScreen.y,
                  0.0,
                  1.0);
 
@@ -150,6 +150,14 @@ MStatus reprojection(MMatrix tfmMatrix,
                     worldTfmMatrix[3][1],
                     worldTfmMatrix[3][2],
                     1.0);
+
+    // Convert world to camera space
+    MMatrix cameraTfmMatrix = worldTfmMatrix * camMatrix.inverse();
+    MPoint posCamera(cameraTfmMatrix[3][0],
+                        cameraTfmMatrix[3][1],
+                        cameraTfmMatrix[3][2],
+                        cameraTfmMatrix[3][3]);
+    posCamera.cartesianize();
 
     // Output Coordinates (-1.0 to 1.0; lower-left corner is -1.0, -1.0)
     outCoordX = coord.x;
@@ -171,9 +179,9 @@ MStatus reprojection(MMatrix tfmMatrix,
 
     // Output Point (camera-space)
     // TODO: This has a strange Z value... find out why.
-    outPointX = pos.x;
-    outPointY = pos.y;
-    outPointZ = pos.z;
+    outPointX = posCamera.x;
+    outPointY = posCamera.y;
+    outPointZ = posCamera.z;
 
     // Output Point (world-space)
     // TODO: This has a strange Z value... find out why.

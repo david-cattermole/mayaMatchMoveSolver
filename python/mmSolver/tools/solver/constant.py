@@ -122,6 +122,15 @@ OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE = True
 OBJECT_TOGGLE_MARKER_DEFAULT_VALUE = True
 OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE = False
 
+# Toggle Attributes (stored on Collection node)
+ATTRIBUTE_TOGGLE_ANIMATED_ATTR = 'attribute_toggle_animated'
+ATTRIBUTE_TOGGLE_STATIC_ATTR = 'attribute_toggle_static'
+ATTRIBUTE_TOGGLE_LOCKED_ATTR = 'attribute_toggle_locked'
+
+ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE = True
+ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE = True
+ATTRIBUTE_TOGGLE_LOCKED_DEFAULT_VALUE = False
+
 # Information to filter invalid input attributes from the Solver UI.
 ATTR_INVALID_OBJECT_TYPES = [
     'imageplane',

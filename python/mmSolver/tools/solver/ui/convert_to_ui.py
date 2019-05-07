@@ -72,7 +72,7 @@ def markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd):
     return root
 
 
-def attributesToUINodes(attr_list):
+def attributesToUINodes(attr_list, show_anm, show_stc, show_lck):
     """
     Convert a list of mmSolver API Attributes into classes to be used
     in the Solver UI.
@@ -87,6 +87,12 @@ def attributesToUINodes(attr_list):
     maya_nodes = dict()
     for attr in attr_list:
         n = attr.get_node()
+        if attr.is_animated() is True and show_anm is False:
+            continue
+        elif attr.is_static() is True and show_stc is False:
+            continue
+        elif attr.is_locked() is True and show_lck is False:
+            continue
         maya_node = maya_nodes.get(n)
         data = {'data': attr}
         if maya_node is None:

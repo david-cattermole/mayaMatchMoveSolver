@@ -54,7 +54,7 @@ def get_dirs(envvar):
 
 def _split_key(key):
     """
-    Split a key into separate name hierarchy.
+    Split a key into separate name hierarchy, with a '/' character.
     """
     args = key.split('/')
     args = [k for k in args if len(k) > 0]
@@ -97,9 +97,13 @@ def read_data(file_path):
              contains.
     :rtype: dict, list or None
     """
+    LOG.debug('Read Configuration: %r', file_path)
     with open(file_path, 'rb') as f:
-        text = f.read()
-        data = json.loads(text)
+        try:
+            text = f.read()
+            data = json.loads(text)
+        except:
+            raise
     return data
 
 
@@ -115,6 +119,7 @@ def write_data(data, file_path, human_readable=True):
     :param file_path: A valid absolute file path.
     :type file_path: str
     """
+    LOG.debug('Write Configuration: %r', file_path)
     kwargs = {
         'sort_keys': True,
         'indent': 2,

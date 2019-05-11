@@ -6,12 +6,18 @@
             "open_solver_ui",
             "solver_run",
             "solver_run_current_frame",
-            "--------------",
             "---Create",
             "create_marker",
             "convert_to_marker",
             "load_marker_ui",
             "create_bundle",
+            "---Selection",
+            "swap_marker_bundles",
+            "select_marker_bundles",
+            "marker_bundle_rename",
+            "---Link",
+            "link_marker_bundle",
+            "unlink_marker_bundle",
             "---Tools",
             "marker_tools/toggle_marker_lock",
             "marker_tools/duplicate_marker",
@@ -20,7 +26,10 @@
             "bundle_tools/reproject_bundle",
             "bundle_tools/raycast_marker",
             "bundle_tools/triangulate_bundle",
-            "bundle_tools/screen_z_manipulator"
+            "bundle_tools/screen_z_manipulator",
+            "center_twodee",
+            "channel_sensitivity_ui",
+            "smooth_keyframes"
         ],
         "functions": {}
     }

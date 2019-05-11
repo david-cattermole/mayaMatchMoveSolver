@@ -8,7 +8,7 @@
                 "import mmSolver.tools.solver.tool;",
                 "mmSolver.tools.solver.tool.open_window();"
             ],
-            "shelf_icon": "menuIconWindow.png"
+            "icon_shelf": "menuIconWindow.png"
         },
         "solver_run": {
             "name": "Run Solver",
@@ -24,6 +24,31 @@
             "command": [
                 "import mmSolver.tools.solver.tool as tool;",
                 "tool.run_solve_on_current_frame();"
+            ]
+        },
+        "create_marker": {
+            "name": "Create Marker",
+            "shelf_name": "Create",
+            "tooltip": "Create a new Marker.",
+            "icon_shelf": "createMarker_32x32.png",
+            "command": [
+                "import mmSolver.tools.createmarker.tool;",
+                "mmSolver.tools.createmarker.tool.main();"
+            ]
+        },
+        "marker_tools": {
+            "name": "Marker Tools",
+            "shelf_name": "MTools",
+            "tooltip": "Marker Tools",
+            "icon_shelf": "createMarker_32x32.png",
+            "command": ["pass"]
+        },
+        "toggle_marker_lock": {
+            "name": "Toggle Marker Lock",
+            "tooltip": "Toggles selected marker lock state.",
+            "command": [
+                "import mmSolver.tools.togglemarkerlock.tool;",
+                "mmSolver.tools.togglemarkerlock.tool.main();"
             ]
         }
     }

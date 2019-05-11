@@ -37,7 +37,8 @@ def create_menu_item(parent=None,
                      tooltip=None,
                      cmd=None,
                      cmdLanguage=None,
-                     divider=None):
+                     divider=None,
+                     subMenu=None):
     """
     Create a Menu Item on a menu.
 
@@ -61,6 +62,9 @@ def create_menu_item(parent=None,
     :param divider: Should this menu item be a divider (separator)?
     :type divider: bool
 
+    :param subMenu: Will this menu item have other menu items under it?
+    :type subMenu: bool
+
     :returns: Maya menu item UI control path.
     :rtype: str
     """
@@ -70,8 +74,8 @@ def create_menu_item(parent=None,
     assert tooltip is None or isinstance(tooltip, basestring)
     assert cmd is None or isinstance(cmd, basestring)
     assert divider is None or isinstance(divider, bool)
+    assert subMenu is None or isinstance(subMenu, bool)
 
-    kwargs = {}
     label = 'label'
     annotation = ''
     sourceType = 'python'
@@ -79,28 +83,38 @@ def create_menu_item(parent=None,
 
     if isinstance(name, basestring):
         label = str(name)
-    if isinstance(cmd, basestring):
-        command = str(cmd)
-        if cmdLanguage is None:
-            sourceType = 'python'
-        elif isinstance(cmdLanguage, basestring):
-            sourceType = str(cmdLanguage)
-        else:
-            msg = 'cmdLanguage must be None or str: cmdLanguage=%r'
-            LOG.error(msg, cmdLanguage)
-            raise ValueError(msg, cmdLanguage)
-        kwargs['command'] = command
-        kwargs['sourceType'] = sourceType
 
     item = None
-    if divider is not True:
+    if divider is not True and subMenu is not True:
+        kwargs = {}
+        if isinstance(cmd, basestring):
+            command = str(cmd)
+            if cmdLanguage is None:
+                sourceType = 'python'
+            elif isinstance(cmdLanguage, basestring):
+                sourceType = str(cmdLanguage)
+            else:
+                msg = 'cmdLanguage must be None or str: cmdLanguage=%r'
+                LOG.error(msg, cmdLanguage)
+                raise ValueError(msg, cmdLanguage)
+            kwargs['command'] = command
+            kwargs['sourceType'] = sourceType
+
         item = maya.cmds.menuItem(
             parent=parent,
             label=label,
             annotation=annotation,
             **kwargs
         )
-    else:
+    elif subMenu is True:
+        item = maya.cmds.menuItem(
+            parent=parent,
+            label=label,
+            annotation=annotation,
+            subMenu=True
+        )
+    elif divider is True:
+        # Divider
         kwargs = {}
         if name is not None:
             kwargs['dividerLabel'] = str(label)
@@ -109,6 +123,8 @@ def create_menu_item(parent=None,
             divider=True,
             **kwargs
         )
+    else:
+        raise RuntimeError
     return item
 
 

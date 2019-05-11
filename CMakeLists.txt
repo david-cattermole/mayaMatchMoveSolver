@@ -369,6 +369,11 @@ install(DIRECTORY "syntheyes/"
         DESTINATION "${MODULE_FULL_NAME}/syntheyes"
         FILES_MATCHING PATTERN "*.szl")
 
+# Install Config.
+install(DIRECTORY "config/"
+        DESTINATION "${MODULE_FULL_NAME}/config"
+        FILES_MATCHING PATTERN "*.json")
+
 # Install Icons.
 install(DIRECTORY "icons/"
         DESTINATION "${MODULE_FULL_NAME}/icons"

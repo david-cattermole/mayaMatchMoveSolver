@@ -36,7 +36,8 @@ def create_menu_item(parent=None,
                      name=None,
                      tooltip=None,
                      cmd=None,
-                     cmdLanguage=None):
+                     cmdLanguage=None,
+                     divider=None):
     """
     Create a Menu Item on a menu.
 
@@ -57,6 +58,9 @@ def create_menu_item(parent=None,
                         or 'mel'?
     :type cmdLanguage: str
 
+    :param divider: Should this menu item be a divider (separator)?
+    :type divider: bool
+
     :returns: Maya menu item UI control path.
     :rtype: str
     """
@@ -65,12 +69,14 @@ def create_menu_item(parent=None,
     assert name is None or isinstance(name, basestring)
     assert tooltip is None or isinstance(tooltip, basestring)
     assert cmd is None or isinstance(cmd, basestring)
+    assert divider is None or isinstance(divider, bool)
 
     kwargs = {}
     label = 'label'
     annotation = ''
     sourceType = 'python'
     command = ''
+
     if isinstance(name, basestring):
         label = str(name)
     if isinstance(cmd, basestring):
@@ -86,12 +92,23 @@ def create_menu_item(parent=None,
         kwargs['command'] = command
         kwargs['sourceType'] = sourceType
 
-    item = maya.cmds.menuItem(
-        parent=parent,
-        label=label,
-        annotation=annotation,
-        **kwargs
-    )
+    item = None
+    if divider is not True:
+        item = maya.cmds.menuItem(
+            parent=parent,
+            label=label,
+            annotation=annotation,
+            **kwargs
+        )
+    else:
+        kwargs = {}
+        if name is not None:
+            kwargs['dividerLabel'] = str(label)
+        item = maya.cmds.menuItem(
+            parent=parent,
+            divider=True,
+            **kwargs
+        )
     return item
 
 

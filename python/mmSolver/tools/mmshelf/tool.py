@@ -143,6 +143,7 @@ def _create_marker_tools_menu(menu):
         tooltip=tooltip,
         cmd=cmd,
     )
+
     # Duplicate Marker
     name = 'Duplicate Marker'
     tooltip = 'Duplicate marker from selection.'

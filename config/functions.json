@@ -1,0 +1,30 @@
+{
+    "version": 1,
+    "data": {
+        "open_solver_ui": {
+            "name": "Open Solver...",
+            "tooltip": "Open the MM Solver window.",
+            "command": [
+                "import mmSolver.tools.solver.tool;",
+                "mmSolver.tools.solver.tool.open_window();"
+            ],
+            "shelf_icon": "menuIconWindow.png"
+        },
+        "solver_run": {
+            "name": "Run Solver",
+            "tooltip": "Run solver on currently active Collection.",
+            "command": [
+                "import mmSolver.tools.solver.tool as tool;",
+                "tool.run_solve();"
+            ]
+        },
+        "solver_run_current_frame": {
+            "name": "Run Solver (Current Frame)",
+            "tooltip": "Run solver on currently active Collection on the current frame.",
+            "command": [
+                "import mmSolver.tools.solver.tool as tool;",
+                "tool.run_solve_on_current_frame();"
+            ]
+        }
+    }
+}

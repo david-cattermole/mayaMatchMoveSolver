@@ -49,11 +49,15 @@
 #define CAMERA_FLAG            "-c"
 #define CAMERA_FLAG_LONG       "-camera"
 
+// Image Resolution
+#define IMAGE_RES_FLAG       "-ir"
+#define IMAGE_RES_FLAG_LONG  "-imageResolution"
+
 // Time
 #define TIME_FLAG              "-t"
 #define TIME_FLAG_LONG         "-time"
 
-// Query as World Point?
+// Query as Camera Point?
 #define CAM_POINT_FLAG       "-cpt"
 #define CAM_POINT_FLAG_LONG  "-asCameraPoint"
 
@@ -64,6 +68,10 @@
 // Query as Coordinate?
 #define COORD_FLAG       "-cd"
 #define COORD_FLAG_LONG  "-asCoordinate"
+
+// Query as Pixel Coordinate?
+#define PIXEL_COORD_FLAG       "-pcd"
+#define PIXEL_COORD_FLAG_LONG  "-asPixelCoordinate"
 
 // Query as Normalized Coordinate?
 #define NORM_COORD_FLAG       "-ncd"
@@ -78,6 +86,7 @@ public:
                           m_timeList(),
                           m_asCameraPoint(false),
                           m_asWorldPoint(false),
+                          m_asPixelCoordinate(false),
                           m_asCoordinate(false),
                           m_asNormalizedCoordinate(false) {};
 
@@ -100,11 +109,14 @@ private:
     MSelectionList m_nodeList;
     Camera m_camera;
     MTimeArray m_timeList;
+    int m_imageResX;
+    int m_imageResY;
 
     bool m_asCameraPoint;
     bool m_asWorldPoint;
     bool m_asCoordinate;
     bool m_asNormalizedCoordinate;
+    bool m_asPixelCoordinate;
 };
 
 #endif // MAYA_MM_REPROJECTION_CMD_H

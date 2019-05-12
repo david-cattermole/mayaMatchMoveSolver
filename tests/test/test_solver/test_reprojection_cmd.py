@@ -48,6 +48,16 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         self.assertGreater(len(coord_values), 0)
         print 'coord_values', repr(coord_values)
 
+        pix_coord_values = maya.cmds.mmReprojection(
+            in_tfm,
+            camera=(cam_tfm, cam_shp),
+            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
+            imageResolution=(512, 512),
+            asPixelCoordinate=True,
+        )
+        self.assertGreater(len(pix_coord_values), 0)
+        print 'pix_coord_values', repr(pix_coord_values)
+
         norm_coord_values = maya.cmds.mmReprojection(
             in_tfm,
             camera=(cam_tfm, cam_shp),

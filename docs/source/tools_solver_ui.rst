@@ -120,7 +120,7 @@ Run the solve, just as if the user presses the "Solve" button in the UI:
 .. code:: python
 
     import mmSolver.tools.solver.tool as solver
-    solver.run_solve_on_current_frame()
+    solver.run_solve()
 
 Run the solve, with the "Override Current Frame" checkbox turned *on*:
 

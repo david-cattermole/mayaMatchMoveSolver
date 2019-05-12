@@ -38,6 +38,7 @@ def run_solve(override_current_frame=None):
         msg = 'No active Collection found. Skipping solve.'
         LOG.warning(msg)
         return
+    force_update_state = lib_state.get_force_dg_update_state()
     refresh_state = lib_state.get_refresh_viewport_state()
     log_level = lib_state.get_log_level()
 
@@ -67,6 +68,7 @@ def run_solve(override_current_frame=None):
     lib_col.run_solve_ui(
         col,
         refresh_state,
+        force_update_state,
         log_level,
         win,
     )

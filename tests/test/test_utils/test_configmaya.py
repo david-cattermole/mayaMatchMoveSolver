@@ -1,5 +1,5 @@
 """
-Test functions for configuratuib Maya module.
+Test functions for Configuration Maya module.
 """
 
 import os

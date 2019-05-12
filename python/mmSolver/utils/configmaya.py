@@ -25,59 +25,7 @@ import mmSolver.logger
 
 LOG = mmSolver.logger.get_logger()
 
-
-def __get_data_on_node_attr(node_name, attr_name):
-    """
-    Get data from an node attribute.
-
-    :param node_name: Node to get data from.
-    :type node_name: str
-
-    :param attr_name: The name of the attribute to get data from.
-    :type attr_name: str
-
-    :return: Arbitrary Plain-Old-Data data structures.
-    :rtype: list of dict
-    """
-    ret = []
-    attr_data = __get_value_on_node_attr(node_name, attr_name)
-    if attr_data is None:
-        return ret
-    data = json.loads(attr_data)
-    if isinstance(data, list):
-        ret = data
-    return ret
-
-
-def __set_data_on_node_attr(node_name, attr_name, data):
-    """
-    Set arbitrary Plain-Old-Data onto a node.attr path.
-
-    :param node_name: Node to store data on.
-    :type node_name: str
-
-    :param attr_name: Attribute name to store data with.
-    :type attr_name: str
-
-    :param data: The data to store.
-    :type data: list or dict
-    """
-    assert isinstance(attr_name, (str, unicode))
-    assert isinstance(data, (list, dict))
-    node_attr = node_name + '.' + attr_name
-
-    new_attr_data = json.dumps(data)
-    old_attr_data = maya.cmds.getAttr(node_attr)
-    if old_attr_data == new_attr_data:
-        return  # no change is needed.
-
-    maya.cmds.setAttr(node_attr, lock=False)
-    maya.cmds.setAttr(node_attr, new_attr_data, type='string')
-    maya.cmds.setAttr(node_attr, lock=True)
-    return
-
-
-def __get_value_on_node_attr(node_name, attr_name):
+def get_node_option(node_name, attr_name, default=None):
     """
     Get numeric value from an node attribute.
 
@@ -90,6 +38,7 @@ def __get_value_on_node_attr(node_name, attr_name):
     :return: A numeric value.
     :rtype: bool or float or int
     """
+    # Get attribute value on the given node.
     attrs = maya.cmds.listAttr(node_name)
     if attr_name not in attrs:
         msg = 'attr_name not found on node: '
@@ -101,7 +50,7 @@ def __get_value_on_node_attr(node_name, attr_name):
     return ret
 
 
-def __set_value_on_node_attr(node_name, attr_name, data):
+def set_node_option(node_name, attr_name, data):
     """
     Set value onto a node.attr path.
 
@@ -126,24 +75,71 @@ def __set_value_on_node_attr(node_name, attr_name, data):
     return
 
 
-def get_node_option(node, name, default=None):
-    # Get attribute value on the given node.
-    pass
+
+def get_node_option_structure(node_name, attr_name):
+    """
+    Get data structure from a node attribute.
+
+    :param node_name: Node to get data from.
+    :type node_name: str
+
+    :param attr_name: The name of the attribute to get data from.
+    :type attr_name: str
+
+    :return: Arbitrary Plain-Old-Data data structures.
+    :rtype: dict
+    """
+    ret = {}
+    attr_data = get_node_option(node_name, attr_name)
+    if attr_data is None:
+        return ret
+    ret = json.loads(attr_data)
+    return ret
 
 
-def set_node_option(node, name, value):
-    # Set attribute value on the given node.
-    pass
+def set_node_option_structure(node_name, attr_name, data_struct):
+    """
+    Set arbitrary Plain-Old-Data onto a node.attr path.
+
+    :param node_name: Node to store data on.
+    :type node_name: str
+
+    :param attr_name: Attribute name to store data with.
+    :type attr_name: str
+
+    :param data_struct: The data to store.
+    :type data_struct: dict
+    """
+    assert isinstance(attr_name, (str, unicode))
+    assert isinstance(data_struct, dict)
+    node_attr = node_name + '.' + attr_name
+
+    new_attr_data = json.dumps(data_struct)
+    old_attr_data = maya.cmds.getAttr(node_attr)
+    if old_attr_data == new_attr_data:
+        return  # no change is needed.
+
+    maya.cmds.setAttr(node_attr, lock=False)
+    maya.cmds.setAttr(node_attr, new_attr_data, type='string')
+    maya.cmds.setAttr(node_attr, lock=True)
+    return
 
 
 def get_scene_option(name, default=None):
-    # Get a value from the scene.
-    pass
+    """
+    Get a value from the scene.
+    """
+    data = get_node_option_structure('MM_SOLVER_SCENE_DATA', 'data')
+    value = data.get(name, default)
+    return value
 
 
 def set_scene_option(name, value):
     # Set a value in the scene.
-    pass
+    data = get_node_option_structure('MM_SOLVER_SCENE_DATA', 'data')
+    value = data[name] = value
+    set_node_option_structure('MM_SOLVER_SCENE_DATA', 'data', value)
+    return
 
 
 def get_session_option(name, default=None):
@@ -158,11 +154,13 @@ def set_session_option(name, value):
 
 def get_preference_option(name, default=None):
     # Get a Maya preference from Maya (optionVar).
+    # maya.cmds.optionVar()
     pass
 
 
 def set_preference_option(name, value):
     # Set a Maya preference to Maya (optionVar).
+    # maya.cmds.optionVar()
     pass
 
 

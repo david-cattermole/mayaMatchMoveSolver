@@ -32,7 +32,8 @@ changes.
 
 | Releases                                                                              | Description                                 |
 | ------------------------------------------------------------------------------------- | ------------------------------------------- |
-| [v0.2.2](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.2) | Bug fix release (*recommended*)             |
+| [v0.2.3](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.3) | Bug fix release (*recommended*)             |
+| [v0.2.2](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.2) | Bug fix release                             |
 | [v0.2.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.1) | Bug fix release                             |
 | [v0.2.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.0) | Improved solver and tools                   |
 | [v0.1.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.1) | Bug fix release                             |

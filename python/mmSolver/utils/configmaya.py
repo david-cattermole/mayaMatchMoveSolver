@@ -22,6 +22,7 @@ import json
 
 import maya.cmds
 import mmSolver.logger
+import mmSolver.utils.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
@@ -129,16 +130,16 @@ def get_scene_option(name, default=None):
     """
     Get a value from the scene.
     """
-    data = get_node_option_structure('MM_SOLVER_SCENE_DATA', 'data')
+    data = get_node_option_structure(const.SCENE_DATA_NODE, const.SCENE_DATA_ATTR)
     value = data.get(name, default)
     return value
 
 
 def set_scene_option(name, value):
     # Set a value in the scene.
-    data = get_node_option_structure('MM_SOLVER_SCENE_DATA', 'data')
+    data = get_node_option_structure(const.SCENE_DATA_NODE, const.SCENE_DATA_ATTR)
     value = data[name] = value
-    set_node_option_structure('MM_SOLVER_SCENE_DATA', 'data', value)
+    set_node_option_structure(const.SCENE_DATA_NODE, const.SCENE_DATA_ATTR, value)
     return
 
 

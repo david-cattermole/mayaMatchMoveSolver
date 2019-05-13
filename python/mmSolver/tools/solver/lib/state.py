@@ -77,6 +77,26 @@ def set_refresh_viewport_state(value):
     return
 
 
+def get_force_dg_update_state():
+    value = scene_data.get_scene_data(
+        const.SCENE_DATA_FORCE_DG_UPDATE
+    )
+    if value is None:
+        value = const.SCENE_DATA_FORCE_DG_UPDATE_DEFAULT
+    return value
+
+
+def set_force_dg_update_state(value):
+    if isinstance(value, bool) is False:
+        msg = 'value cannot be %r; %r is not bool'
+        raise TypeError(msg % (type(value), value))
+    scene_data.set_scene_data(
+        const.SCENE_DATA_FORCE_DG_UPDATE,
+        value
+    )
+    return
+
+
 def get_log_level():
     value = scene_data.get_scene_data(
         const.SCENE_DATA_LOG_LEVEL
@@ -94,4 +114,30 @@ def set_log_level(value):
         const.SCENE_DATA_LOG_LEVEL,
         value
     )
+    return
+
+
+def get_solver_is_running_state():
+    value = mmapi.is_solver_running()
+    return value
+
+
+def set_solver_is_running_state(value):
+    if isinstance(value, bool) is False:
+        msg = 'value cannot be %r; %r is not bool'
+        raise TypeError(msg % (type(value), value))
+    mmapi.set_solver_running(value)
+    return
+
+
+def get_solver_user_interrupt_state():
+    value = mmapi.get_user_interrupt()
+    return value
+
+
+def set_solver_user_interrupt_state(value):
+    if isinstance(value, bool) is False:
+        msg = 'value cannot be %r; %r is not bool'
+        raise TypeError(msg % (type(value), value))
+    mmapi.set_user_interrupt(value)
     return

@@ -72,12 +72,31 @@ def __create_node(mkr_data, cam, mkr_grp, with_bundles):
 
 def __set_attr_keyframes(node, attr_name, keyframes,
                          before_value=None,
-                         after_value=None):
+                         after_value=None,
+                         reduce_keys=None):
     """
     Set keyframes on a node.attribute, from a KeyframeData instance.
 
+    :param node: Node to set data on.
+    :type node: str
+
+    :param attr_name: Attribute (on 'node') to set keyframes.
+    :type attr_name: str
+
+    :param keyframes: The keyframe information.
+    :type keyframes: KeyframeData
+
     :param before_value: Value to set before the first keyframe.
+    :type before_value: int, float or bool
+
     :param after_value: Value to set after the first keyframe.
+    :type after_value: int, float or bool
+
+    :param reduce_keys: Allow reducing the keyframes, potentially
+                        deleting all keyframes. Values will NEVER be
+                        changed, only duplicate keyframe data is
+                        removed.
+    :type reduce_keys: bool
 
     :returns: Maya API MFnAnimCurve object.
     :rtype: OpenMaya.MFnAnimCurve
@@ -85,6 +104,11 @@ def __set_attr_keyframes(node, attr_name, keyframes,
     if isinstance(keyframes, interface.KeyframeData) is False:
         msg = 'keyframes must be type %r'
         raise TypeError(msg % interface.KeyframeData.__name__)
+    if reduce_keys is None:
+        reduce_keys = False
+    if isinstance(reduce_keys, bool) is False:
+        msg = "reduce_keys must be type 'bool'"
+        raise TypeError(msg)
     times, values = keyframes.get_times_and_values()
     assert len(times) == len(values)
 
@@ -105,6 +129,12 @@ def __set_attr_keyframes(node, attr_name, keyframes,
 
     node_attr = node + '.' + attr_name
     animFn = mmapi.create_anim_curve_node(times, values, node_attr)
+
+    if reduce_keys is True:
+        locked = maya.cmds.getAttr(node_attr, lock=True)
+        maya.cmds.setAttr(node_attr, lock=False)
+        maya.cmds.delete(node_attr, staticChannels=True)
+        maya.cmds.setAttr(node_attr, lock=locked)
     return animFn
 
 
@@ -155,13 +185,15 @@ def __set_node_data(mkr, mkr_data):
     __set_attr_keyframes(mkr_node, 'translateY', mkr_y)
     __set_attr_keyframes(mkr_node, 'enable', mkr_enable,
                          before_value=False,
-                         after_value=False)
-    __set_attr_keyframes(mkr_node, 'weight', mkr_weight)
+                         after_value=False,
+                         reduce_keys=True)
+    __set_attr_keyframes(mkr_node, 'weight', mkr_weight, reduce_keys=True)
 
     # Lock
     maya.cmds.setAttr(mkr_node + '.translateX', lock=True)
     maya.cmds.setAttr(mkr_node + '.translateY', lock=True)
     maya.cmds.setAttr(mkr_node + '.enable', lock=True)
+    maya.cmds.setAttr(mkr_node + '.weight', lock=True)
 
     return mkr
 

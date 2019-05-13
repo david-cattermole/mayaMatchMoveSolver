@@ -27,6 +27,8 @@
 #include <maya/MStatus.h>
 #include <maya/MObject.h>
 
+// Build-Time constant values.
+#include <buildConstant.h>
 
 // TODO: Add entry points for mmReprojection cmd and node, mmMarkerScale cmd and mmTriangulate cmd.
 #include <MMSolverCmd.h>
@@ -86,8 +88,8 @@
 
 
 #undef PLUGIN_COMPANY  // Maya API defines this, we override it.
-#define PLUGIN_COMPANY "MM Solver"
-#define PLUGIN_VERSION "0.2.0"
+#define PLUGIN_COMPANY PROJECT_NAME
+#define PLUGIN_VERSION PROJECT_VERSION
 
 
 // Register with Maya

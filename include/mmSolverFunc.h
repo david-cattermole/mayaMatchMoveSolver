@@ -105,6 +105,7 @@ struct SolverData {
 
     // Allow user to cancel the solve.
     MComputation *computation;
+    bool userInterrupted;
 
     // Verbosity.
     bool verbose;

@@ -6,11 +6,12 @@ cmake_minimum_required(VERSION 2.8)
 project(mayaMatchMoveSolver)
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 2)
-set(PROJECT_VERSION_PATCH 2)
+set(PROJECT_VERSION_PATCH 3)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
-set(PROJECT_AUTHOR "David Cattermole")
+set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
+set(PROJECT_COPYRIGHT "2018, 2019, David Cattermole, Anil Reddy.")
 
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
@@ -114,7 +115,24 @@ else()
 endif()
 
 
-# TODO: Create Python file with project version embedded.
+# Create Python file with some build options baked in.
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py
+        @ONLY)
+
+# Create Python file with some build options baked in.
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h
+        @ONLY)
+
+# Create Python file for documentation sphinx build with some build
+# options baked in.
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py
+        @ONLY)
 
 
 # Source

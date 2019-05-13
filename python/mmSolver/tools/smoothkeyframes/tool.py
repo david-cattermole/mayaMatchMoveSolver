@@ -6,7 +6,7 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.constant as utils_const
-import mmSolver.utils.smooth as utils_smooth
+import mmSolver.tools.smoothkeyframes.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 
@@ -15,16 +15,20 @@ def main():
     """
     Smooth the selected keyframes in the Graph Editor.
 
-    Usage:
+    Usage::
+
     1) Select keyframes in Graph Editor.
+
     2) Run tool
+
     3) Keyframe values will be smoothed.
+
     """
     key_attrs = maya.cmds.keyframe(query=True, name=True) or []
     if len(key_attrs) == 0:
         msg = (
-            'Please select keyframes (in the'
-            ' Graph Editor) to smooth.'
+            'Please select keyframes '
+            '(in the Graph Editor) to smooth.'
         )
         LOG.warning(msg)
         return
@@ -34,30 +38,24 @@ def main():
             key_attr,
             query=True,
             selected=True
-        ) or []
-        if len(selected_keyframes) < 2:
+        )
+        if len(selected_keyframes) == 0:
             msg = (
-                'Please select more than 1 keyframes '
+                'Please select keyframes '
                 '(in the Graph Editor) to smooth.'
             )
             LOG.warning(msg)
-            return
-
-        value_array = []
-        for frame in selected_keyframes:
-            plug = key_attr + '.output'
-            value = maya.cmds.getAttr(plug, time=frame)
-            value_array.append(value)
+            continue
 
         smooth_type = utils_const.SMOOTH_TYPE_FOURIER
         width = 2
-        new_array = utils_smooth.smooth(smooth_type, value_array, width)
-
-        assert len(selected_keyframes) == len(new_array)
-        for frame, value in zip(selected_keyframes, new_array):
-            time_range = (frame, frame)
-            maya.cmds.keyframe(
-                key_attr,
-                valueChange=value,
-                time=time_range)
+        blend_smooth_type = utils_const.SMOOTH_TYPE_GAUSSIAN
+        blend_width = 2
+        lib.smooth_animcurve(
+            key_attr,
+            selected_keyframes,
+            smooth_type,
+            width,
+            blend_smooth_type,
+            blend_width)
     return

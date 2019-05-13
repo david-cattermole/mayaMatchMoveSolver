@@ -1,12 +1,277 @@
-<!DOCTYPE html>
-<html>
-<body>
 
-<p>Maya MatchMove Solver documentation has not been compiled.</p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<p>Please see the
-    <a href="https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md#build-documentation">build documentation</a>
-    for details.</p>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>mmSolver - Maya MatchMove Solver &#8212; mayaMatchMoveSolver 0.2.3 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduction" href="introduction.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">mayaMatchMoveSolver 0.2.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
 
-</body>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="mmsolver-maya-matchmove-solver">
+<h1>mmSolver - Maya MatchMove Solver<a class="headerlink" href="#mmsolver-maya-matchmove-solver" title="Permalink to this headline">¶</a></h1>
+<p>Welcome to <cite>mmSolver</cite>! <cite>mmSolver</cite> is a Bundle Adjustment solver for
+Autodesk Maya, for solving MatchMove tasks by adjusting Maya
+attributes.</p>
+<p>This documentation is for the GitHub <a class="reference external" href="https://github.com/david-cattermole/mayaMatchMoveSolver">project</a>, and details the tools,
+solver design, python scripting, plug-in command and node details. For
+installation instructions see the <em>INSTALL.md</em> file with mmSolver, or
+the latest install development <a class="reference external" href="https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL.md">instructions</a>.</p>
+<p>If you are new to mmSolver, take a look at the video <a class="reference internal" href="tutorial.html#tutorial-heading"><span class="std std-ref">Tutorials</span></a>.</p>
+<p><cite>mmSolver</cite> is licensed under the <strong>GNU LGPL v3 license</strong>, and is Free
+and Open Source Software. Any person may use, copy and distribute the
+software given under the terms of the <strong>GNU LGPL v3 license</strong>. See the
+LICENSE text file distributed with <cite>mmSolver</cite>.
+See the <a class="reference internal" href="licenses.html#licenses-heading"><span class="std std-ref">Licenses</span></a> for more detail.</p>
+<div class="section" id="usage-guide">
+<h2>Usage Guide<a class="headerlink" href="#usage-guide" title="Permalink to this headline">¶</a></h2>
+<p>An overview of the features available inside mmSolver.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#use-cases">Use Cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#features">Features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#usage-guide">Usage Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#camera-and-object-solve">Camera and Object Solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#multi-camera-and-object-solve">Multi-Camera and Object Solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#hierarchical-object-solve">Hierarchical Object Solve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#nodal-camera-and-object-solve">Nodal Camera and Object Solve</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui.html">Solver UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_loadmarker.html">Load Markers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#create-marker">Create Marker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#convert-to-marker">Convert to Marker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#create-bundle">Create Bundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#link-marker-bundle">Link Marker + Bundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#unlink-marker-from-all-bundles">Unlink Marker from all Bundles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#toggle-marker-bundle">Toggle Marker / Bundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#select-marker-bundle">Select Marker + Bundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#marker-bundle-rename">Marker Bundle Rename</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#ray-cast-marker">Ray-Cast Marker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#smooth-keyframes">Smooth Keyframes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#center-2d-on-selection">Center 2D On Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#aim-at-camera">Aim at Camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#screen-z-manipulator">Screen-Z Manipulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#channel-sensitivity">Channel Sensitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#toggle-bundle-lock-state">Toggle Bundle Lock State</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#toggle-marker-lock-state">Toggle Marker Lock State</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#average-marker">Average Marker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#duplicate-marker">Duplicate marker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="licenses.html">Licenses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="licenses.html#free-fft-and-convolution-python">Free FFT and convolution (Python)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="licenses.html#cminpack">CMinpack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="licenses.html#levmar">levmar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="licenses.html#qt-py">Qt.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="licenses.html#findmaya-cmake">FindMaya (CMake)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="technical">
+<h2>Technical<a class="headerlink" href="#technical" title="Permalink to this headline">¶</a></h2>
+<p>Technical documentation for users wanting to understand the low-level
+details and features to use.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="nodes.html">Nodes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes.html#mmmarkergrouptransform-node"><code class="docutils literal notranslate"><span class="pre">mmMarkerGroupTransform</span></code> Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes.html#mmmarkerscale-node"><code class="docutils literal notranslate"><span class="pre">mmMarkerScale</span></code> Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes.html#mmreprojection-node"><code class="docutils literal notranslate"><span class="pre">mmReprojection</span></code> Node</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="commands.html">Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#mmsolver-command"><code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> Command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#mmsolvertype-command"><code class="docutils literal notranslate"><span class="pre">mmSolverType</span></code> Command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands.html#mmtestcameramatrix-command"><code class="docutils literal notranslate"><span class="pre">mmTestCameraMatrix</span></code> Command</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="solver_design.html#how-does-the-solver-work">How does the solver work?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solver_design.html#solving-process">Solving Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solver_design.html#general-solving-concepts">General Solving Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solver_design.html#frequently-asked-questions">Frequently Asked Questions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">Related Books and Papers</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="scripting">
+<h2>Scripting<a class="headerlink" href="#scripting" title="Permalink to this headline">¶</a></h2>
+<p>Documentation for the mmSolver Python tools, Python API and utilities.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.averagemarker.html">mmSolver.tools.averagemarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.cameraaim.html">mmSolver.tools.cameraaim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.centertwodee.html">mmSolver.tools.centertwodee</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.channelsen.html">mmSolver.tools.channelsen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.convertmarker.html">mmSolver.tools.convertmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.createbundle.html">mmSolver.tools.createbundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.createmarker.html">mmSolver.tools.createmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.duplicatemarker.html">mmSolver.tools.duplicatemarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.linkmarkerbundle.html">mmSolver.tools.linkmarkerbundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.loadmarker.html">mmSolver.tools.loadmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.markerbundlerename.html">mmSolver.tools.markerbundlerename</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.raycastmarker.html">mmSolver.tools.raycastmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.reprojectbundle.html">mmSolver.tools.reprojectbundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.selection.html">mmSolver.tools.selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.smoothkeyframes.html">mmSolver.tools.smoothkeyframes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html">mmSolver.tools.solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.togglebundlelock.html">mmSolver.tools.togglebundlelock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.togglemarkerlock.html">mmSolver.tools.togglemarkerlock</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.api.html">mmSolver.api</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#object-overview">Object Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#camera">Camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#bundle">Bundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#marker">Marker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#markergroup">MarkerGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#attribute">Attribute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#frame">Frame</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#solver">Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#collection">Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#solveresult">SolveResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html#constants">Constants</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.logger.html">mmSolver.logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.html">mmSolver.ui</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.base_maya_window.html">mmSolver.ui.base_maya_window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.converttypes.html">mmSolver.ui.converttypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.nodes.html">mmSolver.ui.nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.shelfutils.html">mmSolver.ui.shelfutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uimodels.html">mmSolver.ui.uimodels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html">mmSolver.ui.uiutils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.utils.html">mmSolver.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.utils.html#module-mmSolver.utils.node">Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.utils.html#module-mmSolver.utils.camera">Camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.utils.html#module-mmSolver.utils.viewport">Viewport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.utils.html#module-mmSolver.utils.smooth">Smooth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.utils.html#module-mmSolver.utils.raytrace">Raytrace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.utils.html#module-mmSolver.utils.constant">Constant</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver - Maya MatchMove Solver</a><ul>
+<li><a class="reference internal" href="#usage-guide">Usage Guide</a></li>
+<li><a class="reference internal" href="#technical">Technical</a></li>
+<li><a class="reference internal" href="#scripting">Scripting</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="introduction.html"
+                        title="next chapter">Introduction</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">mayaMatchMoveSolver 0.2.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
+    </div>
+  </body>
 </html>

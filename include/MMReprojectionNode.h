@@ -26,7 +26,7 @@
 #include <maya/MPxNode.h>
 
 #include <maya/MString.h>
-#include <maya/MVector.h>
+#include <maya/MObject.h>
 #include <maya/MTime.h>
 
 #include <maya/MFnDependencyNode.h>

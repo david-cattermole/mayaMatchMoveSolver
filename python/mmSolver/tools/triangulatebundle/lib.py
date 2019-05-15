@@ -161,6 +161,7 @@ def triangulate_bundle(bnd, relock=None):
             if len(frm_list) == 0:
                 continue
 
+            bnd_node = bnd.get_node()
             cam = mkr.get_camera()
             cam_tfm = cam.get_transform_node()
 
@@ -171,11 +172,15 @@ def triangulate_bundle(bnd, relock=None):
             first_pnt, first_dir = get_point_and_direction(cam_tfm, mkr_node, first_frm_num)
             last_pnt, last_dir = get_point_and_direction(cam_tfm, mkr_node, last_frm_num)
 
-            pnt = calculate_approx_intersection_point_between_two_3d_lines(
+            a_pnt, b_pnt = calculate_approx_intersection_point_between_two_3d_lines(
                 first_pnt, first_dir,
                 last_pnt, last_dir
             )
-            bnd_node = bnd.get_node()
+            pnt = OpenMaya.MPoint(
+                (a_pnt.x + b_pnt.x) * 0.5,
+                (a_pnt.y + b_pnt.y) * 0.5,
+                (a_pnt.z + b_pnt.z) * 0.5
+            )
 
             plugs = [
                 '%s.translateX' % bnd_node,
@@ -189,6 +194,7 @@ def triangulate_bundle(bnd, relock=None):
                 maya.cmds.setAttr(plug, lock=False)
 
             maya.cmds.xform(
+                bnd_node,
                 translation=(pnt.x, pnt.y, pnt.z),
                 worldSpace=True
             )

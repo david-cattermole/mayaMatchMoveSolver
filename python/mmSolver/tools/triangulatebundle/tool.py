@@ -45,12 +45,14 @@ def main():
     bnd_list = [mmapi.Bundle(node=node) for node in bnd_nodes]
 
     # Triangulate
+    adjusted_bnd_node_list = []
     for bnd in bnd_list:
         lib.triangulate_bundle(bnd)
+        adjusted_bnd_node_list.append(bnd.get_node())
 
     # Select all bundle nodes.
-    if len(bnd_nodes) > 0:
-        maya.cmds.select(bnd_nodes, replace=True)
+    if len(adjusted_bnd_node_list) > 0:
+        maya.cmds.select(adjusted_bnd_node_list, replace=True)
     else:
         msg = 'No Bundle nodes found, see Script Editor for details.'
         LOG.warning(msg)

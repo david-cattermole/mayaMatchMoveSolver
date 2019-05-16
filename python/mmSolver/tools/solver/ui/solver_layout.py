@@ -167,6 +167,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
         self.updateObjectModel()
+        self.updateAttributeToggleButtons()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -675,6 +676,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         def update_func():
             if uiutils.isValidQtObject(self) is False:
                 return
+            self.updateAttributeToggleButtons()
             self.updateAttributeModel()
             self.updateSolveValidState()
             return
@@ -715,6 +717,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
                 callback_manager
             )
 
+        self.updateAttributeToggleButtons()
         self.updateAttributeModel()
         self.updateSolveValidState()
 
@@ -780,6 +783,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateDynamicWindowTitle()
         self.updateObjectToggleButtons()
         self.updateObjectModel()
+        self.updateAttributeToggleButtons()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()

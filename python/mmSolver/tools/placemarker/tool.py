@@ -1,5 +1,5 @@
 """
-
+A tool to place a Marker at a position of a mouse click.
 """
 
 import maya.cmds

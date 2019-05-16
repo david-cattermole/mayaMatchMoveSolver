@@ -30,6 +30,7 @@ def context_on_press():
     # print 'pos:', position
     # print 'dir:', direction
     # print 'cam:', camTfm, camShp
+    frame = maya.cmds.currentTime(query=True)
     node = maya.cmds.createNode('transform')
     maya.cmds.setAttr('%s.tx' % node, position.x)
     maya.cmds.setAttr('%s.ty' % node, position.y)
@@ -37,7 +38,7 @@ def context_on_press():
     point = maya.cmds.mmReprojection(
         node, camera=(camTfm, camShp),
         asNormalizedCoordinate=True,
-        time=1
+        time=frame
     )
     print 'point', point
     maya.cmds.delete(node)

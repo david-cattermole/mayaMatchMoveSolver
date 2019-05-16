@@ -80,6 +80,15 @@ def attributesToUINodes(attr_list, show_anm, show_stc, show_lck):
     :param attr_list: List of Attributes to convert.
     :type attr_list: [Attribute, ..]
 
+    :param show_anm: Should the animated attributes be visible?
+    :type show_anm: bool
+
+    :param show_stc: Should the static attributes be visible?
+    :type show_stc: bool
+
+    :param show_lck: Should the locked attributes be visible?
+    :type show_lck: bool
+
     :returns: A hierarchy of UI nodes to be viewed in a 'tree view'.
     :rtype: PlugNode
     """

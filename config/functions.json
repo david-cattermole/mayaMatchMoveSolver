@@ -1,14 +1,32 @@
 {
     "version": 1,
     "data": {
-        "open_solver_ui": {
-            "name": "Open Solver...",
+        "solver_tools": {
+            "name": "Solver",
+            "name_shelf": "Solver",
             "tooltip": "Open the MM Solver window.",
+            "icon_shelf": "menuIconWindow.png",
             "command": [
                 "import mmSolver.tools.solver.tool;",
                 "mmSolver.tools.solver.tool.open_window();"
-            ],
-            "icon_shelf": "menuIconWindow.png"
+            ]
+        },
+        "solver_popup_left": {
+            "popup": true,
+            "popup_button": "left"
+        },
+        "solver_popup_right": {
+            "popup": true,
+            "popup_button": "right"
+        },
+        "open_solver_ui": {
+            "name": "Open Solver...",
+            "tooltip": "Open the MM Solver window.",
+            "icon_shelf": "menuIconWindow.png",
+            "command": [
+                "import mmSolver.tools.solver.tool;",
+                "mmSolver.tools.solver.tool.open_window();"
+            ]
         },
         "solver_run": {
             "name": "Run Solver",
@@ -28,7 +46,7 @@
         },
         "create_marker": {
             "name": "Create Marker",
-            "shelf_name": "Create",
+            "name_shelf": "Create",
             "tooltip": "Create a new Marker.",
             "icon_shelf": "createMarker_32x32.png",
             "command": [
@@ -38,10 +56,18 @@
         },
         "marker_tools": {
             "name": "Marker Tools",
-            "shelf_name": "MTools",
+            "name_shelf": "MTools",
             "tooltip": "Marker Tools",
             "icon_shelf": "createMarker_32x32.png",
             "command": ["pass"]
+        },
+        "marker_popup_left": {
+            "popup": true,
+            "popup_button": "left"
+        },
+        "marker_popup_right": {
+            "popup": true,
+            "popup_button": "right"
         },
         "toggle_marker_lock": {
             "name": "Toggle Marker Lock",
@@ -53,10 +79,18 @@
         },
         "bundle_tools": {
             "name": "Bundle Tools",
-            "shelf_name": "BTools",
+            "name_shelf": "BTools",
             "tooltip": "Bundle Tools",
             "icon_shelf": "createBundle_32x32.png",
             "command": ["pass"]
+        },
+        "bundle_popup_left": {
+            "popup": true,
+            "popup_button": "left"
+        },
+        "bundle_popup_right": {
+            "popup": true,
+            "popup_button": "right"
         },
         "toggle_bundle_lock": {
             "name": "Toggle Bundle Lock-State",
@@ -114,6 +148,12 @@
                 "mmSolver.tools.averagemarker.tool.main();"
             ]
         },
+        "mb_link_tools": {
+            "name": "Marker + Bundle Link Tools",
+            "name_shelf": "MBLnk",
+            "tooltip": "Marker bundle link and unlink Tools.",
+            "command": ["pass"]
+        },
         "link_marker_bundle": {
             "name": "Link Marker + Bundle",
             "tooltip": "Link the selected Marker and Bundle together.",
@@ -134,7 +174,7 @@
             "name": "Convert to Marker",
             "name_shelf": "Convrt",
             "tooltip": "Convert 3D Transform to Marker.",
-            "icon": "createMarker_32x32.png",
+            "icon_shelf": "createMarker_32x32.png",
             "command": [
                 "import mmSolver.tools.convertmarker.tool;",
                 "mmSolver.tools.convertmarker.tool.main();"
@@ -144,7 +184,7 @@
             "name": "Load Marker",
             "name_shelf": "Load...",
             "tooltip": "Load Marker.",
-            "icon": "menuIconFile.png",
+            "icon_shelf": "menuIconFile.png",
             "command": [
                 "import mmSolver.tools.loadmarker.tool;",
                 "mmSolver.tools.loadmarker.tool.open_window();"
@@ -154,7 +194,7 @@
             "name": "Create Bundle",
             "name_shelf": "Create",
             "tooltip": "Create Bundle.",
-            "icon": "createBundle_32x32.png",
+            "icon_shelf": "createBundle_32x32.png",
             "command": [
                 "import mmSolver.tools.createbundle.tool;",
                 "mmSolver.tools.createbundle.tool.main();"
@@ -205,9 +245,9 @@
             ]
         },
         "channel_sensitivity_ui": {
-            "name": "Channel sensitivity UI",
+            "name": "Channel Sensitivity UI",
             "name_shelf": "ChSen",
-            "tooltip": "Channel sensitivity UI.",
+            "tooltip": "Channel Sensitivity UI.",
             "command": [
                 "import mmSolver.tools.channelsen.tool;",
                 "mmSolver.tools.channelsen.tool.main();"

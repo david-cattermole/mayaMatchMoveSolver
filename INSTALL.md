@@ -87,13 +87,19 @@ which can control mmSolver's behaviour.
 
 | Name                     | Description                                                                                            |
 | ------------------------ | ------------------------------------------------------------------------------------------------------ |
-| MMSOLVER_LOAD_AT_STARTUP | Automatically load mmSolver plug-in at Maya start-up.                                                  |
+| MMSOLVER_LOAD_AT_STARTUP | Automatically load mmSolver plug-in and scripts at Maya start-up.                                      |
 | MMSOLVER_CREATE_SHELF    | Automatically create a Maya shelf at start-up.                                                         |
 | MMSOLVER_CREATE_MENU     | Un-used currently.                                                                                     |
 | MMSOLVER_HELP_SOURCE     | Prefer 'internet' or 'local' source of help? For users with internet restrictions set this to 'local'. |
 | MMSOLVER_DEFAULT_SOLVER  | (Advanced) The default solver to use in mmSolver; 'cminpack_lm' or 'levmar'.                           |
 | MMSOLVER_DEBUG           | (Advanced) Forces mmSolver to print out debug messages. Not for users, for use by developers only.     |
 | MMSOLVER_LOCATION        | Do not change this variable!!!                                                                         |
+
+*Note:* If MMSOLVER_LOAD_AT_STARTUP is "0", the mmSolver plug-in will
+not be loaded, and any initialization scripts will not load. For
+example mmSolver shelf and menus will not be created. With this option
+off, to create the shelf and menus after Maya start-up simply load the
+mmSolver plug-in from the Maya Plug-in Manager.
 
 # Install 3DEqualizer Files
 

@@ -3,10 +3,10 @@ Build the mmSolver menu.
 """
 
 import mmSolver.logger
+import mmSolver.utils.config as config_utils
+import mmSolver.ui.menuutils as menu_utils
 import mmSolver.tools.mmmenu.constant as const
 import mmSolver.tools.mmmenu.lib as lib
-import mmSolver.ui.menuutils as menu_utils
-import mmSolver.utils.config as config_utils
 
 LOG = mmSolver.logger.get_logger()
 
@@ -15,6 +15,7 @@ def build_menu():
     """
     Build the 'mmSolver' menu.
     """
+    LOG.info('Building mmSolver Menu...')
     func_config = config_utils.get_config("functions.json")
     if func_config is None:
         LOG.warning('Could not find functions.json config file')

@@ -359,6 +359,7 @@ bool solve(int iterMax,
     MStatus status;
     std::string resultStr;
     int ret = 1;
+    MGlobal::MMayaState mayaSessionState = MGlobal::mayaState(&status);
 
 #ifdef MAYA_PROFILE
     int profileCategory = MProfiler::getCategoryIndex("mmSolver");
@@ -576,6 +577,9 @@ bool solve(int iterMax,
     // Allow user to exit out of solve.
     userData.computation = &computation;
     userData.userInterrupted = false;
+
+    // Maya is running as an interactive or batch?
+    userData.mayaSessionState = mayaSessionState;
 
     // Verbosity
     userData.verbose = verbose;

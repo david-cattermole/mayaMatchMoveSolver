@@ -11,7 +11,7 @@ import mmSolver.tools.smoothkeyframes.lib as lib
 LOG = mmSolver.logger.get_logger()
 
 
-def main():
+def smooth_selected_keyframes():
     """
     Smooth the selected keyframes in the Graph Editor.
 
@@ -59,3 +59,8 @@ def main():
             blend_smooth_type,
             blend_width)
     return
+
+
+def main():
+    import mmSolver.tools.smoothkeyframes.ui.smoothkeys_window as window
+    window.main()

@@ -203,7 +203,7 @@ class SolverWindow(BaseWindow):
         action = QtWidgets.QAction(label, tools_menu)
         action.setStatusTip(tooltip)
         action.triggered.connect(partial(self.renameMarkerBundleCB))
-        tools_menu.addAction(action)        
+        tools_menu.addAction(action)
 
         tools_menu.addSeparator()
 
@@ -216,6 +216,17 @@ class SolverWindow(BaseWindow):
         action.setCheckable(True)
         action.setChecked(refresh_value)
         action.toggled.connect(type(self).refreshActionToggledCB)
+        tools_menu.addAction(action)
+
+        # Force DG evaluation.
+        label = 'Force DG Update'
+        tooltip = 'Force Maya DG Evaluation while solving.'
+        force_dg_update_value = lib_state.get_force_dg_update_state()
+        action = QtWidgets.QAction(label, tools_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(force_dg_update_value)
+        action.toggled.connect(type(self).forceDgUpdateActionToggledCB)
         tools_menu.addAction(action)
 
         menubar.addMenu(tools_menu)
@@ -390,8 +401,11 @@ class SolverWindow(BaseWindow):
 
     @staticmethod
     def refreshActionToggledCB(value):
-        LOG.warning('refreshActionToggledCB: %r', value)
         lib_state.set_refresh_viewport_state(value)
+
+    @staticmethod
+    def forceDgUpdateActionToggledCB(value):
+        lib_state.set_force_dg_update_state(value)
 
     def launchHelpCB(self):
         self.help()
@@ -411,15 +425,30 @@ class SolverWindow(BaseWindow):
         return
 
     def apply(self):
+        """
+        Tbis button launches a solve, but can also be used to cancel a solve.
+        """
+        running_state = lib_state.get_solver_is_running_state()
+        if running_state is True:
+            lib_state.set_solver_user_interrupt_state(True)
+            return
         refresh_state = lib_state.get_refresh_viewport_state()
+        force_update_state = lib_state.get_force_dg_update_state()
         log_level = lib_state.get_log_level()
         col = lib_state.get_active_collection()
-        lib_collection.run_solve_ui(col, refresh_state, log_level, self)
+        lib_collection.run_solve_ui(
+            col,
+            refresh_state,
+            force_update_state,
+            log_level,
+            self)
         return
 
     def help(self):
         src = helputils.get_help_source()
-        helputils.open_help_in_browser(page='tools.html#solver-ui', help_source=src)
+        helputils.open_help_in_browser(
+            page='tools.html#solver-ui',
+            help_source=src)
         return
 
 

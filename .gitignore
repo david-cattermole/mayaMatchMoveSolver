@@ -6,6 +6,9 @@
 cmake-build-*
 *build/*
 *build_*/*
+python/mmSolver/constant.py
+include/buildConstant.h
+docs/source/conf.py
 
 test*.pstat
 test*.txt

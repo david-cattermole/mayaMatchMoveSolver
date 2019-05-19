@@ -26,6 +26,8 @@
 #include <maya/MStatus.h>
 #include <maya/MObject.h>
 #include <maya/MMatrix.h>
+#include <maya/MPoint.h>
+#include <maya/MVector.h>
 #include <maya/MString.h>
 #include <maya/MPlug.h>
 

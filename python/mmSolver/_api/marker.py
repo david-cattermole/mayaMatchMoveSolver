@@ -174,6 +174,9 @@ class Marker(object):
         maya.cmds.setAttr(tfm + '.sx', lock=True)
         maya.cmds.setAttr(tfm + '.sy', lock=True)
         maya.cmds.setAttr(tfm + '.sz', lock=True)
+        maya.cmds.setAttr(tfm + '.shxy', lock=True)
+        maya.cmds.setAttr(tfm + '.shxz', lock=True)
+        maya.cmds.setAttr(tfm + '.shyz', lock=True)
         maya.cmds.setAttr(tfm + '.tz', keyable=False, channelBox=False)
         maya.cmds.setAttr(tfm + '.rx', keyable=False, channelBox=False)
         maya.cmds.setAttr(tfm + '.ry', keyable=False, channelBox=False)
@@ -181,6 +184,9 @@ class Marker(object):
         maya.cmds.setAttr(tfm + '.sx', keyable=False, channelBox=False)
         maya.cmds.setAttr(tfm + '.sy', keyable=False, channelBox=False)
         maya.cmds.setAttr(tfm + '.sz', keyable=False, channelBox=False)
+        maya.cmds.setAttr(tfm + '.shxy', keyable=False, channelBox=False)
+        maya.cmds.setAttr(tfm + '.shxz', keyable=False, channelBox=False)
+        maya.cmds.setAttr(tfm + '.shyz', keyable=False, channelBox=False)
 
         # Shape Node
         shp_name = tfm.rpartition('|')[-1] + 'Shape'

@@ -204,6 +204,23 @@ def _create_link_tools_menu(menu):
     return
 
 
+def _create_smooth_tools_menu(menu):
+    # Smooth Tools
+    name = 'Smooth Keyframes UI...'
+    tooltip = 'Open Smooth Keyframes UI.'
+    cmd = (
+        'import mmSolver.tools.smoothkeyframes.tool;'
+        'mmSolver.tools.smoothkeyframes.tool.main();'
+    )
+    shelfutils.create_menu_item(
+        parent=menu,
+        name=name,
+        tooltip=tooltip,
+        cmd=cmd,
+    )
+    return
+
+
 def build_shelf():
     """
     Build the 'mmSolver' shelf.
@@ -448,18 +465,22 @@ def build_shelf():
     )
 
     # Smooth Selected Keyframes
-    name = 'Smooth'
-    tooltip = 'Smooth Selected Keyframes.'
+    name = 'Smooth Selected Keyframes'
+    tooltip = 'Smooth the Selected Graph Editor Keyframes.'
     icon = None
     cmd = (
         'import mmSolver.tools.smoothkeyframes.tool;'
-        'mmSolver.tools.smoothkeyframes.tool.main();'
+        'mmSolver.tools.smoothkeyframes.tool.smooth_selected_keyframes();'
     )
-    shelfutils.create_shelf_button(
+    btn = shelfutils.create_shelf_button(
         parent=shelf,
         name=name,
         tooltip=tooltip,
         icon=icon,
         cmd=cmd,
     )
+    # Create Menu Pop-Up (for both left and right mouse buttons)
+    menu_rmb = shelfutils.create_popup_menu(parent=btn, button=3)
+    _create_smooth_tools_menu(menu_rmb)
+    
     return

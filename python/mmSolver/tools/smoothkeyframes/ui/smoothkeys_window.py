@@ -40,19 +40,22 @@ class SmoothKeysWindow(BaseWindow):
         # Standard Buttons
         self.baseHideStandardButtons()
         self.applyBtn.show()
+        self.resetBtn.show()
         self.helpBtn.show()
         self.closeBtn.show()
         self.applyBtn.setText('Smooth')
 
-        self.applyBtn.clicked.connect(self.apply)
+        self.applyBtn.clicked.connect(tool.smooth_selected_keyframes)
+        self.resetBtn.clicked.connect(self.reset_options)
         self.helpBtn.clicked.connect(self.help)
 
         # Hide irrelevant stuff
         self.baseHideMenuBar()
         self.baseHideProgressBar()
 
-    def apply(self):
-        tool.smooth_selected_keyframes()
+    def reset_options(self):
+        form = self.getSubForm()
+        form.reset_options()
         return
 
     def help(self):

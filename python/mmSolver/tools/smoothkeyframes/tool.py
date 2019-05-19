@@ -6,6 +6,8 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.constant as utils_const
+import mmSolver.utils.configmaya as configmaya
+import mmSolver.tools.smoothkeyframes.constant as const
 import mmSolver.tools.smoothkeyframes.lib as lib
 
 LOG = mmSolver.logger.get_logger()
@@ -38,7 +40,7 @@ def smooth_selected_keyframes():
             key_attr,
             query=True,
             selected=True
-        )
+        ) or []
         if len(selected_keyframes) == 0:
             msg = (
                 'Please select keyframes '
@@ -47,10 +49,18 @@ def smooth_selected_keyframes():
             LOG.warning(msg)
             continue
 
-        smooth_type = utils_const.SMOOTH_TYPE_FOURIER
-        width = 2
+        smooth_type = configmaya.get_scene_option(
+            const.CONFIG_MODE_KEY,
+            default=const.DEFAULT_MODE)
+        width = configmaya.get_scene_option(
+            const.CONFIG_WIDTH_KEY,
+            default=const.DEFAULT_WIDTH)
+        
         blend_smooth_type = utils_const.SMOOTH_TYPE_GAUSSIAN
-        blend_width = 2
+        blend_width = configmaya.get_scene_option(
+            const.CONFIG_BLEND_WIDTH_KEY,
+            default=const.DEFAULT_BLEND_WIDTH)
+        
         lib.smooth_animcurve(
             key_attr,
             selected_keyframes,

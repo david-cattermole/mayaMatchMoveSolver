@@ -212,6 +212,8 @@ def get_scene_option(name, default=None):
     :return: None
     :rtype: any
     """
+    if not maya.cmds.objExists(const.SCENE_DATA_NODE):
+        maya.cmds.createNode('script', name=const.SCENE_DATA_NODE)
     data = get_node_option_structure(
         const.SCENE_DATA_NODE,
         const.SCENE_DATA_ATTR
@@ -220,7 +222,7 @@ def get_scene_option(name, default=None):
     return value
 
 
-def set_scene_option(name, value):
+def set_scene_option(name, value, add_attr=None):
     """
     Set a value in the scene.
 
@@ -230,17 +232,27 @@ def set_scene_option(name, value):
     :param value: Value to set.
     :type value: any
 
+    :param add_attr: Add attribute to the scene, if the attribute
+                     does not already exist.
+    :type add_attr: bool
+
     :rtype: None
     """
+    if not maya.cmds.objExists(const.SCENE_DATA_NODE):
+        maya.cmds.createNode(
+            'script',
+            name=const.SCENE_DATA_NODE,
+            skipSelect=True)
     data = get_node_option_structure(
         const.SCENE_DATA_NODE,
         const.SCENE_DATA_ATTR
     )
-    value = data[name] = value
+    data[name] = value
     set_node_option_structure(
         const.SCENE_DATA_NODE,
         const.SCENE_DATA_ATTR,
-        value
+        data,
+        add_attr=add_attr,
     )
     return
 

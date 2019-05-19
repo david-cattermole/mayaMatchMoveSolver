@@ -116,6 +116,7 @@ def create_shelf_button(parent=None,
     assert icon is None or isinstance(icon, basestring)
     assert cmd is None or isinstance(cmd, basestring)
 
+    kwargs = {}
     label = 'label'
     imageOverlayLabel = 'label'
     annotation = 'tooltip'
@@ -132,8 +133,6 @@ def create_shelf_button(parent=None,
     if isinstance(icon, basestring):
         image = str(icon)
         image1 = str(icon)
-    if isinstance(cmd, basestring):
-        command = str(cmd)
     if cmdLanguage is None:
         sourceType = 'python'
     elif isinstance(cmdLanguage, basestring):
@@ -142,6 +141,10 @@ def create_shelf_button(parent=None,
         msg = 'cmdLanguage must be None or str: cmdLanguage=%r'
         LOG.error(msg, cmdLanguage)
         raise ValueError(msg, cmdLanguage)
+    if isinstance(cmd, basestring):
+        command = str(cmd)
+        kwargs['command'] = command
+        kwargs['sourceType'] = sourceType
 
     button = maya.cmds.shelfButton(
         parent=parent,
@@ -149,10 +152,9 @@ def create_shelf_button(parent=None,
         image1=image1,
         label=label,
         imageOverlayLabel=imageOverlayLabel,
-        sourceType=sourceType,
-        command=command,
         noDefaultPopup=True,
         preventOverride=True,
+        **kwargs
     )
     return button
 

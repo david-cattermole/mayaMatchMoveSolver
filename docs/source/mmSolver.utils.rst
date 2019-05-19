@@ -43,7 +43,13 @@ Raytrace
     :undoc-members:
     :special-members: __init__
 
+Config
+++++++
 
+.. automodule:: mmSolver.utils.config
+    :members:
+    :undoc-members:
+    :special-members: __init__
 
 Constant
 ++++++++

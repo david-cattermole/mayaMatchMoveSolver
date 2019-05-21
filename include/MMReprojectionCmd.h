@@ -77,6 +77,10 @@
 #define NORM_COORD_FLAG       "-ncd"
 #define NORM_COORD_FLAG_LONG  "-asNormalizedCoordinate"
 
+// Query as Normalized Coordinate?
+#define MARKER_COORD_FLAG       "-mcd"
+#define MARKER_COORD_FLAG_LONG  "-asMarkerCoordinate"
+
 
 class MMReprojectionCmd : public MPxCommand {
 public:
@@ -86,9 +90,10 @@ public:
                           m_timeList(),
                           m_asCameraPoint(false),
                           m_asWorldPoint(false),
-                          m_asPixelCoordinate(false),
                           m_asCoordinate(false),
-                          m_asNormalizedCoordinate(false) {};
+                          m_asNormalizedCoordinate(false),
+                          m_asMarkerCoordinate(false),
+                          m_asPixelCoordinate(false) {};
 
     virtual ~MMReprojectionCmd();
 
@@ -116,6 +121,7 @@ private:
     bool m_asWorldPoint;
     bool m_asCoordinate;
     bool m_asNormalizedCoordinate;
+    bool m_asMarkerCoordinate;
     bool m_asPixelCoordinate;
 };
 

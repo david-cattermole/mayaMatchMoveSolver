@@ -114,8 +114,8 @@ private:
     MSelectionList m_nodeList;
     Camera m_camera;
     MTimeArray m_timeList;
-    int m_imageResX;
-    int m_imageResY;
+    double m_imageResX;
+    double m_imageResY;
 
     bool m_asCameraPoint;
     bool m_asWorldPoint;

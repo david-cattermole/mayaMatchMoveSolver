@@ -85,7 +85,7 @@ MSyntax MMReprojectionCmd::newSyntax() {
     syntax.addFlag(CAMERA_FLAG, CAMERA_FLAG_LONG, MSyntax::kString, MSyntax::kString);
     syntax.addFlag(TIME_FLAG, TIME_FLAG_LONG, MSyntax::kDouble);
     syntax.addFlag(CAM_POINT_FLAG, CAM_POINT_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(IMAGE_RES_FLAG, IMAGE_RES_FLAG_LONG, MSyntax::kLong, MSyntax::kLong);
+    syntax.addFlag(IMAGE_RES_FLAG, IMAGE_RES_FLAG_LONG, MSyntax::kDouble, MSyntax::kDouble);
     syntax.addFlag(WORLD_POINT_FLAG, WORLD_POINT_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(COORD_FLAG, COORD_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(NORM_COORD_FLAG, NORM_COORD_FLAG_LONG, MSyntax::kBoolean);
@@ -155,8 +155,8 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     }
 
     // Get Image Resolution flag
-    m_imageResX = 2048;
-    m_imageResY = 1556;
+    m_imageResX = 2048.0;
+    m_imageResY = 1556.0;
     bool imageResFlagIsSet = argData.isFlagSet(IMAGE_RES_FLAG, &status);
     if (imageResFlagIsSet == true) {
         status = argData.getFlagArgument(IMAGE_RES_FLAG, 0, m_imageResX);

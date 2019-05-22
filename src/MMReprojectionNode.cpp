@@ -77,6 +77,10 @@ MObject MMReprojectionNode::a_outCoordY;
 MObject MMReprojectionNode::a_outNormCoord;
 MObject MMReprojectionNode::a_outNormCoordX;
 MObject MMReprojectionNode::a_outNormCoordY;
+MObject MMReprojectionNode::a_outMarkerCoord;
+MObject MMReprojectionNode::a_outMarkerCoordX;
+MObject MMReprojectionNode::a_outMarkerCoordY;
+MObject MMReprojectionNode::a_outMarkerCoordZ;
 MObject MMReprojectionNode::a_outPixel;
 MObject MMReprojectionNode::a_outPixelX;
 MObject MMReprojectionNode::a_outPixelY;
@@ -117,6 +121,10 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         || (plug == a_outNormCoord)
         || (plug == a_outNormCoordX)
         || (plug == a_outNormCoordY)
+        || (plug == a_outMarkerCoord)
+        || (plug == a_outMarkerCoordX)
+        || (plug == a_outMarkerCoordY)
+        || (plug == a_outMarkerCoordZ)
         || (plug == a_outPixel)
         || (plug == a_outPixelX)
         || (plug == a_outPixelY)
@@ -243,6 +251,9 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         double outCoordY;
         double outNormCoordX;
         double outNormCoordY;
+        double outMarkerCoordX;
+        double outMarkerCoordY;
+        double outMarkerCoordZ;
         double outPixelX;
         double outPixelY;
         bool outInsideFrustum;
@@ -294,6 +305,7 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
                 // Outputs
                 outCoordX, outCoordY,
                 outNormCoordX, outNormCoordY,
+                outMarkerCoordX, outMarkerCoordY, outMarkerCoordZ,
                 outPixelX, outPixelY,
                 outInsideFrustum,
                 outPointX, outPointY, outPointZ,
@@ -325,6 +337,17 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         outNormCoordXHandle.setClean();
         outNormCoordYHandle.setClean();
 
+        // Output Coordinates (-0.5 to 0.5; lower-left corner is -0.5, -0.5)
+        MDataHandle outMarkerCoordXHandle = data.outputValue(a_outMarkerCoordX);
+        MDataHandle outMarkerCoordYHandle = data.outputValue(a_outMarkerCoordY);
+        MDataHandle outMarkerCoordZHandle = data.outputValue(a_outMarkerCoordZ);
+        outMarkerCoordXHandle.setDouble(outMarkerCoordX);
+        outMarkerCoordYHandle.setDouble(outMarkerCoordY);
+        outMarkerCoordZHandle.setDouble(outMarkerCoordZ);
+        outMarkerCoordXHandle.setClean();
+        outMarkerCoordYHandle.setClean();
+        outMarkerCoordZHandle.setClean();
+        
         // Output Pixel Coordinates (0.0 to width; 0.0 to height;
         // lower-left corner is 0.0, 0.0)
         MDataHandle outPixelXHandle = data.outputValue(a_outPixelX);
@@ -363,7 +386,6 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         outWorldPointZHandle.setClean();
 
         // Output Matrix (camera-space)
-        // TODO: This has a strange translate Z value... find out why.
         MDataHandle outMatrixHandle = data.outputValue(a_outMatrix);
         outMatrixHandle.setMMatrix(outMatrix);
         outMatrixHandle.setClean();
@@ -683,6 +705,45 @@ MStatus MMReprojectionNode::initialize() {
     /////////////////////////////////////////////////////////////////////////
 
     {
+        // Out Marker Coord X
+        a_outMarkerCoordX = numericAttr.create(
+                "outMarkerCoordX", "omcdx",
+                MFnNumericData::kDouble, 0.0);
+        CHECK_MSTATUS(numericAttr.setStorable(false));
+        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        CHECK_MSTATUS(numericAttr.setReadable(true));
+        CHECK_MSTATUS(numericAttr.setWritable(false));
+
+        // Out Marker Coord Y
+        a_outMarkerCoordY = numericAttr.create(
+                "outMarkerCoordY", "omcdy",
+                MFnNumericData::kDouble, 0.0);
+        CHECK_MSTATUS(numericAttr.setStorable(false));
+        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        CHECK_MSTATUS(numericAttr.setReadable(true));
+        CHECK_MSTATUS(numericAttr.setWritable(false));
+
+        // Out Marker Coord Z
+        a_outMarkerCoordZ = numericAttr.create(
+                "outMarkerCoordZ", "omcdz",
+                MFnNumericData::kDouble, 0.0);
+        CHECK_MSTATUS(numericAttr.setStorable(false));
+        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        CHECK_MSTATUS(numericAttr.setReadable(true));
+        CHECK_MSTATUS(numericAttr.setWritable(false));
+
+        // Out Marker Coord (parent of outMarkerCoord* attributes)
+        a_outMarkerCoord = compoundAttr.create("outMarkerCoord", "omcd", &status);
+        CHECK_MSTATUS(status);
+        compoundAttr.addChild(a_outMarkerCoordX);
+        compoundAttr.addChild(a_outMarkerCoordY);
+        compoundAttr.addChild(a_outMarkerCoordZ);
+        CHECK_MSTATUS(addAttribute(a_outMarkerCoord));
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+
+    {
         // Out Pixel Coord X
         a_outPixelX = numericAttr.create(
                 "outPixelX", "opixx",
@@ -920,6 +981,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outMarkerCoordY));
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outPixelY));
@@ -944,6 +1009,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outPixelY));
@@ -970,6 +1039,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outPixelY));
@@ -994,7 +1067,9 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outNormCoordY));
-    CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outMarkerCoordY));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outPixelY));
@@ -1019,7 +1094,9 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outNormCoordY));
-    CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outMarkerCoordY));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outPixelY));
@@ -1044,7 +1121,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outNormCoordY));
-    CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outPixelY));
@@ -1069,6 +1149,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_screenX, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_screenX, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_screenX, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_screenX, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_screenX, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_screenX, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_screenX, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_screenX, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_screenX, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_screenX, a_outPixelY));
@@ -1093,6 +1177,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_screenY, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_screenY, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_screenY, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_screenY, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_screenY, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_screenY, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_screenY, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_screenY, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_screenY, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_screenY, a_outPixelY));
@@ -1117,6 +1205,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_screenZ, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_screenZ, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_screenZ, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_screenZ, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_screenZ, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_screenZ, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_screenZ, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_screenZ, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_screenZ, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_screenZ, a_outPixelY));
@@ -1141,6 +1233,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_depthScale, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_depthScale, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_depthScale, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_depthScale, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_depthScale, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_depthScale, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_depthScale, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_depthScale, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_depthScale, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_depthScale, a_outPixelY));
@@ -1164,6 +1260,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_focalLength, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_focalLength, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_focalLength, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_focalLength, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_focalLength, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_focalLength, a_outPixelY));
@@ -1192,6 +1292,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outPixelY));
@@ -1220,6 +1324,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outPixelY));
@@ -1248,6 +1356,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outPixelY));
@@ -1276,6 +1388,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outPixelY));
@@ -1304,6 +1420,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outPixelY));
@@ -1332,6 +1452,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outPixelY));
@@ -1360,6 +1484,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_filmFit, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_filmFit, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_filmFit, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_filmFit, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_filmFit, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_filmFit, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_filmFit, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_filmFit, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_filmFit, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_filmFit, a_outPixelY));
@@ -1388,6 +1516,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outPixelY));
@@ -1416,6 +1548,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outPixelY));
@@ -1444,6 +1580,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outPixelY));
@@ -1472,6 +1612,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outPixelY));
@@ -1500,6 +1644,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outPixelY));

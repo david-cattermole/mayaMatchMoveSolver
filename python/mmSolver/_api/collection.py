@@ -31,9 +31,6 @@ import maya.mel
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
-import mmSolver.utils.viewport as viewport_utils
-import mmSolver.utils.configmaya as configmaya
-import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
 import mmSolver._api.constant as const
@@ -42,7 +39,6 @@ import mmSolver._api.solver as solver
 import mmSolver._api.marker as marker
 import mmSolver._api.attribute as attribute
 import mmSolver._api.sethelper as sethelper
-import mmSolver._api.collectionutils as collectionutils
 
 
 LOG = mmSolver.logger.get_logger()
@@ -129,7 +125,7 @@ class Collection(object):
         :rtype: list of dict
         """
         set_node = self._set.get_node()
-        return configmaya.get_node_option_structure(set_node, attr_name)
+        return api_utils.get_data_on_node_attr(set_node, attr_name)
 
     def _set_attr_data(self, attr_name, data):
         """
@@ -570,6 +566,16 @@ class Collection(object):
                         msg = msg.format(node_name, attr_name)
                         raise excep.NotValid(msg)
 
+            # Scale and Offset
+            scale_value = None
+            offset_value = None
+            attr_type = maya.cmds.attributeQuery(
+                attr_name,
+                node=node_name,
+                attributeType=True)
+            if attr_type.endswith('Angle'):
+                offset_value = 360.0
+
             animated = attr.is_animated()
             static = attr.is_static()
             use = False
@@ -578,7 +584,13 @@ class Collection(object):
             if use_static and static is True:
                 use = True
             if use is True:
-                attrs.append((name, str(min_value), str(max_value)))
+                attrs.append(
+                    (name,
+                     str(min_value),
+                     str(max_value),
+                     str(offset_value),
+                     str(scale_value))
+                )
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
             return None
@@ -820,13 +832,13 @@ class Collection(object):
                 s = time.time()
                 isolate_nodes = set()
                 for kwargs in kwargs_list:
-                    isolate_nodes |= collectionutils.generate_isolate_nodes(kwargs)
+                    isolate_nodes |= self.__generate_isolate_nodes(kwargs)
                 if len(isolate_nodes) == 0:
                     raise excep.NotValid
                 isolate_node_list = list(isolate_nodes)
                 for panel in panels:
-                    viewport_utils.set_image_plane_visibility(panel, False)
-                    viewport_utils.set_isolated_nodes(panel, isolate_node_list, True)
+                    self.__set_image_plane_visibility(panel, False)
+                    self.__set_isolated_nodes(panel, isolate_node_list, True)
                 e = time.time()
                 LOG.debug('Perform Pre-Isolate; time=%r', e - s)
 

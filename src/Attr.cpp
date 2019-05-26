@@ -173,6 +173,7 @@ MPlug Attr::getPlug() {
     return m_plug;
 }
 
+
 MObject Attr::getAttribute() {
     MPlug plug = Attr::getPlug();
     MObject attrObj;
@@ -212,13 +213,9 @@ int Attr::getAttrType() {
 bool Attr::isFreeToChange() {
     if (m_isFreeToChange < 0) {
         MPlug plug = Attr::getPlug();
-        if (plug.isFreeToChange() == MPlug::kFreeToChange) {
-             m_isFreeToChange = 1;
-        } else {
-             m_isFreeToChange = 0;
-        }
+        m_isFreeToChange = (int) (plug.isFreeToChange() == MPlug::kFreeToChange);
     }
-    return m_isFreeToChange != 0;
+    return (bool) m_isFreeToChange;
 }
 
 /*

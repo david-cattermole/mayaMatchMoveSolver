@@ -56,12 +56,12 @@ class TestSolver2(solverUtils.SolverTestCase):
             (marker2_tfm, cam_shp, bundle2_tfm),
         )
         node_attrs = [
-            (group_tfm + '.tx', 'None', 'None'),
-            (group_tfm + '.ty', 'None', 'None'),
-            (group_tfm + '.tz', 'None', 'None'),
-            (group_tfm + '.sx', 'None', 'None'),
-            (group_tfm + '.ry', 'None', 'None'),
-            (group_tfm + '.rz', 'None', 'None'),
+            (group_tfm + '.tx', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.ty', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.tz', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.sx', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.ry', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.rz', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),
@@ -88,10 +88,10 @@ class TestSolver2(solverUtils.SolverTestCase):
 
         # Run solver! (with less attributes)
         node_attrs = [
-            (group_tfm + '.tx', 'None', 'None'),
-            (group_tfm + '.ty', 'None', 'None'),
-            (group_tfm + '.sx', 'None', 'None'),
-            (group_tfm + '.rz', 'None', 'None'),
+            (group_tfm + '.tx', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.ty', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.sx', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.rz', 'None', 'None', 'None', 'None'),
         ]
         s = time.time()
         result = maya.cmds.mmSolver(

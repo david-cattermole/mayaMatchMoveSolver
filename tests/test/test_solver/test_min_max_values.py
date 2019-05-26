@@ -84,8 +84,8 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             (marker_01_tfm, cam_shp, bundle_01_tfm),
         )
         node_attrs = [
-            (bundle_01_tfm + '.tx', '-5.0', '5.0'),
-            (bundle_01_tfm + '.ty', 'None', 'None'),
+            (bundle_01_tfm + '.tx', '-5.0', '5.0', 'None', 'None'),
+            (bundle_01_tfm + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),

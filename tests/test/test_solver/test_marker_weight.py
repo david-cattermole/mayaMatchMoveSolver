@@ -117,8 +117,8 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             (marker_02_tfm, cam_shp, bundle_02_tfm),
         )
         node_attrs = [
-            (grp + '.tx', 'None', 'None'),
-            (grp + '.ty', 'None', 'None'),
+            (grp + '.tx', 'None', 'None', 'None', 'None'),
+            (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),
@@ -170,8 +170,8 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             (marker_02_tfm, cam_shp, bundle_02_tfm),
         )
         node_attrs = [
-            (grp + '.tx', 'None', 'None'),
-            (grp + '.ty', 'None', 'None'),
+            (grp + '.tx', 'None', 'None', 'None', 'None'),
+            (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),
@@ -229,8 +229,8 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             (marker_02_tfm, cam_shp, bundle_02_tfm),
         )
         node_attrs = [
-            (grp + '.tx', 'None', 'None'),
-            (grp + '.ty', 'None', 'None'),
+            (grp + '.tx', 'None', 'None', 'None', 'None'),
+            (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),
@@ -282,8 +282,8 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             (marker_02_tfm, cam_shp, bundle_02_tfm),
         )
         node_attrs = [
-            (grp + '.tx', 'None', 'None'),
-            (grp + '.ty', 'None', 'None'),
+            (grp + '.tx', 'None', 'None', 'None', 'None'),
+            (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),
@@ -337,8 +337,8 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             (marker_02_tfm, cam_shp, bundle_02_tfm),
         )
         node_attrs = [
-            (grp + '.tx', 'None', 'None'),
-            (grp + '.ty', 'None', 'None'),
+            (grp + '.tx', 'None', 'None', 'None', 'None'),
+            (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),

@@ -165,9 +165,12 @@ int solveFunc(int numberOfParameters,
             IndexPair attrPair = ud->paramToAttrList[i];
             AttrPtr attr = ud->attrList[attrPair.first];
 
+            double offset = attr->getOffsetValue();
+            double scale = attr->getScaleValue();
             double xmin = attr->getMinimumValue();
             double xmax = attr->getMaximumValue();
             double value = parameters[i];
+            value = (value / scale) - offset;
 
             // TODO: Implement proper Box Constraints; Issue #64.
             value = std::max<double>(value, xmin);

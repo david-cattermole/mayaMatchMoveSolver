@@ -493,6 +493,9 @@ bool solve(int iterMax,
             return false;
         }
 
+        double xoffset = attr->getOffsetValue();
+        double xscale = attr->getScaleValue();
+        value = (value * xscale) + xoffset;
         paramList[i] = value;
     }
 
@@ -912,9 +915,12 @@ bool solve(int iterMax,
         IndexPair attrPair = paramToAttrList[i];
         AttrPtr attr = attrList[attrPair.first];
 
+        double offset = attr->getOffsetValue();
+        double scale = attr->getScaleValue();
         double xmin = attr->getMinimumValue();
         double xmax = attr->getMaximumValue();
         double value = paramList[i];
+        value = (value / scale) - offset;
 
         // TODO: Implement proper Box Constraints; Issue #64.
         value = std::max<double>(value, xmin);

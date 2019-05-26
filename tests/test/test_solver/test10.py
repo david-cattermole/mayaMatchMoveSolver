@@ -86,10 +86,10 @@ class TestSolver10(solverUtils.SolverTestCase):
             (marker2_tfm, cam_shp, bundle2_tfm),
         )
         node_attrs = [
-            (cam_tfm + '.rx', 'None', 'None'),
-            (cam_tfm + '.ry', 'None', 'None'),
-            # (cam_tfm + '.rz', 'None', 'None'),
-            (cam_shp + '.focalLength', 'None', 'None'),
+            (cam_tfm + '.rx', 'None', 'None', 'None', 'None'),
+            (cam_tfm + '.ry', 'None', 'None', 'None', 'None'),
+            # (cam_tfm + '.rz', 'None', 'None', 'None', 'None'),
+            (cam_shp + '.focalLength', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),

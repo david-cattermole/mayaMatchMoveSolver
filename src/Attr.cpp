@@ -62,7 +62,9 @@ Attr::Attr() :
         m_connected(-1),
         m_isFreeToChange(-1),
         m_minValue(-std::numeric_limits<float>::max()),
-        m_maxValue(std::numeric_limits<float>::max()) {
+        m_maxValue(std::numeric_limits<float>::max()),
+        m_offsetValue(0.0),
+        m_scaleValue(1.0) {
      MDistance distanceOne(1.0, MDistance::internalUnit());
      m_linearFactor = distanceOne.as(MDistance::uiUnit());
      m_linearFactorInv = 1.0 / m_linearFactor;
@@ -506,5 +508,20 @@ void Attr::setMaximumValue(double value) {
     m_maxValue = value;
 }
 
+double Attr::getOffsetValue() {
+    return m_offsetValue;
+}
+
+void Attr::setOffsetValue(double value) {
+    m_offsetValue = value;
+}
+
+double Attr::getScaleValue() {
+    return m_scaleValue;
+}
+
+void Attr::setScaleValue(double value) {
+    m_scaleValue = value;
+}
 
 #undef USE_DG_CONTEXT_IN_GUI

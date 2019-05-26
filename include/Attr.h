@@ -104,6 +104,14 @@ public:
 
     void setMaximumValue(double value);
 
+    double getOffsetValue();
+
+    void setOffsetValue(double value);
+
+    double getScaleValue();
+
+    void setScaleValue(double value);
+
 private:
     MString m_nodeName;
     MString m_attrName;
@@ -115,8 +123,8 @@ private:
     int m_isFreeToChange;
     double m_minValue;
     double m_maxValue;
-    // double m_offsetValue;
-    // double m_scaleValue;
+    double m_offsetValue;
+    double m_scaleValue;
 
     double m_linearFactor;
     double m_linearFactorInv;

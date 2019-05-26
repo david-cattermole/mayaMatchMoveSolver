@@ -53,8 +53,8 @@ class TestSolver1(solverUtils.SolverTestCase):
             (marker_tfm, cam_shp, bundle_tfm),
         )
         node_attrs = [
-            (bundle_tfm + '.tx', 'None', 'None'),
-            (bundle_tfm + '.ty', 'None', 'None'),
+            (bundle_tfm + '.tx', 'None', 'None', 'None', 'None'),
+            (bundle_tfm + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),

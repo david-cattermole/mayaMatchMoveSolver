@@ -550,6 +550,16 @@ class Collection(object):
                         msg = msg.format(node_name, attr_name)
                         raise excep.NotValid(msg)
 
+            # Scale and Offset
+            scale_value = None
+            offset_value = None
+            attr_type = maya.cmds.attributeQuery(
+                attr_name,
+                node=node_name,
+                attributeType=True)
+            if attr_type.endswith('Angle'):
+                offset_value = 360.0
+
             animated = attr.is_animated()
             static = attr.is_static()
             use = False
@@ -558,7 +568,13 @@ class Collection(object):
             if use_static and static is True:
                 use = True
             if use is True:
-                attrs.append((name, str(min_value), str(max_value)))
+                attrs.append(
+                    (name,
+                     str(min_value),
+                     str(max_value),
+                     str(offset_value),
+                     str(scale_value))
+                )
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
             return None
@@ -746,8 +762,8 @@ class Collection(object):
 
         save_node_attrs = []
         attrs = kwargs.get('attr') or []
-        for attr_name, min_val, max_val in attrs:
-            attr_obj = attribute.Attribute(attr_name)
+        for attr_name, min_val, max_val, offset_val, scale_val in attrs:
+            attr_obj = attribute.Attribute(name=attr_name)
             if attr_obj.is_animated() is False:
                 continue
 
@@ -813,7 +829,7 @@ class Collection(object):
         """
         frames = list(sorted(frames))
         attrs = kwargs.get('attr') or []
-        for attr_name, min_val, max_val in attrs:
+        for attr_name, min_val, max_val, offset_val, scale_val in attrs:
             attr_obj = attribute.Attribute(name=attr_name)
             if not attr_obj.is_animated():
                 continue
@@ -959,7 +975,7 @@ class Collection(object):
     def __generate_isolate_nodes(kwargs):
         nodes = set()
         attrs = kwargs.get('attr') or []
-        for attr_name, min_val, max_val in attrs:
+        for attr_name, min_val, max_val, offset_val, scale_val in attrs:
             attr_obj = attribute.Attribute(name=attr_name)
             node = attr_obj.get_node()
             nodes.add(node)

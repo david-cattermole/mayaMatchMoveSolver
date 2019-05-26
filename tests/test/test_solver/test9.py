@@ -83,8 +83,8 @@ class TestSolver9(solverUtils.SolverTestCase):
             # NOTE: All dynamic attributes must have a keyframe before
             # starting to solve.
             node_attrs = [
-                (bundle_tfm + '.tx', 'None', 'None'),
-                (bundle_tfm + '.ty', 'None', 'None'),
+                (bundle_tfm + '.tx', 'None', 'None', 'None', 'None'),
+                (bundle_tfm + '.ty', 'None', 'None', 'None', 'None'),
             ]
 
             # Run solver!

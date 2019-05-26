@@ -68,13 +68,13 @@ class TestSolver7(solverUtils.SolverTestCase):
 
         # Get Attrs
         node_attrs = [
-            (cameras[0][0] + '.tx', 'None', 'None'),
-            (cameras[0][0] + '.ty', 'None', 'None'),
-            (cameras[0][0] + '.tz', 'None', 'None'),
-            (cameras[0][0] + '.rx', 'None', 'None'),
-            (cameras[0][0] + '.ry', 'None', 'None'),
-            (cameras[0][0] + '.rz', 'None', 'None'),
-            # (cameras[0][1] + '.focalLength', '10.0', '100.0'),
+            (cameras[0][0] + '.tx', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.ty', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.tz', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.rx', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.ry', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.rz', 'None', 'None', 'None', 'None'),
+            # (cameras[0][1] + '.focalLength', '10.0', '100.0', 'None', 'None'),
         ]
         frames = [1]
 

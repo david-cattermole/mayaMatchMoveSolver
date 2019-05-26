@@ -88,7 +88,7 @@ class TestSolve(test_api_utils.APITestCase):
         # Solver
         sol = mmapi.Solver()
         sol.set_max_iterations(10)
-        sol.set_solver_type(mmapi.SOLVER_TYPE_LEVMAR)
+        sol.set_solver_type(mmapi.SOLVER_TYPE_CMINPACK_LM)
         sol.set_verbose(True)
         sol.set_frame_list(frm_list)
 

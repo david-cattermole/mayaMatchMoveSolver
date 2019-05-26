@@ -276,7 +276,7 @@ int solveFunc(int numberOfParameters,
             if (cam_dot_bnd < 0.0) {
                  behind_camera = true;
             }
-            
+
             debugFile << "Bundle: " << bnd->getNodeName()
                       << std::endl;
             debugFile << "Cam DOT Bnd: " << cam_dot_bnd

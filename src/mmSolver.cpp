@@ -1055,7 +1055,7 @@ bool solve(int iterMax,
       VRB("Jacobian Evaluations: " << userData.jacIterNum);
 
       // Add all the data into the output string from the Maya command.
-      resultStr = "success=" + string::numberToString<int>(static_cast<bool>(ret));
+      resultStr = "success=" + string::numberToString<int>(ret != 0);
       outResult.append(MString(resultStr.c_str()));
 
       resultStr = "reason_string=" + cminpackReasons[reasonNum];

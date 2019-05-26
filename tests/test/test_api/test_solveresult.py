@@ -202,9 +202,11 @@ class TestSolveResult(test_api_utils.APITestCase):
         frame_error_list = mmapi.merge_frame_error_list([solres])
         avg_error = mmapi.get_average_frame_error_list(frame_error_list)
         max_frame_error = mmapi.get_max_frame_error(frame_error_list)
-        self.assertEqual(max_frame_error[0], None)
+        self.assertEqual(max_frame_error[0], 120)
+        self.assertIsInstance(max_frame_error[0], int)
         self.assertIsInstance(max_frame_error[1], float)
         self.assertTrue(success)
+        self.assertLess(avg_error, 1.0)
         self.assertGreater(err, 0.0)
         return
 

@@ -2,8 +2,11 @@
 Functions to create Maya shelves and buttons.
 """
 
+import warnings
+
 import maya.cmds
 import maya.mel
+
 import mmSolver.logger
 
 
@@ -113,6 +116,7 @@ def create_shelf_button(parent=None,
     assert icon is None or isinstance(icon, basestring)
     assert cmd is None or isinstance(cmd, basestring)
 
+    kwargs = {}
     label = 'label'
     imageOverlayLabel = 'label'
     annotation = 'tooltip'
@@ -129,8 +133,6 @@ def create_shelf_button(parent=None,
     if isinstance(icon, basestring):
         image = str(icon)
         image1 = str(icon)
-    if isinstance(cmd, basestring):
-        command = str(cmd)
     if cmdLanguage is None:
         sourceType = 'python'
     elif isinstance(cmdLanguage, basestring):
@@ -139,6 +141,10 @@ def create_shelf_button(parent=None,
         msg = 'cmdLanguage must be None or str: cmdLanguage=%r'
         LOG.error(msg, cmdLanguage)
         raise ValueError(msg, cmdLanguage)
+    if isinstance(cmd, basestring):
+        command = str(cmd)
+        kwargs['command'] = command
+        kwargs['sourceType'] = sourceType
 
     button = maya.cmds.shelfButton(
         parent=parent,
@@ -146,10 +152,9 @@ def create_shelf_button(parent=None,
         image1=image1,
         label=label,
         imageOverlayLabel=imageOverlayLabel,
-        sourceType=sourceType,
-        command=command,
         noDefaultPopup=True,
         preventOverride=True,
+        **kwargs
     )
     return button
 
@@ -174,89 +179,15 @@ def create_shelf_separator(parent=None):
     return control
 
 
-def create_popup_menu(parent=None,
-                      button=None):
-    """
-    Create a Pop-Up menu (for a shelf button).
-
-    :param parent: What should this control be placed under?
-    :type parent: str
-
-    :param button: Which mouse button should active this pop-up menu?
-                   1=left, 2=middle, 3=right mouse button.
-    :type button: int
-
-    :returns: Maya popup menu UI control path.
-    :rtype: str
-    """
-    assert parent is not None
-    assert isinstance(parent, basestring)
-    if button is None:
-        button = 3
-    assert isinstance(button, int)
-    menu = maya.cmds.popupMenu(
-        parent=parent,
-        button=button)
-    return menu
+def create_popup_menu(*args, **kwargs):
+    msg = 'Deprecated, please use mmSolver.ui.menuutils.create_popup_menu'
+    warnings.warn(msg)
+    import mmSolver.ui.menuutils as menu_utils
+    return menu_utils.create_popup_menu(*args, **kwargs)
 
 
-def create_menu_item(parent=None,
-                     name=None,
-                     tooltip=None,
-                     cmd=None,
-                     cmdLanguage=None):
-    """
-    Create a Menu Item on a menu.
-
-    :param parent: Which menu should this menu item be placed under?
-    :type parent: str
-
-    :param name: Name (label) of the menu item button.
-    :type name: str
-
-    :param tooltip: The text shown to the user in the status line, when
-                    the user has the mouse over the menu item.
-    :type tooltip: str
-
-    :param cmd: The command text to run when the menu item is pressed.
-    :type cmd: str
-
-    :param cmdLanguage: What language is 'cmd' argument in? 'python'
-                        or 'mel'?
-    :type cmdLanguage: str
-
-    :returns: Maya menu item UI control path.
-    :rtype: str
-    """
-    assert parent is not None
-    assert isinstance(parent, basestring)
-    assert name is None or isinstance(name, basestring)
-    assert tooltip is None or isinstance(tooltip, basestring)
-    assert cmd is None or isinstance(cmd, basestring)
-
-    label = 'label'
-    annotation = ''
-    sourceType = 'python'
-    command = None
-    if isinstance(name, basestring):
-        label = str(name)
-    if isinstance(cmd, basestring):
-        command = str(cmd)
-    if cmdLanguage is None:
-        sourceType = 'python'
-    elif isinstance(cmdLanguage, basestring):
-        sourceType = str(cmdLanguage)
-    else:
-        msg = 'cmdLanguage must be None or str: cmdLanguage=%r'
-        LOG.error(msg, cmdLanguage)
-        raise ValueError(msg, cmdLanguage)
-
-    item = maya.cmds.menuItem(
-        parent=parent,
-        label=label,
-        annotation=annotation,
-        command=cmd,
-        sourceType=sourceType,
-
-    )
-    return item
+def create_menu_item(*args, **kwargs):
+    msg = 'Deprecated, please use mmSolver.ui.menuutils.create_menu_item'
+    warnings.warn(msg)
+    import mmSolver.ui.menuutils as menu_utils
+    return menu_utils.create_menu_item(*args, **kwargs)

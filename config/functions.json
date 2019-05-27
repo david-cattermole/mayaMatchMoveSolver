@@ -132,6 +132,14 @@
                 "mmSolver.tools.screenzmanipulator.tool.main();"
             ]
         },
+        "place_marker_manipulator": {
+            "name": "Place Marker...",
+            "tooltip": "Place Marker at screen-space 2D position.",
+            "command": [
+                "import mmSolver.tools.placemarkermanip.tool;",
+                "mmSolver.tools.placemarkermanip.tool.main();"
+            ]
+        },
         "duplicate_marker": {
             "name": "Duplicate Marker",
             "tooltip": "Duplicate marker from selection.",

@@ -40,7 +40,8 @@
             "---OtherTools",
             "center_twodee",
             "channel_sensitivity_ui",
-            "smooth_keyframes"
+            "smooth_keyframes",
+            "screen_z_transform_bake"
         ],
         "functions": {}
     }

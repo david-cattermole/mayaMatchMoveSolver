@@ -269,6 +269,15 @@
                 "import mmSolver.tools.smoothkeyframes.tool;",
                 "mmSolver.tools.smoothkeyframes.tool.main();"
             ]
+        },
+        "screen_z_transform_bake": {
+            "name": "Screen-Space Tranform Bake",
+            "name_shelf": "ScrnBk",
+            "tooltip": "Convert a transform into a screen-space transform.",
+            "command": [
+                "import mmSolver.tools.screenzbake.tool;",
+                "mmSolver.tools.screenzbake.tool.main();"
+            ]
         }
     }
 }

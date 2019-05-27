@@ -62,6 +62,7 @@ MStatus reprojection(MMatrix tfmMatrix,
                      // Outputs
                      double &outCoordX, double &outCoordY,
                      double &outNormCoordX, double &outNormCoordY,
+                     double &outMarkerCoordX, double &outMarkerCoordY, double &outMarkerCoordZ,
                      double &outPixelX, double &outPixelY,
                      bool &outInsideFrustum,
                      double &outPointX, double &outPointY, double &outPointZ,
@@ -154,9 +155,9 @@ MStatus reprojection(MMatrix tfmMatrix,
     // Convert world to camera space
     MMatrix cameraTfmMatrix = worldTfmMatrix * camMatrix.inverse();
     MPoint posCamera(cameraTfmMatrix[3][0],
-                        cameraTfmMatrix[3][1],
-                        cameraTfmMatrix[3][2],
-                        cameraTfmMatrix[3][3]);
+                     cameraTfmMatrix[3][1],
+                     cameraTfmMatrix[3][2],
+                     cameraTfmMatrix[3][3]);
     posCamera.cartesianize();
 
     // Output Coordinates (-1.0 to 1.0; lower-left corner is -1.0, -1.0)
@@ -168,6 +169,11 @@ MStatus reprojection(MMatrix tfmMatrix,
     outNormCoordX = (coord.x + 1.0) * 0.5;
     outNormCoordY = (coord.y + 1.0) * 0.5;
 
+    // Output Coordinates (-0.5 to 0.5; lower-left corner is -0.5, -0.5)
+    outMarkerCoordX = coord.x * 0.5;
+    outMarkerCoordY = coord.y * 0.5;
+    outMarkerCoordZ = posCamera.z * -1.0;
+
     // Output Pixel Coordinates (0.0 to width; 0.0 to height;
     // lower-left corner is 0.0, 0.0)
     outPixelX = (coord.x + 1.0) * 0.5 * imageWidth;
@@ -178,19 +184,16 @@ MStatus reprojection(MMatrix tfmMatrix,
     outInsideFrustum = insideFrustum;
 
     // Output Point (camera-space)
-    // TODO: This has a strange Z value... find out why.
     outPointX = posCamera.x;
     outPointY = posCamera.y;
     outPointZ = posCamera.z;
 
     // Output Point (world-space)
-    // TODO: This has a strange Z value... find out why.
     outWorldPointX = worldPos.x;
     outWorldPointY = worldPos.y;
     outWorldPointZ = worldPos.z;
 
     // Output Matrix (camera-space)
-    // TODO: This has a strange translate Z value... find out why.
     outMatrix = tfmMatrix;
 
     // Output Matrix (world-space)

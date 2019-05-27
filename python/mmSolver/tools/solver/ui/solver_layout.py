@@ -54,10 +54,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         )
 
         # Object Nodes
-        # TODO: Perhaps we should remove a tree view and research how
-        # we can embed a Maya Outliner inside our layout with a filter
-        # to only show markers (and their parents), this would provide
-        # a lot of default functionality from Maya.
         root = object_nodes.ObjectNode('root')
         self.object_model = object_nodes.ObjectModel(root, font=self.font)
         self.object_filterModel = QtCore.QSortFilterProxyModel()
@@ -102,6 +98,15 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.attribute_selModel = self.attribute_treeView.selectionModel()
         self.attribute_selModel.selectionChanged.connect(
             self.attrNodeSelectionChanged
+        )
+        self.attributeToggleAnimated_toolButton.clicked.connect(
+            self.attributeToggleAnimatedClicked,
+        )
+        self.attributeToggleStatic_toolButton.clicked.connect(
+            self.attributeToggleStaticClicked,
+        )
+        self.attributeToggleLocked_toolButton.clicked.connect(
+            self.attributeToggleLockedClicked,
         )
 
         # Attr Add and Remove buttons
@@ -162,6 +167,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
         self.updateObjectModel()
+        self.updateAttributeToggleButtons()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -221,6 +227,18 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         widgets = [self.object_frame]
         self.populateWidgetsEnabled(widgets)
+        return
+
+    def updateAttributeToggleButtons(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        show_anm = lib_col.get_attribute_toggle_animated_from_collection(col)
+        show_stc = lib_col.get_attribute_toggle_static_from_collection(col)
+        show_lck = lib_col.get_attribute_toggle_locked_from_collection(col)
+        self.attributeToggleAnimated_toolButton.setChecked(show_anm)
+        self.attributeToggleStatic_toolButton.setChecked(show_stc)
+        self.attributeToggleLocked_toolButton.setChecked(show_lck)
         return
 
     def updateAttributeModel(self):
@@ -299,8 +317,14 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         col = lib_state.get_active_collection()
         attr_list = []
+        show_anm = const.ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE
+        show_stc = const.ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE
+        show_lck = const.ATTRIBUTE_TOGGLE_LOCKED_DEFAULT_VALUE
         if col is not None:
             attr_list = lib_attr.get_attributes_from_collection(col)
+            show_anm = lib_col.get_attribute_toggle_animated_from_collection(col)
+            show_stc = lib_col.get_attribute_toggle_static_from_collection(col)
+            show_lck = lib_col.get_attribute_toggle_locked_from_collection(col)
 
         def update_func():
             if uiutils.isValidQtObject(self) is False:
@@ -319,7 +343,11 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
                 update_func,
                 callback_manager
             )
-        root = convert_to_ui.attributesToUINodes(attr_list)
+        root = convert_to_ui.attributesToUINodes(
+            attr_list,
+            show_anm,
+            show_stc,
+            show_lck)
         model.setRootNode(root)
         return
 
@@ -420,6 +448,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
         self.updateObjectModel()
+        self.updateAttributeToggleButtons()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -441,6 +470,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
         self.updateObjectModel()
+        self.updateAttributeToggleButtons()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -466,8 +496,48 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
         self.updateObjectModel()
+        self.updateAttributeToggleButtons()
         self.updateAttributeModel()
         self.updateSolverModel()
+        self.updateSolveValidState()
+        return
+
+    def attributeToggleAnimatedClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_attribute_toggle_animated_from_collection(col)
+        value = not value
+        lib_col.set_attribute_toggle_animated_on_collection(col, value)
+
+        self.updateAttributeModel()
+        self.updateSolveValidState()
+        return
+
+    def attributeToggleStaticClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_attribute_toggle_static_from_collection(col)
+        value = not value
+        lib_col.set_attribute_toggle_static_on_collection(col, value)
+
+        self.updateAttributeModel()
+        self.updateSolveValidState()
+        return
+
+    def attributeToggleLockedClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_attribute_toggle_locked_from_collection(col)
+        value = not value
+        lib_col.set_attribute_toggle_locked_on_collection(col, value)
+
+        self.updateAttributeModel()
         self.updateSolveValidState()
         return
 
@@ -606,6 +676,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         def update_func():
             if uiutils.isValidQtObject(self) is False:
                 return
+            self.updateAttributeToggleButtons()
             self.updateAttributeModel()
             self.updateSolveValidState()
             return
@@ -646,6 +717,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
                 callback_manager
             )
 
+        self.updateAttributeToggleButtons()
         self.updateAttributeModel()
         self.updateSolveValidState()
 
@@ -711,6 +783,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateDynamicWindowTitle()
         self.updateObjectToggleButtons()
         self.updateObjectModel()
+        self.updateAttributeToggleButtons()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()

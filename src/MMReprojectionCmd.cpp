@@ -85,10 +85,11 @@ MSyntax MMReprojectionCmd::newSyntax() {
     syntax.addFlag(CAMERA_FLAG, CAMERA_FLAG_LONG, MSyntax::kString, MSyntax::kString);
     syntax.addFlag(TIME_FLAG, TIME_FLAG_LONG, MSyntax::kDouble);
     syntax.addFlag(CAM_POINT_FLAG, CAM_POINT_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(IMAGE_RES_FLAG, IMAGE_RES_FLAG_LONG, MSyntax::kLong, MSyntax::kLong);
+    syntax.addFlag(IMAGE_RES_FLAG, IMAGE_RES_FLAG_LONG, MSyntax::kDouble, MSyntax::kDouble);
     syntax.addFlag(WORLD_POINT_FLAG, WORLD_POINT_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(COORD_FLAG, COORD_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(NORM_COORD_FLAG, NORM_COORD_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(MARKER_COORD_FLAG, MARKER_COORD_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(PIXEL_COORD_FLAG, PIXEL_COORD_FLAG_LONG, MSyntax::kBoolean);
 
     syntax.makeFlagMultiUse(TIME_FLAG);
@@ -137,6 +138,14 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
+    // Get Marker Coordinate flag
+    m_asMarkerCoordinate = false;
+    bool markerCoordFlagIsSet = argData.isFlagSet(MARKER_COORD_FLAG, &status);
+    if (markerCoordFlagIsSet == true) {
+        status = argData.getFlagArgument(MARKER_COORD_FLAG, 0, m_asMarkerCoordinate);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
     // Get Pixel Coordinate flag
     m_asPixelCoordinate = false;
     bool pixelCoordFlagIsSet = argData.isFlagSet(PIXEL_COORD_FLAG, &status);
@@ -146,8 +155,8 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     }
 
     // Get Image Resolution flag
-    m_imageResX = 2048;
-    m_imageResY = 1556;
+    m_imageResX = 2048.0;
+    m_imageResY = 1556.0;
     bool imageResFlagIsSet = argData.isFlagSet(IMAGE_RES_FLAG, &status);
     if (imageResFlagIsSet == true) {
         status = argData.getFlagArgument(IMAGE_RES_FLAG, 0, m_imageResX);
@@ -285,6 +294,9 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     double outCoordY;
     double outNormCoordX;
     double outNormCoordY;
+    double outMarkerCoordX;
+    double outMarkerCoordY;
+    double outMarkerCoordZ;
     double outPixelX;
     double outPixelY;
     bool outInsideFrustum;
@@ -367,6 +379,7 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
                     // Outputs
                     outCoordX, outCoordY,
                     outNormCoordX, outNormCoordY,
+                    outMarkerCoordX, outMarkerCoordY, outMarkerCoordZ,
                     outPixelX, outPixelY,
                     outInsideFrustum,
                     outPointX, outPointY, outPointZ,
@@ -400,6 +413,11 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
                 outResult.append(outNormCoordX);
                 outResult.append(outNormCoordY);
                 outResult.append(outPointZ);
+            }
+            if (m_asMarkerCoordinate == true) {
+                outResult.append(outMarkerCoordX);
+                outResult.append(outMarkerCoordY);
+                outResult.append(outMarkerCoordZ);
             }
             if (m_asPixelCoordinate == true) {
                 outResult.append(outPixelX);

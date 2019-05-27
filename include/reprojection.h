@@ -56,6 +56,7 @@ MStatus reprojection(MMatrix tfmMatrix,
                      // Outputs
                      double &outCoordX, double &outCoordY,
                      double &outNormCoordX, double &outNormCoordY,
+                     double &outMarkerCoordX, double &outMarkerCoordY, double &outMarkerCoord,
                      double &outPixelX, double &outPixelY,
                      bool &outInsideFrustum,
                      double &outPointX, double &outPointY, double &outPointZ,

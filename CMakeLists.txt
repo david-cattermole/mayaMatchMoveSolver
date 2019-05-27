@@ -5,8 +5,8 @@ cmake_minimum_required(VERSION 2.8)
 # Project configuration.
 project(mayaMatchMoveSolver)
 set(PROJECT_VERSION_MAJOR 0)
-set(PROJECT_VERSION_MINOR 2)
-set(PROJECT_VERSION_PATCH 2)
+set(PROJECT_VERSION_MINOR 3)
+set(PROJECT_VERSION_PATCH 0)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
@@ -148,12 +148,14 @@ set(SOURCE_FILES
         include/Marker.h
         include/Bundle.h
         include/Attr.h
+        include/reprojection.h
         include/MMMarkerScaleNode.h
         include/MMReprojectionNode.h
         include/MMMarkerGroupTransformNode.h
         include/MMTestCameraMatrixCmd.h
         include/MMSolverCmd.h
         include/MMSolverTypeCmd.h
+        include/MMReprojectionCmd.h
         src/mmSolver.cpp
         src/mmSolverFunc.cpp
         src/mmSolverLevMar.cpp
@@ -162,12 +164,14 @@ set(SOURCE_FILES
         src/Marker.cpp
         src/Bundle.cpp
         src/Attr.cpp
+        src/reprojection.cpp
         src/MMMarkerScaleNode.cpp
         src/MMReprojectionNode.cpp
         src/MMMarkerGroupTransformNode.cpp
         src/MMTestCameraMatrixCmd.cpp
         src/MMSolverCmd.cpp
         src/MMSolverTypeCmd.cpp
+        src/MMReprojectionCmd.cpp
         src/pluginMain.cpp
 )
 
@@ -368,6 +372,11 @@ install(DIRECTORY "3dequalizer/scriptdb/"
 install(DIRECTORY "syntheyes/"
         DESTINATION "${MODULE_FULL_NAME}/syntheyes"
         FILES_MATCHING PATTERN "*.szl")
+
+# Install Config.
+install(DIRECTORY "config/"
+        DESTINATION "${MODULE_FULL_NAME}/config"
+        FILES_MATCHING PATTERN "*.json")
 
 # Install Icons.
 install(DIRECTORY "icons/"

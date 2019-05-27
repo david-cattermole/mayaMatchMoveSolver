@@ -18,6 +18,7 @@ set(input_files
 set(output_file ${CMAKE_SOURCE_DIR}/docs/build/html/py-modindex.html)
 add_custom_command(
         OUTPUT ${output_file}
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/docs/source/index.html ${CMAKE_SOURCE_DIR}/docs/build/html/index.html
         COMMAND make html
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs
         DEPENDS ${input_files}

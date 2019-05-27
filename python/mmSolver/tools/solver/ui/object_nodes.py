@@ -30,6 +30,12 @@ class ObjectNode(nodes.Node):
             neverHasChildren=neverHasChildren)
         self.typeInfo = 'object'
 
+    def weight(self):
+        return ''
+
+    def deviation(self):
+        return ''
+
 
 class MarkerNode(ObjectNode):
     def __init__(self, name,
@@ -44,6 +50,35 @@ class MarkerNode(ObjectNode):
             selectable=True,
             editable=False)
         self.typeInfo = 'marker'
+
+    def weight(self):
+        """
+        Get the current weight value of the marker.
+        """
+        weight = '-'
+        d = self.data()
+        mkr = d.get('marker')
+        if mkr is None:
+            return weight
+        weight = mkr.get_weight()
+        return str(weight)
+
+    def deviation(self):
+        """
+        Get the current deviation value of the marker.
+        """
+        dev = '-'
+        d = self.data()
+        if not d:
+            return dev
+        mkr = d.get('marker')
+        if mkr is None:
+            return dev
+        enable = mkr.get_enable()
+        if not enable:
+            return dev
+        dev = mkr.get_deviation(times=None)
+        return '%.2fpx' % dev[0]
 
 
 class CameraNode(ObjectNode):
@@ -60,6 +95,12 @@ class CameraNode(ObjectNode):
             editable=False)
         self.typeInfo = 'camera'
 
+    def weight(self):
+        return ''
+
+    def deviation(self):
+        return ''
+
 
 class BundleNode(ObjectNode):
     def __init__(self, name,
@@ -75,15 +116,25 @@ class BundleNode(ObjectNode):
             editable=False)
         self.typeInfo = 'bundle'
 
+    def weight(self):
+        return ''
+        
+    def deviation(self):
+        return ''
+
 
 class ObjectModel(uimodels.ItemModel):
     def __init__(self, root, font=None):
         super(ObjectModel, self).__init__(root, font=font)
         self._column_names = {
             0: 'Node',
+            1: 'Weight',
+            2: 'Deviation',
         }
         self._node_attr_key = {
             'Node': 'name',
+            'Weight': 'weight',
+            'Deviation': 'deviation',
         }
 
     def defaultNodeType(self):
@@ -92,12 +143,16 @@ class ObjectModel(uimodels.ItemModel):
     def columnNames(self):
         column_names = {
             0: 'Node',
+            1: 'Weight',
+            2: 'Deviation',
         }
         return column_names
 
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {
             'Node': 'name',
+            'Weight': 'weight',
+            'Deviation': 'deviation',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 

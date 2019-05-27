@@ -149,54 +149,54 @@ class SolverWindow(BaseWindow):
 
         menubar.addMenu(edit_menu)
 
-        # View Menu
-        view_menu = QtWidgets.QMenu('View', menubar)
+        # # View Menu
+        # view_menu = QtWidgets.QMenu('View', menubar)
 
-        # Display Object Deviation
-        label = 'Display Object Deviation'
-        tooltip = 'Display deviation column'
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        view_menu.addAction(action)
+        # # Display Object Deviation
+        # label = 'Display Object Deviation'
+        # tooltip = 'Display deviation column'
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # view_menu.addAction(action)
 
-        # Display Object Weight
-        label = 'Display Object Weight Column'
-        tooltip = 'Display Object weight column'
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        view_menu.addAction(action)
+        # # Display Object Weight
+        # label = 'Display Object Weight Column'
+        # tooltip = 'Display Object weight column'
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # view_menu.addAction(action)
 
-        view_menu.addSeparator()
+        # view_menu.addSeparator()
         
-        # Display Attribute State
-        label = 'Display Attribute State'
-        tooltip = 'Display Attribute State columns'
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        view_menu.addAction(action)
+        # # Display Attribute State
+        # label = 'Display Attribute State'
+        # tooltip = 'Display Attribute State columns'
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # view_menu.addAction(action)
 
-        # Display Attribute Min/Max
-        label = 'Display Attribute Min/Max'
-        tooltip = 'Display Attribute Minimum and Maximum columns'
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        view_menu.addAction(action)
+        # # Display Attribute Min/Max
+        # label = 'Display Attribute Min/Max'
+        # tooltip = 'Display Attribute Minimum and Maximum columns'
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # view_menu.addAction(action)
 
-        view_menu.addSeparator()
+        # view_menu.addSeparator()
 
-        # Deviation Live Update
-        label = 'Deviation Live Update'
-        tooltip = 'The Deviation shown in the UI will be updated live.'
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        view_menu.addAction(action)
+        # # Deviation Live Update
+        # label = 'Deviation Live Update'
+        # tooltip = 'The Deviation shown in the UI will be updated live.'
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # view_menu.addAction(action)
 
-        menubar.addMenu(view_menu)
+        # menubar.addMenu(view_menu)
 
         # Tools Menu
         tools_menu = QtWidgets.QMenu('Tools', menubar)

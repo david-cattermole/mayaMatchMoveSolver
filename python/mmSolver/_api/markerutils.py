@@ -18,11 +18,29 @@ def calculate_marker_deviation(mkr_node,
                                image_height):
     """
     Calculate the 2D-to-3D pixel distance for the given marker.
+
+    :param mkr_node: The marker transform node to compute with.
+    :type mkr_node: str
+    
+    :param bnd_node: The bundle transform node to compute with.
+    :type bnd_node: str
+
+    :param cam_tfm: The camera transform node to compute with.
+    :type cam_tfm: str
+
+    :param cam_shp: The camera shape node to compute with.
+    :type cam_shp: str
     
     :param times: The times to query the deviation.
     :type times: [float, ..]
 
-    :returns: List of deviation values for given times.
+    :param image_width: The width of the matchmove image plate.
+    :type image_width: float
+    
+    :param image_height: The height of the matchmove image plate.
+    :type image_height: float
+
+    :returns: List of pixel deviation values for given times.
     :rtype: [float, ..]
     """
     dev = [None] * len(times)

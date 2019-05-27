@@ -1,7 +1,9 @@
 """
 This file holds all the helpful functions for markerbundlerename
 """
+
 import maya.cmds
+import mmSolver.api as mmapi
 
 
 def prompt_for_new_node_name(title, message, text):
@@ -35,3 +37,70 @@ def prompt_for_new_node_name(title, message, text):
     if result == 'OK':
         name = maya.cmds.promptDialog(query=True, text=True)
     return name
+
+
+def rename_markers_and_bundles(mkr_nodes, bnd_nodes,
+                               mkr_name, bnd_name, name_format,
+                               mkr_suffix, bnd_suffix):
+    """
+    Rename the given marker and bundle nodes.
+
+    :param mkr_nodes: Marker nodes to rename.
+    :type mkr_nodes: [str, ..]
+
+    :param bnd_nodes: Bundle nodes to rename.
+    :type bnd_nodes: [str, ..]
+
+    :param mkr_name: Rename the markers to this name.
+    :type mkr_name: str
+
+    :param bnd_name: Rename the bundle to this name.
+    :type bnd_name: str
+
+    :param name_format: The name format string for numbering.
+    :type name_format: str
+
+    :param mkr_suffix: Set the marker suffix name.
+    :type mkr_suffix: str
+
+    :param bnd_suffix: Set the bundle suffix name.
+    :type bnd_suffix: str
+
+    :returns: Nodes that have been renamed.
+    :rtype: [str, ..]
+    """
+    # Convert markers to bundles.
+    mkr_nodes = list(mkr_nodes)
+    bnd_nodes = list(bnd_nodes)
+    for node in mkr_nodes:
+        mkr = mmapi.Marker(node=node)
+        bnd = mkr.get_bundle()
+        if bnd is None:
+            continue
+        bnd_node = bnd.get_node()
+        if bnd_node not in bnd_nodes:
+            bnd_nodes.append(bnd_nodes)
+
+    # Rename the bundles.
+    renamed_nodes = []
+    for i, bnd_node in enumerate(bnd_nodes):
+        num_str = '%02d' % (i + 1)
+        bnd = mmapi.Bundle(node=bnd_node)
+
+        new_bnd_name = mmapi.get_bundle_name(
+            num_str,
+            prefix=bnd_name,
+            suffix=bnd_suffix
+        )
+        bnd_node = bnd.get_node()
+        maya.cmds.rename(bnd_node, new_bnd_name)
+        renamed_nodes.append(bnd.get_node())
+
+        new_mkr_name = new_bnd_name.replace(bnd_name, mkr_name)
+        new_mkr_name = new_mkr_name.replace(bnd_suffix, mkr_suffix)
+        mkr_list = bnd.get_marker_list()
+        for mkr in mkr_list:
+            mkr_node = mkr.get_node()
+            maya.cmds.rename(mkr_node, new_mkr_name)
+            renamed_nodes.append(mkr.get_node())
+    return renamed_nodes

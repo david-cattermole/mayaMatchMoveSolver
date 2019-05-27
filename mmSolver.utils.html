@@ -218,21 +218,17 @@ however if numpy is available, an numpy-accelerated code-path will be used.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>smooth_type</strong> &#8211; Type of smoothing operation.</li>
+<li><strong>smooth_type</strong> (<em>SMOOTH_TYPE_*</em>) &#8211; Type of smoothing operation.</li>
 <li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; Input data to smooth.</li>
 <li><strong>width</strong> (<em>float</em>) &#8211; The width to smooth over. Values above 1.0 will
 perform smoothing. 1.0 or below has no effect.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Tyoe smooth_type:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first">SMOOTH_TYPE_*</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed copy of &#8216;value_array&#8217;, using the &#8216;smooth_type&#8217;, given.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed copy of &#8216;value_array&#8217;, using the &#8216;smooth_type&#8217;, given.</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[float, .]</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[float, .]</p>
 </td>
 </tr>
 </tbody>

@@ -20,6 +20,7 @@
             "unlink_marker_bundle",
             "---Tools",
             "marker_tools/toggle_marker_lock",
+            "marker_tools/place_marker_manipulator",
             "marker_tools/duplicate_marker",
             "marker_tools/average_markers",
             "bundle_tools/toggle_bundle_lock",
@@ -29,7 +30,8 @@
             "bundle_tools/screen_z_manipulator",
             "center_twodee",
             "channel_sensitivity_ui",
-            "smooth_keyframes"
+            "smooth_keyframes",
+            "screen_z_transform_bake"
         ],
         "functions": {}
     }

@@ -132,6 +132,14 @@
                 "mmSolver.tools.screenzmanipulator.tool.main();"
             ]
         },
+        "place_marker_manipulator": {
+            "name": "Place Marker...",
+            "tooltip": "Place Marker at screen-space 2D position.",
+            "command": [
+                "import mmSolver.tools.placemarkermanip.tool;",
+                "mmSolver.tools.placemarkermanip.tool.main();"
+            ]
+        },
         "duplicate_marker": {
             "name": "Duplicate Marker",
             "tooltip": "Duplicate marker from selection.",
@@ -260,6 +268,15 @@
             "command": [
                 "import mmSolver.tools.smoothkeyframes.tool;",
                 "mmSolver.tools.smoothkeyframes.tool.main();"
+            ]
+        },
+        "screen_z_transform_bake": {
+            "name": "Screen-Space Tranform Bake",
+            "name_shelf": "ScrnBk",
+            "tooltip": "Convert a transform into a screen-space transform.",
+            "command": [
+                "import mmSolver.tools.screenzbake.tool;",
+                "mmSolver.tools.screenzbake.tool.main();"
             ]
         }
     }

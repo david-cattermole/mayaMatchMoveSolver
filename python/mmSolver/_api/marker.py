@@ -255,7 +255,8 @@ class Marker(object):
         """
         Get the enabled state of the Marker.
 
-        :param time: The time to query the enable.
+        :param time: The time to query the enable, if not given the
+                      current frame is used.  
         :type time: float
 
         :returns: The enabled state of the marker.
@@ -277,7 +278,8 @@ class Marker(object):
         """
         Get the current wire-frame colour of the Marker.
 
-        :param time: The time to query the weight.
+        :param time: The time to query the weight, if not given the
+                     current frame is used.  
         :type time: float
 
         :returns: The weight of the marker.
@@ -299,7 +301,8 @@ class Marker(object):
         """
         Get the deviation for the marker, computed live.
 
-        :param times: The times to query the deviation on.
+        :param times: The times to query the deviation on, if not
+                      given the current frame is used.
         :type times: float
 
         :returns: The deviation of the marker-to-bundle re-projection in pixels.

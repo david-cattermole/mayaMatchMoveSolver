@@ -2,6 +2,11 @@
 Object nodes for the mmSolver Window UI.
 """
 
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
+import Qt.QtCore as QtCore
+
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.nodes as nodes
 
@@ -78,7 +83,7 @@ class MarkerNode(ObjectNode):
         if not enable:
             return dev
         dev = mkr.get_deviation(times=None)
-        return '%.2fpx' % dev[0]
+        return '%.2f' % dev[0]
 
 
 class CameraNode(ObjectNode):
@@ -99,7 +104,20 @@ class CameraNode(ObjectNode):
         return ''
 
     def deviation(self):
-        return ''
+        """
+        Get the current deviation value of the marker.
+        """
+        dev = '-'
+        d = self.data()
+        if not d:
+            return dev
+        cam = d.get('camera')
+        if cam is None:
+            return dev
+        dev_value = cam.get_deviation()
+        if dev_value is None:
+            return dev
+        return '%.2f' % dev_value
 
 
 class BundleNode(ObjectNode):
@@ -129,12 +147,12 @@ class ObjectModel(uimodels.ItemModel):
         self._column_names = {
             0: 'Node',
             1: 'Weight',
-            2: 'Deviation',
+            2: 'Deviation (px)',
         }
         self._node_attr_key = {
             'Node': 'name',
             'Weight': 'weight',
-            'Deviation': 'deviation',
+            'Deviation (px)': 'deviation',
         }
 
     def defaultNodeType(self):
@@ -144,15 +162,23 @@ class ObjectModel(uimodels.ItemModel):
         column_names = {
             0: 'Node',
             1: 'Weight',
-            2: 'Deviation',
+            2: 'Deviation (px)',
         }
         return column_names
 
+    def columnAlignments(self):
+        values = {
+            'Node': QtCore.Qt.AlignLeft,
+            'Weight': QtCore.Qt.AlignRight,
+            'Deviation (px)': QtCore.Qt.AlignRight,
+        }
+        return values
+    
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {
             'Node': 'name',
             'Weight': 'weight',
-            'Deviation': 'deviation',
+            'Deviation (px)': 'deviation',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 

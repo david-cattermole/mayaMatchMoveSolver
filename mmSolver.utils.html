@@ -359,6 +359,270 @@ given, or None if no point was found.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-mmSolver.utils.config">
+<span id="config"></span><h2>Config<a class="headerlink" href="#module-mmSolver.utils.config" title="Permalink to this headline">¶</a></h2>
+<p>Configuration for querying and setting configuration values and files.</p>
+<p>Tools may need to have config files to read from and write. This
+module is a unified module for working with these configuration files.</p>
+<p>All configuration files are expected to be JSON formatted.</p>
+<p>By default, without any keyword arguments, configuration files are
+searched for in the &#8216;MMSOLVER_CONFIG_PATH&#8217; environment variable, but
+this may be overridden using &#8220;get_dirs&#8221;, or &#8220;get_config&#8221; function arguments.</p>
+<p>By default the following paths are searched (in order, top-down):</p>
+<blockquote>
+<div><ul class="simple">
+<li>${MMSOLVER_LOCATION}/config (Linux and Windows)</li>
+<li>${HOME}/.mmSolver (Linux)</li>
+<li>%APPDATA%mmSolver (Windows)</li>
+</ul>
+</div></blockquote>
+<p>This allows both a default fallback, and a user specified path.
+Additionally, studios may modify the &#8216;.mod&#8217; file to provide an
+intermediate studio or project location.</p>
+<dl class="function">
+<dt id="mmSolver.utils.config.get_dirs">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_dirs</code><span class="sig-paren">(</span><em>envvar</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_dirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of directories to look in for config files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>envvar</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; The environment variable to query for a list
+of directories.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of config directories.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.find_path">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">find_path</code><span class="sig-paren">(</span><em>file_name</em>, <em>search_paths</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.find_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search though a list of defined paths for the config file name given.</p>
+<p>If an absolute file path is given, it is verified and returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> (<em>str</em>) &#8211; File name to find.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Full config file name, or None.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.read_data">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">read_data</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.read_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read configuration file and return the data embedded.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) &#8211; The absolute file path to a config file.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Dictionary, list or None, depending what the given file
+contains.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict, list or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.write_data">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">write_data</code><span class="sig-paren">(</span><em>data</em>, <em>file_path</em>, <em>human_readable=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.write_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the given configuration data to a file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>dict</em><em> or </em><em>list</em>) &#8211; Configuration data to write. The data should be
+plain-old-(Python)data types, like lists, float, int,
+string and dict.</li>
+<li><strong>file_path</strong> (<em>str</em>) &#8211; A valid absolute file path.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.exists">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">exists</code><span class="sig-paren">(</span><em>data</em>, <em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does the key exist in data?</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>dict</em>) &#8211; The name of the config file, or an absolute file
+path.</li>
+<li><strong>key</strong> (<em>str</em>) &#8211; Hierarchy of keys separated by forward slash to search
+for in the config.
+For example &#8216;data[arg1][arg2][arg3]&#8217;.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:rtype</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.get_value">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_value</code><span class="sig-paren">(</span><em>data</em>, <em>key</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a value from the config data.</p>
+<p>If the config data value does not exist, or one of the argument (keys)
+does not exist, &#8216;default_value&#8217; is returned.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="s1">&#39;/path/to/config.json&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;key/subkey&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;key/subkey/subsubkey&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>dict</em>) &#8211; The configuration data, as a Python dict (plain-old-data).</li>
+<li><strong>key</strong> (<em>str</em>) &#8211; Hierarchy of keys separated by forward slash to search
+for in the config.
+For example &#8216;data[arg1][arg2][arg3]&#8217;.</li>
+<li><strong>default_value</strong> (<em>any type</em>) &#8211; The value returned when the config file or
+key doesn&#8217;t exist.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:rtype</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.set_value">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">set_value</code><span class="sig-paren">(</span><em>data</em>, <em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.set_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a value in the given configuration data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>dict</em>) &#8211; The data to set the value on to.</li>
+<li><strong>key</strong> (<em>str</em>) &#8211; Where to set the value in data</li>
+<li><strong>value</strong> (<em>any</em>) &#8211; The value to set.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A copy of the configuration data with the modification
+made.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="mmSolver.utils.config.Config">
+<em class="property">class </em><code class="descclassname">mmSolver.utils.config.</code><code class="descname">Config</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="mmSolver.utils.config.Config.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.get_autoread">
+<code class="descname">get_autoread</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.get_autoread" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.set_autoread">
+<code class="descname">set_autoread</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.set_autoread" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.get_autowrite">
+<code class="descname">get_autowrite</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.get_autowrite" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.set_autowrite">
+<code class="descname">set_autowrite</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.set_autowrite" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.read">
+<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>human_readable=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.exists">
+<code class="descname">exists</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.exists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.get_value">
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>key</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.get_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.set_value">
+<code class="descname">set_value</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.set_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.get_config">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_config</code><span class="sig-paren">(</span><em>file_name</em>, <em>search=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a config file as a Config class object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_name</strong> (<em>str</em>) &#8211; The name of the config file, or an absolute file
+path.</li>
+<li><strong>search</strong> (<em>str</em><em> or </em><em>[</em><em>str</em><em>, </em><em>.</em><em>] or </em><em>None</em>) &#8211; An environment variable to parse for search paths, 
+or a list of given search directory paths, or if set 
+to None, use the default environment variable for 
+mmSolver.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Config object, or None if the file is not found.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#mmSolver.utils.config.Config" title="mmSolver.utils.config.Config">Config</a> or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 <div class="section" id="module-mmSolver.utils.constant">
 <span id="constant"></span><h2>Constant<a class="headerlink" href="#module-mmSolver.utils.constant" title="Permalink to this headline">¶</a></h2>
 <p>Constant values for utilities.</p>
@@ -409,6 +673,7 @@ given, or None if no point was found.</p>
 <li><a class="reference internal" href="#module-mmSolver.utils.viewport">Viewport</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.smooth">Smooth</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.raytrace">Raytrace</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.config">Config</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.constant">Constant</a></li>
 </ul>
 </li>

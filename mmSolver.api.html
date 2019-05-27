@@ -277,6 +277,41 @@ uninitialized.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="mmSolver.api.Camera.get_deviation">
+<code class="descname">get_deviation</code><span class="sig-paren">(</span><em>times=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Camera.get_deviation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the average deviation for all marker under the camera.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>times</strong> (<em>float</em>) &#8211; The times to query the deviation on, if not
+given the current frame is used.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The deviation of the marker-to-bundle re-projection in pixels.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Camera.get_marker_list">
+<code class="descname">get_marker_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Camera.get_marker_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of Markers under this camera.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of Marker objects.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker">Marker</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.api.Camera.is_valid">
 <code class="descname">is_valid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Camera.is_valid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Is this Camera object valid?
@@ -564,6 +599,63 @@ information, in a camera&#8217;s screen-space.</p>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">This Marker object, with Maya node removed.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker">Marker</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Marker.get_enable">
+<code class="descname">get_enable</code><span class="sig-paren">(</span><em>time=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.get_enable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the enabled state of the Marker.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<em>float</em>) &#8211; The time to query the enable, if not given the
+current frame is used.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The enabled state of the marker.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Marker.get_weight">
+<code class="descname">get_weight</code><span class="sig-paren">(</span><em>time=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.get_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current wire-frame colour of the Marker.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<em>float</em>) &#8211; The time to query the weight, if not given the
+current frame is used.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The weight of the marker.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Marker.get_deviation">
+<code class="descname">get_deviation</code><span class="sig-paren">(</span><em>times=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.get_deviation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the deviation for the marker, computed live.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>times</strong> (<em>float</em>) &#8211; The times to query the deviation on, if not
+given the current frame is used.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The deviation of the marker-to-bundle re-projection in pixels.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
 </tr>
 </tbody>
 </table>

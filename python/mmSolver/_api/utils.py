@@ -375,13 +375,13 @@ def get_marker_name(name, prefix=None, suffix=None):
     :param name: Name of object.
     :type name: str
 
-    :param name: Prefix of the marker, if a number is the first
-                 letter. If None, a default name is added.
-    :type name: str or None
+    :param prefix: Prefix of the marker, if a number is the first
+                   character. If None, a default name is added.
+    :type prefix: str or None
 
-    :param name: Suffix of the marker, added to the name. If None, a
-                 default name is added.
-    :type name: str or None
+    :param suffix: Suffix of the marker, added to the name. If None, a
+                   default name is added.
+    :type suffix: str or None
 
     :return: Name for the marker.
     :rtype: str
@@ -407,13 +407,13 @@ def get_bundle_name(name, prefix=None, suffix=None):
     :param name: Name of object.
     :type name: str
 
-    :param name: Prefix of the bundle, if a number is the first
-                 letter. If None, a default name is added.
-    :type name: str or None
+    :param prefix: Prefix of the bundle, if a number is the first
+                   character. If None, a default name is added.
+    :type prefix: str or None
 
-    :param name: Suffix of the bundle, added to the name. If None, a
-                 default name is added.
-    :type name: str or None
+    :param suffix: Suffix of the bundle, added to the name. If None, a
+                   default name is added.
+    :type suffix: str or None
 
     :return: Name for the bundle.
     :rtype: str

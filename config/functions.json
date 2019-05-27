@@ -1,0 +1,283 @@
+{
+    "version": 1,
+    "data": {
+        "solver_tools": {
+            "name": "Solver",
+            "name_shelf": "Solver",
+            "tooltip": "Open the MM Solver window.",
+            "icon_shelf": "menuIconWindow.png",
+            "command": [
+                "import mmSolver.tools.solver.tool;",
+                "mmSolver.tools.solver.tool.open_window();"
+            ]
+        },
+        "solver_popup_left": {
+            "popup": true,
+            "popup_button": "left"
+        },
+        "solver_popup_right": {
+            "popup": true,
+            "popup_button": "right"
+        },
+        "open_solver_ui": {
+            "name": "Open Solver...",
+            "tooltip": "Open the MM Solver window.",
+            "icon_shelf": "menuIconWindow.png",
+            "command": [
+                "import mmSolver.tools.solver.tool;",
+                "mmSolver.tools.solver.tool.open_window();"
+            ]
+        },
+        "solver_run": {
+            "name": "Run Solver",
+            "tooltip": "Run solver on currently active Collection.",
+            "command": [
+                "import mmSolver.tools.solver.tool as tool;",
+                "tool.run_solve();"
+            ]
+        },
+        "solver_run_current_frame": {
+            "name": "Run Solver (Current Frame)",
+            "tooltip": "Run solver on currently active Collection on the current frame.",
+            "command": [
+                "import mmSolver.tools.solver.tool as tool;",
+                "tool.run_solve_on_current_frame();"
+            ]
+        },
+        "create_marker": {
+            "name": "Create Marker",
+            "name_shelf": "Create",
+            "tooltip": "Create a new Marker.",
+            "icon_shelf": "createMarker_32x32.png",
+            "command": [
+                "import mmSolver.tools.createmarker.tool;",
+                "mmSolver.tools.createmarker.tool.main();"
+            ]
+        },
+        "marker_tools": {
+            "name": "Marker Tools",
+            "name_shelf": "MTools",
+            "tooltip": "Marker Tools",
+            "icon_shelf": "createMarker_32x32.png",
+            "command": ["pass"]
+        },
+        "marker_popup_left": {
+            "popup": true,
+            "popup_button": "left"
+        },
+        "marker_popup_right": {
+            "popup": true,
+            "popup_button": "right"
+        },
+        "toggle_marker_lock": {
+            "name": "Toggle Marker Lock",
+            "tooltip": "Toggles selected marker lock state.",
+            "command": [
+                "import mmSolver.tools.togglemarkerlock.tool;",
+                "mmSolver.tools.togglemarkerlock.tool.main();"
+            ]
+        },
+        "bundle_tools": {
+            "name": "Bundle Tools",
+            "name_shelf": "BTools",
+            "tooltip": "Bundle Tools",
+            "icon_shelf": "createBundle_32x32.png",
+            "command": ["pass"]
+        },
+        "bundle_popup_left": {
+            "popup": true,
+            "popup_button": "left"
+        },
+        "bundle_popup_right": {
+            "popup": true,
+            "popup_button": "right"
+        },
+        "toggle_bundle_lock": {
+            "name": "Toggle Bundle Lock-State",
+            "tooltip": "Toggle the Bundle node attribute Lock State.",
+            "command": [
+                "import mmSolver.tools.togglebundlelock.tool as tglbndlock;",
+                "tglbndlock.main();"
+            ]
+        },
+        "reproject_bundle": {
+            "name": "Re-Project Bundle",
+            "tooltip": "Re-Project Bundle on top of Marker.",
+            "command": [
+                "import mmSolver.tools.reprojectbundle.tool;",
+                "mmSolver.tools.reprojectbundle.tool.main();"
+            ]
+        },
+        "triangulate_bundle": {
+            "name": "Triangulate Bundle",
+            "tooltip": "Use Marker to triangulate a 3D position for Bundle.",
+            "command": [
+                "import mmSolver.tools.triangulate.tool;",
+                "mmSolver.tools.triangulate.tool.main();"
+            ]
+        },
+        "raycast_marker": {
+            "name": "Ray-Cast Marker",
+            "tooltip": "Ray Cast Marker onto geometry.",
+            "command": [
+                "import mmSolver.tools.raycastmarker.tool;",
+                "mmSolver.tools.raycastmarker.tool.main();"
+            ]
+        },
+        "screen_z_manipulator": {
+            "name": "Aim At Camera (Screen Z)",
+            "tooltip": "Screen-space Z.",
+            "command": [
+                "import mmSolver.tools.screenzmanipulator.tool;",
+                "mmSolver.tools.screenzmanipulator.tool.main();"
+            ]
+        },
+        "place_marker_manipulator": {
+            "name": "Place Marker...",
+            "tooltip": "Place Marker at screen-space 2D position.",
+            "command": [
+                "import mmSolver.tools.placemarkermanip.tool;",
+                "mmSolver.tools.placemarkermanip.tool.main();"
+            ]
+        },
+        "duplicate_marker": {
+            "name": "Duplicate Marker",
+            "tooltip": "Duplicate marker from selection.",
+            "command": [
+                "import mmSolver.tools.duplicatemarker.tool;",
+                "mmSolver.tools.duplicatemarker.tool.main();"
+            ]
+        },
+        "average_markers": {
+            "name": "Average Markers",
+            "tooltip": "Average marker from selection.",
+            "command": [
+                "import mmSolver.tools.averagemarker.tool;",
+                "mmSolver.tools.averagemarker.tool.main();"
+            ]
+        },
+        "mb_link_tools": {
+            "name": "Marker + Bundle Link Tools",
+            "name_shelf": "MBLnk",
+            "tooltip": "Marker bundle link and unlink Tools.",
+            "command": ["pass"]
+        },
+        "link_marker_bundle": {
+            "name": "Link Marker + Bundle",
+            "tooltip": "Link the selected Marker and Bundle together.",
+            "command": [
+                "import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;",
+            "link_mb_tool.link_marker_bundle();"
+            ]
+        },
+        "unlink_marker_bundle": {
+            "name": "Unlink Marker from Bundle",
+            "tooltip": "Unlink all selected Markers from their Bundle.",
+            "command": [
+                "import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;",
+                "link_mb_tool.unlink_marker_bundle();"
+            ]
+        },
+        "convert_to_marker": {
+            "name": "Convert to Marker",
+            "name_shelf": "Convrt",
+            "tooltip": "Convert 3D Transform to Marker.",
+            "icon_shelf": "createMarker_32x32.png",
+            "command": [
+                "import mmSolver.tools.convertmarker.tool;",
+                "mmSolver.tools.convertmarker.tool.main();"
+            ]
+        },
+        "load_marker_ui": {
+            "name": "Load Marker",
+            "name_shelf": "Load...",
+            "tooltip": "Load Marker.",
+            "icon_shelf": "menuIconFile.png",
+            "command": [
+                "import mmSolver.tools.loadmarker.tool;",
+                "mmSolver.tools.loadmarker.tool.open_window();"
+            ]
+        },
+        "create_bundle": {
+            "name": "Create Bundle",
+            "name_shelf": "Create",
+            "tooltip": "Create Bundle.",
+            "icon_shelf": "createBundle_32x32.png",
+            "command": [
+                "import mmSolver.tools.createbundle.tool;",
+                "mmSolver.tools.createbundle.tool.main();"
+            ]
+        },
+        "swap_marker_bundles": {
+            "name": "Swap Markers / Bundles",
+            "name_shelf": "M / B",
+            "tooltip": "Toggle Markers Bundles.",
+            "command": [
+                "import mmSolver.tools.selection.tools as selection_tool;",
+                "selection_tool.swap_between_selected_markers_and_bundles();"
+            ]
+        },
+        "select_marker_bundles": {
+            "name": "Select Markers and Bundles",
+            "name_shelf": "M + B",
+            "tooltip": "Select Markers and Bundles.",
+            "command": [
+                "import mmSolver.tools.selection.tools as selection_tool;",
+                "selection_tool.select_both_markers_and_bundles();"
+            ]
+        },
+        "marker_bundle_rename": {
+            "name": "Marker Bundle Rename",
+            "name_shelf": "MBRena",
+            "tooltip": "Rename Selected Marker And Connected Bundles.",
+            "command": [
+                "import mmSolver.tools.markerbundlerename.tool;",
+                "mmSolver.tools.markerbundlerename.tool.main();"
+            ]
+        },
+        "link_unlink_marker_bundles": {
+            "name": "Marker bundle link and unlink Tools",
+            "name_shelf": "MBLnk",
+            "tooltip": "Marker bundle link and unlink Tools",
+            "command": [
+                "pass"
+            ]
+        },
+        "center_twodee": {
+            "name": "Center 2D on Selected",
+            "name_shelf": "Center",
+            "tooltip": "Center 2D on Selected.",
+            "command": [
+                "import mmSolver.tools.centertwodee.tool;",
+                "mmSolver.tools.centertwodee.tool.main();"
+            ]
+        },
+        "channel_sensitivity_ui": {
+            "name": "Channel Sensitivity UI",
+            "name_shelf": "ChSen",
+            "tooltip": "Channel Sensitivity UI.",
+            "command": [
+                "import mmSolver.tools.channelsen.tool;",
+                "mmSolver.tools.channelsen.tool.main();"
+            ]
+        },
+        "smooth_keyframes": {
+            "name": "Smooth Keyframes",
+            "name_shelf": "Smooth",
+            "tooltip": "Smooth Selected Keyframes.",
+            "command": [
+                "import mmSolver.tools.smoothkeyframes.tool;",
+                "mmSolver.tools.smoothkeyframes.tool.main();"
+            ]
+        },
+        "screen_z_transform_bake": {
+            "name": "Screen-Space Tranform Bake",
+            "name_shelf": "ScrnBk",
+            "tooltip": "Convert a transform into a screen-space transform.",
+            "command": [
+                "import mmSolver.tools.screenzbake.tool;",
+                "mmSolver.tools.screenzbake.tool.main();"
+            ]
+        }
+    }
+}

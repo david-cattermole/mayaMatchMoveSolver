@@ -1,7 +1,12 @@
 import maya.cmds
 from maya import OpenMaya as OpenMaya
 
+import mmSolver.logger
+import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
+
+
+LOG = mmSolver.logger.get_logger()
 
 
 class Camera(object):
@@ -172,6 +177,58 @@ class Camera(object):
         return
 
     ############################################################################
+
+    def get_deviation(self, times=None):
+        """
+        Get the average deviation for all marker under the camera.
+
+        :param times: The times to query the deviation on, if not
+                      given the current frame is used.
+        :type times: float
+
+        :returns: The deviation of the marker-to-bundle re-projection in pixels.
+        :rtype: float
+        """
+        dev = None
+        node = self.get_transform_node()
+        if node is None:
+            msg = 'Could not get Camera transform node. self=%r'
+            LOG.warning(msg, self)
+            return dev
+
+        total = 0
+        dev_sum = 0.0
+        mkr_list = self.get_marker_list()
+        for mkr in mkr_list:
+            if not mkr.get_enable():
+                continue
+            dev_values = mkr.get_deviation(times=times)
+            dev_sum += dev_values[0]
+            total += 1
+        if total > 0:
+            dev = dev_sum / total
+        return dev
+
+    ############################################################################
+
+    def get_marker_list(self):
+        """
+        Get the list of Markers under this camera.
+
+        :return: List of Marker objects.
+        :rtype: Marker
+        """
+        import mmSolver._api.marker
+        node = self.get_transform_node()
+        below_nodes = maya.cmds.ls(
+            node,
+            dag=True,
+            long=True,
+            type='transform') or []
+        mkr_list = [mmSolver._api.marker.Marker(node=n)
+                    for n in below_nodes
+                    if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER]
+        return mkr_list
 
     def is_valid(self):
         """

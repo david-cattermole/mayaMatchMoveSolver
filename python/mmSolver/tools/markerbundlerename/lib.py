@@ -2,8 +2,12 @@
 This file holds all the helpful functions for markerbundlerename
 """
 
+import mmSolver.logger
 import maya.cmds
 import mmSolver.api as mmapi
+
+
+LOG = mmSolver.logger.get_logger()
 
 
 def prompt_for_new_node_name(title, message, text):
@@ -40,7 +44,8 @@ def prompt_for_new_node_name(title, message, text):
 
 
 def rename_markers_and_bundles(mkr_nodes, bnd_nodes,
-                               mkr_name, bnd_name, name_format,
+                               mkr_name, bnd_name,
+                               number_format,
                                mkr_suffix, bnd_suffix):
     """
     Rename the given marker and bundle nodes.
@@ -57,8 +62,8 @@ def rename_markers_and_bundles(mkr_nodes, bnd_nodes,
     :param bnd_name: Rename the bundle to this name.
     :type bnd_name: str
 
-    :param name_format: The name format string for numbering.
-    :type name_format: str
+    :param number_format: The name format string for numbering.
+    :type number_format: str
 
     :param mkr_suffix: Set the marker suffix name.
     :type mkr_suffix: str
@@ -78,13 +83,15 @@ def rename_markers_and_bundles(mkr_nodes, bnd_nodes,
         if bnd is None:
             continue
         bnd_node = bnd.get_node()
+        if not bnd_node:
+            continue
         if bnd_node not in bnd_nodes:
-            bnd_nodes.append(bnd_nodes)
+            bnd_nodes.append(bnd_node)
 
     # Rename the bundles.
     renamed_nodes = []
     for i, bnd_node in enumerate(bnd_nodes):
-        num_str = '%02d' % (i + 1)
+        num_str = number_format % (i + 1)
         bnd = mmapi.Bundle(node=bnd_node)
 
         new_bnd_name = mmapi.get_bundle_name(

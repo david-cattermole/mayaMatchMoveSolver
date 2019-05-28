@@ -4,9 +4,9 @@ This tool renames selected markers and bundles (and the connected nodes).
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.tools.selection.filternodes as filternodes
-import mmSolver.tools.markerbundlerename.lib as lib
 import mmSolver.tools.markerbundlerename.constant as const
+import mmSolver.tools.markerbundlerename.lib as lib
+import mmSolver.tools.selection.filternodes as filternodes
 
 LOG = mmSolver.logger.get_logger()
 
@@ -25,22 +25,23 @@ def main():
     title = const.TITLE
     message = const.MESSAGE
     text = const.MARKER_NAME
-    marker_name = lib.prompt_for_new_node_name(title, message, text)
-    if marker_name is None:
+    mkr_name = lib.prompt_for_new_node_name(title, message, text)
+    if mkr_name is None:
         # If user clicks cancel on prompt window it returns None.
         LOG.warning('User canceled rename.')
         return
 
-    name_format = const.NAME_FORMAT
+    number_format = const.NUMBER_FORMAT
     mkr_suffix = const.MARKER_SUFFIX
     bnd_suffix = const.BUNDLE_SUFFIX
-    if marker_name == text:
-        bundle_name = const.BUNDLE_NAME
+    if mkr_name == text:
+        bnd_name = const.BUNDLE_NAME
     else:
-        bundle_name = marker_name
+        bnd_name = mkr_name
     nodes = lib.rename_markers_and_bundles(
         sel_mkr_nodes, sel_bnd_nodes,
-        marker_name, bundle_name, name_format,
+        mkr_name, bnd_name,
+        number_format,
         mkr_suffix, bnd_suffix
     )
     maya.cmds.select(nodes, replace=True)

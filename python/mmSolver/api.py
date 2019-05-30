@@ -77,6 +77,7 @@ from mmSolver._api.utils import (
     set_solver_running,
     get_user_interrupt,
     set_user_interrupt,
+    find_marker_attr_mapping,
 )
 
 # Animation Utility functions that the user is allowed to use.
@@ -145,6 +146,7 @@ __all__ = [
     'set_solver_running',
     'get_user_interrupt',
     'set_user_interrupt',
+    'find_marker_attr_mapping',
     'combine_timer_stats',
     'merge_frame_error_list',
     'get_average_frame_error_list',

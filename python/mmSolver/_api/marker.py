@@ -8,6 +8,7 @@ import maya.OpenMaya as OpenMaya
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
 import mmSolver._api.bundle
@@ -165,7 +166,7 @@ class Marker(object):
             assert len(colour) == 3
 
         # Transform
-        tfm = maya.cmds.createNode('transform', name=name)
+        tfm = maya.cmds.createNode(const.MARKER_TRANSFORM_NODE_TYPE, name=name)
         tfm = api_utils.get_long_name(tfm)
         maya.cmds.setAttr(tfm + '.tz', -1.0)
         maya.cmds.setAttr(tfm + '.tz', lock=True)
@@ -191,7 +192,8 @@ class Marker(object):
 
         # Shape Node
         shp_name = tfm.rpartition('|')[-1] + 'Shape'
-        shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm)
+        shp = maya.cmds.createNode(const.MARKER_SHAPE_NODE_TYPE,
+                                   name=shp_name, parent=tfm)
         maya.cmds.setAttr(shp + '.localScaleX', 0.01)
         maya.cmds.setAttr(shp + '.localScaleY', 0.01)
         maya.cmds.setAttr(shp + '.localScaleZ', 0.0)
@@ -408,7 +410,10 @@ class Marker(object):
         if node is not None:
             assert maya.cmds.objExists(node)
             bnd_node = None
-            bnd_nodes = maya.cmds.listConnections(node + '.bundle') or []
+            node_attr = node + '.bundle'
+            bnd_nodes = maya.cmds.listConnections(
+                node_attr,
+                type=const.BUNDLE_TRANSFORM_NODE_TYPE) or []
             if len(bnd_nodes) > 0:
                 bnd_node = bnd_nodes[0]
             if bnd_node is not None and len(bnd_node) > 0:

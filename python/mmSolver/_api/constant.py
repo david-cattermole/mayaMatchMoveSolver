@@ -77,3 +77,10 @@ AUTO_DIFF_TYPE_LIST = [
 # Default node Colours for Markers and bundles.
 MARKER_COLOUR_RGB = (1.0, 0.0, 0.0)
 BUNDLE_COLOUR_RGB = (0.0, 1.0, 0.0)
+
+
+# Node Types.
+MARKER_TRANSFORM_NODE_TYPE = 'transform'
+MARKER_SHAPE_NODE_TYPE = 'locator'
+BUNDLE_TRANSFORM_NODE_TYPE = 'transform'
+BUNDLE_SHAPE_NODE_TYPE = 'locator'

@@ -5,6 +5,7 @@ Attach Bundle to Curve tool. Attaches a bundle node to a NURBs curve.
 import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.tools.attachbundletocurve.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
@@ -75,8 +76,8 @@ def connect_transform_to_nurbs_curve(tfm_node, crv_shp_node, attr_name):
     """
     Connect a transform node to a NURBS curve.
 
-    The attribute created will range from 0.0 to 100.0, with a default
-    value of 50.0.
+    The attribute created will range from 0.0 to 1.0, with a default
+    value of 0.5.
 
     :param tfm_node: Transform node to connect to the NURBS curve.
     :type tfm_node: str
@@ -94,13 +95,26 @@ def connect_transform_to_nurbs_curve(tfm_node, crv_shp_node, attr_name):
     assert maya.cmds.objExists(tfm_node)
     assert maya.cmds.objExists(crv_shp_node)
 
+    # NOTE: If we add a multipleDivide node to remap the values, the
+    # solver will not work. The cause is unknown. We therefore must
+    # use only direct connections between the attributes and this
+    # seems to work.
+    do_remap = const.REMAP_TO_ONE_HUNDRED
+    min_value = 0.0
+    max_value = 1.0
+    default_value = 0.5
+    if do_remap is True:
+        min_value = 0.0
+        max_value = 100.0
+        default_value = 50.0
+
     maya.cmds.addAttr(
         tfm_node,
         longName=attr_name,
         attributeType='double',
-        minValue=0.0,
-        maxValue=100.0,
-        defaultValue=50.0,
+        minValue=min_value,
+        maxValue=max_value,
+        defaultValue=default_value,
         keyable=True)
 
     info_node = maya.cmds.createNode('pointOnCurveInfo')
@@ -110,15 +124,20 @@ def connect_transform_to_nurbs_curve(tfm_node, crv_shp_node, attr_name):
     dst = info_node + '.inputCurve'
     maya.cmds.connectAttr(src, dst)
 
-    mult_node = maya.cmds.createNode('multiplyDivide')
-    maya.cmds.setAttr(mult_node + '.input2X', 0.01)
-    src = mult_node + '.outputX'
-    dst = info_node + '.parameter'
-    maya.cmds.connectAttr(src, dst)
+    if do_remap is False:
+        src = tfm_node + '.' + attr_name
+        dst = info_node + '.parameter'
+        maya.cmds.connectAttr(src, dst)
+    else:
+        mult_node = maya.cmds.createNode('multiplyDivide')
+        maya.cmds.setAttr(mult_node + '.input2X', 0.01)
+        src = mult_node + '.outputX'
+        dst = info_node + '.parameter'
+        maya.cmds.connectAttr(src, dst)
 
-    src = tfm_node + '.' + attr_name
-    dst = mult_node + '.input1X'
-    maya.cmds.connectAttr(src, dst)
+        src = tfm_node + '.' + attr_name
+        dst = mult_node + '.input1X'
+        maya.cmds.connectAttr(src, dst)
 
     src = info_node + '.position'
     dst = tfm_node + '.translate'
@@ -158,7 +177,10 @@ def attach_bundle_to_curve(bnd_node, crv_shp_node, attr_name):
         bnd_node,
         crv_shp_node,
         attr_name)
-    value = crv_param * 100.0
+    do_remap = const.REMAP_TO_ONE_HUNDRED
+    value = crv_param
+    if do_remap is True:
+        value = crv_param * 100.0
     plug = bnd_node + '.' + attr_name
     maya.cmds.setAttr(plug, value)
     return plug

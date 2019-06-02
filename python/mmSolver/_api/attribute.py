@@ -22,6 +22,8 @@ Module for attributes and related functions.
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaAnim as OpenMayaAnim
+
+import mmSolver.utils.node as node_utils
 import mmSolver._api.utils as api_utils
 import mmSolver._api.constant as const
 import mmSolver.logger
@@ -86,7 +88,7 @@ class Attribute(object):
                 raise RuntimeError(msg)
 
             node_attr = node + '.' + attr
-            plug = api_utils.get_as_plug(node_attr)
+            plug = node_utils.get_as_plug(node_attr)
             self._plug = plug
 
             node_obj = self._plug.node()
@@ -105,7 +107,7 @@ class Attribute(object):
             except RuntimeError:
                 pass
         if node is not None and full_path is True:
-            node = api_utils.get_long_name(node)
+            node = node_utils.get_long_name(node)
         return node
 
     def get_attr(self, long_name=True):

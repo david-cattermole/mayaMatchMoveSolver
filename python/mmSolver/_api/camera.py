@@ -19,6 +19,7 @@ import maya.cmds
 from maya import OpenMaya as OpenMaya
 
 import mmSolver.logger
+import mmSolver.utils.node as node_utils
 import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 
@@ -112,12 +113,12 @@ class Camera(object):
         self._mfn_tfm = None
         self._mfn_shp = None
 
-        tfm_dag = api_utils.get_as_dag_path(name)
+        tfm_dag = node_utils.get_as_dag_path(name)
         if tfm_dag is not None:
             assert tfm_dag.apiType() == OpenMaya.MFn.kTransform
 
             # Get camera shape from transform.
-            dag = api_utils.get_as_dag_path(name)
+            dag = node_utils.get_as_dag_path(name)
             num_children = dag.childCount()
             if num_children > 0:
                 for i in xrange(num_children):
@@ -175,12 +176,12 @@ class Camera(object):
         self._mfn_tfm = None
         self._mfn_shp = None
 
-        shp_dag = api_utils.get_as_dag_path(name)
+        shp_dag = node_utils.get_as_dag_path(name)
         if shp_dag is not None:
             assert shp_dag.apiType() == OpenMaya.MFn.kCamera
 
             # Get transform from shape.
-            tfm_dag = api_utils.get_as_dag_path(name)
+            tfm_dag = node_utils.get_as_dag_path(name)
             tfm_dag.pop(1)
             assert tfm_dag.apiType() == OpenMaya.MFn.kTransform
 

@@ -19,28 +19,27 @@
 Convert between different types of nodes.
 """
 
-import maya.cmds
+import mmSolver._api.marker as marker
+import mmSolver._api.bundle as bundle
+import mmSolver._api.nodefilter as nodefilter
 
-import mmSolver.api as mmapi
-import mmSolver.tools.selection.filternodes as filternodes
 
-
-def get_bundles_from_markers(nodes):
+def get_bundle_nodes_from_marker_nodes(nodes):
     """
     Convert Marker nodes into Bundle nodes.
 
     :param nodes: Maya nodes to convert into Bundles (expected to be
                   Marker nodes, but other node types will not cause
                   errors).
-    :type nodes: list of str
+    :type nodes: [str, ..]
 
     :returns: All Maya nodes connected to Marker nodes as Bundles.
-    :rtype: list of str
+    :rtype: [str, ..]
     """
-    mkr_nodes = filternodes.get_marker_nodes(nodes)
+    mkr_nodes = nodefilter.filter_marker_nodes(nodes)
     bnd_nodes = []
     for mkr_node in mkr_nodes:
-        mkr = mmapi.Marker(mkr_node)
+        mkr = marker.Marker(mkr_node)
         bnd = mkr.get_bundle()
         if bnd is None:
             continue
@@ -52,11 +51,19 @@ def get_bundles_from_markers(nodes):
     return bnd_nodes
 
 
-def get_markers_from_bundles(nodes):
-    bnd_nodes = filternodes.get_bundle_nodes(nodes)
+def get_marker_nodes_from_bundle_nodes(nodes):
+    """
+
+    :param nodes:
+    :type nodes:
+
+    :return:
+    :rtype:
+    """
+    bnd_nodes = nodefilter.filter_bundle_nodes(nodes)
     mkr_nodes = []
     for bnd_node in bnd_nodes:
-        bnd = mmapi.Bundle(bnd_node)
+        bnd = bundle.Bundle(bnd_node)
         mkr_list = bnd.get_marker_list()
         for mkr in mkr_list:
             mkr_node = mkr.get_node()
@@ -65,12 +72,21 @@ def get_markers_from_bundles(nodes):
     return mkr_nodes
 
 
-def get_cameras_from_markers(nodes):
-    mkr_nodes = filternodes.get_marker_nodes(nodes)
+def get_camera_nodes_from_marker_nodes(nodes):
+    """
+    Get the list of Camera nodes that are 'connected' to the markers nodes.
+
+    :param nodes: Marker nodes.
+    :type nodes: [str, ..]
+
+    :returns: A list of camera transform and shape tuples.
+    :rtype: [(str, str), ..]
+    """
+    mkr_nodes = nodefilter.filter_marker_nodes(nodes)
     cam_nodes = []
     cam_nodes_tmp = {}
     for mkr_node in mkr_nodes:
-        mkr = mmapi.Marker(mkr_node)
+        mkr = marker.Marker(mkr_node)
         cam = mkr.get_camera()
         cam_tfm_node = cam.get_transform_node()
         cam_shp_node = cam.get_shape_node()

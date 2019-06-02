@@ -23,7 +23,6 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.tools.selection.filternodes as filternodes
 import mmSolver.tools.reprojectbundle.lib as lib
 
 
@@ -57,7 +56,7 @@ def main():
     
     # Get Markers and Bundles
     sel = maya.cmds.ls(sl=True) or []
-    filter_nodes = filternodes.get_nodes(sel)
+    filter_nodes = mmapi.filter_nodes_into_categories(sel)
     mkr_nodes = filter_nodes.get('marker', [])
     bnd_nodes = filter_nodes.get('bundle', [])
     if len(mkr_nodes) == 0 and len(bnd_nodes) == 0:
@@ -145,7 +144,7 @@ def main():
         have_mkr_nodes.append(mkr_node_full)
 
     # Do projection
-    modified_bnds = lib.current_frame(mkr_list, relock=relock)
+    modified_bnds = lib.reproject_bundle_current_frame(mkr_list, relock=relock)
 
     # Select all moved bundle nodes.
     modified_bnd_nodes = [bnd.get_node() for bnd in modified_bnds]

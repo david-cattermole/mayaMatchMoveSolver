@@ -23,7 +23,7 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaAnim as OpenMayaAnim
 
-import mmSolver._api.utils as utils
+import mmSolver.utils.node as node_utils
 
 
 def create_anim_curve_node(times, values,
@@ -68,7 +68,7 @@ def create_anim_curve_node(times, values,
         animCurve = animfn.create(anim_type)
     else:
         # Get the plug to be animated.
-        dst_plug = utils.get_as_plug(node_attr)
+        dst_plug = node_utils.get_as_plug(node_attr)
 
         objs = OpenMaya.MObjectArray()
         find = OpenMayaAnim.MAnimUtil.findAnimation(dst_plug, objs)

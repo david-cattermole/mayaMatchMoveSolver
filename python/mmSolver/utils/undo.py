@@ -16,45 +16,33 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-The Create Bundle tool.
+Undo related tools.
 """
 
-import warnings
+from functools import wraps
 
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.api as mmapi
-import mmSolver.tools.linkmarkerbundle.lib as linkmarkerbundle_lib
-
 
 LOG = mmSolver.logger.get_logger()
 
 
-def main():
+def undo_chunk(func):
     """
-    Create a new Bundle, attached to the selected Marker (if a Marker
-    is selected)
+    Undo/Redo Chunk Decorator.
+
+    Puts the wrapped 'func' into a single Maya Undo action.
+    If 'func' raises and exception, we close the chunk.
     """
-    sel = maya.cmds.ls(sl=True, long=True)
-    mkr_nodes = mmapi.filter_marker_nodes(sel)
-
-    bnd_name = mmapi.get_new_bundle_name('bundle1')
-    bnd = mmapi.Bundle().create_node(
-        name=bnd_name
-    )
-
-    bnd_node = bnd.get_node()
-    for mkr_node in mkr_nodes:
-        linkmarkerbundle_lib.link_marker_bundle(
-            mkr_node,
-            bnd_node
-        )
-
-    maya.cmds.select(bnd.get_node(), replace=True)
-    return
-
-
-def create_bundle():
-    warnings.warn("Use 'main' function instead.")
-    main()
+    @wraps(func)
+    def _func(*args, **kwargs):
+        try:
+            # start an undo chunk
+            maya.cmds.undoInfo(openChunk=True)
+            return func(*args, **kwargs)
+        finally:
+            # after calling the func, end the undo chunk and undo
+            maya.cmds.undoInfo(closeChunk=True)
+            maya.cmds.undo()
+    return _func

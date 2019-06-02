@@ -26,6 +26,7 @@ import os
 import maya.cmds
 
 import mmSolver.api as mmapi
+import mmSolver.utils.animutils as anim_utils
 import mmSolver.tools.loadmarker.interface as interface
 import mmSolver.tools.loadmarker.formatmanager as fmtmgr
 
@@ -77,8 +78,8 @@ def __create_node(mkr_data, cam, mkr_grp, with_bundles):
         raise TypeError(msg % bool.__name__)
 
     name = mkr_data.get_name()
-    mkr_name = mmapi.get_marker_name(name)
-    bnd_name = mmapi.get_bundle_name(name)
+    mkr_name = mmapi.get_new_marker_name(name)
+    bnd_name = mmapi.get_new_bundle_name(name)
     bnd = None
     mmapi.load_plugin()
     if with_bundles is True:
@@ -145,7 +146,7 @@ def __set_attr_keyframes(node, attr_name, keyframes,
     # before we set the keyframes
 
     node_attr = node + '.' + attr_name
-    animFn = mmapi.create_anim_curve_node(times, values, node_attr)
+    animFn = anim_utils.create_anim_curve_node(times, values, node_attr)
 
     if reduce_keys is True:
         locked = maya.cmds.getAttr(node_attr, lock=True)

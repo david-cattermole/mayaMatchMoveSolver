@@ -16,10 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Set Helper, creates, removes and manipulates Maya set nodes.
-
-Any queries use the Maya Python API, but modifications are handled with
-maya.cmds.* so that they support undo/redo correctly.
+Collection functions used to group and execute a solve using mmSolver.
 """
 
 import time
@@ -31,9 +28,11 @@ import logging
 
 import maya.cmds
 import maya.mel
-import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
+import mmSolver.utils.viewport as viewport_utils
+import mmSolver.utils.configmaya as configmaya
+import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
 import mmSolver._api.constant as const
@@ -42,9 +41,22 @@ import mmSolver._api.solver as solver
 import mmSolver._api.marker as marker
 import mmSolver._api.attribute as attribute
 import mmSolver._api.sethelper as sethelper
+import mmSolver._api.collectionutils as collectionutils
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def __set_status(status_fn, text):
+    if status_fn is not None:
+        status_fn(str(text))
+    return
+
+
+def __set_progress(prog_fn, value):
+    if prog_fn is not None:
+        prog_fn(int(value))
+    return
 
 
 class Collection(object):
@@ -128,7 +140,7 @@ class Collection(object):
         :rtype: list of dict
         """
         set_node = self._set.get_node()
-        return api_utils.get_data_on_node_attr(set_node, attr_name)
+        return configmaya.get_node_option_structure(set_node, attr_name)
 
     def _set_attr_data(self, attr_name, data):
         """
@@ -144,7 +156,9 @@ class Collection(object):
         :rtype: None
         """
         set_node = self._set.get_node()
-        api_utils.set_data_on_node_attr(set_node, attr_name, data)
+        configmaya.set_node_option_structure(
+            set_node, attr_name, data,
+            add_attr=True)
         self._kwargs_list = []  # reset argument flag cache.
         return
 
@@ -731,265 +745,6 @@ class Collection(object):
             ret = False
         return ret
 
-    @staticmethod
-    def __set_progress(prog_fn, value):
-        if prog_fn is not None:
-            prog_fn(int(value))
-        return
-
-    @staticmethod
-    def __set_status(status_fn, text):
-        if status_fn is not None:
-            status_fn(str(text))
-        return
-
-    @staticmethod
-    def __is_single_frame(kwargs):
-        """
-        Logic to determine if the solver arguments will solve a single
-        frame or not.
-        """
-        has_one_frame = len(kwargs.get('frame')) is 1
-        is_interactive = maya.cmds.about(query=True, batch=True) is False
-        return has_one_frame and is_interactive
-
-    @staticmethod
-    def __disconnect_animcurves(kwargs):
-        # HACK: Disconnect animCurves from animated attributes,
-        # then re-connect afterward. This is to solve a Maya bug,
-        # which will not solve values on a single frame.
-        f = kwargs.get('frame')[0]
-        maya.cmds.currentTime(f, edit=True, update=False)
-
-        save_node_attrs = []
-        attrs = kwargs.get('attr') or []
-        for attr_name, min_val, max_val in attrs:
-            attr_obj = attribute.Attribute(attr_name)
-            if attr_obj.is_animated() is False:
-                continue
-
-            in_plug_name = None
-            out_plug_name = attr_name
-            plug = api_utils.get_as_plug(attr_name)
-            isDest = plug.isDestination()
-            if isDest:
-                connPlugs = OpenMaya.MPlugArray()
-                asDest = True  # get the source plugs on the other end of 'plug'.
-                asSrc = False
-                plug.connectedTo(connPlugs, asDest, asSrc)
-                for i, conn in enumerate(connPlugs):
-                    connPlug = connPlugs[i]
-                    connObj = connPlug.node()
-                    if connObj.hasFn(OpenMaya.MFn.kAnimCurve):
-                        in_plug_name = connPlug.name()
-                        break
-            if in_plug_name is not None:
-                save_node_attrs.append((in_plug_name, out_plug_name))
-                if maya.cmds.isConnected(in_plug_name, out_plug_name) is True:
-                    maya.cmds.disconnectAttr(in_plug_name, out_plug_name)
-                else:
-                    LOG.error('Nodes are not connected. This is WRONG.')
-        return save_node_attrs
-
-    @staticmethod
-    def __reconnect_animcurves(kwargs, save_node_attrs, force_dg_update=True):
-        f = kwargs.get('frame')[0]
-        maya.cmds.currentTime(f, edit=True, update=False)
-
-        # Re-connect animCurves, and set the solved values.
-        update_nodes = []
-        for in_plug_name, out_plug_name in save_node_attrs:
-            if maya.cmds.isConnected(in_plug_name, out_plug_name) is False:
-                v = maya.cmds.getAttr(out_plug_name)
-                maya.cmds.connectAttr(in_plug_name, out_plug_name)
-                attr_obj = attribute.Attribute(name=out_plug_name)
-                tangent_type = 'linear'
-                node = attr_obj.get_node()
-                maya.cmds.setKeyframe(
-                    node,
-                    attribute=attr_obj.get_attr(),
-                    time=f, value=v,
-                    inTangentType=tangent_type,
-                    outTangentType=tangent_type,
-                )
-                update_nodes.append(node)
-            else:
-                LOG.error('Nodes are connected. This is WRONG.')
-                raise RuntimeError
-
-        # force update of Maya.
-        if force_dg_update is True:
-            maya.cmds.dgdirty(update_nodes)
-        return
-
-    @staticmethod
-    def __clear_attr_keyframes(kwargs, frames):
-        """
-        Evaluates the animated attributes at 'frames', then deletes the
-        existing animCurves.
-        """
-        frames = list(sorted(frames))
-        attrs = kwargs.get('attr') or []
-        for attr_name, min_val, max_val in attrs:
-            attr_obj = attribute.Attribute(name=attr_name)
-            if not attr_obj.is_animated():
-                continue
-
-            # Get Animation Curve
-            animCurves = maya.cmds.listConnections(
-                attr_name,
-                type='animCurve'
-            ) or []
-            if len(animCurves) == 0:
-                continue
-            animCurve = animCurves[0]
-
-            # Query AnimCurve values that we wish to keep.
-            values = []
-            for f in frames:
-                v = maya.cmds.getAttr(
-                    animCurve + '.output',
-                    time=float(f),
-                )
-                values.append(v)
-
-            # Re-create animCurve.
-            maya.cmds.delete(animCurve)
-            tangent_type = 'linear'
-            for f, v in zip(frames, values):
-                maya.cmds.setKeyframe(
-                    attr_name,
-                    time=f,
-                    value=v,
-                    respectKeyable=False,
-                    minimizeRotation=False,
-                    inTangentType=tangent_type,
-                    outTangentType=tangent_type
-                )
-        return
-
-    @staticmethod
-    def __get_all_model_panels():
-        """
-        Return a list of all Maya model panels.
-        """
-        model_panels = []
-        is_batch = maya.cmds.about(query=True, batch=True)
-        if is_batch is True:
-            return model_panels
-        panels = maya.cmds.getPanel(allPanels=True)
-        for panel in panels:
-            panel_type = maya.cmds.getPanel(typeOf=panel)
-            if panel_type == 'modelPanel':
-                model_panels.append(panel)
-        return model_panels
-
-    @staticmethod
-    def __get_isolated_nodes(model_panel):
-        """
-        Return nodes that are being isolated for 'model_panel'.
-        """
-        nodes = []
-        state = maya.cmds.isolateSelect(
-            model_panel,
-            query=True,
-            state=True)
-        if state is False:
-            return nodes
-
-        set_node = maya.cmds.isolateSelect(
-            model_panel,
-            query=True,
-            viewObjects=True)
-
-        obj = api_utils.get_as_object(set_node)
-        set_mfn = OpenMaya.MFnSet(obj)
-
-        flatten = False
-        full_path = True
-        sel_list = OpenMaya.MSelectionList()
-        try:
-            set_mfn.getMembers(sel_list, flatten)
-        except RuntimeError:
-            return nodes
-
-        sel_list.getSelectionStrings(nodes)
-        if full_path is True:
-            nodes = maya.cmds.ls(nodes, long=True) or []
-        return nodes
-
-    @staticmethod
-    def __get_image_plane_visibility(model_panel):
-        model_editor = maya.cmds.modelPanel(
-            model_panel,
-            query=True,
-            modelEditor=True)
-        value = maya.cmds.modelEditor(
-            model_editor,
-            query=True,
-            imagePlane=True)
-        return value
-
-    @staticmethod
-    def __set_image_plane_visibility(model_panel, value):
-        model_editor = maya.cmds.modelPanel(
-            model_panel,
-            query=True,
-            modelEditor=True)
-        maya.cmds.modelEditor(
-            model_editor,
-            edit=True,
-            imagePlane=value)
-        return
-
-    @staticmethod
-    def __set_isolated_nodes(model_panel, nodes, enable):
-        """
-        Override the isolate objects on 'model_panel'.
-
-        With an empty list, this function clears the 'model_panel's
-        isolate object list.
-        """
-        model_editor = maya.cmds.modelPanel(
-            model_panel,
-            query=True,
-            modelEditor=True)
-
-        sel = maya.cmds.ls(selection=True, long=True) or []
-        maya.cmds.select(nodes, replace=True)
-
-        cmd = 'enableIsolateSelect("%s", %s);'
-        cmd = cmd % (model_editor, int(enable))
-        maya.mel.eval(cmd)
-
-        cmd = 'doReload("%s");'
-        cmd = cmd % model_editor
-        maya.mel.eval(cmd)
-
-        if len(sel) > 0:
-            maya.cmds.select(sel, replace=True)
-        else:
-            maya.cmds.select(clear=True)
-        return
-
-    @staticmethod
-    def __generate_isolate_nodes(kwargs):
-        nodes = set()
-        attrs = kwargs.get('attr') or []
-        for attr_name, min_val, max_val in attrs:
-            attr_obj = attribute.Attribute(name=attr_name)
-            node = attr_obj.get_node()
-            nodes.add(node)
-        markers = kwargs.get('marker') or []
-        for mkr_node, cam_shp_node, bnd_node in markers:
-            nodes.add(mkr_node)
-            nodes.add(bnd_node)
-        cameras = kwargs.get('camera') or []
-        for cam_tfm_node, cam_shp_node in cameras:
-            nodes.add(cam_tfm_node)
-            nodes.add(cam_shp_node)
-        return nodes
-
     def execute(self,
                 verbose=False,
                 refresh=False,
@@ -1036,7 +791,7 @@ class Collection(object):
         # image planes).
         panel_objs = {}
         panel_img_pl_vis = {}
-        panels = self.__get_all_model_panels()
+        panels = viewport_utils.get_all_model_panels()
         if refresh is True:
             for panel in panels:
                 state = maya.cmds.isolateSelect(
@@ -1045,9 +800,9 @@ class Collection(object):
                     state=True)
                 nodes = None
                 if state is True:
-                    nodes = self.__get_isolated_nodes(panel)
+                    nodes = viewport_utils.get_isolated_nodes(panel)
                 panel_objs[panel] = nodes
-                panel_img_pl_vis[panel] = self.__get_image_plane_visibility(panel)
+                panel_img_pl_vis[panel] = viewport_utils.get_image_plane_visibility(panel)
 
         # Save current frame, to revert to later on.
         cur_frame = maya.cmds.currentTime(query=True)
@@ -1057,9 +812,9 @@ class Collection(object):
         try:
             if undo_state is True:
                 maya.cmds.undoInfo(openChunk=True, chunkName=undo_id)
-            self.__set_progress(prog_fn, 0)
-            self.__set_status(status_fn, 'Solver Initializing...')
-            api_utils.set_solver_running(True)
+            __set_progress(prog_fn, 0)
+            __set_status(status_fn, 'Solver Initializing...')
+            api_state.set_solver_running(True)
 
             # Check for validity
             solres_list = []
@@ -1067,7 +822,7 @@ class Collection(object):
                 LOG.warning('Collection not valid: %r', self.get_node())
                 return solres_list
             kwargs_list = self._compile()
-            self.__set_progress(prog_fn, 1)
+            __set_progress(prog_fn, 1)
 
             # Isolate all nodes used in all of the kwargs to be run.
             # Note; This assumes the isolated objects are visible, but
@@ -1076,13 +831,13 @@ class Collection(object):
                 s = time.time()
                 isolate_nodes = set()
                 for kwargs in kwargs_list:
-                    isolate_nodes |= self.__generate_isolate_nodes(kwargs)
+                    isolate_nodes |= collectionutils.generate_isolate_nodes(kwargs)
                 if len(isolate_nodes) == 0:
                     raise excep.NotValid
                 isolate_node_list = list(isolate_nodes)
                 for panel in panels:
-                    self.__set_image_plane_visibility(panel, False)
-                    self.__set_isolated_nodes(panel, isolate_node_list, True)
+                    viewport_utils.set_image_plane_visibility(panel, False)
+                    viewport_utils.set_isolated_nodes(panel, isolate_node_list, True)
                 e = time.time()
                 LOG.debug('Perform Pre-Isolate; time=%r', e - s)
 
@@ -1110,7 +865,7 @@ class Collection(object):
             total = len(kwargs_list)
             for i, kwargs in enumerate(kwargs_list):
                 frame = kwargs.get('frame')
-                self.__set_status(status_fn, 'Evaluating frames %r' % frame)
+                __set_status(status_fn, 'Evaluating frames %r' % frame)
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
 
@@ -1128,16 +883,16 @@ class Collection(object):
 
                 # HACK for single frame solves.
                 save_node_attrs = []
-                is_single_frame = self.__is_single_frame(kwargs)
+                is_single_frame = collectionutils.is_single_frame(kwargs)
                 if is_single_frame is True:
-                    save_node_attrs = self.__disconnect_animcurves(kwargs)
+                    save_node_attrs = collectionutils.disconnect_animcurves(kwargs)
 
                 # Run Solver Maya plug-in command
                 solve_data = maya.cmds.mmSolver(**kwargs)
 
                 # Revert special HACK for single frame solves
                 if is_single_frame is True:
-                    self.__reconnect_animcurves(kwargs, save_node_attrs)
+                    collectionutils.reconnect_animcurves(kwargs, save_node_attrs)
 
                 # Create SolveResult.
                 solres = solveresult.SolveResult(solve_data)
@@ -1146,19 +901,19 @@ class Collection(object):
                 # Update progress
                 ratio = float(i) / float(total)
                 percent = float(start) + (ratio * (100.0 - start))
-                self.__set_progress(prog_fn, int(percent))
+                __set_progress(prog_fn, int(percent))
 
                 cmd_cancel = solres.get_user_interrupted()
-                gui_cancel = api_utils.get_user_interrupt()
+                gui_cancel = api_state.get_user_interrupt()
                 if cmd_cancel is True or gui_cancel is True:
                     msg = 'Canceled by User'
-                    api_utils.set_user_interrupt(False)
-                    self.__set_status(status_fn, 'WARNING: ' + msg)
+                    api_state.set_user_interrupt(False)
+                    __set_status(status_fn, 'WARNING: ' + msg)
                     LOG.warning(msg)
                     break
                 if solres.get_success() is False:
                     msg = 'Solver failed!!!'
-                    self.__set_status(status_fn, 'ERROR: ' + msg)
+                    __set_status(status_fn, 'ERROR: ' + msg)
                     LOG.error(msg)
 
                 # Refresh the Viewport.
@@ -1184,16 +939,16 @@ class Collection(object):
                     if objs is None:
                         # No original objects, disable 'isolate
                         # selected' after resetting the objects.
-                        self.__set_isolated_nodes(panel, [], False)
+                        viewport_utils.set_isolated_nodes(panel, [], False)
                         img_pl_vis = panel_img_pl_vis.get(panel, True)
-                        self.__set_image_plane_visibility(panel, img_pl_vis)
+                        viewport_utils.set_image_plane_visibility(panel, img_pl_vis)
                     else:
-                        self.__set_isolated_nodes(panel, list(objs), True)
+                        viewport_utils.set_isolated_nodes(panel, list(objs), True)
                 e = time.time()
                 LOG.debug('Finally; reset isolate selected; time=%r', e - s)
 
-            self.__set_progress(prog_fn, 100)
-            api_utils.set_solver_running(False)
+            __set_progress(prog_fn, 100)
+            api_state.set_solver_running(False)
 
             if undo_state is True:
                 maya.cmds.undoInfo(closeChunk=True, chunkName=undo_id)

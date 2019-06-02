@@ -32,13 +32,11 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_col
-import mmSolver.tools.selection.filternodes as filternodes
 import mmSolver.tools.triangulatebundle.lib as lib_triangulate
 import test.test_api.apiutils as test_api_utils
 
 
 LOG = mmSolver.logger.get_logger()
-
 
 
 # @unittest.skip
@@ -578,7 +576,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Triangulate all 3D points.
         nodes = maya.cmds.ls(type='transform') or []
-        bnd_nodes = filternodes.get_bundle_nodes(nodes)
+        bnd_nodes = mmapi.filter_bundle_nodes(nodes)
         bnd_list = [mmapi.Bundle(node=n) for n in bnd_nodes]
         for bnd in bnd_list:
             lib_triangulate.triangulate_bundle(bnd)

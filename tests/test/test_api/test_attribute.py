@@ -26,9 +26,8 @@ import unittest
 import maya.cmds
 
 import test.test_api.apiutils as test_api_utils
-import mmSolver._api.utils as api_utils
+import mmSolver.utils.node as node_utils
 import mmSolver._api.attribute as attribute
-import mmSolver._api.marker as marker
 import mmSolver._api.constant as const
 
 
@@ -37,7 +36,7 @@ class TestAttribute(test_api_utils.APITestCase):
     def test_init(self):
         # TODO: More exhaustive test.
         node = maya.cmds.createNode('transform')
-        node = api_utils.get_long_name(node)
+        node = node_utils.get_long_name(node)
         x = attribute.Attribute(node=node, attr='translateX')
         y = attribute.Attribute(node=node, attr='ty')
         self.assertEqual(x.get_node(), node)
@@ -49,7 +48,7 @@ class TestAttribute(test_api_utils.APITestCase):
 
     def test_get_state(self):
         node = maya.cmds.createNode('transform')
-        node = api_utils.get_long_name(node)
+        node = node_utils.get_long_name(node)
 
         # Animated
         maya.cmds.setKeyframe(node, attribute='rotateY', time=1, value=-1.0)

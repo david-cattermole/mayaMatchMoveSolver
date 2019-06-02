@@ -21,10 +21,11 @@ Set up callbacks for Maya events.
 
 import collections
 import maya.OpenMaya as OpenMaya
+
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.ui.uiutils as uiutils
-
+import mmSolver.utils.node as node_utils
 
 TYPE_NEW_SCENE = 'new_scene'
 TYPE_ATTRIBUTE = 'attribute'
@@ -165,7 +166,7 @@ def add_callbacks_attribute(node_uuid, node_path, update_func):
     :rtype: list of maya.OpenMaya.MCallbackId
     """
     callback_ids = []
-    node_mobj = mmapi.get_as_object(node_path)
+    node_mobj = node_utils.get_as_object(node_path)
 
     # Attribute Changed
     clientData = (node_uuid, update_func)
@@ -201,7 +202,7 @@ def add_callbacks_to_collection(node_uuid, node_path, update_func):
     Add all callbacks for a node from a 'Collection' class.
     """
     callback_ids = []
-    node_mobj = mmapi.get_as_object(node_path)
+    node_mobj = node_utils.get_as_object(node_path)
 
     clientData = (node_uuid, update_func)
     callback_id = OpenMaya.MObjectSetMessage.addSetMembersModifiedCallback(
@@ -225,7 +226,7 @@ def add_callbacks_to_marker(node_uuid, node_path, update_func):
 
     """
     callback_ids = []
-    node_mobj = mmapi.get_as_object(node_path)
+    node_mobj = node_utils.get_as_object(node_path)
 
     # Attribute Changed (if a marker/bundle relationship is changed.)
     clientData = (node_uuid, update_func)
@@ -262,7 +263,7 @@ def add_callbacks_to_marker_group(node_uuid, node_path, update_func):
     Add all callbacks for a node from a 'MarkerGroup' class.
     """
     callback_ids = []
-    node_mobj = mmapi.get_as_object(node_path)
+    node_mobj = node_utils.get_as_object(node_path)
 
     # Node Has Been Deleted
     # TODO: This callback does not seem to be doing anything.
@@ -281,7 +282,7 @@ def add_callbacks_to_bundle(node_uuid, node_path, update_func):
     Add all callbacks for a node from a 'Bundle' class.
     """
     callback_ids = []
-    node_mobj = mmapi.get_as_object(node_path)
+    node_mobj = node_utils.get_as_object(node_path)
 
     # Attribute Changed (if a marker/bundle relationship is changed.)
     clientData = (node_uuid, update_func)
@@ -317,7 +318,7 @@ def add_callbacks_to_camera(node_uuid, node_path, update_func):
     Add all callbacks for a node from a 'Marker' class.
     """
     callback_ids = []
-    node_mobj = mmapi.get_as_object(node_path)
+    node_mobj = node_utils.get_as_object(node_path)
 
     # Node Name Change
     clientData = (node_uuid, update_func)

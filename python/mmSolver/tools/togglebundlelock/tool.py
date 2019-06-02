@@ -21,7 +21,7 @@ This tool toggles selected bundle lock state
 
 import maya.cmds
 import mmSolver.logger
-import mmSolver.tools.selection.filternodes as filternodes
+import mmSolver.api as mmapi
 import mmSolver.tools.togglebundlelock.constant as const
 
 LOG = mmSolver.logger.get_logger()
@@ -32,7 +32,7 @@ def main():
     Toggles selected bundle lock state.
     """
     selection = maya.cmds.ls(selection=True, long=True) or []
-    selected_bundles = filternodes.get_bundle_nodes(selection)
+    selected_bundles = mmapi.filter_bundle_nodes(selection)
     if len(selected_bundles) == 0:
         LOG.warning("Please select bundle's to lock or unlock")
         return

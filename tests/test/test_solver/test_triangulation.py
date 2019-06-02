@@ -25,9 +25,8 @@ import unittest
 
 import maya.cmds
 
-
 import test.test_solver.solverutils as solverUtils
-import mmSolver._api.utils as api_utils
+import mmSolver.utils.node as node_utils
 
 
 # @unittest.skip
@@ -36,10 +35,10 @@ class TestTriangulation(solverUtils.SolverTestCase):
     @staticmethod
     def create_camera(name):
         cam_tfm = maya.cmds.createNode('transform', name=name)
-        cam_tfm = api_utils.get_long_name(cam_tfm)
+        cam_tfm = node_utils.get_long_name(cam_tfm)
         cam_shp = maya.cmds.createNode('camera', name=name+'Shape',
                                        parent=cam_tfm)
-        cam_shp = api_utils.get_long_name(cam_shp)
+        cam_shp = node_utils.get_long_name(cam_shp)
         return cam_tfm, cam_shp
 
     def test_triangulation(self):

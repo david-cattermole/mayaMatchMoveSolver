@@ -25,6 +25,7 @@ import maya.OpenMaya as OpenMaya
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.node as node_utils
 import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
@@ -75,7 +76,7 @@ class Marker(object):
             node = name
         if isinstance(node, basestring):
             try:
-                dag = api_utils.get_as_dag_path(node)
+                dag = node_utils.get_as_dag_path(node)
                 self._mfn = OpenMaya.MFnDagNode(dag)
             except RuntimeError as e:
                 msg = 'Given Marker node name is invalid: name=%r'
@@ -126,7 +127,7 @@ class Marker(object):
         :rtype: None
         """
         assert isinstance(node, (str, unicode))
-        dag = api_utils.get_as_dag_path(node)
+        dag = node_utils.get_as_dag_path(node)
         try:
             self._mfn = OpenMaya.MFnDagNode(dag)
         except RuntimeError:
@@ -184,7 +185,7 @@ class Marker(object):
 
         # Transform
         tfm = maya.cmds.createNode(const.MARKER_TRANSFORM_NODE_TYPE, name=name)
-        tfm = api_utils.get_long_name(tfm)
+        tfm = node_utils.get_long_name(tfm)
         maya.cmds.setAttr(tfm + '.tz', -1.0)
         maya.cmds.setAttr(tfm + '.tz', lock=True)
         maya.cmds.setAttr(tfm + '.rx', lock=True)
@@ -391,7 +392,7 @@ class Marker(object):
             LOG.warning(msg, node, shps)
             return
         shp = shps[0]
-        v = api_utils.get_node_wire_colour_rgb(shp)
+        v = node_utils.get_node_wire_colour_rgb(shp)
         return v
 
     def set_colour_rgb(self, rgb):
@@ -416,7 +417,7 @@ class Marker(object):
             LOG.warning(msg, node, shps)
             return
         shp = shps[0]
-        api_utils.set_node_wire_colour_rgb(shp, rgb)
+        node_utils.set_node_wire_colour_rgb(shp, rgb)
         return
 
     ############################################################################
@@ -509,7 +510,7 @@ class Marker(object):
         """
         mkr_node = self.get_node()
 
-        cam_tfm, cam_shp = api_utils.get_camera_above_node(mkr_node)
+        cam_tfm, cam_shp = node_utils.get_camera_above_node(mkr_node)
 
         # Make the camera object.
         cam = None

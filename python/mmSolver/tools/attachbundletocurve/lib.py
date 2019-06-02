@@ -4,7 +4,6 @@ Attach Bundle to Curve tool. Attaches a bundle node to a NURBs curve.
 
 import maya.cmds
 import mmSolver.logger
-import mmSolver.api as mmapi
 import mmSolver.tools.attachbundletocurve.constant as const
 
 LOG = mmSolver.logger.get_logger()

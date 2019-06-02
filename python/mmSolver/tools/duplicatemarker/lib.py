@@ -66,6 +66,7 @@ def __get_lock_state(node, attrs):
     for attr in attrs:
         plug = '%s.%s' % (node, attr)
         value = maya.cmds.getAttr(plug, lock=True)
+        # BUG: The plug should be used as the key, not attr.
         plug_lock_state[attr] = value
     return plug_lock_state
 
@@ -86,6 +87,7 @@ def __set_lock_state(node, attrs, lock_attr_values):
     :return: None
     """
     for attr in attrs:
+        # BUG: The plug should be used as the key, not attr.
         value = lock_attr_values.get(attr)
         plug = '%s.%s' % (node, attr)
         maya.cmds.setAttr(plug, lock=value)

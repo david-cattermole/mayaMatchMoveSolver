@@ -27,7 +27,6 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.viewport as utils_viewport
 import mmSolver.utils.camera as utils_camera
-import mmSolver.tools.selection.filternodes as filter_nodes
 
 
 LOG = mmSolver.logger.get_logger()
@@ -41,7 +40,7 @@ def main():
     mmapi.load_plugin()
 
     sel = maya.cmds.ls(sl=True, long=True)
-    node_filtered = filter_nodes.get_nodes(sel)
+    node_filtered = mmapi.filter_nodes_into_categories(sel)
     cams = node_filtered['camera']
     cams = filter(utils_camera.is_not_startup_cam, cams)
     mkr_grps = node_filtered['markergroup']
@@ -99,12 +98,12 @@ def main():
     else:
         LOG.error('Should not get here.')
 
-    bnd_name = mmapi.get_bundle_name('bundle1')
+    bnd_name = mmapi.get_new_bundle_name('bundle1')
     bnd = mmapi.Bundle().create_node(
         name=bnd_name
     )
 
-    mkr_name = mmapi.get_marker_name('marker1')
+    mkr_name = mmapi.get_new_marker_name('marker1')
     mkr = mmapi.Marker().create_node(
         name=mkr_name,
         cam=cam,

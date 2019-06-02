@@ -23,8 +23,8 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
+import mmSolver.utils.node as node_utils
 import mmSolver._api.constant as const
-import mmSolver._api.utils as api_utils
 import mmSolver._api.marker
 
 
@@ -59,7 +59,7 @@ class Bundle(object):
         if node is not None:
             assert isinstance(node, (str, unicode))
             assert maya.cmds.objExists(node)
-            dag = api_utils.get_as_dag_path(node)
+            dag = node_utils.get_as_dag_path(node)
             if dag is not None:
                 self._mfn = OpenMaya.MFnDagNode(dag)
         else:
@@ -107,7 +107,7 @@ class Bundle(object):
         """
         assert isinstance(node, (str, unicode))
         assert maya.cmds.objExists(node)
-        dag = api_utils.get_as_dag_path(node)
+        dag = node_utils.get_as_dag_path(node)
         if dag is not None:
             self._mfn = OpenMaya.MFnDagNode(dag)
         else:
@@ -140,7 +140,7 @@ class Bundle(object):
         # Transform
         tfm = maya.cmds.createNode(const.BUNDLE_TRANSFORM_NODE_TYPE,
                                    name=name)
-        tfm = api_utils.get_long_name(tfm)
+        tfm = node_utils.get_long_name(tfm)
         maya.cmds.setAttr(tfm + '.rx', lock=True)
         maya.cmds.setAttr(tfm + '.ry', lock=True)
         maya.cmds.setAttr(tfm + '.rz', lock=True)
@@ -210,7 +210,7 @@ class Bundle(object):
             LOG.warning(msg, node, shps)
             return None
         shp = shps[0]
-        v = api_utils.get_node_wire_colour_rgb(shp)
+        v = node_utils.get_node_wire_colour_rgb(shp)
         return v
 
     def set_colour_rgb(self, rgb):
@@ -235,7 +235,7 @@ class Bundle(object):
             LOG.warning(msg, node, shps)
             return
         shp = shps[0]
-        api_utils.set_node_wire_colour_rgb(shp, rgb)
+        node_utils.set_node_wire_colour_rgb(shp, rgb)
         return
 
     ############################################################################

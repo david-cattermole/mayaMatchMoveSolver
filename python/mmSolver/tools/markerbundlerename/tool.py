@@ -21,9 +21,9 @@ This tool renames selected markers and bundles (and the connected nodes).
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.api as mmapi
 import mmSolver.tools.markerbundlerename.constant as const
 import mmSolver.tools.markerbundlerename.lib as lib
-import mmSolver.tools.selection.filternodes as filternodes
 
 LOG = mmSolver.logger.get_logger()
 
@@ -33,8 +33,8 @@ def main():
     Renames selected markers and bundles (and the connected nodes).
     """
     selection = maya.cmds.ls(selection=True, long=True) or []
-    sel_mkr_nodes = filternodes.get_marker_nodes(selection)
-    sel_bnd_nodes = filternodes.get_bundle_nodes(selection)
+    sel_mkr_nodes = mmapi.filter_marker_nodes(selection)
+    sel_bnd_nodes = mmapi.filter_bundle_nodes(selection)
     if len(sel_mkr_nodes) == 0 and len(sel_bnd_nodes) == 0:
         LOG.warning('Please select markers or bundles to rename.')
         return

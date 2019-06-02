@@ -112,7 +112,7 @@ def rename_markers_and_bundles(mkr_nodes, bnd_nodes,
         num_str = number_format % (i + 1)
         bnd = mmapi.Bundle(node=bnd_node)
 
-        new_bnd_name = mmapi.get_bundle_name(
+        new_bnd_name = mmapi.get_new_bundle_name(
             num_str,
             prefix=bnd_name,
             suffix=bnd_suffix

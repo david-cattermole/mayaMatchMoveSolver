@@ -28,8 +28,7 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
-import mmSolver._api.utils as api_utils
-
+import mmSolver.utils.node as node_utils
 
 LOG = mmSolver.logger.get_logger()
 
@@ -54,7 +53,7 @@ class SetHelper(object):
             node = name
         if node is not None:
             if isinstance(node, (str, unicode)):
-                obj = api_utils.get_as_object(node)
+                obj = node_utils.get_as_object(node)
                 self._mfn = OpenMaya.MFnSet(obj)
             else:
                 msg = 'node argument must be a string.'
@@ -86,7 +85,7 @@ class SetHelper(object):
         return uids[0]
 
     def set_node(self, name):
-        obj = api_utils.get_as_object(name)
+        obj = node_utils.get_as_object(name)
         try:
             self._mfn = OpenMaya.MFnSet(obj)
         except RuntimeError:
@@ -165,10 +164,10 @@ class SetHelper(object):
         # NOTE: For attributes, you must use a MPlug, as testing with
         # an MObject only tests the dependency node
         if '.' in name:
-            plug = api_utils.get_as_plug(name)
+            plug = node_utils.get_as_plug(name)
             ret = self._mfn.isMember(plug)
         else:
-            obj = api_utils.get_as_object(name)
+            obj = node_utils.get_as_object(name)
             ret = self._mfn.isMember(obj)
         return ret
 

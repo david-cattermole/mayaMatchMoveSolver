@@ -129,7 +129,7 @@ def reproject_bundle(mkr_list, frame_list, relock=None):
     return bnd_moved_list
 
 
-def current_frame(mkr_list, relock=None):
+def reproject_bundle_current_frame(mkr_list, relock=None):
     """
     Re-project Marker's Bundle underneath the Marker in screen-space,
     on the current-frame.

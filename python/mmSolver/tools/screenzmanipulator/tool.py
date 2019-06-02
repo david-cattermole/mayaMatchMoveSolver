@@ -31,8 +31,7 @@ LOG = mmSolver.logger.get_logger()
 
 def screen_space_z(camera_tfm):
     """
-    Modifies moveManipContext to custom and points one of the axis to
-    focus camera.
+    Modifies moveManipContext to custom and points one of the axis to the camera.
 
     :param camera_tfm: Camera to point to
     :type camera_tfm: str

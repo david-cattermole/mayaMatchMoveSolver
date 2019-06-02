@@ -24,16 +24,14 @@ import time
 import uuid
 
 import maya.cmds
-import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 import mmSolver.api as mmapi
 
 import mmSolver.utils.time as utils_time
+import mmSolver.utils.configmaya as configmaya
 
-import mmSolver.tools.selection.filternodes as filter_nodes
 import mmSolver.tools.solver.lib.solver as solver_utils
-import mmSolver.tools.solver.lib.maya_utils as maya_utils
 import mmSolver.tools.solver.lib.solver_step as solver_step
 import mmSolver.tools.solver.constant as const
 
@@ -49,7 +47,7 @@ def get_collections():
     :rtype: [Collection, ..]
     """
     nodes = maya.cmds.ls(type='objectSet', long=True) or []
-    node_categories = filter_nodes.get_nodes(nodes)
+    node_categories = mmapi.filter_nodes_into_categories(nodes)
     cols = []
     for col_node in node_categories['collection']:
         col = mmapi.Collection(node=col_node)
@@ -272,7 +270,7 @@ def get_override_current_frame_from_collection(col):
     """
     node = col.get_node()
     ensure_override_current_frame_attr_exists(col)
-    value = mmapi.get_value_on_node_attr(node, const.OVERRIDE_CURRENT_FRAME_ATTR)
+    value = configmaya.get_node_option(node, const.OVERRIDE_CURRENT_FRAME_ATTR)
     assert isinstance(value, bool)
     return value
 
@@ -290,7 +288,7 @@ def set_override_current_frame_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_override_current_frame_attr_exists(col)
     node = col.get_node()
-    mmapi.set_value_on_node_attr(node, const.OVERRIDE_CURRENT_FRAME_ATTR, value)
+    configmaya.get_node_option(node, const.OVERRIDE_CURRENT_FRAME_ATTR, value)
     return
 
 
@@ -331,7 +329,7 @@ def get_attribute_toggle_animated_from_collection(col):
     """
     node = col.get_node()
     ensure_attribute_toggle_animated_attr_exists(col)
-    value = mmapi.get_value_on_node_attr(node, const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR)
+    value = configmaya.get_node_option(node, const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR)
     assert isinstance(value, bool)
     return value
 
@@ -349,7 +347,7 @@ def set_attribute_toggle_animated_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_attribute_toggle_animated_attr_exists(col)
     node = col.get_node()
-    mmapi.set_value_on_node_attr(node, const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR, value)
+    configmaya.get_node_option(node, const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR, value)
     return
 
 
@@ -390,7 +388,7 @@ def get_attribute_toggle_static_from_collection(col):
     """
     node = col.get_node()
     ensure_attribute_toggle_static_attr_exists(col)
-    value = mmapi.get_value_on_node_attr(node, const.ATTRIBUTE_TOGGLE_STATIC_ATTR)
+    value = configmaya.get_node_option(node, const.ATTRIBUTE_TOGGLE_STATIC_ATTR)
     assert isinstance(value, bool)
     return value
 
@@ -408,7 +406,7 @@ def set_attribute_toggle_static_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_attribute_toggle_static_attr_exists(col)
     node = col.get_node()
-    mmapi.set_value_on_node_attr(node, const.ATTRIBUTE_TOGGLE_STATIC_ATTR, value)
+    configmaya.get_node_option(node, const.ATTRIBUTE_TOGGLE_STATIC_ATTR, value)
     return
 
 
@@ -449,7 +447,7 @@ def get_attribute_toggle_locked_from_collection(col):
     """
     node = col.get_node()
     ensure_attribute_toggle_locked_attr_exists(col)
-    value = mmapi.get_value_on_node_attr(node, const.ATTRIBUTE_TOGGLE_LOCKED_ATTR)
+    value = configmaya.get_node_option(node, const.ATTRIBUTE_TOGGLE_LOCKED_ATTR)
     assert isinstance(value, bool)
     return value
 
@@ -467,7 +465,7 @@ def set_attribute_toggle_locked_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_attribute_toggle_locked_attr_exists(col)
     node = col.get_node()
-    mmapi.set_value_on_node_attr(node, const.ATTRIBUTE_TOGGLE_LOCKED_ATTR, value)
+    configmaya.get_node_option(node, const.ATTRIBUTE_TOGGLE_LOCKED_ATTR, value)
     return
 
 
@@ -508,7 +506,7 @@ def get_object_toggle_camera_from_collection(col):
     """
     node = col.get_node()
     ensure_object_toggle_camera_attr_exists(col)
-    value = mmapi.get_value_on_node_attr(node, const.OBJECT_TOGGLE_CAMERA_ATTR)
+    value = configmaya.get_node_option(node, const.OBJECT_TOGGLE_CAMERA_ATTR)
     assert isinstance(value, bool)
     return value
 
@@ -526,7 +524,7 @@ def set_object_toggle_camera_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_object_toggle_camera_attr_exists(col)
     node = col.get_node()
-    mmapi.set_value_on_node_attr(node, const.OBJECT_TOGGLE_CAMERA_ATTR, value)
+    configmaya.get_node_option(node, const.OBJECT_TOGGLE_CAMERA_ATTR, value)
     return
 
 
@@ -567,7 +565,7 @@ def get_object_toggle_marker_from_collection(col):
     """
     node = col.get_node()
     ensure_object_toggle_marker_attr_exists(col)
-    value = mmapi.get_value_on_node_attr(node, const.OBJECT_TOGGLE_MARKER_ATTR)
+    value = configmaya.get_node_option(node, const.OBJECT_TOGGLE_MARKER_ATTR)
     assert isinstance(value, bool)
     return value
 
@@ -585,7 +583,7 @@ def set_object_toggle_marker_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_object_toggle_marker_attr_exists(col)
     node = col.get_node()
-    mmapi.set_value_on_node_attr(node, const.OBJECT_TOGGLE_MARKER_ATTR, value)
+    configmaya.get_node_option(node, const.OBJECT_TOGGLE_MARKER_ATTR, value)
     return
 
 
@@ -626,7 +624,7 @@ def get_object_toggle_bundle_from_collection(col):
     """
     node = col.get_node()
     ensure_object_toggle_bundle_attr_exists(col)
-    value = mmapi.get_value_on_node_attr(node, const.OBJECT_TOGGLE_BUNDLE_ATTR)
+    value = configmaya.get_node_option(node, const.OBJECT_TOGGLE_BUNDLE_ATTR)
     assert isinstance(value, bool)
     return value
 
@@ -644,7 +642,7 @@ def set_object_toggle_bundle_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_object_toggle_bundle_attr_exists(col)
     node = col.get_node()
-    mmapi.set_value_on_node_attr(node, const.OBJECT_TOGGLE_BUNDLE_ATTR, value)
+    configmaya.get_node_option(node, const.OBJECT_TOGGLE_BUNDLE_ATTR, value)
     return
 
 
@@ -733,7 +731,7 @@ def get_solver_steps_from_collection(col):
     if maya.cmds.objExists(node) is False:
         return []
     ensure_solver_steps_attr_exists(col)
-    data_list = mmapi.get_data_on_node_attr(node, const.SOLVER_STEP_ATTR)
+    data_list = configmaya.get_node_option_structure(node, const.SOLVER_STEP_ATTR)
     step_list = [solver_step.SolverStep(d) for d in data_list]
     return step_list
 
@@ -797,7 +795,7 @@ def set_solver_step_list_to_collection(col, step_list):
     node = col.get_node()
     data_list = [s.get_data() for s in step_list]
     ensure_solver_steps_attr_exists(col)
-    mmapi.set_data_on_node_attr(node, const.SOLVER_STEP_ATTR, data_list)
+    configmaya.set_node_option_structure(node, const.SOLVER_STEP_ATTR, data_list)
     sol_list = compile_solvers_from_steps(col, step_list)
     col.set_solver_list(sol_list)
     return

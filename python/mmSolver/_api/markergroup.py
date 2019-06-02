@@ -25,6 +25,7 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
+import mmSolver.utils.node as node_utils
 import mmSolver._api.camera as camera
 import mmSolver._api.utils as api_utils
 import mmSolver._api.constant as const
@@ -95,7 +96,7 @@ class MarkerGroup(object):
         assert api_utils.get_object_type(node) == const.OBJECT_TYPE_MARKER_GROUP
 
         self._mfn_tfm = None
-        tfm_dag = api_utils.get_as_dag_path(node)
+        tfm_dag = node_utils.get_as_dag_path(node)
         if tfm_dag is not None:
             assert maya.cmds.nodeType(tfm_dag.fullPathName()) == 'mmMarkerGroupTransform'
             self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
@@ -115,7 +116,7 @@ class MarkerGroup(object):
         """
         mkr_node = self.get_node()
 
-        cam_tfm, cam_shp = api_utils.get_camera_above_node(mkr_node)
+        cam_tfm, cam_shp = node_utils.get_camera_above_node(mkr_node)
 
         # Make the camera object.
         cam = None

@@ -24,7 +24,6 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 
-import mmSolver.tools.selection.filternodes as filternodes
 import mmSolver.tools.duplicatemarker.lib as lib
 import mmSolver.tools.duplicatemarker.constant as const
 
@@ -36,7 +35,7 @@ def main():
     Main function runs duplicate marker on all selected markers.
     """
     selection = maya.cmds.ls(selection=True, long=True) or []
-    selected_markers = filternodes.get_marker_nodes(selection)
+    selected_markers = mmapi.filter_marker_nodes(selection)
     if not selected_markers:
         LOG.warning('Please select markers')
         return
@@ -76,11 +75,11 @@ def main():
         # get attrs lock state
         lock_value = lib.__get_lock_state(marker, mkr_attrs)
 
-        mkr_name = mmapi.get_marker_name(mkr_name)
+        mkr_name = mmapi.get_new_marker_name(mkr_name)
         new_mkr = mmapi.Marker().create_node(cam=cam_from_mkr,
                                              name=mkr_name)
         new_mkr_node = new_mkr.get_node()
-        bnd_name = mmapi.get_bundle_name(bnd_name)
+        bnd_name = mmapi.get_new_bundle_name(bnd_name)
         new_bnd = mmapi.Bundle().create_node(name=bnd_name)
         # connecting bundle to the marker
         new_mkr.set_bundle(new_bnd)

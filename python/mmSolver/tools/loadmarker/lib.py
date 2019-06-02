@@ -24,9 +24,9 @@ import os.path
 import pprint
 
 import maya.cmds
-import mmSolver.api as mmapi
 import mmSolver.logger
-import mmSolver.tools.selection.filternodes as filternodes
+import mmSolver.utils.node as node_utils
+import mmSolver.api as mmapi
 import mmSolver.tools.loadmarker.formatmanager as formatmanager
 import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
 
@@ -45,7 +45,7 @@ def get_selected_cameras():
     nodes = maya.cmds.ls(sl=True, long=True) or []
 
     added_cameras = []
-    objects = filternodes.get_nodes(nodes)
+    objects = mmapi.filter_nodes_into_categories(nodes)
     for node in objects['camera']:
         cam = None
         if maya.cmds.nodeType(node) == 'camera':
@@ -91,7 +91,7 @@ def get_cameras():
     :rtype: list of mmSolver.api.Camera
     """
     nodes = maya.cmds.ls(type='camera', long=True) or []
-    cam_nodes = filternodes.get_camera_nodes(nodes)
+    cam_nodes = mmapi.filter_camera_nodes(nodes)
     cams = []
     for node in cam_nodes:
         startup = maya.cmds.camera(node, query=True, startupCamera=True)
@@ -249,12 +249,12 @@ def create_new_camera():
     cam_tfm = maya.cmds.createNode(
         'transform',
         name=name)
-    cam_tfm = mmapi.get_long_name(cam_tfm)
+    cam_tfm = node_utils.get_long_name(cam_tfm)
     cam_shp = maya.cmds.createNode(
         'camera',
         name=name + 'Shape',
         parent=cam_tfm)
-    cam_shp = mmapi.get_long_name(cam_shp)
+    cam_shp = node_utils.get_long_name(cam_shp)
     cam = mmapi.Camera(transform=cam_tfm, shape=cam_shp)
     return cam
 

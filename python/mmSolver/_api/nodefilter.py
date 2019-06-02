@@ -19,16 +19,16 @@
 Helpful tools to filter a list of nodes into pre-defined categories.
 """
 
-import maya.cmds
 
-import mmSolver.api as mmapi
 import mmSolver.logger
+import mmSolver._api.constant as const
+import mmSolver._api.utils as api_utils
 
 
 LOG = mmSolver.logger.get_logger()
 
 
-def get_nodes(nodes):
+def filter_nodes_into_categories(nodes):
     """
     Return nodes sorted into mmSolver-specific object type categories.
 
@@ -59,25 +59,25 @@ def get_nodes(nodes):
         'other': []
     }
     for node in nodes:
-        obj_type = mmapi.get_object_type(node)
-        if obj_type == mmapi.OBJECT_TYPE_MARKER:
+        obj_type = api_utils.get_object_type(node)
+        if obj_type == const.OBJECT_TYPE_MARKER:
             result['marker'].append(node)
-        elif obj_type == mmapi.OBJECT_TYPE_MARKER_GROUP:
+        elif obj_type == const.OBJECT_TYPE_MARKER_GROUP:
             result['markergroup'].append(node)
-        elif obj_type == mmapi.OBJECT_TYPE_BUNDLE:
+        elif obj_type == const.OBJECT_TYPE_BUNDLE:
             result['bundle'].append(node)
-        elif obj_type == mmapi.OBJECT_TYPE_CAMERA:
+        elif obj_type == const.OBJECT_TYPE_CAMERA:
             result['camera'].append(node)
-        elif obj_type == mmapi.OBJECT_TYPE_ATTRIBUTE:
+        elif obj_type == const.OBJECT_TYPE_ATTRIBUTE:
             result['attribute'].append(node)
-        elif obj_type == mmapi.OBJECT_TYPE_COLLECTION:
+        elif obj_type == const.OBJECT_TYPE_COLLECTION:
             result['collection'].append(node)
         else:
             result['other'].append(node)
     return result
 
 
-def get_marker_nodes(nodes):
+def filter_marker_nodes(nodes):
     """
     Filter the given 'nodes' by only the Marker nodes.
 
@@ -87,11 +87,11 @@ def get_marker_nodes(nodes):
     :returns: A list of Marker nodes, or empty list if no Marker nodes.
     :rtype: list
     """
-    filter_nodes = get_nodes(nodes)
+    filter_nodes = filter_nodes_into_categories(nodes)
     return filter_nodes.get('marker', [])
 
 
-def get_marker_group_nodes(nodes):
+def filter_marker_group_nodes(nodes):
     """
     Filter the given 'nodes' by only the MarkerGroup nodes.
 
@@ -101,11 +101,11 @@ def get_marker_group_nodes(nodes):
     :returns: A list of MarkerGroup nodes, or empty list if no MarkerGroup nodes.
     :rtype: list
     """
-    filter_nodes = get_nodes(nodes)
+    filter_nodes = filter_nodes_into_categories(nodes)
     return filter_nodes.get('markergroup', [])
 
 
-def get_bundle_nodes(nodes):
+def filter_bundle_nodes(nodes):
     """
     Filter the given 'nodes' by only the Bundle nodes.
 
@@ -115,11 +115,11 @@ def get_bundle_nodes(nodes):
     :returns: A list of Bundle nodes, or empty list if no Bundle nodes.
     :rtype: list
     """
-    filter_nodes = get_nodes(nodes)
+    filter_nodes = filter_nodes_into_categories(nodes)
     return filter_nodes.get('bundle', [])
 
 
-def get_camera_nodes(nodes):
+def filter_camera_nodes(nodes):
     """
     Filter the given 'nodes' by only the camera nodes.
 
@@ -129,11 +129,11 @@ def get_camera_nodes(nodes):
     :returns: A list of camera nodes, or empty list if no camera nodes.
     :rtype: list
     """
-    filter_nodes = get_nodes(nodes)
+    filter_nodes = filter_nodes_into_categories(nodes)
     return filter_nodes.get('camera', [])
 
 
-def get_collection_nodes(nodes):
+def filter_collection_nodes(nodes):
     """
     Filter the given 'nodes' by only the Collection nodes.
 
@@ -143,5 +143,5 @@ def get_collection_nodes(nodes):
     :returns: A list of Collection nodes, or empty list if no Collection nodes.
     :rtype: list
     """
-    filter_nodes = get_nodes(nodes)
+    filter_nodes = filter_nodes_into_categories(nodes)
     return filter_nodes.get('collection', [])

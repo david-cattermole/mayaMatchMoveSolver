@@ -36,7 +36,7 @@ import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.tools.loadmarker.constant as const
-import mmSolver.tools.loadmarker.lib as lib
+import mmSolver.tools.loadmarker.lib.utils as lib
 import mmSolver.tools.loadmarker.ui.loadmarker_layout as loadmarker_layout
 import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 

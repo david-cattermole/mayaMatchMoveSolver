@@ -31,7 +31,7 @@ import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.tools.loadmarker.constant as const
 import mmSolver.tools.loadmarker.ui.ui_loadmarker_layout as ui_loadmarker_layout
-import mmSolver.tools.loadmarker.lib as lib
+import mmSolver.tools.loadmarker.lib.utils as lib
 
 
 LOG = mmSolver.logger.get_logger()

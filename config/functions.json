@@ -112,8 +112,8 @@
             "name": "Triangulate Bundle",
             "tooltip": "Use Marker to triangulate a 3D position for Bundle.",
             "command": [
-                "import mmSolver.tools.triangulate.tool;",
-                "mmSolver.tools.triangulate.tool.main();"
+                "import mmSolver.tools.triangulatebundle.tool;",
+                "mmSolver.tools.triangulatebundle.tool.main();"
             ]
         },
         "raycast_marker": {

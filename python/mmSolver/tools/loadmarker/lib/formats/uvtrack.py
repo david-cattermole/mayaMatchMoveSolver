@@ -62,8 +62,8 @@ The dictionary looks like this::
 
 import json
 import mmSolver.logger
-import mmSolver.tools.loadmarker.interface as interface
-import mmSolver.tools.loadmarker.formatmanager as fmtmgr
+import mmSolver.tools.loadmarker.lib.interface as interface
+import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
 import mmSolver.tools.loadmarker.constant as const
 
 LOG = mmSolver.logger.get_logger()

@@ -27,11 +27,11 @@ import maya.cmds
 
 import mmSolver.api as mmapi
 import mmSolver.utils.animutils as anim_utils
-import mmSolver.tools.loadmarker.interface as interface
-import mmSolver.tools.loadmarker.formatmanager as fmtmgr
+import mmSolver.tools.loadmarker.lib.interface as interface
+import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
 
 # Used to force importing of formats; do not remove this line.
-import mmSolver.tools.loadmarker.formats
+import mmSolver.tools.loadmarker.lib.formats
 
 
 def read(file_path, **kwargs):
@@ -84,7 +84,11 @@ def __create_node(mkr_data, cam, mkr_grp, with_bundles):
     mmapi.load_plugin()
     if with_bundles is True:
         bnd = mmapi.Bundle().create_node(bnd_name)
-    mkr = mmapi.Marker().create_node(name=mkr_name, cam=cam, mkr_grp=mkr_grp, bnd=bnd)
+    mkr = mmapi.Marker().create_node(
+        name=mkr_name,
+        cam=cam,
+        mkr_grp=mkr_grp,
+        bnd=bnd)
     return mkr
 
 
@@ -141,19 +145,33 @@ def __set_attr_keyframes(node, attr_name, keyframes,
             times = times + [end_time + 1]
             values = values + [after_value]
 
-    # TODO: Reduce keyframes, if we can, we don't need per-frame
-    # keyframes if the data is the same. Change the times/values just
-    # before we set the keyframes
+    # Reduce keyframes, we don't need per-frame keyframes if the data
+    # is the same. Change the times/values just before we set the
+    # keyframes
+    if reduce_keys is True:
+        tmp_times = list(times)
+        tmp_values = list(values)
+        times = []
+        values = []
+        prev_v = None
+        for t, v in zip(tmp_times, tmp_values):
+            if prev_v is None:
+                times.append(t)
+                values.append(v)
+            elif interface.float_is_equal(prev_v, v) is False:
+                times.append(t)
+                values.append(v)
+            prev_v = v
 
     node_attr = node + '.' + attr_name
-    animFn = anim_utils.create_anim_curve_node(times, values, node_attr)
+    anim_fn = anim_utils.create_anim_curve_node(times, values, node_attr)
 
     if reduce_keys is True:
         locked = maya.cmds.getAttr(node_attr, lock=True)
         maya.cmds.setAttr(node_attr, lock=False)
         maya.cmds.delete(node_attr, staticChannels=True)
         maya.cmds.setAttr(node_attr, lock=locked)
-    return animFn
+    return anim_fn
 
 
 def __set_node_data(mkr, mkr_data):
@@ -212,7 +230,6 @@ def __set_node_data(mkr, mkr_data):
     maya.cmds.setAttr(mkr_node + '.translateY', lock=True)
     maya.cmds.setAttr(mkr_node + '.enable', lock=True)
     maya.cmds.setAttr(mkr_node + '.weight', lock=True)
-
     return mkr
 
 

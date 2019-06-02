@@ -29,7 +29,7 @@ import mmSolver.api as mmapi
 import mmSolver.utils.camera as utils_camera
 import mmSolver.utils.viewport as utils_viewport
 import mmSolver.utils.time as utils_time
-import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
+import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 import mmSolver.tools.convertmarker.lib as lib
 
 

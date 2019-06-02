@@ -19,14 +19,12 @@
 Test functions for loadmarker tool module.
 """
 
-import sys
-import os
 import unittest
 
 import maya.cmds
 
 import test.test_tools.toolsutils as test_tools_utils
-import mmSolver.tools.loadmarker.mayareadfile as marker_read
+import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 
 
 # @unittest.skip

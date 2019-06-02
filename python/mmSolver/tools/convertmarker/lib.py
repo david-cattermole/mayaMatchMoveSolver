@@ -23,7 +23,7 @@ import maya.cmds
 import maya.mel
 
 import mmSolver.logger
-import mmSolver.tools.loadmarker.interface as loadmkr_interface
+import mmSolver.tools.loadmarker.lib.interface as loadmkr_interface
 import mmSolver.utils.reproject as reproject_utils
 
 LOG = mmSolver.logger.get_logger()

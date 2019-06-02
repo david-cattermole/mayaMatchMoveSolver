@@ -22,8 +22,8 @@ Reads a Matchmover rz2 file.
 import os
 import re
 
-import mmSolver.tools.loadmarker.interface as interface
-import mmSolver.tools.loadmarker.formatmanager as fmtmgr
+import mmSolver.tools.loadmarker.lib.interface as interface
+import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
 
 
 class LoaderRZ2(interface.LoaderBase):

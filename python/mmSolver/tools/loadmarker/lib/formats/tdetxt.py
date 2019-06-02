@@ -42,8 +42,8 @@ Simple file with 1 2D track and 1 frame of data::
 """
 
 import mmSolver.logger
-import mmSolver.tools.loadmarker.interface as interface
-import mmSolver.tools.loadmarker.formatmanager as fmtmgr
+import mmSolver.tools.loadmarker.lib.interface as interface
+import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
 
 LOG = mmSolver.logger.get_logger()
 

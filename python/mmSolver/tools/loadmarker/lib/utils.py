@@ -24,11 +24,12 @@ import os.path
 import pprint
 
 import maya.cmds
+
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
+import mmSolver.tools.loadmarker.lib.formatmanager as formatmanager
+import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 import mmSolver.api as mmapi
-import mmSolver.tools.loadmarker.formatmanager as formatmanager
-import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
 
 
 LOG = mmSolver.logger.get_logger()
@@ -245,6 +246,12 @@ def get_start_directory(file_path):
 
 
 def create_new_camera():
+    """
+    Create a new camera nodes and object.
+
+    :returns: Camera object.
+    :rtype: Camera
+    """
     name = 'camera'
     cam_tfm = maya.cmds.createNode(
         'transform',

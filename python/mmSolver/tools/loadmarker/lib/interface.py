@@ -40,6 +40,9 @@ class ParserError(Exception):
 def float_is_equal(x, y):
     """
     Check the two float numbers match.
+
+    :returns: True or False, if float is equal or not.
+    :rtype: bool
     """
     # float equality
     if x == y:
@@ -108,7 +111,7 @@ class KeyframeData(object):
 
     def __init__(self, data=None):
         self._data = dict()
-        self._uptodate = False
+        self._up_to_date = False
         self._keyframe_values = None
         if isinstance(data, dict):
             self._data = data.copy()
@@ -157,7 +160,7 @@ class KeyframeData(object):
         assert isinstance(self._data, dict)
 
         # This enables multiple calls not to re-compute this data.
-        if self._uptodate is True:
+        if self._up_to_date is True:
             return self._keyframe_values
 
         key_values = list()
@@ -176,7 +179,7 @@ class KeyframeData(object):
             key_values.append(key_value)
 
         self._keyframe_values = key_values
-        self._uptodate = True
+        self._up_to_date = True
         return key_values
 
     def get_times(self):
@@ -215,7 +218,7 @@ class KeyframeData(object):
         """
         Set the 'value', at 'frame'.
         """
-        self._uptodate = False
+        self._up_to_date = False
         frame_str = str(frame)
         self._data[frame_str] = value
         return True
@@ -226,7 +229,7 @@ class KeyframeData(object):
         static if all values are the same.
         """
         assert isinstance(self._data, dict)
-        self._uptodate = False
+        self._up_to_date = False
         initial = None
         total = float()  # assume it's a float?
         total_num = int()

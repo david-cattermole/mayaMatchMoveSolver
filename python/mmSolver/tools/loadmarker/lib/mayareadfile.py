@@ -153,14 +153,18 @@ def __set_attr_keyframes(node, attr_name, keyframes,
         tmp_values = list(values)
         times = []
         values = []
+        prev_t = None
         prev_v = None
         for t, v in zip(tmp_times, tmp_values):
             if prev_v is None:
                 times.append(t)
                 values.append(v)
             elif interface.float_is_equal(prev_v, v) is False:
+                times.append(prev_t)
+                values.append(prev_v)
                 times.append(t)
                 values.append(v)
+            prev_t = t
             prev_v = v
 
     node_attr = node + '.' + attr_name

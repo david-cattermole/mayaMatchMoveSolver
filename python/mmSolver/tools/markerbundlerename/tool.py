@@ -16,69 +16,50 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-This tool renames selected markers and connected bundles.
+This tool renames selected markers and bundles (and the connected nodes).
 """
 import maya.cmds
+
 import mmSolver.logger
-import mmSolver.api as mmapi
-import mmSolver.tools.selection.filternodes as filternodes
-import mmSolver.tools.markerbundlerename.lib as lib
 import mmSolver.tools.markerbundlerename.constant as const
+import mmSolver.tools.markerbundlerename.lib as lib
+import mmSolver.tools.selection.filternodes as filternodes
 
 LOG = mmSolver.logger.get_logger()
 
 
 def main():
     """
-    Renames selected markers and connected bundles.
+    Renames selected markers and bundles (and the connected nodes).
     """
     selection = maya.cmds.ls(selection=True, long=True) or []
-
-    selected_markers = filternodes.get_marker_nodes(selection)
-    if not selected_markers:
-        LOG.warning('Please select markers')
+    sel_mkr_nodes = filternodes.get_marker_nodes(selection)
+    sel_bnd_nodes = filternodes.get_bundle_nodes(selection)
+    if len(sel_mkr_nodes) == 0 and len(sel_bnd_nodes) == 0:
+        LOG.warning('Please select markers or bundles to rename.')
         return
 
     title = const.TITLE
     message = const.MESSAGE
     text = const.MARKER_NAME
-    marker_name = lib.prompt_for_new_node_name(title, message, text)
-    # if user clicks cancel on prompt window it returns "None"
-    if not marker_name:
+    mkr_name = lib.prompt_for_new_node_name(title, message, text)
+    if mkr_name is None:
+        # If user clicks cancel on prompt window it returns None.
+        LOG.warning('User canceled rename.')
         return
 
+    number_format = const.NUMBER_FORMAT
     mkr_suffix = const.MARKER_SUFFIX
     bnd_suffix = const.BUNDLE_SUFFIX
-    if marker_name == text:
-        bundle_name = const.BUNDLE_NAME
+    if mkr_name == text:
+        bnd_name = const.BUNDLE_NAME
     else:
-        bundle_name = marker_name
-
-    total_mkrs = len(selected_markers)
-    for number, marker in enumerate(reversed(selected_markers)):
-        num_str = '%02d' % (total_mkrs - number)
-        new_mkr_name = mmapi.get_marker_name(
-            num_str,
-            prefix=marker_name,
-            suffix=mkr_suffix
-        )
-
-        mkr = mmapi.Marker(node=marker)
-        mkr_node = mkr.get_node()
-        maya.cmds.rename(mkr_node, new_mkr_name)
-
-        bnd = mkr.get_bundle()
-        # checking if marker is connected to bundle
-        if not bnd:
-            msg = 'Cannot find bundle connected to Marker; mkr_node=%r'
-            LOG.warning(msg, mkr_node)
-            continue
-
-        new_bnd_name = mmapi.get_bundle_name(
-            num_str,
-            prefix=bundle_name,
-            suffix=bnd_suffix
-        )
-        bnd_node = bnd.get_node()
-        maya.cmds.rename(bnd_node, new_bnd_name)
+        bnd_name = mkr_name
+    nodes = lib.rename_markers_and_bundles(
+        sel_mkr_nodes, sel_bnd_nodes,
+        mkr_name, bnd_name,
+        number_format,
+        mkr_suffix, bnd_suffix
+    )
+    maya.cmds.select(nodes, replace=True)
     return

@@ -38,8 +38,8 @@ def smooth_animcurve(animcurve, selected_keyframes,
         return
     first_time = int(times[0])
     last_time = int(times[-1])
-    first_time_padded = first_time - (width * 2)
-    last_time_padded = last_time + (width * 2)
+    first_time_padded = int(first_time - (width * 2))
+    last_time_padded = int(last_time + (width * 2))
 
     all_times = range(first_time_padded, last_time_padded + 1)
     weight_array = [0.0] * len(all_times)

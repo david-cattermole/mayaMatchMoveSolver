@@ -24,6 +24,7 @@ this module.
 """
 
 from functools import wraps
+import warnings
 import json
 import re
 
@@ -392,13 +393,13 @@ def get_marker_name(name, prefix=None, suffix=None):
     :param name: Name of object.
     :type name: str
 
-    :param name: Prefix of the marker, if a number is the first
-                 letter. If None, a default name is added.
-    :type name: str or None
+    :param prefix: Prefix of the marker, if a number is the first
+                   character. If None, a default name is added.
+    :type prefix: str or None
 
-    :param name: Suffix of the marker, added to the name. If None, a
-                 default name is added.
-    :type name: str or None
+    :param suffix: Suffix of the marker, added to the name. If None, a
+                   default name is added.
+    :type suffix: str or None
 
     :return: Name for the marker.
     :rtype: str
@@ -424,13 +425,13 @@ def get_bundle_name(name, prefix=None, suffix=None):
     :param name: Name of object.
     :type name: str
 
-    :param name: Prefix of the bundle, if a number is the first
-                 letter. If None, a default name is added.
-    :type name: str or None
+    :param prefix: Prefix of the bundle, if a number is the first
+                   character. If None, a default name is added.
+    :type prefix: str or None
 
-    :param name: Suffix of the bundle, added to the name. If None, a
-                 default name is added.
-    :type name: str or None
+    :param suffix: Suffix of the bundle, added to the name. If None, a
+                   default name is added.
+    :type suffix: str or None
 
     :return: Name for the bundle.
     :rtype: str
@@ -499,6 +500,8 @@ def get_data_on_node_attr(node_name, attr_name):
     :return: Arbitrary Plain-Old-Data data structures.
     :rtype: list of dict
     """
+    msg = 'This is deprecated. Use `mmSolver.utils.config` module'
+    warnings.warn(msg)
     ret = []
     attrs = maya.cmds.listAttr(node_name)
     if attr_name not in attrs:
@@ -532,6 +535,8 @@ def set_data_on_node_attr(node_name, attr_name, data):
     ;return: Nothing.
     :rtype: None
     """
+    msg = 'This is deprecated. Use `mmSolver.utils.config` module'
+    warnings.warn(msg)
     assert isinstance(attr_name, (str, unicode))
     assert isinstance(data, (list, dict))
     node_attr = node_name + '.' + attr_name
@@ -560,6 +565,8 @@ def get_value_on_node_attr(node_name, attr_name):
     :return: A numeric value.
     :rtype: bool or float or int
     """
+    msg = 'This is deprecated. Use `mmSolver.utils.config` module'
+    warnings.warn(msg)
     ret = []
     attrs = maya.cmds.listAttr(node_name)
     if attr_name not in attrs:
@@ -588,6 +595,8 @@ def set_value_on_node_attr(node_name, attr_name, data):
     ;return: Nothing.
     :rtype: None
     """
+    msg = 'This is deprecated. Use `mmSolver.utils.config` module'
+    warnings.warn(msg)
     assert isinstance(attr_name, (str, unicode))
     assert isinstance(data, (bool, float, int))
     node_attr = node_name + '.' + attr_name

@@ -19,6 +19,11 @@
 Attribute nodes for the mmSolver Window UI.
 """
 
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
+import Qt.QtCore as QtCore
+
 import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.nodes as nodes
@@ -156,6 +161,15 @@ class AttrModel(uimodels.ItemModel):
             # 3: 'Max',
         }
         return column_names
+
+    def columnAlignments(self):
+        values = {
+            'Attr': QtCore.Qt.AlignLeft,
+            'State': QtCore.Qt.AlignRight,
+            # 'Min': QtCore.Qt.AlignCenter,
+            # 'Max': QtCore.Qt.AlignCenter,
+        }
+        return values
 
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {

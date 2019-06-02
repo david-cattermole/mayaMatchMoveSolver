@@ -90,6 +90,12 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         }
         return dict(column_names)
 
+    def columnAlignments(self):
+        values = {
+            'Column': QtCore.Qt.AlignLeft,
+        }
+        return values
+
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {
             'Column': 'name',
@@ -125,6 +131,12 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         if index.column() == 0:
             return node.icon()
         return None
+
+    def indexColumnAlignment(self, index):
+        alignments = self.columnAlignments()
+        column_name = self.getColumnNameFromIndex(index)
+        align = alignments.get(column_name, QtCore.Qt.AlignLeft)
+        return align
 
     ####################################################
 
@@ -203,14 +215,15 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
     def data(self, index, role):
         if not index.isValid():
             return None
-        node = index.internalPointer()
 
         if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
             func = self.getGetAttrFuncFromIndex(index)
+            value = None
             if func is not None:
                 value = func()
             return value
 
+        node = index.internalPointer()
         if role == QtCore.Qt.DecorationRole:
             return self.indexIcon(index)
 
@@ -223,6 +236,9 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         if role == QtCore.Qt.FontRole:
             if self._font is not None:
                 return self._font
+
+        if role == QtCore.Qt.TextAlignmentRole:
+            return self.indexColumnAlignment(index)
         return
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):

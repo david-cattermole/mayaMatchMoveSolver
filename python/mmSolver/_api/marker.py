@@ -25,11 +25,13 @@ import maya.OpenMaya as OpenMaya
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
 import mmSolver._api.bundle
 import mmSolver._api.camera as camera
 import mmSolver._api.markergroup as markergroup
+import mmSolver._api.markerutils as markerutils
 
 
 LOG = mmSolver.logger.get_logger()
@@ -181,7 +183,7 @@ class Marker(object):
             assert len(colour) == 3
 
         # Transform
-        tfm = maya.cmds.createNode('transform', name=name)
+        tfm = maya.cmds.createNode(const.MARKER_TRANSFORM_NODE_TYPE, name=name)
         tfm = api_utils.get_long_name(tfm)
         maya.cmds.setAttr(tfm + '.tz', -1.0)
         maya.cmds.setAttr(tfm + '.tz', lock=True)
@@ -191,6 +193,9 @@ class Marker(object):
         maya.cmds.setAttr(tfm + '.sx', lock=True)
         maya.cmds.setAttr(tfm + '.sy', lock=True)
         maya.cmds.setAttr(tfm + '.sz', lock=True)
+        maya.cmds.setAttr(tfm + '.shxy', lock=True)
+        maya.cmds.setAttr(tfm + '.shxz', lock=True)
+        maya.cmds.setAttr(tfm + '.shyz', lock=True)
         maya.cmds.setAttr(tfm + '.tz', keyable=False, channelBox=False)
         maya.cmds.setAttr(tfm + '.rx', keyable=False, channelBox=False)
         maya.cmds.setAttr(tfm + '.ry', keyable=False, channelBox=False)
@@ -198,10 +203,14 @@ class Marker(object):
         maya.cmds.setAttr(tfm + '.sx', keyable=False, channelBox=False)
         maya.cmds.setAttr(tfm + '.sy', keyable=False, channelBox=False)
         maya.cmds.setAttr(tfm + '.sz', keyable=False, channelBox=False)
+        maya.cmds.setAttr(tfm + '.shxy', keyable=False, channelBox=False)
+        maya.cmds.setAttr(tfm + '.shxz', keyable=False, channelBox=False)
+        maya.cmds.setAttr(tfm + '.shyz', keyable=False, channelBox=False)
 
         # Shape Node
         shp_name = tfm.rpartition('|')[-1] + 'Shape'
-        shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm)
+        shp = maya.cmds.createNode(const.MARKER_SHAPE_NODE_TYPE,
+                                   name=shp_name, parent=tfm)
         maya.cmds.setAttr(shp + '.localScaleX', 0.01)
         maya.cmds.setAttr(shp + '.localScaleY', 0.01)
         maya.cmds.setAttr(shp + '.localScaleZ', 0.0)
@@ -261,6 +270,108 @@ class Marker(object):
 
     ############################################################################
 
+    def get_enable(self, time=None):
+        """
+        Get the enabled state of the Marker.
+
+        :param time: The time to query the enable, if not given the
+                      current frame is used.  
+        :type time: float
+
+        :returns: The enabled state of the marker.
+        :rtype: int
+        """
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return
+        v = None
+        if time is None:
+            v = maya.cmds.getAttr(node + '.enable')
+        else:
+            v = maya.cmds.getAttr(node + '.enable', time=time)
+        return v
+
+    def get_weight(self, time=None):
+        """
+        Get the current wire-frame colour of the Marker.
+
+        :param time: The time to query the weight, if not given the
+                     current frame is used.  
+        :type time: float
+
+        :returns: The weight of the marker.
+        :rtype: float
+        """
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return
+        v = None
+        if time is None:
+            v = maya.cmds.getAttr(node + '.weight')
+        else:
+            v = maya.cmds.getAttr(node + '.weight', time=time)
+        return v
+
+    def get_deviation(self, times=None):
+        """
+        Get the deviation for the marker, computed live.
+
+        :param times: The times to query the deviation on, if not
+                      given the current frame is used.
+        :type times: float
+
+        :returns: The deviation of the marker-to-bundle re-projection in pixels.
+        :rtype: float
+        """
+        v = None
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get Marker node. self=%r'
+            LOG.warning(msg, self)
+            return v
+        cam = self.get_camera()
+        if cam is None:
+            msg = 'Could not get Camera node. self=%r'
+            LOG.warning(msg, self)
+            return v
+        bnd = self.get_bundle()
+        if bnd is None:
+            msg = 'Could not get Bundle node. self=%r'
+            LOG.warning(msg, self)
+            return v
+
+        frames = []
+        if times is None:
+            frames = [maya.cmds.currentTime(query=True)]
+        else:
+            frames = times
+        assert len(frames) > 0
+
+        cam_tfm = cam.get_transform_node()
+        cam_shp = cam.get_shape_node()
+        hfa = maya.cmds.getAttr(
+            cam_shp + '.horizontalFilmAperture',
+            time=frames[0])
+        vfa = maya.cmds.getAttr(
+            cam_shp + '.verticalFilmAperture',
+            time=frames[0])
+        # TODO: Get camera image plane width.
+        image_width = 2048.0
+        image_height = image_width * (vfa / hfa)
+
+        bnd_node = bnd.get_node()
+        dev = markerutils.calculate_marker_deviation(
+            node, bnd_node,
+            cam_tfm, cam_shp,
+            frames,
+            image_width, image_height
+        )
+        return dev
+    
     def get_colour_rgb(self):
         """
         Get the current wire-frame colour of the Marker.
@@ -316,7 +427,10 @@ class Marker(object):
         if node is not None:
             assert maya.cmds.objExists(node)
             bnd_node = None
-            bnd_nodes = maya.cmds.listConnections(node + '.bundle') or []
+            node_attr = node + '.bundle'
+            bnd_nodes = maya.cmds.listConnections(
+                node_attr,
+                type=const.BUNDLE_TRANSFORM_NODE_TYPE) or []
             if len(bnd_nodes) > 0:
                 bnd_node = bnd_nodes[0]
             if bnd_node is not None and len(bnd_node) > 0:

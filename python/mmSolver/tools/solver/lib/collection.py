@@ -319,6 +319,183 @@ def ensure_override_current_frame_attr_exists(col):
     return
 
 
+def get_attribute_toggle_animated_from_collection(col):
+    """
+    Get the value of 'Attributes Toggle Animated', from a Collection.
+
+    :param col: The Collection to query.
+    :type col: Collection
+
+    :returns: True or False.
+    :rtype: bool
+    """
+    node = col.get_node()
+    ensure_attribute_toggle_animated_attr_exists(col)
+    value = mmapi.get_value_on_node_attr(node, const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR)
+    assert isinstance(value, bool)
+    return value
+
+
+def set_attribute_toggle_animated_on_collection(col, value):
+    """
+    Set the value of 'Attributes Toggle Animated' on a Collection.
+
+    :param col: The Collection to change.
+    :type col: Collection
+
+    :param value: Value to set to.
+    :type value: bool
+    """
+    assert isinstance(value, bool)
+    ensure_attribute_toggle_animated_attr_exists(col)
+    node = col.get_node()
+    mmapi.set_value_on_node_attr(node, const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR, value)
+    return
+
+
+def ensure_attribute_toggle_animated_attr_exists(col):
+    """
+    Forces the creation of a 'attribute_toggle_animated' attribute, if
+    none exists already.
+
+    :param col: The Collection to create the attribute on.
+    :type col: Collection
+    """
+    node = col.get_node()
+    default_value = const.ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE
+    attr_name = const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR
+    attrs = maya.cmds.listAttr(node)
+    if attr_name in attrs:
+        return
+    maya.cmds.addAttr(
+        node,
+        defaultValue=default_value,
+        longName=attr_name,
+        attributeType='bool'
+    )
+    node_attr = node + '.' + attr_name
+    maya.cmds.setAttr(node_attr, lock=True)
+    return
+
+
+def get_attribute_toggle_static_from_collection(col):
+    """
+    Get the value of 'Attributes Toggle Static', from a Collection.
+
+    :param col: The Collection to query.
+    :type col: Collection
+
+    :returns: True or False.
+    :rtype: bool
+    """
+    node = col.get_node()
+    ensure_attribute_toggle_static_attr_exists(col)
+    value = mmapi.get_value_on_node_attr(node, const.ATTRIBUTE_TOGGLE_STATIC_ATTR)
+    assert isinstance(value, bool)
+    return value
+
+
+def set_attribute_toggle_static_on_collection(col, value):
+    """
+    Set the value of 'Attributes Toggle Static' on a Collection.
+
+    :param col: The Collection to change.
+    :type col: Collection
+
+    :param value: Value to set to.
+    :type value: bool
+    """
+    assert isinstance(value, bool)
+    ensure_attribute_toggle_static_attr_exists(col)
+    node = col.get_node()
+    mmapi.set_value_on_node_attr(node, const.ATTRIBUTE_TOGGLE_STATIC_ATTR, value)
+    return
+
+
+def ensure_attribute_toggle_static_attr_exists(col):
+    """
+    Forces the creation of a 'attribute_toggle_static' attribute, if
+    none exists already.
+
+    :param col: The Collection to create the attribute on.
+    :type col: Collection
+    """
+    node = col.get_node()
+    default_value = const.ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE
+    attr_name = const.ATTRIBUTE_TOGGLE_STATIC_ATTR
+    attrs = maya.cmds.listAttr(node)
+    if attr_name in attrs:
+        return
+    maya.cmds.addAttr(
+        node,
+        defaultValue=default_value,
+        longName=attr_name,
+        attributeType='bool'
+    )
+    node_attr = node + '.' + attr_name
+    maya.cmds.setAttr(node_attr, lock=True)
+    return
+
+
+def get_attribute_toggle_locked_from_collection(col):
+    """
+    Get the value of 'Attributes Toggle Locked', from a Collection.
+
+    :param col: The Collection to query.
+    :type col: Collection
+
+    :returns: True or False.
+    :rtype: bool
+    """
+    node = col.get_node()
+    ensure_attribute_toggle_locked_attr_exists(col)
+    value = mmapi.get_value_on_node_attr(node, const.ATTRIBUTE_TOGGLE_LOCKED_ATTR)
+    assert isinstance(value, bool)
+    return value
+
+
+def set_attribute_toggle_locked_on_collection(col, value):
+    """
+    Set the value of 'Attributes Toggle Locked' on a Collection.
+
+    :param col: The Collection to change.
+    :type col: Collection
+
+    :param value: Value to set to.
+    :type value: bool
+    """
+    assert isinstance(value, bool)
+    ensure_attribute_toggle_locked_attr_exists(col)
+    node = col.get_node()
+    mmapi.set_value_on_node_attr(node, const.ATTRIBUTE_TOGGLE_LOCKED_ATTR, value)
+    return
+
+
+def ensure_attribute_toggle_locked_attr_exists(col):
+    """
+    Forces the creation of a 'attribute_toggle_locked' attribute, if
+    none exists already.
+
+    :param col: The Collection to create the attribute on.
+    :type col: Collection
+    """
+    node = col.get_node()
+    default_value = const.ATTRIBUTE_TOGGLE_LOCKED_DEFAULT_VALUE
+    attr_name = const.ATTRIBUTE_TOGGLE_LOCKED_ATTR
+    attrs = maya.cmds.listAttr(node)
+    if attr_name in attrs:
+        return
+    maya.cmds.addAttr(
+        node,
+        defaultValue=default_value,
+        longName=attr_name,
+        attributeType='bool'
+    )
+    node_attr = node + '.' + attr_name
+    maya.cmds.setAttr(node_attr, lock=True)
+    return
+
+
 def get_object_toggle_camera_from_collection(col):
     """
     Get the value of 'Objects Toggle Camera', from a Collection.

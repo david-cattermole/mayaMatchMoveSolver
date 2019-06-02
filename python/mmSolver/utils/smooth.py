@@ -65,7 +65,7 @@ def smooth(smooth_type, value_array, width):
     Run a Smoothing function, of any type, just pass a 'smooth type' in.
 
     :param smooth_type: Type of smoothing operation.
-    :tyoe smooth_type: SMOOTH_TYPE_*
+    :type smooth_type: SMOOTH_TYPE_*
 
     :param value_array: Input data to smooth.
     :type value_array: [float, ..]

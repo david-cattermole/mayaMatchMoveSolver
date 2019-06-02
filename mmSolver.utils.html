@@ -103,6 +103,157 @@ value, then re-lock afterward?</li>
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="mmSolver.utils.node.get_long_name">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_long_name</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_long_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a valid node path, get the &#8216;full path&#8217; node name, or None if invalid.</p>
+<dl class="docutils">
+<dt>note::</dt>
+<dd>DG nodes do not have a &#8216;full path&#8217; as they do not have hierarchy and
+will always have unique node names.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Maya DG or DAG node path.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Full path node name.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">None or str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_as_selection_list">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_selection_list</code><span class="sig-paren">(</span><em>paths</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_selection_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a Maya API selection list with the given valid Maya node paths.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paths</strong> (<em>list of str</em>) &#8211; List of Maya node paths.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MSelectionList with valid nodes added to list.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">OpenMaya.MSelectionList</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_as_dag_path">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_dag_path</code><span class="sig-paren">(</span><em>node_str</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_dag_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the given Maya node path into a MDagPath object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_str</strong> (<em>str</em>) &#8211; Maya node path to be converted.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MDagPath API object or None if the &#8216;node_str&#8217; is invalid.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">MDagPath or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_as_object">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_object</code><span class="sig-paren">(</span><em>node_str</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the given Maya node path into a MObject object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_str</strong> (<em>str</em>) &#8211; Maya node path to be converted.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MObject API object or None, if conversion failed.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">MObject or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_as_plug">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_plug</code><span class="sig-paren">(</span><em>node_attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_plug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the given &#8216;node.attr&#8217; path into a MPlug object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_attr</strong> (<em>str</em>) &#8211; Node attribute string in format &#8216;node.attr&#8217;.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MPlug object or None if conversion failed.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">MPlug or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_camera_above_node">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_camera_above_node</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_camera_above_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the first camera transform and shape node above the node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em><em> or </em><em>unicode</em>) &#8211; The node name to check above for a camera.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Tuple of camera transform and shape nodes, or (None, None)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_node_wire_colour_rgb">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_node_wire_colour_rgb</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_node_wire_colour_rgb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current wireframe colour of the node.</p>
+<p>The &#8216;node&#8217; is assumed to a DAG node (capable of having a wireframe
+colour).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Maya node path to get wireframe colour from.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Tuple of red, green and blue.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(float, float, float)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.set_node_wire_colour_rgb">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">set_node_wire_colour_rgb</code><span class="sig-paren">(</span><em>node</em>, <em>rgb</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.set_node_wire_colour_rgb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the wireframe colour of the node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rgb</strong> (<em>tuple</em>) &#8211; Colour as R, G, B; Or None to reset to default colour.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nothing.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="module-mmSolver.utils.camera">
 <span id="camera"></span><h2>Camera<a class="headerlink" href="#module-mmSolver.utils.camera" title="Permalink to this headline">¶</a></h2>
@@ -158,6 +309,18 @@ value, then re-lock afterward?</li>
 <span id="viewport"></span><h2>Viewport<a class="headerlink" href="#module-mmSolver.utils.viewport" title="Permalink to this headline">¶</a></h2>
 <p>Utilities for setting and querying viewport related information.</p>
 <dl class="function">
+<dt id="mmSolver.utils.viewport.viewport_turn_off">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off Maya UI.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.viewport_turn_on">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn on Maya UI.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="mmSolver.utils.viewport.get_active_model_editor">
 <code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_active_model_editor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_active_model_editor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the active model editor.</p>
@@ -187,6 +350,36 @@ value, then re-lock afterward?</li>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_all_model_panels">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_all_model_panels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_all_model_panels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all Maya model panels.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_isolated_nodes">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_isolated_nodes</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_isolated_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return nodes that are being isolated for &#8216;model_panel&#8217;.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_image_plane_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_image_plane_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_image_plane_visibility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_image_plane_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_image_plane_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_image_plane_visibility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_isolated_nodes">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_isolated_nodes</code><span class="sig-paren">(</span><em>model_panel</em>, <em>nodes</em>, <em>enable</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_isolated_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override the isolate objects on &#8216;model_panel&#8217;.</p>
+<p>With an empty list, this function clears the &#8216;model_panel&#8217;s
+isolate object list.</p>
 </dd></dl>
 
 </div>

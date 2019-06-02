@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mmSolver.tools.triangulatebundle &#8212; mayaMatchMoveSolver master documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'master',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.api" href="mmSolver.api.html" />
+    <link rel="prev" title="mmSolver.tools.togglemarkerlock" href="mmSolver.tools.togglemarkerlock.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.api.html" title="mmSolver.api"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.togglemarkerlock.html" title="mmSolver.tools.togglemarkerlock"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-mmSolver.tools.triangulatebundle">
+<span id="mmsolver-tools-triangulatebundle"></span><h1>mmSolver.tools.triangulatebundle<a class="headerlink" href="#module-mmSolver.tools.triangulatebundle" title="Permalink to this headline">¶</a></h1>
+<p>Calculate a 3D position of a bundle, based on the camera and 2D marker.</p>
+<div class="section" id="tools">
+<h2>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-mmSolver.tools.triangulatebundle.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.triangulatebundle.lib" title="Permalink to this headline">¶</a></h2>
+<p>Position Bundle under the Marker.</p>
+<dl class="function">
+<dt id="mmSolver.tools.triangulatebundle.lib.get_marker_frame_list">
+<code class="descclassname">mmSolver.tools.triangulatebundle.lib.</code><code class="descname">get_marker_frame_list</code><span class="sig-paren">(</span><em>mkr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.triangulatebundle.lib.get_marker_frame_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of frames that this marker is enabled for.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.triangulatebundle.lib.get_point_and_direction">
+<code class="descclassname">mmSolver.tools.triangulatebundle.lib.</code><code class="descname">get_point_and_direction</code><span class="sig-paren">(</span><em>camera_node</em>, <em>point_node</em>, <em>frame</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.triangulatebundle.lib.get_point_and_direction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the direction of the camera toward a given point.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>camera_node</strong> (<em>str</em>) &#8211; Camera transform node.</li>
+<li><strong>point_node</strong> (<em>str</em>) &#8211; Transform node to aim at.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Point and direction from camera to point.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.triangulatebundle.lib.calculate_approx_intersection_point_between_two_3d_lines">
+<code class="descclassname">mmSolver.tools.triangulatebundle.lib.</code><code class="descname">calculate_approx_intersection_point_between_two_3d_lines</code><span class="sig-paren">(</span><em>a_pnt</em>, <em>a_dir</em>, <em>b_pnt</em>, <em>b_dir</em>, <em>eps=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.triangulatebundle.lib.calculate_approx_intersection_point_between_two_3d_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate approximate intersection between two lines in 3D.</p>
+<p><a class="reference external" href="http://paulbourke.net/geometry/pointlineplane/">http://paulbourke.net/geometry/pointlineplane/</a>
+<a class="reference external" href="http://paulbourke.net/geometry/pointlineplane/lineline.c">http://paulbourke.net/geometry/pointlineplane/lineline.c</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>a_pnt</strong> (<em>MPoint</em>) &#8211; Point A.</li>
+<li><strong>a_dir</strong> (<em>MVector</em>) &#8211; Direction A.</li>
+<li><strong>b_pnt</strong> (<em>MPoint</em>) &#8211; Point B</li>
+<li><strong>b_dir</strong> (<em>MVector</em>) &#8211; Direction B.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Two points to define the closest line intersection.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:rtype (MPoint, MPoint)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.triangulatebundle.lib.triangulate_bundle">
+<code class="descclassname">mmSolver.tools.triangulatebundle.lib.</code><code class="descname">triangulate_bundle</code><span class="sig-paren">(</span><em>bnd</em>, <em>relock=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.triangulatebundle.lib.triangulate_bundle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triangulate a 3D bundle position.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bnd</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Bundle" title="mmSolver.api.Bundle"><em>Bundle</em></a>) &#8211; Bundle to be triangulated.</li>
+<li><strong>relock</strong> (<em>bool</em>) &#8211; If True any bundle translate attributes will be
+unlocked, changed then relocked.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.triangulatebundle</a><ul>
+<li><a class="reference internal" href="#tools">Tools</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.triangulatebundle.lib">Library</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.tools.togglemarkerlock.html"
+                        title="previous chapter">mmSolver.tools.togglemarkerlock</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.api.html"
+                        title="next chapter">mmSolver.api</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.triangulatebundle.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.api.html" title="mmSolver.api"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.togglemarkerlock.html" title="mmSolver.tools.togglemarkerlock"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

@@ -207,6 +207,38 @@ project. The tool will work on the current frame only.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="re-project-bundle">
+<h2>Re-Project Bundle<a class="headerlink" href="#re-project-bundle" title="Permalink to this headline">¶</a></h2>
+<p>Position Bundle under the Marker, in screen-space.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select Markers or Bundles</li>
+</ol>
+<ol class="arabic simple" start="3">
+<li>Run tool.</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reprojectbundle.tool</span> <span class="k">as</span> <span class="nn">reprojbnd_tool</span>
+<span class="n">reprojbnd_tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="triangulate-bundle">
+<h2>Triangulate Bundle<a class="headerlink" href="#triangulate-bundle" title="Permalink to this headline">¶</a></h2>
+<p>Calculate a 3D position of a bundle, based on the camera and 2D marker.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select Markers or Bundles</li>
+</ol>
+<ol class="arabic simple" start="3">
+<li>Run tool.</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.triangulatebundle.tool</span> <span class="k">as</span> <span class="nn">tribnd_tool</span>
+<span class="n">tribnd_tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="center-2d-on-selection">
 <h2>Center 2D On Selection<a class="headerlink" href="#center-2d-on-selection" title="Permalink to this headline">¶</a></h2>
 <p>Forces the active viewport camera to lock it’s center to the currently
@@ -363,6 +395,8 @@ markers.</p>
 <li><a class="reference internal" href="#marker-bundle-rename">Marker Bundle Rename</a></li>
 <li><a class="reference internal" href="#ray-cast-marker">Ray-Cast Marker</a></li>
 <li><a class="reference internal" href="#smooth-keyframes">Smooth Keyframes</a></li>
+<li><a class="reference internal" href="#re-project-bundle">Re-Project Bundle</a></li>
+<li><a class="reference internal" href="#triangulate-bundle">Triangulate Bundle</a></li>
 <li><a class="reference internal" href="#center-2d-on-selection">Center 2D On Selection</a></li>
 <li><a class="reference internal" href="#aim-at-camera">Aim at Camera</a></li>
 <li><a class="reference internal" href="#screen-z-manipulator">Screen-Z Manipulator</a></li>

@@ -116,7 +116,7 @@ def set_node_option(node_name, attr_name, value,
 
     :rtype: None
     """
-    assert isinstance(attr_name, (str, unicode))
+    assert isinstance(attr_name, basestring)
     assert isinstance(value, (bool, float, int, basestring))
     if add_attr is None:
         add_attr = False
@@ -135,7 +135,7 @@ def set_node_option(node_name, attr_name, value,
     maya.cmds.setAttr(node_attr, lock=False)
     if isinstance(value, (bool, float, int)):
         maya.cmds.setAttr(node_attr, value)
-    elif isinstance(value, str):
+    elif isinstance(value, basestring):
         maya.cmds.setAttr(node_attr, value, type='string')
     maya.cmds.setAttr(node_attr, lock=True)
     return
@@ -177,7 +177,7 @@ def set_node_option_structure(node_name, attr_name, data_struct, add_attr=None):
     :type attr_name: str
 
     :param data_struct: The data to store.
-    :type data_struct: dict
+    :type data_struct: dict or list
 
     :param add_attr: Add attribute to the given node, if the attribute
                      does not already exist.
@@ -186,7 +186,7 @@ def set_node_option_structure(node_name, attr_name, data_struct, add_attr=None):
     :rtype: None
     """
     assert isinstance(attr_name, (str, unicode))
-    assert isinstance(data_struct, dict)
+    assert isinstance(data_struct, (list, dict))
 
     new_attr_data = json.dumps(data_struct)
     old_attr_data = get_node_option(node_name, attr_name)

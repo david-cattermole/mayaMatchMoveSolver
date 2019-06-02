@@ -100,6 +100,8 @@ class MarkerNode(ObjectNode):
         if not enable:
             return dev
         dev = mkr.get_deviation(times=None)
+        if dev is None:
+            dev = -1.0
         return '%.2f' % dev[0]
 
 

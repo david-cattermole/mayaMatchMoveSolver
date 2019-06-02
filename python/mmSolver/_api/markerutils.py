@@ -87,8 +87,7 @@ def calculate_marker_deviation(mkr_node,
     for i, (mx, my, bx, by) in enumerate(zip(mkr_x, mkr_y, bnd_x, bnd_y)):
         dx = mx - bx
         dy = my - by
-        dev[i] = math.sqrt((dx * dx) + (dy * dy))
-        
+        dev[int(i)] = math.sqrt((dx * dx) + (dy * dy))
     return dev
 
 

@@ -371,6 +371,8 @@ class Marker(object):
             frames,
             image_width, image_height
         )
+        if dev is None:
+            dev = -1.0
         return dev
     
     def get_colour_rgb(self):

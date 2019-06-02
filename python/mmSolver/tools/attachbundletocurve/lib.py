@@ -9,15 +9,18 @@ import mmSolver.api as mmapi
 LOG = mmSolver.logger.get_logger()
 
 
-def _lerp(a, b, f):
-    return a + f * (b - a)
-
-
-def get_nurbs_curve_nodes(sel):
+def get_nurbs_curve_nodes(nodes):
     """
+    Get the NURBS curve shape nodes from the given nodes.
+
+    :param nodes: Nodes to query.
+    :type nodes: [str, ..]
+
+    :returns: List of NURBS curve shape nodes.
+    :rtype: [str, ..]
     """
     crv_shp_nodes = []
-    for node in sel:
+    for node in nodes:
         node_type = maya.cmds.nodeType(node)
         if node_type == 'transform':
             shps = maya.cmds.listRelatives(
@@ -33,6 +36,18 @@ def get_nurbs_curve_nodes(sel):
 
 def get_closest_point_on_nurbs_curve(pos, crv_shp_node):
     """
+    Get the position along a NURBS curve that is closest to the input position.
+
+    Position is expected to be in world space.
+
+    :param pos: Position of the input to find closest point.
+    :type pos: [float, float, float]
+
+    :param crv_shp_node: NURBS curve shape node.
+    :type crv_shp_node: str
+
+    :returns: Tuple of world space position and percentage along the NURBS curve.
+    :rtype: ([float, float, float], float)
     """
     assert isinstance(pos, (tuple, list))
     assert len(pos) == 3
@@ -42,15 +57,15 @@ def get_closest_point_on_nurbs_curve(pos, crv_shp_node):
     try:
         crv_min = maya.cmds.getAttr(crv_shp_node + '.minValue')
         crv_max = maya.cmds.getAttr(crv_shp_node + '.maxValue')
-        
+
         src = crv_shp_node + '.worldSpace[0]'
         dst = node + '.inputCurve'
         maya.cmds.connectAttr(src, dst)
 
-        maya.cmds.setAttr(node + '.inPosition', pos)
+        maya.cmds.setAttr(node + '.inPosition', *pos)
         closest_pos = maya.cmds.getAttr(node + '.position')
         closest_param = maya.cmds.getAttr(node + '.parameter')
-        closest_param = _lerp(crv_min, crv_max, closest_param)
+        closest_param = (closest_param - crv_min) / (crv_max - crv_min)
     finally:
         maya.cmds.delete(node)
     return closest_pos, closest_param
@@ -59,6 +74,22 @@ def get_closest_point_on_nurbs_curve(pos, crv_shp_node):
 def connect_transform_to_nurbs_curve(tfm_node, crv_shp_node, attr_name):
     """
     Connect a transform node to a NURBS curve.
+
+    The attribute created will range from 0.0 to 100.0, with a default
+    value of 50.0.
+
+    :param tfm_node: Transform node to connect to the NURBS curve.
+    :type tfm_node: str
+
+    :param crv_shp_node: NURBS curve shape node to connect to.
+    :type crv_shp_node: str
+
+    :param attr_name: Attribute name to create on the transform.
+    :type attr_name: str
+
+    :returns: A 'pointOnCurveInfo' node name connected between the
+              transform and curve.
+    :rtype: str
     """
     assert maya.cmds.objExists(tfm_node)
     assert maya.cmds.objExists(crv_shp_node)
@@ -73,10 +104,12 @@ def connect_transform_to_nurbs_curve(tfm_node, crv_shp_node, attr_name):
         keyable=True)
 
     info_node = maya.cmds.createNode('pointOnCurveInfo')
+    plug = info_node + '.turnOnPercentage'
+    maya.cmds.setAttr(plug, 1)
     src = crv_shp_node + '.worldSpace[0]'
     dst = info_node + '.inputCurve'
     maya.cmds.connectAttr(src, dst)
-    
+
     mult_node = maya.cmds.createNode('multiplyDivide')
     maya.cmds.setAttr(mult_node + '.input2X', 0.01)
     src = mult_node + '.outputX'
@@ -86,10 +119,33 @@ def connect_transform_to_nurbs_curve(tfm_node, crv_shp_node, attr_name):
     src = tfm_node + '.' + attr_name
     dst = mult_node + '.input1X'
     maya.cmds.connectAttr(src, dst)
+
+    src = info_node + '.position'
+    dst = tfm_node + '.translate'
+    maya.cmds.connectAttr(src, dst)
     return info_node
 
 
 def attach_bundle_to_curve(bnd_node, crv_shp_node, attr_name):
+    """
+    Connect a Bundle node to a NURBS curve, and create an attribute to
+    control the position along the curve.
+
+    :param bnd_node: Bundle (transform) node to connect to the NURBS
+                     curve.
+    :type bnd_node: str
+
+    :param crv_shp_node: NURBS curve shape node to connect to.
+    :type crv_shp_node: str
+
+    :param attr_name: Attribute name to create on the bundle node.
+    :type attr_name: str
+
+    :returns: The 'node.attr' to be controlled for bundle movement
+              along the curve.
+    :rtype: str
+
+    """
     pos = maya.cmds.xform(
         bnd_node,
         query=True,
@@ -105,5 +161,4 @@ def attach_bundle_to_curve(bnd_node, crv_shp_node, attr_name):
     value = crv_param * 100.0
     plug = bnd_node + '.' + attr_name
     maya.cmds.setAttr(plug, value)
-    return
-
+    return plug

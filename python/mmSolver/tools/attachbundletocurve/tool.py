@@ -22,8 +22,8 @@ def main():
         msg = 'Please select at least one Bundle and only one NURBS curve.'
         LOG.warning(msg)
         return
-    if len(bnd_nodes) > 0 and len(crv_shp_nodes) != 0:
-        msg = 'Please select only one NURBS curve.'
+    if len(bnd_nodes) > 0 and len(crv_shp_nodes) != 1:
+        msg = 'Please select one NURBS curve.'
         LOG.warning(msg)
         return
     if len(bnd_nodes) == 0 and len(crv_shp_nodes) == 1:
@@ -32,7 +32,7 @@ def main():
         return
 
     attr_name = const.ATTR_NAME
-    crv_shp_node = crv_shp_nodes
+    crv_shp_node = crv_shp_nodes[0]
     for bnd_node in bnd_nodes:
         lib.attach_bundle_to_curve(bnd_node, crv_shp_node, attr_name)
     maya.cmds.select(bnd_nodes)

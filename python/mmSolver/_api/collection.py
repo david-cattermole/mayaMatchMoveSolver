@@ -47,18 +47,6 @@ import mmSolver._api.collectionutils as collectionutils
 LOG = mmSolver.logger.get_logger()
 
 
-def __set_status(status_fn, text):
-    if status_fn is not None:
-        status_fn(str(text))
-    return
-
-
-def __set_progress(prog_fn, value):
-    if prog_fn is not None:
-        prog_fn(int(value))
-    return
-
-
 class Collection(object):
     """
     Holds all data needed for a mmSolver run.
@@ -812,8 +800,8 @@ class Collection(object):
         try:
             if undo_state is True:
                 maya.cmds.undoInfo(openChunk=True, chunkName=undo_id)
-            __set_progress(prog_fn, 0)
-            __set_status(status_fn, 'Solver Initializing...')
+            self.__set_progress(prog_fn, 0)
+            self.__set_status(status_fn, 'Solver Initializing...')
             api_state.set_solver_running(True)
 
             # Check for validity
@@ -822,7 +810,7 @@ class Collection(object):
                 LOG.warning('Collection not valid: %r', self.get_node())
                 return solres_list
             kwargs_list = self._compile()
-            __set_progress(prog_fn, 1)
+            self.__set_progress(prog_fn, 1)
 
             # Isolate all nodes used in all of the kwargs to be run.
             # Note; This assumes the isolated objects are visible, but
@@ -865,7 +853,7 @@ class Collection(object):
             total = len(kwargs_list)
             for i, kwargs in enumerate(kwargs_list):
                 frame = kwargs.get('frame')
-                __set_status(status_fn, 'Evaluating frames %r' % frame)
+                self.__set_status(status_fn, 'Evaluating frames %r' % frame)
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
 
@@ -901,19 +889,19 @@ class Collection(object):
                 # Update progress
                 ratio = float(i) / float(total)
                 percent = float(start) + (ratio * (100.0 - start))
-                __set_progress(prog_fn, int(percent))
+                self.__set_progress(prog_fn, int(percent))
 
                 cmd_cancel = solres.get_user_interrupted()
                 gui_cancel = api_state.get_user_interrupt()
                 if cmd_cancel is True or gui_cancel is True:
                     msg = 'Canceled by User'
                     api_state.set_user_interrupt(False)
-                    __set_status(status_fn, 'WARNING: ' + msg)
+                    self.__set_status(status_fn, 'WARNING: ' + msg)
                     LOG.warning(msg)
                     break
                 if solres.get_success() is False:
                     msg = 'Solver failed!!!'
-                    __set_status(status_fn, 'ERROR: ' + msg)
+                    self.__set_status(status_fn, 'ERROR: ' + msg)
                     LOG.error(msg)
 
                 # Refresh the Viewport.
@@ -947,10 +935,22 @@ class Collection(object):
                 e = time.time()
                 LOG.debug('Finally; reset isolate selected; time=%r', e - s)
 
-            __set_progress(prog_fn, 100)
+            self.__set_progress(prog_fn, 100)
             api_state.set_solver_running(False)
 
             if undo_state is True:
                 maya.cmds.undoInfo(closeChunk=True, chunkName=undo_id)
             maya.cmds.currentTime(cur_frame, edit=True, update=True)
         return solres_list
+
+    @staticmethod
+    def __set_status(status_fn, text):
+        if status_fn is not None:
+            status_fn(str(text))
+        return
+
+    @staticmethod
+    def __set_progress(prog_fn, value):
+        if prog_fn is not None:
+            prog_fn(int(value))
+        return

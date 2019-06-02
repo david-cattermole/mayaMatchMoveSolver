@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Utility functions for Maya API.
 
@@ -376,13 +393,13 @@ def get_marker_name(name, prefix=None, suffix=None):
     :param name: Name of object.
     :type name: str
 
-    :param name: Prefix of the marker, if a number is the first
-                 letter. If None, a default name is added.
-    :type name: str or None
+    :param prefix: Prefix of the marker, if a number is the first
+                   character. If None, a default name is added.
+    :type prefix: str or None
 
-    :param name: Suffix of the marker, added to the name. If None, a
-                 default name is added.
-    :type name: str or None
+    :param suffix: Suffix of the marker, added to the name. If None, a
+                   default name is added.
+    :type suffix: str or None
 
     :return: Name for the marker.
     :rtype: str
@@ -408,13 +425,13 @@ def get_bundle_name(name, prefix=None, suffix=None):
     :param name: Name of object.
     :type name: str
 
-    :param name: Prefix of the bundle, if a number is the first
-                 letter. If None, a default name is added.
-    :type name: str or None
+    :param prefix: Prefix of the bundle, if a number is the first
+                   character. If None, a default name is added.
+    :type prefix: str or None
 
-    :param name: Suffix of the bundle, added to the name. If None, a
-                 default name is added.
-    :type name: str or None
+    :param suffix: Suffix of the bundle, added to the name. If None, a
+                   default name is added.
+    :type suffix: str or None
 
     :return: Name for the bundle.
     :rtype: str

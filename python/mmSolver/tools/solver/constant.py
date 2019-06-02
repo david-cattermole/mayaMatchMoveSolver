@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Holds all constant data needed for the solver tool and UI.
 """
@@ -121,6 +138,15 @@ OBJECT_TOGGLE_BUNDLE_ATTR = 'object_toggle_bundle'
 OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE = True
 OBJECT_TOGGLE_MARKER_DEFAULT_VALUE = True
 OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE = False
+
+# Toggle Attributes (stored on Collection node)
+ATTRIBUTE_TOGGLE_ANIMATED_ATTR = 'attribute_toggle_animated'
+ATTRIBUTE_TOGGLE_STATIC_ATTR = 'attribute_toggle_static'
+ATTRIBUTE_TOGGLE_LOCKED_ATTR = 'attribute_toggle_locked'
+
+ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE = True
+ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE = True
+ATTRIBUTE_TOGGLE_LOCKED_DEFAULT_VALUE = False
 
 # Information to filter invalid input attributes from the Solver UI.
 ATTR_INVALID_OBJECT_TYPES = [

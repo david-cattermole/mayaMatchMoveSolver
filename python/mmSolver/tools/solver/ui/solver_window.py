@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 The main window for the 'Solver' tool.
 """
@@ -51,12 +68,10 @@ class SolverWindow(BaseWindow):
         # Standard Buttons
         self.baseHideStandardButtons()
         self.applyBtn.show()
-        self.helpBtn.show()
         self.closeBtn.show()
         self.applyBtn.setText('Solve')
 
         self.applyBtn.clicked.connect(self.apply)
-        self.helpBtn.clicked.connect(self.help)
 
         # Hide irrelevant stuff
         self.baseHideProgressBar()
@@ -123,6 +138,82 @@ class SolverWindow(BaseWindow):
         file_menu.addAction(action)
 
         menubar.addMenu(file_menu)
+
+        # Edit Menu
+        edit_menu = QtWidgets.QMenu('Edit', menubar)
+
+        # Refresh Viewport During Solve
+        label = 'Refresh Viewport'
+        tooltip = 'Refresh the viewport while Solving.'
+        refresh_value = lib_state.get_refresh_viewport_state()
+        action = QtWidgets.QAction(label, edit_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(refresh_value)
+        action.toggled.connect(type(self).refreshActionToggledCB)
+        edit_menu.addAction(action)
+
+        # Force DG evaluation.
+        label = 'Force DG Update'
+        tooltip = 'Force Maya DG Evaluation while solving.'
+        force_dg_update_value = lib_state.get_force_dg_update_state()
+        action = QtWidgets.QAction(label, edit_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(force_dg_update_value)
+        action.toggled.connect(type(self).forceDgUpdateActionToggledCB)
+        edit_menu.addAction(action)
+
+        menubar.addMenu(edit_menu)
+
+        # # View Menu
+        # view_menu = QtWidgets.QMenu('View', menubar)
+
+        # # Display Object Deviation
+        # label = 'Display Object Deviation'
+        # tooltip = 'Display deviation column'
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # view_menu.addAction(action)
+
+        # # Display Object Weight
+        # label = 'Display Object Weight Column'
+        # tooltip = 'Display Object weight column'
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # view_menu.addAction(action)
+
+        # view_menu.addSeparator()
+        
+        # # Display Attribute State
+        # label = 'Display Attribute State'
+        # tooltip = 'Display Attribute State columns'
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # view_menu.addAction(action)
+
+        # # Display Attribute Min/Max
+        # label = 'Display Attribute Min/Max'
+        # tooltip = 'Display Attribute Minimum and Maximum columns'
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # view_menu.addAction(action)
+
+        # view_menu.addSeparator()
+
+        # # Deviation Live Update
+        # label = 'Deviation Live Update'
+        # tooltip = 'The Deviation shown in the UI will be updated live.'
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # view_menu.addAction(action)
+
+        # menubar.addMenu(view_menu)
 
         # Tools Menu
         tools_menu = QtWidgets.QMenu('Tools', menubar)
@@ -203,30 +294,6 @@ class SolverWindow(BaseWindow):
         action = QtWidgets.QAction(label, tools_menu)
         action.setStatusTip(tooltip)
         action.triggered.connect(partial(self.renameMarkerBundleCB))
-        tools_menu.addAction(action)
-
-        tools_menu.addSeparator()
-
-        # Refresh Viewport During Solve
-        label = 'Refresh Viewport'
-        tooltip = 'Refresh the viewport while Solving.'
-        refresh_value = lib_state.get_refresh_viewport_state()
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(refresh_value)
-        action.toggled.connect(type(self).refreshActionToggledCB)
-        tools_menu.addAction(action)
-
-        # Force DG evaluation.
-        label = 'Force DG Update'
-        tooltip = 'Force Maya DG Evaluation while solving.'
-        force_dg_update_value = lib_state.get_force_dg_update_state()
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(force_dg_update_value)
-        action.toggled.connect(type(self).forceDgUpdateActionToggledCB)
         tools_menu.addAction(action)
 
         menubar.addMenu(tools_menu)

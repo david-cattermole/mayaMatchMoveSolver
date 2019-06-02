@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Convert mmSolver API objects into UI objects that can be used in Qt models.
 """
@@ -72,13 +89,22 @@ def markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd):
     return root
 
 
-def attributesToUINodes(attr_list):
+def attributesToUINodes(attr_list, show_anm, show_stc, show_lck):
     """
     Convert a list of mmSolver API Attributes into classes to be used
     in the Solver UI.
 
     :param attr_list: List of Attributes to convert.
     :type attr_list: [Attribute, ..]
+
+    :param show_anm: Should the animated attributes be visible?
+    :type show_anm: bool
+
+    :param show_stc: Should the static attributes be visible?
+    :type show_stc: bool
+
+    :param show_lck: Should the locked attributes be visible?
+    :type show_lck: bool
 
     :returns: A hierarchy of UI nodes to be viewed in a 'tree view'.
     :rtype: PlugNode
@@ -87,6 +113,12 @@ def attributesToUINodes(attr_list):
     maya_nodes = dict()
     for attr in attr_list:
         n = attr.get_node()
+        if attr.is_animated() is True and show_anm is False:
+            continue
+        elif attr.is_static() is True and show_stc is False:
+            continue
+        elif attr.is_locked() is True and show_lck is False:
+            continue
         maya_node = maya_nodes.get(n)
         data = {'data': attr}
         if maya_node is None:

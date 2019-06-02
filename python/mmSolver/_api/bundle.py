@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 3D Bundle objects.
 """
@@ -6,6 +23,7 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
+import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 import mmSolver._api.marker
 
@@ -120,7 +138,8 @@ class Bundle(object):
             assert len(colour) == 3
 
         # Transform
-        tfm = maya.cmds.createNode('transform', name=name)
+        tfm = maya.cmds.createNode(const.BUNDLE_TRANSFORM_NODE_TYPE,
+                                   name=name)
         tfm = api_utils.get_long_name(tfm)
         maya.cmds.setAttr(tfm + '.rx', lock=True)
         maya.cmds.setAttr(tfm + '.ry', lock=True)
@@ -143,7 +162,8 @@ class Bundle(object):
 
         # Shape Node
         shp_name = tfm.rpartition('|')[-1] + 'Shape'
-        shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm)
+        shp = maya.cmds.createNode(const.BUNDLE_SHAPE_NODE_TYPE,
+                                   name=shp_name, parent=tfm)
         maya.cmds.setAttr(shp + '.localScaleX', 0.1)
         maya.cmds.setAttr(shp + '.localScaleY', 0.1)
         maya.cmds.setAttr(shp + '.localScaleZ', 0.1)
@@ -229,7 +249,9 @@ class Bundle(object):
         """
         node = self.get_node()
         node_attr = node + '.message'
-        conns = maya.cmds.listConnections(node_attr) or []
+        conns = maya.cmds.listConnections(
+            node_attr,
+            type=const.MARKER_TRANSFORM_NODE_TYPE) or []
         mkr_list = []
         for conn in conns:
             mkr = mmSolver._api.marker.Marker(node=conn)

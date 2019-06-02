@@ -41,7 +41,8 @@
             "center_twodee",
             "channel_sensitivity_ui",
             "smooth_keyframes",
-            "screen_z_transform_bake"
+            "screen_z_transform_bake",
+            "attach_bundle_to_curve"
         ],
         "functions": {}
     }

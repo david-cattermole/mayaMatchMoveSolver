@@ -1,3 +1,20 @@
+# Copyright (C) 2018 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 The Load Marker tool - user facing.
 """
@@ -7,11 +24,12 @@ import os.path
 import pprint
 
 import maya.cmds
-import mmSolver.api as mmapi
+
 import mmSolver.logger
-import mmSolver.tools.selection.filternodes as filternodes
-import mmSolver.tools.loadmarker.formatmanager as formatmanager
-import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
+import mmSolver.utils.node as node_utils
+import mmSolver.tools.loadmarker.lib.formatmanager as formatmanager
+import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
+import mmSolver.api as mmapi
 
 
 LOG = mmSolver.logger.get_logger()
@@ -28,7 +46,7 @@ def get_selected_cameras():
     nodes = maya.cmds.ls(sl=True, long=True) or []
 
     added_cameras = []
-    objects = filternodes.get_nodes(nodes)
+    objects = mmapi.filter_nodes_into_categories(nodes)
     for node in objects['camera']:
         cam = None
         if maya.cmds.nodeType(node) == 'camera':
@@ -74,7 +92,7 @@ def get_cameras():
     :rtype: list of mmSolver.api.Camera
     """
     nodes = maya.cmds.ls(type='camera', long=True) or []
-    cam_nodes = filternodes.get_camera_nodes(nodes)
+    cam_nodes = mmapi.filter_camera_nodes(nodes)
     cams = []
     for node in cam_nodes:
         startup = maya.cmds.camera(node, query=True, startupCamera=True)
@@ -228,16 +246,22 @@ def get_start_directory(file_path):
 
 
 def create_new_camera():
+    """
+    Create a new camera nodes and object.
+
+    :returns: Camera object.
+    :rtype: Camera
+    """
     name = 'camera'
     cam_tfm = maya.cmds.createNode(
         'transform',
         name=name)
-    cam_tfm = mmapi.get_long_name(cam_tfm)
+    cam_tfm = node_utils.get_long_name(cam_tfm)
     cam_shp = maya.cmds.createNode(
         'camera',
         name=name + 'Shape',
         parent=cam_tfm)
-    cam_shp = mmapi.get_long_name(cam_shp)
+    cam_shp = node_utils.get_long_name(cam_shp)
     cam = mmapi.Camera(transform=cam_tfm, shape=cam_shp)
     return cam
 

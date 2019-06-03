@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 The Solver layout, the contents of the main solver window.
 """
@@ -59,6 +76,14 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.object_filterModel = QtCore.QSortFilterProxyModel()
         self.object_filterModel.setSourceModel(self.object_model)
         self.object_filterModel.setDynamicSortFilter(False)
+        self.object_header = QtWidgets.QHeaderView(
+            QtCore.Qt.Horizontal,
+            parent=self.object_treeView
+        )
+        self.object_header.setSectionResizeMode(
+            QtWidgets.QHeaderView.ResizeToContents
+        )
+        self.object_treeView.setHeader(self.object_header)
         self.object_treeView.setModel(self.object_filterModel)
         self.object_treeView.setSortingEnabled(True)
         self.object_treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)
@@ -91,6 +116,15 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.attribute_filterModel = QtCore.QSortFilterProxyModel()
         self.attribute_filterModel.setSourceModel(self.attribute_model)
         self.attribute_filterModel.setDynamicSortFilter(False)
+        self.attribute_header = QtWidgets.QHeaderView(
+            QtCore.Qt.Horizontal,
+            parent=self.attribute_treeView
+        )
+        self.attribute_header.setSectionResizeMode(
+            QtWidgets.QHeaderView.ResizeToContents
+        )
+        self.attribute_treeView.setHeader(self.attribute_header)
+
         self.attribute_treeView.setModel(self.attribute_filterModel)
         self.attribute_treeView.setSortingEnabled(True)
         self.attribute_treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)

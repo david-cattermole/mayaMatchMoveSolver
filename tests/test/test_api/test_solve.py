@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Solve a single non-animated bundle to the screen-space location of a bundle.
 
@@ -15,11 +32,11 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_col
+import mmSolver.tools.triangulatebundle.lib as lib_triangulate
 import test.test_api.apiutils as test_api_utils
 
 
 LOG = mmSolver.logger.get_logger()
-
 
 
 # @unittest.skip
@@ -509,7 +526,7 @@ class TestSolve(test_api_utils.APITestCase):
         solres_list = col.execute()
         e = time.time()
         print 'total time:', e - s
-        
+
         # save the output
         path = self.get_data_path('test_solve_badPerFrameSolve_after.ma')
         maya.cmds.file(rename=path)
@@ -534,7 +551,7 @@ class TestSolve(test_api_utils.APITestCase):
         solres_list = col.execute()
         e = time.time()
         print 'total time:', e - s
-        
+
         # save the output
         path = self.get_data_path('test_solve_allFrameStrategySolve_after.ma')
         maya.cmds.file(rename=path)
@@ -542,7 +559,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         self.checkSolveResults(solres_list)
         return
-    
+
     def test_solveAllFramesCausesStaticAnimCurves(self):
         """
         Solving with the scene file 'mmSolverBasicSolveB_before.ma', was
@@ -557,11 +574,50 @@ class TestSolve(test_api_utils.APITestCase):
         path = self.get_data_path('scenes', file_name)
         maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
 
+        # Triangulate all 3D points.
+        nodes = maya.cmds.ls(type='transform') or []
+        bnd_nodes = mmapi.filter_bundle_nodes(nodes)
+        bnd_list = [mmapi.Bundle(node=n) for n in bnd_nodes]
+        for bnd in bnd_list:
+            lib_triangulate.triangulate_bundle(bnd)
+
+        # Get Bundle attributes to compute.
+        bnd_attr_list = []
+        for bnd in bnd_list:
+            node = bnd.get_node()
+            attrs = ['translateX', 'translateY', 'translateZ']
+            for attr_name in attrs:
+                attr = mmapi.Attribute(node=node, attr=attr_name)
+                bnd_attr_list.append(attr)
+
+        # Camera attributes
+        cam_tfm = 'stA_1_1'
+        cam_attr_list = []
+        attrs = ['translateX', 'translateY', 'translateZ',
+                 'rotateX', 'rotateY', 'rotateZ']
+        for attr_name in attrs:
+            attr = mmapi.Attribute(node=cam_tfm, attr=attr_name)
+            cam_attr_list.append(attr)
+
         # Run solver!
         s = time.time()
+        # Solve camera transform based on triangulated bundle
+        # positions.
         col = mmapi.Collection(node='collection1')
+        col.set_attribute_list(cam_attr_list)
         lib_col.compile_collection(col)
         solres_list = col.execute()
+
+        # Refine the bundle positions only
+        col.set_attribute_list(bnd_attr_list)
+        lib_col.compile_collection(col)
+        solres_list = col.execute()
+
+        # Solve both camera transform and bundle positions together.
+        col.set_attribute_list(cam_attr_list)
+        col.add_attribute_list(bnd_attr_list)
+        lib_col.compile_collection(col)
+        solres_list = col.execute()        
         e = time.time()
         print 'total time:', e - s
 
@@ -573,7 +629,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         self.checkSolveResults(solres_list)
         return
-    
+
     # def test_opera_house(self):
     #     start = 0
     #     end = 41

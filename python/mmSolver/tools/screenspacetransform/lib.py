@@ -11,7 +11,7 @@ import mmSolver.api as mmapi
 LOG = mmSolver.logger.get_logger()
 
 
-def createScreenSpaceLocator(cam, name=None):
+def create_screen_space_locator(cam, name=None):
     """
     Create a Screen-Space Maya Locator that may be solved in Screen XYZ.
     """

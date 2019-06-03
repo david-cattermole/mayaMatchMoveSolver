@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Animation utilities.
 """
@@ -6,7 +23,7 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaAnim as OpenMayaAnim
 
-import mmSolver._api.utils as utils
+import mmSolver.utils.node as node_utils
 
 
 def create_anim_curve_node(times, values,
@@ -51,7 +68,7 @@ def create_anim_curve_node(times, values,
         animCurve = animfn.create(anim_type)
     else:
         # Get the plug to be animated.
-        dst_plug = utils.get_as_plug(node_attr)
+        dst_plug = node_utils.get_as_plug(node_attr)
 
         objs = OpenMaya.MObjectArray()
         find = OpenMayaAnim.MAnimUtil.findAnimation(dst_plug, objs)

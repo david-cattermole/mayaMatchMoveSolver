@@ -180,7 +180,46 @@ Run this Python command:
     import mmSolver.tools.smoothkeyframes.tool as smoothkeys_tool
     smoothkeys_tool.main()
 
-    
+
+Re-Project Bundle
+-----------------
+
+Position Bundle under the Marker, in screen-space.
+
+Usage:
+
+1) Select Markers or Bundles
+
+3) Run tool.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.reprojectbundle.tool as reprojbnd_tool
+    reprojbnd_tool.main()
+
+
+Triangulate Bundle
+------------------
+
+Calculate a 3D position of a bundle, based on the camera and 2D marker.
+
+Usage:
+
+1) Select Markers or Bundles
+
+3) Run tool.
+
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.triangulatebundle.tool as tribnd_tool
+    tribnd_tool.main()
+
+
 Center 2D On Selection
 ----------------------
 
@@ -289,7 +328,6 @@ Run this Python command:
 
     import mmSolver.tools.togglebundlelock.tool as tglbndlock
     tglbndlock.toggle_bundle_lock()
-
 
 
 Toggle Marker Lock State

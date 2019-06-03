@@ -1,3 +1,20 @@
+# Copyright (C) 2018 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Reads a Matchmover rz2 file.
 """
@@ -5,8 +22,8 @@ Reads a Matchmover rz2 file.
 import os
 import re
 
-import mmSolver.tools.loadmarker.interface as interface
-import mmSolver.tools.loadmarker.formatmanager as fmtmgr
+import mmSolver.tools.loadmarker.lib.interface as interface
+import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
 
 
 class LoaderRZ2(interface.LoaderBase):

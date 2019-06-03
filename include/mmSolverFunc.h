@@ -33,6 +33,7 @@
 #include <utilities/debugUtils.h>
 
 // Maya
+#include <maya/MGlobal.h>
 #include <maya/MPoint.h>
 #include <maya/MStringArray.h>
 #include <maya/MAnimCurveChange.h>
@@ -106,6 +107,9 @@ struct SolverData {
     // Allow user to cancel the solve.
     MComputation *computation;
     bool userInterrupted;
+
+    // Maya is running as an interactive or batch?
+    MGlobal::MMayaState mayaSessionState;
 
     // Verbosity.
     bool verbose;

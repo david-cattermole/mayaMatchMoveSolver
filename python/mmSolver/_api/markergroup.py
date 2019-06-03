@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Defines a MarkerGroup node.
 """
@@ -8,6 +25,7 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
+import mmSolver.utils.node as node_utils
 import mmSolver._api.camera as camera
 import mmSolver._api.utils as api_utils
 import mmSolver._api.constant as const
@@ -78,7 +96,7 @@ class MarkerGroup(object):
         assert api_utils.get_object_type(node) == const.OBJECT_TYPE_MARKER_GROUP
 
         self._mfn_tfm = None
-        tfm_dag = api_utils.get_as_dag_path(node)
+        tfm_dag = node_utils.get_as_dag_path(node)
         if tfm_dag is not None:
             assert maya.cmds.nodeType(tfm_dag.fullPathName()) == 'mmMarkerGroupTransform'
             self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
@@ -98,7 +116,7 @@ class MarkerGroup(object):
         """
         mkr_node = self.get_node()
 
-        cam_tfm, cam_shp = api_utils.get_camera_above_node(mkr_node)
+        cam_tfm, cam_shp = node_utils.get_camera_above_node(mkr_node)
 
         # Make the camera object.
         cam = None

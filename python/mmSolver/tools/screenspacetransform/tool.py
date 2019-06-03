@@ -2,15 +2,12 @@
 Convert a transform into a screen-space transform.
 """
 
-import itertools
-
 import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.time as utils_time
-import mmSolver.tools.selection.filternodes as filternodes
 import mmSolver.tools.screenzbake.lib as lib
 
 
@@ -55,7 +52,7 @@ def main():
     times = range(start_frame, end_frame+1)
 
     for node in nodes:
-        grp_node, depth_tfm, loc_tfm, loc_shp = lib.createScreenSpaceLocator(cam)
+        grp_node, depth_tfm, loc_tfm, loc_shp = lib.create_screen_space_locator(cam)
 
         values = maya.cmds.mmReprojection(
             node,

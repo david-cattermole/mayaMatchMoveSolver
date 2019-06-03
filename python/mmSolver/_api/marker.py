@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Marker and the related objects, Camera and Bundle.
 """
@@ -8,11 +25,14 @@ import maya.OpenMaya as OpenMaya
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.node as node_utils
+import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
 import mmSolver._api.bundle
 import mmSolver._api.camera as camera
 import mmSolver._api.markergroup as markergroup
+import mmSolver._api.markerutils as markerutils
 
 
 LOG = mmSolver.logger.get_logger()
@@ -56,7 +76,7 @@ class Marker(object):
             node = name
         if isinstance(node, basestring):
             try:
-                dag = api_utils.get_as_dag_path(node)
+                dag = node_utils.get_as_dag_path(node)
                 self._mfn = OpenMaya.MFnDagNode(dag)
             except RuntimeError as e:
                 msg = 'Given Marker node name is invalid: name=%r'
@@ -107,7 +127,7 @@ class Marker(object):
         :rtype: None
         """
         assert isinstance(node, (str, unicode))
-        dag = api_utils.get_as_dag_path(node)
+        dag = node_utils.get_as_dag_path(node)
         try:
             self._mfn = OpenMaya.MFnDagNode(dag)
         except RuntimeError:
@@ -164,8 +184,8 @@ class Marker(object):
             assert len(colour) == 3
 
         # Transform
-        tfm = maya.cmds.createNode('transform', name=name)
-        tfm = api_utils.get_long_name(tfm)
+        tfm = maya.cmds.createNode(const.MARKER_TRANSFORM_NODE_TYPE, name=name)
+        tfm = node_utils.get_long_name(tfm)
         maya.cmds.setAttr(tfm + '.tz', -1.0)
         maya.cmds.setAttr(tfm + '.tz', lock=True)
         maya.cmds.setAttr(tfm + '.rx', lock=True)
@@ -190,7 +210,8 @@ class Marker(object):
 
         # Shape Node
         shp_name = tfm.rpartition('|')[-1] + 'Shape'
-        shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm)
+        shp = maya.cmds.createNode(const.MARKER_SHAPE_NODE_TYPE,
+                                   name=shp_name, parent=tfm)
         maya.cmds.setAttr(shp + '.localScaleX', 0.01)
         maya.cmds.setAttr(shp + '.localScaleY', 0.01)
         maya.cmds.setAttr(shp + '.localScaleZ', 0.0)
@@ -250,6 +271,110 @@ class Marker(object):
 
     ############################################################################
 
+    def get_enable(self, time=None):
+        """
+        Get the enabled state of the Marker.
+
+        :param time: The time to query the enable, if not given the
+                      current frame is used.  
+        :type time: float
+
+        :returns: The enabled state of the marker.
+        :rtype: int
+        """
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return
+        v = None
+        if time is None:
+            v = maya.cmds.getAttr(node + '.enable')
+        else:
+            v = maya.cmds.getAttr(node + '.enable', time=time)
+        return v
+
+    def get_weight(self, time=None):
+        """
+        Get the current wire-frame colour of the Marker.
+
+        :param time: The time to query the weight, if not given the
+                     current frame is used.  
+        :type time: float
+
+        :returns: The weight of the marker.
+        :rtype: float
+        """
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return
+        v = None
+        if time is None:
+            v = maya.cmds.getAttr(node + '.weight')
+        else:
+            v = maya.cmds.getAttr(node + '.weight', time=time)
+        return v
+
+    def get_deviation(self, times=None):
+        """
+        Get the deviation for the marker, computed live.
+
+        :param times: The times to query the deviation on, if not
+                      given the current frame is used.
+        :type times: float
+
+        :returns: The deviation of the marker-to-bundle re-projection in pixels.
+        :rtype: float
+        """
+        v = None
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get Marker node. self=%r'
+            LOG.warning(msg, self)
+            return v
+        cam = self.get_camera()
+        if cam is None:
+            msg = 'Could not get Camera node. self=%r'
+            LOG.warning(msg, self)
+            return v
+        bnd = self.get_bundle()
+        if bnd is None:
+            msg = 'Could not get Bundle node. self=%r'
+            LOG.warning(msg, self)
+            return v
+
+        frames = []
+        if times is None:
+            frames = [maya.cmds.currentTime(query=True)]
+        else:
+            frames = times
+        assert len(frames) > 0
+
+        cam_tfm = cam.get_transform_node()
+        cam_shp = cam.get_shape_node()
+        hfa = maya.cmds.getAttr(
+            cam_shp + '.horizontalFilmAperture',
+            time=frames[0])
+        vfa = maya.cmds.getAttr(
+            cam_shp + '.verticalFilmAperture',
+            time=frames[0])
+        # TODO: Get camera image plane width.
+        image_width = 2048.0
+        image_height = image_width * (vfa / hfa)
+
+        bnd_node = bnd.get_node()
+        dev = markerutils.calculate_marker_deviation(
+            node, bnd_node,
+            cam_tfm, cam_shp,
+            frames,
+            image_width, image_height
+        )
+        if dev is None:
+            dev = -1.0
+        return dev
+    
     def get_colour_rgb(self):
         """
         Get the current wire-frame colour of the Marker.
@@ -269,7 +394,7 @@ class Marker(object):
             LOG.warning(msg, node, shps)
             return
         shp = shps[0]
-        v = api_utils.get_node_wire_colour_rgb(shp)
+        v = node_utils.get_node_wire_colour_rgb(shp)
         return v
 
     def set_colour_rgb(self, rgb):
@@ -294,7 +419,7 @@ class Marker(object):
             LOG.warning(msg, node, shps)
             return
         shp = shps[0]
-        api_utils.set_node_wire_colour_rgb(shp, rgb)
+        node_utils.set_node_wire_colour_rgb(shp, rgb)
         return
 
     ############################################################################
@@ -305,7 +430,10 @@ class Marker(object):
         if node is not None:
             assert maya.cmds.objExists(node)
             bnd_node = None
-            bnd_nodes = maya.cmds.listConnections(node + '.bundle') or []
+            node_attr = node + '.bundle'
+            bnd_nodes = maya.cmds.listConnections(
+                node_attr,
+                type=const.BUNDLE_TRANSFORM_NODE_TYPE) or []
             if len(bnd_nodes) > 0:
                 bnd_node = bnd_nodes[0]
             if bnd_node is not None and len(bnd_node) > 0:
@@ -384,7 +512,7 @@ class Marker(object):
         """
         mkr_node = self.get_node()
 
-        cam_tfm, cam_shp = api_utils.get_camera_above_node(mkr_node)
+        cam_tfm, cam_shp = node_utils.get_camera_above_node(mkr_node)
 
         # Make the camera object.
         cam = None

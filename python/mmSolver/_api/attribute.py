@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Module for attributes and related functions.
 """
@@ -5,6 +22,8 @@ Module for attributes and related functions.
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaAnim as OpenMayaAnim
+
+import mmSolver.utils.node as node_utils
 import mmSolver._api.utils as api_utils
 import mmSolver._api.constant as const
 import mmSolver.logger
@@ -69,7 +88,7 @@ class Attribute(object):
                 raise RuntimeError(msg)
 
             node_attr = node + '.' + attr
-            plug = api_utils.get_as_plug(node_attr)
+            plug = node_utils.get_as_plug(node_attr)
             self._plug = plug
 
             node_obj = self._plug.node()
@@ -88,7 +107,7 @@ class Attribute(object):
             except RuntimeError:
                 pass
         if node is not None and full_path is True:
-            node = api_utils.get_long_name(node)
+            node = node_utils.get_long_name(node)
         return node
 
     def get_attr(self, long_name=True):

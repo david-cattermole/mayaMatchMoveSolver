@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Module for reading marker files.
 
@@ -9,11 +26,12 @@ import os
 import maya.cmds
 
 import mmSolver.api as mmapi
-import mmSolver.tools.loadmarker.interface as interface
-import mmSolver.tools.loadmarker.formatmanager as fmtmgr
+import mmSolver.utils.animutils as anim_utils
+import mmSolver.tools.loadmarker.lib.interface as interface
+import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
 
 # Used to force importing of formats; do not remove this line.
-import mmSolver.tools.loadmarker.formats
+import mmSolver.tools.loadmarker.lib.formats
 
 
 def read(file_path, **kwargs):
@@ -60,13 +78,17 @@ def __create_node(mkr_data, cam, mkr_grp, with_bundles):
         raise TypeError(msg % bool.__name__)
 
     name = mkr_data.get_name()
-    mkr_name = mmapi.get_marker_name(name)
-    bnd_name = mmapi.get_bundle_name(name)
+    mkr_name = mmapi.get_new_marker_name(name)
+    bnd_name = mmapi.get_new_bundle_name(name)
     bnd = None
     mmapi.load_plugin()
     if with_bundles is True:
         bnd = mmapi.Bundle().create_node(bnd_name)
-    mkr = mmapi.Marker().create_node(name=mkr_name, cam=cam, mkr_grp=mkr_grp, bnd=bnd)
+    mkr = mmapi.Marker().create_node(
+        name=mkr_name,
+        cam=cam,
+        mkr_grp=mkr_grp,
+        bnd=bnd)
     return mkr
 
 
@@ -123,19 +145,37 @@ def __set_attr_keyframes(node, attr_name, keyframes,
             times = times + [end_time + 1]
             values = values + [after_value]
 
-    # TODO: Reduce keyframes, if we can, we don't need per-frame
-    # keyframes if the data is the same. Change the times/values just
-    # before we set the keyframes
+    # Reduce keyframes, we don't need per-frame keyframes if the data
+    # is the same. Change the times/values just before we set the
+    # keyframes
+    if reduce_keys is True:
+        tmp_times = list(times)
+        tmp_values = list(values)
+        times = []
+        values = []
+        prev_t = None
+        prev_v = None
+        for t, v in zip(tmp_times, tmp_values):
+            if prev_v is None:
+                times.append(t)
+                values.append(v)
+            elif interface.float_is_equal(prev_v, v) is False:
+                times.append(prev_t)
+                values.append(prev_v)
+                times.append(t)
+                values.append(v)
+            prev_t = t
+            prev_v = v
 
     node_attr = node + '.' + attr_name
-    animFn = mmapi.create_anim_curve_node(times, values, node_attr)
+    anim_fn = anim_utils.create_anim_curve_node(times, values, node_attr)
 
     if reduce_keys is True:
         locked = maya.cmds.getAttr(node_attr, lock=True)
         maya.cmds.setAttr(node_attr, lock=False)
         maya.cmds.delete(node_attr, staticChannels=True)
         maya.cmds.setAttr(node_attr, lock=locked)
-    return animFn
+    return anim_fn
 
 
 def __set_node_data(mkr, mkr_data):
@@ -194,7 +234,6 @@ def __set_node_data(mkr, mkr_data):
     maya.cmds.setAttr(mkr_node + '.translateY', lock=True)
     maya.cmds.setAttr(mkr_node + '.enable', lock=True)
     maya.cmds.setAttr(mkr_node + '.weight', lock=True)
-
     return mkr
 
 

@@ -1,3 +1,20 @@
+# Copyright (C) 2019 Anil Reddy.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 This is a Ray cast Markers tool.
 """
@@ -5,43 +22,12 @@ This is a Ray cast Markers tool.
 import maya.cmds
 import maya.OpenMaya
 import mmSolver.utils.raytrace as raytrace_utils
-import mmSolver.tools.selection.filternodes as filternodes
+import mmSolver.utils.reproject as reproject_utils
 import mmSolver.api as mmapi
 import mmSolver.logger
 
+
 LOG = mmSolver.logger.get_logger()
-
-
-def __get_camera_direction_to_point(camera_node, point_node):
-    """
-    Get the direction of the camera toward a given point.
-
-    :param camera_node: Camera transform node.
-    :type camera_node: str
-
-    :param point_node: Transform node to aim at.
-    :type point_node: str
-
-    :return: Direction from camera to point.
-    :rtype: (float, float, float)
-    """
-    obj = maya.cmds.xform(
-        point_node,
-        query=True,
-        worldSpace=True,
-        translation=True)
-    cam = maya.cmds.xform(
-        camera_node,
-        query=True,
-        worldSpace=True,
-        translation=True)
-    cam_vec = maya.OpenMaya.MVector(*cam)
-    obj_vec = maya.OpenMaya.MVector(*obj)
-    distance = obj_vec - cam_vec
-    length = maya.OpenMaya.MVector(distance).length()
-    direction = distance / length
-    x, y, z = direction.x, direction.y, direction.z
-    return x, y, z
 
 
 def main():
@@ -65,7 +51,7 @@ def main():
         LOG.warning('Please select a marker to rayCast.')
         return
 
-    selected_markers = filternodes.get_marker_nodes(selection)
+    selected_markers = mmapi.filter_marker_nodes(selection)
     if not selected_markers:
         LOG.warning('No markers found in the selection list.')
         return
@@ -91,7 +77,7 @@ def main():
         mkr_node = mkr.get_node()
         camera = mkr.get_camera()
         camera = camera.get_transform_node()
-        direction = __get_camera_direction_to_point(camera, mkr_node)
+        direction = reproject_utils.get_camera_direction_to_point(camera, mkr_node)
         origin_point = maya.cmds.xform(
             mkr_node, query=True,
             translation=True,

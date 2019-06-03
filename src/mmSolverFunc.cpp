@@ -66,8 +66,6 @@
 #include <mmSolverCMinpack.h>
 #include <mmSolverLevMar.h>
 
-#define FABS(x)     (((x)>=0)? (x) : -(x))
-
 // NOTE: There is a very strange bug in Maya. After setting a number
 // of plug values using a DG Context, when quering plug values at the
 // same times, the values do not evaluate correctly. To 'trick' Maya
@@ -147,7 +145,45 @@ int solveFunc(int numberOfParameters,
         return SOLVE_FUNC_FAILURE;
     }
 
-    MGlobal::executeCommand("dgdirty -allPlugs -implicit;");
+    bool interactive = ud->mayaSessionState == MGlobal::MMayaState::kInteractive;
+    MString dgDirtyCmd;
+
+    // Calculate exact nodes to update.
+    dgDirtyCmd = "dgdirty ";
+    MStringArray dgDirtyNodeNames;
+    for (i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
+         IndexPair markerPair = ud->errorToMarkerList[i];
+
+         MarkerPtr marker = ud->markerList[markerPair.first];
+         MString markerName = marker->getNodeName();
+         if (dgDirtyNodeNames.indexOf(markerName) == -1) {
+              dgDirtyCmd += " \"" + markerName + "\" ";
+              dgDirtyNodeNames.append(markerName);
+         }
+
+         CameraPtr camera = marker->getCamera();
+         MString cameraTransformName = camera->getTransformNodeName();
+         MString cameraShapeName = camera->getShapeNodeName();
+         if (dgDirtyNodeNames.indexOf(cameraTransformName) == -1) {
+              dgDirtyCmd += " \"" + cameraTransformName + "\" ";
+              dgDirtyNodeNames.append(cameraTransformName);
+         }
+         if (dgDirtyNodeNames.indexOf(cameraShapeName) == -1) {
+              dgDirtyCmd += " \"" + cameraShapeName + "\" ";
+              dgDirtyNodeNames.append(cameraShapeName);
+         }
+
+         BundlePtr bundle = marker->getBundle();
+         MString bundleName = bundle->getNodeName();
+         if (dgDirtyNodeNames.indexOf(bundleName) == -1) {
+              dgDirtyCmd += " \"" + bundleName + "\" ";
+              dgDirtyNodeNames.append(bundleName);
+         }
+    }
+    dgDirtyCmd += ";";
+    if (interactive) {
+         MGlobal::executeCommand(dgDirtyCmd);
+    }
 
     // Set Parameter
     MStatus status;
@@ -205,8 +241,6 @@ int solveFunc(int numberOfParameters,
         ud->paramBenchTimer->stop();
         ud->paramBenchTicks->stop();
     }
-
-    MGlobal::executeCommand("dgdirty -allPlugs -implicit;");
 
     // Measure Errors
     double error_avg = 0.0;
@@ -374,5 +408,4 @@ int solveFunc(int numberOfParameters,
 }
 
 // Clean up #define
-#undef FABS
 #undef FORCE_TRIGGER_EVAL

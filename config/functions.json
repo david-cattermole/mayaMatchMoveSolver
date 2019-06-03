@@ -112,8 +112,8 @@
             "name": "Triangulate Bundle",
             "tooltip": "Use Marker to triangulate a 3D position for Bundle.",
             "command": [
-                "import mmSolver.tools.triangulate.tool;",
-                "mmSolver.tools.triangulate.tool.main();"
+                "import mmSolver.tools.triangulatebundle.tool;",
+                "mmSolver.tools.triangulatebundle.tool.main();"
             ]
         },
         "raycast_marker": {
@@ -277,6 +277,15 @@
             "command": [
                 "import mmSolver.tools.screenzbake.tool;",
                 "mmSolver.tools.screenzbake.tool.main();"
+            ]
+        },
+        "attach_bundle_to_curve": {
+            "name": "Attach Bundle to Curve",
+            "name_shelf": "BtCrv",
+            "tooltip": "Attach a 3D Bundle to a NURBS Curve.",
+            "command": [
+                "import mmSolver.tools.attachbundletocurve.tool;",
+                "mmSolver.tools.attachbundletocurve.tool.main();"
             ]
         }
     }

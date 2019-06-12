@@ -287,6 +287,45 @@
                 "import mmSolver.tools.attachbundletocurve.tool;",
                 "mmSolver.tools.attachbundletocurve.tool.main();"
             ]
+        },
+        "deform_marker": {
+            "name": "Deform Marker",
+            "name_shelf": "MkrOff",
+            "tooltip": "Deform Marker",
+            "icon_shelf": "createMarker_32x32.png",
+            "command": ["pass"]
+        },
+        "deform_popup_left": {
+            "popup": true,
+            "popup_button": "left"
+        },
+        "deform_popup_right": {
+            "popup": true,
+            "popup_button": "right"
+        },
+        "create_offset": {
+            "name": "Deform marker",
+            "tooltip": "Create layer for selected markers.",
+            "command": [
+                "import mmSolver.tools.deformMarker.tool as deformMkr;",
+                "deformMkr.create_offset_layer();"
+            ]
+        },
+        "bake_offset": {
+            "name": "Bake offset",
+            "tooltip": "Bake layer override for the selected marker.",
+            "command": [
+                "import mmSolver.tools.deformMarker.tool as deformMkr;",
+                "deformMkr.bake_offset();"
+            ]
+        },
+        "remove_offset": {
+            "name": "Remove offset",
+            "tooltip": "Removes layer override changes for the selected marker.",
+            "command": [
+                "import mmSolver.tools.deformMarker.tool as deformMkr;",
+                "deformMkr.remove_layer_override();"
+            ]
         }
     }
 }

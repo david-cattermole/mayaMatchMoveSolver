@@ -19,13 +19,16 @@
 This tool creates anim layer override to create offset for markers
 """
 
-import maya.cmds
-import mmSolver.tools.deformMarker.lib as lib
-import mmSolver.tools.deformMarker.constant as const
-import mmSolver.logger
 import operator
-import mmSolver.api as mmapi
+
+import maya.cmds
 import maya.mel
+
+import mmSolver.logger
+import mmSolver.api as mmapi
+
+import mmSolver.tools.deformmarker.lib as lib
+import mmSolver.tools.deformmarker.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
@@ -33,9 +36,9 @@ LOG = mmSolver.logger.get_logger()
 def create_offset_layer():
     """
     Creates anim layer for the selected markers.
+
     :return: None
     """
-
     selection = maya.cmds.ls(selection=True, long=True) or []
     selected_markers = mmapi.filter_marker_nodes(selection)
     if len(selected_markers) == 0:
@@ -50,12 +53,12 @@ def create_offset_layer():
 
     if not marker_nodes:
         LOG.warning('Please select a marker to create offset')
-        return
+        return None
 
     attrs = lib.get_attrs_for_offset(marker_nodes)
     if attrs is None:
         LOG.warning('Please select marker to create override')
-        return
+        return None
 
     anim_layer_name = const.ANIM_LAYER
     anim_layer = lib.find_animlayer(anim_layer_name)
@@ -63,15 +66,16 @@ def create_offset_layer():
     for attr in attrs:
         if lib.is_in_layer(attr, anim_layer):
             LOG.warning('Selected marker is already having a override')
-            return
+            return None
 
     maya.cmds.animLayer(anim_layer, attribute=attrs, edit=True)
-    return
+    return None
 
 
 def bake_offset():
     """
     Bakes offset for the selected markers.
+
     :return: None
     """
     selection = maya.cmds.ls(selection=True, long=True) or []
@@ -87,7 +91,7 @@ def bake_offset():
         marker_nodes.append(marker_node)
     if not marker_nodes:
         LOG.warning('Please select a marker to bake offset')
-        return
+        return None
 
     attrs = lib.get_attrs_for_offset(marker_nodes)
     anim_layer = const.ANIM_LAYER
@@ -95,14 +99,13 @@ def bake_offset():
         if not lib.is_in_layer(attr, anim_layer):
             text = 'Selected marker is not having a layer override'
             LOG.warning(text)
-            return
+            return None
     if not lib.is_key_framed(attrs):
         maya.cmds.setKeyframe(attrs)
 
     for attr in attrs:
         first_frame, last_frame = lib.__get_first_last_frame(attr,
                                                              anim_layer)
-        print first_frame, last_frame
         input_a, input_b = lib.get_attr_blend_plugs(attr,
                                                     anim_layer)
         input_a_value = lib.__get_attr_value_array(input_a,
@@ -111,8 +114,7 @@ def bake_offset():
         input_b_value = lib.__get_attr_value_array(input_b,
                                                    first_frame,
                                                    last_frame)
-        new_array = list(map(operator.add, input_a_value,
-                             input_b_value))
+        new_array = list(map(operator.add, input_a_value, input_b_value))
 
         maya.cmds.animLayer(anim_layer,
                             removeAttribute=attr,
@@ -135,14 +137,14 @@ def bake_offset():
 def remove_layer_override():
     """
     Removed markers layer override.
+
     :return: None
     """
-
     selection = maya.cmds.ls(selection=True, long=True) or []
     selected_markers = mmapi.filter_marker_nodes(selection)
     if len(selected_markers) == 0:
-        LOG.warning('Please select a marker to remove'
-                    ' anim layer override')
+        text = 'Please select a marker to remove anim layer override'
+        LOG.warning(text)
         return None
 
     marker_nodes = []
@@ -152,8 +154,8 @@ def remove_layer_override():
         marker_nodes.append(marker_node)
 
     if not marker_nodes:
-        LOG.warning('Please select a marker to remove'
-                    ' anim layer override')
+        text = 'Please select a marker to remove anim layer override'
+        LOG.warning(text)
         return
 
     attrs = lib.get_attrs_for_offset(marker_nodes)

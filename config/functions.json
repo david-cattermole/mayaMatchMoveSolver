@@ -303,27 +303,27 @@
             "popup": true,
             "popup_button": "right"
         },
-        "create_offset": {
+        "deform_marker_create_offset": {
             "name": "Deform marker",
             "tooltip": "Create layer for selected markers.",
             "command": [
-                "import mmSolver.tools.deformMarker.tool as deformMkr;",
+                "import mmSolver.tools.deformmarker.tool as deformMkr;",
                 "deformMkr.create_offset_layer();"
             ]
         },
-        "bake_offset": {
+        "deform_marker_bake_offset": {
             "name": "Bake offset",
             "tooltip": "Bake layer override for the selected marker.",
             "command": [
-                "import mmSolver.tools.deformMarker.tool as deformMkr;",
+                "import mmSolver.tools.deformmarker.tool as deformMkr;",
                 "deformMkr.bake_offset();"
             ]
         },
-        "remove_offset": {
+        "deform_marker_remove_offset": {
             "name": "Remove offset",
             "tooltip": "Removes layer override changes for the selected marker.",
             "command": [
-                "import mmSolver.tools.deformMarker.tool as deformMkr;",
+                "import mmSolver.tools.deformmarker.tool as deformMkr;",
                 "deformMkr.remove_layer_override();"
             ]
         }

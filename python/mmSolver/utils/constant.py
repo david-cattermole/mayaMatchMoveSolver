@@ -39,3 +39,31 @@ CONFIG_PATH_VAR_NAME = 'MMSOLVER_CONFIG_PATH'
 # Maya configuration
 SCENE_DATA_NODE = 'MM_SOLVER_SCENE_DATA'
 SCENE_DATA_ATTR = 'data'
+
+
+ROTATE_ORDER_STR_LIST = [
+    'xyz',
+    'yzx',
+    'zxy',
+    'xzy',
+    'yxz',
+    'zyx'
+]
+
+ROTATE_ORDER_INDEX_TO_STR = {
+    0: 'xyz',
+    1: 'yzx',
+    2: 'zxy',
+    3: 'xzy',
+    4: 'yxz',
+    5: 'zyx'
+}
+
+ROTATE_ORDER_STR_TO_INDEX = {
+    'xyz': 0,
+    'yzx': 1,
+    'zxy': 2,
+    'xzy': 3,
+    'yxz': 4,
+    'zyx': 5,
+}

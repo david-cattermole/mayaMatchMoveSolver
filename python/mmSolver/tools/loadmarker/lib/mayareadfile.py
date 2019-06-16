@@ -26,7 +26,7 @@ import os
 import maya.cmds
 
 import mmSolver.api as mmapi
-import mmSolver.utils.animutils as anim_utils
+import mmSolver.utils.animcurve as anim_utils
 import mmSolver.tools.loadmarker.lib.interface as interface
 import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
 
@@ -120,8 +120,8 @@ def __set_attr_keyframes(node, attr_name, keyframes,
                         removed.
     :type reduce_keys: bool
 
-    :returns: Maya API MFnAnimCurve object.
-    :rtype: OpenMaya.MFnAnimCurve
+    :returns: Maya API (version 1) MFnAnimCurve object.
+    :rtype: maya.OpenMaya.MFnAnimCurve
     """
     if isinstance(keyframes, interface.KeyframeData) is False:
         msg = 'keyframes must be type %r'
@@ -168,7 +168,7 @@ def __set_attr_keyframes(node, attr_name, keyframes,
             prev_v = v
 
     node_attr = node + '.' + attr_name
-    anim_fn = anim_utils.create_anim_curve_node(times, values, node_attr)
+    anim_fn = anim_utils.create_anim_curve_node_apione(times, values, node_attr)
 
     if reduce_keys is True:
         locked = maya.cmds.getAttr(node_attr, lock=True)

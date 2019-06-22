@@ -11,14 +11,6 @@
                 "mmSolver.tools.solver.tool.open_window();"
             ]
         },
-        "solver_popup_left": {
-            "popup": true,
-            "popup_button": "left"
-        },
-        "solver_popup_right": {
-            "popup": true,
-            "popup_button": "right"
-        },
         "open_solver_ui": {
             "name": "Open Solver...",
             "tooltip": "Open the MM Solver window.",
@@ -61,14 +53,6 @@
             "icon_shelf": "createMarker_32x32.png",
             "command": ["pass"]
         },
-        "marker_popup_left": {
-            "popup": true,
-            "popup_button": "left"
-        },
-        "marker_popup_right": {
-            "popup": true,
-            "popup_button": "right"
-        },
         "toggle_marker_lock": {
             "name": "Toggle Marker Lock",
             "tooltip": "Toggles selected marker lock state.",
@@ -83,14 +67,6 @@
             "tooltip": "Bundle Tools",
             "icon_shelf": "createBundle_32x32.png",
             "command": ["pass"]
-        },
-        "bundle_popup_left": {
-            "popup": true,
-            "popup_button": "left"
-        },
-        "bundle_popup_right": {
-            "popup": true,
-            "popup_button": "right"
         },
         "toggle_bundle_lock": {
             "name": "Toggle Bundle Lock-State",
@@ -281,6 +257,7 @@
         },
         "attach_bundle_to_curve": {
             "name": "Attach Bundle to Curve",
+            "name_menu": "Attach Bundle to Curve",
             "name_shelf": "BtCrv",
             "tooltip": "Attach a 3D Bundle to a NURBS Curve.",
             "command": [
@@ -294,14 +271,6 @@
             "tooltip": "Deform Marker",
             "icon_shelf": "createMarker_32x32.png",
             "command": ["pass"]
-        },
-        "deform_popup_left": {
-            "popup": true,
-            "popup_button": "left"
-        },
-        "deform_popup_right": {
-            "popup": true,
-            "popup_button": "right"
         },
         "deform_marker_create_offset": {
             "name": "Deform marker",

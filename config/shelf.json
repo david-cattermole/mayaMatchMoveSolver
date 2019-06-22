@@ -2,54 +2,61 @@
     "version": 1,
     "data": {
         "items": [
-            "solver_tools/solver_popup_right/open_solver_ui",
-            "solver_tools/solver_popup_right/solver_run",
-            "solver_tools/solver_popup_right/solver_run_current_frame",
+            "solver_tools/solver_popup/open_solver_ui",
+            "solver_tools/solver_popup/solver_run",
+            "solver_tools/solver_popup/solver_run_current_frame",
             "---Create",
             "create_marker",
             "convert_to_marker",
             "load_marker_ui",
             "create_bundle",
             "---Tools",
-            "marker_tools/marker_popup_left/toggle_marker_lock",
-            "marker_tools/marker_popup_left/place_marker_manipulator",
-            "marker_tools/marker_popup_left/duplicate_marker",
-            "marker_tools/marker_popup_left/average_markers",
-            "marker_tools/marker_popup_right/toggle_marker_lock",
-            "marker_tools/marker_popup_right/place_marker_manipulator",
-            "marker_tools/marker_popup_right/duplicate_marker",
-            "marker_tools/marker_popup_right/average_markers",
-            "bundle_tools/bundle_popup_left/toggle_bundle_lock",
-            "bundle_tools/bundle_popup_left/reproject_bundle",
-            "bundle_tools/bundle_popup_left/raycast_marker",
-            "bundle_tools/bundle_popup_left/triangulate_bundle",
-            "bundle_tools/bundle_popup_left/screen_z_manipulator",
-            "bundle_tools/bundle_popup_right/toggle_bundle_lock",
-            "bundle_tools/bundle_popup_right/reproject_bundle",
-            "bundle_tools/bundle_popup_right/raycast_marker",
-            "bundle_tools/bundle_popup_right/triangulate_bundle",
-            "bundle_tools/bundle_popup_right/screen_z_manipulator",
-            "deform_marker/deform_popup_left/deform_marker_create_offset",
-            "deform_marker/deform_popup_left/deform_marker_bake_offset",
-            "deform_marker/deform_popup_left/deform_marker_remove_offset",
-            "deform_marker/deform_popup_right/deform_marker_create_offset",
-            "deform_marker/deform_popup_right/deform_marker_bake_offset",
-            "deform_marker/deform_popup_right/deform_marker_remove_offset",
+            "marker_tools/marker_popup/toggle_marker_lock",
+            "marker_tools/marker_popup/place_marker_manipulator",
+            "marker_tools/marker_popup/duplicate_marker",
+            "marker_tools/marker_popup/average_markers",
+            "marker_tools/marker_popup/deform_menu/deform_marker_create_offset",
+            "marker_tools/marker_popup/deform_menu/deform_marker_bake_offset",
+            "marker_tools/marker_popup/deform_menu/deform_marker_remove_offset",
+            "bundle_tools/bundle_popup/toggle_bundle_lock",
+            "bundle_tools/bundle_popup/reproject_bundle",
+            "bundle_tools/bundle_popup/raycast_marker",
+            "bundle_tools/bundle_popup/triangulate_bundle",
+            "bundle_tools/bundle_popup/screen_z_manipulator",
+            "bundle_tools/bundle_popup/attach_bundle_to_curve",
             "---Selection",
             "swap_marker_bundles",
             "select_marker_bundles",
             "marker_bundle_rename",
-            "mb_link_tools/marker_popup_left/link_marker_bundle",
-            "mb_link_tools/marker_popup_left/unlink_marker_bundle",
-            "mb_link_tools/marker_popup_right/link_marker_bundle",
-            "mb_link_tools/marker_popup_right/unlink_marker_bundle",
+            "mb_link_tools/marker_popup/link_marker_bundle",
+            "mb_link_tools/marker_popup/unlink_marker_bundle",
             "---OtherTools",
             "center_twodee",
             "channel_sensitivity_ui",
             "smooth_keyframes",
-            "screen_z_transform_bake",
-            "attach_bundle_to_curve"
+            "screen_z_transform_bake"
         ],
-        "functions": {}
+        "functions": {
+            "solver_popup": {
+                "popup": true,
+                "popup_button": ["right"]
+            },
+            "marker_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "bundle_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "deform_menu": {
+                "name": "Deform Marker",
+                "tearoff": false
+            },
+            "deform_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            }
+        }
     }
 }

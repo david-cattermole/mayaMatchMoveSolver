@@ -247,7 +247,7 @@
             ]
         },
         "screen_z_transform_bake": {
-            "name": "Screen-Space Tranform Bake",
+            "name": "Screen-Space Transform Bake",
             "name_shelf": "ScrnBk",
             "tooltip": "Convert a transform into a screen-space transform.",
             "command": [
@@ -273,7 +273,7 @@
             "command": ["pass"]
         },
         "deform_marker_create_offset": {
-            "name": "Deform marker",
+            "name": "Create",
             "tooltip": "Create layer for selected markers.",
             "command": [
                 "import mmSolver.tools.deformmarker.tool as deformMkr;",
@@ -281,7 +281,7 @@
             ]
         },
         "deform_marker_bake_offset": {
-            "name": "Bake offset",
+            "name": "Bake",
             "tooltip": "Bake layer override for the selected marker.",
             "command": [
                 "import mmSolver.tools.deformmarker.tool as deformMkr;",
@@ -289,7 +289,7 @@
             ]
         },
         "deform_marker_remove_offset": {
-            "name": "Remove offset",
+            "name": "Remove",
             "tooltip": "Removes layer override changes for the selected marker.",
             "command": [
                 "import mmSolver.tools.deformmarker.tool as deformMkr;",

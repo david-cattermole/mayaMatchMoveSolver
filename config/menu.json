@@ -15,7 +15,7 @@
             "swap_marker_bundles",
             "select_marker_bundles",
             "marker_bundle_rename",
-            "---Link",
+            "---Marker-Bundle Link",
             "link_marker_bundle",
             "unlink_marker_bundle",
             "---Tools",

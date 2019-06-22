@@ -213,9 +213,13 @@ int Attr::getAttrType() {
 bool Attr::isFreeToChange() {
     if (m_isFreeToChange < 0) {
         MPlug plug = Attr::getPlug();
-        m_isFreeToChange = (int) (plug.isFreeToChange() == MPlug::kFreeToChange);
+        if (plug.isFreeToChange() == MPlug::kFreeToChange) {
+             m_isFreeToChange = 1;
+        } else {
+             m_isFreeToChange = 0;
+        }
     }
-    return (bool) m_isFreeToChange;
+    return m_isFreeToChange != 0;
 }
 
 /*

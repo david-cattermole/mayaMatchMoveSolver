@@ -788,6 +788,22 @@ class Collection(object):
         return self._kwargs_list
 
     def is_valid(self, prog_fn=None, status_fn=None):
+        """
+        Tests if the current sate of this Collection is valid to solve with.
+
+        :param prog_fn: Progress function callback. If not None this
+                        function will be executed to emit progress
+                        messages.
+        :type prog_fn: callable
+
+        :param status_fn: Status message function callback. If not
+                          None this function will be executed each
+                          time a status message needs to be printed.
+        :type status_fn: callable
+
+        :returns: Is the Collection valid to solve? Yes or no.
+        :rtype: bool
+        """
         try:
             self._compile(prog_fn=None, status_fn=None)
             ret = True

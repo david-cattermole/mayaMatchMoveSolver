@@ -167,54 +167,67 @@ class SolverWindow(BaseWindow):
 
         menubar.addMenu(edit_menu)
 
-        # # View Menu
-        # view_menu = QtWidgets.QMenu('View', menubar)
+        # View Menu
+        view_menu = QtWidgets.QMenu('View', menubar)
 
-        # # Display Object Deviation
-        # label = 'Display Object Deviation'
-        # tooltip = 'Display deviation column'
-        # action = QtWidgets.QAction(label, view_menu)
-        # action.setStatusTip(tooltip)
-        # action.setCheckable(True)
-        # view_menu.addAction(action)
+        # Display Object Weight
+        label = 'Display Object Weight Column'
+        tooltip = 'Display Object weight column'
+        value = lib_state.get_display_object_weight_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(self.subForm.displayObjectWeightColumnChanged)
+        view_menu.addAction(action)
 
-        # # Display Object Weight
-        # label = 'Display Object Weight Column'
-        # tooltip = 'Display Object weight column'
-        # action = QtWidgets.QAction(label, view_menu)
-        # action.setStatusTip(tooltip)
-        # action.setCheckable(True)
-        # view_menu.addAction(action)
+        # Display Object Deviation
+        label = 'Display Object Frame Deviation'
+        tooltip = 'Display per-frame deviation for each Marker/Camera.'
+        value = lib_state.get_display_object_frame_deviation_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(self.subForm.displayObjectFrameDeviationColumnChanged)
+        view_menu.addAction(action)
 
-        # view_menu.addSeparator()
-        
-        # # Display Attribute State
-        # label = 'Display Attribute State'
-        # tooltip = 'Display Attribute State columns'
-        # action = QtWidgets.QAction(label, view_menu)
-        # action.setStatusTip(tooltip)
-        # action.setCheckable(True)
-        # view_menu.addAction(action)
+        # Display Object Deviation
+        label = 'Display Object Average Deviation'
+        tooltip = 'Display deviation column'
+        value = lib_state.get_display_object_average_deviation_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(self.subForm.displayObjectAverageDeviationColumnChanged)
+        view_menu.addAction(action)
 
-        # # Display Attribute Min/Max
-        # label = 'Display Attribute Min/Max'
-        # tooltip = 'Display Attribute Minimum and Maximum columns'
-        # action = QtWidgets.QAction(label, view_menu)
-        # action.setStatusTip(tooltip)
-        # action.setCheckable(True)
-        # view_menu.addAction(action)
+        view_menu.addSeparator()
 
-        # view_menu.addSeparator()
+        # Display Attribute State
+        label = 'Display Attribute State'
+        tooltip = 'Display Attribute State column'
+        value = lib_state.get_display_attribute_state_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(self.subForm.displayAttributeStateColumnChanged)
+        view_menu.addAction(action)
 
-        # # Deviation Live Update
-        # label = 'Deviation Live Update'
-        # tooltip = 'The Deviation shown in the UI will be updated live.'
-        # action = QtWidgets.QAction(label, view_menu)
-        # action.setStatusTip(tooltip)
-        # action.setCheckable(True)
-        # view_menu.addAction(action)
+        # Display Attribute Min/Max
+        label = 'Display Attribute Min/Max'
+        tooltip = 'Display Attribute Minimum and Maximum columns'
+        value = lib_state.get_display_attribute_min_max_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(self.subForm.displayAttributeMinMaxColumnChanged)
+        view_menu.addAction(action)
 
-        # menubar.addMenu(view_menu)
+        menubar.addMenu(view_menu)
 
         # Tools Menu
         tools_menu = QtWidgets.QMenu('Tools', menubar)
@@ -428,6 +441,7 @@ class SolverWindow(BaseWindow):
         Create a Marker under the active viewport camera.
         """
         createmarker_tool.main()
+        return
 
     def convertToMarkerCB(self):
         """
@@ -442,41 +456,71 @@ class SolverWindow(BaseWindow):
         could also show the point data before loading the file.
         """
         loadmarker_tool.open_window()
+        return
 
     def createBundleCB(self):
         """
         Create a Bundle node, attached to the selected markers.
         """
         createbundle_tool.main()
+        return
 
     def toggleMarkerBundleSelectionCB(self):
         selection_tool.swap_between_selected_markers_and_bundles()
+        return
 
     def selectBothMarkersAndBundlesCB(self):
         selection_tool.select_both_markers_and_bundles()
+        return
 
     def renameMarkerBundleCB(self):
         """
         Rename the selected markers and bundles (with a prompt window).
         """
         mbrename_tool.main()
+        return
 
     def linkMarkerBundleCB(self):
         link_mb_tool.link_marker_bundle()
+        return
 
     def unlinkMarkerBundleCB(self):
         link_mb_tool.unlink_marker_bundle()
+        return
 
     @staticmethod
     def refreshActionToggledCB(value):
         lib_state.set_refresh_viewport_state(value)
+        return
 
     @staticmethod
     def forceDgUpdateActionToggledCB(value):
         lib_state.set_force_dg_update_state(value)
+        return
+
+    @staticmethod
+    def displayObjectFrameDeviationActionToggledCB(value):
+        lib_state.set_display_object_frame_deviation_state(value)
+        return
+        
+    @staticmethod
+    def displayObjectAverageDeviationActionToggledCB(value):
+        lib_state.set_display_object_average_deviation_state(value)
+        return
+
+    @staticmethod
+    def displayObjectWeightActionToggledCB(value):
+        lib_state.set_display_object_weight_state(value)
+        return
+    
+    @staticmethod
+    def displayAttributeMinMaxActionToggledCB(value):
+        lib_state.set_display_attribute_min_max_state(value)
+        return
 
     def launchHelpCB(self):
         self.help()
+        return
 
     # def launchAboutCB(self):
     #     # LOG.info('Launch About... not yet.')

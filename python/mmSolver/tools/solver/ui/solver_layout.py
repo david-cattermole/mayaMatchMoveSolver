@@ -162,13 +162,15 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         # Set up custom widgets for viewing and editing the columns.
         self.solver_attrFilterDelegate = solver_nodes.AttributeComboBoxDelegate()
+        attr_idx = self.solver_model.getColumnIndexFromColumnName('Attributes')
+        strategy_idx = self.solver_model.getColumnIndexFromColumnName('Strategy')
         self.solver_tableView.setItemDelegateForColumn(
-            2,
+            attr_idx,
             self.solver_attrFilterDelegate,
         )
         self.solver_strategyDelegate = solver_nodes.StrategyComboBoxDelegate()
         self.solver_tableView.setItemDelegateForColumn(
-            3,
+            strategy_idx,
             self.solver_strategyDelegate,
         )
 
@@ -200,8 +202,10 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
+        self.updateObjectColumnVisibility()
         self.updateObjectModel()
         self.updateAttributeToggleButtons()
+        self.updateAttributeColumnVisibility()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -252,6 +256,15 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.objectToggleBundle_toolButton.setChecked(show_bnd)
         return
 
+    def updateObjectColumnVisibility(self):
+        show_weight = lib_state.get_display_object_weight_state()
+        show_frm_dev = lib_state.get_display_object_frame_deviation_state()
+        show_avg_dev = lib_state.get_display_object_average_deviation_state()
+        self.displayObjectWeightColumnChanged(show_weight)
+        self.displayObjectFrameDeviationColumnChanged(show_frm_dev)
+        self.displayObjectAverageDeviationColumnChanged(show_avg_dev)
+        return
+
     def updateObjectModel(self):
         self.populateObjectModel(self.object_model)
         valid = uiutils.isValidQtObject(self.object_treeView)
@@ -273,6 +286,13 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.attributeToggleAnimated_toolButton.setChecked(show_anm)
         self.attributeToggleStatic_toolButton.setChecked(show_stc)
         self.attributeToggleLocked_toolButton.setChecked(show_lck)
+        return
+
+    def updateAttributeColumnVisibility(self):
+        show_state = lib_state.get_display_attribute_state_state()
+        show_min_max = lib_state.get_display_attribute_min_max_state()
+        self.displayAttributeStateColumnChanged(show_state)
+        self.displayAttributeMinMaxColumnChanged(show_min_max)
         return
 
     def updateAttributeModel(self):
@@ -481,8 +501,10 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
+        self.updateObjectColumnVisibility()
         self.updateObjectModel()
         self.updateAttributeToggleButtons()
+        self.updateAttributeColumnVisibility()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -503,8 +525,10 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
+        self.updateObjectColumnVisibility()
         self.updateObjectModel()
         self.updateAttributeToggleButtons()
+        self.updateAttributeColumnVisibility()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -529,8 +553,10 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
+        self.updateObjectColumnVisibility()
         self.updateObjectModel()
         self.updateAttributeToggleButtons()
+        self.updateAttributeColumnVisibility()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -639,6 +665,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             if uiutils.isValidQtObject(self) is False:
                 return
             self.updateObjectToggleButtons()
+            self.updateObjectColumnVisibility()
             self.updateObjectModel()
             self.updateSolveValidState()
             return
@@ -680,6 +707,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             )
 
         self.updateObjectToggleButtons()
+        self.updateObjectColumnVisibility()
         self.updateObjectModel()
         self.updateSolveValidState()
 
@@ -711,6 +739,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             if uiutils.isValidQtObject(self) is False:
                 return
             self.updateAttributeToggleButtons()
+            self.updateAttributeColumnVisibility()
             self.updateAttributeModel()
             self.updateSolveValidState()
             return
@@ -752,6 +781,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             )
 
         self.updateAttributeToggleButtons()
+        self.updateAttributeColumnVisibility()
         self.updateAttributeModel()
         self.updateSolveValidState()
 
@@ -816,8 +846,10 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         self.updateDynamicWindowTitle()
         self.updateObjectToggleButtons()
+        self.updateObjectColumnVisibility()
         self.updateObjectModel()
         self.updateAttributeToggleButtons()
+        self.updateAttributeColumnVisibility()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -898,4 +930,41 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         # 'value' from Qt is expected to be an int, we expect a bool.
         value = bool(value)
         self.setOverrideCurrentFrame(col, value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayObjectWeightColumnChanged(self, value):
+        lib_state.set_display_object_weight_state(value)
+        idx = self.object_model.getColumnIndexFromColumnName('Weight')
+        self.object_treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayObjectFrameDeviationColumnChanged(self, value):
+        lib_state.set_display_object_frame_deviation_state(value)
+        idx = self.object_model.getColumnIndexFromColumnName('Frame Dev (px)')
+        self.object_treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayObjectAverageDeviationColumnChanged(self, value):
+        lib_state.set_display_object_average_deviation_state(value)
+        idx = self.object_model.getColumnIndexFromColumnName('Average Dev (px)')
+        self.object_treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayAttributeStateColumnChanged(self, value):
+        lib_state.set_display_attribute_state_state(value)
+        idx = self.attribute_model.getColumnIndexFromColumnName('State')
+        self.attribute_treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayAttributeMinMaxColumnChanged(self, value):
+        lib_state.set_display_attribute_min_max_state(value)
+        idx_min = self.attribute_model.getColumnIndexFromColumnName('Min')
+        idx_max = self.attribute_model.getColumnIndexFromColumnName('Max')
+        self.attribute_treeView.setColumnHidden(idx_min, not value)
+        self.attribute_treeView.setColumnHidden(idx_max, not value)
         return

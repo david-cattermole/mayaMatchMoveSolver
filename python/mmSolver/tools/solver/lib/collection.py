@@ -863,7 +863,7 @@ def execute_collection(col,
     msg = 'execute_collection: '
     msg += 'col=%r log_level=%r refresh=%r force_update=%r '
     msg += 'prog_fn=%r status_fn=%r'
-    LOG.debug(msg, col, log_level, refresh, prog_fn, status_fn)
+    LOG.debug(msg, col, log_level, refresh, force_update, prog_fn, status_fn)
 
     assert isinstance(refresh, bool)
     assert isinstance(force_update, bool)

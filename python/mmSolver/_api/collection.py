@@ -815,6 +815,7 @@ class Collection(object):
                 verbose=False,
                 refresh=False,
                 force_update=False,
+                do_isolate=False,
                 prog_fn=None,
                 status_fn=None):
         """
@@ -836,6 +837,9 @@ class Collection(object):
                              solver in case of a Maya evaluation DG bug.
         :type force_update: bool
 
+        :param do_isolate: Isolate only solving objects while running solve.
+        :type do_isolate: bool
+
         :param prog_fn: The function used report progress messages to
                         the user.
         :type prog_fn: callable or None
@@ -847,8 +851,6 @@ class Collection(object):
         :return: List of SolveResults from the executed collection.
         :rtype: [SolverResult, ..]
         """
-        do_isolate = False
-
         # Ensure the plug-in is loaded, so we fail before trying to run.
         api_utils.load_plugin()
 

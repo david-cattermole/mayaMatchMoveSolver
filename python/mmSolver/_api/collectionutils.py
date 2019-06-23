@@ -85,8 +85,8 @@ def disconnect_animcurves(kwargs):
 
     save_node_attrs = []
     attrs = kwargs.get('attr') or []
-    for attr_name, min_val, max_val in attrs:
-        attr_obj = attribute.Attribute(attr_name)
+    for attr_name, min_val, max_val, offset_val, scale_val in attrs:
+        attr_obj = attribute.Attribute(name=attr_name)
         if attr_obj.is_animated() is False:
             continue
 
@@ -159,7 +159,7 @@ def clear_attr_keyframes(kwargs, frames):
     """
     frames = list(sorted(frames))
     attrs = kwargs.get('attr') or []
-    for attr_name, min_val, max_val in attrs:
+    for attr_name, min_val, max_val, offset_val, scale_val in attrs:
         attr_obj = attribute.Attribute(name=attr_name)
         if not attr_obj.is_animated():
             continue
@@ -206,7 +206,7 @@ def generate_isolate_nodes(kwargs):
     """
     nodes = set()
     attrs = kwargs.get('attr') or []
-    for attr_name, min_val, max_val in attrs:
+    for attr_name, min_val, max_val, offset_val, scale_val in attrs:
         attr_obj = attribute.Attribute(name=attr_name)
         node = attr_obj.get_node()
         nodes.add(node)

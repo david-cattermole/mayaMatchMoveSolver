@@ -33,6 +33,8 @@ import maya.OpenMaya as OpenMaya
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.configmaya as configmaya
+import mmSolver.utils.node as node_utils
+import mmSolver.utils.animutils as anim_utils
 import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
@@ -46,6 +48,48 @@ import mmSolver._api.collectionutils as collectionutils
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def _create_collection_attributes(node):
+    """
+    Create the attributes expected to be on a Collection (set) node.
+
+    :param node: Collection set node to add attributes to.
+    :type node: str
+    """
+    attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_LIST
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            dataType='string'
+        )
+        plug = node + '.' + attr
+        maya.cmds.setAttr(plug, lock=True)
+
+    attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_RESULTS
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            dataType='string'
+        )
+        plug = node + '.' + attr
+        maya.cmds.setAttr(plug, lock=True)
+
+    attr = const.COLLECTION_ATTR_LONG_NAME_DEVIATION
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='double',
+            minValue=-1.0,
+            defaultValue=-1.0,
+            keyable=True
+        )
+        plug = node + '.' + attr
+        maya.cmds.setAttr(plug, lock=True)
+    return
 
 
 class Collection(object):
@@ -93,18 +137,17 @@ class Collection(object):
         """
         self._set.create_node(name)
         set_node = self._set.get_node()
-
-        # Add 'solver_list' attribute.
-        attr_name = 'solver_list'
-        maya.cmds.addAttr(
-            set_node,
-            longName=attr_name,
-            dataType='string')
-        maya.cmds.setAttr(
-            set_node + '.' + attr_name,
-            lock=True)
-
+        _create_collection_attributes(set_node)
         return self
+
+    def add_attributes(self):
+        """
+        Adds attributes to the collection node, if they do not already
+        exist.
+        """
+        node = self.get_node()
+        _create_collection_attributes(node)
+        return
 
     def get_node(self):
         return self._set.get_node()
@@ -161,7 +204,8 @@ class Collection(object):
         :rtype: list of Solver
         """
         solver_list = []
-        attr_data = self._get_attr_data('solver_list')
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_LIST
+        attr_data = self._get_attr_data(attr)
         if isinstance(attr_data, list) is False:
             return solver_list
         for item in attr_data:
@@ -187,7 +231,9 @@ class Collection(object):
             data = sol.get_data()
             if isinstance(data, dict):
                 data_list.append(data)
-        self._set_attr_data('solver_list', data_list)
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_LIST
+        self._set_attr_data(attr, data_list)
+        self._kwargs_list = []  # reset argument flag cache.
         return
 
     def _get_solver_list_names(self, solver_list):
@@ -788,6 +834,11 @@ class Collection(object):
         """
         # Ensure the plug-in is loaded, so we fail before trying to run.
         api_utils.load_plugin()
+
+        # Make sure attributes exists on the collection node.
+        # An older scene may not contain all the attributes, which we
+        # assume exists.
+        self.add_attributes()
 
         # If 'refresh' is 'on' change all viewports to 'isolate
         # selected' on only the markers and bundles being solved. This

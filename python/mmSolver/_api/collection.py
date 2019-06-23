@@ -812,13 +812,9 @@ class Collection(object):
         # Save current frame, to revert to later on.
         cur_frame = maya.cmds.currentTime(query=True)
 
-        undo_state = maya.cmds.undoInfo(query=True, state=True)
-        undo_id = 'mmSolver.api.collection.execute: ' + str(uuid.uuid4())
         try:
-            if undo_state is True:
-                maya.cmds.undoInfo(openChunk=True, chunkName=undo_id)
-            self.__set_progress(prog_fn, 0)
-            self.__set_status(status_fn, 'Solver Initializing...')
+            collectionutils.run_progress_func(prog_fn, 0)
+            collectionutils.run_status_func(status_fn, 'Solver Initializing...')
             api_state.set_solver_running(True)
 
             # Check for validity
@@ -827,11 +823,11 @@ class Collection(object):
                 LOG.warning('Collection not valid: %r', self.get_node())
                 return solres_list
             kwargs_list = self._compile()
-            self.__set_progress(prog_fn, 1)
+            collectionutils.run_progress_func(prog_fn, 1)
 
             # Isolate all nodes used in all of the kwargs to be run.
             # Note; This assumes the isolated objects are visible, but
-            # they may be hidden.
+            # they may actually be hidden.
             if refresh is True:
                 s = time.time()
                 isolate_nodes = set()
@@ -870,7 +866,7 @@ class Collection(object):
             total = len(kwargs_list)
             for i, kwargs in enumerate(kwargs_list):
                 frame = kwargs.get('frame')
-                self.__set_status(status_fn, 'Evaluating frames %r' % frame)
+                collectionutils.run_status_func(status_fn, 'Evaluating frames %r' % frame)
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
 
@@ -906,19 +902,20 @@ class Collection(object):
                 # Update progress
                 ratio = float(i) / float(total)
                 percent = float(start) + (ratio * (100.0 - start))
-                self.__set_progress(prog_fn, int(percent))
+                collectionutils.run_progress_func(prog_fn, int(percent))
 
+                # Check if the user wants to stop solving.
                 cmd_cancel = solres.get_user_interrupted()
                 gui_cancel = api_state.get_user_interrupt()
                 if cmd_cancel is True or gui_cancel is True:
-                    msg = 'Canceled by User'
+                    msg = 'Cancelled by User'
                     api_state.set_user_interrupt(False)
-                    self.__set_status(status_fn, 'WARNING: ' + msg)
+                    collectionutils.run_status_func(status_fn, 'WARNING: ' + msg)
                     LOG.warning(msg)
                     break
                 if solres.get_success() is False:
                     msg = 'Solver failed!!!'
-                    self.__set_status(status_fn, 'ERROR: ' + msg)
+                    collectionutils.run_status_func(status_fn, 'ERROR: ' + msg)
                     LOG.error(msg)
 
                 # Refresh the Viewport.
@@ -952,10 +949,8 @@ class Collection(object):
                 e = time.time()
                 LOG.debug('Finally; reset isolate selected; time=%r', e - s)
 
-            self.__set_progress(prog_fn, 100)
+            collectionutils.run_progress_func(prog_fn, 100)
             api_state.set_solver_running(False)
 
-            if undo_state is True:
-                maya.cmds.undoInfo(closeChunk=True, chunkName=undo_id)
             maya.cmds.currentTime(cur_frame, edit=True, update=True)
         return solres_list

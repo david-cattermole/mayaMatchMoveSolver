@@ -19,7 +19,7 @@
 The main window for the 'Solver' tool.
 """
 
-import sys
+import uuid
 from functools import partial
 
 import mmSolver.ui.qtpyutils as qtpyutils
@@ -30,6 +30,7 @@ import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
+import mmSolver.utils.undo as undo_utils
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.tools.solver.lib.collection as lib_collection
@@ -495,20 +496,22 @@ class SolverWindow(BaseWindow):
         """
         Tbis button launches a solve, but can also be used to cancel a solve.
         """
-        running_state = lib_state.get_solver_is_running_state()
-        if running_state is True:
-            lib_state.set_solver_user_interrupt_state(True)
-            return
-        refresh_state = lib_state.get_refresh_viewport_state()
-        force_update_state = lib_state.get_force_dg_update_state()
-        log_level = lib_state.get_log_level()
-        col = lib_state.get_active_collection()
-        lib_collection.run_solve_ui(
-            col,
-            refresh_state,
-            force_update_state,
-            log_level,
-            self)
+        undo_id = 'mmSolver: ' + str(uuid.uuid4())
+        with undo_utils.undo_chunk(undo_id):
+            running_state = lib_state.get_solver_is_running_state()
+            if running_state is True:
+                lib_state.set_solver_user_interrupt_state(True)
+                return
+            refresh_state = lib_state.get_refresh_viewport_state()
+            force_update_state = lib_state.get_force_dg_update_state()
+            log_level = lib_state.get_log_level()
+            col = lib_state.get_active_collection()
+            lib_collection.run_solve_ui(
+                col,
+                refresh_state,
+                force_update_state,
+                log_level,
+                self)
         return
 
     def help(self):

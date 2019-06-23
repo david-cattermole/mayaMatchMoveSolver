@@ -18,9 +18,6 @@
 """
 Utilities built around Maya nodes and node paths.
 """
-
-import warnings
-
 import maya.cmds
 import maya.OpenMaya as OpenMaya1
 import maya.api.OpenMaya as OpenMaya2
@@ -147,7 +144,7 @@ def get_as_object_apione(node_str):
     selList = get_as_selection_list([node_str])
     if not selList:
         return None
-    obj = OpenMaya1.MObject()
+    obj = OpenMaya.MObject()
     try:
         selList.getDependNode(0, obj)
     except RuntimeError:
@@ -304,3 +301,44 @@ def set_node_wire_colour_rgb(node, rgb):
         # Reset to default wireframe colour.
         maya.cmds.color(node)
     return
+
+
+def attribute_exists(attr, node):
+    """
+    Check if an attribute exists on the given node.
+
+    This is a Python equivalent of the MEL command 'attributeExists'.
+
+    :param attr: Attribute name to check for existence.
+    :type attr: str
+
+    :param node: The node to look for the attribute.
+    :type node: str
+
+    :returns: A boolean, if the attribute exists or not.
+    :rtype: bool
+    """
+    if (attr == '') or (node == ''):
+        return False
+
+    # See if the node exists!
+    if not maya.cmds.objExists(node):
+        return False
+
+    # First check to see if the attribute matches the short names
+    attrs = maya.cmds.listAttr(node, shortNames=True)
+    if attr in attrs:
+        return True
+
+    # Now check against the long names
+    attrs = maya.cmds.listAttr(node)
+    if attr in attrs:
+        return True
+
+    # Finally check if there are any alias
+    # attributes with that name.
+    alias_attrs = maya.cmds.aliasAttr(node, query=True)
+    if alias_attrs is not None:
+        if attr in alias_attrs:
+            return True
+    return False

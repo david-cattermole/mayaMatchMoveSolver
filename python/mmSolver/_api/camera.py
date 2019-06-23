@@ -209,9 +209,38 @@ class Camera(object):
         # TODO: Get the correct plate resolution from the connected image plane.
         return resolution
 
-    def get_deviation(self, times=None):
+    def get_average_deviation(self, times=None):
         """
         Get the average deviation for all marker under the camera.
+
+        :param times: The times to query the deviation on, if not
+                      given the current frame is used.
+        :type times: float
+
+        :returns: The deviation of the marker-to-bundle re-projection in pixels.
+        :rtype: float
+        """
+        dev = None
+        node = self.get_transform_node()
+        if node is None:
+            msg = 'Could not get Camera transform node. self=%r'
+            LOG.warning(msg, self)
+            return dev
+
+        total = 0
+        dev_sum = 0.0
+        mkr_list = self.get_marker_list()
+        for mkr in mkr_list:
+            dev_value = mkr.get_average_deviation()
+            dev_sum += dev_value
+            total += 1
+        if total > 0:
+            dev = dev_sum / total
+        return dev
+
+    def get_deviation(self, times=None):
+        """
+        Get the deviation for all marker under the camera at the current times.
 
         :param times: The times to query the deviation on, if not
                       given the current frame is used.

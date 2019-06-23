@@ -58,6 +58,9 @@ class ObjectNode(nodes.Node):
     def deviation(self):
         return ''
 
+    def avgDeviation(self):
+        return ''
+
 
 class MarkerNode(ObjectNode):
     def __init__(self, name,
@@ -85,6 +88,24 @@ class MarkerNode(ObjectNode):
         weight = mkr.get_weight()
         return str(weight)
 
+    def avgDeviation(self):
+        """
+        Get the current deviation value of the marker.
+        """
+        dev = '-'
+        d = self.data()
+        if not d:
+            return dev
+        mkr = d.get('marker')
+        if mkr is None:
+            return dev
+        dev_value = mkr.get_average_deviation()
+        if dev_value is None:
+            return dev
+        if dev_value < 0:
+            return dev
+        return '%.2f' % dev_value
+
     def deviation(self):
         """
         Get the current deviation value of the marker.
@@ -99,10 +120,12 @@ class MarkerNode(ObjectNode):
         enable = mkr.get_enable()
         if not enable:
             return dev
-        dev = mkr.get_deviation(times=None)
-        if dev is None:
-            dev = -1.0
-        return '%.2f' % dev[0]
+        dev_values = mkr.get_deviation(times=None)
+        if dev_values is None:
+            return dev
+        if dev_values[0] < 0:
+            return dev
+        return '%.2f' % dev_values[0]
 
 
 class CameraNode(ObjectNode):
@@ -136,6 +159,26 @@ class CameraNode(ObjectNode):
         dev_value = cam.get_deviation()
         if dev_value is None:
             return dev
+        if dev_value < 0:
+            return dev
+        return '%.2f' % dev_value
+
+    def avgDeviation(self):
+        """
+        Get the current deviation value of the marker.
+        """
+        dev = '-'
+        d = self.data()
+        if not d:
+            return dev
+        cam = d.get('camera')
+        if cam is None:
+            return dev
+        dev_value = cam.get_average_deviation()
+        if dev_value is None:
+            return dev
+        if dev_value < 0:
+            return dev
         return '%.2f' % dev_value
 
 
@@ -155,8 +198,11 @@ class BundleNode(ObjectNode):
 
     def weight(self):
         return ''
-        
+
     def deviation(self):
+        return ''
+
+    def avgDeviation(self):
         return ''
 
 
@@ -166,12 +212,14 @@ class ObjectModel(uimodels.ItemModel):
         self._column_names = {
             0: 'Node',
             1: 'Weight',
-            2: 'Deviation (px)',
+            2: 'Frame Dev (px)',
+            3: 'Average Dev (px)',
         }
         self._node_attr_key = {
             'Node': 'name',
             'Weight': 'weight',
-            'Deviation (px)': 'deviation',
+            'Frame Dev (px)': 'deviation',
+            'Average Dev (px)': 'avgDeviation',
         }
 
     def defaultNodeType(self):
@@ -181,7 +229,8 @@ class ObjectModel(uimodels.ItemModel):
         column_names = {
             0: 'Node',
             1: 'Weight',
-            2: 'Deviation (px)',
+            2: 'Frame Dev (px)',
+            3: 'Average Dev (px)',
         }
         return column_names
 
@@ -189,15 +238,17 @@ class ObjectModel(uimodels.ItemModel):
         values = {
             'Node': QtCore.Qt.AlignLeft,
             'Weight': QtCore.Qt.AlignRight,
-            'Deviation (px)': QtCore.Qt.AlignRight,
+            'Frame Dev (px)': QtCore.Qt.AlignRight,
+            'Average Dev (px)': QtCore.Qt.AlignRight,
         }
         return values
-    
+
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {
             'Node': 'name',
             'Weight': 'weight',
-            'Deviation (px)': 'deviation',
+            'Frame Dev (px)': 'deviation',
+            'Average Dev (px)': 'avgDeviation',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 

@@ -64,6 +64,13 @@ def is_single_frame(kwargs):
     """
     Logic to determine if the solver arguments will solve a single
     frame or not.
+
+    :param kwargs: Solver keyword arguments.
+    :type kwargs: dict
+
+    :returns: If the given 'kwargs' argument defines only one unique 
+              frame to solve.
+    :rtype: bool
     """
     has_one_frame = len(kwargs.get('frame')) is 1
     is_interactive = maya.cmds.about(query=True, batch=True) is False
@@ -72,13 +79,16 @@ def is_single_frame(kwargs):
 
 def disconnect_animcurves(kwargs):
     """
-
     HACK: Disconnect animCurves from animated attributes,
     then re-connect afterward. This is to solve a Maya bug,
     which will not solve values on a single frame.
 
-    :param kwargs:
-    :return:
+    :param kwargs: Solver keyword arguments.
+    :type kwargs: dict
+
+    :returns: Pairs of source and destination plugs that have been
+              disconnected by this function.
+    :rtype: [(str, str), ..]
     """
     f = kwargs.get('frame')[0]
     maya.cmds.currentTime(f, edit=True, update=False)
@@ -116,11 +126,17 @@ def disconnect_animcurves(kwargs):
 
 def reconnect_animcurves(kwargs, save_node_attrs, force_dg_update=True):
     """
+    Re-connect animation curves previously disconnected using
+    'disconnect_animcurves' function
 
-    :param kwargs:
-    :param save_node_attrs:
-    :param force_dg_update:
-    :return:
+    :param kwargs: Solver keyword arguments.
+    :type kwargs: dict
+
+    :param save_node_attrs: List of pairs of Maya node.attrs to be re-connected.
+    :type save_node_attrs: [(str, str), ..]
+
+    :param force_dg_update: Should the DG network be updated?
+    :type force_dg_update: bool
     """
     f = kwargs.get('frame')[0]
     maya.cmds.currentTime(f, edit=True, update=False)
@@ -156,6 +172,9 @@ def clear_attr_keyframes(kwargs, frames):
     """
     Evaluates the animated attributes at 'frames', then deletes the
     existing animCurves.
+
+    :param kwargs: Solver keyword arguments.
+    :type kwargs: dict
     """
     frames = list(sorted(frames))
     attrs = kwargs.get('attr') or []
@@ -200,9 +219,13 @@ def clear_attr_keyframes(kwargs, frames):
 
 def generate_isolate_nodes(kwargs):
     """
+    Create a list of Maya nodes to be shown to the user during solving.
 
-    :param kwargs:
-    :return:
+    :param kwargs: Solver keyword arguments.
+    :type kwargs: dict
+
+    :returns: List of Maya nodes.
+    :rtype: [str, ..]
     """
     nodes = set()
     attrs = kwargs.get('attr') or []

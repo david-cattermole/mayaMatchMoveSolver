@@ -22,6 +22,7 @@ Collection and solving functions.
 import pprint
 import time
 import uuid
+import json
 
 import maya.cmds
 
@@ -181,15 +182,6 @@ def get_previous_collection(cols, current_col):
     """
     prev_col, prev_index = get_previous_collection_and_index(cols, current_col)
     return prev_col
-
-
-def set_solver_results_on_collection(col, solres_list):
-    """
-    This function is expected to manipulate the list of solver result
-    """
-    msg = 'TODO: Create attributes and set keyframes according to the errors'
-    msg += ' returned by the solver.'
-    LOG.debug(msg)
 
 
 def log_solve_results(log, solres_list, total_time=None, status_fn=None):
@@ -903,7 +895,6 @@ def execute_collection(col,
     e = time.time()
 
     # Display Solver results
-    set_solver_results_on_collection(col, solres_list)
     log_solve_results(log, solres_list, total_time=e-s, status_fn=status_fn)
     return
 

@@ -191,7 +191,6 @@ class Collection(object):
         configmaya.set_node_option_structure(
             set_node, attr_name, data,
             add_attr=True)
-        self._kwargs_list = []  # reset argument flag cache.
         return
 
     ############################################################################

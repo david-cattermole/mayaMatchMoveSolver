@@ -280,7 +280,7 @@ def set_override_current_frame_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_override_current_frame_attr_exists(col)
     node = col.get_node()
-    configmaya.get_node_option(node, const.OVERRIDE_CURRENT_FRAME_ATTR, value)
+    configmaya.set_node_option(node, const.OVERRIDE_CURRENT_FRAME_ATTR, value)
     return
 
 
@@ -339,7 +339,7 @@ def set_attribute_toggle_animated_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_attribute_toggle_animated_attr_exists(col)
     node = col.get_node()
-    configmaya.get_node_option(node, const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR, value)
+    configmaya.set_node_option(node, const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR, value)
     return
 
 
@@ -398,7 +398,7 @@ def set_attribute_toggle_static_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_attribute_toggle_static_attr_exists(col)
     node = col.get_node()
-    configmaya.get_node_option(node, const.ATTRIBUTE_TOGGLE_STATIC_ATTR, value)
+    configmaya.set_node_option(node, const.ATTRIBUTE_TOGGLE_STATIC_ATTR, value)
     return
 
 
@@ -457,7 +457,7 @@ def set_attribute_toggle_locked_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_attribute_toggle_locked_attr_exists(col)
     node = col.get_node()
-    configmaya.get_node_option(node, const.ATTRIBUTE_TOGGLE_LOCKED_ATTR, value)
+    configmaya.set_node_option(node, const.ATTRIBUTE_TOGGLE_LOCKED_ATTR, value)
     return
 
 
@@ -516,7 +516,7 @@ def set_object_toggle_camera_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_object_toggle_camera_attr_exists(col)
     node = col.get_node()
-    configmaya.get_node_option(node, const.OBJECT_TOGGLE_CAMERA_ATTR, value)
+    configmaya.set_node_option(node, const.OBJECT_TOGGLE_CAMERA_ATTR, value)
     return
 
 
@@ -575,7 +575,7 @@ def set_object_toggle_marker_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_object_toggle_marker_attr_exists(col)
     node = col.get_node()
-    configmaya.get_node_option(node, const.OBJECT_TOGGLE_MARKER_ATTR, value)
+    configmaya.set_node_option(node, const.OBJECT_TOGGLE_MARKER_ATTR, value)
     return
 
 
@@ -634,7 +634,7 @@ def set_object_toggle_bundle_on_collection(col, value):
     assert isinstance(value, bool)
     ensure_object_toggle_bundle_attr_exists(col)
     node = col.get_node()
-    configmaya.get_node_option(node, const.OBJECT_TOGGLE_BUNDLE_ATTR, value)
+    configmaya.set_node_option(node, const.OBJECT_TOGGLE_BUNDLE_ATTR, value)
     return
 
 

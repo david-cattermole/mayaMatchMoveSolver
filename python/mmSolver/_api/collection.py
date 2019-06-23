@@ -847,6 +847,8 @@ class Collection(object):
         :return: List of SolveResults from the executed collection.
         :rtype: [SolverResult, ..]
         """
+        do_isolate = False
+
         # Ensure the plug-in is loaded, so we fail before trying to run.
         api_utils.load_plugin()
 
@@ -865,14 +867,15 @@ class Collection(object):
         panels = viewport_utils.get_all_model_panels()
         if refresh is True:
             for panel in panels:
-                state = maya.cmds.isolateSelect(
-                    panel,
-                    query=True,
-                    state=True)
-                nodes = None
-                if state is True:
-                    nodes = viewport_utils.get_isolated_nodes(panel)
-                panel_objs[panel] = nodes
+                if do_isolate is True:
+                    state = maya.cmds.isolateSelect(
+                        panel,
+                        query=True,
+                        state=True)
+                    nodes = None
+                    if state is True:
+                        nodes = viewport_utils.get_isolated_nodes(panel)
+                    panel_objs[panel] = nodes
                 panel_img_pl_vis[panel] = viewport_utils.get_image_plane_visibility(panel)
 
         # Save current frame, to revert to later on.
@@ -896,15 +899,17 @@ class Collection(object):
             # they may actually be hidden.
             if refresh is True:
                 s = time.time()
-                isolate_nodes = set()
-                for kwargs in kwargs_list:
-                    isolate_nodes |= collectionutils.generate_isolate_nodes(kwargs)
-                if len(isolate_nodes) == 0:
-                    raise excep.NotValid
-                isolate_node_list = list(isolate_nodes)
+                if do_isolate is True:
+                    isolate_nodes = set()
+                    for kwargs in kwargs_list:
+                        isolate_nodes |= collectionutils.generate_isolate_nodes(kwargs)
+                    if len(isolate_nodes) == 0:
+                        raise excep.NotValid
+                    isolate_node_list = list(isolate_nodes)
+                    for panel in panels:
+                        viewport_utils.set_isolated_nodes(panel, isolate_node_list, True)
                 for panel in panels:
                     viewport_utils.set_image_plane_visibility(panel, False)
-                    viewport_utils.set_isolated_nodes(panel, isolate_node_list, True)
                 e = time.time()
                 LOG.debug('Perform Pre-Isolate; time=%r', e - s)
 
@@ -1007,11 +1012,13 @@ class Collection(object):
                     if objs is None:
                         # No original objects, disable 'isolate
                         # selected' after resetting the objects.
-                        viewport_utils.set_isolated_nodes(panel, [], False)
+                        if do_isolate is True:
+                            viewport_utils.set_isolated_nodes(panel, [], False)
                         img_pl_vis = panel_img_pl_vis.get(panel, True)
                         viewport_utils.set_image_plane_visibility(panel, img_pl_vis)
                     else:
-                        viewport_utils.set_isolated_nodes(panel, list(objs), True)
+                        if do_isolate is True:
+                            viewport_utils.set_isolated_nodes(panel, list(objs), True)
                 e = time.time()
                 LOG.debug('Finally; reset isolate selected; time=%r', e - s)
 

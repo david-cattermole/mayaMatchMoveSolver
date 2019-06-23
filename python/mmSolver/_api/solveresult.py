@@ -126,11 +126,12 @@ class SolveResult(object):
     """
     def __init__(self, cmd_data):
         if isinstance(cmd_data, list) is False:
-            msg = 'cmd_data is of type %r, not expected list.'
+            msg = 'cmd_data is of type %r, expected a list object.'
             raise TypeError(msg % type(cmd_data))
+        self._raw_data = list(cmd_data)
         data = parse_command_result(cmd_data)
 
-        # Common warning in this function.
+        # Common warning message in this method.
         msg = 'mmSolver data is incomplete, '
         msg += 'a solver error may have occurred: '
         msg += 'name={0} key={1} typ={2} value={3}'
@@ -221,6 +222,15 @@ class SolveResult(object):
                 self._per_frame_error[t] = v
         return
 
+    def get_data_raw(self):
+        """
+        Get a copy of the raw data given to this object at initialization.
+
+        It is possible to re-create this object exactly by saving this
+        raw data and re-initializing the object with this data.
+        """
+        return list(self._raw_data)
+
     def get_success(self):
         """
         Command Success or not? Did the solver fail?
@@ -228,6 +238,9 @@ class SolveResult(object):
         return self._solver_stats.get('success')
 
     def get_final_error(self):
+        """
+        The single error value representing the solve at it's last state.
+        """
         return self._error_stats.get('final')
 
     def get_user_interrupted(self):
@@ -237,18 +250,40 @@ class SolveResult(object):
         return self._solver_stats.get('user_interrupted', False)
     
     def get_error_stats(self):
+        """
+        Details for the error (deviation) of the solve.
+        """
         return self._error_stats.copy()
 
     def get_timer_stats(self):
+        """
+        Details for how long different aspects of the solve took to compute. 
+        """
         return self._timer_stats.copy()
 
     def get_solver_stats(self):
+        """
+        Details of internal solver.
+        """
         return self._solver_stats.copy()
 
     def get_frame_error_list(self):
+        """
+        The error (deviation) per-frame of the solver.
+        """
         return self._per_frame_error.copy()
 
     def get_marker_error_list(self, marker_node=None):
+        """
+        Get a list of errors (deviation) for all markers, or the given marker.
+        
+        :param marker_node: The specific marker node to get an error list for.
+        :type marker_node: str
+
+        :returns: A dict of marker node names and time values, giving
+                  the error (deviation).
+        :rtype: {"marker_node": {float: float}}
+        """
         v = None
         if marker_node is None:
             v = self._per_marker_per_frame_error.copy()

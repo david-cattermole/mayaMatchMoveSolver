@@ -196,6 +196,19 @@ class Camera(object):
 
     ############################################################################
 
+    def get_plate_resolution(self):
+        """
+        Get the resolution of the image attached to this camera, or
+        return a default value if no image is attached.
+
+        :return: Tuple of X and Y resolution.
+        :rtype: (int, int)
+        """
+        resolution = (const.DEFAULT_PLATE_WIDTH,
+                      const.DEFAULT_PLATE_HEIGHT)
+        # TODO: Get the correct plate resolution from the connected image plane.
+        return resolution
+
     def get_deviation(self, times=None):
         """
         Get the average deviation for all marker under the camera.

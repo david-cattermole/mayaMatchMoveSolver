@@ -19,7 +19,9 @@
 Undo related tools.
 """
 
+import uuid
 from functools import wraps
+from contextlib import contextmanager
 
 import maya.cmds
 
@@ -28,7 +30,7 @@ import mmSolver.logger
 LOG = mmSolver.logger.get_logger()
 
 
-def undo_chunk(func):
+def wrap_as_undo_chunk(func):
     """
     Undo/Redo Chunk Decorator.
 
@@ -46,3 +48,16 @@ def undo_chunk(func):
             maya.cmds.undoInfo(closeChunk=True)
             maya.cmds.undo()
     return _func
+
+
+@contextmanager
+def undo_chunk(name=None):
+    if name is None:
+        name = str(uuid.uuid4())
+    undo_state = maya.cmds.undoInfo(query=True, state=True)
+    if undo_state is True:
+        maya.cmds.undoInfo(openChunk=True, chunkName=name)
+    yield name
+    if undo_state is True:
+        maya.cmds.undoInfo(closeChunk=True, chunkName=name)
+

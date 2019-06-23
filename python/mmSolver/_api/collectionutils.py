@@ -19,13 +19,18 @@
 Utilities used with Collection compiled 'kwargs'.
 """
 
-import maya.OpenMaya as OpenMaya
 import maya.cmds
 import maya.mel
+import maya.OpenMaya as OpenMaya
+import maya.OpenMayaAnim as OpenMayaAnim
 
 import mmSolver.logger
-import mmSolver.utils.node
+import mmSolver.utils.node as node_utils
+import mmSolver.utils.animutils as anim_utils
+import mmSolver._api.constant as const
 import mmSolver._api.attribute as attribute
+import mmSolver._api.marker as marker
+import mmSolver._api.solveresult as solveresult
 
 LOG = mmSolver.logger.get_logger()
 
@@ -68,7 +73,7 @@ def is_single_frame(kwargs):
     :param kwargs: Solver keyword arguments.
     :type kwargs: dict
 
-    :returns: If the given 'kwargs' argument defines only one unique 
+    :returns: If the given 'kwargs' argument defines only one unique
               frame to solve.
     :rtype: bool
     """
@@ -102,7 +107,7 @@ def disconnect_animcurves(kwargs):
 
         in_plug_name = None
         out_plug_name = attr_name
-        plug = mmSolver.utils.node.get_as_plug(attr_name)
+        plug = node_utils.get_as_plug(attr_name)
         isDest = plug.isDestination()
         if isDest:
             connPlugs = OpenMaya.MPlugArray()
@@ -242,3 +247,43 @@ def generate_isolate_nodes(kwargs):
         nodes.add(cam_tfm_node)
         nodes.add(cam_shp_node)
     return nodes
+
+
+def calculate_marker_deviation(mkr_nodes, frame_list):
+    """
+    Calculate marker deviation, and set it on the marker.
+    """
+    frame_list_set = [int(x) for x in frame_list]
+    frame_list_set = set(frame_list_set)
+    for mkr_node in mkr_nodes:
+        mkr = marker.Marker(node=mkr_node)
+        mkr_frames = mkr.get_enabled_frames()
+        mkr_frames = [int(x) for x in mkr_frames]
+        mkr_frames = set(mkr_frames).intersection(frame_list_set)
+        mkr_frames = list(mkr_frames)
+        if len(mkr_frames) > 0:
+            deviation_list = mkr.compute_deviation(mkr_frames)
+            mkr.set_deviation(mkr_frames, deviation_list)
+    return
+
+
+def set_solver_deviation_on_collection(node, solres_list):
+    """
+    Set keyframe data on the collection for the solver.
+    """
+    frame_error_list = solveresult.merge_frame_error_list(solres_list)
+    frame_list = []
+    err_list = []
+    for frame, err in frame_error_list.items():
+        frame_list.append(frame)
+        err_list.append(err)
+    plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_DEVIATION)
+    try:
+        maya.cmds.setAttr(plug, lock=False)
+        anim_utils.create_anim_curve_node(
+            frame_list, err_list,
+            node_attr=plug,
+            anim_type=OpenMayaAnim.MFnAnimCurve.kAnimCurveTU)
+    finally:
+        maya.cmds.setAttr(plug, lock=True)
+    return

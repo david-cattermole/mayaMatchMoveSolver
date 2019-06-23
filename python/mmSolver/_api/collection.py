@@ -27,11 +27,13 @@ import logging
 
 import maya.cmds
 import maya.mel
+import maya.OpenMayaAnim as OpenMayaAnim
 
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.configmaya as configmaya
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.animutils as anim_utils
 import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
@@ -942,6 +944,7 @@ class Collection(object):
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
 
+                # Write solver flags to a debug file.
                 debug_file_path = kwargs.get('debugFile', None)
                 if debug_file_path is not None:
                     options_file_path = debug_file_path.replace('.log', '.flags')
@@ -1003,14 +1006,6 @@ class Collection(object):
                     maya.cmds.refresh()
                     e = time.time()
                     LOG.debug('Refresh Viewport; time=%r', e - s)
-
-            # Calculate marker deviation, and set it on the marker.
-            s = time.time()
-            marker_nodes = list(set(marker_nodes))
-            collectionutils.calculate_marker_deviation(marker_nodes, frame_list)
-            e = time.time()
-            LOG.debug('Calculate Marker Deviation; time=%r', e - s)
-
         finally:
             if refresh is True:
                 s = time.time()
@@ -1040,11 +1035,27 @@ class Collection(object):
             raw_data = solres.get_data_raw()
             raw_data_list.append(raw_data)
         self._set_attr_data(attr, raw_data_list)
-
-        # Set keyframe data on the collection for the solver
-        s = time.time()
-        node = self.get_node()
-        collectionutils.set_solver_deviation_on_collection(node, solres_list)
-        e = time.time()
-        LOG.debug('set solver deviation on collection; time=%r', e - s)
         return solres_list
+
+
+def update_deviation_on_collection(col, solres_list):
+    """
+    Set keyframe data on the collection for the solver.
+    """
+    node = col.get_node()
+    frame_error_list = solveresult.merge_frame_error_list(solres_list)
+    frame_list = []
+    err_list = []
+    for frame, err in frame_error_list.items():
+        frame_list.append(frame)
+        err_list.append(err)
+    plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_DEVIATION)
+    try:
+        maya.cmds.setAttr(plug, lock=False)
+        anim_utils.create_anim_curve_node(
+            frame_list, err_list,
+            node_attr=plug,
+            anim_type=OpenMayaAnim.MFnAnimCurve.kAnimCurveTU)
+    finally:
+        maya.cmds.setAttr(plug, lock=True)
+    return

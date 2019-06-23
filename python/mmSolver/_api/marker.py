@@ -35,6 +35,7 @@ import mmSolver._api.bundle
 import mmSolver._api.camera as camera
 import mmSolver._api.markergroup as markergroup
 import mmSolver._api.markerutils as markerutils
+import mmSolver._api.solveresult as solveresult
 
 
 LOG = mmSolver.logger.get_logger()
@@ -485,7 +486,7 @@ class Marker(object):
 
     def get_average_deviation(self):
         """
-        Compute a single float number (in pixels) representing the 
+        Calculate a single float number (in pixels) representing the 
         average deviation of this Marker.
         """
         frames = self.get_enabled_frames()
@@ -522,11 +523,15 @@ class Marker(object):
         assert len(frames) > 0
 
         # Ensure the deviation attribute exists.
+        #
+        # TODO: We should call this less frequently, re-factor it into
+        # another function.
         self.add_attributes()
 
         dev_list = []
         plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_DEVIATION)
         for frame in frames:
+            # TODO: Performance problem; query the animCurve directly.
             v = maya.cmds.getAttr(plug, time=frame)
             dev_list.append(v)
         return dev_list
@@ -548,6 +553,9 @@ class Marker(object):
         assert len(times) == len(values)
 
         # Ensure the deviation attribute exists.
+        #
+        # TODO: We should call this less frequently, re-factor it into
+        # another function.
         self.add_attributes()
 
         node = self.get_node()
@@ -889,4 +897,23 @@ class Marker(object):
         # Move the marker under the world root, don't modify the marker in
         # any way otherwise.
         maya.cmds.parent(mkr_node, relative=True, world=True)
-        pass
+        return
+
+
+def update_deviation_on_markers(mkr_list, solres_list):
+    """
+    Calculate marker deviation, and set it on the marker.
+    """
+    frame_list = solveresult.merge_frame_list(solres_list)
+    frame_list_set = [int(x) for x in frame_list]
+    frame_list_set = set(frame_list_set)
+    for mkr in mkr_list:
+        mkr_frames = mkr.get_enabled_frames()
+        mkr_frames = [int(x) for x in mkr_frames]
+        mkr_frames = set(mkr_frames).intersection(frame_list_set)
+        mkr_frames = list(mkr_frames)
+        if len(mkr_frames) > 0:
+            deviation_list = mkr.compute_deviation(mkr_frames)
+            mkr.set_deviation(mkr_frames, deviation_list)
+    return
+

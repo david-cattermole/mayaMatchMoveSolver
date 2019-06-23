@@ -30,6 +30,36 @@ import mmSolver._api.attribute as attribute
 LOG = mmSolver.logger.get_logger()
 
 
+def run_progress_func(prog_fn, value):
+    """
+    Call the prog_fn callable function, if it's not None.
+
+    :param prog_fn: Callable function to print or save the 'value' argument.
+    :type prog_fn: callable
+
+    :param value: Expected to be a percent number from 0 to 100.
+    :type value: int or float
+    """
+    if prog_fn is not None:
+        prog_fn(int(value))
+    return
+
+
+def run_status_func(status_fn, text):
+    """
+    Call the status_fn callable function, if it's not None.
+
+    :param status_fn: Callable function to print or save the 'text' argument.
+    :type status_fn: callable
+
+    :param text: Text to display as the current status.
+    :type text: str
+    """
+    if status_fn is not None:
+        status_fn(str(text))
+    return
+
+
 def is_single_frame(kwargs):
     """
     Logic to determine if the solver arguments will solve a single

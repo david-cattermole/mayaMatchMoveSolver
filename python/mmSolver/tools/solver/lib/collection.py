@@ -896,6 +896,20 @@ def execute_collection(col,
 
     # Display Solver results
     log_solve_results(log, solres_list, total_time=e-s, status_fn=status_fn)
+
+    # Calculate marker deviation, and set it on the marker.
+    s = time.time()
+    mkr_nodes = mmapi.merge_marker_node_list(solres_list)
+    mkr_list = [mmapi.Marker(node=n) for n in mkr_nodes]
+    mmapi.update_deviation_on_markers(mkr_list, solres_list)
+    e = time.time()
+    LOG.debug('Update Deviation on Markers; time=%r', e - s)
+
+    # Set keyframe data on the collection for the solver
+    s = time.time()
+    mmapi.update_deviation_on_collection(col, solres_list)
+    e = time.time()
+    LOG.debug('Update Deviation on collection; time=%r', e - s)
     return
 
 
@@ -916,7 +930,8 @@ def run_solve_ui(col, refresh_state, force_update_state, log_level, window):
     :param refresh_state: Should we update the viewport while solving?
     :type refresh_state: bool
 
-    :param force_update_state: Should we forcibly update the DG while solving?
+    :param force_update_state: Should we forcibly update the DG while 
+                               solving?
     :type force_update_state: bool
 
     :param log_level: How much information should we print out;a

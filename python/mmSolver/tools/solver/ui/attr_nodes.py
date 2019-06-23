@@ -166,8 +166,8 @@ class AttrModel(uimodels.ItemModel):
         values = {
             'Attr': QtCore.Qt.AlignLeft,
             'State': QtCore.Qt.AlignRight,
-            # 'Min': QtCore.Qt.AlignCenter,
-            # 'Max': QtCore.Qt.AlignCenter,
+            'Min': QtCore.Qt.AlignCenter,
+            'Max': QtCore.Qt.AlignCenter,
         }
         return values
 

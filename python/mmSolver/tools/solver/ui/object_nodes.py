@@ -238,8 +238,8 @@ class ObjectModel(uimodels.ItemModel):
         values = {
             'Node': QtCore.Qt.AlignLeft,
             'Weight': QtCore.Qt.AlignRight,
-            'Frame Dev (px)': QtCore.Qt.AlignRight,
-            'Average Dev (px)': QtCore.Qt.AlignRight,
+            'Frame Dev (px)': QtCore.Qt.AlignCenter,
+            'Average Dev (px)': QtCore.Qt.AlignCenter,
         }
         return values
 

@@ -341,6 +341,62 @@ class Marker(object):
         return
 
     ############################################################################
+    
+    def compute_deviation(self, times):
+        """
+        Compute the deviation for the marker.
+
+        .. note:: This function assumes the camera film aperture (AKA 
+           the film back) is not animated over the times given.
+
+        :param times: The times to query the deviation on, if not
+                      given the current frame is used.
+        :type times: [float, ..]
+
+        :returns: The deviation of the marker-to-bundle re-projection 
+                  in pixels. The length of the list returned will 
+                  always equal the length of the 'times' argument.
+        :rtype: [float, ..]
+        """
+        v = None
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get Marker node. self=%r'
+            LOG.warning(msg, self)
+            return v
+        cam = self.get_camera()
+        if cam is None:
+            msg = 'Could not get Camera node. self=%r'
+            LOG.warning(msg, self)
+            return v
+        bnd = self.get_bundle()
+        if bnd is None:
+            msg = 'Could not get Bundle node. self=%r'
+            LOG.warning(msg, self)
+            return v
+
+        assert len(times) > 0
+        cam_tfm = cam.get_transform_node()
+        cam_shp = cam.get_shape_node()
+        hfa_plug = cam_shp + '.horizontalFilmAperture'
+        vfa_plug = cam_shp + '.verticalFilmAperture'
+        hfa = maya.cmds.getAttr(hfa_plug, time=times[0])
+        vfa = maya.cmds.getAttr(vfa_plug, time=times[0])
+        image_width, _ = cam.get_plate_resolution()
+        image_width = float(image_width)
+        image_height = image_width * (vfa / hfa)
+
+        bnd_node = bnd.get_node()
+        dev_list = markerutils.calculate_marker_deviation(
+            node, bnd_node,
+            cam_tfm, cam_shp,
+            times,
+            image_width, image_height
+        )
+        if dev_list is None:
+            dev_list = [-1.0] * times
+        assert len(dev_list) == len(times)
+        return dev_list
 
     def get_enable(self, time=None):
         """
@@ -366,6 +422,43 @@ class Marker(object):
             v = maya.cmds.getAttr(plug, time=time)
         return v
 
+    def get_enabled_frames(self):
+        """
+        Get the list of frames that this Marker is enabled.
+
+        :returns: The enabled frame numbers of the marker.
+        :rtype: [int, ..]
+        """
+        times = []
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return times
+        plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_ENABLE)
+        
+        anim_curves = maya.cmds.listConnections(plug, type='animCurve') or []
+        if len(anim_curves) == 0:
+            # TODO: Use current frame?
+            return times
+        anim_curve = anim_curves[0]
+
+        enable_times = maya.cmds.keyframe(
+            anim_curve,
+            query=True,
+            timeChange=True) or []
+        if len(enable_times) == 0:
+            # TODO: Use current frame?
+            return times
+
+        start_frame = int(min(enable_times))
+        end_frame = int(max(enable_times))
+        for f in range(start_frame, end_frame + 1):
+            v = self.get_enable(time=f)
+            if v:
+                times.append(f)
+        return times
+
     def get_weight(self, time=None):
         """
         Get the current wire-frame colour of the Marker.
@@ -389,6 +482,18 @@ class Marker(object):
         else:
             v = maya.cmds.getAttr(plug, time=time)
         return v
+
+    def get_average_deviation(self):
+        """
+        Compute a single float number (in pixels) representing the 
+        average deviation of this Marker.
+        """
+        frames = self.get_enabled_frames()
+        if len(frames) == 0:
+            frames = [maya.cmds.currentTime(query=True)]
+        dev_list = self.get_deviation(times=frames)
+        dev = sum(dev_list) / len(dev_list)
+        return dev
 
     def get_deviation(self, times=None):
         """

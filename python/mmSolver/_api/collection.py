@@ -28,7 +28,7 @@ import logging
 
 import maya.cmds
 import maya.mel
-import maya.OpenMaya as OpenMaya
+import maya.OpenMayaAnim as OpenMayaAnim
 
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
@@ -921,6 +921,7 @@ class Collection(object):
             for kwargs in kwargs_list:
                 frame_list += kwargs.get('frame', [])
             frame_list = list(set(frame_list))
+            frame_list = list(sorted(frame_list))
             is_whole_solve_single_frame = len(frame_list) == 1
             if is_whole_solve_single_frame is False:
                 s = time.time()
@@ -933,6 +934,7 @@ class Collection(object):
                 LOG.debug('Update previous of current time; time=%r', e - s)
 
             # Run Solver...
+            kwargs_markers = []
             start = 0
             total = len(kwargs_list)
             for i, kwargs in enumerate(kwargs_list):
@@ -989,6 +991,8 @@ class Collection(object):
                     collectionutils.run_status_func(status_fn, 'ERROR: ' + msg)
                     LOG.error(msg)
 
+                kwargs_markers += kwargs.get('marker', [])
+
                 # Refresh the Viewport.
                 if refresh is True:
                     s = time.time()
@@ -1000,11 +1004,20 @@ class Collection(object):
                     maya.cmds.refresh()
                     e = time.time()
                     LOG.debug('Refresh Viewport; time=%r', e - s)
-        except:
-            solres_list = []
-            # TODO: If we have failed, should we attempt to clean up the mess
-            # and undo the entire undo chunk?
-            raise
+
+            # Calculate marker deviation, and set it on the marker.
+            frame_list_set = [int(x) for x in frame_list]
+            frame_list_set = set(frame_list_set)
+            for mkr_node, cam_shp_node, bnd_node in kwargs_markers:
+                mkr = marker.Marker(node=mkr_node)
+                mkr_frames = mkr.get_enabled_frames()
+                mkr_frames = [int(x) for x in mkr_frames]
+                mkr_frames = set(mkr_frames).intersection(frame_list_set)
+                mkr_frames = list(mkr_frames)
+                if len(mkr_frames) > 0:
+                    deviation_list = mkr.compute_deviation(mkr_frames)
+                    mkr.set_deviation(mkr_frames, deviation_list)
+
         finally:
             if refresh is True:
                 s = time.time()
@@ -1026,4 +1039,31 @@ class Collection(object):
             api_state.set_solver_running(False)
 
             maya.cmds.currentTime(cur_frame, edit=True, update=True)
+
+        # Store output information of the solver.
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_RESULTS
+        raw_data_list = []
+        for solres in solres_list:
+            raw_data = solres.get_data_raw()
+            raw_data_list.append(raw_data)
+        self._set_attr_data(attr, raw_data_list)
+
+        # Set keyframe data on the collection for the solver
+        frame_error_list = solveresult.merge_frame_error_list(solres_list)
+        frame_list = []
+        err_list = []
+        for frame, err in frame_error_list.items():
+            frame_list.append(frame)
+            err_list.append(err)
+        node = self.get_node()
+        plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_DEVIATION)
+        try:
+            maya.cmds.setAttr(plug, lock=False)
+            anim_utils.create_anim_curve_node(
+                frame_list, err_list,
+                node_attr=plug,
+                anim_type=OpenMayaAnim.MFnAnimCurve.kAnimCurveTU)
+        finally:
+            maya.cmds.setAttr(plug, lock=True)
+
         return solres_list

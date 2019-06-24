@@ -87,6 +87,9 @@ class SolverWindow(BaseWindow):
             None,
             callback_ids,
         )
+
+        # Update the status with the last solve result
+        self.updateStatusWithSolveResult()
         return
 
     def __del__(self):
@@ -97,6 +100,26 @@ class SolverWindow(BaseWindow):
         maya_callbacks.remove_callbacks(callback_ids)
         del self.callback_manager
         self.callback_manager = maya_callbacks.CallbackManager()
+
+    def updateStatusWithSolveResult(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        # TODO: If no solve has been performed yet, we should print
+        # that fact.
+        solres_list = col.get_last_solve_results()
+        # TODO: The last solve time should be read from the Collection,
+        # and displayed to the user
+        total_time = 42.0
+        status_fn = self.setStatusLine
+        # We don't want to log every time we open the UI.
+        log = None
+        lib_collection.log_solve_results(
+            log,
+            solres_list,
+            total_time=total_time,
+            status_fn=status_fn)
+        return
 
     def addMenuBarContents(self, menubar):
         # File Menu
@@ -502,7 +525,7 @@ class SolverWindow(BaseWindow):
     def displayObjectFrameDeviationActionToggledCB(value):
         lib_state.set_display_object_frame_deviation_state(value)
         return
-        
+
     @staticmethod
     def displayObjectAverageDeviationActionToggledCB(value):
         lib_state.set_display_object_average_deviation_state(value)
@@ -512,7 +535,7 @@ class SolverWindow(BaseWindow):
     def displayObjectWeightActionToggledCB(value):
         lib_state.set_display_object_weight_state(value)
         return
-    
+
     @staticmethod
     def displayAttributeMinMaxActionToggledCB(value):
         lib_state.set_display_attribute_min_max_state(value)

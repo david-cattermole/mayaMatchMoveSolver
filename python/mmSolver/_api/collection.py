@@ -193,6 +193,26 @@ class Collection(object):
         return
 
     ############################################################################
+    
+    def get_last_solve_results(self):
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_RESULTS
+        raw_data_list = self._get_attr_data(attr)
+        solres_list = []
+        for raw_data in raw_data_list:
+            solres = solveresult.SolveResult(raw_data)
+            solres_list.append(solres)
+        return solres_list
+
+    def _set_last_solve_results(self, solres_list):
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_RESULTS
+        raw_data_list = []
+        for solres in solres_list:
+            raw_data = solres.get_data_raw()
+            raw_data_list.append(raw_data)
+        self._set_attr_data(attr, raw_data_list)
+        return
+
+    ############################################################################
 
     def _load_solver_list(self):
         """
@@ -1029,12 +1049,7 @@ class Collection(object):
             maya.cmds.currentTime(cur_frame, edit=True, update=True)
 
         # Store output information of the solver.
-        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_RESULTS
-        raw_data_list = []
-        for solres in solres_list:
-            raw_data = solres.get_data_raw()
-            raw_data_list.append(raw_data)
-        self._set_attr_data(attr, raw_data_list)
+        self._set_last_solve_results(solres_list)
         return solres_list
 
 

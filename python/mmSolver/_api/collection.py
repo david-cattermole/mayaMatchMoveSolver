@@ -832,9 +832,18 @@ class Collection(object):
 
     def execute(self,
                 verbose=False,
+                # TODO: Refactor arguments into a 'Preferences' object
+                # to hold the different preferences.
                 refresh=False,
                 force_update=False,
                 do_isolate=False,
+                # TODO: Allow a dict to be passed to the function
+                # specifying the object type and the visibility status
+                # during solving. This allows us to turn on/off any
+                # object type during solving. If an argument is not
+                # given or is None, the object type visibility will
+                # not be changed.
+                display_image_plane=False,
                 prog_fn=None,
                 status_fn=None):
         """
@@ -858,6 +867,9 @@ class Collection(object):
 
         :param do_isolate: Isolate only solving objects while running solve.
         :type do_isolate: bool
+
+        :param display_image_plane: Display Image Planes while solving?
+        :type display_image_plane: bool
 
         :param prog_fn: The function used report progress messages to
                         the user.
@@ -929,8 +941,11 @@ class Collection(object):
                     isolate_node_list = list(isolate_nodes)
                     for panel in panels:
                         viewport_utils.set_isolated_nodes(panel, isolate_node_list, True)
+    
                 for panel in panels:
-                    viewport_utils.set_image_plane_visibility(panel, False)
+                    viewport_utils.set_image_plane_visibility(
+                        panel,
+                        display_image_plane)
                 e = time.time()
                 LOG.debug('Perform Pre-Isolate; time=%r', e - s)
 
@@ -1017,6 +1032,14 @@ class Collection(object):
 
                 # Refresh the Viewport.
                 if refresh is True:
+                    # TODO: If we solve per-frame without "refresh"
+                    # on, then we get wacky solvers
+                    # per-frame. Interestingly, the 'force_update'
+                    # does not seem to make a difference, just the
+                    # 'maya.cmds.refresh' call.
+                    #
+                    # Test scene file:
+                    # ./tests/data/scenes/mmSolverBasicSolveD_before.ma
                     s = time.time()
                     maya.cmds.currentTime(
                         frame[0],

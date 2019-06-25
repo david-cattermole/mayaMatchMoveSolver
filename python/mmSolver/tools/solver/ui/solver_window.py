@@ -250,6 +250,30 @@ class SolverWindow(BaseWindow):
         action.toggled.connect(self.subForm.displayAttributeMinMaxColumnChanged)
         view_menu.addAction(action)
 
+        view_menu.addSeparator()
+
+        # Display the Image Planes while solving.
+        label = 'Display Image Planes (while solving)'
+        tooltip = 'Display Image Planes while solving.'
+        value = lib_state.get_display_image_plane_while_solving_state()
+        action = QtWidgets.QAction(label, edit_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(type(self).displayImagePlaneWhileSolvingActionToggledCB)
+        view_menu.addAction(action)
+
+        # Isolate Objects while solving
+        label = 'Isolate Objects (while solving)'
+        tooltip = 'Isolate visibility of all Markers and Bundles while solving.'
+        value = lib_state.get_display_image_plane_while_solving_state()
+        action = QtWidgets.QAction(label, edit_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(type(self).isolateObjectWhileSolvingActionToggledCB)
+        view_menu.addAction(action)
+
         menubar.addMenu(view_menu)
 
         # Tools Menu
@@ -522,6 +546,16 @@ class SolverWindow(BaseWindow):
         return
 
     @staticmethod
+    def isolateObjectWhileSolvingActionToggledCB(value):
+        lib_state.set_isolate_object_while_solving_state(value)
+        return
+
+    @staticmethod
+    def displayImagePlaneWhileSolvingActionToggledCB(value):
+        lib_state.set_display_image_plane_while_solving_state(value)
+        return
+
+    @staticmethod
     def displayObjectFrameDeviationActionToggledCB(value):
         lib_state.set_display_object_frame_deviation_state(value)
         return
@@ -571,12 +605,16 @@ class SolverWindow(BaseWindow):
                 return
             refresh_state = lib_state.get_refresh_viewport_state()
             force_update_state = lib_state.get_force_dg_update_state()
+            do_isolate_state = lib_state.get_isolate_object_while_solving_state()
+            image_plane_state = lib_state.get_display_image_plane_while_solving_state()
             log_level = lib_state.get_log_level()
             col = lib_state.get_active_collection()
             lib_collection.run_solve_ui(
                 col,
                 refresh_state,
                 force_update_state,
+                do_isolate_state,
+                image_plane_state,
                 log_level,
                 self)
         return

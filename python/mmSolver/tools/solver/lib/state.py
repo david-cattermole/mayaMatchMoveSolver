@@ -122,6 +122,24 @@ def set_force_dg_update_state(value):
     return set_state_bool(const.SCENE_DATA_FORCE_DG_UPDATE, value)
 
 
+def get_isolate_object_while_solving_state():
+    return get_state_bool(const.SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING,
+                          const.SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING_DEFAULT)
+
+
+def set_isolate_object_while_solving_state(value):
+    return set_state_bool(const.SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING, value)
+
+
+def get_display_image_plane_while_solving_state():
+    return get_state_bool(const.SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING,
+                          const.SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING_DEFAULT)
+
+
+def set_display_image_plane_while_solving_state(value):
+    return set_state_bool(const.SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING, value)
+
+
 def get_display_object_frame_deviation_state():
     return get_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION,
                           const.SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION_DEFAULT)

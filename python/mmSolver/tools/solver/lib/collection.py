@@ -247,7 +247,7 @@ def log_solve_results(log, solres_list, total_time=None, status_fn=None):
     if log:
         log.info('Max Frame Deviation: %.2f pixels at frame %s', max_error, max_frame)
         log.info('Average Deviation: %.2f pixels', avg_error)
-        
+
     if status_fn is not None:
         status_fn(status_str)
     if log:
@@ -838,6 +838,8 @@ def execute_collection(col,
                        log_level=None,
                        refresh=False,
                        force_update=False,
+                       do_isolate=False,
+                       display_image_plane=False,
                        prog_fn=None,
                        status_fn=None):
     """
@@ -849,11 +851,18 @@ def execute_collection(col,
     :param log_level: Logging level to print out.
     :type log_level: None or str
 
-    :param refresh: Should we refresh the viewport?
+    :param refresh: Refresh the viewport while solving?
     :type refresh: bool
 
     :param force_update: Should we force-update the Maya DG?
     :type force_update: bool
+
+    :param do_isolate: Isolate only objects to be solved during solver
+                       iterations?
+    :type do_isolate: bool
+
+    :param display_image_plane: Display image planes during solving?
+    :type display_image_plane: bool
 
     :param prog_fn: A function called with an 'int' argument, to
                     display progress information to the user. The
@@ -866,12 +875,15 @@ def execute_collection(col,
     :type status_fn: None or function
     """
     msg = 'execute_collection: '
-    msg += 'col=%r log_level=%r refresh=%r force_update=%r '
+    msg += 'col=%r log_level=%r refresh=%r '
+    msg += 'force_update=%r display_image_plane=%r '
     msg += 'prog_fn=%r status_fn=%r'
-    LOG.debug(msg, col, log_level, refresh, force_update, prog_fn, status_fn)
+    LOG.debug(msg, col, log_level, refresh, force_update, display_image_plane, prog_fn, status_fn)
 
     assert isinstance(refresh, bool)
     assert isinstance(force_update, bool)
+    assert isinstance(display_image_plane, bool)
+    assert isinstance(do_isolate, bool)
     assert log_level is None or isinstance(log_level, (str, unicode))
     assert prog_fn is None or hasattr(prog_fn, '__call__')
     assert status_fn is None or hasattr(status_fn, '__call__')
@@ -894,6 +906,8 @@ def execute_collection(col,
         verbose=verbose,
         refresh=refresh,
         force_update=force_update,
+        display_image_plane=display_image_plane,
+        do_isolate=do_isolate,
         prog_fn=prog_fn,
         status_fn=status_fn,
     )
@@ -918,7 +932,13 @@ def execute_collection(col,
     return
 
 
-def run_solve_ui(col, refresh_state, force_update_state, log_level, window):
+def run_solve_ui(col,
+                 refresh_state,
+                 force_update_state,
+                 do_isolate_state,
+                 image_plane_state,
+                 log_level,
+                 window):
     """
     Run the active "solve" (UI state information), and update the UI.
 
@@ -935,9 +955,17 @@ def run_solve_ui(col, refresh_state, force_update_state, log_level, window):
     :param refresh_state: Should we update the viewport while solving?
     :type refresh_state: bool
 
-    :param force_update_state: Should we forcibly update the DG while 
+    :param force_update_state: Should we forcibly update the DG while
                                solving?
     :type force_update_state: bool
+
+    :param do_isolate_state: Should the solving objects only be visible 
+                             while performing the solve?
+    :type do_isolate_state: bool
+
+    :param image_plane_state: Display image planes in the viewport while
+                              performing the solve?
+    :type image_plane_state: bool
 
     :param log_level: How much information should we print out;a
                       'error', 'warning', 'info', 'verbose' or 'debug'.
@@ -981,6 +1009,8 @@ def run_solve_ui(col, refresh_state, force_update_state, log_level, window):
                 log_level=log_level,
                 refresh=refresh_state,
                 force_update=force_update_state,
+                do_isolate=do_isolate_state,
+                display_image_plane=image_plane_state,
                 prog_fn=prog_fn,
                 status_fn=status_fn,
             )

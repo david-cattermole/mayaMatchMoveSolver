@@ -35,6 +35,10 @@ RAYTRACE_EPSILON = 0.0001
 
 # Config
 CONFIG_PATH_VAR_NAME = 'MMSOLVER_CONFIG_PATH'
+CONFIG_HOME_DIR_PATH = {
+    'Linux': '${HOME}/.mmSolver/',
+    'Windows': '${APPDATA}/mmSolver/',
+}
 
 # Maya configuration
 SCENE_DATA_NODE = 'MM_SOLVER_SCENE_DATA'

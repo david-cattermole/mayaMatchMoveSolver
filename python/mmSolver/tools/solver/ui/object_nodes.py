@@ -61,6 +61,9 @@ class ObjectNode(nodes.Node):
     def avgDeviation(self):
         return ''
 
+    def maxDeviation(self):
+        return ''
+
 
 class MarkerNode(ObjectNode):
     def __init__(self, name,
@@ -127,6 +130,24 @@ class MarkerNode(ObjectNode):
             return dev
         return '%.2f' % dev_values[0]
 
+    def maxDeviation(self):
+        """
+        Get the current deviation value of the marker.
+        """
+        dev = '-'
+        d = self.data()
+        if not d:
+            return dev
+        mkr = d.get('marker')
+        if mkr is None:
+            return dev
+        dev_value, dev_frame = mkr.get_maximum_deviation()
+        if dev_value is None:
+            return dev
+        if dev_value < 0:
+            return dev
+        return '%.2f @ %s' % (dev_value, dev_frame)
+
 
 class CameraNode(ObjectNode):
     def __init__(self, name,
@@ -147,7 +168,7 @@ class CameraNode(ObjectNode):
 
     def deviation(self):
         """
-        Get the current deviation value of the marker.
+        Get the current deviation of the for the camera.
         """
         dev = '-'
         d = self.data()
@@ -165,7 +186,7 @@ class CameraNode(ObjectNode):
 
     def avgDeviation(self):
         """
-        Get the current deviation value of the marker.
+        Get the average deviation value of the camera.
         """
         dev = '-'
         d = self.data()
@@ -180,6 +201,25 @@ class CameraNode(ObjectNode):
         if dev_value < 0:
             return dev
         return '%.2f' % dev_value
+
+
+    def maxDeviation(self):
+        """
+        Get the average deviation value of the camera.
+        """
+        dev = '-'
+        d = self.data()
+        if not d:
+            return dev
+        cam = d.get('camera')
+        if cam is None:
+            return dev
+        dev_value, dev_frame = cam.get_maximum_deviation()
+        if dev_value is None:
+            return dev
+        if dev_value < 0:
+            return dev
+        return '%.2f @ %s' % (dev_value, dev_frame)
 
 
 class BundleNode(ObjectNode):
@@ -203,6 +243,9 @@ class BundleNode(ObjectNode):
         return ''
 
     def avgDeviation(self):
+        return ''
+
+    def maxDeviation(self):
         return ''
 
 

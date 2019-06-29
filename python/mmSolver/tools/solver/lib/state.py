@@ -158,6 +158,15 @@ def set_display_object_average_deviation_state(value):
     return set_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION, value)
 
 
+def get_display_object_maximum_deviation_state():
+    return get_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION,
+                          const.SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION_DEFAULT)
+
+
+def set_display_object_maximum_deviation_state(value):
+    return set_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION, value)
+
+
 def get_display_object_weight_state():
     return get_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_WEIGHT,
                           const.SCENE_DATA_DISPLAY_OBJECT_WEIGHT_DEFAULT)

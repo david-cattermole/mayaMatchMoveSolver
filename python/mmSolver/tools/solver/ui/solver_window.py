@@ -47,6 +47,7 @@ import mmSolver.tools.createbundle.tool as createbundle_tool
 import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
 import mmSolver.tools.convertmarker.tool as convertmarker_tool
 import mmSolver.tools.markerbundlerename.tool as mbrename_tool
+import mmSolver.tools.aboutwindow.tool as aboutwin_tool
 
 
 LOG = mmSolver.logger.get_logger()
@@ -232,6 +233,17 @@ class SolverWindow(BaseWindow):
         action.setCheckable(True)
         action.setChecked(value)
         action.toggled.connect(self.subForm.displayObjectAverageDeviationColumnChanged)
+        view_menu.addAction(action)
+
+        # Display Object Deviation
+        label = 'Display Object Maximum Deviation'
+        tooltip = 'Display deviation column'
+        value = lib_state.get_display_object_maximum_deviation_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(self.subForm.displayObjectMaximumDeviationColumnChanged)
         view_menu.addAction(action)
 
         view_menu.addSeparator()
@@ -453,13 +465,13 @@ class SolverWindow(BaseWindow):
         action.triggered.connect(partial(self.launchHelpCB))
         help_menu.addAction(action)
 
-        # # Launch About
-        # label = 'About...'
-        # tooltip = 'About this software.'
-        # action = QtWidgets.QAction(label, help_menu)
-        # action.setStatusTip(tooltip)
-        # action.triggered.connect(partial(self.launchAboutCB))
-        # help_menu.addAction(action)
+        # Launch About
+        label = 'About mmSolver...'
+        tooltip = 'About this software.'
+        action = QtWidgets.QAction(label, help_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.launchAboutCB))
+        help_menu.addAction(action)
 
         menubar.addMenu(help_menu)
         return
@@ -574,6 +586,11 @@ class SolverWindow(BaseWindow):
         return
 
     @staticmethod
+    def displayObjectMaximumDeviationActionToggledCB(value):
+        lib_state.set_display_object_maximum_deviation_state(value)
+        return
+
+    @staticmethod
     def displayObjectWeightActionToggledCB(value):
         lib_state.set_display_object_weight_state(value)
         return
@@ -587,9 +604,9 @@ class SolverWindow(BaseWindow):
         self.help()
         return
 
-    # def launchAboutCB(self):
-    #     # LOG.info('Launch About... not yet.')
-    #     self.help()
+    def launchAboutCB(self):
+        aboutwin_tool.open_window()
+        return
 
     def setStatusLine(self, text):
         self.subForm.setStatusLine(text)

@@ -260,9 +260,11 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         show_weight = lib_state.get_display_object_weight_state()
         show_frm_dev = lib_state.get_display_object_frame_deviation_state()
         show_avg_dev = lib_state.get_display_object_average_deviation_state()
+        show_max_dev = lib_state.get_display_object_maximum_deviation_state()
         self.displayObjectWeightColumnChanged(show_weight)
         self.displayObjectFrameDeviationColumnChanged(show_frm_dev)
         self.displayObjectAverageDeviationColumnChanged(show_avg_dev)
+        self.displayObjectMaximumDeviationColumnChanged(show_max_dev)
         return
 
     def updateObjectModel(self):

@@ -48,6 +48,7 @@ import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
 import mmSolver.tools.convertmarker.tool as convertmarker_tool
 import mmSolver.tools.markerbundlerename.tool as mbrename_tool
 import mmSolver.tools.aboutwindow.tool as aboutwin_tool
+import mmSolver.tools.sysinfowindow.tool as sysinfowin_tool
 
 
 LOG = mmSolver.logger.get_logger()
@@ -465,6 +466,14 @@ class SolverWindow(BaseWindow):
         action.triggered.connect(partial(self.launchHelpCB))
         help_menu.addAction(action)
 
+        # Launch System Info window.
+        label = 'System Information...'
+        tooltip = 'Display detailed information about software and hardware.'
+        action = QtWidgets.QAction(label, help_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.launchSysInfoCB))
+        help_menu.addAction(action)
+
         # Launch About
         label = 'About mmSolver...'
         tooltip = 'About this software.'
@@ -606,6 +615,10 @@ class SolverWindow(BaseWindow):
 
     def launchAboutCB(self):
         aboutwin_tool.open_window()
+        return
+
+    def launchSysInfoCB(self):
+        sysinfowin_tool.open_window()
         return
 
     def setStatusLine(self, text):

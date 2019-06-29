@@ -128,6 +128,11 @@ class Collection(object):
             else:
                 msg = 'node argument must be a string.'
                 raise TypeError(msg)
+
+            # Make sure attributes exists on the collection node.
+            # An older scene may not contain all the attributes, which we
+            # assume exists.
+            self.add_attributes()
         return
 
     def create_node(self, name):
@@ -145,7 +150,8 @@ class Collection(object):
         exist.
         """
         node = self.get_node()
-        _create_collection_attributes(node)
+        if node is not None:
+            _create_collection_attributes(node)
         return
 
     def get_node(self):

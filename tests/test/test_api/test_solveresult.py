@@ -129,6 +129,18 @@ class TestSolveResult(test_api_utils.APITestCase):
         frame_error_list = mmapi.merge_frame_error_list(results)
         assert isinstance(frame_error_list, dict)
 
+    def test_merge_frame_list(self):
+        col = create_example_solve_scene()
+        results = col.execute()
+        success = results[0].get_success()
+        err = results[0].get_final_error()
+        self.assertTrue(isinstance(success, bool))
+        self.assertTrue(isinstance(err, float))
+
+        frame_list = mmapi.merge_frame_list(results)
+        assert isinstance(frame_list, list)
+        assert len(frame_list) > 0
+
     def test_get_average_frame_error_list(self):
         frame_error_list = {
             1: 0,
@@ -190,6 +202,30 @@ class TestSolveResult(test_api_utils.APITestCase):
         assert frm is None or isinstance(frm, float)
         assert isinstance(val, float)
 
+    def test_merge_marker_error_list(self):
+        col = create_example_solve_scene()
+        results = col.execute()
+        success = results[0].get_success()
+        err = results[0].get_final_error()
+        self.assertTrue(isinstance(success, bool))
+        self.assertTrue(isinstance(err, float))
+
+        marker_error_list = mmapi.merge_marker_error_list(results)
+        assert isinstance(marker_error_list, dict)
+        assert len(marker_error_list) > 0
+
+    def test_merge_marker_node_list(self):
+        col = create_example_solve_scene()
+        results = col.execute()
+        success = results[0].get_success()
+        err = results[0].get_final_error()
+        self.assertTrue(isinstance(success, bool))
+        self.assertTrue(isinstance(err, float))
+
+        nodes = mmapi.merge_marker_node_list(results)
+        assert isinstance(nodes, list)
+        assert len(nodes) > 0
+
     def test_perfect_solve(self):
         """
         Open a file and trigger a solve to get perfect results.
@@ -216,6 +252,7 @@ class TestSolveResult(test_api_utils.APITestCase):
         solres = solres_list[0]
         success = solres.get_success()
         err = solres.get_final_error()
+        frame_list = mmapi.merge_frame_list([solres])
         frame_error_list = mmapi.merge_frame_error_list([solres])
         avg_error = mmapi.get_average_frame_error_list(frame_error_list)
         max_frame_error = mmapi.get_max_frame_error(frame_error_list)

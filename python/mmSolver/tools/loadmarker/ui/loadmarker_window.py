@@ -55,6 +55,7 @@ class LoadMarkerWindow(BaseWindow):
         self.addSubForm(loadmarker_layout.LoadMarkerLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
+        self.setWindowFlags(QtCore.Qt.Tool)
 
         # Standard Buttons
         self.baseHideStandardButtons()

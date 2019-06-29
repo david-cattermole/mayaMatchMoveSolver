@@ -62,6 +62,7 @@ class Camera(object):
         """
         self._mfn_tfm = None
         self._mfn_shp = None
+        self._cache_marker_list = dict()
 
         if transform is None and shape is None:
             self._mfn_tfm = OpenMaya.MFnDagNode()
@@ -196,9 +197,51 @@ class Camera(object):
 
     ############################################################################
 
-    def get_deviation(self, times=None):
+    def get_plate_resolution(self):
+        """
+        Get the resolution of the image attached to this camera, or
+        return a default value if no image is attached.
+
+        :return: Tuple of X and Y resolution.
+        :rtype: (int, int)
+        """
+        resolution = (const.DEFAULT_PLATE_WIDTH,
+                      const.DEFAULT_PLATE_HEIGHT)
+        # TODO: Get the correct plate resolution from the connected image plane.
+        return resolution
+
+    def get_average_deviation(self, times=None):
         """
         Get the average deviation for all marker under the camera.
+
+        :param times: The times to query the deviation on, if not
+                      given the current frame is used.
+        :type times: float
+
+        :returns: The deviation of the marker-to-bundle re-projection in pixels.
+        :rtype: float
+        """
+        dev = None
+        node = self.get_transform_node()
+        if node is None:
+            msg = 'Could not get Camera transform node. self=%r'
+            LOG.warning(msg, self)
+            return dev
+
+        total = 0
+        dev_sum = 0.0
+        mkr_list = self.get_marker_list()
+        for mkr in mkr_list:
+            dev_value = mkr.get_average_deviation()
+            dev_sum += dev_value
+            total += 1
+        if total > 0:
+            dev = dev_sum / total
+        return dev
+
+    def get_deviation(self, times=None):
+        """
+        Get the deviation for all marker under the camera at the current times.
 
         :param times: The times to query the deviation on, if not
                       given the current frame is used.
@@ -227,6 +270,33 @@ class Camera(object):
             dev = dev_sum / total
         return dev
 
+    def get_maximum_deviation(self, times=None):
+        """
+        Get the maximum deviation (and frame) for all marker under the camera.
+
+        :param times: The times to query the deviation on, if not
+                      given the current frame is used.
+        :type times: float
+
+        :returns:
+        :rtype: (float, float)
+        """
+        max_dev = -1.0
+        max_frm = -1.0
+        node = self.get_transform_node()
+        if node is None:
+            msg = 'Could not get Camera transform node. self=%r'
+            LOG.warning(msg, self)
+            return max_dev, max_frm
+
+        mkr_list = self.get_marker_list()
+        for mkr in mkr_list:
+            val, frm = mkr.get_maximum_deviation()
+            if val > max_dev:
+                max_dev = val
+                max_frm = frm
+        return max_dev, max_frm
+
     ############################################################################
 
     def get_marker_list(self):
@@ -243,9 +313,25 @@ class Camera(object):
             dag=True,
             long=True,
             type='transform') or []
-        mkr_list = [mmSolver._api.marker.Marker(node=n)
-                    for n in below_nodes
-                    if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER]
+
+        mkr_list = []
+        ver = maya.cmds.about(apiVersion=True)
+        if ver < 201600:
+            mkr_list = [mmSolver._api.marker.Marker(node=n)
+                        for n in below_nodes
+                        if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER]
+        else:
+            # Note: Use UUIDs to cache nodes, this is only supported
+            # on Maya 2016 and above.
+            for n in below_nodes:
+                uids = maya.cmds.ls(node, uuid=True) or []
+                mkr = self._cache_marker_list.get(uids[0])
+                if mkr is None:
+                    if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER:
+                        mkr = mmSolver._api.marker.Marker(node=n)
+                if mkr is not None:
+                    mkr_list.append(mkr)
+        
         return mkr_list
 
     def is_valid(self):

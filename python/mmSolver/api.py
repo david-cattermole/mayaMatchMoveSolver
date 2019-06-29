@@ -28,10 +28,16 @@ Controls the user-facing API.
 # All the objects for the user API.
 from mmSolver._api.camera import Camera
 from mmSolver._api.bundle import Bundle
-from mmSolver._api.marker import Marker
+from mmSolver._api.marker import (
+    Marker,
+    update_deviation_on_markers
+)
 from mmSolver._api.markergroup import MarkerGroup
 from mmSolver._api.attribute import Attribute
-from mmSolver._api.collection import Collection
+from mmSolver._api.collection import (
+    Collection,
+    update_deviation_on_collection
+)
 from mmSolver._api.frame import Frame
 from mmSolver._api.solver import Solver
 from mmSolver._api.collectionutils import (
@@ -72,9 +78,12 @@ from mmSolver._api.nodefilter import (
 from mmSolver._api.solveresult import (
     SolveResult,
     combine_timer_stats,
+    merge_frame_list,
     merge_frame_error_list,
     get_average_frame_error_list,
     get_max_frame_error,
+    merge_marker_error_list,
+    merge_marker_node_list,
 )
 from mmSolver._api.excep import (
     MMException,
@@ -160,6 +169,12 @@ __all__ = [
     'NotEnoughMarkers',
     'SolverNotAvailable',
 
+    # Marker
+    'update_deviation_on_markers',
+
+    # Collection
+    'update_deviation_on_collection',
+
     # Marker Utils
     'calculate_marker_deviation',
     'get_markers_start_end_frames',
@@ -206,7 +221,10 @@ __all__ = [
 
     # Solver Result.
     'combine_timer_stats',
+    'merge_frame_list',
     'merge_frame_error_list',
     'get_average_frame_error_list',
     'get_max_frame_error',
+    'merge_marker_error_list',
+    'merge_marker_node_list',
 ]

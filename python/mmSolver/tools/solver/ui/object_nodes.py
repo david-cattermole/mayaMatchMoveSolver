@@ -26,6 +26,7 @@ import Qt.QtCore as QtCore
 
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.nodes as nodes
+import mmSolver.tools.solver.constant as const
 
 
 class ObjectNode(nodes.Node):
@@ -58,6 +59,12 @@ class ObjectNode(nodes.Node):
     def deviation(self):
         return ''
 
+    def avgDeviation(self):
+        return ''
+
+    def maxDeviation(self):
+        return ''
+
 
 class MarkerNode(ObjectNode):
     def __init__(self, name,
@@ -85,6 +92,24 @@ class MarkerNode(ObjectNode):
         weight = mkr.get_weight()
         return str(weight)
 
+    def avgDeviation(self):
+        """
+        Get the current deviation value of the marker.
+        """
+        dev = '-'
+        d = self.data()
+        if not d:
+            return dev
+        mkr = d.get('marker')
+        if mkr is None:
+            return dev
+        dev_value = mkr.get_average_deviation()
+        if dev_value is None:
+            return dev
+        if dev_value < 0:
+            return dev
+        return '%.2f' % dev_value
+
     def deviation(self):
         """
         Get the current deviation value of the marker.
@@ -99,10 +124,30 @@ class MarkerNode(ObjectNode):
         enable = mkr.get_enable()
         if not enable:
             return dev
-        dev = mkr.get_deviation(times=None)
-        if dev is None:
-            dev = -1.0
-        return '%.2f' % dev[0]
+        dev_values = mkr.get_deviation(times=None)
+        if dev_values is None:
+            return dev
+        if dev_values[0] < 0:
+            return dev
+        return '%.2f' % dev_values[0]
+
+    def maxDeviation(self):
+        """
+        Get the current deviation value of the marker.
+        """
+        dev = '-'
+        d = self.data()
+        if not d:
+            return dev
+        mkr = d.get('marker')
+        if mkr is None:
+            return dev
+        dev_value, dev_frame = mkr.get_maximum_deviation()
+        if dev_value is None:
+            return dev
+        if dev_value < 0:
+            return dev
+        return '%.2f @ %s' % (dev_value, dev_frame)
 
 
 class CameraNode(ObjectNode):
@@ -124,7 +169,7 @@ class CameraNode(ObjectNode):
 
     def deviation(self):
         """
-        Get the current deviation value of the marker.
+        Get the current deviation of the for the camera.
         """
         dev = '-'
         d = self.data()
@@ -136,7 +181,46 @@ class CameraNode(ObjectNode):
         dev_value = cam.get_deviation()
         if dev_value is None:
             return dev
+        if dev_value < 0:
+            return dev
         return '%.2f' % dev_value
+
+    def avgDeviation(self):
+        """
+        Get the average deviation value of the camera.
+        """
+        dev = '-'
+        d = self.data()
+        if not d:
+            return dev
+        cam = d.get('camera')
+        if cam is None:
+            return dev
+        dev_value = cam.get_average_deviation()
+        if dev_value is None:
+            return dev
+        if dev_value < 0:
+            return dev
+        return '%.2f' % dev_value
+
+
+    def maxDeviation(self):
+        """
+        Get the average deviation value of the camera.
+        """
+        dev = '-'
+        d = self.data()
+        if not d:
+            return dev
+        cam = d.get('camera')
+        if cam is None:
+            return dev
+        dev_value, dev_frame = cam.get_maximum_deviation()
+        if dev_value is None:
+            return dev
+        if dev_value < 0:
+            return dev
+        return '%.2f @ %s' % (dev_value, dev_frame)
 
 
 class BundleNode(ObjectNode):
@@ -155,54 +239,56 @@ class BundleNode(ObjectNode):
 
     def weight(self):
         return ''
-        
+
     def deviation(self):
+        return ''
+
+    def avgDeviation(self):
+        return ''
+
+    def maxDeviation(self):
         return ''
 
 
 class ObjectModel(uimodels.ItemModel):
     def __init__(self, root, font=None):
         super(ObjectModel, self).__init__(root, font=font)
-        self._column_names = {
-            0: 'Node',
-            1: 'Weight',
-            2: 'Deviation (px)',
-        }
-        self._node_attr_key = {
-            'Node': 'name',
-            'Weight': 'weight',
-            'Deviation (px)': 'deviation',
-        }
 
     def defaultNodeType(self):
         return MarkerNode
 
     def columnNames(self):
         column_names = {
-            0: 'Node',
-            1: 'Weight',
-            2: 'Deviation (px)',
+            0: const.OBJECT_COLUMN_NAME_NODE,
+            1: const.OBJECT_COLUMN_NAME_WEIGHT,
+            2: const.OBJECT_COLUMN_NAME_DEVIATION_FRAME,
+            3: const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE,
+            4: const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM,
         }
         return column_names
 
     def columnAlignments(self):
         values = {
-            'Node': QtCore.Qt.AlignLeft,
-            'Weight': QtCore.Qt.AlignRight,
-            'Deviation (px)': QtCore.Qt.AlignRight,
+            const.OBJECT_COLUMN_NAME_NODE: QtCore.Qt.AlignLeft,
+            const.OBJECT_COLUMN_NAME_WEIGHT: QtCore.Qt.AlignRight,
+            const.OBJECT_COLUMN_NAME_DEVIATION_FRAME: QtCore.Qt.AlignCenter,
+            const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE: QtCore.Qt.AlignCenter,
+            const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: QtCore.Qt.AlignCenter,
         }
         return values
-    
+
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {
-            'Node': 'name',
-            'Weight': 'weight',
-            'Deviation (px)': 'deviation',
+            const.OBJECT_COLUMN_NAME_NODE: 'name',
+            const.OBJECT_COLUMN_NAME_WEIGHT: 'weight',
+            const.OBJECT_COLUMN_NAME_DEVIATION_FRAME: 'deviation',
+            const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE: 'avgDeviation',
+            const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: 'maxDeviation',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 
     def getSetAttrFuncFromIndex(self, index):
         set_attr_dict = {
-            'Node': 'setName',
+            const.OBJECT_COLUMN_NAME_NODE: 'setName',
         }
         return self._getGetAttrFuncFromIndex(index, set_attr_dict)

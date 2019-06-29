@@ -174,6 +174,15 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
             LOG.warning(msg, index, column_names, column_name)
         return column_name
 
+    def getColumnIndexFromColumnName(self, name):
+        index = None
+        column_names = self.columnNames()
+        for idx, value in column_names.items():
+            if name == value:
+                index = idx
+                break
+        return index
+
     ####################################################
 
     def rootNode(self):
@@ -429,6 +438,15 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
             msg += 'index=%r column_names=%r column_name=%r'
             LOG.warning(msg, index, column_names, column_name)
         return column_name
+
+    def getColumnIndexFromColumnName(self, name):
+        index = None
+        column_names = self.columnNames()
+        for idx, value in column_names.items():
+            if name == value:
+                index = idx
+                break
+        return index
 
     ################################################
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Anil Reddy.
+# Copyright (C) 2019 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -16,14 +16,11 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Window for the Channel Sensitivity tool.
-
-Usage::
-
-   import mmSolver.tools.channelsen.ui.channelsen_window as channelsen_window
-   channelsen_window.main()
-
+The window for the 'About' window tool.
 """
+
+import os
+from functools import partial
 
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
@@ -35,47 +32,37 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
-import mmSolver.tools.channelsen.ui.channelsen_layout as channelsen_layout
-
+import mmSolver.utils.config as config_utils
+import mmSolver.tools.aboutwindow.constant as const
+import mmSolver.tools.aboutwindow.ui.about_layout as about_layout
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
 
 
-class ChannelSenWindow(BaseWindow):
+class AboutWindow(BaseWindow):
 
-    name = 'ChannelSenWindow'
+    name = 'AboutWindow'
 
     def __init__(self, parent=None, name=None):
-        super(ChannelSenWindow, self).__init__(parent,
-                                               name=name)
+        super(AboutWindow, self).__init__(parent, name=name)
         self.setupUi(self)
-        self.addSubForm(channelsen_layout.ChannelSenLayout)
-
-        self.setWindowTitle('Channel Box Sensitivity')
+        self.addSubForm(about_layout.AboutLayout)
+        self.setWindowTitle(const.WINDOW_TITLE_BAR)
         self.setWindowFlags(QtCore.Qt.Tool)
 
-        # Standard Buttons
-        self.baseHideStandardButtons()
-        self.helpBtn.show()
-        self.closeBtn.show()
-
-        self.helpBtn.clicked.connect(self.help)
-
-        # Hide irrelevant stuff
+        # Hide default stuff
         self.baseHideMenuBar()
+        self.baseHideStandardButtons()
         self.baseHideProgressBar()
 
-    def help(self):
-        src = helputils.get_help_source()
-        page = 'tools.html#channel-sensitivity'
-        helputils.open_help_in_browser(page=page, help_source=src)
+        self.subForm.okButton.clicked.connect(self.close)
         return
 
 
 def main(show=True, auto_raise=True, delete=False):
     """
-    Open the Channel Sensitivity UI window.
+    Open the About window.
 
     :param show: Show the UI.
     :type show: bool
@@ -87,11 +74,11 @@ def main(show=True, auto_raise=True, delete=False):
                    developing the UI in Maya script editor.
     :type delete: bool
 
-    :returns: A new solver window, or None if the window cannot be
+    :returns: A new about window, or None if the window cannot be
               opened.
-    :rtype: SolverWindow or None.
+    :rtype: AboutWindow or None.
     """
-    win = ChannelSenWindow.open_window(
+    win = AboutWindow.open_window(
         show=show,
         auto_raise=auto_raise,
         delete=delete

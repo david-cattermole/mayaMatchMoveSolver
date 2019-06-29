@@ -43,7 +43,7 @@ def node_is_referenced(node):
     :return: True or False, is it referenced?
     :rtype: bool
     """
-    return maya.cmds.referenceQuery(node, referenceNode=True)
+    return maya.cmds.referenceQuery(node, isNodeReferenced=True)
 
 
 def set_attr(plug, value, relock=False):
@@ -61,7 +61,7 @@ def set_attr(plug, value, relock=False):
     """
     node = plug.partition('.')[0]
     is_referenced = node_is_referenced(node)
-    locked = maya.cmds.getAttr(plug, locked=True)
+    locked = maya.cmds.getAttr(plug, lock=True)
     if is_referenced is True and locked is True:
         msg = 'Cannot set attr %r, it is locked and the node is referenced.'
         LOG.warning(msg, plug)

@@ -19,6 +19,7 @@
 Collection and solving functions.
 """
 
+import datetime
 import pprint
 import time
 import uuid
@@ -184,7 +185,10 @@ def get_previous_collection(cols, current_col):
     return prev_col
 
 
-def log_solve_results(log, solres_list, total_time=None, status_fn=None):
+def log_solve_results(log, solres_list,
+                      timestamp=None,
+                      total_time=None,
+                      status_fn=None):
     """
     Displays / saves the Solve Results.
 
@@ -194,7 +198,11 @@ def log_solve_results(log, solres_list, total_time=None, status_fn=None):
     :param solres_list: List of Solve Results to log.
     :type solres_list: list of SolveResult
 
-    :param total_time:
+    :param timestamp: The current time; as a UNIX Epoch floating point 
+                      number (as returned by 'time.time()').
+    :type timestamp: None or float
+
+    :param total_time: The duration of the solve to log.
     :type total_time: None or float
 
     :param status_fn: Function to set the status text.
@@ -206,6 +214,18 @@ def log_solve_results(log, solres_list, total_time=None, status_fn=None):
     status_str = ''
     long_status_str = ''
 
+    if timestamp is not None:
+        assert isinstance(timestamp, float)
+        ts = datetime.datetime.fromtimestamp(timestamp)
+        # Remove microseconds from the datetime object.
+        stamp = ts.replace(
+            ts.year, ts.month, ts.day,
+            ts.hour, ts.minute, ts.second, 0)
+        stamp = stamp.isoformat(' ')
+        assert isinstance(stamp, str)
+        status_str += stamp + ' | '
+        long_status_str += stamp + ' | '
+
     # Get Solver success.
     success = True
     for solres in solres_list:
@@ -214,11 +234,11 @@ def log_solve_results(log, solres_list, total_time=None, status_fn=None):
             success = False
             break
     if success is True:
-        status_str += 'Solved: '
-        long_status_str += 'Solved: '
+        status_str += 'Solved | '
+        long_status_str += 'Solved | '
     else:
-        status_str += 'Failed: '
-        long_status_str += 'Failed: '
+        status_str += 'Failed | '
+        long_status_str += 'Failed | '
 
     frame_error_list = mmapi.merge_frame_error_list(solres_list)
     frame_error_txt = pprint.pformat(dict(frame_error_list))
@@ -841,7 +861,8 @@ def execute_collection(col,
                        do_isolate=False,
                        display_image_plane=False,
                        prog_fn=None,
-                       status_fn=None):
+                       status_fn=None,
+                       info_fn=None,):
     """
     Execute the entire collection; Solvers, Markers, Bundles, etc.
 
@@ -873,12 +894,19 @@ def execute_collection(col,
     :param status_fn: A function called with an 'str' argument, to display
                       status information to the user.
     :type status_fn: None or function
+
+    :param info_fn: A function called with an 'str' argument, to display
+                      solver information to the user.
+    :type info_fn: None or function
     """
     msg = 'execute_collection: '
     msg += 'col=%r log_level=%r refresh=%r '
     msg += 'force_update=%r display_image_plane=%r '
-    msg += 'prog_fn=%r status_fn=%r'
-    LOG.debug(msg, col, log_level, refresh, force_update, display_image_plane, prog_fn, status_fn)
+    msg += 'prog_fn=%r status_fn=%r info_fn=%r'
+    LOG.debug(msg, col, log_level, refresh,
+              force_update,
+              display_image_plane,
+              prog_fn, status_fn, info_fn)
 
     assert isinstance(refresh, bool)
     assert isinstance(force_update, bool)
@@ -887,6 +915,7 @@ def execute_collection(col,
     assert log_level is None or isinstance(log_level, (str, unicode))
     assert prog_fn is None or hasattr(prog_fn, '__call__')
     assert status_fn is None or hasattr(status_fn, '__call__')
+    assert info_fn is None or hasattr(info_fn, '__call__')
 
     log = LOG
     verbose = False
@@ -910,11 +939,20 @@ def execute_collection(col,
         do_isolate=do_isolate,
         prog_fn=prog_fn,
         status_fn=status_fn,
+        info_fn=info_fn,
     )
     e = time.time()
+    total_time = e - s
 
     # Display Solver results
-    log_solve_results(log, solres_list, total_time=e-s, status_fn=status_fn)
+    timestamp = e
+    log_solve_results(
+        log,
+        solres_list,
+        timestamp=timestamp,
+        total_time=total_time,
+        status_fn=info_fn
+    )
 
     # Calculate marker deviation, and set it on the marker.
     s = time.time()
@@ -1000,9 +1038,11 @@ def run_solve_ui(col,
         else:
             prog_fn = LOG.warning
             status_fn = LOG.warning
+            info_fn = LOG.warning
             if window is not None:
                 prog_fn = window.setProgressValue
                 status_fn = window.setStatusLine
+                info_fn = window.setSolveInfoLine
 
             execute_collection(
                 col,
@@ -1013,6 +1053,7 @@ def run_solve_ui(col,
                 display_image_plane=image_plane_state,
                 prog_fn=prog_fn,
                 status_fn=status_fn,
+                info_fn=info_fn,
             )
     finally:
         if window is not None:

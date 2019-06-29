@@ -193,6 +193,37 @@ class Collection(object):
         return
 
     ############################################################################
+
+    def get_last_solve_timestamp(self):
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVE_TIMESTAMP
+        value = self._get_attr_data(attr)
+        if len(value) > 0:
+            value = value[0]
+        else:
+            value = None
+        return value
+
+    def _set_last_solve_timestamp(self, value):
+        assert isinstance(value, float)
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVE_TIMESTAMP
+        value = [value]
+        self._set_attr_data(attr, value)
+        return
+
+    def get_last_solve_duration(self):
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVE_DURATION
+        value = self._get_attr_data(attr)
+        if len(value) > 0:
+            value = value[0]
+        else:
+            value = None
+        return value
+
+    def _set_last_solve_duration(self, value):
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVE_DURATION
+        value = [value]
+        self._set_attr_data(attr, value)
+        return
     
     def get_last_solve_results(self):
         attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_RESULTS
@@ -845,7 +876,8 @@ class Collection(object):
                 # not be changed.
                 display_image_plane=False,
                 prog_fn=None,
-                status_fn=None):
+                status_fn=None,
+                info_fn=None):
         """
         Compile the collection, then pass that data to the 'mmSolver' command.
 
@@ -882,13 +914,10 @@ class Collection(object):
         :return: List of SolveResults from the executed collection.
         :rtype: [SolverResult, ..]
         """
+        start_time = time.time()
+
         # Ensure the plug-in is loaded, so we fail before trying to run.
         api_utils.load_plugin()
-
-        # Make sure attributes exists on the collection node.
-        # An older scene may not contain all the attributes, which we
-        # assume exists.
-        self.add_attributes()
 
         # If 'refresh' is 'on' change all viewports to 'isolate
         # selected' on only the markers and bundles being solved. This
@@ -975,7 +1004,7 @@ class Collection(object):
             total = len(kwargs_list)
             for i, kwargs in enumerate(kwargs_list):
                 frame = kwargs.get('frame')
-                collectionutils.run_status_func(status_fn, 'Evaluating frames %r' % frame)
+                collectionutils.run_status_func(info_fn, 'Evaluating frames %r' % frame)
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
 
@@ -1072,6 +1101,10 @@ class Collection(object):
             maya.cmds.currentTime(cur_frame, edit=True, update=True)
 
         # Store output information of the solver.
+        end_time = time.time()
+        duration = end_time - start_time
+        self._set_last_solve_timestamp(end_time)
+        self._set_last_solve_duration(duration)
         self._set_last_solve_results(solres_list)
         return solres_list
 

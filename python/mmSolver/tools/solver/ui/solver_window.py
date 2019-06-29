@@ -19,6 +19,7 @@
 The main window for the 'Solver' tool.
 """
 
+import time
 import uuid
 from functools import partial
 
@@ -105,20 +106,27 @@ class SolverWindow(BaseWindow):
         col = lib_state.get_active_collection()
         if col is None:
             return
-        # TODO: If no solve has been performed yet, we should print
-        # that fact.
+        info_fn = self.setSolveInfoLine
         solres_list = col.get_last_solve_results()
-        # TODO: The last solve time should be read from the Collection,
-        # and displayed to the user
-        total_time = 42.0
-        status_fn = self.setStatusLine
+        timestamp = col.get_last_solve_timestamp()
+        total_time = col.get_last_solve_duration()
+
+        msg = 'No solve performed.'
+        if (len(solres_list) == 0):
+            info_fn(msg)
+        if timestamp is None:
+            timestamp = time.time()
+        if total_time is None:
+            total_time = 0.0
+
         # We don't want to log every time we open the UI.
         log = None
         lib_collection.log_solve_results(
             log,
             solres_list,
+            timestamp=timestamp,
             total_time=total_time,
-            status_fn=status_fn)
+            status_fn=info_fn)
         return
 
     def addMenuBarContents(self, menubar):
@@ -585,6 +593,11 @@ class SolverWindow(BaseWindow):
 
     def setStatusLine(self, text):
         self.subForm.setStatusLine(text)
+        QtWidgets.QApplication.processEvents()
+        return
+
+    def setSolveInfoLine(self, text):
+        self.subForm.setSolveInfoLine(text)
         QtWidgets.QApplication.processEvents()
         return
 

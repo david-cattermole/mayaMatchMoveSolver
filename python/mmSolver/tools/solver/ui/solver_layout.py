@@ -220,6 +220,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         title = title.format(node)
         self._parentObject.window().setWindowTitle(title)
 
+    def updateStatusWithSolveResult(self):
+        return self._parentObject.updateStatusWithSolveResult()
+
     def updateCollectionModel(self):
         self.populateCollectionModel(self.collectionName_model)
 
@@ -437,6 +440,16 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         valid = uiutils.isValidQtObject(self.statusLine_label)
         if valid is False:
             return
+        self.statusLine_label.setText(text)
+        return
+
+    def setSolveInfoLine(self, text):
+        valid = uiutils.isValidQtObject(self)
+        if valid is False:
+            return
+        valid = uiutils.isValidQtObject(self.solveInfoLine_lineEdit)
+        if valid is False:
+            return
         self.solveInfoLine_lineEdit.setText(text)
         return
 
@@ -496,6 +509,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_state.set_active_collection(col)
 
         self.updateDynamicWindowTitle()
+        self.updateStatusWithSolveResult()
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
         self.updateObjectColumnVisibility()
@@ -520,6 +534,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             lib_col.rename_collection(col, new_name)
 
         self.updateDynamicWindowTitle()
+        self.updateStatusWithSolveResult()
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
         self.updateObjectColumnVisibility()
@@ -548,6 +563,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_state.set_active_collection(prev_col)
 
         self.updateDynamicWindowTitle()
+        self.updateStatusWithSolveResult()
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
         self.updateObjectColumnVisibility()
@@ -842,6 +858,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_state.set_active_collection(data)
 
         self.updateDynamicWindowTitle()
+        self.updateStatusWithSolveResult()
         self.updateObjectToggleButtons()
         self.updateObjectColumnVisibility()
         self.updateObjectModel()

@@ -18,6 +18,9 @@
 """
 Utilities built around Maya nodes and node paths.
 """
+
+import warnings
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
@@ -26,12 +29,10 @@ import mmSolver.logger
 LOG = mmSolver.logger.get_logger()
 
 
-def get_node_full_path(node):
-    full_path = None
-    nodes = maya.cmds.ls(node, long=True) or []
-    if len(nodes) > 0:
-        full_path = nodes[0]
-    return full_path
+def get_node_full_path(*args, **kwargs):
+    msg = 'Use mmSolver.utils.node.get_long_name function instead'
+    warnings.warn(msg, DeprecationWarning)
+    return get_long_name(*args, **kwargs)
 
 
 def node_is_referenced(node):

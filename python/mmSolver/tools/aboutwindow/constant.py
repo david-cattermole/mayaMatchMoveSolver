@@ -29,6 +29,8 @@ Copyright (C) {copyrights}
 
 Authors: {author}
 
+Website: {page}
+
 == License ==
 This software, mmSolver, is licensed under the GNU LGPL v3 license.
 

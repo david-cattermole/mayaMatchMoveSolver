@@ -496,6 +496,23 @@ class Marker(object):
         dev = sum(dev_list) / len(dev_list)
         return dev
 
+    def get_maximum_deviation(self):
+        """
+        Return a tuple of (value, frame) for the deviation
+        value and frame number that is the highest.
+        """
+        frames = self.get_enabled_frames()
+        if len(frames) == 0:
+            frames = [maya.cmds.currentTime(query=True)]
+        dev_list = self.get_deviation(times=frames)
+        max_dev = -1.0
+        max_frm = -1.0
+        for dev, frm in zip(dev_list, frames):
+            if dev > max_dev:
+                max_dev = dev
+                max_frm = frm
+        return max_dev, max_frm
+
     def get_deviation(self, times=None):
         """
         Get the deviation for the marker from the internal animCurve.

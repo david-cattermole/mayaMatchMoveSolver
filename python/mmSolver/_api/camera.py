@@ -269,6 +269,33 @@ class Camera(object):
             dev = dev_sum / total
         return dev
 
+    def get_maximum_deviation(self, times=None):
+        """
+        Get the maximum deviation (and frame) for all marker under the camera.
+
+        :param times: The times to query the deviation on, if not
+                      given the current frame is used.
+        :type times: float
+
+        :returns:
+        :rtype: (float, float)
+        """
+        max_dev = -1.0
+        max_frm = -1.0
+        node = self.get_transform_node()
+        if node is None:
+            msg = 'Could not get Camera transform node. self=%r'
+            LOG.warning(msg, self)
+            return max_dev, max_frm
+
+        mkr_list = self.get_marker_list()
+        for mkr in mkr_list:
+            val, frm = mkr.get_maximum_deviation()
+            if val > max_dev:
+                max_dev = val
+                max_frm = frm
+        return max_dev, max_frm
+
     ############################################################################
 
     def get_marker_list(self):

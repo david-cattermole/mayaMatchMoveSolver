@@ -37,7 +37,7 @@ def get_camera(node):
     cam_shp = None
     node_type = maya.cmds.nodeType(node)
     if node_type == 'camera':
-        cam_shp = node_utils.get_node_full_path(node)
+        cam_shp = node_utils.get_long_name(node)
         nodes = maya.cmds.listRelatives(
             cam_shp,
             parent=True,
@@ -45,7 +45,7 @@ def get_camera(node):
         ) or []
         cam_tfm = nodes[0]
     elif node_type == 'transform':
-        cam_tfm = node_utils.get_node_full_path(node)
+        cam_tfm = node_utils.get_long_name(node)
         nodes = maya.cmds.listRelatives(
             cam_tfm,
             shapes=True,

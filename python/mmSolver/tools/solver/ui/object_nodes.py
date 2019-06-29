@@ -26,6 +26,7 @@ import Qt.QtCore as QtCore
 
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.nodes as nodes
+import mmSolver.tools.solver.constant as const
 
 
 class ObjectNode(nodes.Node):
@@ -252,51 +253,42 @@ class BundleNode(ObjectNode):
 class ObjectModel(uimodels.ItemModel):
     def __init__(self, root, font=None):
         super(ObjectModel, self).__init__(root, font=font)
-        self._column_names = {
-            0: 'Node',
-            1: 'Weight',
-            2: 'Frame Dev (px)',
-            3: 'Average Dev (px)',
-        }
-        self._node_attr_key = {
-            'Node': 'name',
-            'Weight': 'weight',
-            'Frame Dev (px)': 'deviation',
-            'Average Dev (px)': 'avgDeviation',
-        }
 
     def defaultNodeType(self):
         return MarkerNode
 
     def columnNames(self):
         column_names = {
-            0: 'Node',
-            1: 'Weight',
-            2: 'Frame Dev (px)',
-            3: 'Average Dev (px)',
+            0: const.OBJECT_COLUMN_NAME_NODE,
+            1: const.OBJECT_COLUMN_NAME_WEIGHT,
+            2: const.OBJECT_COLUMN_NAME_DEVIATION_FRAME,
+            3: const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE,
+            4: const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM,
         }
         return column_names
 
     def columnAlignments(self):
         values = {
-            'Node': QtCore.Qt.AlignLeft,
-            'Weight': QtCore.Qt.AlignRight,
-            'Frame Dev (px)': QtCore.Qt.AlignCenter,
-            'Average Dev (px)': QtCore.Qt.AlignCenter,
+            const.OBJECT_COLUMN_NAME_NODE: QtCore.Qt.AlignLeft,
+            const.OBJECT_COLUMN_NAME_WEIGHT: QtCore.Qt.AlignRight,
+            const.OBJECT_COLUMN_NAME_DEVIATION_FRAME: QtCore.Qt.AlignCenter,
+            const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE: QtCore.Qt.AlignCenter,
+            const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: QtCore.Qt.AlignCenter,
         }
         return values
 
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {
-            'Node': 'name',
-            'Weight': 'weight',
-            'Frame Dev (px)': 'deviation',
-            'Average Dev (px)': 'avgDeviation',
+            const.OBJECT_COLUMN_NAME_NODE: 'name',
+            const.OBJECT_COLUMN_NAME_WEIGHT: 'weight',
+            const.OBJECT_COLUMN_NAME_DEVIATION_FRAME: 'deviation',
+            const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE: 'avgDeviation',
+            const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: 'maxDeviation',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 
     def getSetAttrFuncFromIndex(self, index):
         set_attr_dict = {
-            'Node': 'setName',
+            const.OBJECT_COLUMN_NAME_NODE: 'setName',
         }
         return self._getGetAttrFuncFromIndex(index, set_attr_dict)

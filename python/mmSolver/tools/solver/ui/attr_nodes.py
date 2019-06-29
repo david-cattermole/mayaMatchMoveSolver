@@ -155,36 +155,36 @@ class AttrModel(uimodels.ItemModel):
 
     def columnNames(self):
         column_names = {
-            0: 'Attr',
-            1: 'State',
-            2: 'Min',
-            3: 'Max',
+            0: const.ATTR_COLUMN_NAME_ATTRIBUTE,
+            1: const.ATTR_COLUMN_NAME_STATE,
+            2: const.ATTR_COLUMN_NAME_VALUE_MIN,
+            3: const.ATTR_COLUMN_NAME_VALUE_MAX,
         }
         return column_names
 
     def columnAlignments(self):
         values = {
-            'Attr': QtCore.Qt.AlignLeft,
-            'State': QtCore.Qt.AlignRight,
-            'Min': QtCore.Qt.AlignCenter,
-            'Max': QtCore.Qt.AlignCenter,
+            const.ATTR_COLUMN_NAME_ATTRIBUTE: QtCore.Qt.AlignLeft,
+            const.ATTR_COLUMN_NAME_STATE: QtCore.Qt.AlignRight,
+            const.ATTR_COLUMN_NAME_VALUE_MIN: QtCore.Qt.AlignCenter,
+            const.ATTR_COLUMN_NAME_VALUE_MAX: QtCore.Qt.AlignCenter,
         }
         return values
 
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {
-            'Attr': 'name',
-            'State': 'state',
-            'Min': 'minValue',
-            'Max': 'maxValue',
+            const.ATTR_COLUMN_NAME_ATTRIBUTE: 'name',
+            const.ATTR_COLUMN_NAME_STATE: 'state',
+            const.ATTR_COLUMN_NAME_VALUE_MIN: 'minValue',
+            const.ATTR_COLUMN_NAME_VALUE_MAX: 'maxValue',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 
     def getSetAttrFuncFromIndex(self, index):
         set_attr_dict = {
-            # 'Attr': 'setName',
-            # 'State': 'setState',
-            # 'Min': 'setMinValue',
-            # 'Max': 'setMaxValue',
+            # const.ATTR_COLUMN_NAME_ATTRIBUTE: 'setName',
+            # const.ATTR_COLUMN_NAME_STATE: 'setState',
+            # const.ATTR_COLUMN_NAME_VALUE_MIN: 'setMinValue',
+            # const.ATTR_COLUMN_NAME_VALUE_MAX: 'setMaxValue',
         }
         return self._getSetAttrFuncFromIndex(index, set_attr_dict)

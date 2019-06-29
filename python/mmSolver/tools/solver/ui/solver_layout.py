@@ -159,8 +159,12 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         # Set up custom widgets for viewing and editing the columns.
         self.solver_attrFilterDelegate = solver_nodes.AttributeComboBoxDelegate()
-        attr_idx = self.solver_model.getColumnIndexFromColumnName('Attributes')
-        strategy_idx = self.solver_model.getColumnIndexFromColumnName('Strategy')
+        attr_idx = self.solver_model.getColumnIndexFromColumnName(
+            const.SOLVER_COLUMN_NAME_ATTRIBUTES
+        )
+        strategy_idx = self.solver_model.getColumnIndexFromColumnName(
+            const.SOLVER_COLUMN_NAME_STRATEGY
+        )
         self.solver_tableView.setItemDelegateForColumn(
             attr_idx,
             self.solver_attrFilterDelegate,
@@ -951,36 +955,57 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
     @QtCore.Slot(bool)
     def displayObjectWeightColumnChanged(self, value):
         lib_state.set_display_object_weight_state(value)
-        idx = self.object_model.getColumnIndexFromColumnName('Weight')
+        idx = self.object_model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_WEIGHT
+        )
         self.object_treeView.setColumnHidden(idx, not value)
         return
 
     @QtCore.Slot(bool)
     def displayObjectFrameDeviationColumnChanged(self, value):
         lib_state.set_display_object_frame_deviation_state(value)
-        idx = self.object_model.getColumnIndexFromColumnName('Frame Dev (px)')
+        idx = self.object_model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_DEVIATION_FRAME
+        )
         self.object_treeView.setColumnHidden(idx, not value)
         return
 
     @QtCore.Slot(bool)
     def displayObjectAverageDeviationColumnChanged(self, value):
         lib_state.set_display_object_average_deviation_state(value)
-        idx = self.object_model.getColumnIndexFromColumnName('Average Dev (px)')
+        idx = self.object_model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE
+        )
+        self.object_treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayObjectMaximumDeviationColumnChanged(self, value):
+        lib_state.set_display_object_maximum_deviation_state(value)
+        idx = self.object_model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM
+        )
         self.object_treeView.setColumnHidden(idx, not value)
         return
 
     @QtCore.Slot(bool)
     def displayAttributeStateColumnChanged(self, value):
         lib_state.set_display_attribute_state_state(value)
-        idx = self.attribute_model.getColumnIndexFromColumnName('State')
+        idx = self.attribute_model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_STATE
+        )
         self.attribute_treeView.setColumnHidden(idx, not value)
         return
 
     @QtCore.Slot(bool)
     def displayAttributeMinMaxColumnChanged(self, value):
         lib_state.set_display_attribute_min_max_state(value)
-        idx_min = self.attribute_model.getColumnIndexFromColumnName('Min')
-        idx_max = self.attribute_model.getColumnIndexFromColumnName('Max')
+        idx_min = self.attribute_model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_VALUE_MIN
+        )
+        idx_max = self.attribute_model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_VALUE_MAX
+        )
         self.attribute_treeView.setColumnHidden(idx_min, not value)
         self.attribute_treeView.setColumnHidden(idx_max, not value)
         return

@@ -62,6 +62,7 @@ class Camera(object):
         """
         self._mfn_tfm = None
         self._mfn_shp = None
+        self._cache_marker_list = dict()
 
         if transform is None and shape is None:
             self._mfn_tfm = OpenMaya.MFnDagNode()
@@ -312,9 +313,25 @@ class Camera(object):
             dag=True,
             long=True,
             type='transform') or []
-        mkr_list = [mmSolver._api.marker.Marker(node=n)
-                    for n in below_nodes
-                    if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER]
+
+        mkr_list = []
+        ver = maya.cmds.about(apiVersion=True)
+        if ver < 201600:
+            mkr_list = [mmSolver._api.marker.Marker(node=n)
+                        for n in below_nodes
+                        if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER]
+        else:
+            # Note: Use UUIDs to cache nodes, this is only supported
+            # on Maya 2016 and above.
+            for n in below_nodes:
+                uids = maya.cmds.ls(node, uuid=True) or []
+                mkr = self._cache_marker_list.get(uids[0])
+                if mkr is None:
+                    if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER:
+                        mkr = mmSolver._api.marker.Marker(node=n)
+                if mkr is not None:
+                    mkr_list.append(mkr)
+        
         return mkr_list
 
     def is_valid(self):

@@ -53,6 +53,659 @@
   <div class="section" id="mmsolver-utils">
 <h1>mmSolver.utils<a class="headerlink" href="#mmsolver-utils" title="Permalink to this headline">¶</a></h1>
 <p>The <code class="docutils literal"><span class="pre">utils</span></code> sub-package.</p>
+<div class="section" id="module-mmSolver.utils.animcurve">
+<span id="animcurve"></span><h2>AnimCurve<a class="headerlink" href="#module-mmSolver.utils.animcurve" title="Permalink to this headline">¶</a></h2>
+<p>Animation curve (animCurve) utilities.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Any function names ending with <em>_apione</em> or <em>_apitwo</em> depicts
+the Python Maya API version used in that function, and the returned
+types. Be careful not to mix API function values, otherwise it will
+all end in tears.</p>
+</div>
+<dl class="function">
+<dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139754405317200'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139754405317200'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='139754405318032'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an animCurve using Maya API (one).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>times</strong> (<em>list</em>) &#8211; Time values for the animCurve</li>
+<li><strong>values</strong> (<em>list</em>) &#8211; Values for the animCurve.</li>
+<li><strong>node_attr</strong> (<em>str</em>) &#8211; The &#8216;plug&#8217; to connect the animCurve to.</li>
+<li><strong>tangent_in_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kTangent*</em>) &#8211; The &#8220;in&#8221; tangent type for keyframes.</li>
+<li><strong>tangent_out_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kTangent*</em>) &#8211; The &#8220;out&#8221; tangent type for keyframes.</li>
+<li><strong>anim_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kAnimCurve*</em>) &#8211; The type of animation curve node.</li>
+<li><strong>undo_cache</strong> (<em>maya.OpenMayaAnim.MAnimCurveChange</em>) &#8211; The Maya AnimCurve Undo Cache data structure or 
+None if no undo is required.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">MFnAnimCurve object attached to a newly created animation curve.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">maya.OpenMaya.MFnAnimCurve</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.animcurve.create_anim_curve_node">
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.animcurve.get_anim_curves_from_nodes">
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">get_anim_curves_from_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.get_anim_curves_from_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all animCurve nodes connected to the given nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; List of nodes to query animation curves.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of animation nodes. List may be empty if no 
+animCurves were found.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[str, .]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.animcurve.euler_filter_value">
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">euler_filter_value</code><span class="sig-paren">(</span><em>prev_value</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.euler_filter_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a &#8216;Euler Filter&#8217; on the given rotation values.</p>
+<p>The filter will ensure that each sequential rotation value will be
+with-in +/-360 degrees of the previous value.</p>
+<p>Each axis (X, Y and Z) must be filtered individuality.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function is called recursively when a rotation is 
+more/less than 360 degrees.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>prev_value</strong> (<em>float</em>) &#8211; The rotation value on the previous frame.</li>
+<li><strong>value</strong> (<em>float</em>) &#8211; The current rotation value.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A new filter rotation value.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.utils.camera">
+<span id="camera"></span><h2>Camera<a class="headerlink" href="#module-mmSolver.utils.camera" title="Permalink to this headline">¶</a></h2>
+<p>Camera related functions.</p>
+<dl class="function">
+<dt id="mmSolver.utils.camera.get_camera">
+<code class="descclassname">mmSolver.utils.camera.</code><code class="descname">get_camera</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.get_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get both transform and shape node of a camera.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> &#8211; Part of the camera node, must be either a transform or</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.camera.is_startup_cam">
+<code class="descclassname">mmSolver.utils.camera.</code><code class="descname">is_startup_cam</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.is_startup_cam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the given camera node is a &#8216;startupCamera&#8217;.</p>
+<p>A startup camera is a camera; &#8216;persp&#8217;, &#8216;side&#8217;, &#8216;top&#8217;, &#8216;front&#8217;, etc.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.camera.is_not_startup_cam">
+<code class="descclassname">mmSolver.utils.camera.</code><code class="descname">is_not_startup_cam</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.is_not_startup_cam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the given camera node is NOT a &#8216;startupCamera&#8217;.</p>
+<p>A startup camera is a camera; &#8216;persp&#8217;, &#8216;side&#8217;, &#8216;top&#8217;, &#8216;front&#8217;, etc.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.utils.config">
+<span id="config"></span><h2>Config<a class="headerlink" href="#module-mmSolver.utils.config" title="Permalink to this headline">¶</a></h2>
+<p>Configuration for querying and setting configuration values and files.</p>
+<p>Tools may need to have config files to read from and write. This
+module is a unified module for working with these configuration files.</p>
+<p>All configuration files are expected to be JSON formatted.</p>
+<p>By default, without any keyword arguments, configuration files are
+searched for in the &#8216;MMSOLVER_CONFIG_PATH&#8217; environment variable, but
+this may be overridden using &#8220;get_dirs&#8221;, or &#8220;get_config&#8221; function arguments.</p>
+<p>By default the following paths are searched (in order, top-down):</p>
+<blockquote>
+<div><ul class="simple">
+<li>${MMSOLVER_LOCATION}/config (Linux and Windows)</li>
+<li>${HOME}/.mmSolver (Linux)</li>
+<li>%APPDATA%mmSolver (Windows)</li>
+</ul>
+</div></blockquote>
+<p>This allows both a default fallback, and a user specified path.
+Additionally, studios may modify the &#8216;.mod&#8217; file to provide an
+intermediate studio or project location.</p>
+<dl class="function">
+<dt id="mmSolver.utils.config.get_dirs">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_dirs</code><span class="sig-paren">(</span><em>envvar</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_dirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of directories to look in for config files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>envvar</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; The environment variable to query for a list
+of directories.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of config directories.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.find_path">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">find_path</code><span class="sig-paren">(</span><em>file_name</em>, <em>search_paths</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.find_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search though a list of defined paths for the config file name given.</p>
+<p>If an absolute file path is given, it is verified and returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> (<em>str</em>) &#8211; File name to find.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Full config file name, or None.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.read_data">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">read_data</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.read_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read configuration file and return the data embedded.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) &#8211; The absolute file path to a config file.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Dictionary, list or None, depending what the given file
+contains.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict, list or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.write_data">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">write_data</code><span class="sig-paren">(</span><em>data</em>, <em>file_path</em>, <em>human_readable=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.write_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the given configuration data to a file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>dict</em><em> or </em><em>list</em>) &#8211; Configuration data to write. The data should be
+plain-old-(Python)data types, like lists, float, int,
+string and dict.</li>
+<li><strong>file_path</strong> (<em>str</em>) &#8211; A valid absolute file path.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.exists">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">exists</code><span class="sig-paren">(</span><em>data</em>, <em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does the key exist in data?</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>dict</em>) &#8211; The name of the config file, or an absolute file
+path.</li>
+<li><strong>key</strong> (<em>str</em>) &#8211; Hierarchy of keys separated by forward slash to search
+for in the config.
+For example &#8216;data[arg1][arg2][arg3]&#8217;.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:rtype</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.get_value">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_value</code><span class="sig-paren">(</span><em>data</em>, <em>key</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a value from the config data.</p>
+<p>If the config data value does not exist, or one of the argument (keys)
+does not exist, &#8216;default_value&#8217; is returned.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="s1">&#39;/path/to/config.json&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;key/subkey&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;key/subkey/subsubkey&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>dict</em>) &#8211; The configuration data, as a Python dict (plain-old-data).</li>
+<li><strong>key</strong> (<em>str</em>) &#8211; Hierarchy of keys separated by forward slash to search
+for in the config.
+For example &#8216;data[arg1][arg2][arg3]&#8217;.</li>
+<li><strong>default_value</strong> (<em>any type</em>) &#8211; The value returned when the config file or
+key doesn&#8217;t exist.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:rtype</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.set_value">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">set_value</code><span class="sig-paren">(</span><em>data</em>, <em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.set_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a value in the given configuration data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>dict</em>) &#8211; The data to set the value on to.</li>
+<li><strong>key</strong> (<em>str</em>) &#8211; Where to set the value in data</li>
+<li><strong>value</strong> (<em>any</em>) &#8211; The value to set.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A copy of the configuration data with the modification
+made.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="mmSolver.utils.config.Config">
+<em class="property">class </em><code class="descclassname">mmSolver.utils.config.</code><code class="descname">Config</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="mmSolver.utils.config.Config.get_autoread">
+<code class="descname">get_autoread</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.get_autoread" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.set_autoread">
+<code class="descname">set_autoread</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.set_autoread" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.get_autowrite">
+<code class="descname">get_autowrite</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.get_autowrite" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.set_autowrite">
+<code class="descname">set_autowrite</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.set_autowrite" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.read">
+<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>human_readable=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.exists">
+<code class="descname">exists</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.exists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.get_value">
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>key</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.get_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.set_value">
+<code class="descname">set_value</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.set_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.get_config">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_config</code><span class="sig-paren">(</span><em>file_name</em>, <em>search=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a config file as a Config class object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_name</strong> (<em>str</em>) &#8211; The name of the config file, or an absolute file
+path.</li>
+<li><strong>search</strong> (<em>str</em><em> or </em><em>[</em><em>str</em><em>, </em><em>.</em><em>] or </em><em>None</em>) &#8211; An environment variable to parse for search paths, 
+or a list of given search directory paths, or if set 
+to None, use the default environment variable for 
+mmSolver.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Config object, or None if the file is not found.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#mmSolver.utils.config.Config" title="mmSolver.utils.config.Config">Config</a> or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.config.get_home_dir_path">
+<code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_home_dir_path</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_home_dir_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the default home directory configuration directory.</p>
+<p>The path returned will be operating system dependent.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The path returned may not exist! It is up to the user to
+check and create files/directories as needed.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; A list of string arguments to be joined to the 
+returned path.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An absolute path to a config directory that may or may not exist.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.utils.configmaya">
+<span id="config-maya"></span><h2>Config Maya<a class="headerlink" href="#module-mmSolver.utils.configmaya" title="Permalink to this headline">¶</a></h2>
+<p>Configuration module. GitHub issue #17.</p>
+<p>There are many places to store and read data from in Maya.</p>
+<ul class="simple">
+<li>A Maya node</li>
+<li>The Maya scene file.</li>
+<li>The Python shared variables.</li>
+<li>The Maya preferences.</li>
+</ul>
+<p>Each type of storage can be considered to have a different life-time.</p>
+<p>The levels are (in ascending order):
+- Maya Node
+- Maya Scene
+- Maya Session
+- Maya Preferences</p>
+<dl class="function">
+<dt id="mmSolver.utils.configmaya.get_node_option">
+<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">get_node_option</code><span class="sig-paren">(</span><em>node_name</em>, <em>attr_name</em>, <em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.get_node_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get value from an node attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node_name</strong> (<em>str</em>) &#8211; Node to get value from. Node must exist before
+running function!</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; The name of the attribute to get value from.</li>
+<li><strong>default</strong> (<em>any</em>) &#8211; Value to be returned if the value does not exist.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A value from the node.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool, float, int or str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.configmaya.set_node_option">
+<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">set_node_option</code><span class="sig-paren">(</span><em>node_name</em>, <em>attr_name</em>, <em>value</em>, <em>add_attr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.set_node_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set value onto a node.attr path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node_name</strong> (<em>str</em>) &#8211; Node to store value on.</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; Attribute name to store value with.</li>
+<li><strong>value</strong> (<em>bool</em><em>, </em><em>float</em><em>, </em><em>int</em><em> or </em><em>str</em>) &#8211; The value to store.</li>
+<li><strong>add_attr</strong> (<em>bool</em>) &#8211; Add attribute to the given node, if the attribute
+does not already exist.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.configmaya.get_node_option_structure">
+<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">get_node_option_structure</code><span class="sig-paren">(</span><em>node_name</em>, <em>attr_name</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.get_node_option_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get data structure from a node attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node_name</strong> (<em>str</em>) &#8211; Node to get data from.</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; The name of the attribute to get data from.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Arbitrary Plain-Old-Data data structures.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.configmaya.set_node_option_structure">
+<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">set_node_option_structure</code><span class="sig-paren">(</span><em>node_name</em>, <em>attr_name</em>, <em>data_struct</em>, <em>add_attr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.set_node_option_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set arbitrary Plain-Old-Data onto a node.attr path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node_name</strong> (<em>str</em>) &#8211; Node to store data on.</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; Attribute name to store data with.</li>
+<li><strong>data_struct</strong> (<em>dict</em><em> or </em><em>list</em>) &#8211; The data to store.</li>
+<li><strong>add_attr</strong> (<em>bool</em>) &#8211; Add attribute to the given node, if the attribute
+does not already exist.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.configmaya.get_scene_option">
+<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">get_scene_option</code><span class="sig-paren">(</span><em>name</em>, <em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.get_scene_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a value from the scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; Get the option with this name.</li>
+<li><strong>default</strong> (<em>any</em>) &#8211; Value to be returned if the value does not exist.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">any</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.configmaya.set_scene_option">
+<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">set_scene_option</code><span class="sig-paren">(</span><em>name</em>, <em>value</em>, <em>add_attr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.set_scene_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a value in the scene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; Set the option with this name.</li>
+<li><strong>value</strong> (<em>any</em>) &#8211; Value to set.</li>
+<li><strong>add_attr</strong> (<em>bool</em>) &#8211; Add attribute to the scene, if the attribute
+does not already exist.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.configmaya.get_session_option">
+<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">get_session_option</code><span class="sig-paren">(</span><em>name</em>, <em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.get_session_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an option that lives in this Maya instance only.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.configmaya.set_session_option">
+<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">set_session_option</code><span class="sig-paren">(</span><em>name</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.set_session_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set an option that lives in this Maya instance only.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.configmaya.get_preference_option">
+<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">get_preference_option</code><span class="sig-paren">(</span><em>name</em>, <em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.get_preference_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a Maya preference from Maya (optionVar).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; Name key to get from Maya preferences.</li>
+<li><strong>default</strong> (<em>any</em>) &#8211; If the preference option is not found, return this value.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The value found under &#8216;name&#8217;, or the &#8216;default&#8217; value.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int, float or str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.configmaya.set_preference_option">
+<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">set_preference_option</code><span class="sig-paren">(</span><em>name</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.set_preference_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a Maya preference to Maya (optionVar).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; Name key to set to Maya preferences.</li>
+<li><strong>value</strong> (<em>int</em><em>, </em><em>float</em><em> or </em><em>str</em>) &#8211; Value to set.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.configmaya.save_preference_options">
+<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">save_preference_options</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.save_preference_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write all Maya preferences to disk.</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-mmSolver.utils.node">
 <span id="node"></span><h2>Node<a class="headerlink" href="#module-mmSolver.utils.node" title="Permalink to this headline">¶</a></h2>
 <p>Utilities built around Maya nodes and node paths.</p>
@@ -295,133 +948,45 @@ colour).</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-mmSolver.utils.camera">
-<span id="camera"></span><h2>Camera<a class="headerlink" href="#module-mmSolver.utils.camera" title="Permalink to this headline">¶</a></h2>
-<p>Camera related functions.</p>
+<div class="section" id="module-mmSolver.utils.raytrace">
+<span id="raytrace"></span><h2>Raytrace<a class="headerlink" href="#module-mmSolver.utils.raytrace" title="Permalink to this headline">¶</a></h2>
+<p>Raytracing functions.</p>
 <dl class="function">
-<dt id="mmSolver.utils.camera.get_camera">
-<code class="descclassname">mmSolver.utils.camera.</code><code class="descname">get_camera</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.get_camera" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get both transform and shape node of a camera.</p>
+<dt id="mmSolver.utils.raytrace.closest_intersect">
+<code class="descclassname">mmSolver.utils.raytrace.</code><code class="descname">closest_intersect</code><span class="sig-paren">(</span><em>source</em>, <em>direction</em>, <em>mesh_nodes</em>, <em>test_both_directions=False</em>, <em>max_dist=None</em>, <em>tolerance=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.raytrace.closest_intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the closest intersection point on meshes given a source point
+and direction</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> &#8211; Part of the camera node, must be either a transform or</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) &#8211; Origin point of the ray projection.</li>
+<li><strong>direction</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) &#8211; The direction the ray will travel.</li>
+<li><strong>mesh_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Mesh nodes</li>
+<li><strong>test_both_directions</strong> (<em>bool</em>) &#8211; testing ray direction both sides;
+default is False.</li>
+<li><strong>max_dist</strong> (<em>float</em>) &#8211; The maximum distance the ray will travel before
+stopping; default is RAYTRACE_MAX_DIST.</li>
+<li><strong>tolerance</strong> (<em>float</em>) &#8211; The minimum ray trace tolerance; default is
+RAYTRACE_EPSILON.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The closest world space intersection, over all mesh nodes
+given, or None if no point was found.</p>
+</td>
 </tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.camera.is_startup_cam">
-<code class="descclassname">mmSolver.utils.camera.</code><code class="descname">is_startup_cam</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.is_startup_cam" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the given camera node is a &#8216;startupCamera&#8217;.</p>
-<p>A startup camera is a camera; &#8216;persp&#8217;, &#8216;side&#8217;, &#8216;top&#8217;, &#8216;front&#8217;, etc.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.camera.is_not_startup_cam">
-<code class="descclassname">mmSolver.utils.camera.</code><code class="descname">is_not_startup_cam</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.is_not_startup_cam" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the given camera node is NOT a &#8216;startupCamera&#8217;.</p>
-<p>A startup camera is a camera; &#8216;persp&#8217;, &#8216;side&#8217;, &#8216;top&#8217;, &#8216;front&#8217;, etc.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">maya.OpenMaya.MFloatPoint or None</p>
+</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 </div>
-<div class="section" id="module-mmSolver.utils.viewport">
-<span id="viewport"></span><h2>Viewport<a class="headerlink" href="#module-mmSolver.utils.viewport" title="Permalink to this headline">¶</a></h2>
-<p>Utilities for setting and querying viewport related information.</p>
-<dl class="function">
-<dt id="mmSolver.utils.viewport.viewport_turn_off">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_off" title="Permalink to this definition">¶</a></dt>
-<dd><p>Turn off Maya UI.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.viewport.viewport_turn_on">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_on" title="Permalink to this definition">¶</a></dt>
-<dd><p>Turn on Maya UI.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.viewport.get_active_model_editor">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_active_model_editor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_active_model_editor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the active model editor.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str or None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.viewport.get_viewport_camera">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_viewport_camera</code><span class="sig-paren">(</span><em>model_editor</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_viewport_camera" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the camera from the model editor.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>model_editor</strong> (<em>str</em>) &#8211; The viewport model editor to get the camera from.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Camera transform and camera shape nodes.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(str, str) or (None, None)</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.viewport.get_all_model_panels">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_all_model_panels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_all_model_panels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a list of all Maya model panels.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.viewport.get_isolated_nodes">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_isolated_nodes</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_isolated_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return nodes that are being isolated for &#8216;model_panel&#8217;.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.viewport.get_image_plane_visibility">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_image_plane_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_image_plane_visibility" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.viewport.set_image_plane_visibility">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_image_plane_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_image_plane_visibility" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.viewport.set_isolated_nodes">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_isolated_nodes</code><span class="sig-paren">(</span><em>model_panel</em>, <em>nodes</em>, <em>enable</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_isolated_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Override the isolate objects on &#8216;model_panel&#8217;.</p>
-<p>With an empty list, this function clears the &#8216;model_panel&#8217;s
-isolate object list.</p>
-</dd></dl>
-
+<div class="section" id="reproject">
+<h2>Reproject<a class="headerlink" href="#reproject" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-mmSolver.utils.smooth">
 <span id="smooth"></span><h2>Smooth<a class="headerlink" href="#module-mmSolver.utils.smooth" title="Permalink to this headline">¶</a></h2>
@@ -551,217 +1116,130 @@ smoothing. 1.0 or below has no effect.</li>
 </dd></dl>
 
 </div>
-<div class="section" id="module-mmSolver.utils.raytrace">
-<span id="raytrace"></span><h2>Raytrace<a class="headerlink" href="#module-mmSolver.utils.raytrace" title="Permalink to this headline">¶</a></h2>
-<p>Raytracing functions.</p>
+<div class="section" id="module-mmSolver.utils.time">
+<span id="time"></span><h2>Time<a class="headerlink" href="#module-mmSolver.utils.time" title="Permalink to this headline">¶</a></h2>
+<p>Time related utilities.</p>
 <dl class="function">
-<dt id="mmSolver.utils.raytrace.closest_intersect">
-<code class="descclassname">mmSolver.utils.raytrace.</code><code class="descname">closest_intersect</code><span class="sig-paren">(</span><em>source</em>, <em>direction</em>, <em>mesh_nodes</em>, <em>test_both_directions=False</em>, <em>max_dist=None</em>, <em>tolerance=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.raytrace.closest_intersect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the closest intersection point on meshes given a source point
-and direction</p>
+<dt id="mmSolver.utils.time.get_maya_timeline_range_inner">
+<code class="descclassname">mmSolver.utils.time.</code><code class="descname">get_maya_timeline_range_inner</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.time.get_maya_timeline_range_inner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Maya frame range (inner bar).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>source</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) &#8211; Origin point of the ray projection.</li>
-<li><strong>direction</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) &#8211; The direction the ray will travel.</li>
-<li><strong>mesh_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Mesh nodes</li>
-<li><strong>test_both_directions</strong> (<em>bool</em>) &#8211; testing ray direction both sides;
-default is False.</li>
-<li><strong>max_dist</strong> (<em>float</em>) &#8211; The maximum distance the ray will travel before
-stopping; default is RAYTRACE_MAX_DIST.</li>
-<li><strong>tolerance</strong> (<em>float</em>) &#8211; The minimum ray trace tolerance; default is
-RAYTRACE_EPSILON.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">start frame and end frame as tuple.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The closest world space intersection, over all mesh nodes
-given, or None if no point was found.</p>
-</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int, int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">maya.OpenMaya.MFloatPoint or None</p>
-</td>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.time.get_maya_timeline_range_outer">
+<code class="descclassname">mmSolver.utils.time.</code><code class="descname">get_maya_timeline_range_outer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.time.get_maya_timeline_range_outer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Maya frame range (outer bar).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">start frame and end frame as tuple.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int, int</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 </div>
-<div class="section" id="module-mmSolver.utils.config">
-<span id="config"></span><h2>Config<a class="headerlink" href="#module-mmSolver.utils.config" title="Permalink to this headline">¶</a></h2>
-<p>Configuration for querying and setting configuration values and files.</p>
-<p>Tools may need to have config files to read from and write. This
-module is a unified module for working with these configuration files.</p>
-<p>All configuration files are expected to be JSON formatted.</p>
-<p>By default, without any keyword arguments, configuration files are
-searched for in the &#8216;MMSOLVER_CONFIG_PATH&#8217; environment variable, but
-this may be overridden using &#8220;get_dirs&#8221;, or &#8220;get_config&#8221; function arguments.</p>
-<p>By default the following paths are searched (in order, top-down):</p>
+<div class="section" id="module-mmSolver.utils.transform">
+<span id="transform"></span><h2>Transform<a class="headerlink" href="#module-mmSolver.utils.transform" title="Permalink to this headline">¶</a></h2>
+<p>Transform utilities, for querying, setting and manipulating
+transform nodes and matrices.</p>
+<p>Features:</p>
 <blockquote>
 <div><ul class="simple">
-<li>${MMSOLVER_LOCATION}/config (Linux and Windows)</li>
-<li>${HOME}/.mmSolver (Linux)</li>
-<li>%APPDATA%mmSolver (Windows)</li>
+<li>Store a Maya Transform node as a Python object, irrespective of
+DAG path names.</li>
+<li>A Matrix Cache object used to query a Transform Matrix across time.</li>
+<li>Common functions for querying transforms using Maya Python API 2.</li>
 </ul>
 </div></blockquote>
-<p>This allows both a default fallback, and a user specified path.
-Additionally, studios may modify the &#8216;.mod&#8217; file to provide an
-intermediate studio or project location.</p>
 <dl class="function">
-<dt id="mmSolver.utils.config.get_dirs">
-<code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_dirs</code><span class="sig-paren">(</span><em>envvar</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_dirs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a list of directories to look in for config files.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>envvar</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; The environment variable to query for a list
-of directories.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of config directories.</td>
-</tr>
-</tbody>
-</table>
+<dt id="mmSolver.utils.transform.create_dg_context_apitwo">
+<code class="descclassname">mmSolver.utils.transform.</code><code class="descname">create_dg_context_apitwo</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.create_dg_context_apitwo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Maya DG Context for querying values at time.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="mmSolver.utils.config.find_path">
-<code class="descclassname">mmSolver.utils.config.</code><code class="descname">find_path</code><span class="sig-paren">(</span><em>file_name</em>, <em>search_paths</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.find_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Search though a list of defined paths for the config file name given.</p>
-<p>If an absolute file path is given, it is verified and returned.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> (<em>str</em>) &#8211; File name to find.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Full config file name, or None.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str or None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.config.read_data">
-<code class="descclassname">mmSolver.utils.config.</code><code class="descname">read_data</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.read_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read configuration file and return the data embedded.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) &#8211; The absolute file path to a config file.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Dictionary, list or None, depending what the given file
-contains.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict, list or None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.config.write_data">
-<code class="descclassname">mmSolver.utils.config.</code><code class="descname">write_data</code><span class="sig-paren">(</span><em>data</em>, <em>file_path</em>, <em>human_readable=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.write_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write the given configuration data to a file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>dict</em><em> or </em><em>list</em>) &#8211; Configuration data to write. The data should be
-plain-old-(Python)data types, like lists, float, int,
-string and dict.</li>
-<li><strong>file_path</strong> (<em>str</em>) &#8211; A valid absolute file path.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.config.exists">
-<code class="descclassname">mmSolver.utils.config.</code><code class="descname">exists</code><span class="sig-paren">(</span><em>data</em>, <em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Does the key exist in data?</p>
+<dt id="mmSolver.utils.transform.get_matrix_from_plug_apitwo">
+<code class="descclassname">mmSolver.utils.transform.</code><code class="descname">get_matrix_from_plug_apitwo</code><span class="sig-paren">(</span><em>plug</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.get_matrix_from_plug_apitwo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a matrix plug value at a given FG (time) context.</p>
+<p><a class="reference external" href="http://chrisdevito.blogspot.com/2013/04/getting-dat-matrix-maya-python-api-20.html">http://chrisdevito.blogspot.com/2013/04/getting-dat-matrix-maya-python-api-20.html</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>dict</em>) &#8211; The name of the config file, or an absolute file
-path.</li>
-<li><strong>key</strong> (<em>str</em>) &#8211; Hierarchy of keys separated by forward slash to search
-for in the config.
-For example &#8216;data[arg1][arg2][arg3]&#8217;.</li>
+<li><strong>plug</strong> (<em>maya.api.OpenMaya.MPlug</em>) &#8211; The node.attribute to query.</li>
+<li><strong>ctx</strong> (<em>maya.api.OpenMaya.MDGContext</em>) &#8211; Time DG Context to query at.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The 4x4 matrix value at the given DG context.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">maya.api.OpenMaya.MMatrix</p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>:rtype</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="mmSolver.utils.config.get_value">
-<code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_value</code><span class="sig-paren">(</span><em>data</em>, <em>key</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a value from the config data.</p>
-<p>If the config data value does not exist, or one of the argument (keys)
-does not exist, &#8216;default_value&#8217; is returned.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="s1">&#39;/path/to/config.json&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;key/subkey&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;key/subkey/subsubkey&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<dt id="mmSolver.utils.transform.get_parent_inverse_matrix_apitwo">
+<code class="descclassname">mmSolver.utils.transform.</code><code class="descname">get_parent_inverse_matrix_apitwo</code><span class="sig-paren">(</span><em>node</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.get_parent_inverse_matrix_apitwo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the matrix value of attribute &#8216;parentInverseMatrix[0]&#8217; at a
+given DG Context.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>dict</em>) &#8211; The configuration data, as a Python dict (plain-old-data).</li>
-<li><strong>key</strong> (<em>str</em>) &#8211; Hierarchy of keys separated by forward slash to search
-for in the config.
-For example &#8216;data[arg1][arg2][arg3]&#8217;.</li>
-<li><strong>default_value</strong> (<em>any type</em>) &#8211; The value returned when the config file or
-key doesn&#8217;t exist.</li>
+<li><strong>node</strong> (<em>str</em>) &#8211; Node path to query values on.</li>
+<li><strong>ctx</strong> (<em>maya.api.OpenMaya.MDGContext</em>) &#8211; The (time) context to query the attribute at.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The 4x4 matrix value at the given DG context.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">maya.api.OpenMaya.MMatrix</p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>:rtype</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="mmSolver.utils.config.set_value">
-<code class="descclassname">mmSolver.utils.config.</code><code class="descname">set_value</code><span class="sig-paren">(</span><em>data</em>, <em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.set_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a value in the given configuration data.</p>
+<dt id="mmSolver.utils.transform.get_world_matrix_apitwo">
+<code class="descclassname">mmSolver.utils.transform.</code><code class="descname">get_world_matrix_apitwo</code><span class="sig-paren">(</span><em>node</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.get_world_matrix_apitwo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the matrix value of attribute &#8216;worldMatrix[0]&#8217; at a
+given DG Context.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>dict</em>) &#8211; The data to set the value on to.</li>
-<li><strong>key</strong> (<em>str</em>) &#8211; Where to set the value in data</li>
-<li><strong>value</strong> (<em>any</em>) &#8211; The value to set.</li>
+<li><strong>node</strong> (<em>str</em>) &#8211; Node path to query values on.</li>
+<li><strong>ctx</strong> (<em>maya.api.OpenMaya.MDGContext</em>) &#8211; The (time) context to query the attribute at.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A copy of the configuration data with the modification
-made.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The 4x4 matrix value at the given DG context.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or list</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">maya.api.OpenMaya.MMatrix</p>
 </td>
 </tr>
 </tbody>
@@ -769,111 +1247,299 @@ made.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="mmSolver.utils.config.Config">
-<em class="property">class </em><code class="descclassname">mmSolver.utils.config.</code><code class="descname">Config</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="mmSolver.utils.config.Config.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="mmSolver.utils.transform.TransformNode">
+<em class="property">class </em><code class="descclassname">mmSolver.utils.transform.</code><code class="descname">TransformNode</code><span class="sig-paren">(</span><em>node=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a Maya Transform node, and the data associated.</p>
+<p>This object store a reference to Maya node, even if the node is
+renamed or re-parented.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">TransformNode</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">get_node</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node_uuid</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">get_node_uuid</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfm_node_parents</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">get_parents</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">TransformNode</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">set_node</span><span class="p">(</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="mmSolver.utils.transform.TransformNode.get_node">
+<code class="descname">get_node</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformNode.get_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the transform node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The transform node name or None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None or str or unicode</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
-<dt id="mmSolver.utils.config.Config.get_autoread">
-<code class="descname">get_autoread</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.get_autoread" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="mmSolver.utils.transform.TransformNode.get_node_uuid">
+<code class="descname">get_node_uuid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformNode.get_node_uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Maya node&#8217;s UUID.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The node UUID.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
-<dt id="mmSolver.utils.config.Config.set_autoread">
-<code class="descname">set_autoread</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.set_autoread" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="mmSolver.utils.transform.TransformNode.set_node">
+<code class="descname">set_node</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformNode.set_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the underlying Maya node that this object will operate on.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Node to set to.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
-<dt id="mmSolver.utils.config.Config.get_autowrite">
-<code class="descname">get_autowrite</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.get_autowrite" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mmSolver.utils.config.Config.set_autowrite">
-<code class="descname">set_autowrite</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.set_autowrite" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mmSolver.utils.config.Config.read">
-<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.read" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mmSolver.utils.config.Config.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>human_readable=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.write" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mmSolver.utils.config.Config.exists">
-<code class="descname">exists</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.exists" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mmSolver.utils.config.Config.get_value">
-<code class="descname">get_value</code><span class="sig-paren">(</span><em>key</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.get_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mmSolver.utils.config.Config.set_value">
-<code class="descname">set_value</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.set_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="mmSolver.utils.transform.TransformNode.get_parents">
+<code class="descname">get_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformNode.get_parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the nodes above the current node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Transform nodes or empty list.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">[<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode">TransformNode</a>, .]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
-<dl class="function">
-<dt id="mmSolver.utils.config.get_config">
-<code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_config</code><span class="sig-paren">(</span><em>file_name</em>, <em>search=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read a config file as a Config class object.</p>
+<dl class="class">
+<dt id="mmSolver.utils.transform.TransformMatrixCache">
+<em class="property">class </em><code class="descclassname">mmSolver.utils.transform.</code><code class="descname">TransformMatrixCache</code><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hold a list of matrix node/values to be queried and stored in the object.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tfm_node</span> <span class="o">=</span> <span class="n">TransformNode</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">times</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1001</span><span class="p">,</span> <span class="mi">1101</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfm_matrix_cache</span> <span class="o">=</span> <span class="n">TransformMatrixCache</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfm_matrix_cache</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tfm_node</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfm_matrix_cache</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfm_matrix_cache</span><span class="o">.</span><span class="n">get_node_attr_matrix</span><span class="p">(</span><span class="n">tfm_node</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="mmSolver.utils.transform.TransformMatrixCache.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear all the cached values, nodes, attributes and times.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.transform.TransformMatrixCache.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>tfm_node</em>, <em>attr_name</em>, <em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a TransformNode / attribute name and set of times to evaluate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.transform.TransformMatrixCache.get_nodes">
+<code class="descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.get_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the nodes in the cache.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.transform.TransformMatrixCache.process">
+<code class="descname">process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate all the node attributes at times.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.transform.TransformMatrixCache.get_node_attr_matrix">
+<code class="descname">get_node_attr_matrix</code><span class="sig-paren">(</span><em>tfm_node</em>, <em>attr_name</em>, <em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.get_node_attr_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the node attribute matrix data, at given times</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>file_name</strong> (<em>str</em>) &#8211; The name of the config file, or an absolute file
-path.</li>
-<li><strong>search</strong> (<em>str</em><em> or </em><em>[</em><em>str</em><em>, </em><em>.</em><em>] or </em><em>None</em>) &#8211; An environment variable to parse for search paths, 
-or a list of given search directory paths, or if set 
-to None, use the default environment variable for 
-mmSolver.</li>
+<li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) &#8211; The transform node to query.</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; Name of the attribute (previously added to the cache).</li>
+<li><strong>times</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) &#8211; The list of times to query from the cache.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Config object, or None if the file is not found.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of MMatrix objects for each time requested. If
+no cached value exists, None is returned in that
+list entry.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#mmSolver.utils.config.Config" title="mmSolver.utils.config.Config">Config</a> or None</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[maya.api.OpenMaya.MMatrix, .]</p>
 </td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
+</dd></dl>
+
 <dl class="function">
-<dt id="mmSolver.utils.config.get_home_dir_path">
-<code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_home_dir_path</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_home_dir_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the default home directory configuration directory.</p>
-<p>The path returned will be operating system dependent.</p>
+<dt id="mmSolver.utils.transform.set_transform_values">
+<code class="descclassname">mmSolver.utils.transform.</code><code class="descname">set_transform_values</code><span class="sig-paren">(</span><em>tfm_matrix_cache</em>, <em>times</em>, <em>src_tfm_node</em>, <em>dst_tfm_node</em>, <em>rotate_order=None</em>, <em>delete_static_anim_curves=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.set_transform_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set transform node values on a destination node at times,
+using previously evaluated cached values.</p>
+<p>src_tfm_node is used to look-up into the cache for values.
+dst_tfm_node is the node that will be set values on. It is
+possible to have src_tfm_node and dst_tfm_node reference the same
+Maya node, or even the same object.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The path returned may not exist! It is up to the user to
-check and create files/directories as needed.</p>
+<p class="last">The function assumes the given destination node has no locked
+attributes.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; A list of string arguments to be joined to the 
-returned path.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tfm_matrix_cache</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformMatrixCache" title="mmSolver.utils.transform.TransformMatrixCache"><em>TransformMatrixCache</em></a>) &#8211; A cache holding queried matrix values.</li>
+<li><strong>times</strong> (<em>[</em><em>int</em><em> or </em><em>float</em><em>, </em><em>..</em><em>]</em>) &#8211; The times to set transforms values on.</li>
+<li><strong>src_tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) &#8211; Source node to get cached transform values from.</li>
+<li><strong>dst_tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) &#8211; Destination node set transform values on.</li>
+<li><strong>rotate_order</strong> (<em>str</em>) &#8211; The rotation order to set on the dst_node,
+or use the existing rotation on the dst_node
+if rotate_order is None.</li>
+<li><strong>delete_static_anim_curves</strong> (<em>bool</em>) &#8211; If an animation curve is static,
+it will be deleted.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An absolute path to a config directory that may or may not exist.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.utils.undo">
+<span id="undo"></span><h2>Undo<a class="headerlink" href="#module-mmSolver.utils.undo" title="Permalink to this headline">¶</a></h2>
+<p>Undo related tools.</p>
+<dl class="function">
+<dt id="mmSolver.utils.undo.wrap_as_undo_chunk">
+<code class="descclassname">mmSolver.utils.undo.</code><code class="descname">wrap_as_undo_chunk</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.undo.wrap_as_undo_chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Undo/Redo Chunk Decorator.</p>
+<p>Puts the wrapped &#8216;func&#8217; into a single Maya Undo action.
+If &#8216;func&#8217; raises and exception, we close the chunk.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.undo.undo_chunk">
+<code class="descclassname">mmSolver.utils.undo.</code><code class="descname">undo_chunk</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.undo.undo_chunk" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.utils.viewport">
+<span id="viewport"></span><h2>Viewport<a class="headerlink" href="#module-mmSolver.utils.viewport" title="Permalink to this headline">¶</a></h2>
+<p>Utilities for setting and querying viewport related information.</p>
+<dl class="function">
+<dt id="mmSolver.utils.viewport.viewport_turn_off">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off Maya UI.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.viewport_turn_on">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn on Maya UI.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_active_model_editor">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_active_model_editor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_active_model_editor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the active model editor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_viewport_camera">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_viewport_camera</code><span class="sig-paren">(</span><em>model_editor</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_viewport_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the camera from the model editor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>model_editor</strong> (<em>str</em>) &#8211; The viewport model editor to get the camera from.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Camera transform and camera shape nodes.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(str, str) or (None, None)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_all_model_panels">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_all_model_panels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_all_model_panels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all Maya model panels.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_isolated_nodes">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_isolated_nodes</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_isolated_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return nodes that are being isolated for &#8216;model_panel&#8217;.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_image_plane_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_image_plane_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_image_plane_visibility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_image_plane_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_image_plane_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_image_plane_visibility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_isolated_nodes">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_isolated_nodes</code><span class="sig-paren">(</span><em>model_panel</em>, <em>nodes</em>, <em>enable</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_isolated_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override the isolate objects on &#8216;model_panel&#8217;.</p>
+<p>With an empty list, this function clears the &#8216;model_panel&#8217;s
+isolate object list.</p>
 </dd></dl>
 
 </div>
@@ -922,12 +1588,18 @@ returned path.</td>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.utils</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.utils.node">Node</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.animcurve">AnimCurve</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.camera">Camera</a></li>
-<li><a class="reference internal" href="#module-mmSolver.utils.viewport">Viewport</a></li>
-<li><a class="reference internal" href="#module-mmSolver.utils.smooth">Smooth</a></li>
-<li><a class="reference internal" href="#module-mmSolver.utils.raytrace">Raytrace</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.config">Config</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.configmaya">Config Maya</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.node">Node</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.raytrace">Raytrace</a></li>
+<li><a class="reference internal" href="#reproject">Reproject</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.smooth">Smooth</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.time">Time</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.transform">Transform</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.undo">Undo</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.viewport">Viewport</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.constant">Constant</a></li>
 </ul>
 </li>

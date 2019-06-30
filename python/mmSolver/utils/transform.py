@@ -346,7 +346,8 @@ class TransformMatrixCache(object):
         :param tfm_node: The transform node to query.
         :type tfm_node: TransformNode
 
-        :param attr_name: Name of the attribute (previously added to the cache).
+        :param attr_name: Name of the attribute (previously added to 
+                          the cache).
         :type attr_name: str
 
         :param times: The list of times to query from the cache.

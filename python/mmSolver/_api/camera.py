@@ -207,7 +207,30 @@ class Camera(object):
         """
         resolution = (const.DEFAULT_PLATE_WIDTH,
                       const.DEFAULT_PLATE_HEIGHT)
-        # TODO: Get the correct plate resolution from the connected image plane.
+        shp = self.get_shape_node()
+        if shp is None:
+            LOG.warning('Could not get Camera shape node.')
+            return resolution
+        plug = shp + '.imagePlane'
+        img_planes = maya.cmds.listConnections(plug, type='imagePlane') or []
+        img_planes = [node_utils.get_long_name(n) for n in img_planes]
+
+        if len(img_planes) == 0:
+            return resolution  # no image planes
+        elif len(img_planes) > 1:
+            msg = 'Multiple image planes on camera, using first;'
+            msg += 'camera=%r nodes=%r'
+            LOG.warning(msg, shp, img_planes)
+        img_plane = img_planes[0]
+
+        width = maya.cmds.getAttr(img_plane + '.coverageX')
+        height = maya.cmds.getAttr(img_plane + '.coverageY')
+        if width > 0 and height > 0:
+            resolution = (width, height)
+        else:
+            msg = 'Get plate resolution failed, using to default values;'
+            msg += 'camera=%r nodes=%r width=%r height=%r'
+            LOG.debug(msg, shp, img_planes, width, height)
         return resolution
 
     def get_average_deviation(self, times=None):

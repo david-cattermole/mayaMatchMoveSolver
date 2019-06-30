@@ -54,16 +54,16 @@ class ObjectNode(nodes.Node):
         self.typeInfo = 'object'
 
     def weight(self):
-        return ''
+        return const.OBJECT_DEFAULT_WEIGHT_UI_VALUE
 
     def deviation(self):
-        return ''
+        return const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
 
     def avgDeviation(self):
-        return ''
+        return const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
 
     def maxDeviation(self):
-        return ''
+        return const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
 
 
 class MarkerNode(ObjectNode):
@@ -84,7 +84,7 @@ class MarkerNode(ObjectNode):
         """
         Get the current weight value of the marker.
         """
-        weight = '-'
+        weight = const.OBJECT_DEFAULT_WEIGHT_UI_VALUE
         d = self.data()
         mkr = d.get('marker')
         if mkr is None:
@@ -96,7 +96,7 @@ class MarkerNode(ObjectNode):
         """
         Get the current deviation value of the marker.
         """
-        dev = '-'
+        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
         d = self.data()
         if not d:
             return dev
@@ -114,7 +114,7 @@ class MarkerNode(ObjectNode):
         """
         Get the current deviation value of the marker.
         """
-        dev = '-'
+        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
         d = self.data()
         if not d:
             return dev
@@ -135,7 +135,7 @@ class MarkerNode(ObjectNode):
         """
         Get the current deviation value of the marker.
         """
-        dev = '-'
+        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
         d = self.data()
         if not d:
             return dev
@@ -165,13 +165,13 @@ class CameraNode(ObjectNode):
         self.typeInfo = 'camera'
 
     def weight(self):
-        return ''
+        return const.OBJECT_DEFAULT_WEIGHT_UI_VALUE
 
     def deviation(self):
         """
         Get the current deviation of the for the camera.
         """
-        dev = '-'
+        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
         d = self.data()
         if not d:
             return dev
@@ -189,7 +189,7 @@ class CameraNode(ObjectNode):
         """
         Get the average deviation value of the camera.
         """
-        dev = '-'
+        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
         d = self.data()
         if not d:
             return dev
@@ -208,7 +208,7 @@ class CameraNode(ObjectNode):
         """
         Get the average deviation value of the camera.
         """
-        dev = '-'
+        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
         d = self.data()
         if not d:
             return dev
@@ -238,16 +238,16 @@ class BundleNode(ObjectNode):
         self.typeInfo = 'bundle'
 
     def weight(self):
-        return ''
+        return const.OBJECT_DEFAULT_WEIGHT_UI_VALUE
 
     def deviation(self):
-        return ''
+        return const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
 
     def avgDeviation(self):
-        return ''
+        return const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
 
     def maxDeviation(self):
-        return ''
+        return const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
 
 
 class ObjectModel(uimodels.ItemModel):

@@ -97,19 +97,19 @@ class AttrNode(PlugNode):
     def minValue(self):
         d = self.data().get('data')
         if d is None:
-            return const.ATTR_DEFAULT_MIN_VALUE
+            return const.ATTR_DEFAULT_MIN_UI_VALUE
         v = d.get_min_value()
         if v is None:
-            return const.ATTR_DEFAULT_MIN_VALUE
+            return const.ATTR_DEFAULT_MIN_UI_VALUE
         return str(v)
 
     def maxValue(self):
         d = self.data().get('data')
         if d is None:
-            return const.ATTR_DEFAULT_MAX_VALUE
+            return const.ATTR_DEFAULT_MAX_UI_VALUE
         v = d.get_max_value()
         if v is None:
-            return const.ATTR_DEFAULT_MAX_VALUE
+            return const.ATTR_DEFAULT_MAX_UI_VALUE
         return str(v)
 
     def mayaNodeName(self):

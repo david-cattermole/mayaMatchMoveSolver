@@ -138,8 +138,11 @@ STATUS_SOLVER_NOT_VALID = 'Solver Not Valid!'
 STATUS_EXECUTING = 'Executing...'
 STATUS_FINISHED = 'Finished.'
 
-ATTR_DEFAULT_MIN_VALUE = '<Not Set>'
-ATTR_DEFAULT_MAX_VALUE = '<Not Set>'
+# Default UI values (displayed in the UI as fall back strings)
+OBJECT_DEFAULT_WEIGHT_UI_VALUE = '-'
+OBJECT_DEFAULT_DEVIATION_UI_VALUE = '-'
+ATTR_DEFAULT_MIN_UI_VALUE = '-'
+ATTR_DEFAULT_MAX_UI_VALUE = '-'
 
 ATTR_STATE_INVALID = 'Invalid'
 ATTR_STATE_STATIC = 'Static'
@@ -170,7 +173,6 @@ ATTR_INVALID_OBJECT_TYPES = [
     'marker',
 ]
 
-
 # The Column Names for the Object Model (used to display input Objects
 # to the user).
 OBJECT_COLUMN_NAME_NODE = 'Node'
@@ -179,14 +181,12 @@ OBJECT_COLUMN_NAME_DEVIATION_FRAME = 'Frame Dev (px)'
 OBJECT_COLUMN_NAME_DEVIATION_AVERAGE = 'Avg Dev (px)'
 OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM = 'Max Dev (px @ frame)'
 
-
 # The Column Names for the Attribute Model (used to display output
 # Attributes to the user).
 ATTR_COLUMN_NAME_ATTRIBUTE = 'Attr'
 ATTR_COLUMN_NAME_STATE = 'State'
 ATTR_COLUMN_NAME_VALUE_MIN = 'Min'
 ATTR_COLUMN_NAME_VALUE_MAX = 'Max'
-
 
 # The Column Names for the Solver Model (used to display Solver Steps
 # to the user).

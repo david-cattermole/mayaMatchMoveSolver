@@ -16,30 +16,28 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Constant values for utilities.
+The 'About' layout, the contents of the about window.
 """
 
-# Constants for smooth method selection.
-SMOOTH_TYPE_AVERAGE = 'average'
-SMOOTH_TYPE_GAUSSIAN = 'gaussian'
-SMOOTH_TYPE_FOURIER = 'fourier'
-SMOOTH_TYPES = [
-    SMOOTH_TYPE_AVERAGE,
-    SMOOTH_TYPE_GAUSSIAN,
-    SMOOTH_TYPE_FOURIER,
-]
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
 
-# Raytrace
-RAYTRACE_MAX_DIST = 9999999999.0
-RAYTRACE_EPSILON = 0.0001
+import Qt.QtCore as QtCore
+import Qt.QtGui as QtGui
+import Qt.QtWidgets as QtWidgets
 
-# Config
-CONFIG_PATH_VAR_NAME = 'MMSOLVER_CONFIG_PATH'
-CONFIG_HOME_DIR_PATH = {
-    'Linux': '${HOME}/.mmSolver/',
-    'Windows': '${APPDATA}/mmSolver/',
-}
+import mmSolver.logger
+import mmSolver.tools.aboutwindow.lib.message as lib_msg
+import mmSolver.tools.aboutwindow.ui.ui_about_layout as ui_about_layout
 
-# Maya configuration
-SCENE_DATA_NODE = 'MM_SOLVER_SCENE_DATA'
-SCENE_DATA_ATTR = 'data'
+
+LOG = mmSolver.logger.get_logger()
+
+
+class AboutLayout(QtWidgets.QWidget, ui_about_layout.Ui_Form):
+    def __init__(self, parent=None, *args, **kwargs):
+        super(AboutLayout, self).__init__(*args, **kwargs)
+        self.setupUi(self)
+        text = lib_msg.get_about_text()
+        self.aboutTextEdit.setText(text)
+        return

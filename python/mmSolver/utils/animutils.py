@@ -33,8 +33,7 @@ def create_anim_curve_node(times, values,
                            anim_type=OpenMayaAnim.MFnAnimCurve.kAnimCurveTL,
                            undo_cache=None):
     """
-    Create an animCurve using the Maya API
-
+    Create an animCurve using the Maya API.
 
     :param times: Time values for the animCurve
     :type times: list
@@ -51,9 +50,9 @@ def create_anim_curve_node(times, values,
     :param undo_cache: The Maya AnimCurve Undo Cache data structure.
     :return:
     """
-    if not isinstance(times, list):
+    if not isinstance(times, (list, tuple)):
         raise ValueError('times must be a list or sequence type.')
-    if not isinstance(values, list):
+    if not isinstance(values, (list, tuple)):
         raise ValueError('times must be a list or sequence type.')
     if len(times) == 0:
         raise ValueError('times must have 1 or more values.')

@@ -19,7 +19,8 @@
 The main window for the 'Solver' tool.
 """
 
-import sys
+import time
+import uuid
 from functools import partial
 
 import mmSolver.ui.qtpyutils as qtpyutils
@@ -30,6 +31,7 @@ import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
+import mmSolver.utils.undo as undo_utils
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.tools.solver.lib.collection as lib_collection
@@ -45,6 +47,7 @@ import mmSolver.tools.createbundle.tool as createbundle_tool
 import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
 import mmSolver.tools.convertmarker.tool as convertmarker_tool
 import mmSolver.tools.markerbundlerename.tool as mbrename_tool
+import mmSolver.tools.aboutwindow.tool as aboutwin_tool
 
 
 LOG = mmSolver.logger.get_logger()
@@ -86,6 +89,9 @@ class SolverWindow(BaseWindow):
             None,
             callback_ids,
         )
+
+        # Update the status with the last solve result
+        self.updateStatusWithSolveResult()
         return
 
     def __del__(self):
@@ -96,6 +102,33 @@ class SolverWindow(BaseWindow):
         maya_callbacks.remove_callbacks(callback_ids)
         del self.callback_manager
         self.callback_manager = maya_callbacks.CallbackManager()
+
+    def updateStatusWithSolveResult(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        info_fn = self.setSolveInfoLine
+        solres_list = col.get_last_solve_results()
+        timestamp = col.get_last_solve_timestamp()
+        total_time = col.get_last_solve_duration()
+
+        msg = 'No solve performed.'
+        if (len(solres_list) == 0):
+            info_fn(msg)
+        if timestamp is None:
+            timestamp = time.time()
+        if total_time is None:
+            total_time = 0.0
+
+        # We don't want to log every time we open the UI.
+        log = None
+        lib_collection.log_solve_results(
+            log,
+            solres_list,
+            timestamp=timestamp,
+            total_time=total_time,
+            status_fn=info_fn)
+        return
 
     def addMenuBarContents(self, menubar):
         # File Menu
@@ -166,54 +199,102 @@ class SolverWindow(BaseWindow):
 
         menubar.addMenu(edit_menu)
 
-        # # View Menu
-        # view_menu = QtWidgets.QMenu('View', menubar)
+        # View Menu
+        view_menu = QtWidgets.QMenu('View', menubar)
 
-        # # Display Object Deviation
-        # label = 'Display Object Deviation'
-        # tooltip = 'Display deviation column'
-        # action = QtWidgets.QAction(label, view_menu)
-        # action.setStatusTip(tooltip)
-        # action.setCheckable(True)
-        # view_menu.addAction(action)
+        # Display Object Weight
+        label = 'Display Object Weight Column'
+        tooltip = 'Display Object weight column'
+        value = lib_state.get_display_object_weight_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(self.subForm.displayObjectWeightColumnChanged)
+        view_menu.addAction(action)
 
-        # # Display Object Weight
-        # label = 'Display Object Weight Column'
-        # tooltip = 'Display Object weight column'
-        # action = QtWidgets.QAction(label, view_menu)
-        # action.setStatusTip(tooltip)
-        # action.setCheckable(True)
-        # view_menu.addAction(action)
+        # Display Object Deviation
+        label = 'Display Object Frame Deviation'
+        tooltip = 'Display per-frame deviation for each Marker/Camera.'
+        value = lib_state.get_display_object_frame_deviation_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(self.subForm.displayObjectFrameDeviationColumnChanged)
+        view_menu.addAction(action)
 
-        # view_menu.addSeparator()
-        
-        # # Display Attribute State
-        # label = 'Display Attribute State'
-        # tooltip = 'Display Attribute State columns'
-        # action = QtWidgets.QAction(label, view_menu)
-        # action.setStatusTip(tooltip)
-        # action.setCheckable(True)
-        # view_menu.addAction(action)
+        # Display Object Deviation
+        label = 'Display Object Average Deviation'
+        tooltip = 'Display deviation column'
+        value = lib_state.get_display_object_average_deviation_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(self.subForm.displayObjectAverageDeviationColumnChanged)
+        view_menu.addAction(action)
 
-        # # Display Attribute Min/Max
-        # label = 'Display Attribute Min/Max'
-        # tooltip = 'Display Attribute Minimum and Maximum columns'
-        # action = QtWidgets.QAction(label, view_menu)
-        # action.setStatusTip(tooltip)
-        # action.setCheckable(True)
-        # view_menu.addAction(action)
+        # Display Object Deviation
+        label = 'Display Object Maximum Deviation'
+        tooltip = 'Display deviation column'
+        value = lib_state.get_display_object_maximum_deviation_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(self.subForm.displayObjectMaximumDeviationColumnChanged)
+        view_menu.addAction(action)
 
-        # view_menu.addSeparator()
+        view_menu.addSeparator()
 
-        # # Deviation Live Update
-        # label = 'Deviation Live Update'
-        # tooltip = 'The Deviation shown in the UI will be updated live.'
-        # action = QtWidgets.QAction(label, view_menu)
-        # action.setStatusTip(tooltip)
-        # action.setCheckable(True)
-        # view_menu.addAction(action)
+        # Display Attribute State
+        label = 'Display Attribute State'
+        tooltip = 'Display Attribute State column'
+        value = lib_state.get_display_attribute_state_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(self.subForm.displayAttributeStateColumnChanged)
+        view_menu.addAction(action)
 
-        # menubar.addMenu(view_menu)
+        # Display Attribute Min/Max
+        label = 'Display Attribute Min/Max'
+        tooltip = 'Display Attribute Minimum and Maximum columns'
+        value = lib_state.get_display_attribute_min_max_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(self.subForm.displayAttributeMinMaxColumnChanged)
+        view_menu.addAction(action)
+
+        view_menu.addSeparator()
+
+        # Display the Image Planes while solving.
+        label = 'Display Image Planes (while solving)'
+        tooltip = 'Display Image Planes while solving.'
+        value = lib_state.get_display_image_plane_while_solving_state()
+        action = QtWidgets.QAction(label, edit_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(type(self).displayImagePlaneWhileSolvingActionToggledCB)
+        view_menu.addAction(action)
+
+        # Isolate Objects while solving
+        label = 'Isolate Objects (while solving)'
+        tooltip = 'Isolate visibility of all Markers and Bundles while solving.'
+        value = lib_state.get_display_image_plane_while_solving_state()
+        action = QtWidgets.QAction(label, edit_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(type(self).isolateObjectWhileSolvingActionToggledCB)
+        view_menu.addAction(action)
+
+        menubar.addMenu(view_menu)
 
         # Tools Menu
         tools_menu = QtWidgets.QMenu('Tools', menubar)
@@ -384,13 +465,13 @@ class SolverWindow(BaseWindow):
         action.triggered.connect(partial(self.launchHelpCB))
         help_menu.addAction(action)
 
-        # # Launch About
-        # label = 'About...'
-        # tooltip = 'About this software.'
-        # action = QtWidgets.QAction(label, help_menu)
-        # action.setStatusTip(tooltip)
-        # action.triggered.connect(partial(self.launchAboutCB))
-        # help_menu.addAction(action)
+        # Launch About
+        label = 'About mmSolver...'
+        tooltip = 'About this software.'
+        action = QtWidgets.QAction(label, help_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.launchAboutCB))
+        help_menu.addAction(action)
 
         menubar.addMenu(help_menu)
         return
@@ -427,6 +508,7 @@ class SolverWindow(BaseWindow):
         Create a Marker under the active viewport camera.
         """
         createmarker_tool.main()
+        return
 
     def convertToMarkerCB(self):
         """
@@ -441,48 +523,98 @@ class SolverWindow(BaseWindow):
         could also show the point data before loading the file.
         """
         loadmarker_tool.open_window()
+        return
 
     def createBundleCB(self):
         """
         Create a Bundle node, attached to the selected markers.
         """
         createbundle_tool.main()
+        return
 
     def toggleMarkerBundleSelectionCB(self):
         selection_tool.swap_between_selected_markers_and_bundles()
+        return
 
     def selectBothMarkersAndBundlesCB(self):
         selection_tool.select_both_markers_and_bundles()
+        return
 
     def renameMarkerBundleCB(self):
         """
         Rename the selected markers and bundles (with a prompt window).
         """
         mbrename_tool.main()
+        return
 
     def linkMarkerBundleCB(self):
         link_mb_tool.link_marker_bundle()
+        return
 
     def unlinkMarkerBundleCB(self):
         link_mb_tool.unlink_marker_bundle()
+        return
 
     @staticmethod
     def refreshActionToggledCB(value):
         lib_state.set_refresh_viewport_state(value)
+        return
 
     @staticmethod
     def forceDgUpdateActionToggledCB(value):
         lib_state.set_force_dg_update_state(value)
+        return
+
+    @staticmethod
+    def isolateObjectWhileSolvingActionToggledCB(value):
+        lib_state.set_isolate_object_while_solving_state(value)
+        return
+
+    @staticmethod
+    def displayImagePlaneWhileSolvingActionToggledCB(value):
+        lib_state.set_display_image_plane_while_solving_state(value)
+        return
+
+    @staticmethod
+    def displayObjectFrameDeviationActionToggledCB(value):
+        lib_state.set_display_object_frame_deviation_state(value)
+        return
+
+    @staticmethod
+    def displayObjectAverageDeviationActionToggledCB(value):
+        lib_state.set_display_object_average_deviation_state(value)
+        return
+
+    @staticmethod
+    def displayObjectMaximumDeviationActionToggledCB(value):
+        lib_state.set_display_object_maximum_deviation_state(value)
+        return
+
+    @staticmethod
+    def displayObjectWeightActionToggledCB(value):
+        lib_state.set_display_object_weight_state(value)
+        return
+
+    @staticmethod
+    def displayAttributeMinMaxActionToggledCB(value):
+        lib_state.set_display_attribute_min_max_state(value)
+        return
 
     def launchHelpCB(self):
         self.help()
+        return
 
-    # def launchAboutCB(self):
-    #     # LOG.info('Launch About... not yet.')
-    #     self.help()
+    def launchAboutCB(self):
+        aboutwin_tool.open_window()
+        return
 
     def setStatusLine(self, text):
         self.subForm.setStatusLine(text)
+        QtWidgets.QApplication.processEvents()
+        return
+
+    def setSolveInfoLine(self, text):
+        self.subForm.setSolveInfoLine(text)
         QtWidgets.QApplication.processEvents()
         return
 
@@ -495,20 +627,26 @@ class SolverWindow(BaseWindow):
         """
         Tbis button launches a solve, but can also be used to cancel a solve.
         """
-        running_state = lib_state.get_solver_is_running_state()
-        if running_state is True:
-            lib_state.set_solver_user_interrupt_state(True)
-            return
-        refresh_state = lib_state.get_refresh_viewport_state()
-        force_update_state = lib_state.get_force_dg_update_state()
-        log_level = lib_state.get_log_level()
-        col = lib_state.get_active_collection()
-        lib_collection.run_solve_ui(
-            col,
-            refresh_state,
-            force_update_state,
-            log_level,
-            self)
+        undo_id = 'mmSolver: ' + str(uuid.uuid4())
+        with undo_utils.undo_chunk(undo_id):
+            running_state = lib_state.get_solver_is_running_state()
+            if running_state is True:
+                lib_state.set_solver_user_interrupt_state(True)
+                return
+            refresh_state = lib_state.get_refresh_viewport_state()
+            force_update_state = lib_state.get_force_dg_update_state()
+            do_isolate_state = lib_state.get_isolate_object_while_solving_state()
+            image_plane_state = lib_state.get_display_image_plane_while_solving_state()
+            log_level = lib_state.get_log_level()
+            col = lib_state.get_active_collection()
+            lib_collection.run_solve_ui(
+                col,
+                refresh_state,
+                force_update_state,
+                do_isolate_state,
+                image_plane_state,
+                log_level,
+                self)
         return
 
     def help(self):

@@ -135,6 +135,11 @@ class TestSolve(test_api_utils.APITestCase):
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
 
+        # Set Deviation
+        mmapi.update_deviation_on_markers([mkr], results)
+        mmapi.update_deviation_on_collection(col, results)
+        return
+
     def test_marker_enable(self):
         start = 1
         end = 5
@@ -174,30 +179,39 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Set Camera Anim
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=start, value=-(aov/2),
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=end, value=(aov/2),
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
 
         # Marker
         mkr = mmapi.Marker().create_node(cam=cam, bnd=bnd)
         marker_tfm = mkr.get_node()
         assert mmapi.get_object_type(marker_tfm) == 'marker'
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-0.5,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=0.5,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setAttr(marker_tfm + '.ty', 0.0)
 
         maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=1, value=1,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=2, value=1,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=3, value=0,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=4, value=1,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=5, value=1,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
 
         # Create Sphere
         sph_tfm, shp_node = maya.cmds.polySphere()
@@ -255,6 +269,10 @@ class TestSolve(test_api_utils.APITestCase):
             # self.assertGreater(0.001, err)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
+
+        # Set Deviation
+        mmapi.update_deviation_on_markers([mkr], results)
+        mmapi.update_deviation_on_collection(col, results)
 
         # save the output
         path = self.get_data_path('test_solve_marker_enabled_after.ma')
@@ -372,6 +390,10 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         self.checkSolveResults(results)
+
+        # Set Deviation
+        mmapi.update_deviation_on_markers([mkr], results)
+        mmapi.update_deviation_on_collection(col, results)
         return
 
     def test_stA_refine_good_solve(self):
@@ -502,6 +524,10 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         self.checkSolveResults(results)
+
+        # Set Deviation
+        mmapi.update_deviation_on_markers(mkr_list, results)
+        mmapi.update_deviation_on_collection(col, results)
         return
 
     def test_badPerFrameSolve(self):

@@ -22,10 +22,13 @@ Marker and the related objects, Camera and Bundle.
 import warnings
 
 import maya.OpenMaya as OpenMaya
+import maya.OpenMayaAnim as OpenMayaAnim
 import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.animutils as anim_utils
+import mmSolver.utils.time as time_utils
 import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
@@ -33,9 +36,82 @@ import mmSolver._api.bundle
 import mmSolver._api.camera as camera
 import mmSolver._api.markergroup as markergroup
 import mmSolver._api.markerutils as markerutils
+import mmSolver._api.solveresult as solveresult
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def _create_marker_attributes(node):
+    """
+    Create the attributes expected to be on a Marker.
+
+    :param node: Transform node for the Marker.
+    :type node: str
+    """
+    attr = const.MARKER_ATTR_LONG_NAME_ENABLE
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='short',
+            minValue=0,
+            maxValue=1,
+            defaultValue=1,
+            keyable=True
+        )
+
+    attr = const.MARKER_ATTR_LONG_NAME_WEIGHT
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='double',
+            minValue=0.0,
+            defaultValue=1.0,
+            keyable=True
+        )
+
+    attr = const.MARKER_ATTR_LONG_NAME_DEVIATION
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='double',
+            minValue=-1.0,
+            defaultValue=-1.0,
+            keyable=True
+        )
+        plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_DEVIATION)
+        maya.cmds.setAttr(plug, lock=True)
+
+    attr = const.MARKER_ATTR_LONG_NAME_BUNDLE
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='message'
+        )
+
+    attr = const.MARKER_ATTR_LONG_NAME_MARKER_NAME
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            dataType='string'
+        )
+        plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_MARKER_NAME)
+        maya.cmds.setAttr(plug, lock=True)
+
+    attr = const.MARKER_ATTR_LONG_NAME_MARKER_ID
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='long',
+            defaultValue=-1
+        )
+    return
 
 
 class Marker(object):
@@ -82,8 +158,13 @@ class Marker(object):
                 msg = 'Given Marker node name is invalid: name=%r'
                 LOG.error(msg, node)
                 raise e
+
+            # Ensure the deviation attribute exists.
+            self.add_attributes()
         else:
             self._mfn = OpenMaya.MFnDagNode()
+        self._MFnAnimCurve_deviation = None
+        self.set_deviation_anim_curve_fn(None)
         return
 
     def __repr__(self):
@@ -120,11 +201,8 @@ class Marker(object):
         """
         Change the underlying Maya node that this Marker class will manipulate.
 
-        :param node: The existing Maya node node.
+        :param node: The existing Maya node.
         :type node: str
-
-        :returns: Nothing.
-        :rtype: None
         """
         assert isinstance(node, (str, unicode))
         dag = node_utils.get_as_dag_path(node)
@@ -132,6 +210,46 @@ class Marker(object):
             self._mfn = OpenMaya.MFnDagNode(dag)
         except RuntimeError:
             raise
+        # Ensure the deviation attribute exists.
+        self.add_attributes()
+        return
+
+    ############################################################################
+
+    def get_deviation_anim_curve_fn(self):
+        """
+        Get the MFnAnimCurve object for the deviation
+        attribute animCurve.
+
+        .. note:: Returned object is Maya API 1.0.
+
+        :returns: Maya animCurve function set.
+        :rtype: maya.OpenMayaAnim.MFnAnimCurve or None
+        """
+        animFn = self._MFnAnimCurve_deviation
+        if animFn is None:
+            node = self.get_node()
+            if node is None:
+                msg = 'Could not get Marker node. self=%r'
+                LOG.warning(msg, self)
+                return animFn
+            plug_name = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_DEVIATION)
+            animCurves = maya.cmds.listConnections(plug_name, type='animCurveTU') or []
+            if len(animCurves) > 0:
+                mobj = node_utils.get_as_object(animCurves[0])
+                animFn = OpenMayaAnim.MFnAnimCurve(mobj)
+        return animFn
+
+    def set_deviation_anim_curve_fn(self, value):
+        """
+        Set the deviation animCurve function set.
+
+        :param value: AnimCurve object to set, or use 'None' to remove
+        the reference to the existing animCurve object
+        :type value: maya.OpenMayaAnim.MFnAnimCurve or None
+        """
+        assert value is None or isinstance(value, OpenMayaAnim.MFnAnimCurve)
+        self._MFnAnimCurve_deviation = value
         return
 
     ############################################################################
@@ -218,22 +336,11 @@ class Marker(object):
         maya.cmds.setAttr(shp + '.localScaleZ', lock=True)
 
         # Add attrs
-        maya.cmds.addAttr(tfm, longName='enable', attributeType='short',
-                          minValue=0,
-                          maxValue=1,
-                          defaultValue=1,
-                          keyable=True)
-        maya.cmds.addAttr(tfm, longName='weight', attributeType='double',
-                          minValue=0.0,
-                          defaultValue=1.0,
-                          keyable=True)
-        maya.cmds.addAttr(tfm, longName='bundle', attributeType='message')
-        maya.cmds.addAttr(tfm, longName='markerName', dataType='string')
-        maya.cmds.addAttr(tfm, longName='markerId', attributeType='long',
-                          defaultValue=-1)
+        _create_marker_attributes(tfm)
 
-        maya.cmds.setAttr(tfm + '.markerName', lock=True)
-        maya.cmds.connectAttr(tfm + '.enable', tfm + '.lodVisibility')
+        src = '{0}.{1}'.format(tfm, const.MARKER_ATTR_LONG_NAME_DEVIATION)
+        dst = '{0}.{1}'.format(tfm, 'lodVisibility')
+        maya.cmds.connectAttr(src, dst)
 
         self.set_node(tfm)
 
@@ -269,64 +376,32 @@ class Marker(object):
         maya.cmds.delete(node)
         return self
 
+    def add_attributes(self):
+        """
+        Add dynamic attributes to marker.
+        """
+        tfm = self.get_node()
+        if tfm is not None:
+            _create_marker_attributes(tfm)
+        return
+
     ############################################################################
 
-    def get_enable(self, time=None):
+    def compute_deviation(self, times):
         """
-        Get the enabled state of the Marker.
+        Compute the deviation for the marker.
 
-        :param time: The time to query the enable, if not given the
-                      current frame is used.  
-        :type time: float
-
-        :returns: The enabled state of the marker.
-        :rtype: int
-        """
-        node = self.get_node()
-        if node is None:
-            msg = 'Could not get node. self=%r'
-            LOG.warning(msg, self)
-            return
-        v = None
-        if time is None:
-            v = maya.cmds.getAttr(node + '.enable')
-        else:
-            v = maya.cmds.getAttr(node + '.enable', time=time)
-        return v
-
-    def get_weight(self, time=None):
-        """
-        Get the current wire-frame colour of the Marker.
-
-        :param time: The time to query the weight, if not given the
-                     current frame is used.  
-        :type time: float
-
-        :returns: The weight of the marker.
-        :rtype: float
-        """
-        node = self.get_node()
-        if node is None:
-            msg = 'Could not get node. self=%r'
-            LOG.warning(msg, self)
-            return
-        v = None
-        if time is None:
-            v = maya.cmds.getAttr(node + '.weight')
-        else:
-            v = maya.cmds.getAttr(node + '.weight', time=time)
-        return v
-
-    def get_deviation(self, times=None):
-        """
-        Get the deviation for the marker, computed live.
+        .. note:: This function assumes the camera film aperture (the
+           film back) is not animated over the times given.x
 
         :param times: The times to query the deviation on, if not
                       given the current frame is used.
-        :type times: float
+        :type times: [float, ..]
 
-        :returns: The deviation of the marker-to-bundle re-projection in pixels.
-        :rtype: float
+        :returns: The deviation of the marker-to-bundle re-projection
+                  in pixels. The length of the list returned will
+                  always equal the length of the 'times' argument.
+        :rtype: [float, ..]
         """
         v = None
         node = self.get_node()
@@ -345,6 +420,262 @@ class Marker(object):
             LOG.warning(msg, self)
             return v
 
+        assert len(times) > 0
+        cam_tfm = cam.get_transform_node()
+        cam_shp = cam.get_shape_node()
+        hfa_plug = cam_shp + '.horizontalFilmAperture'
+        vfa_plug = cam_shp + '.verticalFilmAperture'
+        hfa = maya.cmds.getAttr(hfa_plug, time=times[0])
+        vfa = maya.cmds.getAttr(vfa_plug, time=times[0])
+        image_width, _ = cam.get_plate_resolution()
+        image_width = float(image_width)
+        image_height = image_width * (vfa / hfa)
+
+        bnd_node = bnd.get_node()
+        dev_list = markerutils.calculate_marker_deviation(
+            node, bnd_node,
+            cam_tfm, cam_shp,
+            times,
+            image_width, image_height
+        )
+        if dev_list is None:
+            dev_list = [-1.0] * times
+        assert len(dev_list) == len(times)
+        return dev_list
+
+    def get_enable(self, time=None):
+        """
+        Get the enabled state of the Marker.
+
+        :param time: The time to query the enable, if not given the
+                      current frame is used.
+        :type time: float
+
+        :returns: The enabled state of the marker.
+        :rtype: int
+        """
+        v = None
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return v
+        plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_ENABLE)
+        if time is None:
+            v = maya.cmds.getAttr(plug)
+        else:
+            v = maya.cmds.getAttr(plug, time=time)
+        return v
+
+    def get_enabled_frames(self,
+                           frame_range_start=None,
+                           frame_range_end=None):
+        """
+        Get the list of frames that this Marker is enabled.
+
+        If there is no animation curve on a Marker we use the
+        frame_range_start and frame_range_end arguments to determine
+        the enabled frame list. If these frame_range_* arguments are
+        not given the default Maya outer timeline range is used.
+
+        :param frame_range_start: The frame range start of the marker
+                                  to consider when no animCurve exists.
+        :type frame_range_start: int
+
+        :param frame_range_end: The frame range end of the marker
+                                to consider when no animCurve exists.
+        :type frame_range_end: int
+
+        :returns: The enabled frame numbers of the marker.
+        :rtype: [int, ..]
+        """
+        start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
+        if frame_range_start is None:
+            frame_range_start = start_frame
+        if frame_range_end is None:
+            frame_range_end = end_frame
+
+        times = []
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return times
+        plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_ENABLE)
+
+        anim_curves = maya.cmds.listConnections(plug, type='animCurve') or []
+        if len(anim_curves) == 0:
+            enable_times = list(range(start_frame, end_frame + 1))
+        else:
+            anim_curve = anim_curves[0]
+            enable_times = maya.cmds.keyframe(
+                anim_curve,
+                query=True,
+                timeChange=True) or []
+            if len(enable_times) == 0:
+                enable_times = list(range(start_frame, end_frame + 1))
+
+        start_frame = int(min(enable_times))
+        end_frame = int(max(enable_times))
+        for f in range(start_frame, end_frame + 1):
+            v = self.get_enable(time=f)
+            if v:
+                times.append(f)
+        return times
+
+    def get_weight(self, time=None):
+        """
+        Get the current wire-frame colour of the Marker.
+
+        :param time: The time to query the weight, if not given the
+                     current frame is used.
+        :type time: float
+
+        :returns: The weight of the marker.
+        :rtype: float
+        """
+        v = None
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return v
+        plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_WEIGHT)
+        if time is None:
+            v = maya.cmds.getAttr(plug)
+        else:
+            v = maya.cmds.getAttr(plug, time=time)
+        return v
+
+    def get_average_deviation(self):
+        """
+        Calculate a single float number (in pixels) representing the
+        average deviation of this Marker.
+        """
+        dev = -1.0
+
+        frames = self._get_enabled_solved_frames()
+        if len(frames) == 0:
+            return dev
+
+        dev_list = self.get_deviation(times=frames)
+        dev = sum(dev_list) / len(dev_list)
+        return dev
+
+    def get_maximum_deviation(self):
+        """
+        Return a tuple of (value, frame) for the deviation
+        value and frame number that is the highest.
+        """
+        max_dev = -1.0
+        max_frm = -1.0
+
+        frames = self._get_enabled_solved_frames()
+        if len(frames) == 0:
+            return max_dev, max_frm
+
+        dev_list = self.get_deviation(times=frames)
+        for dev, frm in zip(dev_list, frames):
+            if dev > max_dev:
+                max_dev = dev
+                max_frm = frm
+        return max_dev, max_frm
+
+    def get_deviation_frames(self,
+                             frame_range_start=None,
+                             frame_range_end=None):
+        """
+        Get the list of frames that this Marker has deviation set.
+
+        If there is no animation curve on a Marker we use the
+        frame_range_start and frame_range_end arguments to determine
+        the deviation frame list. If these frame_range_* arguments are
+        not given the default Maya outer timeline range is used.
+
+        :param frame_range_start: The frame range start of the marker
+                                  to consider when no animCurve exists.
+        :type frame_range_start: int
+
+        :param frame_range_end: The frame range end of the marker
+                                to consider when no animCurve exists.
+        :type frame_range_end: int
+
+        :returns: The deviation frame numbers of the marker.
+        :rtype: [int, ..]
+        """
+        start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
+        if frame_range_start is None:
+            frame_range_start = start_frame
+        if frame_range_end is None:
+            frame_range_end = end_frame
+
+        times = []
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warning(msg, self)
+            return times
+        anim_curve_fn = self.get_deviation_anim_curve_fn()
+
+        if anim_curve_fn is None:
+            enable_times = range(frame_range_start,
+                                 frame_range_end + 1)
+            enable_times = list(enable_times)
+        else:
+            num_keys = anim_curve_fn.numKeys()
+            enable_times = [None] * num_keys
+            for i in range(num_keys):
+                mtime = anim_curve_fn.time(i)
+                enable_times[i] = int(mtime.value())
+            if num_keys == 0:
+                enable_times = range(frame_range_start,
+                                     frame_range_end + 1)
+                enable_times = list(enable_times)
+
+        start_frame = int(min(enable_times))
+        end_frame = int(max(enable_times))
+        frame_range = list(range(start_frame, end_frame + 1))
+        dev_list = self.get_deviation(times=frame_range)
+        for frm, dev_val in zip(frame_range, dev_list):
+            if dev_val > 0.0:
+                times.append(frm)
+        return times
+
+    def _get_enabled_solved_frames(self,
+                                   frame_range_start=None,
+                                   frame_range_end=None):
+        enable_frames = self.get_enabled_frames()
+        if len(enable_frames) == 0:
+            enable_frames = [maya.cmds.currentTime(query=True)]
+        assert len(enable_frames) > 0
+        enable_frames_set = set(enable_frames)
+
+        dev_frames_set = set(self.get_deviation_frames(
+            frame_range_start=frame_range_start,
+            frame_range_end=frame_range_end
+        ))
+        frames = list(enable_frames_set.intersection(dev_frames_set))
+        return frames
+
+    def get_deviation(self, times=None):
+        """
+        Get the deviation for the marker from the internal animCurve.
+
+        :param times: The times to query the deviation on, if not
+                      given the current frame is used.
+        :type times: [float, ..]
+
+        :returns: The deviation of the marker-to-bundle re-projection
+                  (in pixels), for each time given.
+        :rtype: [float, ..]
+        """
+        v = None
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get Marker node. self=%r'
+            LOG.warning(msg, self)
+            return v
+
         frames = []
         if times is None:
             frames = [maya.cmds.currentTime(query=True)]
@@ -352,29 +683,60 @@ class Marker(object):
             frames = times
         assert len(frames) > 0
 
-        cam_tfm = cam.get_transform_node()
-        cam_shp = cam.get_shape_node()
-        hfa = maya.cmds.getAttr(
-            cam_shp + '.horizontalFilmAperture',
-            time=frames[0])
-        vfa = maya.cmds.getAttr(
-            cam_shp + '.verticalFilmAperture',
-            time=frames[0])
-        # TODO: Get camera image plane width.
-        image_width = 2048.0
-        image_height = image_width * (vfa / hfa)
+        attr_name = const.MARKER_ATTR_LONG_NAME_DEVIATION
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        anim_curve_fn = self.get_deviation_anim_curve_fn()
 
-        bnd_node = bnd.get_node()
-        dev = markerutils.calculate_marker_deviation(
-            node, bnd_node,
-            cam_tfm, cam_shp,
-            frames,
-            image_width, image_height
-        )
-        if dev is None:
-            dev = -1.0
-        return dev
-    
+        dev_list = [None] * len(frames)
+        unit = OpenMaya.MTime.uiUnit()
+        if anim_curve_fn is not None:
+            # Evaluate Curve
+            unit = OpenMaya.MTime.uiUnit()
+            for i, frame in enumerate(frames):
+                frame_time = OpenMaya.MTime(float(frame), unit)
+                value = anim_curve_fn.evaluate(frame_time)
+                dev_list[i] = value
+
+            self.set_deviation_anim_curve_fn(anim_curve_fn)
+        else:
+            # Note: We assume if there is not animCurve then the
+            # deviation value is static. We do not account for a
+            # non-animCurve node connected to the deviation attribute,
+            # as that is considered an error.
+            v = maya.cmds.getAttr(plug_name)
+            dev_list = [v] * len(frames)
+        return dev_list
+
+    def set_deviation(self, times, values):
+        """
+        Set deviation keyframes on the marker.
+
+        :param times: Times to set deviation values for.
+        :type times: [float, ..]
+
+        :param values: Values of deviation to set at each time.
+        :type values: [float, ..]
+        """
+        assert isinstance(times, (list, tuple))
+        assert isinstance(values, (list, tuple))
+        assert len(times) > 0
+        assert len(values) > 0
+        assert len(times) == len(values)
+
+        node = self.get_node()
+        attr_name = const.MARKER_ATTR_LONG_NAME_DEVIATION
+        plug = '{0}.{1}'.format(node, attr_name)
+        try:
+            maya.cmds.setAttr(plug, lock=False)
+            anim_curve_fn = anim_utils.create_anim_curve_node(
+                times, values,
+                node_attr=plug,
+                anim_type=OpenMayaAnim.MFnAnimCurve.kAnimCurveTU)
+            self.set_deviation_anim_curve_fn(anim_curve_fn)
+        finally:
+            maya.cmds.setAttr(plug, lock=True)
+        return
+
     def get_colour_rgb(self):
         """
         Get the current wire-frame colour of the Marker.
@@ -403,9 +765,6 @@ class Marker(object):
 
         :param rgb: Colour as R, G, B; Or None to reset to default colour.
         :type rgb: tuple
-
-        :return: Nothing.
-        :rtype: None
         """
         assert rgb is None or isinstance(rgb, (tuple, list))
         node = self.get_node()
@@ -425,6 +784,12 @@ class Marker(object):
     ############################################################################
 
     def get_bundle(self):
+        """
+        Get the Bundle connected to this Marker node.
+
+        :returns: a Bundle object or None if no Bundle is connected.
+        :rtype: Bundle or None
+        """
         bnd = None
         node = self.get_node()
         if node is not None:
@@ -441,6 +806,12 @@ class Marker(object):
         return bnd
 
     def set_bundle(self, bnd):
+        """
+        Connect the given Bundle to this Marker.
+
+        :param bnd: Bundle to connect to.
+        :type bnd: Bundle
+        """
         if bnd is None:
             self._unlink_from_bundle()
         elif isinstance(bnd, mmSolver._api.bundle.Bundle):
@@ -506,8 +877,8 @@ class Marker(object):
         """
         Get the camera connected implicitly with the Marker.
 
-        :returns: Camera API object, or None if Marker does not have a
-                  Camera.
+        :returns: Camera object, or None if Marker does not have a
+                  Camera (for example it's unparented to world).
         :rtype: None or Camera
         """
         mkr_node = self.get_node()
@@ -639,9 +1010,6 @@ class Marker(object):
 
         :param mkr_grp: Marker group object to link to this Marker.
         :type mkr_grp: MarkerGroup or None
-
-        :return: Nothing.
-        :rtype: None
         """
         if mkr_grp is None:
             self._unlink_from_marker_group()
@@ -702,4 +1070,47 @@ class Marker(object):
         # Move the marker under the world root, don't modify the marker in
         # any way otherwise.
         maya.cmds.parent(mkr_node, relative=True, world=True)
-        pass
+        return
+
+
+def update_deviation_on_markers(mkr_list, solres_list):
+    """
+    Calculate marker deviation, and set it on the marker.
+
+    :param mkr_list: Marker objects to update deviation on.
+    :type mkr_list: [Marker, ..]
+
+    :param solres_list: The solve results to calculate deviation frames from.
+    :type solres_list: [SolveResult, ..]
+    """
+    frame_list = solveresult.merge_frame_list(solres_list)
+    frame_list = [int(x) for x in frame_list]
+    frame_list_set = set(frame_list)
+    for mkr in mkr_list:
+        mkr_frames = mkr.get_enabled_frames()
+        mkr_frames = [int(x) for x in mkr_frames]
+        mkr_frames_set = set(mkr_frames).intersection(frame_list_set)
+        mkr_frames = list(mkr_frames_set)
+        if len(mkr_frames) > 0:
+            deviation_list = mkr.compute_deviation(mkr_frames)
+
+            # Note: Extra frame is given at start and end.
+            frame_range_set = set(range(min(mkr_frames_set) - 1, max(mkr_frames_set) + 2))
+            diff_set = frame_range_set.difference(mkr_frames_set)
+
+            frm_list = list(sorted(frame_range_set))
+            dev_list = [None] * len(frame_range_set)
+            assert len(frm_list) == len(dev_list)
+            idx = 0
+            for i, frm in enumerate(sorted(frame_range_set)):
+                if frm in diff_set:
+                    # Deviation should be zero on a frame that is not
+                    # enabled.
+                    dev_list[i] = -1.0
+                else:
+                    # Look up value from deviation_list.
+                    dev_list[i] = deviation_list[idx]
+                    idx += 1
+            assert idx == (len(deviation_list))
+            mkr.set_deviation(frm_list, dev_list)
+    return

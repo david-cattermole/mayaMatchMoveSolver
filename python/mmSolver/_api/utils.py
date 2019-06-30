@@ -42,6 +42,9 @@ def load_plugin():
     """
     msg = 'Could not load plug-in %r!'
     for name in const.PLUGIN_NAMES:
+        loaded = maya.cmds.pluginInfo(name, query=True, loaded=True)
+        if loaded is True:
+            continue
         try:
             maya.cmds.loadPlugin(name, quiet=True)
         except RuntimeError as e:

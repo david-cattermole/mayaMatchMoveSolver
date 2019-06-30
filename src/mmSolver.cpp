@@ -445,7 +445,7 @@ bool solve(int iterMax,
         ERR("Solver failure; cannot solve for more attributes (\"parameters\") "
             << "than number of markers (\"errors\"). "
             << "parameters=" << numberOfParameters << " "
-            << "errors =" << numberOfErrors);
+            << "errors=" << numberOfErrors);
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
         return false;

@@ -108,6 +108,16 @@ class Camera(object):
         return uid[0]
 
     def set_transform_node(self, name):
+        """
+        Change the underlying Maya nodes that this Camera class will
+        manipulate.
+
+        This function will automatically set the Camera shape node based
+        this transform node.
+
+        :param name: The existing Maya node.
+        :type name: str
+        """
         assert isinstance(name, (str, unicode))
         assert maya.cmds.objExists(name)
 
@@ -171,6 +181,16 @@ class Camera(object):
         return uids[0]
 
     def set_shape_node(self, name):
+        """
+        Change the underlying Maya nodes that this Camera class will
+        manipulate.
+
+        This function will automatically set the Camera transform node
+        based this shape node.
+
+        :param name: The existing Maya node.
+        :type name: str
+        """
         assert isinstance(name, (str, unicode))
         assert maya.cmds.objExists(name)
 
@@ -233,13 +253,9 @@ class Camera(object):
             LOG.debug(msg, shp, img_planes, width, height)
         return resolution
 
-    def get_average_deviation(self, times=None):
+    def get_average_deviation(self):
         """
         Get the average deviation for all marker under the camera.
-
-        :param times: The times to query the deviation on, if not
-                      given the current frame is used.
-        :type times: float
 
         :returns: The deviation of the marker-to-bundle re-projection in pixels.
         :rtype: float
@@ -293,7 +309,7 @@ class Camera(object):
             dev = dev_sum / total
         return dev
 
-    def get_maximum_deviation(self, times=None):
+    def get_maximum_deviation(self):
         """
         Get the maximum deviation (and frame) for all marker under the camera.
 
@@ -354,7 +370,7 @@ class Camera(object):
                         mkr = mmSolver._api.marker.Marker(node=n)
                 if mkr is not None:
                     mkr_list.append(mkr)
-        
+
         return mkr_list
 
     def is_valid(self):

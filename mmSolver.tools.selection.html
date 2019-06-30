@@ -57,7 +57,12 @@
             
   <div class="section" id="mmsolver-tools-selection">
 <h1>mmSolver.tools.selection<a class="headerlink" href="#mmsolver-tools-selection" title="Permalink to this headline">¶</a></h1>
-<p>This package contains all selection tools related to solver, marker, and bundle.</p>
+<p>This package contains all selection tools related to solver, marker, and bundle nodes.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This module once contained &#8216;filternodes&#8217; and &#8216;convert&#8217; sub-modules.
+Modules have been refactored into <code class="xref py py-mod docutils literal"><span class="pre">mmSolver.api</span></code></p>
+</div>
 <div class="section" id="module-mmSolver.tools.selection.tools">
 <span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.selection.tools" title="Permalink to this headline">¶</a></h2>
 <p>Common tools for manipulating selection, specific to mmSolver.</p>
@@ -76,20 +81,6 @@ vice versa.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="convert">
-<h2>Convert<a class="headerlink" href="#convert" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="xref py py-mod docutils literal"><span class="pre">mmSolver.tools.selection.convert</span></code> module provides functions
-to convert between various node types. Currently the following
-convertions are supported:</p>
-<ul class="simple">
-<li>Markers -&gt; Bundles</li>
-<li>Bundles -&gt; Markers</li>
-<li>Markers -&gt; Cameras</li>
-</ul>
-</div>
-<div class="section" id="filter-nodes">
-<h2>Filter Nodes<a class="headerlink" href="#filter-nodes" title="Permalink to this headline">¶</a></h2>
-</div>
 </div>
 
 
@@ -102,8 +93,6 @@ convertions are supported:</p>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.selection</a><ul>
 <li><a class="reference internal" href="#module-mmSolver.tools.selection.tools">Tools</a></li>
-<li><a class="reference internal" href="#convert">Convert</a></li>
-<li><a class="reference internal" href="#filter-nodes">Filter Nodes</a></li>
 </ul>
 </li>
 </ul>

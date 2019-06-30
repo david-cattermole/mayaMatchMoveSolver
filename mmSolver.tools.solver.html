@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="mmSolver.tools.togglebundlelock" href="mmSolver.tools.togglebundlelock.html" />
+    <link rel="next" title="mmSolver.tools.sysinfowindow" href="mmSolver.tools.sysinfowindow.html" />
     <link rel="prev" title="mmSolver.tools.smoothkeyframes" href="mmSolver.tools.smoothkeyframes.html" /> 
   </head>
   <body role="document">
@@ -40,7 +40,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="mmSolver.tools.togglebundlelock.html" title="mmSolver.tools.togglebundlelock"
+          <a href="mmSolver.tools.sysinfowindow.html" title="mmSolver.tools.sysinfowindow"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="mmSolver.tools.smoothkeyframes.html" title="mmSolver.tools.smoothkeyframes"
@@ -505,14 +505,8 @@ collections.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="mmSolver.tools.solver.lib.collection.set_solver_results_on_collection">
-<code class="descclassname">mmSolver.tools.solver.lib.collection.</code><code class="descname">set_solver_results_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>solres_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collection.set_solver_results_on_collection" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is expected to manipulate the list of solver result</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="mmSolver.tools.solver.lib.collection.log_solve_results">
-<code class="descclassname">mmSolver.tools.solver.lib.collection.</code><code class="descname">log_solve_results</code><span class="sig-paren">(</span><em>log</em>, <em>solres_list</em>, <em>total_time=None</em>, <em>status_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collection.log_solve_results" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.tools.solver.lib.collection.</code><code class="descname">log_solve_results</code><span class="sig-paren">(</span><em>log</em>, <em>solres_list</em>, <em>timestamp=None</em>, <em>total_time=None</em>, <em>status_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collection.log_solve_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays / saves the Solve Results.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -521,7 +515,9 @@ collections.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>log</strong> (<a class="reference internal" href="mmSolver.logger.html#module-mmSolver.logger" title="mmSolver.logger"><em>logger</em></a>) &#8211; Logging object to log with.</li>
 <li><strong>solres_list</strong> (<em>list of SolveResult</em>) &#8211; List of Solve Results to log.</li>
-<li><strong>total_time</strong> (<em>None</em><em> or </em><em>float</em>) &#8211; </li>
+<li><strong>timestamp</strong> (<em>None</em><em> or </em><em>float</em>) &#8211; The current time; as a UNIX Epoch floating point 
+number (as returned by &#8216;time.time()&#8217;).</li>
+<li><strong>total_time</strong> (<em>None</em><em> or </em><em>float</em>) &#8211; The duration of the solve to log.</li>
 <li><strong>status_fn</strong> (<em>callable function</em><em> or </em><em>None</em>) &#8211; Function to set the status text.</li>
 </ul>
 </td>
@@ -986,7 +982,7 @@ percentage value, between 0 and 100.</li>
 
 <dl class="function">
 <dt id="mmSolver.tools.solver.lib.collection.execute_collection">
-<code class="descclassname">mmSolver.tools.solver.lib.collection.</code><code class="descname">execute_collection</code><span class="sig-paren">(</span><em>col</em>, <em>log_level=None</em>, <em>refresh=False</em>, <em>force_update=False</em>, <em>prog_fn=None</em>, <em>status_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collection.execute_collection" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.tools.solver.lib.collection.</code><code class="descname">execute_collection</code><span class="sig-paren">(</span><em>col</em>, <em>log_level=None</em>, <em>refresh=False</em>, <em>force_update=False</em>, <em>do_isolate=False</em>, <em>display_image_plane=False</em>, <em>prog_fn=None</em>, <em>status_fn=None</em>, <em>info_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collection.execute_collection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute the entire collection; Solvers, Markers, Bundles, etc.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -995,14 +991,19 @@ percentage value, between 0 and 100.</li>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; Collection to execute.</li>
 <li><strong>log_level</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; Logging level to print out.</li>
-<li><strong>refresh</strong> (<em>bool</em>) &#8211; Should we refresh the viewport?</li>
+<li><strong>refresh</strong> (<em>bool</em>) &#8211; Refresh the viewport while solving?</li>
 <li><strong>force_update</strong> (<em>bool</em>) &#8211; Should we force-update the Maya DG?</li>
+<li><strong>do_isolate</strong> (<em>bool</em>) &#8211; Isolate only objects to be solved during solver
+iterations?</li>
+<li><strong>display_image_plane</strong> (<em>bool</em>) &#8211; Display image planes during solving?</li>
 <li><strong>prog_fn</strong> (<em>None</em><em> or </em><em>function</em>) &#8211; A function called with an &#8216;int&#8217; argument, to
 display progress information to the user. The
 integer is expected to be between 0 and 100 (and
 is read as a percentage).</li>
 <li><strong>status_fn</strong> (<em>None</em><em> or </em><em>function</em>) &#8211; A function called with an &#8216;str&#8217; argument, to display
 status information to the user.</li>
+<li><strong>info_fn</strong> (<em>None</em><em> or </em><em>function</em>) &#8211; A function called with an &#8216;str&#8217; argument, to display
+solver information to the user.</li>
 </ul>
 </td>
 </tr>
@@ -1012,7 +1013,7 @@ status information to the user.</li>
 
 <dl class="function">
 <dt id="mmSolver.tools.solver.lib.collection.run_solve_ui">
-<code class="descclassname">mmSolver.tools.solver.lib.collection.</code><code class="descname">run_solve_ui</code><span class="sig-paren">(</span><em>col</em>, <em>refresh_state</em>, <em>force_update_state</em>, <em>log_level</em>, <em>window</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collection.run_solve_ui" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.tools.solver.lib.collection.</code><code class="descname">run_solve_ui</code><span class="sig-paren">(</span><em>col</em>, <em>refresh_state</em>, <em>force_update_state</em>, <em>do_isolate_state</em>, <em>image_plane_state</em>, <em>log_level</em>, <em>window</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collection.run_solve_ui" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the active &#8220;solve&#8221; (UI state information), and update the UI.</p>
 <p>This is a UI focused function. Calling this function with the
 &#8216;window&#8217; argument set will update the UI and show progress to the
@@ -1026,7 +1027,12 @@ update the UI.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The active collection to solve.</li>
 <li><strong>refresh_state</strong> (<em>bool</em>) &#8211; Should we update the viewport while solving?</li>
-<li><strong>force_update_state</strong> (<em>bool</em>) &#8211; Should we forcibly update the DG while solving?</li>
+<li><strong>force_update_state</strong> (<em>bool</em>) &#8211; Should we forcibly update the DG while
+solving?</li>
+<li><strong>do_isolate_state</strong> (<em>bool</em>) &#8211; Should the solving objects only be visible 
+while performing the solve?</li>
+<li><strong>image_plane_state</strong> (<em>bool</em>) &#8211; Display image planes in the viewport while
+performing the solve?</li>
 <li><strong>log_level</strong> (<em>str</em>) &#8211; How much information should we print out;a
 &#8216;error&#8217;, &#8216;warning&#8217;, &#8216;info&#8217;, &#8216;verbose&#8217; or &#8216;debug&#8217;.</li>
 <li><strong>window</strong> (<em>SolverWindow</em><em> or </em><em>None</em>) &#8211; The SolverWindow object for the UI.</li>
@@ -1425,6 +1431,26 @@ active collection.</td>
 </dd></dl>
 
 <dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.get_state_bool">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">get_state_bool</code><span class="sig-paren">(</span><em>name</em>, <em>default_value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.get_state_bool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.set_state_bool">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">set_state_bool</code><span class="sig-paren">(</span><em>name</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.set_state_bool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.get_state_str">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">get_state_str</code><span class="sig-paren">(</span><em>name</em>, <em>default_value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.get_state_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.set_state_str">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">set_state_str</code><span class="sig-paren">(</span><em>name</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.set_state_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="mmSolver.tools.solver.lib.state.get_refresh_viewport_state">
 <code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">get_refresh_viewport_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.get_refresh_viewport_state" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1442,6 +1468,86 @@ active collection.</td>
 <dl class="function">
 <dt id="mmSolver.tools.solver.lib.state.set_force_dg_update_state">
 <code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">set_force_dg_update_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.set_force_dg_update_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.get_isolate_object_while_solving_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">get_isolate_object_while_solving_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.get_isolate_object_while_solving_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.set_isolate_object_while_solving_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">set_isolate_object_while_solving_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.set_isolate_object_while_solving_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.get_display_image_plane_while_solving_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">get_display_image_plane_while_solving_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.get_display_image_plane_while_solving_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.set_display_image_plane_while_solving_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">set_display_image_plane_while_solving_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.set_display_image_plane_while_solving_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.get_display_object_frame_deviation_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">get_display_object_frame_deviation_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.get_display_object_frame_deviation_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.set_display_object_frame_deviation_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">set_display_object_frame_deviation_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.set_display_object_frame_deviation_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.get_display_object_average_deviation_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">get_display_object_average_deviation_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.get_display_object_average_deviation_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.set_display_object_average_deviation_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">set_display_object_average_deviation_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.set_display_object_average_deviation_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.get_display_object_maximum_deviation_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">get_display_object_maximum_deviation_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.get_display_object_maximum_deviation_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.set_display_object_maximum_deviation_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">set_display_object_maximum_deviation_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.set_display_object_maximum_deviation_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.get_display_object_weight_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">get_display_object_weight_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.get_display_object_weight_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.set_display_object_weight_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">set_display_object_weight_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.set_display_object_weight_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.get_display_attribute_state_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">get_display_attribute_state_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.get_display_attribute_state_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.set_display_attribute_state_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">set_display_attribute_state_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.set_display_attribute_state_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.get_display_attribute_min_max_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">get_display_attribute_min_max_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.get_display_attribute_min_max_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.state.set_display_attribute_min_max_state">
+<code class="descclassname">mmSolver.tools.solver.lib.state.</code><code class="descname">set_display_attribute_min_max_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.state.set_display_attribute_min_max_state" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -1574,8 +1680,8 @@ active collection.</td>
   <p class="topless"><a href="mmSolver.tools.smoothkeyframes.html"
                         title="previous chapter">mmSolver.tools.smoothkeyframes</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="mmSolver.tools.togglebundlelock.html"
-                        title="next chapter">mmSolver.tools.togglebundlelock</a></p>
+  <p class="topless"><a href="mmSolver.tools.sysinfowindow.html"
+                        title="next chapter">mmSolver.tools.sysinfowindow</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -1607,7 +1713,7 @@ active collection.</td>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="mmSolver.tools.togglebundlelock.html" title="mmSolver.tools.togglebundlelock"
+          <a href="mmSolver.tools.sysinfowindow.html" title="mmSolver.tools.sysinfowindow"
              >next</a> |</li>
         <li class="right" >
           <a href="mmSolver.tools.smoothkeyframes.html" title="mmSolver.tools.smoothkeyframes"

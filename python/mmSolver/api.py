@@ -84,6 +84,7 @@ from mmSolver._api.solveresult import (
     get_max_frame_error,
     merge_marker_error_list,
     merge_marker_node_list,
+    format_timestamp,
 )
 from mmSolver._api.excep import (
     MMException,
@@ -227,4 +228,5 @@ __all__ = [
     'get_max_frame_error',
     'merge_marker_error_list',
     'merge_marker_node_list',
+    'format_timestamp',
 ]

@@ -27,6 +27,7 @@ The information returned from a solve.
 
 import collections
 import math
+import datetime
 import mmSolver.logger
 
 
@@ -470,3 +471,24 @@ def merge_marker_node_list(solres_list):
     mkr_nodes = list(mkr_nodes)
     mkr_nodes = list(sorted(mkr_nodes))
     return mkr_nodes
+
+
+def format_timestamp(value):
+    """
+    Convert a 'UNIX Epoch' float number to a human-readable Timestamp.
+
+    :param value: Input UNIX Epoch as returned by 'time.time()' function.
+    :type value: float
+
+    :returns: Human (and machine) readable timestamp.
+    :rtype: str
+    """
+    assert isinstance(value, float)
+    ts = datetime.datetime.fromtimestamp(value)
+    # Remove microseconds from the datetime object.
+    stamp = ts.replace(
+        ts.year, ts.month, ts.day,
+        ts.hour, ts.minute, ts.second, 0)
+    stamp = stamp.isoformat(' ')
+    assert isinstance(stamp, str)
+    return stamp

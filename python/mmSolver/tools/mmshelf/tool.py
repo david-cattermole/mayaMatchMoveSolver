@@ -20,7 +20,6 @@ Build the mmSolver Maya shelf.
 """
 
 import mmSolver.logger
-import mmSolver.utils.config as config_utils
 import mmSolver.ui.shelfutils as shelf_utils
 import mmSolver.tools.mmshelf.constant as const
 import mmSolver.tools.mmshelf.lib as lib
@@ -35,20 +34,6 @@ def build_shelf():
     """
     LOG.info('Building mmSolver Shelf...')
 
-    func_config_name = const.CONFIG_FILE_FUNCTIONS_NAME
-    func_config = config_utils.get_config(func_config_name)
-    if func_config is None:
-        LOG.warning('Could not find %s config file', func_config_name)
-
-    shelf_config_name = const.CONFIG_FILE_SHELF_NAME
-    shelf_config = config_utils.get_config(shelf_config_name)
-    if shelf_config is None:
-        LOG.warning('Could not find %s config file', shelf_config_name)
-
-    main_funcs = func_config.get_value('data', default_value={})
-    shelf_funcs = shelf_config.get_value('data/functions', default_value={})
-    funcs = [shelf_funcs, main_funcs]
-
     # Create main shelf.
     shelf_parent = shelf_utils.get_shelves_parent()
     shelf_name = str(const.SHELF_NAME)
@@ -61,8 +46,26 @@ def build_shelf():
         LOG.error(msg)
         return
 
-    # Create the shelf buttons items
-    items = shelf_config.get_value('data/items', default_value=[])
-    items_to_create = lib.compile_items(items, funcs)
-    lib.create_items(items_to_create, shelf)
-    return shelf
+    func_config_name = const.CONFIG_FILE_FUNCTIONS_NAME
+    shelf_config_name = const.CONFIG_FILE_SHELF_DEFAULT_NAME
+    return lib.build(shelf, func_config_name, shelf_config_name)
+
+
+def build_minimal_shelf_items(shelf):
+    """
+    Build a smaller number of shelf items.
+
+    This function is designed to be used for integration with an
+    already created shelf-building system. Simply call this function
+    with the parent shelf and the items will be created.
+    """
+    LOG.info('Building mmSolver Minimal Shelf Items...')
+
+    if shelf is None:
+        msg = 'Cannot create shelf. Exiting without creating shelf buttons.'
+        LOG.error(msg)
+        return
+
+    func_config_name = const.CONFIG_FILE_FUNCTIONS_NAME
+    shelf_config_name = const.CONFIG_FILE_SHELF_MINIMAL_NAME
+    return lib.build(shelf, func_config_name, shelf_config_name)

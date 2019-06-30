@@ -23,7 +23,8 @@ SHELF_NAME = 'mmSolver'
 
 # Configuration file names
 CONFIG_FILE_FUNCTIONS_NAME = 'functions.json'
-CONFIG_FILE_SHELF_NAME = 'shelf.json'
+CONFIG_FILE_SHELF_DEFAULT_NAME = 'shelf.json'
+CONFIG_FILE_SHELF_MINIMAL_NAME = 'shelf_minimal.json'
 
 # Suffix for shelf specific config options.
 KEY_SUFFIX_SHELF = '_shelf'

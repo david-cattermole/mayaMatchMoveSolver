@@ -12,6 +12,13 @@ Tools
     :members:
     :undoc-members:
 
+Library
++++++++
+
+.. automodule:: mmSolver.tools.attachbundletocurve.lib
+    :members:
+    :undoc-members:
+
 Constants
 +++++++++
 

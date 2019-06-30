@@ -180,13 +180,6 @@ __all__ = [
     'calculate_marker_deviation',
     'get_markers_start_end_frames',
 
-    # Collection Utils
-    'is_single_frame',
-    'disconnect_animcurves',
-    'reconnect_animcurves',
-    'clear_attr_keyframes',
-    'generate_isolate_nodes',
-
     # Naming
     'find_valid_maya_node_name',
     'get_new_marker_name',
@@ -213,7 +206,6 @@ __all__ = [
 
     # Utilities Functions
     'load_plugin',
-    'get_long_name',
     'get_object_type',
     'get_data_on_node_attr',
     'set_data_on_node_attr',

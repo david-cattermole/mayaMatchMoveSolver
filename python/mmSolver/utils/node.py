@@ -22,7 +22,8 @@ Utilities built around Maya nodes and node paths.
 import warnings
 
 import maya.cmds
-import maya.OpenMaya as OpenMaya
+import maya.OpenMaya as OpenMaya1
+import maya.api.OpenMaya as OpenMaya2
 
 import mmSolver.logger
 
@@ -95,7 +96,7 @@ def get_long_name(node):
     return None
 
 
-def get_as_selection_list(paths):
+def get_as_selection_list_apione(paths):
     """
     Get a Maya API selection list with the given valid Maya node paths.
 
@@ -103,10 +104,10 @@ def get_as_selection_list(paths):
     :type paths: list of str
 
     :return: MSelectionList with valid nodes added to list.
-    :rtype: OpenMaya.MSelectionList
+    :rtype: OpenMaya1.MSelectionList
     """
     assert isinstance(paths, list) or isinstance(paths, tuple)
-    sel_list = OpenMaya.MSelectionList()
+    sel_list = OpenMaya1.MSelectionList()
     for node in paths:
         try:
             sel_list.add(node)
@@ -115,7 +116,7 @@ def get_as_selection_list(paths):
     return sel_list
 
 
-def get_as_dag_path(node_str):
+def get_as_dag_path_apione(node_str):
     """
     Convert the given Maya node path into a MDagPath object.
 
@@ -128,12 +129,12 @@ def get_as_dag_path(node_str):
     sel_list = get_as_selection_list([node_str])
     if not sel_list:
         return None
-    dagPath = OpenMaya.MDagPath()
+    dagPath = OpenMaya1.MDagPath()
     sel_list.getDagPath(0, dagPath)
     return dagPath
 
 
-def get_as_object(node_str):
+def get_as_object_apione(node_str):
     """
     Convert the given Maya node path into a MObject object.
 
@@ -146,7 +147,7 @@ def get_as_object(node_str):
     selList = get_as_selection_list([node_str])
     if not selList:
         return None
-    obj = OpenMaya.MObject()
+    obj = OpenMaya1.MObject()
     try:
         selList.getDependNode(0, obj)
     except RuntimeError:
@@ -154,7 +155,7 @@ def get_as_object(node_str):
     return obj
 
 
-def get_as_plug(node_attr):
+def get_as_plug_apione(node_attr):
     """
     Convert the given 'node.attr' path into a MPlug object.
 
@@ -168,11 +169,68 @@ def get_as_plug(node_attr):
     plug = None
     if not sel.isEmpty():
         try:
-            plug = OpenMaya.MPlug()
+            plug = OpenMaya1.MPlug()
             sel.getPlug(0, plug)
         except RuntimeError:
             plug = None
     return plug
+
+
+def get_as_selection_list_apitwo(node_names):
+    assert isinstance(node_names, list) or isinstance(node_names, tuple)
+    sel_list = OpenMaya2.MSelectionList()
+    try:
+        for node in node_names:
+            sel_list.add(node)
+    except RuntimeError:
+        return sel_list
+    return sel_list
+
+
+def get_as_object_apitwo(node_name):
+    sel_list = get_as_selection_list_apitwo([node_name])
+    if not sel_list:
+        return None
+    mobject = sel_list.getDependNode(0)
+    return mobject
+
+
+def get_as_dag_path_apitwo(node_name):
+    sel_list = get_as_selection_list_apitwo([node_name])
+    if not sel_list:
+        return None
+    dag_path = sel_list.getDagPath(0)
+    return dag_path
+
+
+def get_as_plug_apitwo(node_attr):
+    sel = get_as_selection_list_apitwo([node_attr])
+    plug = sel.getPlug(0)
+    return plug
+
+
+def get_as_selection_list(*args, **kwargs):
+    msg = 'Use mmSolver.utils.node.get_as_selection_list_apione instead.'
+    warnings.warn(msg, DeprecationWarning)
+    return get_as_selection_list_apione(*args, **kwargs)
+
+
+def get_as_dag_path(*args, **kwargs):
+    msg = 'Use mmSolver.utils.node.get_as_dag_path_apione instead.'
+    warnings.warn(msg, DeprecationWarning)
+    return get_as_dag_path_apione(*args, **kwargs)
+
+
+def get_as_object(*args, **kwargs):
+    msg = 'Use mmSolver.utils.node.get_as_object_apione instead.'
+    warnings.warn(msg, DeprecationWarning)
+    return get_as_object_apione(*args, **kwargs)
+
+
+def get_as_plug(*args, **kwargs):
+    msg = 'Use mmSolver.utils.node.get_as_plug_apione instead.'
+    warnings.warn(msg, DeprecationWarning)
+    return get_as_plug_apione(*args, **kwargs)
 
 
 def get_camera_above_node(node):
@@ -192,12 +250,12 @@ def get_camera_above_node(node):
     dag = get_as_dag_path(node)
     got_it = False
     while dag.length() != 0:
-        if dag.apiType() == OpenMaya.MFn.kTransform:
+        if dag.apiType() == OpenMaya1.MFn.kTransform:
             num_children = dag.childCount()
             if num_children > 0:
                 for i in xrange(num_children):
                     child_obj = dag.child(i)
-                    if child_obj.apiType() == OpenMaya.MFn.kCamera:
+                    if child_obj.apiType() == OpenMaya1.MFn.kCamera:
                         cam_tfm = dag.fullPathName()
                         dag.push(child_obj)
                         cam_shp = dag.fullPathName()
@@ -246,44 +304,3 @@ def set_node_wire_colour_rgb(node, rgb):
         # Reset to default wireframe colour.
         maya.cmds.color(node)
     return
-
-
-def attribute_exists(attr, node):
-    """
-    Check if an attribute exists on the given node.
-
-    This is a Python equivalent of the MEL command 'attributeExists'.
-
-    :param attr: Attribute name to check for existence.
-    :type attr: str
-
-    :param node: The node to look for the attribute.
-    :type node: str
-
-    :returns: A boolean, if the attribute exists or not.
-    :rtype: bool
-    """
-    if (attr == '') or (node == ''):
-        return False
-
-    # See if the node exists!
-    if not maya.cmds.objExists(node):
-        return False
-
-    # First check to see if the attribute matches the short names
-    attrs = maya.cmds.listAttr(node, shortNames=True)
-    if attr in attrs:
-        return True
-
-    # Now check against the long names
-    attrs = maya.cmds.listAttr(node)
-    if attr in attrs:
-        return True
-
-    # Finally check if there are any alias
-    # attributes with that name.
-    alias_attrs = maya.cmds.aliasAttr(node, query=True)
-    if alias_attrs is not None:
-        if attr in alias_attrs:
-            return True
-    return False

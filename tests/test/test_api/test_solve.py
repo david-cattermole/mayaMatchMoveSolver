@@ -600,11 +600,27 @@ class TestSolve(test_api_utils.APITestCase):
         path = self.get_data_path('scenes', file_name)
         maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
 
+        # NOTE: We leave these nodes along, since these are already in
+        # the 'correct' position, we are treating these as surveyed.
+        # When we have less than 3 points as survey the solve goes
+        # crazy.
+        dont_touch_these_nodes = [
+            '|bundle_12_BND',
+            '|bundle_13_BND',
+            '|bundle_14_BND']
+
         # Triangulate all 3D points.
         nodes = maya.cmds.ls(type='transform') or []
         bnd_nodes = mmapi.filter_bundle_nodes(nodes)
         bnd_list = [mmapi.Bundle(node=n) for n in bnd_nodes]
         for bnd in bnd_list:
+            bnd_node = bnd.get_node()
+            if bnd_node in dont_touch_these_nodes:
+                continue
+            attrs = ['translateX', 'translateY', 'translateZ']
+            for attr_name in attrs:
+                plug = bnd_node + '.' + attr_name
+                maya.cmds.setAttr(plug, lock=False)
             lib_triangulate.triangulate_bundle(bnd)
 
         # Get Bundle attributes to compute.
@@ -640,8 +656,7 @@ class TestSolve(test_api_utils.APITestCase):
         solres_list = col.execute()
 
         # Solve both camera transform and bundle positions together.
-        col.set_attribute_list(cam_attr_list)
-        col.add_attribute_list(bnd_attr_list)
+        col.set_attribute_list(cam_attr_list + bnd_attr_list)
         lib_col.compile_collection(col)
         solres_list = col.execute()        
         e = time.time()

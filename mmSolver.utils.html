@@ -127,8 +127,8 @@ will always have unique node names.</dd>
 </dd></dl>
 
 <dl class="function">
-<dt id="mmSolver.utils.node.get_as_selection_list">
-<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_selection_list</code><span class="sig-paren">(</span><em>paths</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_selection_list" title="Permalink to this definition">¶</a></dt>
+<dt id="mmSolver.utils.node.get_as_selection_list_apione">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_selection_list_apione</code><span class="sig-paren">(</span><em>paths</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_selection_list_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a Maya API selection list with the given valid Maya node paths.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -138,15 +138,15 @@ will always have unique node names.</dd>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MSelectionList with valid nodes added to list.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">OpenMaya.MSelectionList</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">OpenMaya1.MSelectionList</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="function">
-<dt id="mmSolver.utils.node.get_as_dag_path">
-<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_dag_path</code><span class="sig-paren">(</span><em>node_str</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_dag_path" title="Permalink to this definition">¶</a></dt>
+<dt id="mmSolver.utils.node.get_as_dag_path_apione">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_dag_path_apione</code><span class="sig-paren">(</span><em>node_str</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_dag_path_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the given Maya node path into a MDagPath object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -163,8 +163,8 @@ will always have unique node names.</dd>
 </dd></dl>
 
 <dl class="function">
-<dt id="mmSolver.utils.node.get_as_object">
-<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_object</code><span class="sig-paren">(</span><em>node_str</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_object" title="Permalink to this definition">¶</a></dt>
+<dt id="mmSolver.utils.node.get_as_object_apione">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_object_apione</code><span class="sig-paren">(</span><em>node_str</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_object_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the given Maya node path into a MObject object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -181,8 +181,8 @@ will always have unique node names.</dd>
 </dd></dl>
 
 <dl class="function">
-<dt id="mmSolver.utils.node.get_as_plug">
-<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_plug</code><span class="sig-paren">(</span><em>node_attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_plug" title="Permalink to this definition">¶</a></dt>
+<dt id="mmSolver.utils.node.get_as_plug_apione">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_plug_apione</code><span class="sig-paren">(</span><em>node_attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_plug_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the given &#8216;node.attr&#8217; path into a MPlug object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -197,6 +197,46 @@ will always have unique node names.</dd>
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_as_selection_list_apitwo">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_selection_list_apitwo</code><span class="sig-paren">(</span><em>node_names</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_selection_list_apitwo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_as_object_apitwo">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_object_apitwo</code><span class="sig-paren">(</span><em>node_name</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_object_apitwo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_as_dag_path_apitwo">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_dag_path_apitwo</code><span class="sig-paren">(</span><em>node_name</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_dag_path_apitwo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_as_plug_apitwo">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_plug_apitwo</code><span class="sig-paren">(</span><em>node_attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_plug_apitwo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_as_selection_list">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_selection_list</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_selection_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_as_dag_path">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_dag_path</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_dag_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_as_object">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_object</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_object" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_as_plug">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_plug</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_plug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.utils.node.get_camera_above_node">
@@ -249,31 +289,6 @@ colour).</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nothing.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.node.attribute_exists">
-<code class="descclassname">mmSolver.utils.node.</code><code class="descname">attribute_exists</code><span class="sig-paren">(</span><em>attr</em>, <em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.attribute_exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if an attribute exists on the given node.</p>
-<p>This is a Python equivalent of the MEL command &#8216;attributeExists&#8217;.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>attr</strong> (<em>str</em>) &#8211; Attribute name to check for existence.</li>
-<li><strong>node</strong> (<em>str</em>) &#8211; The node to look for the attribute.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A boolean, if the attribute exists or not.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
-</td>
 </tr>
 </tbody>
 </table>

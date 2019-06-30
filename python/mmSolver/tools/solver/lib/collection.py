@@ -215,14 +215,7 @@ def log_solve_results(log, solres_list,
     long_status_str = ''
 
     if timestamp is not None:
-        assert isinstance(timestamp, float)
-        ts = datetime.datetime.fromtimestamp(timestamp)
-        # Remove microseconds from the datetime object.
-        stamp = ts.replace(
-            ts.year, ts.month, ts.day,
-            ts.hour, ts.minute, ts.second, 0)
-        stamp = stamp.isoformat(' ')
-        assert isinstance(stamp, str)
+        stamp = mmapi.format_timestamp(timestamp)
         status_str += stamp + ' | '
         long_status_str += stamp + ' | '
 

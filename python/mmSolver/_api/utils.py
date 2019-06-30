@@ -174,8 +174,8 @@ def get_data_on_node_attr(node_name, attr_name):
     :return: Arbitrary Plain-Old-Data data structures.
     :rtype: list of dict
     """
-    msg = 'This is deprecated. Use `mmSolver.utils.configmaya` module'
-    warnings.warn(msg)
+    msg = 'Use `mmSolver.utils.configmaya` module'
+    warnings.warn(msg, DeprecationWarning)
     value = configmaya.get_node_option_structure(
         node_name,
         attr_name
@@ -199,8 +199,8 @@ def set_data_on_node_attr(node_name, attr_name, data):
     ;return: Nothing.
     :rtype: None
     """
-    msg = 'This is deprecated. Use `mmSolver.utils.configmaya` module'
-    warnings.warn(msg)
+    msg = 'Use `mmSolver.utils.configmaya` module'
+    warnings.warn(msg, DeprecationWarning)
     configmaya.set_node_option_structure(
         node_name, attr_name, data,
         add_attr=True)
@@ -220,8 +220,8 @@ def get_value_on_node_attr(node_name, attr_name):
     :return: A numeric value.
     :rtype: bool or float or int
     """
-    msg = 'This is deprecated. Use `mmSolver.utils.configmaya` module'
-    warnings.warn(msg)
+    msg = 'Use `mmSolver.utils.configmaya` module'
+    warnings.warn(msg, DeprecationWarning)
     value = configmaya.get_node_option(node_name, attr_name)
     return value
 
@@ -242,7 +242,7 @@ def set_value_on_node_attr(node_name, attr_name, data):
     ;return: Nothing.
     :rtype: None
     """
-    msg = 'This is deprecated. Use `mmSolver.utils.configmaya` module'
-    warnings.warn(msg)
+    msg = 'Use `mmSolver.utils.configmaya` module'
+    warnings.warn(msg, DeprecationWarning)
     configmaya.set_node_option(node_name, attr_name, data)
     return

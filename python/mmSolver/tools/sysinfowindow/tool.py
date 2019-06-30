@@ -16,27 +16,18 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-mmSolver shelf constant values.
+The Sys Info window for mmSolver.
 """
 
-SHELF_NAME = 'mmSolver'
+import mmSolver.logger
+import mmSolver.tools.sysinfowindow.ui.sysinfo_window as sysinfo_window
 
-# Configuration file names
-CONFIG_FILE_FUNCTIONS_NAME = 'functions.json'
-CONFIG_FILE_SHELF_DEFAULT_NAME = 'shelf.json'
-CONFIG_FILE_SHELF_MINIMAL_NAME = 'shelf_minimal.json'
+LOG = mmSolver.logger.get_logger()
 
-# Suffix for shelf specific config options.
-KEY_SUFFIX_SHELF = '_shelf'
-KEY_SUFFIX_MENU = '_menu'
 
-# Key names in the config.
-NAME_KEY = 'name'
-ICON_KEY = 'icon'
-TOOLTIP_KEY = 'tooltip'
-DIVIDER_KEY = 'divider'
-POPUP_KEY = 'popup'
-POPUP_BUTTON_KEY = 'popup_button'
-CMD_LANG_KEY = 'command_lang'
-CMD_KEY = 'command'
-TEAR_OFF_KEY = 'tearoff'
+def open_window():
+    """
+    Open the System Information window.
+    """
+    sysinfo_window.main()
+    return

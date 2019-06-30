@@ -19,8 +19,6 @@
 Formats and displays 'about' information.
 """
 
-import os
-import maya.cmds
 import mmSolver.constant as mmSolver_const
 import mmSolver.tools.aboutwindow.constant as const
 
@@ -32,56 +30,12 @@ def get_about_text():
     author = mmSolver_const.PROJECT_AUTHOR
     page = mmSolver_const.PROJECT_HOMEPAGE_URL
     copyrights = mmSolver_const.PROJECT_COPYRIGHT
-    default_solver_const = mmSolver_const.DEFAULT_SOLVER
-    module_name = mmSolver_const.MODULE_FULL_NAME
-
-    # System Information
-    oper_sys = maya.cmds.about(operatingSystemVersion=True)
-    oper_sys = oper_sys.strip()
-    maya_cut_id = maya.cmds.about(cutIdentifier=True)
-    maya_ver = maya.cmds.about(installedVersion=True)
-    maya_api_ver = maya.cmds.about(apiVersion=True)
-    qt_ver = maya.cmds.about(qtVersion=True)
-    desktop_comp_man = maya.cmds.about(compositingManager=True)
-    desktop_wind_man = maya.cmds.about(windowManager=True)
-    try:
-        gpu_info = ''.join(maya.cmds.ogs(deviceInformation=True))
-        gpu_info = gpu_info.strip()
-    except RuntimeError:
-        gpu_info = '<Could not get GPU Device Information>'
-
-    # mmSolver Configuration
-    load_at_start = os.environ.get('MMSOLVER_LOAD_AT_STARTUP')
-    create_menu = os.environ.get('MMSOLVER_CREATE_MENU')
-    create_shelf = os.environ.get('MMSOLVER_CREATE_SHELF')
-    help_source = os.environ.get('MMSOLVER_HELP_SOURCE')
-    default_solver_env = os.environ.get('MMSOLVER_DEFAULT_SOLVER')
-    debug_mode = os.environ.get('MMSOLVER_DEBUG')
 
     text = const.ABOUT_TEXT.format(
         author=author,
         description=desc,
         page=page,
         copyrights=copyrights,
-        module_name=module_name,
-        default_solver_const=default_solver_const,
-
-        version=version,
-        maya_ver=maya_ver,
-        maya_cut_id=maya_cut_id,
-        maya_api=maya_api_ver,
-        qt_ver=qt_ver,
-        
-        operating_sys=oper_sys,
-        desktop_comp_man=desktop_comp_man,
-        desktop_wind_man=desktop_wind_man,
-        gpu_info=gpu_info,
-
-        load_at_start=load_at_start,
-        create_menu=create_menu,
-        create_shelf=create_shelf,
-        help_source=help_source,
-        default_solver_env=default_solver_env,
-        debug_mode=debug_mode,        
+        version=version
     )
     return text

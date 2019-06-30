@@ -29,6 +29,8 @@ Copyright (C) {copyrights}
 
 Authors: {author}
 
+Website: {page}
+
 == License ==
 This software, mmSolver, is licensed under the GNU LGPL v3 license.
 
@@ -53,28 +55,4 @@ of the GNU LGPL v3 license.
 mmSolver is a solving engine with a bundled tool-set for MatchMove
 tasks inside Autodesk Maya.  The solver core is incremental, building
 on the initial values given to the solver.
-
-== Software Versions ==
-mmSolver Version: v{version}
-mmSolver Module: {module_name}
-Maya Version: {maya_ver}
-Maya API: {maya_api}
-Maya Cut ID: {maya_cut_id}
-Qt Version: {qt_ver}
-
-== System Information ==
-Operating System: {operating_sys}
-Window Manager: {desktop_wind_man}
-Compositing Manager: {desktop_comp_man}
-GPU: 
-{gpu_info}
-
-== Configuration ==
-Load at Startup: {load_at_start}
-Create Menu: {create_menu}
-Create Shelf: {create_shelf}
-Help Source: {help_source}
-Default Solver (env): {default_solver_env}
-Default Solver (python): {default_solver_const}
-Debug: {debug_mode}
 """

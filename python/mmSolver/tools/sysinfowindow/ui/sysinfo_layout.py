@@ -16,27 +16,28 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-mmSolver shelf constant values.
+The 'Sysinfo' layout, the contents of the sysinfo window.
 """
 
-SHELF_NAME = 'mmSolver'
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
 
-# Configuration file names
-CONFIG_FILE_FUNCTIONS_NAME = 'functions.json'
-CONFIG_FILE_SHELF_DEFAULT_NAME = 'shelf.json'
-CONFIG_FILE_SHELF_MINIMAL_NAME = 'shelf_minimal.json'
+import Qt.QtCore as QtCore
+import Qt.QtGui as QtGui
+import Qt.QtWidgets as QtWidgets
 
-# Suffix for shelf specific config options.
-KEY_SUFFIX_SHELF = '_shelf'
-KEY_SUFFIX_MENU = '_menu'
+import mmSolver.logger
+import mmSolver.tools.sysinfowindow.lib.message as lib_msg
+import mmSolver.tools.sysinfowindow.ui.ui_sysinfo_layout as ui_sysinfo_layout
 
-# Key names in the config.
-NAME_KEY = 'name'
-ICON_KEY = 'icon'
-TOOLTIP_KEY = 'tooltip'
-DIVIDER_KEY = 'divider'
-POPUP_KEY = 'popup'
-POPUP_BUTTON_KEY = 'popup_button'
-CMD_LANG_KEY = 'command_lang'
-CMD_KEY = 'command'
-TEAR_OFF_KEY = 'tearoff'
+
+LOG = mmSolver.logger.get_logger()
+
+
+class SysInfoLayout(QtWidgets.QWidget, ui_sysinfo_layout.Ui_Form):
+    def __init__(self, parent=None, *args, **kwargs):
+        super(SysInfoLayout, self).__init__(*args, **kwargs)
+        self.setupUi(self)
+        text = lib_msg.get_sysinfo_text()
+        self.sysInfoTextEdit.setText(text)
+        return

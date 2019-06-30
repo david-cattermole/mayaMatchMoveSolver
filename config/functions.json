@@ -36,6 +36,12 @@
                 "tool.run_solve_on_current_frame();"
             ]
         },
+        "create_tools": {
+            "name": "Create Tools",
+            "name_shelf": "Create",
+            "tooltip": "Creation Tools",
+            "command": ["pass"]
+        },
         "create_marker": {
             "name": "Create Marker",
             "name_shelf": "Create",
@@ -90,6 +96,16 @@
             "command": [
                 "import mmSolver.tools.triangulatebundle.tool;",
                 "mmSolver.tools.triangulatebundle.tool.main();"
+            ]
+        },
+        "attach_bundle_to_curve": {
+            "name": "Attach Bundle to Curve",
+            "name_menu": "Attach Bundle to Curve",
+            "name_shelf": "BtCrv",
+            "tooltip": "Attach a 3D Bundle to a NURBS Curve.",
+            "command": [
+                "import mmSolver.tools.attachbundletocurve.tool;",
+                "mmSolver.tools.attachbundletocurve.tool.main();"
             ]
         },
         "raycast_marker": {
@@ -184,6 +200,12 @@
                 "mmSolver.tools.createbundle.tool.main();"
             ]
         },
+        "sel_tools": {
+            "name": "Selection Tools",
+            "name_shelf": "Select",
+            "tooltip": "Selection Tools",
+            "command": ["pass"]
+        },
         "swap_marker_bundles": {
             "name": "Swap Markers / Bundles",
             "name_shelf": "M / B",
@@ -219,6 +241,12 @@
                 "pass"
             ]
         },
+        "general_tools": {
+            "name": "General Tools",
+            "name_shelf": "Tools",
+            "tooltip": "General Tools",
+            "command": ["pass"]
+        },
         "center_twodee": {
             "name": "Center 2D on Selected",
             "name_shelf": "Center",
@@ -251,18 +279,8 @@
             "name_shelf": "ScrnBk",
             "tooltip": "Convert a transform into a screen-space transform.",
             "command": [
-                "import mmSolver.tools.screenzbake.tool;",
-                "mmSolver.tools.screenzbake.tool.main();"
-            ]
-        },
-        "attach_bundle_to_curve": {
-            "name": "Attach Bundle to Curve",
-            "name_menu": "Attach Bundle to Curve",
-            "name_shelf": "BtCrv",
-            "tooltip": "Attach a 3D Bundle to a NURBS Curve.",
-            "command": [
-                "import mmSolver.tools.attachbundletocurve.tool;",
-                "mmSolver.tools.attachbundletocurve.tool.main();"
+                "import mmSolver.tools.screenspacetransform.tool;",
+                "mmSolver.tools.screenspacetransform.tool.main();"
             ]
         },
         "deform_marker": {
@@ -273,7 +291,7 @@
             "command": ["pass"]
         },
         "deform_marker_create_offset": {
-            "name": "Create",
+            "name": "Deform Create",
             "tooltip": "Create layer for selected markers.",
             "command": [
                 "import mmSolver.tools.deformmarker.tool as deformMkr;",
@@ -281,7 +299,7 @@
             ]
         },
         "deform_marker_bake_offset": {
-            "name": "Bake",
+            "name": "Deform Bake",
             "tooltip": "Bake layer override for the selected marker.",
             "command": [
                 "import mmSolver.tools.deformmarker.tool as deformMkr;",
@@ -289,7 +307,7 @@
             ]
         },
         "deform_marker_remove_offset": {
-            "name": "Remove",
+            "name": "Deform Remove",
             "tooltip": "Removes layer override changes for the selected marker.",
             "command": [
                 "import mmSolver.tools.deformmarker.tool as deformMkr;",

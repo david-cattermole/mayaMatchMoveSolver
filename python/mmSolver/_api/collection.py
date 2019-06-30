@@ -951,7 +951,8 @@ class Collection(object):
 
         try:
             collectionutils.run_progress_func(prog_fn, 0)
-            collectionutils.run_status_func(status_fn, 'Solver Initializing...')
+            ts = solveresult.format_timestamp(time.time())
+            collectionutils.run_status_func(status_fn, 'Solve start (%s)' % ts)
             api_state.set_solver_running(True)
 
             # Check for validity
@@ -1101,6 +1102,7 @@ class Collection(object):
                 e = time.time()
                 LOG.debug('Finally; reset isolate selected; time=%r', e - s)
 
+            collectionutils.run_status_func(status_fn, 'Solve Ended')
             collectionutils.run_progress_func(prog_fn, 100)
             api_state.set_solver_running(False)
 

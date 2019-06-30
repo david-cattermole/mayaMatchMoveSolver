@@ -18,6 +18,9 @@
 """
 Utilities built around Maya nodes and node paths.
 """
+
+import warnings
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya1
 import maya.api.OpenMaya as OpenMaya2
@@ -144,7 +147,7 @@ def get_as_object_apione(node_str):
     selList = get_as_selection_list([node_str])
     if not selList:
         return None
-    obj = OpenMaya.MObject()
+    obj = OpenMaya1.MObject()
     try:
         selList.getDependNode(0, obj)
     except RuntimeError:

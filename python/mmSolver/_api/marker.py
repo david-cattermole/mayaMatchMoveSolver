@@ -392,7 +392,7 @@ class Marker(object):
         Compute the deviation for the marker.
 
         .. note:: This function assumes the camera film aperture (the
-           film back) is not animated over the times given.x
+           film back) is not animated over the times given.
 
         :param times: The times to query the deviation on, if not
                       given the current frame is used.

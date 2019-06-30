@@ -65,7 +65,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139965451154320'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139965451154320'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='139965451154448'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139976555390352'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139976555390352'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='139976555390544'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -161,9 +161,12 @@ more/less than 360 degrees.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> &#8211; Part of the camera node, must be either a transform or</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Part of the camera node, must be either a transform
+or shape node.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Two nodes in a tuple, transform then shape node.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(str, str)</td>
 </tr>
 </tbody>
 </table>
@@ -171,7 +174,7 @@ more/less than 360 degrees.</p>
 
 <dl class="function">
 <dt id="mmSolver.utils.camera.is_startup_cam">
-<code class="descclassname">mmSolver.utils.camera.</code><code class="descname">is_startup_cam</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.is_startup_cam" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.camera.</code><code class="descname">is_startup_cam</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.is_startup_cam" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the given camera node is a &#8216;startupCamera&#8217;.</p>
 <p>A startup camera is a camera; &#8216;persp&#8217;, &#8216;side&#8217;, &#8216;top&#8217;, &#8216;front&#8217;, etc.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -186,7 +189,7 @@ more/less than 360 degrees.</p>
 
 <dl class="function">
 <dt id="mmSolver.utils.camera.is_not_startup_cam">
-<code class="descclassname">mmSolver.utils.camera.</code><code class="descname">is_not_startup_cam</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.is_not_startup_cam" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.camera.</code><code class="descname">is_not_startup_cam</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.is_not_startup_cam" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the given camera node is NOT a &#8216;startupCamera&#8217;.</p>
 <p>A startup camera is a camera; &#8216;persp&#8217;, &#8216;side&#8217;, &#8216;top&#8217;, &#8216;front&#8217;, etc.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1010,8 +1013,8 @@ given, or None if no point was found.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="reproject">
-<h2>Reproject<a class="headerlink" href="#reproject" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="re-project">
+<h2>Re-Project<a class="headerlink" href="#re-project" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-mmSolver.utils.smooth">
 <span id="smooth"></span><h2>Smooth<a class="headerlink" href="#module-mmSolver.utils.smooth" title="Permalink to this headline">¶</a></h2>
@@ -1619,7 +1622,7 @@ isolate object list.</p>
 <li><a class="reference internal" href="#module-mmSolver.utils.configmaya">Config Maya</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.node">Node</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.raytrace">Raytrace</a></li>
-<li><a class="reference internal" href="#reproject">Reproject</a></li>
+<li><a class="reference internal" href="#re-project">Re-Project</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.smooth">Smooth</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.time">Time</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.transform">Transform</a></li>

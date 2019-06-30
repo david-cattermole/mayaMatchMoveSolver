@@ -45,8 +45,8 @@ Raytrace
     :members:
     :undoc-members:
 
-Reproject
-+++++++++
+Re-Project
+++++++++++
 
 .. automodule:: mmSolver.utils.reproject
     :members:

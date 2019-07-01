@@ -15,28 +15,45 @@
             "swap_marker_bundles",
             "select_marker_bundles",
             "marker_bundle_rename",
-            "---Link",
+            "---Marker-Bundle Link",
             "link_marker_bundle",
             "unlink_marker_bundle",
             "---Tools",
+            "marker_tools/---Markers",
             "marker_tools/toggle_marker_lock",
             "marker_tools/place_marker_manipulator",
             "marker_tools/duplicate_marker",
             "marker_tools/average_markers",
+            "marker_tools/deform_marker/deform_marker_create_offset",
+            "marker_tools/deform_marker/deform_marker_bake_offset",
+            "marker_tools/deform_marker/deform_marker_remove_offset",
+            "marker_tools/---Bundles",
             "bundle_tools/toggle_bundle_lock",
             "bundle_tools/reproject_bundle",
             "bundle_tools/raycast_marker",
             "bundle_tools/triangulate_bundle",
             "bundle_tools/screen_z_manipulator",
-            "deform_marker/deform_marker_create_offset",
-            "deform_marker/deform_marker_bake_offset",
-            "deform_marker/deform_marker_remove_offset",
+            "bundle_tools/attach_bundle_to_curve",
+            "---General Tools",
             "center_twodee",
-            "channel_sensitivity_ui",
-            "smooth_keyframes",
             "screen_z_transform_bake",
-            "attach_bundle_to_curve"
+            "---Tool UIs",
+            "channel_sensitivity_ui",
+            "smooth_keyframes"
         ],
-        "functions": {}
+        "functions": {
+            "marker_tools": {
+                "name": "Marker Tools",
+                "tearoff": true
+            },
+            "bundle_tools": {
+                "name": "Bundle Tools",
+                "tearoff": true
+            },
+            "deform_marker": {
+                "name": "Deform Marker",
+                "tearoff": true
+            }
+        }
     }
 }

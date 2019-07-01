@@ -6,7 +6,6 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.tools.selection.filternodes as filternodes
 import mmSolver.tools.triangulatebundle.lib as lib
 
 
@@ -27,7 +26,7 @@ def main():
     """
     # Get Markers and Bundles
     sel = maya.cmds.ls(selection=True, long=True) or []
-    filter_nodes = filternodes.get_nodes(sel)
+    filter_nodes = mmapi.filter_nodes_into_categories(sel)
     mkr_nodes = filter_nodes.get('marker', [])
     bnd_nodes = filter_nodes.get('bundle', [])
     if len(mkr_nodes) == 0 and len(bnd_nodes) == 0:

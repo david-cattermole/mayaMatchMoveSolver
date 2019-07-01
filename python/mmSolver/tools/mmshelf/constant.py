@@ -21,8 +21,14 @@ mmSolver shelf constant values.
 
 SHELF_NAME = 'mmSolver'
 
+# Configuration file names
+CONFIG_FILE_FUNCTIONS_NAME = 'functions.json'
+CONFIG_FILE_SHELF_DEFAULT_NAME = 'shelf.json'
+CONFIG_FILE_SHELF_MINIMAL_NAME = 'shelf_minimal.json'
+
 # Suffix for shelf specific config options.
-KEY_SUFFIX = '_shelf'
+KEY_SUFFIX_SHELF = '_shelf'
+KEY_SUFFIX_MENU = '_menu'
 
 # Key names in the config.
 NAME_KEY = 'name'
@@ -33,3 +39,4 @@ POPUP_KEY = 'popup'
 POPUP_BUTTON_KEY = 'popup_button'
 CMD_LANG_KEY = 'command_lang'
 CMD_KEY = 'command'
+TEAR_OFF_KEY = 'tearoff'

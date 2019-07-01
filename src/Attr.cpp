@@ -173,6 +173,7 @@ MPlug Attr::getPlug() {
     return m_plug;
 }
 
+
 MObject Attr::getAttribute() {
     MPlug plug = Attr::getPlug();
     MObject attrObj;

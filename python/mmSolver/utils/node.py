@@ -30,12 +30,10 @@ import mmSolver.logger
 LOG = mmSolver.logger.get_logger()
 
 
-def get_node_full_path(node):
-    full_path = None
-    nodes = maya.cmds.ls(node, long=True) or []
-    if len(nodes) > 0:
-        full_path = nodes[0]
-    return full_path
+def get_node_full_path(*args, **kwargs):
+    msg = 'Use mmSolver.utils.node.get_long_name function instead'
+    warnings.warn(msg, DeprecationWarning)
+    return get_long_name(*args, **kwargs)
 
 
 def node_is_referenced(node):
@@ -47,7 +45,7 @@ def node_is_referenced(node):
     :return: True or False, is it referenced?
     :rtype: bool
     """
-    return maya.cmds.referenceQuery(node, referenceNode=True)
+    return maya.cmds.referenceQuery(node, isNodeReferenced=True)
 
 
 def set_attr(plug, value, relock=False):
@@ -65,7 +63,7 @@ def set_attr(plug, value, relock=False):
     """
     node = plug.partition('.')[0]
     is_referenced = node_is_referenced(node)
-    locked = maya.cmds.getAttr(plug, locked=True)
+    locked = maya.cmds.getAttr(plug, lock=True)
     if is_referenced is True and locked is True:
         msg = 'Cannot set attr %r, it is locked and the node is referenced.'
         LOG.warning(msg, plug)
@@ -139,7 +137,7 @@ def get_as_dag_path_apione(node_str):
 def get_as_object_apione(node_str):
     """
     Convert the given Maya node path into a MObject object.
-    
+
     :param node_str: Maya node path to be converted.
     :type node_str: str
 
@@ -306,3 +304,44 @@ def set_node_wire_colour_rgb(node, rgb):
         # Reset to default wireframe colour.
         maya.cmds.color(node)
     return
+
+
+def attribute_exists(attr, node):
+    """
+    Check if an attribute exists on the given node.
+
+    This is a Python equivalent of the MEL command 'attributeExists'.
+
+    :param attr: Attribute name to check for existence.
+    :type attr: str
+
+    :param node: The node to look for the attribute.
+    :type node: str
+
+    :returns: A boolean, if the attribute exists or not.
+    :rtype: bool
+    """
+    if (attr == '') or (node == ''):
+        return False
+
+    # See if the node exists!
+    if not maya.cmds.objExists(node):
+        return False
+
+    # First check to see if the attribute matches the short names
+    attrs = maya.cmds.listAttr(node, shortNames=True)
+    if attr in attrs:
+        return True
+
+    # Now check against the long names
+    attrs = maya.cmds.listAttr(node)
+    if attr in attrs:
+        return True
+
+    # Finally check if there are any alias
+    # attributes with that name.
+    alias_attrs = maya.cmds.aliasAttr(node, query=True)
+    if alias_attrs is not None:
+        if attr in alias_attrs:
+            return True
+    return False

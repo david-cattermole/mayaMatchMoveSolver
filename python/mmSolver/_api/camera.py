@@ -62,6 +62,7 @@ class Camera(object):
         """
         self._mfn_tfm = None
         self._mfn_shp = None
+        self._cache_marker_list = dict()
 
         if transform is None and shape is None:
             self._mfn_tfm = OpenMaya.MFnDagNode()
@@ -107,6 +108,16 @@ class Camera(object):
         return uid[0]
 
     def set_transform_node(self, name):
+        """
+        Change the underlying Maya nodes that this Camera class will
+        manipulate.
+
+        This function will automatically set the Camera shape node based
+        this transform node.
+
+        :param name: The existing Maya node.
+        :type name: str
+        """
         assert isinstance(name, (str, unicode))
         assert maya.cmds.objExists(name)
 
@@ -170,6 +181,16 @@ class Camera(object):
         return uids[0]
 
     def set_shape_node(self, name):
+        """
+        Change the underlying Maya nodes that this Camera class will
+        manipulate.
+
+        This function will automatically set the Camera transform node
+        based this shape node.
+
+        :param name: The existing Maya node.
+        :type name: str
+        """
         assert isinstance(name, (str, unicode))
         assert maya.cmds.objExists(name)
 
@@ -196,9 +217,70 @@ class Camera(object):
 
     ############################################################################
 
-    def get_deviation(self, times=None):
+    def get_plate_resolution(self):
+        """
+        Get the resolution of the image attached to this camera, or
+        return a default value if no image is attached.
+
+        :return: Tuple of X and Y resolution.
+        :rtype: (int, int)
+        """
+        resolution = (const.DEFAULT_PLATE_WIDTH,
+                      const.DEFAULT_PLATE_HEIGHT)
+        shp = self.get_shape_node()
+        if shp is None:
+            LOG.warning('Could not get Camera shape node.')
+            return resolution
+        plug = shp + '.imagePlane'
+        img_planes = maya.cmds.listConnections(plug, type='imagePlane') or []
+        img_planes = [node_utils.get_long_name(n) for n in img_planes]
+
+        if len(img_planes) == 0:
+            return resolution  # no image planes
+        elif len(img_planes) > 1:
+            msg = 'Multiple image planes on camera, using first;'
+            msg += 'camera=%r nodes=%r'
+            LOG.warning(msg, shp, img_planes)
+        img_plane = img_planes[0]
+
+        width = maya.cmds.getAttr(img_plane + '.coverageX')
+        height = maya.cmds.getAttr(img_plane + '.coverageY')
+        if width > 0 and height > 0:
+            resolution = (width, height)
+        else:
+            msg = 'Get plate resolution failed, using to default values;'
+            msg += 'camera=%r nodes=%r width=%r height=%r'
+            LOG.debug(msg, shp, img_planes, width, height)
+        return resolution
+
+    def get_average_deviation(self):
         """
         Get the average deviation for all marker under the camera.
+
+        :returns: The deviation of the marker-to-bundle re-projection in pixels.
+        :rtype: float
+        """
+        dev = None
+        node = self.get_transform_node()
+        if node is None:
+            msg = 'Could not get Camera transform node. self=%r'
+            LOG.warning(msg, self)
+            return dev
+
+        total = 0
+        dev_sum = 0.0
+        mkr_list = self.get_marker_list()
+        for mkr in mkr_list:
+            dev_value = mkr.get_average_deviation()
+            dev_sum += dev_value
+            total += 1
+        if total > 0:
+            dev = dev_sum / total
+        return dev
+
+    def get_deviation(self, times=None):
+        """
+        Get the deviation for all marker under the camera at the current times.
 
         :param times: The times to query the deviation on, if not
                       given the current frame is used.
@@ -227,6 +309,33 @@ class Camera(object):
             dev = dev_sum / total
         return dev
 
+    def get_maximum_deviation(self):
+        """
+        Get the maximum deviation (and frame) for all marker under the camera.
+
+        :param times: The times to query the deviation on, if not
+                      given the current frame is used.
+        :type times: float
+
+        :returns:
+        :rtype: (float, float)
+        """
+        max_dev = -1.0
+        max_frm = -1.0
+        node = self.get_transform_node()
+        if node is None:
+            msg = 'Could not get Camera transform node. self=%r'
+            LOG.warning(msg, self)
+            return max_dev, max_frm
+
+        mkr_list = self.get_marker_list()
+        for mkr in mkr_list:
+            val, frm = mkr.get_maximum_deviation()
+            if val > max_dev:
+                max_dev = val
+                max_frm = frm
+        return max_dev, max_frm
+
     ############################################################################
 
     def get_marker_list(self):
@@ -243,9 +352,25 @@ class Camera(object):
             dag=True,
             long=True,
             type='transform') or []
-        mkr_list = [mmSolver._api.marker.Marker(node=n)
-                    for n in below_nodes
-                    if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER]
+
+        mkr_list = []
+        ver = maya.cmds.about(apiVersion=True)
+        if ver < 201600:
+            mkr_list = [mmSolver._api.marker.Marker(node=n)
+                        for n in below_nodes
+                        if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER]
+        else:
+            # Note: Use UUIDs to cache nodes, this is only supported
+            # on Maya 2016 and above.
+            for n in below_nodes:
+                uids = maya.cmds.ls(node, uuid=True) or []
+                mkr = self._cache_marker_list.get(uids[0])
+                if mkr is None:
+                    if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER:
+                        mkr = mmSolver._api.marker.Marker(node=n)
+                if mkr is not None:
+                    mkr_list.append(mkr)
+
         return mkr_list
 
     def is_valid(self):

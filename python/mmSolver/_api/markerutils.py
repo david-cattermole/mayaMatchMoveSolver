@@ -102,8 +102,8 @@ def get_markers_start_end_frames(selected_markers):
     :return: Start and end frame of given markers list.
     :rtype: (int, int)
     """
-    first_frame = []
-    last_frame = []
+    first_frames = []
+    last_frames = []
     for marker in selected_markers:
         plugs = [
             '%s.translateX' % marker,
@@ -119,17 +119,17 @@ def get_markers_start_end_frames(selected_markers):
             first_keyframe_num = maya.cmds.keyframe(anim_curves,
                                                     query=True,
                                                     timeChange=True)
-            first_frame.append(first_keyframe_num[0])
+            first_frames.append(first_keyframe_num[0])
             last_keyframe_num = maya.cmds.keyframe(anim_curves,
                                                    query=True,
                                                    timeChange=True)
-            last_frame.append(last_keyframe_num[-1])
+            last_frames.append(last_keyframe_num[-1])
 
     current_frame = maya.cmds.currentTime(query=True)
     start_frame = current_frame
     end_frame = current_frame
-    if len(first_frame) > 0:
-        start_frame = min(first_frame)
-    if len(last_frame) > 0:
-        end_frame = max(last_frame)
+    if len(first_frames) > 0:
+        start_frame = min(first_frames)
+    if len(last_frames) > 0:
+        end_frame = max(last_frames)
     return start_frame, end_frame

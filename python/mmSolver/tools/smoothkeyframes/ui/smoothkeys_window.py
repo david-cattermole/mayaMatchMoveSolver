@@ -18,6 +18,7 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
+import mmSolver.tools.smoothkeyframes.constant as const
 import mmSolver.tools.smoothkeyframes.tool as tool
 import mmSolver.tools.smoothkeyframes.ui.smoothkeys_layout as smoothkeys_layout
 
@@ -35,7 +36,8 @@ class SmoothKeysWindow(BaseWindow):
         self.setupUi(self)
         self.addSubForm(smoothkeys_layout.SmoothKeysLayout)
 
-        self.setWindowTitle('Smooth Keyframes')
+        self.setWindowTitle(const.WINDOW_TITLE)
+        self.setWindowFlags(QtCore.Qt.Tool)
 
         # Standard Buttons
         self.baseHideStandardButtons()

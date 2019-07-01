@@ -27,7 +27,7 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
-import mmSolver.utils.animutils as anim_utils
+import mmSolver.utils.animcurve as anim_utils
 import mmSolver.utils.time as time_utils
 import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils

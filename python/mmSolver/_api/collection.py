@@ -33,7 +33,7 @@ import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.configmaya as configmaya
 import mmSolver.utils.node as node_utils
-import mmSolver.utils.animutils as anim_utils
+import mmSolver.utils.animcurve as anim_utils
 import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep

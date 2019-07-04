@@ -22,15 +22,10 @@ Utilities used with Collection compiled 'kwargs'.
 import maya.cmds
 import maya.mel
 import maya.OpenMaya as OpenMaya
-import maya.OpenMayaAnim as OpenMayaAnim
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
-import mmSolver.utils.animutils as anim_utils
-import mmSolver._api.constant as const
 import mmSolver._api.attribute as attribute
-import mmSolver._api.marker as marker
-import mmSolver._api.solveresult as solveresult
 
 LOG = mmSolver.logger.get_logger()
 

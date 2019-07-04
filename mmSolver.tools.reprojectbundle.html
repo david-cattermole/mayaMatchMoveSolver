@@ -58,8 +58,28 @@
   <div class="section" id="module-mmSolver.tools.reprojectbundle">
 <span id="mmsolver-tools-reprojectbundle"></span><h1>mmSolver.tools.reprojectbundle<a class="headerlink" href="#module-mmSolver.tools.reprojectbundle" title="Permalink to this headline">¶</a></h1>
 <p>Move a bundle in front of the camera.</p>
-<div class="section" id="tools">
-<h2>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-mmSolver.tools.reprojectbundle.tool">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.reprojectbundle.tool" title="Permalink to this headline">¶</a></h2>
+<p>Position Bundle under the Marker, in screen-space.</p>
+<dl class="function">
+<dt id="mmSolver.tools.reprojectbundle.tool.main">
+<code class="descclassname">mmSolver.tools.reprojectbundle.tool.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reprojectbundle.tool.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triangulate Bundle on current-frame</p>
+<p>Perform a reprojection of the selected bundle (or bundle connected
+to the selected marker), at the current frame.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select markers or connected bundles (or both).</li>
+<li>Run tool.</li>
+<li>Bundle is triangulated in TX, TY and TZ.</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If a Bundle has locked attributes, they will be unlocked and
+then relocked.</p>
+</div>
+</dd></dl>
+
 </div>
 <div class="section" id="module-mmSolver.tools.reprojectbundle.lib">
 <span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.reprojectbundle.lib" title="Permalink to this headline">¶</a></h2>
@@ -73,7 +93,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mkr_list</strong> (<em>[</em><em>Marker</em><em>, </em><em>.</em><em>]</em>) &#8211; Markers to have Bundles triangulated.</li>
+<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) &#8211; Markers to have Bundles triangulated.</li>
 <li><strong>frame_list</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; Frame numbers to re-project Bundle on, if there
 is only one frame, no keyframes are set,
 otherwise keyframes are set for each frame
@@ -86,7 +106,7 @@ unlocked, changed then relocked.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of Bundle</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[Bundle, .]</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Bundle" title="mmSolver.api.Bundle">Bundle</a>, .]</p>
 </td>
 </tr>
 </tbody>
@@ -103,7 +123,7 @@ on the current-frame.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mkr_list</strong> (<em>[</em><em>Marker</em><em>, </em><em>.</em><em>]</em>) &#8211; Markers to have Bundles triangulated.</li>
+<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) &#8211; Markers to have Bundles triangulated.</li>
 <li><strong>relock</strong> (<em>bool</em>) &#8211; If True any bundle translate attributes will be
 unlocked, changed then relocked.  then relocked.</li>
 </ul>
@@ -112,7 +132,7 @@ unlocked, changed then relocked.  then relocked.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of Bundle</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[Bundle, .]</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Bundle" title="mmSolver.api.Bundle">Bundle</a>, .]</p>
 </td>
 </tr>
 </tbody>
@@ -131,7 +151,7 @@ unlocked, changed then relocked.  then relocked.</li>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.reprojectbundle</a><ul>
-<li><a class="reference internal" href="#tools">Tools</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.reprojectbundle.tool">Tools</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.reprojectbundle.lib">Library</a></li>
 </ul>
 </li>

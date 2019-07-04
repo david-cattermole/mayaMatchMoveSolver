@@ -65,7 +65,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139976555390352'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139976555390352'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='139976555390544'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140154884337616'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140154884337616'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='140154884419728'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1013,8 +1013,77 @@ given, or None if no point was found.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="re-project">
-<h2>Re-Project<a class="headerlink" href="#re-project" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-mmSolver.utils.reproject">
+<span id="re-project"></span><h2>Re-Project<a class="headerlink" href="#module-mmSolver.utils.reproject" title="Permalink to this headline">¶</a></h2>
+<p>Re-Projection utilities - converting a 3D transform into a 2D point.</p>
+<dl class="function">
+<dt id="mmSolver.utils.reproject.get_camera_direction_to_point">
+<code class="descclassname">mmSolver.utils.reproject.</code><code class="descname">get_camera_direction_to_point</code><span class="sig-paren">(</span><em>camera_node</em>, <em>point_node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.reproject.get_camera_direction_to_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the direction of the camera toward a given point.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>camera_node</strong> (<em>str</em>) &#8211; Camera transform node.</li>
+<li><strong>point_node</strong> (<em>str</em>) &#8211; Transform node to aim at.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Direction from camera to point.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(float, float, float)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.reproject.create_reprojection_on_camera">
+<code class="descclassname">mmSolver.utils.reproject.</code><code class="descname">create_reprojection_on_camera</code><span class="sig-paren">(</span><em>cam_tfm</em>, <em>cam_shp</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.reproject.create_reprojection_on_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a mmReprojection node, then connect it up as needed.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.reproject.find_reprojection_nodes">
+<code class="descclassname">mmSolver.utils.reproject.</code><code class="descname">find_reprojection_nodes</code><span class="sig-paren">(</span><em>cam_tfm</em>, <em>cam_shp</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.reproject.find_reprojection_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all the reprojection nodes on the camera.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.reproject.remove_reprojection_from_camera">
+<code class="descclassname">mmSolver.utils.reproject.</code><code class="descname">remove_reprojection_from_camera</code><span class="sig-paren">(</span><em>cam_tfm</em>, <em>cam_shp</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.reproject.remove_reprojection_from_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the mmReprojection node and delete it.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.reproject.reset_pan_zoom">
+<code class="descclassname">mmSolver.utils.reproject.</code><code class="descname">reset_pan_zoom</code><span class="sig-paren">(</span><em>cam_tfm</em>, <em>cam_shp</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.reproject.reset_pan_zoom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the Pan/Zoom camera settings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cam_tfm</strong> (<em>str</em>) &#8211; Camera transform node</li>
+<li><strong>cam_shp</strong> (<em>str</em>) &#8211; Camera shape node.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.reproject.connect_transform_to_reprojection">
+<code class="descclassname">mmSolver.utils.reproject.</code><code class="descname">connect_transform_to_reprojection</code><span class="sig-paren">(</span><em>tfm</em>, <em>reproj</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.reproject.connect_transform_to_reprojection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-mmSolver.utils.smooth">
 <span id="smooth"></span><h2>Smooth<a class="headerlink" href="#module-mmSolver.utils.smooth" title="Permalink to this headline">¶</a></h2>
@@ -1622,7 +1691,7 @@ isolate object list.</p>
 <li><a class="reference internal" href="#module-mmSolver.utils.configmaya">Config Maya</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.node">Node</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.raytrace">Raytrace</a></li>
-<li><a class="reference internal" href="#re-project">Re-Project</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.reproject">Re-Project</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.smooth">Smooth</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.time">Time</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.transform">Transform</a></li>

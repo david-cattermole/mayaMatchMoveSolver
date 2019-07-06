@@ -46,11 +46,15 @@ import mmSolver.tools.createcontroller.lib as lib
 
 def create():
     nodes = maya.cmds.ls(selection=True, long=True) or []
-    ctrls = lib.create(nodes)
+    ctrls = lib.create(nodes, sparse=True)
+    if len(ctrls) > 0:
+        maya.cmds.select(ctrls, replace=True)
     return
 
 
 def remove():
     nodes = maya.cmds.ls(selection=True, long=True) or []
-    ctrls = lib.remove(nodes)
+    orig_nodes = lib.remove(nodes)
+    if len(orig_nodes) > 0:
+        maya.cmds.select(orig_nodes, replace=True)
     return

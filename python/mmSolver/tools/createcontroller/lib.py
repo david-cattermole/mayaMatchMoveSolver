@@ -38,27 +38,53 @@ import mmSolver.api as mmapi
 
 LOG = mmSolver.logger.get_logger()
 
-
-TFM_ATTRS = [
-    'translateX', 'translateY', 'translateZ',
-    'rotateX', 'rotateY', 'rotateZ',
-    'scaleX', 'scaleY', 'scaleZ',
+TRANSLATE_ATTRS = [
+    'translateX', 'translateY', 'translateZ'
 ]
 
+ROTATE_ATTRS = [
+    'rotateX', 'rotateY', 'rotateZ'
+]
 
-def create(nodes, maintain_hierarchy=True, sparse=True):
-    # Get selected nodes.
-    nodes = maya.cmds.ls(selection=True, long=True) or []
+SCALE_ATTRS = [
+    'scaleX', 'scaleY', 'scaleZ'
+]
+
+TFM_ATTRS = []
+TFM_ATTRS += TRANSLATE_ATTRS
+TFM_ATTRS += ROTATE_ATTRS
+TFM_ATTRS += SCALE_ATTRS
+
+
+def _get_keyable_attrs(node, attrs):
+    keyable_attrs = set()
+    for attr in attrs:
+        plug = node + '.' + attr
+        keyable = maya.cmds.getAttr(plug, keyable=True)
+        if keyable is True:
+            keyable_attrs.add(plug)
+    return keyable_attrs
+
+
+def _get_skip_attrs(node, attrs):
+    assert len(attrs) == 3
+    axis_list = ['x', 'y', 'z']
+    skip_attrs = set(axis_list)
+    for axis, attr in zip(axis_list, attrs):
+        plug = node + '.' + attr
+        keyable = maya.cmds.getAttr(plug, keyable=True)
+        if keyable is True:
+            skip_attrs.remove(axis)
+    return skip_attrs
+
+
+def create(nodes, sparse=True):
     tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
 
-    # Ensure node attributes are unlocked
+    # Ensure node attributes are editable.
     keyable_attrs = set()
     for node in nodes:
-        for attr in TFM_ATTRS:
-            plug = node + '.' + attr
-            keyable = maya.cmds.getAttr(plug, keyable=True)
-            if keyable is True:
-                keyable_attrs.add(plug)
+        keyable_attrs |= _get_keyable_attrs(node, TFM_ATTRS)
 
     # Query keyframe times on each node attribute (sparse keys)
     frame_ranges = {}
@@ -108,9 +134,10 @@ def create(nodes, maintain_hierarchy=True, sparse=True):
         node = tfm_node.get_node()
         name = node + '_CTRL'
         name = mmapi.find_valid_maya_node_name(name)
-        if maintain_hierarchy is True:
-            # TODO: Allow maintaining relative hierarchy of nodes.
-            pass
+        # # TODO: Allow maintaining relative hierarchy of nodes.
+        # if maintain_hierarchy is True:
+        #     pass
+        # TODO: How to workout what rotation order to use?
         tfm = maya.cmds.createNode('transform', name=name)
         maya.cmds.createNode('locator', parent=tfm)
         ctrl_list.append(tfm)
@@ -123,30 +150,37 @@ def create(nodes, maintain_hierarchy=True, sparse=True):
         start, end = frame_ranges.get(node, fallback_frame_range)
         times = list(range(start, end + 1))
         if sparse is True:
-            times = list(key_times.get(node))
+            temp = list(key_times.get(node))
+            if len(temp) > 0:
+                times = temp
         tfm_utils.set_transform_values(cache, times, tfm_node, ctrl)
 
-    # Delete all keyframes for non-keyed times (sparse)
-    if sparse is True:
-        # TODO: Use a sparse-to-dense Maya animCurve solver.
-        pass
+    # # TODO: Use a sparse-to-dense Maya animCurve solver.
+    # if sparse is True:
+    #     pass
 
     # Delete all keyframes on controlled nodes
-    anim_curves = anim_utils.get_anim_curves_from_nodes(nodes)
+    anim_curves = anim_utils.get_anim_curves_from_nodes(
+        list(keyable_attrs),
+    )
     anim_curves = [n for n in anim_curves
                    if node_utils.node_is_referenced(n) is False]
-    maya.cmds.delete(anim_curves)
+    if len(anim_curves) > 0:
+        maya.cmds.delete(anim_curves)
 
     # Create constraint(s) to previous nodes.
-    # - Create point, orient and scale constraints.
     for tfm_node, ctrl in zip(tfm_nodes, ctrl_tfm_nodes):
         src_node = tfm_node.get_node()
         dst_node = ctrl.get_node()
-        # TODO: ensure we actually can connect to the respective
-        # translate, rotate and scale attributes.
-        maya.cmds.pointConstraint(src_node, dst_node)
-        maya.cmds.orientConstraint(src_node, dst_node)
-        maya.cmds.scaleConstraint(src_node, dst_node)
+        skip = _get_skip_attrs(node, TRANSLATE_ATTRS)
+        if len(skip) != 3:
+            maya.cmds.pointConstraint(dst_node, src_node, skip=tuple(skip))
+        skip = _get_skip_attrs(node, ROTATE_ATTRS)
+        if len(skip) != 3:
+            maya.cmds.orientConstraint(dst_node, src_node, skip=tuple(skip))
+        skip = _get_skip_attrs(node, SCALE_ATTRS)
+        if len(skip) != 3:
+            maya.cmds.scaleConstraint(dst_node, src_node, skip=tuple(skip))
     return ctrl_list
 
 

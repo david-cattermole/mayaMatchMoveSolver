@@ -283,6 +283,24 @@
                 "mmSolver.tools.screenspacetransform.tool.main();"
             ]
         },
+        "create_controller": {
+            "name": "Create Controller",
+            "name_shelf": "CrCtrl",
+            "tooltip": "Create Controller for selected nodes.",
+            "command": [
+                "import mmSolver.tools.createcontroller.tool;",
+                "mmSolver.tools.createcontroller.tool.create();"
+            ]
+        },
+        "remove_controller": {
+            "name": "Remove Controller",
+            "name_shelf": "RmCtrl",
+            "tooltip": "Remove Controller for selected nodes.",
+            "command": [
+                "import mmSolver.tools.createcontroller.tool;",
+                "mmSolver.tools.createcontroller.tool.remove();"
+            ]
+        },
         "deform_marker": {
             "name": "Deform Marker",
             "name_shelf": "MkrOff",

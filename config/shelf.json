@@ -39,6 +39,8 @@
             "---OtherTools",
             "center_twodee",
             "screen_z_transform_bake",
+            "create_controller",
+            "remove_controller",
             "smooth_keyframes",
             "channel_sensitivity_ui"
         ],

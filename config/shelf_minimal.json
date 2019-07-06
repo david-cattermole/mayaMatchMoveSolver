@@ -40,6 +40,8 @@
             "general_tools/gen_tools_popup/---General",
             "general_tools/gen_tools_popup/center_twodee",
             "general_tools/gen_tools_popup/screen_z_transform_bake",
+            "general_tools/gen_tools_popup/create_controller",
+            "general_tools/gen_tools_popup/remove_controller",
             "general_tools/gen_tools_popup/---UIs",
             "general_tools/gen_tools_popup/channel_sensitivity_ui",
             "general_tools/gen_tools_popup/smooth_keyframes"

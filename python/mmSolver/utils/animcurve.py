@@ -61,7 +61,7 @@ def create_anim_curve_node_apione(times, values,
     :param anim_type: The type of animation curve node.
     :type anim_type: maya.OpenMayaAnim.MFnAnimCurve.kAnimCurve*
 
-    :param undo_cache: The Maya AnimCurve Undo Cache data structure or 
+    :param undo_cache: The Maya AnimCurve Undo Cache data structure or
                        None if no undo is required.
     :type undo_cache: maya.OpenMayaAnim.MAnimCurveChange
 
@@ -124,14 +124,14 @@ def create_anim_curve_node(*args, **kwargs):
     return create_anim_curve_node_apione(*args, **kwargs)
 
 
-def get_anim_curves_from_nodes(nodes):
+def get_anim_curves_from_nodes(nodes, attrs=None):
     """
     Get all animCurve nodes connected to the given nodes.
 
-    :param nodes: List of nodes to query animation curves.
+    :param nodes: List of nodes (or plugs) to query animation curves.
     :type nodes: [str, ..]
 
-    :returns: List of animation nodes. List may be empty if no 
+    :returns: List of animation nodes. List may be empty if no
               animCurves were found.
     :rtype: [str, ..]
     """
@@ -152,8 +152,8 @@ def euler_filter_value(prev_value, value):
 
     Each axis (X, Y and Z) must be filtered individuality.
 
-    .. note:: 
-        This function is called recursively when a rotation is 
+    .. note::
+        This function is called recursively when a rotation is
         more/less than 360 degrees.
 
     :param prev_value: The rotation value on the previous frame.

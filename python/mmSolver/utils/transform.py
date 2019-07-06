@@ -293,8 +293,8 @@ class TransformMatrixCache(object):
         """
         Get all the nodes in the cache.
 
-        :returns:
-        :rtype:
+        :returns: List of node names inside the cache
+        :rtype: [str, ..]
         """
         tfm_nodes = []
         for key in self._data.keys():

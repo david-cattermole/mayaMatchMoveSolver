@@ -185,21 +185,78 @@ def create(nodes, sparse=True):
 
 
 def remove(nodes):
-    # Get selected nodes
+    start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
 
     # detect if these are 'controllers'
 
     # find controlled nodes from controller nodes
+    ctrl_to_ctrlled_map = {}
+    ctrl_to_const_map = {}
+    for node in nodes:
+        const_nodes = maya.cmds.listConnections(
+            node,
+            type='constraint',
+            source=False,
+            destination=True) or []
+        const_nodes = set(const_nodes)
+        # TODO: Filter by referenced constraints.
+        LOG.warn('constraints: %r', const_nodes)
+        if len(const_nodes) == 0:
+            LOG.warn('node is not controlling anything: %r', node)
+            continue
+
+        controlled_nodes = set()
+        attr = 'constraintParentInverseMatrix'
+        for const_node in const_nodes:
+            plug = const_node + '.' + attr
+            temp = maya.cmds.listConnections(
+                plug,
+                type='transform',
+                source=True,
+                destination=False,
+            ) or []
+            controlled_nodes |= set(temp)
+        LOG.warn('controlled_nodes: %r', controlled_nodes)
+        if len(controlled_nodes) != 1:
+            continue
+        ctrl_to_ctrlled_map[node] = list(controlled_nodes)[0]
+        ctrl_to_const_map[node] = const_nodes
 
     # query transform matrix on controlled nodes.
+    times = list(range(start_frame, end_frame + 1))
+    cache = tfm_utils.TransformMatrixCache()
+    for ctrl_node, ctrlled_node in ctrl_to_ctrlled_map.items():
+        ctrl = tfm_utils.TransformNode(node=ctrl_node)
+        ctrlled = tfm_utils.TransformNode(node=ctrlled_node)
+        cache.add(ctrlled, 'worldMatrix[0]', times)
+        cache.add(ctrl, 'worldMatrix[0]', times)
+    cache.process()
 
-    # query keyframe times on controller nodes.
+    # TODO: query keyframe times on controller nodes.
 
     # delete constraints on controlled nodes.
+    ctrlled_nodes = set()
+    const_nodes = set()
+    for ctrl_node, ctrlled_node in ctrl_to_ctrlled_map.items():
+        const_nodes |= set(ctrl_to_const_map.get(ctrl_node))
+        ctrlled_nodes.add(ctrlled_node)
+    LOG.warn('const_nodes: %r', list(const_nodes))
+    if len(const_nodes) > 0:
+        maya.cmds.delete(list(const_nodes))
 
     # set keyframes (per-frame) on controlled nodes
+    for ctrl_node, ctrlled_node in ctrl_to_ctrlled_map.items():
+        ctrl = tfm_utils.TransformNode(node=ctrl_node)
+        ctrlled = tfm_utils.TransformNode(node=ctrlled_node)
+        tfm_utils.set_transform_values(cache, times, ctrl, ctrlled)
 
-    # Delete keyframes for non-keyed times (sparse)
+    # TODO: Delete keyframes for non-keyed times (sparse)
 
     # delete controller nodes
-    pass
+    ctrl_nodes = ctrl_to_ctrlled_map.keys()
+    LOG.warn('ctrl_nodes: %r', list(ctrl_nodes))
+    if len(ctrl_nodes) > 0:
+        maya.cmds.delete(ctrl_nodes)
+    LOG.warn('ctrlled_nodes: %r', list(ctrlled_nodes))
+    
+    return list(ctrlled_nodes)

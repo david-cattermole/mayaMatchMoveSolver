@@ -27,7 +27,7 @@
             "marker_tools/deform_marker/deform_marker_create_offset",
             "marker_tools/deform_marker/deform_marker_bake_offset",
             "marker_tools/deform_marker/deform_marker_remove_offset",
-            "marker_tools/---Bundles",
+            "bundle_tools/---Bundles",
             "bundle_tools/toggle_bundle_lock",
             "bundle_tools/reproject_bundle",
             "bundle_tools/raycast_marker",
@@ -37,6 +37,8 @@
             "---General Tools",
             "center_twodee",
             "screen_z_transform_bake",
+            "create_controller",
+            "remove_controller",
             "---Tool UIs",
             "channel_sensitivity_ui",
             "smooth_keyframes"

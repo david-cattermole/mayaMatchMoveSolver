@@ -8,6 +8,7 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.time as utils_time
+import mmSolver.utils.animcurve as anim_utils
 import mmSolver.tools.screenspacetransform.lib as lib
 
 
@@ -51,8 +52,10 @@ def main():
     start_frame, end_frame = utils_time.get_maya_timeline_range_inner()
     times = range(start_frame, end_frame+1)
 
+    created_loc_tfms = []
     for node in nodes:
         grp_node, depth_tfm, loc_tfm, loc_shp = lib.create_screen_space_locator(cam)
+        created_loc_tfms.append(loc_tfm)
 
         values = maya.cmds.mmReprojection(
             node,
@@ -61,35 +64,34 @@ def main():
             asMarkerCoordinate=True,
             imageResolution=(int(img_width), int(img_height)),
         )
-        LOG.warning('len(values)=%r', len(values))
-        LOG.warning('values=%r', values)
         stop = len(values)
         step = 3
 
         plug = loc_tfm + '.translateX'
         values_x = values[0:stop:step]
-        LOG.warning('len(values_x)=%r', len(values_x))
-        LOG.warning('values_x=%r', values_x)
-        animfn_x = mmapi.create_anim_curve_node(
+        animfn_x = anim_utils.create_anim_curve_node_apione(
             times, values_x,
             node_attr=plug
         )
 
         plug = loc_tfm + '.translateY'
         values_y = values[1:stop:step]
-        LOG.warning('len(values_y)=%r', len(values_y))
-        LOG.warning('values_y=%r', values_y)
-        animfn_y = mmapi.create_anim_curve_node(
+        animfn_y = anim_utils.create_anim_curve_node_apione(
             times, values_y,
             node_attr=plug
         )
 
         plug = depth_tfm + '.scaleX'
         values_z = values[2:stop:step]
-        LOG.warning('len(values_z)=%r', len(values_z))
-        LOG.warning('values_z=%r', values_z)
-        animfn_z = mmapi.create_anim_curve_node(
+        animfn_z = anim_utils.create_anim_curve_node_apione(
             times, values_z,
             node_attr=plug
         )
+
+    if len(created_loc_tfms) > 0:
+        maya.cmds.select(created_loc_tfms, replace=True)
+
+    # Trigger Maya to refresh.
+    maya.cmds.currentTime(update=True)
+    maya.cmds.refresh()
     return

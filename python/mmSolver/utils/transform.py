@@ -458,6 +458,7 @@ def set_transform_values(tfm_matrix_cache,
     dst_node = dst_tfm_node.get_node()
     prv_rot = None
     for t, world_mat in zip(times, world_mat_list):
+        assert world_mat is not None
         ctx = create_dg_context_apitwo(t)
         parent_mat = get_matrix_from_plug_apitwo(
             parent_inv_matrix_plug,

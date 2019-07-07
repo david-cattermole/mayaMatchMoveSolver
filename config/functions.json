@@ -274,6 +274,24 @@
                 "mmSolver.tools.smoothkeyframes.tool.main();"
             ]
         },
+        "show_deviation_curves": {
+            "name": "Show Deviation Curves",
+            "name_shelf": "ShwDev",
+            "tooltip": "Show Deviation for selected Marker nodes.",
+            "command": [
+                "import mmSolver.tools.showdeviationcurves.tool;",
+                "mmSolver.tools.showdeviationcurves.tool.show_deviation();"
+            ]
+        },
+        "hide_deviation_curves": {
+            "name": "Hide Deviation Curves",
+            "name_shelf": "HidDev",
+            "tooltip": "Hide Deviation Curves from Graph Editor.",
+            "command": [
+                "import mmSolver.tools.showdeviationcurves.tool;",
+                "mmSolver.tools.showdeviationcurves.tool.hide_deviation();"
+            ]
+        },
         "screen_z_transform_bake": {
             "name": "Screen-Space Transform Bake",
             "name_shelf": "ScrnBk",

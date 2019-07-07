@@ -65,7 +65,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140154884337616'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140154884337616'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='140154884419728'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140084998246352'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140084998246352'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='140084998328464'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -78,7 +78,7 @@ all end in tears.</p>
 <li><strong>tangent_in_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kTangent*</em>) &#8211; The &#8220;in&#8221; tangent type for keyframes.</li>
 <li><strong>tangent_out_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kTangent*</em>) &#8211; The &#8220;out&#8221; tangent type for keyframes.</li>
 <li><strong>anim_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kAnimCurve*</em>) &#8211; The type of animation curve node.</li>
-<li><strong>undo_cache</strong> (<em>maya.OpenMayaAnim.MAnimCurveChange</em>) &#8211; The Maya AnimCurve Undo Cache data structure or 
+<li><strong>undo_cache</strong> (<em>maya.OpenMayaAnim.MAnimCurveChange</em>) &#8211; The Maya AnimCurve Undo Cache data structure or
 None if no undo is required.</li>
 </ul>
 </td>
@@ -100,15 +100,15 @@ None if no undo is required.</li>
 
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.get_anim_curves_from_nodes">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">get_anim_curves_from_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.get_anim_curves_from_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">get_anim_curves_from_nodes</code><span class="sig-paren">(</span><em>nodes</em>, <em>attrs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.get_anim_curves_from_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all animCurve nodes connected to the given nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; List of nodes to query animation curves.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; List of nodes (or plugs) to query animation curves.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of animation nodes. List may be empty if no 
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of animation nodes. List may be empty if no
 animCurves were found.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[str, .]</td>
@@ -126,7 +126,7 @@ with-in +/-360 degrees of the previous value.</p>
 <p>Each axis (X, Y and Z) must be filtered individuality.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This function is called recursively when a rotation is 
+<p class="last">This function is called recursively when a rotation is
 more/less than 360 degrees.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1453,9 +1453,9 @@ renamed or re-parented.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of node names inside the cache</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">[str, .]</td>
 </tr>
 </tbody>
 </table>
@@ -1487,7 +1487,8 @@ renamed or re-parented.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) &#8211; The transform node to query.</li>
-<li><strong>attr_name</strong> (<em>str</em>) &#8211; Name of the attribute (previously added to the cache).</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; Name of the attribute (previously added to 
+the cache).</li>
 <li><strong>times</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) &#8211; The list of times to query from the cache.</li>
 </ul>
 </td>

@@ -49,6 +49,9 @@ def create():
     ctrls = lib.create(nodes, sparse=True)
     if len(ctrls) > 0:
         maya.cmds.select(ctrls, replace=True)
+    # Trigger Maya to refresh.
+    maya.cmds.currentTime(update=True)
+    maya.cmds.refresh()
     return
 
 
@@ -57,4 +60,7 @@ def remove():
     orig_nodes = lib.remove(nodes)
     if len(orig_nodes) > 0:
         maya.cmds.select(orig_nodes, replace=True)
+    # Trigger Maya to refresh.
+    maya.cmds.currentTime(update=True)
+    maya.cmds.refresh()
     return

@@ -282,6 +282,15 @@ def create(nodes, sparse=True):
 
 
 def remove(nodes, sparse=True):
+    """
+    Remove a controller and push the animation back to the controlled
+    object.
+
+    .. todo:: What should we do with any transforms parented under the
+    controller? Should these objects be re-parented under the
+    controlled object? Probably yes.
+
+    """
     # find controlled nodes from controller nodes
     ctrl_to_ctrlled_map = {}
     for ctrl_node in nodes:
@@ -307,6 +316,7 @@ def remove(nodes, sparse=True):
                            total_start, total_end,
                            sparse)
         ctrl = tfm_utils.TransformNode(node=ctrl_node)
+        # TODO: We must account for rotate and translate pivots.
         cache.add(ctrl, 'worldMatrix[0]', times)
         for dest_node in dest_nodes:
             dest = tfm_utils.TransformNode(node=dest_node)

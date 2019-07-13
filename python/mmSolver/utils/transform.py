@@ -279,6 +279,9 @@ class TransformMatrixCache(object):
     def add(self, tfm_node, attr_name, times):
         """
         Add a TransformNode / attribute name and set of times to evaluate.
+
+        # TODO: Make sure the attribute name is optional. The default
+        usage will be to add worldMatrix[0] attribute matrix.
         """
         uuid = tfm_node.get_node_uuid()
         if uuid not in self._data:
@@ -328,6 +331,10 @@ class TransformMatrixCache(object):
         times = list(sorted(times))
 
         # Query the matrices, looping over time sequentially.
+        #
+        # TODO: Query the rotation/translation pivot of the object
+        # too. This will allow the function to get an accurate value,
+        # even if the user changed the pivot point.
         for t in times:
             ctx = create_dg_context_apitwo(t)
             for uuid in self._data.keys():

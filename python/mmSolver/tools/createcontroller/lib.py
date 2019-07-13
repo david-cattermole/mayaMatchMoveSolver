@@ -262,7 +262,8 @@ def create(nodes, sparse=True):
                            key_times_map, frame_ranges_map,
                            total_start, total_end,
                            sparse)
-        tfm_utils.set_transform_values(cache, times, tfm_node, ctrl)
+        tfm_utils.set_transform_values(cache, times, tfm_node, ctrl,
+                                       delete_static_anim_curves=False)
 
     # Delete all keyframes on controlled nodes
     anim_curves = anim_utils.get_anim_curves_from_nodes(

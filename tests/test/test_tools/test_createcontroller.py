@@ -46,7 +46,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrl = ctrls[0]
 
         # save the output
-        path = self.get_data_path('controller_create_sparse_no_keyframes.ma')
+        path = self.get_data_path('controller_create_sparse_no_keyframes_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -64,7 +64,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrl = ctrls[0]
 
         # save the output
-        path = self.get_data_path('controller_create_dense_no_keyframes.ma')
+        path = self.get_data_path('controller_create_dense_no_keyframes_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -86,7 +86,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         nodes = lib.remove(ctrls)
 
         # save the output
-        path = self.get_data_path('controller_remove_sparse_no_keyframes.ma')
+        path = self.get_data_path('controller_remove_sparse_no_keyframes_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -112,7 +112,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrl = ctrls[0]
 
         # save the output
-        path = self.get_data_path('controller_create_sparse_one_keyframe.ma')
+        path = self.get_data_path('controller_create_sparse_one_keyframe_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -134,7 +134,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         nodes = lib.remove(ctrls)
 
         # save the output
-        path = self.get_data_path('controller_create_sparse_one_keyframe.ma')
+        path = self.get_data_path('controller_create_sparse_one_keyframe_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -195,7 +195,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrl = ctrls[0]
 
         # save the output
-        path = self.get_data_path('controller_create_sparse_three_keyframes.ma')
+        path = self.get_data_path('controller_create_sparse_three_keyframes_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -222,7 +222,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrl = ctrls[0]
 
         # save the output
-        path = self.get_data_path('controller_create_dense_three_keyframes.ma')
+        path = self.get_data_path('controller_create_dense_three_keyframes_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -273,7 +273,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrl = ctrls[0]
 
         # save the output
-        path = self.get_data_path('controller_create_sparse_hierarchy.ma')
+        path = self.get_data_path('controller_create_sparse_hierarchy_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -294,7 +294,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrl = ctrls[0]
 
         # save the output
-        path = self.get_data_path('controller_create_dense_hierarchy.ma')
+        path = self.get_data_path('controller_create_dense_hierarchy_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

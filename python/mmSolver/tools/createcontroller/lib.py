@@ -375,6 +375,17 @@ def remove(nodes, sparse=True):
             tfm_utils.set_transform_values(cache, times, ctrl, ctrlled,
                                            delete_static_anim_curves=False)
 
+            # Re-parent controller child nodes under controlled node.
+            ctrl_children = maya.cmds.listRelatives(
+                ctrl_node,
+                children=True,
+                shapes=False,
+                fullPath=True,
+                type='transform',
+            ) or []
+            for child_node in ctrl_children:
+                maya.cmds.parent(child_node, ctrlled_node, absolute=True)
+
     # Delete controller nodes
     ctrl_nodes = ctrl_to_ctrlled_map.keys()
     if len(ctrl_nodes) > 0:

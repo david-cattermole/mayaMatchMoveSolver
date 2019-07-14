@@ -259,6 +259,9 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         maya.cmds.setKeyframe(tfm_b, attribute='translateY', value=10.0, time=end)
         maya.cmds.setKeyframe(tfm_b, attribute='translateZ', value=20.0, time=end)
         maya.cmds.setKeyframe(tfm_b, attribute='rotateY', value=-60.0, time=end)
+
+        child_a = maya.cmds.createNode('transform', parent=tfm_a)
+        child_b = maya.cmds.createNode('transform', parent=tfm_b)
         return tfm_a, tfm_b
 
     def test_create_sparse_four(self):
@@ -270,10 +273,39 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         tfm_a, tfm_b = self.create_hierachy_scene(start, end)
 
         ctrls = lib.create([tfm_a, tfm_b], sparse=True)
-        ctrl = ctrls[0]
+        ctrl_a, ctrl_b = ctrls
+
+        child_a = maya.cmds.createNode('transform', parent=ctrl_a)
+        child_b = maya.cmds.createNode('transform', parent=ctrl_b)
 
         # save the output
         path = self.get_data_path('controller_create_sparse_hierarchy_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        # self.assertEqual(maya.cmds.getAttr(ctrl + '.translateX', time=start), 20.0)
+        # self.assertEqual(maya.cmds.getAttr(ctrl + '.translateY', time=start), 30.0)
+        # self.assertEqual(maya.cmds.getAttr(ctrl + '.translateZ', time=start), 10.0)
+        return
+
+    def test_remove_sparse_four(self):
+        """
+        Transform node in a hierarchy.
+        """
+        start = 1
+        end = 100
+        tfm_a, tfm_b = self.create_hierachy_scene(start, end)
+
+        ctrls = lib.create([tfm_a, tfm_b], sparse=True)
+        ctrl_a, ctrl_b = ctrls
+
+        child_a = maya.cmds.createNode('transform', parent=ctrl_a)
+        child_b = maya.cmds.createNode('transform', parent=ctrl_b)
+
+        lib.remove(ctrls, sparse=True)
+
+        # save the output
+        path = self.get_data_path('controller_remove_sparse_hierarchy_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -291,7 +323,10 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         tfm_a, tfm_b = self.create_hierachy_scene(start, end)
 
         ctrls = lib.create([tfm_a, tfm_b], sparse=False)
-        ctrl = ctrls[0]
+        ctrl_a, ctrl_b = ctrls
+
+        child_a = maya.cmds.createNode('transform', parent=ctrl_a)
+        child_b = maya.cmds.createNode('transform', parent=ctrl_b)
 
         # save the output
         path = self.get_data_path('controller_create_dense_hierarchy_after.ma')

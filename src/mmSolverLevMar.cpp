@@ -26,19 +26,19 @@
 
 #ifdef USE_SOLVER_LEVMAR
 
-// // Lev-Mar
-// #include <levmar.h>  // dlevmar_dif
+// Lev-Mar
+#include <levmar.h>
 
-#include <mmSolverFunc.h>  // solveFunc
+#include <mmSolverFunc.h>
 
 // STL
-#include <ctime>     // time
-#include <cmath>     // exp
-#include <iostream>  // cout, cerr, endl
-#include <string>    // string
-#include <vector>    // vector
-#include <cassert>   // assert
-#include <limits>    // double max value, NaN
+#include <ctime>
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cassert>
+#include <limits>
 #include <math.h>
 
 // Utils
@@ -58,6 +58,168 @@
 
 // Utilities
 #include <mayaUtils.h>
+
+
+bool solve_3d_levmar_dif(
+        SolverOptions &solverOptions,
+        int numberOfParameters,
+        int numberOfErrors,
+        std::vector<double> &paramList,
+        std::vector<double> &errorList,
+        std::vector<double> &paramLowerBoundList,
+        std::vector<double> &paramUpperBoundList,
+        std::vector<double> &paramWeightList,
+        SolverData &userData,
+        SolverResult &solveResult,
+        MStringArray &outResult){
+    int solverType = SOLVER_TYPE_LEVMAR;
+    std::string resultStr;
+
+    const unsigned int levmar_optsSize = LM_OPTS_SZ;
+    const unsigned int levmar_infoSize = LM_INFO_SZ;
+    double levmar_opts[levmar_optsSize];
+    double levmar_info[levmar_infoSize];
+
+    // Change the sign of the delta
+    double delta_factor = std::abs(solverOptions.delta);
+    if (solverOptions.autoDiffType == 1) {
+        // Central Differencing
+        //
+        // To use forward differing the delta must be a positive
+        // number, so we make 'delta_factor' negative.
+        delta_factor *= -1;
+    }
+
+    levmar_opts[0] = solverOptions.tau;
+    levmar_opts[1] = solverOptions.eps1;
+    levmar_opts[2] = solverOptions.eps2;
+    levmar_opts[3] = solverOptions.eps3;
+    levmar_opts[4] = delta_factor;
+    userData.solverType = solverType;
+
+    // Allocate a memory block for both 'work' and 'covar', so that
+    // the block is close together in physical memory.
+    double *work, *covar;
+    work = (double *) malloc(
+            (LM_BC_DIF_WORKSZ(numberOfParameters, numberOfErrors) +
+             numberOfParameters * numberOfParameters) * sizeof(double));
+    if (!work) {
+        ERR("Memory allocation request failed.");
+        resultStr = "success=0";
+        outResult.append(MString(resultStr.c_str()));
+        return false;
+    }
+    covar = work + LM_BC_DIF_WORKSZ(numberOfParameters, numberOfErrors);
+
+    // Solve!
+    int ret = dlevmar_bc_dif(
+            // Function to call (input only)
+            // Function must be of the structure:
+            //   func(double *params, double *x, int numberOfParameters, int numberOfErrors, void *data)
+            solveFunc_levmar,
+
+            // Parameters (input and output)
+            // Should be filled with initial estimate, will be filled
+            // with output parameters
+            &paramList[0],
+
+            // Measurement Vector (input only)
+            // NULL implies a zero vector
+            &errorList[0],
+
+            // Parameter Vector Dimension (input only)
+            // (i.e. #unknowns)
+            numberOfParameters,
+
+            // Measurement Vector Dimension (input only)
+            numberOfErrors,
+
+            // vector of lower bounds. If NULL, no lower bounds apply
+            &paramLowerBoundList[0],
+
+            // vector of upper bounds. If NULL, no upper bounds apply (input only)
+            &paramUpperBoundList[0],
+
+            // diagonal scaling constants. NULL implies no scaling (input only)
+            &paramWeightList[0],
+
+            // Maximum Number of Iterations (input only)
+            solverOptions.iterMax,
+
+            // Minimisation options (input only)
+            // opts[0] = tau      (scale factor for initialTransform mu)
+            // opts[1] = epsilon1 (stopping threshold for ||J^T e||_inf)
+            // opts[2] = epsilon2 (stopping threshold for ||Dp||_2)
+            // opts[3] = epsilon3 (stopping threshold for ||e||_2)
+            // opts[4] = delta    (step used in difference approximation to the Jacobian)
+            //
+            // If \delta<0, the Jacobian is approximated with central differences
+            // which are more accurate (but slower!) compared to the forward
+            // differences employed by default.
+            // Set to NULL for defaults to be used.
+            levmar_opts,
+
+            // Output Information (output only)
+            // information regarding the minimization.
+            // info[0] = ||e||_2 at initialTransform params.
+            // info[1-4] = (all computed at estimated params)
+            //  [
+            //   ||e||_2,
+            //   ||J^T e||_inf,
+            //   ||Dp||_2,
+            //   \mu/max[J^T J]_ii
+            //  ]
+            // info[5] = number of iterations,
+            // info[6] = reason for terminating:
+            //   1 - stopped by small gradient J^T e
+            //   2 - stopped by small Dp
+            //   3 - stopped by iterMax
+            //   4 - singular matrix. Restart from current params with increased \mu
+            //   5 - no further error reduction is possible. Restart with increased mu
+            //   6 - stopped by small ||e||_2
+            //   7 - stopped by invalid (i.e. NaN or Inf) "func" refPoints; a user error
+            // info[7] = number of function evaluations
+            // info[8] = number of Jacobian evaluations
+            // info[9] = number linear systems solved (number of attempts for reducing error)
+            //
+            // Set to NULL if don't care
+            levmar_info,
+
+            // Working Data (input only)
+            // working memory, allocated internally if NULL. If !=NULL, it is assumed to
+            // point to a memory chunk at least LM_DIF_WORKSZ(numberOfParameters, numberOfErrors)*sizeof(double) bytes
+            // long
+            work,
+
+            // Covariance matrix (output only)
+            // Covariance matrix corresponding to LS solution; Assumed to point to a mxm matrix.
+            // Set to NULL if not needed.
+            covar,
+
+            // Custom Data for 'func' (input only)
+            // pointer to possibly needed additional data, passed uninterpreted to func.
+            // Set to NULL if not needed
+            (void *) &userData);
+
+    free(work);
+
+    int reason_number = (int) levmar_info[6];
+    const std::string &reason = levmarReasons[reason_number];
+    solveResult.success = ret > 0;
+    solveResult.reason_number = reason_number;
+    solveResult.reason = reason;
+    solveResult.iterations = (int) levmar_info[5];;
+    solveResult.functionEvals = (int) levmar_info[7];
+    solveResult.jacobianEvals = (int) levmar_info[8];
+    // solveResult.iterationAttempts = (int) levmar_info[9];
+    // solveResult.errorInitial = levmar_info[0];
+    solveResult.errorFinal = levmar_info[1];
+    // solveResult.errorJt = levmar_info[2];
+    // solveResult.errorDp = levmar_info[3];
+    // solveResult.errorMaximum = levmar_info[4];
+    return true;
+}
+
 
 // Function run by lev-mar algorithm to test the input parameters, p,
 // and compute the output errors, x.

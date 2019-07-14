@@ -62,6 +62,7 @@
 
 // Local solvers
 #include <mmSolver.h>
+#include <mmSolverData.h>
 #include <mmSolverFunc.h>
 #include <mmSolverCMinpack.h>
 #include <mmSolverLevMar.h>
@@ -86,8 +87,8 @@ int solveFunc(int numberOfParameters,
     register int i = 0;
 
     SolverData *ud = static_cast<SolverData *>(userData);
-    ud->funcBenchTimer->start();
-    ud->funcBenchTicks->start();
+    ud->timer.funcBenchTimer.start();
+    ud->timer.funcBenchTicks.start();
     ud->computation->setProgress(ud->iterNum);
 
     // Seems heavy we are opening and closing a file each iteration.
@@ -188,8 +189,8 @@ int solveFunc(int numberOfParameters,
     // Set Parameter
     MStatus status;
     {
-        ud->paramBenchTimer->start();
-        ud->paramBenchTicks->start();
+        ud->timer.paramBenchTimer.start();
+        ud->timer.paramBenchTicks.start();
 #ifdef MAYA_PROFILE
         MProfilingScope setParamScope(profileCategory,
                                       MProfiler::kColorA_L2,
@@ -238,8 +239,8 @@ int solveFunc(int numberOfParameters,
         for (i = 0; i < (int) ud->cameraList.size(); ++i) {
             ud->cameraList[i]->clearAttrValueCache();
         }
-        ud->paramBenchTimer->stop();
-        ud->paramBenchTicks->stop();
+        ud->timer.paramBenchTimer.stop();
+        ud->timer.paramBenchTicks.stop();
     }
 
     // Measure Errors
@@ -247,8 +248,8 @@ int solveFunc(int numberOfParameters,
     double error_max = -0.0;
     double error_min = std::numeric_limits<double>::max();
     {
-        ud->errorBenchTimer->start();
-        ud->errorBenchTicks->start();
+        ud->timer.errorBenchTimer.start();
+        ud->timer.errorBenchTicks.start();
 #ifdef MAYA_PROFILE
         MProfilingScope setParamScope(profileCategory,
                                       MProfiler::kColorA_L1,
@@ -365,11 +366,11 @@ int solveFunc(int numberOfParameters,
             if (d > error_max) { error_max = d; }
             if (d < error_min) { error_min = d; }
         }
-        ud->errorBenchTimer->stop();
-        ud->errorBenchTicks->stop();
+        ud->timer.errorBenchTimer.stop();
+        ud->timer.errorBenchTicks.stop();
     }
-    ud->funcBenchTimer->stop();
-    ud->funcBenchTicks->stop();
+    ud->timer.funcBenchTimer.stop();
+    ud->timer.funcBenchTicks.stop();
 
     error_avg *= 1.0 / (numberOfErrors / ERRORS_PER_MARKER);
 

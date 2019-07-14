@@ -83,7 +83,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
 
         maya.cmds.setAttr(ctrl + '.ty', 42.0)
 
-        nodes = lib.remove(ctrls)
+        nodes = lib.remove(ctrls, sparse=True)
 
         # save the output
         path = self.get_data_path('controller_remove_sparse_no_keyframes_after.ma')
@@ -131,10 +131,10 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
 
         maya.cmds.setKeyframe(ctrl, attribute='translateY', value=42.0)
 
-        nodes = lib.remove(ctrls)
+        nodes = lib.remove(ctrls, sparse=True)
 
         # save the output
-        path = self.get_data_path('controller_create_sparse_one_keyframe_after.ma')
+        path = self.get_data_path('controller_remove_sparse_one_keyframe_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

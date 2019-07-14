@@ -1131,7 +1131,7 @@ def update_deviation_on_collection(col, solres_list):
     plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_DEVIATION)
     try:
         maya.cmds.setAttr(plug, lock=False)
-        anim_utils.create_anim_curve_node(
+        anim_utils.create_anim_curve_node_apione(
             frame_list, err_list,
             node_attr=plug,
             anim_type=OpenMayaAnim.MFnAnimCurve.kAnimCurveTU)

@@ -728,7 +728,7 @@ class Marker(object):
         plug = '{0}.{1}'.format(node, attr_name)
         try:
             maya.cmds.setAttr(plug, lock=False)
-            anim_curve_fn = anim_utils.create_anim_curve_node(
+            anim_curve_fn = anim_utils.create_anim_curve_node_apione(
                 times, values,
                 node_attr=plug,
                 anim_type=OpenMayaAnim.MFnAnimCurve.kAnimCurveTU)

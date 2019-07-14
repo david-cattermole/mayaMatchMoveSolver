@@ -24,11 +24,8 @@
 #define MAYA_MM_SOLVER_CMINPACK_H
 
 // STL
-#include <string>  // string
-#include <vector>  // vector
-
-// Utils
-#include <utilities/debugUtils.h>
+#include <string>
+#include <vector>
 
 // Maya
 #include <maya/MPoint.h>
@@ -43,7 +40,7 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-//
+#include <mmSolverFunc.h>
 #include <mmSolver.h>
 
 
@@ -81,6 +78,19 @@ const std::string cminpackReasons[9] = {
         // reason 8
         "\'gtol\' is too small. fvec is orthogonal to the columns of the Jacobian to machine precision.",
 };
+
+
+bool solve_3d_cminpack_lmdiff(SolverOptions &solverOptions,
+                              int numberOfParameters,
+                              int numberOfErrors,
+                              std::vector<double> &paramList,
+                              std::vector<double> &errorList,
+                              std::vector<double> &paramLowerBoundList,
+                              std::vector<double> &paramUpperBoundList,
+                              std::vector<double> &paramWeightList,
+                              SolverData &userData,
+                              SolverResult &solveResult,
+                              MStringArray &outResult);
 
 
 int solveFunc_cminpack_lm(void *data,

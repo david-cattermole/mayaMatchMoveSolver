@@ -1,0 +1,3 @@
+[submodule "external/working/loguru"]
+	path = external/working/loguru
+	url = https://github.com/emilk/loguru.git

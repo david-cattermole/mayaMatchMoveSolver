@@ -156,7 +156,7 @@ def detect_rotate_pivot_non_zero(tfm_node):
     assert isinstance(tfm_node, TransformNode)
     node = tfm_node.get_node()
     plug = node + '.rotatePivot'
-    rp = maya.cmds.getAttr(plug)
+    rp = maya.cmds.getAttr(plug)[0]
     rp = [abs(v) for v in rp]
     return sum(rp) > 0
 

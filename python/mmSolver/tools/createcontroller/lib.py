@@ -240,7 +240,7 @@ def create(nodes, sparse=True):
                            key_times_map, frame_ranges_map,
                            total_start, total_end,
                            sparse, dont_allow_empty)
-        cache.add(tfm_node, 'worldMatrix[0]', times)
+        cache.add_node(tfm_node, times)
     cache.process()
 
     # Create new (locator) node for each input node
@@ -343,11 +343,10 @@ def remove(nodes, sparse=True):
                            total_start, total_end,
                            sparse, dont_allow_empty)
         ctrl = tfm_utils.TransformNode(node=ctrl_node)
-        # TODO: We must account for rotate and translate pivots.
-        cache.add(ctrl, 'worldMatrix[0]', times)
+        cache.add_node(ctrl, times)
         for dest_node in dest_nodes:
             dest = tfm_utils.TransformNode(node=dest_node)
-            cache.add(dest, 'worldMatrix[0]', times)
+            cache.add_node(dest, times)
     cache.process()
 
     # Get Controlled nodes

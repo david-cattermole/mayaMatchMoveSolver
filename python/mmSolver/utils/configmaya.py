@@ -230,7 +230,10 @@ def get_scene_option(name, default=None):
     :rtype: any
     """
     if not maya.cmds.objExists(const.SCENE_DATA_NODE):
-        maya.cmds.createNode('script', name=const.SCENE_DATA_NODE)
+        maya.cmds.createNode(
+            'script',
+            name=const.SCENE_DATA_NODE,
+            skipSelect=True)
     data = get_node_option_structure(
         const.SCENE_DATA_NODE,
         const.SCENE_DATA_ATTR

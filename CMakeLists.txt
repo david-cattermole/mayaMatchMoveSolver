@@ -64,7 +64,6 @@ set(BLAS_LIB_NAMES
        CACHE STRING
        "BLAS libraries to link")
 
-
 # Default Solver to use.
 set(PREFERRED_SOLVER "cminpack_lm" CACHE STRING
         "Choices are cminpack_lm or levmar. Which solver is used by default?")
@@ -85,7 +84,9 @@ set(MODULE_BUILD_DIR "${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}")
 
 # Set a default solver
 set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
-if ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
+if ((USE_GPL_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 1))
+    # Support both levmar and cminpack.
+elseif ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
     if (NOT (DEFAULT_SOLVER STREQUAL "cminpack_lm"))
         message(WARNING 
           "Preferred solver cannot be used because it's not enabled. "
@@ -139,7 +140,7 @@ configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py
         @ONLY)
 
-# Create Python file with some build options baked in.
+# Create C Header file with some build options baked in.
 configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h.in
         ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h

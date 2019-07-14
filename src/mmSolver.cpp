@@ -678,7 +678,7 @@ bool solve(int iterMax,
     bool printStatsInput = false;
     bool printStatsAffects = false;
     if (printStatsList.length() > 0) {
-         for (i = 0; i < printStatsList.length(); ++i) {
+         for (int i = 0; i < printStatsList.length(); ++i) {
               if (printStatsList[i] == PRINT_STATS_MODE_INPUTS) {
                    printStatsInput = true;
                    printStats = true;

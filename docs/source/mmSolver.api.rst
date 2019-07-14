@@ -96,7 +96,7 @@ Camera
 .. autoclass:: mmSolver.api.Camera
    :members:
    :undoc-members:
-   :special-members: __init__
+   :special-members:
 
 Bundle
 ++++++
@@ -104,7 +104,7 @@ Bundle
 .. autoclass:: mmSolver.api.Bundle
    :members:
    :undoc-members:
-   :special-members: __init__
+   :special-members:
 
 Marker
 ++++++
@@ -114,7 +114,13 @@ Marker
 .. autoclass:: mmSolver.api.Marker
    :members:
    :undoc-members:
-   :special-members: __init__
+   :special-members:
+
+.. autofunction:: mmSolver.api.update_deviation_on_markers
+
+.. autofunction:: mmSolver.api.calculate_marker_deviation
+
+.. autofunction:: mmSolver.api.get_markers_start_end_frames
 
 MarkerGroup
 +++++++++++
@@ -124,7 +130,7 @@ A group containing Marker nodes.
 .. autoclass:: mmSolver.api.MarkerGroup
    :members:
    :undoc-members:
-   :special-members: __init__
+   :special-members:
 
 Attribute
 +++++++++
@@ -134,7 +140,7 @@ Attribute that will be solved.
 .. autoclass:: mmSolver.api.Attribute
    :members:
    :undoc-members:
-   :special-members: __init__
+   :special-members:
 
 Frame
 +++++
@@ -142,7 +148,7 @@ Frame
 .. autoclass:: mmSolver.api.Frame
    :members:
    :undoc-members:
-   :special-members: __init__
+   :special-members:
 
 Solver
 ++++++
@@ -150,7 +156,7 @@ Solver
 .. autoclass:: mmSolver.api.Solver
    :members:
    :undoc-members:
-   :special-members: __init__
+   :special-members:
 
 Collection
 ++++++++++
@@ -158,7 +164,9 @@ Collection
 .. autoclass:: mmSolver.api.Collection
    :members:
    :undoc-members:
-   :special-members: __init__
+   :special-members:
+
+.. autofunction:: mmSolver.api.update_deviation_on_collection
 
 SolveResult
 +++++++++++
@@ -166,7 +174,7 @@ SolveResult
 .. autoclass:: mmSolver.api.SolveResult
    :members:
    :undoc-members:
-   :special-members: __init__
+   :special-members:
 
 .. autofunction:: mmSolver.api.combine_timer_stats
 
@@ -176,40 +184,98 @@ SolveResult
 
 .. autofunction:: mmSolver.api.get_max_frame_error
 
+Naming
+++++++
+
+.. autofunction:: mmSolver.api.find_valid_maya_node_name
+
+.. autofunction:: mmSolver.api.get_new_marker_name
+
+.. autofunction:: mmSolver.api.get_new_bundle_name
+
+
 Utilities
 +++++++++
 
-.. autofunction:: mmSolver.api.get_long_name
-
-.. autofunction:: mmSolver.api.get_as_selection_list
-
-.. autofunction:: mmSolver.api.get_as_dag_path
-
-.. autofunction:: mmSolver.api.get_as_object
-
-.. autofunction:: mmSolver.api.get_as_plug
+.. autofunction:: mmSolver.api.load_plugin
 
 .. autofunction:: mmSolver.api.get_object_type
 
-.. autofunction:: mmSolver.api.convert_valid_maya_name
 
-.. autofunction:: mmSolver.api.get_marker_name
-
-.. autofunction:: mmSolver.api.get_bundle_name
-
-.. autofunction:: mmSolver.api.load_plugin
-
-.. autofunction:: mmSolver.api.get_data_on_node_attr
-
-.. autofunction:: mmSolver.api.set_data_on_node_attr
-
-.. autofunction:: mmSolver.api.get_value_on_node_attr
-
-.. autofunction:: mmSolver.api.set_value_on_node_attr
+State
++++++
 
 .. autofunction:: mmSolver.api.is_solver_running
 
 .. autofunction:: mmSolver.api.set_solver_running
+
+.. autofunction:: mmSolver.api.get_user_interrupt
+
+.. autofunction:: mmSolver.api.set_user_interrupt
+
+Node Conversions
+++++++++++++++++
+
+The :mod:`mmSolver.api` module provides functions to convert between
+various node types. Currently the following conversions are supported:
+
+- Bundles -> Markers
+- Markers -> Bundles
+- Markers -> Cameras
+
+.. autofunction:: mmSolver.api.get_marker_nodes_from_bundle_nodes
+
+.. autofunction:: mmSolver.api.get_bundle_nodes_from_marker_nodes
+
+.. autofunction:: mmSolver.api.get_camera_nodes_from_marker_nodes
+
+Nodes Filter
+++++++++++++
+
+.. autofunction:: mmSolver.api.filter_nodes_into_categories
+
+.. autofunction:: mmSolver.api.filter_marker_nodes
+
+.. autofunction:: mmSolver.api.filter_marker_group_nodes
+
+.. autofunction:: mmSolver.api.filter_bundle_nodes
+
+.. autofunction:: mmSolver.api.filter_camera_nodes
+
+.. autofunction:: mmSolver.api.filter_collection_nodes
+
+Exceptions
+++++++++++
+
+.. autoclass:: mmSolver.api.MMException
+   :members:
+   :undoc-members:
+   :special-members:
+
+.. autoclass:: mmSolver.api.NotValid
+   :members:
+   :undoc-members:
+   :special-members:
+
+.. autoclass:: mmSolver.api.AlreadyLinked
+   :members:
+   :undoc-members:
+   :special-members:
+
+.. autoclass:: mmSolver.api.AlreadyUnlinked
+   :members:
+   :undoc-members:
+   :special-members:
+
+.. autoclass:: mmSolver.api.NotEnoughMarkers
+   :members:
+   :undoc-members:
+   :special-members:
+
+.. autoclass:: mmSolver.api.SolverNotAvailable
+   :members:
+   :undoc-members:
+   :special-members:
 
 Constants
 +++++++++
@@ -243,6 +309,8 @@ referenced inside the documentation.
 .. autoattribute:: mmSolver.api.ATTR_STATE_LOCKED
 
 .. autoattribute:: mmSolver.api.SOLVER_TYPE_LEVMAR
+
+.. autoattribute:: mmSolver.api.SOLVER_TYPE_CMINPACK_LM
 
 .. autoattribute:: mmSolver.api.AUTO_DIFF_TYPE_FORWARD
 

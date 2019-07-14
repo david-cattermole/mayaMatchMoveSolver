@@ -1,3 +1,20 @@
+# Copyright (C) 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 User interface utilities for Qt and Qt based applications.
 """
@@ -11,7 +28,6 @@ import Qt
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
-import Qt.QtCompat as QtCompat
 
 
 def getHostApplication():
@@ -61,7 +77,7 @@ def getMayaMainWindow():
     """
     import maya.OpenMayaUI as omui
     window_ptr = omui.MQtUtil.mainWindow()
-    window = QtCompat.wrapInstance(long(window_ptr), QtWidgets.QMainWindow)
+    window = Qt.QtCompat.wrapInstance(long(window_ptr), QtWidgets.QMainWindow)
     return window
 
 
@@ -70,7 +86,7 @@ def findControlMayaWidget(name, clsTyp):
     ptr = omui.MQtUtil.findControl(name)
     widget = None
     if ptr:
-        widget = QtCompat.wrapInstance(long(ptr), clsTyp)
+        widget = Qt.QtCompat.wrapInstance(long(ptr), clsTyp)
     return widget
 
 

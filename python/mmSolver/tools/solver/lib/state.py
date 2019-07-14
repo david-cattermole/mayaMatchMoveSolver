@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Query and set Maya scene state.
 """
@@ -57,41 +74,156 @@ def set_active_collection(col):
     return
 
 
-def get_refresh_viewport_state():
-    value = scene_data.get_scene_data(
-        const.SCENE_DATA_REFRESH_VIEWPORT
-    )
+def get_state_bool(name, default_value):
+    value = scene_data.get_scene_data(name)
     if value is None:
-        value = const.SCENE_DATA_REFRESH_VIEWPORT_DEFAULT
+        value = default_value
     return value
 
 
-def set_refresh_viewport_state(value):
+def set_state_bool(name, value):
     if isinstance(value, bool) is False:
-        msg = 'value cannot be %r; %r is not bool'
-        raise TypeError(msg % (type(value), value))
-    scene_data.set_scene_data(
-        const.SCENE_DATA_REFRESH_VIEWPORT,
-        value
-    )
+        msg = 'Value cannot be %r; %r is not bool, name=%r'
+        raise TypeError(msg % (type(value), value, name))
+    scene_data.set_scene_data(name, value)
     return
 
 
-def get_log_level():
-    value = scene_data.get_scene_data(
-        const.SCENE_DATA_LOG_LEVEL
-    )
+def get_state_str(name, default_value):
+    value = scene_data.get_scene_data(name)
     if value is None:
-        value = const.SCENE_DATA_LOG_LEVEL_DEFAULT
+        value = default_value
     return value
 
 
-def set_log_level(value):
+def set_state_str(name, value):
     if isinstance(value, basestring) is False:
-        msg = 'value cannot be %r; %r is not a string'
+        msg = 'Value cannot be %r; %r is not a string, name=%r'
+        raise TypeError(msg % (type(value), value, name))
+    scene_data.set_scene_data(name, value)
+    return
+
+
+def get_refresh_viewport_state():
+    return get_state_bool(const.SCENE_DATA_REFRESH_VIEWPORT,
+                          const.SCENE_DATA_REFRESH_VIEWPORT_DEFAULT)
+
+
+def set_refresh_viewport_state(value):
+    return set_state_bool(const.SCENE_DATA_REFRESH_VIEWPORT, value)
+
+
+def get_force_dg_update_state():
+    return get_state_bool(const.SCENE_DATA_FORCE_DG_UPDATE,
+                          const.SCENE_DATA_FORCE_DG_UPDATE_DEFAULT)
+
+
+def set_force_dg_update_state(value):
+    return set_state_bool(const.SCENE_DATA_FORCE_DG_UPDATE, value)
+
+
+def get_isolate_object_while_solving_state():
+    return get_state_bool(const.SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING,
+                          const.SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING_DEFAULT)
+
+
+def set_isolate_object_while_solving_state(value):
+    return set_state_bool(const.SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING, value)
+
+
+def get_display_image_plane_while_solving_state():
+    return get_state_bool(const.SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING,
+                          const.SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING_DEFAULT)
+
+
+def set_display_image_plane_while_solving_state(value):
+    return set_state_bool(const.SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING, value)
+
+
+def get_display_object_frame_deviation_state():
+    return get_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION,
+                          const.SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION_DEFAULT)
+
+
+def set_display_object_frame_deviation_state(value):
+    return set_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION, value)
+
+
+def get_display_object_average_deviation_state():
+    return get_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION,
+                          const.SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION_DEFAULT)
+
+
+def set_display_object_average_deviation_state(value):
+    return set_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION, value)
+
+
+def get_display_object_maximum_deviation_state():
+    return get_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION,
+                          const.SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION_DEFAULT)
+
+
+def set_display_object_maximum_deviation_state(value):
+    return set_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION, value)
+
+
+def get_display_object_weight_state():
+    return get_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_WEIGHT,
+                          const.SCENE_DATA_DISPLAY_OBJECT_WEIGHT_DEFAULT)
+
+
+def set_display_object_weight_state(value):
+    return set_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_WEIGHT, value)
+
+
+def get_display_attribute_state_state():
+    return get_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_STATE,
+                          const.SCENE_DATA_DISPLAY_ATTRIBUTE_STATE_DEFAULT)
+
+
+def set_display_attribute_state_state(value):
+    return set_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_STATE, value)
+
+
+def get_display_attribute_min_max_state():
+    return get_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX,
+                          const.SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX_DEFAULT)
+
+
+def set_display_attribute_min_max_state(value):
+    return set_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX, value)
+
+
+def get_log_level():
+    return get_state_str(const.SCENE_DATA_LOG_LEVEL,
+                         const.SCENE_DATA_LOG_LEVEL_DEFAULT)
+
+
+def set_log_level(value):
+    return set_state_str(const.SCENE_DATA_LOG_LEVEL, value)
+
+
+def get_solver_is_running_state():
+    value = mmapi.is_solver_running()
+    return value
+
+
+def set_solver_is_running_state(value):
+    if isinstance(value, bool) is False:
+        msg = 'value cannot be %r; %r is not bool'
         raise TypeError(msg % (type(value), value))
-    scene_data.set_scene_data(
-        const.SCENE_DATA_LOG_LEVEL,
-        value
-    )
+    mmapi.set_solver_running(value)
+    return
+
+
+def get_solver_user_interrupt_state():
+    value = mmapi.get_user_interrupt()
+    return value
+
+
+def set_solver_user_interrupt_state(value):
+    if isinstance(value, bool) is False:
+        msg = 'value cannot be %r; %r is not bool'
+        raise TypeError(msg % (type(value), value))
+    mmapi.set_user_interrupt(value)
     return

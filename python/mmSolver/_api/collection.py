@@ -1,21 +1,40 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
-Set Helper, creates, removes and manipulates Maya set nodes.
-
-Any queries use the Maya Python API, but modifications are handled with
-maya.cmds.* so that they support undo/redo correctly.
+Collection functions used to group and execute a solve using mmSolver.
 """
 
+import time
 import pprint
 import os
 import warnings
-import uuid
 import logging
 
 import maya.cmds
 import maya.mel
-import maya.OpenMaya as OpenMaya
+import maya.OpenMayaAnim as OpenMayaAnim
 
 import mmSolver.logger
+import mmSolver.utils.viewport as viewport_utils
+import mmSolver.utils.configmaya as configmaya
+import mmSolver.utils.node as node_utils
+import mmSolver.utils.animcurve as anim_utils
+import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
 import mmSolver._api.constant as const
@@ -24,9 +43,52 @@ import mmSolver._api.solver as solver
 import mmSolver._api.marker as marker
 import mmSolver._api.attribute as attribute
 import mmSolver._api.sethelper as sethelper
+import mmSolver._api.collectionutils as collectionutils
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def _create_collection_attributes(node):
+    """
+    Create the attributes expected to be on a Collection (set) node.
+
+    :param node: Collection set node to add attributes to.
+    :type node: str
+    """
+    attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_LIST
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            dataType='string'
+        )
+        plug = node + '.' + attr
+        maya.cmds.setAttr(plug, lock=True)
+
+    attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_RESULTS
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            dataType='string'
+        )
+        plug = node + '.' + attr
+        maya.cmds.setAttr(plug, lock=True)
+
+    attr = const.COLLECTION_ATTR_LONG_NAME_DEVIATION
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='double',
+            minValue=-1.0,
+            defaultValue=-1.0,
+            keyable=True
+        )
+        plug = node + '.' + attr
+        maya.cmds.setAttr(plug, lock=True)
+    return
 
 
 class Collection(object):
@@ -66,6 +128,11 @@ class Collection(object):
             else:
                 msg = 'node argument must be a string.'
                 raise TypeError(msg)
+
+            # Make sure attributes exists on the collection node.
+            # An older scene may not contain all the attributes, which we
+            # assume exists.
+            self.add_attributes()
         return
 
     def create_node(self, name):
@@ -74,18 +141,18 @@ class Collection(object):
         """
         self._set.create_node(name)
         set_node = self._set.get_node()
-
-        # Add 'solver_list' attribute.
-        attr_name = 'solver_list'
-        maya.cmds.addAttr(
-            set_node,
-            longName=attr_name,
-            dataType='string')
-        maya.cmds.setAttr(
-            set_node + '.' + attr_name,
-            lock=True)
-
+        _create_collection_attributes(set_node)
         return self
+
+    def add_attributes(self):
+        """
+        Adds attributes to the collection node, if they do not already
+        exist.
+        """
+        node = self.get_node()
+        if node is not None:
+            _create_collection_attributes(node)
+        return
 
     def get_node(self):
         return self._set.get_node()
@@ -110,7 +177,7 @@ class Collection(object):
         :rtype: list of dict
         """
         set_node = self._set.get_node()
-        return api_utils.get_data_on_node_attr(set_node, attr_name)
+        return configmaya.get_node_option_structure(set_node, attr_name)
 
     def _set_attr_data(self, attr_name, data):
         """
@@ -126,8 +193,60 @@ class Collection(object):
         :rtype: None
         """
         set_node = self._set.get_node()
-        api_utils.set_data_on_node_attr(set_node, attr_name, data)
-        self._kwargs_list = []  # reset argument flag cache.
+        configmaya.set_node_option_structure(
+            set_node, attr_name, data,
+            add_attr=True)
+        return
+
+    ############################################################################
+
+    def get_last_solve_timestamp(self):
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVE_TIMESTAMP
+        value = self._get_attr_data(attr)
+        if len(value) > 0:
+            value = value[0]
+        else:
+            value = None
+        return value
+
+    def _set_last_solve_timestamp(self, value):
+        assert isinstance(value, float)
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVE_TIMESTAMP
+        value = [value]
+        self._set_attr_data(attr, value)
+        return
+
+    def get_last_solve_duration(self):
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVE_DURATION
+        value = self._get_attr_data(attr)
+        if len(value) > 0:
+            value = value[0]
+        else:
+            value = None
+        return value
+
+    def _set_last_solve_duration(self, value):
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVE_DURATION
+        value = [value]
+        self._set_attr_data(attr, value)
+        return
+    
+    def get_last_solve_results(self):
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_RESULTS
+        raw_data_list = self._get_attr_data(attr)
+        solres_list = []
+        for raw_data in raw_data_list:
+            solres = solveresult.SolveResult(raw_data)
+            solres_list.append(solres)
+        return solres_list
+
+    def _set_last_solve_results(self, solres_list):
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_RESULTS
+        raw_data_list = []
+        for solres in solres_list:
+            raw_data = solres.get_data_raw()
+            raw_data_list.append(raw_data)
+        self._set_attr_data(attr, raw_data_list)
         return
 
     ############################################################################
@@ -140,7 +259,8 @@ class Collection(object):
         :rtype: list of Solver
         """
         solver_list = []
-        attr_data = self._get_attr_data('solver_list')
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_LIST
+        attr_data = self._get_attr_data(attr)
         if isinstance(attr_data, list) is False:
             return solver_list
         for item in attr_data:
@@ -166,7 +286,9 @@ class Collection(object):
             data = sol.get_data()
             if isinstance(data, dict):
                 data_list.append(data)
-        self._set_attr_data('solver_list', data_list)
+        attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_LIST
+        self._set_attr_data(attr, data_list)
+        self._kwargs_list = []  # reset argument flag cache.
         return
 
     def _get_solver_list_names(self, solver_list):
@@ -549,6 +671,16 @@ class Collection(object):
                         msg = msg.format(node_name, attr_name)
                         raise excep.NotValid(msg)
 
+            # Scale and Offset
+            scale_value = None
+            offset_value = None
+            attr_type = maya.cmds.attributeQuery(
+                attr_name,
+                node=node_name,
+                attributeType=True)
+            if attr_type.endswith('Angle'):
+                offset_value = 360.0
+
             animated = attr.is_animated()
             static = attr.is_static()
             use = False
@@ -557,7 +689,13 @@ class Collection(object):
             if use_static and static is True:
                 use = True
             if use is True:
-                attrs.append((name, str(min_value), str(max_value)))
+                attrs.append(
+                    (name,
+                     str(min_value),
+                     str(max_value),
+                     str(offset_value),
+                     str(scale_value))
+                )
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
             return None
@@ -706,6 +844,22 @@ class Collection(object):
         return self._kwargs_list
 
     def is_valid(self, prog_fn=None, status_fn=None):
+        """
+        Tests if the current sate of this Collection is valid to solve with.
+
+        :param prog_fn: Progress function callback. If not None this
+                        function will be executed to emit progress
+                        messages.
+        :type prog_fn: callable
+
+        :param status_fn: Status message function callback. If not
+                          None this function will be executed each
+                          time a status message needs to be printed.
+        :type status_fn: callable
+
+        :returns: Is the Collection valid to solve? Yes or no.
+        :rtype: bool
+        """
         try:
             self._compile(prog_fn=None, status_fn=None)
             ret = True
@@ -713,266 +867,23 @@ class Collection(object):
             ret = False
         return ret
 
-    @staticmethod
-    def __set_progress(prog_fn, value):
-        if prog_fn is not None:
-            prog_fn(int(value))
-        return
-
-    @staticmethod
-    def __set_status(status_fn, text):
-        if status_fn is not None:
-            status_fn(str(text))
-        return
-
-    @staticmethod
-    def __is_single_frame(kwargs):
-        """
-        Logic to determine if the solver arguments will solve a single
-        frame or not.
-        """
-        has_one_frame = len(kwargs.get('frame')) is 1
-        is_interactive = maya.cmds.about(query=True, batch=True) is False
-        return has_one_frame and is_interactive
-
-    @staticmethod
-    def __disconnect_animcurves(kwargs):
-        # HACK: Disconnect animCurves from animated attributes,
-        # then re-connect afterward. This is to solve a Maya bug,
-        # which will not solve values on a single frame.
-        f = kwargs.get('frame')[0]
-        maya.cmds.currentTime(f, edit=True, update=False)
-
-        save_node_attrs = []
-        attrs = kwargs.get('attr') or []
-        for attr_name, min_val, max_val in attrs:
-            attr_obj = attribute.Attribute(attr_name)
-            if attr_obj.is_animated() is False:
-                continue
-
-            in_plug_name = None
-            out_plug_name = attr_name
-            plug = api_utils.get_as_plug(attr_name)
-            isDest = plug.isDestination()
-            if isDest:
-                connPlugs = OpenMaya.MPlugArray()
-                asDest = True  # get the source plugs on the other end of 'plug'.
-                asSrc = False
-                plug.connectedTo(connPlugs, asDest, asSrc)
-                for i, conn in enumerate(connPlugs):
-                    connPlug = connPlugs[i]
-                    connObj = connPlug.node()
-                    if connObj.hasFn(OpenMaya.MFn.kAnimCurve):
-                        in_plug_name = connPlug.name()
-                        break
-            if in_plug_name is not None:
-                save_node_attrs.append((in_plug_name, out_plug_name))
-                if maya.cmds.isConnected(in_plug_name, out_plug_name) is True:
-                    maya.cmds.disconnectAttr(in_plug_name, out_plug_name)
-                else:
-                    LOG.error('Nodes are not connected. This is WRONG.')
-        return save_node_attrs
-
-    @staticmethod
-    def __reconnect_animcurves(kwargs, save_node_attrs, force_dg_update=True):
-        f = kwargs.get('frame')[0]
-        maya.cmds.currentTime(f, edit=True, update=False)
-
-        # Re-connect animCurves, and set the solved values.
-        update_nodes = []
-        for in_plug_name, out_plug_name in save_node_attrs:
-            if maya.cmds.isConnected(in_plug_name, out_plug_name) is False:
-                v = maya.cmds.getAttr(out_plug_name)
-                maya.cmds.connectAttr(in_plug_name, out_plug_name)
-                attr_obj = attribute.Attribute(name=out_plug_name)
-                tangent_type = 'linear'
-                node = attr_obj.get_node()
-                maya.cmds.setKeyframe(
-                    node,
-                    attribute=attr_obj.get_attr(),
-                    time=f, value=v,
-                    inTangentType=tangent_type,
-                    outTangentType=tangent_type,
-                )
-                update_nodes.append(node)
-            else:
-                LOG.error('Nodes are connected. This is WRONG.')
-                raise RuntimeError
-
-        # force update of Maya.
-        if force_dg_update is True:
-            maya.cmds.dgdirty(update_nodes)
-        return
-
-    @staticmethod
-    def __clear_attr_keyframes(kwargs, frames):
-        """
-        Evaluates the animated attributes at 'frames', then deletes the
-        existing animCurves.
-        """
-        frames = list(sorted(frames))
-        attrs = kwargs.get('attr') or []
-        for attr_name, min_val, max_val in attrs:
-            attr_obj = attribute.Attribute(name=attr_name)
-            if not attr_obj.is_animated():
-                continue
-
-            # Get Animation Curve
-            animCurves = maya.cmds.listConnections(
-                attr_name,
-                type='animCurve'
-            ) or []
-            if len(animCurves) == 0:
-                continue
-            animCurve = animCurves[0]
-
-            # Query AnimCurve values that we wish to keep.
-            values = []
-            for f in frames:
-                v = maya.cmds.getAttr(
-                    animCurve + '.output',
-                    time=float(f),
-                )
-                values.append(v)
-
-            # Re-create animCurve.
-            maya.cmds.delete(animCurve)
-            tangent_type = 'linear'
-            for f, v in zip(frames, values):
-                maya.cmds.setKeyframe(
-                    attr_name,
-                    time=f,
-                    value=v,
-                    respectKeyable=False,
-                    minimizeRotation=False,
-                    inTangentType=tangent_type,
-                    outTangentType=tangent_type
-                )
-        return
-
-    @staticmethod
-    def __get_all_model_panels():
-        """
-        Return a list of all Maya model panels.
-        """
-        model_panels = []
-        is_batch = maya.cmds.about(query=True, batch=True)
-        if is_batch is True:
-            return model_panels
-        panels = maya.cmds.getPanel(allPanels=True)
-        for panel in panels:
-            panel_type = maya.cmds.getPanel(typeOf=panel)
-            if panel_type == 'modelPanel':
-                model_panels.append(panel)
-        return model_panels
-
-    @staticmethod
-    def __get_isolated_nodes(model_panel):
-        """
-        Return nodes that are being isolated for 'model_panel'.
-        """
-        nodes = []
-        state = maya.cmds.isolateSelect(
-            model_panel,
-            query=True,
-            state=True)
-        if state is False:
-            return nodes
-
-        set_node = maya.cmds.isolateSelect(
-            model_panel,
-            query=True,
-            viewObjects=True)
-
-        obj = api_utils.get_as_object(set_node)
-        set_mfn = OpenMaya.MFnSet(obj)
-
-        flatten = False
-        full_path = True
-        sel_list = OpenMaya.MSelectionList()
-        try:
-            set_mfn.getMembers(sel_list, flatten)
-        except RuntimeError:
-            return nodes
-
-        sel_list.getSelectionStrings(nodes)
-        if full_path is True:
-            nodes = maya.cmds.ls(nodes, long=True) or []
-        return nodes
-
-    @staticmethod
-    def __get_image_plane_visibility(model_panel):
-        model_editor = maya.cmds.modelPanel(
-            model_panel,
-            query=True,
-            modelEditor=True)
-        value = maya.cmds.modelEditor(
-            model_editor,
-            query=True,
-            imagePlane=True)
-        return value
-
-    @staticmethod
-    def __set_image_plane_visibility(model_panel, value):
-        model_editor = maya.cmds.modelPanel(
-            model_panel,
-            query=True,
-            modelEditor=True)
-        maya.cmds.modelEditor(
-            model_editor,
-            edit=True,
-            imagePlane=value)
-        return
-
-    @staticmethod
-    def __set_isolated_nodes(model_panel, nodes, enable):
-        """
-        Override the isolate objects on 'model_panel'.
-
-        With an empty list, this function clears the 'model_panel's
-        isolate object list.
-        """
-        model_editor = maya.cmds.modelPanel(
-            model_panel,
-            query=True,
-            modelEditor=True)
-
-        sel = maya.cmds.ls(selection=True, long=True) or []
-        maya.cmds.select(nodes, replace=True)
-
-        cmd = 'enableIsolateSelect("%s", %s);'
-        cmd = cmd % (model_editor, int(enable))
-        maya.mel.eval(cmd)
-
-        cmd = 'doReload("%s");'
-        cmd = cmd % model_editor
-        maya.mel.eval(cmd)
-
-        if len(sel) > 0:
-            maya.cmds.select(sel, replace=True)
-        else:
-            maya.cmds.select(clear=True)
-        return
-
-    @staticmethod
-    def __generate_isolate_nodes(kwargs):
-        nodes = set()
-        attrs = kwargs.get('attr') or []
-        for attr_name, min_val, max_val in attrs:
-            attr_obj = attribute.Attribute(name=attr_name)
-            node = attr_obj.get_node()
-            nodes.add(node)
-        markers = kwargs.get('marker') or []
-        for mkr_node, cam_shp_node, bnd_node in markers:
-            nodes.add(mkr_node)
-            nodes.add(bnd_node)
-        cameras = kwargs.get('camera') or []
-        for cam_tfm_node, cam_shp_node in cameras:
-            nodes.add(cam_tfm_node)
-            nodes.add(cam_shp_node)
-        return nodes
-
-    def execute(self, verbose=False, refresh=False, prog_fn=None, status_fn=None):
+    def execute(self,
+                verbose=False,
+                # TODO: Refactor arguments into a 'Preferences' object
+                # to hold the different preferences.
+                refresh=False,
+                force_update=False,
+                do_isolate=False,
+                # TODO: Allow a dict to be passed to the function
+                # specifying the object type and the visibility status
+                # during solving. This allows us to turn on/off any
+                # object type during solving. If an argument is not
+                # given or is None, the object type visibility will
+                # not be changed.
+                display_image_plane=False,
+                prog_fn=None,
+                status_fn=None,
+                info_fn=None):
         """
         Compile the collection, then pass that data to the 'mmSolver' command.
 
@@ -980,9 +891,37 @@ class Collection(object):
         passed to the SolveResult class so the user can query the raw data
         using an interface.
 
+        :param verbose: Print extra solver information while a solve is
+                        running.
+        :type verbose: bool
+
+        :param refresh: Should the solver refresh the viewport while
+                        solving?
+        :type refresh: bool
+
+        :param force_update: Force updating the DG network, to help the
+                             solver in case of a Maya evaluation DG bug.
+        :type force_update: bool
+
+        :param do_isolate: Isolate only solving objects while running solve.
+        :type do_isolate: bool
+
+        :param display_image_plane: Display Image Planes while solving?
+        :type display_image_plane: bool
+
+        :param prog_fn: The function used report progress messages to
+                        the user.
+        :type prog_fn: callable or None
+
+        :param status_fn: The function used to report status messages
+                          to the user.
+        :type status_fn: callable or None
+
         :return: List of SolveResults from the executed collection.
         :rtype: [SolverResult, ..]
         """
+        start_time = time.time()
+
         # Ensure the plug-in is loaded, so we fail before trying to run.
         api_utils.load_plugin()
 
@@ -993,40 +932,28 @@ class Collection(object):
         # image planes).
         panel_objs = {}
         panel_img_pl_vis = {}
-        panels = self.__get_all_model_panels()
+        panels = viewport_utils.get_all_model_panels()
         if refresh is True:
             for panel in panels:
-                state = maya.cmds.isolateSelect(
-                    panel,
-                    query=True,
-                    state=True)
-                nodes = None
-                if state is True:
-                    nodes = self.__get_isolated_nodes(panel)
-                panel_objs[panel] = nodes
-                panel_img_pl_vis[panel] = self.__get_image_plane_visibility(panel)
+                if do_isolate is True:
+                    state = maya.cmds.isolateSelect(
+                        panel,
+                        query=True,
+                        state=True)
+                    nodes = None
+                    if state is True:
+                        nodes = viewport_utils.get_isolated_nodes(panel)
+                    panel_objs[panel] = nodes
+                panel_img_pl_vis[panel] = viewport_utils.get_image_plane_visibility(panel)
 
         # Save current frame, to revert to later on.
         cur_frame = maya.cmds.currentTime(query=True)
 
-        undo_state = maya.cmds.undoInfo(query=True, state=True)
-        undo_id = 'mmSolver.api.collection.execute: ' + str(uuid.uuid4())
         try:
-            if undo_state is True:
-                maya.cmds.undoInfo(openChunk=True, chunkName=undo_id)
-            self.__set_progress(prog_fn, 0)
-            self.__set_status(status_fn, 'Solver Initializing...')
-            api_utils.set_solver_running(True)
-
-            # Set the first current time to the frame before current.
-            # This is to help trigger evaluations on the 'current
-            # frame', if the current frame is the same as the first
-            # frame.
-            maya.cmds.currentTime(
-                cur_frame - 1,
-                edit=True,
-                update=True
-            )
+            collectionutils.run_progress_func(prog_fn, 0)
+            ts = solveresult.format_timestamp(time.time())
+            collectionutils.run_status_func(status_fn, 'Solve start (%s)' % ts)
+            api_state.set_solver_running(True)
 
             # Check for validity
             solres_list = []
@@ -1034,29 +961,61 @@ class Collection(object):
                 LOG.warning('Collection not valid: %r', self.get_node())
                 return solres_list
             kwargs_list = self._compile()
-            self.__set_progress(prog_fn, 1)
+            collectionutils.run_progress_func(prog_fn, 1)
 
             # Isolate all nodes used in all of the kwargs to be run.
+            # Note; This assumes the isolated objects are visible, but
+            # they may actually be hidden.
             if refresh is True:
-                isolate_nodes = set()
-                for kwargs in kwargs_list:
-                    isolate_nodes |= self.__generate_isolate_nodes(kwargs)
-                if len(isolate_nodes) == 0:
-                    raise excep.NotValid
-                isolate_node_list = list(isolate_nodes)
+                s = time.time()
+                if do_isolate is True:
+                    isolate_nodes = set()
+                    for kwargs in kwargs_list:
+                        isolate_nodes |= collectionutils.generate_isolate_nodes(kwargs)
+                    if len(isolate_nodes) == 0:
+                        raise excep.NotValid
+                    isolate_node_list = list(isolate_nodes)
+                    for panel in panels:
+                        viewport_utils.set_isolated_nodes(panel, isolate_node_list, True)
+    
                 for panel in panels:
-                    self.__set_image_plane_visibility(panel, False)
-                    self.__set_isolated_nodes(panel, isolate_node_list, True)
+                    viewport_utils.set_image_plane_visibility(
+                        panel,
+                        display_image_plane)
+                e = time.time()
+                LOG.debug('Perform Pre-Isolate; time=%r', e - s)
+
+            # Set the first current time to the frame before current.
+            # This is to help trigger evaluations on the 'current
+            # frame', if the current frame is the same as the first
+            # frame.
+            frame_list = []
+            for kwargs in kwargs_list:
+                frame_list += kwargs.get('frame', [])
+            frame_list = list(set(frame_list))
+            frame_list = list(sorted(frame_list))
+            is_whole_solve_single_frame = len(frame_list) == 1
+            if is_whole_solve_single_frame is False:
+                s = time.time()
+                maya.cmds.currentTime(
+                    cur_frame - 1,
+                    edit=True,
+                    update=force_update,
+                )
+                e = time.time()
+                LOG.debug('Update previous of current time; time=%r', e - s)
 
             # Run Solver...
+            marker_nodes = []
             start = 0
             total = len(kwargs_list)
             for i, kwargs in enumerate(kwargs_list):
                 frame = kwargs.get('frame')
-                self.__set_status(status_fn, 'Evaluating frames %r' % frame)
+                collectionutils.run_status_func(info_fn, 'Evaluating frames %r' % frame)
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
 
+                # Write solver flags to a debug file.
                 debug_file_path = kwargs.get('debugFile', None)
                 if debug_file_path is not None:
                     options_file_path = debug_file_path.replace('.log', '.flags')
@@ -1071,16 +1030,16 @@ class Collection(object):
 
                 # HACK for single frame solves.
                 save_node_attrs = []
-                is_single_frame = self.__is_single_frame(kwargs)
+                is_single_frame = collectionutils.is_single_frame(kwargs)
                 if is_single_frame is True:
-                    save_node_attrs = self.__disconnect_animcurves(kwargs)
+                    save_node_attrs = collectionutils.disconnect_animcurves(kwargs)
 
                 # Run Solver Maya plug-in command
                 solve_data = maya.cmds.mmSolver(**kwargs)
 
                 # Revert special HACK for single frame solves
                 if is_single_frame is True:
-                    self.__reconnect_animcurves(kwargs, save_node_attrs)
+                    collectionutils.reconnect_animcurves(kwargs, save_node_attrs)
 
                 # Create SolveResult.
                 solres = solveresult.SolveResult(solve_data)
@@ -1089,42 +1048,93 @@ class Collection(object):
                 # Update progress
                 ratio = float(i) / float(total)
                 percent = float(start) + (ratio * (100.0 - start))
-                self.__set_progress(prog_fn, int(percent))
+                collectionutils.run_progress_func(prog_fn, int(percent))
 
+                # Check if the user wants to stop solving.
+                cmd_cancel = solres.get_user_interrupted()
+                gui_cancel = api_state.get_user_interrupt()
+                if cmd_cancel is True or gui_cancel is True:
+                    msg = 'Cancelled by User'
+                    api_state.set_user_interrupt(False)
+                    collectionutils.run_status_func(status_fn, 'WARNING: ' + msg)
+                    LOG.warning(msg)
+                    break
                 if solres.get_success() is False:
                     msg = 'Solver failed!!!'
-                    self.__set_status(status_fn, 'ERROR:' + msg)
+                    collectionutils.run_status_func(status_fn, 'ERROR: ' + msg)
                     LOG.error(msg)
+
+                marker_nodes += [x[0] for x in kwargs.get('marker', [])]
 
                 # Refresh the Viewport.
                 if refresh is True:
+                    # TODO: If we solve per-frame without "refresh"
+                    # on, then we get wacky solvers
+                    # per-frame. Interestingly, the 'force_update'
+                    # does not seem to make a difference, just the
+                    # 'maya.cmds.refresh' call.
+                    #
+                    # Test scene file:
+                    # ./tests/data/scenes/mmSolverBasicSolveD_before.ma
+                    s = time.time()
                     maya.cmds.currentTime(
                         frame[0],
                         edit=True,
-                        update=True
+                        update=force_update,
                     )
                     maya.cmds.refresh()
-        except:
-            solres_list = []
-            # TODO: If we have failed, should we attempt to clean up the mess
-            # and undo the entire undo chunk?
-            raise
+                    e = time.time()
+                    LOG.debug('Refresh Viewport; time=%r', e - s)
         finally:
             if refresh is True:
+                s = time.time()
                 for panel, objs in panel_objs.items():
                     if objs is None:
                         # No original objects, disable 'isolate
                         # selected' after resetting the objects.
-                        self.__set_isolated_nodes(panel, [], False)
+                        if do_isolate is True:
+                            viewport_utils.set_isolated_nodes(panel, [], False)
                         img_pl_vis = panel_img_pl_vis.get(panel, True)
-                        self.__set_image_plane_visibility(panel, img_pl_vis)
+                        viewport_utils.set_image_plane_visibility(panel, img_pl_vis)
                     else:
-                        self.__set_isolated_nodes(panel, list(objs), True)
+                        if do_isolate is True:
+                            viewport_utils.set_isolated_nodes(panel, list(objs), True)
+                e = time.time()
+                LOG.debug('Finally; reset isolate selected; time=%r', e - s)
 
-            self.__set_progress(prog_fn, 100)
-            api_utils.set_solver_running(False)
+            collectionutils.run_status_func(status_fn, 'Solve Ended')
+            collectionutils.run_progress_func(prog_fn, 100)
+            api_state.set_solver_running(False)
 
-            if undo_state is True:
-                maya.cmds.undoInfo(closeChunk=True, chunkName=undo_id)
             maya.cmds.currentTime(cur_frame, edit=True, update=True)
+
+        # Store output information of the solver.
+        end_time = time.time()
+        duration = end_time - start_time
+        self._set_last_solve_timestamp(end_time)
+        self._set_last_solve_duration(duration)
+        self._set_last_solve_results(solres_list)
         return solres_list
+
+
+def update_deviation_on_collection(col, solres_list):
+    """
+    Set keyframe data on the collection for the solver.
+    """
+    node = col.get_node()
+    frame_error_list = solveresult.merge_frame_error_list(solres_list)
+    frame_list = []
+    err_list = []
+    for frame, err in frame_error_list.items():
+        frame_list.append(frame)
+        err_list.append(err)
+    plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_DEVIATION)
+    try:
+        maya.cmds.setAttr(plug, lock=False)
+        anim_utils.create_anim_curve_node_apione(
+            frame_list, err_list,
+            node_attr=plug,
+            anim_type=OpenMayaAnim.MFnAnimCurve.kAnimCurveTU)
+    finally:
+        maya.cmds.setAttr(plug, lock=True)
+    return

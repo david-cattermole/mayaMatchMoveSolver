@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 The Solver layout, the contents of the main solver window.
 """
@@ -38,9 +55,6 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         # state.
         self._parentObject = parent
 
-        # Hide the Solve Info line until it's set up. GitHub Issue #56
-        self.solveInfoLine_lineEdit.setVisible(False)
-
         # Collection Combo Box.
         self.collectionName_model = uimodels.StringDataListModel()
         self.collectionName_comboBox.setModel(self.collectionName_model)
@@ -54,15 +68,19 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         )
 
         # Object Nodes
-        # TODO: Perhaps we should remove a tree view and research how
-        # we can embed a Maya Outliner inside our layout with a filter
-        # to only show markers (and their parents), this would provide
-        # a lot of default functionality from Maya.
         root = object_nodes.ObjectNode('root')
         self.object_model = object_nodes.ObjectModel(root, font=self.font)
         self.object_filterModel = QtCore.QSortFilterProxyModel()
         self.object_filterModel.setSourceModel(self.object_model)
         self.object_filterModel.setDynamicSortFilter(False)
+        self.object_header = QtWidgets.QHeaderView(
+            QtCore.Qt.Horizontal,
+            parent=self.object_treeView
+        )
+        self.object_header.setSectionResizeMode(
+            QtWidgets.QHeaderView.ResizeToContents
+        )
+        self.object_treeView.setHeader(self.object_header)
         self.object_treeView.setModel(self.object_filterModel)
         self.object_treeView.setSortingEnabled(True)
         self.object_treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)
@@ -95,6 +113,15 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.attribute_filterModel = QtCore.QSortFilterProxyModel()
         self.attribute_filterModel.setSourceModel(self.attribute_model)
         self.attribute_filterModel.setDynamicSortFilter(False)
+        self.attribute_header = QtWidgets.QHeaderView(
+            QtCore.Qt.Horizontal,
+            parent=self.attribute_treeView
+        )
+        self.attribute_header.setSectionResizeMode(
+            QtWidgets.QHeaderView.ResizeToContents
+        )
+        self.attribute_treeView.setHeader(self.attribute_header)
+
         self.attribute_treeView.setModel(self.attribute_filterModel)
         self.attribute_treeView.setSortingEnabled(True)
         self.attribute_treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)
@@ -102,6 +129,15 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.attribute_selModel = self.attribute_treeView.selectionModel()
         self.attribute_selModel.selectionChanged.connect(
             self.attrNodeSelectionChanged
+        )
+        self.attributeToggleAnimated_toolButton.clicked.connect(
+            self.attributeToggleAnimatedClicked,
+        )
+        self.attributeToggleStatic_toolButton.clicked.connect(
+            self.attributeToggleStaticClicked,
+        )
+        self.attributeToggleLocked_toolButton.clicked.connect(
+            self.attributeToggleLockedClicked,
         )
 
         # Attr Add and Remove buttons
@@ -123,13 +159,19 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         # Set up custom widgets for viewing and editing the columns.
         self.solver_attrFilterDelegate = solver_nodes.AttributeComboBoxDelegate()
+        attr_idx = self.solver_model.getColumnIndexFromColumnName(
+            const.SOLVER_COLUMN_NAME_ATTRIBUTES
+        )
+        strategy_idx = self.solver_model.getColumnIndexFromColumnName(
+            const.SOLVER_COLUMN_NAME_STRATEGY
+        )
         self.solver_tableView.setItemDelegateForColumn(
-            2,
+            attr_idx,
             self.solver_attrFilterDelegate,
         )
         self.solver_strategyDelegate = solver_nodes.StrategyComboBoxDelegate()
         self.solver_tableView.setItemDelegateForColumn(
-            3,
+            strategy_idx,
             self.solver_strategyDelegate,
         )
 
@@ -161,7 +203,10 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.updateDynamicWindowTitle()
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
+        self.updateObjectColumnVisibility()
         self.updateObjectModel()
+        self.updateAttributeToggleButtons()
+        self.updateAttributeColumnVisibility()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -178,6 +223,9 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         title = str(const.WINDOW_TITLE_BAR)
         title = title.format(node)
         self._parentObject.window().setWindowTitle(title)
+
+    def updateStatusWithSolveResult(self):
+        return self._parentObject.updateStatusWithSolveResult()
 
     def updateCollectionModel(self):
         self.populateCollectionModel(self.collectionName_model)
@@ -212,6 +260,17 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.objectToggleBundle_toolButton.setChecked(show_bnd)
         return
 
+    def updateObjectColumnVisibility(self):
+        show_weight = lib_state.get_display_object_weight_state()
+        show_frm_dev = lib_state.get_display_object_frame_deviation_state()
+        show_avg_dev = lib_state.get_display_object_average_deviation_state()
+        show_max_dev = lib_state.get_display_object_maximum_deviation_state()
+        self.displayObjectWeightColumnChanged(show_weight)
+        self.displayObjectFrameDeviationColumnChanged(show_frm_dev)
+        self.displayObjectAverageDeviationColumnChanged(show_avg_dev)
+        self.displayObjectMaximumDeviationColumnChanged(show_max_dev)
+        return
+
     def updateObjectModel(self):
         self.populateObjectModel(self.object_model)
         valid = uiutils.isValidQtObject(self.object_treeView)
@@ -221,6 +280,25 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         widgets = [self.object_frame]
         self.populateWidgetsEnabled(widgets)
+        return
+
+    def updateAttributeToggleButtons(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        show_anm = lib_col.get_attribute_toggle_animated_from_collection(col)
+        show_stc = lib_col.get_attribute_toggle_static_from_collection(col)
+        show_lck = lib_col.get_attribute_toggle_locked_from_collection(col)
+        self.attributeToggleAnimated_toolButton.setChecked(show_anm)
+        self.attributeToggleStatic_toolButton.setChecked(show_stc)
+        self.attributeToggleLocked_toolButton.setChecked(show_lck)
+        return
+
+    def updateAttributeColumnVisibility(self):
+        show_state = lib_state.get_display_attribute_state_state()
+        show_min_max = lib_state.get_display_attribute_min_max_state()
+        self.displayAttributeStateColumnChanged(show_state)
+        self.displayAttributeMinMaxColumnChanged(show_min_max)
         return
 
     def updateAttributeModel(self):
@@ -299,8 +377,14 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             return
         col = lib_state.get_active_collection()
         attr_list = []
+        show_anm = const.ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE
+        show_stc = const.ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE
+        show_lck = const.ATTRIBUTE_TOGGLE_LOCKED_DEFAULT_VALUE
         if col is not None:
             attr_list = lib_attr.get_attributes_from_collection(col)
+            show_anm = lib_col.get_attribute_toggle_animated_from_collection(col)
+            show_stc = lib_col.get_attribute_toggle_static_from_collection(col)
+            show_lck = lib_col.get_attribute_toggle_locked_from_collection(col)
 
         def update_func():
             if uiutils.isValidQtObject(self) is False:
@@ -319,7 +403,11 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
                 update_func,
                 callback_manager
             )
-        root = convert_to_ui.attributesToUINodes(attr_list)
+        root = convert_to_ui.attributesToUINodes(
+            attr_list,
+            show_anm,
+            show_stc,
+            show_lck)
         model.setRootNode(root)
         return
 
@@ -359,6 +447,16 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         if valid is False:
             return
         self.statusLine_label.setText(text)
+        return
+
+    def setSolveInfoLine(self, text):
+        valid = uiutils.isValidQtObject(self)
+        if valid is False:
+            return
+        valid = uiutils.isValidQtObject(self.solveInfoLine_lineEdit)
+        if valid is False:
+            return
+        self.solveInfoLine_lineEdit.setText(text)
         return
 
     def getDefaultCollectionIndex(self, model, col):
@@ -417,9 +515,13 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_state.set_active_collection(col)
 
         self.updateDynamicWindowTitle()
+        self.updateStatusWithSolveResult()
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
+        self.updateObjectColumnVisibility()
         self.updateObjectModel()
+        self.updateAttributeToggleButtons()
+        self.updateAttributeColumnVisibility()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -438,9 +540,13 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             lib_col.rename_collection(col, new_name)
 
         self.updateDynamicWindowTitle()
+        self.updateStatusWithSolveResult()
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
+        self.updateObjectColumnVisibility()
         self.updateObjectModel()
+        self.updateAttributeToggleButtons()
+        self.updateAttributeColumnVisibility()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -463,11 +569,54 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_state.set_active_collection(prev_col)
 
         self.updateDynamicWindowTitle()
+        self.updateStatusWithSolveResult()
         self.updateCollectionModel()
         self.updateObjectToggleButtons()
+        self.updateObjectColumnVisibility()
         self.updateObjectModel()
+        self.updateAttributeToggleButtons()
+        self.updateAttributeColumnVisibility()
         self.updateAttributeModel()
         self.updateSolverModel()
+        self.updateSolveValidState()
+        return
+
+    def attributeToggleAnimatedClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_attribute_toggle_animated_from_collection(col)
+        value = not value
+        lib_col.set_attribute_toggle_animated_on_collection(col, value)
+
+        self.updateAttributeModel()
+        self.updateSolveValidState()
+        return
+
+    def attributeToggleStaticClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_attribute_toggle_static_from_collection(col)
+        value = not value
+        lib_col.set_attribute_toggle_static_on_collection(col, value)
+
+        self.updateAttributeModel()
+        self.updateSolveValidState()
+        return
+
+    def attributeToggleLockedClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_attribute_toggle_locked_from_collection(col)
+        value = not value
+        lib_col.set_attribute_toggle_locked_on_collection(col, value)
+
+        self.updateAttributeModel()
         self.updateSolveValidState()
         return
 
@@ -535,6 +684,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             if uiutils.isValidQtObject(self) is False:
                 return
             self.updateObjectToggleButtons()
+            self.updateObjectColumnVisibility()
             self.updateObjectModel()
             self.updateSolveValidState()
             return
@@ -576,6 +726,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
             )
 
         self.updateObjectToggleButtons()
+        self.updateObjectColumnVisibility()
         self.updateObjectModel()
         self.updateSolveValidState()
 
@@ -606,6 +757,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         def update_func():
             if uiutils.isValidQtObject(self) is False:
                 return
+            self.updateAttributeToggleButtons()
+            self.updateAttributeColumnVisibility()
             self.updateAttributeModel()
             self.updateSolveValidState()
             return
@@ -646,6 +799,8 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
                 callback_manager
             )
 
+        self.updateAttributeToggleButtons()
+        self.updateAttributeColumnVisibility()
         self.updateAttributeModel()
         self.updateSolveValidState()
 
@@ -709,8 +864,12 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         lib_state.set_active_collection(data)
 
         self.updateDynamicWindowTitle()
+        self.updateStatusWithSolveResult()
         self.updateObjectToggleButtons()
+        self.updateObjectColumnVisibility()
         self.updateObjectModel()
+        self.updateAttributeToggleButtons()
+        self.updateAttributeColumnVisibility()
         self.updateAttributeModel()
         self.updateSolverModel()
         self.updateSolveValidState()
@@ -791,4 +950,62 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         # 'value' from Qt is expected to be an int, we expect a bool.
         value = bool(value)
         self.setOverrideCurrentFrame(col, value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayObjectWeightColumnChanged(self, value):
+        lib_state.set_display_object_weight_state(value)
+        idx = self.object_model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_WEIGHT
+        )
+        self.object_treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayObjectFrameDeviationColumnChanged(self, value):
+        lib_state.set_display_object_frame_deviation_state(value)
+        idx = self.object_model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_DEVIATION_FRAME
+        )
+        self.object_treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayObjectAverageDeviationColumnChanged(self, value):
+        lib_state.set_display_object_average_deviation_state(value)
+        idx = self.object_model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE
+        )
+        self.object_treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayObjectMaximumDeviationColumnChanged(self, value):
+        lib_state.set_display_object_maximum_deviation_state(value)
+        idx = self.object_model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM
+        )
+        self.object_treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayAttributeStateColumnChanged(self, value):
+        lib_state.set_display_attribute_state_state(value)
+        idx = self.attribute_model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_STATE
+        )
+        self.attribute_treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayAttributeMinMaxColumnChanged(self, value):
+        lib_state.set_display_attribute_min_max_state(value)
+        idx_min = self.attribute_model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_VALUE_MIN
+        )
+        idx_max = self.attribute_model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_VALUE_MAX
+        )
+        self.attribute_treeView.setColumnHidden(idx_min, not value)
+        self.attribute_treeView.setColumnHidden(idx_max, not value)
         return

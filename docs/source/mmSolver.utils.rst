@@ -3,13 +3,12 @@ mmSolver.utils
 
 The ``utils`` sub-package.
 
-Node
-++++
+AnimCurve
++++++++++
 
-.. automodule:: mmSolver.utils.node
+.. automodule:: mmSolver.utils.animcurve
     :members:
     :undoc-members:
-    :special-members: __init__
 
 Camera
 ++++++
@@ -17,23 +16,27 @@ Camera
 .. automodule:: mmSolver.utils.camera
     :members:
     :undoc-members:
-    :special-members: __init__
 
-Viewport
-++++++++
-
-.. automodule:: mmSolver.utils.viewport
-    :members:
-    :undoc-members:
-    :special-members: __init__
-
-Smooth
+Config
 ++++++
 
-.. automodule:: mmSolver.utils.smooth
+.. automodule:: mmSolver.utils.config
     :members:
     :undoc-members:
-    :special-members: __init__
+
+Config Maya
++++++++++++
+
+.. automodule:: mmSolver.utils.configmaya
+    :members:
+    :undoc-members:
+
+Node
+++++
+
+.. automodule:: mmSolver.utils.node
+    :members:
+    :undoc-members:
 
 Raytrace
 ++++++++
@@ -41,8 +44,48 @@ Raytrace
 .. automodule:: mmSolver.utils.raytrace
     :members:
     :undoc-members:
-    :special-members: __init__
 
+Re-Project
+++++++++++
+
+.. automodule:: mmSolver.utils.reproject
+    :members:
+    :undoc-members:
+
+Smooth
+++++++
+
+.. automodule:: mmSolver.utils.smooth
+    :members:
+    :undoc-members:
+
+Time
+++++
+
+.. automodule:: mmSolver.utils.time
+    :members:
+    :undoc-members:
+
+Transform
++++++++++
+
+.. automodule:: mmSolver.utils.transform
+    :members:
+    :undoc-members:
+
+Undo
+++++
+
+.. automodule:: mmSolver.utils.undo
+    :members:
+    :undoc-members:
+
+Viewport
+++++++++
+
+.. automodule:: mmSolver.utils.viewport
+    :members:
+    :undoc-members:
 
 
 Constant
@@ -51,7 +94,6 @@ Constant
 .. automodule:: mmSolver.utils.constant
     :members:
     :undoc-members:
-    :special-members: __init__
 
 .. autoattribute:: mmSolver.utils.constant.SMOOTH_TYPE_AVERAGE
 

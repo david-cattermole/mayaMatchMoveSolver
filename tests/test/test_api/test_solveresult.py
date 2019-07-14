@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Test functions for API utils module.
 """
@@ -112,6 +129,18 @@ class TestSolveResult(test_api_utils.APITestCase):
         frame_error_list = mmapi.merge_frame_error_list(results)
         assert isinstance(frame_error_list, dict)
 
+    def test_merge_frame_list(self):
+        col = create_example_solve_scene()
+        results = col.execute()
+        success = results[0].get_success()
+        err = results[0].get_final_error()
+        self.assertTrue(isinstance(success, bool))
+        self.assertTrue(isinstance(err, float))
+
+        frame_list = mmapi.merge_frame_list(results)
+        assert isinstance(frame_list, list)
+        assert len(frame_list) > 0
+
     def test_get_average_frame_error_list(self):
         frame_error_list = {
             1: 0,
@@ -173,6 +202,30 @@ class TestSolveResult(test_api_utils.APITestCase):
         assert frm is None or isinstance(frm, float)
         assert isinstance(val, float)
 
+    def test_merge_marker_error_list(self):
+        col = create_example_solve_scene()
+        results = col.execute()
+        success = results[0].get_success()
+        err = results[0].get_final_error()
+        self.assertTrue(isinstance(success, bool))
+        self.assertTrue(isinstance(err, float))
+
+        marker_error_list = mmapi.merge_marker_error_list(results)
+        assert isinstance(marker_error_list, dict)
+        assert len(marker_error_list) > 0
+
+    def test_merge_marker_node_list(self):
+        col = create_example_solve_scene()
+        results = col.execute()
+        success = results[0].get_success()
+        err = results[0].get_final_error()
+        self.assertTrue(isinstance(success, bool))
+        self.assertTrue(isinstance(err, float))
+
+        nodes = mmapi.merge_marker_node_list(results)
+        assert isinstance(nodes, list)
+        assert len(nodes) > 0
+
     def test_perfect_solve(self):
         """
         Open a file and trigger a solve to get perfect results.
@@ -199,12 +252,15 @@ class TestSolveResult(test_api_utils.APITestCase):
         solres = solres_list[0]
         success = solres.get_success()
         err = solres.get_final_error()
+        frame_list = mmapi.merge_frame_list([solres])
         frame_error_list = mmapi.merge_frame_error_list([solres])
         avg_error = mmapi.get_average_frame_error_list(frame_error_list)
         max_frame_error = mmapi.get_max_frame_error(frame_error_list)
-        self.assertEqual(max_frame_error[0], None)
+        self.assertEqual(max_frame_error[0], 120)
+        self.assertIsInstance(max_frame_error[0], int)
         self.assertIsInstance(max_frame_error[1], float)
         self.assertTrue(success)
+        self.assertLess(avg_error, 1.0)
         self.assertGreater(err, 0.0)
         return
 

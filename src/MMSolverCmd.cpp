@@ -81,7 +81,9 @@ MSyntax MMSolverCmd::newSyntax() {
     syntax.addFlag(MARKER_FLAG, MARKER_FLAG_LONG,
                    MSyntax::kString, MSyntax::kString, MSyntax::kString);
     syntax.addFlag(ATTR_FLAG, ATTR_FLAG_LONG,
-                   MSyntax::kString, MSyntax::kString, MSyntax::kString);
+                   MSyntax::kString,
+                   MSyntax::kString, MSyntax::kString,
+                   MSyntax::kString, MSyntax::kString);
     syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG,
                    MSyntax::kLong);
     syntax.addFlag(TAU_FLAG, TAU_FLAG_LONG,
@@ -281,9 +283,11 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         MArgList attrArgs;
         status = argData.getFlagArgumentList(ATTR_FLAG, i, attrArgs);
         if (status == MStatus::kSuccess) {
-            if (attrArgs.length() != 3) {
-                ERR("Attribute argument list must have 3 argument; "
-                    << "\"node.attribute\", \"min\", \"max\".");
+            if (attrArgs.length() != 5) {
+                ERR("Attribute argument list must have 5 argument; "
+                    << "\"node.attribute\", "
+                    << "\"min\", \"max\", "
+                    << "\"offset\", \"scale\".");
                 continue;
             }
 
@@ -314,8 +318,25 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
                 attr->setMaximumValue(maxValueStr.asDouble());
             }
 
-            m_attrList.push_back(attr);
+            // Add an internal offset value used to make sure values
+            // are not at 0.0.
+            MString offsetValueStr = attrArgs.asString(3);
+            if (offsetValueStr.isDouble()) {
+                attr->setOffsetValue(offsetValueStr.asDouble());
+            }
 
+            // Add an internal scale value.
+            //
+            // TODO: Get the node this attribute is connected to. If
+            // it's a DAG node we must query the position, then create
+            // a function to scale down attributes farther away from
+            // camera. Issue #26.
+            MString scaleValueStr = attrArgs.asString(4);
+            if (scaleValueStr.isDouble()) {
+                attr->setScaleValue(scaleValueStr.asDouble());
+            }
+
+            m_attrList.push_back(attr);
             MPlug attrPlug = attr->getPlug();
         }
     }

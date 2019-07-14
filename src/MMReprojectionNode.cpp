@@ -40,6 +40,7 @@
 
 #include <MMReprojectionNode.h>
 #include <Camera.h>  // getProjectionMatrix, computeFrustumCoordinates
+#include <reprojection.h>
 
 
 MTypeId MMReprojectionNode::m_id(MM_REPROJECTION_TYPE_ID);
@@ -76,6 +77,10 @@ MObject MMReprojectionNode::a_outCoordY;
 MObject MMReprojectionNode::a_outNormCoord;
 MObject MMReprojectionNode::a_outNormCoordX;
 MObject MMReprojectionNode::a_outNormCoordY;
+MObject MMReprojectionNode::a_outMarkerCoord;
+MObject MMReprojectionNode::a_outMarkerCoordX;
+MObject MMReprojectionNode::a_outMarkerCoordY;
+MObject MMReprojectionNode::a_outMarkerCoordZ;
 MObject MMReprojectionNode::a_outPixel;
 MObject MMReprojectionNode::a_outPixelX;
 MObject MMReprojectionNode::a_outPixelY;
@@ -116,6 +121,10 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         || (plug == a_outNormCoord)
         || (plug == a_outNormCoordX)
         || (plug == a_outNormCoordY)
+        || (plug == a_outMarkerCoord)
+        || (plug == a_outMarkerCoordX)
+        || (plug == a_outMarkerCoordY)
+        || (plug == a_outMarkerCoordZ)
         || (plug == a_outPixel)
         || (plug == a_outPixelX)
         || (plug == a_outPixelY)
@@ -187,7 +196,7 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
 
         // TODO: near clip plane forced to 0.1, otherwise reprojection
         // does't work. Why? No idea.
-        double nearClipPlane_const = 0.1;
+        double nearClipPlane = 0.1;
 
         MDataHandle farClipPlaneHandle = data.inputValue(a_farClipPlane,
                                                          &status);
@@ -237,86 +246,85 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double depthScale = depthScaleHandle.asDouble();
 
-        // Use frustum coordinates to calculate coordinates values.
-        double left = 0.0;
-        double right = 0.0;
-        double top = 0.0;
-        double bottom = 0.0;
-        computeFrustumCoordinates(
-                focalLength,
-                horizontalFilmAperture, verticalFilmAperture,
-                horizontalFilmOffset, verticalFilmOffset,
-                nearClipPlane_const, cameraScale,
-                left, right, top, bottom);
+        // Reprojection Outputs
+        double outCoordX;
+        double outCoordY;
+        double outNormCoordX;
+        double outNormCoordY;
+        double outMarkerCoordX;
+        double outMarkerCoordY;
+        double outMarkerCoordZ;
+        double outPixelX;
+        double outPixelY;
+        bool outInsideFrustum;
+        double outPointX;
+        double outPointY;
+        double outPointZ;
+        double outWorldPointX;
+        double outWorldPointY;
+        double outWorldPointZ;
+        MMatrix outMatrix;
+        MMatrix outWorldMatrix;
+        MMatrix outCameraProjectionMatrix;
+        MMatrix outInverseCameraProjectionMatrix;
+        MMatrix outWorldCameraProjectionMatrix;
+        MMatrix outWorldInverseCameraProjectionMatrix;
+        double outHorizontalPan;
+        double outVerticalPan;
 
-        // Get Camera Projection Matrix
-        MMatrix camProjMatrix;
-        status = getProjectionMatrix(
+        // Query the reprojection.
+        status = reprojection(
+                tfmMatrix,
+                camMatrix,
+
+                // Camera
                 focalLength,
-                horizontalFilmAperture, verticalFilmAperture,
-                horizontalFilmOffset, verticalFilmOffset,
-                imageWidth, imageHeight,
+                horizontalFilmAperture,
+                verticalFilmAperture,
+                horizontalFilmOffset,
+                verticalFilmOffset,
                 filmFit,
-                nearClipPlane_const, farClipPlane,
+                nearClipPlane,
+                farClipPlane,
                 cameraScale,
-                camProjMatrix);
+
+                // Image
+                imageWidth,
+                imageHeight,
+
+                // Manipulation
+                applyMatrix,
+                overrideScreenX,
+                overrideScreenY,
+                overrideScreenZ,
+                screenX,
+                screenY,
+                screenZ,
+                depthScale,
+
+                // Outputs
+                outCoordX, outCoordY,
+                outNormCoordX, outNormCoordY,
+                outMarkerCoordX, outMarkerCoordY, outMarkerCoordZ,
+                outPixelX, outPixelY,
+                outInsideFrustum,
+                outPointX, outPointY, outPointZ,
+                outWorldPointX, outWorldPointY, outWorldPointZ,
+                outMatrix,
+                outWorldMatrix,
+                outCameraProjectionMatrix,
+                outInverseCameraProjectionMatrix,
+                outWorldCameraProjectionMatrix,
+                outWorldInverseCameraProjectionMatrix,
+                outHorizontalPan,
+                outVerticalPan);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-
-        // Camera World Projection Matrix
-        MMatrix camWorldProjMatrix = camMatrix.inverse() * camProjMatrix;
-
-        // Convert to screen-space
-        tfmMatrix = tfmMatrix * camWorldProjMatrix;
-
-        // Do screen-space overrides
-        if (overrideScreenX) {
-            tfmMatrix[3][0] = screenX;
-        }
-        if (overrideScreenY) {
-            tfmMatrix[3][1] = screenY;
-        }
-        if (overrideScreenZ) {
-            tfmMatrix[3][2] = screenZ;
-        }
-
-        // Apply screen-space matrix
-        tfmMatrix = tfmMatrix * applyMatrix;
-
-        // Scale the screen-space depth.
-        tfmMatrix *= depthScale;
-
-        // Get (screen-space) point
-        MPoint pos(tfmMatrix[3][0],
-                   tfmMatrix[3][1],
-                   tfmMatrix[3][2],
-                   tfmMatrix[3][3]);
-        pos.cartesianize();
-        MPoint coord(pos.x,
-                     pos.y,
-                     0.0,
-                     1.0);
-
-        // Is the point inside the frustum of the camera?
-        bool insideFrustum = true;
-        if ((coord.x < -1.0)
-            || (coord.x > 1.0)
-            || (coord.y < -1.0)
-            || (coord.y > 1.0)) {
-            insideFrustum = false;
-        }
-
-        // Convert back to world space
-        MMatrix worldTfmMatrix = tfmMatrix * camWorldProjMatrix.inverse();
-        MPoint worldPos(worldTfmMatrix[3][0],
-                        worldTfmMatrix[3][1],
-                        worldTfmMatrix[3][2],
-                        1.0);
 
         // Output Coordinates (-1.0 to 1.0; lower-left corner is -1.0, -1.0)
         MDataHandle outCoordXHandle = data.outputValue(a_outCoordX);
         MDataHandle outCoordYHandle = data.outputValue(a_outCoordY);
-        outCoordXHandle.setDouble(coord.x);
-        outCoordYHandle.setDouble(coord.y);
+        outCoordXHandle.setDouble(outCoordX);
+        outCoordYHandle.setDouble(outCoordY);
         outCoordXHandle.setClean();
         outCoordYHandle.setClean();
 
@@ -324,87 +332,95 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         // corner is 0.0, 0.0)
         MDataHandle outNormCoordXHandle = data.outputValue(a_outNormCoordX);
         MDataHandle outNormCoordYHandle = data.outputValue(a_outNormCoordY);
-        outNormCoordXHandle.setDouble((coord.x + 1.0) * 0.5);
-        outNormCoordYHandle.setDouble((coord.y + 1.0) * 0.5);
+        outNormCoordXHandle.setDouble(outNormCoordX);
+        outNormCoordYHandle.setDouble(outNormCoordY);
         outNormCoordXHandle.setClean();
         outNormCoordYHandle.setClean();
 
+        // Output Coordinates (-0.5 to 0.5; lower-left corner is -0.5, -0.5)
+        MDataHandle outMarkerCoordXHandle = data.outputValue(a_outMarkerCoordX);
+        MDataHandle outMarkerCoordYHandle = data.outputValue(a_outMarkerCoordY);
+        MDataHandle outMarkerCoordZHandle = data.outputValue(a_outMarkerCoordZ);
+        outMarkerCoordXHandle.setDouble(outMarkerCoordX);
+        outMarkerCoordYHandle.setDouble(outMarkerCoordY);
+        outMarkerCoordZHandle.setDouble(outMarkerCoordZ);
+        outMarkerCoordXHandle.setClean();
+        outMarkerCoordYHandle.setClean();
+        outMarkerCoordZHandle.setClean();
+        
         // Output Pixel Coordinates (0.0 to width; 0.0 to height;
         // lower-left corner is 0.0, 0.0)
         MDataHandle outPixelXHandle = data.outputValue(a_outPixelX);
         MDataHandle outPixelYHandle = data.outputValue(a_outPixelY);
-        outPixelXHandle.setDouble((coord.x + 1.0) * 0.5 * imageWidth);
-        outPixelYHandle.setDouble((coord.y + 1.0) * 0.5 * imageHeight);
+        outPixelXHandle.setDouble(outPixelX);
+        outPixelYHandle.setDouble(outPixelY);
         outPixelXHandle.setClean();
         outPixelYHandle.setClean();
 
         // Output 'Inside Frustum'; is the input matrix inside the
         // camera frustrum or not?
         MDataHandle outInsideFrustumHandle = data.outputValue(a_outInsideFrustum);
-        outInsideFrustumHandle.setBool(insideFrustum);
+        outInsideFrustumHandle.setBool(outInsideFrustum);
         outInsideFrustumHandle.setClean();
 
         // Output Point (camera-space)
-        // TODO: This has a strange Z value... find out why.
         MDataHandle outPointXHandle = data.outputValue(a_outPointX);
         MDataHandle outPointYHandle = data.outputValue(a_outPointY);
         MDataHandle outPointZHandle = data.outputValue(a_outPointZ);
-        outPointXHandle.setDouble(pos.x);
-        outPointYHandle.setDouble(pos.y);
-        outPointZHandle.setDouble(pos.z);
+        outPointXHandle.setDouble(outPointX);
+        outPointYHandle.setDouble(outPointY);
+        outPointZHandle.setDouble(outPointZ);
         outPointXHandle.setClean();
         outPointYHandle.setClean();
         outPointZHandle.setClean();
 
         // Output Point (world-space)
-        // TODO: This has a strange Z value... find out why.
         MDataHandle outWorldPointXHandle = data.outputValue(a_outWorldPointX);
         MDataHandle outWorldPointYHandle = data.outputValue(a_outWorldPointY);
         MDataHandle outWorldPointZHandle = data.outputValue(a_outWorldPointZ);
-        outWorldPointXHandle.setDouble(worldPos.x);
-        outWorldPointYHandle.setDouble(worldPos.y);
-        outWorldPointZHandle.setDouble(worldPos.z);
+        outWorldPointXHandle.setDouble(outWorldPointX);
+        outWorldPointYHandle.setDouble(outWorldPointY);
+        outWorldPointZHandle.setDouble(outWorldPointZ);
         outWorldPointXHandle.setClean();
         outWorldPointYHandle.setClean();
         outWorldPointZHandle.setClean();
 
         // Output Matrix (camera-space)
-        // TODO: This has a strange translate Z value... find out why.
         MDataHandle outMatrixHandle = data.outputValue(a_outMatrix);
-        outMatrixHandle.setMMatrix(tfmMatrix);
+        outMatrixHandle.setMMatrix(outMatrix);
         outMatrixHandle.setClean();
 
         // Output Matrix (world-space)
         MDataHandle outWorldMatrixHandle = data.outputValue(a_outWorldMatrix);
-        outWorldMatrixHandle.setMMatrix(worldTfmMatrix);
+        outWorldMatrixHandle.setMMatrix(outWorldMatrix);
         outWorldMatrixHandle.setClean();
 
         // Output Camera Projection Matrix
         MDataHandle outCameraProjectionMatrixHandle = data.outputValue(a_outCameraProjectionMatrix);
-        outCameraProjectionMatrixHandle.setMMatrix(camProjMatrix);
+        outCameraProjectionMatrixHandle.setMMatrix(outCameraProjectionMatrix);
         outCameraProjectionMatrixHandle.setClean();
 
         // Output Inverse Camera Projection Matrix
         MDataHandle outInverseCameraProjectionMatrixHandle = data.outputValue(a_outInverseCameraProjectionMatrix);
-        outInverseCameraProjectionMatrixHandle.setMMatrix(camProjMatrix.inverse());
+        outInverseCameraProjectionMatrixHandle.setMMatrix(outInverseCameraProjectionMatrix);
         outInverseCameraProjectionMatrixHandle.setClean();
 
         // Output World Camera Projection Matrix
         MDataHandle outWorldCameraProjectionMatrixHandle = data.outputValue(a_outWorldCameraProjectionMatrix);
-        outWorldCameraProjectionMatrixHandle.setMMatrix(camWorldProjMatrix);
+        outWorldCameraProjectionMatrixHandle.setMMatrix(outWorldCameraProjectionMatrix);
         outWorldCameraProjectionMatrixHandle.setClean();
 
         // Output World Inverse Camera Projection Matrix
         MDataHandle outWorldInverseCameraProjectionMatrixHandle = data.outputValue(
                 a_outWorldInverseCameraProjectionMatrix);
-        outWorldInverseCameraProjectionMatrixHandle.setMMatrix(camWorldProjMatrix.inverse());
+        outWorldInverseCameraProjectionMatrixHandle.setMMatrix(outWorldInverseCameraProjectionMatrix);
         outWorldInverseCameraProjectionMatrixHandle.setClean();
 
         // Output Pan
         MDataHandle outHorizontalPanHandle = data.outputValue(a_outHorizontalPan);
         MDataHandle outVerticalPanHandle = data.outputValue(a_outVerticalPan);
-        outHorizontalPanHandle.setDouble(coord.x * 0.5 * horizontalFilmAperture);
-        outVerticalPanHandle.setDouble(coord.y * 0.5 * verticalFilmAperture);
+        outHorizontalPanHandle.setDouble(outHorizontalPan);
+        outVerticalPanHandle.setDouble(outVerticalPan);
         outHorizontalPanHandle.setClean();
         outVerticalPanHandle.setClean();
 
@@ -689,6 +705,45 @@ MStatus MMReprojectionNode::initialize() {
     /////////////////////////////////////////////////////////////////////////
 
     {
+        // Out Marker Coord X
+        a_outMarkerCoordX = numericAttr.create(
+                "outMarkerCoordX", "omcdx",
+                MFnNumericData::kDouble, 0.0);
+        CHECK_MSTATUS(numericAttr.setStorable(false));
+        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        CHECK_MSTATUS(numericAttr.setReadable(true));
+        CHECK_MSTATUS(numericAttr.setWritable(false));
+
+        // Out Marker Coord Y
+        a_outMarkerCoordY = numericAttr.create(
+                "outMarkerCoordY", "omcdy",
+                MFnNumericData::kDouble, 0.0);
+        CHECK_MSTATUS(numericAttr.setStorable(false));
+        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        CHECK_MSTATUS(numericAttr.setReadable(true));
+        CHECK_MSTATUS(numericAttr.setWritable(false));
+
+        // Out Marker Coord Z
+        a_outMarkerCoordZ = numericAttr.create(
+                "outMarkerCoordZ", "omcdz",
+                MFnNumericData::kDouble, 0.0);
+        CHECK_MSTATUS(numericAttr.setStorable(false));
+        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        CHECK_MSTATUS(numericAttr.setReadable(true));
+        CHECK_MSTATUS(numericAttr.setWritable(false));
+
+        // Out Marker Coord (parent of outMarkerCoord* attributes)
+        a_outMarkerCoord = compoundAttr.create("outMarkerCoord", "omcd", &status);
+        CHECK_MSTATUS(status);
+        compoundAttr.addChild(a_outMarkerCoordX);
+        compoundAttr.addChild(a_outMarkerCoordY);
+        compoundAttr.addChild(a_outMarkerCoordZ);
+        CHECK_MSTATUS(addAttribute(a_outMarkerCoord));
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+
+    {
         // Out Pixel Coord X
         a_outPixelX = numericAttr.create(
                 "outPixelX", "opixx",
@@ -926,6 +981,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outMarkerCoordY));
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outPixelY));
@@ -950,6 +1009,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outPixelY));
@@ -976,6 +1039,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outPixelY));
@@ -1000,7 +1067,9 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outNormCoordY));
-    CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outMarkerCoordY));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenX, a_outPixelY));
@@ -1025,7 +1094,9 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outNormCoordY));
-    CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outMarkerCoordY));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenY, a_outPixelY));
@@ -1050,7 +1121,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outNormCoordY));
-    CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_overrideScreenZ, a_outPixelY));
@@ -1075,6 +1149,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_screenX, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_screenX, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_screenX, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_screenX, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_screenX, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_screenX, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_screenX, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_screenX, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_screenX, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_screenX, a_outPixelY));
@@ -1099,6 +1177,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_screenY, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_screenY, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_screenY, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_screenY, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_screenY, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_screenY, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_screenY, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_screenY, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_screenY, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_screenY, a_outPixelY));
@@ -1123,6 +1205,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_screenZ, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_screenZ, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_screenZ, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_screenZ, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_screenZ, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_screenZ, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_screenZ, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_screenZ, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_screenZ, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_screenZ, a_outPixelY));
@@ -1147,6 +1233,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_depthScale, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_depthScale, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_depthScale, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_depthScale, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_depthScale, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_depthScale, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_depthScale, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_depthScale, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_depthScale, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_depthScale, a_outPixelY));
@@ -1170,6 +1260,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_focalLength, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_focalLength, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_focalLength, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_focalLength, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_focalLength, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_focalLength, a_outPixelY));
@@ -1198,6 +1292,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outPixelY));
@@ -1226,6 +1324,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outPixelY));
@@ -1254,6 +1356,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outPixelY));
@@ -1282,6 +1388,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outPixelY));
@@ -1310,6 +1420,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outPixelY));
@@ -1338,6 +1452,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outPixelY));
@@ -1366,6 +1484,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_filmFit, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_filmFit, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_filmFit, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_filmFit, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_filmFit, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_filmFit, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_filmFit, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_filmFit, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_filmFit, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_filmFit, a_outPixelY));
@@ -1394,6 +1516,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_nearClipPlane, a_outPixelY));
@@ -1422,6 +1548,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_farClipPlane, a_outPixelY));
@@ -1450,6 +1580,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_cameraScale, a_outPixelY));
@@ -1478,6 +1612,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_imageWidth, a_outPixelY));
@@ -1506,6 +1644,10 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outNormCoord));
     CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outNormCoordX));
     CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outNormCoordY));
+    CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outMarkerCoord));
+    CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outMarkerCoordX));
+    CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outMarkerCoordY));
+    CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outMarkerCoordZ));
     CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outPixel));
     CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outPixelX));
     CHECK_MSTATUS(attributeAffects(a_imageHeight, a_outPixelY));

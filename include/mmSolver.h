@@ -48,6 +48,9 @@
 #include <Bundle.h>
 #include <Attr.h>
 
+#include <mmSolverData.h>
+#include <mmSolverFunc.h>
+
 // The different solver types to choose from:
 
 // Dense LM solver using 'levmar',
@@ -116,16 +119,49 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
                                      IndexPairList &paramToAttrList,
                                      MStatus &status);
 
-void findErrorToUnknownRelationship(MarkerPtrList markerList,
-                                    AttrPtrList attrList,
-                                    MTimeArray frameList,
+void findErrorToUnknownRelationship(MarkerPtrList &markerList,
+                                    AttrPtrList &attrList,
+                                    MTimeArray &frameList,
                                     int numParameters,
                                     int numErrors,
-                                    IndexPairList paramToAttrList,
-                                    IndexPairList errorToMarkerList,
+                                    IndexPairList &paramToAttrList,
+                                    IndexPairList &errorToMarkerList,
                                     BoolList2D &markerToAttrMapping,
                                     BoolList2D &errorToParamMapping,
                                     MStatus &status);
+
+bool set_initial_parameters(int numberOfParameters,
+                            std::vector<double> &paramList,
+                            std::vector<std::pair<int, int> > &paramToAttrList,
+                            AttrPtrList &attrList,
+                            MTimeArray &frameList,
+                            MStringArray &outResult);
+
+
+bool set_maya_attribute_values(int numberOfParameters,
+                               std::vector<std::pair<int, int> > &paramToAttrList,
+                               AttrPtrList &attrList,
+                               std::vector<double> &paramList,
+                               MTimeArray &frameList,
+                               MDGModifier &dgmod,
+                               MAnimCurveChange &curveChange);
+
+
+bool compute_error_stats(int numberOfErrors,
+                         SolverData &userData,
+                         double &errorAvg,
+                         double &errorMin,
+                         double &errorMax);
+
+
+void print_details(SolverResult &solverResult,
+                   SolverData &userData,
+                   SolverTimer &timer,
+                   int numberOfParameters,
+                   int numberOfErrors,
+                   std::vector<double> &paramList,
+                   MStringArray &outResult);
+
 
 bool solve(int iterMax,
            double tau,
@@ -136,11 +172,11 @@ bool solve(int iterMax,
            int autoDiffType,
            int autoParamScale,
            int solverType,
-           CameraPtrList cameraList,
-           MarkerPtrList markerList,
-           BundlePtrList bundleList,
-           AttrPtrList attrList,
-           MTimeArray frameList,
+           CameraPtrList &cameraList,
+           MarkerPtrList &markerList,
+           BundlePtrList &bundleList,
+           AttrPtrList &attrList,
+           MTimeArray &frameList,
            MDGModifier &dgmod,
            MAnimCurveChange &curveChange,
            MComputation &computation,

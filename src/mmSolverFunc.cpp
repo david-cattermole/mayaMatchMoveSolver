@@ -62,11 +62,10 @@
 
 // Local solvers
 #include <mmSolver.h>
+#include <mmSolverData.h>
 #include <mmSolverFunc.h>
 #include <mmSolverCMinpack.h>
 #include <mmSolverLevMar.h>
-
-#define FABS(x)     (((x)>=0)? (x) : -(x))
 
 // NOTE: There is a very strange bug in Maya. After setting a number
 // of plug values using a DG Context, when quering plug values at the
@@ -88,8 +87,8 @@ int solveFunc(int numberOfParameters,
     register int i = 0;
 
     SolverData *ud = static_cast<SolverData *>(userData);
-    ud->funcBenchTimer->start();
-    ud->funcBenchTicks->start();
+    ud->timer.funcBenchTimer.start();
+    ud->timer.funcBenchTicks.start();
     ud->computation->setProgress(ud->iterNum);
 
     // Seems heavy we are opening and closing a file each iteration.
@@ -143,16 +142,55 @@ int solveFunc(int numberOfParameters,
 
     if (ud->computation->isInterruptRequested()) {
         WRN("User wants to cancel the evalutation!");
+        ud->userInterrupted = true;
         return SOLVE_FUNC_FAILURE;
     }
 
-    MGlobal::executeCommand("dgdirty -allPlugs -implicit;");
+    bool interactive = ud->mayaSessionState == MGlobal::MMayaState::kInteractive;
+    MString dgDirtyCmd;
+
+    // Calculate exact nodes to update.
+    dgDirtyCmd = "dgdirty ";
+    MStringArray dgDirtyNodeNames;
+    for (i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
+         IndexPair markerPair = ud->errorToMarkerList[i];
+
+         MarkerPtr marker = ud->markerList[markerPair.first];
+         MString markerName = marker->getNodeName();
+         if (dgDirtyNodeNames.indexOf(markerName) == -1) {
+              dgDirtyCmd += " \"" + markerName + "\" ";
+              dgDirtyNodeNames.append(markerName);
+         }
+
+         CameraPtr camera = marker->getCamera();
+         MString cameraTransformName = camera->getTransformNodeName();
+         MString cameraShapeName = camera->getShapeNodeName();
+         if (dgDirtyNodeNames.indexOf(cameraTransformName) == -1) {
+              dgDirtyCmd += " \"" + cameraTransformName + "\" ";
+              dgDirtyNodeNames.append(cameraTransformName);
+         }
+         if (dgDirtyNodeNames.indexOf(cameraShapeName) == -1) {
+              dgDirtyCmd += " \"" + cameraShapeName + "\" ";
+              dgDirtyNodeNames.append(cameraShapeName);
+         }
+
+         BundlePtr bundle = marker->getBundle();
+         MString bundleName = bundle->getNodeName();
+         if (dgDirtyNodeNames.indexOf(bundleName) == -1) {
+              dgDirtyCmd += " \"" + bundleName + "\" ";
+              dgDirtyNodeNames.append(bundleName);
+         }
+    }
+    dgDirtyCmd += ";";
+    if (interactive) {
+         MGlobal::executeCommand(dgDirtyCmd);
+    }
 
     // Set Parameter
     MStatus status;
     {
-        ud->paramBenchTimer->start();
-        ud->paramBenchTicks->start();
+        ud->timer.paramBenchTimer.start();
+        ud->timer.paramBenchTicks.start();
 #ifdef MAYA_PROFILE
         MProfilingScope setParamScope(profileCategory,
                                       MProfiler::kColorA_L2,
@@ -164,9 +202,12 @@ int solveFunc(int numberOfParameters,
             IndexPair attrPair = ud->paramToAttrList[i];
             AttrPtr attr = ud->attrList[attrPair.first];
 
+            double offset = attr->getOffsetValue();
+            double scale = attr->getScaleValue();
             double xmin = attr->getMinimumValue();
             double xmax = attr->getMaximumValue();
             double value = parameters[i];
+            value = (value / scale) - offset;
 
             // TODO: Implement proper Box Constraints; Issue #64.
             value = std::max<double>(value, xmin);
@@ -198,19 +239,17 @@ int solveFunc(int numberOfParameters,
         for (i = 0; i < (int) ud->cameraList.size(); ++i) {
             ud->cameraList[i]->clearAttrValueCache();
         }
-        ud->paramBenchTimer->stop();
-        ud->paramBenchTicks->stop();
+        ud->timer.paramBenchTimer.stop();
+        ud->timer.paramBenchTicks.stop();
     }
-
-    MGlobal::executeCommand("dgdirty -allPlugs -implicit;");
 
     // Measure Errors
     double error_avg = 0.0;
     double error_max = -0.0;
     double error_min = std::numeric_limits<double>::max();
     {
-        ud->errorBenchTimer->start();
-        ud->errorBenchTicks->start();
+        ud->timer.errorBenchTimer.start();
+        ud->timer.errorBenchTicks.start();
 #ifdef MAYA_PROFILE
         MProfilingScope setParamScope(profileCategory,
                                       MProfiler::kColorA_L1,
@@ -275,7 +314,7 @@ int solveFunc(int numberOfParameters,
             if (cam_dot_bnd < 0.0) {
                  behind_camera = true;
             }
-            
+
             debugFile << "Bundle: " << bnd->getNodeName()
                       << std::endl;
             debugFile << "Cam DOT Bnd: " << cam_dot_bnd
@@ -327,11 +366,11 @@ int solveFunc(int numberOfParameters,
             if (d > error_max) { error_max = d; }
             if (d < error_min) { error_min = d; }
         }
-        ud->errorBenchTimer->stop();
-        ud->errorBenchTicks->stop();
+        ud->timer.errorBenchTimer.stop();
+        ud->timer.errorBenchTicks.stop();
     }
-    ud->funcBenchTimer->stop();
-    ud->funcBenchTicks->stop();
+    ud->timer.funcBenchTimer.stop();
+    ud->timer.funcBenchTicks.stop();
 
     error_avg *= 1.0 / (numberOfErrors / ERRORS_PER_MARKER);
 
@@ -370,5 +409,4 @@ int solveFunc(int numberOfParameters,
 }
 
 // Clean up #define
-#undef FABS
 #undef FORCE_TRIGGER_EVAL

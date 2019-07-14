@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Testing marker min/max attribute (box constraints).
 """
@@ -84,8 +101,8 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             (marker_01_tfm, cam_shp, bundle_01_tfm),
         )
         node_attrs = [
-            (bundle_01_tfm + '.tx', '-5.0', '5.0'),
-            (bundle_01_tfm + '.ty', 'None', 'None'),
+            (bundle_01_tfm + '.tx', '-5.0', '5.0', 'None', 'None'),
+            (bundle_01_tfm + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),

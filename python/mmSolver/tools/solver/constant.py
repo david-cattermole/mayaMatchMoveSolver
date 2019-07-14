@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Holds all constant data needed for the solver tool and UI.
 """
@@ -30,8 +47,26 @@ MM_SOLVER_DATA_ATTR_NAME = 'mmSolver_data'
 # Scene Data keys and default values.
 SCENE_DATA_ACTIVE_COLLECTION_UID = 'active_collection_uid'
 SCENE_DATA_REFRESH_VIEWPORT = 'refresh_viewport_state'
-SCENE_DATA_REFRESH_VIEWPORT_DEFAULT = True
+SCENE_DATA_FORCE_DG_UPDATE = 'force_dg_update_state'
+SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING = 'display_image_plane_while_solving'
+SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING = 'isolate_object_while_solving'
+SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION = 'display_object_frame_deviation'
+SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION = 'display_object_average_deviation'
+SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION = 'display_object_maximum_deviation'
+SCENE_DATA_DISPLAY_OBJECT_WEIGHT = 'display_object_weight'
+SCENE_DATA_DISPLAY_ATTRIBUTE_STATE = 'display_attribute_state'
+SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX = 'display_attribute_min_max'
 SCENE_DATA_LOG_LEVEL = 'log_level'
+SCENE_DATA_REFRESH_VIEWPORT_DEFAULT = True
+SCENE_DATA_FORCE_DG_UPDATE_DEFAULT = True
+SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING_DEFAULT = False
+SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING_DEFAULT = False
+SCENE_DATA_DISPLAY_OBJECT_WEIGHT_DEFAULT = True
+SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION_DEFAULT = False
+SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION_DEFAULT = False
+SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION_DEFAULT = False
+SCENE_DATA_DISPLAY_ATTRIBUTE_STATE_DEFAULT = True
+SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX_DEFAULT = False
 SCENE_DATA_LOG_LEVEL_DEFAULT = LOG_LEVEL_INFO
 
 
@@ -103,8 +138,11 @@ STATUS_SOLVER_NOT_VALID = 'Solver Not Valid!'
 STATUS_EXECUTING = 'Executing...'
 STATUS_FINISHED = 'Finished.'
 
-ATTR_DEFAULT_MIN_VALUE = '<Not Set>'
-ATTR_DEFAULT_MAX_VALUE = '<Not Set>'
+# Default UI values (displayed in the UI as fall back strings)
+OBJECT_DEFAULT_WEIGHT_UI_VALUE = '-'
+OBJECT_DEFAULT_DEVIATION_UI_VALUE = '-'
+ATTR_DEFAULT_MIN_UI_VALUE = '-'
+ATTR_DEFAULT_MAX_UI_VALUE = '-'
 
 ATTR_STATE_INVALID = 'Invalid'
 ATTR_STATE_STATIC = 'Static'
@@ -120,8 +158,40 @@ OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE = True
 OBJECT_TOGGLE_MARKER_DEFAULT_VALUE = True
 OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE = False
 
+# Toggle Attributes (stored on Collection node)
+ATTRIBUTE_TOGGLE_ANIMATED_ATTR = 'attribute_toggle_animated'
+ATTRIBUTE_TOGGLE_STATIC_ATTR = 'attribute_toggle_static'
+ATTRIBUTE_TOGGLE_LOCKED_ATTR = 'attribute_toggle_locked'
+
+ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE = True
+ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE = True
+ATTRIBUTE_TOGGLE_LOCKED_DEFAULT_VALUE = False
+
 # Information to filter invalid input attributes from the Solver UI.
 ATTR_INVALID_OBJECT_TYPES = [
     'imageplane',
     'marker',
 ]
+
+# The Column Names for the Object Model (used to display input Objects
+# to the user).
+OBJECT_COLUMN_NAME_NODE = 'Node'
+OBJECT_COLUMN_NAME_WEIGHT = 'Weight'
+OBJECT_COLUMN_NAME_DEVIATION_FRAME = 'Frame Dev (px)'
+OBJECT_COLUMN_NAME_DEVIATION_AVERAGE = 'Avg Dev (px)'
+OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM = 'Max Dev (px @ frame)'
+
+# The Column Names for the Attribute Model (used to display output
+# Attributes to the user).
+ATTR_COLUMN_NAME_ATTRIBUTE = 'Attr'
+ATTR_COLUMN_NAME_STATE = 'State'
+ATTR_COLUMN_NAME_VALUE_MIN = 'Min'
+ATTR_COLUMN_NAME_VALUE_MAX = 'Max'
+
+# The Column Names for the Solver Model (used to display Solver Steps
+# to the user).
+SOLVER_COLUMN_NAME_ENABLED = 'Enabled'
+SOLVER_COLUMN_NAME_FRAMES = 'Frames'
+SOLVER_COLUMN_NAME_ATTRIBUTES = 'Attributes'
+SOLVER_COLUMN_NAME_STRATEGY = 'Strategy'
+

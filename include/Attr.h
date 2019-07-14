@@ -30,9 +30,16 @@
 #include <maya/MFnAnimCurve.h>
 #include <maya/MAnimControl.h>
 #include <maya/MDGModifier.h>
+#include <maya/MDistance.h>
+#include <maya/MAngle.h>
 
 #include <vector>
 #include <memory>
+
+#define ATTR_TYPE_UNKNOWN 0
+#define ATTR_TYPE_LINEAR 1
+#define ATTR_TYPE_ANGLE 2
+#define ATTR_TYPE_NUMERIC 3
 
 
 class Attr {
@@ -58,6 +65,8 @@ public:
     MObject getAttribute();
 
     MString getAnimCurveName();
+
+    int getAttrType();
 
     bool isFreeToChange();
 
@@ -95,6 +104,14 @@ public:
 
     void setMaximumValue(double value);
 
+    double getOffsetValue();
+
+    void setOffsetValue(double value);
+
+    double getScaleValue();
+
+    void setScaleValue(double value);
+
 private:
     MString m_nodeName;
     MString m_attrName;
@@ -106,6 +123,13 @@ private:
     int m_isFreeToChange;
     double m_minValue;
     double m_maxValue;
+    double m_offsetValue;
+    double m_scaleValue;
+
+    double m_linearFactor;
+    double m_linearFactorInv;
+    double m_angularFactor;
+    double m_angularFactorInv;
 };
 
 

@@ -1,3 +1,20 @@
+# Copyright (C) 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 The 'Convert to Marker' tool.
 """
@@ -12,100 +29,11 @@ import mmSolver.api as mmapi
 import mmSolver.utils.camera as utils_camera
 import mmSolver.utils.viewport as utils_viewport
 import mmSolver.utils.time as utils_time
-import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
-import mmSolver.tools.loadmarker.interface as loadmkr_interface
+import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
+import mmSolver.tools.convertmarker.lib as lib
 
 
 LOG = mmSolver.logger.get_logger()
-
-
-def __connect_transform_to_reprojection(tfm, reproj):
-    src = tfm + '.worldMatrix'
-    dst = reproj + '.transformWorldMatrix'
-    maya.cmds.connectAttr(src, dst)
-    return
-
-
-def __create_reprojection_node(cam_tfm, cam_shp):
-    """
-    Create a mmReprojection node, then connect it up as needed.
-    """
-    node = maya.cmds.createNode('mmReprojection')
-
-    # Connect camera attributes
-    maya.cmds.connectAttr(cam_tfm + '.worldMatrix', node + '.cameraWorldMatrix')
-    maya.cmds.connectAttr(cam_shp + '.focalLength', node + '.focalLength')
-    maya.cmds.connectAttr(cam_shp + '.cameraAperture', node + '.cameraAperture')
-    maya.cmds.connectAttr(cam_shp + '.filmOffset', node + '.filmOffset')
-    maya.cmds.connectAttr(cam_shp + '.filmFit', node + '.filmFit')
-    maya.cmds.connectAttr(cam_shp + '.nearClipPlane', node + '.nearClipPlane')
-    maya.cmds.connectAttr(cam_shp + '.farClipPlane', node + '.farClipPlane')
-    maya.cmds.connectAttr(cam_shp + '.cameraScale', node + '.cameraScale')
-
-    # Force the image width and height to be the same aspect as the
-    # film back.
-    mult_node = maya.cmds.createNode('multiplyDivide')
-
-    src = cam_shp + '.horizontalFilmAperture'
-    dst = mult_node + '.input1X'
-    maya.cmds.connectAttr(src, dst)
-
-    src = cam_shp + '.verticalFilmAperture'
-    dst = mult_node + '.input1Y'
-    maya.cmds.connectAttr(src, dst)
-
-    maya.cmds.setAttr(mult_node + '.input2X', 10000.0)
-    maya.cmds.setAttr(mult_node + '.input2Y', 10000.0)
-
-    src = mult_node + '.outputX'
-    dst = node + '.imageWidth'
-    maya.cmds.connectAttr(src, dst)
-
-    src = mult_node + '.outputY'
-    dst = node + '.imageHeight'
-    maya.cmds.connectAttr(src, dst)
-    return node
-
-
-def __convert_nodes_to_marker_data_list(cam_tfm, cam_shp,
-                                        nodes,
-                                        start_frame, end_frame):
-    # Create nodes and objects for loop.
-    node_pairs = []
-    reproj_nodes = []
-    mkr_data_list = []
-    for node in nodes:
-        reproj = __create_reprojection_node(cam_tfm, cam_shp)
-        __connect_transform_to_reprojection(node, reproj)
-        reproj_nodes.append(reproj)
-
-        mkr_data = loadmkr_interface.MarkerData()
-        mkr_data.set_name(node)
-        mkr_data_list.append(mkr_data)
-
-        node_pairs.append((node, reproj, mkr_data))
-
-    # Query Screen-space coordinates across time for all nodes
-    cur_time = maya.cmds.currentTime(query=True)
-    for f in xrange(start_frame, end_frame + 1):
-        maya.cmds.currentTime(f, edit=True, update=True)
-        for node, reproj, mkr_data in node_pairs:
-            node_attr = reproj + '.outNormCoord'
-            mkr_u = maya.cmds.getAttr(node_attr + 'X')
-            mkr_v = maya.cmds.getAttr(node_attr + 'Y')
-            mkr_enable = True
-            mkr_weight = 1.0
-
-            mkr_data.weight.set_value(f, mkr_weight)
-            mkr_data.enable.set_value(f, mkr_enable)
-            mkr_data.x.set_value(f, mkr_u)
-            mkr_data.y.set_value(f, mkr_v)
-
-    if len(reproj_nodes) > 0:
-        maya.cmds.delete(reproj_nodes)
-
-    maya.cmds.currentTime(cur_time, edit=True, update=True)
-    return mkr_data_list
 
 
 def main():
@@ -139,12 +67,11 @@ def main():
 
     mmapi.load_plugin()
     try:
-        # Turn off Maya UI
-        maya.mel.eval('paneLayout -e -manage false $gMainPane')
+        utils_viewport.viewport_turn_off()
 
         # Compute the Marker Data.
         start_frame, end_frame = utils_time.get_maya_timeline_range_outer()
-        mkr_data_list = __convert_nodes_to_marker_data_list(
+        mkr_data_list = lib.convert_nodes_to_marker_data_list(
             cam_tfm,
             cam_shp,
             nodes,
@@ -163,8 +90,7 @@ def main():
     except:
         raise
     finally:
-        # Turn on Maya UI
-        maya.mel.eval('paneLayout -e -manage true $gMainPane')
+        utils_viewport.viewport_turn_on()
     if len(mkr_nodes) > 0:
         maya.cmds.select(mkr_nodes, replace=True)
     return

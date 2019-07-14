@@ -1,4 +1,22 @@
-"""Solver nodes for the mmSolver Window UI.
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
+"""
+Solver nodes for the mmSolver Window UI.
 
 Solvers are presented to the user as Solver Steps, which is a step of solver functions defined by:
 - Frames
@@ -246,30 +264,30 @@ class SolverModel(uimodels.TableModel):
 
     def columnNames(self):
         column_names = {
-            0: 'Enabled',
-            1: 'Frames',
-            2: 'Attributes',
-            3: 'Strategy',
+            0: const.SOLVER_COLUMN_NAME_ENABLED,
+            1: const.SOLVER_COLUMN_NAME_FRAMES,
+            2: const.SOLVER_COLUMN_NAME_ATTRIBUTES,
+            3: const.SOLVER_COLUMN_NAME_STRATEGY,
         }
         return column_names
 
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {
             # Column Name to node function name
-            'Enabled': 'stepEnabled',
-            'Frames': 'frames',
-            'Strategy': 'strategy',
-            'Attributes': 'attrs',
+            const.SOLVER_COLUMN_NAME_ENABLED: 'stepEnabled',
+            const.SOLVER_COLUMN_NAME_FRAMES: 'frames',
+            const.SOLVER_COLUMN_NAME_STRATEGY: 'strategy',
+            const.SOLVER_COLUMN_NAME_ATTRIBUTES: 'attrs',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 
     def getSetAttrFuncFromIndex(self, index):
         set_attr_dict = {
             # Column Name to node function name
-            'Enabled': 'setStepEnabled',
-            'Frames': 'setFrames',
-            'Strategy': 'setStrategy',
-            'Attributes': 'setAttrs',
+            const.SOLVER_COLUMN_NAME_ENABLED: 'setStepEnabled',
+            const.SOLVER_COLUMN_NAME_FRAMES: 'setFrames',
+            const.SOLVER_COLUMN_NAME_STRATEGY: 'setStrategy',
+            const.SOLVER_COLUMN_NAME_ATTRIBUTES: 'setAttrs',
         }
         return self._getSetAttrFuncFromIndex(index, set_attr_dict)
 
@@ -279,10 +297,10 @@ class SolverModel(uimodels.TableModel):
         node = self._node_list[row_index]
         column_names = self.columnNames()
         checkable_column_mapping = {
-            'Enabled': True,
-            'Frames': False,
-            'Strategy': False,
-            'Attributes': False,
+            const.SOLVER_COLUMN_NAME_ENABLED: True,
+            const.SOLVER_COLUMN_NAME_FRAMES: False,
+            const.SOLVER_COLUMN_NAME_STRATEGY: False,
+            const.SOLVER_COLUMN_NAME_ATTRIBUTES: False,
         }
         checkable = uimodels.getNameFromDict(
             column_index,
@@ -303,7 +321,7 @@ class SolverModel(uimodels.TableModel):
         column_names = self.columnNames()
         column_name = self.getColumnNameFromIndex(index)
         enabled = False
-        if column_name == 'Enabled':
+        if column_name == const.SOLVER_COLUMN_NAME_ENABLED:
             return True
         else:
             stepEnabled = node.stepEnabled()
@@ -312,9 +330,10 @@ class SolverModel(uimodels.TableModel):
                 return False
 
         # The step is enabled!
-        if column_name in ['Frames', 'Attributes']:
+        if column_name in [const.SOLVER_COLUMN_NAME_FRAMES,
+                           const.SOLVER_COLUMN_NAME_ATTRIBUTES]:
             enabled = True
-        elif column_name == 'Strategy':
+        elif column_name == const.SOLVER_COLUMN_NAME_STRATEGY:
             # The 'strategy' column should be disabled if
             # 'attrs' is set to use either 'No Attributes' or
             # 'Animated Only'.
@@ -325,7 +344,8 @@ class SolverModel(uimodels.TableModel):
 
         # When 'Override Current Frame' is on, frames and strategy
         # should be editable.
-        if column_name in ['Frames', 'Strategy']:
+        if column_name in [const.SOLVER_COLUMN_NAME_FRAMES,
+                           const.SOLVER_COLUMN_NAME_STRATEGY]:
             col = node.collectionNode()
             cur_frame = lib_collection.get_override_current_frame_from_collection(col)
             if cur_frame is True:

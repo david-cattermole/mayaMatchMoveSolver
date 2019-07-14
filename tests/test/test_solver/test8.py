@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Test multi-camera solving on a single frame.
 """
@@ -61,19 +78,19 @@ class TestSolver8(solverUtils.SolverTestCase):
 
         # Get Attrs
         node_attrs = [
-            (cameras[0][0] + '.tx', 'None', 'None'),
-            (cameras[0][0] + '.ty', 'None', 'None'),
-            (cameras[0][0] + '.tz', 'None', 'None'),
-            (cameras[0][0] + '.rx', 'None', 'None'),
-            (cameras[0][0] + '.ry', 'None', 'None'),
-            (cameras[0][0] + '.rz', 'None', 'None'),
+            (cameras[0][0] + '.tx', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.ty', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.tz', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.rx', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.ry', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.rz', 'None', 'None', 'None', 'None'),
 
-            (cameras[1][0] + '.tx', 'None', 'None'),
-            (cameras[1][0] + '.ty', 'None', 'None'),
-            (cameras[1][0] + '.tz', 'None', 'None'),
-            (cameras[1][0] + '.rx', 'None', 'None'),
-            (cameras[1][0] + '.ry', 'None', 'None'),
-            (cameras[1][0] + '.rz', 'None', 'None'),
+            (cameras[1][0] + '.tx', 'None', 'None', 'None', 'None'),
+            (cameras[1][0] + '.ty', 'None', 'None', 'None', 'None'),
+            (cameras[1][0] + '.tz', 'None', 'None', 'None', 'None'),
+            (cameras[1][0] + '.rx', 'None', 'None', 'None', 'None'),
+            (cameras[1][0] + '.ry', 'None', 'None', 'None', 'None'),
+            (cameras[1][0] + '.rz', 'None', 'None', 'None', 'None'),
         ]
         frames = [1]
 

@@ -1,3 +1,21 @@
+# Copyright (C) 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+# ---------------------------------------------------------------------
+#
 # Maya MatchMoveSolver build script.
 #
 cmake_minimum_required(VERSION 2.8)
@@ -5,12 +23,13 @@ cmake_minimum_required(VERSION 2.8)
 # Project configuration.
 project(mayaMatchMoveSolver)
 set(PROJECT_VERSION_MAJOR 0)
-set(PROJECT_VERSION_MINOR 2)
-set(PROJECT_VERSION_PATCH 2)
+set(PROJECT_VERSION_MINOR 3)
+set(PROJECT_VERSION_PATCH 0)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
-set(PROJECT_AUTHOR "David Cattermole")
+set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
+set(PROJECT_COPYRIGHT "2018, 2019, David Cattermole, Anil Reddy.")
 
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
@@ -45,7 +64,6 @@ set(BLAS_LIB_NAMES
        CACHE STRING
        "BLAS libraries to link")
 
-
 # Default Solver to use.
 set(PREFERRED_SOLVER "cminpack_lm" CACHE STRING
         "Choices are cminpack_lm or levmar. Which solver is used by default?")
@@ -66,7 +84,9 @@ set(MODULE_BUILD_DIR "${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}")
 
 # Set a default solver
 set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
-if ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
+if ((USE_GPL_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 1))
+    # Support both levmar and cminpack.
+elseif ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
     if (NOT (DEFAULT_SOLVER STREQUAL "cminpack_lm"))
         message(WARNING 
           "Preferred solver cannot be used because it's not enabled. "
@@ -114,7 +134,24 @@ else()
 endif()
 
 
-# TODO: Create Python file with project version embedded.
+# Create Python file with some build options baked in.
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py
+        @ONLY)
+
+# Create C Header file with some build options baked in.
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h
+        @ONLY)
+
+# Create Python file for documentation sphinx build with some build
+# options baked in.
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py
+        @ONLY)
 
 
 # Source
@@ -130,12 +167,14 @@ set(SOURCE_FILES
         include/Marker.h
         include/Bundle.h
         include/Attr.h
+        include/reprojection.h
         include/MMMarkerScaleNode.h
         include/MMReprojectionNode.h
         include/MMMarkerGroupTransformNode.h
         include/MMTestCameraMatrixCmd.h
         include/MMSolverCmd.h
         include/MMSolverTypeCmd.h
+        include/MMReprojectionCmd.h
         src/mmSolver.cpp
         src/mmSolverFunc.cpp
         src/mmSolverLevMar.cpp
@@ -144,12 +183,14 @@ set(SOURCE_FILES
         src/Marker.cpp
         src/Bundle.cpp
         src/Attr.cpp
+        src/reprojection.cpp
         src/MMMarkerScaleNode.cpp
         src/MMReprojectionNode.cpp
         src/MMMarkerGroupTransformNode.cpp
         src/MMTestCameraMatrixCmd.cpp
         src/MMSolverCmd.cpp
         src/MMSolverTypeCmd.cpp
+        src/MMReprojectionCmd.cpp
         src/pluginMain.cpp
 )
 
@@ -350,6 +391,11 @@ install(DIRECTORY "3dequalizer/scriptdb/"
 install(DIRECTORY "syntheyes/"
         DESTINATION "${MODULE_FULL_NAME}/syntheyes"
         FILES_MATCHING PATTERN "*.szl")
+
+# Install Config.
+install(DIRECTORY "config/"
+        DESTINATION "${MODULE_FULL_NAME}/config"
+        FILES_MATCHING PATTERN "*.json")
 
 # Install Icons.
 install(DIRECTORY "icons/"

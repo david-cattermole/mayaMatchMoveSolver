@@ -1,6 +1,28 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Attribute nodes for the mmSolver Window UI.
 """
+
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
+import Qt.QtCore as QtCore
 
 import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
@@ -75,19 +97,19 @@ class AttrNode(PlugNode):
     def minValue(self):
         d = self.data().get('data')
         if d is None:
-            return const.ATTR_DEFAULT_MIN_VALUE
+            return const.ATTR_DEFAULT_MIN_UI_VALUE
         v = d.get_min_value()
         if v is None:
-            return const.ATTR_DEFAULT_MIN_VALUE
+            return const.ATTR_DEFAULT_MIN_UI_VALUE
         return str(v)
 
     def maxValue(self):
         d = self.data().get('data')
         if d is None:
-            return const.ATTR_DEFAULT_MAX_VALUE
+            return const.ATTR_DEFAULT_MAX_UI_VALUE
         v = d.get_max_value()
         if v is None:
-            return const.ATTR_DEFAULT_MAX_VALUE
+            return const.ATTR_DEFAULT_MAX_UI_VALUE
         return str(v)
 
     def mayaNodeName(self):
@@ -133,27 +155,36 @@ class AttrModel(uimodels.ItemModel):
 
     def columnNames(self):
         column_names = {
-            0: 'Attr',
-            1: 'State',
-            # 2: 'Min',
-            # 3: 'Max',
+            0: const.ATTR_COLUMN_NAME_ATTRIBUTE,
+            1: const.ATTR_COLUMN_NAME_STATE,
+            2: const.ATTR_COLUMN_NAME_VALUE_MIN,
+            3: const.ATTR_COLUMN_NAME_VALUE_MAX,
         }
         return column_names
 
+    def columnAlignments(self):
+        values = {
+            const.ATTR_COLUMN_NAME_ATTRIBUTE: QtCore.Qt.AlignLeft,
+            const.ATTR_COLUMN_NAME_STATE: QtCore.Qt.AlignRight,
+            const.ATTR_COLUMN_NAME_VALUE_MIN: QtCore.Qt.AlignCenter,
+            const.ATTR_COLUMN_NAME_VALUE_MAX: QtCore.Qt.AlignCenter,
+        }
+        return values
+
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {
-            'Attr': 'name',
-            'State': 'state',
-            # 'Min': 'minValue',
-            # 'Max': 'maxValue',
+            const.ATTR_COLUMN_NAME_ATTRIBUTE: 'name',
+            const.ATTR_COLUMN_NAME_STATE: 'state',
+            const.ATTR_COLUMN_NAME_VALUE_MIN: 'minValue',
+            const.ATTR_COLUMN_NAME_VALUE_MAX: 'maxValue',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 
     def getSetAttrFuncFromIndex(self, index):
         set_attr_dict = {
-            'Attr': 'setName',
-            'State': 'setState',
-            # 'Min': 'setMinValue',
-            # 'Max': 'setMaxValue',
+            # const.ATTR_COLUMN_NAME_ATTRIBUTE: 'setName',
+            # const.ATTR_COLUMN_NAME_STATE: 'setState',
+            # const.ATTR_COLUMN_NAME_VALUE_MIN: 'setMinValue',
+            # const.ATTR_COLUMN_NAME_VALUE_MAX: 'setMaxValue',
         }
         return self._getSetAttrFuncFromIndex(index, set_attr_dict)

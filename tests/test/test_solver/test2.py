@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Semi-Complex hierarchy and object-space utilising solve.
 """
@@ -56,12 +73,12 @@ class TestSolver2(solverUtils.SolverTestCase):
             (marker2_tfm, cam_shp, bundle2_tfm),
         )
         node_attrs = [
-            (group_tfm + '.tx', 'None', 'None'),
-            (group_tfm + '.ty', 'None', 'None'),
-            (group_tfm + '.tz', 'None', 'None'),
-            (group_tfm + '.sx', 'None', 'None'),
-            (group_tfm + '.ry', 'None', 'None'),
-            (group_tfm + '.rz', 'None', 'None'),
+            (group_tfm + '.tx', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.ty', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.tz', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.sx', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.ry', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.rz', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),
@@ -88,10 +105,10 @@ class TestSolver2(solverUtils.SolverTestCase):
 
         # Run solver! (with less attributes)
         node_attrs = [
-            (group_tfm + '.tx', 'None', 'None'),
-            (group_tfm + '.ty', 'None', 'None'),
-            (group_tfm + '.sx', 'None', 'None'),
-            (group_tfm + '.rz', 'None', 'None'),
+            (group_tfm + '.tx', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.ty', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.sx', 'None', 'None', 'None', 'None'),
+            (group_tfm + '.rz', 'None', 'None', 'None', 'None'),
         ]
         s = time.time()
         result = maya.cmds.mmSolver(

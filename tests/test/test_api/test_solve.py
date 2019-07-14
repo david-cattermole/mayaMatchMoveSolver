@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Solve a single non-animated bundle to the screen-space location of a bundle.
 
@@ -15,11 +32,11 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_col
+import mmSolver.tools.triangulatebundle.lib as lib_triangulate
 import test.test_api.apiutils as test_api_utils
 
 
 LOG = mmSolver.logger.get_logger()
-
 
 
 # @unittest.skip
@@ -88,7 +105,7 @@ class TestSolve(test_api_utils.APITestCase):
         # Solver
         sol = mmapi.Solver()
         sol.set_max_iterations(10)
-        sol.set_solver_type(mmapi.SOLVER_TYPE_LEVMAR)
+        sol.set_solver_type(mmapi.SOLVER_TYPE_CMINPACK_LM)
         sol.set_verbose(True)
         sol.set_frame_list(frm_list)
 
@@ -108,18 +125,20 @@ class TestSolve(test_api_utils.APITestCase):
         # Run solver!
         results = col.execute()
 
-        # Ensure the values are correct
-        for res in results:
-            success = res.get_success()
-            err = res.get_final_error()
-            self.assertTrue(success)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
-
         # save the output
         path = self.get_data_path('test_solve_init_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        # Ensure the values are correct
+        self.checkSolveResults(results)
+        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
+        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
+
+        # Set Deviation
+        mmapi.update_deviation_on_markers([mkr], results)
+        mmapi.update_deviation_on_collection(col, results)
+        return
 
     def test_marker_enable(self):
         start = 1
@@ -160,30 +179,39 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Set Camera Anim
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=start, value=-(aov/2),
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=end, value=(aov/2),
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
 
         # Marker
         mkr = mmapi.Marker().create_node(cam=cam, bnd=bnd)
         marker_tfm = mkr.get_node()
         assert mmapi.get_object_type(marker_tfm) == 'marker'
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-0.5,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=0.5,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setAttr(marker_tfm + '.ty', 0.0)
 
         maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=1, value=1,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=2, value=1,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=3, value=0,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=4, value=1,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=5, value=1,
-                              inTangentType='linear', outTangentType='linear')
+                              inTangentType='linear',
+                              outTangentType='linear')
 
         # Create Sphere
         sph_tfm, shp_node = maya.cmds.polySphere()
@@ -241,6 +269,10 @@ class TestSolve(test_api_utils.APITestCase):
             # self.assertGreater(0.001, err)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
+
+        # Set Deviation
+        mmapi.update_deviation_on_markers([mkr], results)
+        mmapi.update_deviation_on_collection(col, results)
 
         # save the output
         path = self.get_data_path('test_solve_marker_enabled_after.ma')
@@ -358,6 +390,10 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         self.checkSolveResults(results)
+
+        # Set Deviation
+        mmapi.update_deviation_on_markers([mkr], results)
+        mmapi.update_deviation_on_collection(col, results)
         return
 
     def test_stA_refine_good_solve(self):
@@ -488,6 +524,10 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         self.checkSolveResults(results)
+
+        # Set Deviation
+        mmapi.update_deviation_on_markers(mkr_list, results)
+        mmapi.update_deviation_on_collection(col, results)
         return
 
     def test_badPerFrameSolve(self):
@@ -512,7 +552,7 @@ class TestSolve(test_api_utils.APITestCase):
         solres_list = col.execute()
         e = time.time()
         print 'total time:', e - s
-        
+
         # save the output
         path = self.get_data_path('test_solve_badPerFrameSolve_after.ma')
         maya.cmds.file(rename=path)
@@ -537,7 +577,7 @@ class TestSolve(test_api_utils.APITestCase):
         solres_list = col.execute()
         e = time.time()
         print 'total time:', e - s
-        
+
         # save the output
         path = self.get_data_path('test_solve_allFrameStrategySolve_after.ma')
         maya.cmds.file(rename=path)
@@ -545,7 +585,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         self.checkSolveResults(solres_list)
         return
-    
+
     def test_solveAllFramesCausesStaticAnimCurves(self):
         """
         Solving with the scene file 'mmSolverBasicSolveB_before.ma', was
@@ -560,11 +600,65 @@ class TestSolve(test_api_utils.APITestCase):
         path = self.get_data_path('scenes', file_name)
         maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
 
+        # NOTE: We leave these nodes along, since these are already in
+        # the 'correct' position, we are treating these as surveyed.
+        # When we have less than 3 points as survey the solve goes
+        # crazy.
+        dont_touch_these_nodes = [
+            '|bundle_12_BND',
+            '|bundle_13_BND',
+            '|bundle_14_BND']
+
+        # Triangulate all 3D points.
+        nodes = maya.cmds.ls(type='transform') or []
+        bnd_nodes = mmapi.filter_bundle_nodes(nodes)
+        bnd_list = [mmapi.Bundle(node=n) for n in bnd_nodes]
+        for bnd in bnd_list:
+            bnd_node = bnd.get_node()
+            if bnd_node in dont_touch_these_nodes:
+                continue
+            attrs = ['translateX', 'translateY', 'translateZ']
+            for attr_name in attrs:
+                plug = bnd_node + '.' + attr_name
+                maya.cmds.setAttr(plug, lock=False)
+            lib_triangulate.triangulate_bundle(bnd)
+
+        # Get Bundle attributes to compute.
+        bnd_attr_list = []
+        for bnd in bnd_list:
+            node = bnd.get_node()
+            attrs = ['translateX', 'translateY', 'translateZ']
+            for attr_name in attrs:
+                attr = mmapi.Attribute(node=node, attr=attr_name)
+                bnd_attr_list.append(attr)
+
+        # Camera attributes
+        cam_tfm = 'stA_1_1'
+        cam_attr_list = []
+        attrs = ['translateX', 'translateY', 'translateZ',
+                 'rotateX', 'rotateY', 'rotateZ']
+        for attr_name in attrs:
+            attr = mmapi.Attribute(node=cam_tfm, attr=attr_name)
+            cam_attr_list.append(attr)
+
         # Run solver!
         s = time.time()
+        # Solve camera transform based on triangulated bundle
+        # positions.
         col = mmapi.Collection(node='collection1')
+        col.set_attribute_list(cam_attr_list)
         lib_col.compile_collection(col)
         solres_list = col.execute()
+
+        # Refine the bundle positions only
+        col.set_attribute_list(bnd_attr_list)
+        lib_col.compile_collection(col)
+        solres_list = col.execute()
+
+        # Solve both camera transform and bundle positions together.
+        col.set_attribute_list(cam_attr_list + bnd_attr_list)
+        lib_col.compile_collection(col)
+        solres_list = col.execute()        
         e = time.time()
         print 'total time:', e - s
 
@@ -576,7 +670,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         self.checkSolveResults(solres_list)
         return
-    
+
     # def test_opera_house(self):
     #     start = 0
     #     end = 41

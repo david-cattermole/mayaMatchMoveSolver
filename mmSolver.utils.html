@@ -65,7 +65,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139766707146832'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139766707146832'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='139766707146960'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140109553397904'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140109553397904'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='140109553398032'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1271,7 +1271,7 @@ DAG path names.</li>
 <dl class="function">
 <dt id="mmSolver.utils.transform.get_matrix_from_plug_apitwo">
 <code class="descclassname">mmSolver.utils.transform.</code><code class="descname">get_matrix_from_plug_apitwo</code><span class="sig-paren">(</span><em>plug</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.get_matrix_from_plug_apitwo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a matrix plug value at a given FG (time) context.</p>
+<dd><p>Get a matrix plug value at a given DG (time) context.</p>
 <p><a class="reference external" href="http://chrisdevito.blogspot.com/2013/04/getting-dat-matrix-maya-python-api-20.html">http://chrisdevito.blogspot.com/2013/04/getting-dat-matrix-maya-python-api-20.html</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1287,6 +1287,30 @@ DAG path names.</li>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">maya.api.OpenMaya.MMatrix</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.transform.get_double_from_plug_apitwo">
+<code class="descclassname">mmSolver.utils.transform.</code><code class="descname">get_double_from_plug_apitwo</code><span class="sig-paren">(</span><em>plug</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.get_double_from_plug_apitwo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a double plug value at a given DG (time) context.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>plug</strong> (<em>maya.api.OpenMaya.MPlug</em>) &#8211; The node.attribute to query.</li>
+<li><strong>ctx</strong> (<em>maya.api.OpenMaya.MDGContext</em>) &#8211; Time DG Context to query at.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The floating point value at the given DG context.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
 </td>
 </tr>
 </tbody>
@@ -1342,6 +1366,11 @@ given DG Context.</p>
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.transform.detect_rotate_pivot_non_zero">
+<code class="descclassname">mmSolver.utils.transform.</code><code class="descname">detect_rotate_pivot_non_zero</code><span class="sig-paren">(</span><em>tfm_node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.detect_rotate_pivot_non_zero" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="class">
 <dt id="mmSolver.utils.transform.TransformNode">
@@ -1440,8 +1469,14 @@ renamed or re-parented.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="mmSolver.utils.transform.TransformMatrixCache.add">
-<code class="descname">add</code><span class="sig-paren">(</span><em>tfm_node</em>, <em>attr_name</em>, <em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.add" title="Permalink to this definition">¶</a></dt>
+<dt id="mmSolver.utils.transform.TransformMatrixCache.add_node">
+<code class="descname">add_node</code><span class="sig-paren">(</span><em>tfm_node</em>, <em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.add_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a TransformNode and set of times to evaluate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.transform.TransformMatrixCache.add_node_attr">
+<code class="descname">add_node_attr</code><span class="sig-paren">(</span><em>tfm_node</em>, <em>attr_name</em>, <em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.add_node_attr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a TransformNode / attribute name and set of times to evaluate.</p>
 </dd></dl>
 
@@ -1465,13 +1500,51 @@ renamed or re-parented.</p>
 <dt id="mmSolver.utils.transform.TransformMatrixCache.process">
 <code class="descname">process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.process" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate all the node attributes at times.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.transform.TransformMatrixCache.get_attrs_for_node">
+<code class="descname">get_attrs_for_node</code><span class="sig-paren">(</span><em>tfm_node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.get_attrs_for_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of attribute names for the node in the cache.</p>
+<p>This function allows us to detect if a node is stored with
+pivot point or not.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>str</em>) &#8211; The node to look into the cache with.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"></td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of attribute names in the cache for this node.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[str, .]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.transform.TransformMatrixCache.get_node_attr">
+<code class="descname">get_node_attr</code><span class="sig-paren">(</span><em>tfm_node</em>, <em>attr_name</em>, <em>times</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.get_node_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the node attribute matrix data, at given times</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>str</em>) &#8211; The transform node to query.</li>
+<li><strong>attr_name</strong> (<em>str</em>) &#8211; Name of the attribute (previously added to 
+the cache).</li>
+<li><strong>times</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) &#8211; The list of times to query from the cache.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of MMatrix objects for each time requested. If
+no cached value exists, None is returned in that
+list entry.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[maya.api.OpenMaya.MMatrix, .]</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1486,7 +1559,7 @@ renamed or re-parented.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) &#8211; The transform node to query.</li>
+<li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>str</em>) &#8211; The transform node to query.</li>
 <li><strong>attr_name</strong> (<em>str</em>) &#8211; Name of the attribute (previously added to 
 the cache).</li>
 <li><strong>times</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) &#8211; The list of times to query from the cache.</li>

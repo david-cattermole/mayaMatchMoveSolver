@@ -41,11 +41,13 @@
             "general_tools/---General",
             "general_tools/center_twodee",
             "general_tools/screen_z_transform_bake",
+            "general_tools/smooth_keyframes",
+            "general_tools/---Controller",
             "general_tools/create_controller",
             "general_tools/remove_controller",
             "general_tools/---UIs",
             "general_tools/channel_sensitivity_ui",
-            "general_tools/smooth_keyframes"
+            "general_tools/smooth_keyframes_ui"
         ],
         "functions": {
             "marker_tools": {

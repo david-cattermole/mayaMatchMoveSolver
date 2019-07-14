@@ -50,8 +50,9 @@ def create():
     if len(ctrls) > 0:
         maya.cmds.select(ctrls, replace=True)
     # Trigger Maya to refresh.
-    maya.cmds.currentTime(update=True)
-    maya.cmds.refresh()
+    frame = maya.cmds.currentTime(query=True)
+    maya.cmds.currentTime(frame, update=True)
+    maya.cmds.refresh(currentView=True, force=False)
     return
 
 
@@ -61,6 +62,7 @@ def remove():
     if len(orig_nodes) > 0:
         maya.cmds.select(orig_nodes, replace=True)
     # Trigger Maya to refresh.
-    maya.cmds.currentTime(update=True)
-    maya.cmds.refresh()
+    frame = maya.cmds.currentTime(query=True)
+    maya.cmds.currentTime(frame, update=True)
+    maya.cmds.refresh(currentView=True, force=False)
     return

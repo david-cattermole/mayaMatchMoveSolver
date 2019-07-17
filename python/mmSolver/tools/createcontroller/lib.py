@@ -190,7 +190,7 @@ def _get_times(node,
                frame_ranges_map,
                total_start,
                total_end,
-               sparse):
+               sparse, allow_empty):
     """
     The logic to query time for a node, in sparse or dense mode.
     """
@@ -198,16 +198,22 @@ def _get_times(node,
     fallback_frame_range = (total_start, total_end)
     fallback_times = list(range(total_start, total_end + 1))
     if sparse is True:
-        times = key_times_map.get(node, fallback_times)
+        tmp = []
+        if allow_empty is False:
+            tmp = fallback_times
+        times = key_times_map.get(node, tmp)
     else:
         start, end = frame_ranges_map.get(node, fallback_frame_range)
         times = range(start, end + 1)
     times = list(times)
-    assert len(times) > 0
+    if allow_empty is False:
+        assert len(times) > 0
     return times
 
 
 def create(nodes, sparse=True):
+    dont_allow_empty = False
+    allow_empty = True
     tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
 
     # Force into long-names.
@@ -233,8 +239,8 @@ def create(nodes, sparse=True):
         times = _get_times(node,
                            key_times_map, frame_ranges_map,
                            total_start, total_end,
-                           sparse)
-        cache.add(tfm_node, 'worldMatrix[0]', times)
+                           sparse, dont_allow_empty)
+        cache.add_node(tfm_node, times)
     cache.process()
 
     # Create new (locator) node for each input node
@@ -256,13 +262,31 @@ def create(nodes, sparse=True):
                       for tfm in ctrl_list]
 
     # Set transform matrix on new node
-    for tfm_node, ctrl in zip(tfm_nodes, ctrl_tfm_nodes):
-        node = tfm_node.get_node()
-        times = _get_times(node,
+    for src, dst in zip(tfm_nodes, ctrl_tfm_nodes):
+        src_node = src.get_node()
+        times = _get_times(src_node,
                            key_times_map, frame_ranges_map,
                            total_start, total_end,
-                           sparse)
-        tfm_utils.set_transform_values(cache, times, tfm_node, ctrl)
+                           sparse, dont_allow_empty)
+        tfm_utils.set_transform_values(
+            cache, times, src, dst,
+            delete_static_anim_curves=False
+        )
+        if sparse is True:
+            # Remove keyframes
+            src_times = _get_times(src_node,
+                                   key_times_map, frame_ranges_map,
+                                   total_start, total_end,
+                                   sparse, allow_empty)
+            dst_node = dst.get_node()
+            if len(src_times) == 0:
+                time_range = (total_start, total_end)
+                maya.cmds.cutKey(
+                    dst_node,
+                    attribute=TFM_ATTRS,
+                    time=time_range,
+                    clear=True
+                )
 
     # Delete all keyframes on controlled nodes
     anim_curves = anim_utils.get_anim_curves_from_nodes(
@@ -282,6 +306,18 @@ def create(nodes, sparse=True):
 
 
 def remove(nodes, sparse=True):
+    """
+    Remove a controller and push the animation back to the controlled
+    object.
+
+    .. todo:: What should we do with any transforms parented under the
+    controller? Should these objects be re-parented under the
+    controlled object? Probably yes.
+
+    """
+    dont_allow_empty = False
+    allow_empty = True
+        
     # find controlled nodes from controller nodes
     ctrl_to_ctrlled_map = {}
     for ctrl_node in nodes:
@@ -305,12 +341,12 @@ def remove(nodes, sparse=True):
         times = _get_times(ctrl_node,
                            key_times_map, frame_ranges_map,
                            total_start, total_end,
-                           sparse)
+                           sparse, dont_allow_empty)
         ctrl = tfm_utils.TransformNode(node=ctrl_node)
-        cache.add(ctrl, 'worldMatrix[0]', times)
+        cache.add_node(ctrl, times)
         for dest_node in dest_nodes:
             dest = tfm_utils.TransformNode(node=dest_node)
-            cache.add(dest, 'worldMatrix[0]', times)
+            cache.add_node(dest, times)
     cache.process()
 
     # Get Controlled nodes
@@ -331,11 +367,23 @@ def remove(nodes, sparse=True):
         times = _get_times(ctrl_node,
                            key_times_map, frame_ranges_map,
                            total_start, total_end,
-                           sparse)
+                           sparse, dont_allow_empty)
         ctrl = tfm_utils.TransformNode(node=ctrl_node)
         for ctrlled_node in ctrlled_nodes:
             ctrlled = tfm_utils.TransformNode(node=ctrlled_node)
-            tfm_utils.set_transform_values(cache, times, ctrl, ctrlled)
+            tfm_utils.set_transform_values(cache, times, ctrl, ctrlled,
+                                           delete_static_anim_curves=False)
+
+            # Re-parent controller child nodes under controlled node.
+            ctrl_children = maya.cmds.listRelatives(
+                ctrl_node,
+                children=True,
+                shapes=False,
+                fullPath=True,
+                type='transform',
+            ) or []
+            for child_node in ctrl_children:
+                maya.cmds.parent(child_node, ctrlled_node, absolute=True)
 
     # Delete controller nodes
     ctrl_nodes = ctrl_to_ctrlled_map.keys()

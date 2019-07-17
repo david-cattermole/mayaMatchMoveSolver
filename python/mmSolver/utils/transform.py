@@ -70,7 +70,7 @@ def create_dg_context_apitwo(t):
 
 def get_matrix_from_plug_apitwo(plug, ctx):
     """
-    Get a matrix plug value at a given FG (time) context.
+    Get a matrix plug value at a given DG (time) context.
 
     http://chrisdevito.blogspot.com/2013/04/getting-dat-matrix-maya-python-api-20.html
 
@@ -89,6 +89,25 @@ def get_matrix_from_plug_apitwo(plug, ctx):
     data = OpenMaya2.MFnMatrixData(mobject)
     matrix = data.matrix()
     return matrix
+
+
+def get_double_from_plug_apitwo(plug, ctx):
+    """
+    Get a double plug value at a given DG (time) context.
+
+    :param plug: The node.attribute to query.
+    :type plug: maya.api.OpenMaya.MPlug
+
+    :param ctx: Time DG Context to query at.
+    :type ctx: maya.api.OpenMaya.MDGContext
+
+    :returns: The floating point value at the given DG context.
+    :rtype: float
+    """
+    assert isinstance(plug, OpenMaya2.MPlug)
+    assert isinstance(ctx, OpenMaya2.MDGContext)
+    value = plug.asDouble(ctx)
+    return value
 
 
 def get_parent_inverse_matrix_apitwo(node, ctx):
@@ -131,6 +150,15 @@ def get_world_matrix_apitwo(node, ctx):
     name = node + '.worldMatrix[0]'
     plug = node_utils.get_as_plug_apitwo(name)
     return get_matrix_from_plug_apitwo(plug, ctx)
+
+
+def detect_rotate_pivot_non_zero(tfm_node):
+    assert isinstance(tfm_node, TransformNode)
+    node = tfm_node.get_node()
+    plug = node + '.rotatePivot'
+    rp = maya.cmds.getAttr(plug)[0]
+    rp = [abs(v) for v in rp]
+    return sum(rp) > 0
 
 
 class TransformNode(object):
@@ -276,11 +304,31 @@ class TransformMatrixCache(object):
         """
         self._data = dict()
 
-    def add(self, tfm_node, attr_name, times):
+    def add_node(self, tfm_node, times):
+        """
+        Add a TransformNode and set of times to evaluate.
+        """
+        with_pivot = detect_rotate_pivot_non_zero(tfm_node)
+        attr_names = ['worldMatrix[0]']
+        if with_pivot is True:
+            attr_names = [
+                'matrix',
+                'parentInverseMatrix[0]',
+                'rotatePivotX',
+                'rotatePivotY',
+                'rotatePivotZ'
+            ]
+        for attr_name in attr_names:
+            self.add_node_attr(tfm_node, attr_name, times)
+        return
+
+    def add_node_attr(self, tfm_node, attr_name, times):
         """
         Add a TransformNode / attribute name and set of times to evaluate.
         """
-        uuid = tfm_node.get_node_uuid()
+        uuid = tfm_node
+        if isinstance(tfm_node, TransformNode):
+            uuid = tfm_node.get_node_uuid()        
         if uuid not in self._data:
             self._data[uuid] = dict()
         if attr_name not in self._data[uuid]:
@@ -306,9 +354,6 @@ class TransformMatrixCache(object):
     def process(self):
         """
         Evaluate all the node attributes at times.
-
-        :returns:
-        :rtype:
         """
         # Get times and nodes.
         times = []
@@ -335,16 +380,42 @@ class TransformMatrixCache(object):
                 for attr_name in d.keys():
                     d2 = map_uuid_to_node.get(uuid, dict())
                     plug = d2.get(attr_name, dict())
-                    matrix = get_matrix_from_plug_apitwo(plug, ctx)
-                    self._data[uuid][attr_name][t] = matrix
+                    if 'matrix' in attr_name.lower():
+                        matrix = get_matrix_from_plug_apitwo(plug, ctx)
+                        self._data[uuid][attr_name][t] = matrix
+                    elif 'rotatepivot' in attr_name.lower():
+                        value = get_double_from_plug_apitwo(plug, ctx)
+                        self._data[uuid][attr_name][t] = value
+                    else:
+                        msg = 'Attribute name is not supported; attr_name=%r'
+                        raise ValueError(msg % attr_name)
         return
 
-    def get_node_attr_matrix(self, tfm_node, attr_name, times):
+    def get_attrs_for_node(self, tfm_node):
+        """
+        Get the list of attribute names for the node in the cache.
+
+        This function allows us to detect if a node is stored with
+        pivot point or not.
+
+        :param tfm_node: The node to look into the cache with.
+        :type tfm_node: TransformNode or str
+
+        :return: List of attribute names in the cache for this node.
+        :rtype: [str, ..]
+        """
+        node_uuid = tfm_node
+        if isinstance(tfm_node, TransformNode):
+            node_uuid = tfm_node.get_node_uuid()
+        attr_names = self._data.get(node_uuid, dict()).keys()
+        return attr_names
+
+    def get_node_attr(self, tfm_node, attr_name, times):
         """
         Get the node attribute matrix data, at given times
 
         :param tfm_node: The transform node to query.
-        :type tfm_node: TransformNode
+        :type tfm_node: TransformNode or str
 
         :param attr_name: Name of the attribute (previously added to 
                           the cache).
@@ -364,11 +435,13 @@ class TransformMatrixCache(object):
         node_values = self._data.get(node_uuid, dict())
         attr_values = node_values.get(attr_name, dict())
         attr_values = attr_values.copy()
-        matrix_values = []
+        values = []
         for t in times:
             v = attr_values.get(t, None)
-            matrix_values.append(v)
-        return matrix_values
+            values.append(v)
+        return values
+
+    get_node_attr_matrix = get_node_attr
 
 
 def set_transform_values(tfm_matrix_cache,
@@ -447,11 +520,71 @@ def set_transform_values(tfm_matrix_cache,
 
     # Query the matrix node.
     src_node_uuid = src_tfm_node.get_node_uuid()
-    world_mat_list = tfm_matrix_cache.get_node_attr_matrix(
-        src_node_uuid,
-        'worldMatrix[0]',
-        times,
-    )
+    src_node_attrs = tfm_matrix_cache.get_attrs_for_node(src_node_uuid)
+    with_pivot = len(src_node_attrs) > 1
+    world_mat_list = []
+    if with_pivot is False:
+        world_mat_list = tfm_matrix_cache.get_node_attr_matrix(
+            src_node_uuid,
+            'worldMatrix[0]',
+            times,
+        )
+    else:        
+        mat_list = tfm_matrix_cache.get_node_attr_matrix(
+            src_node_uuid,
+            'matrix',
+            times,
+        )
+        assert len(mat_list) == len(times)
+        
+        par_inv_mat_list = tfm_matrix_cache.get_node_attr_matrix(
+            src_node_uuid,
+            'parentInverseMatrix[0]',
+            times,
+        )
+        assert len(par_inv_mat_list) == len(times)
+        
+        rot_piv_x_list = tfm_matrix_cache.get_node_attr_matrix(
+            src_node_uuid,
+            'rotatePivotX',
+            times,
+        )
+        assert len(rot_piv_x_list) == len(times)
+        
+        rot_piv_y_list = tfm_matrix_cache.get_node_attr_matrix(
+            src_node_uuid,
+            'rotatePivotY',
+            times,
+        )
+        assert len(rot_piv_y_list) == len(times)
+        
+        rot_piv_z_list = tfm_matrix_cache.get_node_attr_matrix(
+            src_node_uuid,
+            'rotatePivotZ',
+            times,
+        )
+        assert len(rot_piv_z_list) == len(times)
+
+        # Reconstruct World-Matrix, accounting for pivot point.
+        space = OpenMaya2.MSpace.kWorld
+        loop_iter = zip(mat_list,
+                        par_inv_mat_list,
+                        rot_piv_x_list,
+                        rot_piv_y_list,
+                        rot_piv_z_list)
+        for mat, par_inv_mat, rot_piv_x, rot_piv_y, rot_piv_z in loop_iter:
+            assert mat is not None
+            assert par_inv_mat is not None
+            assert rot_piv_x is not None
+            assert rot_piv_y is not None
+            assert rot_piv_z is not None
+            mat = OpenMaya2.MTransformationMatrix(mat)
+            pivot = OpenMaya2.MVector(rot_piv_x, rot_piv_y, rot_piv_z)
+            trans = mat.translation(space)
+            mat.setTranslation(trans + pivot, space)
+            mat = mat.asMatrix()
+            world_mat = par_inv_mat * mat
+            world_mat_list.append(world_mat)
     assert len(world_mat_list) == len(times)
 
     # Set transform

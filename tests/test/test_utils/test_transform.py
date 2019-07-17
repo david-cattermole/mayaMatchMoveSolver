@@ -50,7 +50,7 @@ class TestTransform(test_utils.UtilsTestCase):
         tfm_node = mod.TransformNode(node=node)
 
         tfm_cache = mod.TransformMatrixCache()
-        tfm_cache.add(tfm_node, 'worldMatrix[0]', frame_range)
+        tfm_cache.add_node_attr(tfm_node, 'worldMatrix[0]', frame_range)
         tfm_cache.process()
 
         dst_node = maya.cmds.createNode('transform')

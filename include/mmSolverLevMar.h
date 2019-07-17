@@ -27,11 +27,8 @@
 #define MAYA_MM_SOLVER_LEVMAR_H
 
 // STL
-#include <string>  // string
-#include <vector>  // vector
-
-// Utils
-#include <utilities/debugUtils.h>
+#include <string>
+#include <vector>
 
 // Maya
 #include <maya/MPoint.h>
@@ -46,6 +43,7 @@
 #include <Bundle.h>
 #include <Attr.h>
 
+#include <mmSolverFunc.h>
 #include <mmSolver.h>
 
 
@@ -76,6 +74,20 @@ const std::string levmarReasons[8] = {
         // "stopped by invalid (i.e. NaN or Inf) \"func\" refPoints (user error)",
         "User canceled",
 };
+
+
+bool solve_3d_levmar_dif(
+        SolverOptions &solverOptions,
+        int numberOfParameters,
+        int numberOfErrors,
+        std::vector<double> &paramList,
+        std::vector<double> &errorList,
+        std::vector<double> &paramLowerBoundList,
+        std::vector<double> &paramUpperBoundList,
+        std::vector<double> &paramWeightList,
+        SolverData &userData,
+        SolverResult &solveResult,
+        MStringArray &outResult);
 
 void solveFunc_levmar(double *p,
                       double *x,

@@ -59,7 +59,7 @@
 #include <mmSolverCMinpack.h>
 
 
-bool solve_3d_cminpack_lmdiff(
+bool solve_3d_cminpack_lmdif(
         SolverOptions &solverOptions,
         int numberOfParameters,
         int numberOfErrors,

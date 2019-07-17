@@ -58,11 +58,15 @@
 #define SOLVER_TYPE_LEVMAR_NAME "levmar"
 
 // Dense LM solver using 'cminpack' library.
-#define SOLVER_TYPE_CMINPACK_LM 1
-#define SOLVER_TYPE_CMINPACK_LM_NAME "cminpack_lm"
+#define SOLVER_TYPE_CMINPACK_LM_DIF 1
+#define SOLVER_TYPE_CMINPACK_LM_DIF_NAME "cminpack_lm"
+
+//// Dense LM solver, with custom jacobian, using 'cminpack' library.
+//#define SOLVER_TYPE_CMINPACK_LM_DER 2
+//#define SOLVER_TYPE_CMINPACK_LM_DER_NAME "cminpack_lmder"
 
 // The default solver to use, if all solvers are available.
-#define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LM
+#define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LM_DIF
 
 // Enable the Maya profiling data collection.
 #define MAYA_PROFILE 1

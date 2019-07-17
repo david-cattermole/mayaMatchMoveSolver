@@ -79,9 +79,13 @@ std::vector<SolverTypePair> getSolverTypes() {
 #endif
 
 #ifdef USE_SOLVER_CMINPACK
-    solverType.first = SOLVER_TYPE_CMINPACK_LM;
-    solverType.second = SOLVER_TYPE_CMINPACK_LM_NAME;
+    solverType.first = SOLVER_TYPE_CMINPACK_LM_DIF;
+    solverType.second = SOLVER_TYPE_CMINPACK_LM_DIF_NAME;
     solverTypes.push_back(solverType);
+
+//    solverType.first = SOLVER_TYPE_CMINPACK_LM_DER;
+//    solverType.second = SOLVER_TYPE_CMINPACK_LM_DER_NAME;
+//    solverTypes.push_back(solverType);
 #endif
     return solverTypes;
 }
@@ -112,8 +116,11 @@ SolverTypePair getSolverTypeDefault() {
         }
         if (solverTypeName == "") {
             ERR("MMSOLVER_DEFAULT_SOLVER environment variable is invalid. "
-                << "Value may be \"cminpack_lm\" or \"levmar\"; "
-                << "value=" << defaultSolver);
+                << "Value may be "
+                << "\"cminpack_lm\", "
+                // << "\"cminpack_lmder\", "
+                << "or \"levmar\"; "
+                << "; value=" << defaultSolver);
         }
     }
     SolverTypePair solverType(solverTypeIndex, solverTypeName);
@@ -903,7 +910,7 @@ bool solve(int iterMax,
 
 #endif // USE_SOLVER_LEVMAR
 
-    } else if (solverType == SOLVER_TYPE_CMINPACK_LM) {
+    } else if (solverType == SOLVER_TYPE_CMINPACK_LM_DIF) {
 
 #ifndef USE_SOLVER_CMINPACK
 
@@ -915,18 +922,18 @@ bool solve(int iterMax,
 
 #else // USE_SOLVER_CMINPACK is defined.
 
-    solve_3d_cminpack_lmdiff(
-            solverOptions,
-            numberOfParameters,
-            numberOfErrors,
-            paramList,
-            errorList,
-            paramLowerBoundList,
-            paramUpperBoundList,
-            paramWeightList,
-            userData,
-            solveResult,
-            outResult);
+        solve_3d_cminpack_lmdif(
+                solverOptions,
+                numberOfParameters,
+                numberOfErrors,
+                paramList,
+                errorList,
+                paramLowerBoundList,
+                paramUpperBoundList,
+                paramWeightList,
+                userData,
+                solveResult,
+                outResult);
 
 #endif // USE_SOLVER_CMINPACK
 

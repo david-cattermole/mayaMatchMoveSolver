@@ -248,4 +248,4 @@ void solveFunc_levmar(double *p,
 }
 
 
-#endif USE_SOLVER_LEVMAR
+#endif // USE_SOLVER_LEVMAR

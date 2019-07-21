@@ -156,6 +156,8 @@ configure_file(
 
 # Source
 set(SOURCE_FILES
+        include/utilities/debugUtils.h
+        include/nodeTypeIds.h
         src/core/reprojection.h
         src/core/reprojection.cpp
         src/core/bundleAdjust_base.h
@@ -170,30 +172,28 @@ set(SOURCE_FILES
         src/core/bundleAdjust_cminpack_lmdif.cpp
         src/core/bundleAdjust_cminpack_lmder.h
         src/core/bundleAdjust_cminpack_lmder.cpp
-        include/utilities/debugUtils.h
-        include/nodeTypeIds.h
         src/mayaUtils.h
         src/Camera.h
-        src/Marker.h
-        src/Bundle.h
-        src/Attr.h
-        src/MMMarkerScaleNode.h
-        src/MMReprojectionNode.h
-        src/MMMarkerGroupTransformNode.h
-        src/MMTestCameraMatrixCmd.h
-        src/MMSolverCmd.h
-        src/MMSolverTypeCmd.h
-        src/MMReprojectionCmd.h
         src/Camera.cpp
+        src/Marker.h
         src/Marker.cpp
+        src/Bundle.h
         src/Bundle.cpp
+        src/Attr.h
         src/Attr.cpp
+        src/MMMarkerScaleNode.h
         src/MMMarkerScaleNode.cpp
+        src/MMReprojectionNode.h
         src/MMReprojectionNode.cpp
+        src/MMMarkerGroupTransformNode.h
         src/MMMarkerGroupTransformNode.cpp
+        src/MMTestCameraMatrixCmd.h
         src/MMTestCameraMatrixCmd.cpp
+        src/MMSolverCmd.h
         src/MMSolverCmd.cpp
+        src/MMSolverTypeCmd.h
         src/MMSolverTypeCmd.cpp
+        src/MMReprojectionCmd.h
         src/MMReprojectionCmd.cpp
         src/pluginMain.cpp
 )

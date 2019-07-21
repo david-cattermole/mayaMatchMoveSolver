@@ -338,7 +338,7 @@ class Marker(object):
         # Add attrs
         _create_marker_attributes(tfm)
 
-        src = '{0}.{1}'.format(tfm, const.MARKER_ATTR_LONG_NAME_DEVIATION)
+        src = '{0}.{1}'.format(tfm, const.MARKER_ATTR_LONG_NAME_ENABLE)
         dst = '{0}.{1}'.format(tfm, 'lodVisibility')
         maya.cmds.connectAttr(src, dst)
 

@@ -61,11 +61,11 @@
 #include <mayaUtils.h>
 
 // Local solvers
-#include <mmSolver.h>
-#include <mmSolverData.h>
-#include <mmSolverFunc.h>
-#include <mmSolverCMinpack.h>
-#include <mmSolverLevMar.h>
+#include <core/mmSolver.h>
+#include <core/mmSolverData.h>
+#include <core/mmSolverFunc.h>
+#include <core/mmSolverCMinpack.h>
+#include <core/mmSolverLevMar.h>
 
 
 // NOTE: There is a very strange bug in Maya. After setting a number

@@ -23,10 +23,10 @@
 
 // Internal
 #include <MMReprojectionCmd.h>
-#include <mmSolver.h>
 #include <mayaUtils.h>
 #include <Camera.h>
-#include <reprojection.h>
+#include <core/mmSolver.h>
+#include <core/reprojection.h>
 
 // STL
 #include <cmath>

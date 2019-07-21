@@ -22,7 +22,7 @@
 
 // Internal
 #include <MMSolverCmd.h>
-#include <mmSolver.h>
+#include <core/mmSolver.h>
 #include <mayaUtils.h>
 
 // STL

@@ -55,7 +55,7 @@
 // Utilities
 #include <mayaUtils.h>
 
-#include <mmSolverCMinpack.h>
+#include <core/mmSolverCMinpack.h>
 
 
 #endif // USE_SOLVER_CMINPACK

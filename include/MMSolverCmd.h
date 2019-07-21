@@ -62,7 +62,7 @@
 #include <Attr.h>
 
 // Define solvers
-#include <mmSolver.h>
+#include <core/mmSolver.h>
 
 
 // Command arguments and command name

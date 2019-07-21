@@ -55,9 +55,9 @@
 // Utilities
 #include <mayaUtils.h>
 
-#include <mmSolverFunc.h>
-#include <mmSolverCMinpack.h>
-#include <mmSolverCMinpackLMDer.h>
+#include <core/mmSolverFunc.h>
+#include <core/mmSolverCMinpack.h>
+#include <core/mmSolverCMinpackLMDer.h>
 
 
 bool solve_3d_cminpack_lmder(

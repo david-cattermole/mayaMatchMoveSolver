@@ -48,8 +48,8 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-#include <mmSolverData.h>
-#include <mmSolverFunc.h>
+#include <core/mmSolverData.h>
+#include <core/mmSolverFunc.h>
 
 // The different solver types to choose from:
 

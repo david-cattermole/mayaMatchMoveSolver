@@ -43,8 +43,8 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-#include <mmSolverFunc.h>
-#include <mmSolver.h>
+#include <core/mmSolverFunc.h>
+#include <core/mmSolver.h>
 
 
 #define LEVMAR_AUTO_DIFF_TYPE_FORWARD (0)

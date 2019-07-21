@@ -156,20 +156,27 @@ configure_file(
 
 # Source
 set(SOURCE_FILES
+        src/core/reprojection.h
+        src/core/reprojection.cpp
+        src/core/mmSolver.h
+        src/core/mmSolver.cpp
+        src/core/mmSolverFunc.h
+        src/core/mmSolverFunc.cpp
+        src/core/mmSolverLevMar.h
+        src/core/mmSolverLevMar.cpp
+        src/core/mmSolverCMinpack.h
+        src/core/mmSolverCMinpack.cpp
+        src/core/mmSolverCMinpackLMDif.h
+        src/core/mmSolverCMinpackLMDif.cpp
+        src/core/mmSolverCMinpackLMDer.h
+        src/core/mmSolverCMinpackLMDer.cpp
         include/utilities/debugUtils.h
         include/nodeTypeIds.h
         include/mayaUtils.h
-        include/mmSolver.h
-        include/mmSolverFunc.h
-        include/mmSolverLevMar.h
-        include/mmSolverCMinpack.h
-        include/mmSolverCMinpackLMDif.h
-        include/mmSolverCMinpackLMDer.h
         include/Camera.h
         include/Marker.h
         include/Bundle.h
         include/Attr.h
-        include/reprojection.h
         include/MMMarkerScaleNode.h
         include/MMReprojectionNode.h
         include/MMMarkerGroupTransformNode.h
@@ -177,17 +184,10 @@ set(SOURCE_FILES
         include/MMSolverCmd.h
         include/MMSolverTypeCmd.h
         include/MMReprojectionCmd.h
-        src/mmSolver.cpp
-        src/mmSolverFunc.cpp
-        src/mmSolverLevMar.cpp
-        src/mmSolverCMinpack.cpp
-        src/mmSolverCMinpackLMDif.cpp
-        src/mmSolverCMinpackLMDer.cpp
         src/Camera.cpp
         src/Marker.cpp
         src/Bundle.cpp
         src/Attr.cpp
-        src/reprojection.cpp
         src/MMMarkerScaleNode.cpp
         src/MMReprojectionNode.cpp
         src/MMMarkerGroupTransformNode.cpp
@@ -248,6 +248,7 @@ endfunction()
 add_library(mmSolver SHARED ${SOURCE_FILES})
 target_include_directories(mmSolver
         PRIVATE include
+        PRIVATE src
         PUBLIC ${MAYA_INCLUDE_DIRS}
 )
 target_link_libraries(mmSolver

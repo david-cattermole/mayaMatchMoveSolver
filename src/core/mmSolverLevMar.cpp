@@ -22,14 +22,11 @@
  * camera.
  */
 
-#include <mmSolverLevMar.h>
 
 #ifdef USE_SOLVER_LEVMAR
 
 // Lev-Mar
 #include <levmar.h>
-
-#include <mmSolverFunc.h>
 
 // STL
 #include <ctime>
@@ -58,6 +55,10 @@
 
 // Utilities
 #include <mayaUtils.h>
+
+// Local
+#include <core/mmSolverLevMar.h>
+#include <core/mmSolverFunc.h>
 
 
 bool solve_3d_levmar_dif(

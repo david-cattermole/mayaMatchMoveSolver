@@ -20,8 +20,8 @@
  */
 
 
-#ifndef MAYA_MM_SOLVER_CMINPACK_LMDER_H
-#define MAYA_MM_SOLVER_CMINPACK_LMDER_H
+#ifndef MAYA_MM_SOLVER_CMINPACK_LMDIF_H
+#define MAYA_MM_SOLVER_CMINPACK_LMDIF_H
 
 // STL
 #include <string>
@@ -40,11 +40,11 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-#include <mmSolverFunc.h>
-#include <mmSolver.h>
+#include <core/mmSolverFunc.h>
+#include <core/mmSolver.h>
 
 
-bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
+bool solve_3d_cminpack_lmdif(SolverOptions &solverOptions,
                              int numberOfParameters,
                              int numberOfErrors,
                              std::vector<double> &paramList,
@@ -57,13 +57,11 @@ bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
                              MStringArray &outResult);
 
 
-int solveFunc_cminpack_lmder(void *data,
-                             int m,
+int solveFunc_cminpack_lmdif(void *data,
                              int n,
-                             const double *x,
-                             double *fvec,
-                             double *fjac, 
-                             int ldfjac, 
+                             int m,
+                             const double *p,
+                             double *x,
                              int iflag);
 
-#endif // MAYA_MM_SOLVER_CMINPACK_LMDER_H
+#endif // MAYA_MM_SOLVER_CMINPACK_LMDIF_H

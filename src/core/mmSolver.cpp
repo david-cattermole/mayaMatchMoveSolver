@@ -21,8 +21,6 @@
  *
  */
 
-#include <mmSolver.h>
-
 // STL
 #include <ctime>
 #include <cmath>
@@ -59,11 +57,12 @@
 #include <maya/MProfiler.h>
 
 // Local
-#include <mmSolverLevMar.h>
-#include <mmSolverCMinpack.h>
-#include <mmSolverCMinpackLMDif.h>
-#include <mmSolverCMinpackLMDer.h>
-#include <mmSolverFunc.h>
+#include <core/mmSolver.h>
+#include <core/mmSolverLevMar.h>
+#include <core/mmSolverCMinpack.h>
+#include <core/mmSolverCMinpackLMDif.h>
+#include <core/mmSolverCMinpackLMDer.h>
+#include <core/mmSolverFunc.h>
 #include <mayaUtils.h>
 
 

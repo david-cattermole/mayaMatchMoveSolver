@@ -40,8 +40,8 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-#include <core/mmSolverFunc.h>
-#include <core/mmSolver.h>
+#include <core/bundleAdjust_solveFunc.h>
+#include <core/bundleAdjust_base.h>
 
 
 #define CMINPACK_AUTO_DIFF_TYPE_FORWARD (0)

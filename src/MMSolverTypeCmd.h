@@ -62,7 +62,7 @@
 #include <Attr.h>
 
 // Define solvers
-#include <core/mmSolver.h>
+#include <core/bundleAdjust_base.h>
 
 
 // Command arguments and command name:

@@ -25,7 +25,7 @@
 #include <MMReprojectionCmd.h>
 #include <mayaUtils.h>
 #include <Camera.h>
-#include <core/mmSolver.h>
+#include <core/bundleAdjust_base.h>
 #include <core/reprojection.h>
 
 // STL

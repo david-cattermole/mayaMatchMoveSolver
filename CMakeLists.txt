@@ -158,18 +158,18 @@ configure_file(
 set(SOURCE_FILES
         src/core/reprojection.h
         src/core/reprojection.cpp
-        src/core/mmSolver.h
-        src/core/mmSolver.cpp
-        src/core/mmSolverFunc.h
-        src/core/mmSolverFunc.cpp
-        src/core/mmSolverLevMar.h
-        src/core/mmSolverLevMar.cpp
-        src/core/mmSolverCMinpack.h
-        src/core/mmSolverCMinpack.cpp
-        src/core/mmSolverCMinpackLMDif.h
-        src/core/mmSolverCMinpackLMDif.cpp
-        src/core/mmSolverCMinpackLMDer.h
-        src/core/mmSolverCMinpackLMDer.cpp
+        src/core/bundleAdjust_base.h
+        src/core/bundleAdjust_base.cpp
+        src/core/bundleAdjust_solveFunc.h
+        src/core/bundleAdjust_solveFunc.cpp
+        src/core/bundleAdjust_levmar_bc_dif.h
+        src/core/bundleAdjust_levmar_bc_dif.cpp
+        src/core/bundleAdjust_cminpack_base.h
+        src/core/bundleAdjust_cminpack_base.cpp
+        src/core/bundleAdjust_cminpack_lmdif.h
+        src/core/bundleAdjust_cminpack_lmdif.cpp
+        src/core/bundleAdjust_cminpack_lmder.h
+        src/core/bundleAdjust_cminpack_lmder.cpp
         include/utilities/debugUtils.h
         include/nodeTypeIds.h
         src/mayaUtils.h

@@ -17,6 +17,7 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
+ * Common data structures for all bundle adjustment algorithms.
  */
 
 

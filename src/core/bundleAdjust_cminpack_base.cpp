@@ -17,24 +17,43 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
+ * Common functions and data to be used by CMinpack algorithms.
  */
 
+#ifdef USE_SOLVER_CMINPACK
 
-#ifndef MAYA_MM_SOLVER_FUNC_H
-#define MAYA_MM_SOLVER_FUNC_H
+// CMinpack
+#include <cminpack.h>
+
+// STL
+#include <ctime>
+#include <cmath>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cassert>
+#include <limits>
+#include <math.h>
+
+// Utils
+#include <utilities/debugUtils.h>
+#include <utilities/stringUtils.h>
+
+// Maya
+#include <maya/MPoint.h>
+#include <maya/MString.h>
+#include <maya/MStringArray.h>
+#include <maya/MObject.h>
+#include <maya/MFnAnimCurve.h>
+#include <maya/MAnimCurveChange.h>
+#include <maya/MMatrix.h>
+#include <maya/MComputation.h>
+#include <maya/MProfiler.h>
+
+// Utilities
+#include <mayaUtils.h>
+
+#include <core/bundleAdjust_cminpack_base.h>
 
 
-// success / failure constants.
-#define SOLVE_FUNC_SUCCESS (0)
-#define SOLVE_FUNC_FAILURE (-1)
-
-
-int solveFunc(int numberOfParameters,
-              int numberOfErrors,
-              const double *parameters,
-              double *errors,
-              double *jacobian,
-              void *userData);
-
-
-#endif // MAYA_MM_SOLVER_FUNC_H
+#endif // USE_SOLVER_CMINPACK

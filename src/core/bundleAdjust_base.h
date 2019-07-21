@@ -48,8 +48,8 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-#include <core/mmSolverData.h>
-#include <core/mmSolverFunc.h>
+#include <core/bundleAdjust_data.h>
+#include <core/bundleAdjust_solveFunc.h>
 
 // The different solver types to choose from:
 

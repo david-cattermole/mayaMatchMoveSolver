@@ -57,12 +57,12 @@
 #include <maya/MProfiler.h>
 
 // Local
-#include <core/mmSolver.h>
-#include <core/mmSolverLevMar.h>
-#include <core/mmSolverCMinpack.h>
-#include <core/mmSolverCMinpackLMDif.h>
-#include <core/mmSolverCMinpackLMDer.h>
-#include <core/mmSolverFunc.h>
+#include <core/bundleAdjust_base.h>
+#include <core/bundleAdjust_levmar_bc_dif.h>
+#include <core/bundleAdjust_cminpack_base.h>
+#include <core/bundleAdjust_cminpack_lmdif.h>
+#include <core/bundleAdjust_cminpack_lmder.h>
+#include <core/bundleAdjust_solveFunc.h>
 #include <mayaUtils.h>
 
 
@@ -896,7 +896,7 @@ bool solve(int iterMax,
 
 #else // USE_SOLVER_LEVMAR is defined.
 
-        solve_3d_levmar_dif(
+        solve_3d_levmar_bc_dif(
                 solverOptions,
                 numberOfParameters,
                 numberOfErrors,

@@ -55,12 +55,12 @@
 // Utilities
 #include <mayaUtils.h>
 
-#include <core/mmSolverFunc.h>
-#include <core/mmSolverCMinpack.h>
-#include <core/mmSolverCMinpackLMDif.h>
+#include <core/bundleAdjust_solveFunc.h>
+#include <core/bundleAdjust_cminpack_base.h>
+#include <core/bundleAdjust_cminpack_lmder.h>
 
 
-bool solve_3d_cminpack_lmdif(
+bool solve_3d_cminpack_lmder(
         SolverOptions &solverOptions,
         int numberOfParameters,
         int numberOfErrors,
@@ -72,7 +72,7 @@ bool solve_3d_cminpack_lmdif(
         SolverData &userData,
         SolverResult &solveResult,
         MStringArray &outResult){
-    int solverType = SOLVER_TYPE_CMINPACK_LM_DIF;
+    int solverType = SOLVER_TYPE_CMINPACK_LM_DER;
     int ret = 0;
     std::string resultStr;
     int iterMax = solverOptions.iterMax;
@@ -80,8 +80,6 @@ bool solve_3d_cminpack_lmdif(
 
     std::vector<double> jacobianList(1);
     jacobianList.resize((unsigned long) numberOfParameters * numberOfErrors, 0);
-
-    int cminpack_info = 0;
 
     std::vector<int> ipvtList(1);
     ipvtList.resize((unsigned long) numberOfParameters, 0);
@@ -103,80 +101,75 @@ bool solve_3d_cminpack_lmdif(
         ldfjac = numberOfParameters;
     }
 
-    double cminpack_ftol = solverOptions.eps1;
-    double cminpack_xtol = solverOptions.eps2;
-    double cminpack_gtol = solverOptions.eps3;
+    double ftol = solverOptions.eps1;
+    double xtol = solverOptions.eps2;
+    double gtol = solverOptions.eps3;
 
-    // Change the sign of the delta
-    // Note: lmdif only supports auto-diff 'forward' mode.
-    double cminpack_epsfcn = std::abs(solverOptions.delta);
-
-    int cminpack_mode = 2; // Off
+    int mode = 2; // Off
     if (solverOptions.autoParamScale == 1) {
-        cminpack_mode = 1; // On
+        mode = 1; // On
     }
 
-    double cminpack_factor = solverOptions.tau;
-    int cminpack_nprint = 0;  // 0 == don't print anything.
-    int cminpack_calls = 0;
-    double cminpack_fnorm = 0.0;
-
-    cminpack_info = __cminpack_func__(lmdif)(
+    double factor = solverOptions.tau;
+    int nprint = 0;  // 0 == don't print anything.
+    int calls = 0;
+    int njev = 0;
+    double fnorm = 0.0;
+    int info = __cminpack_func__(lmder)(
             // Function to call
-            solveFunc_cminpack_lmdif,
+            solveFunc_cminpack_lmder,
 
             // Input user data.
             (void *) &userData,
-
+            
             // Number of errors.
             numberOfErrors,
 
             // Number of parameters.
             numberOfParameters,
 
-            // parameters
+            // Parameters
             &paramList[0],
 
-            // errors
+            // Errors
             &errorList[0],
 
-            // Tolerance to stop solving.
-            cminpack_ftol, cminpack_xtol, cminpack_gtol,
-
-            // Iteration maximum
-            iterMax,
-
-            // Delta (how much to shift parameters when calculating
-            // jacobian).
-            cminpack_epsfcn,
-
-            // Weight list (diagonal scaling)
-            &paramWeightList[0],
-
-            // Auto-parameter scaling mode
-            cminpack_mode,
-
-            // Tau factor (scale factor for initialTransform mu)
-            cminpack_factor,
-
-            // Should we print at each iteration?
-            cminpack_nprint,
-
-            // 'nfev' is an integer output variable set to the
-            // number of calls to 'fcn'.
-            &cminpack_calls,
-
+            // Jacobian (of length numberOfErrors * numberOfParameters)
+            //
             // 'fjac' is an output numberOfParameters by n
             // array. The upper n by n submatrix of fjac contains
             // an upper triangular matrix r with diagonal elements
             // of nonincreasing magnitude.
             &jacobianList[0],
 
-            // 'ldfjac' is a positive integer input variable not
-            // less than numberOfParameters which specifies the
-            // leading dimension of the array fjac.
+            // Longest Dimension of Jacobian Matrix
             ldfjac,
 
+            // Tolerance to stop solving.
+            ftol, xtol, gtol,
+
+            // Iteration maximum
+            iterMax,
+
+            // Weight list (diagonal scaling)
+            &paramWeightList[0],
+
+            // Auto-parameter-scaling mode
+            mode,
+
+            // Tau factor (scale factor for initialTransform mu)
+            factor,
+
+            // Should we print at each iteration?
+            nprint,
+            
+            // 'nfev' is an integer output variable set to the
+            // number of calls to 'fcn'.
+            &calls,
+
+            // Number of Jacobian calls.
+            &njev,
+            
             // 'ipvt' is an integer output array of length n. ipvt
             // defines a permutation matrix p such that jac*p =
             // q*r, where jac is the final calculated Jacobian, q
@@ -185,7 +178,7 @@ bool solve_3d_cminpack_lmdif(
             // magnitude. Column j of p is column ipvt(j) of the
             // identity matrix
             &ipvtList[0],
-
+            
             // 'qtf' is an output array of length n which contains
             // the first n elements of the vector `(q transpose) *
             // fvec`.
@@ -196,23 +189,23 @@ bool solve_3d_cminpack_lmdif(
             &wa2List[0],
             &wa3List[0],
             &wa4List[0]);
-    cminpack_fnorm = __cminpack_func__(enorm)(numberOfErrors, &errorList[0]);
+    fnorm = __cminpack_func__(enorm)(numberOfErrors, &errorList[0]);
     ret = userData.iterNum;
 
-    int reason_number = cminpack_info;
+    int reason_number = info;
     const std::string &reason = cminpackReasons[reason_number];
     solveResult.success = ret > 0;
     solveResult.reason_number = reason_number;
     solveResult.reason = reason;
-    solveResult.iterations = cminpack_calls;
+    solveResult.iterations = calls;
     solveResult.functionEvals = userData.iterNum;
     solveResult.jacobianEvals = userData.jacIterNum;
-    solveResult.errorFinal = cminpack_fnorm;
+    solveResult.errorFinal = fnorm;
     return true;
 }
 
 
-// Run the cminpack 'lmdif' solve function.
+// Run the cminpack 'lmder' solve function.
 //
 // 'data' is a pointer to a user data that was passed to 'lmdif'.
 //
@@ -229,23 +222,29 @@ bool solve_3d_cminpack_lmdif(
 // 'fvec' is an output array of length m which contains the functions
 // evaluated at the output x.
 //
+// 'fjac' is an output array of length m*n containing the
+// jacobian matrix (at end of solve).
+//
+// 'ldfjac' is a positive integer of the highest dimension of the
+// fjac array (m or n).
+//
 // 'iflag' tells us what type of call this function is expected to perform.
-int solveFunc_cminpack_lmdif(void *data,
+int solveFunc_cminpack_lmder(void *data,
                              int m,
                              int n,
                              const double *x,
                              double *fvec,
+                             double *fjac, 
+                             int ldfjac, 
                              int iflag) {
+    assert(ldfjac == n ? m <= n : m);
+
     SolverData *ud = static_cast<SolverData *>(data);
     ud->isPrintCall = iflag == 0;
     ud->isNormalCall = iflag == 1;
     ud->isJacobianCall = iflag == 2;
-
-    // We will not compute a jacobian in 'lmdif'
-    ud->doCalcJacobian = false;
-    double *fjac = NULL;
-
-    // int ret = solveFunc(n, m, x, fvec, data);
+    ud->doCalcJacobian = iflag == 2;
+    
     int ret = solveFunc(n, m, x, fvec, fjac, data);
 
     int info = -1;

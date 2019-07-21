@@ -18,6 +18,8 @@
  * ====================================================================
  *
  * The universal solving function, works with any solver.
+ *
+ * The functions contain the essential core of a minimization solver.
  */
 
 // cminpack
@@ -61,11 +63,11 @@
 #include <mayaUtils.h>
 
 // Local solvers
-#include <core/mmSolver.h>
-#include <core/mmSolverData.h>
-#include <core/mmSolverFunc.h>
-#include <core/mmSolverCMinpack.h>
-#include <core/mmSolverLevMar.h>
+#include <core/bundleAdjust_base.h>
+#include <core/bundleAdjust_data.h>
+#include <core/bundleAdjust_solveFunc.h>
+#include <core/bundleAdjust_cminpack_base.h>
+#include <core/bundleAdjust_levmar_bc_dif.h>
 
 
 // NOTE: There is a very strange bug in Maya. After setting a number

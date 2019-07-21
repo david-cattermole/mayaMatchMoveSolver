@@ -43,8 +43,8 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-#include <core/mmSolverFunc.h>
-#include <core/mmSolver.h>
+#include <core/bundleAdjust_solveFunc.h>
+#include <core/bundleAdjust_base.h>
 
 
 #define LEVMAR_AUTO_DIFF_TYPE_FORWARD (0)
@@ -80,7 +80,7 @@ const std::string levmarReasons[8] = {
 };
 
 
-bool solve_3d_levmar_dif(
+bool solve_3d_levmar_bc_dif(
         SolverOptions &solverOptions,
         int numberOfParameters,
         int numberOfErrors,
@@ -93,10 +93,10 @@ bool solve_3d_levmar_dif(
         SolverResult &solveResult,
         MStringArray &outResult);
 
-void solveFunc_levmar(double *p,
-                      double *x,
-                      int m,
-                      int n,
-                      void *data);
+void solveFunc_levmar_bc_dif(double *p,
+                             double *x,
+                             int m,
+                             int n,
+                             void *data);
 
 #endif // MAYA_MM_SOLVER_LEVMAR_H

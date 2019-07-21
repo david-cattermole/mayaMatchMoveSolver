@@ -40,8 +40,8 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-#include <core/mmSolverFunc.h>
-#include <core/mmSolver.h>
+#include <core/bundleAdjust_solveFunc.h>
+#include <core/bundleAdjust_base.h>
 
 
 bool solve_3d_cminpack_lmdif(SolverOptions &solverOptions,

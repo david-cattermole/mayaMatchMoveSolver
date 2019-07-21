@@ -17,9 +17,7 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Uses Non-Linear Least Squares algorithm to calculate attribute
- * values based on 2D-to-3D error measurements through a pinhole
- * camera.
+ * Bundle Adjustment functions to launch a solve using the levmar library.
  */
 
 
@@ -57,11 +55,11 @@
 #include <mayaUtils.h>
 
 // Local
-#include <core/mmSolverLevMar.h>
-#include <core/mmSolverFunc.h>
+#include <core/bundleAdjust_levmar_bc_dif.h>
+#include <core/bundleAdjust_solveFunc.h>
 
 
-bool solve_3d_levmar_dif(
+bool solve_3d_levmar_bc_dif(
         SolverOptions &solverOptions,
         int numberOfParameters,
         int numberOfErrors,
@@ -117,7 +115,7 @@ bool solve_3d_levmar_dif(
             // Function to call (input only)
             // Function must be of the structure:
             //   func(double *params, double *x, int numberOfParameters, int numberOfErrors, void *data)
-            solveFunc_levmar,
+            solveFunc_levmar_bc_dif,
 
             // Parameters (input and output)
             // Should be filled with initial estimate, will be filled
@@ -234,11 +232,11 @@ bool solve_3d_levmar_dif(
 // 'n' is the number of errors (the length of 'x')
 //
 // 'data' is the user data passed to the solving function.
-void solveFunc_levmar(double *p,
-                      double *x,
-                      int m,
-                      int n,
-                      void *data) {    
+void solveFunc_levmar_bc_dif(double *p,
+                             double *x,
+                             int m,
+                             int n,
+                             void *data) {
     // We will not compute a jacobian in 'levmar'
     SolverData *ud = static_cast<SolverData *>(data);
     ud->doCalcJacobian = false;

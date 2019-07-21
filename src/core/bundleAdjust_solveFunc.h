@@ -17,45 +17,25 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Uses Non-Linear Least Squares algorithm to calculate attribute
- * values based on 2D-to-3D error measurements through a pinhole
- * camera.
+ * Universal solver functions, to be used by any library.
  */
 
-#ifdef USE_SOLVER_CMINPACK
 
-// CMinpack
-#include <cminpack.h>
-
-// STL
-#include <ctime>
-#include <cmath>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <cassert>
-#include <limits>
-#include <math.h>
-
-// Utils
-#include <utilities/debugUtils.h>
-#include <utilities/stringUtils.h>
-
-// Maya
-#include <maya/MPoint.h>
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
-#include <maya/MObject.h>
-#include <maya/MFnAnimCurve.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MMatrix.h>
-#include <maya/MComputation.h>
-#include <maya/MProfiler.h>
-
-// Utilities
-#include <mayaUtils.h>
-
-#include <core/mmSolverCMinpack.h>
+#ifndef MAYA_MM_SOLVER_FUNC_H
+#define MAYA_MM_SOLVER_FUNC_H
 
 
-#endif // USE_SOLVER_CMINPACK
+// success / failure constants.
+#define SOLVE_FUNC_SUCCESS (0)
+#define SOLVE_FUNC_FAILURE (-1)
+
+
+int solveFunc(int numberOfParameters,
+              int numberOfErrors,
+              const double *parameters,
+              double *errors,
+              double *jacobian,
+              void *userData);
+
+
+#endif // MAYA_MM_SOLVER_FUNC_H

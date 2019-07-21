@@ -172,18 +172,18 @@ set(SOURCE_FILES
         src/core/mmSolverCMinpackLMDer.cpp
         include/utilities/debugUtils.h
         include/nodeTypeIds.h
-        include/mayaUtils.h
-        include/Camera.h
-        include/Marker.h
-        include/Bundle.h
-        include/Attr.h
-        include/MMMarkerScaleNode.h
-        include/MMReprojectionNode.h
-        include/MMMarkerGroupTransformNode.h
-        include/MMTestCameraMatrixCmd.h
-        include/MMSolverCmd.h
-        include/MMSolverTypeCmd.h
-        include/MMReprojectionCmd.h
+        src/mayaUtils.h
+        src/Camera.h
+        src/Marker.h
+        src/Bundle.h
+        src/Attr.h
+        src/MMMarkerScaleNode.h
+        src/MMReprojectionNode.h
+        src/MMMarkerGroupTransformNode.h
+        src/MMTestCameraMatrixCmd.h
+        src/MMSolverCmd.h
+        src/MMSolverTypeCmd.h
+        src/MMReprojectionCmd.h
         src/Camera.cpp
         src/Marker.cpp
         src/Bundle.cpp

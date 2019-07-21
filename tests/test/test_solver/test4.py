@@ -115,8 +115,11 @@ class TestSolver4(solverUtils.SolverTestCase):
     def test_init_levmar(self):
         self.do_solve('levmar', 0)
 
-    def test_init_cminpack_lm(self):
+    def test_init_cminpack_lmdif(self):
         self.do_solve('cminpack_lm', 1)
+
+    def test_init_cminpack_lmder(self):
+        self.do_solve('cminpack_lmder', 2)
 
 
 if __name__ == '__main__':

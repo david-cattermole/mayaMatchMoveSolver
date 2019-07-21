@@ -47,6 +47,10 @@
 #include <mmSolver.h>
 
 
+#define LEVMAR_AUTO_DIFF_TYPE_FORWARD (0)
+#define LEVMAR_AUTO_DIFF_TYPE_CENTRAL (1)
+
+
 // Sparse LM or Lev-Mar Termination Reasons:
 const std::string levmarReasons[8] = {
         // reason 0

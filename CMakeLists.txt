@@ -65,8 +65,8 @@ set(BLAS_LIB_NAMES
        "BLAS libraries to link")
 
 # Default Solver to use.
-set(PREFERRED_SOLVER "cminpack_lm" CACHE STRING
-        "Choices are cminpack_lm or levmar. Which solver is used by default?")
+set(PREFERRED_SOLVER "cminpack_lmder" CACHE STRING
+        "Choices are cminpack_lm, cminpack_lmder or levmar. Which solver is used by default?")
 
 # Module paths
 if (UNIX)
@@ -87,8 +87,8 @@ set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
 if ((USE_GPL_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 1))
     # Support both levmar and cminpack.
 elseif ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
-    if (NOT (DEFAULT_SOLVER STREQUAL "cminpack_lm"))
-        message(WARNING 
+    if (NOT (DEFAULT_SOLVER MATCHES "cminpack_lm[a-zA-Z]+"))
+        message(WARNING
           "Preferred solver cannot be used because it's not enabled. "
           "preferred=${PREFERRED_SOLVER} "
           "default=${DEFAULT_SOLVER} "
@@ -163,6 +163,8 @@ set(SOURCE_FILES
         include/mmSolverFunc.h
         include/mmSolverLevMar.h
         include/mmSolverCMinpack.h
+        include/mmSolverCMinpackLMDif.h
+        include/mmSolverCMinpackLMDer.h
         include/Camera.h
         include/Marker.h
         include/Bundle.h
@@ -179,6 +181,8 @@ set(SOURCE_FILES
         src/mmSolverFunc.cpp
         src/mmSolverLevMar.cpp
         src/mmSolverCMinpack.cpp
+        src/mmSolverCMinpackLMDif.cpp
+        src/mmSolverCMinpackLMDer.cpp
         src/Camera.cpp
         src/Marker.cpp
         src/Bundle.cpp

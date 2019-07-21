@@ -63,6 +63,19 @@ struct SolverTimer {
 };
 
 
+struct SolverOptions {
+    int iterMax;
+    double tau;
+    double eps1;
+    double eps2;
+    double eps3;
+    double delta;
+    int autoDiffType;
+    int autoParamScale;
+    int solverType;
+};
+
+
 // The user data given to the solve function.
 struct SolverData {
     // Solver Objects.
@@ -79,11 +92,12 @@ struct SolverData {
     std::vector<double> markerWeightList;
 
     // Internal Solver Data.
+    std::vector<double> paramList;
     std::vector<double> errorList;
     std::vector<double> errorDistanceList;
+    std::vector<double> jacobianList;
     int iterNum;
     int jacIterNum;
-    int iterMax;
     int solverType;
     double imageWidth;
 
@@ -91,13 +105,10 @@ struct SolverData {
     bool isNormalCall;
     bool isJacobianCall;
     bool isPrintCall;
+    bool doCalcJacobian;
 
-    // Error Thresholds.
-    double tau;
-    double eps1;
-    double eps2;
-    double eps3;
-    double delta;
+    // Solver Options
+    SolverOptions *solverOptions;
 
     // Benchmarks
     SolverTimer timer;
@@ -119,19 +130,6 @@ struct SolverData {
 };
 
 
-struct SolverOptions {
-    int iterMax;
-    double tau;
-    double eps1;
-    double eps2;
-    double eps3;
-    double delta;
-    int autoDiffType;
-    int autoParamScale;
-    int solverType;
-};
-
-
 struct SolverResult {
     bool success;
     double errorAvg;
@@ -142,12 +140,7 @@ struct SolverResult {
     int iterations;
     int functionEvals;
     int jacobianEvals;
-    // int iterationAttempts;
-    // double errorInitial;
     double errorFinal;
-    // double errorJt;
-    // double errorDp;
-    // double errorMaximum;
 };
 
 #endif // MAYA_MM_SOLVER_DATA_H

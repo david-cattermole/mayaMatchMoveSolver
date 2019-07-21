@@ -38,10 +38,13 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver9(solverUtils.SolverTestCase):
 
-    def test_init(self):
+    def do_solve(self, solver_name, solver_index):
         """
         Solve an animated bundle across time.
         """
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
         start = 1
         end = 2
 
@@ -114,6 +117,7 @@ class TestSolver9(solverUtils.SolverTestCase):
                     marker=markers,
                     attr=node_attrs,
                     frame=[f],
+                    solverType=solver_index,
                     verbose=True,
                 )
                 # Ensure the values are correct
@@ -127,6 +131,15 @@ class TestSolver9(solverUtils.SolverTestCase):
         path = self.get_data_path('solver_test9_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+    def test_init_levmar(self):
+        self.do_solve('levmar', 0)
+
+    def test_init_cminpack_lmdif(self):
+        self.do_solve('cminpack_lm', 1)
+
+    def test_init_cminpack_lmder(self):
+        self.do_solve('cminpack_lmder', 2)
 
 
 if __name__ == '__main__':

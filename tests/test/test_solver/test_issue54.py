@@ -237,13 +237,22 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         self.do_solve_with_initial_value_twenty('levmar', 0)
         self.do_solve_with_initial_value_threeSixty('levmar', 0)
 
-    def test_init_cminpack_lm(self):
+    def test_init_cminpack_lmdif(self):
         """
         Solve nodal camera on a single frame, using cminpack_lm
         """
         self.do_solve_with_initial_value_zero('cminpack_lm', 1)
         self.do_solve_with_initial_value_twenty('cminpack_lm', 1)
         self.do_solve_with_initial_value_threeSixty('cminpack_lm', 1)
+
+    def test_init_cminpack_lmder(self):
+        """
+        Solve nodal camera on a single frame, using cminpack_lm
+        """
+        self.do_solve_with_initial_value_zero('cminpack_lmder', 2)
+        self.do_solve_with_initial_value_twenty('cminpack_lmder', 2)
+        self.do_solve_with_initial_value_threeSixty('cminpack_lmder', 2)
+
 
 
 if __name__ == '__main__':

@@ -28,10 +28,13 @@
 #define SOLVE_FUNC_SUCCESS (0)
 #define SOLVE_FUNC_FAILURE (-1)
 
+
 int solveFunc(int numberOfParameters,
               int numberOfErrors,
               const double *parameters,
               double *errors,
+              double *jacobian,
               void *userData);
+
 
 #endif // MAYA_MM_SOLVER_FUNC_H

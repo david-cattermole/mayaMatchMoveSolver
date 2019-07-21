@@ -377,15 +377,24 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     }
 
     // Set defaults based on solver type chosen.
-    if (m_solverType == SOLVER_TYPE_CMINPACK_LM) {
-        m_iterations = CMINPACK_LM_ITERATIONS_DEFAULT_VALUE;
-        m_tau = CMINPACK_LM_TAU_DEFAULT_VALUE;
-        m_epsilon1 = CMINPACK_LM_EPSILON1_DEFAULT_VALUE;
-        m_epsilon2 = CMINPACK_LM_EPSILON2_DEFAULT_VALUE;
-        m_epsilon3 = CMINPACK_LM_EPSILON3_DEFAULT_VALUE;
-        m_delta = CMINPACK_LM_DELTA_DEFAULT_VALUE;
-        m_autoDiffType = CMINPACK_LM_AUTO_DIFF_TYPE_DEFAULT_VALUE;
-        m_autoParamScale = CMINPACK_LM_AUTO_PARAM_SCALE_DEFAULT_VALUE;
+    if (m_solverType == SOLVER_TYPE_CMINPACK_LM_DIF) {
+        m_iterations = CMINPACK_LMDIF_ITERATIONS_DEFAULT_VALUE;
+        m_tau = CMINPACK_LMDIF_TAU_DEFAULT_VALUE;
+        m_epsilon1 = CMINPACK_LMDIF_EPSILON1_DEFAULT_VALUE;
+        m_epsilon2 = CMINPACK_LMDIF_EPSILON2_DEFAULT_VALUE;
+        m_epsilon3 = CMINPACK_LMDIF_EPSILON3_DEFAULT_VALUE;
+        m_delta = CMINPACK_LMDIF_DELTA_DEFAULT_VALUE;
+        m_autoDiffType = CMINPACK_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE;
+        m_autoParamScale = CMINPACK_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE;
+    } else if (m_solverType == SOLVER_TYPE_CMINPACK_LM_DER) {
+        m_iterations = CMINPACK_LMDER_ITERATIONS_DEFAULT_VALUE;
+        m_tau = CMINPACK_LMDER_TAU_DEFAULT_VALUE;
+        m_epsilon1 = CMINPACK_LMDER_EPSILON1_DEFAULT_VALUE;
+        m_epsilon2 = CMINPACK_LMDER_EPSILON2_DEFAULT_VALUE;
+        m_epsilon3 = CMINPACK_LMDER_EPSILON3_DEFAULT_VALUE;
+        m_delta = CMINPACK_LMDER_DELTA_DEFAULT_VALUE;
+        m_autoDiffType = CMINPACK_LMDER_AUTO_DIFF_TYPE_DEFAULT_VALUE;
+        m_autoParamScale = CMINPACK_LMDER_AUTO_PARAM_SCALE_DEFAULT_VALUE;
     } else if (m_solverType == SOLVER_TYPE_LEVMAR) {
         m_iterations = LEVMAR_ITERATIONS_DEFAULT_VALUE;
         m_tau = LEVMAR_TAU_DEFAULT_VALUE;

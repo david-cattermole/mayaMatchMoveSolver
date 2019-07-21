@@ -172,25 +172,35 @@
 #define PRINT_STATS_FLAG_LONG      "-printStatistics"
 
 // Default Values for solver option flags
-#define CMINPACK_LM_ITERATIONS_DEFAULT_VALUE  20
-#define CMINPACK_LM_TAU_DEFAULT_VALUE  100.0 // default is 100.0
-#define CMINPACK_LM_EPSILON1_DEFAULT_VALUE  1E-6 // default is 1E-15 (ftol)
-#define CMINPACK_LM_EPSILON2_DEFAULT_VALUE  1E-6 // default is 1E-15 (xtol)
-#define CMINPACK_LM_EPSILON3_DEFAULT_VALUE  1E-6 // default is 0.0 (gtol)
-#define CMINPACK_LM_DELTA_DEFAULT_VALUE  1E-03 // default is 0.0
-// cminpack only supports forward '0=forward' auto-diff'ing.
-#define CMINPACK_LM_AUTO_DIFF_TYPE_DEFAULT_VALUE  0
-#define CMINPACK_LM_AUTO_PARAM_SCALE_DEFAULT_VALUE  1  // default is 'on=1 (mode=1)'
+#define CMINPACK_LMDIF_ITERATIONS_DEFAULT_VALUE  (20)
+#define CMINPACK_LMDIF_TAU_DEFAULT_VALUE  (100.0) // default is 100.0
+#define CMINPACK_LMDIF_EPSILON1_DEFAULT_VALUE  (1E-6) // default is 1E-15 (ftol)
+#define CMINPACK_LMDIF_EPSILON2_DEFAULT_VALUE  (1E-6) // default is 1E-15 (xtol)
+#define CMINPACK_LMDIF_EPSILON3_DEFAULT_VALUE  (1E-6) // default is 0.0 (gtol)
+#define CMINPACK_LMDIF_DELTA_DEFAULT_VALUE  (1E-03) // default is 0.0
+// cminpack lmdif only supports forward '0=forward' auto-diff'ing.
+#define CMINPACK_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE  (0)
+#define CMINPACK_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE  (1)  // default is 'on=1 (mode=1)'
 
-#define LEVMAR_ITERATIONS_DEFAULT_VALUE  20
-#define LEVMAR_TAU_DEFAULT_VALUE  1E-03 // LevMar default is 1E-3
-#define LEVMAR_EPSILON1_DEFAULT_VALUE  1E-6 // LevMar default is 1E-12
-#define LEVMAR_EPSILON2_DEFAULT_VALUE  1E-6 // LevMar default is 1E-12
-#define LEVMAR_EPSILON3_DEFAULT_VALUE  1E-6 // LevMar default is 1E-12
+#define CMINPACK_LMDER_ITERATIONS_DEFAULT_VALUE  (20)
+#define CMINPACK_LMDER_TAU_DEFAULT_VALUE  (100.0) // default is 100.0
+#define CMINPACK_LMDER_EPSILON1_DEFAULT_VALUE  (1E-6) // default is 1E-15 (ftol)
+#define CMINPACK_LMDER_EPSILON2_DEFAULT_VALUE  (1E-6) // default is 1E-15 (xtol)
+#define CMINPACK_LMDER_EPSILON3_DEFAULT_VALUE  (1E-6) // default is 0.0 (gtol)
+#define CMINPACK_LMDER_DELTA_DEFAULT_VALUE  (1E-03) // default is 0.0
+// cminpack lmder supports both forward '0=forward' and central auto-diff'ing.
+#define CMINPACK_LMDER_AUTO_DIFF_TYPE_DEFAULT_VALUE  (0)
+#define CMINPACK_LMDER_AUTO_PARAM_SCALE_DEFAULT_VALUE  (1)  // default is 'on=1 (mode=1)'
+
+#define LEVMAR_ITERATIONS_DEFAULT_VALUE  (20)
+#define LEVMAR_TAU_DEFAULT_VALUE  (1E-03) // LevMar default is 1E-3
+#define LEVMAR_EPSILON1_DEFAULT_VALUE  (1E-6) // LevMar default is 1E-12
+#define LEVMAR_EPSILON2_DEFAULT_VALUE  (1E-6) // LevMar default is 1E-12
+#define LEVMAR_EPSILON3_DEFAULT_VALUE  (1E-6) // LevMar default is 1E-12
 #define LEVMAR_DELTA_DEFAULT_VALUE  (1E-04) // LevMar default is 1E-06
-#define LEVMAR_AUTO_DIFF_TYPE_DEFAULT_VALUE  1 // LevMar default is '0=forward'
+#define LEVMAR_AUTO_DIFF_TYPE_DEFAULT_VALUE  (1) // LevMar default is '0=forward'
 // LevMar does not have auto-parameter scaling.
-#define LEVMAR_AUTO_PARAM_SCALE_DEFAULT_VALUE  0
+#define LEVMAR_AUTO_PARAM_SCALE_DEFAULT_VALUE  (0)
 
 
 class MMSolverCmd : public MPxCommand {

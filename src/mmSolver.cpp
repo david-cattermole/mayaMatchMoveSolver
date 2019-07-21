@@ -61,6 +61,8 @@
 // Local
 #include <mmSolverLevMar.h>
 #include <mmSolverCMinpack.h>
+#include <mmSolverCMinpackLMDif.h>
+#include <mmSolverCMinpackLMDer.h>
 #include <mmSolverFunc.h>
 #include <mayaUtils.h>
 
@@ -82,10 +84,10 @@ std::vector<SolverTypePair> getSolverTypes() {
     solverType.first = SOLVER_TYPE_CMINPACK_LM_DIF;
     solverType.second = SOLVER_TYPE_CMINPACK_LM_DIF_NAME;
     solverTypes.push_back(solverType);
-
-//    solverType.first = SOLVER_TYPE_CMINPACK_LM_DER;
-//    solverType.second = SOLVER_TYPE_CMINPACK_LM_DER_NAME;
-//    solverTypes.push_back(solverType);
+    
+    solverType.first = SOLVER_TYPE_CMINPACK_LM_DER;
+    solverType.second = SOLVER_TYPE_CMINPACK_LM_DER_NAME;
+    solverTypes.push_back(solverType);
 #endif
     return solverTypes;
 }
@@ -118,7 +120,7 @@ SolverTypePair getSolverTypeDefault() {
             ERR("MMSOLVER_DEFAULT_SOLVER environment variable is invalid. "
                 << "Value may be "
                 << "\"cminpack_lm\", "
-                // << "\"cminpack_lmder\", "
+                << "\"cminpack_lmder\", "
                 << "or \"levmar\"; "
                 << "; value=" << defaultSolver);
         }
@@ -720,6 +722,7 @@ bool solve(int iterMax,
     std::vector<double> markerWeightList;
     std::vector<double> errorList(1);
     std::vector<double> paramList(1);
+    std::vector<double> jacobianList(1);
 
     int numberOfErrors = 0;
     MarkerPtrList validMarkerList;
@@ -785,6 +788,7 @@ bool solve(int iterMax,
     }
     paramList.resize((unsigned long) numberOfParameters, 0);
     errorList.resize((unsigned long) numberOfErrors, 0);
+    jacobianList.resize((unsigned long) numberOfParameters * numberOfErrors, 0);
 
     std::vector<double> errorDistanceList;
     errorDistanceList.resize((unsigned long) numberOfErrors / ERRORS_PER_MARKER, 0);
@@ -839,22 +843,20 @@ bool solve(int iterMax,
     userData.markerPosList = markerPosList;
     userData.markerWeightList = markerWeightList;
 
+    userData.paramList = paramList;
     userData.errorList = errorList;
     userData.errorDistanceList = errorDistanceList;
+    userData.jacobianList = jacobianList;
     userData.iterNum = 0;
     userData.jacIterNum = 0;
-    userData.iterMax = iterMax;
     userData.imageWidth = 2048.0;  // TODO: Get actual image plane resolution.
 
     userData.isJacobianCall = false;
     userData.isNormalCall = true;
     userData.isPrintCall = false;
+    userData.doCalcJacobian = false;
 
-    userData.tau = tau;
-    userData.eps1 = eps1;
-    userData.eps2 = eps2;
-    userData.eps3 = eps3;
-    userData.delta = delta;
+    userData.solverOptions = &solverOptions;
 
     userData.timer = timer;
 
@@ -923,6 +925,33 @@ bool solve(int iterMax,
 #else // USE_SOLVER_CMINPACK is defined.
 
         solve_3d_cminpack_lmdif(
+                solverOptions,
+                numberOfParameters,
+                numberOfErrors,
+                paramList,
+                errorList,
+                paramLowerBoundList,
+                paramUpperBoundList,
+                paramWeightList,
+                userData,
+                solveResult,
+                outResult);
+
+#endif // USE_SOLVER_CMINPACK
+
+    } else if (solverType == SOLVER_TYPE_CMINPACK_LM_DER) {
+
+#ifndef USE_SOLVER_CMINPACK
+
+        ERR("Solver Type is not supported by this compiled plug-in. "
+            << "solverType=" << solverType);
+        resultStr = "success=0";
+        outResult.append(MString(resultStr.c_str()));
+        return false;
+
+#else // USE_SOLVER_CMINPACK is defined.
+
+        solve_3d_cminpack_lmder(
                 solverOptions,
                 numberOfParameters,
                 numberOfErrors,

@@ -39,7 +39,11 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver5(solverUtils.SolverTestCase):
 
-    def test_init(self):
+    def do_solve(self, solver_name, solver_index):
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
+
         start = 1
         end = 100
 
@@ -88,6 +92,7 @@ class TestSolver5(solverUtils.SolverTestCase):
                 marker=markers,
                 attr=node_attrs,
                 iterations=10,
+                solverType=solver_index,
                 frame=(f),
                 verbose=True,
             )
@@ -104,6 +109,16 @@ class TestSolver5(solverUtils.SolverTestCase):
         for result in results:
             self.assertEqual(result[0], 'success=1')
         return
+
+    def test_init_levmar(self):
+        self.do_solve('levmar', 0)
+
+    def test_init_cminpack_lmdif(self):
+        self.do_solve('cminpack_lm', 1)
+
+    def test_init_cminpack_lmder(self):
+        self.do_solve('cminpack_lmder', 2)
+
 
 if __name__ == '__main__':
     prog = unittest.main()

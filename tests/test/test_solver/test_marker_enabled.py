@@ -242,7 +242,7 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         ty_mid = maya.cmds.getAttr(grp + '.ty', time=mid)
         ty_end = maya.cmds.getAttr(grp + '.ty', time=end)
         assert self.approx_equal(tx_start, -0.51855463, eps=0.001)
-        assert self.approx_equal(tx_mid, -2.30711317518, eps=0.001)
+        assert self.approx_equal(tx_mid, -2.30211317518, eps=0.001)
         assert self.approx_equal(tx_end, -1.48144697, eps=0.001)
         assert self.approx_equal(ty_start, 1.30993172, eps=0.001)
         assert self.approx_equal(ty_mid, 1.65458758547, eps=0.001)

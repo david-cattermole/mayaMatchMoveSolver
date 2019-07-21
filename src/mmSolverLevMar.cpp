@@ -82,7 +82,7 @@ bool solve_3d_levmar_dif(
 
     // Change the sign of the delta
     double delta_factor = std::abs(solverOptions.delta);
-    if (solverOptions.autoDiffType == 1) {
+    if (solverOptions.autoDiffType == LEVMAR_AUTO_DIFF_TYPE_CENTRAL) {
         // Central Differencing
         //
         // To use forward differing the delta must be a positive
@@ -237,8 +237,14 @@ void solveFunc_levmar(double *p,
                       double *x,
                       int m,
                       int n,
-                      void *data) {
-    int ret = solveFunc(m, n, p, x, data);
+                      void *data) {    
+    // We will not compute a jacobian in 'levmar'
+    SolverData *ud = static_cast<SolverData *>(data);
+    ud->doCalcJacobian = false;
+    double *fjac = NULL;
+
+    // int ret = solveFunc(m, n, p, x, data);
+    int ret = solveFunc(m, n, p, x, fjac, data);    
     if (ret == SOLVE_FUNC_FAILURE) {
         for (int i = 0; i < n; ++i) {
           x[i] = std::numeric_limits<double>::quiet_NaN();

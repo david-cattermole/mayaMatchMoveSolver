@@ -36,7 +36,11 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver2(solverUtils.SolverTestCase):
 
-    def test_init(self):
+    def do_solve(self, solver_name, solver_index):
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
+
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
@@ -96,6 +100,7 @@ class TestSolver2(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             iterations=1000,
+            solverType=solver_index,
             frame=frames,
             verbose=True,
         )
@@ -130,6 +135,14 @@ class TestSolver2(solverUtils.SolverTestCase):
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
 
+    def test_init_levmar(self):
+        self.do_solve('levmar', 0)
+
+    def test_init_cminpack_lmdif(self):
+        self.do_solve('cminpack_lm', 1)
+
+    def test_init_cminpack_lmder(self):
+        self.do_solve('cminpack_lmder', 2)
 
 if __name__ == '__main__':
     prog = unittest.main()

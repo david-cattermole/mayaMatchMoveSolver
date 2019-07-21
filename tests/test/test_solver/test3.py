@@ -115,12 +115,17 @@ class TestSolver3(solverUtils.SolverTestCase):
         """
         self.do_solve('levmar', 0)
 
-    def test_init_cminpack_lm(self):
+    def test_init_cminpack_lmdif(self):
         """
-        Solve nodal camera on a single frame, using cminpack_lm
+        Solve nodal camera on a single frame, using cminpack_lmdif
         """
         self.do_solve('cminpack_lm', 1)
 
+    def test_init_cminpack_lmder(self):
+        """
+        Solve nodal camera on a single frame, using cminpack_lmder
+        """
+        self.do_solve('cminpack_lmder', 2)
 
 if __name__ == '__main__':
     prog = unittest.main()

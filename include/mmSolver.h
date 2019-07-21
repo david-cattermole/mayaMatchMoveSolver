@@ -27,10 +27,10 @@
 #define MAYA_MM_SOLVER_H
 
 // STL
-#include <string>  // string
-#include <vector>  // vector
-#include <map>     // map
-#include <utility> // pair
+#include <string>
+#include <vector>
+#include <map>
+#include <utility>
 
 // Utils
 #include <utilities/debugUtils.h>
@@ -61,9 +61,9 @@
 #define SOLVER_TYPE_CMINPACK_LM_DIF 1
 #define SOLVER_TYPE_CMINPACK_LM_DIF_NAME "cminpack_lm"
 
-//// Dense LM solver, with custom jacobian, using 'cminpack' library.
-//#define SOLVER_TYPE_CMINPACK_LM_DER 2
-//#define SOLVER_TYPE_CMINPACK_LM_DER_NAME "cminpack_lmder"
+// Dense LM solver, with custom jacobian, using 'cminpack' library.
+#define SOLVER_TYPE_CMINPACK_LM_DER 2
+#define SOLVER_TYPE_CMINPACK_LM_DER_NAME "cminpack_lmder"
 
 // The default solver to use, if all solvers are available.
 #define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LM_DIF

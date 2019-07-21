@@ -38,7 +38,11 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver8(solverUtils.SolverTestCase):
 
-    def test_init(self):
+    def do_solve(self, solver_name, solver_index):
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
+
         # Open File Path
         scenePath = self.get_data_path('solver_test8.ma')
         maya.cmds.file(scenePath,
@@ -102,6 +106,7 @@ class TestSolver8(solverUtils.SolverTestCase):
             attr=node_attrs,
             frame=frames,
             iterations=1000,
+            solverType=solver_index,
             verbose=True,
         )
         e = time.time()
@@ -114,6 +119,15 @@ class TestSolver8(solverUtils.SolverTestCase):
         
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
+
+    def test_init_levmar(self):
+        self.do_solve('levmar', 0)
+
+    def test_init_cminpack_lmdif(self):
+        self.do_solve('cminpack_lm', 1)
+
+    def test_init_cminpack_lmder(self):
+        self.do_solve('cminpack_lmder', 2)
 
 
 if __name__ == '__main__':

@@ -134,8 +134,8 @@ MString generateDirtyCommand(int numberOfErrors, SolverData *ud) {
 // screen-space-"uniform" deviation. A bundle attribute axis that is
 // pointed away from the camera will need to move much farther than an
 // attribute axis pointed orthogonal to the camera's direction.
-double calculateParameterDelta(int deltaDirection) {
-    double delta = 1.0;
+double calculateParameterDelta(double delta, int deltaDirection) {
+    double result = delta;
 
     // Get attribute
 
@@ -144,20 +144,27 @@ double calculateParameterDelta(int deltaDirection) {
     // Switch based on attribute type.
     // - Camera Translate
     //   - ???
+
     // - Camera Rotate X and Y (tilt and pan)
+    //   - Note: We assume the camera rotation order is ZXY.
     //   - All camera rotations should be screen-space FOV degree
     //     values.
     //   - Calculate the Angle of View of the camera, width and height
     //     axis.
     //   - As a ratio of the camera FOV in width and height, use this
     //     to tilt and pan the camera attributes.
+
     // - Camera Rotate Z (roll)
+    //   - Note: We assume the camera rotation order is ZXY.
     //   - Use a fixed value? The Camera FOV will not affect this
     //     method.
+    //   - How-far away from the center of the camera's FOV?
+
     // - Camera Scale
     //   - Throw an error - nobody should solve camera scale.
     //   - Or should we consider this a transform scale?
     //   - At the very least we should print-out a warning.
+
     // - Bundle Translate or Transform Translate
     //   - Get bundle world matrix
     //   - Create a new vector along the translate axis (x = (1, 0, 0))
@@ -168,19 +175,24 @@ double calculateParameterDelta(int deltaDirection) {
     //     translate axis.
     //   - Compute the screen-space distance between two points.
     //   - Use this screen-space distance as the delta.
+
     // - Transform rotate
     //   - Calculate the rotation axis plane's area as seen in the
     //     current camera's FOV.
+
     // - Transform scale
     //   - Use a fixed ratio? Like 1 or 5 percent. *=1.05 and *=0.95?
+
     // - Focal length
     //   - Use a fixed ratio? *=1.05 and *=0.95?
+
     // - Attribute with min/max values.
     //   - Use a specific ratio, such as 1 percent.
+
     // - Misc attribute
     //   - Use a fixed number? 0.1?
 
-    return delta;
+    return result;
 }
 
 

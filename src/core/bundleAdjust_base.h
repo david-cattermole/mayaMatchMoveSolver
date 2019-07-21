@@ -66,7 +66,7 @@
 #define SOLVER_TYPE_CMINPACK_LM_DER_NAME "cminpack_lmder"
 
 // The default solver to use, if all solvers are available.
-#define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LM_DIF
+#define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LM_DER
 
 // Enable the Maya profiling data collection.
 #define MAYA_PROFILE 1

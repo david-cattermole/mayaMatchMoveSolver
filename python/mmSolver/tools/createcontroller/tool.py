@@ -45,6 +45,9 @@ import mmSolver.tools.createcontroller.lib as lib
 
 
 def create():
+    """
+    Create a controller for selected nodes.
+    """
     nodes = maya.cmds.ls(selection=True, long=True) or []
     ctrls = lib.create(nodes, sparse=True)
     if len(ctrls) > 0:
@@ -57,6 +60,9 @@ def create():
 
 
 def remove():
+    """
+    Remove selected controllers and bake data on controlled nodes.
+    """
     nodes = maya.cmds.ls(selection=True, long=True) or []
     orig_nodes = lib.remove(nodes)
     if len(orig_nodes) > 0:

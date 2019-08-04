@@ -378,11 +378,7 @@ bool set_maya_attribute_values(int numberOfParameters,
         double xmin = attr->getMinimumValue();
         double xmax = attr->getMaximumValue();
         double value = paramList[i];
-        value = (value / scale) - offset;
-
-        // TODO: Implement proper Box Constraints; Issue #64.
-        value = std::max<double>(value, xmin);
-        value = std::min<double>(value, xmax);
+        value = fromInternalToBounded(value, xmin, xmax, offset, scale);
 
         // Get frame time
         MTime frame = currentFrame;

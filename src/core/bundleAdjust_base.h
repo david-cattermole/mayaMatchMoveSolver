@@ -134,13 +134,33 @@ void findErrorToUnknownRelationship(MarkerPtrList &markerList,
                                     BoolList2D &errorToParamMapping,
                                     MStatus &status);
 
+inline
+double fromInternalToBounded(double value,
+                             double xmin, double xmax,
+                             double offset, double scale) {
+    value = (value / scale) - offset;
+
+    // TODO: Implement proper Box Constraints; Issue #64.
+    value = std::max<double>(value, xmin);
+    value = std::min<double>(value, xmax);
+    return value;
+}
+
+
+//inline
+//double fromBoundedToInternal(double value,
+//                             double xmin, double xmax,
+//                             double offset, double scale){
+//    return value;
+//}
+
+
 bool set_initial_parameters(int numberOfParameters,
                             std::vector<double> &paramList,
                             std::vector<std::pair<int, int> > &paramToAttrList,
                             AttrPtrList &attrList,
                             MTimeArray &frameList,
                             MStringArray &outResult);
-
 
 bool set_maya_attribute_values(int numberOfParameters,
                                std::vector<std::pair<int, int> > &paramToAttrList,

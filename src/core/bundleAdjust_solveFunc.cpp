@@ -230,7 +230,10 @@ void setParameters(
         double xmin = attr->getMinimumValue();
         double xmax = attr->getMaximumValue();
         double value = parameters[i];
-        value = fromInternalToBounded(value, xmin, xmax, offset, scale);
+        value = parameterBoundFromInternalToExternal(
+            value,
+            xmin, xmax,
+            offset, scale);
 
         // Get frame time
         MTime frame = currentFrame;

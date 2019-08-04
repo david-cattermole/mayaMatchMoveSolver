@@ -71,7 +71,7 @@
 // Enable the Maya profiling data collection.
 #define MAYA_PROFILE 1
 
-// The number of errors that are measured per-marker.  
+// The number of errors that are measured per-marker.
 //
 // This can be a value of 2 or 3. 3 was used in the past with
 // success, but tests now prove 2 to reduce error with less
@@ -134,10 +134,12 @@ void findErrorToUnknownRelationship(MarkerPtrList &markerList,
                                     BoolList2D &errorToParamMapping,
                                     MStatus &status);
 
+
+// Implements Box Constraints; Issue #64.
 inline
-double fromInternalToBounded(double value,
-                             double xmin, double xmax,
-                             double offset, double scale) {
+double parameterBoundFromInternalToExternal(double value,
+                                            double xmin, double xmax,
+                                            double offset, double scale) {
     value = (value / scale) - offset;
 
     // TODO: Implement proper Box Constraints; Issue #64.
@@ -147,12 +149,16 @@ double fromInternalToBounded(double value,
 }
 
 
-//inline
-//double fromBoundedToInternal(double value,
-//                             double xmin, double xmax,
-//                             double offset, double scale){
-//    return value;
-//}
+inline
+double parameterBoundsFromExternalToInternal(double value,
+                                             double xmin, double xmax,
+                                             double offset, double scale){
+    value = std::max<double>(value, xmin);
+    value = std::min<double>(value, xmax);
+    
+    value = (value * scale) + offset;
+    return value;
+}
 
 
 bool set_initial_parameters(int numberOfParameters,

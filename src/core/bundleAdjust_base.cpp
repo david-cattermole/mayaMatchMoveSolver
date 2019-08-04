@@ -83,7 +83,7 @@ std::vector<SolverTypePair> getSolverTypes() {
     solverType.first = SOLVER_TYPE_CMINPACK_LM_DIF;
     solverType.second = SOLVER_TYPE_CMINPACK_LM_DIF_NAME;
     solverTypes.push_back(solverType);
-    
+
     solverType.first = SOLVER_TYPE_CMINPACK_LM_DER;
     solverType.second = SOLVER_TYPE_CMINPACK_LM_DER_NAME;
     solverTypes.push_back(solverType);
@@ -353,7 +353,12 @@ bool set_initial_parameters(int numberOfParameters,
 
         double xoffset = attr->getOffsetValue();
         double xscale = attr->getScaleValue();
-        value = (value * xscale) + xoffset;
+        double xmin = attr->getMinimumValue();
+        double xmax = attr->getMaximumValue();
+        value = parameterBoundsFromExternalToInternal(
+            value,
+            xmin, xmax,
+            xoffset, xscale);
         paramList[i] = value;
     }
     return true;
@@ -373,12 +378,15 @@ bool set_maya_attribute_values(int numberOfParameters,
         IndexPair attrPair = paramToAttrList[i];
         AttrPtr attr = attrList[attrPair.first];
 
-        double offset = attr->getOffsetValue();
-        double scale = attr->getScaleValue();
+        double xoffset = attr->getOffsetValue();
+        double xscale = attr->getScaleValue();
         double xmin = attr->getMinimumValue();
         double xmax = attr->getMaximumValue();
         double value = paramList[i];
-        value = fromInternalToBounded(value, xmin, xmax, offset, scale);
+        value = parameterBoundFromInternalToExternal(
+            value,
+            xmin, xmax,
+            xoffset, xscale);
 
         // Get frame time
         MTime frame = currentFrame;

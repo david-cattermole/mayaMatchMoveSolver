@@ -134,8 +134,22 @@ MString generateDirtyCommand(int numberOfErrors, SolverData *ud) {
 // screen-space-"uniform" deviation. A bundle attribute axis that is
 // pointed away from the camera will need to move much farther than an
 // attribute axis pointed orthogonal to the camera's direction.
-double calculateParameterDelta(double delta, int deltaDirection) {
+double calculateParameterDelta(double value, double delta, double sign, AttrPtr attr) {
     double result = delta;
+
+    // If the value +/- delta would cause the attribute to go
+    // out of box-constraints, then we should only use one
+    // value, or go in the other direction.
+    // sign = 1;  // or '-1' to set delta negative
+    double xmin = attr->getMinimumValue();
+    double xmax = attr->getMaximumValue();
+    if ((value + delta) > xmax) {
+        sign = -1;
+    }
+    if ((value - delta) < xmin) {
+        sign = 1;
+    }
+    result *= sign;
 
     // Get attribute
 
@@ -216,11 +230,7 @@ void setParameters(
         double xmin = attr->getMinimumValue();
         double xmax = attr->getMaximumValue();
         double value = parameters[i];
-        value = (value / scale) - offset;
-
-        // TODO: Implement proper Box Constraints; Issue #64.
-        value = std::max<double>(value, xmin);
-        value = std::min<double>(value, xmax);
+        value = fromInternalToBounded(value, xmin, xmax, offset, scale);
 
         // Get frame time
         MTime frame = currentFrame;
@@ -591,22 +601,21 @@ int solveFunc(int numberOfParameters,
             }
             std::vector<double> errorListA(numberOfErrors, 0);
 
-            // // Calculate the relative delta for each parameter.
-            // double delta = calculateParameterDelta()
+            // Calculate the relative delta for each parameter.
             double delta = ud->solverOptions->delta;
-
-            // // TODO: If the value +/- delta would cause the attribute to go out of
-            // //   box-constraints, then we should only use one value, or go in
-            // //   the other direction.
-            // double sign = 1;  // or '-1' to set delta negative
+            assert(delta > 0.0);
 
             // TODO: Find a way to 'analytically' calculate the deviation of
             //   markers as will be affected by the new calculated delta
             //   value.  This will give us a jacobian matrix, without needing
             //   to set attribute values and re-evaluate them in Maya's DG.
+            IndexPair attrPair = ud->paramToAttrList[i];
+            AttrPtr attr = ud->attrList[attrPair.first];
+            double value = parameters[i];
+            double deltaA = calculateParameterDelta(value, delta, 1, attr);
 
             incrementJacobianIteration(ud, debugIsOpen, debugFile);
-            paramListA[i] = paramListA[i] + delta;
+            paramListA[i] = paramListA[i] + deltaA;
             {
                 ud->timer.paramBenchTimer.start();
                 ud->timer.paramBenchTicks.start();
@@ -654,7 +663,7 @@ int solveFunc(int numberOfParameters,
             if (autoDiffType == CMINPACK_AUTO_DIFF_TYPE_FORWARD) {
                 // Set the Jacobian matrix using the previously
                 // calculated errors (original and A).
-                double inv_delta = 1.0 / delta;
+                double inv_delta = 1.0 / deltaA;
                 for (int j = 0; j < errorListA.size(); ++j) {
                     int num = (i * ldfjac) + j;
                     double x = (errorListA[j] - errors[j]) * inv_delta;
@@ -663,66 +672,85 @@ int solveFunc(int numberOfParameters,
                 }
 
             } else if (autoDiffType == CMINPACK_AUTO_DIFF_TYPE_CENTRAL) {
+                // Create another copy of parameters and errors.
                 std::vector<double> paramListB(numberOfParameters, 0);
                 for (int j = 0; j < numberOfParameters; ++j) {
                     paramListB[j] = parameters[j];
                 }
                 std::vector<double> errorListB(numberOfErrors, 0);
 
-                incrementJacobianIteration(ud, debugIsOpen, debugFile);
-                paramListB[i] = paramListB[i] - delta;
-                {
-                    ud->timer.paramBenchTimer.start();
-                    ud->timer.paramBenchTicks.start();
-#ifdef MAYA_PROFILE
-                    MProfilingScope setParamScope(profileCategory,
-                                                  MProfiler::kColorA_L2,
-                                                  "set parameters");
-#endif
-                    setParameters(numberOfParameters,
-                                  &paramListB[0],
-                                  ud,
-                                  writeDebug,
-                                  debugFile,
-                                  status);
-                    ud->timer.paramBenchTimer.stop();
-                    ud->timer.paramBenchTicks.stop();
-                }
+                // Get the new delta, from the oposite direction. If
+                // we don't calculate a different delta value, we
+                // something has gone wrong and a second evaluation is
+                // not needed.
+                double deltaB = calculateParameterDelta(value, delta, -1, attr);
+                if (deltaA == deltaB) {
+                    // Set the Jacobian matrix using the previously
+                    // calculated errors (original and A).
+                    double inv_delta = 1.0 / deltaA;
+                    for (int j = 0; j < errorListA.size(); ++j) {
+                        int num = (i * ldfjac) + j;
+                        double x = (errorListA[j] - errors[j]) * inv_delta;
+                        ud->jacobianList[num] = x;
+                        jacobian[num] = x;
+                    }
+                } else {
 
-                error_avg_tmp = 0;
-                error_max_tmp = 0;
-                error_min_tmp = 0;
-                {
-                    ud->timer.errorBenchTimer.start();
-                    ud->timer.errorBenchTicks.start();
+                    incrementJacobianIteration(ud, debugIsOpen, debugFile);
+                    paramListB[i] = paramListB[i] + deltaB;
+                    {
+                        ud->timer.paramBenchTimer.start();
+                        ud->timer.paramBenchTicks.start();
 #ifdef MAYA_PROFILE
-                    MProfilingScope setParamScope(profileCategory,
-                                                  MProfiler::kColorA_L1,
-                                                  "measure errors");
+                        MProfilingScope setParamScope(profileCategory,
+                                                      MProfiler::kColorA_L2,
+                                                      "set parameters");
 #endif
-                    measureErrors(numberOfParameters,
-                                  numberOfErrors,
-                                  &errorListB[0],
-                                  ud,
-                                  error_avg_tmp,
-                                  error_max_tmp,
-                                  error_min_tmp,
-                                  writeDebug,
-                                  debugFile,
-                                  status);
-                    ud->timer.errorBenchTimer.stop();
-                    ud->timer.errorBenchTicks.stop();
-                }
+                        setParameters(numberOfParameters,
+                                      &paramListB[0],
+                                      ud,
+                                      writeDebug,
+                                      debugFile,
+                                      status);
+                        ud->timer.paramBenchTimer.stop();
+                        ud->timer.paramBenchTicks.stop();
+                    }
 
-                // Set the Jacobian matrix using the previously
-                // calculated errors (A and B).
-                assert(errorListA.size() == errorListB.size());
-                double inv_delta = 0.5 / delta;
-                for (int j = 0; j < errorListA.size(); ++j) {
-                    int num = (i * ldfjac) + j;
-                    double x = (errorListA[j] - errorListB[j]) * inv_delta;
-                    ud->jacobianList[num] = x;
-                    jacobian[num] = x;
+                    error_avg_tmp = 0;
+                    error_max_tmp = 0;
+                    error_min_tmp = 0;
+                    {
+                        ud->timer.errorBenchTimer.start();
+                        ud->timer.errorBenchTicks.start();
+#ifdef MAYA_PROFILE
+                        MProfilingScope setParamScope(profileCategory,
+                                                      MProfiler::kColorA_L1,
+                                                      "measure errors");
+#endif
+                        measureErrors(numberOfParameters,
+                                      numberOfErrors,
+                                      &errorListB[0],
+                                      ud,
+                                      error_avg_tmp,
+                                      error_max_tmp,
+                                      error_min_tmp,
+                                      writeDebug,
+                                      debugFile,
+                                      status);
+                        ud->timer.errorBenchTimer.stop();
+                        ud->timer.errorBenchTicks.stop();
+                    }
+
+                    // Set the Jacobian matrix using the previously
+                    // calculated errors (A and B).
+                    assert(errorListA.size() == errorListB.size());
+                    double inv_delta = 0.5 / (fabs(deltaA) + fabs(deltaB));
+                    for (int j = 0; j < errorListA.size(); ++j) {
+                        int num = (i * ldfjac) + j;
+                        double x = (errorListA[j] - errorListB[j]) * inv_delta;
+                        ud->jacobianList[num] = x;
+                        jacobian[num] = x;
+                    }
                 }
             }
         }

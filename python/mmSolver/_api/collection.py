@@ -917,6 +917,10 @@ class Collection(object):
                           to the user.
         :type status_fn: callable or None
 
+        :param info_fn: The function used to report information
+                        messages to the user.
+        :type info_fn: callable or None
+
         :return: List of SolveResults from the executed collection.
         :rtype: [SolverResult, ..]
         """

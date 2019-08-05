@@ -136,89 +136,14 @@ void findErrorToUnknownRelationship(MarkerPtrList &markerList,
                                     MStatus &status);
 
 
-// Convert an unbounded parameter value (that has already run through
-// 'parameterBoundFromExternalToInternal') into a bounded value where:
-//    xmin < value < xmax
-//
-// Implements Box Constraints; Issue #64.
-inline
 double parameterBoundFromInternalToExternal(double value,
                                             double xmin, double xmax,
-                                            double offset, double scale) {
-    const double float_max = std::numeric_limits<float>::max();
-    if ((xmin <= -float_max) && (xmax >= float_max)) {
-        // No bounds!
-        value = (value / scale) - offset;
-        value = std::max<double>(value, xmin);
-        value = std::min<double>(value, xmax);
-        return value;
-    }
-    else if (xmax >= float_max) {
-        // Lower bound only.
-        value = xmin - (1.0 + std::sqrt(value * value + 1.0));
-    }
-    else if (xmin <= -float_max) {
-        // Upper bound only.
-        value = xmax + (1.0 - std::sqrt(value * value + 1.0));
-    } else {
-        // Both lower and upper bounds.
-        value = xmin + ((xmax - xmin) / 2.0) * (std::sin(value) + 1.0);
-    }
-
-    value = (value / scale) - offset;
-    value = std::max<double>(value, xmin);
-    value = std::min<double>(value, xmax);
-    return value;
-}
+                                            double offset, double scale);
 
 
-// Convert a bounded parameter value, into an unbounded value.
-//
-// Implements Box Constraints; Issue #64.
-inline
 double parameterBoundFromExternalToInternal(double value,
                                             double xmin, double xmax,
-                                            double offset, double scale){
-    double initial_value = value;
-    double initial_xmin = xmin;
-    double initial_xmax = xmax;
-    double reconvert_value = 0.0;
-
-    value = std::max<double>(value, xmin);
-    value = std::min<double>(value, xmax);
-    value = (value * scale) + offset;
-    xmin = (xmin * scale) + offset;
-    xmax = (xmax * scale) + offset;
-
-    const double float_max = std::numeric_limits<float>::max();
-    if ((xmin <= float_max) && (xmax >= float_max)) {
-        // No bounds!
-        reconvert_value = parameterBoundFromInternalToExternal(
-            value,
-            initial_xmin, initial_xmax,
-            offset, scale);
-        assert(initial_value == reconvert_value);
-        return value;
-    }
-    else if (xmax >= float_max) {
-        // Lower bound only.
-        value = std::sqrt(std::pow(((value - xmin) + 1.0), 2.0) - 1.0);
-    }
-    else if (xmin <= -float_max) {
-        // Upper bound only.
-        value = std::sqrt(std::pow((xmax - value) + 1.0, 2.0) - 1.0);
-    } else {
-        // Both lower and upper bounds.
-        value = std::asin((2.0 * (value - xmin) / (xmax - xmin)) - 1.0);
-    }
-
-    reconvert_value = parameterBoundFromInternalToExternal(
-        value,
-        initial_xmin, initial_xmax,
-        offset, scale);
-    assert(initial_value == reconvert_value);
-    return value;
-}
+                                            double offset, double scale);
 
 
 bool set_initial_parameters(int numberOfParameters,

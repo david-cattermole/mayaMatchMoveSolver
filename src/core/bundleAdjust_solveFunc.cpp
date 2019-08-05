@@ -134,7 +134,10 @@ MString generateDirtyCommand(int numberOfErrors, SolverData *ud) {
 // screen-space-"uniform" deviation. A bundle attribute axis that is
 // pointed away from the camera will need to move much farther than an
 // attribute axis pointed orthogonal to the camera's direction.
-double calculateParameterDelta(double value, double delta, double sign, AttrPtr attr) {
+double calculateParameterDelta(double value,
+                               double delta,
+                               double sign,
+                               AttrPtr attr) {
     double result = delta;
 
     // If the value +/- delta would cause the attribute to go

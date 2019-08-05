@@ -608,10 +608,11 @@ int solveFunc(int numberOfParameters,
             double delta = ud->solverOptions->delta;
             assert(delta > 0.0);
 
-            // TODO: Find a way to 'analytically' calculate the deviation of
-            //   markers as will be affected by the new calculated delta
-            //   value.  This will give us a jacobian matrix, without needing
-            //   to set attribute values and re-evaluate them in Maya's DG.
+            // 'analytically' calculate the deviation of markers as
+            //  will be affected by the new calculated delta value.
+            //  This will give us a jacobian matrix, without needing
+            //  to set attribute values and re-evaluate them in Maya's
+            //  DG.
             IndexPair attrPair = ud->paramToAttrList[i];
             AttrPtr attr = ud->attrList[attrPair.first];
             double value = parameters[i];

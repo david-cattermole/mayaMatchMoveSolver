@@ -355,7 +355,7 @@ bool set_initial_parameters(int numberOfParameters,
         double xscale = attr->getScaleValue();
         double xmin = attr->getMinimumValue();
         double xmax = attr->getMaximumValue();
-        value = parameterBoundsFromExternalToInternal(
+        value = parameterBoundFromExternalToInternal(
             value,
             xmin, xmax,
             xoffset, xscale);

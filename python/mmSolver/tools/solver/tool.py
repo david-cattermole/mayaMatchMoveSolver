@@ -58,6 +58,8 @@ def run_solve(override_current_frame=None):
     force_update_state = lib_state.get_force_dg_update_state()
     refresh_state = lib_state.get_refresh_viewport_state()
     log_level = lib_state.get_log_level()
+    do_isolate_state = lib_state.get_isolate_object_while_solving_state()
+    image_plane_state = lib_state.get_display_image_plane_while_solving_state()
 
     layout = None
     win = solver_window.SolverWindow.get_instance()
@@ -86,6 +88,8 @@ def run_solve(override_current_frame=None):
         col,
         refresh_state,
         force_update_state,
+        do_isolate_state,
+        image_plane_state,
         log_level,
         win,
     )

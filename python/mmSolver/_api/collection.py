@@ -78,24 +78,17 @@ def createExecuteOptions(verbose=False,
 
     :param refresh: Should the solver refresh the viewport while solving?
     :type refresh: bool
-    :param refresh_state: Should we update the viewport while solving?
-    :type refresh_state: bool
 
     :param force_update: Force updating the DG network, to help the
                          solver in case of a Maya evaluation DG bug.
     :type force_update: bool
-    :param force_update_state: Should we forcibly update the DG while solving?
-    :type force_update_state: bool
 
-    :param do_isolate: Isolate only solving objects while running solve.
+    :param do_isolate: Isolate only solving objects while performing
+                       the solve.
     :type do_isolate: bool
-    :param do_isolate_state: Should the solving objects only be visible while performing the solve?
-    :type do_isolate_state: bool
 
-    :param display_image_plane: Display Image Planes while solving?
+    :param display_image_plane: Display image planes in the viewport while performing the solve?
     :type display_image_plane: bool
-    :param image_plane_state: Display image planes in the viewport while performing the solve?
-    :type image_plane_state: bool
     """
     # if display_node_types is None:
     #     display_node_types = dict()

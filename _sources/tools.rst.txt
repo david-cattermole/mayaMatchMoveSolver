@@ -10,8 +10,8 @@ Pages dedicated to specific tools:
 .. toctree::
     :maxdepth: 1
 
-   tools_solver_ui
-   tools_loadmarker
+    tools_solver_ui
+    tools_loadmarker
 
 Create Marker
 -------------
@@ -180,7 +180,6 @@ Run this Python command:
     import mmSolver.tools.smoothkeyframes.tool as smoothkeys_tool
     smoothkeys_tool.main()
 
-
 Re-Project Bundle
 -----------------
 
@@ -198,7 +197,6 @@ Run this Python command:
 
     import mmSolver.tools.reprojectbundle.tool as reprojbnd_tool
     reprojbnd_tool.main()
-
 
 Triangulate Bundle
 ------------------
@@ -218,7 +216,6 @@ Run this Python command:
 
     import mmSolver.tools.triangulatebundle.tool as tribnd_tool
     tribnd_tool.main()
-
 
 Center 2D On Selection
 ----------------------
@@ -270,15 +267,15 @@ Aim the selected transform nodes toward the active viewport camera.
 
 .. note::
 
-   This tool is deprecated. Use the "Screen-Z Manipulator" tool
-   instead.
+    This tool is deprecated. Use the "Screen-Z Manipulator" tool
+    instead.
 
 Run this Python command:
 
 .. code:: python
 
-   import mmSolver.tools.cameraaim.tool as cameraaim_tool
-   cameraaim_tool.main()
+    import mmSolver.tools.cameraaim.tool as cameraaim_tool
+    cameraaim_tool.main()
 
 Screen-Z Manipulator
 --------------------
@@ -329,7 +326,6 @@ Run this Python command:
     import mmSolver.tools.togglebundlelock.tool as tglbndlock
     tglbndlock.toggle_bundle_lock()
 
-
 Toggle Marker Lock State
 ------------------------
 
@@ -353,7 +349,6 @@ Run this Python command:
     import mmSolver.tools.togglemarkerlock.tool as tglmkrlock
     tglmkrlock.toggle_marker_lock()
 
-
 Average Marker
 --------------
 
@@ -375,7 +370,7 @@ Run this Python command:
     import mmSolver.tools.averagemarker.tool
     mmSolver.tools.averagemarker.tool.main()
 
-Duplicate marker
+Duplicate Marker
 ----------------
 
 Duplicate marker tool will create a new markers having same position
@@ -388,4 +383,3 @@ Run this Python command:
 
     import mmSolver.tools.duplicatemarker.tool
     mmSolver.tools.duplicatemarker.tool.main()
-

@@ -68,7 +68,7 @@ public:
 private:
     MString m_nodeName;
     MObject m_object;
-     double m_weight;
+    double m_weight;
     Attr m_matrix;
 };
 

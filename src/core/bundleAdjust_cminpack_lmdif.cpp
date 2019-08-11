@@ -103,23 +103,24 @@ bool solve_3d_cminpack_lmdif(
         ldfjac = numberOfParameters;
     }
 
-    double cminpack_ftol = solverOptions.eps1;
-    double cminpack_xtol = solverOptions.eps2;
-    double cminpack_gtol = solverOptions.eps3;
+    double ftol = solverOptions.eps1;
+    double xtol = solverOptions.eps2;
+    double gtol = solverOptions.eps3;
 
     // Change the sign of the delta
     // Note: lmdif only supports auto-diff 'forward' mode.
-    double cminpack_epsfcn = std::abs(solverOptions.delta);
+    double epsfcn = std::abs(solverOptions.delta);
 
-    int cminpack_mode = 2; // Off
+    int mode = 2; // Off
     if (solverOptions.autoParamScale == 1) {
-        cminpack_mode = 1; // On
+        mode = 1; // On
     }
 
-    double cminpack_factor = solverOptions.tau;
-    int cminpack_nprint = 0;  // 0 == don't print anything.
-    int cminpack_calls = 0;
-    double cminpack_fnorm = 0.0;
+    // cminpack uses a 'tau' value of between 0.0 to 100.0;
+    double tau_factor = solverOptions.tau * 100.0;
+    int nprint = 0;  // 0 == don't print anything.
+    int calls = 0;
+    double error_norm_value = 0.0;
 
     cminpack_info = __cminpack_func__(lmdif)(
             // Function to call
@@ -141,30 +142,30 @@ bool solve_3d_cminpack_lmdif(
             &errorList[0],
 
             // Tolerance to stop solving.
-            cminpack_ftol, cminpack_xtol, cminpack_gtol,
+            ftol, xtol, gtol,
 
             // Iteration maximum
             iterMax,
 
             // Delta (how much to shift parameters when calculating
             // jacobian).
-            cminpack_epsfcn,
+            epsfcn,
 
             // Weight list (diagonal scaling)
             &paramWeightList[0],
 
             // Auto-parameter scaling mode
-            cminpack_mode,
+            mode,
 
             // Tau factor (scale factor for initialTransform mu)
-            cminpack_factor,
+            tau_factor,
 
             // Should we print at each iteration?
-            cminpack_nprint,
+            nprint,
 
             // 'nfev' is an integer output variable set to the
             // number of calls to 'fcn'.
-            &cminpack_calls,
+            &calls,
 
             // 'fjac' is an output numberOfParameters by n
             // array. The upper n by n submatrix of fjac contains
@@ -196,7 +197,7 @@ bool solve_3d_cminpack_lmdif(
             &wa2List[0],
             &wa3List[0],
             &wa4List[0]);
-    cminpack_fnorm = __cminpack_func__(enorm)(numberOfErrors, &errorList[0]);
+    error_norm_value = __cminpack_func__(enorm)(numberOfErrors, &errorList[0]);
     ret = userData.iterNum;
 
     int reason_number = cminpack_info;
@@ -204,10 +205,10 @@ bool solve_3d_cminpack_lmdif(
     solveResult.success = ret > 0;
     solveResult.reason_number = reason_number;
     solveResult.reason = reason;
-    solveResult.iterations = cminpack_calls;
+    solveResult.iterations = calls;
     solveResult.functionEvals = userData.iterNum;
     solveResult.jacobianEvals = userData.jacIterNum;
-    solveResult.errorFinal = cminpack_fnorm;
+    solveResult.errorFinal = error_norm_value;
     return true;
 }
 

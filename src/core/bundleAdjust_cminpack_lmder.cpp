@@ -115,7 +115,7 @@ bool solve_3d_cminpack_lmder(
     int nprint = 0;  // 0 == don't print anything.
     int calls = 0;
     int njev = 0;
-    double fnorm = 0.0;
+    double error_norm_value = 0.0;
     int info = __cminpack_func__(lmder)(
             // Function to call
             solveFunc_cminpack_lmder,
@@ -190,7 +190,7 @@ bool solve_3d_cminpack_lmder(
             &wa2List[0],
             &wa3List[0],
             &wa4List[0]);
-    fnorm = __cminpack_func__(enorm)(numberOfErrors, &errorList[0]);
+    error_norm_value = __cminpack_func__(enorm)(numberOfErrors, &errorList[0]);
     ret = userData.iterNum;
 
     int reason_number = info;
@@ -201,7 +201,7 @@ bool solve_3d_cminpack_lmder(
     solveResult.iterations = calls;
     solveResult.functionEvals = userData.iterNum;
     solveResult.jacobianEvals = userData.jacIterNum;
-    solveResult.errorFinal = fnorm;
+    solveResult.errorFinal = error_norm_value;
     return true;
 }
 

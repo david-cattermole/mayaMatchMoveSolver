@@ -23,6 +23,7 @@ import time
 import pprint
 import os
 import warnings
+import collections
 import logging
 
 import maya.cmds
@@ -47,6 +48,66 @@ import mmSolver._api.collectionutils as collectionutils
 
 
 LOG = mmSolver.logger.get_logger()
+
+ExecuteOptions = collections.namedtuple(
+    'ExecuteOptions',
+    ('verbose', 'refresh',
+     'force_update', 'do_isolate',
+     'display_image_plane')
+)
+
+
+def createExecuteOptions(verbose=False,
+                         refresh=False,
+                         force_update=False,
+                         do_isolate=False,
+                         display_image_plane=None,
+                         # display_node_types=None,
+                         # TODO: Allow a dict to be
+                         #  passed to the function specifying the object type
+                         #  and the visibility status during solving. This
+                         #  allows us to turn on/off any object type during
+                         #  solving. If an argument is not given or is None,
+                         #  the object type visibility will not be changed.
+                         ):
+    """
+    Create ExecuteOptions.
+
+    :param verbose: Print extra solver information while a solve is running.
+    :type verbose: bool
+
+    :param refresh: Should the solver refresh the viewport while solving?
+    :type refresh: bool
+    :param refresh_state: Should we update the viewport while solving?
+    :type refresh_state: bool
+
+    :param force_update: Force updating the DG network, to help the
+                         solver in case of a Maya evaluation DG bug.
+    :type force_update: bool
+    :param force_update_state: Should we forcibly update the DG while solving?
+    :type force_update_state: bool
+
+    :param do_isolate: Isolate only solving objects while running solve.
+    :type do_isolate: bool
+    :param do_isolate_state: Should the solving objects only be visible while performing the solve?
+    :type do_isolate_state: bool
+
+    :param display_image_plane: Display Image Planes while solving?
+    :type display_image_plane: bool
+    :param image_plane_state: Display image planes in the viewport while performing the solve?
+    :type image_plane_state: bool
+    """
+    # if display_node_types is None:
+    #     display_node_types = dict()
+    options = ExecuteOptions(
+        verbose=verbose,
+        refresh=refresh,
+        force_update=force_update,
+        do_isolate=do_isolate,
+        display_image_plane=display_image_plane,
+        # display_node_types=display_node_types
+    )
+    return options
 
 
 def _create_collection_attributes(node):
@@ -230,7 +291,7 @@ class Collection(object):
         value = [value]
         self._set_attr_data(attr, value)
         return
-    
+
     def get_last_solve_results(self):
         attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_RESULTS
         raw_data_list = self._get_attr_data(attr)
@@ -868,19 +929,7 @@ class Collection(object):
         return ret
 
     def execute(self,
-                verbose=False,
-                # TODO: Refactor arguments into a 'Preferences' object
-                # to hold the different preferences.
-                refresh=False,
-                force_update=False,
-                do_isolate=False,
-                # TODO: Allow a dict to be passed to the function
-                # specifying the object type and the visibility status
-                # during solving. This allows us to turn on/off any
-                # object type during solving. If an argument is not
-                # given or is None, the object type visibility will
-                # not be changed.
-                display_image_plane=False,
+                options=None,
                 prog_fn=None,
                 status_fn=None,
                 info_fn=None):
@@ -891,23 +940,8 @@ class Collection(object):
         passed to the SolveResult class so the user can query the raw data
         using an interface.
 
-        :param verbose: Print extra solver information while a solve is
-                        running.
-        :type verbose: bool
-
-        :param refresh: Should the solver refresh the viewport while
-                        solving?
-        :type refresh: bool
-
-        :param force_update: Force updating the DG network, to help the
-                             solver in case of a Maya evaluation DG bug.
-        :type force_update: bool
-
-        :param do_isolate: Isolate only solving objects while running solve.
-        :type do_isolate: bool
-
-        :param display_image_plane: Display Image Planes while solving?
-        :type display_image_plane: bool
+        :param options: The options for the execution.
+        :type options: ExecuteOptions
 
         :param prog_fn: The function used report progress messages to
                         the user.
@@ -924,10 +958,16 @@ class Collection(object):
         :return: List of SolveResults from the executed collection.
         :rtype: [SolverResult, ..]
         """
+        if options is None:
+            options = createExecuteOptions()
+
         start_time = time.time()
 
         # Ensure the plug-in is loaded, so we fail before trying to run.
         api_utils.load_plugin()
+
+        # TODO: Pause viewport 2.0 while solving? Assumes viewport 2 is used.
+        # This might not be supported below Maya 2017?
 
         # If 'refresh' is 'on' change all viewports to 'isolate
         # selected' on only the markers and bundles being solved. This
@@ -937,9 +977,9 @@ class Collection(object):
         panel_objs = {}
         panel_img_pl_vis = {}
         panels = viewport_utils.get_all_model_panels()
-        if refresh is True:
+        if options.refresh is True:
             for panel in panels:
-                if do_isolate is True:
+                if options.do_isolate is True:
                     state = maya.cmds.isolateSelect(
                         panel,
                         query=True,
@@ -970,9 +1010,9 @@ class Collection(object):
             # Isolate all nodes used in all of the kwargs to be run.
             # Note; This assumes the isolated objects are visible, but
             # they may actually be hidden.
-            if refresh is True:
+            if options.refresh is True:
                 s = time.time()
-                if do_isolate is True:
+                if options.do_isolate is True:
                     isolate_nodes = set()
                     for kwargs in kwargs_list:
                         isolate_nodes |= collectionutils.generate_isolate_nodes(kwargs)
@@ -981,11 +1021,11 @@ class Collection(object):
                     isolate_node_list = list(isolate_nodes)
                     for panel in panels:
                         viewport_utils.set_isolated_nodes(panel, isolate_node_list, True)
-    
+
                 for panel in panels:
                     viewport_utils.set_image_plane_visibility(
                         panel,
-                        display_image_plane)
+                        options.display_image_plane)
                 e = time.time()
                 LOG.debug('Perform Pre-Isolate; time=%r', e - s)
 
@@ -1004,7 +1044,7 @@ class Collection(object):
                 maya.cmds.currentTime(
                     cur_frame - 1,
                     edit=True,
-                    update=force_update,
+                    update=options.force_update,
                 )
                 e = time.time()
                 LOG.debug('Update previous of current time; time=%r', e - s)
@@ -1027,9 +1067,9 @@ class Collection(object):
                     with open(options_file_path, 'w') as file_:
                         file_.write(text)
 
-                # HACK: Overriding the verbosity, irrespective of what
+                # Overriding the verbosity, irrespective of what
                 # the solver verbosity value is set to.
-                if verbose is True:
+                if options.verbose is True:
                     kwargs['verbose'] = True
 
                 # HACK for single frame solves.
@@ -1071,7 +1111,7 @@ class Collection(object):
                 marker_nodes += [x[0] for x in kwargs.get('marker', [])]
 
                 # Refresh the Viewport.
-                if refresh is True:
+                if options.refresh is True:
                     # TODO: If we solve per-frame without "refresh"
                     # on, then we get wacky solvers
                     # per-frame. Interestingly, the 'force_update'
@@ -1084,24 +1124,29 @@ class Collection(object):
                     maya.cmds.currentTime(
                         frame[0],
                         edit=True,
-                        update=force_update,
+                        update=options.force_update,
                     )
+                    # TODO: Refresh should not add to undo queue, we
+                    # should skip it. This should fix the problem of
+                    # stepping over the viewport each time we undo an
+                    # 'animated' solve. Or we pause the viewport while
+                    # we undo?
                     maya.cmds.refresh()
                     e = time.time()
                     LOG.debug('Refresh Viewport; time=%r', e - s)
         finally:
-            if refresh is True:
+            if options.refresh is True:
                 s = time.time()
                 for panel, objs in panel_objs.items():
                     if objs is None:
                         # No original objects, disable 'isolate
                         # selected' after resetting the objects.
-                        if do_isolate is True:
+                        if options.do_isolate is True:
                             viewport_utils.set_isolated_nodes(panel, [], False)
                         img_pl_vis = panel_img_pl_vis.get(panel, True)
                         viewport_utils.set_image_plane_visibility(panel, img_pl_vis)
                     else:
-                        if do_isolate is True:
+                        if options.do_isolate is True:
                             viewport_utils.set_isolated_nodes(panel, list(objs), True)
                 e = time.time()
                 LOG.debug('Finally; reset isolate selected; time=%r', e - s)
@@ -1109,7 +1154,6 @@ class Collection(object):
             collectionutils.run_status_func(status_fn, 'Solve Ended')
             collectionutils.run_progress_func(prog_fn, 100)
             api_state.set_solver_running(False)
-
             maya.cmds.currentTime(cur_frame, edit=True, update=True)
 
         # Store output information of the solver.

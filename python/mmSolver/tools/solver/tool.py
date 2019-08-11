@@ -20,6 +20,7 @@ The Solver UI tool.
 """
 
 import mmSolver.logger
+import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.ui.solver_window as solver_window
@@ -84,12 +85,15 @@ def run_solve(override_current_frame=None):
             layout.setOverrideCurrentFrame(col, override_current_frame)
 
     # Run Solver
+    options = mmapi.createExecuteOptions(
+        refresh=refresh_state,
+        force_update=force_update_state,
+        do_isolate=do_isolate_state,
+        display_image_plane=image_plane_state
+    )
     lib_col.run_solve_ui(
         col,
-        refresh_state,
-        force_update_state,
-        do_isolate_state,
-        image_plane_state,
+        options,
         log_level,
         win,
     )

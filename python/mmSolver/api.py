@@ -35,6 +35,8 @@ from mmSolver._api.marker import (
 from mmSolver._api.markergroup import MarkerGroup
 from mmSolver._api.attribute import Attribute
 from mmSolver._api.collection import (
+    createExecuteOptions,
+    ExecuteOptions,
     Collection,
     update_deviation_on_collection
 )

@@ -29,7 +29,7 @@ import mmSolver.utils.node as node_utils
 LOG = mmSolver.logger.get_logger()
 
 
-def viewport_turn_off():
+def viewport1_turn_off():
     """
     Turn off Maya UI.
     """
@@ -37,12 +37,52 @@ def viewport_turn_off():
     return
 
 
-def viewport_turn_on():
+def viewport1_turn_on():
     """
     Turn on Maya UI.
     """
     maya.mel.eval('paneLayout -e -manage true $gMainPane')
     return
+
+
+viewport_turn_off = viewport1_turn_off
+viewport_turn_on = viewport1_turn_on
+
+
+def viewport2_turn_off():
+    """
+    Turn off Viewport 2.
+    """
+    set_viewport2_active_state(False)
+    return
+
+
+def viewport2_turn_on():
+    """
+    Turn on Viewport 2.
+    """
+    set_viewport2_active_state(True)
+    return
+
+
+def set_viewport2_active_state(value):
+    """
+    Set Viewport 2 activation state.
+
+    :param value: Set activation of the state.
+    :type value: bool
+    """
+    v = not value
+    return not maya.mel.ogs(pause=v)
+
+
+def get_viewport2_active_state():
+    """
+    Query the Viewport 2 active state.
+
+    :rtype: bool
+    """
+    return not maya.mel.ogs(query=True, pause=True)
 
 
 def get_active_model_editor():
@@ -137,6 +177,15 @@ def get_isolated_nodes(model_panel):
 
 
 def get_image_plane_visibility(model_panel):
+    """
+    Query the image plane visibility.
+
+    :param model_panel: Model panel name to set visibility.
+    :type model_panel: str
+
+    :return: The visibility of image planes.
+    :rtype: bool
+    """
     model_editor = maya.cmds.modelPanel(
         model_panel,
         query=True,
@@ -149,6 +198,15 @@ def get_image_plane_visibility(model_panel):
 
 
 def set_image_plane_visibility(model_panel, value):
+    """
+    Set the visibility of imagePlane nodes in the given model panel.
+
+    :param model_panel: Model panel name to set visibility.
+    :type model_panel: str
+
+    :param value: Visibility of image planes.
+    :type value: bool
+    """
     model_editor = maya.cmds.modelPanel(
         model_panel,
         query=True,

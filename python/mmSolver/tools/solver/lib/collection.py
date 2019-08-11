@@ -848,14 +848,11 @@ def compile_collection(col, prog_fn=None):
 
 
 def execute_collection(col,
+                       options=None,
                        log_level=None,
-                       refresh=False,
-                       force_update=False,
-                       do_isolate=False,
-                       display_image_plane=False,
                        prog_fn=None,
                        status_fn=None,
-                       info_fn=None,):
+                       info_fn=None):
     """
     Execute the entire collection; Solvers, Markers, Bundles, etc.
 
@@ -865,18 +862,8 @@ def execute_collection(col,
     :param log_level: Logging level to print out.
     :type log_level: None or str
 
-    :param refresh: Refresh the viewport while solving?
-    :type refresh: bool
-
-    :param force_update: Should we force-update the Maya DG?
-    :type force_update: bool
-
-    :param do_isolate: Isolate only objects to be solved during solver
-                       iterations?
-    :type do_isolate: bool
-
-    :param display_image_plane: Display image planes during solving?
-    :type display_image_plane: bool
+    :param options: Solver execution options.
+    :type options: mmSolver.api.ExecuteOptions
 
     :param prog_fn: A function called with an 'int' argument, to
                     display progress information to the user. The
@@ -896,15 +883,15 @@ def execute_collection(col,
     msg += 'col=%r log_level=%r refresh=%r '
     msg += 'force_update=%r display_image_plane=%r '
     msg += 'prog_fn=%r status_fn=%r info_fn=%r'
-    LOG.debug(msg, col, log_level, refresh,
-              force_update,
-              display_image_plane,
+    LOG.debug(msg, col, log_level, options.refresh,
+              options.force_update,
+              options.display_image_plane,
               prog_fn, status_fn, info_fn)
 
-    assert isinstance(refresh, bool)
-    assert isinstance(force_update, bool)
-    assert isinstance(display_image_plane, bool)
-    assert isinstance(do_isolate, bool)
+    assert isinstance(options.refresh, bool)
+    assert isinstance(options.force_update, bool)
+    assert isinstance(options.display_image_plane, bool)
+    assert isinstance(options.do_isolate, bool)
     assert log_level is None or isinstance(log_level, (str, unicode))
     assert prog_fn is None or hasattr(prog_fn, '__call__')
     assert status_fn is None or hasattr(status_fn, '__call__')
@@ -922,14 +909,19 @@ def execute_collection(col,
         msg = 'log_level value is invalid; value=%r'
         raise ValueError(msg % log_level)
 
+    options = mmapi.createExecuteOptions(
+        verbose=verbose,
+        refresh=options.refresh,
+        force_update=options.force_update,
+        do_isolate=options.do_isolate,
+        display_image_plane=options.display_image_plane,
+        # display_node_types=dict(),
+    )
+
     # Execute the solve.
     s = time.time()
     solres_list = col.execute(
-        verbose=verbose,
-        refresh=refresh,
-        force_update=force_update,
-        display_image_plane=display_image_plane,
-        do_isolate=do_isolate,
+        options=options,
         prog_fn=prog_fn,
         status_fn=status_fn,
         info_fn=info_fn,
@@ -964,10 +956,7 @@ def execute_collection(col,
 
 
 def run_solve_ui(col,
-                 refresh_state,
-                 force_update_state,
-                 do_isolate_state,
-                 image_plane_state,
+                 options,
                  log_level,
                  window):
     """
@@ -983,20 +972,8 @@ def run_solve_ui(col,
     :param col: The active collection to solve.
     :type col: Collection
 
-    :param refresh_state: Should we update the viewport while solving?
-    :type refresh_state: bool
-
-    :param force_update_state: Should we forcibly update the DG while
-                               solving?
-    :type force_update_state: bool
-
-    :param do_isolate_state: Should the solving objects only be visible 
-                             while performing the solve?
-    :type do_isolate_state: bool
-
-    :param image_plane_state: Display image planes in the viewport while
-                              performing the solve?
-    :type image_plane_state: bool
+    :param options: Options for the solver options.
+    :type options: mmSolver.api.ExecuteOptions
 
     :param log_level: How much information should we print out;a
                       'error', 'warning', 'info', 'verbose' or 'debug'.
@@ -1039,11 +1016,8 @@ def run_solve_ui(col,
 
             execute_collection(
                 col,
+                options=options,
                 log_level=log_level,
-                refresh=refresh_state,
-                force_update=force_update_state,
-                do_isolate=do_isolate_state,
-                display_image_plane=image_plane_state,
                 prog_fn=prog_fn,
                 status_fn=status_fn,
                 info_fn=info_fn,

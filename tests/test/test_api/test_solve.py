@@ -660,13 +660,13 @@ class TestSolve(test_api_utils.APITestCase):
         solres_list = col.execute()
         print 'time (solve #2):', time.time() - s2
 
-        # Solve both camera transform and bundle positions together.
-        s3 = time.time()
-        col.set_attribute_list(cam_attr_list + bnd_attr_list)
-        lib_col.compile_collection(col)
-        solres_list = col.execute()
+        # # Solve both camera transform and bundle positions together.
+        # s3 = time.time()
+        # col.set_attribute_list(cam_attr_list + bnd_attr_list)
+        # lib_col.compile_collection(col)
+        # solres_list = col.execute()
         e = time.time()
-        print 'time (solve #3):', e - s3
+        # print 'time (solve #3):', e - s3
         print 'total time:', e - s
 
         # save the output

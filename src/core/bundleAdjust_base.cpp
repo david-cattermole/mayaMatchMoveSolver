@@ -80,11 +80,11 @@ std::vector<SolverTypePair> getSolverTypes() {
 #endif
 
 #ifdef USE_SOLVER_CMINPACK
-    solverType.first = SOLVER_TYPE_CMINPACK_LM_DIF;
+    solverType.first = SOLVER_TYPE_CMINPACK_LMDIF;
     solverType.second = SOLVER_TYPE_CMINPACK_LM_DIF_NAME;
     solverTypes.push_back(solverType);
 
-    solverType.first = SOLVER_TYPE_CMINPACK_LM_DER;
+    solverType.first = SOLVER_TYPE_CMINPACK_LMDER;
     solverType.second = SOLVER_TYPE_CMINPACK_LM_DER_NAME;
     solverTypes.push_back(solverType);
 #endif
@@ -195,12 +195,20 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
                 MMatrix cameraWorldProjectionMatrix;
                 CameraPtr camera = marker->getCamera();
                 status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
+                double filmBackWidth = camera->getFilmbackWidthValue(frame);
+                double filmBackHeight = camera->getFilmbackWidthValue(frame);
+                double filmBackInvAspect = filmBackHeight / filmBackWidth;
                 CHECK_MSTATUS(status);
                 MPoint marker_pos;
                 status = marker->getPos(marker_pos, frame);
                 CHECK_MSTATUS(status);
                 marker_pos = marker_pos * cameraWorldProjectionMatrix;
                 marker_pos.cartesianize();
+                marker_pos[0] *= 0.5;  // convert to -0.5 to 0.5.
+                // convert to -0.5 to 0.5, maintaining the aspect ratio of the film back.
+                marker_pos[1] *= 0.5 * filmBackInvAspect;
+                marker_pos[2] = 0.0;
+                marker_pos[3] = 1.0;
                 markerPosList.push_back(marker_pos);
             }
         }
@@ -515,26 +523,27 @@ void print_details(
         SolverTimer &timer,
         int numberOfParameters,
         int numberOfErrors,
+        bool verbose,
         std::vector<double> &paramList,
         MStringArray &outResult) {
-    bool verbose = false;
 
     VRB("Results:");
-    VRB("Solver returned " << solverResult.success << " in " << solverResult.iterations
-                           << " iterations");
+    if (solverResult.success) {
+        VRB("Solver returned SUCCESS in " << solverResult.iterations << " iterations");
+    } else {
+        VRB("Solver returned FAILURE in " << solverResult.iterations << " iterations");
+    }
 
     int reasonNum = solverResult.reason_number;
     VRB("Reason: " << solverResult.reason);
     VRB("Reason number: " << solverResult.reason_number);
-    VRB("");
 
-    VRB(std::endl << std::endl << "Solve Information:");
+    VRB(std::endl << "Solve Information:");
     VRB("Maximum Error: " << solverResult.errorMax);
     VRB("Average Error: " << solverResult.errorAvg);
     VRB("Minimum Error: " << solverResult.errorMin);
 
     VRB("Iterations: " << solverResult.iterations);
-    VRB("Termination Reason: " << solverResult.reason);
     VRB("Function Evaluations: " << solverResult.functionEvals);
     VRB("Jacobian Evaluations: " << solverResult.jacobianEvals);
 
@@ -740,18 +749,10 @@ void print_details(
  * This function is responsible for taking the given cameras, markers,
  * bundles and solver options, and modifying the current Maya scene,
  * saving changes in the 'dgmod' variable, and returning the results
- * in the outResult.
+ * in the outResult string.
  *
  */
-bool solve(int iterMax,
-           double tau,
-           double eps1,
-           double eps2,
-           double eps3,
-           double delta,
-           int autoDiffType,
-           int autoParamScale,
-           int solverType,
+bool solve(SolverOptions &solverOptions,
            CameraPtrList &cameraList,
            MarkerPtrList &markerList,
            BundlePtrList &bundleList,
@@ -790,17 +791,6 @@ bool solve(int iterMax,
                                    MProfiler::kColorC_L3,
                                    "solve");
 #endif
-
-    SolverOptions solverOptions;
-    solverOptions.iterMax = iterMax;
-    solverOptions.tau = tau;
-    solverOptions.eps1 = eps1;
-    solverOptions.eps2 = eps2;
-    solverOptions.eps3 = eps3;
-    solverOptions.delta = delta;
-    solverOptions.autoDiffType = autoDiffType;
-    solverOptions.autoParamScale = autoParamScale;
-    solverOptions.solverType = solverType;
 
     IndexPairList paramToAttrList;
     IndexPairList errorToMarkerList;
@@ -895,20 +885,20 @@ bool solve(int iterMax,
     }
 
     VRB("Solving...");
-    VRB("Solver Type=" << solverType);
-    VRB("Maximum Iterations=" << iterMax);
-    VRB("Tau=" << tau);
-    VRB("Epsilon1=" << eps1);
-    VRB("Epsilon2=" << eps2);
-    VRB("Epsilon3=" << eps3);
-    VRB("Delta=" << fabs(delta));
-    VRB("Auto Differencing Type=" << autoDiffType);
+    VRB("Solver Type=" << solverOptions.solverType);
+    VRB("Maximum Iterations=" << solverOptions.iterMax);
+    VRB("Tau=" << solverOptions.tau);
+    VRB("Epsilon1=" << solverOptions.eps1);
+    VRB("Epsilon2=" << solverOptions.eps2);
+    VRB("Epsilon3=" << solverOptions.eps3);
+    VRB("Delta=" << fabs(solverOptions.delta));
+    VRB("Auto Differencing Type=" << solverOptions.autoDiffType);
 
     // MComputation helper.
     bool showProgressBar = true;
     bool isInterruptable = true;
     bool useWaitCursor = true;
-    computation.setProgressRange(0, iterMax);
+    computation.setProgressRange(0, solverOptions.iterMax);
     computation.beginComputation(showProgressBar, isInterruptable, useWaitCursor);
 
     // Start Solving
@@ -933,6 +923,7 @@ bool solve(int iterMax,
     userData.errorList = errorList;
     userData.errorDistanceList = errorDistanceList;
     userData.jacobianList = jacobianList;
+    userData.funcEvalNum = 0;  // number of function evaluations.
     userData.iterNum = 0;
     userData.jacIterNum = 0;
     userData.imageWidth = 2048.0;  // TODO: Get actual image plane resolution.
@@ -971,12 +962,12 @@ bool solve(int iterMax,
     }
 
     SolverResult solveResult;
-    if (solverType == SOLVER_TYPE_LEVMAR) {
+    if (solverOptions.solverType == SOLVER_TYPE_LEVMAR) {
 
 #ifndef USE_SOLVER_LEVMAR
 
         ERR("Solver Type is not supported by this compiled plug-in. "
-            << "solverType=" << solverType);
+            << "solverType=" << solverOptions.solverType);
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
         return false;
@@ -998,12 +989,12 @@ bool solve(int iterMax,
 
 #endif // USE_SOLVER_LEVMAR
 
-    } else if (solverType == SOLVER_TYPE_CMINPACK_LM_DIF) {
+    } else if (solverOptions.solverType == SOLVER_TYPE_CMINPACK_LMDIF) {
 
 #ifndef USE_SOLVER_CMINPACK
 
         ERR("Solver Type is not supported by this compiled plug-in. "
-            << "solverType=" << solverType);
+            << "solverType=" << solverOptions.solverType);
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
         return false;
@@ -1025,12 +1016,12 @@ bool solve(int iterMax,
 
 #endif // USE_SOLVER_CMINPACK
 
-    } else if (solverType == SOLVER_TYPE_CMINPACK_LM_DER) {
+    } else if (solverOptions.solverType == SOLVER_TYPE_CMINPACK_LMDER) {
 
 #ifndef USE_SOLVER_CMINPACK
 
         ERR("Solver Type is not supported by this compiled plug-in. "
-            << "solverType=" << solverType);
+            << "solverType=" << solverOptions.solverType);
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
         return false;
@@ -1053,7 +1044,8 @@ bool solve(int iterMax,
 #endif // USE_SOLVER_CMINPACK
 
     } else {
-        ERR("Solver Type is invalid. solverType=" << solverType);
+        ERR("Solver Type is invalid. solverType="
+            << solverOptions.solverType);
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
         return false;
@@ -1094,6 +1086,7 @@ bool solve(int iterMax,
             timer,
             numberOfParameters,
             numberOfErrors,
+            verbose,
             paramList,
             outResult);
     return ret != -1;

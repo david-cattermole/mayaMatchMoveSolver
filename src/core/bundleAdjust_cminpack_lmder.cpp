@@ -72,7 +72,7 @@ bool solve_3d_cminpack_lmder(
         SolverData &userData,
         SolverResult &solveResult,
         MStringArray &outResult){
-    int solverType = SOLVER_TYPE_CMINPACK_LM_DER;
+    int solverType = SOLVER_TYPE_CMINPACK_LMDER;
     int ret = 0;
     std::string resultStr;
     int iterMax = solverOptions.iterMax;
@@ -110,7 +110,8 @@ bool solve_3d_cminpack_lmder(
         mode = 1; // On
     }
 
-    double factor = solverOptions.tau;
+    // cminpack uses a 'tau' value of between 0.0 to 100.0;
+    double factor = solverOptions.tau * 100.0;
     int nprint = 0;  // 0 == don't print anything.
     int calls = 0;
     int njev = 0;

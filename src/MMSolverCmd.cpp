@@ -22,13 +22,15 @@
 
 // Internal
 #include <MMSolverCmd.h>
+#include <core/bundleAdjust_data.h>
 #include <core/bundleAdjust_base.h>
 #include <mayaUtils.h>
 
 // STL
 #include <cmath>
 #include <cassert>
-#include <cstdlib>  // getenv
+#include <cstdlib>
+#include <algorithm>
 
 // Utils
 #include <utilities/debugUtils.h>
@@ -100,6 +102,10 @@ MSyntax MMSolverCmd::newSyntax() {
                    MSyntax::kUnsigned);
     syntax.addFlag(AUTO_PARAM_SCALE_FLAG, AUTO_PARAM_SCALE_FLAG_LONG,
                    MSyntax::kUnsigned);
+    syntax.addFlag(ROBUST_LOSS_TYPE_FLAG, ROBUST_LOSS_TYPE_FLAG_LONG,
+                   MSyntax::kUnsigned);
+    syntax.addFlag(ROBUST_LOSS_SCALE_FLAG, ROBUST_LOSS_SCALE_FLAG_LONG,
+                   MSyntax::kDouble);
     syntax.addFlag(SOLVER_TYPE_FLAG, SOLVER_TYPE_FLAG_LONG,
                    MSyntax::kUnsigned);
     syntax.addFlag(ITERATIONS_FLAG, ITERATIONS_FLAG_LONG,
@@ -377,7 +383,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     }
 
     // Set defaults based on solver type chosen.
-    if (m_solverType == SOLVER_TYPE_CMINPACK_LM_DIF) {
+    if (m_solverType == SOLVER_TYPE_CMINPACK_LMDIF) {
         m_iterations = CMINPACK_LMDIF_ITERATIONS_DEFAULT_VALUE;
         m_tau = CMINPACK_LMDIF_TAU_DEFAULT_VALUE;
         m_epsilon1 = CMINPACK_LMDIF_EPSILON1_DEFAULT_VALUE;
@@ -386,7 +392,13 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_delta = CMINPACK_LMDIF_DELTA_DEFAULT_VALUE;
         m_autoDiffType = CMINPACK_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE;
         m_autoParamScale = CMINPACK_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE;
-    } else if (m_solverType == SOLVER_TYPE_CMINPACK_LM_DER) {
+        m_robustLossType = CMINPACK_LMDIF_ROBUST_LOSS_TYPE_DEFAULT_VALUE;
+        m_robustLossScale = CMINPACK_LMDIF_ROBUST_LOSS_SCALE_DEFAULT_VALUE;
+        m_supportAutoDiffForward = CMINPACK_LMDIF_SUPPORT_AUTO_DIFF_FORWARD_VALUE;
+        m_supportAutoDiffCentral = CMINPACK_LMDIF_SUPPORT_AUTO_DIFF_CENTRAL_VALUE;
+        m_supportParameterBounds = CMINPACK_LMDIF_SUPPORT_PARAMETER_BOUNDS_VALUE;
+        m_supportRobustLoss = CMINPACK_LMDIF_SUPPORT_ROBUST_LOSS_VALUE;
+    } else if (m_solverType == SOLVER_TYPE_CMINPACK_LMDER) {
         m_iterations = CMINPACK_LMDER_ITERATIONS_DEFAULT_VALUE;
         m_tau = CMINPACK_LMDER_TAU_DEFAULT_VALUE;
         m_epsilon1 = CMINPACK_LMDER_EPSILON1_DEFAULT_VALUE;
@@ -395,6 +407,12 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_delta = CMINPACK_LMDER_DELTA_DEFAULT_VALUE;
         m_autoDiffType = CMINPACK_LMDER_AUTO_DIFF_TYPE_DEFAULT_VALUE;
         m_autoParamScale = CMINPACK_LMDER_AUTO_PARAM_SCALE_DEFAULT_VALUE;
+        m_robustLossType = CMINPACK_LMDER_ROBUST_LOSS_TYPE_DEFAULT_VALUE;
+        m_robustLossScale = CMINPACK_LMDER_ROBUST_LOSS_SCALE_DEFAULT_VALUE;
+        m_supportAutoDiffForward = CMINPACK_LMDER_SUPPORT_AUTO_DIFF_FORWARD_VALUE;
+        m_supportAutoDiffCentral = CMINPACK_LMDER_SUPPORT_AUTO_DIFF_CENTRAL_VALUE;
+        m_supportParameterBounds = CMINPACK_LMDER_SUPPORT_PARAMETER_BOUNDS_VALUE;
+        m_supportRobustLoss = CMINPACK_LMDER_SUPPORT_ROBUST_LOSS_VALUE;
     } else if (m_solverType == SOLVER_TYPE_LEVMAR) {
         m_iterations = LEVMAR_ITERATIONS_DEFAULT_VALUE;
         m_tau = LEVMAR_TAU_DEFAULT_VALUE;
@@ -404,6 +422,12 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_delta = LEVMAR_DELTA_DEFAULT_VALUE;
         m_autoDiffType = LEVMAR_AUTO_DIFF_TYPE_DEFAULT_VALUE;
         m_autoParamScale = LEVMAR_AUTO_PARAM_SCALE_DEFAULT_VALUE;
+        m_robustLossType = LEVMAR_ROBUST_LOSS_TYPE_DEFAULT_VALUE;
+        m_robustLossScale = LEVMAR_ROBUST_LOSS_SCALE_DEFAULT_VALUE;
+        m_supportAutoDiffForward = LEVMAR_SUPPORT_AUTO_DIFF_FORWARD_VALUE;
+        m_supportAutoDiffCentral = LEVMAR_SUPPORT_AUTO_DIFF_CENTRAL_VALUE;
+        m_supportParameterBounds = LEVMAR_SUPPORT_PARAMETER_BOUNDS_VALUE;
+        m_supportRobustLoss = LEVMAR_SUPPORT_ROBUST_LOSS_VALUE;
     } else {
         ERR("Solver Type is invalid. "
             << "Value may be 0 or 1 (0 == levmar, 1 == cminpack_lm);"
@@ -424,6 +448,9 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(TAU_FLAG, 0, m_tau);
         CHECK_MSTATUS(status);
     }
+    m_tau = std::max(0.0, m_tau);
+    m_tau = std::min(m_tau, 1.0);
+    assert(0.0 < m_tau < 1.0);
 
     // Get 'Epsilon1'
     if (argData.isFlagSet(EPSILON1_FLAG)) {
@@ -460,6 +487,18 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(AUTO_PARAM_SCALE_FLAG, 0, m_autoParamScale);
         CHECK_MSTATUS(status);
     }
+
+    // Get 'Robust Loss Type'
+    if (argData.isFlagSet(ROBUST_LOSS_TYPE_FLAG)) {
+        status = argData.getFlagArgument(ROBUST_LOSS_TYPE_FLAG, 0, m_robustLossType);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Robust Loss Scale'
+    if (argData.isFlagSet(ROBUST_LOSS_SCALE_FLAG)) {
+        status = argData.getFlagArgument(ROBUST_LOSS_SCALE_FLAG, 0, m_robustLossScale);
+        CHECK_MSTATUS(status);
+    }
     return status;
 }
 
@@ -492,17 +531,26 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     // of edits.
     m_curveChange.setInteractive(true);
 
+    SolverOptions solverOptions;
+    solverOptions.iterMax = m_iterations;
+    solverOptions.tau = m_tau;
+    solverOptions.eps1 = m_epsilon1;
+    solverOptions.eps2 = m_epsilon2;
+    solverOptions.eps3 = m_epsilon3;
+    solverOptions.delta = m_delta;
+    solverOptions.autoDiffType = m_autoDiffType;
+    solverOptions.autoParamScale = m_autoParamScale;
+    solverOptions.robustLossType = m_robustLossType;
+    solverOptions.robustLossScale = m_robustLossScale;
+    solverOptions.solverType = m_solverType;
+    solverOptions.solverSupportsAutoDiffForward = m_supportAutoDiffForward;
+    solverOptions.solverSupportsAutoDiffCentral = m_supportAutoDiffCentral;
+    solverOptions.solverSupportsParameterBounds = m_supportParameterBounds;
+    solverOptions.solverSupportsRobustLoss = m_supportRobustLoss;
+
     MStringArray outResult;
     bool ret = solve(
-            m_iterations,
-            m_tau,
-            m_epsilon1,
-            m_epsilon2,
-            m_epsilon3,
-            m_delta,
-            m_autoDiffType,
-            m_autoParamScale,
-            m_solverType,
+            solverOptions,
             m_cameraList,
             m_markerList,
             m_bundleList,

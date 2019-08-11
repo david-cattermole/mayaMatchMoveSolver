@@ -20,8 +20,8 @@
  */
 
 
-#ifndef MAYA_MM_SOLVER_CMINPACK_H
-#define MAYA_MM_SOLVER_CMINPACK_H
+#ifndef MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_BASE_H
+#define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_BASE_H
 
 // STL
 #include <string>
@@ -42,10 +42,6 @@
 
 #include <core/bundleAdjust_solveFunc.h>
 #include <core/bundleAdjust_base.h>
-
-
-#define CMINPACK_AUTO_DIFF_TYPE_FORWARD (0)
-#define CMINPACK_AUTO_DIFF_TYPE_CENTRAL (1)
 
 
 // CMinpack 'lmdif' Termination Reasons:
@@ -84,4 +80,4 @@ const std::string cminpackReasons[9] = {
 };
 
 
-#endif // MAYA_MM_SOLVER_CMINPACK_H
+#endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_BASE_H

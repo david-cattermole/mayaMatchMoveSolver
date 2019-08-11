@@ -382,8 +382,8 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         tx = maya.cmds.getAttr(grp + '.tx')
         ty = maya.cmds.getAttr(grp + '.ty')
         self.assertEqual(result[0], 'success=1')
-        assert self.approx_equal(tx, -2.24999755)
-        assert self.approx_equal(ty, 1.65000644)
+        assert self.approx_equal(tx, -2.25, eps=0.001)
+        assert self.approx_equal(ty, 1.65, eps=0.001)
 
 
 if __name__ == '__main__':

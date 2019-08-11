@@ -312,12 +312,9 @@ void measureErrors(
         MPoint cam_pos;
         camera->getWorldPosition(cam_pos, frame);
         camera->getForwardDirection(cam_dir, frame);
-
-        double left = 0;
-        double right = 0;
-        double top = 0;
-        double bottom = 0;
-        camera->getFrustum(left, right, top, bottom, frame);
+        double filmBackWidth = camera->getFilmbackWidthValue(frame);
+        double filmBackHeight = camera->getFilmbackWidthValue(frame);
+        double filmBackInvAspect = filmBackHeight / filmBackWidth;
 
         BundlePtr bnd = marker->getBundle();
 
@@ -326,6 +323,7 @@ void measureErrors(
         double mkr_weight = ud->markerWeightList[i];
         mkr_weight = std::sqrt(mkr_weight);
 
+        // Re-project Bundle into screen-space.
         MVector bnd_dir;
         status = bnd->getPos(bnd_mpos, frame);
         CHECK_MSTATUS(status);
@@ -334,6 +332,11 @@ void measureErrors(
         bnd_dir.normalize();
         bnd_mpos = bnd_mpos * cameraWorldProjectionMatrix;
         bnd_mpos.cartesianize();
+        bnd_mpos[0] *= 0.5;  // convert to -0.5 to 0.5.
+        // convert to -0.5 to 0.5, maintaining the aspect ratio of the film back.
+        bnd_mpos[1] *= 0.5 * filmBackInvAspect;
+        bnd_mpos[2] = 0.0;
+        bnd_mpos[3] = 1.0;
 
         // Is the bundle behind the camera?
         bool behind_camera = false;
@@ -343,7 +346,7 @@ void measureErrors(
             behind_camera = true;
         }
 
-        if (writeDebug == true && debugIsOpen == true) {
+        if (writeDebug && debugIsOpen) {
             debugFile << "Bundle: " << bnd->getNodeName()
                       << std::endl;
             debugFile << "Cam DOT Bnd: " << cam_dot_bnd
@@ -375,38 +378,39 @@ void measureErrors(
         // bad idea as it will introduce non-linearities, we are
         // better off using something like 'x*x - y*y'. It would
         // be best to test this detail.
-        double dx = fabs(mkr_mpos.x - bnd_mpos.x) * ((right - left) * ud->imageWidth);
-        double dy = fabs(mkr_mpos.y - bnd_mpos.y) * ((right - left) * ud->imageWidth);
-        double d = distance_2d(mkr_mpos, bnd_mpos) * ((right - left) * ud->imageWidth);
+        double dx = fabs(mkr_mpos.x - bnd_mpos.x) * ud->imageWidth;
+        double dy = fabs(mkr_mpos.y - bnd_mpos.y) * ud->imageWidth;
+        double d = distance_2d(mkr_mpos, bnd_mpos) * ud->imageWidth;
 
         errors[(i * ERRORS_PER_MARKER) + 0] = dx * mkr_weight;  // X error
         errors[(i * ERRORS_PER_MARKER) + 1] = dy * mkr_weight;  // Y error
 
+        // 'ud->errorList' is the deviation shown to the user, it
+        // should not have any loss functions or scaling applied to it.
         ud->errorList[(i * ERRORS_PER_MARKER) + 0] = dx;
         ud->errorList[(i * ERRORS_PER_MARKER) + 1] = dy;
-
-#if ERRORS_PER_MARKER == 3
-        // d = distance_2d(mkr_mpos, bnd_mpos) * ((right - left) * ud->imageWidth);
-        errors[(i * ERRORS_PER_MARKER) + 2] = d * mkr_weight;   // Distance error
-        ud->errorList[(i * ERRORS_PER_MARKER) + 2] = d;
-#endif
-
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) { error_max = d; }
         if (d < error_min) { error_min = d; }
     }
 
+    // Changes the errors to be scaled by the loss function.
+    // This will reduce the affect outliers have on the solve.
+    if (ud->solverOptions->solverSupportsRobustLoss) {
+        // TODO: Scale the jacobian by the loss function too?
+        applyLossFunctionToErrors(numberOfErrors, errors,
+                                  ud->solverOptions->robustLossType,
+                                  ud->solverOptions->robustLossScale);
+    }
+
     error_avg *= 1.0 / (numberOfErrors / ERRORS_PER_MARKER);
 
-    if (writeDebug == true && debugIsOpen == true) {
+    if (writeDebug && debugIsOpen) {
         for (int i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
             debugFile << "error i=" << i
                       << " x=" << ud->errorList[(i * ERRORS_PER_MARKER) + 0]
                       << " y=" << ud->errorList[(i * ERRORS_PER_MARKER) + 1]
-#if ERRORS_PER_MARKER == 3
-                      << " z=" << ud->errorList[(i * ERRORS_PER_MARKER) + 2]
-#endif
                       << std::endl;
         }
         for (int i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
@@ -419,7 +423,6 @@ void measureErrors(
                   << " eavg=" << error_avg
                   << std::endl;
     }
-
     return;
 }
 
@@ -428,13 +431,17 @@ void measureErrors(
 void incrementNormalIteration(SolverData *ud,
                               bool debugIsOpen,
                               std::ofstream &debugFile) {
+    ++ud->funcEvalNum;
     ++ud->iterNum;
     // We're not using INFO macro because we don't want a
     // new-line created.
-    if (ud->verbose == true) {
-        std::cout << "Eval " << ud->iterNum;
+    if (ud->verbose) {
+        std::cout << "Eval ";
+        std::cout << std::setfill ('0') << std::setw (4) << ud->funcEvalNum;
+        std::cout << " | Normal   ";
+        std::cout << std::setfill ('0') << std::setw (4) << ud->iterNum;
     }
-    if (debugIsOpen == true) {
+    if (debugIsOpen) {
         debugFile << std::endl
                   << "iteration normal: " << ud->iterNum
                   << std::endl;
@@ -447,15 +454,18 @@ void incrementNormalIteration(SolverData *ud,
 void incrementJacobianIteration(SolverData *ud,
                                 bool debugIsOpen,
                                 std::ofstream &debugFile) {
+    ++ud->funcEvalNum;
     ++ud->jacIterNum;
-    if (ud->verbose == true) {
-        if (ud->doCalcJacobian == false) {
-            std::cout << "Eval Jacobian " << ud->jacIterNum;
-        } else {
-            std::cout << "Eval Jacobian " << ud->jacIterNum << std::endl;
+    if (ud->verbose) {
+        std::cout << "Eval ";
+        std::cout << std::setfill ('0') << std::setw (4) << ud->funcEvalNum;
+        std::cout << " | Jacobian ";
+        std::cout << std::setfill ('0') << std::setw (4) << ud->jacIterNum;
+        if (ud->doCalcJacobian) {
+            std::cout << std::endl;
         }
     }
-    if (debugIsOpen == true) {
+    if (debugIsOpen) {
         debugFile << std::endl
                   << "iteration jacobian: " << ud->jacIterNum
                   << std::endl;
@@ -475,7 +485,7 @@ int solveFunc(int numberOfParameters,
     SolverData *ud = static_cast<SolverData *>(userData);
     ud->timer.funcBenchTimer.start();
     ud->timer.funcBenchTicks.start();
-    if (ud->doCalcJacobian == false) {
+    if (!ud->doCalcJacobian) {
         ud->computation->setProgress(ud->iterNum);
     }
 
@@ -490,7 +500,7 @@ int solveFunc(int numberOfParameters,
 
     if (ud->isNormalCall) {
         incrementNormalIteration(ud, debugIsOpen, debugFile);
-    } else if (ud->isJacobianCall == true && ud->doCalcJacobian == false) {
+    } else if (ud->isJacobianCall && !ud->doCalcJacobian) {
         incrementJacobianIteration(ud, debugIsOpen, debugFile);
     }
 
@@ -527,7 +537,7 @@ int solveFunc(int numberOfParameters,
     double error_avg = 0;
     double error_max = 0;
     double error_min = 0;
-    if (ud->doCalcJacobian == false) {
+    if (!ud->doCalcJacobian) {
         bool writeDebug = true;
 
         // Set Parameters
@@ -575,7 +585,7 @@ int solveFunc(int numberOfParameters,
         // Calculate Jacobian Matrix
         MStatus status;
         bool writeDebug = true;
-        assert(ud->solverOptions->solverType == SOLVER_TYPE_CMINPACK_LM_DER);
+        assert(ud->solverOptions->solverType == SOLVER_TYPE_CMINPACK_LMDER);
         int autoDiffType = ud->solverOptions->autoDiffType;
 
         // Get longest dimension for jacobian matrix
@@ -592,7 +602,8 @@ int solveFunc(int numberOfParameters,
         writeDebug = true;
         for (int i = 0; i < numberOfParameters; ++i) {
             double ratio = (double) i / (double) numberOfParameters;
-            ud->computation->setProgress(progressMin + (ratio * progressMax));
+            int progressNum = progressMin + static_cast<int>(ratio * progressMax);
+            ud->computation->setProgress(progressNum);
 
             if (ud->computation->isInterruptRequested()) {
                 WRN("User wants to cancel the evalutation!");
@@ -667,7 +678,8 @@ int solveFunc(int numberOfParameters,
                 ud->timer.errorBenchTicks.stop();
             }
 
-            if (autoDiffType == CMINPACK_AUTO_DIFF_TYPE_FORWARD) {
+            if (autoDiffType == AUTO_DIFF_TYPE_FORWARD) {
+                assert(ud->solverOptions->solverSupportsAutoDiffForward);
                 // Set the Jacobian matrix using the previously
                 // calculated errors (original and A).
                 double inv_delta = 1.0 / deltaA;
@@ -678,7 +690,8 @@ int solveFunc(int numberOfParameters,
                     jacobian[num] = x;
                 }
 
-            } else if (autoDiffType == CMINPACK_AUTO_DIFF_TYPE_CENTRAL) {
+            } else if (autoDiffType == AUTO_DIFF_TYPE_CENTRAL) {
+                assert(ud->solverOptions->solverSupportsAutoDiffCentral);
                 // Create another copy of parameters and errors.
                 std::vector<double> paramListB(numberOfParameters, 0);
                 for (int j = 0; j < numberOfParameters; ++j) {
@@ -765,14 +778,14 @@ int solveFunc(int numberOfParameters,
     ud->timer.funcBenchTimer.stop();
     ud->timer.funcBenchTicks.stop();
 
-    if (ud->verbose == true) {
+    if (ud->verbose) {
         if (ud->isNormalCall) {
             std::cout << " | error avg=" << error_avg
                       << " min=" << error_min
                       << " max=" << error_max
                       << std::endl;;
         } else {
-            if (ud->doCalcJacobian == false) {    
+            if (!ud->doCalcJacobian) {
                 std::cout << std::endl;
             }            
         }

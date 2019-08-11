@@ -72,7 +72,7 @@ bool solve_3d_cminpack_lmdif(
         SolverData &userData,
         SolverResult &solveResult,
         MStringArray &outResult){
-    int solverType = SOLVER_TYPE_CMINPACK_LM_DIF;
+    int solverType = SOLVER_TYPE_CMINPACK_LMDIF;
     int ret = 0;
     std::string resultStr;
     int iterMax = solverOptions.iterMax;

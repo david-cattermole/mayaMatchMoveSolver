@@ -20,8 +20,8 @@
  * Define the reprojection functions.
  */
 
-#ifndef MAYA_MM_SOLVER_REPROJECTION_H
-#define MAYA_MM_SOLVER_REPROJECTION_H
+#ifndef MAYA_MM_SOLVER_CORE_REPROJECTION_H
+#define MAYA_MM_SOLVER_CORE_REPROJECTION_H
 
 
 // Maya
@@ -71,4 +71,4 @@ MStatus reprojection(MMatrix tfmMatrix,
                      double &outVerticalPan);
 
 
-#endif // MAYA_MM_SOLVER_REPROJECTION_H
+#endif // MAYA_MM_SOLVER_CORE_REPROJECTION_H

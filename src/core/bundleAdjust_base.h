@@ -23,14 +23,15 @@
  */
 
 
-#ifndef MAYA_MM_SOLVER_H
-#define MAYA_MM_SOLVER_H
+#ifndef MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H
+#define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H
 
 // STL
 #include <string>
 #include <vector>
 #include <map>
 #include <utility>
+#include <cmath>
 #include <cassert>
 
 // Utils
@@ -59,27 +60,31 @@
 #define SOLVER_TYPE_LEVMAR_NAME "levmar"
 
 // Dense LM solver using 'cminpack' library.
-#define SOLVER_TYPE_CMINPACK_LM_DIF 1
-#define SOLVER_TYPE_CMINPACK_LM_DIF_NAME "cminpack_lm"
+#define SOLVER_TYPE_CMINPACK_LMDIF 1
+#define SOLVER_TYPE_CMINPACK_LM_DIF_NAME "cminpack_lmdif"
 
 // Dense LM solver, with custom jacobian, using 'cminpack' library.
-#define SOLVER_TYPE_CMINPACK_LM_DER 2
+#define SOLVER_TYPE_CMINPACK_LMDER 2
 #define SOLVER_TYPE_CMINPACK_LM_DER_NAME "cminpack_lmder"
 
 // The default solver to use, if all solvers are available.
-#define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LM_DER
+#define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LMDER
+
 
 // Enable the Maya profiling data collection.
 #define MAYA_PROFILE 1
 
 // The number of errors that are measured per-marker.
+// There are two measurements per-marker, X and Y.
 //
-// This can be a value of 2 or 3. 3 was used in the past with
+// Three measurements were used in the past with
 // success, but tests now prove 2 to reduce error with less
 // iterations, and is significantly faster overall.
-#define ERRORS_PER_MARKER 2
+//
+// Do not change this definition.
+#define ERRORS_PER_MARKER (2)
 
-
+// Text character used to split up a single result string.
 #define CMD_RESULT_SPLIT_CHAR "#"
 
 
@@ -88,6 +93,19 @@
 // These are the possible values:
 #define PRINT_STATS_MODE_INPUTS   "inputs"
 #define PRINT_STATS_MODE_AFFECTS  "affects"
+
+
+// Robust Loss Function Types.
+//
+#define ROBUST_LOSS_TYPE_TRIVIAL  (0)
+#define ROBUST_LOSS_TYPE_SOFT_L_ONE  (1)
+#define ROBUST_LOSS_TYPE_CAUCHY  (2)
+
+
+// CMinpack-specific values for recognising forward or central differencing.
+//
+#define AUTO_DIFF_TYPE_FORWARD (0)
+#define AUTO_DIFF_TYPE_CENTRAL (1)
 
 
 typedef std::vector<std::vector<bool> > BoolList2D;
@@ -146,6 +164,80 @@ double parameterBoundFromExternalToInternal(double value,
                                             double offset, double scale);
 
 
+inline
+void lossFunctionTrivial(double z,
+                         double &rho0,
+                         double &rho1,
+                         double &rho2) {
+    // Trivial - 'no op' loss function.
+    rho0 = z;
+    rho1 = 1.0;
+    rho2 = 0.0;
+};
+
+
+inline
+void lossFunctionSoftL1(double z,
+                        double &rho0,
+                        double &rho1,
+                        double &rho2) {
+    // Soft L1
+    double t = 1.0 + z;
+    rho0 = 2.0 * (std::pow(t, 0.5 - 1.0));
+    rho1 = std::pow(t, -0.5);
+    rho2 = -0.5 * std::pow(t, -1.5);
+};
+
+
+inline
+void lossFunctionCauchy(double z,
+                        double &rho0,
+                        double &rho1,
+                        double &rho2) {
+    // Cauchy
+    // TODO: replace with 'std::log1p(z)', with C++11.
+    rho0 = std::log(1.0 + z);
+    double t = 1.0 + z;
+    rho1 = 1.0 / t;
+    rho2 = -1.0 / std::pow(t, 2.0);
+};
+
+
+inline
+void applyLossFunctionToErrors(int numberOfErrors,
+                               double *f,
+                               int loss_type,
+                               double loss_scale) {
+    for (int i = 0; i < numberOfErrors; ++i) {
+        // The loss function
+        double z = std::pow(f[i] / loss_scale, 2);
+        double rho0 = z;
+        double rho1 = 1.0;
+        double rho2 = 0.0;
+        if (loss_type == ROBUST_LOSS_TYPE_TRIVIAL) {
+            lossFunctionTrivial(z, rho0, rho1, rho2);
+        } else if (loss_type == ROBUST_LOSS_TYPE_SOFT_L_ONE) {
+            lossFunctionSoftL1(z, rho0, rho1, rho2);
+        } else if (loss_type == ROBUST_LOSS_TYPE_CAUCHY) {
+            lossFunctionCauchy(z, rho0, rho1, rho2);
+        } else {
+            DBG("Invalid Robust Loss Type given; value=" << loss_type);
+        }
+        rho0 *= std::pow(loss_scale, 2.0);
+        rho2 /= std::pow(loss_scale, 2.0);
+
+        double J_scale = rho1 + 2.0 * rho2 * std::pow(f[i], 2.0);
+        const double eps = std::numeric_limits<double>::epsilon();
+        if (J_scale < eps) {
+            J_scale = eps;
+        }
+        J_scale = std::pow(J_scale, 0.5);
+        f[i] *= rho1 / J_scale;
+    }
+    return;
+}
+
+
 bool set_initial_parameters(int numberOfParameters,
                             std::vector<double> &paramList,
                             std::vector<std::pair<int, int> > &paramToAttrList,
@@ -175,19 +267,12 @@ void print_details(SolverResult &solverResult,
                    SolverTimer &timer,
                    int numberOfParameters,
                    int numberOfErrors,
+                   bool verbose,
                    std::vector<double> &paramList,
                    MStringArray &outResult);
 
 
-bool solve(int iterMax,
-           double tau,
-           double eps1,
-           double eps2,
-           double eps3,
-           double delta,
-           int autoDiffType,
-           int autoParamScale,
-           int solverType,
+bool solve(SolverOptions &solverOptions,
            CameraPtrList &cameraList,
            MarkerPtrList &markerList,
            BundlePtrList &bundleList,
@@ -201,4 +286,4 @@ bool solve(int iterMax,
            bool verbose,
            MStringArray &outResult);
 
-#endif // MAYA_MM_SOLVER_H
+#endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H

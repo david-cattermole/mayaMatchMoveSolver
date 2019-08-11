@@ -23,8 +23,8 @@
  */
 
 
-#ifndef MAYA_MM_SOLVER_LEVMAR_H
-#define MAYA_MM_SOLVER_LEVMAR_H
+#ifndef MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_LEVMAR_BC_DIF_H
+#define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_LEVMAR_BC_DIF_H
 
 // STL
 #include <string>
@@ -57,13 +57,13 @@ const std::string levmarReasons[8] = {
         "No reason, should not get here!",
 
         // reason 1
-        "Stopped by small gradient J^T e",
+        "Stopped by small solver gradient.",
 
         // reason 2
-        "Stopped by small Dp",
+        "Stopped by small change in parameters.",
 
         // reason 3
-        "Stopped by reaching maximum iterations",
+        "Stopped by reaching maximum iterations.",
 
         // reason 4
         "Singular matrix. Restart from current parameters with increased \'Tau Factor\'",
@@ -99,4 +99,4 @@ void solveFunc_levmar_bc_dif(double *p,
                              int n,
                              void *data);
 
-#endif // MAYA_MM_SOLVER_LEVMAR_H
+#endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_LEVMAR_BC_DIF_H

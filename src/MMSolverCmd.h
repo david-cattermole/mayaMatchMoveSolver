@@ -78,6 +78,10 @@
 #define FRAME_FLAG       "-f"
 #define FRAME_FLAG_LONG  "-frame"
 
+// Type of Solver to use.
+//
+// The Type of Solver backend to use for refinement and
+// guessing of parameter values.
 #define SOLVER_TYPE_FLAG           "-st"
 #define SOLVER_TYPE_FLAG_LONG      "-solverType"
 
@@ -157,6 +161,21 @@
 #define AUTO_PARAM_SCALE_FLAG      "-aps"
 #define AUTO_PARAM_SCALE_FLAG_LONG "-autoParamScaling"
 
+// Robust Loss Function Type
+//
+// 0 = 'trivial'
+// 1 = 'soft_l1'
+// 2 = 'cauchy'
+#define ROBUST_LOSS_TYPE_FLAG      "-rlt"
+#define ROBUST_LOSS_TYPE_FLAG_LONG "-robustLossType"
+
+// Robust Loss Function Scale
+//
+// The scale factor to remap '1.0' of the robust loss function to.
+#define ROBUST_LOSS_SCALE_FLAG      "-rls"
+#define ROBUST_LOSS_SCALE_FLAG_LONG "-robustLossScale"
+
+
 // Should the solver print out verbose information while solving?
 #define VERBOSE_FLAG           "-v"
 #define VERBOSE_FLAG_LONG      "-verbose"
@@ -171,37 +190,59 @@
 #define PRINT_STATS_FLAG           "-pst"
 #define PRINT_STATS_FLAG_LONG      "-printStatistics"
 
-// Default Values for solver option flags
-#define CMINPACK_LMDIF_ITERATIONS_DEFAULT_VALUE  (20)
-#define CMINPACK_LMDIF_TAU_DEFAULT_VALUE  (100.0) // default is 100.0
-#define CMINPACK_LMDIF_EPSILON1_DEFAULT_VALUE  (1E-6) // default is 1E-15 (ftol)
-#define CMINPACK_LMDIF_EPSILON2_DEFAULT_VALUE  (1E-6) // default is 1E-15 (xtol)
-#define CMINPACK_LMDIF_EPSILON3_DEFAULT_VALUE  (1E-6) // default is 0.0 (gtol)
-#define CMINPACK_LMDIF_DELTA_DEFAULT_VALUE  (1E-03) // default is 0.0
+// CMinpack lmdif Solver default flag values
+//
+#define CMINPACK_LMDIF_ITERATIONS_DEFAULT_VALUE  (100)
+#define CMINPACK_LMDIF_TAU_DEFAULT_VALUE  (1.0)
+#define CMINPACK_LMDIF_EPSILON1_DEFAULT_VALUE  (1E-15) // ftol
+#define CMINPACK_LMDIF_EPSILON2_DEFAULT_VALUE  (1E-15) // xtol
+#define CMINPACK_LMDIF_EPSILON3_DEFAULT_VALUE  (1E-15) // gtol
+#define CMINPACK_LMDIF_DELTA_DEFAULT_VALUE  (1E-04)
 // cminpack lmdif only supports forward '0=forward' auto-diff'ing.
-#define CMINPACK_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE  (0)
+#define CMINPACK_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE  (AUTO_DIFF_TYPE_FORWARD)
 #define CMINPACK_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE  (1)  // default is 'on=1 (mode=1)'
+#define CMINPACK_LMDIF_ROBUST_LOSS_TYPE_DEFAULT_VALUE  (ROBUST_LOSS_TYPE_TRIVIAL)
+#define CMINPACK_LMDIF_ROBUST_LOSS_SCALE_DEFAULT_VALUE 1.0
+#define CMINPACK_LMDIF_SUPPORT_AUTO_DIFF_FORWARD_VALUE true
+#define CMINPACK_LMDIF_SUPPORT_AUTO_DIFF_CENTRAL_VALUE false
+#define CMINPACK_LMDIF_SUPPORT_PARAMETER_BOUNDS_VALUE true
+#define CMINPACK_LMDIF_SUPPORT_ROBUST_LOSS_VALUE false
 
-#define CMINPACK_LMDER_ITERATIONS_DEFAULT_VALUE  (20)
-#define CMINPACK_LMDER_TAU_DEFAULT_VALUE  (100.0) // default is 100.0
-#define CMINPACK_LMDER_EPSILON1_DEFAULT_VALUE  (1E-6) // default is 1E-15 (ftol)
-#define CMINPACK_LMDER_EPSILON2_DEFAULT_VALUE  (1E-6) // default is 1E-15 (xtol)
-#define CMINPACK_LMDER_EPSILON3_DEFAULT_VALUE  (1E-6) // default is 0.0 (gtol)
-#define CMINPACK_LMDER_DELTA_DEFAULT_VALUE  (1E-03) // default is 0.0
-// cminpack lmder supports both forward '0=forward' and central auto-diff'ing.
-#define CMINPACK_LMDER_AUTO_DIFF_TYPE_DEFAULT_VALUE  (0)
+// CMinpack lmder Solver default flag values
+//
+#define CMINPACK_LMDER_ITERATIONS_DEFAULT_VALUE  (100)
+#define CMINPACK_LMDER_TAU_DEFAULT_VALUE  (1.0)
+#define CMINPACK_LMDER_EPSILON1_DEFAULT_VALUE  (1E-15) // ftol
+#define CMINPACK_LMDER_EPSILON2_DEFAULT_VALUE  (1E-15) // xtol
+#define CMINPACK_LMDER_EPSILON3_DEFAULT_VALUE  (1E-15) // gtol
+#define CMINPACK_LMDER_DELTA_DEFAULT_VALUE  (1E-04)
+// cminpack lmder supports both forward '0=forward' and 'central' auto-diff'ing.
+#define CMINPACK_LMDER_AUTO_DIFF_TYPE_DEFAULT_VALUE  (AUTO_DIFF_TYPE_FORWARD)
 #define CMINPACK_LMDER_AUTO_PARAM_SCALE_DEFAULT_VALUE  (1)  // default is 'on=1 (mode=1)'
+#define CMINPACK_LMDER_ROBUST_LOSS_TYPE_DEFAULT_VALUE  (ROBUST_LOSS_TYPE_TRIVIAL)
+#define CMINPACK_LMDER_ROBUST_LOSS_SCALE_DEFAULT_VALUE 1.0
+#define CMINPACK_LMDER_SUPPORT_AUTO_DIFF_FORWARD_VALUE true
+#define CMINPACK_LMDER_SUPPORT_AUTO_DIFF_CENTRAL_VALUE true
+#define CMINPACK_LMDER_SUPPORT_PARAMETER_BOUNDS_VALUE true
+#define CMINPACK_LMDER_SUPPORT_ROBUST_LOSS_VALUE  false
 
-#define LEVMAR_ITERATIONS_DEFAULT_VALUE  (20)
-#define LEVMAR_TAU_DEFAULT_VALUE  (1E-03) // LevMar default is 1E-3
-#define LEVMAR_EPSILON1_DEFAULT_VALUE  (1E-6) // LevMar default is 1E-12
-#define LEVMAR_EPSILON2_DEFAULT_VALUE  (1E-6) // LevMar default is 1E-12
-#define LEVMAR_EPSILON3_DEFAULT_VALUE  (1E-6) // LevMar default is 1E-12
-#define LEVMAR_DELTA_DEFAULT_VALUE  (1E-04) // LevMar default is 1E-06
-#define LEVMAR_AUTO_DIFF_TYPE_DEFAULT_VALUE  (1) // LevMar default is '0=forward'
+// Levmar Solver default flag values
+//
+#define LEVMAR_ITERATIONS_DEFAULT_VALUE  (100)
+#define LEVMAR_TAU_DEFAULT_VALUE  (1.0)
+#define LEVMAR_EPSILON1_DEFAULT_VALUE  (1E-6)
+#define LEVMAR_EPSILON2_DEFAULT_VALUE  (1E-6)
+#define LEVMAR_EPSILON3_DEFAULT_VALUE  (1E-6)
+#define LEVMAR_DELTA_DEFAULT_VALUE  (1E-04)
+#define LEVMAR_AUTO_DIFF_TYPE_DEFAULT_VALUE  (AUTO_DIFF_TYPE_FORWARD)
 // LevMar does not have auto-parameter scaling.
 #define LEVMAR_AUTO_PARAM_SCALE_DEFAULT_VALUE  (0)
-
+#define LEVMAR_ROBUST_LOSS_TYPE_DEFAULT_VALUE  (ROBUST_LOSS_TYPE_TRIVIAL)
+#define LEVMAR_ROBUST_LOSS_SCALE_DEFAULT_VALUE 1.0
+#define LEVMAR_SUPPORT_AUTO_DIFF_FORWARD_VALUE true
+#define LEVMAR_SUPPORT_AUTO_DIFF_CENTRAL_VALUE true
+#define LEVMAR_SUPPORT_PARAMETER_BOUNDS_VALUE true
+#define LEVMAR_SUPPORT_ROBUST_LOSS_VALUE false
 
 class MMSolverCmd : public MPxCommand {
 public:
@@ -237,7 +278,17 @@ private:
     double m_delta;     // Step used in difference approximation to the Jacobian
     int m_autoDiffType; // Auto Differencing type to use; 0=forward, 1=central.
     int m_autoParamScale; // Auto Parameter Scaling; 0=OFF, 1=ON.
+    int m_robustLossType; // Robust Loss function type; 0=trivial,
+                          //                            1=soft_l1,
+                          //                            2=cauchy.
+    double m_robustLossScale; // Factor to scale robust loss function by.
     int m_solverType;   // Solver type to use; 0=levmar, 1=cminpack_lm.
+
+    // What type of features does the given solver type support?
+    bool m_supportAutoDiffForward;
+    bool m_supportAutoDiffCentral;
+    bool m_supportParameterBounds;
+    bool m_supportRobustLoss;
 
     // Solver printing.
     MString m_debugFile;

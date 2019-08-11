@@ -89,7 +89,6 @@ class TestSolver3(solverUtils.SolverTestCase):
             camera=cameras,
             marker=markers,
             attr=node_attrs,
-            iterations=10,
             solverType=solver_index,
             frame=frames,
             verbose=True,
@@ -106,8 +105,8 @@ class TestSolver3(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         rx = maya.cmds.getAttr(cam_tfm + '.rx')
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
-        assert self.approx_equal(rx, 7.43790257882, eps=0.01)
-        assert self.approx_equal(ry, -32.3908666703, eps=0.01)
+        assert self.approx_equal(rx, 7.44014, eps=0.001)
+        assert self.approx_equal(ry, -32.3891, eps=0.001)
 
     def test_init_levmar(self):
         """

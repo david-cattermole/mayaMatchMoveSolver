@@ -21,8 +21,8 @@
  */
 
 
-#ifndef MAYA_MM_SOLVER_DATA_H
-#define MAYA_MM_SOLVER_DATA_H
+#ifndef MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H
+#define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H
 
 // STL
 #include <string>
@@ -73,7 +73,16 @@ struct SolverOptions {
     double delta;
     int autoDiffType;
     int autoParamScale;
+    int robustLossType;
+    double robustLossScale;
     int solverType;
+
+    // All the different supported features by the currently active
+    // solver type.
+    bool solverSupportsAutoDiffForward;
+    bool solverSupportsAutoDiffCentral;
+    bool solverSupportsParameterBounds;
+    bool solverSupportsRobustLoss;
 };
 
 
@@ -97,6 +106,7 @@ struct SolverData {
     std::vector<double> errorList;
     std::vector<double> errorDistanceList;
     std::vector<double> jacobianList;
+    int funcEvalNum;
     int iterNum;
     int jacIterNum;
     int solverType;
@@ -144,4 +154,4 @@ struct SolverResult {
     double errorFinal;
 };
 
-#endif // MAYA_MM_SOLVER_DATA_H
+#endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H

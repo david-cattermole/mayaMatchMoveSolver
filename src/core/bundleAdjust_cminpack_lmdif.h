@@ -20,8 +20,8 @@
  */
 
 
-#ifndef MAYA_MM_SOLVER_CMINPACK_LMDIF_H
-#define MAYA_MM_SOLVER_CMINPACK_LMDIF_H
+#ifndef MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDIF_H
+#define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDIF_H
 
 // STL
 #include <string>
@@ -64,4 +64,4 @@ int solveFunc_cminpack_lmdif(void *data,
                              double *x,
                              int iflag);
 
-#endif // MAYA_MM_SOLVER_CMINPACK_LMDIF_H
+#endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDIF_H

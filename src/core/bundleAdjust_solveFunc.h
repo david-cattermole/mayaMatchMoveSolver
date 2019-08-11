@@ -21,8 +21,8 @@
  */
 
 
-#ifndef MAYA_MM_SOLVER_FUNC_H
-#define MAYA_MM_SOLVER_FUNC_H
+#ifndef MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
+#define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
 
 
 // success / failure constants.
@@ -38,4 +38,4 @@ int solveFunc(int numberOfParameters,
               void *userData);
 
 
-#endif // MAYA_MM_SOLVER_FUNC_H
+#endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H

@@ -19,7 +19,9 @@
 The standard solver.
 """
 
-import mmSolver._api.solverbase as solveropbase
+import mmSolver._api.frame as frame
+import mmSolver._api.solverbase as solverbase
+import mmSolver._api.solverstep as solverstep
 import mmSolver._api.action as api_action
 
 
@@ -37,7 +39,7 @@ import mmSolver._api.action as api_action
 #     pass
 
 
-class SolverStandard(solveropbase.SolverBase):
+class SolverStandard(solverbase.SolverBase):
     # TODO: Write a 'meta-solver' class to hold attributes for solving.
     #  Issue #57 - Maya Tool - Solver UI - Add Simplified Solver Settings
     #  Issue #72 - Python API - Re-Design Collection Compiling
@@ -77,16 +79,45 @@ class SolverStandard(solveropbase.SolverBase):
     #  Only the root frames need to be initialized with good values.
     #
     # TODO: Add get/set 'use_single_frame' - bool
+    # TODO: Add get/set 'only_root_frames' - bool
+    # TODO: Add get/set 'global_solve' - bool
     # TODO: Add get/set 'single_frame' - Frame or None
     # TODO: Add get/set 'root_frame_list' - list of Frame
     # TODO: Add get/set 'frame_list' - list of Frame
-    # TODO: Add get/set 'only_root_frames' - bool
-    # TODO: Add get/set 'global_solve' - bool
 
     def compile(self, mkr_list, attr_list):
-        action = api_action.Action(
-            func=None,
-            args=[],
-            kwargs=dict()
-        )
-        return [action]
+        actions = []
+        # Options to affect how the solve is constructed.
+        use_single_frame = False
+        only_root_frames = False
+        global_solve = False
+
+        single_frame = frame.Frame(1)
+        root_frame_list = [frame.Frame(x) for x in range(0, 100, 10)]
+        frame_list = [frame.Frame(x) for x in range(100)]
+
+        if use_single_frame is True:
+            # Single frame solve
+            solA = solverstep.SolverStep()
+            solA.set_frame_list([single_frame])
+            solA.set_attributes_use_animated(True)
+            solA.set_attributes_use_static(True)
+            actions += solA.compile(mkr_list, attr_list)
+        else:
+            # Solver for root frames.
+            solA = solverstep.SolverStep()
+            solA.set_frame_list(root_frame_list)
+            solA.set_attributes_use_animated(True)
+            solA.set_attributes_use_static(True)
+            actions += solA.compile(mkr_list, attr_list)
+
+            if only_root_frames is not True:
+                # Solver for all other frames.
+                solB = solverstep.SolverStep()
+                solB.set_frame_list(frame_list)
+                solB.set_attributes_use_animated(True)
+                solB.set_attributes_use_static(False)
+                if global_solve is True:
+                    solB.set_attributes_use_static(True)
+                actions += solB.compile(mkr_list, attr_list)
+        return actions

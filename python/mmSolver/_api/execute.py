@@ -20,6 +20,7 @@ Execute a solve.
 """
 
 
+import importlib
 import time
 import pprint
 import collections
@@ -102,7 +103,9 @@ def createExecuteOptions(verbose=False,
     return options
 
 
-def _compile(col_node, sol_list, mkr_list, attr_list, prog_fn=None, status_fn=None):
+def _compile(col_node, sol_list, mkr_list, attr_list,
+             prog_fn=None,
+             status_fn=None):
     """
     Take the data in this class and compile it into keyword argument flags.
 
@@ -110,6 +113,11 @@ def _compile(col_node, sol_list, mkr_list, attr_list, prog_fn=None, status_fn=No
     :rtype: [SolverAction, ..]
     """
     action_list = []
+    if len(sol_list) == 0:
+        msg = 'Collection is not valid, no Solvers given; '
+        msg += 'collection={0}'
+        msg = msg.format(repr(col_node))
+        raise excep.NotValid(msg)
 
     # Check Solvers
     sol_enabled_list = [sol for sol in sol_list
@@ -488,35 +496,44 @@ def execute(col,
         total = len(actions_list)
         for i, action in enumerate(actions_list):
             func = action.func
+            func_is_mmsolver = isinstance(func, basestring) and '.mmSolver' in func
             args = list(action.args)
             kwargs = action.kwargs.copy()
+            if isinstance(func, basestring):
+                # Look up function name at run-time.
+                mod_name, func_name = func.rsplit('.', 1)
+                mod = importlib.import_module(mod_name)
+                func = getattr(mod, func_name)
 
-            frame = kwargs.get('frame')
-            collectionutils.run_status_func(info_fn, 'Evaluating frames %r' % frame)
-            if frame is None or len(frame) == 0:
-                raise excep.NotValid
+            save_node_attrs = None
+            is_single_frame = None
+            if func_is_mmsolver is True:
+                frame = kwargs.get('frame')
+                collectionutils.run_status_func(info_fn, 'Evaluating frames %r' % frame)
+                if frame is None or len(frame) == 0:
+                    raise excep.NotValid
 
-            # Write solver flags to a debug file.
-            debug_file_path = kwargs.get('debugFile', None)
-            if debug_file_path is not None:
-                options_file_path = debug_file_path.replace('.log', '.flags')
-                text = pprint.pformat(kwargs)
-                with open(options_file_path, 'w') as file_:
-                    file_.write(text)
+                # Write solver flags to a debug file.
+                debug_file_path = kwargs.get('debugFile', None)
+                if debug_file_path is not None:
+                    options_file_path = debug_file_path.replace('.log', '.flags')
+                    text = pprint.pformat(kwargs)
+                    with open(options_file_path, 'w') as file_:
+                        file_.write(text)
 
-            # Overriding the verbosity, irrespective of what
-            # the solver verbosity value is set to.
-            if options.verbose is True:
-                kwargs['verbose'] = True
+                # Overriding the verbosity, irrespective of what
+                # the solver verbosity value is set to.
+                if options.verbose is True:
+                    kwargs['verbose'] = True
 
-            # TODO: Try to test and remove the need to disconnect
-            #  and re-connect animation curves.
-            #
-            # HACK for single frame solves.
-            save_node_attrs = []
-            is_single_frame = collectionutils.is_single_frame(kwargs)
-            if is_single_frame is True:
-                save_node_attrs = collectionutils.disconnect_animcurves(kwargs)
+                # TODO: Try to test and remove the need to disconnect
+                #  and re-connect animation curves.
+                #
+                # HACK for single frame solves.
+                save_node_attrs = []
+                is_single_frame = collectionutils.is_single_frame(kwargs)
+                if is_single_frame is True:
+                    save_node_attrs = collectionutils.disconnect_animcurves(kwargs)
 
             # TODO: Detect if we can re-run the mmSolver command
             #  multiple times, to get better quality.
@@ -531,8 +548,9 @@ def execute(col,
             solve_data = func(*args, **kwargs)
 
             # Revert special HACK for single frame solves
-            if is_single_frame is True:
-                collectionutils.reconnect_animcurves(kwargs, save_node_attrs)
+            if func_is_mmsolver is True:
+                if is_single_frame is True:
+                    collectionutils.reconnect_animcurves(kwargs, save_node_attrs)
 
             # Create SolveResult.
             solres = None

@@ -180,18 +180,8 @@ class SolverStep(solverbase.SolverBase):
     """
     SolverStep; the options for how a solver should be executed.
     """
-    def __init__(self, name=None, data=None):
-        self._data = const.SOLVER_DATA_DEFAULT.copy()
-        if isinstance(data, dict):
-            self.set_data(data)
-        if isinstance(name, (str, unicode, uuid.UUID)):
-            self._data['name'] = name
-        else:
-            # give the solver a random name.
-            if 'name' not in self._data:
-                self._data['name'] = str(uuid.uuid4())
-        assert 'name' in self._data
-
+    def __init__(self, *args, **kwargs):
+        super(SolverStep, self).__init__(*args, **kwargs)
         self._attributes_use = {
             'animated': True,
             'static': True,
@@ -201,43 +191,7 @@ class SolverStep(solverbase.SolverBase):
         }
         return
 
-    def get_name(self):
-        return self._data.get('name')
-
-    def set_name(self, name):
-        assert isinstance(name, (str, unicode, uuid.UUID))
-        self._data['name'] = str(name)
-        return
-
-    def get_data(self):
-        assert isinstance(self._data, dict)
-        return self._data.copy()
-
-    def set_data(self, data):
-        assert isinstance(data, dict)
-        self._data = data.copy()
-        return self
-
     ############################################################################
-
-    def get_enabled(self):
-        """
-        Flags this solver should not be used for solving.
-        :rtype: bool
-        """
-        return self._data.get('enabled')
-
-    def set_enabled(self, value):
-        """
-        Set if this solver be used?
-
-        :param value: The enabled value.
-        :type value: bool
-        """
-        if isinstance(value, bool) is False:
-            raise TypeError('Expected bool value type.')
-        self._data['enabled'] = value
-        return
 
     def get_max_iterations(self):
         return self._data.get('max_iterations')
@@ -416,7 +370,7 @@ class SolverStep(solverbase.SolverBase):
 
     ##########################################
 
-    def compile(self, mkr_list, attr_list, prog_fn=None):
+    def compile(self, mkr_list, attr_list):
         """
         Compiles data given into flags for a single run of 'mmSolver'.
 
@@ -429,9 +383,6 @@ class SolverStep(solverbase.SolverBase):
         :param attr_list: Attributes to solve for
         :type attr_list: list of Attribute
 
-        :param prog_fn: Progress Function, with signature f(int)
-        :type prog_fn: function
-
         :return: List of SolverActions to be performed one after the other.
         :rtype: [SolverAction, ..]
         """
@@ -440,7 +391,7 @@ class SolverStep(solverbase.SolverBase):
         assert isinstance(attr_list, list)
         assert self.get_frame_list_length() > 0
 
-        func = maya.cmds.mmSolver
+        func = 'maya.cmds.mmSolver'
         args = []
         kwargs = dict()
         kwargs['camera'] = []

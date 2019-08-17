@@ -110,6 +110,7 @@ MSyntax MMSolverCmd::newSyntax() {
                    MSyntax::kUnsigned);
     syntax.addFlag(ITERATIONS_FLAG, ITERATIONS_FLAG_LONG,
                    MSyntax::kUnsigned);
+    // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
     syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG,
                    MSyntax::kBoolean);
     syntax.addFlag(DEBUG_FILE_FLAG, DEBUG_FILE_FLAG_LONG,
@@ -137,6 +138,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get 'Verbose'
+    // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
     m_verbose = VERBOSE_DEFAULT_VALUE;
     if (argData.isFlagSet(VERBOSE_FLAG)) {
         status = argData.getFlagArgument(VERBOSE_FLAG, 0, m_verbose);

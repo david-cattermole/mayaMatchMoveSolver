@@ -177,6 +177,7 @@
 
 
 // Should the solver print out verbose information while solving?
+// TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
 #define VERBOSE_FLAG           "-v"
 #define VERBOSE_FLAG_LONG      "-verbose"
 #define VERBOSE_DEFAULT_VALUE  false

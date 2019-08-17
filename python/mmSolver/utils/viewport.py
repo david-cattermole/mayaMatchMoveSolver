@@ -29,6 +29,30 @@ import mmSolver.utils.node as node_utils
 LOG = mmSolver.logger.get_logger()
 
 
+SUPPORTED_DISPLAY_NODE_TYPES = [
+    'mesh',
+    'imagePlane',
+    'nurbsCurve',
+    'nurbsSurface',
+    'subdiv',
+    'locator',
+    'plane',
+    'light',
+    'joint',
+    'deformer',
+    'ikHandle',
+    'dynamic',
+    'fluid',
+    'hairSystem',
+    'follicle',
+    'nCloth',
+    'nParticle',
+    'nRigid',
+    'texture',
+    'stroke',
+]
+
+
 def viewport1_turn_off():
     """
     Turn off Maya UI.
@@ -176,48 +200,6 @@ def get_isolated_nodes(model_panel):
     return nodes
 
 
-def get_image_plane_visibility(model_panel):
-    """
-    Query the image plane visibility.
-
-    :param model_panel: Model panel name to set visibility.
-    :type model_panel: str
-
-    :return: The visibility of image planes.
-    :rtype: bool
-    """
-    model_editor = maya.cmds.modelPanel(
-        model_panel,
-        query=True,
-        modelEditor=True)
-    value = maya.cmds.modelEditor(
-        model_editor,
-        query=True,
-        imagePlane=True)
-    return value
-
-
-def set_image_plane_visibility(model_panel, value):
-    """
-    Set the visibility of imagePlane nodes in the given model panel.
-
-    :param model_panel: Model panel name to set visibility.
-    :type model_panel: str
-
-    :param value: Visibility of image planes.
-    :type value: bool
-    """
-    model_editor = maya.cmds.modelPanel(
-        model_panel,
-        query=True,
-        modelEditor=True)
-    maya.cmds.modelEditor(
-        model_editor,
-        edit=True,
-        imagePlane=value)
-    return
-
-
 def set_isolated_nodes(model_panel, nodes, enable):
     """
     Override the isolate objects on 'model_panel'.
@@ -246,3 +228,447 @@ def set_isolated_nodes(model_panel, nodes, enable):
     else:
         maya.cmds.select(clear=True)
     return
+
+
+def _get_node_type_visibility(model_panel, node_type):
+    """
+    Query the image plane visibility.
+
+    :param model_panel: Model panel name to set visibility.
+    :type model_panel: str
+
+    :return: The visibility of image planes.
+    :rtype: bool
+    """
+    model_editor = maya.cmds.modelPanel(
+        model_panel,
+        query=True,
+        modelEditor=True)
+    kwargs = {
+        'query': True,
+        str(node_type): True,
+    }
+    value = maya.cmds.modelEditor(model_editor, **kwargs)
+    return value
+
+
+def _set_node_type_visibility(model_panel, node_type, value):
+    """
+    Set the visibility of any node types in the given model panel.
+
+    :param model_panel: Model panel name to set visibility.
+    :type model_panel: str
+
+    :param value: Visibility of image planes.
+    :type value: bool
+    """
+    model_editor = maya.cmds.modelPanel(
+        model_panel,
+        query=True,
+        modelEditor=True)
+    kwargs = {
+        'edit': True,
+        str(node_type): value,
+    }
+    maya.cmds.modelEditor(model_editor, **kwargs)
+    return
+
+
+def get_grid_visibility(model_panel):
+    """
+    Query the grids visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'grid')
+
+
+def set_grid_visibility(model_panel, value):
+    """
+    Set the visibility of grids nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'grid', value)
+
+
+def get_image_plane_visibility(model_panel):
+    """
+    Query the image plane visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'imagePlane')
+
+
+def set_image_plane_visibility(model_panel, value):
+    """
+    Set the visibility of imagePlane nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'imagePlane', value)
+
+
+def get_mesh_visibility(model_panel):
+    """
+    Query the mesh visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'polymeshes')
+
+
+def set_mesh_visibility(model_panel, value):
+    """
+    Set the visibility of mesh nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'polymeshes', value)
+
+
+def get_subdiv_visibility(model_panel):
+    """
+    Query the subdiv visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'subdivSurfaces')
+
+
+def set_subdiv_visibility(model_panel, value):
+    """
+    Set the visibility of subdiv nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'subdivSurfaces', value)
+
+
+def get_nurbs_curve_visibility(model_panel):
+    """
+    Query the NURBS Curve visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'nurbsCurves')
+
+
+def set_nurbs_curve_visibility(model_panel, value):
+    """
+    Set the visibility of NURBS Curve nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'nurbsCurves', value)
+
+
+def get_nurbs_surface_visibility(model_panel):
+    """
+    Query the NURBS surface visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'nurbsSurfaces')
+
+
+def set_nurbs_surface_visibility(model_panel, value):
+    """
+    Set the visibility of NURBS surface nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'nurbsSurfaces', value)
+
+
+def get_locator_visibility(model_panel):
+    """
+    Query the locators visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'locators')
+
+
+def set_locator_visibility(model_panel, value):
+    """
+    Set the visibility of locators nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'locators', value)
+
+
+def get_plane_visibility(model_panel):
+    """
+    Query the plane visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'locators')
+
+
+def set_plane_visibility(model_panel, value):
+    """
+    Set the visibility of plane nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'planes', value)
+
+
+def get_camera_visibility(model_panel):
+    """
+    Query the cameras visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'cameras')
+
+
+def set_camera_visibility(model_panel, value):
+    """
+    Set the visibility of cameras nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'cameras', value)
+
+
+def get_light_visibility(model_panel):
+    """
+    Query the lights visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'lights')
+
+
+def set_light_visibility(model_panel, value):
+    """
+    Set the visibility of lights nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'lights', value)
+
+
+def get_joint_visibility(model_panel):
+    """
+    Query the joints visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'joints')
+
+
+def set_joint_visibility(model_panel, value):
+    """
+    Set the visibility of joints nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'joints', value)
+
+
+def get_deformer_visibility(model_panel):
+    """
+    Query the deformers visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'deformers')
+
+
+def set_deformer_visibility(model_panel, value):
+    """
+    Set the visibility of deformers nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'deformers', value)
+
+
+def get_ik_handle_visibility(model_panel):
+    """
+    Query the ikHandles visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'ikHandles')
+
+
+def set_ik_handle_visibility(model_panel, value):
+    """
+    Set the visibility of ikHandles nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'ikHandles', value)
+
+
+def get_dynamic_visibility(model_panel):
+    """
+    Query the dynamics visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'dynamics')
+
+
+def set_dynamic_visibility(model_panel, value):
+    """
+    Set the visibility of dynamics nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'dynamics', value)
+
+
+def get_fluid_visibility(model_panel):
+    """
+    Query the fluids visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'fluids')
+
+
+def set_fluid_visibility(model_panel, value):
+    """
+    Set the visibility of fluids nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'fluids', value)
+
+
+def get_hair_system_visibility(model_panel):
+    """
+    Query the hairSystems visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'hairSystems')
+
+
+def set_hair_system_visibility(model_panel, value):
+    """
+    Set the visibility of hairSystems nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'hairSystems', value)
+
+
+def get_follicle_visibility(model_panel):
+    """
+    Query the follicles visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'follicles')
+
+
+def set_follicle_visibility(model_panel, value):
+    """
+    Set the visibility of follicles nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'follicles', value)
+
+
+def get_ncloth_visibility(model_panel):
+    """
+    Query the nCloths visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'nCloths')
+
+
+def set_ncloth_visibility(model_panel, value):
+    """
+    Set the visibility of nCloths nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'nCloths', value)
+
+
+def get_nparticle_visibility(model_panel):
+    """
+    Query the nParticles visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'nParticles')
+
+
+def set_nparticle_visibility(model_panel, value):
+    """
+    Set the visibility of nParticles nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'nParticles', value)
+
+
+def get_nrigid_visibility(model_panel):
+    """
+    Query the nRigids visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'nRigids')
+
+
+def set_nrigid_visibility(model_panel, value):
+    """
+    Set the visibility of nRigids nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'nRigids', value)
+
+
+def get_texture_visibility(model_panel):
+    """
+    Query the textures visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'textures')
+
+
+def set_texture_visibility(model_panel, value):
+    """
+    Set the visibility of textures nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'textures', value)
+
+
+def get_stroke_visibility(model_panel):
+    """
+    Query the strokes visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'strokes')
+
+
+def set_stroke_visibility(model_panel, value):
+    """
+    Set the visibility of strokes nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'strokes', value)
+
+
+NODE_TYPE_TO_GET_VIS_FUNC = {
+    'mesh': get_mesh_visibility,
+    'imagePlane': get_image_plane_visibility,
+    'nurbsCurve': get_nurbs_curve_visibility,
+    'nurbsSurface': get_nurbs_surface_visibility,
+    'subdiv': get_subdiv_visibility,
+    'locator': get_locator_visibility,
+    'plane': get_plane_visibility,
+    'light': get_light_visibility,
+    'joint': get_joint_visibility,
+    'deformer': get_deformer_visibility,
+    'ikHandle': get_ik_handle_visibility,
+    'dynamic': get_dynamic_visibility,
+    'fluid': get_fluid_visibility,
+    'hairSystem': get_hair_system_visibility,
+    'follicle': get_follicle_visibility,
+    'nCloth': get_ncloth_visibility,
+    'nParticle': get_nparticle_visibility,
+    'nRigid': get_nrigid_visibility,
+    'texture': get_texture_visibility,
+    'stroke': get_stroke_visibility,
+}
+
+
+NODE_TYPE_TO_SET_VIS_FUNC = {
+    'mesh': set_mesh_visibility,
+    'imagePlane': set_image_plane_visibility,
+    'nurbsCurve': set_nurbs_curve_visibility,
+    'nurbsSurface': set_nurbs_surface_visibility,
+    'subdiv': set_subdiv_visibility,
+    'locator': set_locator_visibility,
+    'plane': set_plane_visibility,
+    'light': set_light_visibility,
+    'joint': set_joint_visibility,
+    'deformer': set_deformer_visibility,
+    'ikHandle': set_ik_handle_visibility,
+    'dynamic': set_dynamic_visibility,
+    'fluid': set_fluid_visibility,
+    'hairSystem': set_hair_system_visibility,
+    'follicle': set_follicle_visibility,
+    'nCloth': set_ncloth_visibility,
+    'nParticle': set_nparticle_visibility,
+    'nRigid': set_nrigid_visibility,
+    'texture': set_texture_visibility,
+    'stroke': set_stroke_visibility,
+}
+
+
+def get_node_type_visibility(model_panel, node_type):
+    """
+    Query the visibility of 'node_type' in the given model panel.
+
+    :param model_panel: Model panel name to set visibility.
+    :type model_panel: str
+
+    :param node_type: Node type to get visibility for.
+    :type node_type: str
+
+    :return: The visibility of the given node type.
+    :rtype: bool
+    """
+    func = NODE_TYPE_TO_GET_VIS_FUNC.get(node_type)
+    if func is None:
+        msg = 'The requested node type is not valid: %r'
+        LOG.warn(msg, node_type)
+        return None
+    value = func(model_panel)
+    return value
+
+
+def set_node_type_visibility(model_panel, node_type, value):
+    """
+    Set the visibility of 'node_type' nodes in the given model panel.
+
+    :param model_panel: Model panel name to set visibility.
+    :type model_panel: str
+
+    :param node_type: Node type to set visibility for.
+    :type node_type: str
+
+    :param value: Visibility of node type.
+    :type value: bool
+    """
+    func = NODE_TYPE_TO_SET_VIS_FUNC.get(node_type)
+    if func is None:
+        msg = 'The requested node type is not valid: %r'
+        LOG.warn(msg, node_type)
+        return None
+    func(model_panel, value)
+    return value

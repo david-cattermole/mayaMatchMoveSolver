@@ -40,67 +40,14 @@ import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
 import mmSolver._api.constant as const
 import mmSolver._api.solveresult as solveresult
-import mmSolver._api.solver as solver
+import mmSolver._api.solverstep as solver
 import mmSolver._api.marker as marker
 import mmSolver._api.attribute as attribute
 import mmSolver._api.sethelper as sethelper
-import mmSolver._api.collectionutils as collectionutils
+import mmSolver._api.execute as execute
 
 
 LOG = mmSolver.logger.get_logger()
-
-ExecuteOptions = collections.namedtuple(
-    'ExecuteOptions',
-    ('verbose', 'refresh',
-     'force_update', 'do_isolate',
-     'display_image_plane')
-)
-
-
-def createExecuteOptions(verbose=False,
-                         refresh=False,
-                         force_update=False,
-                         do_isolate=False,
-                         display_image_plane=None,
-                         # display_node_types=None,
-                         # TODO: Allow a dict to be
-                         #  passed to the function specifying the object type
-                         #  and the visibility status during solving. This
-                         #  allows us to turn on/off any object type during
-                         #  solving. If an argument is not given or is None,
-                         #  the object type visibility will not be changed.
-                         ):
-    """
-    Create ExecuteOptions.
-
-    :param verbose: Print extra solver information while a solve is running.
-    :type verbose: bool
-
-    :param refresh: Should the solver refresh the viewport while solving?
-    :type refresh: bool
-
-    :param force_update: Force updating the DG network, to help the
-                         solver in case of a Maya evaluation DG bug.
-    :type force_update: bool
-
-    :param do_isolate: Isolate only solving objects while performing
-                       the solve.
-    :type do_isolate: bool
-
-    :param display_image_plane: Display image planes in the viewport while performing the solve?
-    :type display_image_plane: bool
-    """
-    # if display_node_types is None:
-    #     display_node_types = dict()
-    options = ExecuteOptions(
-        verbose=verbose,
-        refresh=refresh,
-        force_update=force_update,
-        do_isolate=do_isolate,
-        display_image_plane=display_image_plane,
-        # display_node_types=display_node_types
-    )
-    return options
 
 
 def _create_collection_attributes(node):
@@ -174,7 +121,7 @@ class Collection(object):
         # Store the keyword arguments for the command, return this if the user
         # asks for the arguments. Invalidate these arguments and force a
         # re-compile if the user sets a new value, otherwise it's still valid.
-        self._kwargs_list = []
+        self._actions_list = []
 
         if node is not None:
             if isinstance(node, (str, unicode)):
@@ -215,7 +162,7 @@ class Collection(object):
         return self._set.get_node_uid()
 
     def set_node(self, name):
-        self._kwargs_list = []  # reset argument flag cache.
+        self._actions_list = []  # reset argument flag cache.
         return self._set.set_node(name)
 
     ############################################################################
@@ -342,7 +289,7 @@ class Collection(object):
                 data_list.append(data)
         attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_LIST
         self._set_attr_data(attr, data_list)
-        self._kwargs_list = []  # reset argument flag cache.
+        self._actions_list = []  # reset argument flag cache.
         return
 
     def _get_solver_list_names(self, solver_list):
@@ -367,7 +314,7 @@ class Collection(object):
         Get Solver objects attached to the collection.
 
         :return: Solver objects.
-        :rtype: list of solver.Solver
+        :rtype: list of solverop.Solver
         """
         solver_list = None
         if self._solver_list is None:
@@ -460,7 +407,7 @@ class Collection(object):
         assert len(node) > 0
         if self._set.member_in_set(node) is False:
             self._set.add_member(node)
-            self._kwargs_list = []  # reset argument flag cache.
+            self._actions_list = []  # reset argument flag cache.
         return
 
     def add_marker_list(self, mkr_list):
@@ -470,7 +417,7 @@ class Collection(object):
             if isinstance(mkr, marker.Marker):
                 node_list.append(mkr.get_node())
         self._set.add_members(node_list)
-        self._kwargs_list = []  # reset argument flag cache.
+        self._actions_list = []  # reset argument flag cache.
         return
 
     def remove_marker(self, mkr):
@@ -478,7 +425,7 @@ class Collection(object):
         node = mkr.get_node()
         if self._set.member_in_set(node):
             self._set.remove_member(node)
-            self._kwargs_list = []  # reset argument flag cache.
+            self._actions_list = []  # reset argument flag cache.
         return
 
     def remove_marker_list(self, mkr_list):
@@ -488,7 +435,7 @@ class Collection(object):
             if isinstance(mkr, marker.Marker):
                 node_list.append(mkr.get_node())
         self._set.remove_members(node_list)
-        self._kwargs_list = []  # reset argument flag cache.
+        self._actions_list = []  # reset argument flag cache.
         return
 
     def set_marker_list(self, mkr_list):
@@ -502,7 +449,7 @@ class Collection(object):
 
         after_num = self.get_marker_list_length()
         if before_num != after_num:
-            self._kwargs_list = []  # reset argument flag cache.
+            self._actions_list = []  # reset argument flag cache.
         return
 
     def clear_marker_list(self):
@@ -514,7 +461,7 @@ class Collection(object):
                 rm_list.append(member)
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)
-            self._kwargs_list = []  # reset argument flag cache.
+            self._actions_list = []  # reset argument flag cache.
         return
 
     ############################################################################
@@ -538,7 +485,7 @@ class Collection(object):
         assert isinstance(name, (str, unicode))
         if not self._set.member_in_set(name):
             self._set.add_member(name)
-            self._kwargs_list = []  # reset argument flag cache.
+            self._actions_list = []  # reset argument flag cache.
         return
 
     def add_attribute_list(self, attr_list):
@@ -548,7 +495,7 @@ class Collection(object):
             if isinstance(attr, attribute.Attribute):
                 name_list.append(attr.get_name())
         self._set.add_members(name_list)
-        self._kwargs_list = []  # reset argument flag cache.
+        self._actions_list = []  # reset argument flag cache.
         return
 
     def remove_attribute(self, attr):
@@ -556,7 +503,7 @@ class Collection(object):
         name = attr.get_name()
         if self._set.member_in_set(name):
             self._set.remove_member(name)
-            self._kwargs_list = []  # reset argument flag cache.
+            self._actions_list = []  # reset argument flag cache.
         return
 
     def remove_attribute_list(self, attr_list):
@@ -566,7 +513,7 @@ class Collection(object):
             if isinstance(attr, attribute.Attribute):
                 name_list.append(attr.get_name())
         self._set.remove_members(name_list)
-        self._kwargs_list = []  # reset argument flag cache.
+        self._actions_list = []  # reset argument flag cache.
         return
 
     def set_attribute_list(self, mkr_list):
@@ -580,7 +527,7 @@ class Collection(object):
 
         after_num = self.get_attribute_list_length()
         if before_num != after_num:
-            self._kwargs_list = []  # reset argument flag cache.
+            self._actions_list = []  # reset argument flag cache.
         return
 
     def clear_attribute_list(self):
@@ -592,310 +539,12 @@ class Collection(object):
                 rm_list.append(member)
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)
-            self._kwargs_list = []  # reset argument flag cache.
+            self._actions_list = []  # reset argument flag cache.
         return
 
     ############################################################################
 
-    def __compile_solver(self, sol, mkr_list, attr_list, prog_fn=None):
-        """
-        Compiles data given into flags for a single run of 'mmSolver'.
-
-        :param sol: The solver to compile
-        :type sol: Solver
-
-        :param mkr_list: Markers to measure
-        :type mkr_list: list of Marker
-
-        :param attr_list: Attributes to solve for
-        :type attr_list: list of Attribute
-
-        :param prog_fn: Progress Function, with signature f(int)
-        :type prog_fn: function
-
-        :return: The keyword arguments for the mmSolver command.
-        :rtype: None or dict
-        """
-        assert isinstance(sol, solver.Solver)
-        assert isinstance(mkr_list, list)
-        assert isinstance(attr_list, list)
-        assert sol.get_frame_list_length() > 0
-
-        kwargs = dict()
-        kwargs['camera'] = []
-        kwargs['marker'] = []
-        kwargs['attr'] = []
-        kwargs['frame'] = []
-
-        # Get Markers and Cameras
-        added_cameras = []
-        markers = []
-        cameras = []
-        for mkr in mkr_list:
-            assert isinstance(mkr, marker.Marker)
-            mkr_node = mkr.get_node()
-            assert isinstance(mkr_node, basestring)
-            bnd = mkr.get_bundle()
-            if bnd is None:
-                msg = 'Cannot find bundle from marker, skipping; mkr_node={0}'
-                msg = msg.format(repr(mkr_node))
-                LOG.warning(msg)
-                continue
-            bnd_node = bnd.get_node()
-            if bnd_node is None:
-                msg = 'Bundle node is invalid, skipping; mkr_node={0}'
-                msg = msg.format(repr(mkr_node))
-                LOG.warning(msg)
-                continue
-            cam = mkr.get_camera()
-            if cam is None:
-                msg = 'Cannot find camera from marker; mkr={0}'
-                msg = msg.format(mkr.get_node())
-                LOG.warning(msg)
-            cam_tfm_node = cam.get_transform_node()
-            cam_shp_node = cam.get_shape_node()
-            assert isinstance(cam_tfm_node, basestring)
-            assert isinstance(cam_shp_node, basestring)
-            markers.append((mkr_node, cam_shp_node, bnd_node))
-            if cam_shp_node not in added_cameras:
-                cameras.append((cam_tfm_node, cam_shp_node))
-                added_cameras.append(cam_shp_node)
-        if len(markers) == 0:
-            LOG.warning('No Markers found!')
-            return None
-        if len(cameras) == 0:
-            LOG.warning('No Cameras found!')
-            return None
-
-        # Get Attributes
-        use_animated = sol.get_attributes_use_animated()
-        use_static = sol.get_attributes_use_static()
-        attrs = []
-        for attr in attr_list:
-            assert isinstance(attr, attribute.Attribute)
-            if attr.is_locked():
-                continue
-            name = attr.get_name()
-            node_name = attr.get_node()
-            attr_name = attr.get_attr()
-
-            # If the user does not specify a min/max value then we get it
-            # from Maya directly, if Maya doesn't have one, we leave
-            # min/max_value as None and pass it to the mmSolver command
-            # indicating there is no bound.
-            min_value = attr.get_min_value()
-            max_value = attr.get_max_value()
-            if min_value is None:
-                min_exists = maya.cmds.attributeQuery(
-                    attr_name,
-                    node=node_name,
-                    minExists=True,
-                )
-                if min_exists:
-                    min_value = maya.cmds.attributeQuery(
-                        attr_name,
-                        node=node_name,
-                        minimum=True,
-                    )
-                    if len(min_value) == 1:
-                        min_value = min_value[0]
-                    else:
-                        msg = 'Cannot handle attributes with multiple '
-                        msg += 'minimum values; node={0} attr={1}'
-                        msg = msg.format(node_name, attr_name)
-                        raise excep.NotValid(msg)
-
-            if max_value is None:
-                max_exists = maya.cmds.attributeQuery(
-                    attr_name,
-                    node=node_name,
-                    maxExists=True,
-                )
-                if max_exists is True:
-                    max_value = maya.cmds.attributeQuery(
-                        attr_name,
-                        node=node_name,
-                        maximum=True,
-                    )
-                    if len(max_value) == 1:
-                        max_value = max_value[0]
-                    else:
-                        msg = 'Cannot handle attributes with multiple '
-                        msg += 'maximum values; node={0} attr={1}'
-                        msg = msg.format(node_name, attr_name)
-                        raise excep.NotValid(msg)
-
-            # Scale and Offset
-            scale_value = None
-            offset_value = None
-            attr_type = maya.cmds.attributeQuery(
-                attr_name,
-                node=node_name,
-                attributeType=True)
-            if attr_type.endswith('Angle'):
-                offset_value = 360.0
-
-            animated = attr.is_animated()
-            static = attr.is_static()
-            use = False
-            if use_animated and animated is True:
-                use = True
-            if use_static and static is True:
-                use = True
-            if use is True:
-                attrs.append(
-                    (name,
-                     str(min_value),
-                     str(max_value),
-                     str(offset_value),
-                     str(scale_value))
-                )
-        if len(attrs) == 0:
-            LOG.warning('No Attributes found!')
-            return None
-
-        # Get Frames
-        frm_list = sol.get_frame_list()
-        frame_use_tags = sol.get_frames_use_tags()
-        frames = []
-        for frm in frm_list:
-            num = frm.get_number()
-            tags = frm.get_tags()
-            use = False
-            if len(frame_use_tags) > 0 and len(tags) > 0:
-                for tag in frame_use_tags:
-                    if tag in tags:
-                        use = True
-                        break
-            else:
-                use = True
-            if use is True:
-                frames.append(num)
-        if len(frames) == 0:
-            LOG.warning('No Frames found!')
-            return None
-
-        kwargs['marker'] = markers
-        kwargs['camera'] = cameras
-        kwargs['attr'] = attrs
-        kwargs['frame'] = frames
-
-        solver_type = sol.get_solver_type()
-        if solver_type is not None:
-            kwargs['solverType'] = solver_type
-
-        iterations = sol.get_max_iterations()
-        if iterations is not None:
-            kwargs['iterations'] = iterations
-
-        verbose = sol.get_verbose()
-        if verbose is not None:
-            kwargs['verbose'] = verbose
-
-        delta_factor = sol.get_delta_factor()
-        if delta_factor is not None:
-            kwargs['delta'] = delta_factor
-
-        auto_diff_type = sol.get_auto_diff_type()
-        if auto_diff_type is not None:
-            kwargs['autoDiffType'] = auto_diff_type
-
-        tau_factor = sol.get_tau_factor()
-        if tau_factor is not None:
-            kwargs['tauFactor'] = tau_factor
-
-        gradient_error_factor = sol.get_gradient_error_factor()
-        if gradient_error_factor is not None:
-            kwargs['epsilon1'] = gradient_error_factor
-
-        parameter_error_factor = sol.get_parameter_error_factor()
-        if parameter_error_factor is not None:
-            kwargs['epsilon2'] = parameter_error_factor
-
-        error_factor = sol.get_error_factor()
-        if error_factor is not None:
-            kwargs['epsilon3'] = error_factor
-
-        # msg = 'kwargs:\n' + pprint.pformat(kwargs)
-        # LOG.debug(msg)
-        return kwargs
-
-    def _compile(self, prog_fn=None, status_fn=None):
-        """
-        Take the data in this class and compile it into keyword argument flags.
-
-        :return: list of keyword arguments.
-        :rtype: list of dict
-        """
-        # TODO: Cache the compiled result internally to speed up
-        # 'is_valid' then '_compile' calls.
-
-        # If the class attributes haven't been changed, re-use the previously
-        # generated arguments.
-        if len(self._kwargs_list) > 0:
-            return self._kwargs_list
-
-        # Re-compile the arguments.
-        kwargs_list = []
-        col_node = self.get_node()
-
-        # Check Solvers
-        sol_list = self.get_solver_list()
-        sol_enabled_list = [sol for sol in sol_list
-                            if sol.get_enabled() is True]
-        if len(sol_enabled_list) == 0:
-            msg = 'Collection is not valid, no enabled Solvers given; '
-            msg += 'collection={0}'
-            msg = msg.format(repr(col_node))
-            raise excep.NotValid(msg)
-
-        # Check Markers
-        mkr_list = self.get_marker_list()
-        if len(mkr_list) == 0:
-            msg = 'Collection is not valid, no Markers given; collection={0}'
-            msg = msg.format(repr(col_node))
-            raise excep.NotValid(msg)
-
-        # Check Attributes
-        attr_list = self.get_attribute_list()
-        if len(attr_list) == 0:
-            msg = 'Collection is not valid, no Attributes given; collection={0}'
-            msg = msg.format(repr(col_node))
-            raise excep.NotValid(msg)
-
-        # Compile all the solvers
-        for i, sol in enumerate(sol_enabled_list):
-            if sol.get_frame_list_length() == 0:
-                msg = 'Collection is not valid, no frames to solve;'
-                msg += ' collection={0}'
-                msg = msg.format(repr(col_node))
-                raise excep.NotValid(msg)
-            kwargs = self.__compile_solver(sol, mkr_list, attr_list)
-
-            # Add a debug file flag to the mmSolver command, only
-            # triggered during debug mode.
-            if logging.DEBUG >= LOG.getEffectiveLevel():
-                debug_file = maya.cmds.file(query=True, sceneName=True)
-                debug_file = os.path.basename(debug_file)
-                debug_file, ext = os.path.splitext(debug_file)
-                debug_file_path = os.path.join(
-                    os.path.expandvars('${TEMP}'),
-                    debug_file + '_' + str(i).zfill(6) + '.log'
-                )
-                if len(debug_file) > 0 and debug_file_path is not None:
-                    kwargs['debugFile'] = debug_file_path
-
-            if isinstance(kwargs, dict):
-                kwargs_list.append(kwargs)
-            else:
-                msg = 'Collection is not valid, failed to compile solver;'
-                msg += ' collection={0}'
-                msg = msg.format(repr(col_node))
-                raise excep.NotValid(msg)
-
-        # Set arguments
-        self._kwargs_list = kwargs_list  # save a copy
-        return self._kwargs_list
+    # TODO: Add 'logging level' flag to Collection.
 
     def is_valid(self, prog_fn=None, status_fn=None):
         """
@@ -914,248 +563,28 @@ class Collection(object):
         :returns: Is the Collection valid to solve? Yes or no.
         :rtype: bool
         """
-        try:
-            self._compile(prog_fn=None, status_fn=None)
-            ret = True
-        except excep.NotValid:
-            ret = False
-        return ret
+        msg = 'Collection.is_valid is deprecated, use "collection_is_valid" function.'
+        warnings.warn(msg, DeprecationWarning)
+        return execute.collection_is_valid(
+            self,
+            prog_fn=prog_fn,
+            status_fn=status_fn
+        )
 
     def execute(self,
                 options=None,
                 prog_fn=None,
                 status_fn=None,
                 info_fn=None):
-        """
-        Compile the collection, then pass that data to the 'mmSolver' command.
-
-        The mmSolver command will return a list of strings, which will then be
-        passed to the SolveResult class so the user can query the raw data
-        using an interface.
-
-        :param options: The options for the execution.
-        :type options: ExecuteOptions
-
-        :param prog_fn: The function used report progress messages to
-                        the user.
-        :type prog_fn: callable or None
-
-        :param status_fn: The function used to report status messages
-                          to the user.
-        :type status_fn: callable or None
-
-        :param info_fn: The function used to report information
-                        messages to the user.
-        :type info_fn: callable or None
-
-        :return: List of SolveResults from the executed collection.
-        :rtype: [SolverResult, ..]
-        """
-        if options is None:
-            options = createExecuteOptions()
-
-        start_time = time.time()
-
-        # Ensure the plug-in is loaded, so we fail before trying to run.
-        api_utils.load_plugin()
-
-        # TODO: Pause viewport 2.0 while solving? Assumes viewport 2 is used.
-        # This might not be supported below Maya 2017?
-
-        # If 'refresh' is 'on' change all viewports to 'isolate
-        # selected' on only the markers and bundles being solved. This
-        # will speed up computations, especially per-frame solving as
-        # it will not re-compute any invisible nodes (such as rigs or
-        # image planes).
-        panel_objs = {}
-        panel_img_pl_vis = {}
-        panels = viewport_utils.get_all_model_panels()
-        if options.refresh is True:
-            for panel in panels:
-                if options.do_isolate is True:
-                    state = maya.cmds.isolateSelect(
-                        panel,
-                        query=True,
-                        state=True)
-                    nodes = None
-                    if state is True:
-                        nodes = viewport_utils.get_isolated_nodes(panel)
-                    panel_objs[panel] = nodes
-                panel_img_pl_vis[panel] = viewport_utils.get_image_plane_visibility(panel)
-
-        # Save current frame, to revert to later on.
-        cur_frame = maya.cmds.currentTime(query=True)
-
-        try:
-            collectionutils.run_progress_func(prog_fn, 0)
-            ts = solveresult.format_timestamp(time.time())
-            collectionutils.run_status_func(status_fn, 'Solve start (%s)' % ts)
-            api_state.set_solver_running(True)
-
-            # Check for validity
-            solres_list = []
-            if self.is_valid() is False:
-                LOG.warning('Collection not valid: %r', self.get_node())
-                return solres_list
-            kwargs_list = self._compile()
-            collectionutils.run_progress_func(prog_fn, 1)
-
-            # Isolate all nodes used in all of the kwargs to be run.
-            # Note; This assumes the isolated objects are visible, but
-            # they may actually be hidden.
-            if options.refresh is True:
-                s = time.time()
-                if options.do_isolate is True:
-                    isolate_nodes = set()
-                    for kwargs in kwargs_list:
-                        isolate_nodes |= collectionutils.generate_isolate_nodes(kwargs)
-                    if len(isolate_nodes) == 0:
-                        raise excep.NotValid
-                    isolate_node_list = list(isolate_nodes)
-                    for panel in panels:
-                        viewport_utils.set_isolated_nodes(panel, isolate_node_list, True)
-
-                for panel in panels:
-                    viewport_utils.set_image_plane_visibility(
-                        panel,
-                        options.display_image_plane)
-                e = time.time()
-                LOG.debug('Perform Pre-Isolate; time=%r', e - s)
-
-            # Set the first current time to the frame before current.
-            # This is to help trigger evaluations on the 'current
-            # frame', if the current frame is the same as the first
-            # frame.
-            frame_list = []
-            for kwargs in kwargs_list:
-                frame_list += kwargs.get('frame', [])
-            frame_list = list(set(frame_list))
-            frame_list = list(sorted(frame_list))
-            is_whole_solve_single_frame = len(frame_list) == 1
-            if is_whole_solve_single_frame is False:
-                s = time.time()
-                maya.cmds.currentTime(
-                    cur_frame - 1,
-                    edit=True,
-                    update=options.force_update,
-                )
-                e = time.time()
-                LOG.debug('Update previous of current time; time=%r', e - s)
-
-            # Run Solver...
-            marker_nodes = []
-            start = 0
-            total = len(kwargs_list)
-            for i, kwargs in enumerate(kwargs_list):
-                frame = kwargs.get('frame')
-                collectionutils.run_status_func(info_fn, 'Evaluating frames %r' % frame)
-                if frame is None or len(frame) == 0:
-                    raise excep.NotValid
-
-                # Write solver flags to a debug file.
-                debug_file_path = kwargs.get('debugFile', None)
-                if debug_file_path is not None:
-                    options_file_path = debug_file_path.replace('.log', '.flags')
-                    text = pprint.pformat(kwargs)
-                    with open(options_file_path, 'w') as file_:
-                        file_.write(text)
-
-                # Overriding the verbosity, irrespective of what
-                # the solver verbosity value is set to.
-                if options.verbose is True:
-                    kwargs['verbose'] = True
-
-                # HACK for single frame solves.
-                save_node_attrs = []
-                is_single_frame = collectionutils.is_single_frame(kwargs)
-                if is_single_frame is True:
-                    save_node_attrs = collectionutils.disconnect_animcurves(kwargs)
-
-                # Run Solver Maya plug-in command
-                solve_data = maya.cmds.mmSolver(**kwargs)
-
-                # Revert special HACK for single frame solves
-                if is_single_frame is True:
-                    collectionutils.reconnect_animcurves(kwargs, save_node_attrs)
-
-                # Create SolveResult.
-                solres = solveresult.SolveResult(solve_data)
-                solres_list.append(solres)
-
-                # Update progress
-                ratio = float(i) / float(total)
-                percent = float(start) + (ratio * (100.0 - start))
-                collectionutils.run_progress_func(prog_fn, int(percent))
-
-                # Check if the user wants to stop solving.
-                cmd_cancel = solres.get_user_interrupted()
-                gui_cancel = api_state.get_user_interrupt()
-                if cmd_cancel is True or gui_cancel is True:
-                    msg = 'Cancelled by User'
-                    api_state.set_user_interrupt(False)
-                    collectionutils.run_status_func(status_fn, 'WARNING: ' + msg)
-                    LOG.warning(msg)
-                    break
-                if solres.get_success() is False:
-                    msg = 'Solver failed!!!'
-                    collectionutils.run_status_func(status_fn, 'ERROR: ' + msg)
-                    LOG.error(msg)
-
-                marker_nodes += [x[0] for x in kwargs.get('marker', [])]
-
-                # Refresh the Viewport.
-                if options.refresh is True:
-                    # TODO: If we solve per-frame without "refresh"
-                    # on, then we get wacky solvers
-                    # per-frame. Interestingly, the 'force_update'
-                    # does not seem to make a difference, just the
-                    # 'maya.cmds.refresh' call.
-                    #
-                    # Test scene file:
-                    # ./tests/data/scenes/mmSolverBasicSolveD_before.ma
-                    s = time.time()
-                    maya.cmds.currentTime(
-                        frame[0],
-                        edit=True,
-                        update=options.force_update,
-                    )
-                    # TODO: Refresh should not add to undo queue, we
-                    # should skip it. This should fix the problem of
-                    # stepping over the viewport each time we undo an
-                    # 'animated' solve. Or we pause the viewport while
-                    # we undo?
-                    maya.cmds.refresh()
-                    e = time.time()
-                    LOG.debug('Refresh Viewport; time=%r', e - s)
-        finally:
-            if options.refresh is True:
-                s = time.time()
-                for panel, objs in panel_objs.items():
-                    if objs is None:
-                        # No original objects, disable 'isolate
-                        # selected' after resetting the objects.
-                        if options.do_isolate is True:
-                            viewport_utils.set_isolated_nodes(panel, [], False)
-                        img_pl_vis = panel_img_pl_vis.get(panel, True)
-                        viewport_utils.set_image_plane_visibility(panel, img_pl_vis)
-                    else:
-                        if options.do_isolate is True:
-                            viewport_utils.set_isolated_nodes(panel, list(objs), True)
-                e = time.time()
-                LOG.debug('Finally; reset isolate selected; time=%r', e - s)
-
-            collectionutils.run_status_func(status_fn, 'Solve Ended')
-            collectionutils.run_progress_func(prog_fn, 100)
-            api_state.set_solver_running(False)
-            maya.cmds.currentTime(cur_frame, edit=True, update=True)
-
-        # Store output information of the solver.
-        end_time = time.time()
-        duration = end_time - start_time
-        self._set_last_solve_timestamp(end_time)
-        self._set_last_solve_duration(duration)
-        self._set_last_solve_results(solres_list)
-        return solres_list
+        msg = 'Collection.execute is deprecated, use "execute" function.'
+        warnings.warn(msg, DeprecationWarning)
+        result = execute.execute(
+            self,
+            options=options,
+            prog_fn=prog_fn,
+            status_fn=status_fn,
+            info_fn=info_fn)
+        return result
 
 
 def update_deviation_on_collection(col, solres_list):

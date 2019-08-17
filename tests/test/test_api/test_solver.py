@@ -26,7 +26,7 @@ import unittest
 import maya.cmds
 
 import test.test_api.apiutils as test_api_utils
-import mmSolver._api.solver as solver
+import mmSolver._api.solverstep as solver
 import mmSolver._api.constant as const
 
 

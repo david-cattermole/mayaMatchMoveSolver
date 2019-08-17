@@ -35,13 +35,28 @@ from mmSolver._api.marker import (
 from mmSolver._api.markergroup import MarkerGroup
 from mmSolver._api.attribute import Attribute
 from mmSolver._api.collection import (
-    createExecuteOptions,
-    ExecuteOptions,
     Collection,
     update_deviation_on_collection
 )
+from mmSolver._api.execute import (
+    createExecuteOptions,
+    ExecuteOptions,
+    execute,
+)
 from mmSolver._api.frame import Frame
-from mmSolver._api.solver import Solver
+from mmSolver._api.action import (
+    Action,
+)
+from mmSolver._api.solverbase import (
+    SolverBase,
+)
+from mmSolver._api.solverstep import (
+    Solver,
+    SolverStep,
+)
+from mmSolver._api.solverstandard import (
+    SolverStandard,
+)
 from mmSolver._api.collectionutils import (
     is_single_frame,
     disconnect_animcurves,
@@ -142,9 +157,14 @@ __all__ = [
     'Marker',
     'MarkerGroup',
     'Attribute',
+    'ExecuteOptions',
     'Collection',
     'Frame',
-    'Solver',
+    'Solver',  # Backwards compatibility
+    'Action',
+    'SolverBase',
+    'SolverStandard',
+    'SolverStep',
     'SolveResult',
 
     # Constants
@@ -183,6 +203,10 @@ __all__ = [
 
     # Collection
     'update_deviation_on_collection',
+
+    # Execute
+    'createExecuteOptions',
+    'execute',
 
     # Marker Utils
     'calculate_marker_deviation',

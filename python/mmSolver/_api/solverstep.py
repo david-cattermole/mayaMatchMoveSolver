@@ -32,148 +32,9 @@ import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.marker as marker
 import mmSolver._api.attribute as attribute
+import mmSolver._api.compile as api_compile
 
 LOG = mmSolver.logger.get_logger()
-
-
-def _compile_markersAndCameras(mkr_list):
-    # Get Markers and Cameras
-    added_cameras = []
-    markers = []
-    cameras = []
-    for mkr in mkr_list:
-        assert isinstance(mkr, marker.Marker)
-        mkr_node = mkr.get_node()
-        assert isinstance(mkr_node, basestring)
-        bnd = mkr.get_bundle()
-        if bnd is None:
-            msg = 'Cannot find bundle from marker, skipping; mkr_node={0}'
-            msg = msg.format(repr(mkr_node))
-            LOG.warning(msg)
-            continue
-        bnd_node = bnd.get_node()
-        if bnd_node is None:
-            msg = 'Bundle node is invalid, skipping; mkr_node={0}'
-            msg = msg.format(repr(mkr_node))
-            LOG.warning(msg)
-            continue
-        cam = mkr.get_camera()
-        if cam is None:
-            msg = 'Cannot find camera from marker; mkr={0}'
-            msg = msg.format(mkr.get_node())
-            LOG.warning(msg)
-        cam_tfm_node = cam.get_transform_node()
-        cam_shp_node = cam.get_shape_node()
-        assert isinstance(cam_tfm_node, basestring)
-        assert isinstance(cam_shp_node, basestring)
-        markers.append((mkr_node, cam_shp_node, bnd_node))
-        if cam_shp_node not in added_cameras:
-            cameras.append((cam_tfm_node, cam_shp_node))
-            added_cameras.append(cam_shp_node)
-    return markers, cameras
-
-
-def _compile_attributes(attr_list, use_animated, use_static):
-    # Get Attributes
-    attrs = []
-    for attr in attr_list:
-        assert isinstance(attr, attribute.Attribute)
-        if attr.is_locked():
-            continue
-        name = attr.get_name()
-        node_name = attr.get_node()
-        attr_name = attr.get_attr()
-
-        # If the user does not specify a min/max value then we get it
-        # from Maya directly, if Maya doesn't have one, we leave
-        # min/max_value as None and pass it to the mmSolver command
-        # indicating there is no bound.
-        min_value = attr.get_min_value()
-        max_value = attr.get_max_value()
-        if min_value is None:
-            min_exists = maya.cmds.attributeQuery(
-                attr_name,
-                node=node_name,
-                minExists=True,
-            )
-            if min_exists:
-                min_value = maya.cmds.attributeQuery(
-                    attr_name,
-                    node=node_name,
-                    minimum=True,
-                )
-                if len(min_value) == 1:
-                    min_value = min_value[0]
-                else:
-                    msg = 'Cannot handle attributes with multiple '
-                    msg += 'minimum values; node={0} attr={1}'
-                    msg = msg.format(node_name, attr_name)
-                    raise excep.NotValid(msg)
-
-        if max_value is None:
-            max_exists = maya.cmds.attributeQuery(
-                attr_name,
-                node=node_name,
-                maxExists=True,
-            )
-            if max_exists is True:
-                max_value = maya.cmds.attributeQuery(
-                    attr_name,
-                    node=node_name,
-                    maximum=True,
-                )
-                if len(max_value) == 1:
-                    max_value = max_value[0]
-                else:
-                    msg = 'Cannot handle attributes with multiple '
-                    msg += 'maximum values; node={0} attr={1}'
-                    msg = msg.format(node_name, attr_name)
-                    raise excep.NotValid(msg)
-
-        # Scale and Offset
-        scale_value = None
-        offset_value = None
-        attr_type = maya.cmds.attributeQuery(
-            attr_name,
-            node=node_name,
-            attributeType=True)
-        if attr_type.endswith('Angle'):
-            offset_value = 360.0
-
-        animated = attr.is_animated()
-        static = attr.is_static()
-        use = False
-        if use_animated and animated is True:
-            use = True
-        if use_static and static is True:
-            use = True
-        if use is True:
-            attrs.append(
-                (name,
-                 str(min_value),
-                 str(max_value),
-                 str(offset_value),
-                 str(scale_value))
-            )
-    return attrs
-
-
-def _compile_frames(frm_list, frame_use_tags):
-    frames = []
-    for frm in frm_list:
-        num = frm.get_number()
-        tags = frm.get_tags()
-        use = False
-        if len(frame_use_tags) > 0 and len(tags) > 0:
-            for tag in frame_use_tags:
-                if tag in tags:
-                    use = True
-                    break
-        else:
-            use = True
-        if use is True:
-            frames.append(num)
-    return frames
 
 
 class SolverStep(solverbase.SolverBase):
@@ -400,32 +261,32 @@ class SolverStep(solverbase.SolverBase):
         kwargs['frame'] = []
 
         # Get Markers and Cameras
-        markers, cameras = _compile_markersAndCameras(mkr_list)
+        markers, cameras = api_compile.markersAndCameras_compile_flags(mkr_list)
         if len(markers) == 0 and len(cameras) == 0:
             LOG.warning('No Markers or Cameras found!')
-            return None
+            return []
         elif len(markers) == 0:
             LOG.warning('No Markers found!')
-            return None
+            return []
         elif len(cameras) == 0:
             LOG.warning('No Cameras found!')
-            return None
+            return []
 
         # Get Attributes
         use_animated = self.get_attributes_use_animated()
         use_static = self.get_attributes_use_static()
-        attrs = _compile_attributes(attr_list, use_animated, use_static)
+        attrs = api_compile.attributes_compile_flags(attr_list, use_animated, use_static)
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
-            return None
+            return []
 
         # Get Frames
         frm_list = self.get_frame_list()
         frame_use_tags = self.get_frames_use_tags()
-        frames = _compile_frames(frm_list, frame_use_tags)
+        frames = api_compile.frames_compile_flags(frm_list, frame_use_tags)
         if len(frames) == 0:
             LOG.warning('No Frames found!')
-            return None
+            return []
 
         kwargs['marker'] = markers
         kwargs['camera'] = cameras

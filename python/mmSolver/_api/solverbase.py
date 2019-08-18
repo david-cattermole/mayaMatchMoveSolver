@@ -87,5 +87,7 @@ class SolverBase(object):
 
     @abc.abstractmethod
     def compile(self, mkr_list, attr_list):
+        # Return list of 'Action's, or empty list if no actions were compiled.
+        # Raises 'NotValid', if the compile goes wrong.
         raise NotImplementedError
 

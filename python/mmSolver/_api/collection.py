@@ -19,28 +19,23 @@
 Collection functions used to group and execute a solve using mmSolver.
 """
 
-import time
-import pprint
-import os
 import warnings
-import collections
-import logging
 
 import maya.cmds
 import maya.mel
 import maya.OpenMayaAnim as OpenMayaAnim
 
 import mmSolver.logger
-import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.configmaya as configmaya
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.animcurve as anim_utils
-import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
+import mmSolver._api.compile as api_compile
 import mmSolver._api.excep as excep
 import mmSolver._api.constant as const
 import mmSolver._api.solveresult as solveresult
-import mmSolver._api.solverstep as solver
+import mmSolver._api.solverbase as solverbase
+import mmSolver._api.solverstep as solverstep
 import mmSolver._api.marker as marker
 import mmSolver._api.attribute as attribute
 import mmSolver._api.sethelper as sethelper
@@ -267,7 +262,7 @@ class Collection(object):
         for item in attr_data:
             if isinstance(item, dict) is False:
                 continue
-            sol = solver.Solver(data=item)
+            sol = solverstep.SolverStep(data=item)
             solver_list.append(sol)
         return solver_list
 
@@ -326,7 +321,7 @@ class Collection(object):
         return len(self.get_solver_list())
 
     def add_solver(self, sol):
-        assert isinstance(sol, solver.Solver)
+        assert isinstance(sol, solverbase.SolverBase)
         if self._solver_list is None:
             self._solver_list = self._load_solver_list()
         solver_name_list = self._get_solver_list_names(self._solver_list)
@@ -351,14 +346,14 @@ class Collection(object):
         return
 
     def remove_solver(self, sol):
-        assert isinstance(sol, solver.Solver)
+        assert isinstance(sol, solverbase.SolverBase)
         if self._solver_list is None:
             self._solver_list = self._load_solver_list()
         solver_name_list = self._get_solver_list_names(self._solver_list)
         if sol.get_name() in solver_name_list:
 
             # TODO: This is really messy, we could probably clean this up with
-            # an override to Solver.__cmp__, right?
+            # an override to SolverStep.__cmp__, right?
             tmp_list = self._solver_list
             for sol2 in tmp_list:
                 if sol.get_name() == sol2.get_name():
@@ -563,13 +558,19 @@ class Collection(object):
         :returns: Is the Collection valid to solve? Yes or no.
         :rtype: bool
         """
-        msg = 'Collection.is_valid is deprecated, use "collection_is_valid" function.'
-        warnings.warn(msg, DeprecationWarning)
-        return execute.collection_is_valid(
-            self,
-            prog_fn=prog_fn,
-            status_fn=status_fn
-        )
+        try:
+            col_node = self.get_node()
+            sol_list = self.get_solver_list()
+            mkr_list = self.get_marker_list()
+            attr_list = self.get_attribute_list()
+            api_compile.collection_compile(
+                col_node,
+                sol_list, mkr_list, attr_list,
+                prog_fn=None, status_fn=None)
+            ret = True
+        except excep.NotValid:
+            ret = False
+        return ret
 
     def execute(self,
                 options=None,

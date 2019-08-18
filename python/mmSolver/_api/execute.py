@@ -32,6 +32,7 @@ import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
+import mmSolver._api.compile as api_compile
 import mmSolver._api.excep as excep
 import mmSolver._api.solveresult as solveresult
 import mmSolver._api.action as api_action
@@ -101,71 +102,6 @@ def createExecuteOptions(verbose=False,
         display_node_types=display_node_types
     )
     return options
-
-
-def _compile(col_node, sol_list, mkr_list, attr_list,
-             prog_fn=None,
-             status_fn=None):
-    """
-    Take the data in this class and compile it into keyword argument flags.
-
-    :return: list of SolverActions.
-    :rtype: [SolverAction, ..]
-    """
-    action_list = []
-    if len(sol_list) == 0:
-        msg = 'Collection is not valid, no Solvers given; '
-        msg += 'collection={0}'
-        msg = msg.format(repr(col_node))
-        raise excep.NotValid(msg)
-
-    # Check Solvers
-    sol_enabled_list = [sol for sol in sol_list
-                        if sol.get_enabled() is True]
-    if len(sol_enabled_list) == 0:
-        msg = 'Collection is not valid, no enabled Solvers given; '
-        msg += 'collection={0}'
-        msg = msg.format(repr(col_node))
-        raise excep.NotValid(msg)
-
-    # Check Markers
-    if len(mkr_list) == 0:
-        msg = 'Collection is not valid, no Markers given; collection={0}'
-        msg = msg.format(repr(col_node))
-        raise excep.NotValid(msg)
-
-    # Check Attributes
-    if len(attr_list) == 0:
-        msg = 'Collection is not valid, no Attributes given; collection={0}'
-        msg = msg.format(repr(col_node))
-        raise excep.NotValid(msg)
-
-    # Compile all the solvers
-    for i, sol in enumerate(sol_enabled_list):
-        assert isinstance(sol, solverbase.SolverBase)
-        if sol.get_frame_list_length() == 0:
-            msg = 'Collection is not valid, no frames to solve;'
-            msg += ' collection={0}'
-            msg = msg.format(repr(col_node))
-            raise excep.NotValid(msg)
-
-        actions = sol.compile(mkr_list, attr_list)
-        assert isinstance(actions, (tuple, list))
-
-        msg = 'Collection is not valid, failed to compile solver;'
-        msg += ' collection={0}'
-        msg = msg.format(repr(col_node))
-        if len(actions) == 0:
-            raise excep.NotValid(msg)
-
-        for action in actions:
-            if not isinstance(action, api_action.Action):
-                raise excep.NotValid(msg)
-            assert action.func is not None
-            assert action.args is not None
-            assert action.kwargs is not None
-            action_list.append(action)
-    return action_list
 
 
 def preSolve_updateProgress(prog_fn, status_fn):
@@ -376,36 +312,6 @@ def postSolve_setUpdateProgress(progress_min,
     return stop_solving
 
 
-def collection_is_valid(col, prog_fn=None, status_fn=None):
-    """
-    Tests if the current sate of this Collection is valid to solve with.
-
-    :param prog_fn: Progress function callback. If not None this
-                    function will be executed to emit progress
-                    messages.
-    :type prog_fn: callable
-
-    :param status_fn: Status message function callback. If not
-                      None this function will be executed each
-                      time a status message needs to be printed.
-    :type status_fn: callable
-
-    :returns: Is the Collection valid to solve? Yes or no.
-    :rtype: bool
-    """
-    try:
-        col_node = col.get_node()
-        sol_list = col.get_solver_list()
-        mkr_list = col.get_marker_list()
-        attr_list = col.get_attribute_list()
-        _compile(col_node, sol_list, mkr_list, attr_list,
-                 prog_fn=None, status_fn=None)
-        ret = True
-    except excep.NotValid:
-        ret = False
-    return ret
-
-
 def execute(col,
             options=None,
             prog_fn=None,
@@ -465,26 +371,24 @@ def execute(col,
     try:
         preSolve_updateProgress(prog_fn, status_fn)
 
-        # Check for validity
+        # Check for validity and compile actions.
         solres_list = []
-        if col.is_valid() is False:
-            LOG.warning('Collection not valid: %r', col.get_node())
-            return solres_list
         col_node = col.get_node()
         sol_list = col.get_solver_list()
         mkr_list = col.get_marker_list()
         attr_list = col.get_attribute_list()
-        # TODO: Cache the compiled result internally to speed up
-        # 'is_valid' then '_compile' calls.
-
-        # If the class attributes haven't been changed, re-use the previously
-        # generated arguments.
-        # TODO: Don't use kwargs directly, use 'SolverAction' objects (which
-        #  are callable functions with args and kwargs).
-        # if len(col._kwargs_list) > 0:
-        #     return col._kwargs_list
-        actions_list = _compile(col_node, sol_list, mkr_list, attr_list,
-                                prog_fn=prog_fn, status_fn=status_fn)
+        try:
+            actions_list = api_compile.collection_compile(
+                col_node,
+                sol_list,
+                mkr_list,
+                attr_list,
+                prog_fn=prog_fn, status_fn=status_fn
+            )
+        except excep.NotValid:
+            # Not valid
+            LOG.warning('Collection not valid: %r', col.get_node())
+            return solres_list
         collectionutils.run_progress_func(prog_fn, 1)
 
         # Prepare frame solve
@@ -500,7 +404,7 @@ def execute(col,
             args = list(action.args)
             kwargs = action.kwargs.copy()
             if isinstance(func, basestring):
-                # Look up function name at run-time.
+                # Look up callable function from name at run-time.
                 mod_name, func_name = func.rsplit('.', 1)
                 mod = importlib.import_module(mod_name)
                 func = getattr(mod, func_name)

@@ -53,12 +53,15 @@ def get_bundle_nodes_from_marker_nodes(nodes):
 
 def get_marker_nodes_from_bundle_nodes(nodes):
     """
+    Get a list of marker nodes from the given list of bundle nodes
 
-    :param nodes:
-    :type nodes:
+    Bundle nodes are automatically filtered from the given 'nodes'.
 
-    :return:
-    :rtype:
+    :param nodes: Candidates for bundle nodes to search with.
+    :type nodes: [str, ..]
+
+    :return: List of marker nodes attached to the given bundle nodes.
+    :rtype: [str, ..]
     """
     bnd_nodes = nodefilter.filter_bundle_nodes(nodes)
     mkr_nodes = []

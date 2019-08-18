@@ -442,7 +442,6 @@ class TestSolve(test_api_utils.APITestCase):
         for frm in frm_list:
             sol = mmapi.Solver()
             sol.set_max_iterations(10)
-            # sol.set_solver_type(mmapi.SOLVER_TYPE_DEFAULT)
             sol.set_verbose(True)
             sol.set_frame_list([frm])
             sol_list.append(sol)

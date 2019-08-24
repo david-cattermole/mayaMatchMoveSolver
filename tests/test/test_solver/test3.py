@@ -118,13 +118,14 @@ class TestSolver3(solverUtils.SolverTestCase):
         """
         Solve nodal camera on a single frame, using cminpack_lmdif
         """
-        self.do_solve('cminpack_lm', 1)
+        self.do_solve('cminpack_lmdif', 1)
 
     def test_init_cminpack_lmder(self):
         """
         Solve nodal camera on a single frame, using cminpack_lmder
         """
         self.do_solve('cminpack_lmder', 2)
+
 
 if __name__ == '__main__':
     prog = unittest.main()

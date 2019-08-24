@@ -139,7 +139,7 @@ class TestSolver2(solverUtils.SolverTestCase):
         self.do_solve('levmar', 0)
 
     def test_init_cminpack_lmdif(self):
-        self.do_solve('cminpack_lm', 1)
+        self.do_solve('cminpack_lmdif', 1)
 
     def test_init_cminpack_lmder(self):
         self.do_solve('cminpack_lmder', 2)

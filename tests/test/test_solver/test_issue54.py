@@ -241,9 +241,9 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         """
         Solve nodal camera on a single frame, using cminpack_lm
         """
-        self.do_solve_with_initial_value_zero('cminpack_lm', 1)
-        self.do_solve_with_initial_value_twenty('cminpack_lm', 1)
-        self.do_solve_with_initial_value_threeSixty('cminpack_lm', 1)
+        self.do_solve_with_initial_value_zero('cminpack_lmdif', 1)
+        self.do_solve_with_initial_value_twenty('cminpack_lmdif', 1)
+        self.do_solve_with_initial_value_threeSixty('cminpack_lmdif', 1)
 
     def test_init_cminpack_lmder(self):
         """

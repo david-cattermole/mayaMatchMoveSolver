@@ -153,14 +153,18 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     }
 
     // Get 'Print Statistics'
-    MString printStats = "";
     unsigned int printStatsNum = argData.numberOfFlagUses(PRINT_STATS_FLAG);
     m_printStatsList.clear();
     for (unsigned int i = 0; i < printStatsNum; ++i) {
-         MString printStatsArg;
-         status = argData.getFlagArgument(PRINT_STATS_FLAG, i, printStatsArg);
-         if (status == MStatus::kSuccess) {
-              m_printStatsList.append(printStatsArg);
+        MArgList printStatsArgs;
+        status = argData.getFlagArgumentList(PRINT_STATS_FLAG, i, printStatsArgs);
+        if (status == MStatus::kSuccess) {
+            MString printStatsArg = "";
+            for (unsigned j = 0; j < printStatsArgs.length(); ++j) {
+                printStatsArg = printStatsArgs.asString(j, &status);
+                CHECK_MSTATUS_AND_RETURN_IT(status);
+                m_printStatsList.append(printStatsArg);
+            }
          }
     }
 

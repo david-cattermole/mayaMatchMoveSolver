@@ -25,9 +25,25 @@
 #define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
 
 
+#include <core/bundleAdjust_data.h>
+
+
 // success / failure constants.
 #define SOLVE_FUNC_SUCCESS (0)
 #define SOLVE_FUNC_FAILURE (-1)
+
+
+void measureErrors(
+        int numberOfParameters,
+        int numberOfErrors,
+        double *errors,
+        SolverData *ud,
+        double &error_avg,
+        double &error_max,
+        double &error_min,
+        bool writeDebug,
+        std::ofstream &debugFile,
+        MStatus &status);
 
 
 int solveFunc(int numberOfParameters,

@@ -93,6 +93,7 @@
 // These are the possible values:
 #define PRINT_STATS_MODE_INPUTS   "inputs"
 #define PRINT_STATS_MODE_AFFECTS  "affects"
+#define PRINT_STATS_MODE_DEVIATION   "deviation"
 
 
 // Robust Loss Function Types.

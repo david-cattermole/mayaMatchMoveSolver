@@ -763,26 +763,35 @@ bool solve(SolverOptions &solverOptions,
            MComputation &computation,
            MString &debugFile,
            MStringArray &printStatsList,
-           bool verbose,
+           bool with_verbosity,
            MStringArray &outResult) {
     MStatus status;
     std::string resultStr;
     int ret = 1;
     MGlobal::MMayaState mayaSessionState = MGlobal::mayaState(&status);
 
+    bool verbose = with_verbosity;
     bool printStats = false;
     bool printStatsInput = false;
-    bool printStatsAffects = false;
+    bool printStatsAffects = false;  // TODO: Print 'affects' statistics.
+    bool printStatsDeviation = false;
     if (printStatsList.length() > 0) {
-         for (int i = 0; i < printStatsList.length(); ++i) {
-              if (printStatsList[i] == PRINT_STATS_MODE_INPUTS) {
-                   printStatsInput = true;
-                   printStats = true;
-              } else if (printStatsList[i] == PRINT_STATS_MODE_AFFECTS) {
-                   printStatsAffects = true;
-                   printStats = true;
-              }
-         }
+        for (unsigned int i = 0; i < printStatsList.length(); ++i) {
+            if (printStatsList[i] == PRINT_STATS_MODE_INPUTS) {
+                printStatsInput = true;
+                printStats = true;
+            } else if (printStatsList[i] == PRINT_STATS_MODE_AFFECTS) {
+                printStatsAffects = true;
+                printStats = true;
+            } else if (printStatsList[i] == PRINT_STATS_MODE_DEVIATION) {
+                printStatsDeviation = true;
+                printStats = true;
+            }
+        }
+    }
+    if (printStats == true) {
+        // When printing statistics, turn off verbosity.
+        verbose = false;
     }
 
 #ifdef MAYA_PROFILE
@@ -847,13 +856,17 @@ bool solve(SolverOptions &solverOptions,
          resultStr += string::numberToString<int>(numberOfErrors);
          outResult.append(MString(resultStr.c_str()));
     }
-    if (printStats == true) {
-         return true;
-    }
 
     VRB("Number of Parameters; numberOfParameters=" << numberOfParameters);
     VRB("Number of Errors; numberOfErrors=" << numberOfErrors);
     if (numberOfParameters > numberOfErrors) {
+        if (printStats == true) {
+            // If the user is asking to print statistics, then we have
+            // successfully achieved that goal and we cannot continue
+            // to generate statistics, because of an invalid number of
+            // parameters/errors.
+            return true;
+        }
         ERR("Solver failure; cannot solve for more attributes (\"parameters\") "
             << "than number of markers (\"errors\"). "
             << "parameters=" << numberOfParameters << " "
@@ -862,6 +875,7 @@ bool solve(SolverOptions &solverOptions,
         outResult.append(MString(resultStr.c_str()));
         return false;
     }
+
     paramList.resize((unsigned long) numberOfParameters, 0);
     errorList.resize((unsigned long) numberOfErrors, 0);
     jacobianList.resize((unsigned long) numberOfParameters * numberOfErrors, 0);
@@ -869,20 +883,6 @@ bool solve(SolverOptions &solverOptions,
     std::vector<double> errorDistanceList;
     errorDistanceList.resize((unsigned long) numberOfErrors / ERRORS_PER_MARKER, 0);
     assert(errorToMarkerList.size() == errorDistanceList.size());
-
-    // Set Initial parameters
-    VRB("Set Initial parameters...");
-    set_initial_parameters(numberOfParameters,
-                           paramList,
-                           paramToAttrList,
-                           attrList,
-                           frameList,
-                           outResult);
-
-    VRB("Initial Parameters: ");
-    for (int i = 0; i < numberOfParameters; ++i) {
-        VRB("-> " << paramList[i]);
-    }
 
     VRB("Solving...");
     VRB("Solver Type=" << solverOptions.solverType);
@@ -951,6 +951,59 @@ bool solve(SolverOptions &solverOptions,
     userData.verbose = verbose;
     userData.debugFileName = debugFile;
 
+    // TODO: Calculate errors and return.
+    if (printStatsDeviation == true) {
+        SolverResult solveResult;
+
+        double errorAvg = 0;
+        double errorMin = 0;
+        double errorMax = 0;
+        const bool writeDebug = false;
+        std::ofstream debugFile;
+        measureErrors(
+                numberOfParameters,
+                numberOfErrors,
+                &errorList[0],
+                &userData,
+                errorAvg,
+                errorMax,
+                errorMin,
+                writeDebug,  // Never write debug data during statistics gathering.
+                debugFile,
+                status);
+
+        solveResult.success = true;
+        solveResult.reason_number = 0;
+        solveResult.reason = "";
+        solveResult.iterations = 0;
+        solveResult.functionEvals = 0;
+        solveResult.jacobianEvals = 0;
+        solveResult.errorFinal = 0.0;
+
+        errorAvg = 0;
+        errorMin = 0;
+        errorMax = 0;
+        compute_error_stats(
+                numberOfErrors, userData,
+                errorAvg, errorMin, errorMax);
+        solveResult.errorAvg = errorAvg;
+        solveResult.errorMin = errorMin;
+        solveResult.errorMax = errorMax;
+
+        print_details(
+                solveResult,
+                userData,
+                timer,
+                numberOfParameters,
+                numberOfErrors,
+                verbose,
+                paramList,
+                outResult);
+    }
+    if (printStats == true) {
+        return true;
+    }
+
     std::ofstream file;
     if (debugFile.length() > 0) {
         const char *debugFileNameChar = debugFile.asChar();
@@ -959,6 +1012,20 @@ bool solve(SolverOptions &solverOptions,
              file << std::endl;
              file.close();
         }
+    }
+
+    // Set Initial parameters
+    VRB("Set Initial parameters...");
+    set_initial_parameters(numberOfParameters,
+                           paramList,
+                           paramToAttrList,
+                           attrList,
+                           frameList,
+                           outResult);
+
+    VRB("Initial Parameters: ");
+    for (int i = 0; i < numberOfParameters; ++i) {
+        VRB("-> " << paramList[i]);
     }
 
     SolverResult solveResult;
@@ -1089,5 +1156,5 @@ bool solve(SolverOptions &solverOptions,
             verbose,
             paramList,
             outResult);
-    return ret != -1;
+    return solveResult.success;
 };

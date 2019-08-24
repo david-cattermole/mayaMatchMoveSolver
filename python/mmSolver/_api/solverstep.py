@@ -19,10 +19,7 @@
 Solver related functions.
 """
 
-import uuid
-
-import maya.cmds
-import maya.mel
+# import pprint
 
 import mmSolver.logger
 import mmSolver._api.frame as frame
@@ -231,6 +228,32 @@ class SolverStep(solverbase.SolverBase):
 
     ##########################################
 
+    def get_print_statistics_inputs(self):
+            return self._data.get('print_statistics_inputs')
+
+    def set_print_statistics_inputs(self, value):
+        if isinstance(value, bool) is False:
+            raise TypeError('Expected bool value type.')
+        self._data['print_statistics_inputs'] = value
+
+    def get_print_statistics_affects(self):
+        return self._data.get('print_statistics_affects')
+
+    def set_print_statistics_affects(self, value):
+        if isinstance(value, bool) is False:
+            raise TypeError('Expected bool value type.')
+        self._data['print_statistics_affects'] = value
+
+    def get_print_statistics_deviation(self):
+        return self._data.get('print_statistics_deviation')
+
+    def set_print_statistics_deviation(self, value):
+        if isinstance(value, bool) is False:
+            raise TypeError('Expected bool value type.')
+        self._data['print_statistics_deviation'] = value
+
+    ##########################################
+
     def compile(self, mkr_list, attr_list):
         """
         Compiles data given into flags for a single run of 'mmSolver'.
@@ -275,7 +298,9 @@ class SolverStep(solverbase.SolverBase):
         # Get Attributes
         use_animated = self.get_attributes_use_animated()
         use_static = self.get_attributes_use_static()
-        attrs = api_compile.attributes_compile_flags(attr_list, use_animated, use_static)
+        attrs = api_compile.attributes_compile_flags(attr_list,
+                                                     use_animated,
+                                                     use_static)
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
             return []
@@ -333,7 +358,20 @@ class SolverStep(solverbase.SolverBase):
         # TODO: Add 'robustLossScale' flag.
         # TODO: Add 'autoParamScaling' flag.
         # TODO: Add 'debugFile' flag.
+
         # TODO: Add 'printStatistics' flag.
+        print_stats_flags = []
+        print_stats_inputs = self.get_print_statistics_inputs()
+        print_stats_affects = self.get_print_statistics_affects()
+        print_stats_deviation = self.get_print_statistics_deviation()
+        if print_stats_inputs is not None:
+            print_stats_flags.append('inputs')
+        if print_stats_affects is not None:
+            print_stats_flags.append('affects')
+        if print_stats_deviation is not None:
+            print_stats_flags.append('deviation')
+        if len(print_stats_flags) > 0:
+            kwargs['printStatistics'] = print_stats_flags
 
         # # Add a debug file flag to the mmSolver command, only
         # # triggered during debug mode.
@@ -355,7 +393,7 @@ class SolverStep(solverbase.SolverBase):
             kwargs=kwargs
         )
         # msg = 'kwargs:\n' + pprint.pformat(kwargs)
-        # LOG.debug(msg)
+        # LOG.warning(msg)
         return [action]
 
 

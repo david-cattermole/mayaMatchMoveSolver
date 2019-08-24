@@ -196,19 +196,19 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
                 CameraPtr camera = marker->getCamera();
                 status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
                 double filmBackWidth = camera->getFilmbackWidthValue(frame);
-                double filmBackHeight = camera->getFilmbackWidthValue(frame);
+                double filmBackHeight = camera->getFilmbackHeightValue(frame);
                 double filmBackInvAspect = filmBackHeight / filmBackWidth;
+                double filmBackAspect = filmBackWidth / filmBackHeight;
                 CHECK_MSTATUS(status);
                 MPoint marker_pos;
                 status = marker->getPos(marker_pos, frame);
                 CHECK_MSTATUS(status);
                 marker_pos = marker_pos * cameraWorldProjectionMatrix;
                 marker_pos.cartesianize();
-                marker_pos[0] *= 0.5;  // convert to -0.5 to 0.5.
-                // convert to -0.5 to 0.5, maintaining the aspect ratio of the film back.
+                // convert to -0.5 to 0.5, maintaining the aspect
+                // ratio of the film back.
+                marker_pos[0] *= 0.5;
                 marker_pos[1] *= 0.5 * filmBackInvAspect;
-                marker_pos[2] = 0.0;
-                marker_pos[3] = 1.0;
                 markerPosList.push_back(marker_pos);
             }
         }

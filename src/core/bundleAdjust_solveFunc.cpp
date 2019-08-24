@@ -313,7 +313,7 @@ void measureErrors(
         camera->getWorldPosition(cam_pos, frame);
         camera->getForwardDirection(cam_dir, frame);
         double filmBackWidth = camera->getFilmbackWidthValue(frame);
-        double filmBackHeight = camera->getFilmbackWidthValue(frame);
+        double filmBackHeight = camera->getFilmbackHeightValue(frame);
         double filmBackInvAspect = filmBackHeight / filmBackWidth;
 
         BundlePtr bnd = marker->getBundle();
@@ -332,11 +332,10 @@ void measureErrors(
         bnd_dir.normalize();
         bnd_mpos = bnd_mpos * cameraWorldProjectionMatrix;
         bnd_mpos.cartesianize();
-        bnd_mpos[0] *= 0.5;  // convert to -0.5 to 0.5.
-        // convert to -0.5 to 0.5, maintaining the aspect ratio of the film back.
+        // convert to -0.5 to 0.5, maintaining the aspect ratio of the
+        // film back.
+        bnd_mpos[0] *= 0.5;
         bnd_mpos[1] *= 0.5 * filmBackInvAspect;
-        bnd_mpos[2] = 0.0;
-        bnd_mpos[3] = 1.0;
 
         // Is the bundle behind the camera?
         bool behind_camera = false;

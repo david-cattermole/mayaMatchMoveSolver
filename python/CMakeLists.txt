@@ -1,3 +1,21 @@
+# Copyright (C) 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+# ---------------------------------------------------------------------
+#
 # Generate .py files from Qt .ui
 
 find_package(Maya REQUIRED)
@@ -45,4 +63,15 @@ add_ui_compile("loadmarker"
 add_ui_compile("solver"
     ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/solver/ui/solver_layout.ui
     ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/solver/ui/ui_solver_layout.py
+)
+
+add_ui_compile("solver_about"
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/aboutwindow/ui/about_layout.ui
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/aboutwindow/ui/ui_about_layout.py
+)
+
+
+add_ui_compile("sysinfo"
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/sysinfowindow/ui/sysinfo_layout.ui
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/sysinfowindow/ui/ui_sysinfo_layout.py
 )

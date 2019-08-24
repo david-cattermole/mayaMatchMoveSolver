@@ -8,7 +8,6 @@ import maya.api.OpenMayaUI as OpenMayaUI
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.tools.selection.filternodes as filternodes
 
 
 LOG = mmSolver.logger.get_logger()
@@ -28,7 +27,7 @@ def place_marker():
         msg = 'No nodes selected! Please select Marker nodes to place.'
         LOG.warning(msg)
         return
-    mkr_nodes = filternodes.get_marker_nodes(nodes)
+    mkr_nodes = mmapi.filter_marker_nodes(nodes)
     if len(mkr_nodes) == 0:
         msg = 'No Marker nodes selected!'
         LOG.warning(msg)

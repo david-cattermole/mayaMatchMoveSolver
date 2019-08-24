@@ -25,6 +25,12 @@ def get_maya_window_parent():
 def create_menu(parent=None, name=None, **kwargs):
     """
     Create a Maya menu.
+
+    :param parent: Which menu should this menu item be placed under?
+    :type parent: str
+
+    :param name: Name (label) of the menu item button.
+    :type name: str
     """
     assert parent is not None
     assert isinstance(parent, basestring)
@@ -38,7 +44,8 @@ def create_menu_item(parent=None,
                      cmd=None,
                      cmdLanguage=None,
                      divider=None,
-                     subMenu=None):
+                     subMenu=None,
+                     tearOff=None):
     """
     Create a Menu Item on a menu.
 
@@ -65,6 +72,10 @@ def create_menu_item(parent=None,
     :param subMenu: Will this menu item have other menu items under it?
     :type subMenu: bool
 
+    :param tearOff: Allow users to tear-off a copy of the menu? This
+                    is not valid for menu items, only sub-menus.
+    :type tearOff: bool
+
     :returns: Maya menu item UI control path.
     :rtype: str
     """
@@ -75,6 +86,7 @@ def create_menu_item(parent=None,
     assert cmd is None or isinstance(cmd, basestring)
     assert divider is None or isinstance(divider, bool)
     assert subMenu is None or isinstance(subMenu, bool)
+    assert tearOff is None or isinstance(tearOff, bool)
 
     label = 'label'
     annotation = ''
@@ -107,14 +119,17 @@ def create_menu_item(parent=None,
             **kwargs
         )
     elif subMenu is True:
+        kwargs = {}
+        if tearOff is not None:
+            kwargs['tearOff'] = tearOff
         item = maya.cmds.menuItem(
             parent=parent,
             label=label,
             annotation=annotation,
-            subMenu=True
+            subMenu=True,
+            **kwargs
         )
     elif divider is True:
-        # Divider
         kwargs = {}
         if name is not None:
             kwargs['dividerLabel'] = str(label)

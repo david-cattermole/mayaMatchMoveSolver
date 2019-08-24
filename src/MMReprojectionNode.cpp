@@ -40,7 +40,7 @@
 
 #include <MMReprojectionNode.h>
 #include <Camera.h>  // getProjectionMatrix, computeFrustumCoordinates
-#include <reprojection.h>
+#include <core/reprojection.h>
 
 
 MTypeId MMReprojectionNode::m_id(MM_REPROJECTION_TYPE_ID);

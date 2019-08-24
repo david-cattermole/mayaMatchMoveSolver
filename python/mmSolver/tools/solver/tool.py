@@ -1,8 +1,26 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 The Solver UI tool.
 """
 
 import mmSolver.logger
+import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.ui.solver_window as solver_window
@@ -41,6 +59,8 @@ def run_solve(override_current_frame=None):
     force_update_state = lib_state.get_force_dg_update_state()
     refresh_state = lib_state.get_refresh_viewport_state()
     log_level = lib_state.get_log_level()
+    do_isolate_state = lib_state.get_isolate_object_while_solving_state()
+    image_plane_state = lib_state.get_display_image_plane_while_solving_state()
 
     layout = None
     win = solver_window.SolverWindow.get_instance()
@@ -65,10 +85,15 @@ def run_solve(override_current_frame=None):
             layout.setOverrideCurrentFrame(col, override_current_frame)
 
     # Run Solver
+    options = mmapi.createExecuteOptions(
+        refresh=refresh_state,
+        force_update=force_update_state,
+        do_isolate=do_isolate_state,
+        display_image_plane=image_plane_state
+    )
     lib_col.run_solve_ui(
         col,
-        refresh_state,
-        force_update_state,
+        options,
         log_level,
         win,
     )

@@ -1,3 +1,20 @@
+# Copyright (C) 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Configuration module. GitHub issue #17.
 
@@ -116,7 +133,7 @@ def set_node_option(node_name, attr_name, value,
 
     :rtype: None
     """
-    assert isinstance(attr_name, (str, unicode))
+    assert isinstance(attr_name, basestring)
     assert isinstance(value, (bool, float, int, basestring))
     if add_attr is None:
         add_attr = False
@@ -135,7 +152,7 @@ def set_node_option(node_name, attr_name, value,
     maya.cmds.setAttr(node_attr, lock=False)
     if isinstance(value, (bool, float, int)):
         maya.cmds.setAttr(node_attr, value)
-    elif isinstance(value, str):
+    elif isinstance(value, basestring):
         maya.cmds.setAttr(node_attr, value, type='string')
     maya.cmds.setAttr(node_attr, lock=True)
     return
@@ -177,7 +194,7 @@ def set_node_option_structure(node_name, attr_name, data_struct, add_attr=None):
     :type attr_name: str
 
     :param data_struct: The data to store.
-    :type data_struct: dict
+    :type data_struct: dict or list
 
     :param add_attr: Add attribute to the given node, if the attribute
                      does not already exist.
@@ -186,7 +203,7 @@ def set_node_option_structure(node_name, attr_name, data_struct, add_attr=None):
     :rtype: None
     """
     assert isinstance(attr_name, (str, unicode))
-    assert isinstance(data_struct, dict)
+    assert isinstance(data_struct, (list, dict))
 
     new_attr_data = json.dumps(data_struct)
     old_attr_data = get_node_option(node_name, attr_name)
@@ -213,7 +230,10 @@ def get_scene_option(name, default=None):
     :rtype: any
     """
     if not maya.cmds.objExists(const.SCENE_DATA_NODE):
-        maya.cmds.createNode('script', name=const.SCENE_DATA_NODE)
+        maya.cmds.createNode(
+            'script',
+            name=const.SCENE_DATA_NODE,
+            skipSelect=True)
     data = get_node_option_structure(
         const.SCENE_DATA_NODE,
         const.SCENE_DATA_ATTR

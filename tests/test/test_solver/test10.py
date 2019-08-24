@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Solve a camera focal length to optimise rotateX, rotateY and focal length.
 """
@@ -20,7 +37,11 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver10(solverUtils.SolverTestCase):
 
-    def test_init(self):
+    def do_solve(self, solver_name, solver_index):
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
+
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', 0.0)
@@ -86,10 +107,10 @@ class TestSolver10(solverUtils.SolverTestCase):
             (marker2_tfm, cam_shp, bundle2_tfm),
         )
         node_attrs = [
-            (cam_tfm + '.rx', 'None', 'None'),
-            (cam_tfm + '.ry', 'None', 'None'),
-            # (cam_tfm + '.rz', 'None', 'None'),
-            (cam_shp + '.focalLength', 'None', 'None'),
+            (cam_tfm + '.rx', 'None', 'None', 'None', 'None'),
+            (cam_tfm + '.ry', 'None', 'None', 'None', 'None'),
+            # (cam_tfm + '.rz', 'None', 'None', 'None', 'None'),
+            (cam_shp + '.focalLength', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),
@@ -103,6 +124,7 @@ class TestSolver10(solverUtils.SolverTestCase):
             attr=node_attrs,
             iterations=1000,
             frame=frames,
+            solverType=solver_index,
             verbose=True,
         )
         e = time.time()
@@ -115,6 +137,15 @@ class TestSolver10(solverUtils.SolverTestCase):
         
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
+
+    def test_init_levmar(self):
+        self.do_solve('levmar', 0)
+
+    def test_init_cminpack_lmdif(self):
+        self.do_solve('cminpack_lmdif', 1)
+
+    def test_init_cminpack_lmder(self):
+        self.do_solve('cminpack_lmder', 2)
 
 
 if __name__ == '__main__':

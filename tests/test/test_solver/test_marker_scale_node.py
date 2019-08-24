@@ -1,8 +1,27 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Test the mmMarkerScale node for correctness.
 """
 
 import unittest
+
+import mmSolver.utils.node as node_utils
 
 try:
     import maya.standalone
@@ -22,10 +41,10 @@ class TestMarkerScaleNode(solverUtils.SolverTestCase):
     @staticmethod
     def create_camera(name):
         cam_tfm = maya.cmds.createNode('transform', name=name)
-        cam_tfm = api_utils.get_long_name(cam_tfm)
+        cam_tfm = node_utils.get_long_name(cam_tfm)
         cam_shp = maya.cmds.createNode('camera', name=name+'Shape',
                                        parent=cam_tfm)
-        cam_shp = api_utils.get_long_name(cam_shp)
+        cam_shp = node_utils.get_long_name(cam_shp)
         return cam_tfm, cam_shp
 
     def test_marker_scale_node(self):

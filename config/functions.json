@@ -11,16 +11,9 @@
                 "mmSolver.tools.solver.tool.open_window();"
             ]
         },
-        "solver_popup_left": {
-            "popup": true,
-            "popup_button": "left"
-        },
-        "solver_popup_right": {
-            "popup": true,
-            "popup_button": "right"
-        },
         "open_solver_ui": {
             "name": "Open Solver...",
+            "name_shelf": "Solver",
             "tooltip": "Open the MM Solver window.",
             "icon_shelf": "menuIconWindow.png",
             "command": [
@@ -30,6 +23,7 @@
         },
         "solver_run": {
             "name": "Run Solver",
+            "name_shelf": "Run",
             "tooltip": "Run solver on currently active Collection.",
             "command": [
                 "import mmSolver.tools.solver.tool as tool;",
@@ -38,11 +32,18 @@
         },
         "solver_run_current_frame": {
             "name": "Run Solver (Current Frame)",
+            "name_shelf": "RunFrm",
             "tooltip": "Run solver on currently active Collection on the current frame.",
             "command": [
                 "import mmSolver.tools.solver.tool as tool;",
                 "tool.run_solve_on_current_frame();"
             ]
+        },
+        "create_tools": {
+            "name": "Create Tools",
+            "name_shelf": "Create",
+            "tooltip": "Creation Tools",
+            "command": ["pass"]
         },
         "create_marker": {
             "name": "Create Marker",
@@ -61,14 +62,6 @@
             "icon_shelf": "createMarker_32x32.png",
             "command": ["pass"]
         },
-        "marker_popup_left": {
-            "popup": true,
-            "popup_button": "left"
-        },
-        "marker_popup_right": {
-            "popup": true,
-            "popup_button": "right"
-        },
         "toggle_marker_lock": {
             "name": "Toggle Marker Lock",
             "tooltip": "Toggles selected marker lock state.",
@@ -83,14 +76,6 @@
             "tooltip": "Bundle Tools",
             "icon_shelf": "createBundle_32x32.png",
             "command": ["pass"]
-        },
-        "bundle_popup_left": {
-            "popup": true,
-            "popup_button": "left"
-        },
-        "bundle_popup_right": {
-            "popup": true,
-            "popup_button": "right"
         },
         "toggle_bundle_lock": {
             "name": "Toggle Bundle Lock-State",
@@ -112,12 +97,23 @@
             "name": "Triangulate Bundle",
             "tooltip": "Use Marker to triangulate a 3D position for Bundle.",
             "command": [
-                "import mmSolver.tools.triangulate.tool;",
-                "mmSolver.tools.triangulate.tool.main();"
+                "import mmSolver.tools.triangulatebundle.tool;",
+                "mmSolver.tools.triangulatebundle.tool.main();"
+            ]
+        },
+        "attach_bundle_to_curve": {
+            "name": "Attach Bundle to Curve",
+            "name_menu": "Attach Bundle to Curve",
+            "name_shelf": "BtCrv",
+            "tooltip": "Attach a 3D Bundle to a NURBS Curve.",
+            "command": [
+                "import mmSolver.tools.attachbundletocurve.tool;",
+                "mmSolver.tools.attachbundletocurve.tool.main();"
             ]
         },
         "raycast_marker": {
-            "name": "Ray-Cast Marker",
+            "name": "Project Marker on Mesh",
+            "name_shelf": "MkrCast",
             "tooltip": "Ray Cast Marker onto geometry.",
             "command": [
                 "import mmSolver.tools.raycastmarker.tool;",
@@ -133,7 +129,7 @@
             ]
         },
         "place_marker_manipulator": {
-            "name": "Place Marker...",
+            "name": "Place Marker Tool",
             "tooltip": "Place Marker at screen-space 2D position.",
             "command": [
                 "import mmSolver.tools.placemarkermanip.tool;",
@@ -189,7 +185,7 @@
             ]
         },
         "load_marker_ui": {
-            "name": "Load Marker",
+            "name": "Load Marker...",
             "name_shelf": "Load...",
             "tooltip": "Load Marker.",
             "icon_shelf": "menuIconFile.png",
@@ -207,6 +203,18 @@
                 "import mmSolver.tools.createbundle.tool;",
                 "mmSolver.tools.createbundle.tool.main();"
             ]
+        },
+        "sel_tools": {
+            "name": "Selection Tools",
+            "name_shelf": "Select",
+            "tooltip": "Selection Tools",
+            "command": ["pass"]
+        },
+        "mkr_bnd_tools": {
+            "name": "Marker-Bundle Tools",
+            "name_shelf": "MBTool",
+            "tooltip": "Marker-Bundle Tools",
+            "command": ["pass"]
         },
         "swap_marker_bundles": {
             "name": "Swap Markers / Bundles",
@@ -243,17 +251,23 @@
                 "pass"
             ]
         },
+        "general_tools": {
+            "name": "General Tools",
+            "name_shelf": "Tools",
+            "tooltip": "General Tools",
+            "command": ["pass"]
+        },
         "center_twodee": {
-            "name": "Center 2D on Selected",
+            "name": "2D Center on Selected",
             "name_shelf": "Center",
-            "tooltip": "Center 2D on Selected.",
+            "tooltip": "2D Center on Selected.",
             "command": [
                 "import mmSolver.tools.centertwodee.tool;",
                 "mmSolver.tools.centertwodee.tool.main();"
             ]
         },
         "channel_sensitivity_ui": {
-            "name": "Channel Sensitivity UI",
+            "name": "Channel Sensitivity UI...",
             "name_shelf": "ChSen",
             "tooltip": "Channel Sensitivity UI.",
             "command": [
@@ -261,22 +275,98 @@
                 "mmSolver.tools.channelsen.tool.main();"
             ]
         },
-        "smooth_keyframes": {
-            "name": "Smooth Keyframes",
+        "smooth_keyframes_ui": {
+            "name": "Smooth Keyframes UI...",
             "name_shelf": "Smooth",
-            "tooltip": "Smooth Selected Keyframes.",
+            "tooltip": "Smooth Keyframes.",
             "command": [
                 "import mmSolver.tools.smoothkeyframes.tool;",
                 "mmSolver.tools.smoothkeyframes.tool.main();"
             ]
         },
+        "smooth_keyframes": {
+            "name": "Smooth Selected Keyframes",
+            "name_shelf": "Smooth",
+            "tooltip": "Smooth Selected Keyframes.",
+            "command": [
+                "import mmSolver.tools.smoothkeyframes.tool;",
+                "mmSolver.tools.smoothkeyframes.tool.smooth_selected_keyframes();"
+            ]
+        },
+        "show_deviation_curves": {
+            "name": "Show Deviation Curves",
+            "name_shelf": "ShwDev",
+            "tooltip": "Show Deviation for selected Marker nodes.",
+            "command": [
+                "import mmSolver.tools.showdeviationcurves.tool;",
+                "mmSolver.tools.showdeviationcurves.tool.show_deviation();"
+            ]
+        },
+        "hide_deviation_curves": {
+            "name": "Hide Deviation Curves",
+            "name_shelf": "HidDev",
+            "tooltip": "Hide Deviation Curves from Graph Editor.",
+            "command": [
+                "import mmSolver.tools.showdeviationcurves.tool;",
+                "mmSolver.tools.showdeviationcurves.tool.hide_deviation();"
+            ]
+        },
         "screen_z_transform_bake": {
-            "name": "Screen-Space Tranform Bake",
+            "name": "Screen-Space Transform Bake",
             "name_shelf": "ScrnBk",
             "tooltip": "Convert a transform into a screen-space transform.",
             "command": [
-                "import mmSolver.tools.screenzbake.tool;",
-                "mmSolver.tools.screenzbake.tool.main();"
+                "import mmSolver.tools.screenspacetransform.tool;",
+                "mmSolver.tools.screenspacetransform.tool.main();"
+            ]
+        },
+        "create_controller": {
+            "name": "Create Controller",
+            "name_shelf": "CrCtrl",
+            "tooltip": "Create Controller for selected nodes.",
+            "command": [
+                "import mmSolver.tools.createcontroller.tool;",
+                "mmSolver.tools.createcontroller.tool.create();"
+            ]
+        },
+        "remove_controller": {
+            "name": "Remove Controller",
+            "name_shelf": "RmCtrl",
+            "tooltip": "Remove Controller for selected nodes.",
+            "command": [
+                "import mmSolver.tools.createcontroller.tool;",
+                "mmSolver.tools.createcontroller.tool.remove();"
+            ]
+        },
+        "deform_marker": {
+            "name": "Deform Marker",
+            "name_shelf": "MkrOff",
+            "tooltip": "Deform Marker",
+            "icon_shelf": "createMarker_32x32.png",
+            "command": ["pass"]
+        },
+        "deform_marker_create_offset": {
+            "name": "Deform Create",
+            "tooltip": "Create layer for selected markers.",
+            "command": [
+                "import mmSolver.tools.deformmarker.tool as deformMkr;",
+                "deformMkr.create_offset_layer();"
+            ]
+        },
+        "deform_marker_bake_offset": {
+            "name": "Deform Bake",
+            "tooltip": "Bake layer override for the selected marker.",
+            "command": [
+                "import mmSolver.tools.deformmarker.tool as deformMkr;",
+                "deformMkr.bake_offset();"
+            ]
+        },
+        "deform_marker_remove_offset": {
+            "name": "Deform Remove",
+            "tooltip": "Removes layer override changes for the selected marker.",
+            "command": [
+                "import mmSolver.tools.deformmarker.tool as deformMkr;",
+                "deformMkr.remove_layer_override();"
             ]
         }
     }

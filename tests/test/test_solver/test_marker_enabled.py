@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Testing marker 'enabled' attribute.
 """
@@ -97,8 +114,8 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
             (marker_02_tfm, cam_shp, bundle_02_tfm),
         )
         node_attrs = [
-            (grp + '.tx', 'None', 'None'),
-            (grp + '.ty', 'None', 'None'),
+            (grp + '.tx', 'None', 'None', 'None', 'None'),
+            (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),
@@ -186,8 +203,8 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         )
         # NOTE: All dynamic attributes must have a keyframe before starting to solve.
         node_attrs = [
-            (grp + '.tx', 'None', 'None'),
-            (grp + '.ty', 'None', 'None'),
+            (grp + '.tx', 'None', 'None', 'None', 'None'),
+            (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
 
         # Run solver, over each frame!
@@ -225,7 +242,7 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         ty_mid = maya.cmds.getAttr(grp + '.ty', time=mid)
         ty_end = maya.cmds.getAttr(grp + '.ty', time=end)
         assert self.approx_equal(tx_start, -0.51855463, eps=0.001)
-        assert self.approx_equal(tx_mid, -2.30711317518, eps=0.001)
+        assert self.approx_equal(tx_mid, -2.30211317518, eps=0.001)
         assert self.approx_equal(tx_end, -1.48144697, eps=0.001)
         assert self.approx_equal(ty_start, 1.30993172, eps=0.001)
         assert self.approx_equal(ty_mid, 1.65458758547, eps=0.001)

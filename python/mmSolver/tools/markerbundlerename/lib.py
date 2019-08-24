@@ -1,9 +1,27 @@
+# Copyright (C) 2019 Anil Reddy, David Cattermole
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 This file holds all the helpful functions for markerbundlerename
 """
 
-import mmSolver.logger
 import maya.cmds
+
+import mmSolver.logger
 import mmSolver.api as mmapi
 
 
@@ -94,7 +112,7 @@ def rename_markers_and_bundles(mkr_nodes, bnd_nodes,
         num_str = number_format % (i + 1)
         bnd = mmapi.Bundle(node=bnd_node)
 
-        new_bnd_name = mmapi.get_bundle_name(
+        new_bnd_name = mmapi.get_new_bundle_name(
             num_str,
             prefix=bnd_name,
             suffix=bnd_suffix

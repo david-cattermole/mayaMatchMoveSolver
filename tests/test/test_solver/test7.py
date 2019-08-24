@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Test 'one-frame lineup' camera solving on a single frame.
 """
@@ -19,7 +36,11 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver7(solverUtils.SolverTestCase):
 
-    def test_init(self):
+    def do_solve(self, solver_name, solver_index):
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
+
         # Open File Path
         scenePath = self.get_data_path('solver_test7.ma')
         maya.cmds.file(scenePath,
@@ -68,13 +89,13 @@ class TestSolver7(solverUtils.SolverTestCase):
 
         # Get Attrs
         node_attrs = [
-            (cameras[0][0] + '.tx', 'None', 'None'),
-            (cameras[0][0] + '.ty', 'None', 'None'),
-            (cameras[0][0] + '.tz', 'None', 'None'),
-            (cameras[0][0] + '.rx', 'None', 'None'),
-            (cameras[0][0] + '.ry', 'None', 'None'),
-            (cameras[0][0] + '.rz', 'None', 'None'),
-            # (cameras[0][1] + '.focalLength', '10.0', '100.0'),
+            (cameras[0][0] + '.tx', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.ty', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.tz', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.rx', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.ry', 'None', 'None', 'None', 'None'),
+            (cameras[0][0] + '.rz', 'None', 'None', 'None', 'None'),
+            # (cameras[0][1] + '.focalLength', '10.0', '100.0', 'None', 'None'),
         ]
         frames = [1]
 
@@ -86,6 +107,7 @@ class TestSolver7(solverUtils.SolverTestCase):
             attr=node_attrs,
             frame=frames,
             iterations=1000,
+            solverType=solver_index,
             verbose=True,
         )
         e = time.time()
@@ -98,6 +120,15 @@ class TestSolver7(solverUtils.SolverTestCase):
         
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
+
+    def test_init_levmar(self):
+        self.do_solve('levmar', 0)
+
+    def test_init_cminpack_lmdif(self):
+        self.do_solve('cminpack_lmdif', 1)
+
+    def test_init_cminpack_lmder(self):
+        self.do_solve('cminpack_lmder', 2)
 
 
 if __name__ == '__main__':

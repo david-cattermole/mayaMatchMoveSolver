@@ -1,3 +1,20 @@
+# Copyright (C) 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Configuration for querying and setting configuration values and files.
 
@@ -24,6 +41,7 @@ intermediate studio or project location.
 import collections
 import json
 import os
+import platform
 
 import mmSolver.logger
 import mmSolver.utils.constant as const
@@ -350,3 +368,29 @@ def get_config(file_name, search=None):
 
     config = Config(file_path)
     return config
+
+
+def get_home_dir_path(*args):
+    """
+    Get the default home directory configuration directory.
+
+    The path returned will be operating system dependent.
+
+    .. note:: The path returned may not exist! It is up to the user to
+              check and create files/directories as needed.
+
+    :param args: A list of string arguments to be joined to the 
+                 returned path.
+    :type args: [str, ..]
+
+    :returns: An absolute path to a config directory that may or may not exist.
+    :rtype: str
+    """
+    os_name = platform.system()
+    path = const.CONFIG_HOME_DIR_PATH.get(os_name)
+    if len(args) > 0:
+        path = os.path.join(path, *args)
+    path = os.path.expandvars(path)
+    path = os.path.abspath(path)
+    LOG.debug('Config Path:', path)
+    return path

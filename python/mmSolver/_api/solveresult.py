@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 The information returned from a solve.
 
@@ -10,6 +27,7 @@ The information returned from a solve.
 
 import collections
 import math
+import datetime
 import mmSolver.logger
 
 
@@ -58,7 +76,7 @@ def _convert_to(name, key, typ, value, index):
     :param value: The value to convert into 'typ'.
     :type value: any
 
-    :param index: The index into 'value', used if value has multiple 
+    :param index: The index into 'value', used if value has multiple
                   values.
     :type index: int
 
@@ -109,11 +127,12 @@ class SolveResult(object):
     """
     def __init__(self, cmd_data):
         if isinstance(cmd_data, list) is False:
-            msg = 'cmd_data is of type %r, not expected list.'
+            msg = 'cmd_data is of type %r, expected a list object.'
             raise TypeError(msg % type(cmd_data))
+        self._raw_data = list(cmd_data)
         data = parse_command_result(cmd_data)
 
-        # Common warning in this function.
+        # Common warning message in this method.
         msg = 'mmSolver data is incomplete, '
         msg += 'a solver error may have occurred: '
         msg += 'name={0} key={1} typ={2} value={3}'
@@ -204,6 +223,15 @@ class SolveResult(object):
                 self._per_frame_error[t] = v
         return
 
+    def get_data_raw(self):
+        """
+        Get a copy of the raw data given to this object at initialization.
+
+        It is possible to re-create this object exactly by saving this
+        raw data and re-initializing the object with this data.
+        """
+        return list(self._raw_data)
+
     def get_success(self):
         """
         Command Success or not? Did the solver fail?
@@ -211,6 +239,9 @@ class SolveResult(object):
         return self._solver_stats.get('success')
 
     def get_final_error(self):
+        """
+        The single error value representing the solve at it's last state.
+        """
         return self._error_stats.get('final')
 
     def get_user_interrupted(self):
@@ -218,20 +249,48 @@ class SolveResult(object):
         Did the user purposely cancel the solve?
         """
         return self._solver_stats.get('user_interrupted', False)
-    
+
     def get_error_stats(self):
+        """
+        Details for the error (deviation) of the solve.
+        """
         return self._error_stats.copy()
 
     def get_timer_stats(self):
+        """
+        Details for how long different aspects of the solve took to compute.
+        """
         return self._timer_stats.copy()
 
     def get_solver_stats(self):
+        """
+        Details of internal solver.
+        """
         return self._solver_stats.copy()
 
+    def get_frame_list(self):
+        """
+        The list of frames that this solve result contains.
+        """
+        return list(sorted(self._per_frame_error.keys()))
+
     def get_frame_error_list(self):
+        """
+        The error (deviation) per-frame of the solver.
+        """
         return self._per_frame_error.copy()
 
     def get_marker_error_list(self, marker_node=None):
+        """
+        Get a list of errors (deviation) for all markers, or the given marker.
+
+        :param marker_node: The specific marker node to get an error list for.
+        :type marker_node: str
+
+        :returns: A dict of marker node names and time values, giving
+                  the error (deviation).
+        :rtype: {"marker_node": {float: float}}
+        """
         v = None
         if marker_node is None:
             v = self._per_marker_per_frame_error.copy()
@@ -267,6 +326,28 @@ def combine_timer_stats(solres_list):
             if isinstance(v, (int, float)):
                 stats_list[k] += v
     return stats_list
+
+
+def merge_frame_list(solres_list):
+    """
+    Combine a 'frame_list' from a list of SolveResult objects.
+
+    :param solres_list: List of SolveResult to merge together.
+    :type solres_list: [SolveResult, ..]
+
+    :returns: A list of frame numbers.
+    :rtype: [int, ..] or [float, ..]
+    """
+    assert isinstance(solres_list, (list, tuple))
+    frame_list = set()
+    msg = 'solres must be a SolveResult object: solres=%r'
+    for solres in solres_list:
+        if isinstance(solres, SolveResult) is False:
+            raise TypeError(msg % solres)
+        frame_list |= set(solres.get_frame_list())
+    frame_list = list(frame_list)
+    frame_list = list(sorted(frame_list))
+    return frame_list
 
 
 def merge_frame_error_list(solres_list):
@@ -337,3 +418,77 @@ def get_max_frame_error(frame_error_list):
             frame = int(k)
             error = x
     return frame, error
+
+
+def merge_marker_error_list(solres_list):
+    """
+    Combine a 'marker_error_list' from a list of SolveResult objects.
+
+    .. note::
+       The 'solres_list' is assumed to represent sequential
+       solver executions; The order of this list is important, because
+       only the last solved error value is used.
+
+    :param solres_list: List of SolveResult to merge together.
+    :type solres_list: [SolveResult, ..]
+
+    :returns: Mapping of frame number to error values.
+    :rtype: dict
+
+    """
+    assert isinstance(solres_list, (list, tuple))
+    marker_error_list = collections.defaultdict(dict)
+    msg = 'solres must be a SolveResult object: solres=%r'
+    for solres in solres_list:
+        if isinstance(solres, SolveResult) is False:
+            raise TypeError(msg % solres)
+        mkr_err_data = solres.get_marker_error_list(marker_node=None)
+        for k1, v1 in mkr_err_data.items():
+            for k2, v2 in v1.items():
+                marker_error_list[k1][k2] = v2
+    return marker_error_list
+
+
+def merge_marker_node_list(solres_list):
+    """
+    Get all the markers used in the SolveResults given.
+
+    :param solres_list: List of SolveResult to merge together.
+    :type solres_list: [SolveResult, ..]
+
+    :returns: A list of Maya nodes of Markers.
+    :rtype: [str, ..]
+
+    """
+    assert isinstance(solres_list, (list, tuple))
+    mkr_nodes = set()
+    msg = 'solres must be a SolveResult object: solres=%r'
+    for solres in solres_list:
+        if isinstance(solres, SolveResult) is False:
+            raise TypeError(msg % solres)
+        data = solres.get_marker_error_list()
+        mkr_nodes |= set(data.keys())
+    mkr_nodes = list(mkr_nodes)
+    mkr_nodes = list(sorted(mkr_nodes))
+    return mkr_nodes
+
+
+def format_timestamp(value):
+    """
+    Convert a 'UNIX Epoch' float number to a human-readable Timestamp.
+
+    :param value: Input UNIX Epoch as returned by 'time.time()' function.
+    :type value: float
+
+    :returns: Human (and machine) readable timestamp.
+    :rtype: str
+    """
+    assert isinstance(value, float)
+    ts = datetime.datetime.fromtimestamp(value)
+    # Remove microseconds from the datetime object.
+    stamp = ts.replace(
+        ts.year, ts.month, ts.day,
+        ts.hour, ts.minute, ts.second, 0)
+    stamp = stamp.isoformat(' ')
+    assert isinstance(stamp, str)
+    return stamp

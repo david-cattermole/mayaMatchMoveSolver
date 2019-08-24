@@ -1,3 +1,21 @@
+# Copyright (C) 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+# ---------------------------------------------------------------------
+#
 # Maya MatchMoveSolver build script.
 #
 cmake_minimum_required(VERSION 2.8)
@@ -46,10 +64,9 @@ set(BLAS_LIB_NAMES
        CACHE STRING
        "BLAS libraries to link")
 
-
 # Default Solver to use.
-set(PREFERRED_SOLVER "cminpack_lm" CACHE STRING
-        "Choices are cminpack_lm or levmar. Which solver is used by default?")
+set(PREFERRED_SOLVER "cminpack_lmder" CACHE STRING
+        "Choices are cminpack_lm, cminpack_lmder or levmar. Which solver is used by default?")
 
 # Module paths
 if (UNIX)
@@ -67,9 +84,11 @@ set(MODULE_BUILD_DIR "${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}")
 
 # Set a default solver
 set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
-if ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
-    if (NOT (DEFAULT_SOLVER STREQUAL "cminpack_lm"))
-        message(WARNING 
+if ((USE_GPL_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 1))
+    # Support both levmar and cminpack.
+elseif ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
+    if (NOT (DEFAULT_SOLVER MATCHES "cminpack_lm[a-zA-Z]+"))
+        message(WARNING
           "Preferred solver cannot be used because it's not enabled. "
           "preferred=${PREFERRED_SOLVER} "
           "default=${DEFAULT_SOLVER} "
@@ -121,7 +140,7 @@ configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py
         @ONLY)
 
-# Create Python file with some build options baked in.
+# Create C Header file with some build options baked in.
 configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h.in
         ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h
@@ -139,38 +158,42 @@ configure_file(
 set(SOURCE_FILES
         include/utilities/debugUtils.h
         include/nodeTypeIds.h
-        include/mayaUtils.h
-        include/mmSolver.h
-        include/mmSolverFunc.h
-        include/mmSolverLevMar.h
-        include/mmSolverCMinpack.h
-        include/Camera.h
-        include/Marker.h
-        include/Bundle.h
-        include/Attr.h
-        include/reprojection.h
-        include/MMMarkerScaleNode.h
-        include/MMReprojectionNode.h
-        include/MMMarkerGroupTransformNode.h
-        include/MMTestCameraMatrixCmd.h
-        include/MMSolverCmd.h
-        include/MMSolverTypeCmd.h
-        include/MMReprojectionCmd.h
-        src/mmSolver.cpp
-        src/mmSolverFunc.cpp
-        src/mmSolverLevMar.cpp
-        src/mmSolverCMinpack.cpp
+        src/core/reprojection.h
+        src/core/reprojection.cpp
+        src/core/bundleAdjust_base.h
+        src/core/bundleAdjust_base.cpp
+        src/core/bundleAdjust_solveFunc.h
+        src/core/bundleAdjust_solveFunc.cpp
+        src/core/bundleAdjust_levmar_bc_dif.h
+        src/core/bundleAdjust_levmar_bc_dif.cpp
+        src/core/bundleAdjust_cminpack_base.h
+        src/core/bundleAdjust_cminpack_base.cpp
+        src/core/bundleAdjust_cminpack_lmdif.h
+        src/core/bundleAdjust_cminpack_lmdif.cpp
+        src/core/bundleAdjust_cminpack_lmder.h
+        src/core/bundleAdjust_cminpack_lmder.cpp
+        src/mayaUtils.h
+        src/Camera.h
         src/Camera.cpp
+        src/Marker.h
         src/Marker.cpp
+        src/Bundle.h
         src/Bundle.cpp
+        src/Attr.h
         src/Attr.cpp
-        src/reprojection.cpp
+        src/MMMarkerScaleNode.h
         src/MMMarkerScaleNode.cpp
+        src/MMReprojectionNode.h
         src/MMReprojectionNode.cpp
+        src/MMMarkerGroupTransformNode.h
         src/MMMarkerGroupTransformNode.cpp
+        src/MMTestCameraMatrixCmd.h
         src/MMTestCameraMatrixCmd.cpp
+        src/MMSolverCmd.h
         src/MMSolverCmd.cpp
+        src/MMSolverTypeCmd.h
         src/MMSolverTypeCmd.cpp
+        src/MMReprojectionCmd.h
         src/MMReprojectionCmd.cpp
         src/pluginMain.cpp
 )
@@ -225,6 +248,7 @@ endfunction()
 add_library(mmSolver SHARED ${SOURCE_FILES})
 target_include_directories(mmSolver
         PRIVATE include
+        PRIVATE src
         PUBLIC ${MAYA_INCLUDE_DIRS}
 )
 target_link_libraries(mmSolver

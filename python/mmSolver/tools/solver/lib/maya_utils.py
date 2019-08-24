@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 General Maya utility functions
 """
@@ -7,7 +24,6 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.tools.selection.filternodes as filter_nodes
 import mmSolver.tools.solver.constant as const
 
 
@@ -147,7 +163,7 @@ def get_markers_from_selection():
     :return: list of Marker objects.
     """
     nodes = maya.cmds.ls(long=True, selection=True) or []
-    node_categories = filter_nodes.get_nodes(nodes)
+    node_categories = mmapi.filter_nodes_into_categories(nodes)
     marker_nodes = node_categories.get('marker', [])
 
     camera_nodes = node_categories.get('camera', [])
@@ -160,12 +176,12 @@ def get_markers_from_selection():
             cam = mmapi.Camera(shape=node)
         tfm_node = cam.get_transform_node()
         below_nodes = maya.cmds.ls(tfm_node, dag=True, long=True)
-        marker_nodes += filter_nodes.get_marker_nodes(below_nodes)
+        marker_nodes += mmapi.filter_marker_nodes(below_nodes)
 
     marker_group_nodes = list(node_categories['markergroup'])
     for node in marker_group_nodes:
         below_nodes = maya.cmds.ls(node, dag=True, long=True)
-        marker_nodes += filter_nodes.get_marker_nodes(below_nodes)
+        marker_nodes += mmapi.filter_marker_nodes(below_nodes)
 
     # Convert nodes into Marker objects.
     marker_nodes = list(set(marker_nodes))

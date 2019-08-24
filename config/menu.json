@@ -15,24 +15,49 @@
             "swap_marker_bundles",
             "select_marker_bundles",
             "marker_bundle_rename",
-            "---Link",
+            "---Marker-Bundle Link",
             "link_marker_bundle",
             "unlink_marker_bundle",
             "---Tools",
+            "marker_tools/---Markers",
             "marker_tools/toggle_marker_lock",
             "marker_tools/place_marker_manipulator",
             "marker_tools/duplicate_marker",
             "marker_tools/average_markers",
+            "marker_tools/raycast_marker",
+            "marker_tools/---Deform Marker",
+            "marker_tools/deform_marker_create_offset",
+            "marker_tools/deform_marker_bake_offset",
+            "marker_tools/deform_marker_remove_offset",
+            "marker_tools/---Deviation",
+            "marker_tools/show_deviation_curves",
+            "marker_tools/hide_deviation_curves",
+            "bundle_tools/---Bundles",
             "bundle_tools/toggle_bundle_lock",
             "bundle_tools/reproject_bundle",
-            "bundle_tools/raycast_marker",
             "bundle_tools/triangulate_bundle",
             "bundle_tools/screen_z_manipulator",
-            "center_twodee",
-            "channel_sensitivity_ui",
-            "smooth_keyframes",
-            "screen_z_transform_bake"
+            "bundle_tools/attach_bundle_to_curve",
+            "general_tools/---General",
+            "general_tools/center_twodee",
+            "general_tools/screen_z_transform_bake",
+            "general_tools/smooth_keyframes",
+            "general_tools/---Controller",
+            "general_tools/create_controller",
+            "general_tools/remove_controller",
+            "general_tools/---UIs",
+            "general_tools/channel_sensitivity_ui",
+            "general_tools/smooth_keyframes_ui"
         ],
-        "functions": {}
+        "functions": {
+            "marker_tools": {
+                "name": "Marker Tools",
+                "tearoff": true
+            },
+            "bundle_tools": {
+                "name": "Bundle Tools",
+                "tearoff": true
+            }
+        }
     }
 }

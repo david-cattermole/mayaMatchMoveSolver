@@ -50,6 +50,7 @@ class TestProjectionMatrix(solverUtils.SolverTestCase):
         maya.cmds.setAttr(cam_tfm + '.horizontalFilmOffset', filmback_offset_x)
         maya.cmds.setAttr(cam_tfm + '.verticalFilmOffset', filmback_offset_y)
         maya.cmds.setAttr(cam_tfm + '.focalLength', focal_length)
+        maya.cmds.setAttr(cam_tfm + '.nearClipPlane', 0.1)
 
         # film fit; 0=fill, 1=horizontal, 2=vertical, 3=overscan
         maya.cmds.setAttr(cam_tfm + '.filmFit', film_fit)

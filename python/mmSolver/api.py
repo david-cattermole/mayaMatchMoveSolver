@@ -17,12 +17,6 @@
 #
 """
 Controls the user-facing API.
-
-.. todo:: This API should not only be importable in Maya. Importing this
-    module in 3DEqualizer or any other software  should not error
-    and should return only the functionality that is supported
-    in that software package.
-
 """
 
 # All the objects for the user API.
@@ -67,12 +61,16 @@ from mmSolver._api.collectionutils import (
 from mmSolver._api.markerutils import (
     calculate_marker_deviation,
     get_markers_start_end_frames,
+    find_marker_attr_mapping,
 )
 from mmSolver._api.naming import (
     find_valid_maya_node_name,
     get_new_marker_name,
     get_new_bundle_name,
 )
+convert_valid_maya_name = find_valid_maya_node_name
+get_marker_name = get_new_marker_name
+get_bundle_name = get_new_bundle_name
 from mmSolver._api.state import (
     is_solver_running,
     set_solver_running,
@@ -137,27 +135,36 @@ from mmSolver._api.constant import (
     AUTO_DIFF_TYPE_CENTRAL,
     AUTO_DIFF_TYPE_LIST,
 )
-
-# Utility functions that the user is allowed to use.
-from mmSolver._api.utils import (
-    load_plugin,
-    get_object_type,
-    undo_chunk,
-    convert_valid_maya_name,
-    get_marker_name,
-    get_bundle_name,
-    load_plugin,
-    get_data_on_node_attr,
-    set_data_on_node_attr,
-    get_value_on_node_attr,
-    set_value_on_node_attr,
+from mmSolver._api.state import (
     is_solver_running,
     set_solver_running,
     get_user_interrupt,
     set_user_interrupt,
 )
-from mmSolver.utils.node import get_long_name, get_as_selection_list, \
-    get_as_dag_path, get_as_object, get_as_plug
+
+# Utility functions that the user is allowed to use.
+from mmSolver._api.utils import (
+    load_plugin,
+    get_object_type,
+    load_plugin,
+    get_data_on_node_attr,
+    set_data_on_node_attr,
+    get_value_on_node_attr,
+    set_value_on_node_attr,
+)
+from mmSolver.utils.undo import (
+    undo_chunk,
+)
+from mmSolver.utils.animcurve import (
+    create_anim_curve_node,
+)
+from mmSolver.utils.node import (
+    get_long_name,
+    get_as_selection_list,
+    get_as_dag_path,
+    get_as_object,
+    get_as_plug
+)
 
 __all__ = [
     # Classes
@@ -220,11 +227,15 @@ __all__ = [
     # Marker Utils
     'calculate_marker_deviation',
     'get_markers_start_end_frames',
+    'find_marker_attr_mapping',
 
     # Naming
     'find_valid_maya_node_name',
     'get_new_marker_name',
     'get_new_bundle_name',
+    'convert_valid_maya_name',  # Backwards compatibility
+    'get_marker_name',  # Backwards compatibility
+    'get_bundle_name',  # Backwards compatibility
 
     # State
     'is_solver_running',
@@ -249,15 +260,19 @@ __all__ = [
     'load_plugin',
     'get_object_type',
     'undo_chunk',
-    'convert_valid_maya_name',
-    'get_marker_name',
-    'get_bundle_name',
     'load_plugin',
     'create_anim_curve_node',
     'get_data_on_node_attr',
     'set_data_on_node_attr',
     'get_value_on_node_attr',
     'set_value_on_node_attr',
+
+    # Nodes
+    'get_long_name',
+    'get_as_selection_list',
+    'get_as_dag_path',
+    'get_as_object',
+    'get_as_plug',
 
     # Solver Result.
     'combine_timer_stats',

@@ -90,6 +90,7 @@ class TestSolver3(solverUtils.SolverTestCase):
             marker=markers,
             attr=node_attrs,
             solverType=solver_index,
+            delta=0.00001,
             frame=frames,
             verbose=True,
         )

@@ -354,6 +354,9 @@ class SolverStep(solverbase.SolverBase):
         if error_factor is not None:
             kwargs['epsilon3'] = error_factor
 
+        kwargs['robustLossType'] = 0  # 0=trivial, 1=soft L1, 2=cauchy.
+        kwargs['robustLossScale'] = 1.0
+
         # TODO: Add 'robustLossType' flag.
         # TODO: Add 'robustLossScale' flag.
         # TODO: Add 'autoParamScaling' flag.

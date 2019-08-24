@@ -290,10 +290,15 @@ def set_node_wire_colour_rgb(node, rgb):
     """
     Change the wireframe colour of the node.
 
+    The 'node' is assumed to a DAG node (capable of having a wireframe
+    colour set).
+
+    :param node: Maya DAG node path.
+    :type node: str
+
     :param rgb: Colour as R, G, B; Or None to reset to default colour.
     :type rgb: tuple
 
-    :return: Nothing.
     :rtype: None
     """
     assert rgb is None or isinstance(rgb, (tuple, list))

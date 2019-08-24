@@ -204,7 +204,7 @@ class Bundle(object):
             msg = 'Could not get node. self=%r'
             LOG.warning(msg, self)
             return None
-        shps = maya.cmds.listRelatives(node, shapes=True) or []
+        shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
         if len(shps) == 0:
             msg = 'Could not find shape to get colour. node=%r shps=%r'
             LOG.warning(msg, node, shps)
@@ -229,7 +229,7 @@ class Bundle(object):
             msg = 'Could not get node. self=%r'
             LOG.warning(msg, self)
             return
-        shps = maya.cmds.listRelatives(node, shapes=True) or []
+        shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
         if len(shps) == 0:
             msg = 'Could not find shape to set colour. node=%r shps=%r'
             LOG.warning(msg, node, shps)

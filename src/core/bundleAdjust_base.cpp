@@ -503,16 +503,14 @@ bool compute_error_stats(int numberOfErrors,
     errorAvg = 0;
     errorMin = std::numeric_limits<double>::max();
     errorMax = -0.0;
-    for (int i = 0; i < numberOfErrors; ++i) {
-        // TODO: Shouldn't 'err' actually be the errorDistanceList
-        // value?
-        double err = userData.errorList[i];
-        errorAvg += userData.errorDistanceList[i / ERRORS_PER_MARKER];
+    for (int i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
+        double err = userData.errorDistanceList[i];
+        errorAvg += err;
         if (err < errorMin) { errorMin = err; }
         if (err > errorMax) { errorMax = err; }
     }
     assert(numberOfErrors > 0);
-    errorAvg /= (double) numberOfErrors;
+    errorAvg /= (double) (numberOfErrors / ERRORS_PER_MARKER);
     return true;
 }
 

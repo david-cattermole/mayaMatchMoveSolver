@@ -196,7 +196,7 @@ class SolverStandard(solverbase.SolverBase):
         :return: frame objects.
         :rtype: list of frame.Frame
         """
-        frame_list_data = self._data.get('frame_list')
+        frame_list_data = self._data.get('root_frame_list')
         if frame_list_data is None:
             return []
         frm_list = []

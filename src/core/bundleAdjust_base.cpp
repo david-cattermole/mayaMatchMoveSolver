@@ -219,8 +219,8 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
     // computed above.
     i = 0;
     typedef IndexPairList::const_iterator IndexPairListCit;
-    IndexPairListCit eit = errorToMarkerList.begin();
-    for (; eit != errorToMarkerList.end(); ++eit) {
+    for (IndexPairListCit eit = errorToMarkerList.begin();
+         eit != errorToMarkerList.end(); ++eit) {
         double weight = markerWeightList[i];
 
         int markerIndex = eit->first;
@@ -290,6 +290,7 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
 
                 // TODO: Get a weight value from the attribute. Currently
                 // weights are not supported in the Maya mmSolver command.
+                // This is not the same as Marker weights.
                 paramWeightList.push_back(1.0);
             }
 

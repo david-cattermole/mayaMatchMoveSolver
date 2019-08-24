@@ -411,8 +411,6 @@ void measureErrors(
                       << " x=" << ud->errorList[(i * ERRORS_PER_MARKER) + 0]
                       << " y=" << ud->errorList[(i * ERRORS_PER_MARKER) + 1]
                       << std::endl;
-        }
-        for (int i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
             debugFile << "error dist i=" << i
                       << " v=" << ud->errorDistanceList[i]
                       << std::endl;
@@ -514,7 +512,7 @@ int solveFunc(int numberOfParameters,
     }
 
     if (ud->computation->isInterruptRequested()) {
-        WRN("User wants to cancel the evalutation!");
+        WRN("User wants to cancel the evaluation!");
         ud->userInterrupted = true;
         return SOLVE_FUNC_FAILURE;
     }
@@ -605,7 +603,7 @@ int solveFunc(int numberOfParameters,
             ud->computation->setProgress(progressNum);
 
             if (ud->computation->isInterruptRequested()) {
-                WRN("User wants to cancel the evalutation!");
+                WRN("User wants to cancel the evaluation!");
                 ud->userInterrupted = true;
                 return SOLVE_FUNC_FAILURE;
             }

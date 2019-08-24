@@ -77,18 +77,6 @@ MStatus reprojection(MMatrix tfmMatrix,
                      double &outVerticalPan) {
     MStatus status = MStatus::kSuccess;
 
-    // Use frustum coordinates to calculate coordinates values.
-    double left = 0.0;
-    double right = 0.0;
-    double top = 0.0;
-    double bottom = 0.0;
-    computeFrustumCoordinates(
-            focalLength,
-            horizontalFilmAperture, verticalFilmAperture,
-            horizontalFilmOffset, verticalFilmOffset,
-            nearClipPlane, cameraScale,
-            left, right, top, bottom);
-
     // Get Camera Projection Matrix
     MMatrix camProjMatrix;
     status = getProjectionMatrix(

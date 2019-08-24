@@ -22,6 +22,7 @@ Marker utilities functions; Raw computations to be used without the Marker class
 import math
 import maya.cmds
 import mmSolver.logger
+import mmSolver.utils.nodeaffects as affects_utils
 
 
 LOG = mmSolver.logger.get_logger()
@@ -133,3 +134,42 @@ def get_markers_start_end_frames(selected_markers):
     if len(last_frames) > 0:
         end_frame = max(last_frames)
     return start_frame, end_frame
+
+
+def find_marker_attr_mapping(mkr_list, attr_list):
+    """
+    Get a mapping of markers to attributes, as a matrix.
+
+    :param mkr_list: Markers to consider in mapping.
+    :type mkr_list: [Marker, ..]
+
+    :param attr_list: Attributes to consider in mapping.
+    :type attr_list: [Attribute, ..]
+
+    :returns: Boolean matrix of size 'markers x attrs'. Matrix index
+              is 'mapping[marker_index][attr_index]', based on the
+              index of the mkr_list and attr_list given.
+    :rtype: [[bool, .. ]]
+    """
+    mapping = []
+    for i, mkr in enumerate(mkr_list):
+        # Initialise mapping list size.
+        tmp = [False] * len(attr_list)
+        mapping.append(tmp)
+
+        bnd = mkr.get_bundle()
+        cam = mkr.get_camera()
+        mkr_node = mkr.get_node()
+        bnd_node = bnd.get_node()
+        cam_node = cam.get_transform_node()
+        mkr_plugs = affects_utils.find_plugs_affecting_transform(
+            mkr_node,
+            cam_tfm=cam_node)
+        bnd_plugs = affects_utils.find_plugs_affecting_transform(
+            bnd_node
+        )
+        plugs = list(set(mkr_plugs + bnd_plugs))
+        for j, attr in enumerate(attr_list):
+            attr_name = attr.get_name()
+            mapping[i][j] = attr_name in plugs
+    return mapping

@@ -19,12 +19,15 @@
 Compile nods into a set of actions to be performed.
 """
 
+import collections
+
 import maya.cmds
 import maya.mel
 
 import mmSolver.logger
 import mmSolver._api.constant as const
 import mmSolver._api.excep as excep
+import mmSolver._api.utils as api_utils
 import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.frame as frame
@@ -69,6 +72,85 @@ def markersAndCameras_compile_flags(mkr_list):
             cameras.append((cam_tfm_node, cam_shp_node))
             added_cameras.append(cam_shp_node)
     return markers, cameras
+
+
+ATTR_SOLVER_TYPE_REGULAR = 'regular'
+ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM = 'bundle_transform'
+ATTR_SOLVER_TYPE_CAMERA_TRANSFORM = 'camera_transform'
+ATTR_SOLVER_TYPE_CAMERA_INTRINSIC = 'camera_intrinsic'
+ATTR_SOLVER_TYPE_LENS_DISTORTION = 'lens_distortion'
+
+BUNDLE_TRANSFORM_ATTR_NAME_LIST = [
+    'translateX', 'translateY', 'translateZ',
+]
+CAMERA_INTRINSIC_ATTR_NAME_LIST = [
+    'focalLength',
+    'horizontalFilmAperture',
+    'verticalFilmAperture',
+]
+CAMERA_TRANSFORM_ATTR_NAME_LIST = [
+    'translateX', 'translateY', 'translateZ',
+    'rotateX', 'rotateY', 'rotateZ',
+    'scaleX', 'scaleY', 'scaleZ',
+]
+
+
+def _get_attribute_solver_type(attr):
+    """
+    Get the type of Attribute, one value of ATTR_SOLVER_TYPE_*.
+
+    :param attr: The Attribute to query.
+    :type attr: Attribute
+
+    :return: One of the ATTR_SOLVER_TYPE_* values.
+    :rtype: str
+    """
+    assert isinstance(attr, attribute.Attribute)
+    attr_solve_type = ATTR_SOLVER_TYPE_REGULAR
+
+    node = attr.get_node(full_path=True)
+    name = attr.get_attr(long_name=True)
+    obj_type = api_utils.get_object_type(node)
+
+    if obj_type == const.OBJECT_TYPE_BUNDLE:
+        if name in BUNDLE_TRANSFORM_ATTR_NAME_LIST:
+            attr_solve_type = ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM
+
+    elif obj_type == const.OBJECT_TYPE_CAMERA:
+        if name in CAMERA_INTRINSIC_ATTR_NAME_LIST:
+            attr_solve_type = ATTR_SOLVER_TYPE_CAMERA_INTRINSIC
+        if name in CAMERA_TRANSFORM_ATTR_NAME_LIST:
+            attr_solve_type = ATTR_SOLVER_TYPE_CAMERA_TRANSFORM
+    return attr_solve_type
+
+
+def categorise_attributes(attr_list):
+    assert isinstance(attr_list, (list, tuple))
+    categories = {
+        'regular': collections.defaultdict(list),
+        'bundle_transform': collections.defaultdict(list),
+        'camera_transform': collections.defaultdict(list),
+        'camera_intrinsic': collections.defaultdict(list),
+        'lens_distortion': collections.defaultdict(list),
+    }
+    for attr in attr_list:
+        assert isinstance(attr, attribute.Attribute)
+        node = attr.get_node(full_path=True)
+        attr_solver_type = _get_attribute_solver_type(attr)
+        if attr_solver_type == ATTR_SOLVER_TYPE_REGULAR:
+            key = ATTR_SOLVER_TYPE_REGULAR
+        elif attr_solver_type == ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM:
+            key = ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM
+        elif attr_solver_type == ATTR_SOLVER_TYPE_CAMERA_TRANSFORM:
+            key = ATTR_SOLVER_TYPE_CAMERA_TRANSFORM
+        elif attr_solver_type == ATTR_SOLVER_TYPE_CAMERA_INTRINSIC:
+            key = ATTR_SOLVER_TYPE_CAMERA_INTRINSIC
+        elif attr_solver_type == ATTR_SOLVER_TYPE_LENS_DISTORTION:
+            key = ATTR_SOLVER_TYPE_LENS_DISTORTION
+        else:
+            raise excep.NotValid
+        categories[key][node].append(attr)
+    return categories
 
 
 def attributes_compile_flags(attr_list, use_animated, use_static):
@@ -157,6 +239,13 @@ def attributes_compile_flags(attr_list, use_animated, use_static):
 
 
 def frames_compile_flags(frm_list, frame_use_tags):
+    """
+    Create a list of frame numbers using Frame objects and some rules.
+
+    :param frm_list:
+    :param frame_use_tags:
+    :return:
+    """
     frames = []
     for frm in frm_list:
         num = frm.get_number()
@@ -212,23 +301,19 @@ def collection_compile(col_node, sol_list, mkr_list, attr_list,
         raise excep.NotValid(msg)
 
     # Compile all the solvers
+    msg = 'Collection is not valid, failed to compile solver;'
+    msg += ' collection={0}'
+    msg = msg.format(repr(col_node))
     for i, sol in enumerate(sol_enabled_list):
         assert isinstance(sol, solverbase.SolverBase)
-        if sol.get_frame_list_length() == 0:
-            msg = 'Collection is not valid, no frames to solve;'
-            msg += ' collection={0}'
-            msg = msg.format(repr(col_node))
-            raise excep.NotValid(msg)
+        # if sol.get_frame_list_length() == 0:
+        #     msg = 'Collection is not valid, no frames to solve;'
+        #     msg += ' collection={0}'
+        #     msg = msg.format(repr(col_node))
+        #     raise excep.NotValid(msg)
 
         actions = sol.compile(mkr_list, attr_list)
         assert isinstance(actions, (tuple, list))
-
-        msg = 'Collection is not valid, failed to compile solver;'
-        msg += ' collection={0}'
-        msg = msg.format(repr(col_node))
-        if len(actions) == 0:
-            raise excep.NotValid(msg)
-
         for action in actions:
             if not isinstance(action, api_action.Action):
                 raise excep.NotValid(msg)
@@ -236,6 +321,9 @@ def collection_compile(col_node, sol_list, mkr_list, attr_list,
             assert action.args is not None
             assert action.kwargs is not None
             action_list.append(action)
+    if len(action_list) == 0:
+        raise excep.NotValid(msg)
+    # LOG.warn('actions: %r', action_list)
     return action_list
 
 

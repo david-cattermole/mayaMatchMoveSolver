@@ -26,6 +26,7 @@ import mmSolver._api.excep as excep
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.solverstep as solverstep
 import mmSolver._api.action as api_action
+import mmSolver._api.compile as api_compile
 
 
 LOG = mmSolver.logger.get_logger()
@@ -96,6 +97,10 @@ class SolverStandard(solverbase.SolverBase):
         self.use_single_frame = False
         self.only_root_frames = False
         self.global_solve = False
+        self.auto_attr_blocks = False
+        self.print_statistics_inputs = False
+        self.print_statistics_affects = False
+        self.print_statistics_deviation = False
         self.single_frame = None  # frame.Frame(1)
         return
 
@@ -273,39 +278,101 @@ class SolverStandard(solverbase.SolverBase):
         use_single_frame = self.use_single_frame
         only_root_frames = self.only_root_frames
         global_solve = self.global_solve
+        auto_attr_blocks = self.auto_attr_blocks
+
+        small_step_iter_num = 3
+        big_step_iter_num = 10
+        verbose = False
 
         single_frame = self.single_frame
-        # root_frame_list = [frame.Frame(x) for x in range(0, 100, 10)]
-        # frame_list = [frame.Frame(x) for x in range(100)]
         root_frame_list = self.get_root_frame_list()
         frame_list = self.get_frame_list()
 
         if use_single_frame is True:
             # Single frame solve
-            solA = solverstep.SolverStep()
-            solA.set_frame_list([single_frame])
-            solA.set_attributes_use_animated(True)
-            solA.set_attributes_use_static(True)
-            actions += solA.compile(mkr_list, attr_list)
+            sol = solverstep.SolverStep()
+            sol.set_verbose(verbose)
+            sol.set_max_iterations(big_step_iter_num)
+            sol.set_frame_list([single_frame])
+            sol.set_attributes_use_animated(True)
+            sol.set_attributes_use_static(True)
+            actions += sol.compile(mkr_list, attr_list)
         else:
-            # Solver for root frames.
-            solA = solverstep.SolverStep()
-            solA.set_frame_list(root_frame_list)
-            solA.set_attributes_use_animated(True)
-            solA.set_attributes_use_static(True)
-            actions_a = solA.compile(mkr_list, attr_list)
-            LOG.warn('actions_a: %r', actions_a)
-            actions += actions_a
+            categories = [
+                'regular',
+                'bundle_transform',
+                'camera_transform',
+                'camera_intrinsic',
+                'lens_distortion',
+                # 'regular',  # re-solve again
+                # 'bundle_transform',  # re-solve again
+            ]
 
-            if only_root_frames is not True:
+            # Solver root frames, breaking attributes into little blocks
+            # to solve.
+            attrs_in_categories = {}
+            if auto_attr_blocks is True:
+                attrs_in_categories = api_compile.categorise_attributes(attr_list)
+                for category in categories:
+                    category_node_attrs = attrs_in_categories[category]
+                    for node, attrs in category_node_attrs.items():
+                        if len(attrs) == 0:
+                            continue
+                        sol = solverstep.SolverStep()
+                        sol.set_verbose(verbose)
+                        sol.set_max_iterations(small_step_iter_num)
+                        sol.set_frame_list(root_frame_list)
+                        sol.set_attributes_use_animated(True)
+                        sol.set_attributes_use_static(True)
+                        actions += sol.compile(mkr_list, attrs)
+
+            # Solver for root frames.
+            sol = solverstep.SolverStep()
+            sol.set_verbose(verbose)
+            sol.set_max_iterations(big_step_iter_num)
+            sol.set_frame_list(root_frame_list)
+            sol.set_attributes_use_animated(True)
+            sol.set_attributes_use_static(True)
+            actions += sol.compile(mkr_list, attr_list)
+
+            if only_root_frames is True:
+                return actions
+
+            if global_solve is not True:
                 # Solver for all other frames.
-                solB = solverstep.SolverStep()
-                solB.set_frame_list(frame_list)
-                solB.set_attributes_use_animated(True)
-                solB.set_attributes_use_static(False)
-                if global_solve is True:
-                    solB.set_attributes_use_static(True)
-                actions_b = solB.compile(mkr_list, attr_list)
-                LOG.warn('actions_b: %r', actions_b)
-                actions += actions_b
+                for frm in frame_list:
+                    one_frame_list = [frm]
+                    # Break attributes into little blocks to solve.
+                    if auto_attr_blocks is True:
+                        for category in categories:
+                            category_node_attrs = attrs_in_categories[category]
+                            for node, attrs in category_node_attrs.items():
+                                if len(attrs) == 0:
+                                    continue
+                                sol = solverstep.SolverStep()
+                                sol.set_verbose(verbose)
+                                sol.set_max_iterations(small_step_iter_num)
+                                sol.set_frame_list(one_frame_list)
+                                sol.set_attributes_use_animated(True)
+                                sol.set_attributes_use_static(True)
+                                actions += sol.compile(mkr_list, attrs)
+
+                    sol = solverstep.SolverStep()
+                    sol.set_verbose(verbose)
+                    sol.set_max_iterations(big_step_iter_num)
+                    sol.set_frame_list(one_frame_list)
+                    sol.set_attributes_use_animated(True)
+                    sol.set_attributes_use_static(False)
+                    actions += sol.compile(mkr_list, attr_list)
+            else:
+                all_frame_list = root_frame_list + frame_list
+                sol = solverstep.SolverStep()
+                sol.set_verbose(verbose)
+                sol.set_max_iterations(big_step_iter_num)
+                sol.set_frame_list(all_frame_list)
+                sol.set_attributes_use_animated(True)
+                sol.set_attributes_use_static(True)
+                actions += sol.compile(mkr_list, attr_list)
+
+        # LOG.warn('actions: %r', actions)
         return actions

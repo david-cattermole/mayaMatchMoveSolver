@@ -48,7 +48,7 @@ class TestSolve(test_api_utils.APITestCase):
         for res in solres_list:
             success = res.get_success()
             err = res.get_final_error()
-            print 'final error', err
+            print 'final error', success, err
             self.assertTrue(success)
             self.assertTrue(isinstance(err, float))
 
@@ -57,10 +57,10 @@ class TestSolve(test_api_utils.APITestCase):
 
         avg_err = mmapi.get_average_frame_error_list(frm_err_list)
         print 'avg error', avg_err
-        self.assertLess(avg_err, 1.0)
 
         max_err_frm, max_err_val = mmapi.get_max_frame_error(frm_err_list)
         print 'max error frame and value:', max_err_frm, max_err_val
+        self.assertLess(avg_err, 1.0)
         self.assertLess(max_err_val, 1.0)
         return
 
@@ -547,6 +547,8 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Frames
         frm_list = []
+        root_frm_list = []
+        not_root_frm_list = []
         all_frames = range(start_frame, end_frame + 1, 1)
         for f in all_frames:
             prim = ((float(f) % 20.0) == 0) \
@@ -554,36 +556,61 @@ class TestSolve(test_api_utils.APITestCase):
                    or (f == end_frame)
             sec = prim is not True
             frm = mmapi.Frame(f, primary=prim, secondary=sec)
+            if prim is True:
+                root_frm_list.append(frm)
+            else:
+                not_root_frm_list.append(frm)
             frm_list.append(frm)
 
         # Solvers
-        #
-        # Global solve with every 10th frame (and start/end frames)
         sol_list = []
-        sol = mmapi.Solver()
-        sol.set_verbose(True)
-        sol.set_max_iterations(10)
-        sol.set_frames_use_tags(['primary'])
-        sol.set_attributes_use_static(True)
-        sol.set_attributes_use_animated(True)
-        sol.set_frame_list(frm_list)
-        sol_list.append(sol)
-
-        # Per-frame solvers
-        for frm in frm_list:
-            sol = mmapi.Solver()
-            sol.set_verbose(True)
+        print_stats = False
+        use_solver_steps = False
+        if print_stats is True:
+            # Print statistics
+            stats_sol = mmapi.SolverStep()
+            stats_sol.set_verbose(False)
+            stats_sol.set_frame_list(frm_list)
+            stats_sol.set_print_statistics_inputs(True)
+            stats_sol.set_print_statistics_affects(True)
+            stats_sol.set_print_statistics_deviation(True)
+            sol_list.append(stats_sol)
+        if use_solver_steps is True:
+            # Global solve with every 10th frame (and start/end frames)
+            sol = mmapi.SolverStep()
+            sol.set_verbose(False)
             sol.set_max_iterations(10)
-            sol.set_frames_use_tags(['primary', 'secondary'])
-            sol.set_attributes_use_static(False)
+            sol.set_frames_use_tags(['primary'])
+            sol.set_attributes_use_static(True)
             sol.set_attributes_use_animated(True)
-            sol.add_frame(frm)
+            sol.set_frame_list(frm_list)
+            sol_list.append(sol)
+
+            # Per-frame solvers
+            for frm in frm_list:
+                sol = mmapi.SolverStep()
+                sol.set_verbose(False)
+                sol.set_max_iterations(10)
+                sol.set_frames_use_tags(['primary', 'secondary'])
+                sol.set_attributes_use_static(False)
+                sol.set_attributes_use_animated(True)
+                sol.set_frame_list([frm])
+                sol_list.append(sol)
+        else:
+            # Solver
+            sol = mmapi.SolverStandard()
+            sol.set_root_frame_list(root_frm_list)
+            sol.set_frame_list(not_root_frm_list)
+            sol.only_root_frames = False
+            sol.global_solve = True
+            sol.auto_attr_blocks = True
+            sol.single_frame = False
             sol_list.append(sol)
 
         # Collection
         col = mmapi.Collection()
         col.create_node('mySolveCollection')
-        col.add_solver_list(sol_list)
+        col.set_solver_list(sol_list)
         col.add_marker_list(mkr_list)
         col.add_attribute_list(attr_list)
 
@@ -596,16 +623,16 @@ class TestSolve(test_api_utils.APITestCase):
         LOG.warning('Running Solver Test... (it may take some time to finish).')
         results = col.execute()
 
+        # Set Deviation
+        mmapi.update_deviation_on_markers(mkr_list, results)
+        mmapi.update_deviation_on_collection(col, results)
+
         # save the output
         path = self.get_data_path('test_solve_stA_refine_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         self.checkSolveResults(results)
-
-        # Set Deviation
-        mmapi.update_deviation_on_markers(mkr_list, results)
-        mmapi.update_deviation_on_collection(col, results)
         return
 
     def test_badPerFrameSolve(self):

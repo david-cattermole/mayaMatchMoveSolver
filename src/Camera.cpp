@@ -662,8 +662,8 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time) {
         MMatrix floatProjMat = MMatrix(&floatProjMat_maya.matrix[0]);
 #else
         int filmFit = 1;
-        int imageWidth = 640;
-        int imageHeight = 480;
+        double imageWidth = 640.0;
+        double imageHeight = 480.0;
         double imageAspectRatio = 1.0;
         double filmWidth = 0.0;
         double filmHeight = 0.0;
@@ -684,19 +684,23 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time) {
         // We assume that the following attributes won't be animated, but Maya
         // allows them to be animated.
         cameraScale = getCameraScaleValue();
-        nearClip = getNearClipPlaneValue();
+        // override because Maya expects this value to be hard-coded,
+        // for some crazy reason.
+        nearClip = 0.1;  // getNearClipPlaneValue();
         farClip = getFarClipPlaneValue();
         filmFit = getFilmFitValue();
-        imageWidth = getRenderWidthValue();
-        imageHeight = getRenderHeightValue();
-        imageAspectRatio = getRenderAspectValue();
+
+        imageWidth = static_cast<double>(getRenderWidthValue());
+        imageHeight = static_cast<double>(getRenderHeightValue());
 
         // Compute the projection matrix
         status = getProjectionMatrix(focal,
                                      filmWidth, filmHeight,
                                      filmOffsetX, filmOffsetY,
                                      imageWidth, imageHeight,
-                                     filmFit, nearClip, farClip, cameraScale,
+                                     filmFit,
+                                     nearClip, farClip,
+                                     cameraScale,
                                      value);
         CHECK_MSTATUS(status);
 #endif

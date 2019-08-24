@@ -174,7 +174,10 @@ MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
             for (unsigned int j = 0; j<4; ++j) {
                 INFO("[" << i << "]["<< j << "] "
                          << value(i, j) << " == " << value_maya(i, j)
-                         << " | " << number::isApproxEqual<double>(value(i, j), value_maya(i, j), tolerance));
+                         << " | "
+                         << number::isApproxEqual<double>(value(i, j),
+                                                          value_maya(i, j),
+                                                          tolerance));
             }
         }
     }

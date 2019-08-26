@@ -269,7 +269,6 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
                     attrIsPartOfCamera = true;
                 }
             }
-
         } else if (nodeObj.apiType() == MFn::kCamera) {
             attrIsPartOfCamera = true;
         }

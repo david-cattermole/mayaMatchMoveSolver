@@ -341,7 +341,7 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
             horizontalFilmOffset = m_camera.getFilmbackOffsetXValue(time);
             verticalFilmOffset = m_camera.getFilmbackOffsetYValue(time);
 
-            // Assumed to not be animated.
+            // Assumed to *not* be animated.
             farClipPlane = m_camera.getFarClipPlaneValue();
             cameraScale = m_camera.getCameraScaleValue();
             filmFit = m_camera.getFilmFitValue();

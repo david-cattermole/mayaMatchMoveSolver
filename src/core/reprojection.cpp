@@ -113,7 +113,8 @@ MStatus reprojection(MMatrix tfmMatrix,
     // Scale the screen-space depth.
     tfmMatrix *= depthScale;
 
-    // Get (screen-space) point
+    // Get (screen-space) point. Screen-space is also called NDC
+    // (normalised device coordinates) space.
     MPoint posScreen(tfmMatrix[3][0],
                      tfmMatrix[3][1],
                      tfmMatrix[3][2],

@@ -245,7 +245,7 @@ class Camera(object):
 
         width = maya.cmds.getAttr(img_plane + '.coverageX')
         height = maya.cmds.getAttr(img_plane + '.coverageY')
-        if width > 0 and height > 0:
+        if width > 1 and height > 1:
             resolution = (width, height)
         else:
             msg = 'Get plate resolution failed, using to default values;'

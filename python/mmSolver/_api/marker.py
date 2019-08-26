@@ -170,7 +170,7 @@ class Marker(object):
     def __repr__(self):
         result = '<{class_name}('.format(class_name=self.__class__.__name__)
         result += '{hash} node={node}'.format(
-            hash=hash(self),
+            hash=hex(hash(self)),
             node=self.get_node(),
         )
         result += ')>'

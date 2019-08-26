@@ -77,8 +77,7 @@ def _get_full_path_plug(plug):
 
 def find_plugs_affecting_transform(bnd_node, cam_tfm=None):
     """
-    Return a list of plugs that affect the world-matrix transform
-    of the given node.
+    Find plugs that affect the world-matrix transform of the node.
 
     :param bnd_node: The input node to query.
     :type bnd_node: str
@@ -105,6 +104,7 @@ def find_plugs_affecting_transform(bnd_node, cam_tfm=None):
             fullPath=True) or []
         parent_nodes += parents
 
+    # Get camera related to the given bundle.
     nodes = [bnd_node] + parent_nodes
     if cam_tfm is not None:
         cam_tfm_node = maya.cmds.ls(cam_tfm, long=True)[0]
@@ -191,12 +191,13 @@ def find_marker_attr_mapping_raw(mkr_list, attr_list):
     Get a mapping of markers to attributes, as a matrix.
 
     :param mkr_list: Tuple of marker node, bundle node and camera
-    shape node in a list; each list of nodes represent a single Marker
-    relationship and will be considered in mapping.
+                     shape node in a list; each list of nodes
+                     represent a single Marker relationship and will
+                     be considered in mapping.
     :type mkr_list: [(str, str, str), ..]
 
     :param attr_list: Maya attributes to consider in mapping, in the
-    farmilar 'node.attr' string representation.
+                      familiar 'node.attr' string representation.
     :type attr_list: [str, ..]
 
     :returns: Boolean matrix of size 'markers x attrs'. Matrix index
@@ -220,3 +221,18 @@ def find_marker_attr_mapping_raw(mkr_list, attr_list):
             attr_name = _get_full_path_plug(attr_name)
             mapping[i][j] = attr_name in plugs
     return mapping
+
+
+def sort_into_hierarchy_groups(mkr_list, attr_list):
+    """
+    Create blocks of Markers and Attributes, sorted by hierarchy.
+
+    This will allow us to solve top-level objects (ie, root level)
+    first, before solving children. This will ensure we minimise the
+    base before attempting to solve the children.
+
+    TODO: Write this.
+
+    :return:
+    """
+    pass

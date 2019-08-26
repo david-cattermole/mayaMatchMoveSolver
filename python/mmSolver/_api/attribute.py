@@ -99,6 +99,17 @@ class Attribute(object):
         self._max_value = None
         return
 
+    def __repr__(self):
+        result = '<{class_name}('.format(class_name=self.__class__.__name__)
+        result += '{hash} name={name} min={min} max={max}'.format(
+            hash=hex(hash(self)),
+            name=self.get_name(),
+            min=self.get_min_value(),
+            max=self.get_max_value(),
+        )
+        result += ')>'
+        return result
+
     def get_node(self, full_path=True):
         node = None
         if self._dependFn is not None:

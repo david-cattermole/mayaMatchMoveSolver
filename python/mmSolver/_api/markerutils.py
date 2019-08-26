@@ -19,8 +19,11 @@
 Marker utilities functions; Raw computations to be used without the Marker class.
 """
 
+import time
 import math
+
 import maya.cmds
+
 import mmSolver.logger
 import mmSolver.utils.nodeaffects as affects_utils
 
@@ -151,6 +154,7 @@ def find_marker_attr_mapping(mkr_list, attr_list):
               index of the mkr_list and attr_list given.
     :rtype: [[bool, .. ]]
     """
+    s = time.time()
     mapping = []
     for i, mkr in enumerate(mkr_list):
         # Initialise mapping list size.
@@ -172,4 +176,10 @@ def find_marker_attr_mapping(mkr_list, attr_list):
         for j, attr in enumerate(attr_list):
             attr_name = attr.get_name()
             mapping[i][j] = attr_name in plugs
+    e = time.time()
+    LOG.debug(
+        'find_marker_attr_mapping: time=%r time_per_mkr=%r',
+        e-s,
+        (e-s) / len(mkr_list)
+    )
     return mapping

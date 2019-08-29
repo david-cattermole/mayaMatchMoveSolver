@@ -94,6 +94,15 @@ class Frame(object):
         assert isinstance(self._tags, list)
         return
 
+    def __repr__(self):
+        result = '<{class_name}('.format(class_name=self.__class__.__name__)
+        result += '{hash} data={data}'.format(
+            hash=hex(hash(self)),
+            data=self.get_data(),
+        )
+        result += ')>'
+        return result
+
     def get_data(self):
         """
         Get the data of this Frame, both number and tags.

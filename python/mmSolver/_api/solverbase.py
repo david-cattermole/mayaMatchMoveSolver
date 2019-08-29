@@ -49,6 +49,15 @@ class SolverBase(object):
         assert 'name' in self._data
         return
 
+    def __repr__(self):
+        result = '<{class_name}('.format(class_name=self.__class__.__name__)
+        result += '{hash} data={data}'.format(
+            hash=hex(hash(self)),
+            data=self.get_data(),
+        )
+        result += ')>'
+        return result
+
     def get_name(self):
         return self._data.get('name')
 

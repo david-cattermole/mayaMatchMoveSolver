@@ -175,7 +175,7 @@ bool solve_3d_cminpack_lmder(
             // defines a permutation matrix p such that jac*p =
             // q*r, where jac is the final calculated Jacobian, q
             // is orthogonal (not stored), and r is upper
-            // triangular with diagonal elements of nonincreasing
+            // triangular with diagonal elements of non-increasing
             // magnitude. Column j of p is column ipvt(j) of the
             // identity matrix
             &ipvtList[0],

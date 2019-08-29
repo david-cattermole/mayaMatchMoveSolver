@@ -43,7 +43,7 @@
 #include <algorithm>
 #include <math.h>
 
-// Utils
+// Standard Utils
 #include <utilities/debugUtils.h>
 #include <utilities/stringUtils.h>
 
@@ -59,7 +59,7 @@
 #include <maya/MProfiler.h>
 #include <maya/MGlobal.h>
 
-// Utilities
+// Solver Utilities
 #include <mayaUtils.h>
 
 // Local solvers

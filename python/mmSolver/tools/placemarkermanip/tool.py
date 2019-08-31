@@ -68,24 +68,14 @@ def place_marker():
         direction)
 
     # Compute the Marker coordinates for the given camera.
-    #
-    # TODO: Find a way to not create a node each time we want to
-    # reprojection a point.
     frame = maya.cmds.currentTime(query=True)
-    node = maya.cmds.createNode('transform')
-    coord = None
-    try:
-        maya.cmds.setAttr('%s.tx' % node, position.x)
-        maya.cmds.setAttr('%s.ty' % node, position.y)
-        maya.cmds.setAttr('%s.tz' % node, position.z)
-        coord = maya.cmds.mmReprojection(
-            node, camera=(camTfm, camShp),
-            asMarkerCoordinate=True,
-            imageResolution=(imageWidth, imageHeight),
-            time=frame
-        )
-    finally:
-        maya.cmds.delete(node)
+    coord = maya.cmds.mmReprojection(
+        worldPoint=(position.x, position.y, position.z),
+        camera=(camTfm, camShp),
+        asMarkerCoordinate=True,
+        imageResolution=(imageWidth, imageHeight),
+        time=frame
+    )
     if coord is None:
         msg = 'Could not get Marker coordinate.'
         LOG.warning(msg)
@@ -133,6 +123,10 @@ def on_hold():
 
 
 def on_drag():
+    # TODO: while we are in the middle of a drag operation, we should
+    #  not store undo operations, but at the end we must. If we always
+    #  store undo operations each time the attribute is set we end up
+    #  filling the undo buffer very quickly.
     LOG.debug('on_drag')
     place_marker()
 

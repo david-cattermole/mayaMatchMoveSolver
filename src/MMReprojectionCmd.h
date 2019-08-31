@@ -38,12 +38,17 @@
 
 #include <maya/MSelectionList.h>
 #include <maya/MTime.h>
+#include <maya/MPoint.h>
 #include <maya/MTimeArray.h>
 
 // Internal Objects
 #include <Camera.h>
 
 // Command arguments and command name:
+
+// World-space Point to reproject, rather than giving a node.
+#define WORLD_POINT_FLAG            "-wp"
+#define WORLD_POINT_FLAG_LONG       "-worldPoint"
 
 // Camera to reproject into.
 #define CAMERA_FLAG            "-c"
@@ -58,34 +63,36 @@
 #define TIME_FLAG_LONG         "-time"
 
 // Query as Camera Point?
-#define CAM_POINT_FLAG       "-cpt"
-#define CAM_POINT_FLAG_LONG  "-asCameraPoint"
+#define AS_CAM_POINT_FLAG       "-cpt"
+#define AS_CAM_POINT_FLAG_LONG  "-asCameraPoint"
 
 // Query as World Point?
-#define WORLD_POINT_FLAG       "-wpt"
-#define WORLD_POINT_FLAG_LONG  "-asWorldPoint"
+#define AS_WORLD_POINT_FLAG       "-wpt"
+#define AS_WORLD_POINT_FLAG_LONG  "-asWorldPoint"
 
 // Query as Coordinate?
-#define COORD_FLAG       "-cd"
-#define COORD_FLAG_LONG  "-asCoordinate"
+#define AS_COORD_FLAG       "-cd"
+#define AS_COORD_FLAG_LONG  "-asCoordinate"
 
 // Query as Pixel Coordinate?
-#define PIXEL_COORD_FLAG       "-pcd"
-#define PIXEL_COORD_FLAG_LONG  "-asPixelCoordinate"
+#define AS_PIXEL_COORD_FLAG       "-pcd"
+#define AS_PIXEL_COORD_FLAG_LONG  "-asPixelCoordinate"
 
 // Query as Normalized Coordinate?
-#define NORM_COORD_FLAG       "-ncd"
-#define NORM_COORD_FLAG_LONG  "-asNormalizedCoordinate"
+#define AS_NORM_COORD_FLAG       "-ncd"
+#define AS_NORM_COORD_FLAG_LONG  "-asNormalizedCoordinate"
 
 // Query as Normalized Coordinate?
-#define MARKER_COORD_FLAG       "-mcd"
-#define MARKER_COORD_FLAG_LONG  "-asMarkerCoordinate"
+#define AS_MARKER_COORD_FLAG       "-mcd"
+#define AS_MARKER_COORD_FLAG_LONG  "-asMarkerCoordinate"
 
 
 class MMReprojectionCmd : public MPxCommand {
 public:
 
     MMReprojectionCmd() : m_nodeList(),
+                          m_givenWorldPoint(false),
+                          m_worldPoint(),
                           m_camera(),
                           m_timeList(),
                           m_asCameraPoint(false),
@@ -112,6 +119,8 @@ private:
     MStatus parseArgs( const MArgList& args );
 
     MSelectionList m_nodeList;
+    bool m_givenWorldPoint;
+    MPoint m_worldPoint;
     Camera m_camera;
     MTimeArray m_timeList;
     double m_imageResX;

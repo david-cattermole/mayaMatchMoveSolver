@@ -106,7 +106,7 @@ Python Function
 ^^^^^^^^^^^^^^^
 
 The commands below are available for this tool, and allow hotkeys or
-custom buttons to be run.
+custom buttons to be created.
 
 Open the Solver UI window:
 

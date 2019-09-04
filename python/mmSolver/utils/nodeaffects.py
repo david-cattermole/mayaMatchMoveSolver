@@ -30,10 +30,19 @@ and attributes.
 - Cameras; transform attributes and focal length will affect all
   markers
 
+.. todo:: Calculating node affect relationships is too slow. We need
+    to find a way of caching the calculation, so that batches of
+    functions that do not change connections can re-use exist
+    computations, leading to greater speed ups, at the cost of memory.
+
 """
 
 import maya.cmds
 
+import mmSolver.logger
+
+
+LOG = mmSolver.logger.get_logger()
 
 VALID_ATTR_TYPES = [
     'double',
@@ -57,6 +66,9 @@ CAMERA_ATTRS = [
 ]
 
 
+__CACHE = dict()
+
+
 def _get_full_path_plug(plug):
     """
     Get convert a 'name.attr' string into the long name equal.
@@ -75,7 +87,24 @@ def _get_full_path_plug(plug):
     return full_path
 
 
-def find_plugs_affecting_transform(bnd_node, cam_tfm=None):
+def _clear_query_cache():
+    global __CACHE
+    __CACHE = dict()
+    return
+
+
+def _get_from_query_cache(key):
+    global __CACHE
+    return __CACHE.get(key)
+
+
+def _add_to_query_cache(key, value):
+    global __CACHE
+    __CACHE[key] = value
+    return
+
+
+def find_plugs_affecting_transform(bnd_node, cam_tfm):
     """
     Find plugs that affect the world-matrix transform of the node.
 
@@ -83,11 +112,24 @@ def find_plugs_affecting_transform(bnd_node, cam_tfm=None):
     :type bnd_node: str
 
     :param cam_tfm: The camera that should be considered (optional)
-    :type cam_tfm: str
+    :type cam_tfm: str or None
 
-    :returns: List of Maya attributes in 'node.attr' string format.
+    :returns: Set of Maya attributes in 'node.attr' string format.
     :rtype: [str, ..]
     """
+    # # Read from cache
+    # #
+    # # TODO: Cache invalidation is very important here. We cannot use the
+    # #  cache if a new object has been added to the Maya scene or for a
+    # #  different run of the solver. Each new solve must trigger a fresh
+    # #  cache. We could do this by adding a new argument 'solve id'
+    # #  and hashing it into the dictionary, which is generated new at
+    # #  the start of each new solver.
+    # plugs = _get_from_query_cache(args)
+    # if plugs is not None:
+    #     return plugs
+    # bnd_node, cam_tfm = args
+
     bnd_node = maya.cmds.ls(bnd_node, long=True)[0]
 
     # Get all the parents above this bundle
@@ -117,7 +159,7 @@ def find_plugs_affecting_transform(bnd_node, cam_tfm=None):
         if cam_shp_node not in nodes:
             nodes.append(cam_shp_node)
 
-    plugs = []
+    plugs = set()
     for node in nodes:
         node_type = maya.cmds.nodeType(node)
         attrs = maya.cmds.listAttr(node, leaf=True) or []
@@ -142,7 +184,7 @@ def find_plugs_affecting_transform(bnd_node, cam_tfm=None):
             if settable is True:
                 typ = maya.cmds.getAttr(node_attr, type=True)
                 if typ in VALID_ATTR_TYPES:
-                    plugs.append(node_attr)
+                    plugs.add(node_attr)
                 continue
 
             # Get plugs connected to this attribute, recursively
@@ -158,7 +200,7 @@ def find_plugs_affecting_transform(bnd_node, cam_tfm=None):
                 if settable is True:
                     typ = maya.cmds.getAttr(node_attr, type=True)
                     if typ in VALID_ATTR_TYPES:
-                        plugs.append(node_attr)
+                        plugs.add(node_attr)
                     continue
 
                 # Get the plugs that affect this plug.
@@ -182,7 +224,10 @@ def find_plugs_affecting_transform(bnd_node, cam_tfm=None):
                 conn_attrs = list(set(conn_attrs))
 
     # Only unique plugs.
-    plugs = list(set(plugs))
+    plugs = set(plugs)
+
+    # Set into cache.
+    # _add_to_query_cache(args, plugs)
     return plugs
 
 
@@ -202,7 +247,7 @@ def find_marker_attr_mapping_raw(mkr_list, attr_list):
 
     :returns: Boolean matrix of size 'markers x attrs'. Matrix index
               is 'mapping[marker_index][attr_index]', based on the
-              index of the mkr_list and attr_list given.
+              index of the mkr_cam_node_frm_list and attr_list given.
     :rtype: [[bool, .. ]]
     """
     mapping = []
@@ -215,7 +260,7 @@ def find_marker_attr_mapping_raw(mkr_list, attr_list):
         bnd_node = mkr[2]
         cam_node = maya.cmds.listRelatives(mkr[1], parent=True)[0]
         mkr_plugs = []
-        bnd_plugs = find_plugs_affecting_transform(bnd_node)
+        bnd_plugs = find_plugs_affecting_transform(bnd_node, None)
         plugs = list(set(mkr_plugs + bnd_plugs))
         for j, attr_name in enumerate(attr_list):
             attr_name = _get_full_path_plug(attr_name)

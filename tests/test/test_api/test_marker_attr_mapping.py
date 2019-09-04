@@ -139,13 +139,14 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
 
         # Test getting affected plugs from a base transform node.
         bnd_node = bnd.get_node()
-        ret = affects_utils.find_plugs_affecting_transform(bnd_node)
+        ret = affects_utils.find_plugs_affecting_transform(bnd_node, None)
         assert (multDivide + '.input1X') in ret
         assert (dummy + '.translateX') in ret
         assert (dummy + '.rotateY') in ret
         assert (dummy + '.translateY') not in ret
         for r in ret:
             assert multDivide2 not in r
+        print 'len(ret):', len(ret)
         assert len(ret) == 106
 
         # Test getting the affect mapping between markers and attrs.

@@ -23,10 +23,7 @@ this module.
 
 """
 
-from functools import wraps
 import warnings
-import json
-import re
 
 import maya.cmds
 

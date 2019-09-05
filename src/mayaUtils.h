@@ -24,6 +24,8 @@
 #ifndef MAYA_UTILS_H
 #define MAYA_UTILS_H
 
+#include <vector>
+
 // Utils
 #include <utilities/debugUtils.h>
 
@@ -33,9 +35,20 @@
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MObject.h>
+#include <maya/MDagPath.h>
 #include <maya/MPlug.h>
 #include <maya/MSelectionList.h>
 #include <maya/MFnDependencyNode.h>
+
+
+#define OBJECT_TYPE_UNKNOWN      (0)
+#define OBJECT_TYPE_ATTRIBUTE    (1)
+#define OBJECT_TYPE_MARKER       (2)
+#define OBJECT_TYPE_BUNDLE       (3)
+#define OBJECT_TYPE_CAMERA       (4)
+#define OBJECT_TYPE_IMAGE_PLANE  (5)
+#define OBJECT_TYPE_MARKER_GROUP (6)
+#define OBJECT_TYPE_COLLECTION   (7)
 
 
 static inline
@@ -92,10 +105,90 @@ MStatus getAsObject(MString nodeName, MObject &object) {
     MStatus status;
     MSelectionList selList;
     status = getAsSelectionList(nodeName, selList);
+    CHECK_MSTATUS(status);
     if (selList.length() == 1) {
-        selList.getDependNode(0, object);
+        status = selList.getDependNode(0, object);
+        CHECK_MSTATUS(status);
     }
     return status;
+}
+
+
+static inline
+MStatus getAsDagPath(MString nodeName, MDagPath &nodeDagPath) {
+    MStatus status;
+    MSelectionList selList;
+    status = getAsSelectionList(nodeName, selList);
+    CHECK_MSTATUS(status);
+    if (selList.length() == 1) {
+        status = selList.getDagPath(0, nodeDagPath);
+        CHECK_MSTATUS(status);
+    }
+    return status;
+}
+
+
+inline
+bool hasAttrName(MFnDependencyNode &dependFn, MString attrName) {
+    MPlug plug = dependFn.findPlug(attrName, true);
+    return plug.isNull();
+}
+
+
+inline
+unsigned int computeObjectType(MObject node_obj, MDagPath nodeDagPath) {
+    bool hasLocatorShape = false;
+    bool hasCameraShape = false;
+    bool hasImagePlaneShape = false;
+    MFn::Type node_tid = nodeDagPath.apiType();
+    std::vector<MFn::Type> shape_tids;
+    unsigned int num_children = nodeDagPath.childCount();
+    for (unsigned int i = 0; i < num_children; ++i) {
+        MObject child_obj = nodeDagPath.child(i);
+        nodeDagPath.push(child_obj);
+        MFn::Type shape_tid = nodeDagPath.apiType();
+        shape_tids.push_back(shape_tid);
+        if (shape_tid == MFn::kLocator) {
+            hasLocatorShape = true;
+        } else if (shape_tid == MFn::kCamera) {
+            hasCameraShape = true;
+        } else if (shape_tid == MFn::kImagePlane) {
+            hasImagePlaneShape = true;
+        }
+    }
+
+    MFnDependencyNode dependFn(node_obj);
+    unsigned int objectType = OBJECT_TYPE_UNKNOWN;
+    bool hasAttrEnable = hasAttrName(dependFn, MString("enable"));
+    bool hasAttrWeight = hasAttrName(dependFn, MString("weight"));
+    bool hasAttrBundle = hasAttrName(dependFn, MString("bundle"));
+    bool hasAttrSolverList = hasAttrName(dependFn, "solver_list");
+    if (node_tid == MFn::kTransform
+        && hasLocatorShape
+        && hasAttrEnable
+        && hasAttrWeight
+        && hasAttrBundle) {
+        objectType = OBJECT_TYPE_MARKER;
+    } else if (node_tid == MFn::kTransform
+               && hasLocatorShape) {
+        objectType = OBJECT_TYPE_BUNDLE;
+    } else if (node_tid == MFn::kTransform
+               && hasCameraShape) {
+        objectType = OBJECT_TYPE_CAMERA;
+    } else if (node_tid == MFn::kCamera) {
+        objectType = OBJECT_TYPE_CAMERA;
+    } else if (node_tid == MFn::kTransform
+               && hasImagePlaneShape) {
+        objectType = OBJECT_TYPE_IMAGE_PLANE;
+    } else if (hasImagePlaneShape) {
+        objectType = OBJECT_TYPE_IMAGE_PLANE;
+    } else if (node_tid == MFn::kPluginDependNode) {
+        // TODO: Check specifically for 'mmMarkerGroupTransform' node type.
+        objectType = OBJECT_TYPE_MARKER_GROUP;
+    } else if (node_tid == MFn::kSet && hasAttrSolverList) {
+        objectType = OBJECT_TYPE_COLLECTION;
+    }
+    return objectType;
 }
 
 

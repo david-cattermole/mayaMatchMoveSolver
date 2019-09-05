@@ -218,17 +218,17 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         MDataHandle overrideScreenXHandle = data.inputValue(a_overrideScreenX,
                                                             &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        bool overrideScreenX = overrideScreenXHandle.asDouble();
+        bool overrideScreenX = overrideScreenXHandle.asBool();
 
         MDataHandle overrideScreenYHandle = data.inputValue(a_overrideScreenY,
                                                             &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        bool overrideScreenY = overrideScreenYHandle.asDouble();
+        bool overrideScreenY = overrideScreenYHandle.asBool();
 
         MDataHandle overrideScreenZHandle = data.inputValue(a_overrideScreenZ,
                                                             &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        bool overrideScreenZ = overrideScreenZHandle.asDouble();
+        bool overrideScreenZ = overrideScreenZHandle.asBool();
 
         MDataHandle screenXHandle = data.inputValue(a_screenX, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);

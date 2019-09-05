@@ -20,7 +20,6 @@ Execute a solve.
 """
 
 
-import importlib
 import time
 import pprint
 import collections
@@ -385,9 +384,10 @@ def execute(col,
                 attr_list,
                 prog_fn=prog_fn, status_fn=status_fn
             )
-        except excep.NotValid:
+        except excep.NotValid as e:
             # Not valid
-            LOG.warning('Collection not valid: %r', col.get_node())
+            # LOG.warning('Collection not valid: %r', col.get_node())
+            LOG.warning(e)
             return solres_list
         collectionutils.run_progress_func(prog_fn, 1)
 
@@ -399,15 +399,8 @@ def execute(col,
         start = 0
         total = len(actions_list)
         for i, action in enumerate(actions_list):
-            func = action.func
-            func_is_mmsolver = isinstance(func, basestring) and '.mmSolver' in func
-            args = list(action.args)
-            kwargs = action.kwargs.copy()
-            if isinstance(func, basestring):
-                # Look up callable function from name at run-time.
-                mod_name, func_name = func.rsplit('.', 1)
-                mod = importlib.import_module(mod_name)
-                func = getattr(mod, func_name)
+            func, args, kwargs = api_action.action_to_components(action)
+            func_is_mmsolver = api_action.action_func_is_mmSolver(action)
 
             save_node_attrs = None
             is_single_frame = None
@@ -458,7 +451,7 @@ def execute(col,
 
             # Create SolveResult.
             solres = None
-            if solve_data is not None:
+            if solve_data is not None and func_is_mmsolver is True:
                 solres = solveresult.SolveResult(solve_data)
                 solres_list.append(solres)
 
@@ -471,7 +464,9 @@ def execute(col,
                 break
 
             # Refresh the Viewport.
-            postSolve_refreshViewport(options, frame)
+            if func_is_mmsolver is True:
+                frame = kwargs.get('frame')
+                postSolve_refreshViewport(options, frame)
     finally:
         postSolve_setViewportState(
             options, panel_objs, panel_node_type_vis

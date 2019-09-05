@@ -64,7 +64,9 @@ Attr::Attr() :
         m_minValue(-std::numeric_limits<float>::max()),
         m_maxValue(std::numeric_limits<float>::max()),
         m_offsetValue(0.0),
-        m_scaleValue(1.0) {
+        m_scaleValue(1.0),
+        m_objectType(OBJECT_TYPE_UNKNOWN),
+        m_solverAttrType(ATTR_SOLVER_TYPE_UNKNOWN) {
      MDistance distanceOne(1.0, MDistance::internalUnit());
      m_linearFactor = distanceOne.as(MDistance::uiUnit());
      m_linearFactorInv = 1.0 / m_linearFactor;
@@ -89,6 +91,18 @@ MStatus Attr::setName(MString value) {
     if (values.length() == 2) {
         Attr::setNodeName(values[0]);
         Attr::setAttrName(values[1]);
+
+        MDagPath nodeDagPath;
+        status = getAsDagPath(values[0], nodeDagPath);
+        CHECK_MSTATUS(status);
+        MObject obj = Attr::getObject();
+        unsigned int objectType = computeObjectType(obj, nodeDagPath);
+        Attr::setObjectType(objectType);
+
+        unsigned int solverAttrType = computeSolverAttrType(
+                objectType,
+                values[1]);
+        Attr::setSolverAttrType(solverAttrType);
     } else {
         ERR("Attr::setName: Value given has more than one dot character. "
             << value);
@@ -188,17 +202,17 @@ MObject Attr::getAttribute() {
  */
 int Attr::getAttrType() {
     MStatus status;
-    int attrType = ATTR_TYPE_UNKNOWN;
+    int attrType = ATTR_DATA_TYPE_UNKNOWN;
     MObject attrObj = Attr::getAttribute();
     MFn::Type mfnAttrType = attrObj.apiType();
     if ((mfnAttrType == MFn::Type::kDoubleLinearAttribute) ||
         (mfnAttrType == MFn::Type::kFloatLinearAttribute)) {
-         attrType = ATTR_TYPE_LINEAR;
+         attrType = ATTR_DATA_TYPE_LINEAR;
     } else if ((mfnAttrType == MFn::Type::kDoubleAngleAttribute) ||
                (mfnAttrType == MFn::Type::kFloatAngleAttribute)) {
-         attrType = ATTR_TYPE_ANGLE;
+         attrType = ATTR_DATA_TYPE_ANGLE;
     } else {
-         attrType = ATTR_TYPE_NUMERIC;
+         attrType = ATTR_DATA_TYPE_NUMERIC;
     }
     return attrType;
 }
@@ -391,7 +405,7 @@ MStatus Attr::getValue(double &value, const MTime &time) {
     }
 
     int attrType = Attr::getAttrType();
-    if (attrType == ATTR_TYPE_ANGLE) {
+    if (attrType == ATTR_DATA_TYPE_ANGLE) {
          value *= m_angularFactor;
     }
     return MS::kSuccess;
@@ -452,7 +466,7 @@ MStatus Attr::setValue(double value, const MTime &time,
     MPlug plug = Attr::getPlug();
 
     int attrType = Attr::getAttrType();
-    if (attrType == ATTR_TYPE_ANGLE) {
+    if (attrType == ATTR_DATA_TYPE_ANGLE) {
          value *= m_angularFactorInv;
     }
 
@@ -524,5 +538,22 @@ double Attr::getScaleValue() {
 void Attr::setScaleValue(double value) {
     m_scaleValue = value;
 }
+
+unsigned int Attr::getObjectType() {
+    return m_objectType;
+}
+
+void Attr::setObjectType(unsigned int value) {
+    m_objectType = value;
+}
+
+unsigned int Attr::getSolverAttrType() {
+    return m_solverAttrType;
+}
+
+void Attr::setSolverAttrType(unsigned int value) {
+    m_solverAttrType = value;
+}
+
 
 #undef USE_DG_CONTEXT_IN_GUI

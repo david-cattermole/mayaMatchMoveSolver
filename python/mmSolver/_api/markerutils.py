@@ -25,6 +25,7 @@ import math
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver._api.attribute as attribute
 import mmSolver.utils.nodeaffects as affects_utils
 
 
@@ -154,6 +155,7 @@ def find_marker_attr_mapping(mkr_list, attr_list):
               index of the mkr_list and attr_list given.
     :rtype: [[bool, .. ]]
     """
+    assert len(mkr_list) > 0
     s = time.time()
     mapping = []
     for i, mkr in enumerate(mkr_list):
@@ -168,18 +170,24 @@ def find_marker_attr_mapping(mkr_list, attr_list):
         cam_node = cam.get_transform_node()
         mkr_plugs = affects_utils.find_plugs_affecting_transform(
             mkr_node,
-            cam_tfm=cam_node)
+            cam_node)
         bnd_plugs = affects_utils.find_plugs_affecting_transform(
-            bnd_node
+            bnd_node,
+            None
         )
-        plugs = list(set(mkr_plugs + bnd_plugs))
+        assert isinstance(mkr_plugs, set)
+        assert isinstance(bnd_plugs, set)
+        plugs = set(mkr_plugs.union(bnd_plugs))
         for j, attr in enumerate(attr_list):
-            attr_name = attr.get_name()
+            assert isinstance(attr, attribute.Attribute)
+            attr_name = attr.get_name(full_path=True)
             mapping[i][j] = attr_name in plugs
     e = time.time()
+    num_iters = len(mkr_list)
+    assert num_iters != 0
     LOG.debug(
         'find_marker_attr_mapping: time=%r time_per_mkr=%r',
         e-s,
-        (e-s) / len(mkr_list)
+        (e-s) / num_iters
     )
     return mapping

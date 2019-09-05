@@ -193,6 +193,18 @@ class SolveResult(object):
             v = _convert_to(name, key, typ, value, index)
             self._timer_stats[name] = v
 
+        # Print statistics
+        name_keys = [
+            ('number_of_parameters', 'numberOfParameters', int),
+            ('number_of_errors', 'numberOfErrors', int),
+        ]
+        index = 0
+        self._print_stats = {}
+        for name, key, typ in name_keys:
+            value = data.get(key)
+            v = _convert_to(name, key, typ, value, index)
+            self._print_stats[name] = v
+
         # List of errors, per-marker, per-frame.
         # Allows graphing the errors and detecting problems.
         self._per_marker_per_frame_error = collections.defaultdict(dict)
@@ -267,6 +279,13 @@ class SolveResult(object):
         Details of internal solver.
         """
         return self._solver_stats.copy()
+
+    def get_print_stats(self):
+        """
+        Details of internal statistics that can be gathered and
+        printed out.
+        """
+        return self._print_stats.copy()
 
     def get_frame_list(self):
         """

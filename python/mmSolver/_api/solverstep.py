@@ -29,6 +29,7 @@ import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.marker as marker
 import mmSolver._api.attribute as attribute
+import mmSolver._api.solveresult as solveresult
 import mmSolver._api.compile as api_compile
 
 LOG = mmSolver.logger.get_logger()
@@ -395,9 +396,31 @@ class SolverStep(solverbase.SolverBase):
             args=args,
             kwargs=kwargs
         )
-        # msg = 'kwargs:\n' + pprint.pformat(kwargs)
-        # LOG.warning(msg)
-        return [action]
+
+        # Check the inputs and outputs are valid.
+        test_failed = False
+        assert api_action.action_func_is_mmSolver(action) is True
+        tfunc, targs, tkwargs = api_action.action_to_components(action)
+        remove_keys = ['debugFile', 'verbose']
+        for key in remove_keys:
+            if key in tkwargs:
+                del tkwargs[key]
+        tkwargs['printStatistics'] = ['inputs']
+        result = tfunc(*targs, **tkwargs)
+        solres = solveresult.SolveResult(result)
+        print_stats = solres.get_print_stats()
+        num_param = print_stats.get('number_of_parameters', 0)
+        num_err = print_stats.get('number_of_errors', 0)
+        if num_param > num_err:
+            test_failed = True
+            # LOG.warn('Test Param/Error Num Failed')
+
+        action_list = []
+        if test_failed is False:
+            # msg = 'kwargs:\n' + pprint.pformat(kwargs)
+            # LOG.warning(msg)
+            action_list = [action]
+        return action_list
 
 
 Solver = SolverStep

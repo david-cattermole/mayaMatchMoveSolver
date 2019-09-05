@@ -533,7 +533,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
     assert(m_frameList.length() > 0);
 
-    // Don't store each individial edits, just store the combination
+    // Don't store each individual edits, just store the combination
     // of edits.
     m_curveChange.setInteractive(true);
 

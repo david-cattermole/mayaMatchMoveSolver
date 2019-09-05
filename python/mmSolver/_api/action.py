@@ -20,9 +20,28 @@ Actions - a wrapper tuple for a callable function with positional and keyword ar
 """
 
 import collections
+import importlib
 
 
 Action = collections.namedtuple(
     'Action',
     ('func', 'args', 'kwargs')
 )
+
+
+def action_func_is_mmSolver(action):
+    func = action.func
+    func_is_mmsolver = isinstance(func, basestring) and '.mmSolver' in func
+    return func_is_mmsolver
+
+
+def action_to_components(action):
+    func = action.func
+    args = list(action.args)
+    kwargs = action.kwargs.copy()
+    if isinstance(func, basestring):
+        # Look up callable function from name at run-time.
+        mod_name, func_name = func.rsplit('.', 1)
+        mod = importlib.import_module(mod_name)
+        func = getattr(mod, func_name)
+    return func, args, kwargs

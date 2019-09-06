@@ -683,6 +683,68 @@ class TestSolve(test_api_utils.APITestCase):
         self.checkSolveResults(solres_list)
         return
 
+    def test_badPerFrameSolve_solverstandard(self):
+        """
+        The same test as 'test_badPerFrameSolve', but using the SolverStandard class.
+        """
+        s = time.time()
+        # Open the Maya file
+        file_name = 'mmSolverBasicSolveA_badSolve01.ma'
+        path = self.get_data_path('scenes', file_name)
+        maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
+        print 'File opened:', path
+
+        # Frames
+        start_frame = 1
+        end_frame = 120
+        root_frames = [1, 30, 60, 90, 120]
+        root_frm_list = []
+        for f in root_frames:
+            frm = mmapi.Frame(f)
+            root_frm_list.append(frm)
+        print 'root frames:', root_frm_list
+
+        frm_list = []
+        for f in range(start_frame, end_frame):
+            frm = mmapi.Frame(f)
+            frm_list.append(frm)
+        print 'frames:', frm_list
+
+        # Solver
+        sol = mmapi.SolverStandard()
+        sol.set_root_frame_list(root_frm_list)
+        sol.set_frame_list(frm_list)
+        sol.use_single_frame = False
+        sol.global_solve = False
+        sol.only_root_frames = False
+        sol.auto_attr_blocks = True
+        sol.triangulate_bundles = False
+        sol_list = [sol]
+        print 'Solver:', sol
+        e = time.time()
+        print 'pre-solve time:', e - s
+
+        # Run solver!
+        s = time.time()
+        col = mmapi.Collection(node='collection1')
+        col.set_solver_list(sol_list)
+        solres_list = col.execute()
+        e = time.time()
+        print 'total time:', e - s
+
+        # Set Deviation
+        mkr_list = col.get_marker_list()
+        mmapi.update_deviation_on_markers(mkr_list, solres_list)
+        mmapi.update_deviation_on_collection(col, solres_list)
+
+        # save the output
+        path = self.get_data_path('test_solve_badPerFrameSolve_solverstandard_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        self.checkSolveResults(solres_list)
+        return
+
     def test_allFrameStrategySolve(self):
         """
         Solving only a 'all frames' solver step across multiple frames.

@@ -61,7 +61,9 @@ class TestSolve(test_api_utils.APITestCase):
         max_err_frm, max_err_val = mmapi.get_max_frame_error(frm_err_list)
         print 'max error frame and value:', max_err_frm, max_err_val
         self.assertLess(avg_err, 1.0)
+        self.assertGreater(avg_err, 0.0)
         self.assertLess(max_err_val, 1.0)
+        self.assertGreater(max_err_val, 0.0)
         return
 
     def test_init(self):

@@ -21,10 +21,15 @@ The standard solver.
 
 
 import mmSolver.logger
+
+import mmSolver._api.constant as const
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
+import mmSolver._api.marker as marker
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.solverstep as solverstep
+import mmSolver._api.solvertriangulate as solvertriangulate
+import mmSolver._api.markerutils as markerutils
 import mmSolver._api.action as api_action
 import mmSolver._api.compile as api_compile
 
@@ -32,11 +37,13 @@ import mmSolver._api.compile as api_compile
 LOG = mmSolver.logger.get_logger()
 
 
-# class SolverOpTriangulateBundles(SolverBase):
-#     """
-#     An operation to re-calculate the bundle positions using triangulation.
-#     """
-#     pass
+ATTR_CATEGORIES = [
+    'regular',
+    'bundle_transform',
+    'camera_transform',
+    'camera_intrinsic',
+    'lens_distortion',
+]
 
 
 # class SolverOpSmoothCameraTranslate(SolverBase):
@@ -44,6 +51,387 @@ LOG = mmSolver.logger.get_logger()
 #     An operation to smooth the translations of a camera.
 #     """
 #     pass
+
+
+def _gen_two_frame_fwd(int_list):
+    """
+    Given a list of integers, create list of Frame pairs, moving
+    though the original list in a forward direction.
+
+    :param int_list: List of frame numbers.
+    :type int_list: List of int
+
+    :returns: List of integer pairs.
+    :rtype: [[int, int], ...]
+    """
+    end = len(int_list) - 1
+    batch_list = []
+    for i in range(end):
+        s = i
+        e = i + 2
+        tmp_list = int_list[s:e]
+        frm_list = []
+        for j, num in enumerate(tmp_list):
+            frm = frame.Frame(num)
+            frm_list.append(frm)
+        batch_list.append(frm_list)
+    return batch_list
+
+
+def _filter_mkr_list_by_frame_list(mkr_list, root_frame_list):
+    """
+
+    :param mkr_list: List of Markers to filter.
+    :type mkr_list: [Marker, ..]
+
+    :param root_frame_list: List of frames to use for filtering.
+    :type root_frame_list: [Frame, ..]
+
+    :return: Two lists, one list is for Markers that have 2 or more
+             frames specified in root_frame_list, and the other list is
+             for Markers that do not have more than 2 frames in
+             root_frame_list.
+    :rtype: ([Marker, ..], [Marker, ..])
+    """
+    root_frame_list_num = [x.get_number() for x in root_frame_list]
+    root_mkr_list = []
+    non_root_mkr_list = []
+    for mkr in mkr_list:
+        assert isinstance(mkr, marker.Marker) is True
+        frame_count = 0
+        for f in root_frame_list_num:
+            frame_count += mkr.get_enable(f)
+        if frame_count >= 2:
+            root_mkr_list.append(mkr)
+        else:
+            non_root_mkr_list.append(mkr)
+    return root_mkr_list, non_root_mkr_list
+
+
+def _split_mkr_attr_into_categories(mkr_list, attr_list):
+    meta_mkr_list = []
+    meta_attr_list = []
+
+    mkr_attr_map = markerutils.find_marker_attr_mapping(
+        mkr_list,
+        attr_list
+    )
+    attrs_in_categories = api_compile.categorise_attributes(
+        attr_list
+    )
+    for category in ATTR_CATEGORIES:
+        category_node_attrs = attrs_in_categories[category]
+
+        num_attrs = [len(v) for k, v in category_node_attrs.items()]
+        num_attrs = sum(num_attrs)
+
+        msg = 'Attribute Category=%r'
+        LOG.debug(msg, category)
+        msg = '-> Number of Nodes=%r'
+        LOG.debug(msg, len(category_node_attrs.keys()))
+        msg = '-> Number Of Attributes=%r'
+        LOG.debug(msg, num_attrs)
+
+        for node, attrs in category_node_attrs.items():
+            if len(attrs) == 0:
+                continue
+            attr_names = [x.get_name() for x in attrs]
+            new_mkr_list = []
+            for j, attr in enumerate(attr_list):
+                attr_name = attr.get_name()
+                if attr_name not in attr_names:
+                    continue
+                for i, mkr in enumerate(mkr_list):
+                    affects = mkr_attr_map[i][j]
+                    if affects is False:
+                        continue
+                    if mkr not in new_mkr_list:
+                        new_mkr_list.append(mkr)
+            if len(new_mkr_list) == 0:
+                LOG.warn(
+                    'No markers found affecting attribute. node=%r',
+                    node
+                )
+                continue
+            meta_mkr_list.append(new_mkr_list)
+            meta_attr_list.append(attr_list)
+
+    return meta_mkr_list, meta_attr_list
+
+
+def _compile_multi_root_frames(actions,
+                               mkr_list,
+                               attr_list,
+                               batch_frame_list,
+                               root_iter_num,
+                               verbose):
+    # Solve root frames.
+    for frm_list in batch_frame_list:
+        # Get root markers
+        root_mkr_list, non_root_mkr_list = _filter_mkr_list_by_frame_list(
+            mkr_list,
+            frm_list
+        )
+        assert len(root_mkr_list) > 0
+
+        mkr_attr_map = markerutils.find_marker_attr_mapping(
+            root_mkr_list,
+            attr_list
+        )
+        root_attr_list = []
+        for i, mkr in enumerate(root_mkr_list):
+            for j, attr in enumerate(attr_list):
+                x = mkr_attr_map[i][j]
+                if x is True and attr not in root_attr_list:
+                    root_attr_list.append(attr)
+
+        sol = solverstep.SolverStep()
+        sol.set_verbose(verbose)
+        sol.set_max_iterations(root_iter_num)
+        sol.set_frame_list(frm_list)
+        sol.set_attributes_use_animated(True)
+        sol.set_attributes_use_static(True)
+        sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+        actions += sol.compile(root_mkr_list, root_attr_list)
+        return actions
+
+
+def _compile_remove_inbetween_frames(actions,
+                                     attr_list,
+                                     non_root_frame_list,
+                                     start_frame,
+                                     end_frame,
+                                     verbose):
+    # Solve in-between frames
+    attr_names = [x.get_name() for x in attr_list]
+
+    # Solver for all other frames.
+    for frm in non_root_frame_list:
+        frame_num = frm.get_number()
+        func = 'maya.cmds.cutKey'
+        args = attr_names
+        kwargs = {'time': (frame_num, frame_num)}
+        action = api_action.Action(
+            func=func,
+            args=args,
+            kwargs=kwargs)
+        actions += [action]
+
+    # Change all attribute keyframes to linear tangents.
+    func = 'maya.cmds.keyTangent'
+    kwargs = {
+        'inTangentType': 'linear',
+        'outTangentType': 'linear',
+        'time': (start_frame.get_number() - 1,
+                 end_frame.get_number() + 1)}
+    action = api_action.Action(
+        func=func,
+        args=attr_names,
+        kwargs=kwargs)
+    actions += [action]
+    return actions
+
+
+def _compile_multi_inbetween_frames(actions,
+                                    mkr_list,
+                                    attr_list,
+                                    all_frame_list,
+                                    global_solve,
+                                    anim_iter_num,
+                                    verbose):
+    if global_solve is True:
+        # Do Global Solve with all frames.
+        sol = solverstep.SolverStep()
+        sol.set_verbose(verbose)
+        sol.set_max_iterations(anim_iter_num)
+        sol.set_frame_list(all_frame_list)
+        sol.set_attributes_use_animated(True)
+        sol.set_attributes_use_static(True)
+        sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+        actions += sol.compile(mkr_list, attr_list)
+    else:
+        for frm in all_frame_list:
+            one_frame_list = [frm]
+            sol = solverstep.SolverStep()
+            sol.set_verbose(verbose)
+            sol.set_max_iterations(anim_iter_num)
+            sol.set_frame_list(one_frame_list)
+            sol.set_attributes_use_animated(True)
+            sol.set_attributes_use_static(False)
+            sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+            actions += sol.compile(mkr_list, attr_list)
+    return actions
+
+
+def _compile_multi_frame(actions,
+                         mkr_list,
+                         attr_list,
+                         root_frame_list,
+                         frame_list,
+                         auto_attr_blocks,
+                         block_iter_num,
+                         only_root_frames,
+                         root_iter_num,
+                         anim_iter_num,
+                         global_solve,
+                         root_frame_strategy,
+                         triangulate_bundles,
+                         verbose):
+    assert len(root_frame_list) >= 2
+    assert len(frame_list) >= 2
+    root_frame_list_num = [x.get_number() for x in root_frame_list]
+    frame_list_num = [x.get_number() for x in frame_list]
+    non_root_frame_list_num = set(frame_list_num) - set(root_frame_list_num)
+    non_root_frame_list = [frame.Frame(x) for x in non_root_frame_list_num]
+
+    all_frame_list_num = list(set(frame_list_num + root_frame_list_num))
+    all_frame_list_num = list(sorted(all_frame_list_num))
+    all_frame_list = [frame.Frame(x) for x in all_frame_list_num]
+    start_frame = all_frame_list[0]
+    end_frame = all_frame_list[-1]
+
+    # TODO: Triangulate the (open) bundles here. We triangulate all
+    #  valid bundles after the root frames have solved.
+    #
+    # NOTE: Bundle triangulation can only happen if the camera
+    # is not nodal.
+    if triangulate_bundles is True:
+        sol = solvertriangulate.SolverTriangulate()
+        # sol.root_frame_list = root_frame_list_num
+        actions += sol.compile(mkr_list, attr_list)
+
+    # Solver root frames, breaking attributes into little blocks
+    # to solve.
+    root_mkr_list, non_root_mkr_list = _filter_mkr_list_by_frame_list(
+        mkr_list,
+        root_frame_list
+    )
+    if auto_attr_blocks is True:
+        meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
+            root_mkr_list,
+            attr_list
+        )
+        for new_mkr_list, new_attr_list in zip(meta_mkr_list, meta_attr_list):
+            sol = solverstep.SolverStep()
+            sol.set_verbose(verbose)
+            sol.set_max_iterations(block_iter_num)
+            sol.set_frame_list(root_frame_list)
+            sol.set_attributes_use_animated(True)
+            sol.set_attributes_use_static(True)
+            sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+            actions += sol.compile(new_mkr_list, new_attr_list)
+
+    # TODO: Create a list of markers specially for root frames.
+    #  Loop over all given markers, determine which markers have 2
+    #  or more root frames, only use those markers for root frame
+    #  computation. Overall, we must filter out all markers that
+    #  cannot/should not be used for different solves.
+    #
+    # TODO: We must make sure to allow the solver to detect that
+    #  not enough markers are being used, and warn the user.
+    #
+    # TODO: All markers that do not have enough root frames to solve
+    #  correctly, but the Bundle is still in the solver, then it should
+    #  be triangulated after the initial root frame solve is performed.
+
+    if root_frame_strategy == 0:
+        # Global solve of root frames.
+        sol = solverstep.SolverStep()
+        sol.set_verbose(verbose)
+        sol.set_max_iterations(root_iter_num)
+        sol.set_frame_list(root_frame_list)
+        sol.set_attributes_use_animated(True)
+        sol.set_attributes_use_static(True)
+        sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+        actions += sol.compile(root_mkr_list, attr_list)
+    else:
+        # Get the order of frames to solve with.
+        batch_frame_list = []
+        if root_frame_strategy == 1:
+            # Two frames at a time, moving forward, plus a global solve
+            # at the end.
+            batch_frame_list = _gen_two_frame_fwd(root_frame_list_num)
+            batch_frame_list.append(root_frame_list)
+        elif root_frame_strategy == 2:
+            # Two frames at a time, moving forward.
+            batch_frame_list = _gen_two_frame_fwd(root_frame_list_num)
+        elif root_frame_strategy == 3:
+            # TODO: Root frame ordering can be determined by the
+            #  count of markers available at each frame. After we
+            #  have an ordering of these frames, we can solve the
+            #  frames incrementally, starting with the first
+            #  highest, then add the next highest, etc. This
+            #  should ensure stability of the solver is maximum.
+            assert False
+        actions = _compile_multi_root_frames(
+            actions,
+            mkr_list,
+            attr_list,
+            batch_frame_list,
+            root_iter_num,
+            verbose
+        )
+
+    # Clear out all the frames between the solved root frames, this
+    # helps us use the new solve root frames to hint the 'in-between'
+    # frame solve.
+    actions = _compile_remove_inbetween_frames(
+        actions,
+        attr_list,
+        non_root_frame_list,
+        start_frame,
+        end_frame,
+        verbose
+    )
+    if only_root_frames is True:
+        return actions
+
+    actions = _compile_multi_inbetween_frames(
+        actions,
+        mkr_list,
+        attr_list,
+        all_frame_list,
+        global_solve,
+        anim_iter_num,
+        verbose,
+    )
+
+    # LOG.warn('actions: %r', actions)
+    return actions
+
+
+def _compile_single_frame(actions,
+                          mkr_list,
+                          attr_list,
+                          single_frame,
+                          block_iter_num,
+                          lineup_iter_num,
+                          auto_attr_blocks,
+                          verbose):
+    if auto_attr_blocks is True:
+        meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
+            mkr_list,
+            attr_list
+        )
+        for new_mkr_list, new_attr_list in zip(meta_mkr_list, meta_attr_list):
+            sol = solverstep.SolverStep()
+            sol.set_verbose(verbose)
+            sol.set_max_iterations(block_iter_num)
+            sol.set_frame_list([single_frame])
+            sol.set_attributes_use_animated(True)
+            sol.set_attributes_use_static(True)
+            sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+            actions += sol.compile(new_mkr_list, new_attr_list)
+
+    # Single frame solve
+    sol = solverstep.SolverStep()
+    sol.set_verbose(verbose)
+    sol.set_max_iterations(lineup_iter_num)
+    sol.set_frame_list([single_frame])
+    sol.set_attributes_use_animated(True)
+    sol.set_attributes_use_static(True)
+    actions += sol.compile(mkr_list, attr_list)
+    return actions
 
 
 class SolverStandard(solverbase.SolverBase):
@@ -89,19 +477,25 @@ class SolverStandard(solverbase.SolverBase):
     # TODO: Add get/set 'only_root_frames' - bool
     # TODO: Add get/set 'global_solve' - bool
     # TODO: Add get/set 'single_frame' - Frame or None
-    # TODO: Add get/set 'root_frame_list' - list of Frame
-    # TODO: Add get/set 'frame_list' - list of Frame
 
     def __init__(self, *args, **kwargs):
         super(SolverStandard, self).__init__(*args, **kwargs)
         self.use_single_frame = False
         self.only_root_frames = False
+        self.root_frame_strategy = 0  # 0=global, 1=forward pair, 2=forward pair + global
         self.global_solve = False
         self.auto_attr_blocks = False
         self.print_statistics_inputs = False
         self.print_statistics_affects = False
         self.print_statistics_deviation = False
         self.single_frame = None  # frame.Frame(1)
+        self.robust_loss_type = 0
+        self.robust_loss_scale = 1.0
+        self.triangulate_bundles = False
+        self.block_iteration_num = 3
+        self.root_iteration_num = 100
+        self.anim_iteration_num = 100
+        self.lineup_iteration_num = 100
         return
 
     ############################################################################
@@ -273,106 +667,51 @@ class SolverStandard(solverbase.SolverBase):
     ############################################################################
 
     def compile(self, mkr_list, attr_list):
-        actions = []
         # Options to affect how the solve is constructed.
         use_single_frame = self.use_single_frame
         only_root_frames = self.only_root_frames
         global_solve = self.global_solve
         auto_attr_blocks = self.auto_attr_blocks
-
-        small_step_iter_num = 3
-        big_step_iter_num = 10
-        verbose = False
-
+        triangulate_bundles = self.triangulate_bundles
         single_frame = self.single_frame
+        block_iter_num = self.block_iteration_num
+        root_iter_num = self.root_iteration_num
+        anim_iter_num = self.anim_iteration_num
+        lineup_iter_num = self.lineup_iteration_num
+        root_frame_strategy = self.root_frame_strategy
         root_frame_list = self.get_root_frame_list()
         frame_list = self.get_frame_list()
+        verbose = True
 
+        actions = []
         if use_single_frame is True:
-            # Single frame solve
-            sol = solverstep.SolverStep()
-            sol.set_verbose(verbose)
-            sol.set_max_iterations(big_step_iter_num)
-            sol.set_frame_list([single_frame])
-            sol.set_attributes_use_animated(True)
-            sol.set_attributes_use_static(True)
-            actions += sol.compile(mkr_list, attr_list)
+            actions = _compile_single_frame(
+                actions,
+                mkr_list,
+                attr_list,
+                single_frame,
+                block_iter_num,
+                lineup_iter_num,
+                auto_attr_blocks,
+                verbose,
+            )
         else:
-            categories = [
-                'regular',
-                'bundle_transform',
-                'camera_transform',
-                'camera_intrinsic',
-                'lens_distortion',
-                # 'regular',  # re-solve again
-                # 'bundle_transform',  # re-solve again
-            ]
-
-            # Solver root frames, breaking attributes into little blocks
-            # to solve.
-            attrs_in_categories = {}
-            if auto_attr_blocks is True:
-                attrs_in_categories = api_compile.categorise_attributes(attr_list)
-                for category in categories:
-                    category_node_attrs = attrs_in_categories[category]
-                    for node, attrs in category_node_attrs.items():
-                        if len(attrs) == 0:
-                            continue
-                        sol = solverstep.SolverStep()
-                        sol.set_verbose(verbose)
-                        sol.set_max_iterations(small_step_iter_num)
-                        sol.set_frame_list(root_frame_list)
-                        sol.set_attributes_use_animated(True)
-                        sol.set_attributes_use_static(True)
-                        actions += sol.compile(mkr_list, attrs)
-
-            # Solver for root frames.
-            sol = solverstep.SolverStep()
-            sol.set_verbose(verbose)
-            sol.set_max_iterations(big_step_iter_num)
-            sol.set_frame_list(root_frame_list)
-            sol.set_attributes_use_animated(True)
-            sol.set_attributes_use_static(True)
-            actions += sol.compile(mkr_list, attr_list)
-
-            if only_root_frames is True:
-                return actions
-
-            if global_solve is not True:
-                # Solver for all other frames.
-                for frm in frame_list:
-                    one_frame_list = [frm]
-                    # Break attributes into little blocks to solve.
-                    if auto_attr_blocks is True:
-                        for category in categories:
-                            category_node_attrs = attrs_in_categories[category]
-                            for node, attrs in category_node_attrs.items():
-                                if len(attrs) == 0:
-                                    continue
-                                sol = solverstep.SolverStep()
-                                sol.set_verbose(verbose)
-                                sol.set_max_iterations(small_step_iter_num)
-                                sol.set_frame_list(one_frame_list)
-                                sol.set_attributes_use_animated(True)
-                                sol.set_attributes_use_static(True)
-                                actions += sol.compile(mkr_list, attrs)
-
-                    sol = solverstep.SolverStep()
-                    sol.set_verbose(verbose)
-                    sol.set_max_iterations(big_step_iter_num)
-                    sol.set_frame_list(one_frame_list)
-                    sol.set_attributes_use_animated(True)
-                    sol.set_attributes_use_static(False)
-                    actions += sol.compile(mkr_list, attr_list)
-            else:
-                all_frame_list = root_frame_list + frame_list
-                sol = solverstep.SolverStep()
-                sol.set_verbose(verbose)
-                sol.set_max_iterations(big_step_iter_num)
-                sol.set_frame_list(all_frame_list)
-                sol.set_attributes_use_animated(True)
-                sol.set_attributes_use_static(True)
-                actions += sol.compile(mkr_list, attr_list)
+            actions = _compile_multi_frame(
+                actions,
+                mkr_list,
+                attr_list,
+                root_frame_list,
+                frame_list,
+                auto_attr_blocks,
+                block_iter_num,
+                only_root_frames,
+                root_iter_num,
+                anim_iter_num,
+                global_solve,
+                root_frame_strategy,
+                triangulate_bundles,
+                verbose,
+            )
 
         # LOG.warn('actions: %r', actions)
         return actions

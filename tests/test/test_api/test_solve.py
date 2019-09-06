@@ -183,9 +183,8 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Solver
         sol = mmapi.SolverStandard()
-        sol.set_root_frame_list(frm_list)
-        sol.set_frame_list(frm_list)
-        sol.use_single_frame = False
+        sol.use_single_frame = True
+        sol.single_frame = frm_list[0]
         sol.global_solve = False
         sol.only_root_frames = False
 
@@ -614,8 +613,9 @@ class TestSolve(test_api_utils.APITestCase):
             sol.set_root_frame_list(root_frm_list)
             sol.set_frame_list(not_root_frm_list)
             sol.only_root_frames = False
-            sol.global_solve = True
-            sol.auto_attr_blocks = True
+            sol.global_solve = False
+            sol.triangulate_bundles = False
+            sol.auto_attr_blocks = False
             sol.single_frame = False
             sol_list.append(sol)
 
@@ -657,15 +657,20 @@ class TestSolve(test_api_utils.APITestCase):
         running the solver, the undo-ing the (bad) result, the
         timeline is traversed slowly. This shows issue #45.
         """
+        s = time.time()
+
         # Open the Maya file
         file_name = 'mmSolverBasicSolveA_badSolve01.ma'
         path = self.get_data_path('scenes', file_name)
         maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
 
-        # Run solver!
-        s = time.time()
         col = mmapi.Collection(node='collection1')
         lib_col.compile_collection(col)
+        e = time.time()
+        print 'pre-solve time:', e - s
+
+        # Run solver!
+        s = time.time()
         solres_list = col.execute()
         e = time.time()
         print 'total time:', e - s
@@ -785,12 +790,13 @@ class TestSolve(test_api_utils.APITestCase):
 
         GitHub Issue #53.
         """
+        s = time.time()
         # Open the Maya file
         file_name = 'mmSolverBasicSolveB_before.ma'
         path = self.get_data_path('scenes', file_name)
         maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
 
-        # NOTE: We leave these nodes along, since these are already in
+        # NOTE: We leave these nodes alone, since these are already in
         # the 'correct' position, we are treating these as surveyed.
         # When we have less than 3 points as survey the solve goes
         # crazy.
@@ -811,7 +817,7 @@ class TestSolve(test_api_utils.APITestCase):
             for attr_name in attrs:
                 plug = bnd_node + '.' + attr_name
                 maya.cmds.setAttr(plug, lock=False)
-            lib_triangulate.triangulate_bundle(bnd)
+                maya.cmds.setAttr(plug, 0.0)
 
         # Get Bundle attributes to compute.
         bnd_attr_list = []
@@ -824,37 +830,52 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Camera attributes
         cam_tfm = 'stA_1_1'
+        cam = mmapi.Camera(cam_tfm)
+        cam_shp = cam.get_shape_node()
         cam_attr_list = []
         attrs = ['translateX', 'translateY', 'translateZ',
                  'rotateX', 'rotateY', 'rotateZ']
         for attr_name in attrs:
             attr = mmapi.Attribute(node=cam_tfm, attr=attr_name)
             cam_attr_list.append(attr)
+        attr = mmapi.Attribute(node=cam_shp, attr='focalLength')
+        cam_attr_list.append(attr)
+
+        # Frame List
+        root_frm_list = []
+        not_root_frm_list = []
+        f_list = [14, 35, 50, 85]
+        for f in f_list:
+            frm = mmapi.Frame(f)
+            root_frm_list.append(frm)
+        for f in range(0, 94):
+            frm = mmapi.Frame(f)
+            not_root_frm_list.append(frm)
 
         # Run solver!
-        s = time.time()
-        # Solve camera transform based on triangulated bundle
-        # positions.
+        sol_list = []
+        sol = mmapi.SolverStandard()
+        sol.set_root_frame_list(root_frm_list)
+        sol.set_frame_list(not_root_frm_list)
+        sol.only_root_frames = False
+        sol.global_solve = False
+        sol.auto_attr_blocks = True
+        sol.triangulate_bundles = False
+        sol.single_frame = False
+        sol.root_frame_strategy = 0
+        sol.robust_loss_type = 0
+        sol.robust_loss_scale = 1.0
+        sol_list.append(sol)
+
         col = mmapi.Collection(node='collection1')
-        col.set_attribute_list(cam_attr_list)
-        lib_col.compile_collection(col)
-        solres_list = col.execute()
-        print 'time (solve #1):', time.time() - s
-
-        # Refine the bundle positions only
-        s2 = time.time()
-        col.set_attribute_list(bnd_attr_list)
-        lib_col.compile_collection(col)
-        solres_list = col.execute()
-        print 'time (solve #2):', time.time() - s2
-
-        # # Solve both camera transform and bundle positions together.
-        # s3 = time.time()
-        # col.set_attribute_list(cam_attr_list + bnd_attr_list)
-        # lib_col.compile_collection(col)
-        # solres_list = col.execute()
+        col.set_attribute_list(cam_attr_list + bnd_attr_list)
+        col.set_solver_list(sol_list)
         e = time.time()
-        # print 'time (solve #3):', e - s3
+        print 'pre=solve time:', e - s
+
+        s = time.time()
+        solres_list = col.execute()
+        e = time.time()
         print 'total time:', e - s
 
         # Set Deviation
@@ -916,13 +937,16 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.setKeyframe(cam_shp, attribute='focalLength', time=end, value=14.0)
 
         # Create image plane
+        path = self.get_data_path('operahouse', 'frame00.jpg')
         imgpl = maya.cmds.imagePlane(
             camera=cam_shp,
-            fileName='/data/Tutorials/Footage/operahouse/frame_proxy.00.jpg'
+            fileName=path
         )
         maya.cmds.setAttr(imgpl[1] + '.useFrameExtension', 1)
         maya.cmds.setAttr(imgpl[1] + '.depth', 2000)
         maya.cmds.setAttr(imgpl[1] + '.frameCache', 0)
+        maya.cmds.setAttr(imgpl[1] + '.coverageX', 3072)
+        maya.cmds.setAttr(imgpl[1] + '.coverageY', 2304)
 
         # Create Horizon Line
         cir = maya.cmds.circle(name='horizon', nrx=0, nry=1, nrz=0)
@@ -1068,16 +1092,15 @@ class TestSolve(test_api_utils.APITestCase):
             maya.cmds.setAttr(plug_tx, pos[0])
             maya.cmds.setAttr(plug_ty, pos[1])
             maya.cmds.setAttr(plug_tz, pos[2])
-            bnd_node = maya.cmds.parent(bnd_node, bgrp, relative=True)[0]
-            # lib_triangulate.triangulate_bundle(bnd)
+            maya.cmds.parent(bnd_node, bgrp, relative=True)
 
-            bnd_node = bnd.get_node()
-            plug_tx = bnd_node + '.tx'
-            plug_ty = bnd_node + '.ty'
-            plug_tz = bnd_node + '.tz'
-            maya.cmds.setAttr(plug_tx, lock=True)
-            maya.cmds.setAttr(plug_ty, lock=True)
-            maya.cmds.setAttr(plug_tz, lock=True)
+            # bnd_node = bnd.get_node()
+            # plug_tx = bnd_node + '.tx'
+            # plug_ty = bnd_node + '.ty'
+            # plug_tz = bnd_node + '.tz'
+            # maya.cmds.setAttr(plug_tx, lock=True)
+            # maya.cmds.setAttr(plug_ty, lock=True)
+            # maya.cmds.setAttr(plug_tz, lock=True)
 
         # Frames
         # prim = [0, 22, 41]
@@ -1111,69 +1134,38 @@ class TestSolve(test_api_utils.APITestCase):
         frm = mmapi.Frame(41, tags=['primary', '8', 'single009'])
         frm_list.append(frm)
 
+        root_frm_list = []
+        not_root_frm_list = []
+        for f in [0, 3, 8, 12, 16, 22, 27, 33, 38, 41]:
+            frm = mmapi.Frame(f)
+            root_frm_list.append(frm)
+        for f in range(0, 41):
+            frm = mmapi.Frame(f)
+            not_root_frm_list.append(frm)
+
         sol_list = []
+        print_stats = False
+        if print_stats is True:
+            # Print statistics
+            stats_sol = mmapi.SolverStep()
+            stats_sol.set_verbose(False)
+            stats_sol.set_frame_list(frm_list)
+            stats_sol.set_print_statistics_inputs(True)
+            stats_sol.set_print_statistics_affects(True)
+            stats_sol.set_print_statistics_deviation(True)
+            sol_list.append(stats_sol)
 
-        # solve each frame
-        for i in range(1, 9):
-            sol = mmapi.Solver()
-            sol.set_max_iterations(10)
-            sol.set_solver_type(mmapi.SOLVER_TYPE_DEFAULT)
-            sol.set_auto_diff_type(mmapi.AUTO_DIFF_TYPE_CENTRAL)
-            sol.set_gradient_error_factor(0.0)
-            sol.set_parameter_error_factor(0.0)
-            sol.set_error_factor(0.0)
-            sol.set_attributes_use_animated(True)
-            sol.set_attributes_use_static(False)
-            sol.set_frames_use_tags(['single00' + str(i+1)])
-            sol.set_verbose(False)
-            sol.set_frame_list(frm_list)
-            sol_list.append(sol)
-
-        # solve each group
-        for i in range(1, 9):
-            sol = mmapi.Solver()
-            sol.set_max_iterations(10)
-            sol.set_solver_type(mmapi.SOLVER_TYPE_DEFAULT)
-            sol.set_auto_diff_type(mmapi.AUTO_DIFF_TYPE_CENTRAL)
-            sol.set_gradient_error_factor(0.0)
-            sol.set_parameter_error_factor(0.0)
-            sol.set_error_factor(0.0)
-            sol.set_attributes_use_animated(True)
-            sol.set_attributes_use_static(False)
-            sol.set_frames_use_tags([str(i)])
-            sol.set_verbose(False)
-            sol.set_frame_list(frm_list)
-            sol_list.append(sol)
-
-        # solve each frame
-        for i in range(0, 41):
-            sol = mmapi.Solver()
-            sol.set_max_iterations(10)
-            sol.set_solver_type(mmapi.SOLVER_TYPE_DEFAULT)
-            sol.set_auto_diff_type(mmapi.AUTO_DIFF_TYPE_CENTRAL)
-            sol.set_gradient_error_factor(0.0)
-            sol.set_parameter_error_factor(0.0)
-            sol.set_error_factor(0.0)
-            sol.set_attributes_use_animated(True)
-            sol.set_attributes_use_static(False)
-            sol.set_verbose(False)
-            frm = mmapi.Frame(i)
-            sol.set_frame_list([frm])
-            sol_list.append(sol)
-
-        # All primary frames together
-        sol = mmapi.Solver()
-        sol.set_max_iterations(10)
-        sol.set_solver_type(mmapi.SOLVER_TYPE_DEFAULT)
-        sol.set_auto_diff_type(mmapi.AUTO_DIFF_TYPE_CENTRAL)
-        sol.set_gradient_error_factor(0.0)
-        sol.set_parameter_error_factor(0.0)
-        sol.set_error_factor(0.0)
-        sol.set_attributes_use_animated(True)
-        sol.set_attributes_use_static(True)
-        sol.set_frames_use_tags(['primary'])
-        sol.set_verbose(True)
-        sol.set_frame_list(frm_list)
+        sol = mmapi.SolverStandard()
+        sol.set_root_frame_list(root_frm_list)
+        sol.set_frame_list(not_root_frm_list)
+        sol.root_frame_strategy = 0
+        sol.robust_loss_type = 1
+        sol.robust_loss_scale = 10.0
+        sol.only_root_frames = False
+        sol.global_solve = False
+        sol.auto_attr_blocks = True
+        sol.triangulate_bundles = False
+        sol.single_frame = False
         sol_list.append(sol)
 
         # Collection
@@ -1183,7 +1175,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Add markers
         col.add_marker_list(mkr_fg_list)
-        # col.add_marker_list(mkr_bg_list)
+        col.add_marker_list(mkr_bg_list)
 
         # Attributes
         attr_cam_tx = mmapi.Attribute(cam_tfm + '.tx')
@@ -1193,8 +1185,8 @@ class TestSolve(test_api_utils.APITestCase):
         attr_cam_ry = mmapi.Attribute(cam_tfm + '.ry')
         attr_cam_rz = mmapi.Attribute(cam_tfm + '.rz')
         attr_cam_focal = mmapi.Attribute(cam_shp + '.focalLength')
-        attr_cam_focal.set_min_value(10.0)
-        attr_cam_focal.set_max_value(20.0)
+        attr_cam_focal.set_min_value(13.0)
+        attr_cam_focal.set_max_value(15.0)
         col.add_attribute(attr_cam_tx)
         col.add_attribute(attr_cam_ty)
         col.add_attribute(attr_cam_tz)
@@ -1203,6 +1195,7 @@ class TestSolve(test_api_utils.APITestCase):
         col.add_attribute(attr_cam_rz)
         # col.add_attribute(attr_cam_focal)
 
+        mkr_list = col.get_marker_list()
         for mkr in mkr_list:
             bnd = mkr.get_bundle()
             bnd_node = bnd.get_node()

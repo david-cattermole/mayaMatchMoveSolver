@@ -46,6 +46,10 @@ For all tutorials, documentation of Tools, Python API and Maya Plug-In
 features, take a look at the
 [Documentation Home Page](https://david-cattermole.github.io/mayaMatchMoveSolver/).
 
+The official YouTube channel is 
+[mmSolver](https://www.youtube.com/channel/UCndLPvFXd9Os7m9sc2Bbbsw), 
+it contains video tutorials for mmSolver on a range of topics. 
+
 A copy of the documentation is also installed with *Maya MatchMove
 Solver*, you can find it by pressing the *help* button in the Solver
 UI, or in the module install directory, for example this path:

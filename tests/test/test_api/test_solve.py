@@ -269,7 +269,16 @@ class TestSolve(test_api_utils.APITestCase):
         mkr = mmapi.Marker().create_node(cam=cam, bnd=bnd)
         marker_tfm = mkr.get_node()
         assert mmapi.get_object_type(marker_tfm) == 'marker'
+        mid_value = 0.23534346
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-0.5,
+                              inTangentType='linear',
+                              outTangentType='linear')
+        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start+1,
+                              value=-mid_value,
+                              inTangentType='linear',
+                              outTangentType='linear')
+        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end-1,
+                              value=mid_value,
                               inTangentType='linear',
                               outTangentType='linear')
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=0.5,
@@ -358,6 +367,8 @@ class TestSolve(test_api_utils.APITestCase):
         path = self.get_data_path('test_solve_marker_enabled_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        self.checkSolveResults(results)
         return
 
     def test_per_frame(self):

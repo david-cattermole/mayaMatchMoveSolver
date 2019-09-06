@@ -32,7 +32,6 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_col
-import mmSolver.tools.triangulatebundle.lib as lib_triangulate
 import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import test.test_api.apiutils as test_api_utils
 
@@ -128,6 +127,10 @@ class TestSolve(test_api_utils.APITestCase):
         # Run solver!
         results = col.execute()
 
+        # Set Deviation
+        mmapi.update_deviation_on_markers([mkr], results)
+        mmapi.update_deviation_on_collection(col, results)
+
         # save the output
         path = self.get_data_path('test_solve_init_after.ma')
         maya.cmds.file(rename=path)
@@ -137,10 +140,6 @@ class TestSolve(test_api_utils.APITestCase):
         self.checkSolveResults(results)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
-
-        # Set Deviation
-        mmapi.update_deviation_on_markers([mkr], results)
-        mmapi.update_deviation_on_collection(col, results)
         return
 
     def test_init_solverstandard(self):
@@ -199,15 +198,19 @@ class TestSolve(test_api_utils.APITestCase):
         col.add_attribute(attr_ty)
 
         # save the output
-        path = self.get_data_path('test_solve_init_before.ma')
+        path = self.get_data_path('test_solve_init_solverstandard_before.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
         results = col.execute()
 
+        # Set Deviation
+        mmapi.update_deviation_on_markers([mkr], results)
+        mmapi.update_deviation_on_collection(col, results)
+
         # save the output
-        path = self.get_data_path('test_solve_init_after.ma')
+        path = self.get_data_path('test_solve_init_solverstandard_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -215,10 +218,6 @@ class TestSolve(test_api_utils.APITestCase):
         self.checkSolveResults(results)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
-
-        # Set Deviation
-        mmapi.update_deviation_on_markers([mkr], results)
-        mmapi.update_deviation_on_collection(col, results)
         return
 
     def test_marker_enable(self):
@@ -464,16 +463,16 @@ class TestSolve(test_api_utils.APITestCase):
         # Run solver!
         results = col.execute()
 
+        # Set Deviation
+        mmapi.update_deviation_on_markers([mkr], results)
+        mmapi.update_deviation_on_collection(col, results)
+
         # save the output
         path = self.get_data_path('test_solve_per_frame_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         self.checkSolveResults(results)
-
-        # Set Deviation
-        mmapi.update_deviation_on_markers([mkr], results)
-        mmapi.update_deviation_on_collection(col, results)
         return
 
     def test_stA_refine_good_solve(self):
@@ -660,6 +659,11 @@ class TestSolve(test_api_utils.APITestCase):
         e = time.time()
         print 'total time:', e - s
 
+        # Set Deviation
+        mkr_list = col.get_marker_list()
+        mmapi.update_deviation_on_markers(mkr_list, solres_list)
+        mmapi.update_deviation_on_collection(col, solres_list)
+
         # save the output
         path = self.get_data_path('test_solve_badPerFrameSolve_after.ma')
         maya.cmds.file(rename=path)
@@ -684,6 +688,11 @@ class TestSolve(test_api_utils.APITestCase):
         solres_list = col.execute()
         e = time.time()
         print 'total time:', e - s
+
+        # Set Deviation
+        mkr_list = col.get_marker_list()
+        mmapi.update_deviation_on_markers(mkr_list, solres_list)
+        mmapi.update_deviation_on_collection(col, solres_list)
 
         # save the output
         path = self.get_data_path('test_solve_allFrameStrategySolve_after.ma')
@@ -774,6 +783,11 @@ class TestSolve(test_api_utils.APITestCase):
         e = time.time()
         # print 'time (solve #3):', e - s3
         print 'total time:', e - s
+
+        # Set Deviation
+        mkr_list = col.get_marker_list()
+        mmapi.update_deviation_on_markers(mkr_list, solres_list)
+        mmapi.update_deviation_on_collection(col, solres_list)
 
         # save the output
         name = 'test_solve_solveAllFramesCausesStaticAnimCurves_after.ma'
@@ -1138,13 +1152,19 @@ class TestSolve(test_api_utils.APITestCase):
         for res in results:
             success = res.get_success()
             err = res.get_final_error()
-            print 'success', success
-            print 'err', err
+            print 'err', err, 'success', success
+
+        # Set Deviation
+        mmapi.update_deviation_on_markers(mkr_list, results)
+        mmapi.update_deviation_on_collection(col, results)
 
         # save the output
         path = self.get_data_path('test_solve_opera_house_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        self.checkSolveResults(results)
+        return
 
 
 if __name__ == '__main__':

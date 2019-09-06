@@ -1,7 +1,7 @@
 # Maya MatchMove Solver (MM Solver)
 
-An error minimisation solver for MatchMove (MM) related tasks
-utilising Maya's DG and DAG architecture, allowing solving of
+An error minimisation solver toolset for MatchMove (MM) related 
+tasks utilising Maya's DG and DAG architecture, allowing solving of
 complex constraints driven by 2D-to-3D re-projection deviation.
 
 ## What Is It?
@@ -38,7 +38,6 @@ changes.
 | [v0.2.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.0) | Improved solver and tools                   |
 | [v0.1.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.1) | Bug fix release                             |
 | [v0.1.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.0) | Initial release                             |
-
 
 ## Documentation
 

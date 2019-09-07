@@ -641,7 +641,7 @@ class SolverWindow(BaseWindow):
         Tbis button launches a solve, but can also be used to cancel a solve.
         """
         undo_id = 'mmSolver: ' + str(uuid.uuid4())
-        with undo_utils.undo_chunk(undo_id):
+        with undo_utils.undo_chunk_context(undo_id):
             running_state = lib_state.get_solver_is_running_state()
             if running_state is True:
                 lib_state.set_solver_user_interrupt_state(True)

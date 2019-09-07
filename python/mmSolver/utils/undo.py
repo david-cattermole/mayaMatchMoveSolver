@@ -52,6 +52,16 @@ def wrap_as_undo_chunk(func):
 
 @contextmanager
 def undo_chunk(name=None):
+    """
+
+    .. code::
+
+       with undo_chunk():
+           maya.cmds.createNode()
+
+    :param name:
+    :return:
+    """
     if name is None:
         name = str(uuid.uuid4())
     undo_state = maya.cmds.undoInfo(query=True, state=True)

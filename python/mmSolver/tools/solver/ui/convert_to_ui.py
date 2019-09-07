@@ -32,6 +32,21 @@ LOG = mmSolver.logger.get_logger()
 def markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd):
     """
     Convert a list of markers into a hierarchy to show the user.
+
+    :param mkr_list: List of Marker objects to convert into UI nodes.
+    :type mkr_list: [Marker, ..]
+
+    :param show_cam: Should we show cameras?
+    :type show_cam: bool
+
+    :param show_mkr: Should we show markers?
+    :type show_mkr: bool
+
+    :param show_bnd: Should we show bundles?
+    :type show_bnd: bool
+
+    :return: A list of UI MarkerNode objects.
+    :rtype: [MarkerNode, ..]
     """
     assert isinstance(show_cam, bool)
     assert isinstance(show_mkr, bool)

@@ -1,5 +1,12 @@
 """
 A tool to place a Marker at a position of a mouse click.
+
+.. todo::
+    While we are in the middle of a drag operation, we should not store
+    undo operations, but at the end we must. If we always store undo
+    operations each time the attribute is set we end up filling the undo
+    buffer very quickly.
+
 """
 
 import maya.cmds
@@ -8,10 +15,9 @@ import maya.api.OpenMayaUI as OpenMayaUI
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-
+import mmSolver.tools.placemarkermanip.constant as const
 
 LOG = mmSolver.logger.get_logger()
-CTX = 'mmSolverMarkerPlacementCtx'
 
 
 def place_marker():
@@ -41,7 +47,7 @@ def place_marker():
     # Get viewport coordinate. Viewport coordinate is relative to the
     # viewport resolution in pixels.
     vpX, vpY, vpZ = maya.cmds.draggerContext(
-        CTX,
+        const.CTX,
         query=True,
         dragPoint=True)
 
@@ -105,34 +111,43 @@ def place_marker():
 
 def on_pre_press():
     LOG.debug('on_pre_press')
+    return
 
 
 def on_press():
     LOG.debug('on_press')
     place_marker()
+    # NOTE: Turn OFF the undo stack!
+    maya.cmds.undoInfo(stateWithoutFlush=False)
+    return
+
+
+def on_hold():
+    # Note: This function is expected not to add any new commands to
+    # the undo stack.
+    place_marker()
+    return
+
+
+def on_drag():
+    # Note: This function is expected not to add any new commands to
+    # the undo stack.
+    place_marker()
+    return
 
 
 def on_release():
     LOG.debug('on_release')
     place_marker()
-
-
-def on_hold():
-    LOG.debug('on_hold')
-    place_marker()
-
-
-def on_drag():
-    # TODO: while we are in the middle of a drag operation, we should
-    #  not store undo operations, but at the end we must. If we always
-    #  store undo operations each time the attribute is set we end up
-    #  filling the undo buffer very quickly.
-    LOG.debug('on_drag')
-    place_marker()
+    # NOTE: Turn the undo stack back on! (We assume the user wants the
+    # undo stack on).
+    maya.cmds.undoInfo(stateWithoutFlush=True)
+    return
 
 
 def tool_clean_up():
     LOG.debug('tool_clean_up')
+    maya.cmds.undoInfo(stateWithoutFlush=True)
 
 
 def main():
@@ -141,17 +156,17 @@ def main():
     """
     mmapi.load_plugin()
 
-    if maya.cmds.draggerContext(CTX, exists=True):
-        maya.cmds.deleteUI(CTX)
+    if maya.cmds.draggerContext(const.CTX, exists=True):
+        maya.cmds.deleteUI(const.CTX)
 
     maya.cmds.draggerContext(
-        CTX,
+        const.CTX,
         prePressCommand=on_pre_press,
         pressCommand=on_press,
         releaseCommand=on_release,
         holdCommand=on_hold,
         dragCommand=on_drag,
         finalize=tool_clean_up,
-        name=CTX,
+        name=const.CTX,
         cursor='crossHair')
-    maya.cmds.setToolTo(CTX)
+    maya.cmds.setToolTo(const.CTX)

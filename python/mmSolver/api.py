@@ -153,7 +153,7 @@ from mmSolver._api.utils import (
     set_value_on_node_attr,
 )
 from mmSolver.utils.undo import (
-    undo_chunk,
+    undo_chunk_context,
 )
 from mmSolver.utils.animcurve import (
     create_anim_curve_node,
@@ -259,7 +259,7 @@ __all__ = [
     # Utilities Functions
     'load_plugin',
     'get_object_type',
-    'undo_chunk',
+    'undo_chunk_context',
     'load_plugin',
     'create_anim_curve_node',
     'get_data_on_node_attr',

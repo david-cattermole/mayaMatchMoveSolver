@@ -51,16 +51,21 @@ def wrap_as_undo_chunk(func):
 
 
 @contextmanager
-def undo_chunk(name=None):
+def undo_chunk_context(name=None):
     """
+    Create an undo chunk, using a context manager.
 
+    Example usage:
     .. code::
+       with undo_chunk_context() as chunk_name:
+           # do something with Maya
+           maya.cmds.createNode('transform')
 
-       with undo_chunk():
-           maya.cmds.createNode()
+    :param name: A string to use as the unique undo chunk name, or
+                 None to generate a random UUID.
+    :type name: str or None
 
-    :param name:
-    :return:
+    :return: Yields (returns) the name of the undo chunk.
     """
     if name is None:
         name = str(uuid.uuid4())

@@ -147,7 +147,7 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
         for r in ret:
             assert multDivide2 not in r
         print 'len(ret):', len(ret)
-        assert len(ret) == 106
+        assert len(ret) == 103
 
         # Test getting the affect mapping between markers and attrs.
         ret = mmapi.find_marker_attr_mapping(mkr_list, attr_list)

@@ -35,9 +35,10 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
+import mmSolver.utils.undo as undoutils
 import mmSolver.tools.loadmarker.constant as const
-import mmSolver.tools.loadmarker.lib.utils as lib
 import mmSolver.tools.loadmarker.ui.loadmarker_layout as loadmarker_layout
+import mmSolver.tools.loadmarker.lib.utils as lib
 import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 
 
@@ -83,20 +84,22 @@ class LoadMarkerWindow(BaseWindow):
             width, height = self.subForm.getImageResolution()
             self.progressBar.setValue(20)
 
-            mkr_data_list = mayareadfile.read(
-                file_path,
-                image_width=width,
-                image_height=height
-            )
-            self.progressBar.setValue(70)
+            with undoutils.undo_chunk_context():
+                mkr_data_list = mayareadfile.read(
+                    file_path,
+                    image_width=width,
+                    image_height=height
+                )
+                self.progressBar.setValue(70)
 
-            if camera_text == const.NEW_CAMERA_VALUE:
-                cam = lib.create_new_camera()
-            else:
-                cam = camera_data
-            self.progressBar.setValue(90)
+                if camera_text == const.NEW_CAMERA_VALUE:
+                    cam = lib.create_new_camera()
+                else:
+                    cam = camera_data
+                self.progressBar.setValue(90)
 
-            mayareadfile.create_nodes(mkr_data_list, cam=cam)
+                mayareadfile.create_nodes(mkr_data_list, cam=cam)
+
         finally:
             self.progressBar.setValue(100)
             self.progressBar.hide()

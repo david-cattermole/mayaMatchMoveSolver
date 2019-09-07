@@ -114,7 +114,10 @@ class LoadMarkerWindow(BaseWindow):
 
     def help(self):
         src = helputils.get_help_source()
-        helputils.open_help_in_browser(page='tools.html#load-markers', help_source=src)
+        helputils.open_help_in_browser(
+            page='tools.html#load-markers',
+            help_source=src
+        )
         return
 
 

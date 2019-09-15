@@ -35,13 +35,22 @@ def action_func_is_mmSolver(action):
     return func_is_mmsolver
 
 
+def func_str_to_callable(func_str):
+    """
+    Convert a function written as a string, to be a callable object.
+    """
+    assert isinstance(func_str, basestring) is True
+    # Look up callable function from name at run-time.
+    mod_name, func_name = func_str.rsplit('.', 1)
+    mod = importlib.import_module(mod_name)
+    func = getattr(mod, func_name)
+    return func
+
+
 def action_to_components(action):
     func = action.func
     args = list(action.args)
     kwargs = action.kwargs.copy()
     if isinstance(func, basestring):
-        # Look up callable function from name at run-time.
-        mod_name, func_name = func.rsplit('.', 1)
-        mod = importlib.import_module(mod_name)
-        func = getattr(mod, func_name)
+        func = func_str_to_callable(func)
     return func, args, kwargs

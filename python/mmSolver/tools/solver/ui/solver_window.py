@@ -40,13 +40,6 @@ import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
 import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 import mmSolver.tools.solver.ui.solver_layout as solver_layout
-import mmSolver.tools.loadmarker.tool as loadmarker_tool
-import mmSolver.tools.selection.tools as selection_tool
-import mmSolver.tools.createmarker.tool as createmarker_tool
-import mmSolver.tools.createbundle.tool as createbundle_tool
-import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
-import mmSolver.tools.convertmarker.tool as convertmarker_tool
-import mmSolver.tools.markerbundlerename.tool as mbrename_tool
 import mmSolver.tools.aboutwindow.tool as aboutwin_tool
 import mmSolver.tools.sysinfowindow.tool as sysinfowin_tool
 
@@ -296,89 +289,6 @@ class SolverWindow(BaseWindow):
 
         menubar.addMenu(view_menu)
 
-        # Tools Menu
-        tools_menu = QtWidgets.QMenu('Tools', menubar)
-
-        # Create Marker
-        label = 'Create Marker'
-        tooltip = 'Create Markers on the selected camera.'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.createMarkerCB))
-        tools_menu.addAction(action)
-
-        # Convert to Marker
-        label = 'Convert to Marker'
-        tooltip = 'Convert the selection to Markers.'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.convertToMarkerCB))
-        tools_menu.addAction(action)
-
-        # Load Markers
-        label = 'Load Markers...'
-        tooltip = 'Load Markers from a file.'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.loadMarkerCB))
-        tools_menu.addAction(action)
-
-        tools_menu.addSeparator()
-
-        # Create Bundle
-        label = 'Create Bundle'
-        tooltip = 'Create a default Bundle node.'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.createBundleCB))
-        tools_menu.addAction(action)
-
-        tools_menu.addSeparator()
-
-        # Link Marker + Bundle
-        label = 'Link Marker + Bundle'
-        tooltip = 'Link the selected Marker and Bundle together.'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.linkMarkerBundleCB))
-        tools_menu.addAction(action)
-
-        # Unlink Marker from all Bundles
-        label = 'Unlink Marker from all Bundles'
-        tooltip = 'Unlink all selected Markers from their Bundle.'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.unlinkMarkerBundleCB))
-        tools_menu.addAction(action)
-
-        tools_menu.addSeparator()
-
-        # Toogle Marker / Bundle selection
-        label = 'Toggle Marker / Bundle'
-        tooltip = 'Select connected Markers, or Bundles.'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.toggleMarkerBundleSelectionCB))
-        tools_menu.addAction(action)
-
-        # Select Marker / Bundle
-        label = 'Select Marker + Bundle'
-        tooltip = 'Select the connected Markers and Bundles.'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.selectBothMarkersAndBundlesCB))
-        tools_menu.addAction(action)
-
-        # Rename Marker + Bundle
-        label = 'Rename Markers + Bundles'
-        tooltip = 'Rename the selected Markers and Bundles;'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.renameMarkerBundleCB))
-        tools_menu.addAction(action)
-
-        menubar.addMenu(tools_menu)
-
         # Log Menu
         # This menu depicts a radio button allowing the user to choose
         # how much information is returned to the console (the logging
@@ -509,58 +419,6 @@ class SolverWindow(BaseWindow):
 
     def removeCollectionNodeCB(self):
         self.subForm.collection_widget.removeActiveNode()
-        return
-
-    def createMarkerCB(self):
-        """
-        Create a Marker under the active viewport camera.
-        """
-        createmarker_tool.main()
-        return
-
-    def convertToMarkerCB(self):
-        """
-        Converts all selected transform nodes into markers.
-        """
-        convertmarker_tool.main()
-        return
-
-    def loadMarkerCB(self):
-        """
-        Open a UI where we can paste a file path in and press "ok". The UI
-        could also show the point data before loading the file.
-        """
-        loadmarker_tool.open_window()
-        return
-
-    def createBundleCB(self):
-        """
-        Create a Bundle node, attached to the selected markers.
-        """
-        createbundle_tool.main()
-        return
-
-    def toggleMarkerBundleSelectionCB(self):
-        selection_tool.swap_between_selected_markers_and_bundles()
-        return
-
-    def selectBothMarkersAndBundlesCB(self):
-        selection_tool.select_both_markers_and_bundles()
-        return
-
-    def renameMarkerBundleCB(self):
-        """
-        Rename the selected markers and bundles (with a prompt window).
-        """
-        mbrename_tool.main()
-        return
-
-    def linkMarkerBundleCB(self):
-        link_mb_tool.link_marker_bundle()
-        return
-
-    def unlinkMarkerBundleCB(self):
-        link_mb_tool.unlink_marker_bundle()
         return
 
     @staticmethod

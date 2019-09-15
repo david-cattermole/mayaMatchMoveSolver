@@ -44,7 +44,9 @@ def get_markers_from_collection(col):
     return col.get_marker_list()
 
 
-def _add_callback_to_any_node(callback_manager, callback_type, node_path, add_callbacks_func, update_func):
+def _add_callback_to_any_node(callback_manager, callback_type, node_path,
+                              add_callbacks_func,
+                              update_func):
     msg = 'Node UUID has multiple paths: node=%r node_uuids=%r'
     node_uuids = maya.cmds.ls(node_path, uuid=True) or []
     if len(node_uuids) != 1:
@@ -54,10 +56,10 @@ def _add_callback_to_any_node(callback_manager, callback_type, node_path, add_ca
     if callback_manager.type_has_node(callback_type, node_uuid) is True:
         return
     callback_ids = add_callbacks_func(
-            node_uuid,
-            node_path,
-            update_func,
-        )
+        node_uuid,
+        node_path,
+        update_func,
+    )
     callback_manager.add_node_ids(
         callback_type,
         node_uuid,

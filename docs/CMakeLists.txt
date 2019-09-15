@@ -26,6 +26,8 @@ add_custom_command(
 add_custom_target(
         build_documentation ALL
         DEPENDS ${output_file}
-        COMMENT "Compiling Qt UI file (${input_file})..."
+        COMMENT "Building Documentation (with Sphinx) (${input_file})..."
 )
-add_dependencies(mmSolver build_documentation)
+if (BUILD_PLUGIN)
+    add_dependencies(mmSolver build_documentation)
+endif ()

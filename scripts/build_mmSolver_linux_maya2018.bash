@@ -56,6 +56,17 @@ BUILD_PACKAGE=0
 ###############################################################################
 
 
+# Build options, to allow faster compilation times. (not to be used by
+# users wanting to build this project.)
+BUILD_PLUGIN=1
+BUILD_PYTHON=1
+BUILD_MEL=1
+BUILD_QT_UI=1
+BUILD_DOCS=1
+BUILD_ICONS=1
+BUILD_CONFIG=1
+BUILD_TESTS=1
+
 # Store the current working directory, to return to.
 CWD=`pwd`
 

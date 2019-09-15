@@ -20,6 +20,7 @@
 #
 cmake_minimum_required(VERSION 2.8)
 
+
 # Project configuration.
 project(mayaMatchMoveSolver)
 set(PROJECT_VERSION_MAJOR 0)
@@ -31,27 +32,62 @@ set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodes
 set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
 set(PROJECT_COPYRIGHT "2018, 2019, David Cattermole, Anil Reddy.")
 
+
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
         ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
+
+# Build options; What will we build?  This is used mostly for
+# developer debug. If the developer is working on some Python code
+# only, we don't need to wait for the Maya Plug-In to compute each
+# time.
+set(BUILD_PLUGIN 1 CACHE BOOLEAN
+        "Do you want to build the plug-in?")
+set(BUILD_PYTHON 1 CACHE BOOLEAN
+        "Do you want to build and install the Python API and tools?")
+set(BUILD_MEL 1 CACHE BOOLEAN
+        "Do you want to build and install the MEL scripts and tools?")
+set(BUILD_QT_UI 1 CACHE BOOLEAN
+        "Do you want to build the Qt UI files?")
+set(BUILD_DOCS 1 CACHE BOOLEAN
+        "Do you want to build and install the documentation?")
+set(BUILD_ICONS 1 CACHE BOOLEAN
+        "Do you want to build and install the icons?")
+set(BUILD_CONFIG 1 CACHE BOOLEAN
+        "Do you want to build and install the config files?")
+set(BUILD_TESTS 1 CACHE BOOLEAN
+        "Do you want to build the test files?")
+
+
 # Maya SDK
-set(MAYA_VERSION "2017" CACHE STRING "Maya version number")
-set(MAYA_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH "Maya install directory")
-set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH "Maya include directory")
-set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH "Maya library directory")
+set(MAYA_VERSION "2017" CACHE STRING
+        "Maya version number")
+set(MAYA_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH
+        "Maya install directory")
+set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH
+        "Maya include directory")
+set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH
+        "Maya library directory")
+
 
 # Lev-Mar
-# WARNING: 'Lev-Mar' is GPL licensed and must not be distributed in binary form to anyone.
-set(USE_GPL_LEVMAR 0 CACHE BOOLEAN "Compile with the GPL-licensed Lev-Mar library?")
+#
+# WARNING: 'Lev-Mar' is GPL licensed and must not be
+# distributed in binary form to anyone.
+set(USE_GPL_LEVMAR 0 CACHE BOOLEAN
+        "Compile with the GPL-licensed Lev-Mar library?")
 set(LEVMAR_ROOT "/usr/local" CACHE PATH "Levmar directory")
-set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH "Levmar include directory")
+set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH
+        "Levmar include directory")
 set(LEVMAR_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
+
 
 # CMinpack
 set(USE_CMINPACK 1 CACHE BOOLEAN "Compile with the cminpack library?")
 set(CMINPACK_ROOT "/usr/local" CACHE PATH "CMinpack directory")
-set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH "cminpack include directory")
+set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH
+        "cminpack include directory")
 set(CMINPACK_LIB_PATH "/usr/local/lib" CACHE PATH "cminpack library directory")
 
 
@@ -60,27 +96,32 @@ set(USE_BLAS OFF CACHE BOOLEAN "Should we use BLAS?")
 set(BLAS_INCLUDE_PATH "/usr/include/blas" CACHE PATH "BLAS library directory")
 set(BLAS_LIB_PATH "/usr/lib64/blas" CACHE PATH "BLAS library directory")
 set(BLAS_LIB_NAMES
-       ""
-       CACHE STRING
-       "BLAS libraries to link")
+        ""
+        CACHE STRING
+        "BLAS libraries to link")
+
 
 # Default Solver to use.
 set(PREFERRED_SOLVER "cminpack_lmder" CACHE STRING
-        "Choices are cminpack_lm, cminpack_lmder or levmar. Which solver is used by default?")
+        "Choices are cminpack_lm, cminpack_lmder or levmar. "
+        "Which solver is used by default?")
+
 
 # Module paths
 if (UNIX)
     set(MODULE_OS_NAME linux)
-elseif(MSVC)
+elseif (MSVC)
     set(MODULE_OS_NAME win64)
-else()
+else ()
     message(FATAL_ERROR "Only Linux and Windows are supported.")
-endif()
+endif ()
+
 
 # Module names
 set(MODULE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
 set(MODULE_FULL_NAME "${MODULE_NAME}-maya${MAYA_VERSION}-${MODULE_OS_NAME}")
 set(MODULE_BUILD_DIR "${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}")
+
 
 # Set a default solver
 set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
@@ -89,34 +130,35 @@ if ((USE_GPL_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 1))
 elseif ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
     if (NOT (DEFAULT_SOLVER MATCHES "cminpack_lm[a-zA-Z]+"))
         message(WARNING
-          "Preferred solver cannot be used because it's not enabled. "
-          "preferred=${PREFERRED_SOLVER} "
-          "default=${DEFAULT_SOLVER} "
-          "use_cminpack=${USE_CMINPACK} "
-          "use_gpl_levmar=${USE_GPL_LEVMAR}"
-          )
+                "Preferred solver cannot be used because it's not enabled. "
+                "preferred=${PREFERRED_SOLVER} "
+                "default=${DEFAULT_SOLVER} "
+                "use_cminpack=${USE_CMINPACK} "
+                "use_gpl_levmar=${USE_GPL_LEVMAR}"
+                )
         set(DEFAULT_SOLVER "cminpack_lm")
-    endif()
+    endif ()
 elseif ((USE_GPL_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 0))
     if (NOT (DEFAULT_SOLVER STREQUAL "levmar"))
-        message(WARNING 
-          "Preferred solver cannot be used because it's not enabled. "
-          "preferred=${PREFERRED_SOLVER} "
-          "default=${DEFAULT_SOLVER} "
-          "use_cminpack=${USE_CMINPACK} "
-          "use_gpl_levmar=${USE_GPL_LEVMAR}"
-        )
+        message(WARNING
+                "Preferred solver cannot be used because it's not enabled. "
+                "preferred=${PREFERRED_SOLVER} "
+                "default=${DEFAULT_SOLVER} "
+                "use_cminpack=${USE_CMINPACK} "
+                "use_gpl_levmar=${USE_GPL_LEVMAR}"
+                )
         set(DEFAULT_SOLVER "levmar")
-    endif()
-else()
+    endif ()
+else ()
     message(FATAL_ERROR
-      " Solver is not available! "
-      "preferred=${PREFERRED_SOLVER} "
-      "default=${DEFAULT_SOLVER} "
-      "use_cminpack=${USE_CMINPACK} "
-      "use_gpl_levmar=${USE_GPL_LEVMAR}"
-    )
-endif()
+            " Solver is not available! "
+            "preferred=${PREFERRED_SOLVER} "
+            "default=${DEFAULT_SOLVER} "
+            "use_cminpack=${USE_CMINPACK} "
+            "use_gpl_levmar=${USE_GPL_LEVMAR}"
+            )
+endif ()
+
 
 # Create Module Description file.
 if (UNIX)
@@ -124,34 +166,42 @@ if (UNIX)
             ${CMAKE_CURRENT_SOURCE_DIR}/modules/mayaMatchMoveSolver_linux.mod
             ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_FULL_NAME}.mod
             @ONLY)
-elseif(MSVC)
+elseif (MSVC)
     configure_file(
             ${CMAKE_CURRENT_SOURCE_DIR}/modules/mayaMatchMoveSolver_windows.mod
             ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_FULL_NAME}.mod
             @ONLY)
-else()
+else ()
     message(FATAL_ERROR "Only Linux and Windows are supported.")
-endif()
+endif ()
 
 
 # Create Python file with some build options baked in.
-configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py.in
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py
-        @ONLY)
+if (BUILD_PYTHON)
+    configure_file(
+            ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py.in
+            ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py
+            @ONLY)
+endif ()
+
 
 # Create C Header file with some build options baked in.
-configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h.in
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h
-        @ONLY)
+if (BUILD_PLUGIN)
+    configure_file(
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h.in
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h
+            @ONLY)
+endif ()
+
 
 # Create Python file for documentation sphinx build with some build
 # options baked in.
-configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py.in
-        ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py
-        @ONLY)
+if (BUILD_PYTHON)
+    configure_file(
+            ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py.in
+            ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py
+            @ONLY)
+endif ()
 
 
 # Source
@@ -196,12 +246,14 @@ set(SOURCE_FILES
         src/MMReprojectionCmd.h
         src/MMReprojectionCmd.cpp
         src/pluginMain.cpp
-)
+        )
+
 
 # Find external packages
 find_package(Maya REQUIRED)
 find_package(LevMar)
 find_package(CMinpack)
+
 
 # Compile Flags.
 #
@@ -225,7 +277,7 @@ if (MSVC)
     # Must add the plug-in entry/exit points otherwise
     # the plug-in won't load.
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /export:initializePlugin /export:uninitializePlugin")
-else()
+else ()
     # For Linux with GCC
     set(CMAKE_CXX_FLAGS_DEBUG "-std=c++0x -O0 -g -Wall")
     set(CMAKE_CXX_FLAGS_RELEASE "-std=c++0x -O3 -fPIC -fno-strict-aliasing -m64")
@@ -234,189 +286,217 @@ else()
     # '-ftemplate-depth-27', rather than '25' is required to compile under GCC 4.8.5.
     # '-ftemplate-depth-35', rather than '25' is required to compile under GCC 5.5.x.
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-deprecated -Wno-reorder -ftemplate-depth-35 -fno-gnu-keywords")
-endif()
+endif ()
 
-function (add_target_link_library_names target names)
+
+function(add_target_link_library_names target names)
     string(STRIP ${names} names_strip)
     string(REPLACE " " ";" names_list ${names_strip})
-    foreach(name IN LISTS names_list)
+    foreach (name IN LISTS names_list)
         target_link_libraries(${target} ${name})
-    endforeach()
+    endforeach ()
 endfunction()
 
-# 'mmSolver' maya plugin library
-add_library(mmSolver SHARED ${SOURCE_FILES})
-target_include_directories(mmSolver
-        PRIVATE include
-        PRIVATE src
-        PUBLIC ${MAYA_INCLUDE_DIRS}
-)
-target_link_libraries(mmSolver
-        ${MAYA_OpenMaya_LIBRARY}
-        ${MAYA_OpenMayaAnim_LIBRARY}
-        ${MAYA_Foundation_LIBRARY}
-)
 
-if (USE_GPL_LEVMAR)
-    message(WARNING
-            "'levmar' library is licensed under GNU GPL and therefore this library "
-            "must not be distributed in binary form.")
-    target_include_directories(mmSolver PUBLIC ${LEVMAR_INCLUDE_DIRS})
-    target_link_libraries(mmSolver ${LEVMAR_LIBRARIES})
-    add_definitions(-DUSE_SOLVER_LEVMAR)
-endif()
+if (BUILD_PLUGIN)
+    # 'mmSolver' maya plugin library
+    add_library(mmSolver SHARED ${SOURCE_FILES})
+    target_include_directories(mmSolver
+            PRIVATE include
+            PRIVATE src
+            PUBLIC ${MAYA_INCLUDE_DIRS}
+            )
+    target_link_libraries(mmSolver
+            ${MAYA_OpenMaya_LIBRARY}
+            ${MAYA_OpenMayaAnim_LIBRARY}
+            ${MAYA_Foundation_LIBRARY}
+            )
+
+    if (USE_GPL_LEVMAR)
+        message(WARNING
+                "'levmar' library is licensed under GNU GPL and therefore this library "
+                "must not be distributed in binary form.")
+        target_include_directories(mmSolver PUBLIC ${LEVMAR_INCLUDE_DIRS})
+        target_link_libraries(mmSolver ${LEVMAR_LIBRARIES})
+        add_definitions(-DUSE_SOLVER_LEVMAR)
+    endif ()
 
 
-if (USE_CMINPACK)
-    target_include_directories(mmSolver PUBLIC ${CMINPACK_INCLUDE_DIRS})
-    target_link_libraries(mmSolver ${CMINPACK_LIBRARIES})
-    add_definitions(-DUSE_SOLVER_CMINPACK)
-endif()
+    if (USE_CMINPACK)
+        target_include_directories(mmSolver PUBLIC ${CMINPACK_INCLUDE_DIRS})
+        target_link_libraries(mmSolver ${CMINPACK_LIBRARIES})
+        add_definitions(-DUSE_SOLVER_CMINPACK)
+    endif ()
 
-# On Linux the 'm' library is required.
-if (UNIX)
-    target_link_libraries(mmSolver m)
-endif()
+    # On Linux the 'm' library is required.
+    if (UNIX)
+        target_link_libraries(mmSolver m)
+    endif ()
 
-# no 'lib' prefix to Maya plugin .so files
-set_target_properties(mmSolver PROPERTIES PREFIX "")
+    # no 'lib' prefix to Maya plugin .so files
+    set_target_properties(mmSolver PROPERTIES PREFIX "")
 
-# On MacOS, the Maya Plug-In file extension is '.bundle'.
-# On Windows, the Maya Plug-In file extension is '.mll', not '.dll'.
-if(APPLE)
-    set(MAYA_PLUGIN_SUFFIX ".bundle")
-elseif (WIN32)
-    set_target_properties(mmSolver PROPERTIES SUFFIX ".mll")
-endif()
+    # On MacOS, the Maya Plug-In file extension is '.bundle'.
+    # On Windows, the Maya Plug-In file extension is '.mll', not '.dll'.
+    if (APPLE)
+        set(MAYA_PLUGIN_SUFFIX ".bundle")
+    elseif (WIN32)
+        set_target_properties(mmSolver PROPERTIES SUFFIX ".mll")
+    endif ()
 
-# HACK: On Linux, LD_LIBRARY_PATH cannot be modified at runtime (on
-# Windows it can), therefore the .mod files *can* change
-# LD_LIBRARY_PATH, but the changes are not used by 'ld.so', which
-# resolves the library path. Therefore, to make sure the the libraries
-# in <module root>/lib are searched for libraries, we add a relative
-# directory 'RPATH' to the library which tells the library resolution
-# to search in the 'lib' directory inside the module root. Note: Linux
-# does not allow run-time changes for security reasons.
-if(UNIX)
-    # We must escape the '$' symbol to make sure it is passed to the
-    # compiler.
+    # HACK: On Linux, LD_LIBRARY_PATH cannot be modified at runtime (on
+    # Windows it can), therefore the .mod files *can* change
+    # LD_LIBRARY_PATH, but the changes are not used by 'ld.so', which
+    # resolves the library path. Therefore, to make sure the the libraries
+    # in <module root>/lib are searched for libraries, we add a relative
+    # directory 'RPATH' to the library which tells the library resolution
+    # to search in the 'lib' directory inside the module root. Note: Linux
+    # does not allow run-time changes for security reasons.
+    if (UNIX)
+        # We must escape the '$' symbol to make sure it is passed to the
+        # compiler.
+        set_target_properties(mmSolver PROPERTIES
+                BUILD_WITH_INSTALL_RPATH ON
+                INSTALL_RPATH "\$ORIGIN/../lib"
+                )
+    endif ()
+
+    # Output to the Module plug-ins directory.
+    #
+    # On Windows, the Plug-In is treated as a 'RUNTIME' type,
+    # on Linux, it's a 'LIBRARY' type.
     set_target_properties(mmSolver PROPERTIES
-         BUILD_WITH_INSTALL_RPATH ON
-         INSTALL_RPATH "\$ORIGIN/../lib"
-    )
-endif()
+            RUNTIME_OUTPUT_DIRECTORY "${MODULE_FULL_NAME}"
+            LIBRARY_OUTPUT_DIRECTORY "${MODULE_FULL_NAME}"
+            ARCHIVE_OUTPUT_DIRECTORY "${MODULE_FULL_NAME}")
+endif ()
 
-# Output to the Module plug-ins directory.
-#
-# On Windows, the Plug-In is treated as a 'RUNTIME' type,
-# on Linux, it's a 'LIBRARY' type.
-set_target_properties(mmSolver PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${MODULE_FULL_NAME}"
-        LIBRARY_OUTPUT_DIRECTORY "${MODULE_FULL_NAME}"
-        ARCHIVE_OUTPUT_DIRECTORY "${MODULE_FULL_NAME}")
 
 # Install the Module Description file.
 install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_FULL_NAME}.mod
         DESTINATION "./")
 
-# Install the Plug-In.
-install(TARGETS mmSolver
-        RUNTIME DESTINATION "${MODULE_FULL_NAME}/plug-ins"
-        LIBRARY DESTINATION "${MODULE_FULL_NAME}/plug-ins")
 
-# Install dynamic libraries
-if(USE_CMINPACK AND CMINPACK_FOUND)
-    if(WIN32)
-        if(EXISTS ${CMINPACK_LIBRARY_DLL})
-            install(FILES ${CMINPACK_LIBRARY_DLL}
-                    DESTINATION "${MODULE_FULL_NAME}/lib/")
-        else()
+if (BUILD_PLUGIN)
+    # Install the Plug-In.
+    install(TARGETS mmSolver
+            RUNTIME DESTINATION "${MODULE_FULL_NAME}/plug-ins"
+            LIBRARY DESTINATION "${MODULE_FULL_NAME}/plug-ins")
+
+
+    # Install dynamic libraries; cminpack
+    if (USE_CMINPACK AND CMINPACK_FOUND)
+        if (WIN32)
+            if (EXISTS ${CMINPACK_LIBRARY_DLL})
+                install(FILES ${CMINPACK_LIBRARY_DLL}
+                        DESTINATION "${MODULE_FULL_NAME}/lib/")
+            else ()
+                install(FILES ${CMINPACK_LIBRARY}
+                        DESTINATION "${MODULE_FULL_NAME}/lib/")
+            endif ()
+        elseif (UNIX)
+            # Install both symlink and real library
+            get_filename_component(ABS_CMINPACK_LIBRARY ${CMINPACK_LIBRARY} REALPATH)
             install(FILES ${CMINPACK_LIBRARY}
                     DESTINATION "${MODULE_FULL_NAME}/lib/")
-        endif()
-    elseif(UNIX)
-        # Install both symlink and real library
-        get_filename_component(ABS_CMINPACK_LIBRARY ${CMINPACK_LIBRARY} REALPATH)
-        install(FILES ${CMINPACK_LIBRARY}
-                DESTINATION "${MODULE_FULL_NAME}/lib/")
-        install(FILES ${ABS_CMINPACK_LIBRARY}
-                DESTINATION "${MODULE_FULL_NAME}/lib/")
-    endif()
-endif()
-
-if(USE_GPL_LEVMAR AND LEVMAR_FOUND)
-    if(WIN32)
-        if(EXISTS ${LEVMAR_LIBRARY_DLL})
-            install(FILES ${LEVMAR_LIBRARY_DLL}
+            install(FILES ${ABS_CMINPACK_LIBRARY}
                     DESTINATION "${MODULE_FULL_NAME}/lib/")
-        else()
+        endif ()
+    endif ()
+
+    # Install dynamic libraries; levmar
+    if (USE_GPL_LEVMAR AND LEVMAR_FOUND)
+        if (WIN32)
+            if (EXISTS ${LEVMAR_LIBRARY_DLL})
+                install(FILES ${LEVMAR_LIBRARY_DLL}
+                        DESTINATION "${MODULE_FULL_NAME}/lib/")
+            else ()
+                install(FILES ${LEVMAR_LIBRARY}
+                        DESTINATION "${MODULE_FULL_NAME}/lib/")
+            endif ()
+        elseif (UNIX)
+            # Install both symlink and real library
+            get_filename_component(ABS_LEVMAR_LIBRARY ${LEVMAR_LIBRARY} REALPATH)
             install(FILES ${LEVMAR_LIBRARY}
                     DESTINATION "${MODULE_FULL_NAME}/lib/")
-        endif()
-    elseif(UNIX)
-        # Install both symlink and real library
-        get_filename_component(ABS_LEVMAR_LIBRARY ${LEVMAR_LIBRARY} REALPATH)
-        install(FILES ${LEVMAR_LIBRARY}
-                DESTINATION "${MODULE_FULL_NAME}/lib/")
-        install(FILES ${ABS_LEVMAR_LIBRARY}
-                DESTINATION "${MODULE_FULL_NAME}/lib/")
-    endif()
-endif()
+            install(FILES ${ABS_LEVMAR_LIBRARY}
+                    DESTINATION "${MODULE_FULL_NAME}/lib/")
+        endif ()
+    endif ()
+endif ()
+
 
 # Install Qt.py, if exists.
 set(QTPY_FILE "${CMAKE_SOURCE_DIR}/external/install/qtpy/Qt.py")
-if(EXISTS ${QTPY_FILE})
+if (EXISTS ${QTPY_FILE})
     install(FILES ${QTPY_FILE}
             DESTINATION "${MODULE_FULL_NAME}/python_qtpy/")
-endif()
+endif ()
+
 
 # Install Python API and tools
-install(DIRECTORY "python/"
-        DESTINATION "${MODULE_FULL_NAME}/python"
-        FILES_MATCHING PATTERN "*.py")
+if (BUILD_PYTHON)
+    install(DIRECTORY "python/"
+            DESTINATION "${MODULE_FULL_NAME}/python"
+            FILES_MATCHING PATTERN "*.py")
+endif ()
+
 
 # Install Maya MEL and Python scripts.
-install(DIRECTORY "mel/"
-        DESTINATION "${MODULE_FULL_NAME}/scripts"
-        FILES_MATCHING PATTERN "*.mel")
-install(DIRECTORY "mel/"
-        DESTINATION "${MODULE_FULL_NAME}/scripts"
-        FILES_MATCHING PATTERN "*.py")
-install(DIRECTORY "mel/AETemplates/"
-        DESTINATION "${MODULE_FULL_NAME}/scripts/AETemplates"
-        FILES_MATCHING PATTERN "*.mel")
+if (BUILD_MEL)
+    install(DIRECTORY "mel/"
+            DESTINATION "${MODULE_FULL_NAME}/scripts"
+            FILES_MATCHING PATTERN "*.mel")
+    install(DIRECTORY "mel/"
+            DESTINATION "${MODULE_FULL_NAME}/scripts"
+            FILES_MATCHING PATTERN "*.py")
+    install(DIRECTORY "mel/AETemplates/"
+            DESTINATION "${MODULE_FULL_NAME}/scripts/AETemplates"
+            FILES_MATCHING PATTERN "*.mel")
+endif ()
+
 
 # Install 3DEqualizer scripts.
 install(DIRECTORY "3dequalizer/scriptdb/"
         DESTINATION "${MODULE_FULL_NAME}/3dequalizer"
         FILES_MATCHING PATTERN "*.py")
 
+
 # Install SynthEyes scripts.
 install(DIRECTORY "syntheyes/"
         DESTINATION "${MODULE_FULL_NAME}/syntheyes"
         FILES_MATCHING PATTERN "*.szl")
 
+
 # Install Config.
-install(DIRECTORY "config/"
-        DESTINATION "${MODULE_FULL_NAME}/config"
-        FILES_MATCHING PATTERN "*.json")
+if (BUILD_CONFIG)
+    install(DIRECTORY "config/"
+            DESTINATION "${MODULE_FULL_NAME}/config"
+            FILES_MATCHING PATTERN "*.json")
+endif ()
+
 
 # Install Icons.
-install(DIRECTORY "icons/"
-        DESTINATION "${MODULE_FULL_NAME}/icons"
-        FILES_MATCHING PATTERN "*.png"
-        PATTERN "icons/edit" EXCLUDE
-        PATTERN "icons/library" EXCLUDE)
-install(DIRECTORY "icons/"
-        DESTINATION "${MODULE_FULL_NAME}/icons"
-        FILES_MATCHING PATTERN "*.svg"
-        PATTERN "icons/edit" EXCLUDE
-        PATTERN "icons/library" EXCLUDE)
+if (BUILD_ICONS)
+    install(DIRECTORY "icons/"
+            DESTINATION "${MODULE_FULL_NAME}/icons"
+            FILES_MATCHING PATTERN "*.png"
+            PATTERN "icons/edit" EXCLUDE
+            PATTERN "icons/library" EXCLUDE)
+    install(DIRECTORY "icons/"
+            DESTINATION "${MODULE_FULL_NAME}/icons"
+            FILES_MATCHING PATTERN "*.svg"
+            PATTERN "icons/edit" EXCLUDE
+            PATTERN "icons/library" EXCLUDE)
+endif ()
+
 
 # Install Documentation
-install(DIRECTORY "docs/build/html/"
-        DESTINATION "${MODULE_FULL_NAME}/docs/html")
+if (BUILD_DOCS)
+    install(DIRECTORY "docs/build/html/"
+            DESTINATION "${MODULE_FULL_NAME}/docs/html")
+endif ()
 
 # Install misc files
 install(FILES
@@ -424,6 +504,7 @@ install(FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/INSTALL.md
         ${CMAKE_CURRENT_SOURCE_DIR}/README.md
         DESTINATION "${MODULE_FULL_NAME}/")
+
 
 # Package Configuration.
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
@@ -446,7 +527,8 @@ if (WIN32 AND NOT UNIX)
 elseif (UNIX AND NOT WIN32)
     # .tar.gz for Linux.
     set(CPACK_GENERATOR "TGZ")
-endif()
+endif ()
+
 
 # TODO: Set up proper 'source' package file inclusion rules.
 # # set(CPACK_SOURCE_GENERATOR "TGZ")
@@ -454,10 +536,17 @@ endif()
 
 # Use CPack (part of CMake) to generate the packages...
 # If 'CPack' is not included, the 'packages' target will not be generated.
-include(CPack)
+# include(CPack)
 
-add_subdirectory(python)
-add_subdirectory(docs)
+if (BUILD_PYTHON)
+    add_subdirectory(python)
+endif ()
 
-enable_testing()
-add_subdirectory(tests)
+if (BUILD_DOCS)
+    add_subdirectory(docs)
+endif ()
+
+if (BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif ()

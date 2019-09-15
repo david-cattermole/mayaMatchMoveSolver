@@ -67,7 +67,13 @@ def stringToIntList(value):
     Convert a string of integer ranges to a list of integers.
 
     value = '1001-1101'
-    value = '1001,1002,1003-1005,1010-1012
+    value = '1001,1002,1003-1005,1010-1012'
+
+    :param value: The string value to convert.
+    :type value: str
+    
+    :return: List of integer numbers parsed from the string.
+    :rtype: [int, ..]
     """
     if isinstance(value, basestring) is False:
         raise TypeError

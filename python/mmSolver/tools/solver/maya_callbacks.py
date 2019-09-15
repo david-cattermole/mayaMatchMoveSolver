@@ -67,6 +67,10 @@ class CallbackManager(object):
             lambda: collections.defaultdict(set)
         )
 
+    def __del__(self):
+        callback_ids = list(self.get_all_ids())
+        remove_callbacks(callback_ids)
+
     def get_all_ids(self):
         all_callback_ids = set()
         msg = 'CallbackManager.get_all_ids: type=%r node=%r id=%r'

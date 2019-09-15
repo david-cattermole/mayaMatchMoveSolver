@@ -73,7 +73,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         # Populate the UI with data.
         self.collection_widget.nameChanged.connect(self.updateDynamicWindowTitle)
-        self.collection_widget.itemChanged.connect(self.solve_state.updateStatusWithSolveResult)
+        # self.collection_widget.itemChanged.connect(self.solver_state.updateStatusWithSolveResult)
         self.collection_widget.itemChanged.connect(self.object_browser.updateModel)
         self.collection_widget.itemChanged.connect(self.object_browser.updateInfo)
         self.collection_widget.itemChanged.connect(self.object_browser.updateToggleButtons)

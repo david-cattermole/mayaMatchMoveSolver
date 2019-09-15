@@ -123,6 +123,21 @@ def get_current_frame():
     return int(time)
 
 
+def set_current_frame(value, update=None):
+    """
+    Get the current Maya frame number.
+
+    :return: Frame number
+    :rtype: int
+    """
+    assert isinstance(value, (float, int, long))
+    if isinstance(update, (bool, int, long)):
+        maya.cmds.currentTime(value, update=update)
+    else:
+        maya.cmds.currentTime(value)
+    return
+
+
 def prompt_for_new_node_name(title, message, text):
     """
     Ask the user for a new node name.
@@ -161,6 +176,7 @@ def get_markers_from_selection():
     Given a selection of nodes, find the associated markers.
 
     :return: list of Marker objects.
+    :rtype: [Marker, ..]
     """
     nodes = maya.cmds.ls(long=True, selection=True) or []
     node_categories = mmapi.filter_nodes_into_categories(nodes)
@@ -267,6 +283,9 @@ def get_selected_maya_attributes():
 def get_selected_node_default_attributes():
     """
     Get the attributes on the selected nodes.
+
+    :returns: List of mmSolver API Attribute objects.
+    :rtype: [Attribute, ..]
     """
     attr_list = []
     sel = maya.cmds.ls(selection=True, long=True) or []

@@ -91,8 +91,8 @@ class SolverWindow(BaseWindow):
             callback_ids,
         )
 
-        # Update the status with the last solve result
-        self.updateStatusWithSolveResult()
+        # # Update the status with the last solve result
+        # self.updateStatusWithSolveResult()
         return
 
     def __del__(self):
@@ -102,34 +102,33 @@ class SolverWindow(BaseWindow):
         callback_ids = list(self.callback_manager.get_all_ids())
         maya_callbacks.remove_callbacks(callback_ids)
         del self.callback_manager
-        self.callback_manager = maya_callbacks.CallbackManager()
 
-    def updateStatusWithSolveResult(self):
-        col = lib_state.get_active_collection()
-        if col is None:
-            return
-        info_fn = self.setSolveInfoLine
-        solres_list = col.get_last_solve_results()
-        timestamp = col.get_last_solve_timestamp()
-        total_time = col.get_last_solve_duration()
+    # def updateStatusWithSolveResult(self):
+    #     col = lib_state.get_active_collection()
+    #     if col is None:
+    #         return
+    #     info_fn = self.setSolveInfoLine
+    #     solres_list = col.get_last_solve_results()
+    #     timestamp = col.get_last_solve_timestamp()
+    #     total_time = col.get_last_solve_duration()
 
-        msg = 'No solve performed.'
-        if (len(solres_list) == 0):
-            info_fn(msg)
-        if timestamp is None:
-            timestamp = time.time()
-        if total_time is None:
-            total_time = 0.0
+    #     msg = 'No solve performed.'
+    #     if (len(solres_list) == 0):
+    #         info_fn(msg)
+    #     if timestamp is None:
+    #         timestamp = time.time()
+    #     if total_time is None:
+    #         total_time = 0.0
 
-        # We don't want to log every time we open the UI.
-        log = None
-        lib_collection.log_solve_results(
-            log,
-            solres_list,
-            timestamp=timestamp,
-            total_time=total_time,
-            status_fn=info_fn)
-        return
+    #     # We don't want to log every time we open the UI.
+    #     log = None
+    #     lib_collection.log_solve_results(
+    #         log,
+    #         solres_list,
+    #         timestamp=timestamp,
+    #         total_time=total_time,
+    #         status_fn=info_fn)
+    #     return
 
     def addMenuBarContents(self, menubar):
         # File Menu
@@ -211,10 +210,10 @@ class SolverWindow(BaseWindow):
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(self.subForm.displayObjectWeightColumnChanged)
+        action.toggled.connect(self.subForm.object_browser.displayWeightColumnChanged)
         view_menu.addAction(action)
 
-        # Display Object Deviation
+        # Display Object Frame Deviation
         label = 'Display Object Frame Deviation'
         tooltip = 'Display per-frame deviation for each Marker/Camera.'
         value = lib_state.get_display_object_frame_deviation_state()
@@ -222,10 +221,10 @@ class SolverWindow(BaseWindow):
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(self.subForm.displayObjectFrameDeviationColumnChanged)
+        action.toggled.connect(self.subForm.object_browser.displayFrameDeviationColumnChanged)
         view_menu.addAction(action)
 
-        # Display Object Deviation
+        # Display Object Average Deviation
         label = 'Display Object Average Deviation'
         tooltip = 'Display deviation column'
         value = lib_state.get_display_object_average_deviation_state()
@@ -233,10 +232,10 @@ class SolverWindow(BaseWindow):
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(self.subForm.displayObjectAverageDeviationColumnChanged)
+        action.toggled.connect(self.subForm.object_browser.displayAverageDeviationColumnChanged)
         view_menu.addAction(action)
-
-        # Display Object Deviation
+  
+        # Display Object Maximum Deviation
         label = 'Display Object Maximum Deviation'
         tooltip = 'Display deviation column'
         value = lib_state.get_display_object_maximum_deviation_state()
@@ -244,7 +243,7 @@ class SolverWindow(BaseWindow):
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(self.subForm.displayObjectMaximumDeviationColumnChanged)
+        action.toggled.connect(self.subForm.object_browser.displayMaximumDeviationColumnChanged)
         view_menu.addAction(action)
 
         view_menu.addSeparator()
@@ -257,7 +256,7 @@ class SolverWindow(BaseWindow):
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(self.subForm.displayAttributeStateColumnChanged)
+        action.toggled.connect(self.subForm.attribute_browser.displayStateColumnChanged)
         view_menu.addAction(action)
 
         # Display Attribute Min/Max
@@ -268,7 +267,7 @@ class SolverWindow(BaseWindow):
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(self.subForm.displayAttributeMinMaxColumnChanged)
+        action.toggled.connect(self.subForm.attribute_browser.displayMinMaxColumnChanged)
         view_menu.addAction(action)
 
         view_menu.addSeparator()
@@ -501,15 +500,15 @@ class SolverWindow(BaseWindow):
         lib_state.set_log_level(const.LOG_LEVEL_DEBUG)
 
     def createNewCollectionNodeCB(self):
-        self.subForm.createNewCollectionNode()
+        self.subForm.collection_widget.createNewNode()
         return
 
     def renameCollectionNodeCB(self):
-        self.subForm.renameCollectionNode()
+        self.subForm.collection_widget.renameActiveNode()
         return
 
     def removeCollectionNodeCB(self):
-        self.subForm.removeCollectionNode()
+        self.subForm.collection_widget.removeActiveNode()
         return
 
     def createMarkerCB(self):

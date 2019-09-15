@@ -60,9 +60,14 @@ add_ui_compile("loadmarker"
     ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/loadmarker/ui/ui_loadmarker_layout.py
 )
 
-add_ui_compile("solver"
+add_ui_compile("solver_layout"
     ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/solver/ui/solver_layout.ui
     ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/solver/ui/ui_solver_layout.py
+)
+
+add_ui_compile("solver_widgets"
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/solver/widget/nodebrowser_widget.ui
+    ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/solver/widget/ui_nodebrowser_widget.py
 )
 
 add_ui_compile("solver_about"

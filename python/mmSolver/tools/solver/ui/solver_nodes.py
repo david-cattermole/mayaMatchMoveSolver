@@ -18,7 +18,10 @@
 """
 Solver nodes for the mmSolver Window UI.
 
-Solvers are presented to the user as Solver Steps, which is a step of solver functions defined by:
+.. note:: This is part of the LEGACY solver, and is considered deprecated.
+
+Solvers are presented to the user as Solver Steps, which is a step of
+solver functions defined by:
 - Frames
 - Attribute Filter
 - Strategy
@@ -36,13 +39,7 @@ If 'Animated Only' attribute filter is used then the strategy is
  unneeded and will solve each frame individually.
 
 The ability to add new solver steps should be given with a + and -
-button at top-right. There should also be buttons to move the selected
-row up or down (NOT DONE).
-
-TODO: A custom right-click menu should be added to the list of frames;
- 'add current frame', 'remove current frame', 'set playback frame
- range' and 'clear frames'.
-
+button at top-right.
 """
 
 import mmSolver.ui.uimodels as uimodels

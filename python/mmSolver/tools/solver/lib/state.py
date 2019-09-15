@@ -17,6 +17,9 @@
 #
 """
 Query and set Maya scene state.
+
+All data is stored in the Maya scene and is dependent on the Maya
+scene.
 """
 
 import maya.cmds

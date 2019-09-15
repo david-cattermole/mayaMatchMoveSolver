@@ -38,6 +38,10 @@ LOG_LEVEL_LIST = [
 ]
 
 
+# Default Collection
+COLLECTION_DEFAULT_NODE_NAME = 'collection1'
+
+
 # The name of the 'Scene Data' representations.
 MM_SOLVER_DATA_NODE_NAME = 'mmSolver_data_node'
 MM_SOLVER_DATA_NODE_TYPE = 'script'
@@ -109,6 +113,8 @@ ATTR_FILTER_LABEL_LIST = [
 
 # Solver Step Data (stored on Collection node)
 SOLVER_STEP_ATTR = 'solver_step_list'
+SOLVER_STEP_ATTR_TYPE = 'string'
+SOLVER_STEP_DEFAULT_VALUE = None  # Do not set any default value.
 SOLVER_STEP_DATA_DEFAULT = {
     'name': None,
     'enabled': True,
@@ -120,14 +126,14 @@ SOLVER_STEP_DATA_DEFAULT = {
 
 # Override Current Frame (stored on Collection node)
 OVERRIDE_CURRENT_FRAME_ATTR = 'override_current_frame'
+OVERRIDE_CURRENT_FRAME_ATTR_TYPE = 'bool'
+OVERRIDE_CURRENT_FRAME_DEFAULT_VALUE = False
 
-# Most simple solves converge on a result within 10
-# iterations, but 20 gives a wider range to refine more
-# complex set ups.
+# Most simple solves converge on a result within 10 iterations, but 20
+# gives a wider range to refine more complex set ups. (LEGACY SOLVER)
 MAX_ITERATION_NUM_DEFAULT_VALUE = 20
 
-# Force the 'central' Auto-Differencing type, because it's
-# more accurate and we can converge on a result faster.
+# Default Auto-Differencing type for solver steps (LEGACY SOLVER).
 AUTO_DIFF_TYPE_DEFAULT_VALUE = 1
 
 # List of common status messages.
@@ -154,6 +160,10 @@ OBJECT_TOGGLE_CAMERA_ATTR = 'object_toggle_camera'
 OBJECT_TOGGLE_MARKER_ATTR = 'object_toggle_marker'
 OBJECT_TOGGLE_BUNDLE_ATTR = 'object_toggle_bundle'
 
+OBJECT_TOGGLE_CAMERA_ATTR_TYPE = 'bool'
+OBJECT_TOGGLE_MARKER_ATTR_TYPE = 'bool'
+OBJECT_TOGGLE_BUNDLE_ATTR_TYPE = 'bool'
+
 OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE = True
 OBJECT_TOGGLE_MARKER_DEFAULT_VALUE = True
 OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE = False
@@ -162,6 +172,10 @@ OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE = False
 ATTRIBUTE_TOGGLE_ANIMATED_ATTR = 'attribute_toggle_animated'
 ATTRIBUTE_TOGGLE_STATIC_ATTR = 'attribute_toggle_static'
 ATTRIBUTE_TOGGLE_LOCKED_ATTR = 'attribute_toggle_locked'
+
+ATTRIBUTE_TOGGLE_ANIMATED_ATTR_TYPE = 'bool'
+ATTRIBUTE_TOGGLE_STATIC_ATTR_TYPE = 'bool'
+ATTRIBUTE_TOGGLE_LOCKED_ATTR_TYPE = 'bool'
 
 ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE = True
 ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE = True
@@ -195,3 +209,65 @@ SOLVER_COLUMN_NAME_FRAMES = 'Frames'
 SOLVER_COLUMN_NAME_ATTRIBUTES = 'Attributes'
 SOLVER_COLUMN_NAME_STRATEGY = 'Strategy'
 
+# Frame 'Range Type' enumeration values
+RANGE_TYPE_CURRENT_FRAME_VALUE = 0
+RANGE_TYPE_TIMELINE_INNER_VALUE = 1
+RANGE_TYPE_TIMELINE_OUTER_VALUE = 2
+RANGE_TYPE_CUSTOM_FRAMES_VALUE = 3
+
+RANGE_TYPE_CURRENT_FRAME_NAME = 'Current Frame'
+RANGE_TYPE_TIMELINE_INNER_NAME = 'Timeline (Inner)'
+RANGE_TYPE_TIMELINE_OUTER_NAME = 'Timeline (Outer)'
+RANGE_TYPE_CUSTOM_FRAMES_NAME = 'Custom Frames'
+
+RANGE_TYPE_VALUE_LIST = [
+    RANGE_TYPE_CURRENT_FRAME_VALUE,
+    RANGE_TYPE_TIMELINE_INNER_VALUE,
+    RANGE_TYPE_TIMELINE_OUTER_VALUE,
+    RANGE_TYPE_CUSTOM_FRAMES_VALUE,
+]
+
+RANGE_TYPE_NAME_LIST = [
+    RANGE_TYPE_CURRENT_FRAME_NAME,
+    RANGE_TYPE_TIMELINE_INNER_NAME,
+    RANGE_TYPE_TIMELINE_OUTER_NAME,
+    RANGE_TYPE_CUSTOM_FRAMES_NAME,
+]
+# NOTE: RANGE_TYPE_VALUE_LIST and RANGE_TYPE_NAME_LIST are expected to
+# be in order.
+assert len(RANGE_TYPE_NAME_LIST) == len(RANGE_TYPE_VALUE_LIST)
+
+# Solver Frames (stored on Collection node)
+SOLVER_TAB_ATTR = 'solver_tab'
+SOLVER_TAB_ATTR_TYPE = 'string'
+SOLVER_TAB_DEFAULT_VALUE = 'basic'
+
+# Solver Frame Range Type (stored on Collection node)
+SOLVER_RANGE_TYPE_ATTR = 'solver_range_type'
+SOLVER_RANGE_TYPE_ATTR_TYPE = 'byte'  # 8-bit integer
+SOLVER_RANGE_TYPE_DEFAULT_VALUE = RANGE_TYPE_TIMELINE_OUTER_VALUE
+
+# Solver Frames (stored on Collection node)
+SOLVER_FRAMES_ATTR = 'solver_frames'
+SOLVER_FRAMES_ATTR_TYPE = 'string'
+SOLVER_FRAMES_DEFAULT_VALUE = None  # No default value.
+
+# Solver Frames (stored on Collection node)
+SOLVER_INCREMENT_BY_FRAME_ATTR = 'solver_increment_by_frame'
+SOLVER_INCREMENT_BY_FRAME_ATTR_TYPE = 'long'
+SOLVER_INCREMENT_BY_FRAME_DEFAULT_VALUE = 1
+
+# Solver Root Frames (stored on Collection node)
+SOLVER_ROOT_FRAMES_ATTR = 'solver_root_frames'
+SOLVER_ROOT_FRAMES_ATTR_TYPE = 'string'
+SOLVER_ROOT_FRAMES_DEFAULT_VALUE = None  # No default value.
+
+# Solver Only Root Frames (stored on Collection node)
+SOLVER_ONLY_ROOT_FRAMES_ATTR = 'solver_only_root_frames'
+SOLVER_ONLY_ROOT_FRAMES_ATTR_TYPE = 'bool'
+SOLVER_ONLY_ROOT_FRAMES_DEFAULT_VALUE = False
+
+# Solver Global Solve (stored on Collection node)
+SOLVER_GLOBAL_SOLVE_ATTR = 'solver_global_solve'
+SOLVER_GLOBAL_SOLVE_ATTR_TYPE = 'bool'
+SOLVER_GLOBAL_SOLVE_DEFAULT_VALUE = False

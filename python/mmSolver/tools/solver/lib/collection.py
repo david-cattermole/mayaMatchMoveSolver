@@ -31,14 +31,31 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 
 import mmSolver.utils.time as utils_time
-import mmSolver.utils.configmaya as configmaya
 
+import mmSolver.tools.solver.lib.collectionstate as col_state
 import mmSolver.tools.solver.lib.solver as solver_utils
 import mmSolver.tools.solver.lib.solver_step as solver_step
 import mmSolver.tools.solver.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+# Function aliases, for the 'collectionstate' module.
+get_override_current_frame_from_collection = col_state.get_override_current_frame_from_collection
+set_override_current_frame_on_collection = col_state.set_override_current_frame_on_collection
+get_attribute_toggle_animated_from_collection = col_state.get_attribute_toggle_animated_from_collection
+set_attribute_toggle_animated_on_collection = col_state.set_attribute_toggle_animated_on_collection
+get_attribute_toggle_static_from_collection = col_state.get_attribute_toggle_static_from_collection
+set_attribute_toggle_static_on_collection = col_state.set_attribute_toggle_static_on_collection
+get_attribute_toggle_locked_from_collection = col_state.get_attribute_toggle_locked_from_collection
+set_attribute_toggle_locked_on_collection = col_state.set_attribute_toggle_locked_on_collection
+get_object_toggle_camera_from_collection = col_state.get_object_toggle_camera_from_collection
+set_object_toggle_camera_on_collection = col_state.set_object_toggle_camera_on_collection
+get_object_toggle_marker_from_collection = col_state.get_object_toggle_marker_from_collection
+set_object_toggle_marker_on_collection = col_state.set_object_toggle_marker_on_collection
+get_object_toggle_bundle_from_collection = col_state.get_object_toggle_bundle_from_collection
+set_object_toggle_bundle_on_collection = col_state.set_object_toggle_bundle_on_collection
 
 
 def get_collections():
@@ -57,17 +74,21 @@ def get_collections():
     return cols
 
 
-def create_collection():
+def create_collection(name=None):
     """
     Create a new Collection in the scene.
+
+    :param name: The node name for the created collection.
+    :type name: str or None
 
     :returns: A new Collection object.
     :rtype: Collection
     """
-    col = mmapi.Collection().create_node('collection1')
+    if name is None:
+        name = const.COLLECTION_DEFAULT_NODE_NAME
+    col = mmapi.Collection().create_node(name)
     sol = solver_utils.create_solver()
     solver_utils.add_solver_to_collection(sol, col)
-    ensure_solver_steps_attr_exists(col)
     step = create_solver_step()
     add_solver_step_to_collection(col, step)
     return col
@@ -268,419 +289,6 @@ def log_solve_results(log, solres_list,
     return
 
 
-def get_override_current_frame_from_collection(col):
-    """
-    Get the value of 'Override Current Frame', from a Collection.
-
-    :param col: The Collection to query.
-    :type col: Collection
-
-    :returns: True or False.
-    :rtype: bool
-    """
-    node = col.get_node()
-    ensure_override_current_frame_attr_exists(col)
-    value = configmaya.get_node_option(node, const.OVERRIDE_CURRENT_FRAME_ATTR)
-    assert isinstance(value, bool)
-    return value
-
-
-def set_override_current_frame_on_collection(col, value):
-    """
-    Set the value of 'Override Current Frame' on a Collection.
-
-    :param col: The Collection to change.
-    :type col: Collection
-
-    :param value: Value to set to.
-    :type value: bool
-    """
-    assert isinstance(value, bool)
-    ensure_override_current_frame_attr_exists(col)
-    node = col.get_node()
-    configmaya.set_node_option(node, const.OVERRIDE_CURRENT_FRAME_ATTR, value)
-    return
-
-
-def ensure_override_current_frame_attr_exists(col):
-    """
-    Forces the creation of a 'override current frame' attribute, if
-    none exists already.
-
-    :param col: The Collection to create the attribute on.
-    :type col: Collection
-    """
-    node = col.get_node()
-    default_value = False
-    attr_name = const.OVERRIDE_CURRENT_FRAME_ATTR
-    attrs = maya.cmds.listAttr(node)
-    if attr_name in attrs:
-        return
-    maya.cmds.addAttr(
-        node,
-        defaultValue=default_value,
-        longName=attr_name,
-        attributeType='bool'
-    )
-    node_attr = node + '.' + attr_name
-    maya.cmds.setAttr(node_attr, lock=True)
-    return
-
-
-def get_attribute_toggle_animated_from_collection(col):
-    """
-    Get the value of 'Attributes Toggle Animated', from a Collection.
-
-    :param col: The Collection to query.
-    :type col: Collection
-
-    :returns: True or False.
-    :rtype: bool
-    """
-    node = col.get_node()
-    ensure_attribute_toggle_animated_attr_exists(col)
-    value = configmaya.get_node_option(node, const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR)
-    assert isinstance(value, bool)
-    return value
-
-
-def set_attribute_toggle_animated_on_collection(col, value):
-    """
-    Set the value of 'Attributes Toggle Animated' on a Collection.
-
-    :param col: The Collection to change.
-    :type col: Collection
-
-    :param value: Value to set to.
-    :type value: bool
-    """
-    assert isinstance(value, bool)
-    ensure_attribute_toggle_animated_attr_exists(col)
-    node = col.get_node()
-    configmaya.set_node_option(node, const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR, value)
-    return
-
-
-def ensure_attribute_toggle_animated_attr_exists(col):
-    """
-    Forces the creation of a 'attribute_toggle_animated' attribute, if
-    none exists already.
-
-    :param col: The Collection to create the attribute on.
-    :type col: Collection
-    """
-    node = col.get_node()
-    default_value = const.ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE
-    attr_name = const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR
-    attrs = maya.cmds.listAttr(node)
-    if attr_name in attrs:
-        return
-    maya.cmds.addAttr(
-        node,
-        defaultValue=default_value,
-        longName=attr_name,
-        attributeType='bool'
-    )
-    node_attr = node + '.' + attr_name
-    maya.cmds.setAttr(node_attr, lock=True)
-    return
-
-
-def get_attribute_toggle_static_from_collection(col):
-    """
-    Get the value of 'Attributes Toggle Static', from a Collection.
-
-    :param col: The Collection to query.
-    :type col: Collection
-
-    :returns: True or False.
-    :rtype: bool
-    """
-    node = col.get_node()
-    ensure_attribute_toggle_static_attr_exists(col)
-    value = configmaya.get_node_option(node, const.ATTRIBUTE_TOGGLE_STATIC_ATTR)
-    assert isinstance(value, bool)
-    return value
-
-
-def set_attribute_toggle_static_on_collection(col, value):
-    """
-    Set the value of 'Attributes Toggle Static' on a Collection.
-
-    :param col: The Collection to change.
-    :type col: Collection
-
-    :param value: Value to set to.
-    :type value: bool
-    """
-    assert isinstance(value, bool)
-    ensure_attribute_toggle_static_attr_exists(col)
-    node = col.get_node()
-    configmaya.set_node_option(node, const.ATTRIBUTE_TOGGLE_STATIC_ATTR, value)
-    return
-
-
-def ensure_attribute_toggle_static_attr_exists(col):
-    """
-    Forces the creation of a 'attribute_toggle_static' attribute, if
-    none exists already.
-
-    :param col: The Collection to create the attribute on.
-    :type col: Collection
-    """
-    node = col.get_node()
-    default_value = const.ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE
-    attr_name = const.ATTRIBUTE_TOGGLE_STATIC_ATTR
-    attrs = maya.cmds.listAttr(node)
-    if attr_name in attrs:
-        return
-    maya.cmds.addAttr(
-        node,
-        defaultValue=default_value,
-        longName=attr_name,
-        attributeType='bool'
-    )
-    node_attr = node + '.' + attr_name
-    maya.cmds.setAttr(node_attr, lock=True)
-    return
-
-
-def get_attribute_toggle_locked_from_collection(col):
-    """
-    Get the value of 'Attributes Toggle Locked', from a Collection.
-
-    :param col: The Collection to query.
-    :type col: Collection
-
-    :returns: True or False.
-    :rtype: bool
-    """
-    node = col.get_node()
-    ensure_attribute_toggle_locked_attr_exists(col)
-    value = configmaya.get_node_option(node, const.ATTRIBUTE_TOGGLE_LOCKED_ATTR)
-    assert isinstance(value, bool)
-    return value
-
-
-def set_attribute_toggle_locked_on_collection(col, value):
-    """
-    Set the value of 'Attributes Toggle Locked' on a Collection.
-
-    :param col: The Collection to change.
-    :type col: Collection
-
-    :param value: Value to set to.
-    :type value: bool
-    """
-    assert isinstance(value, bool)
-    ensure_attribute_toggle_locked_attr_exists(col)
-    node = col.get_node()
-    configmaya.set_node_option(node, const.ATTRIBUTE_TOGGLE_LOCKED_ATTR, value)
-    return
-
-
-def ensure_attribute_toggle_locked_attr_exists(col):
-    """
-    Forces the creation of a 'attribute_toggle_locked' attribute, if
-    none exists already.
-
-    :param col: The Collection to create the attribute on.
-    :type col: Collection
-    """
-    node = col.get_node()
-    default_value = const.ATTRIBUTE_TOGGLE_LOCKED_DEFAULT_VALUE
-    attr_name = const.ATTRIBUTE_TOGGLE_LOCKED_ATTR
-    attrs = maya.cmds.listAttr(node)
-    if attr_name in attrs:
-        return
-    maya.cmds.addAttr(
-        node,
-        defaultValue=default_value,
-        longName=attr_name,
-        attributeType='bool'
-    )
-    node_attr = node + '.' + attr_name
-    maya.cmds.setAttr(node_attr, lock=True)
-    return
-
-
-def get_object_toggle_camera_from_collection(col):
-    """
-    Get the value of 'Objects Toggle Camera', from a Collection.
-
-    :param col: The Collection to query.
-    :type col: Collection
-
-    :returns: True or False.
-    :rtype: bool
-    """
-    node = col.get_node()
-    ensure_object_toggle_camera_attr_exists(col)
-    value = configmaya.get_node_option(node, const.OBJECT_TOGGLE_CAMERA_ATTR)
-    assert isinstance(value, bool)
-    return value
-
-
-def set_object_toggle_camera_on_collection(col, value):
-    """
-    Set the value of 'Objects Toggle Camera' on a Collection.
-
-    :param col: The Collection to change.
-    :type col: Collection
-
-    :param value: Value to set to.
-    :type value: bool
-    """
-    assert isinstance(value, bool)
-    ensure_object_toggle_camera_attr_exists(col)
-    node = col.get_node()
-    configmaya.set_node_option(node, const.OBJECT_TOGGLE_CAMERA_ATTR, value)
-    return
-
-
-def ensure_object_toggle_camera_attr_exists(col):
-    """
-    Forces the creation of a 'object_toggle_camera' attribute, if
-    none exists already.
-
-    :param col: The Collection to create the attribute on.
-    :type col: Collection
-    """
-    node = col.get_node()
-    default_value = const.OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE
-    attr_name = const.OBJECT_TOGGLE_CAMERA_ATTR
-    attrs = maya.cmds.listAttr(node)
-    if attr_name in attrs:
-        return
-    maya.cmds.addAttr(
-        node,
-        defaultValue=default_value,
-        longName=attr_name,
-        attributeType='bool'
-    )
-    node_attr = node + '.' + attr_name
-    maya.cmds.setAttr(node_attr, lock=True)
-    return
-
-
-def get_object_toggle_marker_from_collection(col):
-    """
-    Get the value of 'Objects Toggle Marker', from a Collection.
-
-    :param col: The Collection to query.
-    :type col: Collection
-
-    :returns: True or False.
-    :rtype: bool
-    """
-    node = col.get_node()
-    ensure_object_toggle_marker_attr_exists(col)
-    value = configmaya.get_node_option(node, const.OBJECT_TOGGLE_MARKER_ATTR)
-    assert isinstance(value, bool)
-    return value
-
-
-def set_object_toggle_marker_on_collection(col, value):
-    """
-    Set the value of 'Objects Toggle Marker' on a Collection.
-
-    :param col: The Collection to change.
-    :type col: Collection
-
-    :param value: Value to set to.
-    :type value: bool
-    """
-    assert isinstance(value, bool)
-    ensure_object_toggle_marker_attr_exists(col)
-    node = col.get_node()
-    configmaya.set_node_option(node, const.OBJECT_TOGGLE_MARKER_ATTR, value)
-    return
-
-
-def ensure_object_toggle_marker_attr_exists(col):
-    """
-    Forces the creation of a 'object_toggle_marker' attribute, if
-    none exists already.
-
-    :param col: The Collection to create the attribute on.
-    :type col: Collection
-    """
-    node = col.get_node()
-    default_value = const.OBJECT_TOGGLE_MARKER_DEFAULT_VALUE
-    attr_name = const.OBJECT_TOGGLE_MARKER_ATTR
-    attrs = maya.cmds.listAttr(node)
-    if attr_name in attrs:
-        return
-    maya.cmds.addAttr(
-        node,
-        defaultValue=default_value,
-        longName=attr_name,
-        attributeType='bool'
-    )
-    node_attr = node + '.' + attr_name
-    maya.cmds.setAttr(node_attr, lock=True)
-    return
-
-
-def get_object_toggle_bundle_from_collection(col):
-    """
-    Get the value of 'Objects Toggle Bundle', from a Collection.
-
-    :param col: The Collection to query.
-    :type col: Collection
-
-    :returns: True or False.
-    :rtype: bool
-    """
-    node = col.get_node()
-    ensure_object_toggle_bundle_attr_exists(col)
-    value = configmaya.get_node_option(node, const.OBJECT_TOGGLE_BUNDLE_ATTR)
-    assert isinstance(value, bool)
-    return value
-
-
-def set_object_toggle_bundle_on_collection(col, value):
-    """
-    Set the value of 'Objects Toggle Bundle' on a Collection.
-
-    :param col: The Collection to change.
-    :type col: Collection
-
-    :param value: Value to set to.
-    :type value: bool
-    """
-    assert isinstance(value, bool)
-    ensure_object_toggle_bundle_attr_exists(col)
-    node = col.get_node()
-    configmaya.set_node_option(node, const.OBJECT_TOGGLE_BUNDLE_ATTR, value)
-    return
-
-
-def ensure_object_toggle_bundle_attr_exists(col):
-    """
-    Forces the creation of a 'object_toggle_bundle' attribute, if
-    none exists already.
-
-    :param col: The Collection to create the attribute on.
-    :type col: Collection
-    """
-    node = col.get_node()
-    default_value = const.OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE
-    attr_name = const.OBJECT_TOGGLE_BUNDLE_ATTR
-    attrs = maya.cmds.listAttr(node)
-    if attr_name in attrs:
-        return
-    maya.cmds.addAttr(
-        node,
-        defaultValue=default_value,
-        longName=attr_name,
-        attributeType='bool'
-    )
-    node_attr = node + '.' + attr_name
-    maya.cmds.setAttr(node_attr, lock=True)
-    return
-
-
 def create_solver_step():
     """
     Create a SolverStep object and return it.
@@ -695,55 +303,6 @@ def create_solver_step():
 
     step = solver_step.SolverStep(data=data)
     return step
-
-
-def ensure_solver_steps_attr_exists(col):
-    """
-    Forces the creation of a 'solver step' attribute, if none exists
-    already.
-
-    :param col: The Collection to create the attribute on.
-    :type col: Collection
-
-    :rtype: None
-    """
-    assert isinstance(col, mmapi.Collection)
-    node = col.get_node()
-    attr_name = const.SOLVER_STEP_ATTR
-    attrs = maya.cmds.listAttr(node)
-    if attr_name in attrs:
-        return
-    maya.cmds.addAttr(
-        node,
-        longName=attr_name,
-        dataType='string'
-    )
-    maya.cmds.setAttr(
-        node + '.' + attr_name,
-        lock=True
-    )
-    return
-
-
-def get_solver_steps_from_collection(col):
-    """
-    Load all steps from collection.
-
-    :param col: The Collection to query.
-    :type col: Collection
-
-    :rtype: list of SolverStep
-    """
-    assert isinstance(col, mmapi.Collection)
-    if col is None:
-        return []
-    node = col.get_node()
-    if maya.cmds.objExists(node) is False:
-        return []
-    ensure_solver_steps_attr_exists(col)
-    data_list = configmaya.get_node_option_structure(node, const.SOLVER_STEP_ATTR)
-    step_list = [solver_step.SolverStep(d) for d in data_list]
-    return step_list
 
 
 def get_named_solver_step_from_collection(col, name):
@@ -801,21 +360,11 @@ def remove_solver_step_from_collection(col, step):
     return
 
 
-def set_solver_step_list_to_collection(col, step_list):
-    node = col.get_node()
-    data_list = [s.get_data() for s in step_list]
-    ensure_solver_steps_attr_exists(col)
-    configmaya.set_node_option_structure(node, const.SOLVER_STEP_ATTR, data_list)
-    sol_list = compile_solvers_from_steps(col, step_list)
-    col.set_solver_list(sol_list)
-    return
-
-
 def compile_solvers_from_steps(col, step_list, prog_fn=None):
     """
     Compile the solver steps attached to Collection into solvers.
     """
-    use_cur_frame = get_override_current_frame_from_collection(col)
+    use_cur_frame = col_state.get_override_current_frame_from_collection(col)
     sol_list = []
     for i, step in enumerate(step_list):
         sol_list += step.compile(
@@ -826,6 +375,48 @@ def compile_solvers_from_steps(col, step_list, prog_fn=None):
             percent = int(ratio * 100.0)
             prog_fn(percent)
     return sol_list
+
+
+def get_solver_steps_from_collection(col):
+    """
+    Load all steps from collection.
+
+    :param col: The Collection to query.
+    :type col: Collection
+
+    :rtype: list of SolverStep
+    """
+    assert isinstance(col, mmapi.Collection)
+    if col is None:
+        return []
+    node = col.get_node()
+    if maya.cmds.objExists(node) is False:
+        return []
+    data_list = col_state.get_value_structure_from_node(
+        col.get_node(),
+        const.SOLVER_STEP_ATTR,
+        attr_type=const.SOLVER_STEP_ATTR_TYPE,
+        default_value=const.SOLVER_STEP_DEFAULT_VALUE,
+    )
+    if data_list is None:
+        data_list = list()
+    step_list = [solver_step.SolverStep(d) for d in data_list]
+    return step_list
+
+
+def set_solver_step_list_to_collection(col, step_list):
+    node = col.get_node()
+    data_list = [s.get_data() for s in step_list]
+    col_state.set_value_structure_on_node(
+        col.get_node(),
+        const.SOLVER_STEP_ATTR,
+        data_list,
+        attr_type=const.SOLVER_STEP_ATTR_TYPE,
+        default_value=const.SOLVER_STEP_DEFAULT_VALUE,
+    )
+    sol_list = compile_solvers_from_steps(col, step_list)
+    col.set_solver_list(sol_list)
+    return
 
 
 def compile_collection(col, prog_fn=None):

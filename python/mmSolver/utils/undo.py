@@ -56,10 +56,9 @@ def undo_chunk_context(name=None):
     Create an undo chunk, using a context manager.
 
     Example usage:
-    .. code::
-       with undo_chunk_context() as chunk_name:
-           # do something with Maya
-           maya.cmds.createNode('transform')
+    >>> with undo_chunk_context() as chunk_name:
+    ...     # do something with Maya
+    ...     maya.cmds.createNode('transform')
 
     :param name: A string to use as the unique undo chunk name, or
                  None to generate a random UUID.

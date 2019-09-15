@@ -17,11 +17,14 @@
 #
 """
 Solver Step - holds data representing a logical solver step.
+
+.. note:: This is part of the LEGACY solver, and is considered deprecated.
+
 """
-import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
 
 
@@ -200,8 +203,7 @@ class SolverStep(object):
         # frames given and override with the current frame number.
         int_list = []
         if override_current_frame is True:
-            time = maya.cmds.currentTime(query=True)
-            cur_frame = int(time)
+            cur_frame = lib_maya_utils.get_current_frame()
             int_list = [cur_frame]
         else:
             int_list = self.get_frame_list()

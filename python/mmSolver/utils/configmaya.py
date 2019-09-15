@@ -168,10 +168,11 @@ def get_node_option_structure(node_name, attr_name):
     :param attr_name: The name of the attribute to get data from.
     :type attr_name: str
 
-    :return: Arbitrary Plain-Old-Data data structures.
-    :rtype: dict
+    :return: Arbitrary Plain-Old-Data data structures, can be a list or
+             dictionary.
+    :rtype: dict or list or None
     """
-    ret = {}
+    ret = None
     attr_data = get_node_option(node_name, attr_name)
     if attr_data is None:
         return ret

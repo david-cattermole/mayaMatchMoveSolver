@@ -29,10 +29,10 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
-import mmSolver.tools.solver.widget.ui_solversettings_widget as ui_solversettings_widget
-import mmSolver.tools.solver.widget.solversettingsstandard_widget as solversettingsstandard_widget
-import mmSolver.tools.solver.widget.solversettingsbasic_widget as solversettingsbasic_widget
-import mmSolver.tools.solver.widget.solversettingslegacy_widget as solversettingslegacy_widget
+import mmSolver.tools.solver.widget.ui_solver_widget as ui_solver_widget
+import mmSolver.tools.solver.widget.solver_standard_widget as solver_standard_widget
+import mmSolver.tools.solver.widget.solver_basic_widget as solver_basic_widget
+import mmSolver.tools.solver.widget.solver_legacy_widget as solver_legacy_widget
 
 
 LOG = mmSolver.logger.get_logger()
@@ -46,25 +46,25 @@ def _populateWidgetsEnabled(widgets):
     return
 
 
-class SolverSettingsWidget(QtWidgets.QWidget, ui_solversettings_widget.Ui_Form):
+class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
 
     tabChanged = QtCore.Signal()
     dataChanged = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
-        super(SolverSettingsWidget, self).__init__(*args, **kwargs)
+        super(SolverWidget, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
         # Solver Settings Basic Widget
-        self.basic_widget = solversettingsbasic_widget.SolverSettingsBasicWidget(self)
+        self.basic_widget = solver_basic_widget.SolverBasicWidget(self)
         self.basic_layout.addWidget(self.basic_widget)
 
         # Solver Settings Standard Widget
-        self.standard_widget = solversettingsstandard_widget.SolverSettingsStandardWidget(self)
+        self.standard_widget = solver_standard_widget.SolverStandardWidget(self)
         self.standard_layout.addWidget(self.standard_widget)
 
         # Solver Settings Legacy Widget
-        self.legacy_widget = solversettingslegacy_widget.SolverSettingsLegacyWidget(self)
+        self.legacy_widget = solver_legacy_widget.SolverLegacyWidget(self)
         self.legacy_layout.addWidget(self.legacy_widget)
 
         self._tab_name_to_index_map = {

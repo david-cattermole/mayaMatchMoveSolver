@@ -35,7 +35,7 @@ import mmSolver.tools.solver.widget.attribute_widget as attrbrowser_widget
 import mmSolver.tools.solver.widget.object_widget as objectbrowser_widget
 import mmSolver.tools.solver.widget.collection_widget as collection_widget
 import mmSolver.tools.solver.widget.solverstate_widget as solverstate_widget
-import mmSolver.tools.solver.widget.solversettings_widget as solversettings_widget
+import mmSolver.tools.solver.widget.solver_widget as solver_widget
 import mmSolver.tools.solver.constant as const
 
 
@@ -64,7 +64,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.attribute_layout.addWidget(self.attribute_browser)
 
         # Solver Widget
-        self.solver_settings = solversettings_widget.SolverSettingsWidget(self)
+        self.solver_settings = solver_widget.SolverWidget(self)
         self.solver_layout.addWidget(self.solver_settings)
 
         # Solver State Widget

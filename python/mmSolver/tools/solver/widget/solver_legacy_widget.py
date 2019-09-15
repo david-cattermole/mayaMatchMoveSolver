@@ -30,25 +30,14 @@ import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
-import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.uiutils as uiutils
 
-import mmSolver.tools.solver.lib.attr as lib_attr
 import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.uiquery as lib_uiquery
-import mmSolver.tools.solver.lib.marker as lib_marker
-import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
-import mmSolver.tools.solver.ui.attr_nodes as attr_nodes
-import mmSolver.tools.solver.ui.object_nodes as object_nodes
 import mmSolver.tools.solver.ui.solver_nodes as solver_nodes
-import mmSolver.tools.solver.ui.ui_solver_layout as ui_solver_layout
 import mmSolver.tools.solver.ui.convert_to_ui as convert_to_ui
-import mmSolver.tools.solver.widget.attribute_widget as attrbrowser_widget
-import mmSolver.tools.solver.widget.object_widget as objectbrowser_widget
-import mmSolver.tools.solver.widget.collection_widget as collection_widget
-import mmSolver.tools.solver.widget.solverstate_widget as solverstate_widget
-import mmSolver.tools.solver.widget.ui_solversettingslegacy_widget as ui_solversettingslegacy_widget
+import mmSolver.tools.solver.widget.ui_solver_legacy_widget as ui_solver_legacy_widget
 import mmSolver.tools.solver.constant as const
 
 
@@ -63,8 +52,8 @@ def _populateWidgetsEnabled(widgets):
     return
 
 
-class SolverSettingsLegacyWidget(QtWidgets.QWidget,
-                                 ui_solversettingslegacy_widget.Ui_Form):
+class SolverLegacyWidget(QtWidgets.QWidget,
+                         ui_solver_legacy_widget.Ui_Form):
     
     itemAdded = QtCore.Signal()
     itemRemoved = QtCore.Signal()
@@ -72,7 +61,7 @@ class SolverSettingsLegacyWidget(QtWidgets.QWidget,
     dataChanged = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
-        super(SolverSettingsLegacyWidget, self).__init__(*args, **kwargs)
+        super(SolverLegacyWidget, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
         self.createTableView()

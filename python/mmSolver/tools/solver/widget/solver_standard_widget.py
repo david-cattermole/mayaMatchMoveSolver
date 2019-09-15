@@ -29,7 +29,7 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
-import mmSolver.tools.solver.widget.ui_solversettingsstandard_widget as ui_solversettingsstandard_widget
+import mmSolver.tools.solver.widget.ui_solver_standard_widget as ui_solver_standard_widget
 import mmSolver.tools.solver.widget.framerange_widget as framerange_widget
 import mmSolver.tools.solver.widget.rootframe_widget as rootframe_widget
 
@@ -83,8 +83,8 @@ class StandardFrameRangeWidget(framerange_widget.FrameRangeWidget):
         return
 
 
-class SolverSettingsStandardWidget(QtWidgets.QWidget,
-                                   ui_solversettingsstandard_widget.Ui_Form):
+class SolverStandardWidget(QtWidgets.QWidget,
+                           ui_solver_standard_widget.Ui_Form):
 
     viewUpdated = QtCore.Signal()
     dataChanged = QtCore.Signal()
@@ -92,7 +92,7 @@ class SolverSettingsStandardWidget(QtWidgets.QWidget,
     onlyRootFramesChanged = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
-        super(SolverSettingsStandardWidget, self).__init__(*args, **kwargs)
+        super(SolverStandardWidget, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
         self.frameRange_widget = StandardFrameRangeWidget(self)

@@ -227,7 +227,8 @@ def get_scene_option(name, default=None):
     :param default: Value to be returned if the value does not exist.
     :type default: any
 
-    :return: None
+    :return: The value of the scene option, or 'default' if the 'name'
+             does not exist.
     :rtype: any
     """
     if not maya.cmds.objExists(const.SCENE_DATA_NODE):
@@ -239,7 +240,9 @@ def get_scene_option(name, default=None):
         const.SCENE_DATA_NODE,
         const.SCENE_DATA_ATTR
     )
-    value = data.get(name, default)
+    value = default
+    if isinstance(data, dict):
+        value = data.get(name, default)
     return value
 
 
@@ -268,6 +271,8 @@ def set_scene_option(name, value, add_attr=None):
         const.SCENE_DATA_NODE,
         const.SCENE_DATA_ATTR
     )
+    if data is None:
+        data = dict()
     data[name] = value
     set_node_option_structure(
         const.SCENE_DATA_NODE,

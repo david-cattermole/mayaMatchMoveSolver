@@ -19,11 +19,9 @@
 Collection and solving functions.
 """
 
-import datetime
 import pprint
 import time
 import uuid
-import json
 
 import maya.cmds
 
@@ -31,7 +29,7 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 
 import mmSolver.utils.time as utils_time
-import mmSolver.ui.converttypes as converttypes
+import mmSolver.utils.converttypes as converttypes
 import mmSolver.tools.solver.lib.collectionstate as col_state
 import mmSolver.tools.solver.lib.solver as solver_utils
 import mmSolver.tools.solver.lib.solver_step as solver_step

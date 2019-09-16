@@ -34,6 +34,7 @@ import mmSolver.logger
 import mmSolver.utils.undo as undo_utils
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
+import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_collection
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
@@ -168,6 +169,8 @@ class SolverWindow(BaseWindow):
         # Edit Menu
         edit_menu = QtWidgets.QMenu('Edit', menubar)
 
+        edit_menu.addSection('Solving')
+
         # Refresh Viewport During Solve
         label = 'Refresh Viewport'
         tooltip = 'Refresh the viewport while Solving.'
@@ -195,51 +198,57 @@ class SolverWindow(BaseWindow):
         # View Menu
         view_menu = QtWidgets.QMenu('View', menubar)
 
+        view_menu.addSection('Input Object Display')
+
         # Display Object Weight
-        label = 'Display Object Weight Column'
+        label = 'Weight Column'
         tooltip = 'Display Object weight column'
         value = lib_state.get_display_object_weight_state()
         action = QtWidgets.QAction(label, view_menu)
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(self.subForm.object_browser.displayWeightColumnChanged)
+        action.toggled.connect(
+            self.subForm.object_browser.displayWeightColumnChanged)
         view_menu.addAction(action)
 
         # Display Object Frame Deviation
-        label = 'Display Object Frame Deviation'
+        label = 'Frame Deviation'
         tooltip = 'Display per-frame deviation for each Marker/Camera.'
         value = lib_state.get_display_object_frame_deviation_state()
         action = QtWidgets.QAction(label, view_menu)
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(self.subForm.object_browser.displayFrameDeviationColumnChanged)
+        action.toggled.connect(
+            self.subForm.object_browser.displayFrameDeviationColumnChanged)
         view_menu.addAction(action)
 
         # Display Object Average Deviation
-        label = 'Display Object Average Deviation'
-        tooltip = 'Display deviation column'
+        label = 'Average Deviation'
+        tooltip = 'Display average  deviation column'
         value = lib_state.get_display_object_average_deviation_state()
         action = QtWidgets.QAction(label, view_menu)
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(self.subForm.object_browser.displayAverageDeviationColumnChanged)
+        action.toggled.connect(
+            self.subForm.object_browser.displayAverageDeviationColumnChanged)
         view_menu.addAction(action)
-  
+
         # Display Object Maximum Deviation
-        label = 'Display Object Maximum Deviation'
-        tooltip = 'Display deviation column'
+        label = 'Maximum Deviation'
+        tooltip = 'Display maximum deviation column'
         value = lib_state.get_display_object_maximum_deviation_state()
         action = QtWidgets.QAction(label, view_menu)
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(self.subForm.object_browser.displayMaximumDeviationColumnChanged)
+        action.toggled.connect(
+            self.subForm.object_browser.displayMaximumDeviationColumnChanged)
         view_menu.addAction(action)
 
-        view_menu.addSeparator()
+        view_menu.addSection('Output Attribute Display')
 
         # Display Attribute State
         label = 'Display Attribute State'
@@ -249,7 +258,8 @@ class SolverWindow(BaseWindow):
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(self.subForm.attribute_browser.displayStateColumnChanged)
+        action.toggled.connect(
+            self.subForm.attribute_browser.displayStateColumnChanged)
         view_menu.addAction(action)
 
         # Display Attribute Min/Max
@@ -260,31 +270,49 @@ class SolverWindow(BaseWindow):
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(self.subForm.attribute_browser.displayMinMaxColumnChanged)
+        action.toggled.connect(
+            self.subForm.attribute_browser.displayMinMaxColumnChanged)
         view_menu.addAction(action)
 
-        view_menu.addSeparator()
+        view_menu.addSection('During Solve')
 
         # Display the Image Planes while solving.
-        label = 'Display Image Planes (while solving)'
+        #
+        # TODO: Add other object types to show/hide while solving,
+        #  such as camera, nurbsCurves, nurbsSurfaces, and locators.
+        label = 'Display Image Planes'
         tooltip = 'Display Image Planes while solving.'
         value = lib_state.get_display_image_plane_while_solving_state()
-        action = QtWidgets.QAction(label, edit_menu)
+        action = QtWidgets.QAction(label, view_menu)
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(type(self).displayImagePlaneWhileSolvingActionToggledCB)
+        action.toggled.connect(
+            type(self).displayImagePlaneWhileSolvingActionToggledCB)
+        view_menu.addAction(action)
+
+        # Display the Meshes while solving.
+        label = 'Display Meshes'
+        tooltip = 'Display Meshes while solving.'
+        value = lib_state.get_display_meshes_while_solving_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            type(self).displayMeshesWhileSolvingActionToggledCB)
         view_menu.addAction(action)
 
         # Isolate Objects while solving
-        label = 'Isolate Objects (while solving)'
+        label = 'Isolate Objects'
         tooltip = 'Isolate visibility of all Markers and Bundles while solving.'
-        value = lib_state.get_display_image_plane_while_solving_state()
-        action = QtWidgets.QAction(label, edit_menu)
+        isolate_value = lib_state.get_isolate_object_while_solving_state()
+        action = QtWidgets.QAction(label, view_menu)
         action.setStatusTip(tooltip)
         action.setCheckable(True)
-        action.setChecked(value)
-        action.toggled.connect(type(self).isolateObjectWhileSolvingActionToggledCB)
+        action.setChecked(isolate_value)
+        action.toggled.connect(
+            type(self).isolateObjectWhileSolvingActionToggledCB)
         view_menu.addAction(action)
 
         menubar.addMenu(view_menu)
@@ -442,6 +470,11 @@ class SolverWindow(BaseWindow):
         return
 
     @staticmethod
+    def displayMeshesWhileSolvingActionToggledCB(value):
+        lib_state.set_display_meshes_while_solving_state(value)
+        return
+
+    @staticmethod
     def displayObjectFrameDeviationActionToggledCB(value):
         lib_state.set_display_object_frame_deviation_state(value)
         return
@@ -501,20 +534,32 @@ class SolverWindow(BaseWindow):
         with undo_utils.undo_chunk_context(undo_id):
             running_state = lib_state.get_solver_is_running_state()
             if running_state is True:
+                # Cancel out of a running solve if the user presses
+                # the button again.
                 lib_state.set_solver_user_interrupt_state(True)
                 return
             refresh_state = lib_state.get_refresh_viewport_state()
             force_update_state = lib_state.get_force_dg_update_state()
             do_isolate_state = lib_state.get_isolate_object_while_solving_state()
+
+            disp_node_types = dict()
             image_plane_state = lib_state.get_display_image_plane_while_solving_state()
+            meshes_state = lib_state.get_display_meshes_while_solving_state()
+            disp_node_types['imagePlane'] = image_plane_state
+            disp_node_types['mesh'] = meshes_state
+
+            options = mmapi.createExecuteOptions(
+                refresh=refresh_state,
+                force_update=force_update_state,
+                # do_isolate=do_isolate_state,
+                display_node_types=disp_node_types,
+            )
+
             log_level = lib_state.get_log_level()
             col = lib_state.get_active_collection()
             lib_collection.run_solve_ui(
                 col,
-                refresh_state,
-                force_update_state,
-                do_isolate_state,
-                image_plane_state,
+                options,
                 log_level,
                 self)
         return

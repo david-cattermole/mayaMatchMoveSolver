@@ -27,10 +27,12 @@ import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
+import mmSolver.utils.time as utils_time
 import mmSolver.ui.converttypes as converttypes
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.widget.ui_rootframe_widget as ui_rootframe_widget
+import mmSolver.tools.solver.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
@@ -39,6 +41,7 @@ LOG = mmSolver.logger.get_logger()
 class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
 
     rootFramesChanged = QtCore.Signal()
+    sendWarning = QtCore.Signal(str)
 
     def __init__(self, parent=None, *args, **kwargs):
         super(RootFrameWidget, self).__init__(*args, **kwargs)
@@ -75,7 +78,8 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         int_list = self.getRootFramesValue(col)
         if int_list is None:
             frame = lib_maya_utils.get_current_frame()
-            int_list = [frame]
+            start, end = utils_time.get_maya_timeline_range_inner()
+            int_list = list(set([start, frame, end]))
             self.setRootFramesValue(col, int_list)
         roots_string = converttypes.intListToString(int_list)
 
@@ -101,6 +105,14 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         # errors given by the user.
         int_list = converttypes.stringToIntList(text)
         frames_string = converttypes.intListToString(int_list)
+        if len(int_list) < 2:
+            msg = 'Must have at least 2 root frames to solve.'
+            LOG.warn(msg)
+            msg = 'WARNING: ' + msg
+            self.sendWarning.emit(msg)
+        else:
+            msg = const.STATUS_READY
+            self.sendWarning.emit(msg)
 
         # Save the integer list, but present the user with a string.
         self.rootFrames_lineEdit.setText(frames_string)

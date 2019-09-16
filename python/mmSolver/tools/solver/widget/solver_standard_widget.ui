@@ -15,10 +15,10 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="rootFrames_layout"/>
+    <layout class="QHBoxLayout" name="frameRange_layout"/>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="frameRange_layout"/>
+    <layout class="QHBoxLayout" name="rootFrames_layout"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="extraOptions_layout">
@@ -70,6 +70,16 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="description_label">
+     <property name="text">
+      <string>Description</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer_3">

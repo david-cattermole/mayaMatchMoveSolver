@@ -77,7 +77,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.collection_widget.itemChanged.connect(self.object_browser.updateModel)
         self.collection_widget.itemChanged.connect(self.object_browser.updateInfo)
         self.collection_widget.itemChanged.connect(self.object_browser.updateToggleButtons)
-        self.collection_widget.itemChanged.connect(self.object_browser.updateColumnVisibility)        
+        self.collection_widget.itemChanged.connect(self.object_browser.updateColumnVisibility)
         self.collection_widget.itemChanged.connect(self.attribute_browser.updateModel)
         self.collection_widget.itemChanged.connect(self.attribute_browser.updateInfo)
         self.collection_widget.itemChanged.connect(self.attribute_browser.updateToggleButtons)
@@ -91,7 +91,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.object_browser.dataChanged.connect(self.solver_settings.updateInfo)
         self.object_browser.viewUpdated.connect(self.object_browser.updateToggleButtons)
         self.object_browser.viewUpdated.connect(self.object_browser.updateColumnVisibility)
-        
+
         self.attribute_browser.dataChanged.connect(self.attribute_browser.updateModel)
         self.attribute_browser.dataChanged.connect(self.attribute_browser.updateInfo)
         self.attribute_browser.dataChanged.connect(self.solver_settings.updateInfo)
@@ -101,6 +101,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.solver_settings.dataChanged.connect(self.solver_settings.updateInfo)
         self.solver_settings.tabChanged.connect(self.solver_settings.updateInfo)
         self.solver_settings.tabChanged.connect(self.solver_settings.updateModel)
+        self.solver_settings.sendWarning.connect(self.setStatusLine)
 
         # Trigger data being updated.
         self.collection_widget.itemChanged.emit()
@@ -140,6 +141,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         #     self.setStatusLine(const.STATUS_SOLVER_NOT_VALID)
         return
 
+    @QtCore.Slot(str)
     def setStatusLine(self, text):
         valid = uiutils.isValidQtObject(self)
         if valid is False:
@@ -150,6 +152,7 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
         self.solver_state.setStatusLine(text)
         return
 
+    @QtCore.Slot(str)
     def setSolveInfoLine(self, text):
         valid = uiutils.isValidQtObject(self)
         if valid is False:

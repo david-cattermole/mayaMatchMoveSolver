@@ -50,6 +50,7 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
 
     tabChanged = QtCore.Signal()
     dataChanged = QtCore.Signal()
+    sendWarning = QtCore.Signal(str)
 
     def __init__(self, parent=None, *args, **kwargs):
         super(SolverWidget, self).__init__(*args, **kwargs)
@@ -90,6 +91,7 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         self.basic_widget.dataChanged.connect(self._dataChanged)
         self.standard_widget.dataChanged.connect(self._dataChanged)
         self.legacy_widget.dataChanged.connect(self._dataChanged)
+        self.standard_widget.sendWarning.connect(self._sendWarningToUser)
         return
 
     def getSolverTabValue(self, col):
@@ -152,4 +154,9 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         tab_widget = self._getTabWidget(idx)
         text = tab_widget.queryInfo()
         self.info_label.setText(text)
+        return
+
+    @QtCore.Slot(str)
+    def _sendWarningToUser(self, value):
+        self.sendWarning.emit(value)
         return

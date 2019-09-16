@@ -31,7 +31,7 @@ import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.widget.ui_solver_basic_widget as ui_solver_basic_widget
 import mmSolver.tools.solver.widget.framerange_widget as framerange_widget
-
+import mmSolver.tools.solver.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
@@ -85,6 +85,9 @@ class SolverBasicWidget(QtWidgets.QWidget,
         self.frameRange_layout.addWidget(self.frameRange_widget)
 
         self.advanced_pushButton.setHidden(True)
+
+        desc = const.SOLVER_BASIC_DESC_DEFAULT
+        self.description_label.setText(desc)        
         return
 
     def updateModel(self):

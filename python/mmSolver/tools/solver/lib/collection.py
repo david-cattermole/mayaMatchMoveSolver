@@ -31,10 +31,11 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 
 import mmSolver.utils.time as utils_time
-
+import mmSolver.ui.converttypes as converttypes
 import mmSolver.tools.solver.lib.collectionstate as col_state
 import mmSolver.tools.solver.lib.solver as solver_utils
 import mmSolver.tools.solver.lib.solver_step as solver_step
+import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
 
 
@@ -219,7 +220,7 @@ def log_solve_results(log, solres_list,
     :param solres_list: List of Solve Results to log.
     :type solres_list: list of SolveResult
 
-    :param timestamp: The current time; as a UNIX Epoch floating point 
+    :param timestamp: The current time; as a UNIX Epoch floating point
                       number (as returned by 'time.time()').
     :type timestamp: None or float
 
@@ -419,6 +420,22 @@ def set_solver_step_list_to_collection(col, step_list):
     return
 
 
+def __compile_frame_list(range_type, frame_string, by_frame):
+    frame_nums = []
+    if range_type == const.RANGE_TYPE_TIMELINE_INNER_VALUE:
+        start, end = utils_time.get_maya_timeline_range_inner()
+        frame_nums = [f for f in xrange(start, end+1, by_frame)]
+    elif range_type == const.RANGE_TYPE_TIMELINE_OUTER_VALUE:
+        start, end = utils_time.get_maya_timeline_range_outer()
+        frame_nums = [f for f in xrange(start, end+1, by_frame)]
+    elif range_type == const.RANGE_TYPE_CUSTOM_FRAMES_VALUE:
+        frame_nums = converttypes.stringToIntList(frame_string)
+        # TODO: Apply 'by_frame' to custom frame ranges.
+        # frame_nums = list(sorted(frame_nums))
+        # start, end = frame_nums[0], frame_nums[-1]
+    return frame_nums 
+
+
 def compile_collection(col, prog_fn=None):
     """
     Compiles, checks and validates the collection, ready for a solve.
@@ -432,8 +449,63 @@ def compile_collection(col, prog_fn=None):
                     percentage value, between 0 and 100.
     :type prog_fn: None or function
     """
-    step_list = get_solver_steps_from_collection(col)
-    sol_list = compile_solvers_from_steps(col, step_list, prog_fn=prog_fn)
+    sol_list = []
+    solver_tab = col_state.get_solver_tab_from_collection(col)
+    assert isinstance(solver_tab, (str, unicode))
+    if solver_tab == const.SOLVER_TAB_BASIC_VALUE:
+        sol = mmapi.SolverBasic()
+        range_type = col_state.get_solver_range_type_from_collection(col)
+        if range_type == const.RANGE_TYPE_CURRENT_FRAME_VALUE:
+            frame_num = lib_maya_utils.get_current_frame()
+            frame = mmapi.Frame(frame_num)
+            sol.set_use_single_frame(True)
+            sol.set_single_frame(frame)
+            sol_list.append(sol)
+        else:
+            by_frame = col_state.get_solver_increment_by_frame_from_collection(col)
+            frame_string = col_state.get_solver_frames_from_collection(col)
+            frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
+            frames = [mmapi.Frame(f) for f in frame_nums]
+            sol.set_frame_list(frames)
+            sol_list.append(sol)
+
+    elif solver_tab == const.SOLVER_TAB_STANDARD_VALUE:
+        sol = mmapi.SolverStandard()
+        range_type = col_state.get_solver_range_type_from_collection(col)
+        if range_type == const.RANGE_TYPE_CURRENT_FRAME_VALUE:
+            frame_num = lib_maya_utils.get_current_frame()
+            frame = mmapi.Frame(frame_num)
+            sol.set_use_single_frame(True)
+            sol.set_single_frame(frame)
+            sol_list.append(sol)
+        else:
+            # Frame numbers
+            by_frame = col_state.get_solver_increment_by_frame_from_collection(col)
+            frame_string = col_state.get_solver_frames_from_collection(col)
+            frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
+
+            # Root frame numbers
+            root_frame_nums = col_state.get_solver_root_frames_from_collection(col)
+
+            frames = [mmapi.Frame(f) for f in frame_nums
+                      if f not in root_frame_nums]
+            root_frames = [mmapi.Frame(f) for f in root_frame_nums]
+            sol.set_root_frame_list(root_frames)
+            sol.set_frame_list(frames)
+
+            global_solve = col_state.get_solver_global_solve_from_collection(col)
+            only_root = col_state.get_solver_only_root_frames_from_collection(col)
+            sol.set_global_solve(global_solve)
+            sol.set_only_root_frames(only_root)
+            sol_list.append(sol)
+
+    elif solver_tab.lower() == const.SOLVER_TAB_LEGACY_VALUE:
+        step_list = get_solver_steps_from_collection(col)
+        sol_list = compile_solvers_from_steps(col, step_list, prog_fn=prog_fn)
+
+    else:
+        msg = 'Solver tab value is invalid: %r'
+        raise TypeError(msg % solver_tab)
     col.set_solver_list(sol_list)
     return col.is_valid(prog_fn=prog_fn)
 
@@ -450,11 +522,11 @@ def execute_collection(col,
     :param col: Collection to execute.
     :type col: Collection
 
-    :param log_level: Logging level to print out.
-    :type log_level: None or str
-
     :param options: Solver execution options.
     :type options: mmSolver.api.ExecuteOptions
+
+    :param log_level: Logging level to print out.
+    :type log_level: None or str
 
     :param prog_fn: A function called with an 'int' argument, to
                     display progress information to the user. The
@@ -470,49 +542,50 @@ def execute_collection(col,
                       solver information to the user.
     :type info_fn: None or function
     """
-    msg = 'execute_collection: '
-    msg += 'col=%r log_level=%r refresh=%r '
-    msg += 'force_update=%r display_image_plane=%r '
-    msg += 'prog_fn=%r status_fn=%r info_fn=%r'
-    LOG.debug(msg, col, log_level, options.refresh,
+    msg = (
+        'execute_collection: '
+        'col=%r '
+        'log_level=%r '
+        'refresh=%r '
+        'force_update=%r '
+        'display_grid=%r '
+        'display_node_types=%r '
+        'prog_fn=%r '
+        'status_fn=%r '
+        'info_fn=%r'
+    )
+    LOG.debug(msg,
+              col,
+              log_level,
+              options.refresh,
               options.force_update,
-              options.display_image_plane,
+              options.display_grid,
+              options.display_node_types,
               prog_fn, status_fn, info_fn)
 
     assert isinstance(options.refresh, bool)
     assert isinstance(options.force_update, bool)
-    assert isinstance(options.display_image_plane, bool)
+    assert isinstance(options.display_node_types, dict)
     assert isinstance(options.do_isolate, bool)
-    assert log_level is None or isinstance(log_level, (str, unicode))
+    assert isinstance(log_level, (str, unicode))
     assert prog_fn is None or hasattr(prog_fn, '__call__')
     assert status_fn is None or hasattr(status_fn, '__call__')
     assert info_fn is None or hasattr(info_fn, '__call__')
 
     log = LOG
-    verbose = False
     if log_level in const.LOG_LEVEL_LIST:
-        if log_level == const.LOG_LEVEL_VERBOSE:
-            log_level = const.LOG_LEVEL_INFO
-            verbose = True
-        log_level = log_level.upper()
-        mmSolver.logger.get_logger(log_level)
+        tmp_log_level = log_level.upper()
+        log = mmSolver.logger.get_logger(tmp_log_level)
     else:
         msg = 'log_level value is invalid; value=%r'
         raise ValueError(msg % log_level)
 
-    options = mmapi.createExecuteOptions(
-        verbose=verbose,
-        refresh=options.refresh,
-        force_update=options.force_update,
-        do_isolate=options.do_isolate,
-        display_image_plane=options.display_image_plane,
-        # display_node_types=dict(),
-    )
-
     # Execute the solve.
     s = time.time()
-    solres_list = col.execute(
+    solres_list = mmapi.execute(
+        col,
         options=options,
+        log_level=log_level,
         prog_fn=prog_fn,
         status_fn=status_fn,
         info_fn=info_fn,
@@ -555,10 +628,8 @@ def run_solve_ui(col,
 
     This is a UI focused function. Calling this function with the
     'window' argument set will update the UI and show progress to the
-    user.
-
-    If the UI window is not given, the solve still runs, but does not
-    update the UI.
+    user. If the UI window is not given, the solve still runs, but
+    does not update the UI.
 
     :param col: The active collection to solve.
     :type col: Collection
@@ -587,10 +658,14 @@ def run_solve_ui(col,
                 window.setStatusLine('ERROR: ' + msg)
             LOG.error(msg)
             return
+
         ok = compile_collection(col)
         if ok is not True:
-            msg = 'Cannot execute solver, collection is not valid.'
-            msg += 'collection=%r'
+            msg = (
+                'Cannot execute solver, '
+                'collection is not valid. '
+                'collection=%r'
+            )
             col_node = col.get_node()
             if window is not None:
                 status = 'Warning: ' + msg

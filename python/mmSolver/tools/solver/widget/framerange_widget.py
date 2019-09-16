@@ -39,7 +39,8 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-class FrameRangeWidget(QtWidgets.QWidget, ui_framerange_widget.Ui_Form):
+class FrameRangeWidget(QtWidgets.QWidget,
+                       ui_framerange_widget.Ui_Form):
 
     rangeTypeChanged = QtCore.Signal()
     framesChanged = QtCore.Signal()
@@ -212,7 +213,7 @@ class FrameRangeWidget(QtWidgets.QWidget, ui_framerange_widget.Ui_Form):
         # errors given by the user.
         int_list = converttypes.stringToIntList(text)
         frames_string = converttypes.intListToString(int_list)
-        
+
         self.frames_lineEdit.setText(frames_string)
         self.setFramesValue(col, frames_string)
         self.framesChanged.emit()

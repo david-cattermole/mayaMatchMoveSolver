@@ -32,6 +32,7 @@ import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.widget.ui_solver_standard_widget as ui_solver_standard_widget
 import mmSolver.tools.solver.widget.framerange_widget as framerange_widget
 import mmSolver.tools.solver.widget.rootframe_widget as rootframe_widget
+import mmSolver.tools.solver.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
@@ -90,6 +91,7 @@ class SolverStandardWidget(QtWidgets.QWidget,
     dataChanged = QtCore.Signal()
     globalSolveChanged = QtCore.Signal()
     onlyRootFramesChanged = QtCore.Signal()
+    sendWarning = QtCore.Signal(str)
 
     def __init__(self, parent=None, *args, **kwargs):
         super(SolverStandardWidget, self).__init__(*args, **kwargs)
@@ -106,7 +108,12 @@ class SolverStandardWidget(QtWidgets.QWidget,
 
         self.advanced_pushButton.setHidden(True)
 
+        desc = const.SOLVER_STD_DESC_DEFAULT
+        self.description_label.setText(desc)
+
         self.dataChanged.connect(self.updateModel)
+        self.frameRange_widget.rangeTypeChanged.connect(self.updateModel)
+        self.rootFrames_widget.sendWarning.connect(self._sendWarningToUser)
         return
 
     def getOnlyRootFramesValue(self, col):
@@ -133,18 +140,29 @@ class SolverStandardWidget(QtWidgets.QWidget,
         if col is None:
             return
 
+        range_type = self.frameRange_widget.getRangeTypeValue(col)
         global_solve = self.getGlobalSolveValue(col)
         only_root_frames = self.getOnlyRootFramesValue(col)
         global_solve_enabled = True
         only_root_frames_enabled = True
         frameRange_enabled = True
-        if global_solve is True:
-            only_root_frames_enabled = False
-            only_root_frames = False
-        if only_root_frames is True:
+        rootFrames_enabled = True
+        if range_type == const.RANGE_TYPE_CURRENT_FRAME_VALUE:
             global_solve_enabled = False
-            global_solve = False
-            frameRange_enabled = False
+            only_root_frames_enabled = False
+            frameRange_enabled = True
+            rootFrames_enabled = False
+        else:
+            if global_solve is True:
+                only_root_frames_enabled = False
+                only_root_frames = False
+                rootFrames_enabled = True
+                frameRange_enabled = True
+            if only_root_frames is True:
+                global_solve_enabled = False
+                global_solve = False
+                frameRange_enabled = False
+                rootFrames_enabled = True
 
         block = self.blockSignals(True)
         self.globalSolve_checkBox.setChecked(global_solve)
@@ -152,6 +170,7 @@ class SolverStandardWidget(QtWidgets.QWidget,
         self.onlyRootFrames_checkBox.setChecked(only_root_frames)
         self.onlyRootFrames_checkBox.setEnabled(only_root_frames_enabled)
         self.frameRange_widget.setEnabled(frameRange_enabled)
+        self.rootFrames_widget.setEnabled(rootFrames_enabled)
         self.blockSignals(block)
 
         self.setGlobalSolveValue(col, global_solve)
@@ -167,7 +186,7 @@ class SolverStandardWidget(QtWidgets.QWidget,
         # NOTE: We can return HTML 'rich text' in this string to allow
         # the text to be bold or coloured to indicate warnings or
         # errors.
-        
+
         text.format(
             param=param_num,
             dev=dev_num,
@@ -202,4 +221,9 @@ class SolverStandardWidget(QtWidgets.QWidget,
         self.setGlobalSolveValue(col, value)
         self.globalSolveChanged.emit()
         self.dataChanged.emit()
+        return
+
+    @QtCore.Slot(str)
+    def _sendWarningToUser(self, value):
+        self.sendWarning.emit(value)
         return

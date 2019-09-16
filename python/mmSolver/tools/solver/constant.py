@@ -53,6 +53,7 @@ SCENE_DATA_ACTIVE_COLLECTION_UID = 'active_collection_uid'
 SCENE_DATA_REFRESH_VIEWPORT = 'refresh_viewport_state'
 SCENE_DATA_FORCE_DG_UPDATE = 'force_dg_update_state'
 SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING = 'display_image_plane_while_solving'
+SCENE_DATA_DISPLAY_MESHES_WHILE_SOLVING = 'display_meshes_while_solving'
 SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING = 'isolate_object_while_solving'
 SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION = 'display_object_frame_deviation'
 SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION = 'display_object_average_deviation'
@@ -65,6 +66,7 @@ SCENE_DATA_REFRESH_VIEWPORT_DEFAULT = True
 SCENE_DATA_FORCE_DG_UPDATE_DEFAULT = True
 SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING_DEFAULT = False
 SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING_DEFAULT = False
+SCENE_DATA_DISPLAY_MESHES_WHILE_SOLVING_DEFAULT = False
 SCENE_DATA_DISPLAY_OBJECT_WEIGHT_DEFAULT = True
 SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION_DEFAULT = False
 SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION_DEFAULT = False
@@ -134,7 +136,10 @@ OVERRIDE_CURRENT_FRAME_DEFAULT_VALUE = False
 MAX_ITERATION_NUM_DEFAULT_VALUE = 20
 
 # Default Auto-Differencing type for solver steps (LEGACY SOLVER).
-AUTO_DIFF_TYPE_DEFAULT_VALUE = 1
+#
+# 0=forward differencing
+# 1=central differencing
+AUTO_DIFF_TYPE_DEFAULT_VALUE = 0
 
 # List of common status messages.
 STATUS_READY = 'Ready.'
@@ -237,7 +242,17 @@ RANGE_TYPE_NAME_LIST = [
 # be in order.
 assert len(RANGE_TYPE_NAME_LIST) == len(RANGE_TYPE_VALUE_LIST)
 
-# Solver Frames (stored on Collection node)
+# Solver Tab values
+SOLVER_TAB_BASIC_VALUE = 'basic'
+SOLVER_TAB_STANDARD_VALUE = 'standard'
+SOLVER_TAB_LEGACY_VALUE = 'legacy'
+SOLVER_TAB_VALUE_LIST = [
+    SOLVER_TAB_BASIC_VALUE,
+    SOLVER_TAB_STANDARD_VALUE,
+    SOLVER_TAB_LEGACY_VALUE,
+]
+
+# Solver Tab (stored on Collection node)
 SOLVER_TAB_ATTR = 'solver_tab'
 SOLVER_TAB_ATTR_TYPE = 'string'
 SOLVER_TAB_DEFAULT_VALUE = 'basic'
@@ -271,3 +286,12 @@ SOLVER_ONLY_ROOT_FRAMES_DEFAULT_VALUE = False
 SOLVER_GLOBAL_SOLVE_ATTR = 'solver_global_solve'
 SOLVER_GLOBAL_SOLVE_ATTR_TYPE = 'bool'
 SOLVER_GLOBAL_SOLVE_DEFAULT_VALUE = False
+
+# Descriptions for solvers
+SOLVER_BASIC_DESC_DEFAULT = (
+    'Solve only animated attributes on frames.'
+)
+SOLVER_STD_DESC_DEFAULT = (
+    'Solve animated and static attributes on root frames, '
+    'then solve animated attributes on frames.'
+)

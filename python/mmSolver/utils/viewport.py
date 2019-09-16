@@ -31,11 +31,12 @@ LOG = mmSolver.logger.get_logger()
 
 SUPPORTED_DISPLAY_NODE_TYPES = [
     'mesh',
-    'imagePlane',
     'nurbsCurve',
     'nurbsSurface',
     'subdiv',
     'locator',
+    'imagePlane',
+    'camera',
     'plane',
     'light',
     'joint',
@@ -300,6 +301,20 @@ def set_image_plane_visibility(model_panel, value):
     Set the visibility of imagePlane nodes in the given model panel.
     """
     return _set_node_type_visibility(model_panel, 'imagePlane', value)
+
+
+def get_camera_visibility(model_panel):
+    """
+    Query the camera visibility in given model panel.
+    """
+    return _get_node_type_visibility(model_panel, 'cameras')
+
+
+def set_camera_visibility(model_panel, value):
+    """
+    Set the visibility of camera nodes in the given model panel.
+    """
+    return _set_node_type_visibility(model_panel, 'cameras', value)
 
 
 def get_mesh_visibility(model_panel):

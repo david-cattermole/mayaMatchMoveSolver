@@ -614,8 +614,8 @@ class TestSolve(test_api_utils.APITestCase):
             sol.set_frame_list(not_root_frm_list)
             sol.set_only_root_frames(False)
             sol.set_global_solve(False)
-            sol.set_triangulate_bundles(False)
-            sol.set_auto_attr_blocks(False)
+            sol._triangulate_bundles = False
+            sol._auto_attr_blocks = False
             sol.set_use_single_frame(False)
             sol_list.append(sol)
 
@@ -722,8 +722,8 @@ class TestSolve(test_api_utils.APITestCase):
         sol.set_use_single_frame(False)
         sol.set_global_solve(False)
         sol.set_only_root_frames(False)
-        sol.set_auto_attr_blocks(True)
-        sol.set_triangulate_bundles(False)
+        sol._auto_attr_blocks = True
+        sol._triangulate_bundles = False
         sol_list = [sol]
         print 'Solver:', sol
         e = time.time()
@@ -859,12 +859,12 @@ class TestSolve(test_api_utils.APITestCase):
         sol.set_frame_list(not_root_frm_list)
         sol.set_only_root_frames(False)
         sol.set_global_solve(False)
-        sol.set_auto_attr_blocks(True)
-        sol.set_triangulate_bundles(False)
+        sol._auto_attr_blocks = True
+        sol._triangulate_bundles = False
         sol.set_single_frame(False)
         sol.set_root_frame_strategy(mmapi.ROOT_FRAME_STRATEGY_GLOBAL_VALUE)
-        # sol.set_robust_loss_type(mmapi.ROBUST_LOSS_TYPE_TRIVIAL_VALUE)
-        # sol.set_robust_loss_scale(1.0)
+        # sol._robust_loss_type = mmapi.ROBUST_LOSS_TYPE_TRIVIAL_VALUE
+        # sol._robust_loss_scale = 1.0
         sol_list.append(sol)
 
         col = mmapi.Collection(node='collection1')
@@ -1156,16 +1156,16 @@ class TestSolve(test_api_utils.APITestCase):
             sol_list.append(stats_sol)
 
         sol = mmapi.SolverStandard()
+        sol.set_single_frame(False)
         sol.set_root_frame_list(root_frm_list)
         sol.set_frame_list(not_root_frm_list)
-        sol.root_frame_strategy = 0
-        sol.robust_loss_type = 1
-        sol.robust_loss_scale = 10.0
-        sol.only_root_frames = False
-        sol.global_solve = False
-        sol.auto_attr_blocks = True
-        sol.triangulate_bundles = False
-        sol.single_frame = False
+        sol.set_root_frame_strategy(mmapi.ROOT_FRAME_STRATEGY_GLOBAL_VALUE)
+        sol.set_only_root_frames(False)
+        sol.set_global_solve(False)
+        sol._robust_loss_type = 1
+        sol._robust_loss_scale = 10.0
+        sol._auto_attr_blocks = True
+        sol._triangulate_bundles = False
         sol_list.append(sol)
 
         # Collection

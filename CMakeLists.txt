@@ -103,8 +103,7 @@ set(BLAS_LIB_NAMES
 
 # Default Solver to use.
 set(PREFERRED_SOLVER "cminpack_lmder" CACHE STRING
-        "Choices are cminpack_lm, cminpack_lmder or levmar. "
-        "Which solver is used by default?")
+        "Choices are cminpack_lm, cminpack_lmder or levmar. Which solver is used by default?")
 
 
 # Module paths

@@ -58,8 +58,7 @@ def createExecuteOptions(verbose=False,
                          do_isolate=False,
                          pre_solve_force_eval=True,
                          display_grid=True,
-                         display_node_types=None,
-                         ):
+                         display_node_types=None):
     """
     Create ExecuteOptions.
 
@@ -104,11 +103,13 @@ def createExecuteOptions(verbose=False,
 
 
 def preSolve_updateProgress(prog_fn, status_fn):
+    LOG.debug('preSolve_updateProgress')
     # Start up solver
     collectionutils.run_progress_func(prog_fn, 0)
     ts = solveresult.format_timestamp(time.time())
     collectionutils.run_status_func(status_fn, 'Solve start (%s)' % ts)
     api_state.set_solver_running(True)
+    return
 
 
 def preSolve_queryViewportState(options, panels):
@@ -123,6 +124,7 @@ def preSolve_queryViewportState(options, panels):
     :param panels:
     :return:
     """
+    LOG.debug('preSolve_queryViewportState')
     panel_objs = {}
     panel_node_type_vis = collections.defaultdict(dict)
     if options.refresh is not True:
@@ -161,6 +163,7 @@ def preSolve_setIsolatedNodes(actions_list, options, panels):
     Note; This assumes the isolated objects are visible, but
     they may actually be hidden.
     """
+    LOG.debug('preSolve_setIsolatedNodes')
     if options.refresh is not True:
         return
     s = time.time()
@@ -179,7 +182,7 @@ def preSolve_setIsolatedNodes(actions_list, options, panels):
     if display_node_types is not None:
         assert isinstance(display_node_types, dict)
         for panel in panels:
-            for node_type, value in options.display_node_types:
+            for node_type, value in display_node_types.items():
                 if value is None:
                     continue
                 assert isinstance(value, bool)
@@ -207,6 +210,7 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
     :param options:
     :type options:
     """
+    LOG.debug('preSolve_triggerEvaluation')
     if options.pre_solve_force_eval is not True:
         return
     s = time.time()
@@ -229,6 +233,13 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
 
 
 def postSolve_refreshViewport(options, frame):
+    LOG.debug(
+        'postSolve_refreshViewport: '
+        'options=%r '
+        'frame=%r ',
+        options,
+        frame)
+    
     # Refresh the Viewport.
     if options.refresh is not True:
         return
@@ -258,23 +269,37 @@ def postSolve_refreshViewport(options, frame):
 
 
 def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
+    LOG.debug(
+        'postSolve_setViewportState: '
+        'options=%r '
+        'panel_objs=%r '
+        'panel_node_type_vis=%r',
+        options,
+        panel_objs,
+        panel_node_type_vis)
     if options.refresh is not True:
         return
     s = time.time()
+
+    # Isolate Objects restore.
     for panel, objs in panel_objs.items():
         if objs is None:
             # No original objects, disable 'isolate
             # selected' after resetting the objects.
             if options.do_isolate is True:
                 viewport_utils.set_isolated_nodes(panel, [], False)
-            node_types_vis = panel_node_type_vis[panel]
-            for node_type, value in node_types_vis:
-                if value is None:
-                    continue
-                viewport_utils.set_node_type_visibility(panel, node_type, value)
         else:
             if options.do_isolate is True:
                 viewport_utils.set_isolated_nodes(panel, list(objs), True)
+
+    # Show menu restore.
+    for panel, node_types_vis in panel_node_type_vis.items():
+        for node_type, value in node_types_vis.items():
+            LOG.debug('turn on node_type=%r with value=%r', node_type, value)
+            if value is None:
+                continue
+            viewport_utils.set_node_type_visibility(panel, node_type, value)
+
     e = time.time()
     LOG.debug('Finally; reset isolate selected; time=%r', e - s)
     return
@@ -285,6 +310,19 @@ def postSolve_setUpdateProgress(progress_min,
                                 progress_max,
                                 solres,  # SolveResult or None
                                 prog_fn, status_fn):
+    LOG.debug(
+        'postSolve_setUpdateProgress: '
+        'progress_min=%r '
+        'progress_value=%r '
+        'progress_max=%r '
+        'solres=%r '
+        'prog_fn=%r '
+        'status_fn=%r',
+        progress_min,
+        progress_value,
+        progress_max,
+        solres,
+        prog_fn, status_fn)
     stop_solving = False
 
     # Update progress
@@ -313,6 +351,7 @@ def postSolve_setUpdateProgress(progress_min,
 
 def execute(col,
             options=None,
+            log_level=None,
             prog_fn=None,
             status_fn=None,
             info_fn=None):
@@ -328,6 +367,9 @@ def execute(col,
 
     :param options: The options for the execution.
     :type options: ExecuteOptions
+
+    :param log_level: The log level for the execution.
+    :type log_level: str
 
     :param prog_fn: The function used report progress messages to
                     the user.
@@ -346,6 +388,9 @@ def execute(col,
     """
     if options is None:
         options = createExecuteOptions()
+    if log_level is None:
+        log_level = 'info'
+    assert isinstance(log_level, (str, unicode))
 
     start_time = time.time()
 
@@ -353,8 +398,8 @@ def execute(col,
     api_utils.load_plugin()
     assert 'mmSolver' in dir(maya.cmds)
 
-    # TODO: Pause viewport 2.0 while solving? Assumes viewport 2 is used.
-    # This might not be supported below Maya 2017?
+    # TODO: Pause viewport 2.0 while solving? Assumes viewport 2 is
+    # used.  This might not be supported below Maya 2017?
 
     # TODO: Test if 'isolate selected' works at all perhaps we're
     #  better off just turning the node types on/off.
@@ -420,7 +465,7 @@ def execute(col,
 
                 # Overriding the verbosity, irrespective of what
                 # the solver verbosity value is set to.
-                if options.verbose is True:
+                if log_level is not None and log_level.lower() == 'verbose':
                     kwargs['verbose'] = True
 
                 # TODO: Try to test and remove the need to disconnect

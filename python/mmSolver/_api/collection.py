@@ -568,12 +568,14 @@ class Collection(object):
                 sol_list, mkr_list, attr_list,
                 prog_fn=None, status_fn=None)
             ret = True
-        except excep.NotValid:
+        except excep.NotValid as e:
             ret = False
+            LOG.warn(e)
         return ret
 
     def execute(self,
                 options=None,
+                log_level=None,
                 prog_fn=None,
                 status_fn=None,
                 info_fn=None):
@@ -582,6 +584,7 @@ class Collection(object):
         result = execute.execute(
             self,
             options=options,
+            log_level=log_level,
             prog_fn=prog_fn,
             status_fn=status_fn,
             info_fn=info_fn)
@@ -599,6 +602,9 @@ def update_deviation_on_collection(col, solres_list):
     for frame, err in frame_error_list.items():
         frame_list.append(frame)
         err_list.append(err)
+    if len(frame_list) == len(err_list) == 0:
+        frame_list.append(1)
+        err_list.append(999.9)
     plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_DEVIATION)
     try:
         maya.cmds.setAttr(plug, lock=False)

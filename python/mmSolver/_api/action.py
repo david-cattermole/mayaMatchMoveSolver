@@ -25,6 +25,7 @@ import importlib
 
 Action = collections.namedtuple(
     'Action',
+    # ('type', 'func', 'args', 'kwargs')
     ('func', 'args', 'kwargs')
 )
 

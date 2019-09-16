@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Compile nods into a set of actions to be performed.
+Compile nodes into a set of actions to be performed.
 """
 
 import collections

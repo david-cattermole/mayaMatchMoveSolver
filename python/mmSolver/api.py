@@ -51,6 +51,9 @@ from mmSolver._api.solverstep import (
 from mmSolver._api.solverstandard import (
     SolverStandard,
 )
+from mmSolver._api.solverbasic import (
+    SolverBasic,
+)
 from mmSolver._api.collectionutils import (
     is_single_frame,
     disconnect_animcurves,
@@ -134,6 +137,18 @@ from mmSolver._api.constant import (
     AUTO_DIFF_TYPE_FORWARD,
     AUTO_DIFF_TYPE_CENTRAL,
     AUTO_DIFF_TYPE_LIST,
+
+    ROOT_FRAME_STRATEGY_GLOBAL_VALUE,
+    ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE,
+    ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE,
+    ROOT_FRAME_STRATEGY_VALUE_LIST,
+    ROOT_FRAME_STRATEGY_DEFAULT_VALUE,
+
+    ROBUST_LOSS_TYPE_TRIVIAL_VALUE,
+    ROBUST_LOSS_TYPE_SOFT_L_ONE_VALUE,
+    ROBUST_LOSS_TYPE_CAUCHY_VALUE,
+    ROBUST_LOSS_TYPE_VALUE_LIST,
+    ROBUST_LOSS_TYPE_DEFAULT_VALUE,
 )
 from mmSolver._api.state import (
     is_solver_running,
@@ -181,6 +196,7 @@ __all__ = [
     'Action',
     'SolverBase',
     'SolverStandard',
+    'SolverBasic',
     'SolverStep',
     'SolveResult',
 
@@ -206,6 +222,16 @@ __all__ = [
     'AUTO_DIFF_TYPE_FORWARD',
     'AUTO_DIFF_TYPE_CENTRAL',
     'AUTO_DIFF_TYPE_LIST',
+    'ROOT_FRAME_STRATEGY_GLOBAL_VALUE',
+    'ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE',
+    'ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE',
+    'ROOT_FRAME_STRATEGY_VALUE_LIST',
+    'ROOT_FRAME_STRATEGY_DEFAULT_VALUE',
+    'ROBUST_LOSS_TYPE_TRIVIAL_VALUE',
+    'ROBUST_LOSS_TYPE_SOFT_L_ONE_VALUE',
+    'ROBUST_LOSS_TYPE_CAUCHY_VALUE',
+    'ROBUST_LOSS_TYPE_VALUE_LIST',
+    'ROBUST_LOSS_TYPE_DEFAULT_VALUE',
 
     # Exceptions
     'MMException',

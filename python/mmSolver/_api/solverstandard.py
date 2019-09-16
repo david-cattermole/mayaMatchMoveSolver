@@ -46,13 +46,6 @@ ATTR_CATEGORIES = [
 ]
 
 
-# class SolverOpSmoothCameraTranslate(SolverBase):
-#     """
-#     An operation to smooth the translations of a camera.
-#     """
-#     pass
-
-
 def _gen_two_frame_fwd(int_list):
     """
     Given a list of integers, create list of Frame pairs, moving
@@ -290,7 +283,7 @@ def _compile_multi_frame(actions,
     start_frame = all_frame_list[0]
     end_frame = all_frame_list[-1]
 
-    # TODO: Triangulate the (open) bundles here. We triangulate all
+    # Triangulate the (open) bundles here. We triangulate all
     #  valid bundles after the root frames have solved.
     #
     # NOTE: Bundle triangulation can only happen if the camera
@@ -334,7 +327,7 @@ def _compile_multi_frame(actions,
     #  correctly, but the Bundle is still in the solver, then it should
     #  be triangulated after the initial root frame solve is performed.
 
-    if root_frame_strategy == 0:
+    if root_frame_strategy == const.ROOT_FRAME_STRATEGY_GLOBAL_VALUE:
         # Global solve of root frames.
         sol = solverstep.SolverStep()
         sol.set_verbose(verbose)
@@ -347,15 +340,15 @@ def _compile_multi_frame(actions,
     else:
         # Get the order of frames to solve with.
         batch_frame_list = []
-        if root_frame_strategy == 1:
+        if root_frame_strategy == const.ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE:
             # Two frames at a time, moving forward, plus a global solve
             # at the end.
             batch_frame_list = _gen_two_frame_fwd(root_frame_list_num)
             batch_frame_list.append(root_frame_list)
-        elif root_frame_strategy == 2:
+        elif root_frame_strategy == const.ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE:
             # Two frames at a time, moving forward.
             batch_frame_list = _gen_two_frame_fwd(root_frame_list_num)
-        elif root_frame_strategy == 3:
+        else:
             # TODO: Root frame ordering can be determined by the
             #  count of markers available at each frame. After we
             #  have an ordering of these frames, we can solve the
@@ -395,8 +388,6 @@ def _compile_multi_frame(actions,
         anim_iter_num,
         verbose,
     )
-
-    # LOG.warn('actions: %r', actions)
     return actions
 
 
@@ -430,73 +421,168 @@ def _compile_single_frame(actions,
     sol.set_frame_list([single_frame])
     sol.set_attributes_use_animated(True)
     sol.set_attributes_use_static(True)
+    sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
     actions += sol.compile(mkr_list, attr_list)
     return actions
 
 
 class SolverStandard(solverbase.SolverBase):
-    # TODO: Write a 'meta-solver' class to hold attributes for solving.
-    #  Issue #57 - Maya Tool - Solver UI - Add Simplified Solver Settings
-    #  Issue #72 - Python API - Re-Design Collection Compiling
-    #
-    # Parameters for 'meta solver':
-    # - Frame Range - with options:
-    #   - "Single Frame"
-    #   - "Time Slider (Inner)"
-    #   - "Time Slider (Outer)"
-    #   - "Custom"
-    # - Root Frames - A list of integer frame numbers.
-    # - Solver Method
-    #   - "Solve Everything at Once" option - On or Off
-    #   - "Solve Root Frames Only" option - On or Off
-    #
-    # If a Solver is 'Single Frame' (current frame), then we solve both
-    # animated and static attributes on the current frame, in a single step
-    # and return.
-    #
-    # If the 'Solver Root Frames Only' option is On, then we only solve the
-    # root frames, with both animated and static attributes.
-    #
-    # If the 'Solver Root Frames Only' is Off, then we first solve the root
-    # frames with both animated and static attributes, then secondly we solve
-    # only animated attributes for the entire frame range.
-    #
-    # If the 'Solve Everything at Once' option is On, then the second solve
-    # step contains static and animated attributes (not just animated),
-    # and all frames are solved as one big crunch.
-    #
-    # TODO: Before solving root frames we should query the current
-    #  animated attribute values at each root frame, store it,
-    #  then remove all keyframes between the first and last frames to
-    #  solve. Lastly we should re-keyframe the values at the animated
-    #  frames, and ensure the keyframe tangents are linear. This will
-    #  ensure that animated keyframe values do not affect a re-solve.
-    #  Only the root frames need to be initialized with good values.
-    #
-    # TODO: Add get/set 'use_single_frame' - bool
-    # TODO: Add get/set 'only_root_frames' - bool
-    # TODO: Add get/set 'global_solve' - bool
-    # TODO: Add get/set 'single_frame' - Frame or None
+    """
+    The standard solver for mmSolver.
+
+    This solver is designed for Animated and Static attributes.
+
+    Parameters for solver:
+    - Frame Range - with options:
+      - "Single Frame"
+      - "Time Slider (Inner)"
+      - "Time Slider (Outer)"
+      - "Custom"
+    - Root Frames - A list of integer frame numbers.
+    - Solver Method
+      - "Solve Everything at Once" option - On or Off
+      - "Solve Root Frames Only" option - On or Off
+
+    If a Solver is 'Single Frame' (current frame), then we solve both
+    animated and static attributes on the current frame, in a single step
+    and return.
+
+    If the 'Solver Root Frames Only' option is On, then we only solve the
+    root frames, with both animated and static attributes.
+
+    If the 'Solver Root Frames Only' is Off, then we first solve the root
+    frames with both animated and static attributes, then secondly we solve
+    only animated attributes for the entire frame range.
+
+    If the 'Solve Everything at Once' option is On, then the second solve
+    step contains static and animated attributes (not just animated),
+    and all frames are solved as one big crunch.
+
+    TODO: Before solving root frames we should query the current
+    animated attribute values at each root frame, store it, then
+    remove all keyframes between the first and last frames to
+    solve. Lastly we should re-keyframe the values at the animated
+    frames, and ensure the keyframe tangents are linear. This will
+    ensure that animated keyframe values do not affect a re-solve.
+    Only the root frames need to be initialized with good values.
+
+    """
 
     def __init__(self, *args, **kwargs):
         super(SolverStandard, self).__init__(*args, **kwargs)
-        self.use_single_frame = False
-        self.only_root_frames = False
-        self.root_frame_strategy = 0  # 0=global, 1=forward pair, 2=forward pair + global
-        self.global_solve = False
-        self.auto_attr_blocks = False
-        self.print_statistics_inputs = False
-        self.print_statistics_affects = False
-        self.print_statistics_deviation = False
-        self.single_frame = None  # frame.Frame(1)
-        self.robust_loss_type = 0
-        self.robust_loss_scale = 1.0
-        self.triangulate_bundles = False
-        self.block_iteration_num = 3
-        self.root_iteration_num = 100
-        self.anim_iteration_num = 100
-        self.lineup_iteration_num = 100
+        # These variables are not officially supported by the class.
+        self._auto_attr_blocks = False
+        self._triangulate_bundles = False
+
+        # These variables are not used by the class.
+        self._print_statistics_inputs = False
+        self._print_statistics_affects = False
+        self._print_statistics_deviation = False
+        self._robust_loss_type = 0
+        self._robust_loss_scale = 1.0
         return
+
+    ############################################################################
+
+    def get_use_single_frame(self):
+        return self._data.get(
+            'use_single_frame',
+            const.SOLVER_STD_USE_SINGLE_FRAME_DEFAULT_VALUE)
+
+    def set_use_single_frame(self, value):
+        assert isinstance(value, (bool, int, long))
+        self._data['use_single_frame'] = bool(value)
+
+    def get_single_frame(self):
+        value = self._data.get(
+            'single_frame',
+            const.SOLVER_STD_SINGLE_FRAME_DEFAULT_VALUE)
+        frm = None
+        if value is not None:
+            frm = frame.Frame(value)
+        return frm
+
+    def set_single_frame(self, value):
+        assert isinstance(value, (frame.Frame, int, long))
+        number = value
+        if isinstance(value, frame.Frame):
+            number = value.get_number()
+        self._data['single_frame'] = number
+
+    ############################################################################
+
+    def get_only_root_frames(self):
+        return self._data.get(
+            'only_root_frames',
+            const.SOLVER_STD_ONLY_ROOT_FRAMES_DEFAULT_VALUE)
+
+    def set_only_root_frames(self, value):
+        assert isinstance(value, (bool, int, long))
+        self._data['only_root_frames'] = bool(value)
+
+    ############################################################################
+
+    def get_global_solve(self):
+        return self._data.get(
+            'global_solve',
+            const.SOLVER_STD_GLOBAL_SOLVE_DEFAULT_VALUE)
+
+    def set_global_solve(self, value):
+        assert isinstance(value, (bool, int, long))
+        self._data['global_solve'] = bool(value)
+
+    ############################################################################
+
+    def get_root_frame_strategy(self):
+        return self._data.get(
+            'root_frame_strategy',
+            const.SOLVER_STD_ROOT_FRAME_STRATEGY_DEFAULT_VALUE)
+
+    def set_root_frame_strategy(self, value):
+        assert isinstance(value, (int, long))
+        self._data['root_frame_strategy'] = bool(value)
+
+    ############################################################################
+
+    def get_block_iteration_num(self):
+        return self._data.get(
+            'block_iteration_num',
+            const.SOLVER_STD_BLOCK_ITERATION_NUM_DEFAULT_VALUE)
+
+    def set_block_iteration_num(self, value):
+        assert isinstance(value, (int, long))
+        assert value > 0
+        self._data['block_iteration_num'] = bool(value)
+
+    def get_root_iteration_num(self):
+        return self._data.get(
+            'root_iteration_num',
+            const.SOLVER_STD_ROOT_ITERATION_NUM_DEFAULT_VALUE)
+
+    def set_root_iteration_num(self, value):
+        assert isinstance(value, (int, long))
+        assert value > 0
+        self._data['root_iteration_num'] = bool(value)
+
+    def get_anim_iteration_num(self):
+        return self._data.get(
+            'anim_iteration_num',
+            const.SOLVER_STD_ANIM_ITERATION_NUM_DEFAULT_VALUE)
+
+    def set_anim_iteration_num(self, value):
+        assert isinstance(value, (int, long))
+        assert value > 0
+        self._data['anim_iteration_num'] = bool(value)
+
+    def get_lineup_iteration_num(self):
+        return self._data.get(
+            'lineup_iteration_num',
+            const.SOLVER_STD_LINEUP_ITERATION_NUM_DEFAULT_VALUE)
+
+    def set_lineup_iteration_num(self, value):
+        assert isinstance(value, (int, long))
+        assert value > 0
+        self._data['lineup_iteration_num'] = bool(value)
 
     ############################################################################
 
@@ -531,7 +617,7 @@ class SolverStandard(solverbase.SolverBase):
         add_frm_data = frm.get_data()
         for frm_data in frm_list_data:
             if frm_data.get('number') == add_frm_data.get('number'):
-                msg = 'Frame already added to SolverStep, cannot add again: {0}'
+                msg = 'Frame already added to the solver, cannot add again: {0}'
                 msg = msg.format(add_frm_data)
                 raise excep.NotValid(msg)
 
@@ -668,19 +754,20 @@ class SolverStandard(solverbase.SolverBase):
 
     def compile(self, mkr_list, attr_list):
         # Options to affect how the solve is constructed.
-        use_single_frame = self.use_single_frame
-        only_root_frames = self.only_root_frames
-        global_solve = self.global_solve
-        auto_attr_blocks = self.auto_attr_blocks
-        triangulate_bundles = self.triangulate_bundles
-        single_frame = self.single_frame
-        block_iter_num = self.block_iteration_num
-        root_iter_num = self.root_iteration_num
-        anim_iter_num = self.anim_iteration_num
-        lineup_iter_num = self.lineup_iteration_num
-        root_frame_strategy = self.root_frame_strategy
+        use_single_frame = self.get_use_single_frame()
+        single_frame = self.get_single_frame()
+        only_root_frames = self.get_only_root_frames()
+        global_solve = self.get_global_solve()
+        block_iter_num = self.get_block_iteration_num()
+        root_iter_num = self.get_root_iteration_num()
+        anim_iter_num = self.get_anim_iteration_num()
+        lineup_iter_num = self.get_lineup_iteration_num()
+        root_frame_strategy = self.get_root_frame_strategy()
         root_frame_list = self.get_root_frame_list()
         frame_list = self.get_frame_list()
+
+        auto_attr_blocks = self._auto_attr_blocks
+        triangulate_bundles = self._triangulate_bundles
         verbose = True
 
         actions = []
@@ -712,6 +799,4 @@ class SolverStandard(solverbase.SolverBase):
                 triangulate_bundles,
                 verbose,
             )
-
-        # LOG.warn('actions: %r', actions)
         return actions

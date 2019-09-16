@@ -392,5 +392,5 @@ def get_home_dir_path(*args):
         path = os.path.join(path, *args)
     path = os.path.expandvars(path)
     path = os.path.abspath(path)
-    LOG.debug('Config Path:', path)
+    LOG.debug('Config Path: %r', path)
     return path

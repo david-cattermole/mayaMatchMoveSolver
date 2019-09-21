@@ -176,6 +176,38 @@ def get_as_plug_apione(node_attr):
     return plug
 
 
+def get_dag_path_shapes_below_apione(dag):
+    """
+    Get the MDagPath shape nodes under the given MDagPath.
+
+    .. note::
+        The given 'dag' MDagPath is not modified during this function.
+
+    :param dag: The DAG path to get shape nodes from.
+    :type dag: maya.OpenMaya.MDagPath
+
+    :return:
+    :rtype: [maya.OpenMaya.MDagPath, ..]
+    """
+    assert isinstance(dag, OpenMaya1.MDagPath)
+    dag_copy = OpenMaya1.MDagPath(dag)
+    dag_shp_list = []
+
+    # Get number of shape nodes.
+    shp_num_script_util = OpenMaya1.MScriptUtil()
+    uint_ptr = shp_num_script_util.asUintPtr()
+    shp_num_script_util.setUint(uint_ptr, 0)
+    dag_copy.numberOfShapesDirectlyBelow(uint_ptr)
+    shp_num = shp_num_script_util.getUint(uint_ptr)
+
+    for i in range(shp_num):
+        dag_copy.extendToShapeDirectlyBelow(i)
+        dag_shp = OpenMaya1.MDagPath(dag_copy)
+        dag_shp_list.append(dag_shp)
+        dag_copy.pop()
+    return dag_shp_list
+
+
 def get_as_selection_list_apitwo(node_names):
     assert isinstance(node_names, list) or isinstance(node_names, tuple)
     sel_list = OpenMaya2.MSelectionList()

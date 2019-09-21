@@ -14,11 +14,10 @@
             "---Selection",
             "swap_marker_bundles",
             "select_marker_bundles",
-            "marker_bundle_rename",
-            "---Marker-Bundle Link",
-            "link_marker_bundle",
-            "unlink_marker_bundle",
             "---Tools",
+            "mb_link_tools/---Marker-Bundle Link",
+            "mb_link_tools/link_marker_bundle",
+            "mb_link_tools/unlink_marker_bundle",
             "marker_tools/---Markers",
             "marker_tools/toggle_marker_lock",
             "marker_tools/place_marker_manipulator",
@@ -40,16 +39,20 @@
             "bundle_tools/attach_bundle_to_curve",
             "general_tools/---General",
             "general_tools/center_twodee",
-            "general_tools/screen_z_transform_bake",
+            "general_tools/marker_bundle_rename",
             "general_tools/smooth_keyframes",
+            "general_tools/smooth_keyframes_ui",
+            "general_tools/screen_z_transform_bake",
+            "general_tools/channel_sensitivity_ui",
             "general_tools/---Controller",
             "general_tools/create_controller",
-            "general_tools/remove_controller",
-            "general_tools/---UIs",
-            "general_tools/channel_sensitivity_ui",
-            "general_tools/smooth_keyframes_ui"
+            "general_tools/remove_controller"
         ],
         "functions": {
+            "mb_link_tools": {
+                "name": "Marker Tools",
+                "tearoff": true
+            },
             "marker_tools": {
                 "name": "Marker Tools",
                 "tearoff": true

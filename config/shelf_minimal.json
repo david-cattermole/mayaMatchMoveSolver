@@ -19,8 +19,6 @@
             "mkr_bnd_tools/mkr_bnd_popup/---Marker-Bundle Link",
             "mkr_bnd_tools/mkr_bnd_popup/link_marker_bundle",
             "mkr_bnd_tools/mkr_bnd_popup/unlink_marker_bundle",
-            "mkr_bnd_tools/mkr_bnd_popup/---Tools",
-            "mkr_bnd_tools/mkr_bnd_popup/marker_bundle_rename",
             "marker_tools/marker_popup/---Marker",
             "marker_tools/marker_popup/toggle_marker_lock",
             "marker_tools/marker_popup/place_marker_manipulator",
@@ -42,14 +40,14 @@
             "bundle_tools/bundle_popup/attach_bundle_to_curve",
             "general_tools/gen_tools_popup/---General",
             "general_tools/gen_tools_popup/center_twodee",
+            "general_tools/gen_tools_popup/marker_bundle_rename",
             "general_tools/gen_tools_popup/smooth_keyframes",
+            "general_tools/gen_tools_popup/smooth_keyframes_ui",
             "general_tools/gen_tools_popup/screen_z_transform_bake",
+            "general_tools/gen_tools_popup/channel_sensitivity_ui",
             "general_tools/gen_tools_popup/---Controllers",
             "general_tools/gen_tools_popup/create_controller",
-            "general_tools/gen_tools_popup/remove_controller",
-            "general_tools/gen_tools_popup/---UIs",
-            "general_tools/gen_tools_popup/channel_sensitivity_ui",
-            "general_tools/gen_tools_popup/smooth_keyframes_ui"
+            "general_tools/gen_tools_popup/remove_controller"
         ],
         "functions": {
             "solver_popup": {

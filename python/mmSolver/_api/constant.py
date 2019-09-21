@@ -106,6 +106,11 @@ BUNDLE_TRANSFORM_NODE_TYPE = 'transform'
 BUNDLE_SHAPE_NODE_TYPE = 'locator'
 
 
+# Icon names
+MARKER_SHAPE_ICON_NAME = 'out_mmMarkerShape.png'
+BUNDLE_SHAPE_ICON_NAME = 'out_mmBundleShape.png'
+
+
 # Collection Attribute Names
 COLLECTION_ATTR_LONG_NAME_SOLVER_LIST = 'solver_list'
 COLLECTION_ATTR_LONG_NAME_SOLVER_RESULTS = 'solver_results'

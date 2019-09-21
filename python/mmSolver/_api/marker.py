@@ -114,6 +114,20 @@ def _create_marker_attributes(node):
     return
 
 
+def _set_marker_icon(dag_path):
+    icon_name = const.MARKER_SHAPE_ICON_NAME
+    dag_shps = node_utils.get_dag_path_shapes_below_apione(dag_path)
+    if len(dag_shps) > 0:
+        for dag_shp in dag_shps:
+            mfn_shp = OpenMaya.MFnDagNode(dag_shp)
+            mfn_shp.setIcon(icon_name)
+    else:
+        # Set icon on transform, because there are no shapes.
+        mfn_tfm = OpenMaya.MFnDagNode(dag_path)
+        mfn_tfm.setIcon(icon_name)
+    return
+
+
 class Marker(object):
     """
     The 2D Marker object.
@@ -158,6 +172,9 @@ class Marker(object):
                 msg = 'Given Marker node name is invalid: name=%r'
                 LOG.error(msg, node)
                 raise e
+
+            # Set icon
+            _set_marker_icon(dag)
 
             # Ensure the deviation attribute exists.
             self.add_attributes()
@@ -210,6 +227,10 @@ class Marker(object):
             self._mfn = OpenMaya.MFnDagNode(dag)
         except RuntimeError:
             raise
+
+        # Set icon
+        _set_marker_icon(dag)
+
         # Ensure the deviation attribute exists.
         self.add_attributes()
         return

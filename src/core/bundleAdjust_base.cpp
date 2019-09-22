@@ -1104,13 +1104,17 @@ bool solve(SolverOptions &solverOptions,
     bool showProgressBar = true;
     bool isInterruptable = true;
     bool useWaitCursor = true;
-    computation.setProgressRange(0, solverOptions.iterMax);
-    computation.beginComputation(showProgressBar, isInterruptable, useWaitCursor);
+    if (printStats != true) {
+        computation.setProgressRange(0, solverOptions.iterMax);
+        computation.beginComputation(showProgressBar, isInterruptable, useWaitCursor);
+    }
 
     // Start Solving
     SolverTimer timer;
-    timer.solveBenchTimer.start();
-    timer.solveBenchTicks.start();
+    if (printStats != true) {
+        timer.solveBenchTimer.start();
+        timer.solveBenchTicks.start();
+    }
 
     // Solving Objects.
     SolverData userData;
@@ -1157,13 +1161,14 @@ bool solve(SolverOptions &solverOptions,
     userData.verbose = verbose;
     userData.debugFileName = debugFile;
 
-    // TODO: Calculate errors and return.
+    // Calculate errors and return.
     if (printStatsDeviation == true) {
         SolverResult solveResult;
 
         double errorAvg = 0;
         double errorMin = 0;
         double errorMax = 0;
+        // Never write debug data during statistics gathering.
         const bool writeDebug = false;
         std::ofstream debugFile;
         measureErrors(
@@ -1174,7 +1179,7 @@ bool solve(SolverOptions &solverOptions,
                 errorAvg,
                 errorMax,
                 errorMin,
-                writeDebug,  // Never write debug data during statistics gathering.
+                writeDebug,
                 debugFile,
                 status);
 

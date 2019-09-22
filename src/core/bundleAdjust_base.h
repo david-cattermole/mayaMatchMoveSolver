@@ -220,79 +220,28 @@ double parameterBoundFromExternalToInternal(double value,
                                             double offset, double scale);
 
 
-inline
 void lossFunctionTrivial(double z,
                          double &rho0,
                          double &rho1,
-                         double &rho2) {
-    // Trivial - 'no op' loss function.
-    rho0 = z;
-    rho1 = 1.0;
-    rho2 = 0.0;
-};
+                         double &rho2);
 
 
-inline
 void lossFunctionSoftL1(double z,
                         double &rho0,
                         double &rho1,
-                        double &rho2) {
-    // Soft L1
-    double t = 1.0 + z;
-    rho0 = 2.0 * (std::pow(t, 0.5 - 1.0));
-    rho1 = std::pow(t, -0.5);
-    rho2 = -0.5 * std::pow(t, -1.5);
-};
+                        double &rho2);
 
 
-inline
 void lossFunctionCauchy(double z,
                         double &rho0,
                         double &rho1,
-                        double &rho2) {
-    // Cauchy
-    // TODO: replace with 'std::log1p(z)', with C++11.
-    rho0 = std::log(1.0 + z);
-    double t = 1.0 + z;
-    rho1 = 1.0 / t;
-    rho2 = -1.0 / std::pow(t, 2.0);
-};
+                        double &rho2);
 
 
-inline
 void applyLossFunctionToErrors(int numberOfErrors,
                                double *f,
                                int loss_type,
-                               double loss_scale) {
-    for (int i = 0; i < numberOfErrors; ++i) {
-        // The loss function
-        double z = std::pow(f[i] / loss_scale, 2);
-        double rho0 = z;
-        double rho1 = 1.0;
-        double rho2 = 0.0;
-        if (loss_type == ROBUST_LOSS_TYPE_TRIVIAL) {
-            lossFunctionTrivial(z, rho0, rho1, rho2);
-        } else if (loss_type == ROBUST_LOSS_TYPE_SOFT_L_ONE) {
-            lossFunctionSoftL1(z, rho0, rho1, rho2);
-        } else if (loss_type == ROBUST_LOSS_TYPE_CAUCHY) {
-            lossFunctionCauchy(z, rho0, rho1, rho2);
-        } else {
-            DBG("Invalid Robust Loss Type given; value=" << loss_type);
-        }
-        rho0 *= std::pow(loss_scale, 2.0);
-        rho2 /= std::pow(loss_scale, 2.0);
-
-        double J_scale = rho1 + 2.0 * rho2 * std::pow(f[i], 2.0);
-        const double eps = std::numeric_limits<double>::epsilon();
-        if (J_scale < eps) {
-            J_scale = eps;
-        }
-        J_scale = std::pow(J_scale, 0.5);
-        f[i] *= rho1 / J_scale;
-    }
-    return;
-}
-
+                               double loss_scale);
 
 bool set_initial_parameters(int numberOfParameters,
                             std::vector<double> &paramList,

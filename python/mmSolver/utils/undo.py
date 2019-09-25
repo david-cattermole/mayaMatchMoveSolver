@@ -75,3 +75,22 @@ def undo_chunk_context(name=None):
     if undo_state is True:
         maya.cmds.undoInfo(closeChunk=True, chunkName=name)
 
+
+@contextmanager
+def no_undo_context():
+    """
+    All statements inside the 'with' block will not be added to the Undo stack.
+
+    Example usage:
+    >>> with no_undo_context():
+    ...     # do something with Maya, not recorded in undo stack
+    ...     maya.cmds.createNode('transform')
+
+    :return: Yields (returns)
+    """
+    undo_state = maya.cmds.undoInfo(query=True, state=True)
+    if undo_state is True:
+        maya.cmds.undoInfo(stateWithoutFlush=False)
+    yield
+    if undo_state is True:
+        maya.cmds.undoInfo(stateWithoutFlush=undo_state)

@@ -97,8 +97,10 @@ def set_viewport2_active_state(value):
     :param value: Set activation of the state.
     :type value: bool
     """
-    v = not value
-    return not maya.mel.ogs(pause=v)
+    current = maya.cmds.ogs(query=True, pause=True)
+    if value == current:
+        maya.cmds.ogs(pause=True)
+    return
 
 
 def get_viewport2_active_state():
@@ -107,7 +109,7 @@ def get_viewport2_active_state():
 
     :rtype: bool
     """
-    return not maya.mel.ogs(query=True, pause=True)
+    return not maya.cmds.ogs(query=True, pause=True)
 
 
 def get_active_model_editor():

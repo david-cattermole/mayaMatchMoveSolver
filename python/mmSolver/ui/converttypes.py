@@ -37,7 +37,7 @@ TRUE_WORDS = utils_convert.TRUE_WORDS
 FALSE_WORDS = utils_convert.FALSE_WORDS
 stringToBoolean = utils_convert.stringToBoolean
 booleanToString = utils_convert.booleanToString
-stringToIntList = utils_convert.booleanToString
+stringToIntList = utils_convert.stringToIntList
 intListToString = utils_convert.intListToString
 stringToInteger = utils_convert.stringToInteger
 

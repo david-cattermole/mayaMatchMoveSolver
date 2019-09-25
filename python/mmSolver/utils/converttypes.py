@@ -69,8 +69,9 @@ def stringToIntList(value):
     :return: List of integer numbers parsed from the string.
     :rtype: [int, ..]
     """
-    if isinstance(value, basestring) is False:
-        raise TypeError
+    if isinstance(value, (basestring, str, unicode)) is False:
+        msg = 'Given argument is not a string: type=%r value=%r'
+        raise TypeError(msg, type(value), value)
     value = value.strip()
     int_list = []
     for v in value.split(','):
@@ -103,7 +104,8 @@ def intListToString(value):
     Convert a list of integers to a string.
     """
     if isinstance(value, list) is False:
-        raise TypeError
+        msg = 'Given argument is not a list: type=%r value=%r'
+        raise TypeError(msg, type(value), value)
     int_list = list(set(value))
     int_list = list(sorted(int_list))
     grps = []

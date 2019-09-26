@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 import maya.cmds
-from maya import OpenMaya as OpenMaya
+import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
@@ -126,7 +126,7 @@ class Camera(object):
 
         tfm_dag = node_utils.get_as_dag_path(name)
         if tfm_dag is not None:
-            assert tfm_dag.apiType() == OpenMaya.MFn.kTransform
+            assert tfm_dag.apiType() in const.CAMERA_TRANSFORM_NODE_API_TYPES
 
             # Get camera shape from transform.
             dag = node_utils.get_as_dag_path(name)
@@ -134,7 +134,7 @@ class Camera(object):
             if num_children > 0:
                 for i in xrange(num_children):
                     child_obj = dag.child(i)
-                    if child_obj.apiType() == OpenMaya.MFn.kCamera:
+                    if child_obj.apiType() in const.CAMERA_SHAPE_NODE_API_TYPES:
                         dag.push(child_obj)
                         self._mfn_shp = OpenMaya.MFnDagNode(dag)
                         break
@@ -199,12 +199,12 @@ class Camera(object):
 
         shp_dag = node_utils.get_as_dag_path(name)
         if shp_dag is not None:
-            assert shp_dag.apiType() == OpenMaya.MFn.kCamera
+            assert shp_dag.apiType() in const.CAMERA_SHAPE_NODE_API_TYPES
 
             # Get transform from shape.
             tfm_dag = node_utils.get_as_dag_path(name)
             tfm_dag.pop(1)
-            assert tfm_dag.apiType() == OpenMaya.MFn.kTransform
+            assert tfm_dag.apiType() in const.CAMERA_TRANSFORM_NODE_API_TYPES
 
             self._mfn_shp = OpenMaya.MFnDagNode(shp_dag)
             self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)

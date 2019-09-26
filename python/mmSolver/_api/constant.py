@@ -19,6 +19,7 @@
 Constant values used in the API.
 """
 
+import maya.OpenMaya as OpenMaya
 
 # Plug-in names
 PLUGIN_NAMES = [
@@ -104,6 +105,14 @@ MARKER_TRANSFORM_NODE_TYPE = 'transform'
 MARKER_SHAPE_NODE_TYPE = 'locator'
 BUNDLE_TRANSFORM_NODE_TYPE = 'transform'
 BUNDLE_SHAPE_NODE_TYPE = 'locator'
+CAMERA_TRANSFORM_NODE_API_TYPES = (
+    OpenMaya.MFn.kTransform,
+    OpenMaya.MFn.kPluginTransformNode,
+    OpenMaya.MFn.kUnknownTransform,
+)
+CAMERA_SHAPE_NODE_API_TYPES = (
+    OpenMaya.MFn.kCamera,
+)
 
 
 # Icon names

@@ -526,7 +526,8 @@ class Marker(object):
 
         anim_curves = maya.cmds.listConnections(plug, type='animCurve') or []
         if len(anim_curves) == 0:
-            enable_times = list(range(start_frame, end_frame + 1))
+            enable_times = list(range(frame_range_start,
+                                      frame_range_end + 1))
         else:
             anim_curve = anim_curves[0]
             enable_times = maya.cmds.keyframe(
@@ -534,7 +535,8 @@ class Marker(object):
                 query=True,
                 timeChange=True) or []
             if len(enable_times) == 0:
-                enable_times = list(range(start_frame, end_frame + 1))
+                enable_times = list(range(frame_range_start,
+                                          frame_range_end + 1))
 
         start_frame = int(min(enable_times))
         end_frame = int(max(enable_times))

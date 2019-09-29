@@ -132,7 +132,7 @@ class Camera(object):
             dag = node_utils.get_as_dag_path(name)
             num_children = dag.childCount()
             if num_children > 0:
-                for i in xrange(num_children):
+                for i in range(num_children):
                     child_obj = dag.child(i)
                     if child_obj.apiType() in const.CAMERA_SHAPE_NODE_API_TYPES:
                         dag.push(child_obj)

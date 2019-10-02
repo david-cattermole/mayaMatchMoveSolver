@@ -25,14 +25,22 @@ import importlib
 
 Action = collections.namedtuple(
     'Action',
-    # ('type', 'func', 'args', 'kwargs')
     ('func', 'args', 'kwargs')
 )
 
 
 def action_func_is_mmSolver(action):
+    if action is None:
+        return False
     func = action.func
-    func_is_mmsolver = isinstance(func, basestring) and '.mmSolver' in func
+    if func is None:
+        return False
+    if isinstance(func, (basestring, unicode, str)):
+        func_is_mmsolver = '.mmSolver' in func
+    elif callable(func):
+        func_is_mmsolver = func.__name__ == 'mmSolver'
+    else:
+        func_is_mmsolver = False
     return func_is_mmsolver
 
 

@@ -27,6 +27,7 @@ import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
+import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.widget.ui_solver_widget as ui_solver_widget
@@ -84,14 +85,25 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
             self.legacy_widget
         ]
 
-        # Set defaults for info text fields.
-        self.info_label.setHidden(False)
+        self.validate_pushButton.setEnabled(False)
 
         self.tabWidget.currentChanged.connect(self._tabChanged)
         self.basic_widget.dataChanged.connect(self._dataChanged)
         self.standard_widget.dataChanged.connect(self._dataChanged)
         self.legacy_widget.dataChanged.connect(self._dataChanged)
         self.standard_widget.sendWarning.connect(self._sendWarningToUser)
+        self.standard_widget.sendWarning.connect(self._sendWarningToUser)
+
+        self.basic_widget.frameRange_widget.rangeTypeChanged.connect(self.updateInfo)
+        self.basic_widget.frameRange_widget.framesChanged.connect(self.updateInfo)
+        self.basic_widget.frameRange_widget.incrementByFrameChanged.connect(self.updateInfo)
+        self.standard_widget.frameRange_widget.rangeTypeChanged.connect(self.updateInfo)
+        self.validate_pushButton.clicked.connect(self.runUpdateInfo)
+
+        # First time we open this UI, we should update the solver info text.
+        value = lib_state.get_auto_update_solver_validation_state()
+        if value is False:
+            self.validate_pushButton.clicked.emit()
         return
 
     def getSolverTabValue(self, col):
@@ -128,6 +140,9 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         return widget
 
     def updateModel(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
         col = lib_state.get_active_collection()
         if col is not None:
             tab_name = self.getSolverTabValue(col)
@@ -147,16 +162,40 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
             self.info_label,
         ]
         _populateWidgetsEnabled(widgets)
+        self.updateInfo()
         return
 
     def updateInfo(self):
+        LOG.debug('RUN solver_widget updateInfo')
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
+
+        value = lib_state.get_auto_update_solver_validation_state()
+        self.validate_pushButton.setEnabled(not value)
+        if value is not True:
+            return
+
+        self.runUpdateInfo()
+        return
+
+    def runUpdateInfo(self):
+        LOG.debug('RUN solver_widget runUpdateInfo B')
         idx = self.tabWidget.currentIndex()
         tab_widget = self._getTabWidget(idx)
         text = tab_widget.queryInfo()
         self.info_label.setText(text)
         return
 
+    @QtCore.Slot(bool)
+    def autoUpdateSolverValidationChanged(self, value):
+        LOG.debug('autoUpdateSolverValidationChanged: %r', value)
+        lib_state.set_auto_update_solver_validation_state(value)
+        self.updateInfo()
+        return
+
     @QtCore.Slot(str)
     def _sendWarningToUser(self, value):
+        LOG.debug('sendWarningToUser: %r', value)
         self.sendWarning.emit(value)
         return

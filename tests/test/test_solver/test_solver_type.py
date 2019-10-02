@@ -97,10 +97,7 @@ class TestMMSolverType(solverUtils.SolverTestCase):
         """
         Test getting the default solver type.
         """
-        solver_type = maya.cmds.mmSolverType(
-            query=True,
-            default=True,
-        )
+        solver_type = maya.cmds.mmSolverType(query=True, default=True)
         assert '=' in solver_type
         assert isinstance(solver_type, (str, unicode))
 

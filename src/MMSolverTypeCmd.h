@@ -68,20 +68,20 @@
 // Command arguments and command name:
 
 // List of Solver Types
-#define LIST_FLAG           "-ls"
-#define LIST_FLAG_LONG      "-list"
+#define MM_SOLVER_TYPE_LIST_FLAG           ("-ls")
+#define MM_SOLVER_TYPE_LIST_FLAG_LONG      ("-list")
 
 // Solver Type Name
-#define NAME_FLAG           "-n"
-#define NAME_FLAG_LONG      "-name"
+#define MM_SOLVER_TYPE_NAME_FLAG           ("-n")
+#define MM_SOLVER_TYPE_NAME_FLAG_LONG      ("-name")
 
 // Solver Type Index
-#define INDEX_FLAG           "-i"
-#define INDEX_FLAG_LONG      "-index"
+#define MM_SOLVER_TYPE_INDEX_FLAG           ("-idx")
+#define MM_SOLVER_TYPE_INDEX_FLAG_LONG      ("-index")
 
 // Solver Type Default
-#define DEFAULT_FLAG           "-df"
-#define DEFAULT_FLAG_LONG      "-default"
+#define MM_SOLVER_TYPE_DEFAULT_FLAG           ("-def")
+#define MM_SOLVER_TYPE_DEFAULT_FLAG_LONG      ("-default")
 
 
 class MMSolverTypeCmd : public MPxCommand {

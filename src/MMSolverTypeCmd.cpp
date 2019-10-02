@@ -34,13 +34,16 @@
 // STL
 #include <cmath>
 #include <cassert>
-#include <cstdlib>  // getenv
+#include <cstdlib>
 
 // Utils
 #include <utilities/debugUtils.h>
 #include <utilities/stringUtils.h>
 
 // Maya
+#include <maya/MStatus.h>
+#include <maya/MArgList.h>
+#include <maya/MArgDatabase.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MObject.h>
@@ -78,10 +81,10 @@ MSyntax MMSolverTypeCmd::newSyntax() {
     syntax.enableEdit(false);
 
     // Flags
-    syntax.addFlag(DEFAULT_FLAG, DEFAULT_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(LIST_FLAG, LIST_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(NAME_FLAG, NAME_FLAG_LONG, MSyntax::kString);
-    syntax.addFlag(INDEX_FLAG, INDEX_FLAG_LONG, MSyntax::kUnsigned);
+    syntax.addFlag(MM_SOLVER_TYPE_DEFAULT_FLAG, MM_SOLVER_TYPE_DEFAULT_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(MM_SOLVER_TYPE_LIST_FLAG, MM_SOLVER_TYPE_LIST_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(MM_SOLVER_TYPE_NAME_FLAG, MM_SOLVER_TYPE_NAME_FLAG_LONG, MSyntax::kString);
+    syntax.addFlag(MM_SOLVER_TYPE_INDEX_FLAG, MM_SOLVER_TYPE_INDEX_FLAG_LONG, MSyntax::kUnsigned);
 
     return syntax;
 }
@@ -95,66 +98,74 @@ MStatus MMSolverTypeCmd::parseArgs(const MArgList &args) {
     MArgDatabase argData(syntax(), args, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    bool query = argData.isQuery(&status);
-    if (status == MStatus::kFailure) {
+    const bool query = argData.isQuery(&status);
+    CHECK_MSTATUS(status);
+    if (status != MStatus::kSuccess) {
+        status.perror("mmSolverType Could not get the query flag");
         return status;
     }
-    if (query == false) {
+    if (!query) {
         status = MStatus::kFailure;
+        status.perror("mmSolverType must query using the 'query' flag");
         return status;
     }
 
     // Get 'default'
     m_default = false;
-    if (argData.isFlagSet(DEFAULT_FLAG)) {
-        status = argData.getFlagArgument(DEFAULT_FLAG, 0, m_default);
-        if (status == MStatus::kFailure) {
+    if (argData.isFlagSet(MM_SOLVER_TYPE_DEFAULT_FLAG)) {
+        status = argData.getFlagArgument(MM_SOLVER_TYPE_DEFAULT_FLAG, 0, m_default);
+        if (status != MStatus::kSuccess) {
+            status.perror("mmSolverType could not get 'default' flag value");
             return status;
         }
     }
 
     // Get 'list'
     m_list = false;
-    if (argData.isFlagSet(LIST_FLAG)) {
-        status = argData.getFlagArgument(LIST_FLAG, 0, m_list);
-        if (status == MStatus::kFailure) {
+    if (argData.isFlagSet(MM_SOLVER_TYPE_LIST_FLAG)) {
+        status = argData.getFlagArgument(MM_SOLVER_TYPE_LIST_FLAG, 0, m_list);
+        if (status != MStatus::kSuccess) {
+            status.perror("mmSolverType could not get 'list' flag value");
             return status;
         }
     }
 
-    if ((m_list == true && m_default == true)
-       || (m_list == false && m_default == false)) {
+    if ((m_list && m_default) || (!m_list && !m_default)) {
         status = MStatus::kFailure;
+        status.perror("mmSolverType; must give 'list' or 'default' flag, not both flags at once");
         return status;
     }
 
     // Default switches
     m_name = false;
     m_index = false;
-    if (m_list == true || m_default == true) {
+    if (m_list || m_default) {
         m_name = true;
         m_index = true;
     }
 
     // Get 'name'
-    if (argData.isFlagSet(NAME_FLAG)) {
-        status = argData.getFlagArgument(NAME_FLAG, 0, m_name);
-        if (status == MStatus::kFailure) {
+    if (argData.isFlagSet(MM_SOLVER_TYPE_NAME_FLAG)) {
+        status = argData.getFlagArgument(MM_SOLVER_TYPE_NAME_FLAG, 0, m_name);
+        if (status != MStatus::kSuccess) {
+            status.perror("mmSolverType could not get 'name' flag value");
             return status;
         }
     }
 
     // Get 'index'
-    if (argData.isFlagSet(INDEX_FLAG)) {
-        status = argData.getFlagArgument(INDEX_FLAG, 0, m_index);
-        if (status == MStatus::kFailure) {
+    if (argData.isFlagSet(MM_SOLVER_TYPE_INDEX_FLAG)) {
+        status = argData.getFlagArgument(MM_SOLVER_TYPE_INDEX_FLAG, 0, m_index);
+        if (status != MStatus::kSuccess) {
+            status.perror("mmSolverType could not get 'index' flag value");
             return status;
         }
     }
 
     // Must have 'name' or 'index' flag, otherwise we don't print anything.
-    if (m_name == false && m_index == false) {
+    if (!m_name && !m_index) {
         status = MStatus::kFailure;
+        status.perror("mmSolverType must have 'name' or 'index' flags");
         return status;
     }
     return status;
@@ -179,16 +190,16 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
 
     // Read all the flag arguments.
     status = parseArgs(args);
-    if (status == MStatus::kFailure) {
+    if (status != MStatus::kSuccess) {
         return status;
     }
 
-    if (m_list == true) {
+    if (m_list) {
         // Get List of Solver Types
         std::vector<SolverTypePair> solverTypes = getSolverTypes();
         std::vector<SolverTypePair>::const_iterator cit;
 
-        if (m_name == true) {
+        if (m_name) {
             MStringArray outResult;
 
             for (cit = solverTypes.cbegin(); cit != solverTypes.cend(); ++cit){
@@ -196,7 +207,7 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
                 std::string name = cit->second;
 
                 MString item = "";
-                if (m_index == true) {
+                if (m_index) {
                     std::string index_string = string::numberToString<int>(index);
                     item += MString(index_string.c_str());
                     item += "=";
@@ -206,7 +217,7 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
             }
 
             MMSolverTypeCmd::setResult(outResult);
-        } else if (m_name == false && m_index == true) {
+        } else if (!m_name && m_index) {
             MIntArray outResult;
 
             for (cit = solverTypes.cbegin(); cit != solverTypes.cend(); ++cit){
@@ -216,16 +227,16 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
 
             MMSolverTypeCmd::setResult(outResult);
         }
-    } else if (m_default == true) {
+    } else if (m_default) {
         // Get Default Solver Type
         SolverTypePair solverType = getSolverTypeDefault();
 
-        if (m_name == true) {
+        if (m_name) {
             MString outResult = "";
             int index = solverType.first;
             std::string name = solverType.second;
 
-            if (m_index == true) {
+            if (m_index) {
                 std::string index_string = string::numberToString<int>(index);
                 outResult += MString(index_string.c_str());
                 outResult += "=";
@@ -233,9 +244,13 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
             outResult += name.c_str();
 
             MMSolverTypeCmd::setResult(outResult);
-        } else if (m_name == false && m_index == true) {
+        } else if (!m_name && m_index) {
             int outResult = solverType.first;
             MMSolverTypeCmd::setResult(outResult);
+        } else {
+            status = MStatus::kFailure;
+            status.perror("mmSolverType must have 'name' or 'index' flags");
+            return status;
         }
     }
 

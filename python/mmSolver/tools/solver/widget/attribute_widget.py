@@ -25,6 +25,7 @@ qtpyutils.override_binding_order()
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
+import Qt.QtCompat as QtCompat
 
 import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
@@ -119,7 +120,9 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.filterModel.setSourceModel(self.model)
         self.filterModel.setDynamicSortFilter(False)
         self.header = QtWidgets.QHeaderView(QtCore.Qt.Horizontal, parent=self.treeView)
-        self.header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        QtCompat.QHeaderView.setSectionResizeMode(
+            self.header, QtWidgets.QHeaderView.ResizeToContents
+        )
         self.treeView.setHeader(self.header)
 
         self.treeView.setModel(self.filterModel)

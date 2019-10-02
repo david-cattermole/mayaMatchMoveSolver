@@ -25,6 +25,7 @@ qtpyutils.override_binding_order()
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
+import Qt.QtCompat as QtCompat
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
@@ -131,8 +132,8 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             QtCore.Qt.Horizontal,
             parent=self.treeView
         )
-        self.header.setSectionResizeMode(
-            QtWidgets.QHeaderView.ResizeToContents
+        QtCompat.QHeaderView.setSectionResizeMode(
+            self.header, QtWidgets.QHeaderView.ResizeToContents
         )
         self.treeView.setHeader(self.header)
         self.treeView.setModel(self.filterModel)

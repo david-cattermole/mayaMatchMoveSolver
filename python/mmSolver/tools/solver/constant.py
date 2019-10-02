@@ -23,6 +23,19 @@ Holds all constant data needed for the solver tool and UI.
 WINDOW_TITLE_BAR = 'mmSolver | {0}'
 
 
+# HTML Color Names, for Qt Rich Text.
+#
+# https://htmlcolorcodes.com/color-names/
+#
+COLOR_HTML_HEX_WHITE = '#FFFFFF'   # 'white'
+COLOR_HTML_HEX_ORANGE = '#FFA500'  # 'orange'
+COLOR_HTML_HEX_YELLOW = '#FFFF00'  # 'yellow'
+COLOR_HTML_HEX_RED = '#FF0000'     # 'red'
+COLOR_TEXT_DEFAULT = COLOR_HTML_HEX_WHITE
+COLOR_WARNING = COLOR_HTML_HEX_ORANGE
+COLOR_ERROR = COLOR_HTML_HEX_RED
+
+
 # Available log levels for the Solver UI.
 LOG_LEVEL_ERROR = 'error'
 LOG_LEVEL_WARNING = 'warning'
@@ -50,6 +63,8 @@ MM_SOLVER_DATA_ATTR_NAME = 'mmSolver_data'
 
 # Scene Data keys and default values.
 SCENE_DATA_ACTIVE_COLLECTION_UID = 'active_collection_uid'
+SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION = 'auto_update_solver_validation'
+SCENE_DATA_PRE_SOLVE_FORCE_EVAL = 'pre_solve_force_eval'
 SCENE_DATA_REFRESH_VIEWPORT = 'refresh_viewport_state'
 SCENE_DATA_FORCE_DG_UPDATE = 'force_dg_update_state'
 SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING = 'display_image_plane_while_solving'
@@ -62,6 +77,8 @@ SCENE_DATA_DISPLAY_OBJECT_WEIGHT = 'display_object_weight'
 SCENE_DATA_DISPLAY_ATTRIBUTE_STATE = 'display_attribute_state'
 SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX = 'display_attribute_min_max'
 SCENE_DATA_LOG_LEVEL = 'log_level'
+SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION_DEFAULT = False
+SCENE_DATA_PRE_SOLVE_FORCE_EVAL_DEFAULT = True
 SCENE_DATA_REFRESH_VIEWPORT_DEFAULT = True
 SCENE_DATA_FORCE_DG_UPDATE_DEFAULT = True
 SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING_DEFAULT = False
@@ -260,7 +277,7 @@ SOLVER_TAB_DEFAULT_VALUE = 'basic'
 # Solver Frame Range Type (stored on Collection node)
 SOLVER_RANGE_TYPE_ATTR = 'solver_range_type'
 SOLVER_RANGE_TYPE_ATTR_TYPE = 'byte'  # 8-bit integer
-SOLVER_RANGE_TYPE_DEFAULT_VALUE = RANGE_TYPE_TIMELINE_OUTER_VALUE
+SOLVER_RANGE_TYPE_DEFAULT_VALUE = RANGE_TYPE_TIMELINE_INNER_VALUE
 
 # Solver Frames (stored on Collection node)
 SOLVER_FRAMES_ATTR = 'solver_frames'

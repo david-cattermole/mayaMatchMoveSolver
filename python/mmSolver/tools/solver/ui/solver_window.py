@@ -19,13 +19,13 @@
 The main window for the 'Solver' tool.
 """
 
-import time
 import uuid
 from functools import partial
 
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
+import Qt
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
@@ -41,6 +41,7 @@ import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
 import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 import mmSolver.tools.solver.ui.solver_layout as solver_layout
+import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
 import mmSolver.tools.aboutwindow.tool as aboutwin_tool
 import mmSolver.tools.sysinfowindow.tool as sysinfowin_tool
 
@@ -168,8 +169,58 @@ class SolverWindow(BaseWindow):
 
         # Edit Menu
         edit_menu = QtWidgets.QMenu('Edit', menubar)
+        edit_menu.setTearOffEnabled(True)
 
-        edit_menu.addSection('Solving')
+        if Qt.IsPySide2 or Qt.IsPyQt5:
+            edit_menu.addSection('Undo / Redo')
+
+        # Undo
+        label = 'Undo (without UI update)'
+        tooltip = ('Undo the Maya scene state, '
+                   'without updating the viewport or solver UI')
+        action = QtWidgets.QAction(label, edit_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(self.undoTriggeredCB)
+        edit_menu.addAction(action)
+
+        # Redo
+        label = 'Redo (without UI update)'
+        tooltip = ('Redo the Maya scene state, '
+                   'without updating the viewport or solver UI')
+        action = QtWidgets.QAction(label, edit_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(self.redoTriggeredCB)
+        edit_menu.addAction(action)
+
+        if Qt.IsPySide2 or Qt.IsPyQt5:
+            edit_menu.addSection('Window Update')
+
+        # Auto Update Solver Validation
+        label = 'Auto-Update Solver Validation'
+        tooltip = 'Auto-update details of the solver parameter/error numbers.'
+        value = lib_state.get_auto_update_solver_validation_state()
+        action = QtWidgets.QAction(label, edit_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            self.subForm.solver_settings.autoUpdateSolverValidationChanged)
+        edit_menu.addAction(action)
+
+        if Qt.IsPySide2 or Qt.IsPyQt5:
+            edit_menu.addSection('Solver Execution')
+
+        # Pre-Solve Force Evaluation
+        label = 'Pre-Solve Force Evaluation'
+        tooltip = ('Before starting a solve, '
+                   'update the scene to force an evaluation.')
+        pre_solve_force_eval = lib_state.get_pre_solve_force_eval_state()
+        action = QtWidgets.QAction(label, edit_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(pre_solve_force_eval)
+        action.toggled.connect(type(self).preSolveForceEvalActionToggledCB)
+        edit_menu.addAction(action)
 
         # Refresh Viewport During Solve
         label = 'Refresh Viewport'
@@ -197,8 +248,10 @@ class SolverWindow(BaseWindow):
 
         # View Menu
         view_menu = QtWidgets.QMenu('View', menubar)
+        view_menu.setTearOffEnabled(True)
 
-        view_menu.addSection('Input Object Display')
+        if Qt.IsPySide2 or Qt.IsPyQt5:
+            view_menu.addSection('Input Object Display')
 
         # Display Object Weight
         label = 'Weight Column'
@@ -248,7 +301,8 @@ class SolverWindow(BaseWindow):
             self.subForm.object_browser.displayMaximumDeviationColumnChanged)
         view_menu.addAction(action)
 
-        view_menu.addSection('Output Attribute Display')
+        if Qt.IsPySide2 or Qt.IsPyQt5:
+            view_menu.addSection('Output Attribute Display')
 
         # Display Attribute State
         label = 'Display Attribute State'
@@ -274,7 +328,8 @@ class SolverWindow(BaseWindow):
             self.subForm.attribute_browser.displayMinMaxColumnChanged)
         view_menu.addAction(action)
 
-        view_menu.addSection('During Solve')
+        if Qt.IsPySide2 or Qt.IsPyQt5:
+            view_menu.addSection('During Solve')
 
         # Display the Image Planes while solving.
         #
@@ -449,6 +504,34 @@ class SolverWindow(BaseWindow):
         self.subForm.collection_widget.removeActiveNode()
         return
 
+    def undoTriggeredCB(self):
+        LOG.debug('undoTriggeredCB')
+        validation = lib_state.get_auto_update_solver_validation_state()
+        with undo_utils.no_undo_context():
+            lib_state.set_auto_update_solver_validation_state(False)
+        block = self.blockSignals(True)
+        try:
+            undoredoscene_tool.main_undo()
+        finally:
+            with undo_utils.no_undo_context():
+                lib_state.set_auto_update_solver_validation_state(validation)
+            self.blockSignals(block)
+        return
+
+    def redoTriggeredCB(self):
+        LOG.debug('redoTriggeredCB')
+        validation = lib_state.get_auto_update_solver_validation_state()
+        with undo_utils.no_undo_context():
+            lib_state.set_auto_update_solver_validation_state(False)
+        block = self.blockSignals(True)
+        try:
+            undoredoscene_tool.main_redo()
+        finally:
+            with undo_utils.no_undo_context():
+                lib_state.set_auto_update_solver_validation_state(validation)
+            self.blockSignals(block)
+        return
+
     @staticmethod
     def refreshActionToggledCB(value):
         lib_state.set_refresh_viewport_state(value)
@@ -457,6 +540,11 @@ class SolverWindow(BaseWindow):
     @staticmethod
     def forceDgUpdateActionToggledCB(value):
         lib_state.set_force_dg_update_state(value)
+        return
+
+    @staticmethod
+    def preSolveForceEvalActionToggledCB(value):
+        lib_state.set_pre_solve_force_eval_state(value)
         return
 
     @staticmethod
@@ -472,31 +560,6 @@ class SolverWindow(BaseWindow):
     @staticmethod
     def displayMeshesWhileSolvingActionToggledCB(value):
         lib_state.set_display_meshes_while_solving_state(value)
-        return
-
-    @staticmethod
-    def displayObjectFrameDeviationActionToggledCB(value):
-        lib_state.set_display_object_frame_deviation_state(value)
-        return
-
-    @staticmethod
-    def displayObjectAverageDeviationActionToggledCB(value):
-        lib_state.set_display_object_average_deviation_state(value)
-        return
-
-    @staticmethod
-    def displayObjectMaximumDeviationActionToggledCB(value):
-        lib_state.set_display_object_maximum_deviation_state(value)
-        return
-
-    @staticmethod
-    def displayObjectWeightActionToggledCB(value):
-        lib_state.set_display_object_weight_state(value)
-        return
-
-    @staticmethod
-    def displayAttributeMinMaxActionToggledCB(value):
-        lib_state.set_display_attribute_min_max_state(value)
         return
 
     def launchHelpCB(self):
@@ -528,40 +591,50 @@ class SolverWindow(BaseWindow):
 
     def apply(self):
         """
-        Tbis button launches a solve, but can also be used to cancel a solve.
+        This button launches a solve, but can also be used to cancel a solve.
         """
-        undo_id = 'mmSolver: ' + str(uuid.uuid4())
-        with undo_utils.undo_chunk_context(undo_id):
-            running_state = lib_state.get_solver_is_running_state()
-            if running_state is True:
-                # Cancel out of a running solve if the user presses
-                # the button again.
-                lib_state.set_solver_user_interrupt_state(True)
-                return
-            refresh_state = lib_state.get_refresh_viewport_state()
-            force_update_state = lib_state.get_force_dg_update_state()
-            do_isolate_state = lib_state.get_isolate_object_while_solving_state()
+        running_state = lib_state.get_solver_is_running_state()
+        if running_state is True:
+            # Cancel out of a running solve if the user presses
+            # the button again.
+            lib_state.set_solver_user_interrupt_state(True)
+            return
+        block = self.blockSignals(True)
+        try:
+            mmapi.set_solver_running(True)
+            undo_id = 'mmSolver: ' + str(uuid.uuid4())
+            with undo_utils.undo_chunk_context(undo_id):
+                refresh_state = lib_state.get_refresh_viewport_state()
+                disable_viewport_two_state = not refresh_state
+                force_update_state = lib_state.get_force_dg_update_state()
+                do_isolate_state = lib_state.get_isolate_object_while_solving_state()
+                pre_solve_force_eval = lib_state.get_pre_solve_force_eval_state()
 
-            disp_node_types = dict()
-            image_plane_state = lib_state.get_display_image_plane_while_solving_state()
-            meshes_state = lib_state.get_display_meshes_while_solving_state()
-            disp_node_types['imagePlane'] = image_plane_state
-            disp_node_types['mesh'] = meshes_state
+                disp_node_types = dict()
+                image_plane_state = lib_state.get_display_image_plane_while_solving_state()
+                meshes_state = lib_state.get_display_meshes_while_solving_state()
+                disp_node_types['imagePlane'] = image_plane_state
+                disp_node_types['mesh'] = meshes_state
 
-            options = mmapi.createExecuteOptions(
-                refresh=refresh_state,
-                force_update=force_update_state,
-                # do_isolate=do_isolate_state,
-                display_node_types=disp_node_types,
-            )
+                options = mmapi.createExecuteOptions(
+                    refresh=refresh_state,
+                    disable_viewport_two=disable_viewport_two_state,
+                    force_update=force_update_state,
+                    do_isolate=do_isolate_state,
+                    pre_solve_force_eval=pre_solve_force_eval,
+                    display_node_types=disp_node_types,
+                )
 
-            log_level = lib_state.get_log_level()
-            col = lib_state.get_active_collection()
-            lib_collection.run_solve_ui(
-                col,
-                options,
-                log_level,
-                self)
+                log_level = lib_state.get_log_level()
+                col = lib_state.get_active_collection()
+                lib_collection.run_solve_ui(
+                    col,
+                    options,
+                    log_level,
+                    self)
+        finally:
+            mmapi.set_solver_running(False)
+            self.blockSignals(block)
         return
 
     def help(self):

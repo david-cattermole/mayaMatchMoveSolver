@@ -32,7 +32,16 @@ def override_binding_order(binding_order=None):
     """
     Change the expected order of Qt bindings used by Qt.py.
 
+    By default the binding order is defined in the module level BINDING_ORDER
+    variable.
 
+    If the user has already defined the environment variable
+    'QT_PREFERRED_BINDING' then we will skip overriding the bind order.
+
+    .. note:: This function should be run before importing Qt.py.
+
+    :param binding_order: A list of binding names
+    :type binding_order: [str, ..]]
     """
     if binding_order is None:
         binding_order = BINDING_ORDER

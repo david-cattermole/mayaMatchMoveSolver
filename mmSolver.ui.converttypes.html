@@ -57,33 +57,9 @@
             
   <div class="section" id="module-mmSolver.ui.converttypes">
 <span id="mmsolver-ui-converttypes"></span><h1>mmSolver.ui.converttypes<a class="headerlink" href="#module-mmSolver.ui.converttypes" title="Permalink to this headline">¶</a></h1>
-<p>Conversion functions between various types.</p>
-<dl class="function">
-<dt id="mmSolver.ui.converttypes.stringToBoolean">
-<code class="descclassname">mmSolver.ui.converttypes.</code><code class="descname">stringToBoolean</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.converttypes.stringToBoolean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a string into a boolean value, using list of &#8216;TRUE_WORDS&#8217;</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.ui.converttypes.booleanToString">
-<code class="descclassname">mmSolver.ui.converttypes.</code><code class="descname">booleanToString</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.converttypes.booleanToString" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert boolean value to a string.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.ui.converttypes.stringToIntList">
-<code class="descclassname">mmSolver.ui.converttypes.</code><code class="descname">stringToIntList</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.converttypes.stringToIntList" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a string of integer ranges to a list of integers.</p>
-<p>value = &#8216;1001-1101&#8217;
-value = &#8216;1001,1002,1003-1005,1010-1012</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.ui.converttypes.intListToString">
-<code class="descclassname">mmSolver.ui.converttypes.</code><code class="descname">intListToString</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.converttypes.intListToString" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a list of integers to a string.</p>
-</dd></dl>
-
+<p>Conversion functions between various types, for Qt types.</p>
+<p>This module should NOT be imported into any module that may not run with a
+GUI avalable (for example on the farm)</p>
 <dl class="function">
 <dt id="mmSolver.ui.converttypes.stringToStrategy">
 <code class="descclassname">mmSolver.ui.converttypes.</code><code class="descname">stringToStrategy</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.converttypes.stringToStrategy" title="Permalink to this definition">¶</a></dt>
@@ -92,11 +68,6 @@ value = &#8216;1001,1002,1003-1005,1010-1012</p>
 <dl class="function">
 <dt id="mmSolver.ui.converttypes.stringToAttrFilter">
 <code class="descclassname">mmSolver.ui.converttypes.</code><code class="descname">stringToAttrFilter</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.converttypes.stringToAttrFilter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.ui.converttypes.stringToInteger">
-<code class="descclassname">mmSolver.ui.converttypes.</code><code class="descname">stringToInteger</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.converttypes.stringToInteger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">

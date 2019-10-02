@@ -79,58 +79,8 @@
 <p>Position Bundle under the Marker.</p>
 <dl class="function">
 <dt id="mmSolver.tools.triangulatebundle.lib.get_marker_frame_list">
-<code class="descclassname">mmSolver.tools.triangulatebundle.lib.</code><code class="descname">get_marker_frame_list</code><span class="sig-paren">(</span><em>mkr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.triangulatebundle.lib.get_marker_frame_list" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.tools.triangulatebundle.lib.</code><code class="descname">get_marker_frame_list</code><span class="sig-paren">(</span><em>mkr_node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.triangulatebundle.lib.get_marker_frame_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the list of frames that this marker is enabled for.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.triangulatebundle.lib.get_point_and_direction">
-<code class="descclassname">mmSolver.tools.triangulatebundle.lib.</code><code class="descname">get_point_and_direction</code><span class="sig-paren">(</span><em>camera_node</em>, <em>point_node</em>, <em>frame</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.triangulatebundle.lib.get_point_and_direction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the direction of the camera toward a given point.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>camera_node</strong> (<em>str</em>) &#8211; Camera transform node.</li>
-<li><strong>point_node</strong> (<em>str</em>) &#8211; Transform node to aim at.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Point and direction from camera to point.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.triangulatebundle.lib.calculate_approx_intersection_point_between_two_3d_lines">
-<code class="descclassname">mmSolver.tools.triangulatebundle.lib.</code><code class="descname">calculate_approx_intersection_point_between_two_3d_lines</code><span class="sig-paren">(</span><em>a_pnt</em>, <em>a_dir</em>, <em>b_pnt</em>, <em>b_dir</em>, <em>eps=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.triangulatebundle.lib.calculate_approx_intersection_point_between_two_3d_lines" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate approximate intersection between two lines in 3D.</p>
-<p><a class="reference external" href="http://paulbourke.net/geometry/pointlineplane/">http://paulbourke.net/geometry/pointlineplane/</a>
-<a class="reference external" href="http://paulbourke.net/geometry/pointlineplane/lineline.c">http://paulbourke.net/geometry/pointlineplane/lineline.c</a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>a_pnt</strong> (<em>MPoint</em>) &#8211; Point A.</li>
-<li><strong>a_dir</strong> (<em>MVector</em>) &#8211; Direction A.</li>
-<li><strong>b_pnt</strong> (<em>MPoint</em>) &#8211; Point B</li>
-<li><strong>b_dir</strong> (<em>MVector</em>) &#8211; Direction B.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Two points to define the closest line intersection.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>:rtype (MPoint, MPoint)</p>
 </dd></dl>
 
 <dl class="function">

@@ -65,7 +65,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140233534925712'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140233534925712'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='140233534925840'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140241140704592'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140241140704592'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='140241140704720'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -567,10 +567,11 @@ does not already exist.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Arbitrary Plain-Old-Data data structures.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Arbitrary Plain-Old-Data data structures, can be a list or
+dictionary.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or list or None</p>
 </td>
 </tr>
 </tbody>
@@ -615,7 +616,8 @@ does not already exist.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">None</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The value of the scene option, or &#8216;default&#8217; if the &#8216;name&#8217;
+does not exist.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">any</p>
@@ -855,6 +857,28 @@ will always have unique node names.</dd>
 </dd></dl>
 
 <dl class="function">
+<dt id="mmSolver.utils.node.get_dag_path_shapes_below_apione">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_dag_path_shapes_below_apione</code><span class="sig-paren">(</span><em>dag</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_dag_path_shapes_below_apione" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the MDagPath shape nodes under the given MDagPath.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The given &#8216;dag&#8217; MDagPath is not modified during this function.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dag</strong> (<em>maya.OpenMaya.MDagPath</em>) &#8211; The DAG path to get shape nodes from.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[maya.OpenMaya.MDagPath, .]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="mmSolver.utils.node.get_as_selection_list_apitwo">
 <code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_selection_list_apitwo</code><span class="sig-paren">(</span><em>node_names</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_selection_list_apitwo" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -936,15 +960,20 @@ colour).</p>
 <dt id="mmSolver.utils.node.set_node_wire_colour_rgb">
 <code class="descclassname">mmSolver.utils.node.</code><code class="descname">set_node_wire_colour_rgb</code><span class="sig-paren">(</span><em>node</em>, <em>rgb</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.set_node_wire_colour_rgb" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change the wireframe colour of the node.</p>
+<p>The &#8216;node&#8217; is assumed to a DAG node (capable of having a wireframe
+colour set).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rgb</strong> (<em>tuple</em>) &#8211; Colour as R, G, B; Or None to reset to default colour.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<em>str</em>) &#8211; Maya DAG node path.</li>
+<li><strong>rgb</strong> (<em>tuple</em>) &#8211; Colour as R, G, B; Or None to reset to default colour.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nothing.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1631,14 +1660,60 @@ If &#8216;func&#8217; raises and exception, we close the chunk.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="mmSolver.utils.undo.undo_chunk">
-<code class="descclassname">mmSolver.utils.undo.</code><code class="descname">undo_chunk</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.undo.undo_chunk" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="mmSolver.utils.undo.undo_chunk_context">
+<code class="descclassname">mmSolver.utils.undo.</code><code class="descname">undo_chunk_context</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.undo.undo_chunk_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an undo chunk, using a context manager.</p>
+<p>Example usage:
+&gt;&gt;&gt; with undo_chunk_context() as chunk_name:
+...     # do something with Maya
+...     maya.cmds.createNode(&#8216;transform&#8217;)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; A string to use as the unique undo chunk name, or
+None to generate a random UUID.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Yields (returns) the name of the undo chunk.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.undo.no_undo_context">
+<code class="descclassname">mmSolver.utils.undo.</code><code class="descname">no_undo_context</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.undo.no_undo_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>All statements inside the &#8216;with&#8217; block will not be added to the Undo stack.</p>
+<p>Example usage:
+&gt;&gt;&gt; with no_undo_context():
+...     # do something with Maya, not recorded in undo stack
+...     maya.cmds.createNode(&#8216;transform&#8217;)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Yields (returns)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 <div class="section" id="module-mmSolver.utils.viewport">
 <span id="viewport"></span><h2>Viewport<a class="headerlink" href="#module-mmSolver.utils.viewport" title="Permalink to this headline">¶</a></h2>
 <p>Utilities for setting and querying viewport related information.</p>
+<dl class="function">
+<dt id="mmSolver.utils.viewport.viewport1_turn_off">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport1_turn_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport1_turn_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off Maya UI.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.viewport1_turn_on">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport1_turn_on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport1_turn_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn on Maya UI.</p>
+</dd></dl>
+
 <dl class="function">
 <dt id="mmSolver.utils.viewport.viewport_turn_off">
 <code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_off" title="Permalink to this definition">¶</a></dt>
@@ -1649,6 +1724,50 @@ If &#8216;func&#8217; raises and exception, we close the chunk.</p>
 <dt id="mmSolver.utils.viewport.viewport_turn_on">
 <code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_on" title="Permalink to this definition">¶</a></dt>
 <dd><p>Turn on Maya UI.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.viewport2_turn_off">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport2_turn_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport2_turn_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off Viewport 2.</p>
+<p>..note:: This is not supported below Maya 2017.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.viewport2_turn_on">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport2_turn_on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport2_turn_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn on Viewport 2.</p>
+<p>..note:: This is not supported below Maya 2017.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_viewport2_active_state">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_viewport2_active_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_viewport2_active_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set Viewport 2 activation state.</p>
+<p>..note:: This is not supported below Maya 2017.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) &#8211; Set activation of the state.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_viewport2_active_state">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_viewport2_active_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_viewport2_active_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the Viewport 2 active state.</p>
+<p>..note:: This is not supported below Maya 2017.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -1696,21 +1815,318 @@ If &#8216;func&#8217; raises and exception, we close the chunk.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="mmSolver.utils.viewport.get_image_plane_visibility">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_image_plane_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_image_plane_visibility" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.viewport.set_image_plane_visibility">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_image_plane_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_image_plane_visibility" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="mmSolver.utils.viewport.set_isolated_nodes">
 <code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_isolated_nodes</code><span class="sig-paren">(</span><em>model_panel</em>, <em>nodes</em>, <em>enable</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_isolated_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override the isolate objects on &#8216;model_panel&#8217;.</p>
 <p>With an empty list, this function clears the &#8216;model_panel&#8217;s
 isolate object list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_grid_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_grid_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_grid_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the grids visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_grid_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_grid_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_grid_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of grids nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_image_plane_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_image_plane_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_image_plane_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the image plane visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_image_plane_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_image_plane_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_image_plane_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of imagePlane nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_mesh_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_mesh_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_mesh_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the mesh visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_mesh_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_mesh_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_mesh_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of mesh nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_subdiv_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_subdiv_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_subdiv_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the subdiv visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_subdiv_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_subdiv_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_subdiv_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of subdiv nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_nurbs_curve_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_nurbs_curve_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_nurbs_curve_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the NURBS Curve visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_nurbs_curve_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_nurbs_curve_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_nurbs_curve_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of NURBS Curve nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_nurbs_surface_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_nurbs_surface_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_nurbs_surface_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the NURBS surface visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_nurbs_surface_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_nurbs_surface_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_nurbs_surface_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of NURBS surface nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_locator_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_locator_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_locator_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the locators visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_locator_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_locator_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_locator_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of locators nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_plane_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_plane_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_plane_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the plane visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_plane_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_plane_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_plane_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of plane nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_camera_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_camera_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_camera_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the cameras visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_camera_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_camera_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_camera_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of cameras nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_light_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_light_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_light_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the lights visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_light_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_light_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_light_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of lights nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_joint_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_joint_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_joint_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the joints visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_joint_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_joint_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_joint_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of joints nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_deformer_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_deformer_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_deformer_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the deformers visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_deformer_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_deformer_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_deformer_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of deformers nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_ik_handle_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_ik_handle_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_ik_handle_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the ikHandles visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_ik_handle_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_ik_handle_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_ik_handle_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of ikHandles nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_dynamic_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_dynamic_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_dynamic_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the dynamics visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_dynamic_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_dynamic_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_dynamic_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of dynamics nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_fluid_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_fluid_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_fluid_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the fluids visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_fluid_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_fluid_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_fluid_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of fluids nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_hair_system_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_hair_system_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_hair_system_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the hairSystems visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_hair_system_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_hair_system_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_hair_system_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of hairSystems nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_follicle_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_follicle_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_follicle_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the follicles visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_follicle_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_follicle_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_follicle_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of follicles nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_ncloth_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_ncloth_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_ncloth_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the nCloths visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_ncloth_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_ncloth_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_ncloth_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of nCloths nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_nparticle_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_nparticle_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_nparticle_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the nParticles visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_nparticle_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_nparticle_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_nparticle_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of nParticles nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_nrigid_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_nrigid_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_nrigid_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the nRigids visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_nrigid_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_nrigid_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_nrigid_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of nRigids nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_texture_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_texture_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_texture_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the textures visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_texture_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_texture_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_texture_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of textures nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_stroke_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_stroke_visibility</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_stroke_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the strokes visibility in given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_stroke_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_stroke_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_stroke_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of strokes nodes in the given model panel.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.get_node_type_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_node_type_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>node_type</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_node_type_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the visibility of &#8216;node_type&#8217; in the given model panel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>model_panel</strong> (<em>str</em>) &#8211; Model panel name to set visibility.</li>
+<li><strong>node_type</strong> (<em>str</em>) &#8211; Node type to get visibility for.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The visibility of the given node type.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.set_node_type_visibility">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_node_type_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>node_type</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_node_type_visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the visibility of &#8216;node_type&#8217; nodes in the given model panel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model_panel</strong> (<em>str</em>) &#8211; Model panel name to set visibility.</li>
+<li><strong>node_type</strong> (<em>str</em>) &#8211; Node type to set visibility for.</li>
+<li><strong>value</strong> (<em>bool</em>) &#8211; Visibility of node type.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

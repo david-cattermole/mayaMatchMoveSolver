@@ -90,7 +90,7 @@
 // #define USE_EXPERIMENTAL_DELTA_VALUE
 
 
- #if MAYA_API_VERSION < 20170000
+#if MAYA_API_VERSION < 201700
 int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
     int index = -1;
     for (unsigned int i=0; i<array.length(); ++i) {
@@ -116,7 +116,7 @@ MString generateDirtyCommand(int numberOfErrors, SolverData *ud) {
 
         MarkerPtr marker = ud->markerList[markerPair.first];
         MString markerName = marker->getNodeName();
-#if MAYA_API_VERSION >= 20170000
+#if MAYA_API_VERSION >= 201700
         const int markerName_idx = dgDirtyNodeNames.indexOf(markerName);
 #else
         const int markerName_idx = getStringArrayIndexOfValue(dgDirtyNodeNames, markerName);
@@ -129,7 +129,7 @@ MString generateDirtyCommand(int numberOfErrors, SolverData *ud) {
         CameraPtr camera = marker->getCamera();
         MString cameraTransformName = camera->getTransformNodeName();
         MString cameraShapeName = camera->getShapeNodeName();
-#if MAYA_API_VERSION >= 20170000
+#if MAYA_API_VERSION >= 201700
         const int cameraTransformName_idx = dgDirtyNodeNames.indexOf(cameraTransformName);
 #else
         const int cameraTransformName_idx = getStringArrayIndexOfValue(dgDirtyNodeNames, cameraTransformName);
@@ -138,7 +138,7 @@ MString generateDirtyCommand(int numberOfErrors, SolverData *ud) {
             dgDirtyCmd += " \"" + cameraTransformName + "\" ";
             dgDirtyNodeNames.append(cameraTransformName);
         }
-#if MAYA_API_VERSION >= 20170000
+#if MAYA_API_VERSION >= 201700
         const int cameraShapeName_idx = dgDirtyNodeNames.indexOf(cameraShapeName);
 #else
         const int cameraShapeName_idx =  getStringArrayIndexOfValue(dgDirtyNodeNames, cameraShapeName);
@@ -150,12 +150,12 @@ MString generateDirtyCommand(int numberOfErrors, SolverData *ud) {
 
         BundlePtr bundle = marker->getBundle();
         MString bundleName = bundle->getNodeName();
-#if MAYA_API_VERSION >= 20170000
-        const int bundeName_idx = dgDirtyNodeNames.indexOf(bundleName) == -1);
+#if MAYA_API_VERSION >= 201700
+        const int bundleName_idx = dgDirtyNodeNames.indexOf(bundleName);
 #else
-        const int bundeName_idx = getStringArrayIndexOfValue(dgDirtyNodeNames, bundleName);
+        const int bundleName_idx = getStringArrayIndexOfValue(dgDirtyNodeNames, bundleName);
 #endif
-        if (bundeName_idx == -1) {
+        if (bundleName_idx == -1) {
             dgDirtyCmd += " \"" + bundleName + "\" ";
             dgDirtyNodeNames.append(bundleName);
         }

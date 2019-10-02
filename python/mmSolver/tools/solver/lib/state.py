@@ -78,6 +78,18 @@ def set_active_collection(col):
 
 
 def get_state_bool(name, default_value):
+    """
+    Get State boolean from the scene settings.
+
+    :param name: Name of the state boolean variable.
+    :type name: str
+
+    :param default_value: Fallback value, if 'name' cannot be found.
+    :type default_value: bool
+
+    :return: The queried value, or 'default_value'.
+    :rtype: bool
+    """
     value = scene_data.get_scene_data(name)
     if value is None:
         value = default_value
@@ -85,6 +97,15 @@ def get_state_bool(name, default_value):
 
 
 def set_state_bool(name, value):
+    """
+    Get a boolean stored in the scene settings.
+
+    :param name: Name of the state boolean variable.
+    :type name: str
+
+    :param value: Value to set.
+    :type value: bool
+    """
     if isinstance(value, bool) is False:
         msg = 'Value cannot be %r; %r is not bool, name=%r'
         raise TypeError(msg % (type(value), value, name))
@@ -93,6 +114,18 @@ def set_state_bool(name, value):
 
 
 def get_state_str(name, default_value):
+    """
+    Get State string from the scene settings.
+
+    :param name: Name of the state string variable.
+    :type name: str
+
+    :param default_value: Fallback value, if 'name' cannot be found.
+    :type default_value: str
+
+    :return: The queried value, or 'default_value'.
+    :rtype: str
+    """
     value = scene_data.get_scene_data(name)
     if value is None:
         value = default_value
@@ -100,6 +133,15 @@ def get_state_str(name, default_value):
 
 
 def set_state_str(name, value):
+    """
+    Get a string stored in the scene settings.
+
+    :param name: Name of the state string variable.
+    :type name: str
+
+    :param value: Value to set.
+    :type value: str
+    """
     if isinstance(value, basestring) is False:
         msg = 'Value cannot be %r; %r is not a string, name=%r'
         raise TypeError(msg % (type(value), value, name))

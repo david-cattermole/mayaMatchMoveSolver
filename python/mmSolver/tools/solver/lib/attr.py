@@ -45,7 +45,7 @@ def add_callbacks_to_attributes(attr_list, update_func, callback_manager):
         node_path = attr_obj.get_node(full_path=True)
         node_uuids = maya.cmds.ls(node_path, uuid=True) or []
         if len(node_uuids) != 1:
-            LOG.warning(msg, node_path, node_uuids)
+            LOG.debug(msg, node_path, node_uuids)
             continue
         node_uuid = node_uuids[0]
         if callback_manager.type_has_node(callback_type, node_uuid) is True:
@@ -70,7 +70,7 @@ def remove_callbacks_from_attributes(attr_list, callback_manager):
         node_path = attr_obj.get_node(full_path=True)
         node_uuids = maya.cmds.ls(node_path, uuid=True) or []
         if len(node_uuids) != 1:
-            LOG.warning(msg, node_path, node_uuids)
+            LOG.debug(msg, node_path, node_uuids)
             continue
         node_uuid = node_uuids[0]
         if callback_manager.type_has_node(callback_type, node_uuid) is False:

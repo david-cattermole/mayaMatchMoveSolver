@@ -43,14 +43,16 @@ MMMarkerGroupTransformNode::MMMarkerGroupTransformNode(MPxTransformationMatrix *
 
 void MMMarkerGroupTransformNode::postConstructor() {
     MPxTransform::postConstructor();
+#if MAYA_API_VERSION < 20190000
     if (baseTransformationMatrix == NULL) {
         baseTransformationMatrix = new MPxTransformationMatrix();
     }
+#endif
 }
 
 MMMarkerGroupTransformNode::~MMMarkerGroupTransformNode() {
-	// Empty function body rather than '= default', to allow compiling 
-	// under Visual Studio 2012.
+    // Empty function body rather than '= default', to allow compiling
+    // under Visual Studio 2012.
 };
 
 

@@ -19,8 +19,6 @@
 Solver related functions.
 """
 
-# import pprint
-
 import mmSolver.logger
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
@@ -229,33 +227,7 @@ class SolverStep(solverbase.SolverBase):
 
     ##########################################
 
-    def get_print_statistics_inputs(self):
-            return self._data.get('print_statistics_inputs')
-
-    def set_print_statistics_inputs(self, value):
-        if isinstance(value, bool) is False:
-            raise TypeError('Expected bool value type.')
-        self._data['print_statistics_inputs'] = value
-
-    def get_print_statistics_affects(self):
-        return self._data.get('print_statistics_affects')
-
-    def set_print_statistics_affects(self, value):
-        if isinstance(value, bool) is False:
-            raise TypeError('Expected bool value type.')
-        self._data['print_statistics_affects'] = value
-
-    def get_print_statistics_deviation(self):
-        return self._data.get('print_statistics_deviation')
-
-    def set_print_statistics_deviation(self, value):
-        if isinstance(value, bool) is False:
-            raise TypeError('Expected bool value type.')
-        self._data['print_statistics_deviation'] = value
-
-    ##########################################
-
-    def compile(self, mkr_list, attr_list):
+    def compile(self, mkr_list, attr_list, withtest=False):
         """
         Compiles data given into flags for a single run of 'mmSolver'.
 
@@ -288,13 +260,13 @@ class SolverStep(solverbase.SolverBase):
         markers, cameras = api_compile.markersAndCameras_compile_flags(mkr_list)
         if len(markers) == 0 and len(cameras) == 0:
             LOG.warning('No Markers or Cameras found!')
-            return []
+            return
         elif len(markers) == 0:
             LOG.warning('No Markers found!')
-            return []
+            return
         elif len(cameras) == 0:
             LOG.warning('No Cameras found!')
-            return []
+            return
 
         # Get Attributes
         use_animated = self.get_attributes_use_animated()
@@ -304,7 +276,7 @@ class SolverStep(solverbase.SolverBase):
                                                      use_static)
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
-            return []
+            return
 
         # Get Frames
         frm_list = self.get_frame_list()
@@ -312,7 +284,7 @@ class SolverStep(solverbase.SolverBase):
         frames = api_compile.frames_compile_flags(frm_list, frame_use_tags)
         if len(frames) == 0:
             LOG.warning('No Frames found!')
-            return []
+            return
 
         kwargs['marker'] = markers
         kwargs['camera'] = cameras
@@ -355,27 +327,13 @@ class SolverStep(solverbase.SolverBase):
         if error_factor is not None:
             kwargs['epsilon3'] = error_factor
 
-        kwargs['robustLossType'] = 0  # 0=trivial, 1=soft L1, 2=cauchy.
+        kwargs['robustLossType'] = const.ROBUST_LOSS_TYPE_TRIVIAL_VALUE
         kwargs['robustLossScale'] = 1.0
 
         # TODO: Add 'robustLossType' flag.
         # TODO: Add 'robustLossScale' flag.
         # TODO: Add 'autoParamScaling' flag.
         # TODO: Add 'debugFile' flag.
-
-        # TODO: Add 'printStatistics' flag.
-        print_stats_flags = []
-        print_stats_inputs = self.get_print_statistics_inputs()
-        print_stats_affects = self.get_print_statistics_affects()
-        print_stats_deviation = self.get_print_statistics_deviation()
-        if print_stats_inputs is not None:
-            print_stats_flags.append('inputs')
-        if print_stats_affects is not None:
-            print_stats_flags.append('affects')
-        if print_stats_deviation is not None:
-            print_stats_flags.append('deviation')
-        if len(print_stats_flags) > 0:
-            kwargs['printStatistics'] = print_stats_flags
 
         # # Add a debug file flag to the mmSolver command, only
         # # triggered during debug mode.
@@ -398,29 +356,24 @@ class SolverStep(solverbase.SolverBase):
         )
 
         # Check the inputs and outputs are valid.
-        test_failed = False
-        assert api_action.action_func_is_mmSolver(action) is True
-        tfunc, targs, tkwargs = api_action.action_to_components(action)
-        remove_keys = ['debugFile', 'verbose']
-        for key in remove_keys:
-            if key in tkwargs:
-                del tkwargs[key]
-        tkwargs['printStatistics'] = ['inputs']
-        result = tfunc(*targs, **tkwargs)
-        solres = solveresult.SolveResult(result)
-        print_stats = solres.get_print_stats()
-        num_param = print_stats.get('number_of_parameters', 0)
-        num_err = print_stats.get('number_of_errors', 0)
-        if num_param > num_err:
-            test_failed = True
-            # LOG.warn('Test Param/Error Num Failed')
+        vaction = None
+        if withtest is True:
+            assert api_action.action_func_is_mmSolver(action) is True
+            vfunc = func
+            vargs = list(args)
+            vkwargs = kwargs.copy()
+            remove_keys = ['debugFile', 'verbose']
+            for key in remove_keys:
+                if key in vkwargs:
+                    del vkwargs[key]
+            vkwargs['printStatistics'] = ['inputs']
+            vaction = api_action.Action(
+                func=vfunc,
+                args=vargs,
+                kwargs=vkwargs
+            )
 
-        action_list = []
-        if test_failed is False:
-            # msg = 'kwargs:\n' + pprint.pformat(kwargs)
-            # LOG.warning(msg)
-            action_list = [action]
-        return action_list
+        yield action, vaction
 
 
 Solver = SolverStep

@@ -115,21 +115,22 @@ def _split_mkr_attr_into_categories(mkr_list, attr_list):
     for category in ATTR_CATEGORIES:
         category_node_attrs = attrs_in_categories[category]
 
-        num_attrs = [len(v) for k, v in category_node_attrs.items()]
-        num_attrs = sum(num_attrs)
+        # num_attrs = [len(v) for k, v in category_node_attrs.items()]
+        # num_attrs = sum(num_attrs)
 
-        msg = 'Attribute Category=%r'
-        LOG.debug(msg, category)
-        msg = '-> Number of Nodes=%r'
-        LOG.debug(msg, len(category_node_attrs.keys()))
-        msg = '-> Number Of Attributes=%r'
-        LOG.debug(msg, num_attrs)
+        # msg = 'Attribute Category=%r'
+        # LOG.warn(msg, category)
+        # msg = '-> Number of Nodes=%r'
+        # LOG.warn(msg, len(category_node_attrs.keys()))
+        # msg = '-> Number Of Attributes=%r'
+        # LOG.warn(msg, num_attrs)
 
         for node, attrs in category_node_attrs.items():
             if len(attrs) == 0:
                 continue
             attr_names = [x.get_name() for x in attrs]
             new_mkr_list = []
+            new_attr_list = []
             for j, attr in enumerate(attr_list):
                 attr_name = attr.get_name()
                 if attr_name not in attr_names:
@@ -140,23 +141,24 @@ def _split_mkr_attr_into_categories(mkr_list, attr_list):
                         continue
                     if mkr not in new_mkr_list:
                         new_mkr_list.append(mkr)
-            if len(new_mkr_list) == 0:
+                        new_attr_list.append(attr)
+            if len(new_mkr_list) == 0 or len(new_attr_list) == 0:
                 LOG.warn(
                     'No markers found affecting attribute. node=%r',
                     node
                 )
                 continue
             meta_mkr_list.append(new_mkr_list)
-            meta_attr_list.append(attr_list)
+            meta_attr_list.append(new_attr_list)
 
     return meta_mkr_list, meta_attr_list
 
 
-def _compile_multi_root_frames(actions,
-                               mkr_list,
+def _compile_multi_root_frames(mkr_list,
                                attr_list,
                                batch_frame_list,
                                root_iter_num,
+                               withtest,
                                verbose):
     # Solve root frames.
     for frm_list in batch_frame_list:
@@ -185,15 +187,21 @@ def _compile_multi_root_frames(actions,
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(True)
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-        actions += sol.compile(root_mkr_list, root_attr_list)
-        return actions
+
+        cache = api_compile.create_compile_solver_cache()
+        generator = api_compile.compile_solver_with_cache(
+            sol, root_mkr_list, root_attr_list, withtest, cache,
+        )
+        for action, vaction in generator:
+            yield action, vaction
+        return
 
 
-def _compile_remove_inbetween_frames(actions,
-                                     attr_list,
+def _compile_remove_inbetween_frames(attr_list,
                                      non_root_frame_list,
                                      start_frame,
                                      end_frame,
+                                     test,
                                      verbose):
     # Solve in-between frames
     attr_names = [x.get_name() for x in attr_list]
@@ -208,7 +216,7 @@ def _compile_remove_inbetween_frames(actions,
             func=func,
             args=args,
             kwargs=kwargs)
-        actions += [action]
+        yield action, None
 
     # Change all attribute keyframes to linear tangents.
     func = 'maya.cmds.keyTangent'
@@ -221,16 +229,15 @@ def _compile_remove_inbetween_frames(actions,
         func=func,
         args=attr_names,
         kwargs=kwargs)
-    actions += [action]
-    return actions
+    yield action, None
 
 
-def _compile_multi_inbetween_frames(actions,
-                                    mkr_list,
+def _compile_multi_inbetween_frames(mkr_list,
                                     attr_list,
                                     all_frame_list,
                                     global_solve,
                                     anim_iter_num,
+                                    test,
                                     verbose):
     if global_solve is True:
         # Do Global Solve with all frames.
@@ -241,8 +248,15 @@ def _compile_multi_inbetween_frames(actions,
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(True)
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-        actions += sol.compile(mkr_list, attr_list)
+
+        cache = api_compile.create_compile_solver_cache()
+        generator = api_compile.compile_solver_with_cache(
+            sol, mkr_list, attr_list, test, cache
+        )
+        for action, vaction in generator:
+            yield action, vaction
     else:
+        cache = api_compile.create_compile_solver_cache()
         for frm in all_frame_list:
             one_frame_list = [frm]
             sol = solverstep.SolverStep()
@@ -252,12 +266,15 @@ def _compile_multi_inbetween_frames(actions,
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(False)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-            actions += sol.compile(mkr_list, attr_list)
-    return actions
+            generator = api_compile.compile_solver_with_cache(
+                sol, mkr_list, attr_list, test, cache
+            )
+            for action, vaction in generator:
+                yield action, vaction
+    return
 
 
-def _compile_multi_frame(actions,
-                         mkr_list,
+def _compile_multi_frame(mkr_list,
                          attr_list,
                          root_frame_list,
                          frame_list,
@@ -269,6 +286,7 @@ def _compile_multi_frame(actions,
                          global_solve,
                          root_frame_strategy,
                          triangulate_bundles,
+                         test,
                          verbose):
     assert len(root_frame_list) >= 2
     assert len(frame_list) >= 2
@@ -291,7 +309,12 @@ def _compile_multi_frame(actions,
     if triangulate_bundles is True:
         sol = solvertriangulate.SolverTriangulate()
         # sol.root_frame_list = root_frame_list_num
-        actions += sol.compile(mkr_list, attr_list)
+        cache = api_compile.create_compile_solver_cache()
+        generator = api_compile.compile_solver_with_cache(
+            sol, mkr_list, attr_list, test, cache
+        )
+        for action, vaction in generator:
+            yield action, vaction
 
     # Solver root frames, breaking attributes into little blocks
     # to solve.
@@ -312,7 +335,13 @@ def _compile_multi_frame(actions,
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(True)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-            actions += sol.compile(new_mkr_list, new_attr_list)
+
+            cache = api_compile.create_compile_solver_cache()
+            generator = api_compile.compile_solver_with_cache(
+                sol, new_mkr_list, new_attr_list, test, cache
+            )
+            for action, vaction in generator:
+                yield action, vaction
 
     # TODO: Create a list of markers specially for root frames.
     #  Loop over all given markers, determine which markers have 2
@@ -326,6 +355,12 @@ def _compile_multi_frame(actions,
     # TODO: All markers that do not have enough root frames to solve
     #  correctly, but the Bundle is still in the solver, then it should
     #  be triangulated after the initial root frame solve is performed.
+    #
+    # TODO: Run the solver multiple times for a hierarchy. First,
+    #  solve DAG level 0 nodes, then add DAG level 1, then level 2,
+    #  etc. This will allow us to incrementally add solving of
+    #  hierarchy, without getting the optimiser confused which
+    #  attributes to solve first to get a stable solve.
 
     if root_frame_strategy == const.ROOT_FRAME_STRATEGY_GLOBAL_VALUE:
         # Global solve of root frames.
@@ -336,7 +371,13 @@ def _compile_multi_frame(actions,
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(True)
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-        actions += sol.compile(root_mkr_list, attr_list)
+
+        cache = api_compile.create_compile_solver_cache()
+        generator = api_compile.compile_solver_with_cache(
+            sol, root_mkr_list, attr_list, test, cache
+        )
+        for action, vaction in generator:
+            yield action, vaction
     else:
         # Get the order of frames to solve with.
         batch_frame_list = []
@@ -355,49 +396,55 @@ def _compile_multi_frame(actions,
             #  frames incrementally, starting with the first
             #  highest, then add the next highest, etc. This
             #  should ensure stability of the solver is maximum.
-            assert False
-        actions = _compile_multi_root_frames(
-            actions,
+            raise NotImplementedError
+        generator = _compile_multi_root_frames(
             mkr_list,
             attr_list,
             batch_frame_list,
             root_iter_num,
+            test,
             verbose
         )
+        for action, vaction in generator:
+            yield action, vaction
 
     # Clear out all the frames between the solved root frames, this
     # helps us use the new solve root frames to hint the 'in-between'
     # frame solve.
-    actions = _compile_remove_inbetween_frames(
-        actions,
+    generator = _compile_remove_inbetween_frames(
         attr_list,
         non_root_frame_list,
         start_frame,
         end_frame,
+        test,
         verbose
     )
+    for action, vaction in generator:
+        yield action, vaction
     if only_root_frames is True:
-        return actions
+        return
 
-    actions = _compile_multi_inbetween_frames(
-        actions,
+    generator = _compile_multi_inbetween_frames(
         mkr_list,
         attr_list,
         all_frame_list,
         global_solve,
         anim_iter_num,
+        test,
         verbose,
     )
-    return actions
+    for action, vaction in generator:
+        yield action, vaction
+    return
 
 
-def _compile_single_frame(actions,
-                          mkr_list,
+def _compile_single_frame(mkr_list,
                           attr_list,
                           single_frame,
                           block_iter_num,
                           lineup_iter_num,
                           auto_attr_blocks,
+                          test,
                           verbose):
     if auto_attr_blocks is True:
         meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
@@ -412,7 +459,13 @@ def _compile_single_frame(actions,
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(True)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-            actions += sol.compile(new_mkr_list, new_attr_list)
+
+            cache = api_compile.create_compile_solver_cache()
+            generator = api_compile.compile_solver_with_cache(
+                sol, new_mkr_list, new_attr_list, test, cache
+            )
+            for action, vaction in generator:
+                yield action, vaction
 
     # Single frame solve
     sol = solverstep.SolverStep()
@@ -422,8 +475,13 @@ def _compile_single_frame(actions,
     sol.set_attributes_use_animated(True)
     sol.set_attributes_use_static(True)
     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-    actions += sol.compile(mkr_list, attr_list)
-    return actions
+    cache = api_compile.create_compile_solver_cache()
+    generator = api_compile.compile_solver_with_cache(
+        sol, mkr_list, attr_list, test, cache
+    )
+    for action, vaction in generator:
+        yield action, vaction
+    return
 
 
 class SolverStandard(solverbase.SolverBase):
@@ -752,7 +810,7 @@ class SolverStandard(solverbase.SolverBase):
 
     ############################################################################
 
-    def compile(self, mkr_list, attr_list):
+    def compile(self, mkr_list, attr_list, withtest=False):
         # Options to affect how the solve is constructed.
         use_single_frame = self.get_use_single_frame()
         single_frame = self.get_single_frame()
@@ -768,23 +826,24 @@ class SolverStandard(solverbase.SolverBase):
 
         auto_attr_blocks = self._auto_attr_blocks
         triangulate_bundles = self._triangulate_bundles
+        withtest = True
         verbose = True
 
-        actions = []
         if use_single_frame is True:
-            actions = _compile_single_frame(
-                actions,
+            generator = _compile_single_frame(
                 mkr_list,
                 attr_list,
                 single_frame,
                 block_iter_num,
                 lineup_iter_num,
                 auto_attr_blocks,
+                withtest,
                 verbose,
             )
+            for action, vaction in generator:
+                yield action, vaction
         else:
-            actions = _compile_multi_frame(
-                actions,
+            generator = _compile_multi_frame(
                 mkr_list,
                 attr_list,
                 root_frame_list,
@@ -797,6 +856,9 @@ class SolverStandard(solverbase.SolverBase):
                 global_solve,
                 root_frame_strategy,
                 triangulate_bundles,
+                withtest,
                 verbose,
             )
-        return actions
+            for action, vaction in generator:
+                yield action, vaction
+        return

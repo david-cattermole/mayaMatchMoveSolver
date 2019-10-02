@@ -558,6 +558,7 @@ class Collection(object):
         :returns: Is the Collection valid to solve? Yes or no.
         :rtype: bool
         """
+        ret = False
         try:
             col_node = self.get_node()
             sol_list = self.get_solver_list()
@@ -566,6 +567,7 @@ class Collection(object):
             api_compile.collection_compile(
                 col_node,
                 sol_list, mkr_list, attr_list,
+                withtest=True,
                 prog_fn=None, status_fn=None)
             ret = True
         except excep.NotValid as e:

@@ -19,7 +19,6 @@
 The basic solver.
 """
 
-
 import mmSolver.logger
 
 import mmSolver._api.constant as const
@@ -197,7 +196,9 @@ class SolverBasic(solverbase.SolverBase):
 
     ############################################################################
 
-    def compile(self, mkr_list, attr_list):
+    def compile(self, mkr_list, attr_list, withtest=False):
+        assert isinstance(withtest, bool)
+
         # Options to affect how the solve is constructed.
         use_single_frame = self.get_use_single_frame()
         single_frame = self.get_single_frame()
@@ -216,9 +217,13 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(False)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-            actions += sol.compile(mkr_list, attr_list)
+
+            for action, vaction in sol.compile(mkr_list, attr_list,
+                                               withtest=withtest):
+                yield (action, vaction)
         else:
-            # Multiple frame solve
+            # Multiple frame solve, per-frame
+            vaction_cache = api_compile.create_compile_solver_cache()
             for frm in frame_list:
                 one_frame_list = [frm]
                 sol = solverstep.SolverStep()
@@ -228,5 +233,12 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_attributes_use_animated(True)
                 sol.set_attributes_use_static(False)
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-                actions += sol.compile(mkr_list, attr_list)
-        return actions
+
+                generator = api_compile.compile_solver_with_cache(
+                    sol, mkr_list, attr_list,
+                    withtest,
+                    vaction_cache
+                )
+                for action, vaction in generator:
+                    yield action, vaction
+        return

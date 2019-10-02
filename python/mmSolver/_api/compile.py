@@ -30,7 +30,6 @@ import mmSolver._api.excep as excep
 import mmSolver._api.utils as api_utils
 import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
-import mmSolver._api.frame as frame
 import mmSolver._api.marker as marker
 import mmSolver._api.attribute as attribute
 
@@ -242,9 +241,15 @@ def frames_compile_flags(frm_list, frame_use_tags):
     """
     Create a list of frame numbers using Frame objects and some rules.
 
-    :param frm_list:
-    :param frame_use_tags:
-    :return:
+    :param frm_list: List of Frame objects.
+    :type frm_list: Frame
+
+    :param frame_use_tags: List of tag names that Frame objects must
+                           contain to be compiled.
+    :type frame_use_tags: [str, ..]
+
+    :return: A list of frame numbers.
+    :rtype: [int, ..]
     """
     frames = []
     for frm in frm_list:
@@ -264,6 +269,7 @@ def frames_compile_flags(frm_list, frame_use_tags):
 
 
 def collection_compile(col_node, sol_list, mkr_list, attr_list,
+                       withtest=False,
                        prog_fn=None,
                        status_fn=None):
     """
@@ -273,13 +279,13 @@ def collection_compile(col_node, sol_list, mkr_list, attr_list,
     :rtype: [SolverAction, ..]
     """
     action_list = []
+    vaction_list = []
     if len(sol_list) == 0:
         msg = 'Collection is not valid, no Solvers given; '
         msg += 'collection={0}'
         msg = msg.format(repr(col_node))
         raise excep.NotValid(msg)
 
-    # Check Solvers
     sol_enabled_list = [sol for sol in sol_list
                         if sol.get_enabled() is True]
     if len(sol_enabled_list) == 0:
@@ -288,13 +294,11 @@ def collection_compile(col_node, sol_list, mkr_list, attr_list,
         msg = msg.format(repr(col_node))
         raise excep.NotValid(msg)
 
-    # Check Markers
     if len(mkr_list) == 0:
         msg = 'Collection is not valid, no Markers given; collection={0}'
         msg = msg.format(repr(col_node))
         raise excep.NotValid(msg)
 
-    # Check Attributes
     if len(attr_list) == 0:
         msg = 'Collection is not valid, no Attributes given; collection={0}'
         msg = msg.format(repr(col_node))
@@ -304,26 +308,100 @@ def collection_compile(col_node, sol_list, mkr_list, attr_list,
     msg = 'Collection is not valid, failed to compile solver;'
     msg += ' collection={0}'
     msg = msg.format(repr(col_node))
-    for i, sol in enumerate(sol_enabled_list):
+    for sol in sol_enabled_list:
         assert isinstance(sol, solverbase.SolverBase)
-        # if sol.get_frame_list_length() == 0:
-        #     msg = 'Collection is not valid, no frames to solve;'
-        #     msg += ' collection={0}'
-        #     msg = msg.format(repr(col_node))
-        #     raise excep.NotValid(msg)
-
-        actions = sol.compile(mkr_list, attr_list)
-        assert isinstance(actions, (tuple, list))
-        for action in actions:
+        for action, vaction in sol.compile(mkr_list, attr_list,
+                                           withtest=withtest):
             if not isinstance(action, api_action.Action):
                 raise excep.NotValid(msg)
             assert action.func is not None
             assert action.args is not None
             assert action.kwargs is not None
             action_list.append(action)
-    if len(action_list) == 0:
-        raise excep.NotValid(msg)
-    # LOG.warn('actions: %r', action_list)
-    return action_list
+            vaction_list.append(vaction)
+    assert len(action_list) == len(vaction_list)
+    return action_list, vaction_list
 
 
+def create_compile_solver_cache():
+    """
+    Create the cache for use with the 'compile_solver_with_cache' function.
+    """
+    cache = collections.defaultdict(list)
+    return cache
+
+
+def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
+    """
+    Compile a single solver, storing the internals in the given cache,
+    and using the cache to speed up future compilations.
+
+    The given cache is expected to be used *only* for one solver and the
+    compiled solver should only vary in frame numbers. This function assumes
+    only the given Markers vary over time, and the Attributes given to the
+    solver will not change in each different solve. If None is given as the
+    Cache, we do not use any caching.
+
+    The cache is expected to be created like so:
+    >>> import mmSolver._api.compile
+    >>> cache = mmSolver._api.compile.create_compile_solver_cache()
+    >>> compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache)
+
+    Compile unique list of frames to withtest the solver when it changes,
+    for example a marker turns off, then only sample the unique sets of
+    markers. This will reduce the compile/testing time considerably,
+    and because we know there are no changes in the structure or number of
+    errors, we can copy the same mmSolver kwargs multiple times (with the
+    frames argument set differently).
+
+    :param sol: The solver to compile.
+    :type sol: Solver
+
+    :param mkr_list: The list of Markers to use for compiling.
+    :type mkr_list: [Marker, ..]
+
+    :param attr_list: The list of Attribute to use for compiling.
+    :type attr_list: [Attribute, ..]
+
+    :returns: A generator function yielding a tuple of two Action
+              objects. The first object is used for solving, the
+              section Action is for validation of the solve.
+    :rtype: (Action, Action or None)
+    """
+    frame_list = sol.get_frame_list()
+    if cache is None or withtest is False:
+        for action, vaction in sol.compile(mkr_list, attr_list,
+                                           withtest=withtest):
+            yield action, vaction
+    else:
+        # Get frame with lowest number of active markers.
+        min_num_of_active_mkr_nodes = 999999999
+        min_list_of_active_mkr_nodes = []
+        for frm in frame_list:
+            frm_num = frm.get_number()
+            active_mkr_nodes = [m.get_node()
+                                for m in mkr_list
+                                if m.get_enable(frm_num)]
+            if len(active_mkr_nodes) < min_num_of_active_mkr_nodes:
+                min_list_of_active_mkr_nodes = active_mkr_nodes
+
+        hash_string = str(len(min_list_of_active_mkr_nodes))
+        hash_string += '#'.join(min_list_of_active_mkr_nodes)
+        vaction_list = cache.get(hash_string, None)
+
+        # Compile if our testing action is not in the cache.
+        if vaction_list is None:
+            # Add to the cache
+            for action, vaction in sol.compile(mkr_list, attr_list,
+                                               withtest=True):
+                cache[hash_string].append(vaction)
+                yield action, vaction
+        else:
+            # Re-use the cache
+            generator = zip(
+                sol.compile(mkr_list, attr_list, withtest=False),
+                vaction_list
+            )
+            for (action, _), vaction in generator:
+                yield action, vaction
+    return

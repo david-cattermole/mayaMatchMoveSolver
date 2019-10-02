@@ -1144,17 +1144,6 @@ class TestSolve(test_api_utils.APITestCase):
             not_root_frm_list.append(frm)
 
         sol_list = []
-        print_stats = False
-        if print_stats is True:
-            # Print statistics
-            stats_sol = mmapi.SolverStep()
-            stats_sol.set_verbose(False)
-            stats_sol.set_frame_list(frm_list)
-            stats_sol.set_print_statistics_inputs(True)
-            stats_sol.set_print_statistics_affects(True)
-            stats_sol.set_print_statistics_deviation(True)
-            sol_list.append(stats_sol)
-
         sol = mmapi.SolverStandard()
         sol.set_single_frame(False)
         sol.set_root_frame_list(root_frm_list)

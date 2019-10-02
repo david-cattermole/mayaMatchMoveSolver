@@ -35,11 +35,15 @@ from mmSolver._api.collection import (
 from mmSolver._api.execute import (
     createExecuteOptions,
     ExecuteOptions,
+    validate,
     execute,
 )
 from mmSolver._api.frame import Frame
 from mmSolver._api.action import (
     Action,
+    action_func_is_mmSolver,
+    func_str_to_callable,
+    action_to_components,
 )
 from mmSolver._api.solverbase import (
     SolverBase,
@@ -247,9 +251,15 @@ __all__ = [
     # Collection
     'update_deviation_on_collection',
 
+    # Action
+    'action_func_is_mmSolver',
+    'func_str_to_callable',
+    'action_to_components',
+
     # Execute
     'createExecuteOptions',
     'execute',
+    'validate',
 
     # Marker Utils
     'calculate_marker_deviation',

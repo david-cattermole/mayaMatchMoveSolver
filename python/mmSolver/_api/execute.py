@@ -19,7 +19,6 @@
 Execute a solve.
 """
 
-
 import time
 import pprint
 import collections
@@ -37,6 +36,7 @@ import mmSolver._api.solveresult as solveresult
 import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.collectionutils as collectionutils
+import mmSolver._api.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
@@ -44,6 +44,7 @@ ExecuteOptions = collections.namedtuple(
     'ExecuteOptions',
     ('verbose',
      'refresh',
+     'disable_viewport_two',
      'force_update',
      'pre_solve_force_eval',
      'do_isolate',
@@ -54,6 +55,7 @@ ExecuteOptions = collections.namedtuple(
 
 def createExecuteOptions(verbose=False,
                          refresh=False,
+                         disable_viewport_two=True,
                          force_update=False,
                          do_isolate=False,
                          pre_solve_force_eval=True,
@@ -68,6 +70,9 @@ def createExecuteOptions(verbose=False,
     :param refresh: Should the solver refresh the viewport while solving?
     :type refresh: bool
 
+    :param disable_viewport_two: Turn off Viewport 2.0 update, before solving?
+    :type disable_viewport_two: bool
+
     :param force_update: Force updating the DG network, to help the
                          solver in case of a Maya evaluation DG bug.
     :type force_update: bool
@@ -75,6 +80,11 @@ def createExecuteOptions(verbose=False,
     :param do_isolate: Isolate only solving objects while performing
                        the solve.
     :type do_isolate: bool
+
+    :param pre_solve_force_eval: Before solving, we kick-start the
+                                 evaluation by changing time and
+                                 forcing update.
+    :type pre_solve_force_eval: bool
 
     :param display_grid: Display grid in the viewport while performing
                          the solve?
@@ -93,6 +103,7 @@ def createExecuteOptions(verbose=False,
     options = ExecuteOptions(
         verbose=verbose,
         refresh=refresh,
+        disable_viewport_two=disable_viewport_two,
         force_update=force_update,
         do_isolate=do_isolate,
         pre_solve_force_eval=pre_solve_force_eval,
@@ -243,25 +254,13 @@ def postSolve_refreshViewport(options, frame):
     # Refresh the Viewport.
     if options.refresh is not True:
         return
-    # TODO: If we solve per-frame without "refresh"
-    # on, then we get wacky solves
-    # per-frame. Interestingly, the 'force_update'
-    # does not seem to make a difference, just the
-    # 'maya.cmds.refresh' call.
-    #
-    # Test scene file:
-    # ./tests/data/scenes/mmSolverBasicSolveD_before.ma
+
     s = time.time()
     maya.cmds.currentTime(
         frame[0],
         edit=True,
         update=options.force_update,
     )
-    # TODO: Refresh should not add to undo queue, we
-    # should skip it. This should fix the problem of
-    # stepping over the viewport each time we undo an
-    # 'animated' solve. Or we pause the viewport while
-    # we undo?
     maya.cmds.refresh()
     e = time.time()
     LOG.debug('Refresh Viewport; time=%r', e - s)
@@ -349,8 +348,106 @@ def postSolve_setUpdateProgress(progress_min,
     return stop_solving
 
 
+def _run_validate_action(vaction):
+    num_param = 0
+    num_err = 0
+    num_frames = 0
+
+    valid = True
+    message = ('Validated parameters, errors and frames: '
+               'param=%r errors=%r frames=%r')
+    metrics = (num_param, num_err, num_frames)
+    if not isinstance(vaction, api_action.Action):
+        message = message % (num_param, num_err, num_frames)
+        return valid, message, metrics
+    vfunc, vargs, vkwargs = api_action.action_to_components(vaction)
+
+    num_frames = len(vkwargs.get('frame', []))
+    if num_frames == 0:
+        valid = False
+        metrics = (num_param, num_err, num_frames)
+        msg = ('Failed to validate number of frames: '
+               'param=%r errors=%r frames=%r')
+        message = msg % (num_param, num_err, num_frames)
+        return valid, message, metrics
+
+    vfunc_is_mmsolver = api_action.action_func_is_mmSolver(vaction)
+    if vfunc_is_mmsolver is False:
+        return valid, message, metrics
+
+    solve_data = vfunc(*vargs, **vkwargs)
+    solres = solveresult.SolveResult(solve_data)
+    print_stats = solres.get_print_stats()
+    num_param = print_stats.get('number_of_parameters', 0)
+    num_err = print_stats.get('number_of_errors', 0)
+    metrics = (num_param, num_err, num_frames)
+    if num_param == 0 or num_err == 0 or num_param > num_err:
+        valid = False
+        msg = ('Failed to validate number of parameters and errors: '
+               'param=%r errors=%r frames=%r')
+        message = msg % (num_param, num_err, num_frames)
+        return valid, message, metrics
+    message = message % (num_param, num_err, num_frames)
+    return valid, message, metrics
+
+
+def _run_validate_action_list(vaction_list):
+    valid = True
+    message_list = []
+    metrics_list = []
+    for vaction in vaction_list:
+        v, message, metrics = _run_validate_action(vaction)
+        metrics_list.append(metrics)
+        message_list.append(message)
+        if v is not True:
+            valid = False
+    return valid, message_list, metrics_list
+
+
+def validate(col):
+    """
+    Validates the given collection state, is it ready for solving?
+
+    :param col: The Collection object to be validated.
+    :type col: Collection
+
+    :return:
+    :rtype: (bool, [str, ..], [(int, int, int), ..])
+    """
+    valid = False
+    message_list = []
+    metrics_list = []
+
+    s = time.time()
+    try:
+        col_node = col.get_node()
+        sol_list = col.get_solver_list()
+        mkr_list = col.get_marker_list()
+        attr_list = col.get_attribute_list()
+        action_list, vaction_list = api_compile.collection_compile(
+            col_node,
+            sol_list, mkr_list, attr_list,
+            withtest=True,
+            prog_fn=None,
+            status_fn=None)
+    except excep.NotValid as e:
+        LOG.warn(e)
+        message_list.append(str(e))
+        metrics_list.append((0, 0, 0))
+        return valid, message_list, metrics_list
+    finally:
+        e = time.time()
+        LOG.warn('Compile time (validate): %r seconds', e - s)
+
+    valid, message_list, metrics_list = _run_validate_action_list(vaction_list)
+    assert len(message_list) > 0
+    assert len(metrics_list) > 0
+    return valid, message_list, metrics_list
+
+
 def execute(col,
             options=None,
+            validate_mode=None,
             log_level=None,
             prog_fn=None,
             status_fn=None,
@@ -367,6 +464,10 @@ def execute(col,
 
     :param options: The options for the execution.
     :type options: ExecuteOptions
+
+    :param validate_mode: How should the solve validate? Must be one of
+                          the VALIDATE_MODE_VALUE_LIST values.
+    :type validate_mode: str or None
 
     :param log_level: The log level for the execution.
     :type log_level: str
@@ -388,8 +489,11 @@ def execute(col,
     """
     if options is None:
         options = createExecuteOptions()
+    if validate_mode is None:
+        validate_mode = const.VALIDATE_MODE_NONE_VALUE
+    assert validate_mode in const.VALIDATE_MODE_VALUE_LIST
     if log_level is None:
-        log_level = 'info'
+        log_level = const.LOG_LEVEL_DEFAULT
     assert isinstance(log_level, (str, unicode))
 
     start_time = time.time()
@@ -398,11 +502,7 @@ def execute(col,
     api_utils.load_plugin()
     assert 'mmSolver' in dir(maya.cmds)
 
-    # TODO: Pause viewport 2.0 while solving? Assumes viewport 2 is
-    # used.  This might not be supported below Maya 2017?
-
-    # TODO: Test if 'isolate selected' works at all perhaps we're
-    #  better off just turning the node types on/off.
+    vp2_state = viewport_utils.get_viewport2_active_state()
 
     panels = viewport_utils.get_all_model_panels()
     panel_objs, panel_node_type_vis = preSolve_queryViewportState(
@@ -413,37 +513,56 @@ def execute(col,
     cur_frame = maya.cmds.currentTime(query=True)
 
     try:
+        if options.disable_viewport_two is True:
+            viewport_utils.set_viewport2_active_state(False)
         preSolve_updateProgress(prog_fn, status_fn)
 
         # Check for validity and compile actions.
         solres_list = []
+        withtest = validate_mode in [const.VALIDATE_MODE_PRE_VALIDATE_VALUE,
+                                     const.VALIDATE_MODE_AT_RUNTIME_VALUE]
         col_node = col.get_node()
         sol_list = col.get_solver_list()
         mkr_list = col.get_marker_list()
         attr_list = col.get_attribute_list()
         try:
-            actions_list = api_compile.collection_compile(
+            s = time.time()
+            action_list, vaction_list = api_compile.collection_compile(
                 col_node,
                 sol_list,
                 mkr_list,
                 attr_list,
-                prog_fn=prog_fn, status_fn=status_fn
+                withtest=withtest,
+                prog_fn=prog_fn,
+                status_fn=status_fn
             )
+            e = time.time()
+            LOG.debug('compile time (execute): %r', e - s)
         except excep.NotValid as e:
-            # Not valid
-            # LOG.warning('Collection not valid: %r', col.get_node())
             LOG.warning(e)
             return solres_list
         collectionutils.run_progress_func(prog_fn, 1)
 
+        if validate_mode == 'pre_validate':
+            valid, msg, metrics_list = _run_validate_action_list(vaction_list)
+            if valid is not True:
+                LOG.warning(msg)
+                return solres_list
+
         # Prepare frame solve
-        preSolve_setIsolatedNodes(actions_list, options, panels)
-        preSolve_triggerEvaluation(actions_list, cur_frame, options)
+        preSolve_setIsolatedNodes(action_list, options, panels)
+        preSolve_triggerEvaluation(action_list, cur_frame, options)
 
         # Run Solver Actions...
         start = 0
-        total = len(actions_list)
-        for i, action in enumerate(actions_list):
+        total = len(action_list)
+        for i, (action, vaction) in enumerate(zip(action_list, vaction_list)):
+            if isinstance(vaction, api_action.Action) and validate_mode == 'at_runtime':
+                valid, message, metrics = _run_validate_action(vaction)
+                if valid is not True:
+                    LOG.warn(message)
+                    return
+
             func, args, kwargs = api_action.action_to_components(action)
             func_is_mmsolver = api_action.action_func_is_mmSolver(action)
 
@@ -468,24 +587,12 @@ def execute(col,
                 if log_level is not None and log_level.lower() == 'verbose':
                     kwargs['verbose'] = True
 
-                # TODO: Try to test and remove the need to disconnect
-                #  and re-connect animation curves.
-                #
                 # HACK for single frame solves.
                 save_node_attrs = []
                 is_single_frame = collectionutils.is_single_frame(kwargs)
                 if is_single_frame is True:
                     save_node_attrs = collectionutils.disconnect_animcurves(kwargs)
 
-            # TODO: Detect if we can re-run the mmSolver command
-            #  multiple times, to get better quality.
-            #
-            # TODO: Run the solver multiple times for a hierarchy. First,
-            #  solve DAG level 0 nodes, then add DAG level 1, then level 2,
-            #  etc. This will allow us to incrementally add solving of
-            #  hierarchy, without getting the optimiser confused which
-            #  attributes to solve first to get a stable solve.
-            #
             # Run Solver Maya plug-in command
             solve_data = func(*args, **kwargs)
 
@@ -516,11 +623,16 @@ def execute(col,
         postSolve_setViewportState(
             options, panel_objs, panel_node_type_vis
         )
-
         collectionutils.run_status_func(status_fn, 'Solve Ended')
         collectionutils.run_progress_func(prog_fn, 100)
         api_state.set_solver_running(False)
-        maya.cmds.currentTime(cur_frame, edit=True, update=True)
+        if options.disable_viewport_two is True:
+            viewport_utils.set_viewport2_active_state(vp2_state)
+        maya.cmds.currentTime(
+            cur_frame,
+            edit=True,
+            update=options.force_update
+        )
 
     # Store output information of the solver.
     end_time = time.time()

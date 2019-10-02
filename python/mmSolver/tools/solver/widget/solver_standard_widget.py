@@ -29,6 +29,7 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
+import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.widget.ui_solver_standard_widget as ui_solver_standard_widget
 import mmSolver.tools.solver.widget.framerange_widget as framerange_widget
 import mmSolver.tools.solver.widget.rootframe_widget as rootframe_widget
@@ -178,20 +179,9 @@ class SolverStandardWidget(QtWidgets.QWidget,
         return
 
     def queryInfo(self):
-        param_num = 0
-        dev_num = 0
-        frm_num = 0
-
-        text = 'Parameters {param} | Deviations {dev} | Frames {frm}'
-        # NOTE: We can return HTML 'rich text' in this string to allow
-        # the text to be bold or coloured to indicate warnings or
-        # errors.
-
-        text.format(
-            param=param_num,
-            dev=dev_num,
-            frm=frm_num
-        )
+        LOG.debug('RUN standard queryInfo')
+        col = lib_state.get_active_collection()
+        text = lib_col.query_solver_info_text(col)
         return text
 
     @QtCore.Slot(bool)

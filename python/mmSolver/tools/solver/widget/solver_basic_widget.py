@@ -29,6 +29,7 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
+import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.widget.ui_solver_basic_widget as ui_solver_basic_widget
 import mmSolver.tools.solver.widget.framerange_widget as framerange_widget
 import mmSolver.tools.solver.constant as const
@@ -87,7 +88,7 @@ class SolverBasicWidget(QtWidgets.QWidget,
         self.advanced_pushButton.setHidden(True)
 
         desc = const.SOLVER_BASIC_DESC_DEFAULT
-        self.description_label.setText(desc)        
+        self.description_label.setText(desc)
         return
 
     def updateModel(self):
@@ -95,18 +96,7 @@ class SolverBasicWidget(QtWidgets.QWidget,
         return
 
     def queryInfo(self):
-        param_num = 0
-        dev_num = 0
-        frm_num = 0
-
-        text = 'Parameters {param} | Deviations {dev} | Frames {frm}'
-        # NOTE: We can return HTML 'rich text' in this string to allow
-        # the text to be bold or coloured to indicate warnings or
-        # errors.
-        
-        text.format(
-            param=param_num,
-            dev=dev_num,
-            frm=frm_num
-        )
+        LOG.debug('RUN basic queryInfo')
+        col = lib_state.get_active_collection()
+        text = lib_col.query_solver_info_text(col)
         return text

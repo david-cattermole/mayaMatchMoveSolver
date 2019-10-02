@@ -31,7 +31,6 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
-
 import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.uiquery as lib_uiquery
@@ -137,20 +136,9 @@ class SolverLegacyWidget(QtWidgets.QWidget,
         return
 
     def queryInfo(self):
-        param_num = 0
-        dev_num = 0
-        frm_num = 0
-
-        text = 'Parameters {param} | Deviations {dev} | Frames {frm}'
-        # NOTE: We can return HTML 'rich text' in this string to allow
-        # the text to be bold or coloured to indicate warnings or
-        # errors.
-        
-        text.format(
-            param=param_num,
-            dev=dev_num,
-            frm=frm_num
-        )
+        LOG.debug('RUN legacy queryInfo')
+        col = lib_state.get_active_collection()
+        text = lib_col.query_solver_info_text(col)
         return text
 
     def addClicked(self):

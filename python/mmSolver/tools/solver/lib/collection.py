@@ -419,6 +419,9 @@ def set_solver_step_list_to_collection(col, step_list):
 
 
 def __compile_frame_list(range_type, frame_string, by_frame):
+    assert isinstance(range_type, int)
+    assert frame_string is None or isinstance(frame_string, basestring)
+    assert isinstance(by_frame, int)
     frame_nums = []
     if range_type == const.RANGE_TYPE_TIMELINE_INNER_VALUE:
         start, end = utils_time.get_maya_timeline_range_inner()
@@ -427,10 +430,15 @@ def __compile_frame_list(range_type, frame_string, by_frame):
         start, end = utils_time.get_maya_timeline_range_outer()
         frame_nums = [f for f in xrange(start, end+1, by_frame)]
     elif range_type == const.RANGE_TYPE_CUSTOM_FRAMES_VALUE:
+        if frame_string is None:
+            start, end = utils_time.get_maya_timeline_range_inner()
+            frame_string = '{0}-{1}'.format(start, end)
         frame_nums = converttypes.stringToIntList(frame_string)
-        # TODO: Apply 'by_frame' to custom frame ranges.
-        # frame_nums = list(sorted(frame_nums))
-        # start, end = frame_nums[0], frame_nums[-1]
+
+        # Apply 'by_frame' to custom frame ranges.
+        start = min(frame_nums)
+        frame_nums = [n for n in frame_nums
+                      if (float(n - start) % by_frame) == 0]
     return frame_nums 
 
 
@@ -447,6 +455,7 @@ def compile_collection(col, prog_fn=None):
                     percentage value, between 0 and 100.
     :type prog_fn: None or function
     """
+    s = time.time()
     sol_list = []
     solver_tab = col_state.get_solver_tab_from_collection(col)
     assert isinstance(solver_tab, (str, unicode))
@@ -483,7 +492,11 @@ def compile_collection(col, prog_fn=None):
             frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
 
             # Root frame numbers
-            root_frame_nums = col_state.get_solver_root_frames_from_collection(col)
+            root_frame_num_string = col_state.get_solver_root_frames_from_collection(col)
+            if root_frame_num_string is None:
+                start, end = utils_time.get_maya_timeline_range_inner()
+                root_frame_num_string = '{0},{1}'.format(start, end)
+            root_frame_nums = converttypes.stringToIntList(root_frame_num_string)
 
             frames = [mmapi.Frame(f) for f in frame_nums
                       if f not in root_frame_nums]
@@ -505,7 +518,9 @@ def compile_collection(col, prog_fn=None):
         msg = 'Solver tab value is invalid: %r'
         raise TypeError(msg % solver_tab)
     col.set_solver_list(sol_list)
-    return col.is_valid(prog_fn=prog_fn)
+    e = time.time()
+    LOG.debug('Compile time (GUI): %r seconds', e - s)
+    return
 
 
 def execute_collection(col,
@@ -617,6 +632,60 @@ def execute_collection(col,
     return
 
 
+def query_solver_info_text(col):
+    """
+    Get a string of text, telling the user of the current solve inputs/outputs.
+
+    :param col: The collection to compile and query.
+    :type col: Collection
+
+    :return: Text, ready for a QLabel.setText().
+    :return: str
+    """
+    LOG.debug('query_solver_info_text: col=%r', col)
+    param_num = 0
+    dev_num = 0
+    frm_num = 0
+
+    color = const.COLOR_TEXT_DEFAULT
+    pre_text = ''
+    text = 'Deviations {dev} | Parameters {param} | Frames {frm}'
+    post_text = ''
+
+    # NOTE: We can return HTML 'rich text' in this string to allow
+    # the text to be bold or coloured to indicate warnings or
+    # errors.
+
+    if col is not None:
+        assert isinstance(col, mmapi.Collection)
+        compile_collection(col)
+        valid, message_list, metrics_list = mmapi.validate(col)
+        assert len(message_list) > 0
+        assert len(metrics_list) > 0
+        if valid is not True:
+            color = const.COLOR_ERROR
+            pre_text = '<font color="{color}">'
+            post_text = '</font>'
+            message = message_list[-1]
+            LOG.warn(message)
+        param_num_list = [d[0] for d in metrics_list]
+        dev_num_list = [d[1] for d in metrics_list]
+        frame_num_list = [d[2] for d in metrics_list]
+        param_num = sum(param_num_list)
+        dev_num = sum(dev_num_list)
+        frm_num = sum(frame_num_list)
+
+    if len(pre_text) > 0:
+        pre_text = pre_text.format(color=color)
+    text = text.format(
+        param=param_num,
+        dev=dev_num,
+        frm=frm_num
+    )
+    text = pre_text + text + post_text
+    return text
+
+
 def run_solve_ui(col,
                  options,
                  log_level,
@@ -657,18 +726,16 @@ def run_solve_ui(col,
             LOG.error(msg)
             return
 
-        ok = compile_collection(col)
-        if ok is not True:
-            msg = (
-                'Cannot execute solver, '
-                'collection is not valid. '
-                'collection=%r'
-            )
-            col_node = col.get_node()
+        compile_collection(col)
+        valid, message_list, metrics_list = mmapi.validate(col)
+        assert len(message_list) > 0
+        assert len(metrics_list) > 0
+        if valid is not True:
+            msg = message_list[-1]
             if window is not None:
                 status = 'Warning: ' + msg
-                window.setStatusLine(status % col_node)
-            LOG.warning(msg, col_node)
+                window.setStatusLine(status)
+            LOG.warning(msg)
         else:
             prog_fn = LOG.warning
             status_fn = LOG.warning

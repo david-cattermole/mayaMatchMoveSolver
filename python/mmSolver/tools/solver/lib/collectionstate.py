@@ -717,7 +717,7 @@ def get_solver_root_frames_from_collection(col):
     :returns: The string representation of the frames.
     :rtype: str
     """
-    value = get_value_structure_from_node(
+    value = get_value_from_node(
         col.get_node(),
         const.SOLVER_ROOT_FRAMES_ATTR,
         attr_type=const.SOLVER_ROOT_FRAMES_ATTR_TYPE,
@@ -736,7 +736,7 @@ def set_solver_root_frames_on_collection(col, value):
     :param value: Value to set to.
     :type value: str
     """
-    set_value_structure_on_node(
+    set_value_on_node(
         col.get_node(),
         const.SOLVER_ROOT_FRAMES_ATTR,
         value,

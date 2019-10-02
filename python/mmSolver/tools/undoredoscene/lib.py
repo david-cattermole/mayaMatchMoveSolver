@@ -32,25 +32,29 @@ LOG = mmSolver.logger.get_logger()
 
 def undo():
     try:
-        viewport.set_viewport2_active_state(False)
+        if maya.cmds.about(apiVersion=True) < 201700:
+            viewport.set_viewport2_active_state(False)
         viewport.viewport1_turn_off()
         undo_state = maya.cmds.undoInfo(query=True, state=True)
         if undo_state is True:
             maya.cmds.undo()
     finally:
         viewport.viewport1_turn_on()
-        viewport.set_viewport2_active_state(True)
+        if maya.cmds.about(apiVersion=True) < 201700:
+            viewport.set_viewport2_active_state(True)
     return
 
 
 def redo():
     try:
-        viewport.set_viewport2_active_state(False)
+        if maya.cmds.about(apiVersion=True) < 201700:
+            viewport.set_viewport2_active_state(False)
         viewport.viewport1_turn_off()
         undo_state = maya.cmds.undoInfo(query=True, state=True)
         if undo_state is True:
             maya.cmds.redo()
     finally:
         viewport.viewport1_turn_on()
-        viewport.set_viewport2_active_state(True)
+        if maya.cmds.about(apiVersion=True) < 201700:
+            viewport.set_viewport2_active_state(True)
     return

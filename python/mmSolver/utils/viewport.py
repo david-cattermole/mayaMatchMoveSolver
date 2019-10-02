@@ -58,6 +58,9 @@ def viewport1_turn_off():
     """
     Turn off Maya UI.
     """
+    is_batch = maya.cmds.about(query=True, batch=True)
+    if is_batch is True:
+        return
     maya.mel.eval('paneLayout -e -manage false $gMainPane')
     return
 
@@ -66,6 +69,9 @@ def viewport1_turn_on():
     """
     Turn on Maya UI.
     """
+    is_batch = maya.cmds.about(query=True, batch=True)
+    if is_batch is True:
+        return
     maya.mel.eval('paneLayout -e -manage true $gMainPane')
     return
 
@@ -77,6 +83,8 @@ viewport_turn_on = viewport1_turn_on
 def viewport2_turn_off():
     """
     Turn off Viewport 2.
+
+    ..note:: This is not supported below Maya 2017.
     """
     set_viewport2_active_state(False)
     return
@@ -85,6 +93,8 @@ def viewport2_turn_off():
 def viewport2_turn_on():
     """
     Turn on Viewport 2.
+
+    ..note:: This is not supported below Maya 2017.
     """
     set_viewport2_active_state(True)
     return
@@ -94,9 +104,17 @@ def set_viewport2_active_state(value):
     """
     Set Viewport 2 activation state.
 
+    ..note:: This is not supported below Maya 2017.
+
     :param value: Set activation of the state.
     :type value: bool
     """
+    if maya.cmds.about(apiVersion=True) < 20170000:
+        LOG.warning('Cannot turn off viewport 2, Maya version cannot do it.')
+        return
+    is_batch = maya.cmds.about(query=True, batch=True)
+    if is_batch is True:
+        return
     current = maya.cmds.ogs(query=True, pause=True)
     if value == current:
         maya.cmds.ogs(pause=True)
@@ -107,8 +125,16 @@ def get_viewport2_active_state():
     """
     Query the Viewport 2 active state.
 
+    ..note:: This is not supported below Maya 2017.
+
     :rtype: bool
     """
+    if maya.cmds.about(apiVersion=True) < 20170000:
+        LOG.warning('Cannot turn off viewport 2, Maya version cannot do it.')
+        return
+    is_batch = maya.cmds.about(query=True, batch=True)
+    if is_batch is True:
+        return False
     return not maya.cmds.ogs(query=True, pause=True)
 
 

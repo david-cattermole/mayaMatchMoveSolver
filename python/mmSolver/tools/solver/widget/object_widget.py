@@ -29,6 +29,7 @@ import Qt.QtCompat as QtCompat
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
+import mmSolver.api as mmapi
 import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.lib.state as lib_state
@@ -162,7 +163,10 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         model.setRootNode(root)
         return
 
-    def updateInfo(self):        
+    def updateInfo(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
         cam_list = set()
         mkr_list = set()
         bnd_list = set()
@@ -194,6 +198,9 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         return
 
     def updateToggleButtons(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
         col = lib_state.get_active_collection()
         if col is None:
             return
@@ -206,6 +213,9 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         return
 
     def updateColumnVisibility(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
         show_weight = lib_state.get_display_object_weight_state()
         show_frm_dev = lib_state.get_display_object_frame_deviation_state()
         show_avg_dev = lib_state.get_display_object_average_deviation_state()
@@ -217,6 +227,10 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         return
 
     def updateModel(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
+
         self.populateModel(self.model)
         valid = uiutils.isValidQtObject(self.treeView)
         if valid is False:

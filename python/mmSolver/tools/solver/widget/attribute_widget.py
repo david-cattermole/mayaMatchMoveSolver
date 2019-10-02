@@ -30,6 +30,7 @@ import Qt.QtCompat as QtCompat
 import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.uiutils as uiutils
+import mmSolver.api as mmapi
 import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 import mmSolver.tools.solver.lib.attr as lib_attr
 import mmSolver.tools.solver.lib.collection as lib_col
@@ -174,6 +175,9 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         return
 
     def updateInfo(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
         anm_list = []
         stc_list = []
         lck_list = []
@@ -194,6 +198,9 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         return
 
     def updateToggleButtons(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
         col = lib_state.get_active_collection()
         if col is None:
             return
@@ -206,6 +213,9 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         return
 
     def updateColumnVisibility(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
         show_state = lib_state.get_display_attribute_state_state()
         show_min_max = lib_state.get_display_attribute_min_max_state()
         self.displayStateColumnChanged(show_state)
@@ -213,6 +223,9 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         return
 
     def updateModel(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
         self.populateModel(self.model)
         valid = uiutils.isValidQtObject(self.treeView)
         if valid is False:

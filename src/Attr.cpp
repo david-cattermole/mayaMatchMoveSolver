@@ -30,6 +30,7 @@
 // Maya
 #include <maya/MFn.h>
 #include <maya/MGlobal.h>
+#include <maya/MDGContext.h>
 #include <maya/MStatus.h>
 #include <maya/MObject.h>
 #include <maya/MObjectArray.h>
@@ -43,6 +44,11 @@
 #include <maya/MAnimUtil.h>
 #include <maya/MFnAnimCurve.h>
 #include <maya/MFnAttribute.h>
+
+#if MAYA_API_VERSION >= 20180000
+#include <maya/MDGContextGuard.h>
+#include <maya/MCppCompat.h>
+#endif
 
 #include <mayaUtils.h>
 #include <Attr.h>
@@ -96,10 +102,10 @@ MStatus Attr::setName(MString value) {
         status = getAsDagPath(values[0], nodeDagPath);
         CHECK_MSTATUS(status);
         MObject obj = Attr::getObject();
-        unsigned int objectType = computeObjectType(obj, nodeDagPath);
+        const unsigned int objectType = computeObjectType(obj, nodeDagPath);
         Attr::setObjectType(objectType);
 
-        unsigned int solverAttrType = computeSolverAttrType(
+        const unsigned int solverAttrType = computeSolverAttrType(
                 objectType,
                 values[1]);
         Attr::setSolverAttrType(solverAttrType);
@@ -170,9 +176,9 @@ MPlug Attr::getPlug() {
             // Here we need 'evaluateNumElements' in case Maya hasn't
             // already computed how many elements the array plug is
             // expected to have.
-            unsigned int num = plug.evaluateNumElements(&status);
+            plug.evaluateNumElements(&status);
             CHECK_MSTATUS(status);
-            num = plug.numElements(&status);
+            const unsigned int num = plug.numElements(&status);
             CHECK_MSTATUS(status);
             if (num > 0) {
                 plug = plug.elementByPhysicalIndex(0, &status);
@@ -245,7 +251,7 @@ bool Attr::isAnimated() {
         MPlug plug = Attr::getPlug();
 
         bool animated = false;
-        bool isDest = plug.isDestination(&status);
+        const bool isDest = plug.isDestination(&status);
         CHECK_MSTATUS(status);
         if (isDest) {
             MPlugArray connPlugs;
@@ -290,7 +296,7 @@ bool Attr::isConnected() {
     MPlug plug = Attr::getPlug();
 
     if (m_connected < 0) {
-        bool isDest = plug.isDestination(&status);
+        const bool isDest = plug.isDestination(&status);
         CHECK_MSTATUS(status);
         m_connected = (int) isDest;
     }
@@ -301,7 +307,7 @@ MString Attr::getAnimCurveName()
 {
     MString result = "";
     // isAnimated will compute 'm_animCurveName' for us.
-    bool animated = Attr::isAnimated();
+    const bool animated = Attr::isAnimated();
     if (animated == true) {
         result = m_animCurveName;
     }
@@ -315,28 +321,40 @@ inline double my_trunc(double d){
 
 MStatus Attr::getValue(bool &value, const MTime &time) {
     MStatus status;
-    bool connected = Attr::isConnected();
-    bool animated = Attr::isAnimated();
+    const bool connected = Attr::isConnected();
+    const bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
     MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
 
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        double curveValue;
+        double curveValue = 0;
         status = curveFn.evaluate(time, curveValue);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         value = my_trunc(curveValue) != 0;
     } else if (connected) {
         if (use_dg_ctx == true) {
+#if MAYA_API_VERSION >= 20180000
+            MDGContext ctx(time);
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asBool(&status);
+#else
             MDGContext ctx(time);
             value = plug.asBool(ctx, &status);
+#endif
         } else {
             MAnimControl::setCurrentTime(time);
+#if MAYA_API_VERSION >= 20180000
+            MDGContext ctx = MDGContext::current();
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asBool(&status);
+#else
             value = plug.asBool(MDGContext::fsNormal, &status);
+#endif
         }
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
@@ -348,28 +366,40 @@ MStatus Attr::getValue(bool &value, const MTime &time) {
 
 MStatus Attr::getValue(int &value, const MTime &time) {
     MStatus status;
-    bool connected = Attr::isConnected();
-    bool animated = Attr::isAnimated();
+    const bool connected = Attr::isConnected();
+    const bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
     MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
 
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        double curveValue;
+        double curveValue = 0;
         status = curveFn.evaluate(time, curveValue);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         value = (int) curveValue;
     } else if (connected) {
         if (use_dg_ctx == true) {
+#if MAYA_API_VERSION >= 20180000
             MDGContext ctx(time);
-            value = plug.asBool(ctx, &status);
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asInt(&status);
+#else
+            MDGContext ctx(time);
+            value = plug.asInt(ctx, &status);
+#endif
         } else {
             MAnimControl::setCurrentTime(time);
+#if MAYA_API_VERSION >= 20180000
+            MDGContext ctx = MDGContext::current();
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asInt(&status);
+#else
             value = plug.asInt(MDGContext::fsNormal, &status);
+#endif
         }
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
@@ -381,24 +411,36 @@ MStatus Attr::getValue(int &value, const MTime &time) {
 
 MStatus Attr::getValue(double &value, const MTime &time) {
     MStatus status;
-    bool connected = Attr::isConnected();
-    bool animated = Attr::isAnimated();
+    const bool connected = Attr::isConnected();
+    const bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
     MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
 
     if (animated) {
         MFnAnimCurve curveFn(plug);
         curveFn.evaluate(time, value);
     } else if (connected) {
         if (use_dg_ctx == true) {
+#if MAYA_API_VERSION >= 20180000
+            MDGContext ctx(time);
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asDouble(&status);
+#else
             MDGContext ctx(time);
             value = plug.asDouble(ctx, &status);
+#endif
         } else {
             MAnimControl::setCurrentTime(time);
+#if MAYA_API_VERSION >= 20180000
+            MDGContext ctx = MDGContext::current();
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asDouble(&status);
+#else
             value = plug.asDouble(MDGContext::fsNormal, &status);
+#endif
         }
     } else {
         value = plug.asDouble();
@@ -416,17 +458,29 @@ MStatus Attr::getValue(MMatrix &value, const MTime &time) {
     MPlug plug = Attr::getPlug();
 
     MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
 
     // Do we change the behaviour for a dynamic attribute?
     MObject matrixObj;
     if (use_dg_ctx == true) {
+#if MAYA_API_VERSION >= 20180000
+        MDGContext ctx(time);
+        MDGContextGuard ctxGuard(ctx);
+        matrixObj = plug.asMObject(&status);
+#else
         MDGContext ctx(time);
         matrixObj = plug.asMObject(ctx, &status);
+#endif
     } else {
         MAnimControl::setCurrentTime(time);
+#if MAYA_API_VERSION >= 20180000
+        MDGContext ctx = MDGContext::current();
+        MDGContextGuard ctxGuard(ctx);
+        matrixObj = plug.asMObject(&status);
+#else
         matrixObj = plug.asMObject(MDGContext::fsNormal, &status);
+#endif
     }
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -461,8 +515,8 @@ MStatus Attr::getValue(MMatrix &value) {
 MStatus Attr::setValue(double value, const MTime &time,
                        MDGModifier &dgmod, MAnimCurveChange &animChange) {
     MStatus status;
-    bool connected = Attr::isConnected();
-    bool animated = Attr::isAnimated();
+    const bool connected = Attr::isConnected();
+    const bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
     int attrType = Attr::getAttrType();
@@ -473,13 +527,13 @@ MStatus Attr::setValue(double value, const MTime &time,
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        unsigned int keyIndex;
+        unsigned int keyIndex = 0;
         // TODO: The keyframe index may be possible to cache, as long
-        // as we can control that when a new keyframe is inserted, we
-        // invalidate the cache, or instead of invalidating the cache
-        // we automatically increment all keyframe indexes based on
-        // the newly insert keyframe index.
-        bool found = curveFn.find(time, keyIndex);
+        //  as we can control that when a new keyframe is inserted, we
+        //  invalidate the cache, or instead of invalidating the cache
+        //  we automatically increment all keyframe indexes based on
+        //  the newly insert keyframe index.
+        const bool found = curveFn.find(time, keyIndex);
         if (found) {
             curveFn.setValue(keyIndex, value, &animChange);
         } else {
@@ -500,58 +554,58 @@ MStatus Attr::setValue(double value, const MTime &time,
     return status;
 }
 
-MStatus Attr::setValue(double value,
+MStatus Attr::setValue(const double value,
                        MDGModifier &dgmod,
                        MAnimCurveChange &animChange) {
     MTime time = MAnimControl::currentTime();
     return Attr::setValue(value, time, dgmod, animChange);
 }
 
-double Attr::getMinimumValue() {
+double Attr::getMinimumValue() const {
     return m_minValue;
 }
 
-void Attr::setMinimumValue(double value) {
+void Attr::setMinimumValue(const double value) {
     m_minValue = value;
 }
 
-double Attr::getMaximumValue() {
+double Attr::getMaximumValue() const {
     return m_maxValue;
 }
 
-void Attr::setMaximumValue(double value) {
+void Attr::setMaximumValue(const double value) {
     m_maxValue = value;
 }
 
-double Attr::getOffsetValue() {
+double Attr::getOffsetValue() const {
     return m_offsetValue;
 }
 
-void Attr::setOffsetValue(double value) {
+void Attr::setOffsetValue(const double value) {
     m_offsetValue = value;
 }
 
-double Attr::getScaleValue() {
+double Attr::getScaleValue() const {
     return m_scaleValue;
 }
 
-void Attr::setScaleValue(double value) {
+void Attr::setScaleValue(const double value) {
     m_scaleValue = value;
 }
 
-unsigned int Attr::getObjectType() {
+unsigned int Attr::getObjectType() const {
     return m_objectType;
 }
 
-void Attr::setObjectType(unsigned int value) {
+void Attr::setObjectType(const unsigned int value) {
     m_objectType = value;
 }
 
-unsigned int Attr::getSolverAttrType() {
+unsigned int Attr::getSolverAttrType() const {
     return m_solverAttrType;
 }
 
-void Attr::setSolverAttrType(unsigned int value) {
+void Attr::setSolverAttrType(const unsigned int value) {
     m_solverAttrType = value;
 }
 

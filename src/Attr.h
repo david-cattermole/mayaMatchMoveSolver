@@ -180,35 +180,35 @@ public:
 
     MStatus getValue(MMatrix &value);
 
-    MStatus setValue(double value, const MTime &time,
+    MStatus setValue(const double value, const MTime &time,
                      MDGModifier &dgmod, MAnimCurveChange &animChange);
 
-    MStatus setValue(double value,
+    MStatus setValue(const double value,
                      MDGModifier &dgmod, MAnimCurveChange &animChange);
 
-    double getMinimumValue();
+    double getMinimumValue() const;
 
-    void setMinimumValue(double value);
+    void setMinimumValue(const double value);
 
-    double getMaximumValue();
+    double getMaximumValue() const;
 
-    void setMaximumValue(double value);
+    void setMaximumValue(const double value);
 
-    double getOffsetValue();
+    double getOffsetValue() const;
 
-    void setOffsetValue(double value);
+    void setOffsetValue(const double value);
 
-    double getScaleValue();
+    double getScaleValue() const;
 
-    void setScaleValue(double value);
+    void setScaleValue(const double value);
 
-    unsigned int getObjectType();
+    unsigned int getObjectType() const;
 
-    void setObjectType(unsigned int value);
+    void setObjectType(const unsigned int value);
 
-    unsigned int getSolverAttrType();
+    unsigned int getSolverAttrType() const;
 
-    void setSolverAttrType(unsigned int value);
+    void setSolverAttrType(const unsigned int value);
 
 private:
     MString m_nodeName;

@@ -140,7 +140,7 @@ def remove_reprojection_from_camera(cam_tfm, cam_shp):
     """
     nodes = find_reprojection_nodes(cam_tfm, cam_shp)
     for node in reversed(nodes):
-        if node.objExists(node) is True:
+        if maya.cmds.objExists(node) is True:
             maya.cmds.delete(node)
     return
 

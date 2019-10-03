@@ -602,36 +602,14 @@ class SolverWindow(BaseWindow):
         block = self.blockSignals(True)
         try:
             mmapi.set_solver_running(True)
-            undo_id = 'mmSolver: ' + str(uuid.uuid4())
-            with undo_utils.undo_chunk_context(undo_id):
-                refresh_state = lib_state.get_refresh_viewport_state()
-                disable_viewport_two_state = not refresh_state
-                force_update_state = lib_state.get_force_dg_update_state()
-                do_isolate_state = lib_state.get_isolate_object_while_solving_state()
-                pre_solve_force_eval = lib_state.get_pre_solve_force_eval_state()
-
-                disp_node_types = dict()
-                image_plane_state = lib_state.get_display_image_plane_while_solving_state()
-                meshes_state = lib_state.get_display_meshes_while_solving_state()
-                disp_node_types['imagePlane'] = image_plane_state
-                disp_node_types['mesh'] = meshes_state
-
-                options = mmapi.createExecuteOptions(
-                    refresh=refresh_state,
-                    disable_viewport_two=disable_viewport_two_state,
-                    force_update=force_update_state,
-                    do_isolate=do_isolate_state,
-                    pre_solve_force_eval=pre_solve_force_eval,
-                    display_node_types=disp_node_types,
-                )
-
-                log_level = lib_state.get_log_level()
-                col = lib_state.get_active_collection()
-                lib_collection.run_solve_ui(
-                    col,
-                    options,
-                    log_level,
-                    self)
+            options = lib_collection.gather_execute_options()
+            log_level = lib_state.get_log_level()
+            col = lib_state.get_active_collection()
+            lib_collection.run_solve_ui(
+                col,
+                options,
+                log_level,
+                self)
         finally:
             mmapi.set_solver_running(False)
             self.blockSignals(block)

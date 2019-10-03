@@ -20,13 +20,50 @@ The Solver UI tool.
 """
 
 import mmSolver.logger
-import mmSolver.api as mmapi
+import mmSolver.ui.uiutils as uiutils
 import mmSolver.tools.solver.lib.collection as lib_col
+import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.ui.solver_window as solver_window
+import mmSolver.tools.solver.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def __get_override_current_frame_value(col, tab):
+    value = None
+    if tab in [const.SOLVER_TAB_BASIC_VALUE,
+               const.SOLVER_TAB_STANDARD_VALUE]:
+        value = lib_col_state.get_solver_range_type_from_collection(col)
+    elif tab == const.SOLVER_TAB_LEGACY_VALUE:
+        value = lib_col.get_override_current_frame_from_collection(col)
+    else:
+        raise ValueError('tab is not supported; tab=%r' % tab)
+    return value
+
+
+def __set_override_current_frame_value(col, layout_ui, tab, value):
+    if layout_ui is None:
+        if tab in [const.SOLVER_TAB_BASIC_VALUE,
+                   const.SOLVER_TAB_STANDARD_VALUE]:
+            if value is True:
+                value = const.RANGE_TYPE_CURRENT_FRAME_VALUE
+            lib_col_state.set_solver_range_type_on_collection(col, value)
+        elif tab == const.SOLVER_TAB_LEGACY_VALUE:
+            lib_col.set_override_current_frame_on_collection(col, value)
+        else:
+            raise ValueError('tab is not supported; tab=%r' % tab)
+    else:
+        if tab == const.SOLVER_TAB_BASIC_VALUE:
+            pass
+        elif tab == const.SOLVER_TAB_STANDARD_VALUE:
+            pass
+        elif tab == const.SOLVER_TAB_LEGACY_VALUE:
+            layout_ui.solver_settings.legacy_widget.setOverrideCurrentFrame(col, value)
+        else:
+            raise ValueError('tab is not supported; tab=%r' % tab)
+    return
 
 
 def run_solve(override_current_frame=None):
@@ -56,41 +93,26 @@ def run_solve(override_current_frame=None):
         msg = 'No active Collection found. Skipping solve.'
         LOG.warning(msg)
         return
-    force_update_state = lib_state.get_force_dg_update_state()
-    refresh_state = lib_state.get_refresh_viewport_state()
     log_level = lib_state.get_log_level()
-    do_isolate_state = lib_state.get_isolate_object_while_solving_state()
-    image_plane_state = lib_state.get_display_image_plane_while_solving_state()
 
     layout = None
     win = solver_window.SolverWindow.get_instance()
-    if win is None:
+    win_valid = uiutils.isValidQtObject(win)
+    if win is None and win_valid:
         msg = 'Could not get window.'
         LOG.warning(msg)
     else:
         layout = win.getSubForm()
 
-    # Set value.
+    # Set 'override current frame' value.
+    tab = lib_col_state.get_solver_tab_from_collection(col)
     prev_value = None
     if override_current_frame is not None:
-        prev_value = lib_col.get_override_current_frame_from_collection(col)
-        if layout is None:
-            lib_col.set_override_current_frame_on_collection(
-                col,
-                override_current_frame
-            )
-        else:
-            # The function should operate on the currently active
-            # collection, so we don't need to pass a collection.
-            layout.setOverrideCurrentFrame(col, override_current_frame)
+        prev_value = __get_override_current_frame_value(col, tab)
+        __set_override_current_frame_value(col, layout, tab, override_current_frame)
 
     # Run Solver
-    options = mmapi.createExecuteOptions(
-        refresh=refresh_state,
-        force_update=force_update_state,
-        do_isolate=do_isolate_state,
-        display_image_plane=image_plane_state
-    )
+    options = lib_col.gather_execute_options()
     lib_col.run_solve_ui(
         col,
         options,
@@ -100,13 +122,7 @@ def run_solve(override_current_frame=None):
 
     # Restore previous value.
     if override_current_frame is not None:
-        if layout is None:
-            lib_col.set_override_current_frame_on_collection(
-                col,
-                prev_value
-            )
-        else:
-            layout.setOverrideCurrentFrame(col, prev_value)
+        __set_override_current_frame_value(col, layout, tab, prev_value)
     return
 
 

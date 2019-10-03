@@ -28,8 +28,10 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 
+import mmSolver.utils.undo as undo_utils
 import mmSolver.utils.time as utils_time
 import mmSolver.utils.converttypes as converttypes
+import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as col_state
 import mmSolver.tools.solver.lib.solver as solver_utils
 import mmSolver.tools.solver.lib.solver_step as solver_step
@@ -336,7 +338,7 @@ def add_solver_step_to_collection(col, step):
     name_list = [s.get_name() for s in step_list]
     name = step.get_name()
     if name in name_list:
-        raise ValueError, 'Solver step already exists with that name.'
+        raise ValueError('Solver step already exists with that name.')
     step_list.insert(0, step)  # new step pushed onto the front.
     set_solver_step_list_to_collection(col, step_list)
     return
@@ -521,6 +523,37 @@ def compile_collection(col, prog_fn=None):
     e = time.time()
     LOG.debug('Compile time (GUI): %r seconds', e - s)
     return
+
+
+def gather_execute_options():
+    """
+    Query the current Solver UI ExecuteOptions state that is saved in the scene.
+
+    :return: The ExecuteOptions ready to be passed to an execution function.
+    :rtype: ExecuteOptions
+    """
+    refresh_state = lib_state.get_refresh_viewport_state()
+    disable_viewport_two_state = not refresh_state
+    force_update_state = lib_state.get_force_dg_update_state()
+    do_isolate_state = lib_state.get_isolate_object_while_solving_state()
+    pre_solve_force_eval = lib_state.get_pre_solve_force_eval_state()
+
+    # Display Types
+    disp_node_types = dict()
+    image_plane_state = lib_state.get_display_image_plane_while_solving_state()
+    meshes_state = lib_state.get_display_meshes_while_solving_state()
+    disp_node_types['imagePlane'] = image_plane_state
+    disp_node_types['mesh'] = meshes_state
+
+    options = mmapi.createExecuteOptions(
+        refresh=refresh_state,
+        disable_viewport_two=disable_viewport_two_state,
+        force_update=force_update_state,
+        do_isolate=do_isolate_state,
+        pre_solve_force_eval=pre_solve_force_eval,
+        display_node_types=disp_node_types,
+    )
+    return options
 
 
 def execute_collection(col,
@@ -745,14 +778,16 @@ def run_solve_ui(col,
                 status_fn = window.setStatusLine
                 info_fn = window.setSolveInfoLine
 
-            execute_collection(
-                col,
-                options=options,
-                log_level=log_level,
-                prog_fn=prog_fn,
-                status_fn=status_fn,
-                info_fn=info_fn,
-            )
+            undo_id = 'mmSolver: ' + str(uuid.uuid4())
+            with undo_utils.undo_chunk_context(undo_id):
+                execute_collection(
+                    col,
+                    options=options,
+                    log_level=log_level,
+                    prog_fn=prog_fn,
+                    status_fn=status_fn,
+                    info_fn=info_fn,
+                )
     finally:
         if window is not None:
             window.progressBar.setValue(100)

@@ -106,8 +106,8 @@
             ]
         },
         "reproject_bundle": {
-            "name": "Re-Project Bundle",
-            "tooltip": "Re-Project Bundle on top of Marker.",
+            "name": "Move Bundle to Marker (current frame)",
+            "tooltip": "Re-Project Bundle on top of Marker in screen space.",
             "command": [
                 "import mmSolver.tools.reprojectbundle.tool;",
                 "mmSolver.tools.reprojectbundle.tool.main();"

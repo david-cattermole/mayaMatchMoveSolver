@@ -39,6 +39,26 @@
                 "tool.run_solve_on_current_frame();"
             ]
         },
+        "navigate_root_frame_next": {
+            "name": "Next Root Frame",
+            "name_shelf": "",
+            "icon_shelf": "timenext.png",
+            "tooltip": "Jump to the next root frame.",
+            "command": [
+                "import mmSolver.tools.navigaterootframes.tool as tool;",
+                "tool.main_next_frame();"
+            ]
+        },
+        "navigate_root_frame_prev": {
+            "name": "Prev Root Frame",
+            "name_shelf": "",
+            "icon_shelf": "timeprev.png",
+            "tooltip": "Jump to the previous root frame.",
+            "command": [
+                "import mmSolver.tools.navigaterootframes.tool as tool;",
+                "tool.main_prev_frame();"
+            ]
+        },
         "create_tools": {
             "name": "Create Tools",
             "name_shelf": "Create",
@@ -318,6 +338,26 @@
             "command": [
                 "import mmSolver.tools.screenspacetransform.tool;",
                 "mmSolver.tools.screenspacetransform.tool.main();"
+            ]
+        },
+        "undo_scene": {
+            "name": "Undo (without UI update)",
+            "name_shelf": "Undo",
+            "tooltip": "Undo the Maya scene state, without updating the viewport or solver UI.",
+            "icon_shelf": "undo.png",
+            "command": [
+                "import mmSolver.tools.undoredoscene.tool;",
+                "mmSolver.tools.undoredoscene.tool.main_undo();"
+            ]
+        },
+        "redo_scene": {
+            "name": "Redo (without UI update)",
+            "name_shelf": "Redo",
+            "tooltip": "Redo the Maya scene state, without updating the viewport or solver UI.",
+            "icon_shelf": "redo.png",
+            "command": [
+                "import mmSolver.tools.undoredoscene.tool;",
+                "mmSolver.tools.undoredoscene.tool.main_redo();"
             ]
         },
         "create_controller": {

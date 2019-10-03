@@ -5,6 +5,10 @@
             "open_solver_ui",
             "solver_run",
             "solver_run_current_frame",
+            "navigate_root_frame_prev",
+            "navigate_root_frame_next",
+            "undo_scene",
+            "redo_scene",
             "---Create",
             "create_marker",
             "convert_to_marker",
@@ -14,9 +18,9 @@
             "swap_marker_bundles",
             "select_marker_bundles",
             "---Tools",
-            "mb_link_tools/marker_popup/---Marker-Bundle Link",
-            "mb_link_tools/marker_popup/link_marker_bundle",
-            "mb_link_tools/marker_popup/unlink_marker_bundle",
+            "mb_link_tools/mb_link_popup/---Marker-Bundle Link",
+            "mb_link_tools/mb_link_popup/link_marker_bundle",
+            "mb_link_tools/mb_link_popup/unlink_marker_bundle",
             "marker_tools/marker_popup/---Marker",
             "marker_tools/marker_popup/toggle_marker_lock",
             "marker_tools/marker_popup/place_marker_manipulator",
@@ -51,6 +55,10 @@
             "solver_popup": {
                 "popup": true,
                 "popup_button": ["right"]
+            },
+            "mb_link_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
             },
             "marker_popup": {
                 "popup": true,

@@ -31,7 +31,7 @@ LOG = mmSolver.logger.get_logger()
 
 def main():
     """
-    Triangulate Bundle on current-frame
+    Move the Bundle to the Marker, on the current-frame.
 
     Perform a reprojection of the selected bundle (or bundle connected
     to the selected marker), at the current frame.

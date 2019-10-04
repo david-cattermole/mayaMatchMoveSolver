@@ -153,6 +153,12 @@ def get_world_matrix_apitwo(node, ctx):
 
 
 def detect_rotate_pivot_non_zero(tfm_node):
+    """
+    Given a TransformNode, determine if the node has a non-zero rotate 
+    pivot.
+
+    :rtype: bool
+    """
     assert isinstance(tfm_node, TransformNode)
     node = tfm_node.get_node()
     plug = node + '.rotatePivot'
@@ -258,6 +264,23 @@ class TransformNode(object):
         else:
             self._mfn = OpenMaya2.MFnDagNode()
         return
+
+    def get_parent(self):
+        """
+        Get the node directly above the current node.
+
+        :returns: Transform node or None, if the node is parented to world.
+        :rtype: TransformNode or None
+        """
+        node = self.get_node()
+        parents = maya.cmds.listRelatives(
+            node,
+            parent=True,
+            fullPath=True) or []
+        parent_tfm_node = None
+        if len(parents) > 0:
+            parent_tfm_node = TransformNode(node=parents[0])
+        return parent_tfm_node
 
     def get_parents(self):
         """

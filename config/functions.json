@@ -360,6 +360,24 @@
                 "mmSolver.tools.undoredoscene.tool.main_redo();"
             ]
         },
+        "reparent_under_node": {
+            "name": "Reparent Under Node",
+            "name_shelf": "RePar",
+            "tooltip": "Reparent the selection under the last selected node.",
+            "command": [
+                "import mmSolver.tools.reparent.tool;",
+                "mmSolver.tools.reparent.tool.reparent_under_node();"
+            ]
+        },
+        "unparent_to_world": {
+            "name": "Unparent to World",
+            "name_shelf": "UnPar",
+            "tooltip": "Unparent the selected nodes into world space.",
+            "command": [
+                "import mmSolver.tools.reparent.tool;",
+                "mmSolver.tools.reparent.tool.unparent_to_world();"
+            ]
+        },
         "create_controller": {
             "name": "Create Controller",
             "name_shelf": "CrCtrl",

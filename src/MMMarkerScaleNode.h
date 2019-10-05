@@ -52,6 +52,7 @@ public:
     // Input Attributes
     static MObject a_depth;
     static MObject a_overscan;
+    static MObject a_overscanInverse;
     static MObject a_focalLength;
     static MObject a_cameraAperture;
     static MObject a_horizontalFilmAperture;

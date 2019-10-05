@@ -65,7 +65,7 @@ class TestReparent(test_tools_utils.ToolsTestCase):
         path = self.get_data_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
-        
+
         self.assertEqual(len(tfm_nodes), 1)
         new_tfm_node = tfm_nodes[0]
         new_parent = new_tfm_node.get_parent()
@@ -74,7 +74,7 @@ class TestReparent(test_tools_utils.ToolsTestCase):
 
     def create_scene_b(self):
         """
-        Three transforms, 2 children under 1 parent. 
+        Three transforms, 2 children under 1 parent.
         No keyframes.
 
         - A
@@ -114,7 +114,7 @@ class TestReparent(test_tools_utils.ToolsTestCase):
         path = self.get_data_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
-        
+
         self.assertEqual(len(tfm_nodes), 2)
         for tfm_node in tfm_nodes:
             new_parent = tfm_node.get_parent()
@@ -132,8 +132,8 @@ class TestReparent(test_tools_utils.ToolsTestCase):
         maya.cmds.playbackOptions(edit=True, animationStartTime=start)
         maya.cmds.playbackOptions(edit=True, animationEndTime=end)
         maya.cmds.playbackOptions(edit=True, maxTime=end)
-        
-        tfm_a = maya.cmds.createNode('transform')        
+
+        tfm_a = maya.cmds.createNode('transform')
         maya.cmds.setKeyframe(tfm_a, attribute='translateX', value=10.0, time=start)
         maya.cmds.setKeyframe(tfm_a, attribute='translateY', value=20.0, time=start)
         maya.cmds.setKeyframe(tfm_a, attribute='translateZ', value=30.0, time=start)
@@ -211,7 +211,7 @@ class TestReparent(test_tools_utils.ToolsTestCase):
         maya.cmds.setKeyframe(tfm_c, attribute='translateZ', value=12.0, time=end)
         tfm_node_c = tfm_utils.TransformNode(node=tfm_c)
         return tfm_node_a, tfm_node_b, tfm_node_c
-    
+
     def test_unparent_to_world_with_keyframes(self):
         """
         Transform node with keyframes.
@@ -234,6 +234,58 @@ class TestReparent(test_tools_utils.ToolsTestCase):
             new_parent = tfm_node.get_parent()
             self.assertIs(new_parent, None)
         return
+
+    def test_reparent_unparent_with_sparse_keyframes(self):
+        name = 'reparent_sparse_keyframes.ma'
+        path = self.get_data_path('scenes', name)
+        maya.cmds.file(path, open=True, force=True)
+
+        tfm_a = 'pSphere1'
+        tfm_b = 'pCube1'
+        tfm_node_a = tfm_utils.TransformNode(node=tfm_a)
+        tfm_node_b = tfm_utils.TransformNode(node=tfm_b)
+
+        # Parent sphere under cube.
+        tfm_nodes = lib.reparent([tfm_node_a], tfm_node_b,
+                                 sparse=True,
+                                 delete_static_anim_curves=True)
+        tfm_node_c = tfm_nodes[0]
+
+        node = tfm_node_c.get_node()
+        plug = node + '.translateX'
+        times = maya.cmds.keyframe(
+                plug,
+                query=True,
+                timeChange=True)
+        self.assertEqual(len(times), 5)
+        self.assertEqual(sorted(times), sorted([1, 16, 61, 98, 120]))
+        self.assertEqual(len(tfm_nodes), 1)
+        new_parent = tfm_node_a.get_parent()
+        self.assertEqual(new_parent, tfm_node_b)
+
+        # Unparent sphere to world
+        tfm_nodes = lib.reparent([tfm_node_c], None,
+                                 sparse=True,
+                                 delete_static_anim_curves=True)
+        tfm_node_d = tfm_nodes[0]
+
+        # save the output
+        name = 'reparent_unparent_sparse_with_keyframes_after.ma'
+        path = self.get_data_path(name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        node = tfm_node_d.get_node()
+        plug = node + '.translateX'
+        times = maya.cmds.keyframe(
+                plug,
+                query=True,
+                timeChange=True)
+        self.assertEqual(len(times), 5)
+        self.assertEqual(sorted(times), sorted([1, 16, 61, 98, 120]))
+        self.assertEqual(len(tfm_nodes), 1)
+        new_parent = tfm_node_a.get_parent()
+        self.assertIs(new_parent, None)
 
 
 if __name__ == '__main__':

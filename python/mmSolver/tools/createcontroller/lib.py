@@ -33,6 +33,7 @@ import mmSolver.utils.node as node_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.animcurve as anim_utils
 import mmSolver.utils.transform as tfm_utils
+import mmSolver.tools.reparent.keytimeutils as keytime_utils
 
 import mmSolver.api as mmapi
 
@@ -78,47 +79,6 @@ def _get_skip_attrs(node, attrs):
         if settable is True and keyable is True:
             skip_attrs.remove(axis)
     return skip_attrs
-
-
-def _get_keyframe_times_for_each_node_attr(nodes, attrs, start_frame, end_frame):
-    """
-    Query keyframe times on each node attribute (sparse keys)
-    """
-    frame_ranges_map = {}
-    key_times_map = {}
-    total_start = 9999999
-    total_end = -9999999
-    for node in nodes:
-        start = start_frame
-        end = end_frame
-        for attr in attrs:
-            plug = node + '.' + attr
-            attr_exists = node_utils.attribute_exists(attr, node)
-            if attr_exists is False:
-                continue
-            settable = maya.cmds.getAttr(plug, settable=True)
-            if settable is False:
-                continue
-            times = maya.cmds.keyframe(
-                plug,
-                query=True,
-                timeChange=True
-            ) or []
-            if len(times) == 0:
-                continue
-            if node not in key_times_map:
-                key_times_map[node] = set()
-            times = [int(t) for t in times]
-            key_times_map[node] |= set(times)
-            node_key_times = key_times_map.get(node)
-            key_start = min(node_key_times)
-            key_end = max(node_key_times)
-            start = min(key_start, start)
-            end = max(key_end, end)
-        frame_ranges_map[node] = (start, end)
-        total_start = min(total_start, start)
-        total_end = max(total_end, end)
-    return total_start, total_end, frame_ranges_map, key_times_map
 
 
 def _get_constraints_from_ctrls(input_node):
@@ -185,35 +145,7 @@ def _create_constraint(src_node, dst_node):
     return
 
 
-def _get_times(node,
-               key_times_map,
-               frame_ranges_map,
-               total_start,
-               total_end,
-               sparse, allow_empty):
-    """
-    The logic to query time for a node, in sparse or dense mode.
-    """
-    times = []
-    fallback_frame_range = (total_start, total_end)
-    fallback_times = list(range(total_start, total_end + 1))
-    if sparse is True:
-        tmp = []
-        if allow_empty is False:
-            tmp = fallback_times
-        times = key_times_map.get(node, tmp)
-    else:
-        start, end = frame_ranges_map.get(node, fallback_frame_range)
-        times = range(start, end + 1)
-    times = list(times)
-    if allow_empty is False:
-        assert len(times) > 0
-    return times
-
-
 def create(nodes, sparse=True):
-    dont_allow_empty = False
-    allow_empty = True
     tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
 
     # Force into long-names.
@@ -226,20 +158,18 @@ def create(nodes, sparse=True):
 
     # Query keyframe times on each node attribute
     start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
-    total_start, total_end, frame_ranges_map, key_times_map = _get_keyframe_times_for_each_node_attr(
-        nodes,
-        TFM_ATTRS,
-        start_frame,
-        end_frame)
+    keytime_obj = keytime_utils.KeyframeTimes()
+    for node in nodes:
+        keytime_obj.add_node_attrs(node, TFM_ATTRS, start_frame, end_frame)
+    fallback_frame_range = keytime_obj.sum_frame_range_for_nodes(nodes)
+    fallback_times = list(range(fallback_frame_range[0],
+                                fallback_frame_range[1]+1))
 
     # Query the transform matrix for the nodes
     cache = tfm_utils.TransformMatrixCache()
     for tfm_node in tfm_nodes:
         node = tfm_node.get_node()
-        times = _get_times(node,
-                           key_times_map, frame_ranges_map,
-                           total_start, total_end,
-                           sparse, dont_allow_empty)
+        times = keytime_obj.get_times(node, sparse) or fallback_times
         cache.add_node(tfm_node, times)
     cache.process()
 
@@ -264,23 +194,19 @@ def create(nodes, sparse=True):
     # Set transform matrix on new node
     for src, dst in zip(tfm_nodes, ctrl_tfm_nodes):
         src_node = src.get_node()
-        times = _get_times(src_node,
-                           key_times_map, frame_ranges_map,
-                           total_start, total_end,
-                           sparse, dont_allow_empty)
+        times = keytime_obj.get_times(src_node, sparse) or fallback_times
         tfm_utils.set_transform_values(
             cache, times, src, dst,
             delete_static_anim_curves=False
         )
         if sparse is True:
             # Remove keyframes
-            src_times = _get_times(src_node,
-                                   key_times_map, frame_ranges_map,
-                                   total_start, total_end,
-                                   sparse, allow_empty)
+            src_times = keytime_obj.get_times(src_node, sparse) or []
             dst_node = dst.get_node()
             if len(src_times) == 0:
-                time_range = (total_start, total_end)
+                time_range = keytime_obj.get_frame_range_for_node(src_node)
+                assert time_range[0] is not None
+                assert time_range[1] is not None
                 maya.cmds.cutKey(
                     dst_node,
                     attribute=TFM_ATTRS,
@@ -315,10 +241,7 @@ def remove(nodes, sparse=True):
     controlled object? Probably yes.
 
     """
-    dont_allow_empty = False
-    allow_empty = True
-        
-    # find controlled nodes from controller nodes
+    # Find controlled nodes from controller nodes
     ctrl_to_ctrlled_map = {}
     for ctrl_node in nodes:
         constraints = _get_constraints_from_ctrls(ctrl_node)
@@ -329,19 +252,17 @@ def remove(nodes, sparse=True):
 
     # Query keyframe times on controller nodes.
     start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
-    total_start, total_end, frame_ranges_map, key_times_map = _get_keyframe_times_for_each_node_attr(
-        nodes,
-        TFM_ATTRS,
-        start_frame,
-        end_frame)
+    keytime_obj = keytime_utils.KeyframeTimes()
+    for node in nodes:
+        keytime_obj.add_node_attrs(node, TFM_ATTRS, start_frame, end_frame)
+    fallback_frame_range = keytime_obj.sum_frame_range_for_nodes(nodes)
+    fallback_times = list(range(fallback_frame_range[0],
+                                fallback_frame_range[1]+1))
 
-    # query transform matrix on controlled nodes.
+    # Query transform matrix on controlled nodes.
     cache = tfm_utils.TransformMatrixCache()
     for ctrl_node, (constraints, dest_nodes) in ctrl_to_ctrlled_map.items():
-        times = _get_times(ctrl_node,
-                           key_times_map, frame_ranges_map,
-                           total_start, total_end,
-                           sparse, dont_allow_empty)
+        times = keytime_obj.get_times(ctrl_node, sparse) or fallback_times
         ctrl = tfm_utils.TransformNode(node=ctrl_node)
         cache.add_node(ctrl, times)
         for dest_node in dest_nodes:
@@ -364,10 +285,7 @@ def remove(nodes, sparse=True):
 
     # Set keyframes (per-frame) on controlled nodes
     for ctrl_node, (_, ctrlled_nodes) in ctrl_to_ctrlled_map.items():
-        times = _get_times(ctrl_node,
-                           key_times_map, frame_ranges_map,
-                           total_start, total_end,
-                           sparse, dont_allow_empty)
+        times = keytime_obj.get_times(ctrl_node, sparse) or fallback_times
         ctrl = tfm_utils.TransformNode(node=ctrl_node)
         for ctrlled_node in ctrlled_nodes:
             ctrlled = tfm_utils.TransformNode(node=ctrlled_node)

@@ -6,8 +6,6 @@
             "open_solver_ui",
             "solver_run",
             "solver_run_current_frame",
-            "undo_scene",
-            "redo_scene",
             "---Create",
             "create_marker",
             "convert_to_marker",

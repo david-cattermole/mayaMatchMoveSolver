@@ -153,6 +153,7 @@ class MarkerGroup(object):
         maya.cmds.addAttr(mkr_grp, longName='depth', at='double', minValue=0.0,
                           defaultValue=1.0)
         maya.cmds.setAttr(mkr_grp + '.depth', keyable=True)
+        maya.cmds.setAttr(mkr_grp + '.depth', 10.0)
         maya.cmds.connectAttr(mkr_grp + '.depth', mkr_scl + '.depth')
 
         # Add attr and connect overscan

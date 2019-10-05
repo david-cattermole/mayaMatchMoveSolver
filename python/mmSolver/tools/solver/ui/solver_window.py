@@ -19,6 +19,7 @@
 The main window for the 'Solver' tool.
 """
 
+import datetime
 import uuid
 from functools import partial
 
@@ -599,20 +600,25 @@ class SolverWindow(BaseWindow):
             # the button again.
             lib_state.set_solver_user_interrupt_state(True)
             return
-        block = self.blockSignals(True)
-        try:
-            mmapi.set_solver_running(True)
-            options = lib_collection.gather_execute_options()
-            log_level = lib_state.get_log_level()
-            col = lib_state.get_active_collection()
-            lib_collection.run_solve_ui(
-                col,
-                options,
-                log_level,
-                self)
-        finally:
-            mmapi.set_solver_running(False)
-            self.blockSignals(block)
+        undo_id = 'mmSolver: '
+        undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
+        undo_id += ' '
+        undo_id += str(uuid.uuid4())
+        with undo_utils.undo_chunk_context(undo_id):
+            block = self.blockSignals(True)
+            try:
+                mmapi.set_solver_running(True)
+                options = lib_collection.gather_execute_options()
+                log_level = lib_state.get_log_level()
+                col = lib_state.get_active_collection()
+                lib_collection.run_solve_ui(
+                    col,
+                    options,
+                    log_level,
+                    self)
+            finally:
+                mmapi.set_solver_running(False)
+                self.blockSignals(block)
         return
 
     def help(self):

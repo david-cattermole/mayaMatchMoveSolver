@@ -19,8 +19,11 @@
 The Solver UI tool.
 """
 
+import datetime
+import uuid
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
+import mmSolver.utils.undo as undo_utils
 import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.lib.state as lib_state
@@ -130,7 +133,12 @@ def run_solve_on_current_frame():
     """
     Run the solver, forcing 'Override Current Frame' on.
     """
-    run_solve(override_current_frame=True)
+    undo_id = 'mmSolver: '
+    undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
+    undo_id += ' '
+    undo_id += str(uuid.uuid4())
+    with undo_utils.undo_chunk_context(undo_id):
+        run_solve(override_current_frame=True)
     return
 
 
@@ -138,7 +146,12 @@ def run_solve_on_all_frames():
     """
     Run the solver, forcing 'Override Current Frame' off.
     """
-    run_solve(override_current_frame=False)
+    undo_id = 'mmSolver: '
+    undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
+    undo_id += ' '
+    undo_id += str(uuid.uuid4())
+    with undo_utils.undo_chunk_context(undo_id):
+        run_solve(override_current_frame=False)
     return
 
 

@@ -28,7 +28,6 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 
-import mmSolver.utils.undo as undo_utils
 import mmSolver.utils.time as utils_time
 import mmSolver.utils.converttypes as converttypes
 import mmSolver.tools.solver.lib.state as lib_state
@@ -778,16 +777,14 @@ def run_solve_ui(col,
                 status_fn = window.setStatusLine
                 info_fn = window.setSolveInfoLine
 
-            undo_id = 'mmSolver: ' + str(uuid.uuid4())
-            with undo_utils.undo_chunk_context(undo_id):
-                execute_collection(
-                    col,
-                    options=options,
-                    log_level=log_level,
-                    prog_fn=prog_fn,
-                    status_fn=status_fn,
-                    info_fn=info_fn,
-                )
+            execute_collection(
+                col,
+                options=options,
+                log_level=log_level,
+                prog_fn=prog_fn,
+                status_fn=status_fn,
+                info_fn=info_fn,
+            )
     finally:
         if window is not None:
             window.progressBar.setValue(100)

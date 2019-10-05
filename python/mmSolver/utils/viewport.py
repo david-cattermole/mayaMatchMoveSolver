@@ -109,11 +109,11 @@ def set_viewport2_active_state(value):
     :param value: Set activation of the state.
     :type value: bool
     """
-    if maya.cmds.about(apiVersion=True) < 201700:
-        LOG.warning('Cannot turn off viewport 2, Maya version cannot do it.')
-        return
     is_batch = maya.cmds.about(query=True, batch=True)
     if is_batch is True:
+        return
+    if maya.cmds.about(apiVersion=True) < 201700:
+        LOG.debug('Cannot turn off viewport 2, Maya version cannot do it.')
         return
     current = maya.cmds.ogs(query=True, pause=True)
     if value == current:
@@ -129,12 +129,12 @@ def get_viewport2_active_state():
 
     :rtype: bool
     """
-    if maya.cmds.about(apiVersion=True) < 201700:
-        LOG.warning('Cannot turn off viewport 2, Maya version cannot do it.')
-        return
     is_batch = maya.cmds.about(query=True, batch=True)
     if is_batch is True:
         return False
+    if maya.cmds.about(apiVersion=True) < 201700:
+        LOG.debug('Cannot turn off viewport 2, Maya version cannot do it.')
+        return
     return not maya.cmds.ogs(query=True, pause=True)
 
 

@@ -215,6 +215,28 @@ class TransformNode(object):
         result += ')>'
         return result
 
+    def __eq__(self, other):
+        """
+        Test if two TransformNode objects DO point to the same underlying
+        node.
+        """
+        if self is None and other is not None:
+            return False
+        if self is not None and other is None:
+            return False
+        if self is None and other is None:
+            return True
+        node_a = self.get_node()
+        node_b = other.get_node()
+        return node_a == node_b
+
+    def __ne__(self, other):
+        """
+        Test if two TransformNode objects DO NOT point to the same
+        underlying node.
+        """
+        return not self.__eq__(other)
+
     def get_node(self):
         """
         Get the transform node.

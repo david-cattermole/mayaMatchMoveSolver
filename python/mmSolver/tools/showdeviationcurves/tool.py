@@ -75,9 +75,11 @@ def show_deviation():
     cmd = (
         'GraphEditor;'
         'filterUISelectAttributesCheckbox deviation 1 graphEditor1OutlineEd;'
-        'GraphEditorAbsoluteView;'
-        'animCurveEditor -autoFit graphEditor1GraphEd;'
     )
+    if maya.cmds.about(apiVersion=True) >= 201700:
+        # The new Graph Editor is only in Maya 2017+
+        cmd += 'GraphEditorAbsoluteView;'
+    cmd += 'animCurveEditor -autoFit graphEditor1GraphEd;'
     maya.mel.eval(cmd)
     return
 

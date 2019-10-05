@@ -41,11 +41,13 @@ def reparent_under_node():
     """
     Re-parent the selection under the last selected node.
     """
-    nodes = maya.cmds.ls(selection=True, long=True) or []
+    nodes = maya.cmds.ls(selection=True, long=True,
+                         type='transform') or []
     if len(nodes) < 2:
         msg = ('Not enough objects selected, '
                'select at least 1 child and 1 parent node.')
         LOG.warn(msg)
+        return
     children = nodes[:-1]
     parent = nodes[-1]
     children_tfm_nodes = [tfm_utils.TransformNode(node=n) for n in children]
@@ -61,7 +63,13 @@ def unparent_to_world():
     """
     Un-parent the selected nodes into world space.
     """
-    nodes = maya.cmds.ls(selection=True, long=True) or []
+    nodes = maya.cmds.ls(selection=True, long=True,
+                         type='transform') or []
+    if len(nodes) == 0:
+        msg = ('Not enough objects selected, '
+               'select at least 1 transform node.')
+        LOG.warn(msg)
+        return
     tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
     lib.reparent(tfm_nodes, None, sparse=True)
     nodes = [tn.get_node() for tn in tfm_nodes]

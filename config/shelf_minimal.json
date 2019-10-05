@@ -4,7 +4,6 @@
         "items": [
             "solver_tools/solver_popup/---Solve",
             "solver_tools/solver_popup/open_solver_ui",
-            "solver_tools/solver_popup/---Run",
             "solver_tools/solver_popup/solver_run",
             "solver_tools/solver_popup/solver_run_current_frame",
             "create_tools/create_popup/---Create Marker",

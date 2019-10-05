@@ -28,9 +28,10 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.time as utils_time
-import mmSolver.ui.converttypes as converttypes
+import mmSolver.ui.converttypes as convert_types
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
+import mmSolver.tools.navigaterootframes.lib as navigaterootframes_lib
 import mmSolver.tools.solver.widget.ui_rootframe_widget as ui_rootframe_widget
 import mmSolver.tools.solver.constant as const
 
@@ -80,11 +81,11 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
             frame = lib_maya_utils.get_current_frame()
             start, end = utils_time.get_maya_timeline_range_inner()
             int_list = list(set([start, frame, end]))
-            roots_string = converttypes.intListToString(int_list)
+            roots_string = convert_types.intListToString(int_list)
             self.setRootFramesValue(col, roots_string)
         else:
-            int_list = converttypes.stringToIntList(roots_string)
-            roots_string = converttypes.intListToString(int_list)
+            int_list = convert_types.stringToIntList(roots_string)
+            roots_string = convert_types.intListToString(int_list)
         assert roots_string is not None
 
         block = self.blockSignals(True)
@@ -107,8 +108,8 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
 
         # Round-trip conversion will make sure there are no syntax
         # errors given by the user.
-        int_list = converttypes.stringToIntList(text)
-        frames_string = converttypes.intListToString(int_list)
+        int_list = convert_types.stringToIntList(text)
+        frames_string = convert_types.intListToString(int_list)
         if len(int_list) < 2:
             msg = 'Must have at least 2 root frames to solve.'
             LOG.warn(msg)
@@ -132,14 +133,14 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         roots_string = self.getRootFramesValue(col)
         if roots_string is None:
             int_list = [frame]
-            roots_string = converttypes.intListToString(int_list)
+            roots_string = convert_types.intListToString(int_list)
             self.setRootFramesValue(col, roots_string)
             self.rootFrames_lineEdit.setText(roots_string)
         else:
-            int_list = converttypes.stringToIntList(roots_string)
+            int_list = convert_types.stringToIntList(roots_string)
         if frame not in int_list:
             int_list.append(frame)
-            roots_string = converttypes.intListToString(int_list)
+            roots_string = convert_types.intListToString(int_list)
             self.setRootFramesValue(col, roots_string)
             self.rootFrames_lineEdit.setText(roots_string)
         return
@@ -152,14 +153,14 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         frames_string = self.getRootFramesValue(col)
         if frames_string is None:
             int_list = [frame]
-            frames_string = converttypes.intListToString(int_list)
+            frames_string = convert_types.intListToString(int_list)
             self.setRootFramesValue(col, frames_string)
             self.rootFrames_lineEdit.setText(frames_string)
         else:
-            int_list = converttypes.stringToIntList(frames_string)
+            int_list = convert_types.stringToIntList(frames_string)
         if frame in int_list:
             int_list.remove(frame)
-            frames_string = converttypes.intListToString(int_list)
+            frames_string = convert_types.intListToString(int_list)
             self.setRootFramesValue(col, frames_string)
             self.rootFrames_lineEdit.setText(frames_string)
         return
@@ -168,22 +169,17 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         col = lib_state.get_active_collection()
         if col is None:
             return
-        cur_frame = lib_maya_utils.get_current_frame()
         frames_string = self.getRootFramesValue(col)
         if frames_string is None:
             LOG.warn('Root Frames are not valid')
             return
-        int_list = converttypes.stringToIntList(frames_string)
-        future_frames = [int(f) for f in int_list if int(f) > cur_frame]
-        future_frames = list(sorted(future_frames))
-        next_frame = cur_frame
-        if len(future_frames) == 0:
-            # Wrap-around the frame values.
-            if len(int_list) > 0:
-                next_frame = list(sorted(int_list))[0]
-        else:
-            # The next future frame.
-            next_frame = future_frames[0]
+        cur_frame = lib_maya_utils.get_current_frame()
+        int_list = convert_types.stringToIntList(frames_string)
+        next_frame = navigaterootframes_lib.get_next_frame(
+            cur_frame, int_list
+        )
+        if next_frame is None:
+            next_frame = cur_frame
         lib_maya_utils.set_current_frame(next_frame)
         return
 
@@ -191,21 +187,16 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         col = lib_state.get_active_collection()
         if col is None:
             return
-        cur_frame = lib_maya_utils.get_current_frame()
         frames_string = self.getRootFramesValue(col)
         if frames_string is None:
             LOG.warn('Root Frames are not valid')
             return
-        int_list = converttypes.stringToIntList(frames_string)
-        past_frames = [f for f in int_list if f < cur_frame]
-        past_frames = list(sorted(past_frames))
-        previous_frame = cur_frame
-        if len(past_frames) == 0:
-            # Wrap-around the frame values.
-            if len(int_list) > 0:
-                previous_frame = list(sorted(int_list))[-1]
-        else:
-            # The last previous frame.
-            previous_frame = past_frames[-1]
+        cur_frame = lib_maya_utils.get_current_frame()
+        int_list = convert_types.stringToIntList(frames_string)
+        previous_frame = navigaterootframes_lib.get_prev_frame(
+            cur_frame, int_list,
+        )
+        if previous_frame is None:
+            previous_frame = cur_frame
         lib_maya_utils.set_current_frame(previous_frame)
         return

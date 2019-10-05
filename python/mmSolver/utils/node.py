@@ -96,6 +96,29 @@ def get_long_name(node):
     return None
 
 
+def get_node_parents(node):
+    """
+    Get all the parents above the given node.
+
+    :param node: Valid Maya DAG node path.
+    :type node: str
+    """
+    assert isinstance(node, (basestring, str, unicode))
+    parent_nodes = []
+    parents = maya.cmds.listRelatives(
+        node,
+        parent=True,
+        fullPath=True) or []
+    parent_nodes += parents
+    while len(parents) > 0:
+        parents = maya.cmds.listRelatives(
+            parents,
+            parent=True,
+            fullPath=True) or []
+        parent_nodes += parents
+    return parent_nodes
+
+
 def get_as_selection_list_apione(paths):
     """
     Get a Maya API selection list with the given valid Maya node paths.

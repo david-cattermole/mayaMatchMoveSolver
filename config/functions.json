@@ -132,7 +132,7 @@
             ]
         },
         "raycast_marker": {
-            "name": "Project Marker on Mesh",
+            "name": "Project Marker on Mesh (Ray-Cast)",
             "name_shelf": "MkrCast",
             "tooltip": "Ray Cast Marker onto geometry.",
             "command": [
@@ -172,14 +172,20 @@
                 "mmSolver.tools.averagemarker.tool.main();"
             ]
         },
+        "mb_tools": {
+            "name": "Marker-Bundle Tools",
+            "name_shelf": "MBLnk",
+            "tooltip": "Marker bundle link and unlink Tools.",
+            "command": ["pass"]
+        },
         "mb_link_tools": {
-            "name": "Marker + Bundle Link Tools",
+            "name": "Marker-Bundle Link Tools",
             "name_shelf": "MBLnk",
             "tooltip": "Marker bundle link and unlink Tools.",
             "command": ["pass"]
         },
         "link_marker_bundle": {
-            "name": "Link Marker + Bundle",
+            "name": "Link Marker and Bundle",
             "tooltip": "Link the selected Marker and Bundle together.",
             "command": [
                 "import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;",
@@ -361,7 +367,7 @@
             ]
         },
         "reparent_under_node": {
-            "name": "Reparent Under Node",
+            "name": "Reparent under Node",
             "name_shelf": "RePar",
             "tooltip": "Reparent the selection under the last selected node.",
             "command": [

@@ -50,7 +50,7 @@
             ]
         },
         "navigate_root_frame_prev": {
-            "name": "Prev Root Frame",
+            "name": "Previous Root Frame",
             "name_shelf": "",
             "icon_shelf": "timeprev.png",
             "tooltip": "Jump to the previous root frame.",

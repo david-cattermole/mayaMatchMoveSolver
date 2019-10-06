@@ -29,3 +29,37 @@ performance of the test suite greatly.
 
 For more information about testing, see the Testing section in
 [DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
+
+# Run Test Suite inside Maya GUI
+
+You may also wish to run the test suite inside the Maya GUI.
+You can do this using the following snippet executed inside the 
+Maya Script Editor.
+
+```python
+import sys
+import os
+dev_path = 'C:/Users/user/dev/mayaMatchMoveSolver/'
+runTest_path = os.path.join(dev_path, 'tests')
+if runTest_path not in sys.path:
+    sys.path.append(runTest_path)
+
+import runTests
+
+# reload the module you are testing
+import test.test_api.test_solve as mod
+reload(mod)
+
+path_list = []
+# # Uncomment to run tests from test_solve.py only.
+# path_list.append(os.path.join(dev_path, 'tests/test/test_api/test_solve.py'))
+runTests.main(path_list)
+```
+
+# Caveats
+
+Some Maya versions work with the test suite and others fail to 
+run in the 'mayapy' executable. For an unknown reason Maya 2018 fails
+to run tests with the 'mayapy' executable. This problem is being 
+investigated, any hints, solutions or Pull Requests are appreciated to
+improve and fix the build system for mmSolver.

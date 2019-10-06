@@ -296,7 +296,7 @@ def get_camera_above_node(node):
     :type node: str or unicode
 
     :return: Tuple of camera transform and shape nodes, or (None, None)
-    :rtype: tuple
+    :rtype: (str, str) or (None, None)
     """
     # TODO: This function may be called many times, we should look into
     # caching some of this computation.
@@ -320,6 +320,26 @@ def get_camera_above_node(node):
             break
         dag.pop(1)
     return cam_tfm, cam_shp
+
+
+def get_all_parent_nodes(node):
+    """
+    Get the parent nodes above the given node.
+
+    :param node: The node name to get the parents of.
+    :type node: str
+
+    :return: List of parent nodes, in order of deepest to shallowest.
+             Nodes unparented into world will have empty lists returned.
+    :rtype: [str, ..]
+    """
+    nodes = []
+    dag = get_as_dag_path(node)
+    while dag.length() != 0:
+        dag.pop(1)
+        node_name = dag.fullPathName()
+        nodes.append(node_name)
+    return nodes
 
 
 def get_node_wire_colour_rgb(node):

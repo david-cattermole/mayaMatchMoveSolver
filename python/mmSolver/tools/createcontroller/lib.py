@@ -23,7 +23,12 @@ Ideas::
   - Have a flag to allow maintaining the relative hierarchy of the
     input transforms.
 
+.. note:: If no keyframes are set, this tool works on the current
+   frame and adds a keyframe to the controller.
+
 """
+
+import collections
 
 import maya.cmds
 
@@ -141,16 +146,102 @@ def _create_constraint(src_node, dst_node):
     return
 
 
-def create(nodes, sparse=True):
-    tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
 
-    # Force into long-names.
-    nodes = [n.get_node() for n in tfm_nodes]
-
-    # Ensure node attributes are editable.
-    keyable_attrs = set()
+def _sort_by_hierarchy(nodes, children_first=False):
+    """
+    Sort the nodes by hierarchy depth; level 0 first, 1 second,
+    until 'n'.
+    """
+    assert isinstance(nodes, (list, set, tuple))
+    depth_to_node_map = collections.defaultdict(list)
     for node in nodes:
-        keyable_attrs |= _get_keyable_attrs(node, const.TFM_ATTRS)
+        assert isinstance(node, basestring)
+        depth = node.count('|')
+        depth_to_node_map[depth].append(node)
+    nodes = []
+    depths = sorted(depth_to_node_map.keys())
+    if children_first is True:
+        depths = reversed(depths)
+    for depth in depths:
+        node_list = depth_to_node_map.get(depth)
+        assert len(node_list) > 0
+        nodes += sorted(node_list)
+    return nodes
+
+
+def _sort_hierarchy_depth_to_nodes(nodes):
+    depth_to_node_map = collections.defaultdict(set)
+    for node in nodes:
+        depth = node.count('|')
+        depth_to_node_map[depth].add(node)
+    return depth_to_node_map
+
+
+def _sort_hierarchy_depth_to_tfm_nodes(tfm_nodes):
+    depth_to_tfm_node_map = collections.defaultdict(set)
+    for tfm_node in tfm_nodes:
+        depth = tfm_node.get_node().count('|')
+        depth_to_tfm_node_map[depth].add(tfm_node)
+    return depth_to_tfm_node_map
+
+
+def _get_node_parent_map(nodes):
+    """
+    For each transform node, get the parent transform above it. If no
+    parent node exists, get the parent should be None (ie, world or
+    root).
+    """
+    nodes_parent = {}
+    for node in nodes:
+        parent = None
+        parents = node_utils.get_all_parent_nodes(node)
+        parents = list(reversed(parents))
+        while len(parents) != 0:
+            p = parents.pop()
+            if p in nodes:
+                parent = p
+                break
+        nodes_parent[node] = parent
+    assert len(nodes_parent) == len(nodes)
+    return nodes_parent
+
+
+def create(nodes,
+           sparse=True,
+           current_frame=None,
+           eval_mode=None):
+    """
+    Create controllers for each given node.
+
+    If the node has no keyframes on the attributes, keyframe
+    the attributes on the current frame number (or allow the user
+    to specify the frame). This will make the tool more predicable
+    for the user.
+
+    .. todo:: Copy animation curve pre/post infinity values to new
+       animation curves.
+
+    :param nodes: The nodes to operate on.
+    :type nodes: [str, ..]
+
+    :param current_frame: What frame number is considered to be
+                          'current' when evaluating transforms without
+                          any keyframes.
+    :type current_frame: float or int
+
+    :param eval_mode: What type of transform evaluation method to use?
+    :type eval_mode: mmSolver.utils.constant.EVAL_MODE_*
+
+    :returns: List of created controller transform nodes.
+    :rtype: [str, ..]
+    """
+    if current_frame is None:
+        current_frame = maya.cmds.currentTime(query=True)
+    assert current_frame is not None
+
+    tfm_nodes = [tfm_utils.TransformNode(node=n)
+                 for n in nodes]
+    nodes = [n.get_node() for n in tfm_nodes]
 
     # Query keyframe times on each node attribute
     start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
@@ -160,39 +251,64 @@ def create(nodes, sparse=True):
     fallback_frame_range = keytime_obj.sum_frame_range_for_nodes(nodes)
     fallback_times = list(range(fallback_frame_range[0],
                                 fallback_frame_range[1]+1))
+    key_times_map = time_utils.get_keyframe_times_for_node_attrs(
+        nodes,
+        const.TFM_ATTRS
+    )
 
     # Query the transform matrix for the nodes
     cache = tfm_utils.TransformMatrixCache()
     for tfm_node in tfm_nodes:
         node = tfm_node.get_node()
         times = keytime_obj.get_times(node, sparse) or fallback_times
+        times = key_times_map.get(node, [current_frame])
         cache.add_node(tfm_node, times)
-    cache.process()
+    cache.process(eval_mode=eval_mode)
+
+    depth_to_tfm_node_map = _sort_hierarchy_depth_to_tfm_nodes(tfm_nodes)
+    nodes_parent = _get_node_parent_map(nodes)
 
     # Create new (locator) node for each input node
     ctrl_list = []
-    for tfm_node in tfm_nodes:
-        node = tfm_node.get_node()
-        name = node.rpartition('|')[-1]
-        assert '|' not in name
-        name = name.replace(':', '_')
-        name = name + '_CTRL'
-        name = mmapi.find_valid_maya_node_name(name)
-        # TODO: Allow maintaining relative hierarchy of nodes.
-        tfm = maya.cmds.createNode('transform', name=name)
-        maya.cmds.createNode('locator', parent=tfm)
-        rot_order = maya.cmds.xform(node, query=True, rotateOrder=True)
-        maya.cmds.xform(tfm, rotateOrder=rot_order, preserve=True)
-        ctrl_list.append(tfm)
+    node_to_ctrl_map = {}
+    depths = sorted(depth_to_tfm_node_map.keys())
+    for depth in depths:
+        depth_tfm_nodes = depth_to_tfm_node_map.get(depth)
+        assert depth_tfm_nodes is not None
+        for tfm_node in depth_tfm_nodes:
+            node = tfm_node.get_node()
+            node_parent = nodes_parent.get(node)
+            if node_parent is not None:
+                node_parent = node_to_ctrl_map.get(node_parent)
+            name = node.rpartition('|')[-1]
+            assert '|' not in name
+            name = name.replace(':', '_')
+            name = name + '_CTRL'
+            name = mmapi.find_valid_maya_node_name(name)
+            tfm = maya.cmds.createNode(
+                'transform',
+                name=name,
+                parent=node_parent)
+            tfm = node_utils.get_long_name(tfm)
+            maya.cmds.createNode('locator', parent=tfm)
+            rot_order = maya.cmds.xform(node, query=True, rotateOrder=True)
+            maya.cmds.xform(tfm, rotateOrder=rot_order, preserve=True)
+            ctrl_list.append(tfm)
+            node_to_ctrl_map[node] = tfm
     ctrl_tfm_nodes = [tfm_utils.TransformNode(node=tfm)
                       for tfm in ctrl_list]
 
     # Set transform matrix on new node
+    anim_curves = []
     for src, dst in zip(tfm_nodes, ctrl_tfm_nodes):
         src_node = src.get_node()
-        times = keytime_obj.get_times(src_node, sparse) or fallback_times
+        # times = keytime_obj.get_times(src_node, sparse) or fallback_times
+        src_times = key_times_map.get(src_node, [current_frame])
+        assert len(src_times) > 0
         tfm_utils.set_transform_values(
-            cache, times, src, dst,
+            cache,
+            src_times,
+            src, dst,
             delete_static_anim_curves=False
         )
         if sparse is True:
@@ -209,8 +325,26 @@ def create(nodes, sparse=True):
                     time=time_range,
                     clear=True
                 )
+        src_had_keys = key_times_map.get(src_node) is not None
+        if src_had_keys is True:
+            continue
+        # Maintain that destination node will not have keyframes now, the
+        # same as the source node.
+        dst_node = dst.get_node()
+        keyable_attrs = _get_keyable_attrs(dst_node, const.TFM_ATTRS)
+        anim_curves += anim_utils.get_anim_curves_from_nodes(
+            list(keyable_attrs),
+        )
+    anim_curves = [n for n in anim_curves
+                   if node_utils.node_is_referenced(n) is False]
+    if len(anim_curves) > 0:
+        maya.cmds.delete(anim_curves)
 
     # Delete all keyframes on controlled nodes
+    keyable_attrs = set()
+    for tfm_node in tfm_nodes:
+        node = tfm_node.get_node()
+        keyable_attrs |= _get_keyable_attrs(node, const.TFM_ATTRS)
     anim_curves = anim_utils.get_anim_curves_from_nodes(
         list(keyable_attrs),
     )
@@ -227,24 +361,52 @@ def create(nodes, sparse=True):
     return ctrl_list
 
 
-def remove(nodes, sparse=True):
+def remove(nodes,
+           sparse=True,
+           current_frame=None,
+           eval_mode=None):
     """
     Remove a controller and push the animation back to the controlled
     object.
 
-    .. todo:: What should we do with any transforms parented under the
-    controller? Should these objects be re-parented under the
-    controlled object? Probably yes.
+    Order the nodes to remove by hierarchy depth. This means that
+    children will be removed first, then parents, this ensures we
+    don't delete a controller accidentally when a parent controller is
+    deleted first.
 
+    :param nodes: The nodes to delete.
+    :type nodes: [str, ..]
+
+    :param current_frame: What frame number is considered to be
+                          'current' when evaluating transforms without
+                          any keyframes.
+    :type current_frame: float or int
+
+    :param eval_mode: What type of transform evaluation method to use?
+    :type eval_mode: mmSolver.utils.constant.EVAL_MODE_*
+
+    :returns: List of once controlled transform nodes, that are no
+              longer controlled.
+    :rtype: [str, ..]
     """
+    if current_frame is None:
+        current_frame = maya.cmds.currentTime(query=True)
+    assert current_frame is not None
+
+    nodes = _sort_by_hierarchy(nodes, children_first=True)
+    tfm_nodes = [tfm_utils.TransformNode(node=n)
+                 for n in nodes]
+
     # Find controlled nodes from controller nodes
     ctrl_to_ctrlled_map = {}
-    for ctrl_node in nodes:
-        constraints = _get_constraints_from_ctrls(ctrl_node)
+    for tfm_node in tfm_nodes:
+        node = tfm_node.get_node()
+        constraints = _get_constraints_from_ctrls(node)
         dests = _get_destination_nodes_from_ctrls(constraints)
         if len(dests) == 0:
             continue
-        ctrl_to_ctrlled_map[ctrl_node] = (constraints, dests)
+        dests = _sort_by_hierarchy(dests, children_first=True)
+        ctrl_to_ctrlled_map[node] = (constraints, dests)
 
     # Query keyframe times on controller nodes.
     start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
@@ -260,21 +422,35 @@ def remove(nodes, sparse=True):
     for ctrl_node, (constraints, dest_nodes) in ctrl_to_ctrlled_map.items():
         times = keytime_obj.get_times(ctrl_node, sparse) or fallback_times
         ctrl = tfm_utils.TransformNode(node=ctrl_node)
+
+    # Query keyframe times on each node attribute
+    key_times_map = time_utils.get_keyframe_times_for_node_attrs(
+        nodes,
+        const.TFM_ATTRS
+    )
+
+    # Query transform matrix on controlled nodes.
+    cache = tfm_utils.TransformMatrixCache()
+    for src_node, (constraints, dst_nodes) in ctrl_to_ctrlled_map.items():
+        times = key_times_map.get(src_node, [current_frame])
+        assert len(times) > 0
+        ctrl = tfm_utils.TransformNode(node=src_node)
         cache.add_node(ctrl, times)
-        for dest_node in dest_nodes:
-            dest = tfm_utils.TransformNode(node=dest_node)
-            cache.add_node(dest, times)
-    cache.process()
+        for dst_node in dst_nodes:
+            dst = tfm_utils.TransformNode(node=dst_node)
+            cache.add_node(dst, times)
+    cache.process(eval_mode=eval_mode)
 
     # Get Controlled nodes
     ctrlled_nodes = set()
-    for ctrl_node, (_, dest_nodes) in ctrl_to_ctrlled_map.items():
-        for dest_node in dest_nodes:
-            ctrlled_nodes.add(dest_node)
+    for src_node, (_, dst_nodes) in ctrl_to_ctrlled_map.items():
+        for dst_node in dst_nodes:
+            ctrlled_nodes.add(dst_node)
 
     # Delete constraints on controlled nodes.
     const_nodes = set()
-    for ctrl_node, (constraints, _) in ctrl_to_ctrlled_map.items():
+    for src_node, (constraints, _) in ctrl_to_ctrlled_map.items():
+        assert src_node not in constraints
         const_nodes |= constraints
     if len(const_nodes) > 0:
         maya.cmds.delete(list(const_nodes))
@@ -288,19 +464,58 @@ def remove(nodes, sparse=True):
             tfm_utils.set_transform_values(cache, times, ctrl, ctrlled,
                                            delete_static_anim_curves=False)
 
+    parent_nodes = []
+    anim_curves = []
+    for src_node, (_, dst_nodes) in ctrl_to_ctrlled_map.items():
+        src_times = key_times_map.get(src_node, [current_frame])
+        assert len(src_times) > 0
+        ctrl = tfm_utils.TransformNode(node=src_node)
+        for dst_node in dst_nodes:
+            dst = tfm_utils.TransformNode(node=dst_node)
+            tfm_utils.set_transform_values(
+                cache, src_times, ctrl, dst,
+                delete_static_anim_curves=False
+            )
+
             # Re-parent controller child nodes under controlled node.
             ctrl_children = maya.cmds.listRelatives(
-                ctrl_node,
+                src_node,
                 children=True,
                 shapes=False,
                 fullPath=True,
                 type='transform',
             ) or []
             for child_node in ctrl_children:
-                maya.cmds.parent(child_node, ctrlled_node, absolute=True)
+                if child_node in nodes:
+                    continue
+                child = tfm_utils.TransformNode(node=child_node)
+                parent_nodes.append((child, dst))
+
+            src_had_keys = key_times_map.get(src_node) is not None
+            if src_had_keys is True:
+                continue
+            # Maintain that destination node will not have keyframes now, the
+            # same as the source node.
+            dst_node = dst.get_node()
+            keyable_attrs = _get_keyable_attrs(dst_node, const.TFM_ATTRS)
+            anim_curves += anim_utils.get_anim_curves_from_nodes(
+                list(keyable_attrs),
+            )
+
+    # Reparent children back to under the controlled.
+    for src, dst in parent_nodes:
+        src_node = src.get_node()
+        dst_node = dst.get_node()
+        maya.cmds.parent(src_node, dst_node, absolute=True)
+
+    # Remove animation curves.
+    anim_curves = [n for n in anim_curves
+                   if node_utils.node_is_referenced(n) is False]
+    if len(anim_curves) > 0:
+        maya.cmds.delete(anim_curves)
 
     # Delete controller nodes
-    ctrl_nodes = ctrl_to_ctrlled_map.keys()
+    ctrl_nodes = [n.get_node() for n in tfm_nodes]
     if len(ctrl_nodes) > 0:
         maya.cmds.delete(ctrl_nodes)
     return list(ctrlled_nodes)

@@ -154,7 +154,7 @@ def get_world_matrix_apitwo(node, ctx):
 
 def detect_rotate_pivot_non_zero(tfm_node):
     """
-    Given a TransformNode, determine if the node has a non-zero rotate 
+    Given a TransformNode, determine if the node has a non-zero rotate
     pivot.
 
     :rtype: bool
@@ -164,7 +164,7 @@ def detect_rotate_pivot_non_zero(tfm_node):
     plug = node + '.rotatePivot'
     rp = maya.cmds.getAttr(plug)[0]
     rp = [abs(v) for v in rp]
-    return sum(rp) > 0
+    return sum(rp) > 0.
 
 
 class TransformNode(object):
@@ -373,7 +373,7 @@ class TransformMatrixCache(object):
         """
         uuid = tfm_node
         if isinstance(tfm_node, TransformNode):
-            uuid = tfm_node.get_node_uuid()        
+            uuid = tfm_node.get_node_uuid()
         if uuid not in self._data:
             self._data[uuid] = dict()
         if attr_name not in self._data[uuid]:

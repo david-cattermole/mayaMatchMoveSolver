@@ -34,27 +34,11 @@ import mmSolver.utils.time as time_utils
 import mmSolver.utils.animcurve as anim_utils
 import mmSolver.utils.transform as tfm_utils
 import mmSolver.tools.reparent.keytimeutils as keytime_utils
+import mmSolver.tools.createcontroller.constant as const
 
 import mmSolver.api as mmapi
 
 LOG = mmSolver.logger.get_logger()
-
-TRANSLATE_ATTRS = [
-    'translateX', 'translateY', 'translateZ'
-]
-
-ROTATE_ATTRS = [
-    'rotateX', 'rotateY', 'rotateZ'
-]
-
-SCALE_ATTRS = [
-    'scaleX', 'scaleY', 'scaleZ'
-]
-
-TFM_ATTRS = []
-TFM_ATTRS += TRANSLATE_ATTRS
-TFM_ATTRS += ROTATE_ATTRS
-TFM_ATTRS += SCALE_ATTRS
 
 
 def _get_keyable_attrs(node, attrs):
@@ -96,6 +80,7 @@ def _get_constraints_from_ctrls(input_node):
     if len(constraints) == 0:
         LOG.warn('node is not controlling anything: %r', input_node)
         return set()
+    assert input_node not in constraints
     return constraints
 
 
@@ -120,22 +105,33 @@ def _get_destination_nodes_from_ctrls(constraints):
 
 
 def _create_constraint(src_node, dst_node):
+    """
+    Create constraint from source node to destination node.
+
+    :param src_node: Constrain from this node.
+    :type src_node: stc
+
+    :param dst_node: Control this node with constraint nodes.
+    :type dst_node: str
+
+    :rtype: None
+    """
     constraints = []
-    skip = _get_skip_attrs(src_node, TRANSLATE_ATTRS)
+    skip = _get_skip_attrs(src_node, const.TRANSLATE_ATTRS)
     if len(skip) != 3:
         constraints += maya.cmds.pointConstraint(
             dst_node,
             src_node,
             skip=tuple(skip)
         )
-    skip = _get_skip_attrs(src_node, ROTATE_ATTRS)
+    skip = _get_skip_attrs(src_node, const.ROTATE_ATTRS)
     if len(skip) != 3:
         constraints += maya.cmds.orientConstraint(
             dst_node,
             src_node,
             skip=tuple(skip)
         )
-    skip = _get_skip_attrs(src_node, SCALE_ATTRS)
+    skip = _get_skip_attrs(src_node, const.SCALE_ATTRS)
     if len(skip) != 3:
         constraints += maya.cmds.scaleConstraint(
             dst_node,
@@ -154,13 +150,13 @@ def create(nodes, sparse=True):
     # Ensure node attributes are editable.
     keyable_attrs = set()
     for node in nodes:
-        keyable_attrs |= _get_keyable_attrs(node, TFM_ATTRS)
+        keyable_attrs |= _get_keyable_attrs(node, const.TFM_ATTRS)
 
     # Query keyframe times on each node attribute
     start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
     keytime_obj = keytime_utils.KeyframeTimes()
     for node in nodes:
-        keytime_obj.add_node_attrs(node, TFM_ATTRS, start_frame, end_frame)
+        keytime_obj.add_node_attrs(node, const.TFM_ATTRS, start_frame, end_frame)
     fallback_frame_range = keytime_obj.sum_frame_range_for_nodes(nodes)
     fallback_times = list(range(fallback_frame_range[0],
                                 fallback_frame_range[1]+1))
@@ -209,7 +205,7 @@ def create(nodes, sparse=True):
                 assert time_range[1] is not None
                 maya.cmds.cutKey(
                     dst_node,
-                    attribute=TFM_ATTRS,
+                    attribute=const.TFM_ATTRS,
                     time=time_range,
                     clear=True
                 )
@@ -254,7 +250,7 @@ def remove(nodes, sparse=True):
     start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
     keytime_obj = keytime_utils.KeyframeTimes()
     for node in nodes:
-        keytime_obj.add_node_attrs(node, TFM_ATTRS, start_frame, end_frame)
+        keytime_obj.add_node_attrs(node, const.TFM_ATTRS, start_frame, end_frame)
     fallback_frame_range = keytime_obj.sum_frame_range_for_nodes(nodes)
     fallback_times = list(range(fallback_frame_range[0],
                                 fallback_frame_range[1]+1))

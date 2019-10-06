@@ -65,7 +65,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139699802629840'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139699802629840'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='139699802629968'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139669209544400'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139669209544400'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='139669209544528'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1259,6 +1259,23 @@ smoothing. 1.0 or below has no effect.</li>
 <div class="section" id="module-mmSolver.utils.time">
 <span id="time"></span><h2>Time<a class="headerlink" href="#module-mmSolver.utils.time" title="Permalink to this headline">¶</a></h2>
 <p>Time related utilities.</p>
+<dl class="class">
+<dt id="mmSolver.utils.time.FrameRange">
+<em class="property">class </em><code class="descclassname">mmSolver.utils.time.</code><code class="descname">FrameRange</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.time.FrameRange" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="mmSolver.utils.time.FrameRange.end">
+<code class="descname">end</code><a class="headerlink" href="#mmSolver.utils.time.FrameRange.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.time.FrameRange.start">
+<code class="descname">start</code><a class="headerlink" href="#mmSolver.utils.time.FrameRange.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="function">
 <dt id="mmSolver.utils.time.get_maya_timeline_range_inner">
 <code class="descclassname">mmSolver.utils.time.</code><code class="descname">get_maya_timeline_range_inner</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.time.get_maya_timeline_range_inner" title="Permalink to this definition">¶</a></dt>
@@ -1267,9 +1284,9 @@ smoothing. 1.0 or below has no effect.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">start frame and end frame as tuple.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Start frame and end frame as FrameRange tuple.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int, int</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(int, int)</td>
 </tr>
 </tbody>
 </table>
@@ -1283,9 +1300,9 @@ smoothing. 1.0 or below has no effect.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">start frame and end frame as tuple.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Start frame and end frame as FrameRange tuple.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int, int</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(int, int)</td>
 </tr>
 </tbody>
 </table>
@@ -1413,7 +1430,7 @@ given DG Context.</p>
 <dl class="function">
 <dt id="mmSolver.utils.transform.detect_rotate_pivot_non_zero">
 <code class="descclassname">mmSolver.utils.transform.</code><code class="descname">detect_rotate_pivot_non_zero</code><span class="sig-paren">(</span><em>tfm_node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.detect_rotate_pivot_non_zero" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a TransformNode, determine if the node has a non-zero rotate 
+<dd><p>Given a TransformNode, determine if the node has a non-zero rotate
 pivot.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

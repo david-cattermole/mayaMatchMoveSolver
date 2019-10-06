@@ -296,7 +296,7 @@ def get_camera_above_node(node):
     :type node: str or unicode
 
     :return: Tuple of camera transform and shape nodes, or (None, None)
-    :rtype: tuple
+    :rtype: (str, str) or (None, None)
     """
     # TODO: This function may be called many times, we should look into
     # caching some of this computation.

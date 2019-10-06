@@ -23,7 +23,12 @@ Ideas::
   - Have a flag to allow maintaining the relative hierarchy of the
     input transforms.
 
+.. note:: If no keyframes are set, this tool works on the current
+   frame and adds a keyframe to the controller.
+
 """
+
+import collections
 
 import maya.cmds
 
@@ -141,6 +146,65 @@ def _create_constraint(src_node, dst_node):
     return
 
 
+def _sort_by_hierarchy(nodes, children_first=False):
+    """
+    Sort the nodes by hierarchy depth; level 0 first, 1 second,
+    until 'n'.
+    """
+    assert isinstance(nodes, (list, set, tuple))
+    depth_to_node_map = collections.defaultdict(list)
+    for node in nodes:
+        assert isinstance(node, basestring)
+        depth = node.count('|')
+        depth_to_node_map[depth].append(node)
+    nodes = []
+    depths = sorted(depth_to_node_map.keys())
+    if children_first is True:
+        depths = reversed(depths)
+    for depth in depths:
+        node_list = depth_to_node_map.get(depth)
+        assert len(node_list) > 0
+        nodes += sorted(node_list)
+    return nodes
+
+
+def _sort_hierarchy_depth_to_nodes(nodes):
+    depth_to_node_map = collections.defaultdict(set)
+    for node in nodes:
+        depth = node.count('|')
+        depth_to_node_map[depth].add(node)
+    return depth_to_node_map
+
+
+def _sort_hierarchy_depth_to_tfm_nodes(tfm_nodes):
+    depth_to_tfm_node_map = collections.defaultdict(set)
+    for tfm_node in tfm_nodes:
+        depth = tfm_node.get_node().count('|')
+        depth_to_tfm_node_map[depth].add(tfm_node)
+    return depth_to_tfm_node_map
+
+
+def _get_node_parent_map(nodes):
+    """
+    For each transform node, get the parent transform above it. If no
+    parent node exists, get the parent should be None (ie, world or
+    root).
+    """
+    nodes_parent = {}
+    for node in nodes:
+        parent = None
+        parents = node_utils.get_all_parent_nodes(node)
+        parents = list(reversed(parents))
+        while len(parents) != 0:
+            p = parents.pop()
+            if p in nodes:
+                parent = p
+                break
+        nodes_parent[node] = parent
+    assert len(nodes_parent) == len(nodes)
+    return nodes_parent
+
+
 def create(nodes, sparse=True):
     tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
 
@@ -168,6 +232,14 @@ def create(nodes, sparse=True):
         times = keytime_obj.get_times(node, sparse) or fallback_times
         cache.add_node(tfm_node, times)
     cache.process()
+
+    # depth_to_tfm_node_map = _sort_hierarchy_depth_to_tfm_nodes(tfm_nodes)
+    # nodes_parent = _get_node_parent_map(nodes)
+    # node_to_ctrl_map = {}
+    # depths = sorted(depth_to_tfm_node_map.keys())
+    # for depth in depths:
+    #     depth_tfm_nodes = depth_to_tfm_node_map.get(depth)
+    #     assert depth_tfm_nodes is not None
 
     # Create new (locator) node for each input node
     ctrl_list = []
@@ -227,7 +299,7 @@ def create(nodes, sparse=True):
     return ctrl_list
 
 
-def remove(nodes, sparse=True):
+def remove(nodes, sparse=True, current_frame=None):
     """
     Remove a controller and push the animation back to the controlled
     object.
@@ -236,7 +308,34 @@ def remove(nodes, sparse=True):
     controller? Should these objects be re-parented under the
     controlled object? Probably yes.
 
+    Order the nodes to remove by hierarchy depth. This means that
+    children will be removed first, then parents, this ensures we
+    don't delete a controller accidentally when a parent controller is
+    deleted first.
+
+    :param nodes: The nodes to delete.
+    :type nodes: [str, ..]
+
+    :param current_frame: What frame number is considered to be
+                          'current' when evaluating transforms without
+                          any keyframes.
+    :type current_frame: float or int
+
+    :param eval_mode: What type of transform evaluation method to use?
+    :type eval_mode: mmSolver.utils.constant.EVAL_MODE_*
+
+    :returns: List of once controlled transform nodes, that are no
+              longer controlled.
+    :rtype: [str, ..]
     """
+    # if current_frame is None:
+    #     current_frame = maya.cmds.currentTime(query=True)
+    # assert current_frame is not None
+    #
+    # nodes = _sort_by_hierarchy(nodes, children_first=True)
+    # tfm_nodes = [tfm_utils.TransformNode(node=n)
+    #              for n in nodes]
+
     # Find controlled nodes from controller nodes
     ctrl_to_ctrlled_map = {}
     for ctrl_node in nodes:

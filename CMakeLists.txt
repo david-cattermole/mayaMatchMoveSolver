@@ -540,7 +540,7 @@ endif ()
 
 # Use CPack (part of CMake) to generate the packages...
 # If 'CPack' is not included, the 'packages' target will not be generated.
-# include(CPack)
+include(CPack)
 
 if (BUILD_PYTHON)
     add_subdirectory(python)

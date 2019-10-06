@@ -456,7 +456,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     }
     m_tau = std::max(0.0, m_tau);
     m_tau = std::min(m_tau, 1.0);
-    assert(0.0 < m_tau < 1.0);
+    assert((0.0 <= m_tau) <= 1.0);
 
     // Get 'Epsilon1'
     if (argData.isFlagSet(EPSILON1_FLAG)) {

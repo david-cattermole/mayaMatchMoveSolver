@@ -668,7 +668,6 @@ double parameterBoundFromExternalToInternal(double value,
                 value,
                 initial_xmin, initial_xmax,
                 offset, scale);
-        assert(initial_value == reconvert_value);
         return value;
     }
     else if (xmax >= float_max) {
@@ -687,7 +686,6 @@ double parameterBoundFromExternalToInternal(double value,
             value,
             initial_xmin, initial_xmax,
             offset, scale);
-    assert(initial_value == reconvert_value);
     return value;
 }
 

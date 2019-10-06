@@ -90,11 +90,15 @@ def place_marker():
 
     # Set the marker position
     for mkr in mkr_list:
+        mkr_grp = mkr.get_marker_group()
+        mkr_grp_node = mkr_grp.get_node()
+        plug_overscan = mkr_grp_node + '.overscan'
+        overscan = maya.cmds.getAttr(plug_overscan)
         node = mkr.get_node()
         plug_tx = node + '.translateX'
         plug_ty = node + '.translateY'
-        value_tx = coord[0]
-        value_ty = coord[1]
+        value_tx = coord[0] * overscan
+        value_ty = coord[1] * overscan
         lock_tx = maya.cmds.getAttr(plug_tx, lock=True)
         lock_ty = maya.cmds.getAttr(plug_tx, lock=True)
         if lock_tx is False and lock_ty is False:

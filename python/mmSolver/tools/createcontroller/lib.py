@@ -146,7 +146,6 @@ def _create_constraint(src_node, dst_node):
     return
 
 
-
 def _sort_by_hierarchy(nodes, children_first=False):
     """
     Sort the nodes by hierarchy depth; level 0 first, 1 second,
@@ -206,42 +205,16 @@ def _get_node_parent_map(nodes):
     return nodes_parent
 
 
-def create(nodes,
-           sparse=True,
-           current_frame=None,
-           eval_mode=None):
-    """
-    Create controllers for each given node.
+def create(nodes, sparse=True):
+    tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
 
-    If the node has no keyframes on the attributes, keyframe
-    the attributes on the current frame number (or allow the user
-    to specify the frame). This will make the tool more predicable
-    for the user.
-
-    .. todo:: Copy animation curve pre/post infinity values to new
-       animation curves.
-
-    :param nodes: The nodes to operate on.
-    :type nodes: [str, ..]
-
-    :param current_frame: What frame number is considered to be
-                          'current' when evaluating transforms without
-                          any keyframes.
-    :type current_frame: float or int
-
-    :param eval_mode: What type of transform evaluation method to use?
-    :type eval_mode: mmSolver.utils.constant.EVAL_MODE_*
-
-    :returns: List of created controller transform nodes.
-    :rtype: [str, ..]
-    """
-    if current_frame is None:
-        current_frame = maya.cmds.currentTime(query=True)
-    assert current_frame is not None
-
-    tfm_nodes = [tfm_utils.TransformNode(node=n)
-                 for n in nodes]
+    # Force into long-names.
     nodes = [n.get_node() for n in tfm_nodes]
+
+    # Ensure node attributes are editable.
+    keyable_attrs = set()
+    for node in nodes:
+        keyable_attrs |= _get_keyable_attrs(node, const.TFM_ATTRS)
 
     # Query keyframe times on each node attribute
     start_frame, end_frame = time_utils.get_maya_timeline_range_outer()

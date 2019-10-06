@@ -402,6 +402,24 @@
                 "mmSolver.tools.createcontroller.tool.remove();"
             ]
         },
+        "parent_transforms": {
+            "name": "Parent Transforms",
+            "name_shelf": "Prnt",
+            "tooltip": "Create Controller for selected nodes.",
+            "command": [
+                "import mmSolver.tools.parenttransform.tool;",
+                "mmSolver.tools.parenttransform.tool.parent();"
+            ]
+        },
+        "unparent_transforms": {
+            "name": "Unparent Transforms",
+            "name_shelf": "UnPrnt",
+            "tooltip": "Unparent the selected nodes to world.",
+            "command": [
+                "import mmSolver.tools.parenttransform.tool;",
+                "mmSolver.tools.parenttransform.tool.unparent();"
+            ]
+        },
         "deform_marker": {
             "name": "Deform Marker",
             "name_shelf": "MkrOff",

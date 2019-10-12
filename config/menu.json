@@ -47,6 +47,7 @@
             "general_tools/smooth_keyframes_ui",
             "general_tools/screen_z_transform_bake",
             "general_tools/channel_sensitivity_ui",
+            "general_tools/copy_camera_to_clipboard",
             "general_tools/---Parenting",
             "general_tools/reparent_under_node",
             "general_tools/unparent_to_world",

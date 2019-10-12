@@ -82,3 +82,30 @@ def is_not_startup_cam(node):
     :rtype: bool
     """
     return is_startup_cam(node) is False
+
+
+def get_image_plane_shapes_from_camera(cam_tfm, cam_shp):
+    """
+    Get the list of image plane shape nodes connected to the given camera.
+
+    :param cam_tfm: Camera transform node.
+    :type cam_tfm: str
+
+    :param cam_shp: Camera shape node.
+    :type cam_shp: str
+
+    :returns: The list of image shape nodes, may be an empty list.
+    :rtype: [str, ..]
+    """
+    assert isinstance(cam_tfm, (str, unicode, basestring))
+    assert len(cam_tfm) > 0
+    assert maya.cmds.objExists(cam_tfm)
+    assert isinstance(cam_shp, (str, unicode, basestring))
+    assert len(cam_shp) > 0
+    assert maya.cmds.objExists(cam_shp)
+    assert node_utils.attribute_exists('imagePlane', cam_shp)
+    plug = '{0}.imagePlane'.format(cam_shp)
+    img_pl_shps = maya.cmds.listConnections(plug, type='imagePlane') or []
+    img_pl_shps = [node_utils.get_long_name(n) for n in img_pl_shps]
+    img_pl_shps = [n for n in img_pl_shps if n is not None]
+    return img_pl_shps

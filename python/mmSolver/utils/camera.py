@@ -53,12 +53,17 @@ def get_camera(node):
         nodes = maya.cmds.listRelatives(
             cam_tfm,
             shapes=True,
+            type='camera',
             fullPath=True
         ) or []
-        cam_shp = nodes[0]
+        if len(nodes) > 0:
+            cam_shp = nodes[0]
+        else:
+            cam_tfm = None
+            cam_shp = None
     else:
         msg = 'Node type not recognised as a camera! node_type=%r'
-        LOG.error(msg, node_type)
+        LOG.warn(msg, node_type)
     return cam_tfm, cam_shp
 
 

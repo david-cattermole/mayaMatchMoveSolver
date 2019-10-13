@@ -21,6 +21,7 @@ Provides a base interface for marker import plug-ins.
 
 import sys
 import abc
+import collections
 
 
 class ParserWarning(Warning):
@@ -254,6 +255,12 @@ class MarkerData(object):
         self._y = KeyframeData()
         self._enable = KeyframeData()
         self._weight = KeyframeData()
+        self._bnd_x = None
+        self._bnd_y = None
+        self._bnd_y = None
+        self._bnd_lock_x = None
+        self._bnd_lock_y = None
+        self._bnd_lock_y = None
 
     def get_name(self):
         return self._name
@@ -281,10 +288,10 @@ class MarkerData(object):
 
     def get_x(self):
         return self._x
-    
+
     def set_x(self, value):
         self._x = value
-    
+
     def get_y(self):
         return self._y
 
@@ -303,6 +310,42 @@ class MarkerData(object):
     def set_weight(self, value):
         self._weight = value
 
+    def get_bundle_x(self):
+        return self._bnd_x
+
+    def set_bundle_x(self, value):
+        self._bnd_x = value
+
+    def get_bundle_y(self):
+        return self._bnd_y
+
+    def set_bundle_y(self, value):
+        self._bnd_y = value
+
+    def get_bundle_z(self):
+        return self._bnd_z
+
+    def set_bundle_z(self, value):
+        self._bnd_z = value
+
+    def get_bundle_lock_x(self):
+        return self._bnd_lock_x
+
+    def set_bundle_lock_x(self, value):
+        self._bnd_lock_x = value
+
+    def get_bundle_lock_y(self):
+        return self._bnd_lock_y
+
+    def set_bundle_lock_y(self, value):
+        self._bnd_lock_y = value
+
+    def get_bundle_lock_z(self):
+        return self._bnd_lock_z
+
+    def set_bundle_lock_z(self, value):
+        self._bnd_lock_z = value
+
     name = property(get_name, set_name)
     id = property(get_id, set_id)
     x = property(get_x, set_x)
@@ -311,6 +354,39 @@ class MarkerData(object):
     weight = property(get_weight, set_weight)
     group_name = property(get_group_name, set_group_name)
     color = property(get_color, set_color)
+    bundle_x = property(get_bundle_x, set_bundle_x)
+    bundle_y = property(get_bundle_y, set_bundle_y)
+    bundle_z = property(get_bundle_z, set_bundle_z)
+    bundle_lock_x = property(get_bundle_lock_x, set_bundle_lock_x)
+    bundle_lock_y = property(get_bundle_lock_y, set_bundle_lock_y)
+    bundle_lock_z = property(get_bundle_lock_z, set_bundle_lock_z)
+
+
+FileInfo = collections.namedtuple(
+    'FileInfo',
+    [
+        'marker_distorted',
+        'marker_undistorted',
+        'bundle_positions',
+    ]
+)
+
+
+def create_file_info(marker_distorted=None,
+                     marker_undistorted=None,
+                     bundle_positions=None):
+    if marker_distorted is None:
+        marker_distorted = False
+    if marker_undistorted is None:
+        marker_undistorted = False
+    if bundle_positions is None:
+        bundle_positions = False
+    file_info = FileInfo(
+        marker_distorted=marker_distorted,
+        marker_undistorted=marker_undistorted,
+        bundle_positions=bundle_positions,
+    )
+    return file_info
 
 
 class LoaderBase(object):

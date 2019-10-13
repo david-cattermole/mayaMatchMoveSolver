@@ -158,7 +158,8 @@ class Loader3DETXT(interface.LoaderBase):
             mkr_data_list.append(mkr_data)
             idx += 1
 
-        return mkr_data_list
+        file_info = interface.create_file_info()
+        return file_info, mkr_data_list
 
 
 # Register the File Format

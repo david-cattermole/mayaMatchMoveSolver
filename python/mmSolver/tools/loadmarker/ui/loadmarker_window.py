@@ -74,6 +74,7 @@ class LoadMarkerWindow(BaseWindow):
 
     def apply(self):
         cam = None
+        mkr_grp = None
         try:
             self.progressBar.setValue(0)
             self.progressBar.show()
@@ -81,14 +82,20 @@ class LoadMarkerWindow(BaseWindow):
             file_path = self.subForm.getFilePath()
             camera_text = self.subForm.getCameraText()
             camera_data = self.subForm.getCameraData()
+            mkr_grp_text = self.subForm.getMarkerGroupText()
+            mkr_grp_data = self.subForm.getMarkerGroupData()
+            load_bnd_pos = self.subForm.getLoadBundlePositions()
+            undist_mode = self.subForm.getDistortionModeText()
+            undistorted = undist_mode == const.UNDISTORTION_MODE_VALUE
             width, height = self.subForm.getImageResolution()
             self.progressBar.setValue(20)
 
             with undoutils.undo_chunk_context():
-                mkr_data_list = mayareadfile.read(
+                file_info, mkr_data_list = mayareadfile.read(
                     file_path,
                     image_width=width,
-                    image_height=height
+                    image_height=height,
+                    undistorted=undistorted,
                 )
                 self.progressBar.setValue(70)
 
@@ -96,20 +103,42 @@ class LoadMarkerWindow(BaseWindow):
                     cam = lib.create_new_camera()
                 else:
                     cam = camera_data
+                    if mkr_grp_text == const.NEW_MARKER_GROUP_VALUE:
+                        mkr_grp = lib.create_new_marker_group(cam)
+                    else:
+                        mkr_grp = mkr_grp_data
                 self.progressBar.setValue(90)
 
-                mayareadfile.create_nodes(mkr_data_list, cam=cam)
-
+                mayareadfile.create_nodes(
+                    mkr_data_list,
+                    cam=cam,
+                    mkr_grp=mkr_grp,
+                    with_bundles=load_bnd_pos
+                )
         finally:
             self.progressBar.setValue(100)
             self.progressBar.hide()
             # Update the camera comboBox with the created camera, or
             # the last used camera.
+            all_camera_nodes = lib.get_cameras()
             selected_cameras = [cam]
+            active_camera = cam
             self.subForm.updateCameraList(
                 self.subForm.camera_comboBox,
                 self.subForm.camera_model,
-                selected_cameras)
+                all_camera_nodes,
+                selected_cameras,
+                active_camera
+            )
+            active_camera = cam
+            active_mkr_grp = mkr_grp
+            mkr_grp_nodes = lib.get_marker_groups(active_camera)
+            self.subForm.updateMarkerGroupList(
+                self.subForm.markerGroup_comboBox,
+                self.subForm.markerGroup_model,
+                active_mkr_grp,
+                mkr_grp_nodes
+            )
         return
 
     def help(self):

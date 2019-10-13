@@ -27,6 +27,8 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.viewport as viewport_utils
+import mmSolver.utils.camera as camera_utils
 import mmSolver.tools.loadmarker.lib.formatmanager as formatmanager
 import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 import mmSolver.api as mmapi
@@ -103,6 +105,48 @@ def get_cameras():
     return cams
 
 
+def get_marker_groups(cam):
+    """
+    Get all MarkerGroups for the given camera.
+
+    :rtype: list of mmSolver.api.MarkerGroup
+    """
+    mkr_grp_list = []
+    if cam is None:
+        return mkr_grp_list
+    assert isinstance(cam, mmapi.Camera)
+    if cam.is_valid() is False:
+        return mkr_grp_list
+    cam_tfm = cam.get_transform_node()
+    below_nodes = maya.cmds.ls(
+        cam_tfm, dag=True, long=True,
+        type='mmMarkerGroupTransform') or []
+    mkr_grp_list = [mmapi.MarkerGroup(node=n) for n in below_nodes
+                    if mmapi.get_object_type(n) == mmapi.OBJECT_TYPE_MARKER_GROUP]
+    return mkr_grp_list
+
+
+def get_active_viewport_camera():
+    """
+    Get the Camera that is attached to the active viewport.
+
+    :return: The Camera object, or None.
+    :rtype: Camera or None
+    """
+    cam = None
+    # Get the camera from the active viewport.
+    model_editor = viewport_utils.get_active_model_editor()
+    if model_editor is None:
+        return cam
+    cam_tfm, cam_shp = viewport_utils.get_viewport_camera(model_editor)
+    if cam_shp is None:
+        return cam
+    if camera_utils.is_startup_cam(cam_shp) is True:
+        return cam
+    cam = mmapi.Camera(shape=cam_shp)
+    return cam
+
+
 def get_file_path_format(text):
     """
     Look up the Format from the file path.
@@ -153,6 +197,20 @@ def get_file_info(file_path):
     :param file_path: The marker file path to get info for.
     :type file_path: str
 
+    :return:
+    :rtype: FileInfo
+    """
+    file_info, _ = mayareadfile.read(file_path)
+    return file_info
+
+
+def get_file_info_strings(file_path):
+    """
+    Get the file path information, as user-readable strings.
+
+    :param file_path: The marker file path to get info for.
+    :type file_path: str
+
     :return Dictionary of various information about the given
             file path.
     :rtype: dict
@@ -163,8 +221,11 @@ def get_file_info(file_path):
         'frame_range': '?-?',
         'start_frame': '?',
         'end_frame': '?',
+        'lens_dist': '?',
+        'lens_undist': '?',
+        'positions': '?',
     }
-    mkr_data_list = mayareadfile.read(file_path)
+    file_info, mkr_data_list = mayareadfile.read(file_path)
     if isinstance(mkr_data_list, list) is False:
         return info
 
@@ -190,10 +251,14 @@ def get_file_info(file_path):
             start_frame = x_start
         if x_end > end_frame:
             end_frame = x_end
+
     info['point_names'] = pprint.pformat(point_names)
     info['start_frame'] = start_frame
     info['end_frame'] = end_frame
     info['frame_range'] = '{0}-{1}'.format(start_frame, end_frame)
+    info['lens_dist'] = file_info.marker_distorted
+    info['lens_undist'] = file_info.marker_undistorted
+    info['positions'] = file_info.bundle_positions
     return info
 
 
@@ -264,6 +329,20 @@ def create_new_camera():
     cam_shp = node_utils.get_long_name(cam_shp)
     cam = mmapi.Camera(transform=cam_tfm, shape=cam_shp)
     return cam
+
+
+def create_new_marker_group(cam):
+    """
+    Create a new marker group node and object.
+
+    :param cam: The camera to create the Marker Group under.
+    :type cam: Camera
+
+    :returns: MarkerGroup object.
+    :rtype: MarkerGroup
+    """
+    mkr_grp = mmapi.MarkerGroup().create_node(cam=cam)
+    return mkr_grp
 
 
 def get_default_image_resolution():

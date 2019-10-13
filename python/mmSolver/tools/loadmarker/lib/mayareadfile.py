@@ -62,8 +62,8 @@ def read(file_path, **kwargs):
         raise RuntimeError(msg % file_path)
 
     file_format_obj = file_format_class()
-    mkr_data_list = file_format_obj.parse(file_path, **kwargs)
-    return mkr_data_list
+    file_info, mkr_data_list = file_format_obj.parse(file_path, **kwargs)
+    return file_info, mkr_data_list
 
 
 def __create_node(mkr_data, cam, mkr_grp, with_bundles):
@@ -258,6 +258,7 @@ def create_nodes(mkr_data_list, cam=None, mkr_grp=None, with_bundles=True):
     :returns: List of Markers.
     :rtype: [Marker, ..]
     """
+    assert isinstance(with_bundles, bool)
     selected_nodes = maya.cmds.ls(sl=True, long=True) or []
     mkr_nodes = []
     mkr_list = []

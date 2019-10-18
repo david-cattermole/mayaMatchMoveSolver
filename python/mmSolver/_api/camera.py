@@ -20,6 +20,7 @@ import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.camera as camera_utils
 import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 
@@ -231,10 +232,9 @@ class Camera(object):
         if shp is None:
             LOG.warning('Could not get Camera shape node.')
             return resolution
-        plug = shp + '.imagePlane'
-        img_planes = maya.cmds.listConnections(plug, type='imagePlane') or []
-        img_planes = [node_utils.get_long_name(n) for n in img_planes]
 
+        tfm = self.get_transform_node()
+        img_planes = camera_utils.get_image_plane_shapes_from_camera(tfm, shp)
         if len(img_planes) == 0:
             return resolution  # no image planes
         elif len(img_planes) > 1:

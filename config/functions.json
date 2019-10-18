@@ -220,6 +220,16 @@
                 "mmSolver.tools.loadmarker.tool.open_window();"
             ]
         },
+        "copy_camera_to_clipboard": {
+            "name": "Copy Camera to Clipboard",
+            "name_shelf": "CpyCam",
+            "tooltip": "Copy selected camera to a temp file.",
+            "icon_shelf": "menuIconFile.png",
+            "command": [
+                "import mmSolver.tools.copypastecamera.tool;",
+                "mmSolver.tools.copypastecamera.tool.main();"
+            ]
+        },
         "create_bundle": {
             "name": "Create Bundle",
             "name_shelf": "Create",

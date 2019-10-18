@@ -154,7 +154,7 @@ def get_image_path_multi_frame(image_path, test_disk):
         if test_disk is True:
             pattern_grps = list(grps)
             pattern_grps[2] = '*'
-            pattern = ''.join(*pattern_grps)
+            pattern = ''.join(pattern_grps)
             glob_pattern = os.path.join(head, pattern)
             exists = any(glob.iglob(glob_pattern))
 
@@ -162,7 +162,7 @@ def get_image_path_multi_frame(image_path, test_disk):
             assert frame_num_padding > 0
             pattern_grps = list(grps)
             pattern_grps[2] = '#' * frame_num_padding
-            pattern = ''.join(*pattern_grps)
+            pattern = ''.join(pattern_grps)
             image_file_path = os.path.join(head, pattern)
     else:
         image_file_path, multi_frame = get_image_path_single_frame(image_path, test_disk)

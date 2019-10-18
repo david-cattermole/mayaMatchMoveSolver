@@ -95,10 +95,10 @@ def _get_frame_list_to_set_values(cam_id, samples_list,
     :param file_end_frame: The end frame available from the parsed file.
     :type file_end_frame: int
 
-    :param chosen_start_frame: The start frame that the user want's to limit to.
+    :param chosen_start_frame: The start frame that the user wants to limit to.
     :type chosen_start_frame: int
 
-    :param chosen_end_frame: The end frame that the user want's to limit to.
+    :param chosen_end_frame: The end frame that the user wants to limit to.
     :type chosen_end_frame: int
 
     :returns: List of integer frame numbers.
@@ -160,9 +160,6 @@ def _set_camera_translation(pgroup_id, cam_id,
     :param cam_id: The Camera ID to apply data to.
     :type cam_id: str
 
-    :param lens_id: The Lens ID to apply data to.
-    :type lens_id: str
-
     :param tx_samples: Frame/value pairs for Translate X, representing
                        a curve of values.
     :type tx_samples: [(int, float), ..]
@@ -181,10 +178,10 @@ def _set_camera_translation(pgroup_id, cam_id,
     :param file_end_frame: The end frame available from the parsed file.
     :type file_end_frame: int
 
-    :param chosen_start_frame: The start frame that the user want's to limit to.
+    :param chosen_start_frame: The start frame that the user wants to limit to.
     :type chosen_start_frame: int
 
-    :param chosen_end_frame: The end frame that the user want's to limit to.
+    :param chosen_end_frame: The end frame that the user wants to limit to.
     :type chosen_end_frame: int
 
     :returns: Were the translation values changed?
@@ -240,9 +237,6 @@ def _set_camera_rotation(pgroup_id, cam_id,
     :param cam_id: The Camera ID to apply data to.
     :type cam_id: str
 
-    :param lens_id: The Lens ID to apply data to.
-    :type lens_id: str
-
     :param rx_samples: Frame/value pairs for Rotate X, representing
                        a curve of values.
     :type rx_samples: [(int, float), ..]
@@ -261,10 +255,10 @@ def _set_camera_rotation(pgroup_id, cam_id,
     :param file_end_frame: The end frame available from the parsed file.
     :type file_end_frame: int
 
-    :param chosen_start_frame: The start frame that the user want's to limit to.
+    :param chosen_start_frame: The start frame that the user wants to limit to.
     :type chosen_start_frame: int
 
-    :param chosen_end_frame: The end frame that the user want's to limit to.
+    :param chosen_end_frame: The end frame that the user wants to limit to.
     :type chosen_end_frame: int
 
     :returns: Were the rotation values changed?
@@ -322,6 +316,28 @@ def _set_camera_focal_length(cam_id, lens_id,
     """
     Set the focal length on the given camera/lens.
 
+    :param cam_id: The Camera ID to apply data to.
+    :type cam_id: str
+
+    :param lens_id: The Lens ID to apply data to.
+    :type lens_id: str
+
+    :param samples: Frame/value pairs for Focal Length attribute,
+                    representing a curve of values.
+    :type samples: [(int, float), ..]
+
+    :param file_start_frame: The start frame available from the parsed file.
+    :type file_start_frame: int
+
+    :param file_end_frame: The end frame available from the parsed file.
+    :type file_end_frame: int
+
+    :param chosen_start_frame: The start frame that the user wants to limit to.
+    :type chosen_start_frame: int
+
+    :param chosen_end_frame: The end frame that the user wants to limit to.
+    :type chosen_end_frame: int
+
     :returns: Return True if the focal length was set, False otherwise.
     :rtype: bool
     """
@@ -369,6 +385,7 @@ def _set_camera_focal_length(cam_id, lens_id,
             if global_frame not in frames:
                 continue
             value *= MILLIMETERS_TO_CENTIMETRES
+            # Internally, 3DE always starts at frame 1.
             raw_frame = 1 + (global_frame - file_start_frame)
             vec = [raw_frame, value]
             key_id = tde4.createCurveKey(curve_id, vec)

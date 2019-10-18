@@ -52,6 +52,7 @@ import tempfile
 import tde4
 import mmcamera_format
 
+# GUI Constants
 TITLE = 'Paste Camera (MM Solver)...'
 WIDTH = 900
 HEIGHT = 600
@@ -70,7 +71,6 @@ ATTR_ROTATE_Y = 'rotateY'
 ATTR_ROTATE_Z = 'rotateZ'
 
 FILE_BROWSER_WIDGET = 'file_browser_widget'
-# WARN_INFO_WIDGET = 'warning_info_widget'
 PLATE_PATH_WIDGET = 'plate_browser_widget'
 PLATE_LOAD_WIDGET = 'plate_load_widget'
 PLATE_RANGE_WIDGET = 'plate_range_widget'
@@ -80,7 +80,6 @@ END_FRAME_WIDGET = 'end_frame_widget'
 CAMERA_NAME_WIDGET = 'camera_name_widget'
 
 FILE_BROWSER_LABEL = 'File Path...'
-# WARN_INFO_LABEL = 'WARNING'
 PLATE_PATH_LABEL = 'Plate Path'
 PLATE_LOAD_LABEL = 'Load Plate?'
 PLATE_RANGE_LABEL = 'Plate Frame Range'
@@ -147,7 +146,6 @@ def _parse_data(file_path):
     assert len(file_path) > 0
     file_data = mmcamera_format.parse(file_path)
     return file_data
-
 
 
 def _file_path_is_valid(file_path):
@@ -343,7 +341,7 @@ def _build_widgets_with_data(req, pgroup_id, cam_id, lens_id, file_data):
     # information in common with the selected camera.
     if not plate_path:
         has_common_frames = False
-        cam_start, cam_end, cam_step = tde4.getCameraSequenceAttr(cam_id)
+        cam_start, cam_end, _ = tde4.getCameraSequenceAttr(cam_id)
         if str(start_frame) and str(end_frame) and str(cam_start) and str(cam_end):
             cam_start = int(cam_start)
             cam_end = int(cam_end)
@@ -443,7 +441,6 @@ def _build_gui():
     file_path = None
     if mmcamera_format.SUPPORT_CLIPBOARD is True:
         file_path = tde4.getClipboardString()
-    # file_path = 'Z:/media/dev/mayaMatchMoveSolver_linux/tests/data/mmcamera/stA_copyCamera.mmcamera'
 
     file_data = None
     if file_path:
@@ -520,7 +517,7 @@ if pgroup_id and cam_id and lens_id:
     try:
         requester = _paste_camera_mmsolver_requester
         _remove_all_dynamic_widgets(requester, '', 0)
-    except (ValueError,NameError,TypeError):
+    except (ValueError, NameError, TypeError):
         requester = _build_gui()
         _paste_camera_mmsolver_requester = requester
 

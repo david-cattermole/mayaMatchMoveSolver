@@ -46,6 +46,7 @@
             "general_tools/gen_tools_popup/smooth_keyframes_ui",
             "general_tools/gen_tools_popup/screen_z_transform_bake",
             "general_tools/gen_tools_popup/channel_sensitivity_ui",
+            "general_tools/gen_tools_popup/copy_camera_to_clipboard",
             "general_tools/gen_tools_popup/---Parenting",
             "general_tools/gen_tools_popup/reparent_under_node",
             "general_tools/gen_tools_popup/unparent_to_world",

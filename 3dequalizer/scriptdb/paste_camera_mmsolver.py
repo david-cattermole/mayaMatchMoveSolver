@@ -51,7 +51,7 @@ import sys
 import collections
 import json
 import os
-vimport collections
+import collections
 import tempfile
 
 import tde4

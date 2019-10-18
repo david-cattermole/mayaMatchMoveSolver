@@ -56,7 +56,7 @@ The JSON dictionary format::
                 'width': int,     # or None
                 'height': int,    # or None
                 'pixel_aspect_ratio': float,  # or None
-v            }
+            },
             'attr': [
                 str: [
                     [int, float]

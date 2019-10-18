@@ -527,7 +527,7 @@ if pgroup_id and cam_id and lens_id:
         'Paste', 'Cancel'
     )
     if button_pressed == 1:
-        # Buttion index pressed is 1-based; 1=='Paste', 2='Cancel'.
+        # Button index pressed is 1-based; 1=='Paste', 2='Cancel'.
         _run_gui(
             _paste_camera_mmsolver_requester,
             pgroup_id,

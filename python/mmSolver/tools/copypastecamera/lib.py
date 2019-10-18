@@ -268,9 +268,9 @@ def guess_pixel_aspect_ratio(cam_tfm, cam_shp, img_pl_shp, file_path_pattern):
         fbk_aspect = fbk_w / fbk_h
 
         # Image size.
-        plug = '{0}.coverageX'.format(cam_shp)
+        plug = '{0}.coverageX'.format(img_pl_shp)
         img_w = float(maya.cmds.getAttr(plug))
-        plug = '{0}.coverageY'.format(cam_shp)
+        plug = '{0}.coverageY'.format(img_pl_shp)
         img_h = float(maya.cmds.getAttr(plug))
         if img_w > 0 and img_h > 0:
             img_aspect = img_w / img_h

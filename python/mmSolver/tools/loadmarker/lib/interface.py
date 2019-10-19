@@ -169,7 +169,6 @@ class KeyframeData(object):
         # Sort keys, based on int values, not string.
         keys = self._data.keys()
         int_keys = list()
-        # for key in keys:
         for key in self._data.iterkeys():
             int_keys.append(int(key))
         keys = sorted(int_keys)

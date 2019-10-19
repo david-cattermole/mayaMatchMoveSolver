@@ -173,9 +173,9 @@ def _parse_point_3d_data_v3(mkr_data, point_data):
     x_lock = point_3d.get('x_lock')
     y_lock = point_3d.get('y_lock')
     z_lock = point_3d.get('z_lock')
-    assert x_lock is None or isinstance(x, bool)
-    assert y_lock is None or isinstance(y, bool)
-    assert z_lock is None or isinstance(z, bool)
+    assert x_lock is None or isinstance(x_lock, bool)
+    assert y_lock is None or isinstance(y_lock, bool)
+    assert z_lock is None or isinstance(z_lock, bool)
     mkr_data.set_bundle_lock_x(x_lock)
     mkr_data.set_bundle_lock_y(y_lock)
     mkr_data.set_bundle_lock_z(z_lock)
@@ -243,7 +243,9 @@ def _parse_marker_occluded_frames_v1_v2_v3(mkr_data, frames):
     return mkr_data
 
 
-def _parse_v2_and_v3(file_path, undistorted=None, with_bundle=None):
+def _parse_v2_and_v3(file_path,
+                     undistorted=None,
+                     with_3d_pos=None):
     """
     Parse the UV file format, using JSON.
 
@@ -254,15 +256,16 @@ def _parse_v2_and_v3(file_path, undistorted=None, with_bundle=None):
                         marker data?
     :type undistorted: bool or None
 
-    :param with_bundle: Should we try to parse bundle data from the file
-                        path? None means False. with_bundle is only
-                        accepted on uvtrack version 3+.
-    :type with_bundle: bool or None
+    :param with_3d_pos: Try to parse 3D position bundle data from
+                        the file path? None means False.
+                        with_3d_pos is only accepted on
+                        uvtrack version 3+.
+    :type with_3d_pos: bool or None
 
     :return: List of MarkerData objects.
     """
-    if with_bundle is None:
-        with_bundle = False
+    if with_3d_pos is None:
+        with_3d_pos = False
 
     pos_key = 'pos_dist'
     if undistorted is None:
@@ -287,7 +290,7 @@ def _parse_v2_and_v3(file_path, undistorted=None, with_bundle=None):
         mkr_data = _parse_point_info_v2_v3(mkr_data, point_data)
 
         # 3D point data
-        if with_bundle is True:
+        if with_3d_pos is True:
             mkr_data = _parse_point_3d_data_v3(mkr_data, point_data)
 
         per_frame = point_data.get('per_frame', [])
@@ -300,10 +303,14 @@ def _parse_v2_and_v3(file_path, undistorted=None, with_bundle=None):
         mkr_data, frames = _parse_per_frame_v2_v3(
             mkr_data,
             per_frame,
-            pos_key=pos_key)
+            pos_key=pos_key
+        )
 
         # Fill in occluded point frames
-        mkr_data = _parse_marker_occluded_frames_v1_v2_v3(mkr_data, frames)
+        mkr_data = _parse_marker_occluded_frames_v1_v2_v3(
+            mkr_data,
+            frames,
+        )
 
         mkr_data_list.append(mkr_data)
     return mkr_data_list
@@ -374,12 +381,15 @@ def parse_v1(file_path, **kwargs):
             frames.append(frame)
 
         # Fill in occluded point frames
-        mkr_data = _parse_marker_occluded_frames_v1_v2_v3(mkr_data, frames)
+        mkr_data = _parse_marker_occluded_frames_v1_v2_v3(
+            mkr_data,
+            frames,
+        )
 
         mkr_data_list.append(mkr_data)
         idx += 1
 
-    file_info = interface.create_file_info()
+    file_info = interface.create_file_info(marker_undistorted=True)
     return file_info, mkr_data_list
 
 
@@ -392,11 +402,11 @@ def parse_v2(file_path, **kwargs):
 
     :return: List of MarkerData objects.
     """
-    file_info = interface.create_file_info()
+    file_info = interface.create_file_info(marker_undistorted=True)
     mkr_data_list = _parse_v2_and_v3(
         file_path,
         undistorted=True,
-        with_bundle=False
+        with_3d_pos=False
     )
     return file_info, mkr_data_list
 
@@ -417,12 +427,12 @@ def parse_v3(file_path, **kwargs):
     file_info = interface.create_file_info(
         marker_distorted=True,
         marker_undistorted=True,
-        bundle_pos=True,
+        bundle_positions=True,
     )
     mkr_data_list = _parse_v2_and_v3(
         file_path,
         undistorted=undistorted,
-        with_bundle=True,
+        with_3d_pos=True,
     )
     return file_info, mkr_data_list
 

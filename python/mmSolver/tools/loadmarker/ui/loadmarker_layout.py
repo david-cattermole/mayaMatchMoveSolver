@@ -56,6 +56,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self._file_info = None
 
         w, h = lib.get_default_image_resolution()
+        self.imageResWidth_label.setEnabled(False)
         self.imageResWidth_spinBox.setValue(w)
         self.imageResWidth_spinBox.setEnabled(False)
         self.imageResWidth_spinBox.setMaximum(99999)
@@ -81,11 +82,11 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
 
         # Set up callback connections
         self.loadMode_comboBox.currentIndexChanged[str].connect(lambda x: self.updateLoadMode())
+        self.camera_comboBox.currentIndexChanged[str].connect(lambda x: self.markerGroupUpdateClicked())
         self.cameraUpdate_pushButton.clicked.connect(self.cameraUpdateClicked)
         self.markerGroupUpdate_pushButton.clicked.connect(self.markerGroupUpdateClicked)
         self.filepath_pushButton.clicked.connect(self.filePathBrowseClicked)
-        self.filepath_lineEdit.editingFinished.connect(self.updateImageResEnabledState)
-        self.filepath_lineEdit.editingFinished.connect(self.updateFileInfoText)
+        self.filepath_lineEdit.editingFinished.connect(self.updateFilePathWidget)
 
         self.populateUi()
 
@@ -136,29 +137,42 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             text += repr(file_path)
             info_widget.setPlainText(text)
             return
-        text = 'Format: {fmt_name}\n'
-        text += 'Frame Range: {start_frame}-{end_frame}\n'
+        text = 'Frame Range: {start_frame}-{end_frame}\n'
         text += 'Number of Points: {num_points}\n'
         text += 'Point Names: {point_names}\n'
         text += '\n'
+        text += 'Format: {fmt_name}\n'
         text += 'Distorted Data: {lens_dist}\n'
         text += 'Undistorted Data: {lens_undist}\n'
         text += 'Bundle Positions: {positions}\n'
         info = lib.get_file_info_strings(file_path)
+
+        # Change point names into single string.
+        point_names = info.get('point_names', '')
+        point_names = point_names.strip()
+        point_names = '\n- ' + point_names.replace(' ', '\n- ')
+        info['point_names'] = point_names
+
         text = text.format(**info)
         info_widget.setPlainText(text)
         return
 
     def updateLoadMode(self):
         text = self.getLoadModeText()
+        value = None
         if text == const.LOAD_MODE_NEW_VALUE:
-            self.camera_comboBox.setEnabled(True)
-            self.markerGroup_comboBox.setEnabled(True)
+            value = True
         elif text == const.LOAD_MODE_REPLACE_VALUE:
-            self.camera_comboBox.setEnabled(False)
-            self.markerGroup_comboBox.setEnabled(False)
+            value = False
         else:
             assert False
+
+        self.camera_label.setEnabled(value)
+        self.camera_comboBox.setEnabled(value)
+        self.cameraUpdate_pushButton.setEnabled(value)
+        self.markerGroup_label.setEnabled(value)
+        self.markerGroup_comboBox.setEnabled(value)
+        self.markerGroupUpdate_pushButton.setEnabled(value)
         return
 
     def updateDistortionModeEnabledState(self):
@@ -189,6 +203,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             for func_name, _ in fmt.args:
                 value = func_name == 'image_width'
                 break
+        self.imageResWidth_label.setEnabled(value)
         self.imageResWidth_spinBox.setEnabled(value)
         self.imageResHeight_spinBox.setEnabled(value)
         return
@@ -351,10 +366,12 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
     def markerGroupUpdateClicked(self):
         active_camera = self.getCameraData()
         mkr_grp_nodes = lib.get_marker_groups(active_camera)
+        active_mkr_grp = None
         self.updateMarkerGroupList(
             self.markerGroup_comboBox,
             self.markerGroup_model,
-            mkr_grp_nodes
+            active_mkr_grp,
+            mkr_grp_nodes,
         )
         return
 
@@ -373,13 +390,17 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             self.setFilePath(file_path)
         return
 
-    def setFilePath(self, value):
-        self.filepath_lineEdit.setText(value)
+    def updateFilePathWidget(self):
         self.updateFileInfo()
         self.updateFileInfoText()
         self.updateImageResEnabledState()
         self.updateDistortionModeEnabledState()
         self.updateLoadBundlePosEnabledState()
+        return
+
+    def setFilePath(self, value):
+        self.filepath_lineEdit.setText(value)
+        self.updateFilePathWidget()
         return
 
     def getFilePath(self):

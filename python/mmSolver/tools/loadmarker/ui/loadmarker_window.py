@@ -80,6 +80,7 @@ class LoadMarkerWindow(BaseWindow):
             self.progressBar.show()
 
             file_path = self.subForm.getFilePath()
+            load_mode = self.subForm.getLoadModeText()
             camera_text = self.subForm.getCameraText()
             camera_data = self.subForm.getCameraData()
             mkr_grp_text = self.subForm.getMarkerGroupText()
@@ -109,12 +110,18 @@ class LoadMarkerWindow(BaseWindow):
                         mkr_grp = mkr_grp_data
                 self.progressBar.setValue(90)
 
-                mayareadfile.create_nodes(
-                    mkr_data_list,
-                    cam=cam,
-                    mkr_grp=mkr_grp,
-                    with_bundles=load_bnd_pos
-                )
+                if load_mode == const.LOAD_MODE_NEW_VALUE:
+                    mayareadfile.create_nodes(
+                        mkr_data_list,
+                        cam=cam,
+                        mkr_grp=mkr_grp,
+                        with_bundles=True,
+                        load_bundle_position=load_bnd_pos,
+                    )
+                if load_mode == const.LOAD_MODE_REPLACE_VALUE:
+                    mkr_list = lib.get_selected_markers()
+                    mayareadfile.update_nodes(mkr_list, mkr_data_list)
+
         finally:
             self.progressBar.setValue(100)
             self.progressBar.hide()

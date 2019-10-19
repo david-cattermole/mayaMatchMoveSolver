@@ -84,12 +84,14 @@ def __create_node(mkr_data, cam, mkr_grp, with_bundles):
     mmapi.load_plugin()
     if with_bundles is True:
         bnd = mmapi.Bundle().create_node(bnd_name)
+    if cam and mkr_grp:
+        cam = None
     mkr = mmapi.Marker().create_node(
         name=mkr_name,
         cam=cam,
         mkr_grp=mkr_grp,
         bnd=bnd)
-    return mkr
+    return mkr, bnd
 
 
 def __set_attr_keyframes(node, attr_name, keyframes,
@@ -178,13 +180,14 @@ def __set_attr_keyframes(node, attr_name, keyframes,
     return anim_fn
 
 
-def __set_node_data(mkr, mkr_data):
+def __set_node_data(mkr, bnd, mkr_data, load_bundle_position):
     """
     Set and override the data on the given marker node.
 
     Note: marker may have existing data or not.
     """
     assert isinstance(mkr, mmapi.Marker)
+    assert bnd is None or isinstance(bnd, mmapi.Bundle)
     assert isinstance(mkr_data, interface.MarkerData)
     mkr_node = mkr.get_node()
 
@@ -234,10 +237,42 @@ def __set_node_data(mkr, mkr_data):
     maya.cmds.setAttr(mkr_node + '.translateY', lock=True)
     maya.cmds.setAttr(mkr_node + '.enable', lock=True)
     maya.cmds.setAttr(mkr_node + '.weight', lock=True)
-    return mkr
+
+    # Set Bundle Position
+    if bnd and load_bundle_position:
+        bnd_node = bnd.get_node()
+        bnd_x = mkr_data.get_bundle_x()
+        bnd_y = mkr_data.get_bundle_y()
+        bnd_z = mkr_data.get_bundle_z()
+        bnd_lock_x = mkr_data.get_bundle_lock_x()
+        bnd_lock_y = mkr_data.get_bundle_lock_y()
+        bnd_lock_z = mkr_data.get_bundle_lock_z()
+
+        maya.cmds.setAttr(bnd_node + '.translateX', lock=False)
+        maya.cmds.setAttr(bnd_node + '.translateY', lock=False)
+        maya.cmds.setAttr(bnd_node + '.translateZ', lock=False)
+
+        if isinstance(bnd_x, float):
+            maya.cmds.setAttr(bnd_node + '.translateX', bnd_x)
+        if isinstance(bnd_y, float):
+            maya.cmds.setAttr(bnd_node + '.translateY', bnd_y)
+        if isinstance(bnd_z, float):
+            maya.cmds.setAttr(bnd_node + '.translateZ', bnd_z)
+
+        if isinstance(bnd_lock_x, bool):
+            maya.cmds.setAttr(bnd_node + '.translateX', lock=True)
+        if isinstance(bnd_lock_y, bool):
+            maya.cmds.setAttr(bnd_node + '.translateY', lock=True)
+        if isinstance(bnd_lock_z, bool):
+            maya.cmds.setAttr(bnd_node + '.translateZ', lock=True)
+    return mkr, bnd
 
 
-def create_nodes(mkr_data_list, cam=None, mkr_grp=None, with_bundles=True):
+def create_nodes(mkr_data_list,
+                 cam=None,
+                 mkr_grp=None,
+                 with_bundles=True,
+                 load_bundle_position=True):
     """
     Create Markers for all given MarkerData objects
 
@@ -255,20 +290,27 @@ def create_nodes(mkr_data_list, cam=None, mkr_grp=None, with_bundles=True):
     :param with_bundles: Create a bundle for each Marker.
     :type with_bundles: bool
 
+    :param load_bundle_position: Apply the 3D positions to bundle.
+    :type load_bundle_position: bool
+
     :returns: List of Markers.
     :rtype: [Marker, ..]
     """
     assert isinstance(with_bundles, bool)
+    assert isinstance(load_bundle_position, bool)
     selected_nodes = maya.cmds.ls(sl=True, long=True) or []
     mkr_nodes = []
     mkr_list = []
     for mkr_data in mkr_data_list:
         # Create the nodes
-        mkr = __create_node(mkr_data, cam, mkr_grp, with_bundles)
+        mkr, bnd = __create_node(
+            mkr_data, cam, mkr_grp,
+            with_bundles,
+        )
         mkr_nodes.append(mkr.get_node())
         if mkr is not None:
             # Set attributes and add into list
-            __set_node_data(mkr, mkr_data)
+            __set_node_data(mkr, bnd, mkr_data, load_bundle_position)
             mkr_list.append(mkr)
     if len(mkr_nodes) > 0:
         maya.cmds.select(mkr_nodes, replace=True)

@@ -126,6 +126,18 @@ def get_marker_groups(cam):
     return mkr_grp_list
 
 
+def get_selected_markers():
+    """
+    Get selected Marker object.
+
+    :rtype: list of mmSolver.api.Marker
+    """
+    nodes = maya.cmds.ls(type='transform', long=True) or []
+    mkr_nodes = mmapi.filter_marker_nodes(nodes)
+    mkr_list = [mmapi.Marker(node=n) for n in mkr_nodes]
+    return mkr_list
+
+
 def get_active_viewport_camera():
     """
     Get the Camera that is attached to the active viewport.
@@ -252,7 +264,7 @@ def get_file_info_strings(file_path):
         if x_end > end_frame:
             end_frame = x_end
 
-    info['point_names'] = pprint.pformat(point_names)
+    info['point_names'] = ' '.join(point_names)
     info['start_frame'] = start_frame
     info['end_frame'] = end_frame
     info['frame_range'] = '{0}-{1}'.format(start_frame, end_frame)

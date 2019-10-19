@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Export 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version:  v1.5
+# 3DE4.script.version:  v1.6
 #
 # 3DE4.script.gui:      Main Window::3DE4::File::Export
 # 3DE4.script.gui:      Object Browser::Context Menu Point
@@ -74,28 +74,23 @@ def main():
     if uvtrack_format.SUPPORT_CAMERA_FRAME_OFFSET is True:
         start_frame = tde4.getCameraFrameOffset(camera)
     pattern = '*' + EXT
-    # Undistortion default is 'On'.
-    undistort = 1
 
     # GUI
     req = tde4.createCustomRequester()
     tde4.addFileWidget(req, 'file_browser_widget', 'Filename...', pattern)
     tde4.addTextFieldWidget(req, 'start_frame_widget', 'Start Frame', str(start_frame))
-    tde4.addToggleWidget(req, 'undistort_widget', 'Apply Undistortion', undistort)
     ret = tde4.postCustomRequester(req, TITLE, 500, 0, 'Ok', 'Cancel')
     if ret == 1:
         # Query GUI Widgets
         path = tde4.getWidgetValue(req, 'file_browser_widget')
         start_frame = tde4.getWidgetValue(req, 'start_frame_widget')
         start_frame = int(start_frame)
-        undistort = tde4.getWidgetValue(req, 'undistort_widget')
-        undistort = bool(undistort)
 
         # Generate file contents
         data_str = uvtrack_format.generate(
             point_group, camera, points,
             start_frame=start_frame,
-            undistort=undistort
+            fmt=uvtrack_format.UV_TRACK_FORMAT_VERSION_3,
         )
 
         # Write file.

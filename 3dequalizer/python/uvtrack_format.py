@@ -22,7 +22,7 @@ Generate track data from the given 2D points in 3DEqualizer.
 
 Files in 'UV Track' format should have file extension '.uv'.
 
-See ./python/mmSolver/tools/loadmarker/formats/uvtrack.py for details
+See ./python/mmSolver/tools/loadmarker/lib/formats/uvtrack.py for details
 of the '.uv' file format.
 """
 # 3DE4.script.hide:     true
@@ -37,13 +37,19 @@ import tde4
 UV_TRACK_FORMAT_VERSION_UNKNOWN = -1
 UV_TRACK_FORMAT_VERSION_1 = 1
 UV_TRACK_FORMAT_VERSION_2 = 2
+UV_TRACK_FORMAT_VERSION_3 = 3
+
 UV_TRACK_HEADER_VERSION_2 = {
     'version': UV_TRACK_FORMAT_VERSION_2,
 }
 
+UV_TRACK_HEADER_VERSION_3 = {
+    'version': UV_TRACK_FORMAT_VERSION_3,
+}
+
 # Preferred UV Track format version (changes the format
 # version used for writing data).
-UV_TRACK_FORMAT_VERSION_PREFERRED = UV_TRACK_FORMAT_VERSION_2
+UV_TRACK_FORMAT_VERSION_PREFERRED = UV_TRACK_FORMAT_VERSION_3
 
 # Do we have support for new features of 3DE tde4 module?
 SUPPORT_PERSISTENT_ID = 'getPointPersistentID' in dir(tde4)
@@ -51,6 +57,7 @@ SUPPORT_CAMERA_FRAME_OFFSET = 'getCameraFrameOffset' in dir(tde4)
 SUPPORT_POINT_WEIGHT_BY_FRAME = 'getPointWeightByFrame' in dir(tde4)
 SUPPORT_CLIPBOARD = 'setClipboardString' in dir(tde4)
 SUPPORT_POINT_VALID_MODE = 'getPointValidMode' in dir(tde4)
+SUPPORT_POINT_SURVEY_XYZ_ENABLED = 'getPointSurveyXYZEnabledFlags' in dir(tde4)
 
 
 def _get_point_valid_mode(point_group, point):
@@ -151,6 +158,47 @@ def _get_point_weight(point_group, point, camera, frame):
     return weight
 
 
+def _get_3d_data_from_point(point_group, point):
+    """
+    Get 3D data structure from 3DE point.
+
+    :param point_group: 3DE point group id.
+    :type point_group: str
+
+    :param point: 3DE point id.
+    :type point: str
+
+    :returns: Dictionary of the point 3d.
+    :rtype: dict
+    """
+    has_pos = tde4.isPointCalculated3D(point_group, point)
+    pos_3d = (None, None, None)
+    if has_pos:
+        pos_3d = tde4.getPointCalcPosition3D(point_group, point)
+
+    x_lock = False
+    y_lock = False
+    z_lock = False
+    survey_mode = tde4.getPointSurveyMode(point_group, point)
+    if survey_mode not in ['SURVEY_FREE']:
+        x_lock = True
+        y_lock = True
+        z_lock = True
+        if SUPPORT_POINT_SURVEY_XYZ_ENABLED is True:
+            xyz_lock = tde4.getPointSurveyXYZEnabledFlags(point_group, point)
+            x_lock, y_lock, z_lock = xyz_lock
+
+    point_3d_data = {
+        'x': pos_3d[0],
+        'y': pos_3d[1],
+        'z': pos_3d[2],
+        'x_lock': bool(x_lock),
+        'y_lock': bool(y_lock),
+        'z_lock': bool(z_lock),
+    }
+    return point_3d_data
+
+
 def generate(point_group, camera, points, fmt=None, **kwargs):
     """
     Return a str, ready to be written to a text file.
@@ -166,12 +214,15 @@ def generate(point_group, camera, points, fmt=None, **kwargs):
     :type points: list of str
 
     :param fmt: The format to generate, either
-                UV_TRACK_FORMAT_VERSION_1 or UV_TRACK_FORMAT_VERSION_2.
+                UV_TRACK_FORMAT_VERSION_1, UV_TRACK_FORMAT_VERSION_2
+                or UV_TRACK_FORMAT_VERSION_3.
     :type fmt: None or UV_TRACK_FORMAT_VERSION_*
 
     Supported 'kwargs':
     - undistort (True or False) - Should points be undistorted?
+                                  (Format v1 and v2)
     - start_frame - (int) - Frame '1' 3DE should be mapped to this value.
+                    (Format v1, v2 and v3)
     """
     if fmt is None:
         fmt = UV_TRACK_FORMAT_VERSION_PREFERRED
@@ -180,12 +231,19 @@ def generate(point_group, camera, points, fmt=None, **kwargs):
         data = _generate_v1(point_group, camera, points, **kwargs)
     elif fmt == UV_TRACK_FORMAT_VERSION_2:
         data = _generate_v2(point_group, camera, points, **kwargs)
+    elif fmt == UV_TRACK_FORMAT_VERSION_3:
+        data = _generate_v3(point_group, camera, points, **kwargs)
     return data
 
 
 def _generate_v1(point_group, camera, points, start_frame=None, undistort=False):
     """
     Generate the UV file format contents, using a basic ASCII format.
+
+    Each point will store:
+    - Point name
+    - X, Y position (in UV coordinates, per-frame)
+    - Point weight (per-frame)
 
     :param point_group: The 3DE Point Group containing 'points'
     :type point_group: str
@@ -206,10 +264,8 @@ def _generate_v1(point_group, camera, points, start_frame=None, undistort=False)
                       data? Yes or no.
     :type undistort: bool
 
-    Each point will store:
-    - Point name
-    - X, Y position (in UV coordinates, per-frame)
-    - Point weight (per-frame)
+    :returns: A ASCII format string, with the UV Track data in it.
+    :rtype: str
     """
     assert isinstance(point_group, basestring)
     assert isinstance(camera, basestring)
@@ -292,9 +348,14 @@ def _generate_v1(point_group, camera, points, start_frame=None, undistort=False)
     return data_str
 
 
-def _generate_v2(point_group, camera, points, start_frame=None, undistort=False):
+def _generate_v2_and_v3(point_group, camera, points,
+                        version=None,
+                        **kwargs):
     """
     Generate the UV file format contents, using JSON format.
+
+    Set the individual _generate_v2 or _generate_v3 functions for
+    details of what is stored.
 
     :param point_group: The 3DE Point Group containing 'points'
     :type point_group: str
@@ -306,30 +367,45 @@ def _generate_v2(point_group, camera, points, start_frame=None, undistort=False)
                    save.
     :type points: list of str
 
-    :param start_frame: The frame number to be considered at
-                       'first frame'. Defaults to 1001 if
-                       set to None.
+    :param version: The version of file to generate,
+                    UV_TRACK_FORMAT_VERSION_2 or
+                    UV_TRACK_FORMAT_VERSION_3.
+    :type version: int
+
+    :param start_frame: Format v2 and v3; The frame number to be
+                        considered at 'first frame'.
+                        Defaults to 1001 if set to None.
     :type start_frame: None or int
 
-    :param undistort: Should we apply undistortion to the 2D points
-                      data? Yes or no.
+    :param undistort: Format v2; Should we apply undistortion to the 2D
+                      points data? Yes or no.
     :type undistort: bool
 
-    Each point will store:
-    - Point name
-    - X, Y position (in UV coordinates, per-frame)
-    - Point weight (per-frame)
-    - Point Set name
-    - Point 'Persistent ID'
+    :returns: A JSON format string, with the UV Track data in it.
+    :rtype: str
     """
     assert isinstance(point_group, basestring)
     assert isinstance(camera, basestring)
     assert isinstance(points, (list, tuple))
+    assert isinstance(version, (int, long))
+    assert version in [UV_TRACK_FORMAT_VERSION_2,
+                       UV_TRACK_FORMAT_VERSION_3]
+
+    start_frame = kwargs.get('start_frame')
     assert start_frame is None or isinstance(start_frame, int)
-    assert isinstance(undistort, bool)
     if start_frame is None:
         start_frame = 1001
-    data = UV_TRACK_HEADER_VERSION_2.copy()
+
+    undistort = None
+    if version == UV_TRACK_FORMAT_VERSION_2:
+        undistort = kwargs.get('undistort')
+        assert isinstance(undistort, bool)
+
+    data = None
+    if version == UV_TRACK_FORMAT_VERSION_2:
+        data = UV_TRACK_HEADER_VERSION_2.copy()
+    else:
+        data = UV_TRACK_HEADER_VERSION_3.copy()
     cam_num_frames = tde4.getCameraNoFrames(camera)
     camera_fov = tde4.getCameraFOV(camera)
 
@@ -340,7 +416,9 @@ def _generate_v2(point_group, camera, points, start_frame=None, undistort=False)
     frame0 -= 1
 
     data['num_points'] = len(points)
-    data['is_undistorted'] = bool(undistort)
+    data['is_undistorted'] = None
+    if version == UV_TRACK_FORMAT_VERSION_2:
+        data['is_undistorted'] = bool(undistort)
 
     data['points'] = []
     for point in points:
@@ -359,6 +437,10 @@ def _generate_v2(point_group, camera, points, start_frame=None, undistort=False)
         point_data['id'] = uid
         point_data['set_name'] = point_set_name
         valid_mode = _get_point_valid_mode(point_group, point)
+
+        # Get the 3D point position
+        if version == UV_TRACK_FORMAT_VERSION_3:
+            point_data['3d'] = _get_3d_data_from_point(point_group, point)
 
         # Write per-frame position data
         frame = 1  # 3DE starts at frame '1' regardless of the 'start frame'.
@@ -408,3 +490,89 @@ def _generate_v2(point_group, camera, points, start_frame=None, undistort=False)
 
     data_str = json.dumps(data)
     return data_str
+
+
+def _generate_v2(point_group, camera, points,
+                 start_frame=None,
+                 undistort=False):
+    """
+    Generate the UV file format contents, using JSON format.
+
+    Each point will store:
+    - Point name
+    - X, Y position (in UV coordinates, per-frame)
+    - Point weight (per-frame)
+    - Point Set name
+    - Point 'Persistent ID'
+
+    :param point_group: The 3DE Point Group containing 'points'
+    :type point_group: str
+
+    :param camera: The 3DE Camera containing 2D 'points' data.
+    :type camera: str
+
+    :param points: The list of 3DE Points representing 2D data to
+                   save.
+    :type points: list of str
+
+    :param start_frame: The frame number to be considered at
+                       'first frame'. Defaults to 1001 if
+                       set to None.
+    :type start_frame: None or int
+
+    :param undistort: Should we apply undistortion to the 2D points
+                      data? Yes or no.
+    :type undistort: bool
+
+    :returns: A JSON format string, with the UV Track data in it.
+    :rtype: str
+    """
+    return _generate_v2_and_v3(
+        point_group,
+        camera,
+        points,
+        version=UV_TRACK_FORMAT_VERSION_2,
+        start_frame=start_frame,
+        undistort=undistort
+    )
+
+
+def _generate_v3(point_group, camera, points,
+                 start_frame=None):
+    """
+    Generate the UV file format contents, using JSON format.
+
+    Each point will store:
+    - Point name
+    - X, Y position (in UV coordinates, per-frame) as distorted and
+      undistorted
+    - Point weight (per-frame)
+    - Point Set name
+    - Point 'Persistent ID'
+    - 3D Point X, Y and Z
+    - 3D Point X, Y and Z locked status.
+
+    :param point_group: The 3DE Point Group containing 'points'
+    :type point_group: str
+
+    :param camera: The 3DE Camera containing 2D 'points' data.
+    :type camera: str
+
+    :param points: The list of 3DE Points representing 2D data to
+                   save.
+    :type points: list of str
+
+    :param start_frame: The frame number to be considered at
+                        'first frame'. Defaults to 1001 if set to None.
+    :type start_frame: None or int
+
+    :returns: A JSON format string, with the UV Track data in it.
+    :rtype: str
+    """
+    return _generate_v2_and_v3(
+        point_group,
+        camera,
+        points,
+        version=UV_TRACK_FORMAT_VERSION_3,
+        start_frame=start_frame
+    )

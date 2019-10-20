@@ -271,12 +271,21 @@
             ]
         },
         "marker_bundle_rename": {
-            "name": "Marker Bundle Rename",
+            "name": "Marker Bundle Rename...",
             "name_shelf": "MBRena",
             "tooltip": "Rename Selected Marker And Connected Bundles.",
             "command": [
                 "import mmSolver.tools.markerbundlerename.tool;",
                 "mmSolver.tools.markerbundlerename.tool.main();"
+            ]
+        },
+        "marker_bundle_rename_with_metadata": {
+            "name": "Marker Bundle Rename (with metadata)",
+            "name_shelf": "MBRena",
+            "tooltip": "Rename Selected Marker And Connected Bundles using embedded metadata.",
+            "command": [
+                "import mmSolver.tools.markerbundlerenamewithmetadata.tool;",
+                "mmSolver.tools.markerbundlerenamewithmetadata.tool.main();"
             ]
         },
         "link_unlink_marker_bundles": {

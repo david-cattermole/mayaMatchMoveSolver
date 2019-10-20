@@ -35,6 +35,9 @@
 # 3DE4.script.comment:  Load Markers UI in Maya to load the .uv file.
 # 3DE4.script.comment:
 # 3DE4.script.comment:  All 2D Tracks are resolution independent.
+# 3DE4.script.comment:
+# 3DE4.script.comment:  Files created with this tool will only work with
+# 3DE4.script.comment:  MM Solver v0.3.1+.
 #
 #
 

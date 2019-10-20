@@ -121,7 +121,7 @@ class LoadMarkerWindow(BaseWindow):
                 if load_mode == const.LOAD_MODE_REPLACE_VALUE:
                     mkr_list = lib.get_selected_markers()
                     mayareadfile.update_nodes(mkr_list, mkr_data_list)
-
+                lib.trigger_maya_to_refresh()
         finally:
             self.progressBar.setValue(100)
             self.progressBar.hide()

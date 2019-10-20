@@ -370,3 +370,12 @@ def get_default_image_resolution():
     w = maya.cmds.getAttr('defaultResolution.width')
     h = maya.cmds.getAttr('defaultResolution.height')
     return w, h
+
+
+def trigger_maya_to_refresh():
+    """
+    Trigger Maya to refresh.
+    """
+    frame = maya.cmds.currentTime(query=True)
+    maya.cmds.currentTime(frame, update=True)
+    maya.cmds.refresh(currentView=True, force=False)

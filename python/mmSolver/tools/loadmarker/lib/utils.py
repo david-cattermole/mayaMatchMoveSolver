@@ -132,7 +132,10 @@ def get_selected_markers():
 
     :rtype: list of mmSolver.api.Marker
     """
-    nodes = maya.cmds.ls(type='transform', long=True) or []
+    nodes = maya.cmds.ls(
+        selection=True,
+        type='transform',
+        long=True) or []
     mkr_nodes = mmapi.filter_marker_nodes(nodes)
     mkr_list = [mmapi.Marker(node=n) for n in mkr_nodes]
     return mkr_list

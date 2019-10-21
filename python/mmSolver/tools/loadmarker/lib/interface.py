@@ -256,10 +256,10 @@ class MarkerData(object):
         self._weight = KeyframeData()
         self._bnd_x = None
         self._bnd_y = None
-        self._bnd_y = None
+        self._bnd_z = None
         self._bnd_lock_x = None
         self._bnd_lock_y = None
-        self._bnd_lock_y = None
+        self._bnd_lock_z = None
 
     def get_name(self):
         return self._name

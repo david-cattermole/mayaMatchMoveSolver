@@ -41,10 +41,10 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             # self.get_data_path('match_mover', 'NonSequentialMatchmoverPoints.rz2'),
         ]
         for path in paths:
-            tmp_list = marker_read.read(path)
+            _, tmp_list = marker_read.read(path)
             mkr_data_list += tmp_list
 
-        # create the markers
+        # Create the markers
         num_nodes1 = len(maya.cmds.ls())
         marker_read.create_nodes(mkr_data_list)
         num_nodes2 = len(maya.cmds.ls())
@@ -82,7 +82,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         ]
         for path in paths:
             print('Reading... %r' % path)
-            tmp_list = marker_read.read(path)
+            _, tmp_list = marker_read.read(path)
             self.assertNotEqual(tmp_list, None)
             mkr_data_list += tmp_list
 
@@ -120,7 +120,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         ]
         for path, res in paths:
             print('Reading... %r' % path)
-            tmp_list = marker_read.read(
+            _, tmp_list = marker_read.read(
                 path,
                 image_width=res[0],
                 image_height=res[1]

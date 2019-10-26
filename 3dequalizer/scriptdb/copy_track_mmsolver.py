@@ -552,16 +552,19 @@ def _generate_v2_and_v3(point_group, camera, points,
                 frame += 1
                 continue
 
-            if undistort is True:
-                pos = tde4.removeDistortion2D(camera, frame,  pos)
+            pos_undist = pos
+            if undistort is True or undistort is None:
+                pos_undist = tde4.removeDistortion2D(camera, frame,  pos)
             weight = _get_point_weight(point_group, point, camera, frame)
 
             f = frame + frame0
             frame_data = {
                 'frame': f,
-                'pos': pos,
+                'pos': pos_undist,
                 'weight': weight
             }
+            if version == UV_TRACK_FORMAT_VERSION_3:
+                frame_data['pos_dist'] = pos
             point_data['per_frame'].append(frame_data)
             frame += 1
 

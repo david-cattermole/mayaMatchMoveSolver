@@ -61,6 +61,15 @@ class MarkerGroup(object):
             self.set_node(node)
         return
 
+    def __repr__(self):
+        result = '<{class_name}('.format(class_name=self.__class__.__name__)
+        result += '{hash} node={node}'.format(
+            hash=hex(hash(self)),
+            node=self.get_node(),
+        )
+        result += ')>'
+        return result
+
     def get_node(self):
         """
         Get the MarkerGroup node.
@@ -146,6 +155,7 @@ class MarkerGroup(object):
 
         mkr_grp = maya.cmds.createNode('mmMarkerGroupTransform',
                                        name=name, parent=cam_tfm)
+        mkr_grp = node_utils.get_long_name(mkr_grp)
         mkr_scl = maya.cmds.createNode('mmMarkerScale')
         self.set_node(mkr_grp)
 

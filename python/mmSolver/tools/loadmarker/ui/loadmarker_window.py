@@ -75,30 +75,30 @@ class LoadMarkerWindow(BaseWindow):
     def apply(self):
         cam = None
         mkr_grp = None
+
+        file_path = self.subForm.getFilePath()
+        load_mode = self.subForm.getLoadModeText()
+        camera_text = self.subForm.getCameraText()
+        camera_data = self.subForm.getCameraData()
+        mkr_grp_text = self.subForm.getMarkerGroupText()
+        mkr_grp_data = self.subForm.getMarkerGroupData()
+        load_bnd_pos = self.subForm.getLoadBundlePositions()
+        undist_mode = self.subForm.getDistortionModeText()
+        undistorted = undist_mode == const.UNDISTORTION_MODE_VALUE
+        width, height = self.subForm.getImageResolution()
+
         try:
             self.progressBar.setValue(0)
             self.progressBar.show()
 
-            file_path = self.subForm.getFilePath()
-            load_mode = self.subForm.getLoadModeText()
-            camera_text = self.subForm.getCameraText()
-            camera_data = self.subForm.getCameraData()
-            mkr_grp_text = self.subForm.getMarkerGroupText()
-            mkr_grp_data = self.subForm.getMarkerGroupData()
-            load_bnd_pos = self.subForm.getLoadBundlePositions()
-            undist_mode = self.subForm.getDistortionModeText()
-            undistorted = undist_mode == const.UNDISTORTION_MODE_VALUE
-            width, height = self.subForm.getImageResolution()
-            self.progressBar.setValue(20)
-
             with undoutils.undo_chunk_context():
-                file_info, mkr_data_list = mayareadfile.read(
+                _, mkr_data_list = mayareadfile.read(
                     file_path,
                     image_width=width,
                     image_height=height,
                     undistorted=undistorted,
                 )
-                self.progressBar.setValue(70)
+                self.progressBar.setValue(50)
 
                 if camera_text == const.NEW_CAMERA_VALUE:
                     cam = lib.create_new_camera()
@@ -108,7 +108,7 @@ class LoadMarkerWindow(BaseWindow):
                         mkr_grp = lib.create_new_marker_group(cam)
                     else:
                         mkr_grp = mkr_grp_data
-                self.progressBar.setValue(90)
+                self.progressBar.setValue(60)
 
                 if load_mode == const.LOAD_MODE_NEW_VALUE:
                     mayareadfile.create_nodes(
@@ -121,6 +121,8 @@ class LoadMarkerWindow(BaseWindow):
                 if load_mode == const.LOAD_MODE_REPLACE_VALUE:
                     mkr_list = lib.get_selected_markers()
                     mayareadfile.update_nodes(mkr_list, mkr_data_list)
+
+                self.progressBar.setValue(99)
                 lib.trigger_maya_to_refresh()
         finally:
             self.progressBar.setValue(100)

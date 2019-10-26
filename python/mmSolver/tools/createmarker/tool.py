@@ -53,6 +53,7 @@ def main():
             'both node types are selected.'
         )
         LOG.error(msg)
+        return
 
     elif len(cams) == 0 and len(mkr_grps) == 0:
         # Create a Marker under the active viewport camera.
@@ -97,6 +98,7 @@ def main():
 
     else:
         LOG.error('Should not get here.')
+        return
 
     bnd_name = mmapi.get_new_bundle_name('bundle1')
     bnd = mmapi.Bundle().create_node(

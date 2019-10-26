@@ -113,11 +113,13 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
 
         value = const.LOAD_MODE_DEFAULT_VALUE
         self.populateLoadModeModel(self.loadMode_model)
-        self.loadMode_comboBox.setCurrentText(value)
+        index = self.loadMode_model.stringList().index(value)
+        self.loadMode_comboBox.setCurrentIndex(index)
 
         value = const.DISTORTION_MODE_DEFAULT_VALUE
         self.populateDistortionModeModel(self.distortionMode_model)
-        self.distortionMode_comboBox.setCurrentText(value)
+        index = self.distortionMode_model.stringList().index(value)
+        self.distortionMode_comboBox.setCurrentIndex(index)
         return
 
     def updateFileInfo(self):

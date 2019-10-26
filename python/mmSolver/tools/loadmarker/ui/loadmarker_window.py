@@ -100,17 +100,16 @@ class LoadMarkerWindow(BaseWindow):
                 )
                 self.progressBar.setValue(50)
 
-                if camera_text == const.NEW_CAMERA_VALUE:
-                    cam = lib.create_new_camera()
-                else:
-                    cam = camera_data
-                    if mkr_grp_text == const.NEW_MARKER_GROUP_VALUE:
-                        mkr_grp = lib.create_new_marker_group(cam)
-                    else:
-                        mkr_grp = mkr_grp_data
-                self.progressBar.setValue(60)
-
                 if load_mode == const.LOAD_MODE_NEW_VALUE:
+                    if camera_text == const.NEW_CAMERA_VALUE:
+                        cam = lib.create_new_camera()
+                    else:
+                        cam = camera_data
+                        if mkr_grp_text == const.NEW_MARKER_GROUP_VALUE:
+                            mkr_grp = lib.create_new_marker_group(cam)
+                        else:
+                            mkr_grp = mkr_grp_data
+                    self.progressBar.setValue(60)
                     mayareadfile.create_nodes(
                         mkr_data_list,
                         cam=cam,
@@ -118,9 +117,13 @@ class LoadMarkerWindow(BaseWindow):
                         with_bundles=True,
                         load_bundle_position=load_bnd_pos,
                     )
-                if load_mode == const.LOAD_MODE_REPLACE_VALUE:
+
+                elif load_mode == const.LOAD_MODE_REPLACE_VALUE:
+                    self.progressBar.setValue(60)
                     mkr_list = lib.get_selected_markers()
                     mayareadfile.update_nodes(mkr_list, mkr_data_list)
+                else:
+                    raise ValueError('Load mode is not valid: %r' % load_mode)
 
                 self.progressBar.setValue(99)
                 lib.trigger_maya_to_refresh()

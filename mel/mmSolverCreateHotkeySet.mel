@@ -1,0 +1,197 @@
+//
+// Copyright (C) 2019 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// ---------------------------------------------------------------------
+//
+// This MEL script will create a hotkey set for mmSolver.
+//
+// The script is expected to overwrite any existing hotkeys already
+// defined, each time this script is run.
+//
+
+
+//
+// Remember current Hotkey Set
+//
+string $currentHotkeySet = `hotkeySet -q -current`;
+
+
+//
+// Delete existing runtime commands.
+//
+if (`runTimeCommand -exists mmSolver_markingMenu_Release`) {
+    runTimeCommand -e -delete mmSolver_markingMenu_Release;
+}
+if (`runTimeCommand -exists mmSolver_markingMenu_Press`) {
+    runTimeCommand -e -delete mmSolver_markingMenu_Press;
+}
+if (`runTimeCommand -exists mmSolver_centerOnSelected`) {
+    runTimeCommand -e -delete mmSolver_centerOnSelected;
+}
+if (`runTimeCommand -exists mmSolver_swapMarkerBundle`) {
+    runTimeCommand -e -delete mmSolver_swapMarkerBundle;
+}
+if (`runTimeCommand -exists mmSolver_selectMarkersAndBundles`) {
+    runTimeCommand -e -delete mmSolver_selectMarkersAndBundles;
+}
+if (`runTimeCommand -exists mmSolver_placeMarkerTool`) {
+    runTimeCommand -e -delete mmSolver_placeMarkerTool;
+}
+
+
+//
+// The runtime commands referenced by the hotkeys
+//
+runTimeCommand
+        -annotation "mmSolver_markingMenu (Release)"
+        -category "Other items.User Marking Menus"
+        -hotkeyCtx ""
+        -commandLanguage "mel"
+        -command ("if (`popupMenu -exists tempMM`) { deleteUI tempMM; }")
+        mmSolver_markingMenu_Release;
+
+runTimeCommand
+        -annotation "mmSolver_markingMenu (Press)"
+        -category "Other items.User Marking Menus"
+        -hotkeyCtx ""
+        -commandLanguage "mel"
+        -command ("if (`popupMenu -exists tempMM`) { deleteUI tempMM; }\npopupMenu -button 1 -ctl false -alt false -sh false -allowOptionBoxes true -parent `findPanelPopupParent` -mm 1 tempMM; \nsource \"menu_mmSolver_markingMenu\";\n")
+        mmSolver_markingMenu_Press;
+
+runTimeCommand
+        -annotation "Center On Selected Node"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.centertwodee.tool as tool;tool.main()")
+        mmSolver_centerOnSelected;
+
+runTimeCommand
+        -annotation "Swap Markers / Bundles Selection"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.selection.tools as tool;\ntool.swap_between_selected_markers_and_bundles();")
+        mmSolver_swapMarkerBundle;
+
+runTimeCommand
+        -annotation "Select both Markers and Bundles"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.selection.tools as tool;\ntool.select_both_markers_and_bundles();")
+        mmSolver_selectMarkersAndBundles;
+
+runTimeCommand
+        -annotation "Place a Marker with a manipulator"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.placemarkermanip.tool as tool;\ntool.main();")
+        mmSolver_placeMarkerTool;
+
+
+
+//
+// The name commands referenced by the hotkeys
+//
+nameCommand
+        -annotation "mmSolver_markingMenu_PressNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_markingMenu_Press")
+        mmSolver_markingMenu_PressNameCommand;
+
+nameCommand
+        -annotation "mmSolver_markingMenu_ReleaseNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_markingMenu_Release")
+        mmSolver_markingMenu_ReleaseNameCommand;
+
+nameCommand
+        -annotation "mmSolver_centerOnSelectedNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_centerOnSelected")
+        mmSolver_centerOnSelectedNameCommand;
+
+nameCommand
+        -annotation "mmSolver_swapMarkerBundleNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_swapMarkerBundle")
+        mmSolver_swapMarkerBundleNameCommand;
+
+nameCommand
+        -annotation "mmSolver_selectMarkersAndBundlesNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_selectMarkersAndBundles")
+        mmSolver_selectMarkersAndBundlesNameCommand;
+
+nameCommand
+        -annotation "mmSolver_placeMarkerToolNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_placeMarkerTool")
+        mmSolver_placeMarkerToolNameCommand;
+
+
+//
+// Delete existing Hotkey set.
+//
+if (`hotkeySet -exists mmSolver`) {
+    hotkeySet -e -delete mmSolver;
+}
+
+//
+// The hotkey set
+//
+hotkeySet -source "Maya_Default" -current mmSolver;
+
+//
+// The hotkey contexts and hotkeys
+//
+hotkey -keyShortcut "a" -releaseName ("mmSolver_markingMenu_ReleaseNameCommand");
+hotkey -keyShortcut "a" -name ("mmSolver_markingMenu_PressNameCommand");
+
+hotkey -keyShortcut "c" -name ("mmSolver_centerOnSelectedNameCommand");
+hotkey -keyShortcut "c" -releaseName ("");
+
+// hotkey -keyShortcut "\\" -releaseName ("");
+// hotkey -keyShortcut "\\" -name ("");
+hotkey -keyShortcut "z" -releaseName ("TogglePanZoomReleaseNameCommand");
+hotkey -keyShortcut "z" -name ("TogglePanZoomPressNameCommand");
+
+hotkey -keyShortcut "m" -name ("mmSolver_swapMarkerBundleNameCommand");
+hotkey -keyShortcut "m" -releaseName ("");
+
+hotkey -keyShortcut "n" -name ("mmSolver_selectMarkersAndBundlesNameCommand");
+hotkey -keyShortcut "n" -releaseName ("");
+
+hotkeyCtx -type "Editor" -addClient "hyperShadePanel";
+hotkeyCtx -type "Editor" -addClient "polyTexturePlacementPanel";
+hotkeyCtx -type "Editor" -addClient "nodeEditorPanel";
+hotkeyCtx -type "Editor" -addClient "outlinerPanel";
+hotkeyCtx -type "Editor" -addClient "cteEditor";
+hotkeyCtx -type "Editor" -addClient "profilerPanel";
+hotkeyCtx -type "Editor" -addClient "hyperGraphPanel";
+hotkeyCtx -type "Editor" -addClient "graphEditor";
+hotkeyCtx -type "Tool" -addClient "texCutContext";
+hotkeyCtx -type "Tool" -addClient "sculptMeshCache";
+hotkeyCtx -type "Tool" -addClient "texSculptCacheContext";
+hotkeyCtx -type "Tool" -addClient "Unfold3DBrush";
+
+//
+// Revert to originally active Hotkey Set
+//
+hotkeySet -e -current $currentHotkeySet;

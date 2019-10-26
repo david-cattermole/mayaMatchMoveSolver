@@ -16,15 +16,13 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Smooth keyframes constants.
+Hotkey Set Switcher constants.
 """
 
-WINDOW_TITLE = 'Smooth Keyframes'
-
-DEFAULT_MODE = 'fourier'
-DEFAULT_WIDTH = 2
-DEFAULT_BLEND_WIDTH = 2
-
-CONFIG_MODE_KEY = 'mmSolver_smoothkeyframes_mode'
-CONFIG_WIDTH_KEY = 'mmSolver_smoothkeyframes_width'
-CONFIG_BLEND_WIDTH_KEY = 'mmSolver_smoothkeyframes_blendWidth'
+HOTKEY_SET_NAME_DEFAULT = 'Maya_Default'
+MENU_CMD = (
+    'import mmSolver.tools.hotkeyswitcher.tool as tool;'
+    'tool.main(name="{name}");'
+)
+MENU_CMD_LANG = 'python'
+MENU_TOOLTIP = 'Switch to Hotkey Set {name}'

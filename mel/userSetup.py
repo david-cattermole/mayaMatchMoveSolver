@@ -51,6 +51,14 @@ def mmsolver_create_menu():
     mmSolver.tools.mmmenu.tool.build_menu()
 
 
+def mmsolver_create_hotkey_set():
+    """
+    Create the mmSolver Hotkey Set.
+    """
+    import mmSolver.tools.mmhotkeyset.tool
+    mmSolver.tools.mmhotkeyset.tool.build_hotkey_set()
+
+
 def mmsolver_startup():
     """
     Responsible for starting up mmSolver.
@@ -75,6 +83,12 @@ def mmsolver_startup():
         LOG.debug('Build Shelf: %r', build_shelf)
         if build_shelf is True:
             maya.utils.executeDeferred(mmsolver_create_shelf)
+
+        # Create Hotkey Set.
+        build_hotkey_set = bool(int(os.environ.get('MMSOLVER_CREATE_HOTKEY_SET', 1)))
+        LOG.debug('Build Hotkey Set: %r', build_hotkey_set)
+        if build_hotkey_set is True:
+            maya.utils.executeDeferred(mmsolver_create_hotkey_set)
     return
 
 

@@ -451,6 +451,25 @@
                 "import mmSolver.tools.deformmarker.tool as deformMkr;",
                 "deformMkr.remove_layer_override();"
             ]
+        },
+        "hotkey_switcher": {
+            "name": "Hotkey",
+            "tooltip": "Switch Hotkey Sets.",
+            "command": [
+                "pass"
+            ]
+        },
+        "hotkey_switcher_popup": {
+            "popup": true,
+            "popup_post_command": [
+                "import mmSolver.tools.hotkeyswitcher.tool as tool;",
+                "tool.create_menu('{menu}');"
+            ],
+            "popup_button": ["left", "right"]
+        },
+        "dummy": {
+            "name": "Dummy",
+            "tooltip": "A Dummy function to do nothing, used as a placeholder."
         }
     }
 }

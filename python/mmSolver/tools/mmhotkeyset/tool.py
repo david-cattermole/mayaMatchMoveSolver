@@ -16,15 +16,22 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Smooth keyframes constants.
+Build the mmSolver Hotkey Set.
 """
 
-WINDOW_TITLE = 'Smooth Keyframes'
+import maya.mel
+import mmSolver.logger
 
-DEFAULT_MODE = 'fourier'
-DEFAULT_WIDTH = 2
-DEFAULT_BLEND_WIDTH = 2
 
-CONFIG_MODE_KEY = 'mmSolver_smoothkeyframes_mode'
-CONFIG_WIDTH_KEY = 'mmSolver_smoothkeyframes_width'
-CONFIG_BLEND_WIDTH_KEY = 'mmSolver_smoothkeyframes_blendWidth'
+LOG = mmSolver.logger.get_logger()
+
+
+def build_hotkey_set():
+    """
+    Create the 'mmSolver' Hotkey Set.
+    """
+    LOG.info('Building mmSolver Hotkey Set...')
+
+    cmd = 'source "mmSolverCreateHotkeySet.mel";'
+    maya.mel.eval(cmd)
+    return

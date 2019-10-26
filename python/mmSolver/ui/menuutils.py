@@ -95,6 +95,8 @@ def create_menu_item(parent=None,
 
     if isinstance(name, basestring):
         label = str(name)
+    if isinstance(tooltip, basestring):
+        annotation = str(tooltip)
 
     item = None
     if divider is not True and subMenu is not True:
@@ -144,12 +146,17 @@ def create_menu_item(parent=None,
 
 
 def create_popup_menu(parent=None,
+                      postCmd=None,
                       button=None):
     """
     Create a Pop-Up menu (for a shelf button).
 
     :param parent: What should this control be placed under?
     :type parent: str
+
+    :param postCmd: Command to be run before the popup menu is shown.
+                    Replaces '{menu}' with the full menu name.
+    :type postCmd: None or str
 
     :param button: Which mouse button should active this pop-up menu?
                    1=left, 2=middle, 3=right mouse button.
@@ -160,11 +167,16 @@ def create_popup_menu(parent=None,
     """
     assert parent is not None
     assert isinstance(parent, basestring)
+    assert postCmd is None or isinstance(postCmd, basestring)
     if button is None:
         button = 3
     assert isinstance(button, int)
     menu = maya.cmds.popupMenu(
         parent=parent,
         button=button)
+    if postCmd is not None:
+        cmd = str(postCmd).format(menu=menu)
+        maya.cmds.popupMenu(
+            menu, edit=True,
+            postMenuCommand=cmd)
     return menu
-

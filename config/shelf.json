@@ -54,7 +54,8 @@
             "general_tools/gen_tools_popup/unparent_to_world",
             "general_tools/gen_tools_popup/---Controllers",
             "general_tools/gen_tools_popup/create_controller",
-            "general_tools/gen_tools_popup/remove_controller"
+            "general_tools/gen_tools_popup/remove_controller",
+            "hotkey_switcher/hotkey_switcher_popup/dummy"
         ],
         "functions": {
             "solver_popup": {

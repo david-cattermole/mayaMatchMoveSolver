@@ -19,11 +19,15 @@
 Smooths the selected keyframes.
 """
 
+import datetime
+import uuid
+
 import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.constant as utils_const
 import mmSolver.utils.configmaya as configmaya
+import mmSolver.utils.undo as undo_utils
 import mmSolver.tools.smoothkeyframes.constant as const
 import mmSolver.tools.smoothkeyframes.lib as lib
 
@@ -51,40 +55,45 @@ def smooth_selected_keyframes():
         )
         LOG.warning(msg)
         return
-    
-    for key_attr in key_attrs:
-        selected_keyframes = maya.cmds.keyframe(
-            key_attr,
-            query=True,
-            selected=True
-        ) or []
-        if len(selected_keyframes) == 0:
-            msg = (
-                'Please select keyframes '
-                '(in the Graph Editor) to smooth.'
-            )
-            LOG.warning(msg)
-            continue
 
-        smooth_type = configmaya.get_scene_option(
-            const.CONFIG_MODE_KEY,
-            default=const.DEFAULT_MODE)
-        width = configmaya.get_scene_option(
-            const.CONFIG_WIDTH_KEY,
-            default=const.DEFAULT_WIDTH)
-        
-        blend_smooth_type = utils_const.SMOOTH_TYPE_GAUSSIAN
-        blend_width = configmaya.get_scene_option(
-            const.CONFIG_BLEND_WIDTH_KEY,
-            default=const.DEFAULT_BLEND_WIDTH)
-        
-        lib.smooth_animcurve(
-            key_attr,
-            selected_keyframes,
-            smooth_type,
-            width,
-            blend_smooth_type,
-            blend_width)
+    smooth_type = configmaya.get_scene_option(
+        const.CONFIG_MODE_KEY,
+        default=const.DEFAULT_MODE)
+    width = configmaya.get_scene_option(
+        const.CONFIG_WIDTH_KEY,
+        default=const.DEFAULT_WIDTH)
+
+    blend_smooth_type = utils_const.SMOOTH_TYPE_GAUSSIAN
+    blend_width = configmaya.get_scene_option(
+        const.CONFIG_BLEND_WIDTH_KEY,
+        default=const.DEFAULT_BLEND_WIDTH)
+
+    undo_id = 'smoothkeyframes: '
+    undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
+    undo_id += ' '
+    undo_id += str(uuid.uuid4())
+    with undo_utils.undo_chunk_context(undo_id):
+        for key_attr in key_attrs:
+            selected_keyframes = maya.cmds.keyframe(
+                key_attr,
+                query=True,
+                selected=True
+            ) or []
+            if len(selected_keyframes) == 0:
+                msg = (
+                    'Please select keyframes '
+                    '(in the Graph Editor) to smooth.'
+                )
+                LOG.warning(msg)
+                continue
+
+            lib.smooth_animcurve(
+                key_attr,
+                selected_keyframes,
+                smooth_type,
+                width,
+                blend_smooth_type,
+                blend_width)
     return
 
 

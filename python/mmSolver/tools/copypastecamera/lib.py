@@ -20,21 +20,21 @@ The Copy/Paste Camera library functions.
 
 The file saved will contain::
 
-- Camera Name
+    - Camera Name
 
-- Image Plane File Path
+    - Image Plane File Path
 
-- Pixel Aspect Ratio (static)
+    - Pixel Aspect Ratio (static)
 
-- Camera Translation (animated)
+    - Camera Translation (animated)
 
-- Camera Rotation (animated - in ZXY rotation order)
+    - Camera Rotation (animated - in ZXY rotation order)
 
-- Camera Film Back (animated)
+    - Camera Film Back (animated)
 
-- Camera Film Offsets (animated)
+    - Camera Film Offsets (animated)
 
-- Camera Focal Length (animated)
+    - Camera Focal Length (animated)
 
 
 This tool does not store Lens Distortion (the Image Plane File Path is
@@ -175,14 +175,15 @@ def get_image_path_pattern(image_name, use_frame_ext, test_disk=None):
 
     Assumptions::
 
-    - '#' character is not used in the image_name string.
+        - '#' character is not used in the image_name string.
 
-    - '?' character is not used in the image_name string.
+        - '?' character is not used in the image_name string.
 
-    - '*' character is not used in the image_name string.
+        - '*' character is not used in the image_name string.
 
-    - An animated image sequence uses the file naming pattern
-      'file.####.ext' or 'file.ext', such as 'image.1001.jpg' or 'image.jpg'.
+        - An animated image sequence uses the file naming pattern
+          'file.####.ext' or 'file.ext', such as 'image.1001.jpg' 
+          or 'image.jpg'.
 
     .. note::
 

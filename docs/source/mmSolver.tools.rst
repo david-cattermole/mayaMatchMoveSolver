@@ -14,6 +14,7 @@ mmSolver.tools
    mmSolver.tools.centertwodee
    mmSolver.tools.channelsen
    mmSolver.tools.convertmarker
+   mmSolver.tools.copypastecamera
    mmSolver.tools.createbundle
    mmSolver.tools.createcontroller
    mmSolver.tools.createmarker

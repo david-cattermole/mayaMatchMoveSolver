@@ -17,4 +17,11 @@
 #
 """
 Create a shelf.
+
+Shelves are created automatically based on the configuration options.
+
+.. note:: It is possible to create a 'minimal' set of shelf buttons,
+   using a Python function so that users and studios may embed
+   mmSolver into already existing shelves.
+
 """

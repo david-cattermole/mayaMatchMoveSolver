@@ -31,10 +31,32 @@ Config Maya
     :members:
     :undoc-members:
 
+Convert Types
++++++++++++++
+
+.. automodule:: mmSolver.utils.converttypes
+    :members:
+    :undoc-members:
+
+
+Line Intersect
+++++++++++++++
+
+.. automodule:: mmSolver.utils.lineintersect
+    :members:
+    :undoc-members:
+
 Node
 ++++
 
 .. automodule:: mmSolver.utils.node
+    :members:
+    :undoc-members:
+
+Node Affects
+++++++++++++
+
+.. automodule:: mmSolver.utils.nodeaffects
     :members:
     :undoc-members:
 
@@ -106,3 +128,17 @@ Constant
 .. autoattribute:: mmSolver.utils.constant.RAYTRACE_MAX_DIST
 
 .. autoattribute:: mmSolver.utils.constant.RAYTRACE_EPSILON
+
+.. autoattribute:: mmSolver.utils.constant.CONFIG_PATH_VAR_NAME
+
+.. autoattribute:: mmSolver.utils.constant.CONFIG_HOME_DIR_PATH
+
+.. autoattribute:: mmSolver.utils.constant.SCENE_DATA_NODE
+
+.. autoattribute:: mmSolver.utils.constant.SCENE_DATA_ATTR
+
+.. autoattribute:: mmSolver.utils.constant.ROTATE_ORDER_STR_LIST
+
+.. autoattribute:: mmSolver.utils.constant.ROTATE_ORDER_INDEX_TO_STR
+
+.. autoattribute:: mmSolver.utils.constant.ROTATE_ORDER_STR_TO_INDEX

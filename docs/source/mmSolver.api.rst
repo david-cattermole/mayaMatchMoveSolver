@@ -122,6 +122,8 @@ Marker
 
 .. autofunction:: mmSolver.api.get_markers_start_end_frames
 
+.. autofunction:: mmSolver.api.find_marker_attr_mapping
+
 MarkerGroup
 +++++++++++
 
@@ -153,7 +155,34 @@ Frame
 Solver
 ++++++
 
-.. autoclass:: mmSolver.api.Solver
+Solver Base
+-----------
+
+.. autoclass:: mmSolver.api.SolverBase
+   :members:
+   :undoc-members:
+   :special-members:
+
+Solver Basic
+------------
+
+.. autoclass:: mmSolver.api.SolverBasic
+   :members:
+   :undoc-members:
+   :special-members:
+
+Solver Standard
+---------------
+
+.. autoclass:: mmSolver.api.SolverBasic
+   :members:
+   :undoc-members:
+   :special-members:
+
+Solver Step
+---------------
+
+.. autoclass:: mmSolver.api.SolverStep
    :members:
    :undoc-members:
    :special-members:
@@ -167,6 +196,48 @@ Collection
    :special-members:
 
 .. autofunction:: mmSolver.api.update_deviation_on_collection
+
+.. autofunction:: mmSolver.api.run_progress_func
+
+.. autofunction:: mmSolver.api.run_status_func
+
+.. autofunction:: mmSolver.api.is_single_frame
+
+.. autofunction:: mmSolver.api.disconnect_animcurves
+
+.. autofunction:: mmSolver.api.reconnect_animcurves
+
+.. autofunction:: mmSolver.api.clear_attr_keyframes
+
+.. autofunction:: mmSolver.api.generate_isolate_nodes
+
+Action
++++++++
+
+.. autoclass:: mmSolver.api.Action
+   :members:
+   :undoc-members:
+   :special-members:
+
+.. autofunction:: mmSolver.api.action_func_is_mmSolver
+
+.. autofunction:: mmSolver.api.func_str_to_callable
+
+.. autofunction:: mmSolver.api.action_to_components
+
+Execute
++++++++
+
+.. autoclass:: mmSolver.api.ExecuteOptions
+   :members:
+   :undoc-members:
+   :special-members:
+
+.. autofunction:: mmSolver.api.createExecuteOptions
+
+.. autofunction:: mmSolver.api.validate
+
+.. autofunction:: mmSolver.api.execute
 
 SolveResult
 +++++++++++
@@ -193,7 +264,6 @@ Naming
 
 .. autofunction:: mmSolver.api.get_new_bundle_name
 
-
 Utilities
 +++++++++
 
@@ -201,6 +271,7 @@ Utilities
 
 .. autofunction:: mmSolver.api.get_object_type
 
+.. autofunction:: mmSolver.api.get_marker_group_above_node
 
 State
 +++++

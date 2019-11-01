@@ -303,12 +303,21 @@
             "command": ["pass"]
         },
         "center_twodee": {
-            "name": "2D Center on Selected",
+            "name": "Apply 2D Center on Selected",
             "name_shelf": "Center",
             "tooltip": "2D Center on Selected.",
             "command": [
                 "import mmSolver.tools.centertwodee.tool;",
                 "mmSolver.tools.centertwodee.tool.main();"
+            ]
+        },
+        "center_twodee_remove": {
+            "name": "Remove 2D Center",
+            "name_shelf": "RmCent",
+            "tooltip": "Remove 2D Centerfrom active camera.",
+            "command": [
+                "import mmSolver.tools.centertwodee.tool;",
+                "mmSolver.tools.centertwodee.tool.remove();"
             ]
         },
         "channel_sensitivity_ui": {

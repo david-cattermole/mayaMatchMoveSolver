@@ -1,0 +1,318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Node Creation Tools &#8212; mayaMatchMoveSolver master documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'master',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Selection Tools" href="tools_selection.html" />
+    <link rel="prev" title="Solver UI" href="tools_solver_ui.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_selection.html" title="Selection Tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tools_solver_ui.html" title="Solver UI"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" accesskey="U">Tools</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="node-creation-tools">
+<h1>Node Creation Tools<a class="headerlink" href="#node-creation-tools" title="Permalink to this headline">¶</a></h1>
+<p>Creating various nodes and objects with mmSolver uses the tools below.</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="_images/tools_shelf_icons_creation.png"><img alt="Node Creation Shelf Icons" src="_images/tools_shelf_icons_creation.png" style="width: 25%;" /></a>
+<p class="caption"><span class="caption-text">Node Creation Shelf Icons</span></p>
+</div>
+<div class="section" id="create-marker">
+<h2>Create Marker<a class="headerlink" href="#create-marker" title="Permalink to this headline">¶</a></h2>
+<p>Create a default Marker node under the active viewport&#8217;s camera.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Click in a Maya 3D viewport, to activate the camera.</li>
+<li>Run the Create Marker tool, using the shelf, menu or marking menu.<ul>
+<li>A Marker will be created in the center of the viewport.</li>
+</ul>
+</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Default Maya cameras (such as <code class="docutils literal"><span class="pre">persp</span></code>, <code class="docutils literal"><span class="pre">top</span></code>, <code class="docutils literal"><span class="pre">front</span></code>, etc)
+are not supported to create Markers.</p>
+</div>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createmarker.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="load-markers">
+<span id="load-markers-ref"></span><h2>Load Markers<a class="headerlink" href="#load-markers" title="Permalink to this headline">¶</a></h2>
+<p>The Load Markers UI allows loading of <code class="docutils literal"><span class="pre">.uv</span></code> (mmSolver), <code class="docutils literal"><span class="pre">.txt</span></code>
+(3DEqualizer4), <code class="docutils literal"><span class="pre">.rz2</span></code> (Autodesk MatchMover) formated files.</p>
+<p>When opening the UI, the contents of the user’s clipboard is
+queried. If the clipboard is a valid file path, it will be
+automatically pasted into the “File Path”, so you won’t need to
+“Browse” for the file.</p>
+<p>In 3DEqualizer, the &#8220;Copy 2D Tracks (MM Solver)&#8221; is designed to copy
+the selected 2D points to a temporary file path and then place that
+file path on the clipboard automatically. Once the file path is on the
+clipboard, just open the Maya Load Marker tool and the path will be
+read automatically.</p>
+<p>The &#8220;Camera&#8221; list contains all the cameras currently in the Maya
+scene. If no cameras are available (persp, front, top, left do not
+count), the default option is to create a new camera. The &#8220;Update&#8221;
+button refreshes the &#8220;Camera&#8221; list without needing to close and
+re-open the UI.</p>
+<p>Once a file path is given, press the “Load” button.
+For <code class="docutils literal"><span class="pre">.txt</span></code> format you will need to enter the Width / Height of the input
+format.</p>
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="_images/tools_loadmarker_overview.png"><img alt="Load Markers UI" src="_images/tools_loadmarker_overview.png" style="width: 66%;" /></a>
+<p class="caption"><span class="caption-text">Load Markers UI</span></p>
+</div>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.loadmarker.ui.loadmarker_window</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="section" id="copy-2d-tracks-from-3dequalizer">
+<h3>Copy 2D Tracks from 3DEqualizer<a class="headerlink" href="#copy-2d-tracks-from-3dequalizer" title="Permalink to this headline">¶</a></h3>
+<p>To create a <code class="docutils literal"><span class="pre">.uv</span></code> file, you may use the 3DEqualizer <code class="docutils literal"><span class="pre">Copy</span> <span class="pre">Tracks</span>
+<span class="pre">(MM</span> <span class="pre">Solver)</span></code> script (see mmSolver installation to install this
+script).</p>
+<ol class="arabic simple">
+<li>In 3DEqualizer, select a 2D Point in the Object or Point Browser.</li>
+<li>Right-click the point and run <code class="docutils literal"><span class="pre">Copy</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code>.<ul>
+<li>A <code class="docutils literal"><span class="pre">.uv</span></code> file will be saved into a temporary file, and the file
+path will be on your system copy/paste clipboard, ready to be used in
+Maya.</li>
+</ul>
+</li>
+<li>Next Open Maya and use the file path in the Load Markers UI.</li>
+</ol>
+<div class="figure align-left">
+<a class="reference internal image-reference" href="_images/tools_loadmarker_tde_copyTracks.png"><img alt="Copy a 2D Track in 3DE" src="_images/tools_loadmarker_tde_copyTracks.png" style="width: 66%;" /></a>
+</div>
+</div>
+<div class="section" id="loading-markers-in-maya">
+<h3>Loading Markers in Maya<a class="headerlink" href="#loading-markers-in-maya" title="Permalink to this headline">¶</a></h3>
+<p>Loading Markers into Maya from external Tracking software is a common
+task needed for solving 3D objects and cameras.</p>
+<div class="figure align-right" id="id3">
+<a class="reference internal image-reference" href="_images/tools_loadmarker_menu.png"><img alt="mmSolver &gt; Load Marker... tool" src="_images/tools_loadmarker_menu.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-text">mmSolver &gt; Load Marker... tool</span></p>
+</div>
+<ol class="arabic simple">
+<li>Open the Load Marker UI, for example use the menu <code class="docutils literal"><span class="pre">mmSolver</span> <span class="pre">&gt;</span> <span class="pre">Load</span>
+<span class="pre">Marker...</span></code>.<ul>
+<li>If you already have a valid file path on your Copy/Paste
+Clipboard, then the Load Marker UI will auto-load the file path.</li>
+<li>The file contents will be displayed below the file path.</li>
+</ul>
+</li>
+<li>Choose your options:<ul>
+<li><strong>Mode</strong> allows you to create new Markers or replace data on
+selected Markers.</li>
+<li><strong>Camera</strong> is the camera node you wish to place the newly created
+Markers under. You may also create a new camera node.</li>
+<li><strong>Marker Group</strong> is the Marker Group (under the <strong>Camera</strong>) that you
+wish to create the Markers underneath. You may create a new
+Marker Group, using the <code class="docutils literal"><span class="pre">&lt;Create</span> <span class="pre">New&gt;</span></code> option.</li>
+<li><strong>Distortion Mode</strong> will allow choosing the type of 2D point data
+to create or load. Some formats (for example <code class="docutils literal"><span class="pre">.uv</span></code>) can store
+both undistorted and distorted 2D data.</li>
+<li><strong>Load Bundle Positions</strong> will allow loading 3D point information
+saved along with the 2D Marker data. Only some formats (for
+example <code class="docutils literal"><span class="pre">.uv</span></code>) can store both 2D and 3D data in one file.</li>
+<li><strong>Image Resolution</strong> is for use with 3DEqualizer4 <code class="docutils literal"><span class="pre">.txt</span></code> files,
+which are stored with plate resolution embedded into the 2D
+data. Use this field to choose the correct plate resolution for
+the 2D data that was exported.</li>
+</ul>
+</li>
+<li>Press the <strong>Load</strong> button.</li>
+</ol>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/tools_loadmarker_create_new_camera.png"><img alt="Create a new Camera and/or Marker Group" src="_images/tools_loadmarker_create_new_camera.png" style="width: 66%;" /></a>
+</div>
+</div>
+<div class="section" id="updating-replacing-markers-in-maya">
+<h3>Updating / Replacing Markers in Maya<a class="headerlink" href="#updating-replacing-markers-in-maya" title="Permalink to this headline">¶</a></h3>
+<p>Marker nodes in Maya can be overwritten with newly tracked data.</p>
+<ol class="arabic">
+<li><p class="first">Open the Load Marker UI.</p>
+</li>
+<li><p class="first">Set the <strong>File Path</strong> for the UI.</p>
+</li>
+<li><p class="first">Change <strong>Mode</strong> to <em>Replace Selected Markers</em>.</p>
+</li>
+<li><p class="first">Select Marker nodes using the Maya Outliner.</p>
+</li>
+<li><p class="first">Press <strong>Load</strong> button.</p>
+<p>The Selected Markers will be considered for update.</p>
+<p>If you have select one Marker node, and the loaded file contains
+one 2D Track, then the 2D Track data will overwrite the selected
+Marker node.</p>
+<p>If you have multiple Marker nodes, selected then the Load Marker
+tool will try to match the pre-existing Marker name or metadata
+with the 2D Tracking data in the file. When using 3DEqualizer the
+2D Tracking data is loaded onto the Marker node that was already
+loaded using 3DEqualizer - there is a link between the 2D data in
+3DEqualizer and the Marker node in Maya.</p>
+</li>
+</ol>
+<div class="figure align-center" id="id4">
+<a class="reference internal image-reference" href="_images/tools_loadmarker_load_mode_replace.png"><img alt="Replace the selected Marker nodes." src="_images/tools_loadmarker_load_mode_replace.png" style="width: 66%;" /></a>
+<p class="caption"><span class="caption-text">Replace the selected Marker nodes.</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="convert-to-marker">
+<h2>Convert to Marker<a class="headerlink" href="#convert-to-marker" title="Permalink to this headline">¶</a></h2>
+<p>Converts the selected transform nodes into screen-space Markers, as
+viewed though the active viewport camera.</p>
+<p>The created markers are named based on the selected transform nodes, and
+are parented under the active viewport camera.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Click into an active 3D viewport.</li>
+<li>Select one or more Maya transform nodes.</li>
+<li>Run tool.<ul>
+<li>A Marker will be created for each Maya transform node selected,
+across the current timeline&#8217;s frame range.</li>
+</ul>
+</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.convertmarker.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-bundle">
+<h2>Create Bundle<a class="headerlink" href="#create-bundle" title="Permalink to this headline">¶</a></h2>
+<p>Create a default Bundle node.</p>
+<p>If Markers are selected, the Bundle will attempt to attach to it, while
+adhering to the rule; <em>a bundle can only have one marker representation
+for each camera.</em></p>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createbundle.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Node Creation Tools</a><ul>
+<li><a class="reference internal" href="#create-marker">Create Marker</a></li>
+<li><a class="reference internal" href="#load-markers">Load Markers</a><ul>
+<li><a class="reference internal" href="#copy-2d-tracks-from-3dequalizer">Copy 2D Tracks from 3DEqualizer</a></li>
+<li><a class="reference internal" href="#loading-markers-in-maya">Loading Markers in Maya</a></li>
+<li><a class="reference internal" href="#updating-replacing-markers-in-maya">Updating / Replacing Markers in Maya</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#convert-to-marker">Convert to Marker</a></li>
+<li><a class="reference internal" href="#create-bundle">Create Bundle</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tools_solver_ui.html"
+                        title="previous chapter">Solver UI</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tools_selection.html"
+                        title="next chapter">Selection Tools</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tools_createnode.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_selection.html" title="Selection Tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tools_solver_ui.html" title="Solver UI"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

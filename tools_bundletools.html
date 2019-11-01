@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Bundle Tools &#8212; mayaMatchMoveSolver master documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'master',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Marker Tools" href="tools_markertools.html" />
+    <link rel="prev" title="Marker Bundle Tools" href="tools_markerbundletools.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_markertools.html" title="Marker Tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tools_markerbundletools.html" title="Marker Bundle Tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" accesskey="U">Tools</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bundle-tools">
+<h1>Bundle Tools<a class="headerlink" href="#bundle-tools" title="Permalink to this headline">¶</a></h1>
+<p>The tools used to manipulate 3D Bundle nodes.</p>
+<div class="section" id="toggle-bundle-lock-state">
+<h2>Toggle Bundle Lock State<a class="headerlink" href="#toggle-bundle-lock-state" title="Permalink to this headline">¶</a></h2>
+<p>Toggle bundle lock state will toggle lock state of the selected
+bundle&#8217;s attributes, if any of the bundles translate attributes are
+locked, running this tool will unlock all attributes on the selected
+bundles, and running the tool again will lock all attributes.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select bundle nodes.</li>
+<li>Run tool.
+- The selected bundle node attributes will be toggled between locked and unlocked.</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.togglebundlelock.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">toggle_bundle_lock</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="move-bundle-to-marker-current-frame">
+<h2>Move Bundle to Marker (current frame)<a class="headerlink" href="#move-bundle-to-marker-current-frame" title="Permalink to this headline">¶</a></h2>
+<p>Moves the Bundle under it&#8217;s attached Marker, in screen-space. This
+will make the Marker and Bundle line up perfectly, but will remove
+depth information from the Bundle.</p>
+<p>An alternative name for this tool is <cite>Re-Project Bundle</cite>.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select Markers or Bundles</li>
+</ol>
+<ol class="arabic simple" start="3">
+<li>Run tool.</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reprojectbundle.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="triangulate-bundle">
+<h2>Triangulate Bundle<a class="headerlink" href="#triangulate-bundle" title="Permalink to this headline">¶</a></h2>
+<p>Calculate a 3D position of a bundle, based on the camera and 2D marker.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select Markers or Bundles</li>
+</ol>
+<ol class="arabic simple" start="3">
+<li>Run tool.</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.triangulatebundle.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="aim-at-camera">
+<h2>Aim at Camera<a class="headerlink" href="#aim-at-camera" title="Permalink to this headline">¶</a></h2>
+<p>Aim the selected transform nodes toward the active viewport camera.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This tool is deprecated and hidden from the menus. Use the
+&#8220;Screen-Z Manipulator&#8221; tool instead.</p>
+</div>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.cameraaim.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="screen-z-manipulator">
+<h2>Screen-Z Manipulator<a class="headerlink" href="#screen-z-manipulator" title="Permalink to this headline">¶</a></h2>
+<p>Aims the move manipulator tool at the active viewport camera.
+After aiming the move tool at the camera, the screen-space Z axis is
+highlighted, ready to be middle-click dragged</p>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenzmanipulator.tool</span>
+<span class="n">mmSolver</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">screenzmanipulator</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="attach-bundle-to-curve">
+<h2>Attach Bundle to Curve<a class="headerlink" href="#attach-bundle-to-curve" title="Permalink to this headline">¶</a></h2>
+<p>Run this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.attachbundletocurve.tool</span>
+<span class="n">mmSolver</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">attachbundletocurve</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Bundle Tools</a><ul>
+<li><a class="reference internal" href="#toggle-bundle-lock-state">Toggle Bundle Lock State</a></li>
+<li><a class="reference internal" href="#move-bundle-to-marker-current-frame">Move Bundle to Marker (current frame)</a></li>
+<li><a class="reference internal" href="#triangulate-bundle">Triangulate Bundle</a></li>
+<li><a class="reference internal" href="#aim-at-camera">Aim at Camera</a></li>
+<li><a class="reference internal" href="#screen-z-manipulator">Screen-Z Manipulator</a></li>
+<li><a class="reference internal" href="#attach-bundle-to-curve">Attach Bundle to Curve</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tools_markerbundletools.html"
+                        title="previous chapter">Marker Bundle Tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tools_markertools.html"
+                        title="next chapter">Marker Tools</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tools_bundletools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_markertools.html" title="Marker Tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tools_markerbundletools.html" title="Marker Bundle Tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="mmSolver.tools.sysinfowindow" href="mmSolver.tools.sysinfowindow.html" />
+    <link rel="next" title="mmSolver.tools.surfacerivet" href="mmSolver.tools.surfacerivet.html" />
     <link rel="prev" title="mmSolver.tools.smoothkeyframes" href="mmSolver.tools.smoothkeyframes.html" /> 
   </head>
   <body role="document">
@@ -40,7 +40,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="mmSolver.tools.sysinfowindow.html" title="mmSolver.tools.sysinfowindow"
+          <a href="mmSolver.tools.surfacerivet.html" title="mmSolver.tools.surfacerivet"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="mmSolver.tools.smoothkeyframes.html" title="mmSolver.tools.smoothkeyframes"
@@ -342,7 +342,7 @@ structures stored must be removed.</p>
 <div class="section" id="library">
 <h2>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="module-mmSolver.tools.solver.lib.attr">
-<span id="attr"></span><h3>Attr<a class="headerlink" href="#module-mmSolver.tools.solver.lib.attr" title="Permalink to this headline">¶</a></h3>
+<span id="attribute"></span><h3>Attribute<a class="headerlink" href="#module-mmSolver.tools.solver.lib.attr" title="Permalink to this headline">¶</a></h3>
 <p>Attribute functions</p>
 <dl class="function">
 <dt id="mmSolver.tools.solver.lib.attr.get_attributes_from_collection">
@@ -618,7 +618,7 @@ percentage value, between 0 and 100.</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The ExecuteOptions ready to be passed to an execution function.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">ExecuteOptions</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="mmSolver.api.html#mmSolver.api.ExecuteOptions" title="mmSolver.api.ExecuteOptions">ExecuteOptions</a></td>
 </tr>
 </tbody>
 </table>
@@ -634,7 +634,7 @@ percentage value, between 0 and 100.</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; Collection to execute.</li>
-<li><strong>options</strong> (<em>mmSolver.api.ExecuteOptions</em>) &#8211; Solver execution options.</li>
+<li><strong>options</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.ExecuteOptions" title="mmSolver.api.ExecuteOptions"><em>mmSolver.api.ExecuteOptions</em></a>) &#8211; Solver execution options.</li>
 <li><strong>log_level</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; Logging level to print out.</li>
 <li><strong>prog_fn</strong> (<em>None</em><em> or </em><em>function</em>) &#8211; A function called with an &#8216;int&#8217; argument, to
 display progress information to the user. The
@@ -683,10 +683,564 @@ does not update the UI.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The active collection to solve.</li>
-<li><strong>options</strong> (<em>mmSolver.api.ExecuteOptions</em>) &#8211; Options for the solver options.</li>
+<li><strong>options</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.ExecuteOptions" title="mmSolver.api.ExecuteOptions"><em>mmSolver.api.ExecuteOptions</em></a>) &#8211; Options for the solver options.</li>
 <li><strong>log_level</strong> (<em>str</em>) &#8211; How much information should we print out;a
 &#8216;error&#8217;, &#8216;warning&#8217;, &#8216;info&#8217;, &#8216;verbose&#8217; or &#8216;debug&#8217;.</li>
 <li><strong>window</strong> (<em>SolverWindow</em><em> or </em><em>None</em>) &#8211; The SolverWindow object for the UI.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.tools.solver.lib.collectionstate">
+<span id="collection-state"></span><h3>Collection State<a class="headerlink" href="#module-mmSolver.tools.solver.lib.collectionstate" title="Permalink to this headline">¶</a></h3>
+<p>Querying and setting of state information on Collection nodes.</p>
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.ensure_attr_exists">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">ensure_attr_exists</code><span class="sig-paren">(</span><em>node</em>, <em>attr_name</em>, <em>attr_type=None</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.ensure_attr_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure an attribute exists on the given node, or we create it.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_value_from_node">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_value_from_node</code><span class="sig-paren">(</span><em>node</em>, <em>attr_name</em>, <em>attr_type=None</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_value_from_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a value from a node.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">First create the attribute if it does not exist.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_value_on_node">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_value_on_node</code><span class="sig-paren">(</span><em>node</em>, <em>attr_name</em>, <em>value</em>, <em>attr_type=None</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_value_on_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a value on a node.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">First create the attribute if it does not exist.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_value_structure_from_node">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_value_structure_from_node</code><span class="sig-paren">(</span><em>node</em>, <em>attr_name</em>, <em>attr_type=None</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_value_structure_from_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a value from a node.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">First create the attribute if it does not exist.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_value_structure_on_node">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_value_structure_on_node</code><span class="sig-paren">(</span><em>node</em>, <em>attr_name</em>, <em>value</em>, <em>attr_type=None</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_value_structure_on_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a value on a node.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">First create the attribute if it does not exist.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_override_current_frame_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_override_current_frame_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_override_current_frame_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of &#8216;Override Current Frame&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True or False.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_override_current_frame_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_override_current_frame_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_override_current_frame_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of &#8216;Override Current Frame&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>bool</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_attribute_toggle_animated_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_attribute_toggle_animated_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_attribute_toggle_animated_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of &#8216;Attributes Toggle Animated&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True or False.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_attribute_toggle_animated_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_attribute_toggle_animated_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_attribute_toggle_animated_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of &#8216;Attributes Toggle Animated&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>bool</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_attribute_toggle_static_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_attribute_toggle_static_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_attribute_toggle_static_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of &#8216;Attributes Toggle Static&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True or False.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_attribute_toggle_static_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_attribute_toggle_static_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_attribute_toggle_static_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of &#8216;Attributes Toggle Static&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>bool</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_attribute_toggle_locked_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_attribute_toggle_locked_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_attribute_toggle_locked_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of &#8216;Attributes Toggle Locked&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True or False.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_attribute_toggle_locked_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_attribute_toggle_locked_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_attribute_toggle_locked_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of &#8216;Attributes Toggle Locked&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>bool</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_object_toggle_camera_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_object_toggle_camera_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_object_toggle_camera_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of &#8216;Objects Toggle Camera&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True or False.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_object_toggle_camera_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_object_toggle_camera_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_object_toggle_camera_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of &#8216;Objects Toggle Camera&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>bool</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_object_toggle_marker_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_object_toggle_marker_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_object_toggle_marker_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of &#8216;Objects Toggle Marker&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True or False.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_object_toggle_marker_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_object_toggle_marker_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_object_toggle_marker_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of &#8216;Objects Toggle Marker&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>bool</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_object_toggle_bundle_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_object_toggle_bundle_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_object_toggle_bundle_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of &#8216;Objects Toggle Bundle&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True or False.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_object_toggle_bundle_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_object_toggle_bundle_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_object_toggle_bundle_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of &#8216;Objects Toggle Bundle&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>bool</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_solver_tab_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_solver_tab_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_solver_tab_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of solver &#8216;tab&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The tab name.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_solver_tab_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_solver_tab_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_solver_tab_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of solver &#8216;tab&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>str</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_solver_range_type_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_solver_range_type_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_solver_range_type_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of solver &#8216;Range Type&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An integer value in const.RANGE_TYPE_VALUE_LIST.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_solver_range_type_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_solver_range_type_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_solver_range_type_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of solver &#8216;Range Type&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>int</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_solver_frames_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_solver_frames_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_solver_frames_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of solver &#8216;Frames&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The string representation of the frames.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_solver_frames_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_solver_frames_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_solver_frames_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of solver &#8216;Frames&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>str</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_solver_increment_by_frame_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_solver_increment_by_frame_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_solver_increment_by_frame_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of solver &#8216;Increment By Frame&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The frame number value.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_solver_increment_by_frame_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_solver_increment_by_frame_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_solver_increment_by_frame_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of solver &#8216;Increment By Frame&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>int</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_solver_root_frames_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_solver_root_frames_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_solver_root_frames_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of solver &#8216;Root Frames&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The string representation of the frames.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_solver_root_frames_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_solver_root_frames_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_solver_root_frames_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of solver &#8216;Root Frames&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>str</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_solver_only_root_frames_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_solver_only_root_frames_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_solver_only_root_frames_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of solver &#8216;Only Root Frames&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A boolean, do we solve only root frames, or not?</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_solver_only_root_frames_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_solver_only_root_frames_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_solver_only_root_frames_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of solver &#8216;Only Root Frames&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>bool</em>) &#8211; Value to set to.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.get_solver_global_solve_from_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">get_solver_global_solve_from_collection</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.get_solver_global_solve_from_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of solver &#8216;Global Solve&#8217;, from a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to query.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A boolean, do we solve all frames and attributes together, or not?</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.solver.lib.collectionstate.set_solver_global_solve_on_collection">
+<code class="descclassname">mmSolver.tools.solver.lib.collectionstate.</code><code class="descname">set_solver_global_solve_on_collection</code><span class="sig-paren">(</span><em>col</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.lib.collectionstate.set_solver_global_solve_on_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of solver &#8216;Global Solve&#8217; on a Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to change.</li>
+<li><strong>value</strong> (<em>bool</em>) &#8211; Value to set to.</li>
 </ul>
 </td>
 </tr>
@@ -1394,6 +1948,42 @@ active collection.</td>
 <h3>Solver Layout<a class="headerlink" href="#solver-layout" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
+<div class="section" id="ui-widgets">
+<h2>UI Widgets<a class="headerlink" href="#ui-widgets" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="attribute-widget">
+<h3>Attribute Widget<a class="headerlink" href="#attribute-widget" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="collection-widget">
+<h3>Collection Widget<a class="headerlink" href="#collection-widget" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="frame-range-widget">
+<h3>Frame Range Widget<a class="headerlink" href="#frame-range-widget" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="node-browser-widget">
+<h3>Node Browser Widget<a class="headerlink" href="#node-browser-widget" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="object-widget">
+<h3>Object Widget<a class="headerlink" href="#object-widget" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="root-frame-widget">
+<h3>Root Frame Widget<a class="headerlink" href="#root-frame-widget" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="solver-widget">
+<h3>Solver Widget<a class="headerlink" href="#solver-widget" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="solver-basic-widget">
+<h3>Solver Basic Widget<a class="headerlink" href="#solver-basic-widget" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="solver-standard-widget">
+<h3>Solver Standard Widget<a class="headerlink" href="#solver-standard-widget" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="solver-legacy-widget">
+<h3>Solver Legacy Widget<a class="headerlink" href="#solver-legacy-widget" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="solver-state-widget">
+<h3>Solver State Widget<a class="headerlink" href="#solver-state-widget" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
 <div class="section" id="ui-node-abstractions">
 <h2>UI Node Abstractions<a class="headerlink" href="#ui-node-abstractions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="attribute-nodes">
@@ -1427,8 +2017,9 @@ active collection.</td>
 <li><a class="reference internal" href="#tool">Tool</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.solver.maya_callbacks">Maya Callbacks</a></li>
 <li><a class="reference internal" href="#library">Library</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.solver.lib.attr">Attr</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.solver.lib.attr">Attribute</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.solver.lib.collection">Collection</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.solver.lib.collectionstate">Collection State</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.solver.lib.marker">Marker</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.solver.lib.maya_utils">Maya Utilities</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.solver.lib.scene_data">Scene Data</a></li>
@@ -1441,6 +2032,20 @@ active collection.</td>
 <li><a class="reference internal" href="#user-interface">User Interface</a><ul>
 <li><a class="reference internal" href="#solver-window">Solver Window</a></li>
 <li><a class="reference internal" href="#solver-layout">Solver Layout</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ui-widgets">UI Widgets</a><ul>
+<li><a class="reference internal" href="#attribute-widget">Attribute Widget</a></li>
+<li><a class="reference internal" href="#collection-widget">Collection Widget</a></li>
+<li><a class="reference internal" href="#frame-range-widget">Frame Range Widget</a></li>
+<li><a class="reference internal" href="#node-browser-widget">Node Browser Widget</a></li>
+<li><a class="reference internal" href="#object-widget">Object Widget</a></li>
+<li><a class="reference internal" href="#root-frame-widget">Root Frame Widget</a></li>
+<li><a class="reference internal" href="#solver-widget">Solver Widget</a></li>
+<li><a class="reference internal" href="#solver-basic-widget">Solver Basic Widget</a></li>
+<li><a class="reference internal" href="#solver-standard-widget">Solver Standard Widget</a></li>
+<li><a class="reference internal" href="#solver-legacy-widget">Solver Legacy Widget</a></li>
+<li><a class="reference internal" href="#solver-state-widget">Solver State Widget</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#ui-node-abstractions">UI Node Abstractions</a><ul>
@@ -1459,8 +2064,8 @@ active collection.</td>
   <p class="topless"><a href="mmSolver.tools.smoothkeyframes.html"
                         title="previous chapter">mmSolver.tools.smoothkeyframes</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="mmSolver.tools.sysinfowindow.html"
-                        title="next chapter">mmSolver.tools.sysinfowindow</a></p>
+  <p class="topless"><a href="mmSolver.tools.surfacerivet.html"
+                        title="next chapter">mmSolver.tools.surfacerivet</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -1492,7 +2097,7 @@ active collection.</td>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="mmSolver.tools.sysinfowindow.html" title="mmSolver.tools.sysinfowindow"
+          <a href="mmSolver.tools.surfacerivet.html" title="mmSolver.tools.surfacerivet"
              >next</a> |</li>
         <li class="right" >
           <a href="mmSolver.tools.smoothkeyframes.html" title="mmSolver.tools.smoothkeyframes"

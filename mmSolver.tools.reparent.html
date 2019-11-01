@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mmSolver.tools.reparent &#8212; mayaMatchMoveSolver master documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'master',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.tools.reprojectbundle" href="mmSolver.tools.reprojectbundle.html" />
+    <link rel="prev" title="mmSolver.tools.raycastmarker" href="mmSolver.tools.raycastmarker.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.reprojectbundle.html" title="mmSolver.tools.reprojectbundle"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.raycastmarker.html" title="mmSolver.tools.raycastmarker"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-mmSolver.tools.reparent">
+<span id="mmsolver-tools-reparent"></span><h1>mmSolver.tools.reparent<a class="headerlink" href="#module-mmSolver.tools.reparent" title="Permalink to this headline">¶</a></h1>
+<p>Re-parent transform node to a new parent, across time.</p>
+<div class="section" id="module-mmSolver.tools.reparent.tool">
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.reparent.tool" title="Permalink to this headline">¶</a></h2>
+<p>Re-parent transform node to a new parent, across time.</p>
+<dl class="function">
+<dt id="mmSolver.tools.reparent.tool.reparent_under_node">
+<code class="descclassname">mmSolver.tools.reparent.tool.</code><code class="descname">reparent_under_node</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent.tool.reparent_under_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Re-parent the selection under the last selected node.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.reparent.tool.unparent_to_world">
+<code class="descclassname">mmSolver.tools.reparent.tool.</code><code class="descname">unparent_to_world</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent.tool.unparent_to_world" title="Permalink to this definition">¶</a></dt>
+<dd><p>Un-parent the selected nodes into world space.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.tools.reparent.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.reparent.lib" title="Permalink to this headline">¶</a></h2>
+<p>Re-parent transform node to a new parent, across time.</p>
+<dl class="function">
+<dt id="mmSolver.tools.reparent.lib.reparent">
+<code class="descclassname">mmSolver.tools.reparent.lib.</code><code class="descname">reparent</code><span class="sig-paren">(</span><em>children</em>, <em>parent</em>, <em>sparse=True</em>, <em>delete_static_anim_curves=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent.lib.reparent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reparent the children under the given parent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>children</strong> (<em>[</em><a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of child nodes to be modified.</li>
+<li><strong>parent</strong> (<a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>None</em>) &#8211; The new parent node for children, or None means
+un-parent.</li>
+<li><strong>sparse</strong> (<em>bool</em>) &#8211; Keyframe animation on the children each frame
+(dense) or sparse (only at keyframes).</li>
+<li><strong>delete_static_anim_curves</strong> (<em>bool</em>) &#8211; Delete any animCurves that all
+have the same values.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of &#8216;children&#8217; TransformNodes modified, will not
+contain child nodes if the child is already parented under
+&#8216;parent&#8217;.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[<a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode">TransformNode</a>, .]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.tools.reparent.keytimeutils">
+<span id="key-time-utilities"></span><h2>Key-Time Utilities<a class="headerlink" href="#module-mmSolver.tools.reparent.keytimeutils" title="Permalink to this headline">¶</a></h2>
+<p>Keyframe time querying utilities.</p>
+<dl class="class">
+<dt id="mmSolver.tools.reparent.keytimeutils.KeyframeTimes">
+<em class="property">class </em><code class="descclassname">mmSolver.tools.reparent.keytimeutils.</code><code class="descname">KeyframeTimes</code><a class="headerlink" href="#mmSolver.tools.reparent.keytimeutils.KeyframeTimes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="mmSolver.tools.reparent.keytimeutils.KeyframeTimes.add_node_attrs">
+<code class="descname">add_node_attrs</code><span class="sig-paren">(</span><em>node</em>, <em>attrs</em>, <em>start_frame</em>, <em>end_frame</em>, <em>parents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent.keytimeutils.KeyframeTimes.add_node_attrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add node attributes into the keyframe times.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.tools.reparent.keytimeutils.KeyframeTimes.get_nodes">
+<code class="descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent.keytimeutils.KeyframeTimes.get_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.tools.reparent.keytimeutils.KeyframeTimes.get_frame_range_for_node">
+<code class="descname">get_frame_range_for_node</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent.keytimeutils.KeyframeTimes.get_frame_range_for_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.tools.reparent.keytimeutils.KeyframeTimes.sum_frame_range_for_nodes">
+<code class="descname">sum_frame_range_for_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent.keytimeutils.KeyframeTimes.sum_frame_range_for_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.tools.reparent.keytimeutils.KeyframeTimes.get_times">
+<code class="descname">get_times</code><span class="sig-paren">(</span><em>node</em>, <em>sparse</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent.keytimeutils.KeyframeTimes.get_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>The logic to query time for a node, in sparse or dense mode.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="constant">
+<h2>Constant<a class="headerlink" href="#constant" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.reparent</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.reparent.tool">Tool</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.reparent.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.reparent.keytimeutils">Key-Time Utilities</a></li>
+<li><a class="reference internal" href="#constant">Constant</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.tools.raycastmarker.html"
+                        title="previous chapter">mmSolver.tools.raycastmarker</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.tools.reprojectbundle.html"
+                        title="next chapter">mmSolver.tools.reprojectbundle</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.reparent.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.reprojectbundle.html" title="mmSolver.tools.reprojectbundle"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.raycastmarker.html" title="mmSolver.tools.raycastmarker"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

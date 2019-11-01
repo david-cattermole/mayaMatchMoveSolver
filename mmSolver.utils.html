@@ -65,7 +65,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140591510990416'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140591510990416'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='140591510990544'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140472250449808'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140472250449808'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='140472250482768'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -735,6 +735,144 @@ does not already exist.</li>
 </dd></dl>
 
 </div>
+<div class="section" id="module-mmSolver.utils.converttypes">
+<span id="convert-types"></span><h2>Convert Types<a class="headerlink" href="#module-mmSolver.utils.converttypes" title="Permalink to this headline">¶</a></h2>
+<p>Conversion functions between various types, for fundamental Python types.</p>
+<dl class="function">
+<dt id="mmSolver.utils.converttypes.stringToBoolean">
+<code class="descclassname">mmSolver.utils.converttypes.</code><code class="descname">stringToBoolean</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.converttypes.stringToBoolean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a string into a boolean value, using list of &#8216;TRUE_WORDS&#8217;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.converttypes.booleanToString">
+<code class="descclassname">mmSolver.utils.converttypes.</code><code class="descname">booleanToString</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.converttypes.booleanToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert boolean value to a string.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.converttypes.stringToIntList">
+<code class="descclassname">mmSolver.utils.converttypes.</code><code class="descname">stringToIntList</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.converttypes.stringToIntList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a string of integer ranges to a list of integers.</p>
+<p>value = &#8216;1001-1101&#8217;
+value = &#8216;1001,1002,1003-1005,1010-1012&#8217;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>str</em>) &#8211; The string value to convert.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of integer numbers parsed from the string.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[int, .]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.converttypes.intListToString">
+<code class="descclassname">mmSolver.utils.converttypes.</code><code class="descname">intListToString</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.converttypes.intListToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a list of integers to a string.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.converttypes.stringToInteger">
+<code class="descclassname">mmSolver.utils.converttypes.</code><code class="descname">stringToInteger</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.converttypes.stringToInteger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.utils.lineintersect">
+<span id="line-intersect"></span><h2>Line Intersect<a class="headerlink" href="#module-mmSolver.utils.lineintersect" title="Permalink to this headline">¶</a></h2>
+<p>Utility functions for 3D line intersection (for triangulating 3D points).</p>
+<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Example usage</span>
+<span class="kn">import</span> <span class="nn">mmSolver.utils.triangulate</span> <span class="k">as</span> <span class="nn">tri_utils</span>
+<span class="n">cam_tfm</span> <span class="o">=</span> <span class="s1">&#39;|camera1&#39;</span>
+<span class="n">mkr_node</span> <span class="o">=</span> <span class="s1">&#39;|camera1|markerGroup1|marker1_MKR&#39;</span>
+<span class="n">first_frm_num</span> <span class="o">=</span> <span class="mi">1001</span>
+<span class="n">last_frm_num</span> <span class="o">=</span> <span class="mi">1101</span>
+<span class="n">first_pnt</span><span class="p">,</span> <span class="n">first_dir</span> <span class="o">=</span> <span class="n">tri_utils</span><span class="o">.</span><span class="n">get_point_and_direction</span><span class="p">(</span>
+    <span class="n">cam_tfm</span><span class="p">,</span>
+    <span class="n">mkr_node</span><span class="p">,</span>
+    <span class="n">first_frm_num</span>
+<span class="p">)</span>
+<span class="n">last_pnt</span><span class="p">,</span> <span class="n">last_dir</span> <span class="o">=</span> <span class="n">tri_utils</span><span class="o">.</span><span class="n">get_point_and_direction</span><span class="p">(</span>
+    <span class="n">cam_tfm</span><span class="p">,</span>
+    <span class="n">mkr_node</span><span class="p">,</span>
+    <span class="n">last_frm_num</span>
+<span class="p">)</span>
+<span class="n">a_pnt</span><span class="p">,</span> <span class="n">b_pnt</span> <span class="o">=</span> <span class="n">tri_utils</span><span class="o">.</span><span class="n">calculate_approx_intersection_point_between_two_3d_lines</span><span class="p">(</span>
+    <span class="n">first_pnt</span><span class="p">,</span> <span class="n">first_dir</span><span class="p">,</span>
+    <span class="n">last_pnt</span><span class="p">,</span> <span class="n">last_dir</span>
+<span class="p">)</span>
+<span class="n">pnt</span> <span class="o">=</span> <span class="n">OpenMaya</span><span class="o">.</span><span class="n">MPoint</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">a_pnt</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">b_pnt</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="n">a_pnt</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">b_pnt</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="n">a_pnt</span><span class="o">.</span><span class="n">z</span> <span class="o">+</span> <span class="n">b_pnt</span><span class="o">.</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+<span class="p">)</span>
+<span class="c1"># Use &#39;pnt&#39; as the &#39;intersection&#39; point of the two lines.</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="mmSolver.utils.lineintersect.get_point_and_direction">
+<code class="descclassname">mmSolver.utils.lineintersect.</code><code class="descname">get_point_and_direction</code><span class="sig-paren">(</span><em>camera_node</em>, <em>point_node</em>, <em>frame</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.lineintersect.get_point_and_direction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the direction of the camera toward a given point.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function changes the current maya scene time to the
+frame argument. It is the user&#8217;s responsibility to ensure the
+frame is maintained before/after the tool using this function
+is finished.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>camera_node</strong> (<em>str</em>) &#8211; Camera transform node.</li>
+<li><strong>point_node</strong> (<em>str</em>) &#8211; Transform node to aim at.</li>
+<li><strong>frame</strong> (<em>int</em>) &#8211; The frame to query at.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Point and direction from camera to point.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(OpenMaya.MPoint, OpenMaya.MVector)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.lineintersect.calculate_approx_intersection_point_between_two_3d_lines">
+<code class="descclassname">mmSolver.utils.lineintersect.</code><code class="descname">calculate_approx_intersection_point_between_two_3d_lines</code><span class="sig-paren">(</span><em>a_pnt</em>, <em>a_dir</em>, <em>b_pnt</em>, <em>b_dir</em>, <em>eps=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.lineintersect.calculate_approx_intersection_point_between_two_3d_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate approximate intersection between two lines in 3D.</p>
+<p><a class="reference external" href="http://paulbourke.net/geometry/pointlineplane/">http://paulbourke.net/geometry/pointlineplane/</a>
+<a class="reference external" href="http://paulbourke.net/geometry/pointlineplane/lineline.c">http://paulbourke.net/geometry/pointlineplane/lineline.c</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>a_pnt</strong> (<em>MPoint</em>) &#8211; Point A.</li>
+<li><strong>a_dir</strong> (<em>MVector</em>) &#8211; Direction A.</li>
+<li><strong>b_pnt</strong> (<em>MPoint</em>) &#8211; Point B</li>
+<li><strong>b_dir</strong> (<em>MVector</em>) &#8211; Direction B.</li>
+<li><strong>eps</strong> (<em>float</em>) &#8211; Direction B.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Two points to define the closest line intersection.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:rtype (MPoint, MPoint)</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-mmSolver.utils.node">
 <span id="node"></span><h2>Node<a class="headerlink" href="#module-mmSolver.utils.node" title="Permalink to this headline">¶</a></h2>
 <p>Utilities built around Maya nodes and node paths.</p>
@@ -1037,6 +1175,106 @@ colour set).</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.utils.nodeaffects">
+<span id="node-affects"></span><h2>Node Affects<a class="headerlink" href="#module-mmSolver.utils.nodeaffects" title="Permalink to this headline">¶</a></h2>
+<p>Query DG relationship information.</p>
+<p>Use the Maya DG graph structure to determine the sparsity structure,
+a relation of cause and effect; which attributes affect which
+markers.</p>
+<p>Answer this question: &#8216;for each marker, determine which attributes
+can affect it&#8217;s bundle.&#8217;</p>
+<p>Detect inputs and outputs for marker-bundle relationships. For each
+marker, get the bundle, then find all the attributes that affect the
+bundle (and it&#8217;s parent nodes). If the bundle cannot be affected by
+any attribute in the solver, print a warning and remove it from the
+solve list.</p>
+<p>This relationship building will be the basis for the mmSolver
+residual/parameter block creation. Note we do not need to worry
+about time in our relationship building, connections cannot be made
+at different times (and if they did, that would be stupid). This
+relationship building could mean we only need to measure a limited
+number of bundles, hence improving performance.</p>
+<p>There are special cases for detecting inputs/outputs between markers
+and attributes.</p>
+<ul class="simple">
+<li>Any transform node/attribute above the marker in the DAG that
+affects the world transform.</li>
+<li>Cameras; transform attributes and focal length will affect all
+markers</li>
+</ul>
+<dl class="function">
+<dt id="mmSolver.utils.nodeaffects.find_plugs_affecting_transform">
+<code class="descclassname">mmSolver.utils.nodeaffects.</code><code class="descname">find_plugs_affecting_transform</code><span class="sig-paren">(</span><em>bnd_node</em>, <em>cam_tfm</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.nodeaffects.find_plugs_affecting_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find plugs that affect the world-matrix transform of the node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>bnd_node</strong> (<em>str</em>) &#8211; The input node to query.</li>
+<li><strong>cam_tfm</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; The camera that should be considered (optional)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Set of Maya attributes in &#8216;node.attr&#8217; string format.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[str, .]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.nodeaffects.find_marker_attr_mapping_raw">
+<code class="descclassname">mmSolver.utils.nodeaffects.</code><code class="descname">find_marker_attr_mapping_raw</code><span class="sig-paren">(</span><em>mkr_list</em>, <em>attr_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.nodeaffects.find_marker_attr_mapping_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a mapping of markers to attributes, as a matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mkr_list</strong> (<em>[</em><em>(</em><em>str</em><em>, </em><em>str</em><em>, </em><em>str</em><em>)</em><em>, </em><em>.</em><em>]</em>) &#8211; Tuple of marker node, bundle node and camera
+shape node in a list; each list of nodes
+represent a single Marker relationship and will
+be considered in mapping.</li>
+<li><strong>attr_list</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Maya attributes to consider in mapping, in the
+familiar &#8216;node.attr&#8217; string representation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Boolean matrix of size &#8216;markers x attrs&#8217;. Matrix index
+is &#8216;mapping[marker_index][attr_index]&#8217;, based on the
+index of the mkr_cam_node_frm_list and attr_list given.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[[bool, . ]]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.nodeaffects.sort_into_hierarchy_groups">
+<code class="descclassname">mmSolver.utils.nodeaffects.</code><code class="descname">sort_into_hierarchy_groups</code><span class="sig-paren">(</span><em>mkr_list</em>, <em>attr_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.nodeaffects.sort_into_hierarchy_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create blocks of Markers and Attributes, sorted by hierarchy.</p>
+<p>This will allow us to solve top-level objects (ie, root level)
+first, before solving children. This will ensure we minimise the
+base before attempting to solve the children.</p>
+<p>TODO: Write this.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
 </tr>
 </tbody>
 </table>
@@ -2337,6 +2575,41 @@ isolate object list.</p>
 <code class="descclassname">constant.</code><code class="descname">RAYTRACE_EPSILON</code><em class="property"> = 0.0001</em><a class="headerlink" href="#mmSolver.utils.constant.RAYTRACE_EPSILON" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.CONFIG_PATH_VAR_NAME">
+<code class="descclassname">constant.</code><code class="descname">CONFIG_PATH_VAR_NAME</code><em class="property"> = 'MMSOLVER_CONFIG_PATH'</em><a class="headerlink" href="#mmSolver.utils.constant.CONFIG_PATH_VAR_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.CONFIG_HOME_DIR_PATH">
+<code class="descclassname">constant.</code><code class="descname">CONFIG_HOME_DIR_PATH</code><em class="property"> = {'Windows': '${APPDATA}/mmSolver/', 'Linux': '${HOME}/.mmSolver/'}</em><a class="headerlink" href="#mmSolver.utils.constant.CONFIG_HOME_DIR_PATH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.SCENE_DATA_NODE">
+<code class="descclassname">constant.</code><code class="descname">SCENE_DATA_NODE</code><em class="property"> = 'MM_SOLVER_SCENE_DATA'</em><a class="headerlink" href="#mmSolver.utils.constant.SCENE_DATA_NODE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.SCENE_DATA_ATTR">
+<code class="descclassname">constant.</code><code class="descname">SCENE_DATA_ATTR</code><em class="property"> = 'data'</em><a class="headerlink" href="#mmSolver.utils.constant.SCENE_DATA_ATTR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.ROTATE_ORDER_STR_LIST">
+<code class="descclassname">constant.</code><code class="descname">ROTATE_ORDER_STR_LIST</code><em class="property"> = ['xyz', 'yzx', 'zxy', 'xzy', 'yxz', 'zyx']</em><a class="headerlink" href="#mmSolver.utils.constant.ROTATE_ORDER_STR_LIST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.ROTATE_ORDER_INDEX_TO_STR">
+<code class="descclassname">constant.</code><code class="descname">ROTATE_ORDER_INDEX_TO_STR</code><em class="property"> = {0: 'xyz', 1: 'yzx', 2: 'zxy', 3: 'xzy', 4: 'yxz', 5: 'zyx'}</em><a class="headerlink" href="#mmSolver.utils.constant.ROTATE_ORDER_INDEX_TO_STR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.constant.ROTATE_ORDER_STR_TO_INDEX">
+<code class="descclassname">constant.</code><code class="descname">ROTATE_ORDER_STR_TO_INDEX</code><em class="property"> = {'yxz': 4, 'yzx': 1, 'xyz': 0, 'xzy': 3, 'zxy': 2, 'zyx': 5}</em><a class="headerlink" href="#mmSolver.utils.constant.ROTATE_ORDER_STR_TO_INDEX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 
@@ -2353,7 +2626,10 @@ isolate object list.</p>
 <li><a class="reference internal" href="#module-mmSolver.utils.camera">Camera</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.config">Config</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.configmaya">Config Maya</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.converttypes">Convert Types</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.lineintersect">Line Intersect</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.node">Node</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.nodeaffects">Node Affects</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.raytrace">Raytrace</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.reproject">Re-Project</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.smooth">Smooth</a></li>

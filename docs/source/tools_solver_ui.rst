@@ -1,6 +1,5 @@
-
 .. _solver-ui-ref:
- 
+
 Solver UI
 =========
 

@@ -20,8 +20,8 @@ Window for the Channel Sensitivity tool.
 
 Usage::
 
-   import mmSolver.tools.channelsen.ui.channelsen_window as channelsen_window
-   channelsen_window.main()
+   import mmSolver.tools.channelsen.ui.channelsen_window as tool
+   tool.main()
 
 """
 

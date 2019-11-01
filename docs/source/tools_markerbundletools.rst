@@ -1,5 +1,5 @@
-Node Linking Tools
-==================
+Marker Bundle Tools
+===================
 
 Link Marker + Bundle
 --------------------
@@ -14,8 +14,8 @@ Run this Python command:
 
 .. code:: python
 
-    import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
-    link_mb_tool.link_marker_bundle()
+    import mmSolver.tools.linkmarkerbundle.tool as tool
+    tool.link_marker_bundle()
 
 Unlink Marker from all Bundles
 ------------------------------
@@ -26,5 +26,5 @@ Run this Python command:
 
 .. code:: python
 
-    import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
-    link_mb_tool.unlink_marker_bundle()
+    import mmSolver.tools.linkmarkerbundle.tool as tool
+    tool.unlink_marker_bundle()

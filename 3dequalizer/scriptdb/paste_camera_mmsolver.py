@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Paste Camera (MM Solver)...
 #
-# 3DE4.script.version:  v1.0
+# 3DE4.script.version:  v1.1
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Camera
 # 3DE4.script.gui:      Object Browser::Context Menu Cameras
@@ -650,12 +650,15 @@ def _parse_data(file_path):
     :type file_path: str
 
     :returns: The data structure contained in the file path.
-    :rtype: dict
+    :rtype: dict or None
     """
     assert file_path is not None
     assert isinstance(file_path, basestring)
     assert len(file_path) > 0
-    file_data = parse(file_path)
+    try:
+        file_data = parse(file_path)
+    except Exception as e:
+        file_data = None
     return file_data
 
 

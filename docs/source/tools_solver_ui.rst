@@ -9,100 +9,178 @@ command (`mmSolver`).
 .. figure:: images/tools_solver_ui_overview.png
     :alt: Solver User Interface
     :align: center
-    :width: 66%
+    :scale: 50%
 
     Solver User Interface
 
-Objects
-~~~~~~~
+Input Objects
+~~~~~~~~~~~~~
 
-This section of the UI displays the marker objects that will be used for
-solving.
+.. figure:: images/tools_solver_ui_widget_objects.png
+    :alt: Solver Input Objects
+    :align: right
+    :scale: 50%
 
-Attributes
-~~~~~~~~~~
+The Objects are the inputs to the current Solve. This will display
+of Markers used for detecting deviation.
+To display the Markers, and the related objects, you may turn on/off
+the ``CAM``, ``MKR`` and ``BND`` buttons.
 
-This section of the UI shows the Attributes that will be used for
-solving.
+There are various columns showing attributes of the input Objects.
+To display the column visiblity, use the Edit menu.
 
-Solver Steps
-~~~~~~~~~~~~
+.. list-table:: Input Object Fields
+   :widths: auto
+   :header-rows: 1
 
-You can add multiple solver “steps”, each step is performed going
-**downwards**, first #1, then #2, #3, etc.
+   * - Field
+     - Description
+   * - Node
+     - The input Object's Node.
+   * - Weight
+     - The weight the Marker will have in the solver. Higher values
+       give an importance to this Marker, at the expense of other
+       Markers.
+   * - Frame Deviation
+     - The deviation, in pixels, of the Marker on the current frame.
+   * - Average Deviation
+     - The average deviation, in pixels, of the Marker across all
+       valid frames.
+   * - Maximum Deviation
+     - The maximum deviation and frame number on the Marker.
 
-When you hit the “solve” button you are performing all of the solve
-steps.
+Output Attributes
+~~~~~~~~~~~~~~~~~
 
-The ‘Override Current Frame’ check-box allows the user to temporarily
-override the time for all Solve Steps with the current frame. The
-current frame value dynamically updates as the user changes the Maya
-frame. The original solver frame numbers are always stored and never
-overwritten.
+.. figure:: images/tools_solver_ui_widget_attributes.png
+    :alt: Solver Output Attributes
+    :align: right
+    :scale: 50%
 
-Each Solver “step” contains:
+This section of the UI shows the Attributes solved.
 
--  Enabled
--  Frames
--  Attributes
--  Strategy
+.. list-table:: Output Object Fields
+   :widths: auto
+   :header-rows: 1
 
-Enabled
-^^^^^^^
+   * - Field
+     - Description
+   * - Attr
+     - Description
+   * - State
+     - description.
 
-Should we use the solver step or not?
+Solver Tabs
+~~~~~~~~~~~
 
-This is a text input (currently), type “yes”, or “no”, “y” or “n”, or
-“true” or “false” (and other common english words), to set the state.
+The Solver tabs define the different solvers and the options for each
+solver. The different solvers tabs share options, such as frame range,
+but each Solver tab is independent.
 
-Frames
-^^^^^^
+The documentation for each Solver tab is below.
 
-This is the list of frames to solve.
+.. toctree::
+    :maxdepth: 2
 
-The frame numbers can be entered as “#-#” to define a range, or
-“#,#,#,#” to define a list of individual frame numbers.
+    tools_solver_ui_tab_basic
+    tools_solver_ui_tab_standard
+    tools_solver_ui_tab_legacy
 
-Examples are “1,10,20,30,40,50” or “10-20,30,40-50”.
+Menus
+~~~~~
 
-Once text is entered the UI will evaluate the list and re-create the
-string shown.
+File Menu
++++++++++
 
-.. _attributes-1:
+.. figure:: images/tools_solver_ui_menu_file.png
+    :alt: File Menu
+    :align: right
+    :scale: 50%
 
-Attributes
-^^^^^^^^^^
+The ``File`` menu contains features to create and manipulate the
+overall use of the Solver UI, such as Collections.
 
-This is a filter of the attributes used in the solve step.
+.. list-table:: File Menu
+   :widths: auto
+   :header-rows: 1
 
-You may type into this field either one of these options:
+   * - Name
+     - Description
+   * - name1
+     - Description
+   * - name2
+     - description.
+   * - name3
+     - description.
 
--  "Animated Only" - Use only the animated attributes
--  "Static + Animated" - Use the static and animated attributes
+Edit Menu
++++++++++
 
-Strategy
-^^^^^^^^
+.. figure:: images/tools_solver_ui_menu_edit.png
+    :alt: Edit Menu
+    :align: right
+    :scale: 50%
 
-This is the “solving strategy”; how the frames and attributes are
-ordered in the solving process.
+The ``Edit`` menu displays options and features for how to change the
+solve or the usage of the Solver UI.
 
-There are three currently supported strategies:
+.. list-table:: Edit Menu
+   :widths: auto
+   :header-rows: 1
 
--  "Per-Frame" - Each frame is solved one-by-one.
+   * - Name
+     - Description
+   * - name1
+     - Description
+   * - name2
+     - description.
+   * - name3
+     - description.
 
--  "Two Frames Fwd" - Each pair of sequential frames are solved
-   together; frame 1 and 2, then 2 and 3, then 3 and 4, etc.
+View Menu
++++++++++
 
--  "All Frames" - All frame numbers are solved together, at once (also
-   called a “global solve”).
+.. figure:: images/tools_solver_ui_menu_view.png
+    :alt: View Menu
+    :align: right
+    :scale: 50%
 
-If the “Animated Only” attribute filter is currently used, then the
-strategies above are unused and instead we loop over the frames
-sequentially and solve each frame independent of any other frame. This
-is the fastest method, but cannot solve Static attributes.
+.. list-table:: View Menu
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Description
+   * - name1
+     - Description
+   * - name2
+     - description.
+   * - name3
+     - description.
+
+Log Menu
+++++++++
+
+.. figure:: images/tools_solver_ui_menu_log.png
+    :alt: Log Menu
+    :align: right
+    :scale: 50%
+
+.. list-table:: Log Menu
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Description
+   * - name1
+     - Description
+   * - name2
+     - description.
+   * - name3
+     - description.
 
 Python Function
-^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~
 
 The commands below are available for this tool, and allow hotkeys or
 custom buttons to be created.

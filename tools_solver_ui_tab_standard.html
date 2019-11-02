@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Selection Tools &#8212; mayaMatchMoveSolver master documentation</title>
+    <title>Standard Solver Tab &#8212; mayaMatchMoveSolver master documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Marker Bundle Tools" href="tools_markerbundletools.html" />
-    <link rel="prev" title="Create Node Tools" href="tools_createnode.html" /> 
+    <link rel="next" title="Legacy Solver Tab" href="tools_solver_ui_tab_legacy.html" />
+    <link rel="prev" title="Basic Solver Tab" href="tools_solver_ui_tab_basic.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -40,13 +40,14 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tools_markerbundletools.html" title="Marker Bundle Tools"
+          <a href="tools_solver_ui_tab_legacy.html" title="Legacy Solver Tab"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="tools_createnode.html" title="Create Node Tools"
+          <a href="tools_solver_ui_tab_basic.html" title="Basic Solver Tab"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="tools.html" accesskey="U">Tools</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="tools_solver_ui.html" accesskey="U">Solver UI</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -55,26 +56,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="selection-tools">
-<h1>Selection Tools<a class="headerlink" href="#selection-tools" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="toggle-marker-bundle">
-<h2>Toggle Marker / Bundle<a class="headerlink" href="#toggle-marker-bundle" title="Permalink to this headline">¶</a></h2>
-<p>Select the opposite node, if a Marker is selected, select it’s connected
-Bundle, and vice-versa.</p>
-<p>Run this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.selection.tools</span> <span class="k">as</span> <span class="nn">selection_tool</span>
-<span class="n">selection_tool</span><span class="o">.</span><span class="n">swap_between_selected_markers_and_bundles</span><span class="p">()</span>
-</pre></div>
+  <div class="section" id="standard-solver-tab">
+<h1>Standard Solver Tab<a class="headerlink" href="#standard-solver-tab" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="_images/tools_solver_ui_solver_tab_standard.png"><img alt="Solver Standard Tab" src="_images/tools_solver_ui_solver_tab_standard.png" style="width: 80%;" /></a>
+<p class="caption"><span class="caption-text">Solver Standard Tab</span></p>
 </div>
-</div>
-<div class="section" id="select-marker-bundle">
-<h2>Select Marker + Bundle<a class="headerlink" href="#select-marker-bundle" title="Permalink to this headline">¶</a></h2>
-<p>With either a Marker or Bundle selected, select both connected nodes.</p>
-<p>Run this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.selection.tools</span> <span class="k">as</span> <span class="nn">selection_tool</span>
-<span class="n">selection_tool</span><span class="o">.</span><span class="n">select_both_markers_and_bundles</span><span class="p">()</span>
-</pre></div>
-</div>
+<div class="section" id="strategy">
+<h2>Strategy<a class="headerlink" href="#strategy" title="Permalink to this headline">¶</a></h2>
+<p>Text.</p>
 </div>
 </div>
 
@@ -86,23 +76,22 @@ Bundle, and vice-versa.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Selection Tools</a><ul>
-<li><a class="reference internal" href="#toggle-marker-bundle">Toggle Marker / Bundle</a></li>
-<li><a class="reference internal" href="#select-marker-bundle">Select Marker + Bundle</a></li>
+<li><a class="reference internal" href="#">Standard Solver Tab</a><ul>
+<li><a class="reference internal" href="#strategy">Strategy</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="tools_createnode.html"
-                        title="previous chapter">Create Node Tools</a></p>
+  <p class="topless"><a href="tools_solver_ui_tab_basic.html"
+                        title="previous chapter">Basic Solver Tab</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="tools_markerbundletools.html"
-                        title="next chapter">Marker Bundle Tools</a></p>
+  <p class="topless"><a href="tools_solver_ui_tab_legacy.html"
+                        title="next chapter">Legacy Solver Tab</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/tools_selection.rst.txt"
+      <li><a href="_sources/tools_solver_ui_tab_standard.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -130,13 +119,14 @@ Bundle, and vice-versa.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tools_markerbundletools.html" title="Marker Bundle Tools"
+          <a href="tools_solver_ui_tab_legacy.html" title="Legacy Solver Tab"
              >next</a> |</li>
         <li class="right" >
-          <a href="tools_createnode.html" title="Create Node Tools"
+          <a href="tools_solver_ui_tab_basic.html" title="Basic Solver Tab"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="tools_solver_ui.html" >Solver UI</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

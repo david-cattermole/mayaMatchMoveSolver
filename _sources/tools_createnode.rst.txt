@@ -1,14 +1,12 @@
-Node Creation Tools
-===================
-
-Creating various nodes and objects with mmSolver uses the tools below.
+Create Node Tools
+=================
 
 .. figure:: images/tools_shelf_icons_creation.png
     :alt: Node Creation Shelf Icons
     :align: center
-    :width: 25%
+    :width: 30%
 
-    Node Creation Shelf Icons
+Creating various nodes and objects with mmSolver uses the tools below.
 
 Create Marker
 -------------
@@ -39,6 +37,13 @@ Run this Python command:
 Load Markers
 ------------
 
+.. figure:: images/tools_loadmarker_overview.png
+    :alt: Load Markers UI
+    :align: right
+    :scale: 50%
+
+    Load Markers UI
+
 The Load Markers UI allows loading of ``.uv`` (mmSolver), ``.txt``
 (3DEqualizer4), ``.rz2`` (Autodesk MatchMover) formated files.
 
@@ -63,13 +68,6 @@ Once a file path is given, press the “Load” button.
 For ``.txt`` format you will need to enter the Width / Height of the input
 format.
 
-.. figure:: images/tools_loadmarker_overview.png
-    :alt: Load Markers UI
-    :align: center
-    :width: 66%
-
-    Load Markers UI
-
 Run this Python command:
 
 .. code:: python
@@ -79,6 +77,11 @@ Run this Python command:
 
 Copy 2D Tracks from 3DEqualizer
 +++++++++++++++++++++++++++++++
+
+.. figure:: images/tools_loadmarker_tde_copyTracks.png
+    :alt: Copy a 2D Track in 3DE
+    :align: right
+    :scale: 20%
 
 To create a ``.uv`` file, you may use the 3DEqualizer ``Copy Tracks
 (MM Solver)`` script (see mmSolver installation to install this
@@ -94,23 +97,12 @@ script).
 
 3) Next Open Maya and use the file path in the Load Markers UI.
 
-.. figure:: images/tools_loadmarker_tde_copyTracks.png
-    :alt: Copy a 2D Track in 3DE
-    :align: left
-    :width: 66%
 
 Loading Markers in Maya
 +++++++++++++++++++++++
 
 Loading Markers into Maya from external Tracking software is a common
 task needed for solving 3D objects and cameras.
-
-.. figure:: images/tools_loadmarker_menu.png
-    :alt: mmSolver > Load Marker... tool
-    :align: right
-    :width: 40%
-
-    mmSolver > Load Marker... tool
 
 1) Open the Load Marker UI, for example use the menu ``mmSolver > Load
    Marker...``.
@@ -120,40 +112,56 @@ task needed for solving 3D objects and cameras.
 
    - The file contents will be displayed below the file path.
 
-2) Choose your options:
-
-   - **Mode** allows you to create new Markers or replace data on
-     selected Markers.
-
-   - **Camera** is the camera node you wish to place the newly created
-     Markers under. You may also create a new camera node.
-
-   - **Marker Group** is the Marker Group (under the **Camera**) that you
-     wish to create the Markers underneath. You may create a new
-     Marker Group, using the ``<Create New>`` option.
-
-   - **Distortion Mode** will allow choosing the type of 2D point data
-     to create or load. Some formats (for example ``.uv``) can store
-     both undistorted and distorted 2D data.
-
-   - **Load Bundle Positions** will allow loading 3D point information
-     saved along with the 2D Marker data. Only some formats (for
-     example ``.uv``) can store both 2D and 3D data in one file.
-
-   - **Image Resolution** is for use with 3DEqualizer4 ``.txt`` files,
-     which are stored with plate resolution embedded into the 2D
-     data. Use this field to choose the correct plate resolution for
-     the 2D data that was exported.
+2) Choose your options.
 
 3) Press the **Load** button.
 
-.. figure:: images/tools_loadmarker_create_new_camera.png
-    :alt: Create a new Camera and/or Marker Group
-    :align: center
-    :width: 66%
+.. list-table:: Load Marker Options
+   :widths: auto
+   :header-rows: 1
+
+   * - Option
+     - Description
+
+   * - Mode
+     - allows you to create new Markers or replace data on selected
+       Markers.
+
+   * - Camera
+     - is the camera node you wish to place the newly created Markers
+       under. You may also create a new camera node.
+
+   * - Marker Group
+     - is the Marker Group (under the **Camera**) that you wish to
+       create the Markers underneath. You may create a new Marker
+       Group, using the ``<Create New>`` option.
+
+   * - Distortion Mode
+     - will allow choosing the type of 2D point data to create or
+       load. Some formats (for example ``.uv``) can store both
+       undistorted and distorted 2D data.
+
+   * - Load Bundle Positions
+     - will allow loading 3D point information saved along with the 2D
+       Marker data. Only some formats (for example ``.uv``) can store
+       both 2D and 3D data in one file.
+
+   * - Image Resolution
+     - is for use with 3DEqualizer4 ``.txt`` files, which are stored
+       with plate resolution embedded into the 2D data. Use this field
+       to choose the correct plate resolution for the 2D data that was
+       exported.
+
 
 Updating / Replacing Markers in Maya
 ++++++++++++++++++++++++++++++++++++
+
+.. figure:: images/tools_loadmarker_load_mode_replace.png
+    :alt: Replace the selected Marker nodes.
+    :align: right
+    :scale: 40%
+
+    Replace the selected Marker nodes.
 
 Marker nodes in Maya can be overwritten with newly tracked data.
 
@@ -179,13 +187,7 @@ Marker nodes in Maya can be overwritten with newly tracked data.
    2D Tracking data is loaded onto the Marker node that was already
    loaded using 3DEqualizer - there is a link between the 2D data in
    3DEqualizer and the Marker node in Maya.
-   
-.. figure:: images/tools_loadmarker_load_mode_replace.png
-    :alt: Replace the selected Marker nodes.
-    :align: center
-    :width: 66%
 
-    Replace the selected Marker nodes.
 
 Convert to Marker
 -----------------

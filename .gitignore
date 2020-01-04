@@ -36,6 +36,14 @@ venv/*
 *.tar.bz2
 *.tar
 
+tests/**/*.jpg
+tests/**/*.tif
+tests/**/*.tiff
+tests/**/*.iff
+tests/**/*.png
+
+icons/library
+
 external/build/*
 external/install/*
 external/working/*

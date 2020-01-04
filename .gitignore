@@ -36,7 +36,9 @@ venv/*
 *.tar.bz2
 *.tar
 
-external/working/levmar*
+external/build/*
+external/install/*
+external/working/*
 external/include/*.h*
 external/include/*atlas*
 

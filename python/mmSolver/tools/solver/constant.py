@@ -1,9 +1,39 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Holds all constant data needed for the solver tool and UI.
 """
 
 # Window Title Bar format.
 WINDOW_TITLE_BAR = 'mmSolver | {0}'
+
+
+# HTML Color Names, for Qt Rich Text.
+#
+# https://htmlcolorcodes.com/color-names/
+#
+COLOR_HTML_HEX_WHITE = '#FFFFFF'   # 'white'
+COLOR_HTML_HEX_ORANGE = '#FFA500'  # 'orange'
+COLOR_HTML_HEX_YELLOW = '#FFFF00'  # 'yellow'
+COLOR_HTML_HEX_RED = '#FF0000'     # 'red'
+COLOR_TEXT_DEFAULT = COLOR_HTML_HEX_WHITE
+COLOR_WARNING = COLOR_HTML_HEX_ORANGE
+COLOR_ERROR = COLOR_HTML_HEX_RED
 
 
 # Available log levels for the Solver UI.
@@ -21,6 +51,10 @@ LOG_LEVEL_LIST = [
 ]
 
 
+# Default Collection
+COLLECTION_DEFAULT_NODE_NAME = 'collection1'
+
+
 # The name of the 'Scene Data' representations.
 MM_SOLVER_DATA_NODE_NAME = 'mmSolver_data_node'
 MM_SOLVER_DATA_NODE_TYPE = 'script'
@@ -29,11 +63,33 @@ MM_SOLVER_DATA_ATTR_NAME = 'mmSolver_data'
 
 # Scene Data keys and default values.
 SCENE_DATA_ACTIVE_COLLECTION_UID = 'active_collection_uid'
+SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION = 'auto_update_solver_validation'
+SCENE_DATA_PRE_SOLVE_FORCE_EVAL = 'pre_solve_force_eval'
 SCENE_DATA_REFRESH_VIEWPORT = 'refresh_viewport_state'
-SCENE_DATA_REFRESH_VIEWPORT_DEFAULT = True
 SCENE_DATA_FORCE_DG_UPDATE = 'force_dg_update_state'
-SCENE_DATA_FORCE_DG_UPDATE_DEFAULT = False
+SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING = 'display_image_plane_while_solving'
+SCENE_DATA_DISPLAY_MESHES_WHILE_SOLVING = 'display_meshes_while_solving'
+SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING = 'isolate_object_while_solving'
+SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION = 'display_object_frame_deviation'
+SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION = 'display_object_average_deviation'
+SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION = 'display_object_maximum_deviation'
+SCENE_DATA_DISPLAY_OBJECT_WEIGHT = 'display_object_weight'
+SCENE_DATA_DISPLAY_ATTRIBUTE_STATE = 'display_attribute_state'
+SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX = 'display_attribute_min_max'
 SCENE_DATA_LOG_LEVEL = 'log_level'
+SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION_DEFAULT = False
+SCENE_DATA_PRE_SOLVE_FORCE_EVAL_DEFAULT = True
+SCENE_DATA_REFRESH_VIEWPORT_DEFAULT = True
+SCENE_DATA_FORCE_DG_UPDATE_DEFAULT = True
+SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING_DEFAULT = False
+SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING_DEFAULT = False
+SCENE_DATA_DISPLAY_MESHES_WHILE_SOLVING_DEFAULT = False
+SCENE_DATA_DISPLAY_OBJECT_WEIGHT_DEFAULT = True
+SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION_DEFAULT = True
+SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION_DEFAULT = False
+SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION_DEFAULT = False
+SCENE_DATA_DISPLAY_ATTRIBUTE_STATE_DEFAULT = True
+SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX_DEFAULT = False
 SCENE_DATA_LOG_LEVEL_DEFAULT = LOG_LEVEL_INFO
 
 
@@ -76,6 +132,8 @@ ATTR_FILTER_LABEL_LIST = [
 
 # Solver Step Data (stored on Collection node)
 SOLVER_STEP_ATTR = 'solver_step_list'
+SOLVER_STEP_ATTR_TYPE = 'string'
+SOLVER_STEP_DEFAULT_VALUE = None  # Do not set any default value.
 SOLVER_STEP_DATA_DEFAULT = {
     'name': None,
     'enabled': True,
@@ -87,15 +145,18 @@ SOLVER_STEP_DATA_DEFAULT = {
 
 # Override Current Frame (stored on Collection node)
 OVERRIDE_CURRENT_FRAME_ATTR = 'override_current_frame'
+OVERRIDE_CURRENT_FRAME_ATTR_TYPE = 'bool'
+OVERRIDE_CURRENT_FRAME_DEFAULT_VALUE = False
 
-# Most simple solves converge on a result within 10
-# iterations, but 20 gives a wider range to refine more
-# complex set ups.
+# Most simple solves converge on a result within 10 iterations, but 20
+# gives a wider range to refine more complex set ups. (LEGACY SOLVER)
 MAX_ITERATION_NUM_DEFAULT_VALUE = 20
 
-# Force the 'central' Auto-Differencing type, because it's
-# more accurate and we can converge on a result faster.
-AUTO_DIFF_TYPE_DEFAULT_VALUE = 1
+# Default Auto-Differencing type for solver steps (LEGACY SOLVER).
+#
+# 0=forward differencing
+# 1=central differencing
+AUTO_DIFF_TYPE_DEFAULT_VALUE = 0
 
 # List of common status messages.
 STATUS_READY = 'Ready.'
@@ -105,8 +166,11 @@ STATUS_SOLVER_NOT_VALID = 'Solver Not Valid!'
 STATUS_EXECUTING = 'Executing...'
 STATUS_FINISHED = 'Finished.'
 
-ATTR_DEFAULT_MIN_VALUE = '<Not Set>'
-ATTR_DEFAULT_MAX_VALUE = '<Not Set>'
+# Default UI values (displayed in the UI as fall back strings)
+OBJECT_DEFAULT_WEIGHT_UI_VALUE = '-'
+OBJECT_DEFAULT_DEVIATION_UI_VALUE = '-'
+ATTR_DEFAULT_MIN_UI_VALUE = '-'
+ATTR_DEFAULT_MAX_UI_VALUE = '-'
 
 ATTR_STATE_INVALID = 'Invalid'
 ATTR_STATE_STATIC = 'Static'
@@ -118,12 +182,133 @@ OBJECT_TOGGLE_CAMERA_ATTR = 'object_toggle_camera'
 OBJECT_TOGGLE_MARKER_ATTR = 'object_toggle_marker'
 OBJECT_TOGGLE_BUNDLE_ATTR = 'object_toggle_bundle'
 
+OBJECT_TOGGLE_CAMERA_ATTR_TYPE = 'bool'
+OBJECT_TOGGLE_MARKER_ATTR_TYPE = 'bool'
+OBJECT_TOGGLE_BUNDLE_ATTR_TYPE = 'bool'
+
 OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE = True
 OBJECT_TOGGLE_MARKER_DEFAULT_VALUE = True
 OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE = False
+
+# Toggle Attributes (stored on Collection node)
+ATTRIBUTE_TOGGLE_ANIMATED_ATTR = 'attribute_toggle_animated'
+ATTRIBUTE_TOGGLE_STATIC_ATTR = 'attribute_toggle_static'
+ATTRIBUTE_TOGGLE_LOCKED_ATTR = 'attribute_toggle_locked'
+
+ATTRIBUTE_TOGGLE_ANIMATED_ATTR_TYPE = 'bool'
+ATTRIBUTE_TOGGLE_STATIC_ATTR_TYPE = 'bool'
+ATTRIBUTE_TOGGLE_LOCKED_ATTR_TYPE = 'bool'
+
+ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE = True
+ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE = True
+ATTRIBUTE_TOGGLE_LOCKED_DEFAULT_VALUE = False
 
 # Information to filter invalid input attributes from the Solver UI.
 ATTR_INVALID_OBJECT_TYPES = [
     'imageplane',
     'marker',
 ]
+
+# The Column Names for the Object Model (used to display input Objects
+# to the user).
+OBJECT_COLUMN_NAME_NODE = 'Node'
+OBJECT_COLUMN_NAME_WEIGHT = 'Weight'
+OBJECT_COLUMN_NAME_DEVIATION_FRAME = 'Frame Dev (px)'
+OBJECT_COLUMN_NAME_DEVIATION_AVERAGE = 'Avg Dev (px)'
+OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM = 'Max Dev (px @ frame)'
+
+# The Column Names for the Attribute Model (used to display output
+# Attributes to the user).
+ATTR_COLUMN_NAME_ATTRIBUTE = 'Attr'
+ATTR_COLUMN_NAME_STATE = 'State'
+ATTR_COLUMN_NAME_VALUE_MIN = 'Min'
+ATTR_COLUMN_NAME_VALUE_MAX = 'Max'
+
+# The Column Names for the Solver Model (used to display Solver Steps
+# to the user).
+SOLVER_COLUMN_NAME_ENABLED = 'Enabled'
+SOLVER_COLUMN_NAME_FRAMES = 'Frames'
+SOLVER_COLUMN_NAME_ATTRIBUTES = 'Attributes'
+SOLVER_COLUMN_NAME_STRATEGY = 'Strategy'
+
+# Frame 'Range Type' enumeration values
+RANGE_TYPE_CURRENT_FRAME_VALUE = 0
+RANGE_TYPE_TIMELINE_INNER_VALUE = 1
+RANGE_TYPE_TIMELINE_OUTER_VALUE = 2
+RANGE_TYPE_CUSTOM_FRAMES_VALUE = 3
+
+RANGE_TYPE_CURRENT_FRAME_NAME = 'Current Frame'
+RANGE_TYPE_TIMELINE_INNER_NAME = 'Timeline (Inner)'
+RANGE_TYPE_TIMELINE_OUTER_NAME = 'Timeline (Outer)'
+RANGE_TYPE_CUSTOM_FRAMES_NAME = 'Custom Frames'
+
+RANGE_TYPE_VALUE_LIST = [
+    RANGE_TYPE_CURRENT_FRAME_VALUE,
+    RANGE_TYPE_TIMELINE_INNER_VALUE,
+    RANGE_TYPE_TIMELINE_OUTER_VALUE,
+    RANGE_TYPE_CUSTOM_FRAMES_VALUE,
+]
+
+RANGE_TYPE_NAME_LIST = [
+    RANGE_TYPE_CURRENT_FRAME_NAME,
+    RANGE_TYPE_TIMELINE_INNER_NAME,
+    RANGE_TYPE_TIMELINE_OUTER_NAME,
+    RANGE_TYPE_CUSTOM_FRAMES_NAME,
+]
+# NOTE: RANGE_TYPE_VALUE_LIST and RANGE_TYPE_NAME_LIST are expected to
+# be in order.
+assert len(RANGE_TYPE_NAME_LIST) == len(RANGE_TYPE_VALUE_LIST)
+
+# Solver Tab values
+SOLVER_TAB_BASIC_VALUE = 'basic'
+SOLVER_TAB_STANDARD_VALUE = 'standard'
+SOLVER_TAB_LEGACY_VALUE = 'legacy'
+SOLVER_TAB_VALUE_LIST = [
+    SOLVER_TAB_BASIC_VALUE,
+    SOLVER_TAB_STANDARD_VALUE,
+    SOLVER_TAB_LEGACY_VALUE,
+]
+
+# Solver Tab (stored on Collection node)
+SOLVER_TAB_ATTR = 'solver_tab'
+SOLVER_TAB_ATTR_TYPE = 'string'
+SOLVER_TAB_DEFAULT_VALUE = 'basic'
+
+# Solver Frame Range Type (stored on Collection node)
+SOLVER_RANGE_TYPE_ATTR = 'solver_range_type'
+SOLVER_RANGE_TYPE_ATTR_TYPE = 'byte'  # 8-bit integer
+SOLVER_RANGE_TYPE_DEFAULT_VALUE = RANGE_TYPE_TIMELINE_INNER_VALUE
+
+# Solver Frames (stored on Collection node)
+SOLVER_FRAMES_ATTR = 'solver_frames'
+SOLVER_FRAMES_ATTR_TYPE = 'string'
+SOLVER_FRAMES_DEFAULT_VALUE = None  # No default value.
+
+# Solver Frames (stored on Collection node)
+SOLVER_INCREMENT_BY_FRAME_ATTR = 'solver_increment_by_frame'
+SOLVER_INCREMENT_BY_FRAME_ATTR_TYPE = 'long'
+SOLVER_INCREMENT_BY_FRAME_DEFAULT_VALUE = 1
+
+# Solver Root Frames (stored on Collection node)
+SOLVER_ROOT_FRAMES_ATTR = 'solver_root_frames'
+SOLVER_ROOT_FRAMES_ATTR_TYPE = 'string'
+SOLVER_ROOT_FRAMES_DEFAULT_VALUE = None  # No default value.
+
+# Solver Only Root Frames (stored on Collection node)
+SOLVER_ONLY_ROOT_FRAMES_ATTR = 'solver_only_root_frames'
+SOLVER_ONLY_ROOT_FRAMES_ATTR_TYPE = 'bool'
+SOLVER_ONLY_ROOT_FRAMES_DEFAULT_VALUE = False
+
+# Solver Global Solve (stored on Collection node)
+SOLVER_GLOBAL_SOLVE_ATTR = 'solver_global_solve'
+SOLVER_GLOBAL_SOLVE_ATTR_TYPE = 'bool'
+SOLVER_GLOBAL_SOLVE_DEFAULT_VALUE = False
+
+# Descriptions for solvers
+SOLVER_BASIC_DESC_DEFAULT = (
+    'Solve only animated attributes on frames.'
+)
+SOLVER_STD_DESC_DEFAULT = (
+    'Solve animated and static attributes on root frames, '
+    'then solve animated attributes on frames.'
+)

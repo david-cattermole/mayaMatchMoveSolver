@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 General Maya utility functions
 """
@@ -7,7 +24,6 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.tools.selection.filternodes as filter_nodes
 import mmSolver.tools.solver.constant as const
 
 
@@ -107,6 +123,21 @@ def get_current_frame():
     return int(time)
 
 
+def set_current_frame(value, update=None):
+    """
+    Get the current Maya frame number.
+
+    :return: Frame number
+    :rtype: int
+    """
+    assert isinstance(value, (float, int, long))
+    if isinstance(update, (bool, int, long)):
+        maya.cmds.currentTime(value, update=update)
+    else:
+        maya.cmds.currentTime(value)
+    return
+
+
 def prompt_for_new_node_name(title, message, text):
     """
     Ask the user for a new node name.
@@ -145,9 +176,10 @@ def get_markers_from_selection():
     Given a selection of nodes, find the associated markers.
 
     :return: list of Marker objects.
+    :rtype: [Marker, ..]
     """
     nodes = maya.cmds.ls(long=True, selection=True) or []
-    node_categories = filter_nodes.get_nodes(nodes)
+    node_categories = mmapi.filter_nodes_into_categories(nodes)
     marker_nodes = node_categories.get('marker', [])
 
     camera_nodes = node_categories.get('camera', [])
@@ -160,12 +192,12 @@ def get_markers_from_selection():
             cam = mmapi.Camera(shape=node)
         tfm_node = cam.get_transform_node()
         below_nodes = maya.cmds.ls(tfm_node, dag=True, long=True)
-        marker_nodes += filter_nodes.get_marker_nodes(below_nodes)
+        marker_nodes += mmapi.filter_marker_nodes(below_nodes)
 
     marker_group_nodes = list(node_categories['markergroup'])
     for node in marker_group_nodes:
         below_nodes = maya.cmds.ls(node, dag=True, long=True)
-        marker_nodes += filter_nodes.get_marker_nodes(below_nodes)
+        marker_nodes += mmapi.filter_marker_nodes(below_nodes)
 
     # Convert nodes into Marker objects.
     marker_nodes = list(set(marker_nodes))
@@ -251,6 +283,9 @@ def get_selected_maya_attributes():
 def get_selected_node_default_attributes():
     """
     Get the attributes on the selected nodes.
+
+    :returns: List of mmSolver API Attribute objects.
+    :rtype: [Attribute, ..]
     """
     attr_list = []
     sel = maya.cmds.ls(selection=True, long=True) or []

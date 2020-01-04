@@ -46,6 +46,43 @@ Here is a specific list, some are listed in PEP 8, some are not:
 - All defines are `UPPER_CASE_WITH_UNDERSCORES`.
 - Remove all redundant white space in source code.
 
+# Building Individual Components
+
+To speed up compilation you may turn off individual components of the 
+CMake build. For example, the BUILD_PLUGIN and BUILD_DOCS is slower to 
+build than just BUILD_PYTHON.
+
+You may control this with the Build options below, which are defined 
+(all ON) in the provided ```./scripts/build_mmSolver_*``` scripts. 
+
+In the Bash Shell scripts:
+```shell script
+# Build options, to allow faster compilation times. (not to be used by
+# users wanting to build this project.)
+BUILD_PLUGIN=1
+BUILD_PYTHON=1
+BUILD_MEL=1
+BUILD_QT_UI=1
+BUILD_DOCS=1
+BUILD_ICONS=1
+BUILD_CONFIG=1
+BUILD_TESTS=1
+```
+
+Or in Windows Batch files:
+```cmd
+:: Build options, to allow faster compilation times. (not to be used by
+:: users wanting to build this project.)
+SET BUILD_PLUGIN=1
+SET BUILD_PYTHON=1
+SET BUILD_MEL=1
+SET BUILD_QT_UI=1
+SET BUILD_DOCS=1
+SET BUILD_ICONS=1
+SET BUILD_CONFIG=1
+SET BUILD_TESTS=1
+```
+
 # Testing
 
 Testing is an essential step in the Maya Matchmove Solver project, all
@@ -59,22 +96,25 @@ Running all the entire test suite is simple:
 
 ```commandline
 $ cd <project root>
-$ sh runTests.sh
+$ mayapy tests/runTests.py tests/test
 ```
 
 You may also test a specific test or list of tests using:
 
 ```commandline
 $ cd <project root>
-$ sh runTests.sh ./tests/test/name/of/test/file.py
+$ mayapy tests/runTests.py tests/test/name/of/test/file.py
 ```
 
-Multiple test files can be given to the ``runTests.sh`` script. You
+Multiple test files can be given to the ``runTests.py`` script. You
 may also run multiple tests by giving a directory, this will run all
 tests in the directory.
 
 Before pushing code, *always* run all tests and fix any errors that
 occur. After a code push, none of the tests should fail.
+
+Please read the [tests/README.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/tests/README.md) file for more details on 
+running the test suite.
 
 ## Writing Tests
 

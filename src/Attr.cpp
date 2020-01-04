@@ -19,13 +19,7 @@
  *
  * Attribute class holds functions for getting and setting an
  * attribute, as well as state information.
- * 
- * TODO: Add a 'virtual offset' value for each attribute. This
- * 'virtual offset' is used to offset all values to and from this
- * attribute. For example this can be used to re-center values around
- * an origin point, such as a rotation angle that will center around
- * the value +360 to avoid inconsistent values if 0.0 is used as the
- * 'center'.
+ *
  */
 
 // STL
@@ -34,7 +28,9 @@
 #include <limits>    // numeric_limits<double>::max and min
 
 // Maya
+#include <maya/MFn.h>
 #include <maya/MGlobal.h>
+#include <maya/MDGContext.h>
 #include <maya/MStatus.h>
 #include <maya/MObject.h>
 #include <maya/MObjectArray.h>
@@ -47,6 +43,12 @@
 #include <maya/MAnimCurveChange.h>
 #include <maya/MAnimUtil.h>
 #include <maya/MFnAnimCurve.h>
+#include <maya/MFnAttribute.h>
+
+#if MAYA_API_VERSION >= 20180000
+#include <maya/MDGContextGuard.h>
+#include <maya/MCppCompat.h>
+#endif
 
 #include <mayaUtils.h>
 #include <Attr.h>
@@ -54,6 +56,7 @@
 // Turning USE_DG_CONTEXT on seems to slow down running the test suite by
 // approximately 33% (inside 'mayapy', without a GUI).
 #define USE_DG_CONTEXT_IN_GUI 1
+
 
 Attr::Attr() :
         m_nodeName(""),
@@ -65,7 +68,18 @@ Attr::Attr() :
         m_connected(-1),
         m_isFreeToChange(-1),
         m_minValue(-std::numeric_limits<float>::max()),
-        m_maxValue(std::numeric_limits<float>::max()) {
+        m_maxValue(std::numeric_limits<float>::max()),
+        m_offsetValue(0.0),
+        m_scaleValue(1.0),
+        m_objectType(OBJECT_TYPE_UNKNOWN),
+        m_solverAttrType(ATTR_SOLVER_TYPE_UNKNOWN) {
+     MDistance distanceOne(1.0, MDistance::internalUnit());
+     m_linearFactor = distanceOne.as(MDistance::uiUnit());
+     m_linearFactorInv = 1.0 / m_linearFactor;
+
+     MAngle angularOne(1.0, MAngle::internalUnit());
+     m_angularFactor = angularOne.as(MAngle::uiUnit());
+     m_angularFactorInv = 1.0 / m_angularFactor;
 }
 
 MString Attr::getName() const {
@@ -83,8 +97,21 @@ MStatus Attr::setName(MString value) {
     if (values.length() == 2) {
         Attr::setNodeName(values[0]);
         Attr::setAttrName(values[1]);
+
+        MDagPath nodeDagPath;
+        status = getAsDagPath(values[0], nodeDagPath);
+        CHECK_MSTATUS(status);
+        MObject obj = Attr::getObject();
+        const unsigned int objectType = computeObjectType(obj, nodeDagPath);
+        Attr::setObjectType(objectType);
+
+        const unsigned int solverAttrType = computeSolverAttrType(
+                objectType,
+                values[1]);
+        Attr::setSolverAttrType(solverAttrType);
     } else {
-        ERR("Attr::setName: Value given has more than one dot character. " << value);
+        ERR("Attr::setName: Value given has more than one dot character. "
+            << value);
         return MS::kFailure;
     }
     return status;
@@ -139,18 +166,19 @@ MPlug Attr::getPlug() {
         MPlug plug = dependsNode.findPlug(attrName, true, &status);
         if (status != MStatus::kSuccess) {
             MString name = Attr::getName();
-            WRN("Attribute cannot be found; " << name);
+            // WRN("Attribute cannot be found; " << name);
             return m_plug;
         }
 
         // For attributes like 'worldMatrix', where we need the first
         // element of the array, not the attribute itself.
         if (plug.isArray()) {
-            // Here we need 'evaluateNumElements' in case Maya hasn't already
-            // computed how many elements the array plug is expected to have.
-            unsigned int num = plug.evaluateNumElements(&status);
+            // Here we need 'evaluateNumElements' in case Maya hasn't
+            // already computed how many elements the array plug is
+            // expected to have.
+            plug.evaluateNumElements(&status);
             CHECK_MSTATUS(status);
-            num = plug.numElements(&status);
+            const unsigned int num = plug.numElements(&status);
             CHECK_MSTATUS(status);
             if (num > 0) {
                 plug = plug.elementByPhysicalIndex(0, &status);
@@ -176,6 +204,26 @@ MObject Attr::getAttribute() {
 }
 
 /*
+ * Get the attribute type; linear, angle or numeric.
+ */
+int Attr::getAttrType() {
+    MStatus status;
+    int attrType = ATTR_DATA_TYPE_UNKNOWN;
+    MObject attrObj = Attr::getAttribute();
+    MFn::Type mfnAttrType = attrObj.apiType();
+    if ((mfnAttrType == MFn::Type::kDoubleLinearAttribute) ||
+        (mfnAttrType == MFn::Type::kFloatLinearAttribute)) {
+         attrType = ATTR_DATA_TYPE_LINEAR;
+    } else if ((mfnAttrType == MFn::Type::kDoubleAngleAttribute) ||
+               (mfnAttrType == MFn::Type::kFloatAngleAttribute)) {
+         attrType = ATTR_DATA_TYPE_ANGLE;
+    } else {
+         attrType = ATTR_DATA_TYPE_NUMERIC;
+    }
+    return attrType;
+}
+
+/*
  * Find out if a plug can be changed or not.
  *
  * Attributes that cannot change could be:
@@ -185,9 +233,13 @@ MObject Attr::getAttribute() {
 bool Attr::isFreeToChange() {
     if (m_isFreeToChange < 0) {
         MPlug plug = Attr::getPlug();
-        m_isFreeToChange = (int) (plug.isFreeToChange() == MPlug::kFreeToChange);
+        if (plug.isFreeToChange() == MPlug::kFreeToChange) {
+             m_isFreeToChange = 1;
+        } else {
+             m_isFreeToChange = 0;
+        }
     }
-    return (bool) m_isFreeToChange;
+    return m_isFreeToChange != 0;
 }
 
 /*
@@ -199,11 +251,12 @@ bool Attr::isAnimated() {
         MPlug plug = Attr::getPlug();
 
         bool animated = false;
-        bool isDest = plug.isDestination(&status);
+        const bool isDest = plug.isDestination(&status);
         CHECK_MSTATUS(status);
         if (isDest) {
             MPlugArray connPlugs;
-            bool asDest = true;  // get the source plugs on the other end of 'plug'.
+            bool asDest = true;  // get the source plugs on the other
+                                 // end of 'plug'.
             bool asSrc = false;
             plug.connectedTo(connPlugs, asDest, asSrc, &status);
             CHECK_MSTATUS(status);
@@ -225,34 +278,36 @@ bool Attr::isAnimated() {
         if (status != MS::kSuccess) {
             MString name = Attr::getName();
             ERR("Attr::isAnimated failed; " << name);
-            animated = false;  // lets assume that if it failed, the plug cannot be animated.
+            animated = false;  // lets assume that if it failed, the
+                               // plug cannot be animated.
         }
         m_connected = (int) isDest;
         m_animated = (int) animated;
     }
-    return (bool) m_animated;
+    return m_animated != 0;
 }
 
 /*
- * Determine if another plug is connected to this plug (so we cannot change the value).
+ * Determine if another plug is connected to this plug (so we cannot
+ * change the value).
  */
 bool Attr::isConnected() {
     MStatus status;
     MPlug plug = Attr::getPlug();
 
     if (m_connected < 0) {
-        bool isDest = plug.isDestination(&status);
+        const bool isDest = plug.isDestination(&status);
         CHECK_MSTATUS(status);
         m_connected = (int) isDest;
     }
-    return (bool) m_connected;
+    return m_connected != 0;
 }
 
 MString Attr::getAnimCurveName()
 {
     MString result = "";
     // isAnimated will compute 'm_animCurveName' for us.
-    bool animated = Attr::isAnimated();
+    const bool animated = Attr::isAnimated();
     if (animated == true) {
         result = m_animCurveName;
     }
@@ -266,28 +321,40 @@ inline double my_trunc(double d){
 
 MStatus Attr::getValue(bool &value, const MTime &time) {
     MStatus status;
-    bool connected = Attr::isConnected();
-    bool animated = Attr::isAnimated();
+    const bool connected = Attr::isConnected();
+    const bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
     MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
 
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        double curveValue;
+        double curveValue = 0;
         status = curveFn.evaluate(time, curveValue);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        value = (bool) my_trunc(curveValue);
+        value = my_trunc(curveValue) != 0;
     } else if (connected) {
         if (use_dg_ctx == true) {
+#if MAYA_API_VERSION >= 20180000
+            MDGContext ctx(time);
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asBool(&status);
+#else
             MDGContext ctx(time);
             value = plug.asBool(ctx, &status);
+#endif
         } else {
             MAnimControl::setCurrentTime(time);
+#if MAYA_API_VERSION >= 20180000
+            MDGContext ctx = MDGContext::current();
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asBool(&status);
+#else
             value = plug.asBool(MDGContext::fsNormal, &status);
+#endif
         }
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
@@ -299,28 +366,40 @@ MStatus Attr::getValue(bool &value, const MTime &time) {
 
 MStatus Attr::getValue(int &value, const MTime &time) {
     MStatus status;
-    bool connected = Attr::isConnected();
-    bool animated = Attr::isAnimated();
+    const bool connected = Attr::isConnected();
+    const bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
     MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
 
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        double curveValue;
+        double curveValue = 0;
         status = curveFn.evaluate(time, curveValue);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         value = (int) curveValue;
     } else if (connected) {
         if (use_dg_ctx == true) {
+#if MAYA_API_VERSION >= 20180000
             MDGContext ctx(time);
-            value = plug.asBool(ctx, &status);
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asInt(&status);
+#else
+            MDGContext ctx(time);
+            value = plug.asInt(ctx, &status);
+#endif
         } else {
             MAnimControl::setCurrentTime(time);
+#if MAYA_API_VERSION >= 20180000
+            MDGContext ctx = MDGContext::current();
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asInt(&status);
+#else
             value = plug.asInt(MDGContext::fsNormal, &status);
+#endif
         }
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
@@ -332,27 +411,44 @@ MStatus Attr::getValue(int &value, const MTime &time) {
 
 MStatus Attr::getValue(double &value, const MTime &time) {
     MStatus status;
-    bool connected = Attr::isConnected();
-    bool animated = Attr::isAnimated();
+    const bool connected = Attr::isConnected();
+    const bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
 
     MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
 
     if (animated) {
         MFnAnimCurve curveFn(plug);
         curveFn.evaluate(time, value);
     } else if (connected) {
         if (use_dg_ctx == true) {
+#if MAYA_API_VERSION >= 20180000
+            MDGContext ctx(time);
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asDouble(&status);
+#else
             MDGContext ctx(time);
             value = plug.asDouble(ctx, &status);
+#endif
         } else {
             MAnimControl::setCurrentTime(time);
+#if MAYA_API_VERSION >= 20180000
+            MDGContext ctx = MDGContext::current();
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asDouble(&status);
+#else
             value = plug.asDouble(MDGContext::fsNormal, &status);
+#endif
         }
     } else {
         value = plug.asDouble();
+    }
+
+    int attrType = Attr::getAttrType();
+    if (attrType == ATTR_DATA_TYPE_ANGLE) {
+         value *= m_angularFactor;
     }
     return MS::kSuccess;
 }
@@ -362,17 +458,29 @@ MStatus Attr::getValue(MMatrix &value, const MTime &time) {
     MPlug plug = Attr::getPlug();
 
     MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
 
     // Do we change the behaviour for a dynamic attribute?
     MObject matrixObj;
     if (use_dg_ctx == true) {
+#if MAYA_API_VERSION >= 20180000
+        MDGContext ctx(time);
+        MDGContextGuard ctxGuard(ctx);
+        matrixObj = plug.asMObject(&status);
+#else
         MDGContext ctx(time);
         matrixObj = plug.asMObject(ctx, &status);
+#endif
     } else {
         MAnimControl::setCurrentTime(time);
+#if MAYA_API_VERSION >= 20180000
+        MDGContext ctx = MDGContext::current();
+        MDGContextGuard ctxGuard(ctx);
+        matrixObj = plug.asMObject(&status);
+#else
         matrixObj = plug.asMObject(MDGContext::fsNormal, &status);
+#endif
     }
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -407,20 +515,25 @@ MStatus Attr::getValue(MMatrix &value) {
 MStatus Attr::setValue(double value, const MTime &time,
                        MDGModifier &dgmod, MAnimCurveChange &animChange) {
     MStatus status;
-    bool connected = Attr::isConnected();
-    bool animated = Attr::isAnimated();
+    const bool connected = Attr::isConnected();
+    const bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
+
+    int attrType = Attr::getAttrType();
+    if (attrType == ATTR_DATA_TYPE_ANGLE) {
+         value *= m_angularFactorInv;
+    }
 
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        unsigned int keyIndex;
+        unsigned int keyIndex = 0;
         // TODO: The keyframe index may be possible to cache, as long
-        // as we can control that when a new keyframe is inserted, we
-        // invalidate the cache, or instead of invalidating the cache
-        // we automatically increment all keyframe indexes based on
-        // the newly insert keyframe index.
-        bool found = curveFn.find(time, keyIndex);
+        //  as we can control that when a new keyframe is inserted, we
+        //  invalidate the cache, or instead of invalidating the cache
+        //  we automatically increment all keyframe indexes based on
+        //  the newly insert keyframe index.
+        const bool found = curveFn.find(time, keyIndex);
         if (found) {
             curveFn.setValue(keyIndex, value, &animChange);
         } else {
@@ -441,25 +554,59 @@ MStatus Attr::setValue(double value, const MTime &time,
     return status;
 }
 
-MStatus Attr::setValue(double value, MDGModifier &dgmod, MAnimCurveChange &animChange) {
+MStatus Attr::setValue(const double value,
+                       MDGModifier &dgmod,
+                       MAnimCurveChange &animChange) {
     MTime time = MAnimControl::currentTime();
     return Attr::setValue(value, time, dgmod, animChange);
 }
 
-double Attr::getMinimumValue() {
+double Attr::getMinimumValue() const {
     return m_minValue;
 }
 
-void Attr::setMinimumValue(double value) {
+void Attr::setMinimumValue(const double value) {
     m_minValue = value;
 }
 
-double Attr::getMaximumValue() {
+double Attr::getMaximumValue() const {
     return m_maxValue;
 }
 
-void Attr::setMaximumValue(double value) {
+void Attr::setMaximumValue(const double value) {
     m_maxValue = value;
+}
+
+double Attr::getOffsetValue() const {
+    return m_offsetValue;
+}
+
+void Attr::setOffsetValue(const double value) {
+    m_offsetValue = value;
+}
+
+double Attr::getScaleValue() const {
+    return m_scaleValue;
+}
+
+void Attr::setScaleValue(const double value) {
+    m_scaleValue = value;
+}
+
+unsigned int Attr::getObjectType() const {
+    return m_objectType;
+}
+
+void Attr::setObjectType(const unsigned int value) {
+    m_objectType = value;
+}
+
+unsigned int Attr::getSolverAttrType() const {
+    return m_solverAttrType;
+}
+
+void Attr::setSolverAttrType(const unsigned int value) {
+    m_solverAttrType = value;
 }
 
 

@@ -1,0 +1,473 @@
+# Copyright (C) 2018 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
+"""
+The .uv format has two versions; v1 ASCII format and v2 JSON format.
+
+The v1 ASCII format is derived from the 3DEqualizer 2D Points exporter.
+
+The UV coordinate (0.0, 0.0) is the lower-left.
+The UV coordinate (1.0, 1.0) is the upper-right.
+
+
+The ASCII file format looks like this::
+
+    int     # Number of track points in the file
+    string  # Name of point
+    int     # Number of frames
+    int float float float  # Frame, U coord, V coord, Point Weight
+
+
+Simple ASCII v1 file with 1 2D track and 1 frame of data::
+
+    1
+    My Point Name
+    1
+    1 0.0 1.0 1.0
+
+
+The JSON format takes the shape of a dictionary.
+The dictionary looks like this, format version 2::
+
+    {
+        'version': int,
+        'num_points': int,
+        'is_undistorted': bool,
+        'points': {
+            'name': str,
+            'id': int,  # or None
+            'set_name': str,
+            'per_frame': [
+                {
+                    'frame': int,
+                    'pos': (float, float),  # assumed to be undistorted.
+                    'weight': float
+                }
+            ]
+        }
+    }
+
+
+Format version 3:
+    {
+        'version': int,
+        'num_points': int,
+        'is_undistorted': None,  # Deprecated
+        'points': {
+            'name': str,
+            'id': int,  # or None
+            'set_name': str,
+            'per_frame': [
+                {
+                    'frame': int,
+                    'pos_dist': (float, float),
+                    'pos': (float, float),
+                    'weight': float
+                },
+            ],
+            '3d': {
+                'x': float, # or None
+                'y': float, # or None
+                'z': float, # or None
+                'x_lock': bool, # or None
+                'y_lock': bool, # or None
+                'z_lock': bool  # or None
+            }
+        }
+    }
+
+
+"""
+
+import json
+import mmSolver.logger
+import mmSolver.tools.loadmarker.lib.interface as interface
+import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
+import mmSolver.tools.loadmarker.constant as const
+
+LOG = mmSolver.logger.get_logger()
+
+
+def determine_format_version(file_path):
+    """
+    Work out the format version by reading the 'file_path'.
+
+    returns: The format version, must be one of constants.UV_TRACK_FORMAT_VERSION_LIST
+    """
+    f = open(file_path)
+    try:
+        data = json.load(f)
+    except ValueError:
+        data = {}
+    f.close()
+    if len(data) == 0:
+        return const.UV_TRACK_FORMAT_VERSION_1
+    version = data.get('version', const.UV_TRACK_FORMAT_VERSION_UNKNOWN)
+    return version
+
+
+def _parse_point_info_v2_v3(mkr_data, point_data):
+    """
+    Get general information from the point data.
+
+    :param mkr_data: The MarkerData object to set.
+    :type mkr_data: MarkerData
+
+    :param point_data: The data dictionary, from the file format.
+    :type point_data: dict
+
+    :returns: A modified MarkerData, with general information set.
+    :rtype: MarkerData
+    """
+    name = point_data.get('name')
+    set_name = point_data.get('set_name')
+    id_ = point_data.get('id')
+    assert isinstance(name, basestring)
+    assert set_name is None or isinstance(set_name, basestring)
+    assert id_ is None or isinstance(id_, int)
+    mkr_data.set_name(name)
+    mkr_data.set_group_name(set_name)
+    mkr_data.set_id(id_)
+    return mkr_data
+
+
+def _parse_point_3d_data_v3(mkr_data, point_data):
+    """
+    Parses the 3D data from individual point data.
+
+    :param mkr_data: The MarkerData object to set.
+    :type mkr_data: MarkerData
+
+    :param point_data: The data dictionary, from the file format.
+    :type point_data: dict
+
+    :returns: A modified MarkerData, with bundle information set.
+    :rtype: MarkerData
+    """
+    point_3d = point_data.get('3d')
+    assert isinstance(point_3d, dict)
+    x = point_3d.get('x')
+    y = point_3d.get('y')
+    z = point_3d.get('z')
+    assert x is None or isinstance(x, float)
+    assert y is None or isinstance(y, float)
+    assert z is None or isinstance(z, float)
+    mkr_data.set_bundle_x(x)
+    mkr_data.set_bundle_y(y)
+    mkr_data.set_bundle_z(z)
+
+    x_lock = point_3d.get('x_lock')
+    y_lock = point_3d.get('y_lock')
+    z_lock = point_3d.get('z_lock')
+    assert x_lock is None or isinstance(x_lock, bool)
+    assert y_lock is None or isinstance(y_lock, bool)
+    assert z_lock is None or isinstance(z_lock, bool)
+    mkr_data.set_bundle_lock_x(x_lock)
+    mkr_data.set_bundle_lock_y(y_lock)
+    mkr_data.set_bundle_lock_z(z_lock)
+    return mkr_data
+
+
+def _parse_per_frame_v2_v3(mkr_data, per_frame_data, pos_key=None):
+    """
+    Get the MarkerData per-frame, including X, Y, weight and enabled
+    values.
+
+    :param mkr_data:
+    :type mkr_data: MarkerData
+
+    :param per_frame_data: List of per-frame data structures.
+    :type per_frame_data: [dict, ..]
+
+    :param pos_key: What key should we use to get the U/V Marker data?
+    :type pos_key: str or None
+
+    :returns: Tuple of Marker data and the list of frames we have data for.
+    :rtype ([MarkerData, ..], [int, ..])
+    """
+    if pos_key is None:
+        pos_key = 'pos'
+    frames = []
+    for frame_data in per_frame_data:
+        frame_num = frame_data.get('frame')
+        assert frame_num is not None
+        frames.append(frame_num)
+
+        pos = frame_data.get(pos_key)
+        assert pos is not None
+        mkr_u, mkr_v = pos
+
+        mkr_weight = frame_data.get('weight')
+
+        # Set Marker Data
+        mkr_data.x.set_value(frame_num, mkr_u)
+        mkr_data.y.set_value(frame_num, mkr_v)
+        mkr_data.weight.set_value(frame_num, mkr_weight)
+        mkr_data.enable.set_value(frame_num, True)
+    return mkr_data, frames
+
+
+def _parse_marker_occluded_frames_v1_v2_v3(mkr_data, frames):
+    """
+    Set the enable and weight values based on the frames we have data
+    for.
+
+    :param mkr_data: The Marker data to set.
+    :type mkr_data: MarkerData
+
+    :param frames: The frames this a marker has been enabled for.
+    :type frames: [int, ..]
+
+    :rtype: MarkerData
+    """
+    all_frames = list(range(min(frames), max(frames)+1))
+    for frame in all_frames:
+        mkr_enable = int(frame in frames)
+        mkr_data.enable.set_value(frame, mkr_enable)
+        if mkr_enable is False:
+            mkr_data.weight.set_value(frame, 0.0)
+    return mkr_data
+
+
+def _parse_v2_and_v3(file_path,
+                     undistorted=None,
+                     with_3d_pos=None):
+    """
+    Parse the UV file format, using JSON.
+
+    :param file_path: File path to read.
+    :type file_path: str
+
+    :param undistorted: Should we choose the undistorted or distorted
+                        marker data?
+    :type undistorted: bool or None
+
+    :param with_3d_pos: Try to parse 3D position bundle data from
+                        the file path? None means False.
+                        with_3d_pos is only accepted on
+                        uvtrack version 3+.
+    :type with_3d_pos: bool or None
+
+    :return: List of MarkerData objects.
+    """
+    if with_3d_pos is None:
+        with_3d_pos = False
+
+    pos_key = 'pos_dist'
+    if undistorted is None:
+        undistorted = True
+    if undistorted is True:
+        pos_key = 'pos'
+
+    mkr_data_list = []
+    f = open(file_path)
+    data = json.load(f)
+    f.close()
+
+    msg = (
+        'Per-frame tracking data was not found on marker, skipping. '
+        'name=%r'
+    )
+    points = data.get('points', [])
+    for point_data in points:
+        mkr_data = interface.MarkerData()
+
+        # Static point information.
+        mkr_data = _parse_point_info_v2_v3(mkr_data, point_data)
+
+        # 3D point data
+        if with_3d_pos is True:
+            mkr_data = _parse_point_3d_data_v3(mkr_data, point_data)
+
+        per_frame = point_data.get('per_frame', [])
+        if len(per_frame) == 0:
+            name = mkr_data.get_name()
+            LOG.warning(msg, name)
+            continue
+
+        # Create marker per-frame data
+        mkr_data, frames = _parse_per_frame_v2_v3(
+            mkr_data,
+            per_frame,
+            pos_key=pos_key
+        )
+
+        # Fill in occluded point frames
+        mkr_data = _parse_marker_occluded_frames_v1_v2_v3(
+            mkr_data,
+            frames,
+        )
+
+        mkr_data_list.append(mkr_data)
+    return mkr_data_list
+
+
+def parse_v1(file_path, **kwargs):
+    """
+    Parse the UV file format or 3DEqualizer .txt format.
+
+    :param file_path:
+    :return:
+    """
+    f = open(file_path, 'r')
+    lines = f.readlines()
+    f.close()
+    if len(lines) == 0:
+        raise OSError('No contents in the file: %s' % file_path)
+    mkr_data_list = []
+
+    num_points = int(lines[0])
+    if num_points < 1:
+        raise interface.ParserError('No points exist.')
+
+    idx = 1  # Skip the first line
+    for _ in xrange(num_points):
+        mkr_name = lines[idx]
+        mkr_name = mkr_name.strip()
+
+        # Create marker
+        mkr_data = interface.MarkerData()
+        mkr_data.set_name(mkr_name)
+
+        idx += 1
+        num_frames = int(lines[idx])
+        if num_frames <= 0:
+            idx += 1
+            msg = 'Point has no data: mkr_name=%r line_num=%r'
+            LOG.warning(msg, mkr_name, idx)
+            continue
+
+        # Frame data parsing
+        frames = []
+        j = num_frames
+        while j > 0:
+            idx += 1
+            line = lines[idx]
+            line = line.strip()
+            if len(line) == 0:
+                # Have we reached the end of the file?
+                break
+            j = j - 1
+            split = line.split()
+            if len(split) != 4:
+                # We should not get here
+                msg = (
+                    'File invalid, there must be 4 numbers in a line'
+                    ' (separated by spaces): line=%r line_num=%r'
+                )
+                raise interface.ParserError(msg % (line, idx))
+            frame = int(split[0])
+            mkr_u = float(split[1])
+            mkr_v = float(split[2])
+            mkr_weight = float(split[3])
+
+            mkr_data.weight.set_value(frame, mkr_weight)
+            mkr_data.x.set_value(frame, mkr_u)
+            mkr_data.y.set_value(frame, mkr_v)
+            frames.append(frame)
+
+        # Fill in occluded point frames
+        mkr_data = _parse_marker_occluded_frames_v1_v2_v3(
+            mkr_data,
+            frames,
+        )
+
+        mkr_data_list.append(mkr_data)
+        idx += 1
+
+    file_info = interface.create_file_info(marker_undistorted=True)
+    return file_info, mkr_data_list
+
+
+def parse_v2(file_path, **kwargs):
+    """
+    Parse the UV file format, using JSON.
+
+    :param file_path: File path to read.
+    :type file_path: str
+
+    :return: List of MarkerData objects.
+    """
+    file_info = interface.create_file_info(marker_undistorted=True)
+    mkr_data_list = _parse_v2_and_v3(
+        file_path,
+        undistorted=True,
+        with_3d_pos=False
+    )
+    return file_info, mkr_data_list
+
+
+def parse_v3(file_path, **kwargs):
+    """
+    Parse the UV file format, using JSON.
+
+    Accepts the keyword 'undistorted'.
+
+    :param file_path: File path to read.
+    :type file_path: str
+
+    :return: List of MarkerData objects.
+    """
+    # Should we choose the undistorted or distorted marker data?
+    undistorted = kwargs.get('undistorted', None)  # bool or None
+    file_info = interface.create_file_info(
+        marker_distorted=True,
+        marker_undistorted=True,
+        bundle_positions=True,
+    )
+    mkr_data_list = _parse_v2_and_v3(
+        file_path,
+        undistorted=undistorted,
+        with_3d_pos=True,
+    )
+    return file_info, mkr_data_list
+
+
+class LoaderUVTrack(interface.LoaderBase):
+
+    name = 'UV Track Points (*.uv)'
+    file_exts = ['.uv']
+    args = []
+
+    def parse(self, file_path, **kwargs):
+        """
+        Decodes a file path into a list of MarkerData.
+
+        :param file_path: The file path to parse.
+        :type file_path: str
+
+        :param kwargs: The keyword 'undistorted' is used by
+                       UV_TRACK_FORMAT_VERSION_3 formats.
+
+        :return: List of MarkerData
+        """
+        version = determine_format_version(file_path)
+        if version == const.UV_TRACK_FORMAT_VERSION_1:
+            file_info, mkr_data_list = parse_v1(file_path, **kwargs)
+        elif version == const.UV_TRACK_FORMAT_VERSION_2:
+            file_info, mkr_data_list = parse_v2(file_path, **kwargs)
+        elif version == const.UV_TRACK_FORMAT_VERSION_3:
+            file_info, mkr_data_list = parse_v3(file_path, **kwargs)
+        else:
+            msg = 'Could not determine format version for UV Track file.'
+            raise interface.ParserError(msg)
+        return file_info, mkr_data_list
+
+
+# Register the File Format
+mgr = fmtmgr.get_format_manager()
+mgr.register_format(LoaderUVTrack)

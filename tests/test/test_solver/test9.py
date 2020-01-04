@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Test a multi-frame bundle solve, with the bundle very, very far away from the camera.
 """
@@ -21,10 +38,13 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver9(solverUtils.SolverTestCase):
 
-    def test_init(self):
+    def do_solve(self, solver_name, solver_index):
         """
         Solve an animated bundle across time.
         """
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
         start = 1
         end = 2
 
@@ -83,8 +103,8 @@ class TestSolver9(solverUtils.SolverTestCase):
             # NOTE: All dynamic attributes must have a keyframe before
             # starting to solve.
             node_attrs = [
-                (bundle_tfm + '.tx', 'None', 'None'),
-                (bundle_tfm + '.ty', 'None', 'None'),
+                (bundle_tfm + '.tx', 'None', 'None', 'None', 'None'),
+                (bundle_tfm + '.ty', 'None', 'None', 'None', 'None'),
             ]
 
             # Run solver!
@@ -97,6 +117,7 @@ class TestSolver9(solverUtils.SolverTestCase):
                     marker=markers,
                     attr=node_attrs,
                     frame=[f],
+                    solverType=solver_index,
                     verbose=True,
                 )
                 # Ensure the values are correct
@@ -110,6 +131,15 @@ class TestSolver9(solverUtils.SolverTestCase):
         path = self.get_data_path('solver_test9_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+    def test_init_levmar(self):
+        self.do_solve('levmar', 0)
+
+    def test_init_cminpack_lmdif(self):
+        self.do_solve('cminpack_lmdif', 1)
+
+    def test_init_cminpack_lmder(self):
+        self.do_solve('cminpack_lmder', 2)
 
 
 if __name__ == '__main__':

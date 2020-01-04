@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Defines a MarkerGroup node.
 """
@@ -8,6 +25,7 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
+import mmSolver.utils.node as node_utils
 import mmSolver._api.camera as camera
 import mmSolver._api.utils as api_utils
 import mmSolver._api.constant as const
@@ -42,6 +60,15 @@ class MarkerGroup(object):
         if node is not None:
             self.set_node(node)
         return
+
+    def __repr__(self):
+        result = '<{class_name}('.format(class_name=self.__class__.__name__)
+        result += '{hash} node={node}'.format(
+            hash=hex(hash(self)),
+            node=self.get_node(),
+        )
+        result += ')>'
+        return result
 
     def get_node(self):
         """
@@ -78,7 +105,7 @@ class MarkerGroup(object):
         assert api_utils.get_object_type(node) == const.OBJECT_TYPE_MARKER_GROUP
 
         self._mfn_tfm = None
-        tfm_dag = api_utils.get_as_dag_path(node)
+        tfm_dag = node_utils.get_as_dag_path(node)
         if tfm_dag is not None:
             assert maya.cmds.nodeType(tfm_dag.fullPathName()) == 'mmMarkerGroupTransform'
             self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
@@ -98,7 +125,7 @@ class MarkerGroup(object):
         """
         mkr_node = self.get_node()
 
-        cam_tfm, cam_shp = api_utils.get_camera_above_node(mkr_node)
+        cam_tfm, cam_shp = node_utils.get_camera_above_node(mkr_node)
 
         # Make the camera object.
         cam = None
@@ -128,6 +155,7 @@ class MarkerGroup(object):
 
         mkr_grp = maya.cmds.createNode('mmMarkerGroupTransform',
                                        name=name, parent=cam_tfm)
+        mkr_grp = node_utils.get_long_name(mkr_grp)
         mkr_scl = maya.cmds.createNode('mmMarkerScale')
         self.set_node(mkr_grp)
 
@@ -135,13 +163,14 @@ class MarkerGroup(object):
         maya.cmds.addAttr(mkr_grp, longName='depth', at='double', minValue=0.0,
                           defaultValue=1.0)
         maya.cmds.setAttr(mkr_grp + '.depth', keyable=True)
+        maya.cmds.setAttr(mkr_grp + '.depth', 10.0)
         maya.cmds.connectAttr(mkr_grp + '.depth', mkr_scl + '.depth')
 
         # Add attr and connect overscan
         maya.cmds.addAttr(mkr_grp, longName='overscan', at='double', minValue=0.0,
                           defaultValue=1.0)
         maya.cmds.setAttr(mkr_grp + '.overscan', keyable=True)
-        maya.cmds.connectAttr(mkr_grp + '.overscan', mkr_scl + '.overscan')
+        maya.cmds.connectAttr(mkr_grp + '.overscan', mkr_scl + '.overscanInverse')
 
         # Connect camera attributes
         maya.cmds.connectAttr(cam_shp + '.focalLength', mkr_scl + '.focalLength')

@@ -34,7 +34,7 @@ Optional Solver:
   - Warning: levmar is GPL licensed, and places restrictions on 
     mmSolver so it may not be distributed in binary form.  
   - Note: The automatic build script for _levmar_ requires 
-    CMake 3.4.3+ with levmar on Windows.
+    [CMake 3.4.3+](https://cmake.org/) with levmar on Windows.
 
 # Building Overview
 
@@ -180,4 +180,4 @@ Maya 2018 on Windows:
 
 NOTE: Other operating systems have not been tested, but may work with
 only minor modifications. *Maya 2018* has been tested on CentOS 7.x
-Linux. *Maya 2019* support is experimental and has known bugs.
+Linux.

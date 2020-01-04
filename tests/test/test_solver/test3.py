@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Testing a single point nodal camera solve on a single frame.
 """
@@ -54,8 +71,8 @@ class TestSolver3(solverUtils.SolverTestCase):
             (marker_tfm, cam_shp, bundle_tfm),
         )
         node_attrs = [
-            (cam_tfm + '.rx', 'None', 'None'),
-            (cam_tfm + '.ry', 'None', 'None'),
+            (cam_tfm + '.rx', 'None', 'None', 'None', 'None'),
+            (cam_tfm + '.ry', 'None', 'None', 'None', 'None'),
         ]
         frames = [
             (1),
@@ -72,8 +89,8 @@ class TestSolver3(solverUtils.SolverTestCase):
             camera=cameras,
             marker=markers,
             attr=node_attrs,
-            iterations=10,
             solverType=solver_index,
+            delta=0.00001,
             frame=frames,
             verbose=True,
         )
@@ -89,8 +106,8 @@ class TestSolver3(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         rx = maya.cmds.getAttr(cam_tfm + '.rx')
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
-        assert self.approx_equal(rx, 7.43790257882, eps=0.01)
-        assert self.approx_equal(ry, -32.3908666703, eps=0.01)
+        assert self.approx_equal(rx, 7.44014, eps=0.001)
+        assert self.approx_equal(ry, -32.3891, eps=0.001)
 
     def test_init_levmar(self):
         """
@@ -98,11 +115,17 @@ class TestSolver3(solverUtils.SolverTestCase):
         """
         self.do_solve('levmar', 0)
 
-    def test_init_cminpack_lm(self):
+    def test_init_cminpack_lmdif(self):
         """
-        Solve nodal camera on a single frame, using cminpack_lm
+        Solve nodal camera on a single frame, using cminpack_lmdif
         """
-        self.do_solve('cminpack_lm', 1)
+        self.do_solve('cminpack_lmdif', 1)
+
+    def test_init_cminpack_lmder(self):
+        """
+        Solve nodal camera on a single frame, using cminpack_lmder
+        """
+        self.do_solve('cminpack_lmder', 2)
 
 
 if __name__ == '__main__':

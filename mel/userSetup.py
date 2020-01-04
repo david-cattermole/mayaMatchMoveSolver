@@ -1,3 +1,21 @@
+#
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 A start-up script for mmSolver.
 
@@ -33,6 +51,14 @@ def mmsolver_create_menu():
     mmSolver.tools.mmmenu.tool.build_menu()
 
 
+def mmsolver_create_hotkey_set():
+    """
+    Create the mmSolver Hotkey Set.
+    """
+    import mmSolver.tools.mmhotkeyset.tool
+    mmSolver.tools.mmhotkeyset.tool.build_hotkey_set()
+
+
 def mmsolver_startup():
     """
     Responsible for starting up mmSolver.
@@ -57,6 +83,12 @@ def mmsolver_startup():
         LOG.debug('Build Shelf: %r', build_shelf)
         if build_shelf is True:
             maya.utils.executeDeferred(mmsolver_create_shelf)
+
+        # Create Hotkey Set.
+        build_hotkey_set = bool(int(os.environ.get('MMSOLVER_CREATE_HOTKEY_SET', 1)))
+        LOG.debug('Build Hotkey Set: %r', build_hotkey_set)
+        if build_hotkey_set is True:
+            maya.utils.executeDeferred(mmsolver_create_hotkey_set)
     return
 
 

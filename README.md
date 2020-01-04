@@ -1,7 +1,7 @@
 # Maya MatchMove Solver (MM Solver)
 
-An error minimisation solver for MatchMove (MM) related tasks
-utilising Maya's DG and DAG architecture, allowing solving of
+An error minimisation solver toolset for MatchMove (MM) related 
+tasks utilising Maya's DG and DAG architecture, allowing solving of
 complex constraints driven by 2D-to-3D re-projection deviation.
 
 ## What Is It?
@@ -32,19 +32,24 @@ changes.
 
 | Releases                                                                              | Description                                 |
 | ------------------------------------------------------------------------------------- | ------------------------------------------- |
-| [v0.2.3](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.3) | Bug fix release (*recommended*)             |
+| [v0.3.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.1) | Added tools and fixed bugs.                 |
+| [v0.3.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.0) | Improved solver, GUI and tools              |
+| [v0.2.3](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.3) | Bug fix release                             |
 | [v0.2.2](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.2) | Bug fix release                             |
 | [v0.2.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.1) | Bug fix release                             |
 | [v0.2.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.0) | Improved solver and tools                   |
 | [v0.1.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.1) | Bug fix release                             |
 | [v0.1.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.0) | Initial release                             |
 
-
 ## Documentation
 
 For all tutorials, documentation of Tools, Python API and Maya Plug-In
 features, take a look at the
 [Documentation Home Page](https://david-cattermole.github.io/mayaMatchMoveSolver/).
+
+The official YouTube channel is 
+[mmSolver](https://www.youtube.com/channel/UCndLPvFXd9Os7m9sc2Bbbsw), 
+it contains video tutorials for mmSolver on a range of topics. 
 
 A copy of the documentation is also installed with *Maya MatchMove
 Solver*, you can find it by pressing the *help* button in the Solver

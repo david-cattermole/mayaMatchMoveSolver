@@ -1,13 +1,31 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Set up callbacks for Maya events.
 """
 
 import collections
 import maya.OpenMaya as OpenMaya
+
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.ui.uiutils as uiutils
-
+import mmSolver.utils.node as node_utils
 
 TYPE_NEW_SCENE = 'new_scene'
 TYPE_ATTRIBUTE = 'attribute'
@@ -48,6 +66,10 @@ class CallbackManager(object):
         self._callbacks = collections.defaultdict(
             lambda: collections.defaultdict(set)
         )
+
+    def __del__(self):
+        callback_ids = list(self.get_all_ids())
+        remove_callbacks(callback_ids)
 
     def get_all_ids(self):
         all_callback_ids = set()
@@ -148,7 +170,7 @@ def add_callbacks_attribute(node_uuid, node_path, update_func):
     :rtype: list of maya.OpenMaya.MCallbackId
     """
     callback_ids = []
-    node_mobj = mmapi.get_as_object(node_path)
+    node_mobj = node_utils.get_as_object(node_path)
 
     # Attribute Changed
     clientData = (node_uuid, update_func)
@@ -184,7 +206,7 @@ def add_callbacks_to_collection(node_uuid, node_path, update_func):
     Add all callbacks for a node from a 'Collection' class.
     """
     callback_ids = []
-    node_mobj = mmapi.get_as_object(node_path)
+    node_mobj = node_utils.get_as_object(node_path)
 
     clientData = (node_uuid, update_func)
     callback_id = OpenMaya.MObjectSetMessage.addSetMembersModifiedCallback(
@@ -208,7 +230,7 @@ def add_callbacks_to_marker(node_uuid, node_path, update_func):
 
     """
     callback_ids = []
-    node_mobj = mmapi.get_as_object(node_path)
+    node_mobj = node_utils.get_as_object(node_path)
 
     # Attribute Changed (if a marker/bundle relationship is changed.)
     clientData = (node_uuid, update_func)
@@ -245,7 +267,7 @@ def add_callbacks_to_marker_group(node_uuid, node_path, update_func):
     Add all callbacks for a node from a 'MarkerGroup' class.
     """
     callback_ids = []
-    node_mobj = mmapi.get_as_object(node_path)
+    node_mobj = node_utils.get_as_object(node_path)
 
     # Node Has Been Deleted
     # TODO: This callback does not seem to be doing anything.
@@ -264,7 +286,7 @@ def add_callbacks_to_bundle(node_uuid, node_path, update_func):
     Add all callbacks for a node from a 'Bundle' class.
     """
     callback_ids = []
-    node_mobj = mmapi.get_as_object(node_path)
+    node_mobj = node_utils.get_as_object(node_path)
 
     # Attribute Changed (if a marker/bundle relationship is changed.)
     clientData = (node_uuid, update_func)
@@ -300,7 +322,7 @@ def add_callbacks_to_camera(node_uuid, node_path, update_func):
     Add all callbacks for a node from a 'Marker' class.
     """
     callback_ids = []
-    node_mobj = mmapi.get_as_object(node_path)
+    node_mobj = node_utils.get_as_object(node_path)
 
     # Node Name Change
     clientData = (node_uuid, update_func)

@@ -1,8 +1,26 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+# ----------------------------------------------------------------------
+#
 # 3DE4.script.name:     Export 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version:  v1.5
+# 3DE4.script.version:  v1.6
 #
 # 3DE4.script.gui:      Main Window::3DE4::File::Export
 # 3DE4.script.gui:      Object Browser::Context Menu Point
@@ -17,6 +35,9 @@
 # 3DE4.script.comment:  Load Markers UI in Maya to load the .uv file.
 # 3DE4.script.comment:
 # 3DE4.script.comment:  All 2D Tracks are resolution independent.
+# 3DE4.script.comment:
+# 3DE4.script.comment:  Files created with this tool will only work with
+# 3DE4.script.comment:  MM Solver v0.3.1+.
 #
 #
 
@@ -56,28 +77,23 @@ def main():
     if uvtrack_format.SUPPORT_CAMERA_FRAME_OFFSET is True:
         start_frame = tde4.getCameraFrameOffset(camera)
     pattern = '*' + EXT
-    # Undistortion default is 'On'.
-    undistort = 1
 
     # GUI
     req = tde4.createCustomRequester()
     tde4.addFileWidget(req, 'file_browser_widget', 'Filename...', pattern)
     tde4.addTextFieldWidget(req, 'start_frame_widget', 'Start Frame', str(start_frame))
-    tde4.addToggleWidget(req, 'undistort_widget', 'Apply Undistortion', undistort)
     ret = tde4.postCustomRequester(req, TITLE, 500, 0, 'Ok', 'Cancel')
     if ret == 1:
         # Query GUI Widgets
         path = tde4.getWidgetValue(req, 'file_browser_widget')
         start_frame = tde4.getWidgetValue(req, 'start_frame_widget')
         start_frame = int(start_frame)
-        undistort = tde4.getWidgetValue(req, 'undistort_widget')
-        undistort = bool(undistort)
 
         # Generate file contents
         data_str = uvtrack_format.generate(
             point_group, camera, points,
             start_frame=start_frame,
-            undistort=undistort
+            fmt=uvtrack_format.UV_TRACK_FORMAT_VERSION_3,
         )
 
         # Write file.

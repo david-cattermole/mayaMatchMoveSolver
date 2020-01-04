@@ -50,6 +50,7 @@ MObject MMMarkerScaleNode::a_horizontalFilmOffset;
 MObject MMMarkerScaleNode::a_verticalFilmOffset;
 MObject MMMarkerScaleNode::a_depth;
 MObject MMMarkerScaleNode::a_overscan;
+MObject MMMarkerScaleNode::a_overscanInverse;
 
 // Output Attributes
 MObject MMMarkerScaleNode::a_outTranslate;
@@ -88,6 +89,7 @@ MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
         MDataHandle filmBackOffsetYHandle = data.inputValue(a_verticalFilmOffset);
         MDataHandle depthHandle = data.inputValue(a_depth);
         MDataHandle overscanHandle = data.inputValue(a_overscan);
+        MDataHandle overscanInvHandle = data.inputValue(a_overscanInverse);
 
         // Get value
         double focalLength = focalLengthHandle.asDouble();
@@ -97,6 +99,7 @@ MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
         double filmBackOffsetY = filmBackOffsetYHandle.asDouble() * INCH_TO_MM;
         double depth = depthHandle.asDouble();
         double overscan = overscanHandle.asDouble();
+        double overscanInverse = 1.0 / overscanInvHandle.asDouble();
 
         double scale = 0.0;
         getCameraPlaneScale(filmBackX, focalLength, scale);
@@ -109,11 +112,17 @@ MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
         double scaleY = scale * depth * 2.0 * (filmBackY/filmBackX);
         double scaleZ = depth;
 
-        // Apply Overscan factor
+        // Apply Overscan factor (deprecated)
         translateX *= overscan;
         translateY *= overscan;
         scaleX *= overscan;
         scaleY *= overscan;
+
+        // Apply Overscan Inverse factor
+        translateX *= overscanInverse;
+        translateY *= overscanInverse;
+        scaleX *= overscanInverse;
+        scaleY *= overscanInverse;
 
         // Output Translate
         MDataHandle outTranslateXHandle = data.outputValue(a_outTranslateX);
@@ -215,7 +224,17 @@ MStatus MMMarkerScaleNode::initialize() {
             MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(numericAttr.setHidden(true));
+    CHECK_MSTATUS(numericAttr.setNiceNameOverride("Overscan (Obsolete)"));
     CHECK_MSTATUS(addAttribute(a_overscan));
+
+    // Overscan Inverse
+    a_overscanInverse = numericAttr.create(
+            "overscanInverse", "ovrscninv",
+            MFnNumericData::kDouble, 1.0);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(a_overscanInverse));
 
     // Out Translate X
     a_outTranslateX = numericAttr.create(
@@ -361,6 +380,15 @@ MStatus MMMarkerScaleNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_overscan, a_outScaleX));
     CHECK_MSTATUS(attributeAffects(a_overscan, a_outScaleY));
     CHECK_MSTATUS(attributeAffects(a_overscan, a_outScaleZ));
+
+    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outTranslate));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outTranslateX));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outTranslateY));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outTranslateZ));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outScale));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outScaleX));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outScaleY));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outScaleZ));
 
     CHECK_MSTATUS(attributeAffects(a_depth, a_outTranslate));
     CHECK_MSTATUS(attributeAffects(a_depth, a_outTranslateX));

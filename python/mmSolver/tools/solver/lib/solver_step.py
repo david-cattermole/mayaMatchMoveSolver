@@ -1,10 +1,30 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Solver Step - holds data representing a logical solver step.
+
+.. note:: This is part of the LEGACY solver, and is considered deprecated.
+
 """
-import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
 
 
@@ -183,8 +203,7 @@ class SolverStep(object):
         # frames given and override with the current frame number.
         int_list = []
         if override_current_frame is True:
-            time = maya.cmds.currentTime(query=True)
-            cur_frame = int(time)
+            cur_frame = lib_maya_utils.get_current_frame()
             int_list = [cur_frame]
         else:
             int_list = self.get_frame_list()
@@ -220,11 +239,10 @@ class SolverStep(object):
                 strategy,
             )
         elif use_anim_attrs is False and use_static_attrs is False:
-            pass
-            # msg = 'No attributes will be solved: '
-            # msg += 'use_static_attrs=%r, use_anim_attrs=%r'
-            # msg = msg % (use_static_attrs, use_anim_attrs)
-            # LOG.debug(msg)
+            msg = 'No attributes will be solved: '
+            msg += 'use_static_attrs=%r, use_anim_attrs=%r'
+            msg = msg % (use_static_attrs, use_anim_attrs)
+            LOG.debug(msg)
         else:
             msg = 'We should not get here: '
             msg += 'use_static_attrs=%r, use_anim_attrs=%r'

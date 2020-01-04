@@ -223,18 +223,6 @@ namespace debug {
 
     };
 
-//    inline
-//    void printLineOut(std::string str = "-", int num = 80) {
-//        char c = '-'; // TODO: Get this value from 'str'.
-//        std::cout << std::setfill(c) << std::setw(num) << str << std::endl;
-//    }
-//
-//    inline
-//    void printLineErr(std::string str = "-", int num = 80) {
-//        char c = '-'; // TODO: Get this value from 'str'.
-//        std::cerr << std::setfill(c) << std::setw(num) << str << std::endl;
-//    }
-
 }
 
 #endif // DEBUG_UTILS_H

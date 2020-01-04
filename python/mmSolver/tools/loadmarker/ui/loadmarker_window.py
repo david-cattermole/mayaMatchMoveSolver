@@ -1,3 +1,20 @@
+# Copyright (C) 2018 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Window for the Load Marker tool.
 
@@ -18,10 +35,11 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
+import mmSolver.utils.undo as undoutils
 import mmSolver.tools.loadmarker.constant as const
-import mmSolver.tools.loadmarker.lib as lib
 import mmSolver.tools.loadmarker.ui.loadmarker_layout as loadmarker_layout
-import mmSolver.tools.loadmarker.mayareadfile as mayareadfile
+import mmSolver.tools.loadmarker.lib.utils as lib
+import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 
 
 LOG = mmSolver.logger.get_logger()
@@ -38,6 +56,7 @@ class LoadMarkerWindow(BaseWindow):
         self.addSubForm(loadmarker_layout.LoadMarkerLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
+        self.setWindowFlags(QtCore.Qt.Tool)
 
         # Standard Buttons
         self.baseHideStandardButtons()
@@ -55,45 +74,91 @@ class LoadMarkerWindow(BaseWindow):
 
     def apply(self):
         cam = None
+        mkr_grp = None
+
+        file_path = self.subForm.getFilePath()
+        load_mode = self.subForm.getLoadModeText()
+        camera_text = self.subForm.getCameraText()
+        camera_data = self.subForm.getCameraData()
+        mkr_grp_text = self.subForm.getMarkerGroupText()
+        mkr_grp_data = self.subForm.getMarkerGroupData()
+        load_bnd_pos = self.subForm.getLoadBundlePositions()
+        undist_mode = self.subForm.getDistortionModeText()
+        undistorted = undist_mode == const.UNDISTORTION_MODE_VALUE
+        width, height = self.subForm.getImageResolution()
+
         try:
             self.progressBar.setValue(0)
             self.progressBar.show()
 
-            file_path = self.subForm.getFilePath()
-            camera_text = self.subForm.getCameraText()
-            camera_data = self.subForm.getCameraData()
-            width, height = self.subForm.getImageResolution()
-            self.progressBar.setValue(20)
+            with undoutils.undo_chunk_context():
+                _, mkr_data_list = mayareadfile.read(
+                    file_path,
+                    image_width=width,
+                    image_height=height,
+                    undistorted=undistorted,
+                )
+                self.progressBar.setValue(50)
 
-            mkr_data_list = mayareadfile.read(
-                file_path,
-                image_width=width,
-                image_height=height
-            )
-            self.progressBar.setValue(70)
+                if load_mode == const.LOAD_MODE_NEW_VALUE:
+                    if camera_text == const.NEW_CAMERA_VALUE:
+                        cam = lib.create_new_camera()
+                    else:
+                        cam = camera_data
+                        if mkr_grp_text == const.NEW_MARKER_GROUP_VALUE:
+                            mkr_grp = lib.create_new_marker_group(cam)
+                        else:
+                            mkr_grp = mkr_grp_data
+                    self.progressBar.setValue(60)
+                    mayareadfile.create_nodes(
+                        mkr_data_list,
+                        cam=cam,
+                        mkr_grp=mkr_grp,
+                        with_bundles=True,
+                        load_bundle_position=load_bnd_pos,
+                    )
 
-            if camera_text == const.NEW_CAMERA_VALUE:
-                cam = lib.create_new_camera()
-            else:
-                cam = camera_data
-            self.progressBar.setValue(90)
+                elif load_mode == const.LOAD_MODE_REPLACE_VALUE:
+                    self.progressBar.setValue(60)
+                    mkr_list = lib.get_selected_markers()
+                    mayareadfile.update_nodes(mkr_list, mkr_data_list)
+                else:
+                    raise ValueError('Load mode is not valid: %r' % load_mode)
 
-            mayareadfile.create_nodes(mkr_data_list, cam=cam)
+                self.progressBar.setValue(99)
+                lib.trigger_maya_to_refresh()
         finally:
             self.progressBar.setValue(100)
             self.progressBar.hide()
             # Update the camera comboBox with the created camera, or
             # the last used camera.
+            all_camera_nodes = lib.get_cameras()
             selected_cameras = [cam]
+            active_camera = cam
             self.subForm.updateCameraList(
                 self.subForm.camera_comboBox,
                 self.subForm.camera_model,
-                selected_cameras)
+                all_camera_nodes,
+                selected_cameras,
+                active_camera
+            )
+            active_camera = cam
+            active_mkr_grp = mkr_grp
+            mkr_grp_nodes = lib.get_marker_groups(active_camera)
+            self.subForm.updateMarkerGroupList(
+                self.subForm.markerGroup_comboBox,
+                self.subForm.markerGroup_model,
+                active_mkr_grp,
+                mkr_grp_nodes
+            )
         return
 
     def help(self):
         src = helputils.get_help_source()
-        helputils.open_help_in_browser(page='tools.html#load-markers', help_source=src)
+        helputils.open_help_in_browser(
+            page='tools.html#load-markers',
+            help_source=src
+        )
         return
 
 

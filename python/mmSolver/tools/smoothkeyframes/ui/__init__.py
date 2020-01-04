@@ -1,0 +1,3 @@
+"""
+Smooth Keyframe user interface.
+"""

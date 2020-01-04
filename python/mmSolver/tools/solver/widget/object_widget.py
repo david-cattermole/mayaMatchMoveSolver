@@ -1,0 +1,405 @@
+# Copyright (C) 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
+"""
+Object Browser widget.
+"""
+
+import mmSolver.ui.qtpyutils as qtpyutils
+qtpyutils.override_binding_order()
+
+import Qt
+import Qt.QtCore as QtCore
+import Qt.QtGui as QtGui
+import Qt.QtWidgets as QtWidgets
+
+import mmSolver.logger
+import mmSolver.ui.uiutils as uiutils
+import mmSolver.api as mmapi
+import mmSolver.tools.solver.maya_callbacks as maya_callbacks
+import mmSolver.tools.solver.lib.collection as lib_col
+import mmSolver.tools.solver.lib.state as lib_state
+import mmSolver.tools.solver.lib.uiquery as lib_uiquery
+import mmSolver.tools.solver.lib.marker as lib_marker
+import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
+import mmSolver.tools.solver.ui.object_nodes as object_nodes
+import mmSolver.tools.solver.ui.convert_to_ui as convert_to_ui
+import mmSolver.tools.solver.widget.nodebrowser_widget as nodebrowser_widget
+import mmSolver.tools.solver.constant as const
+
+
+LOG = mmSolver.logger.get_logger()
+
+
+def _populateWidgetsEnabled(widgets):
+    col = lib_state.get_active_collection()
+    enabled = col is not None
+    for widget in widgets:
+        widget.setEnabled(enabled)
+    return
+
+
+def _lookupNodes(indexes, model):
+    """
+    Find the UI nodes, from the list of Qt indexes.
+    """
+    maya_nodes = []
+    for idx in indexes:
+        ui_node = lib_uiquery.get_ui_node_from_index(idx, model)
+        if ui_node is None:
+            continue
+
+        # Type info will be 'marker', 'bundle' or 'camera' based on
+        # the selected node type.
+        typeInfo = ui_node.typeInfo
+        nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], typeInfo)
+        if typeInfo == 'camera':
+            maya_nodes += [x.get_shape_node() for x in nodes]
+        else:
+            # For bundles and markers
+            maya_nodes += [x.get_node() for x in nodes]
+    return maya_nodes
+
+
+class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
+
+    def __init__(self, parent=None, *args, **kwargs):
+        super(ObjectBrowserWidget, self).__init__(*args, **kwargs)
+
+        self.title_label.setText('Input Objects')
+
+        self.createToolButtons()
+        self.createTreeView()
+
+        self.dataChanged.connect(self.updateModel)
+
+        self.callback_manager = maya_callbacks.CallbackManager()
+        return
+
+    def __del__(self):
+        """
+        Release all resources held by the class.
+        """
+        del self.callback_manager
+
+    def createToolButtons(self):
+        """
+        Create the 'toggle' buttons for the Object browser.
+        """
+        self.toggleCamera_toolButton = QtWidgets.QToolButton(self)
+        self.toggleCamera_toolButton.setText('CAM')
+        self.toggleCamera_toolButton.setCheckable(True)
+        self.toggleButtons_layout.addWidget(self.toggleCamera_toolButton)
+
+        self.toggleMarker_toolButton = QtWidgets.QToolButton(self)
+        self.toggleMarker_toolButton.setText('MKR')
+        self.toggleMarker_toolButton.setCheckable(True)
+        self.toggleButtons_layout.addWidget(self.toggleMarker_toolButton)
+
+        self.toggleBundle_toolButton = QtWidgets.QToolButton(self)
+        self.toggleBundle_toolButton.setText('BND')
+        self.toggleBundle_toolButton.setCheckable(True)
+        self.toggleButtons_layout.addWidget(self.toggleBundle_toolButton)
+
+        self.toggleCamera_toolButton.clicked.connect(self.toggleCameraClicked)
+        self.toggleMarker_toolButton.clicked.connect(self.toggleMarkerClicked)
+        self.toggleBundle_toolButton.clicked.connect(self.toggleBundleClicked)
+        return
+
+    def createTreeView(self):
+        """
+        Set up the tree view.
+        """
+        root = object_nodes.ObjectNode('root')
+        self.model = object_nodes.ObjectModel(root, font=self.font)
+        self.filterModel = QtCore.QSortFilterProxyModel()
+        self.filterModel.setSourceModel(self.model)
+        self.filterModel.setDynamicSortFilter(False)
+        self.header = QtWidgets.QHeaderView(
+            QtCore.Qt.Horizontal,
+            parent=self.treeView
+        )
+        Qt.QtCompat.QHeaderView.setSectionResizeMode(
+            self.header, QtWidgets.QHeaderView.ResizeToContents
+        )
+        self.treeView.setHeader(self.header)
+        self.treeView.setModel(self.filterModel)
+        self.treeView.setSortingEnabled(True)
+        self.treeView.sortByColumn(0, QtCore.Qt.AscendingOrder)
+        self.treeView.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.selModel = self.treeView.selectionModel()
+        self.selModel.selectionChanged.connect(self.selectionChanged)
+        return
+
+    def populateModel(self, model):
+        valid = uiutils.isValidQtObject(model)
+        if valid is False:
+            return
+        col = lib_state.get_active_collection()
+        mkr_list = []
+        show_cam = const.OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE
+        show_mkr = const.OBJECT_TOGGLE_MARKER_DEFAULT_VALUE
+        show_bnd = const.OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE
+        if col is not None:
+            mkr_list = lib_marker.get_markers_from_collection(col)
+            show_cam = lib_col.get_object_toggle_camera_from_collection(col)
+            show_mkr = lib_col.get_object_toggle_marker_from_collection(col)
+            show_bnd = lib_col.get_object_toggle_bundle_from_collection(col)
+        root = convert_to_ui.markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd)
+        model.setRootNode(root)
+        return
+
+    def updateInfo(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
+        cam_list = set()
+        mkr_list = set()
+        bnd_list = set()
+
+        text = 'Camera {cam} | Markers {mkr} | Bundles {bnd}'
+
+        col = lib_state.get_active_collection()
+        if col is not None:
+            marker_list = col.get_marker_list()
+            for mkr in marker_list:
+                mkr_node = mkr.get_node()
+                mkr_list.add(mkr_node)
+
+                cam = mkr.get_camera()
+                cam_shp_node = cam.get_shape_node()
+                cam_list.add(cam_shp_node)
+
+                bnd = mkr.get_bundle()
+                if bnd is not None:
+                    bnd_node = bnd.get_node()
+                    bnd_list.add(bnd_node)
+
+        text = text.format(
+            cam=len(cam_list),
+            mkr=len(mkr_list),
+            bnd=len(bnd_list),
+        )
+        self.info_label.setText(text)
+        return
+
+    def updateToggleButtons(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        show_cam = lib_col.get_object_toggle_camera_from_collection(col)
+        show_mkr = lib_col.get_object_toggle_marker_from_collection(col)
+        show_bnd = lib_col.get_object_toggle_bundle_from_collection(col)
+        self.toggleCamera_toolButton.setChecked(show_cam)
+        self.toggleMarker_toolButton.setChecked(show_mkr)
+        self.toggleBundle_toolButton.setChecked(show_bnd)
+        return
+
+    def updateColumnVisibility(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
+        show_weight = lib_state.get_display_object_weight_state()
+        show_frm_dev = lib_state.get_display_object_frame_deviation_state()
+        show_avg_dev = lib_state.get_display_object_average_deviation_state()
+        show_max_dev = lib_state.get_display_object_maximum_deviation_state()
+        self.displayWeightColumnChanged(show_weight)
+        self.displayFrameDeviationColumnChanged(show_frm_dev)
+        self.displayAverageDeviationColumnChanged(show_avg_dev)
+        self.displayMaximumDeviationColumnChanged(show_max_dev)
+        return
+
+    def updateModel(self):
+        is_running = mmapi.is_solver_running()
+        if is_running is True:
+            return
+
+        self.populateModel(self.model)
+        valid = uiutils.isValidQtObject(self.treeView)
+        if valid is False:
+            return
+        self.treeView.expandAll()
+
+        widgets = [self]
+        _populateWidgetsEnabled(widgets)
+
+        block = self.blockSignals(True)
+        self.viewUpdated.emit()
+        self.blockSignals(block)
+        return
+
+    def addClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            msg = 'Cannot add markers, active collection is not defined.'
+            LOG.warning(msg)
+            return
+
+        sel = lib_maya_utils.get_scene_selection()
+        mkr_list = lib_maya_utils.get_markers_from_selection()
+        if len(mkr_list) == 0:
+            msg = 'Please select objects, found no markers.'
+            LOG.warning(msg)
+            return
+        lib_marker.add_markers_to_collection(mkr_list, col)
+
+        def update_func():
+            if uiutils.isValidQtObject(self) is False:
+                return
+            self.dataChanged.emit()
+            self.viewUpdated.emit()
+            return
+
+        # Add Callbacks
+        callback_manager = self.callback_manager
+        if callback_manager is not None:
+            lib_marker.add_callbacks_to_markers(
+                mkr_list,
+                update_func,
+                callback_manager
+            )
+
+        update_func()
+
+        # Restore selection.
+        lib_maya_utils.set_scene_selection(sel)
+        return
+
+    def removeClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+
+        sel = lib_maya_utils.get_scene_selection()
+        ui_nodes = lib_uiquery.get_selected_ui_nodes(
+            self.treeView,
+            self.filterModel
+        )
+        nodes = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'marker')
+        lib_marker.remove_markers_from_collection(nodes, col)
+
+        # Remove Callbacks
+        callback_manager = self.callback_manager
+        if callback_manager is not None:
+            lib_marker.remove_callbacks_from_markers(
+                nodes,
+                callback_manager
+            )
+
+        self.dataChanged.emit()
+        self.viewUpdated.emit()
+
+        # Restore selection.
+        lib_maya_utils.set_scene_selection(sel)
+        return
+
+    def toggleCameraClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_object_toggle_camera_from_collection(col)
+        value = not value
+        lib_col.set_object_toggle_camera_on_collection(col, value)
+
+        self.dataChanged.emit()
+        return
+
+    def toggleMarkerClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_object_toggle_marker_from_collection(col)
+        value = not value
+        lib_col.set_object_toggle_marker_on_collection(col, value)
+
+        self.dataChanged.emit()
+        return
+
+    def toggleBundleClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            LOG.warning('No active collection to set.')
+            return
+        value = lib_col.get_object_toggle_bundle_from_collection(col)
+        value = not value
+        lib_col.set_object_toggle_bundle_on_collection(col, value)
+
+        self.dataChanged.emit()
+        return
+
+    @QtCore.Slot(QtCore.QItemSelection, QtCore.QItemSelection)
+    def selectionChanged(self, selected, deselected):
+        """
+        Look up the Maya node from the 'selected' nodes, and add them
+        to the Maya selection.
+        """
+        select_indexes = [idx for idx in selected.indexes()]
+        deselect_indexes = [idx for idx in deselected.indexes()]
+
+        select_nodes = _lookupNodes(
+            select_indexes,
+            self.filterModel
+        )
+        deselect_nodes = _lookupNodes(
+            deselect_indexes,
+            self.filterModel
+        )
+
+        lib_maya_utils.add_scene_selection(select_nodes)
+        lib_maya_utils.remove_scene_selection(deselect_nodes)
+        return
+
+    @QtCore.Slot(bool)
+    def displayWeightColumnChanged(self, value):
+        lib_state.set_display_object_weight_state(value)
+        idx = self.model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_WEIGHT
+        )
+        self.treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayFrameDeviationColumnChanged(self, value):
+        lib_state.set_display_object_frame_deviation_state(value)
+        idx = self.model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_DEVIATION_FRAME
+        )
+        self.treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayAverageDeviationColumnChanged(self, value):
+        lib_state.set_display_object_average_deviation_state(value)
+        idx = self.model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE
+        )
+        self.treeView.setColumnHidden(idx, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayMaximumDeviationColumnChanged(self, value):
+        lib_state.set_display_object_maximum_deviation_state(value)
+        idx = self.model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM
+        )
+        self.treeView.setColumnHidden(idx, not value)
+        return

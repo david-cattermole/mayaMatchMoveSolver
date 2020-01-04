@@ -1,33 +1,50 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 The main window for the 'Solver' tool.
 """
 
-import sys
+import datetime
+import uuid
 from functools import partial
 
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
+import Qt
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
+import mmSolver.utils.undo as undo_utils
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
+import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_collection
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
 import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 import mmSolver.tools.solver.ui.solver_layout as solver_layout
-import mmSolver.tools.loadmarker.tool as loadmarker_tool
-import mmSolver.tools.selection.tools as selection_tool
-import mmSolver.tools.createmarker.tool as createmarker_tool
-import mmSolver.tools.createbundle.tool as createbundle_tool
-import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool
-import mmSolver.tools.convertmarker.tool as convertmarker_tool
-import mmSolver.tools.markerbundlerename.tool as mbrename_tool
+import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
+import mmSolver.tools.aboutwindow.tool as aboutwin_tool
+import mmSolver.tools.sysinfowindow.tool as sysinfowin_tool
 
 
 LOG = mmSolver.logger.get_logger()
@@ -51,12 +68,10 @@ class SolverWindow(BaseWindow):
         # Standard Buttons
         self.baseHideStandardButtons()
         self.applyBtn.show()
-        self.helpBtn.show()
         self.closeBtn.show()
         self.applyBtn.setText('Solve')
 
         self.applyBtn.clicked.connect(self.apply)
-        self.helpBtn.clicked.connect(self.help)
 
         # Hide irrelevant stuff
         self.baseHideProgressBar()
@@ -71,6 +86,9 @@ class SolverWindow(BaseWindow):
             None,
             callback_ids,
         )
+
+        # # Update the status with the last solve result
+        # self.updateStatusWithSolveResult()
         return
 
     def __del__(self):
@@ -80,7 +98,33 @@ class SolverWindow(BaseWindow):
         callback_ids = list(self.callback_manager.get_all_ids())
         maya_callbacks.remove_callbacks(callback_ids)
         del self.callback_manager
-        self.callback_manager = maya_callbacks.CallbackManager()
+
+    # def updateStatusWithSolveResult(self):
+    #     col = lib_state.get_active_collection()
+    #     if col is None:
+    #         return
+    #     info_fn = self.setSolveInfoLine
+    #     solres_list = col.get_last_solve_results()
+    #     timestamp = col.get_last_solve_timestamp()
+    #     total_time = col.get_last_solve_duration()
+
+    #     msg = 'No solve performed.'
+    #     if (len(solres_list) == 0):
+    #         info_fn(msg)
+    #     if timestamp is None:
+    #         timestamp = time.time()
+    #     if total_time is None:
+    #         total_time = 0.0
+
+    #     # We don't want to log every time we open the UI.
+    #     log = None
+    #     lib_collection.log_solve_results(
+    #         log,
+    #         solres_list,
+    #         timestamp=timestamp,
+    #         total_time=total_time,
+    #         status_fn=info_fn)
+    #     return
 
     def addMenuBarContents(self, menubar):
         # File Menu
@@ -124,112 +168,210 @@ class SolverWindow(BaseWindow):
 
         menubar.addMenu(file_menu)
 
-        # Tools Menu
-        tools_menu = QtWidgets.QMenu('Tools', menubar)
+        # Edit Menu
+        edit_menu = QtWidgets.QMenu('Edit', menubar)
+        edit_menu.setTearOffEnabled(True)
 
-        # Create Marker
-        label = 'Create Marker'
-        tooltip = 'Create Markers on the selected camera.'
-        action = QtWidgets.QAction(label, tools_menu)
+        if Qt.IsPySide2 or Qt.IsPyQt5:
+            edit_menu.addSection('Undo / Redo')
+
+        # Undo
+        label = 'Undo (without UI update)'
+        tooltip = ('Undo the Maya scene state, '
+                   'without updating the viewport or solver UI')
+        action = QtWidgets.QAction(label, edit_menu)
         action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.createMarkerCB))
-        tools_menu.addAction(action)
+        action.triggered.connect(self.undoTriggeredCB)
+        edit_menu.addAction(action)
 
-        # Convert to Marker
-        label = 'Convert to Marker'
-        tooltip = 'Convert the selection to Markers.'
-        action = QtWidgets.QAction(label, tools_menu)
+        # Redo
+        label = 'Redo (without UI update)'
+        tooltip = ('Redo the Maya scene state, '
+                   'without updating the viewport or solver UI')
+        action = QtWidgets.QAction(label, edit_menu)
         action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.convertToMarkerCB))
-        tools_menu.addAction(action)
+        action.triggered.connect(self.redoTriggeredCB)
+        edit_menu.addAction(action)
 
-        # Load Markers
-        label = 'Load Markers...'
-        tooltip = 'Load Markers from a file.'
-        action = QtWidgets.QAction(label, tools_menu)
+        if Qt.IsPySide2 or Qt.IsPyQt5:
+            edit_menu.addSection('Window Update')
+
+        # Auto Update Solver Validation
+        label = 'Auto-Update Solver Validation'
+        tooltip = 'Auto-update details of the solver parameter/error numbers.'
+        value = lib_state.get_auto_update_solver_validation_state()
+        action = QtWidgets.QAction(label, edit_menu)
         action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.loadMarkerCB))
-        tools_menu.addAction(action)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            self.subForm.solver_settings.autoUpdateSolverValidationChanged)
+        edit_menu.addAction(action)
 
-        tools_menu.addSeparator()
+        if Qt.IsPySide2 or Qt.IsPyQt5:
+            edit_menu.addSection('Solver Execution')
 
-        # Create Bundle
-        label = 'Create Bundle'
-        tooltip = 'Create a default Bundle node.'
-        action = QtWidgets.QAction(label, tools_menu)
+        # Pre-Solve Force Evaluation
+        label = 'Pre-Solve Force Evaluation'
+        tooltip = ('Before starting a solve, '
+                   'update the scene to force an evaluation.')
+        pre_solve_force_eval = lib_state.get_pre_solve_force_eval_state()
+        action = QtWidgets.QAction(label, edit_menu)
         action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.createBundleCB))
-        tools_menu.addAction(action)
-
-        tools_menu.addSeparator()
-
-        # Link Marker + Bundle
-        label = 'Link Marker + Bundle'
-        tooltip = 'Link the selected Marker and Bundle together.'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.linkMarkerBundleCB))
-        tools_menu.addAction(action)
-
-        # Unlink Marker from all Bundles
-        label = 'Unlink Marker from all Bundles'
-        tooltip = 'Unlink all selected Markers from their Bundle.'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.unlinkMarkerBundleCB))
-        tools_menu.addAction(action)
-
-        tools_menu.addSeparator()
-
-        # Toogle Marker / Bundle selection
-        label = 'Toggle Marker / Bundle'
-        tooltip = 'Select connected Markers, or Bundles.'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.toggleMarkerBundleSelectionCB))
-        tools_menu.addAction(action)
-
-        # Select Marker / Bundle
-        label = 'Select Marker + Bundle'
-        tooltip = 'Select the connected Markers and Bundles.'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.selectBothMarkersAndBundlesCB))
-        tools_menu.addAction(action)
-
-        # Rename Marker + Bundle
-        label = 'Rename Markers + Bundles'
-        tooltip = 'Rename the selected Markers and Bundles;'
-        action = QtWidgets.QAction(label, tools_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.renameMarkerBundleCB))
-        tools_menu.addAction(action)
-
-        tools_menu.addSeparator()
+        action.setCheckable(True)
+        action.setChecked(pre_solve_force_eval)
+        action.toggled.connect(type(self).preSolveForceEvalActionToggledCB)
+        edit_menu.addAction(action)
 
         # Refresh Viewport During Solve
         label = 'Refresh Viewport'
         tooltip = 'Refresh the viewport while Solving.'
         refresh_value = lib_state.get_refresh_viewport_state()
-        action = QtWidgets.QAction(label, tools_menu)
+        action = QtWidgets.QAction(label, edit_menu)
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(refresh_value)
         action.toggled.connect(type(self).refreshActionToggledCB)
-        tools_menu.addAction(action)
+        edit_menu.addAction(action)
 
         # Force DG evaluation.
         label = 'Force DG Update'
         tooltip = 'Force Maya DG Evaluation while solving.'
         force_dg_update_value = lib_state.get_force_dg_update_state()
-        action = QtWidgets.QAction(label, tools_menu)
+        action = QtWidgets.QAction(label, edit_menu)
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(force_dg_update_value)
         action.toggled.connect(type(self).forceDgUpdateActionToggledCB)
-        tools_menu.addAction(action)
+        edit_menu.addAction(action)
 
-        menubar.addMenu(tools_menu)
+        menubar.addMenu(edit_menu)
+
+        # View Menu
+        view_menu = QtWidgets.QMenu('View', menubar)
+        view_menu.setTearOffEnabled(True)
+
+        if Qt.IsPySide2 or Qt.IsPyQt5:
+            view_menu.addSection('Input Object Display')
+
+        # Display Object Weight
+        label = 'Weight Column'
+        tooltip = 'Display Object weight column'
+        value = lib_state.get_display_object_weight_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            self.subForm.object_browser.displayWeightColumnChanged)
+        view_menu.addAction(action)
+
+        # Display Object Frame Deviation
+        label = 'Frame Deviation'
+        tooltip = 'Display per-frame deviation for each Marker/Camera.'
+        value = lib_state.get_display_object_frame_deviation_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            self.subForm.object_browser.displayFrameDeviationColumnChanged)
+        view_menu.addAction(action)
+
+        # Display Object Average Deviation
+        label = 'Average Deviation'
+        tooltip = 'Display average  deviation column'
+        value = lib_state.get_display_object_average_deviation_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            self.subForm.object_browser.displayAverageDeviationColumnChanged)
+        view_menu.addAction(action)
+
+        # Display Object Maximum Deviation
+        label = 'Maximum Deviation'
+        tooltip = 'Display maximum deviation column'
+        value = lib_state.get_display_object_maximum_deviation_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            self.subForm.object_browser.displayMaximumDeviationColumnChanged)
+        view_menu.addAction(action)
+
+        if Qt.IsPySide2 or Qt.IsPyQt5:
+            view_menu.addSection('Output Attribute Display')
+
+        # Display Attribute State
+        label = 'Display Attribute State'
+        tooltip = 'Display Attribute State column'
+        value = lib_state.get_display_attribute_state_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            self.subForm.attribute_browser.displayStateColumnChanged)
+        view_menu.addAction(action)
+
+        # Display Attribute Min/Max
+        label = 'Display Attribute Min/Max'
+        tooltip = 'Display Attribute Minimum and Maximum columns'
+        value = lib_state.get_display_attribute_min_max_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            self.subForm.attribute_browser.displayMinMaxColumnChanged)
+        view_menu.addAction(action)
+
+        if Qt.IsPySide2 or Qt.IsPyQt5:
+            view_menu.addSection('During Solve')
+
+        # Display the Image Planes while solving.
+        #
+        # TODO: Add other object types to show/hide while solving,
+        #  such as camera, nurbsCurves, nurbsSurfaces, and locators.
+        label = 'Display Image Planes'
+        tooltip = 'Display Image Planes while solving.'
+        value = lib_state.get_display_image_plane_while_solving_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            type(self).displayImagePlaneWhileSolvingActionToggledCB)
+        view_menu.addAction(action)
+
+        # Display the Meshes while solving.
+        label = 'Display Meshes'
+        tooltip = 'Display Meshes while solving.'
+        value = lib_state.get_display_meshes_while_solving_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            type(self).displayMeshesWhileSolvingActionToggledCB)
+        view_menu.addAction(action)
+
+        # Isolate Objects while solving
+        label = 'Isolate Objects'
+        tooltip = 'Isolate visibility of all Markers and Bundles while solving.'
+        isolate_value = lib_state.get_isolate_object_while_solving_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(isolate_value)
+        action.toggled.connect(
+            type(self).isolateObjectWhileSolvingActionToggledCB)
+        view_menu.addAction(action)
+
+        menubar.addMenu(view_menu)
 
         # Log Menu
         # This menu depicts a radio button allowing the user to choose
@@ -317,13 +459,21 @@ class SolverWindow(BaseWindow):
         action.triggered.connect(partial(self.launchHelpCB))
         help_menu.addAction(action)
 
-        # # Launch About
-        # label = 'About...'
-        # tooltip = 'About this software.'
-        # action = QtWidgets.QAction(label, help_menu)
-        # action.setStatusTip(tooltip)
-        # action.triggered.connect(partial(self.launchAboutCB))
-        # help_menu.addAction(action)
+        # Launch System Info window.
+        label = 'System Information...'
+        tooltip = 'Display detailed information about software and hardware.'
+        action = QtWidgets.QAction(label, help_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.launchSysInfoCB))
+        help_menu.addAction(action)
+
+        # Launch About
+        label = 'About mmSolver...'
+        tooltip = 'About this software.'
+        action = QtWidgets.QAction(label, help_menu)
+        action.setStatusTip(tooltip)
+        action.triggered.connect(partial(self.launchAboutCB))
+        help_menu.addAction(action)
 
         menubar.addMenu(help_menu)
         return
@@ -344,78 +494,94 @@ class SolverWindow(BaseWindow):
         lib_state.set_log_level(const.LOG_LEVEL_DEBUG)
 
     def createNewCollectionNodeCB(self):
-        self.subForm.createNewCollectionNode()
+        self.subForm.collection_widget.createNewNode()
         return
 
     def renameCollectionNodeCB(self):
-        self.subForm.renameCollectionNode()
+        self.subForm.collection_widget.renameActiveNode()
         return
 
     def removeCollectionNodeCB(self):
-        self.subForm.removeCollectionNode()
+        self.subForm.collection_widget.removeActiveNode()
         return
 
-    def createMarkerCB(self):
-        """
-        Create a Marker under the active viewport camera.
-        """
-        createmarker_tool.main()
-
-    def convertToMarkerCB(self):
-        """
-        Converts all selected transform nodes into markers.
-        """
-        convertmarker_tool.main()
+    def undoTriggeredCB(self):
+        LOG.debug('undoTriggeredCB')
+        validation = lib_state.get_auto_update_solver_validation_state()
+        with undo_utils.no_undo_context():
+            lib_state.set_auto_update_solver_validation_state(False)
+        block = self.blockSignals(True)
+        try:
+            undoredoscene_tool.main_undo()
+        finally:
+            with undo_utils.no_undo_context():
+                lib_state.set_auto_update_solver_validation_state(validation)
+            self.blockSignals(block)
         return
 
-    def loadMarkerCB(self):
-        """
-        Open a UI where we can paste a file path in and press "ok". The UI
-        could also show the point data before loading the file.
-        """
-        loadmarker_tool.open_window()
-
-    def createBundleCB(self):
-        """
-        Create a Bundle node, attached to the selected markers.
-        """
-        createbundle_tool.main()
-
-    def toggleMarkerBundleSelectionCB(self):
-        selection_tool.swap_between_selected_markers_and_bundles()
-
-    def selectBothMarkersAndBundlesCB(self):
-        selection_tool.select_both_markers_and_bundles()
-
-    def renameMarkerBundleCB(self):
-        """
-        Rename the selected markers and bundles (with a prompt window).
-        """
-        mbrename_tool.main()
-
-    def linkMarkerBundleCB(self):
-        link_mb_tool.link_marker_bundle()
-
-    def unlinkMarkerBundleCB(self):
-        link_mb_tool.unlink_marker_bundle()
+    def redoTriggeredCB(self):
+        LOG.debug('redoTriggeredCB')
+        validation = lib_state.get_auto_update_solver_validation_state()
+        with undo_utils.no_undo_context():
+            lib_state.set_auto_update_solver_validation_state(False)
+        block = self.blockSignals(True)
+        try:
+            undoredoscene_tool.main_redo()
+        finally:
+            with undo_utils.no_undo_context():
+                lib_state.set_auto_update_solver_validation_state(validation)
+            self.blockSignals(block)
+        return
 
     @staticmethod
     def refreshActionToggledCB(value):
         lib_state.set_refresh_viewport_state(value)
+        return
 
     @staticmethod
     def forceDgUpdateActionToggledCB(value):
         lib_state.set_force_dg_update_state(value)
+        return
+
+    @staticmethod
+    def preSolveForceEvalActionToggledCB(value):
+        lib_state.set_pre_solve_force_eval_state(value)
+        return
+
+    @staticmethod
+    def isolateObjectWhileSolvingActionToggledCB(value):
+        lib_state.set_isolate_object_while_solving_state(value)
+        return
+
+    @staticmethod
+    def displayImagePlaneWhileSolvingActionToggledCB(value):
+        lib_state.set_display_image_plane_while_solving_state(value)
+        return
+
+    @staticmethod
+    def displayMeshesWhileSolvingActionToggledCB(value):
+        lib_state.set_display_meshes_while_solving_state(value)
+        return
 
     def launchHelpCB(self):
         self.help()
+        return
 
-    # def launchAboutCB(self):
-    #     # LOG.info('Launch About... not yet.')
-    #     self.help()
+    def launchAboutCB(self):
+        aboutwin_tool.open_window()
+        return
+
+    def launchSysInfoCB(self):
+        sysinfowin_tool.open_window()
+        return
 
     def setStatusLine(self, text):
         self.subForm.setStatusLine(text)
+        QtWidgets.QApplication.processEvents()
+        return
+
+    def setSolveInfoLine(self, text):
+        self.subForm.setSolveInfoLine(text)
         QtWidgets.QApplication.processEvents()
         return
 
@@ -426,22 +592,33 @@ class SolverWindow(BaseWindow):
 
     def apply(self):
         """
-        Tbis button launches a solve, but can also be used to cancel a solve.
+        This button launches a solve, but can also be used to cancel a solve.
         """
         running_state = lib_state.get_solver_is_running_state()
         if running_state is True:
+            # Cancel out of a running solve if the user presses
+            # the button again.
             lib_state.set_solver_user_interrupt_state(True)
             return
-        refresh_state = lib_state.get_refresh_viewport_state()
-        force_update_state = lib_state.get_force_dg_update_state()
-        log_level = lib_state.get_log_level()
-        col = lib_state.get_active_collection()
-        lib_collection.run_solve_ui(
-            col,
-            refresh_state,
-            force_update_state,
-            log_level,
-            self)
+        undo_id = 'mmSolver: '
+        undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
+        undo_id += ' '
+        undo_id += str(uuid.uuid4())
+        with undo_utils.undo_chunk_context(undo_id):
+            block = self.blockSignals(True)
+            try:
+                mmapi.set_solver_running(True)
+                options = lib_collection.gather_execute_options()
+                log_level = lib_state.get_log_level()
+                col = lib_state.get_active_collection()
+                lib_collection.run_solve_ui(
+                    col,
+                    options,
+                    log_level,
+                    self)
+            finally:
+                mmapi.set_solver_running(False)
+                self.blockSignals(block)
         return
 
     def help(self):

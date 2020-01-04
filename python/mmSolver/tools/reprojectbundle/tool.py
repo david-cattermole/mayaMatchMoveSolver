@@ -1,3 +1,20 @@
+# Copyright (C) 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Position Bundle under the Marker, in screen-space.
 """
@@ -6,7 +23,6 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.tools.selection.filternodes as filternodes
 import mmSolver.tools.reprojectbundle.lib as lib
 
 
@@ -15,7 +31,7 @@ LOG = mmSolver.logger.get_logger()
 
 def main():
     """
-    Triangulate Bundle on current-frame
+    Move the Bundle to the Marker, on the current-frame.
 
     Perform a reprojection of the selected bundle (or bundle connected
     to the selected marker), at the current frame.
@@ -40,7 +56,7 @@ def main():
     
     # Get Markers and Bundles
     sel = maya.cmds.ls(sl=True) or []
-    filter_nodes = filternodes.get_nodes(sel)
+    filter_nodes = mmapi.filter_nodes_into_categories(sel)
     mkr_nodes = filter_nodes.get('marker', [])
     bnd_nodes = filter_nodes.get('bundle', [])
     if len(mkr_nodes) == 0 and len(bnd_nodes) == 0:
@@ -128,7 +144,7 @@ def main():
         have_mkr_nodes.append(mkr_node_full)
 
     # Do projection
-    modified_bnds = lib.current_frame(mkr_list, relock=relock)
+    modified_bnds = lib.reproject_bundle_current_frame(mkr_list, relock=relock)
 
     # Select all moved bundle nodes.
     modified_bnd_nodes = [bnd.get_node() for bnd in modified_bnds]

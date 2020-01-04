@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Testing a single point nodal camera solve across time.
 
@@ -22,7 +39,11 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver5(solverUtils.SolverTestCase):
 
-    def test_init(self):
+    def do_solve(self, solver_name, solver_index):
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
+
         start = 1
         end = 100
 
@@ -58,8 +79,8 @@ class TestSolver5(solverUtils.SolverTestCase):
         )
         # NOTE: All dynamic attributes must have a keyframe before starting to solve.
         node_attrs = [
-            (cam_tfm + '.rx', 'None', 'None'),
-            (cam_tfm + '.ry', 'None', 'None'),
+            (cam_tfm + '.rx', 'None', 'None', 'None', 'None'),
+            (cam_tfm + '.ry', 'None', 'None', 'None', 'None'),
         ]
 
         # Run solver!
@@ -71,6 +92,7 @@ class TestSolver5(solverUtils.SolverTestCase):
                 marker=markers,
                 attr=node_attrs,
                 iterations=10,
+                solverType=solver_index,
                 frame=(f),
                 verbose=True,
             )
@@ -87,6 +109,16 @@ class TestSolver5(solverUtils.SolverTestCase):
         for result in results:
             self.assertEqual(result[0], 'success=1')
         return
+
+    def test_init_levmar(self):
+        self.do_solve('levmar', 0)
+
+    def test_init_cminpack_lmdif(self):
+        self.do_solve('cminpack_lmdif', 1)
+
+    def test_init_cminpack_lmder(self):
+        self.do_solve('cminpack_lmder', 2)
+
 
 if __name__ == '__main__':
     prog = unittest.main()

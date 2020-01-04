@@ -1,5 +1,24 @@
 @ECHO OFF
 SETLOCAL
+::
+:: Copyright (C) 2019 David Cattermole.
+::
+:: This file is part of mmSolver.
+::
+:: mmSolver is free software: you can redistribute it and/or modify it
+:: under the terms of the GNU Lesser General Public License as
+:: published by the Free Software Foundation, either version 3 of the
+:: License, or (at your option) any later version.
+::
+:: mmSolver is distributed in the hope that it will be useful,
+:: but WITHOUT ANY WARRANTY; without even the implied warranty of
+:: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+:: GNU Lesser General Public License for more details.
+::
+:: You should have received a copy of the GNU Lesser General Public License
+:: along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+:: ---------------------------------------------------------------------
+::
 :: Builds the Maya MatchMove Solver project.
 
 :: Maya directories
@@ -49,6 +68,17 @@ SET BUILD_PACKAGE=0
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
+:: Build options, to allow faster compilation times. (not to be used by
+:: users wanting to build this project.)
+SET BUILD_PLUGIN=1
+SET BUILD_PYTHON=1
+SET BUILD_MEL=1
+SET BUILD_QT_UI=1
+SET BUILD_DOCS=1
+SET BUILD_ICONS=1
+SET BUILD_CONFIG=1
+SET BUILD_TESTS=1
+
 :: To Generate a Visual Studio 'Solution' file, change the '0' to a '1'.
 SET GENERATE_SOLUTION=0
 
@@ -85,6 +115,14 @@ REM To Generate a Visual Studio 'Solution' file
     cmake -G "NMake Makefiles" ^
         -DCMAKE_BUILD_TYPE=Release ^
         -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
+        -DBUILD_PLUGIN=%BUILD_PLUGIN% ^
+        -DBUILD_PYTHON=%BUILD_PYTHON% ^
+        -DBUILD_MEL=%BUILD_MEL% ^
+        -DBUILD_QT_UI=%BUILD_QT_UI% ^
+        -DBUILD_DOCS=%BUILD_DOCS% ^
+        -DBUILD_ICONS=%BUILD_ICONS% ^
+        -DBUILD_CONFIG=%BUILD_CONFIG% ^
+        -DBUILD_TESTS=%BUILD_TESTS% ^
         -DUSE_GPL_LEVMAR=%WITH_GPL_CODE% ^
         -DUSE_CMINPACK=%WITH_CMINPACK% ^
         -DCMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack" ^

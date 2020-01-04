@@ -1,3 +1,20 @@
+# Copyright (C) 2018, 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 3D Bundle objects.
 """
@@ -6,11 +23,26 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
-import mmSolver._api.utils as api_utils
+import mmSolver.utils.node as node_utils
+import mmSolver._api.constant as const
 import mmSolver._api.marker
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def _set_bundle_icon(dag_path):
+    icon_name = const.BUNDLE_SHAPE_ICON_NAME
+    dag_shps = node_utils.get_dag_path_shapes_below_apione(dag_path)
+    if len(dag_shps) > 0:
+        for dag_shp in dag_shps:
+            mfn_shp = OpenMaya.MFnDagNode(dag_shp)
+            mfn_shp.setIcon(icon_name)
+    else:
+        # Set icon on transform, because there are no shapes.
+        mfn_tfm = OpenMaya.MFnDagNode(dag_path)
+        mfn_tfm.setIcon(icon_name)
+    return
 
 
 class Bundle(object):
@@ -41,9 +73,12 @@ class Bundle(object):
         if node is not None:
             assert isinstance(node, (str, unicode))
             assert maya.cmds.objExists(node)
-            dag = api_utils.get_as_dag_path(node)
+            dag = node_utils.get_as_dag_path(node)
             if dag is not None:
                 self._mfn = OpenMaya.MFnDagNode(dag)
+
+            # Set icon
+            _set_bundle_icon(dag)
         else:
             self._mfn = OpenMaya.MFnDagNode()
         return
@@ -51,7 +86,7 @@ class Bundle(object):
     def __repr__(self):
         result = '<{class_name}('.format(class_name=self.__class__.__name__)
         result += '{hash} node={node}'.format(
-            hash=hash(self),
+            hash=hex(hash(self)),
             node=self.get_node(),
         )
         result += ')>'
@@ -89,9 +124,12 @@ class Bundle(object):
         """
         assert isinstance(node, (str, unicode))
         assert maya.cmds.objExists(node)
-        dag = api_utils.get_as_dag_path(node)
+        dag = node_utils.get_as_dag_path(node)
         if dag is not None:
             self._mfn = OpenMaya.MFnDagNode(dag)
+
+            # Set icon
+            _set_bundle_icon(dag)
         else:
             self._mfn = OpenMaya.MFnDagNode()
         return
@@ -120,8 +158,9 @@ class Bundle(object):
             assert len(colour) == 3
 
         # Transform
-        tfm = maya.cmds.createNode('transform', name=name)
-        tfm = api_utils.get_long_name(tfm)
+        tfm = maya.cmds.createNode(const.BUNDLE_TRANSFORM_NODE_TYPE,
+                                   name=name)
+        tfm = node_utils.get_long_name(tfm)
         maya.cmds.setAttr(tfm + '.rx', lock=True)
         maya.cmds.setAttr(tfm + '.ry', lock=True)
         maya.cmds.setAttr(tfm + '.rz', lock=True)
@@ -143,7 +182,8 @@ class Bundle(object):
 
         # Shape Node
         shp_name = tfm.rpartition('|')[-1] + 'Shape'
-        shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm)
+        shp = maya.cmds.createNode(const.BUNDLE_SHAPE_NODE_TYPE,
+                                   name=shp_name, parent=tfm)
         maya.cmds.setAttr(shp + '.localScaleX', 0.1)
         maya.cmds.setAttr(shp + '.localScaleY', 0.1)
         maya.cmds.setAttr(shp + '.localScaleZ', 0.1)
@@ -184,13 +224,13 @@ class Bundle(object):
             msg = 'Could not get node. self=%r'
             LOG.warning(msg, self)
             return None
-        shps = maya.cmds.listRelatives(node, shapes=True) or []
+        shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
         if len(shps) == 0:
             msg = 'Could not find shape to get colour. node=%r shps=%r'
             LOG.warning(msg, node, shps)
             return None
         shp = shps[0]
-        v = api_utils.get_node_wire_colour_rgb(shp)
+        v = node_utils.get_node_wire_colour_rgb(shp)
         return v
 
     def set_colour_rgb(self, rgb):
@@ -209,13 +249,13 @@ class Bundle(object):
             msg = 'Could not get node. self=%r'
             LOG.warning(msg, self)
             return
-        shps = maya.cmds.listRelatives(node, shapes=True) or []
+        shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
         if len(shps) == 0:
             msg = 'Could not find shape to set colour. node=%r shps=%r'
             LOG.warning(msg, node, shps)
             return
         shp = shps[0]
-        api_utils.set_node_wire_colour_rgb(shp, rgb)
+        node_utils.set_node_wire_colour_rgb(shp, rgb)
         return
 
     ############################################################################
@@ -229,7 +269,10 @@ class Bundle(object):
         """
         node = self.get_node()
         node_attr = node + '.message'
-        conns = maya.cmds.listConnections(node_attr) or []
+        conns = maya.cmds.listConnections(
+            node_attr,
+            type=const.MARKER_TRANSFORM_NODE_TYPE,
+            skipConversionNodes=True) or []
         mkr_list = []
         for conn in conns:
             mkr = mmSolver._api.marker.Marker(node=conn)

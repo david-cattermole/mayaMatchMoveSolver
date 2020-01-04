@@ -1,3 +1,20 @@
+# Copyright (C) 2019 Anil Reddy, David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Functions to support smoothing animation curve keyframes.
 """
@@ -21,8 +38,8 @@ def smooth_animcurve(animcurve, selected_keyframes,
         return
     first_time = int(times[0])
     last_time = int(times[-1])
-    first_time_padded = first_time - (width * 2)
-    last_time_padded = last_time + (width * 2)
+    first_time_padded = int(first_time - (width * 2))
+    last_time_padded = int(last_time + (width * 2))
 
     all_times = range(first_time_padded, last_time_padded + 1)
     weight_array = [0.0] * len(all_times)

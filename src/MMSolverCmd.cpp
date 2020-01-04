@@ -22,13 +22,15 @@
 
 // Internal
 #include <MMSolverCmd.h>
-#include <mmSolver.h>
+#include <core/bundleAdjust_data.h>
+#include <core/bundleAdjust_base.h>
 #include <mayaUtils.h>
 
 // STL
 #include <cmath>
 #include <cassert>
-#include <cstdlib>  // getenv
+#include <cstdlib>
+#include <algorithm>
 
 // Utils
 #include <utilities/debugUtils.h>
@@ -81,7 +83,9 @@ MSyntax MMSolverCmd::newSyntax() {
     syntax.addFlag(MARKER_FLAG, MARKER_FLAG_LONG,
                    MSyntax::kString, MSyntax::kString, MSyntax::kString);
     syntax.addFlag(ATTR_FLAG, ATTR_FLAG_LONG,
-                   MSyntax::kString, MSyntax::kString, MSyntax::kString);
+                   MSyntax::kString,
+                   MSyntax::kString, MSyntax::kString,
+                   MSyntax::kString, MSyntax::kString);
     syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG,
                    MSyntax::kLong);
     syntax.addFlag(TAU_FLAG, TAU_FLAG_LONG,
@@ -98,13 +102,20 @@ MSyntax MMSolverCmd::newSyntax() {
                    MSyntax::kUnsigned);
     syntax.addFlag(AUTO_PARAM_SCALE_FLAG, AUTO_PARAM_SCALE_FLAG_LONG,
                    MSyntax::kUnsigned);
+    syntax.addFlag(ROBUST_LOSS_TYPE_FLAG, ROBUST_LOSS_TYPE_FLAG_LONG,
+                   MSyntax::kUnsigned);
+    syntax.addFlag(ROBUST_LOSS_SCALE_FLAG, ROBUST_LOSS_SCALE_FLAG_LONG,
+                   MSyntax::kDouble);
     syntax.addFlag(SOLVER_TYPE_FLAG, SOLVER_TYPE_FLAG_LONG,
                    MSyntax::kUnsigned);
     syntax.addFlag(ITERATIONS_FLAG, ITERATIONS_FLAG_LONG,
                    MSyntax::kUnsigned);
+    // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
     syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG,
                    MSyntax::kBoolean);
     syntax.addFlag(DEBUG_FILE_FLAG, DEBUG_FILE_FLAG_LONG,
+                   MSyntax::kString);
+    syntax.addFlag(PRINT_STATS_FLAG, PRINT_STATS_FLAG_LONG,
                    MSyntax::kString);
 
     // We can use marker and attr flags more than once.
@@ -112,6 +123,7 @@ MSyntax MMSolverCmd::newSyntax() {
     syntax.makeFlagMultiUse(MARKER_FLAG);
     syntax.makeFlagMultiUse(ATTR_FLAG);
     syntax.makeFlagMultiUse(FRAME_FLAG);
+    syntax.makeFlagMultiUse(PRINT_STATS_FLAG);
 
     return syntax;
 }
@@ -126,6 +138,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get 'Verbose'
+    // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
     m_verbose = VERBOSE_DEFAULT_VALUE;
     if (argData.isFlagSet(VERBOSE_FLAG)) {
         status = argData.getFlagArgument(VERBOSE_FLAG, 0, m_verbose);
@@ -137,6 +150,22 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     if (argData.isFlagSet(DEBUG_FILE_FLAG)) {
         status = argData.getFlagArgument(DEBUG_FILE_FLAG, 0, m_debugFile);
         CHECK_MSTATUS(status);
+    }
+
+    // Get 'Print Statistics'
+    unsigned int printStatsNum = argData.numberOfFlagUses(PRINT_STATS_FLAG);
+    m_printStatsList.clear();
+    for (unsigned int i = 0; i < printStatsNum; ++i) {
+        MArgList printStatsArgs;
+        status = argData.getFlagArgumentList(PRINT_STATS_FLAG, i, printStatsArgs);
+        if (status == MStatus::kSuccess) {
+            MString printStatsArg = "";
+            for (unsigned j = 0; j < printStatsArgs.length(); ++j) {
+                printStatsArg = printStatsArgs.asString(j, &status);
+                CHECK_MSTATUS_AND_RETURN_IT(status);
+                m_printStatsList.append(printStatsArg);
+            }
+         }
     }
 
     m_cameraList.clear();
@@ -266,9 +295,11 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         MArgList attrArgs;
         status = argData.getFlagArgumentList(ATTR_FLAG, i, attrArgs);
         if (status == MStatus::kSuccess) {
-            if (attrArgs.length() != 3) {
-                ERR("Attribute argument list must have 3 argument; "
-                    << "\"node.attribute\", \"min\", \"max\".");
+            if (attrArgs.length() != 5) {
+                ERR("Attribute argument list must have 5 argument; "
+                    << "\"node.attribute\", "
+                    << "\"min\", \"max\", "
+                    << "\"offset\", \"scale\".");
                 continue;
             }
 
@@ -299,8 +330,25 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
                 attr->setMaximumValue(maxValueStr.asDouble());
             }
 
-            m_attrList.push_back(attr);
+            // Add an internal offset value used to make sure values
+            // are not at 0.0.
+            MString offsetValueStr = attrArgs.asString(3);
+            if (offsetValueStr.isDouble()) {
+                attr->setOffsetValue(offsetValueStr.asDouble());
+            }
 
+            // Add an internal scale value.
+            //
+            // TODO: Get the node this attribute is connected to. If
+            // it's a DAG node we must query the position, then create
+            // a function to scale down attributes farther away from
+            // camera. Issue #26.
+            MString scaleValueStr = attrArgs.asString(4);
+            if (scaleValueStr.isDouble()) {
+                attr->setScaleValue(scaleValueStr.asDouble());
+            }
+
+            m_attrList.push_back(attr);
             MPlug attrPlug = attr->getPlug();
         }
     }
@@ -341,15 +389,36 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     }
 
     // Set defaults based on solver type chosen.
-    if (m_solverType == SOLVER_TYPE_CMINPACK_LM) {
-        m_iterations = CMINPACK_LM_ITERATIONS_DEFAULT_VALUE;
-        m_tau = CMINPACK_LM_TAU_DEFAULT_VALUE;
-        m_epsilon1 = CMINPACK_LM_EPSILON1_DEFAULT_VALUE;
-        m_epsilon2 = CMINPACK_LM_EPSILON2_DEFAULT_VALUE;
-        m_epsilon3 = CMINPACK_LM_EPSILON3_DEFAULT_VALUE;
-        m_delta = CMINPACK_LM_DELTA_DEFAULT_VALUE;
-        m_autoDiffType = CMINPACK_LM_AUTO_DIFF_TYPE_DEFAULT_VALUE;
-        m_autoParamScale = CMINPACK_LM_AUTO_PARAM_SCALE_DEFAULT_VALUE;
+    if (m_solverType == SOLVER_TYPE_CMINPACK_LMDIF) {
+        m_iterations = CMINPACK_LMDIF_ITERATIONS_DEFAULT_VALUE;
+        m_tau = CMINPACK_LMDIF_TAU_DEFAULT_VALUE;
+        m_epsilon1 = CMINPACK_LMDIF_EPSILON1_DEFAULT_VALUE;
+        m_epsilon2 = CMINPACK_LMDIF_EPSILON2_DEFAULT_VALUE;
+        m_epsilon3 = CMINPACK_LMDIF_EPSILON3_DEFAULT_VALUE;
+        m_delta = CMINPACK_LMDIF_DELTA_DEFAULT_VALUE;
+        m_autoDiffType = CMINPACK_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE;
+        m_autoParamScale = CMINPACK_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE;
+        m_robustLossType = CMINPACK_LMDIF_ROBUST_LOSS_TYPE_DEFAULT_VALUE;
+        m_robustLossScale = CMINPACK_LMDIF_ROBUST_LOSS_SCALE_DEFAULT_VALUE;
+        m_supportAutoDiffForward = CMINPACK_LMDIF_SUPPORT_AUTO_DIFF_FORWARD_VALUE;
+        m_supportAutoDiffCentral = CMINPACK_LMDIF_SUPPORT_AUTO_DIFF_CENTRAL_VALUE;
+        m_supportParameterBounds = CMINPACK_LMDIF_SUPPORT_PARAMETER_BOUNDS_VALUE;
+        m_supportRobustLoss = CMINPACK_LMDIF_SUPPORT_ROBUST_LOSS_VALUE;
+    } else if (m_solverType == SOLVER_TYPE_CMINPACK_LMDER) {
+        m_iterations = CMINPACK_LMDER_ITERATIONS_DEFAULT_VALUE;
+        m_tau = CMINPACK_LMDER_TAU_DEFAULT_VALUE;
+        m_epsilon1 = CMINPACK_LMDER_EPSILON1_DEFAULT_VALUE;
+        m_epsilon2 = CMINPACK_LMDER_EPSILON2_DEFAULT_VALUE;
+        m_epsilon3 = CMINPACK_LMDER_EPSILON3_DEFAULT_VALUE;
+        m_delta = CMINPACK_LMDER_DELTA_DEFAULT_VALUE;
+        m_autoDiffType = CMINPACK_LMDER_AUTO_DIFF_TYPE_DEFAULT_VALUE;
+        m_autoParamScale = CMINPACK_LMDER_AUTO_PARAM_SCALE_DEFAULT_VALUE;
+        m_robustLossType = CMINPACK_LMDER_ROBUST_LOSS_TYPE_DEFAULT_VALUE;
+        m_robustLossScale = CMINPACK_LMDER_ROBUST_LOSS_SCALE_DEFAULT_VALUE;
+        m_supportAutoDiffForward = CMINPACK_LMDER_SUPPORT_AUTO_DIFF_FORWARD_VALUE;
+        m_supportAutoDiffCentral = CMINPACK_LMDER_SUPPORT_AUTO_DIFF_CENTRAL_VALUE;
+        m_supportParameterBounds = CMINPACK_LMDER_SUPPORT_PARAMETER_BOUNDS_VALUE;
+        m_supportRobustLoss = CMINPACK_LMDER_SUPPORT_ROBUST_LOSS_VALUE;
     } else if (m_solverType == SOLVER_TYPE_LEVMAR) {
         m_iterations = LEVMAR_ITERATIONS_DEFAULT_VALUE;
         m_tau = LEVMAR_TAU_DEFAULT_VALUE;
@@ -359,6 +428,12 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_delta = LEVMAR_DELTA_DEFAULT_VALUE;
         m_autoDiffType = LEVMAR_AUTO_DIFF_TYPE_DEFAULT_VALUE;
         m_autoParamScale = LEVMAR_AUTO_PARAM_SCALE_DEFAULT_VALUE;
+        m_robustLossType = LEVMAR_ROBUST_LOSS_TYPE_DEFAULT_VALUE;
+        m_robustLossScale = LEVMAR_ROBUST_LOSS_SCALE_DEFAULT_VALUE;
+        m_supportAutoDiffForward = LEVMAR_SUPPORT_AUTO_DIFF_FORWARD_VALUE;
+        m_supportAutoDiffCentral = LEVMAR_SUPPORT_AUTO_DIFF_CENTRAL_VALUE;
+        m_supportParameterBounds = LEVMAR_SUPPORT_PARAMETER_BOUNDS_VALUE;
+        m_supportRobustLoss = LEVMAR_SUPPORT_ROBUST_LOSS_VALUE;
     } else {
         ERR("Solver Type is invalid. "
             << "Value may be 0 or 1 (0 == levmar, 1 == cminpack_lm);"
@@ -379,6 +454,9 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(TAU_FLAG, 0, m_tau);
         CHECK_MSTATUS(status);
     }
+    m_tau = std::max(0.0, m_tau);
+    m_tau = std::min(m_tau, 1.0);
+    assert((0.0 <= m_tau) <= 1.0);
 
     // Get 'Epsilon1'
     if (argData.isFlagSet(EPSILON1_FLAG)) {
@@ -415,6 +493,18 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(AUTO_PARAM_SCALE_FLAG, 0, m_autoParamScale);
         CHECK_MSTATUS(status);
     }
+
+    // Get 'Robust Loss Type'
+    if (argData.isFlagSet(ROBUST_LOSS_TYPE_FLAG)) {
+        status = argData.getFlagArgument(ROBUST_LOSS_TYPE_FLAG, 0, m_robustLossType);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Robust Loss Scale'
+    if (argData.isFlagSet(ROBUST_LOSS_SCALE_FLAG)) {
+        status = argData.getFlagArgument(ROBUST_LOSS_SCALE_FLAG, 0, m_robustLossScale);
+        CHECK_MSTATUS(status);
+    }
     return status;
 }
 
@@ -443,21 +533,30 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
     assert(m_frameList.length() > 0);
 
-    // Don't store each individial edits, just store the combination
+    // Don't store each individual edits, just store the combination
     // of edits.
     m_curveChange.setInteractive(true);
 
+    SolverOptions solverOptions;
+    solverOptions.iterMax = m_iterations;
+    solverOptions.tau = m_tau;
+    solverOptions.eps1 = m_epsilon1;
+    solverOptions.eps2 = m_epsilon2;
+    solverOptions.eps3 = m_epsilon3;
+    solverOptions.delta = m_delta;
+    solverOptions.autoDiffType = m_autoDiffType;
+    solverOptions.autoParamScale = m_autoParamScale;
+    solverOptions.robustLossType = m_robustLossType;
+    solverOptions.robustLossScale = m_robustLossScale;
+    solverOptions.solverType = m_solverType;
+    solverOptions.solverSupportsAutoDiffForward = m_supportAutoDiffForward;
+    solverOptions.solverSupportsAutoDiffCentral = m_supportAutoDiffCentral;
+    solverOptions.solverSupportsParameterBounds = m_supportParameterBounds;
+    solverOptions.solverSupportsRobustLoss = m_supportRobustLoss;
+
     MStringArray outResult;
     bool ret = solve(
-            m_iterations,
-            m_tau,
-            m_epsilon1,
-            m_epsilon2,
-            m_epsilon3,
-            m_delta,
-            m_autoDiffType,
-            m_autoParamScale,
-            m_solverType,
+            solverOptions,
             m_cameraList,
             m_markerList,
             m_bundleList,
@@ -467,6 +566,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
             m_curveChange,
             m_computation,
             m_debugFile,
+            m_printStatsList,
             m_verbose,
             outResult
     );

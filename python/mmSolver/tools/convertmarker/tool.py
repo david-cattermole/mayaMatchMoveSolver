@@ -87,8 +87,6 @@ def main():
             with_bundles=True,
         )
         mkr_nodes = [mkr.get_node() for mkr in mkr_list]
-    except:
-        raise
     finally:
         utils_viewport.viewport_turn_on()
     if len(mkr_nodes) > 0:

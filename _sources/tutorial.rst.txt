@@ -80,6 +80,19 @@ This video uses mmSolver v0.1.1.
 
     <iframe width="560" height="315" src="https://www.youtube.com/embed/wk7GwEbKRCs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+Character Rotomation Solving
+----------------------------
+
+This video explains some workflows and techniques for solving characters.
+
+This video uses v0.3.1, newer versions will contain bug fixes and
+features to improve this workflow.
+
+.. raw:: html
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/ck6HU7nzpkQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
 Nodal Camera and Object Solve
 -----------------------------
 

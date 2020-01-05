@@ -166,11 +166,18 @@ class MarkerGroup(object):
         maya.cmds.setAttr(mkr_grp + '.depth', 10.0)
         maya.cmds.connectAttr(mkr_grp + '.depth', mkr_scl + '.depth')
 
-        # Add attr and connect overscan
-        maya.cmds.addAttr(mkr_grp, longName='overscan', at='double', minValue=0.0,
-                          defaultValue=1.0)
-        maya.cmds.setAttr(mkr_grp + '.overscan', keyable=True)
-        maya.cmds.connectAttr(mkr_grp + '.overscan', mkr_scl + '.overscanInverse')
+        # Add overscan X and Y
+        mode_attr = mkr_scl + '.overscanMode'
+        mode = 1  # 1='overscan x and y' mode
+        maya.cmds.setAttr(mode_attr, mode)
+        for axis in ['x', 'y']:
+            attr_name = 'overscan' + axis.upper()
+            maya.cmds.addAttr(mkr_grp, longName=attr_name, at='double',
+                              minValue=0.0, defaultValue=1.0)
+            src = mkr_grp + '.' + attr_name
+            dst = mkr_scl + '.overscanInverse' + axis.upper()
+            maya.cmds.setAttr(src, keyable=True)
+            maya.cmds.connectAttr(src, dst)
 
         # Connect camera attributes
         maya.cmds.connectAttr(cam_shp + '.focalLength', mkr_scl + '.focalLength')

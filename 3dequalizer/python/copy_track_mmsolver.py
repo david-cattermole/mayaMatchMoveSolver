@@ -83,7 +83,7 @@ def main():
     data_str = uvtrack_format.generate(
         point_group, camera, points,
         start_frame=start_frame,
-        fmt=uvtrack_format.UV_TRACK_FORMAT_VERSION_4
+        fmt=uvtrack_format.UV_TRACK_FORMAT_VERSION_PREFERRED
     )
 
     # Write file.

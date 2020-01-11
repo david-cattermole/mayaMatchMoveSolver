@@ -115,7 +115,7 @@ def main():
     data_str = generate(
         point_group, camera, points,
         start_frame=start_frame,
-        fmt=UV_TRACK_FORMAT_VERSION_3
+        fmt=UV_TRACK_FORMAT_VERSION_PREFERRED
     )
 
     # Write file.

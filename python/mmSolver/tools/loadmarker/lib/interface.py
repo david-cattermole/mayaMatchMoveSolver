@@ -367,23 +367,28 @@ FileInfo = collections.namedtuple(
         'marker_distorted',
         'marker_undistorted',
         'bundle_positions',
+        'camera_field_of_view',
     ]
 )
 
 
 def create_file_info(marker_distorted=None,
                      marker_undistorted=None,
-                     bundle_positions=None):
+                     bundle_positions=None,
+                     camera_field_of_view=None):
     if marker_distorted is None:
         marker_distorted = False
     if marker_undistorted is None:
         marker_undistorted = False
     if bundle_positions is None:
         bundle_positions = False
+    if camera_field_of_view is None:
+        camera_field_of_view = []
     file_info = FileInfo(
         marker_distorted=marker_distorted,
         marker_undistorted=marker_undistorted,
         bundle_positions=bundle_positions,
+        camera_field_of_view=camera_field_of_view,
     )
     return file_info
 

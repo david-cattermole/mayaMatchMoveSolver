@@ -19,6 +19,9 @@
 The main component of the user interface for the loadmarker window.
 """
 
+import os
+import pprint
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -28,11 +31,34 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
+import mmSolver.utils.config as config_utils
 import mmSolver.tools.loadmarker.constant as const
 import mmSolver.tools.loadmarker.ui.ui_loadmarker_layout as ui_loadmarker_layout
 import mmSolver.tools.loadmarker.lib.utils as lib
 
 LOG = mmSolver.logger.get_logger()
+
+
+def get_config():
+    """Get the Load Marker config object or None."""
+    file_name = const.CONFIG_FILE_NAME
+    config_path = config_utils.get_home_dir_path(file_name)
+    config = config_utils.Config(config_path)
+    config.set_autoread(False)
+    config.set_autowrite(False)
+    if os.path.isfile(config.file_path):
+        config.read()
+    return config
+
+
+def get_config_value(config, key, fallback):
+    """Query the attribute from the user's home directory. If the user's
+    option is saved, use that value instead.
+    """
+    value = fallback
+    if config is not None:
+        value = config.get_value(key, fallback)
+    return value
 
 
 class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
@@ -52,22 +78,51 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.distortionMode_model = QtCore.QStringListModel()
         self.distortionMode_comboBox.setModel(self.distortionMode_model)
 
-        # Set default values
+        self.createConnections()
+        self.populateUi()
+
+    def createConnections(self):
+        """Set up callback connections"""
+        self.loadMode_comboBox.currentIndexChanged[str].connect(
+            lambda x: self.updateLoadMode())
+        self.camera_comboBox.currentIndexChanged[str].connect(
+            lambda x: self.markerGroupUpdateClicked())
+        self.camera_comboBox.currentIndexChanged[str].connect(
+            lambda x: self.updateOverscanValues())
+
+        self.cameraUpdate_pushButton.clicked.connect(self.cameraUpdateClicked)
+        self.markerGroupUpdate_pushButton.clicked.connect(self.markerGroupUpdateClicked)
+        self.filepath_pushButton.clicked.connect(self.filePathBrowseClicked)
+        self.filepath_lineEdit.editingFinished.connect(self.updateFilePathWidget)
+        self.overscan_checkBox.toggled.connect(self.setOverscanEnabled)
+        return
+
+    def populateUi(self):
+        config = get_config()
         self._file_info = None
 
         w, h = lib.get_default_image_resolution()
+        self.imageRes_label.setEnabled(False)
         self.imageResWidth_label.setEnabled(False)
         self.imageResWidth_spinBox.setValue(w)
         self.imageResWidth_spinBox.setEnabled(False)
-        self.imageResWidth_spinBox.setMaximum(99999)
+        self.imageResHeight_label.setEnabled(False)
         self.imageResHeight_spinBox.setValue(h)
         self.imageResHeight_spinBox.setEnabled(False)
-        self.imageResHeight_spinBox.setMaximum(99999)
 
         self.fileInfo_plainTextEdit.setReadOnly(True)
 
-        value = const.LOAD_BUNDLE_POS_DEFAULT_VALUE
+        value = get_config_value(
+            config,
+            'data/load_bundle_position',
+            const.LOAD_BUNDLE_POS_DEFAULT_VALUE)
         self.loadBndPositions_checkBox.setChecked(value)
+
+        value = get_config_value(
+            config,
+            'data/use_overscan',
+            const.USE_OVERSCAN_DEFAULT_VALUE)
+        self.overscan_checkBox.setChecked(value)
 
         # Get the file path from the clipboard.
         try:
@@ -80,17 +135,6 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             LOG.warning(msg)
             LOG.info(str(e))
 
-        # Set up callback connections
-        self.loadMode_comboBox.currentIndexChanged[str].connect(lambda x: self.updateLoadMode())
-        self.camera_comboBox.currentIndexChanged[str].connect(lambda x: self.markerGroupUpdateClicked())
-        self.cameraUpdate_pushButton.clicked.connect(self.cameraUpdateClicked)
-        self.markerGroupUpdate_pushButton.clicked.connect(self.markerGroupUpdateClicked)
-        self.filepath_pushButton.clicked.connect(self.filePathBrowseClicked)
-        self.filepath_lineEdit.editingFinished.connect(self.updateFilePathWidget)
-
-        self.populateUi()
-
-    def populateUi(self):
         all_camera_nodes = lib.get_cameras()
         selected_cameras = lib.get_selected_cameras()
         active_camera = lib.get_active_viewport_camera()
@@ -111,12 +155,20 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             mkr_grp_nodes
         )
 
-        value = const.LOAD_MODE_DEFAULT_VALUE
+        value = get_config_value(
+            config,
+            "data/load_mode",
+            const.LOAD_MODE_DEFAULT_VALUE
+        )
         self.populateLoadModeModel(self.loadMode_model)
         index = self.loadMode_model.stringList().index(value)
         self.loadMode_comboBox.setCurrentIndex(index)
 
-        value = const.DISTORTION_MODE_DEFAULT_VALUE
+        value = get_config_value(
+            config,
+            "data/distortion_mode",
+            const.DISTORTION_MODE_DEFAULT_VALUE
+        )
         self.populateDistortionModeModel(self.distortionMode_model)
         index = self.distortionMode_model.stringList().index(value)
         self.distortionMode_comboBox.setCurrentIndex(index)
@@ -147,6 +199,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         text += 'Distorted Data: {lens_dist}\n'
         text += 'Undistorted Data: {lens_undist}\n'
         text += 'Bundle Positions: {positions}\n'
+        text += 'With Camera FOV: {has_camera_fov}\n'
         info = lib.get_file_info_strings(file_path)
 
         # Change point names into single string.
@@ -177,6 +230,32 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.markerGroupUpdate_pushButton.setEnabled(value)
         return
 
+    def updateOverscanValues(self):
+        x = 100.0
+        y = 100.0
+        file_info = self.getFileInfo()
+        camera = self.getCameraData()
+        if file_info is not None and camera is not None:
+            fovs = file_info.camera_field_of_view
+            x, y = lib.calculate_overscan_ratio(camera, fovs)
+            x *= 100.0
+            y *= 100.0
+        self.overscanX_doubleSpinBox.setValue(x)
+        self.overscanY_doubleSpinBox.setValue(y)
+        return
+
+    def updateOverscanEnabledState(self):
+        value = False
+        file_info = self.getFileInfo()
+        if file_info is not None:
+            value = bool(file_info.camera_field_of_view)
+        self.overscan_checkBox.setEnabled(value)
+        self.overscanX_label.setEnabled(value)
+        self.overscanX_doubleSpinBox.setEnabled(value)
+        self.overscanY_label.setEnabled(value)
+        self.overscanY_doubleSpinBox.setEnabled(value)
+        return
+
     def updateDistortionModeEnabledState(self):
         value = False
         file_info = self.getFileInfo()
@@ -205,8 +284,10 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             for func_name, _ in fmt.args:
                 value = func_name == 'image_width'
                 break
+        self.imageRes_label.setEnabled(value)
         self.imageResWidth_label.setEnabled(value)
         self.imageResWidth_spinBox.setEnabled(value)
+        self.imageResHeight_label.setEnabled(value)
         self.imageResHeight_spinBox.setEnabled(value)
         return
 
@@ -397,7 +478,17 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.updateFileInfoText()
         self.updateImageResEnabledState()
         self.updateDistortionModeEnabledState()
+        self.updateOverscanValues()
+        self.updateOverscanEnabledState()
         self.updateLoadBundlePosEnabledState()
+        return
+
+    def setOverscanEnabled(self, value):
+        assert isinstance(value, bool)
+        self.overscanX_label.setEnabled(value)
+        self.overscanX_doubleSpinBox.setEnabled(value)
+        self.overscanY_label.setEnabled(value)
+        self.overscanY_doubleSpinBox.setEnabled(value)
         return
 
     def setFilePath(self, value):
@@ -423,6 +514,15 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
     def getDistortionModeText(self):
         text = self.distortionMode_comboBox.currentText()
         return text
+
+    def getOverscanValues(self):
+        x = 1.0
+        y = 1.0
+        use_overscan = self.overscan_checkBox.isChecked()
+        if use_overscan is True:
+            x = self.overscanX_doubleSpinBox.value() * 0.01
+            y = self.overscanY_doubleSpinBox.value() * 0.01
+        return use_overscan, x, y
 
     def getCameraText(self):
         text = self.camera_comboBox.currentText()

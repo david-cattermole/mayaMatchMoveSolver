@@ -36,6 +36,7 @@ import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.utils.undo as undoutils
+import mmSolver.utils.config as config_utils
 import mmSolver.tools.loadmarker.constant as const
 import mmSolver.tools.loadmarker.ui.loadmarker_layout as loadmarker_layout
 import mmSolver.tools.loadmarker.lib.utils as lib
@@ -44,6 +45,16 @@ import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
+
+
+def get_config():
+    """Get the Load Marker config object or None."""
+    file_name = const.CONFIG_FILE_NAME
+    config_path = config_utils.get_home_dir_path(file_name)
+    config = config_utils.Config(config_path)
+    config.set_autoread(False)
+    config.set_autowrite(False)
+    return config
 
 
 class LoadMarkerWindow(BaseWindow):
@@ -84,6 +95,7 @@ class LoadMarkerWindow(BaseWindow):
         mkr_grp_data = self.subForm.getMarkerGroupData()
         load_bnd_pos = self.subForm.getLoadBundlePositions()
         undist_mode = self.subForm.getDistortionModeText()
+        use_overscan, overscan_x, overscan_y = self.subForm.getOverscanValues()
         undistorted = undist_mode == const.UNDISTORTION_MODE_VALUE
         width, height = self.subForm.getImageResolution()
 
@@ -151,6 +163,16 @@ class LoadMarkerWindow(BaseWindow):
                 active_mkr_grp,
                 mkr_grp_nodes
             )
+
+            # Update config file with latest values.
+            config = get_config()
+            if config is not None:
+                config.set_value("data/use_overscan", use_overscan)
+                config.set_value("data/load_bundle_position", load_bnd_pos)
+                config.set_value("data/distortion_mode", undist_mode)
+                config.set_value("data/load_mode", load_mode)
+                config.write()
+
         return
 
     def help(self):

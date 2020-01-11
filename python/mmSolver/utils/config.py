@@ -323,7 +323,7 @@ class Config(object):
         if self._auto_read is True and len(self._values) == 0:
             self.read()
         data = self._values
-        if data is None:
+        if data is None or len(data) == 0:
             return default_value
         value = get_value(data, key, default_value=default_value)
         return value

@@ -62,7 +62,8 @@ The dictionary looks like this, format version 2::
     }
 
 
-Format version 3:
+Format version 3::
+
     {
         'version': int,
         'num_points': int,
@@ -91,7 +92,8 @@ Format version 3:
     }
 
 
-Format version 4:
+Format version 4::
+
     {
         'version': int,
         'num_points': int,
@@ -129,7 +131,6 @@ Format version 4:
             ],
         }
     }
-
 
 """
 

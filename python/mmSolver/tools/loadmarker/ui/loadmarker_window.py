@@ -1,4 +1,4 @@
-# Copyright (C) 2018 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -95,7 +95,8 @@ class LoadMarkerWindow(BaseWindow):
         mkr_grp_data = self.subForm.getMarkerGroupData()
         load_bnd_pos = self.subForm.getLoadBundlePositions()
         undist_mode = self.subForm.getDistortionModeText()
-        use_overscan, overscan_x, overscan_y = self.subForm.getOverscanValues()
+        use_overscan = self.subForm.getUseOverscanValue()
+        camera_field_of_view = self.subForm.getCameraFieldOfViewValue()
         undistorted = undist_mode == const.UNDISTORTION_MODE_VALUE
         width, height = self.subForm.getImageResolution()
 
@@ -128,12 +129,19 @@ class LoadMarkerWindow(BaseWindow):
                         mkr_grp=mkr_grp,
                         with_bundles=True,
                         load_bundle_position=load_bnd_pos,
+                        camera_field_of_view=camera_field_of_view,
                     )
 
                 elif load_mode == const.LOAD_MODE_REPLACE_VALUE:
                     self.progressBar.setValue(60)
                     mkr_list = lib.get_selected_markers()
-                    mayareadfile.update_nodes(mkr_list, mkr_data_list)
+                    # NOTE: camera_field_of_view can only be from one
+                    # camera, because (we assume) only one MarkerData
+                    # file can be loaded at once.
+                    mayareadfile.update_nodes(
+                        mkr_list, mkr_data_list,
+                        camera_field_of_view=camera_field_of_view
+                    )
                 else:
                     raise ValueError('Load mode is not valid: %r' % load_mode)
 

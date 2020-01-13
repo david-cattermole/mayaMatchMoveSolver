@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -21,6 +21,7 @@ Module for reading marker files.
 This should be used by end-users, not the internal modules.
 """
 
+import math
 import os
 
 import maya.cmds
@@ -30,6 +31,7 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.animcurve as anim_utils
 import mmSolver.utils.node as node_utils
+import mmSolver.tools.loadmarker.lib.fieldofview as fieldofview
 import mmSolver.tools.loadmarker.lib.interface as interface
 import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
 
@@ -75,6 +77,22 @@ def read(file_path, **kwargs):
 def __create_node(mkr_data, cam, mkr_grp, with_bundles):
     """
     Create a Marker object from a MarkerData object.
+
+    :param mkr_data: The data to create the Marker with.
+    :type mkr_data: MarkerData
+
+    :param cam: Camera to create marker node underneath.
+    :type cam: Camera
+
+    :param mkr_grp: MarkerGroup to create marker underneath
+    :type mkr_grp: MarkerGroup
+
+    :param with_bundles: Create the Marker with Bundle attached?
+    :type with_bundles: bool
+
+    :returns: Created Marker and Bundle objects. If with_bundles is
+              False, the Bundle object will be None.
+    :rtype: (Marker, Bundle or None)
     """
     if isinstance(mkr_data, interface.MarkerData) is False:
         msg = 'mkr_data must be of type: %r'
@@ -186,7 +204,9 @@ def __set_attr_keyframes(node, attr_name, keyframes,
     return anim_fn
 
 
-def __set_node_data(mkr, bnd, mkr_data, load_bnd_pos):
+def __set_node_data(mkr, bnd, mkr_data,
+                    load_bnd_pos,
+                    overscan_x, overscan_y):
     """
     Set and override the data on the given marker node.
 
@@ -204,6 +224,12 @@ def __set_node_data(mkr, bnd, mkr_data, load_bnd_pos):
     :param load_bnd_pos: Should we set Bundle positions?
     :type load_bnd_pos: bool
 
+    :param overscan_x: Overscan factor to apply to the MarkerData x values.
+    :type overscan_x: float
+
+    :param overscan_y: Overscan factor to apply to the MarkerData y values.
+    :type overscan_y: float
+
     :returns: Tuple of Marker and Bundle objects.
     :rtype: (Marker, Bundle or None)
     """
@@ -211,6 +237,8 @@ def __set_node_data(mkr, bnd, mkr_data, load_bnd_pos):
     assert bnd is None or isinstance(bnd, mmapi.Bundle)
     assert isinstance(mkr_data, interface.MarkerData)
     assert load_bnd_pos is None or isinstance(load_bnd_pos, bool)
+    assert isinstance(overscan_x, float)
+    assert isinstance(overscan_y, float)
     mkr_node = mkr.get_node()
 
     mkr_name = mkr_data.get_name()
@@ -232,9 +260,9 @@ def __set_node_data(mkr, bnd, mkr_data, load_bnd_pos):
     mkr_x_data = mkr_data.get_x().get_raw_data()
     mkr_y_data = mkr_data.get_y().get_raw_data()
     for t, v in mkr_x_data.iteritems():
-        mkr_x_data[t] = v - 0.5
+        mkr_x_data[t] = (v - 0.5) * overscan_x
     for t, v in mkr_y_data.iteritems():
-        mkr_y_data[t] = v - 0.5
+        mkr_y_data[t] = (v - 0.5) * overscan_y
     mkr_x = interface.KeyframeData(data=mkr_x_data)
     mkr_y = interface.KeyframeData(data=mkr_y_data)
     mkr_enable = mkr_data.get_enable()
@@ -295,7 +323,8 @@ def create_nodes(mkr_data_list,
                  cam=None,
                  mkr_grp=None,
                  with_bundles=True,
-                 load_bundle_position=True):
+                 load_bundle_position=True,
+                 camera_field_of_view=None):
     """
     Create Markers for all given MarkerData objects
 
@@ -316,12 +345,31 @@ def create_nodes(mkr_data_list,
     :param load_bundle_position: Apply the 3D positions to bundle.
     :type load_bundle_position: bool
 
+    :param camera_field_of_view: The camera field of view of the
+                                 original camera with this 2D data.
+    :type camera_field_of_view: [(int, float, float)]
+
     :returns: List of Markers.
     :rtype: [Marker, ..]
     """
+    assert isinstance(cam, mmapi.Camera)
+    assert isinstance(mkr_grp, mmapi.MarkerGroup)
     assert isinstance(with_bundles, bool)
     assert isinstance(load_bundle_position, bool)
-    selected_nodes = maya.cmds.ls(sl=True, long=True) or []
+    assert camera_field_of_view is None \
+        or isinstance(camera_field_of_view, (list, tuple))
+
+    selected_nodes = maya.cmds.ls(selection=True, long=True) or []
+
+    overscan_x = 1.0
+    overscan_y = 1.0
+    if camera_field_of_view is not None:
+        overscan_x, overscan_y = fieldofview.calculate_overscan_ratio(
+            cam,
+            mkr_grp,
+            camera_field_of_view
+        )
+
     mkr_nodes = []
     mkr_list = []
     for mkr_data in mkr_data_list:
@@ -333,7 +381,11 @@ def create_nodes(mkr_data_list,
         mkr_nodes.append(mkr.get_node())
         if mkr is not None:
             # Set attributes and add into list
-            __set_node_data(mkr, bnd, mkr_data, load_bundle_position)
+            __set_node_data(
+                mkr, bnd, mkr_data,
+                load_bundle_position,
+                overscan_x, overscan_y
+            )
             mkr_list.append(mkr)
     if len(mkr_nodes) > 0:
         maya.cmds.select(mkr_nodes, replace=True)
@@ -417,19 +469,26 @@ def _find_marker_data(mkr, mkr_data_list):
     return found_mkr_data
 
 
-def _update_node(mkr, bnd, mkr_data, load_bundle_position):
+def _update_node(mkr, bnd, mkr_data,
+                 load_bundle_position,
+                 overscan_x, overscan_y):
     """
     Set the MarkerData on the given Marker and Bundle.
     """
     assert isinstance(mkr, mmapi.Marker)
     assert bnd is None or isinstance(bnd, mmapi.Bundle)
     assert isinstance(mkr_data, interface.MarkerData)
-    __set_node_data(mkr, bnd, mkr_data, load_bundle_position)
+    __set_node_data(
+        mkr, bnd, mkr_data,
+        load_bundle_position,
+        overscan_x, overscan_y
+    )
     return
 
 
 def update_nodes(mkr_list, mkr_data_list,
-                 load_bundle_position=True):
+                 load_bundle_position=True,
+                 camera_field_of_view=None):
     """
     Update the given mkr_list with data from mkr_data_list.
     The length of both lists must match.
@@ -443,20 +502,52 @@ def update_nodes(mkr_list, mkr_data_list,
     :param load_bundle_position: Apply the 3D positions to bundle.
     :type load_bundle_position: bool
 
+    :param camera_field_of_view: The camera field of view of the
+                                 original camera with this 2D data.
+    :type camera_field_of_view: [(int, float, float)]
+
     :returns: List of Marker objects that were changed.
     :rtype: [Marker, ..]
     """
     assert isinstance(mkr_list, (list, tuple, set))
     assert isinstance(mkr_data_list, (list, tuple, set))
     assert isinstance(load_bundle_position, bool)
+    assert camera_field_of_view is None \
+        or isinstance(camera_field_of_view, (list, tuple))
     selected_nodes = maya.cmds.ls(selection=True, long=True) or []
+
+    # Calculate overscan for marker's camera node.
+    overscan_per_camera = {}
+    if camera_field_of_view is not None:
+        for mkr in mkr_list:
+            mkr_grp = mkr.get_marker_group()
+            cam = mkr.get_camera()
+            cam_shp = cam.get_shape_node()
+            if cam_shp in overscan_per_camera:
+                continue
+            overscan_x, overscan_y = fieldofview.calculate_overscan_ratio(
+                cam,
+                mkr_grp,
+                camera_field_of_view
+            )
+            overscan_per_camera[cam_shp] = (overscan_x, overscan_y)
 
     mkr_list_changed = []
     if len(mkr_list) == 1 and len(mkr_data_list) == 1:
         mkr = mkr_list[0]
+        cam = mkr.get_camera()
         bnd = mkr.get_bundle()
         mkr_data = mkr_data_list[0]
-        _update_node(mkr, bnd, mkr_data, load_bundle_position)
+        cam_shp = cam.get_shape_node()
+        overscan_x, overscan_y = overscan_per_camera.get(
+            cam_shp,
+            (1.0, 1.0)
+        )
+        _update_node(
+            mkr, bnd, mkr_data,
+            load_bundle_position,
+            overscan_x, overscan_y
+        )
     else:
         # Make a copy of mkr_list and mkr_data_list, to avoid any
         # posiblity of the given arguments mkr_list and mkr_data_list
@@ -468,8 +559,17 @@ def update_nodes(mkr_list, mkr_data_list,
             mkr_data = _find_marker_data(mkr, mkr_data_list)
             if mkr_data is None:
                 continue
+            cam = mkr.get_camera()
             bnd = mkr.get_bundle()
-            _update_node(mkr, bnd, mkr_data, load_bundle_position)
+            cam_shp = cam.get_shape_node()
+            overscan_x, overscan_y = overscan_per_camera.get(
+                cam_shp, (1.0, 1.0)
+            )
+            _update_node(
+                mkr, bnd, mkr_data,
+                load_bundle_position,
+                overscan_x, overscan_y
+            )
             mkr_data_list.remove(mkr_data)
             mkr_list_changed.append(mkr)
 

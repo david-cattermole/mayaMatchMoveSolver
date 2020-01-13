@@ -1,4 +1,4 @@
-# Copyright (C) 2018 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -20,7 +20,6 @@ The main component of the user interface for the loadmarker window.
 """
 
 import os
-import pprint
 
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
@@ -34,6 +33,7 @@ import mmSolver.ui.uimodels as uimodels
 import mmSolver.utils.config as config_utils
 import mmSolver.tools.loadmarker.constant as const
 import mmSolver.tools.loadmarker.ui.ui_loadmarker_layout as ui_loadmarker_layout
+import mmSolver.tools.loadmarker.lib.fieldofview as fieldofview
 import mmSolver.tools.loadmarker.lib.utils as lib
 
 LOG = mmSolver.logger.get_logger()
@@ -89,12 +89,14 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             lambda x: self.markerGroupUpdateClicked())
         self.camera_comboBox.currentIndexChanged[str].connect(
             lambda x: self.updateOverscanValues())
+        self.markerGroup_comboBox.currentIndexChanged[str].connect(
+            lambda x: self.updateOverscanValues())
 
         self.cameraUpdate_pushButton.clicked.connect(self.cameraUpdateClicked)
         self.markerGroupUpdate_pushButton.clicked.connect(self.markerGroupUpdateClicked)
         self.filepath_pushButton.clicked.connect(self.filePathBrowseClicked)
         self.filepath_lineEdit.editingFinished.connect(self.updateFilePathWidget)
-        self.overscan_checkBox.toggled.connect(self.setOverscanEnabled)
+        self.overscan_checkBox.toggled.connect(self.setOverscanEnabledState)
         return
 
     def populateUi(self):
@@ -236,12 +238,25 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         file_info = self.getFileInfo()
         camera = self.getCameraData()
         if file_info is not None and camera is not None:
-            fovs = file_info.camera_field_of_view
-            x, y = lib.calculate_overscan_ratio(camera, fovs)
+            mkr_grp = None
+            file_fovs = file_info.camera_field_of_view
+            x, y = fieldofview.calculate_overscan_ratio(
+                camera,
+                mkr_grp,
+                file_fovs
+            )
+            # NOTE: Inverse the overscan value, because the user will
+            # be more comfortable with numbers above 100%.
+            x = 1.0 / x
+            y = 1.0 / y
             x *= 100.0
             y *= 100.0
-        self.overscanX_doubleSpinBox.setValue(x)
-        self.overscanY_doubleSpinBox.setValue(y)
+        label_x = 'Width: %.2f' % x
+        label_y = 'Height: %.2f' % y
+        label_x += '%'
+        label_y += '%'
+        self.overscanX_label.setText(label_x)
+        self.overscanY_label.setText(label_y)
         return
 
     def updateOverscanEnabledState(self):
@@ -251,9 +266,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             value = bool(file_info.camera_field_of_view)
         self.overscan_checkBox.setEnabled(value)
         self.overscanX_label.setEnabled(value)
-        self.overscanX_doubleSpinBox.setEnabled(value)
         self.overscanY_label.setEnabled(value)
-        self.overscanY_doubleSpinBox.setEnabled(value)
         return
 
     def updateDistortionModeEnabledState(self):
@@ -483,12 +496,10 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.updateLoadBundlePosEnabledState()
         return
 
-    def setOverscanEnabled(self, value):
+    def setOverscanEnabledState(self, value):
         assert isinstance(value, bool)
         self.overscanX_label.setEnabled(value)
-        self.overscanX_doubleSpinBox.setEnabled(value)
         self.overscanY_label.setEnabled(value)
-        self.overscanY_doubleSpinBox.setEnabled(value)
         return
 
     def setFilePath(self, value):
@@ -507,6 +518,12 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
     def getFileInfo(self):
         return self._file_info
 
+    def getCameraFieldOfViewValue(self):
+        file_info = self.getFileInfo()
+        if file_info is None:
+            return None
+        return file_info.camera_field_of_view
+
     def getLoadModeText(self):
         text = self.loadMode_comboBox.currentText()
         return text
@@ -515,14 +532,10 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         text = self.distortionMode_comboBox.currentText()
         return text
 
-    def getOverscanValues(self):
-        x = 1.0
-        y = 1.0
+    def getUseOverscanValue(self):
         use_overscan = self.overscan_checkBox.isChecked()
-        if use_overscan is True:
-            x = self.overscanX_doubleSpinBox.value() * 0.01
-            y = self.overscanY_doubleSpinBox.value() * 0.01
-        return use_overscan, x, y
+        enabled = self.overscan_checkBox.isEnabled()
+        return use_overscan and enabled
 
     def getCameraText(self):
         text = self.camera_comboBox.currentText()

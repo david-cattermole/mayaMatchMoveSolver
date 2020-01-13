@@ -1,4 +1,4 @@
-# Copyright (C) 2018 David Cattermole.
+# Copyright (C) 2018, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -360,6 +360,7 @@ def create_new_marker_group(cam):
     :returns: MarkerGroup object.
     :rtype: MarkerGroup
     """
+    assert isinstance(cam, mmapi.Camera)
     mkr_grp = mmapi.MarkerGroup().create_node(cam=cam)
     return mkr_grp
 
@@ -383,79 +384,3 @@ def trigger_maya_to_refresh():
     frame = maya.cmds.currentTime(query=True)
     maya.cmds.currentTime(frame, update=True)
     maya.cmds.refresh(currentView=True, force=False)
-
-
-def get_camera_field_of_view(cam_shp, frames):
-    cam_fov_list = []
-    for frame in frames:
-        focal_length = maya.cmds.getAttr(cam_shp + '.focalLength', time=frame)
-        film_back_x = maya.cmds.getAttr(cam_shp + '.horizontalFilmAperture', time=frame)
-        film_back_y = maya.cmds.getAttr(cam_shp + '.verticalFilmAperture', time=frame)
-        focal_length *= 0.1
-        film_back_x *= 2.54
-        film_back_y *= 2.54
-
-        # Calculate angle of view from focal length and film back.
-        angle_x = math.atan(film_back_x / (2.0 * focal_length))
-        angle_y = math.atan(film_back_y / (2.0 * focal_length))
-        angle_x = math.degrees(2.0 * angle_x)
-        angle_y = math.degrees(2.0 * angle_y)
-
-        cam_fov_list.append((frame, angle_x, angle_y))
-    return cam_fov_list
-
-
-def calculate_overscan_ratio(camera_node, camera_fov):
-    """
-    Calculate overscan with camera and FOV.
-
-    Query the overscan of camera_node by comparing to the camera_fov field of view.
-
-    :param camera_node:
-        The mmapi Camera object, query FOV from.
-    :type camera_node: Camera
-
-    :param camera_fov:
-        Tuple of camera field of view per-frame values X and Y.
-    :type camera_fov: [(int, float, float), ..]
-    """
-    assert isinstance(camera_node, mmapi.Camera)
-    assert isinstance(camera_fov, list)
-
-    cam_shp = camera_node.get_shape_node()
-    frames = [f for f, _, _ in camera_fov]
-    maya_camera_fov = get_camera_field_of_view(cam_shp, frames)
-
-    all_same_ratio_x = True
-    all_same_ratio_y = True
-    last_ratio_x = None
-    last_ratio_y = None
-    for file_fov, maya_fov in zip(camera_fov, maya_camera_fov):
-        file_frame, file_angle_x, file_angle_y = file_fov
-        maya_frame, maya_angle_x, maya_angle_y = maya_fov
-
-        file_fov_x = math.tan(math.radians(file_angle_x * 0.5))
-        file_fov_y = math.tan(math.radians(file_angle_y * 0.5))
-        maya_fov_x = math.tan(math.radians(maya_angle_x * 0.5))
-        maya_fov_y = math.tan(math.radians(maya_angle_y * 0.5))
-
-        ratio_x = maya_fov_x / file_fov_x
-        ratio_y = maya_fov_y / file_fov_y
-        if last_ratio_x is None and last_ratio_y is None:
-            last_ratio_x = ratio_x
-            last_ratio_y = ratio_y
-
-        ratio_same_x = interface.float_is_equal(ratio_x, last_ratio_x)
-        ratio_same_y = interface.float_is_equal(ratio_y, last_ratio_y)
-        if not ratio_same_x:
-            all_same_ratio_x = False
-        if not ratio_same_y:
-            all_same_ratio_y = False
-        if all_same_ratio_x is True or all_same_ratio_y is True:
-            x = ratio_x
-            y = ratio_y
-        else:
-            x = 1.0
-            y = 1.0
-            break
-    return x, y

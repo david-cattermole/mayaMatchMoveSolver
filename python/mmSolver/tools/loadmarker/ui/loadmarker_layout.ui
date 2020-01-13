@@ -556,7 +556,7 @@
           <item>
            <widget class="QCheckBox" name="overscan_checkBox">
             <property name="text">
-             <string>Use Overscan</string>
+             <string>Use Embedded Overscan</string>
             </property>
            </widget>
           </item>
@@ -579,29 +579,7 @@
           <item>
            <widget class="QLabel" name="overscanX_label">
             <property name="text">
-             <string>Width</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="overscanX_doubleSpinBox">
-            <property name="suffix">
-             <string>%</string>
-            </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>1.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>1000.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>5.000000000000000</double>
-            </property>
-            <property name="value">
-             <double>100.000000000000000</double>
+             <string>Width: ---%</string>
             </property>
            </widget>
           </item>
@@ -624,29 +602,7 @@
           <item>
            <widget class="QLabel" name="overscanY_label">
             <property name="text">
-             <string>Height</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="overscanY_doubleSpinBox">
-            <property name="suffix">
-             <string>%</string>
-            </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>1.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>1000.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>5.000000000000000</double>
-            </property>
-            <property name="value">
-             <double>100.000000000000000</double>
+             <string>Height: ---%</string>
             </property>
            </widget>
           </item>

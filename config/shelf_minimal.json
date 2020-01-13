@@ -48,7 +48,6 @@
             "general_tools/gen_tools_popup/smooth_keyframes_ui",
             "general_tools/gen_tools_popup/screen_z_transform_bake",
             "general_tools/gen_tools_popup/channel_sensitivity_ui",
-            "general_tools/gen_tools_popup/copy_camera_to_clipboard",
             "general_tools/gen_tools_popup/---Naming",
             "general_tools/gen_tools_popup/marker_bundle_rename",
             "general_tools/gen_tools_popup/marker_bundle_rename_with_metadata",
@@ -57,7 +56,10 @@
             "general_tools/gen_tools_popup/unparent_to_world",
             "general_tools/gen_tools_popup/---Controllers",
             "general_tools/gen_tools_popup/create_controller",
-            "general_tools/gen_tools_popup/remove_controller"
+            "general_tools/gen_tools_popup/remove_controller",
+            "general_tools/gen_tools_popup/---Input Output",
+            "general_tools/gen_tools_popup/copy_camera_to_clipboard",
+            "hotkey_switcher/hotkey_switcher_popup/dummy"
         ],
         "functions": {
             "solver_popup": {

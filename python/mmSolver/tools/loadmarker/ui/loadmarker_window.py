@@ -116,6 +116,7 @@ class LoadMarkerWindow(BaseWindow):
                 if load_mode == const.LOAD_MODE_NEW_VALUE:
                     if camera_text == const.NEW_CAMERA_VALUE:
                         cam = lib.create_new_camera()
+                        mkr_grp = lib.create_new_marker_group(cam)
                     else:
                         cam = camera_data
                         if mkr_grp_text == const.NEW_MARKER_GROUP_VALUE:

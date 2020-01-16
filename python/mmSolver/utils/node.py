@@ -102,6 +102,9 @@ def get_node_parents(node):
 
     :param node: Valid Maya DAG node path.
     :type node: str
+
+    :returns: The parent nodes of node, in order from node upwards.
+    :rtype: [basestring, ..]
     """
     assert isinstance(node, (basestring, str, unicode))
     parent_nodes = []

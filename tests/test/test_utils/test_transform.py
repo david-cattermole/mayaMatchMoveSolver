@@ -46,28 +46,70 @@ class TestTransform(test_utils.UtilsTestCase):
         start_frame = 1001
         end_frame = 1101
         node = maya.cmds.createNode('transform')
-        plug_name = '{}.{}'.format(node, 'matrix')
-        plug = node_utils.get_as_plug_apitwo(plug_name)
-        times = [1.0, 2, -1.0, -1, 42, 9999, -9999]
-        for time in times:
-            ctx = mod.create_dg_context_apitwo(time)
-            matrix = mod.get_matrix_from_plug_apitwo(plug, ctx)
-            assert isinstance(matrix, OpenMaya2.MMatrix)
+        attr_names = [
+            'matrix',
+            'worldMatrix[0]',
+            'parentMatrix[0]',
+        ]
+        for attr_name in attr_names:
+            plug_name = '{}.{}'.format(node, attr_name)
+            plug = node_utils.get_as_plug_apitwo(plug_name)
+            times = [1.0, 2, -1.0, -1, 42, 9999, -9999]
+            times += list(range(start_frame, end_frame))
+            for time in times:
+                ctx = mod.create_dg_context_apitwo(time)
+                matrix = mod.get_matrix_from_plug_apitwo(plug, ctx)
+                assert isinstance(matrix, OpenMaya2.MMatrix)
         return
 
-    # def test_get_double_from_plug_apitwo(self):
-    #     # mod.get_double_from_plug_apitwo(plug, ctx)
-    #     pass
+    def test_get_double_from_plug_apitwo(self):
+        start_frame = 1001
+        end_frame = 1101
+        node = maya.cmds.createNode('transform')
+        attr_names = [
+            'translateX',
+            'rotateY',
+            'scaleZ',
+        ]
+        for attr_name in attr_names:
+            plug_name = '{}.{}'.format(node, attr_name)
+            plug = node_utils.get_as_plug_apitwo(plug_name)
+            times = [1.0, 2, -1.0, -1, 42, 9999, -9999]
+            times += list(range(start_frame, end_frame))
+            for time in times:
+                ctx = mod.create_dg_context_apitwo(time)
+                value = mod.get_double_from_plug_apitwo(plug, ctx)
+                assert isinstance(value, float)
+        return
 
-    # def test_get_parent_inverse_matrix_apitwo(self):
-    #     # mod.get_parent_inverse_matrix_apitwo(node, ctx)
-    #     pass
+    def test_get_parent_inverse_matrix_apitwo(self):
+        start_frame = 1001
+        end_frame = 1101
+        node = maya.cmds.createNode('transform')
+        times = [1.0, 2, -1.0, -1, 42, 9999, -9999]
+        times += list(range(start_frame, end_frame))
+        for time in times:
+            ctx = mod.create_dg_context_apitwo(time)
+            value = mod.get_parent_inverse_matrix_apitwo(node, ctx)
+            assert isinstance(value, OpenMaya2.MMatrix)
+        return
 
-    # def test_get_world_matrix_apitwo(self):
-    #     # mod.get_world_matrix_apitwo(node, ctx)
-    #     pass
+    def test_get_world_matrix_apitwo(self):
+        start_frame = 1001
+        end_frame = 1101
+        node = maya.cmds.createNode('transform')
+        times = [1.0, 2, -1.0, -1, 42, 9999, -9999]
+        times += list(range(start_frame, end_frame))
+        for time in times:
+            ctx = mod.create_dg_context_apitwo(time)
+            value = mod.get_world_matrix_apitwo(node, ctx)
+            assert isinstance(value, OpenMaya2.MMatrix)
+        return
 
     # def test_detect_rotate_pivot_non_zero(self):
+    #     start_frame = 1001
+    #     end_frame = 1101
+    #     node = maya.cmds.createNode('transform')
     #     # mod.detect_rotate_pivot_non_zero(tfm_node)
     #     pass
 

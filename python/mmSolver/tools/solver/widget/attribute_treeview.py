@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -16,47 +16,37 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Browser widget class for visualising nodes.
-
-This class is designed to be sub-classed with functionality for final use.
+Object Browser widget.
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
+import Qt
 import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
-import mmSolver.tools.solver.widget.ui_nodebrowser_widget as ui_nodebrowser_widget
+
 
 LOG = mmSolver.logger.get_logger()
 
 
-class NodeBrowserWidget(QtWidgets.QWidget):
-
-    nodeAdded = QtCore.Signal()
-    nodeRemoved = QtCore.Signal()
-    viewUpdated = QtCore.Signal()
-    dataChanged = QtCore.Signal()
+class AttributeTreeView(QtWidgets.QTreeView):
 
     def __init__(self, parent=None, *args, **kwargs):
-        super(NodeBrowserWidget, self).__init__(parent=parent, *args, **kwargs)
-        self.ui = ui_nodebrowser_widget.Ui_Form()
-        self.ui.setupUi(self)
-
-        # Add and Remove buttons
-        self.ui.add_toolButton.clicked.connect(
-            self.addClicked
-        )
-        self.ui.remove_toolButton.clicked.connect(
-            self.removeClicked
-        )
+        super(AttributeTreeView, self).__init__(parent, *args, **kwargs)
         return
 
-    def addClicked(self):
-        raise NotImplementedError
-
-    def removeClicked(self):
-        raise NotImplementedError
+    def contextMenuEvent(self, event):
+        LOG.info('Attribute TreeView Context Menu Event: %r', event)
+        menu = QtWidgets.QMenu(self)
+        cutAct = QtWidgets.QAction('Attr Cut Action', self)
+        copyAct = QtWidgets.QAction('Attr Copy Action', self)
+        pasteAct = QtWidgets.QAction('Attr Paste Action', self)
+        menu.addAction(cutAct)
+        menu.addAction(copyAct)
+        menu.addAction(pasteAct)
+        menu.exec_(event.globalPos())
+        return

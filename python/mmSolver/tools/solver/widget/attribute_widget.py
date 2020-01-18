@@ -40,6 +40,7 @@ import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.ui.attr_nodes as attr_nodes
 import mmSolver.tools.solver.ui.convert_to_ui as convert_to_ui
 import mmSolver.tools.solver.widget.nodebrowser_widget as nodebrowser_widget
+import mmSolver.tools.solver.widget.attribute_treeview as attr_treeview
 import mmSolver.tools.solver.constant as const
 
 
@@ -71,13 +72,13 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
     def __init__(self, parent=None, *args, **kwargs):
         super(AttributeBrowserWidget, self).__init__(*args, **kwargs)
 
-        self.title_label.setText('Output Attributes')
+        self.ui.title_label.setText('Output Attributes')
 
         self.createToolButtons()
         self.createTreeView()
 
         self.dataChanged.connect(self.updateModel)
-        
+
         self.callback_manager = maya_callbacks.CallbackManager()
         return
 
@@ -94,17 +95,17 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.toggleAnimated_toolButton = QtWidgets.QToolButton(self)
         self.toggleAnimated_toolButton.setText('ANM')
         self.toggleAnimated_toolButton.setCheckable(True)
-        self.toggleButtons_layout.addWidget(self.toggleAnimated_toolButton)
+        self.ui.toggleButtons_layout.addWidget(self.toggleAnimated_toolButton)
 
         self.toggleStatic_toolButton = QtWidgets.QToolButton(self)
         self.toggleStatic_toolButton.setText('STC')
         self.toggleStatic_toolButton.setCheckable(True)
-        self.toggleButtons_layout.addWidget(self.toggleStatic_toolButton)
+        self.ui.toggleButtons_layout.addWidget(self.toggleStatic_toolButton)
 
         self.toggleLocked_toolButton = QtWidgets.QToolButton(self)
         self.toggleLocked_toolButton.setText('LCK')
         self.toggleLocked_toolButton.setCheckable(True)
-        self.toggleButtons_layout.addWidget(self.toggleLocked_toolButton)
+        self.ui.toggleButtons_layout.addWidget(self.toggleLocked_toolButton)
 
         self.toggleAnimated_toolButton.clicked.connect(self.toggleAnimatedClicked)
         self.toggleStatic_toolButton.clicked.connect(self.toggleStaticClicked)
@@ -115,12 +116,18 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         """
         Set up the tree view.
         """
+        self.treeView = attr_treeview.AttributeTreeView()
+        self.ui.treeViewLayout.addWidget(self.treeView)
+
         root = attr_nodes.PlugNode('root')
         self.model = attr_nodes.AttrModel(root, font=self.font)
         self.filterModel = QtCore.QSortFilterProxyModel()
         self.filterModel.setSourceModel(self.model)
         self.filterModel.setDynamicSortFilter(False)
-        self.header = QtWidgets.QHeaderView(QtCore.Qt.Horizontal, parent=self.treeView)
+        self.header = QtWidgets.QHeaderView(
+            QtCore.Qt.Horizontal,
+            parent=self.treeView
+        )
         Qt.QtCompat.QHeaderView.setSectionResizeMode(
             self.header, QtWidgets.QHeaderView.ResizeToContents
         )

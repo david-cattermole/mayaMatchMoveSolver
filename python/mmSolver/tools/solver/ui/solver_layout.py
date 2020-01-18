@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -42,10 +42,11 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
+class SolverLayout(QtWidgets.QWidget):
     def __init__(self, parent=None, *args, **kwargs):
         super(SolverLayout, self).__init__(*args, **kwargs)
-        self.setupUi(self)
+        self.ui = ui_solver_layout.Ui_Form()
+        self.ui.setupUi(self)
 
         # Store the parent window class, so we can set the applyBtn enabled
         # state.
@@ -53,23 +54,23 @@ class SolverLayout(QtWidgets.QWidget, ui_solver_layout.Ui_Form):
 
         # Collection Widget
         self.collection_widget = collection_widget.CollectionWidget(self)
-        self.collection_layout.addWidget(self.collection_widget)
+        self.ui.collection_layout.addWidget(self.collection_widget)
 
         # Object Widget
         self.object_browser = objectbrowser_widget.ObjectBrowserWidget(self)
-        self.object_layout.addWidget(self.object_browser)
+        self.ui.object_layout.addWidget(self.object_browser)
 
         # Attribute Widget
         self.attribute_browser = attrbrowser_widget.AttributeBrowserWidget(self)
-        self.attribute_layout.addWidget(self.attribute_browser)
+        self.ui.attribute_layout.addWidget(self.attribute_browser)
 
         # Solver Widget
         self.solver_settings = solver_widget.SolverWidget(self)
-        self.solver_layout.addWidget(self.solver_settings)
+        self.ui.solver_layout.addWidget(self.solver_settings)
 
         # Solver State Widget
         self.solver_state = solverstate_widget.SolverStateWidget(self)
-        self.solverState_layout.addWidget(self.solver_state)
+        self.ui.solverState_layout.addWidget(self.solver_state)
 
         # Populate the UI with data.
         self.collection_widget.nameChanged.connect(self.updateDynamicWindowTitle)

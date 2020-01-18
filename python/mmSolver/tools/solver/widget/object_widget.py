@@ -39,6 +39,7 @@ import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.ui.object_nodes as object_nodes
 import mmSolver.tools.solver.ui.convert_to_ui as convert_to_ui
 import mmSolver.tools.solver.widget.nodebrowser_widget as nodebrowser_widget
+import mmSolver.tools.solver.widget.object_treeview as object_treeview
 import mmSolver.tools.solver.constant as const
 
 
@@ -78,9 +79,10 @@ def _lookupNodes(indexes, model):
 class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
 
     def __init__(self, parent=None, *args, **kwargs):
-        super(ObjectBrowserWidget, self).__init__(*args, **kwargs)
+        super(ObjectBrowserWidget, self).__init__(
+            parent=parent, *args, **kwargs)
 
-        self.title_label.setText('Input Objects')
+        self.ui.title_label.setText('Input Objects')
 
         self.createToolButtons()
         self.createTreeView()
@@ -103,17 +105,17 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.toggleCamera_toolButton = QtWidgets.QToolButton(self)
         self.toggleCamera_toolButton.setText('CAM')
         self.toggleCamera_toolButton.setCheckable(True)
-        self.toggleButtons_layout.addWidget(self.toggleCamera_toolButton)
+        self.ui.toggleButtons_layout.addWidget(self.toggleCamera_toolButton)
 
         self.toggleMarker_toolButton = QtWidgets.QToolButton(self)
         self.toggleMarker_toolButton.setText('MKR')
         self.toggleMarker_toolButton.setCheckable(True)
-        self.toggleButtons_layout.addWidget(self.toggleMarker_toolButton)
+        self.ui.toggleButtons_layout.addWidget(self.toggleMarker_toolButton)
 
         self.toggleBundle_toolButton = QtWidgets.QToolButton(self)
         self.toggleBundle_toolButton.setText('BND')
         self.toggleBundle_toolButton.setCheckable(True)
-        self.toggleButtons_layout.addWidget(self.toggleBundle_toolButton)
+        self.ui.toggleButtons_layout.addWidget(self.toggleBundle_toolButton)
 
         self.toggleCamera_toolButton.clicked.connect(self.toggleCameraClicked)
         self.toggleMarker_toolButton.clicked.connect(self.toggleMarkerClicked)
@@ -124,6 +126,9 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         """
         Set up the tree view.
         """
+        self.treeView = object_treeview.ObjectTreeView()
+        self.ui.treeViewLayout.addWidget(self.treeView)
+
         root = object_nodes.ObjectNode('root')
         self.model = object_nodes.ObjectModel(root, font=self.font)
         self.filterModel = QtCore.QSortFilterProxyModel()

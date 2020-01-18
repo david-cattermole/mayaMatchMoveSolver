@@ -1057,7 +1057,8 @@ class TestSolve(test_api_utils.APITestCase):
                                           name='bg',
                                           parent=mkr_grp)
         path = self.get_data_path('match_mover', 'loadmarker.rz2')
-        mkr_data_list = marker_read.read(path)
+        _, mkr_data_list = marker_read.read(path)
+        print 'mkr_data_list', mkr_data_list
         mkr_list = marker_read.create_nodes(mkr_data_list, cam=cam)
         mkr_fg_list = []
         mkr_bg_list = []

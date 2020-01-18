@@ -82,7 +82,7 @@ def _create_marker_attributes(node):
             defaultValue=-1.0,
             keyable=True
         )
-        plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_DEVIATION)
+        plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
 
     attr = const.MARKER_ATTR_LONG_NAME_BUNDLE
@@ -100,7 +100,7 @@ def _create_marker_attributes(node):
             longName=attr,
             dataType='string'
         )
-        plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_MARKER_NAME)
+        plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
 
     attr = const.MARKER_ATTR_LONG_NAME_MARKER_ID
@@ -111,6 +111,8 @@ def _create_marker_attributes(node):
             attributeType='long',
             defaultValue=-1
         )
+        plug = '{0}.{1}'.format(node, attr)
+        maya.cmds.setAttr(plug, lock=True)
     return
 
 

@@ -23,8 +23,8 @@ Maya Callbacks
 Library
 +++++++
 
-Attr
-----
+Attribute
+---------
 
 .. automodule:: mmSolver.tools.solver.lib.attr
    :members:
@@ -34,6 +34,13 @@ Collection
 ----------
 
 .. automodule:: mmSolver.tools.solver.lib.collection
+   :members:
+   :undoc-members:
+
+Collection State
+----------------
+
+.. automodule:: mmSolver.tools.solver.lib.collectionstate
    :members:
    :undoc-members:
 
@@ -100,6 +107,86 @@ Solver Layout
 -------------
 
 .. automodule:: mmSolver.tools.solver.ui.solver_layout
+   :members:
+   :undoc-members:
+
+UI Widgets
+++++++++++
+
+Attribute Widget
+----------------
+
+.. automodule:: mmSolver.tools.solver.widget.attribute_widget
+   :members:
+   :undoc-members:
+
+Collection Widget
+-----------------
+
+.. automodule:: mmSolver.tools.solver.widget.collection_widget
+   :members:
+   :undoc-members:
+
+Frame Range Widget
+------------------
+
+.. automodule:: mmSolver.tools.solver.widget.framerange_widget
+   :members:
+   :undoc-members:
+
+Node Browser Widget
+-------------------
+
+.. automodule:: mmSolver.tools.solver.widget.nodebrowser_widget
+   :members:
+   :undoc-members:
+
+Object Widget
+-------------
+
+.. automodule:: mmSolver.tools.solver.widget.object_widget
+   :members:
+   :undoc-members:
+
+Root Frame Widget
+-----------------
+
+.. automodule:: mmSolver.tools.solver.widget.rootframe_widget
+   :members:
+   :undoc-members:
+
+Solver Widget
+-------------------
+
+.. automodule:: mmSolver.tools.solver.widget.solver_widget
+   :members:
+   :undoc-members:
+
+Solver Basic Widget
+-------------------
+
+.. automodule:: mmSolver.tools.solver.widget.solver_basic_widget
+   :members:
+   :undoc-members:
+
+Solver Standard Widget
+-------------------
+
+.. automodule:: mmSolver.tools.solver.widget.solver_standard_widget
+   :members:
+   :undoc-members:
+
+Solver Legacy Widget
+-------------------
+
+.. automodule:: mmSolver.tools.solver.widget.solver_legacy_widget
+   :members:
+   :undoc-members:
+
+Solver State Widget
+-------------------
+
+.. automodule:: mmSolver.tools.solver.widget.solverstate_widget
    :members:
    :undoc-members:
 

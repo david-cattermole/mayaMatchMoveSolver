@@ -1,0 +1,610 @@
+
+    menuItem
+        -label "Swap Marker / Bundle"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.selection.tools as tool;tool.swap_between_selected_markers_and_bundles();\");"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -radialPosition "W"
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem2;
+
+    menuItem
+        -label "Select Marker + Bundle"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.selection.tools as tool;tool.select_both_markers_and_bundles();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -radialPosition "NW"
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem3;
+
+    menuItem
+        -label "Toggle Marker Lock"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.togglemarkerlock.tool as tool;tool.main();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -radialPosition "NE"
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem5;
+
+    menuItem
+        -label "Toggle Bundle Lock"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.togglebundlelock.tool as tool;tool.main();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -radialPosition "E"
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem6;
+
+    menuItem
+        -label "Previous Root Frame"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.navigaterootframes.tool as tool;tool.main_prev_frame();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -radialPosition "SW"
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -image "timeprev.png"
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem9;
+
+    menuItem
+        -label "Next Root Frame"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.navigaterootframes.tool as tool;tool.main_next_frame();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -radialPosition "SE"
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -image "timenext.png"
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem10;
+
+    menuItem
+        -label "Place Marker Tool"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.placemarkermanip.tool as tool;tool.main();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -radialPosition "N"
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem13;
+
+    menuItem
+        -label "2D Center on Selected"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.centertwodee.tool as tool;tool.main();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem26;
+
+    menuItem
+        -label "separator"
+        -divider 1
+        -dividerLabel "separator"
+        -subMenu 0
+        -tearOff 0
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem27;
+
+    menuItem
+        -label "Marker Bundle Rename..."
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.markerbundlerename.tool as tool;tool.main();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem14;
+
+    menuItem
+        -label "Marker Bundle Rename (with metadata)"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.markerbundlerenamewithmetadata.tool as tool;tool.main();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem15;
+
+    menuItem
+        -label "separator"
+        -divider 1
+        -dividerLabel "separator"
+        -subMenu 0
+        -tearOff 0
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem16;
+
+    menuItem
+        -label "Smooth Selected Keyframes"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.smoothkeyframes.tool as tool;tool.smooth_selected_keyframes();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem17;
+
+    menuItem
+        -label "menuEditorMenuItem18"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.smoothkeyframes.tool as tool;tool.main();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 1
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 0
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem7;
+
+    menuItem
+        -label "separator"
+        -divider 1
+        -dividerLabel "separator"
+        -subMenu 0
+        -tearOff 0
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem8;
+
+    menuItem
+        -label "Reparent under Node"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.reparent.tool as tool;tool.reparent_under_node();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem19;
+
+    menuItem
+        -label "Unparent to World"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.reparent.tool as tool;tool.unparent_to_world();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem20;
+
+    menuItem
+        -label "separator"
+        -divider 1
+        -dividerLabel "separator"
+        -subMenu 0
+        -tearOff 0
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem22;
+
+    menuItem
+        -label "Create Controller"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.createcontroller.tool as tool;tool.create();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem23;
+
+    menuItem
+        -label "Remove Controller"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.createcontroller.tool as tool;tool.remove();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem24;
+
+    menuItem
+        -label "separator"
+        -divider 1
+        -dividerLabel "separator"
+        -subMenu 0
+        -tearOff 0
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem21;
+
+    menuItem
+        -label "Create Marker"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.createmarker.tool as tool;tool.main();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -image "createMarker_32x32.png"
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem1;
+
+    menuItem
+        -label "Convert 3D Transform to Marker"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.convertmarker.tool as tool; tool.main();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -image "createMarker_32x32.png"
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem12;
+
+    menuItem
+        -label "Load Marker..."
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.loadmarker.tool as tool;tool.open_window();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -image "menuIconFile.png"
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem4;
+
+    menuItem
+        -label "Create Bundle"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.createbundle.tool as tool;tool.main();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -image "createBundle_32x32.png"
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem18;
+
+setParent -m ..;

@@ -1,3 +1,4 @@
+==============================
 mmSolver.tools.smoothkeyframes
 ==============================
 
@@ -18,7 +19,21 @@ Library
 .. automodule:: mmSolver.tools.smoothkeyframes.lib
     :members:
     :undoc-members:
-       
+
+UI - Layout
++++++++++++
+
+.. automodule:: mmSolver.tools.smoothkeyframes.ui.smoothkeys_layout
+    :members:
+    :undoc-members:
+
+UI - Window
++++++++++++
+
+.. automodule:: mmSolver.tools.smoothkeyframes.ui.smoothkeys_window
+    :members:
+    :undoc-members:
+
 Constants
 +++++++++
 

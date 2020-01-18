@@ -5,43 +5,61 @@ mmSolver.tools.loadmarker
     :members:
     :undoc-members:
 
-Basics
-++++++
+Tool
+++++
 
-.. automodule:: mmSolver.tools.loadmarker.mayareadfile
+.. automodule:: mmSolver.tools.loadmarker.lib.tool
     :members:
     :undoc-members:
 
-Advanced
-++++++++
+Library - Basics
+++++++++++++++++
 
-.. automodule:: mmSolver.tools.loadmarker.formatmanager
+.. automodule:: mmSolver.tools.loadmarker.lib.mayareadfile
     :members:
     :undoc-members:
 
-.. automodule:: mmSolver.tools.loadmarker.interface
+Library - Advanced
+++++++++++++++++++
+
+.. automodule:: mmSolver.tools.loadmarker.lib.formatmanager
     :members:
     :undoc-members:
+
+.. automodule:: mmSolver.tools.loadmarker.lib.interface
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.tools.loadmarker.lib.utils
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.tools.loadmarker.lib.fieldofview
+    :members:
+    :undoc-members:
+
+Library - Formats
++++++++++++++++++
+
+.. automodule:: mmSolver.tools.loadmarker.lib.formats
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.tools.loadmarker.lib.formats.rz2
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.tools.loadmarker.lib.formats.tdetxt
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.tools.loadmarker.lib.formats.uvtrack
+    :members:
+    :undoc-members:
+
+Constants
++++++++++
 
 .. automodule:: mmSolver.tools.loadmarker.constant
-    :members:
-    :undoc-members:
-
-Formats
-+++++++
-
-.. automodule:: mmSolver.tools.loadmarker.formats
-    :members:
-    :undoc-members:
-
-.. automodule:: mmSolver.tools.loadmarker.formats.rz2
-    :members:
-    :undoc-members:
-
-.. automodule:: mmSolver.tools.loadmarker.formats.tdetxt
-    :members:
-    :undoc-members:
-
-.. automodule:: mmSolver.tools.loadmarker.formats.uvtrack
     :members:
     :undoc-members:

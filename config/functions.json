@@ -220,6 +220,16 @@
                 "mmSolver.tools.loadmarker.tool.open_window();"
             ]
         },
+        "copy_camera_to_clipboard": {
+            "name": "Copy Camera to Clipboard",
+            "name_shelf": "CpyCam",
+            "tooltip": "Copy selected camera to a temp file.",
+            "icon_shelf": "menuIconFile.png",
+            "command": [
+                "import mmSolver.tools.copypastecamera.tool;",
+                "mmSolver.tools.copypastecamera.tool.main();"
+            ]
+        },
         "create_bundle": {
             "name": "Create Bundle",
             "name_shelf": "Create",
@@ -261,12 +271,21 @@
             ]
         },
         "marker_bundle_rename": {
-            "name": "Marker Bundle Rename",
+            "name": "Marker Bundle Rename...",
             "name_shelf": "MBRena",
             "tooltip": "Rename Selected Marker And Connected Bundles.",
             "command": [
                 "import mmSolver.tools.markerbundlerename.tool;",
                 "mmSolver.tools.markerbundlerename.tool.main();"
+            ]
+        },
+        "marker_bundle_rename_with_metadata": {
+            "name": "Marker Bundle Rename (with metadata)",
+            "name_shelf": "MBRena",
+            "tooltip": "Rename Selected Marker And Connected Bundles using embedded metadata.",
+            "command": [
+                "import mmSolver.tools.markerbundlerenamewithmetadata.tool;",
+                "mmSolver.tools.markerbundlerenamewithmetadata.tool.main();"
             ]
         },
         "link_unlink_marker_bundles": {
@@ -284,12 +303,21 @@
             "command": ["pass"]
         },
         "center_twodee": {
-            "name": "2D Center on Selected",
+            "name": "Apply 2D Center on Selected",
             "name_shelf": "Center",
             "tooltip": "2D Center on Selected.",
             "command": [
                 "import mmSolver.tools.centertwodee.tool;",
                 "mmSolver.tools.centertwodee.tool.main();"
+            ]
+        },
+        "center_twodee_remove": {
+            "name": "Remove 2D Center",
+            "name_shelf": "RmCent",
+            "tooltip": "Remove 2D Centerfrom active camera.",
+            "command": [
+                "import mmSolver.tools.centertwodee.tool;",
+                "mmSolver.tools.centertwodee.tool.remove();"
             ]
         },
         "channel_sensitivity_ui": {
@@ -450,6 +478,25 @@
                 "import mmSolver.tools.deformmarker.tool as deformMkr;",
                 "deformMkr.remove_layer_override();"
             ]
+        },
+        "hotkey_switcher": {
+            "name": "Hotkey",
+            "tooltip": "Switch Hotkey Sets.",
+            "command": [
+                "pass"
+            ]
+        },
+        "hotkey_switcher_popup": {
+            "popup": true,
+            "popup_post_command": [
+                "import mmSolver.tools.hotkeyswitcher.tool as tool;",
+                "tool.create_menu('{menu}');"
+            ],
+            "popup_button": ["left", "right"]
+        },
+        "dummy": {
+            "name": "Dummy",
+            "tooltip": "A Dummy function to do nothing, used as a placeholder."
         }
     }
 }

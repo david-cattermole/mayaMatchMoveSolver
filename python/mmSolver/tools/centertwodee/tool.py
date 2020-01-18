@@ -103,6 +103,27 @@ def main():
     return
 
 
+def remove():
+    """
+    Remove the centering nodes in the current active viewport.
+    """
+    model_editor = viewport_utils.get_active_model_editor()
+    if model_editor is None:
+        msg = 'Please select an active 3D viewport.'
+        LOG.warning(msg)
+        return
+
+    cam_tfm, cam_shp = viewport_utils.get_viewport_camera(model_editor)
+    if cam_shp is None:
+        msg = 'Please select an active 3D viewport to get a camera.'
+        LOG.warning(msg)
+        return
+
+    reproject_utils.remove_reprojection_from_camera(cam_tfm, cam_shp)
+    reproject_utils.reset_pan_zoom(cam_tfm, cam_shp)
+    return
+
+
 def center_two_dee():
     warnings.warn("Use 'main' function instead.")
     main()

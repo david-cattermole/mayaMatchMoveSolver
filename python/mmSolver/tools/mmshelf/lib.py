@@ -268,6 +268,9 @@ def create_item(parents, func_def, is_first_item, is_last_item):
         elif popup:
             key_suffix = const.KEY_SUFFIX_MENU
             popupBtn = lookup_value(func_def, const.POPUP_BUTTON_KEY, key_suffix)
+            popupPostCmd = lookup_value(func_def, const.POPUP_POST_CMD_KEY, key_suffix)
+            if isinstance(popupPostCmd, (list, tuple)):
+                popupPostCmd = str(os.linesep).join(popupPostCmd)
 
             # Create list of popup buttons, for each button-click used
             # to open them.
@@ -289,6 +292,7 @@ def create_item(parents, func_def, is_first_item, is_last_item):
             for index in popupBtnIndexList:
                 item = menu_utils.create_popup_menu(
                     parent=parent,
+                    postCmd=popupPostCmd,
                     button=index
                 )
                 items.append(item)

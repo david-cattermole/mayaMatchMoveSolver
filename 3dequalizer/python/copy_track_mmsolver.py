@@ -1,6 +1,6 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Copy 2D Tracks (MM Solver)
 #
-# 3DE4.script.version:  v1.5
+# 3DE4.script.version:  v1.7
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Point
 # 3DE4.script.gui:      Object Browser::Context Menu Points
@@ -30,7 +30,7 @@
 # 3DE4.script.comment:  file and puts the file path on the Operating
 # 3DE4.script.comment:  System's clipboard.
 # 3DE4.script.comment:
-# 3DE4.script.comment:  2D track points are undistorted!
+# 3DE4.script.comment:  The 2D Tracks are stored distorted and undistorted.
 # 3DE4.script.comment:
 # 3DE4.script.comment:  To use the file with MM Solver in Maya, open the
 # 3DE4.script.comment:  Load Markers UI in Maya, the UI will
@@ -38,7 +38,9 @@
 # 3DE4.script.comment:  clipboard and add it into the file path field.
 # 3DE4.script.comment:
 # 3DE4.script.comment:  All 2D Tracks are resolution independent.
-#
+# 3DE4.script.comment:
+# 3DE4.script.comment:  Files created with this tool will only work with
+# 3DE4.script.comment:  MM Solver v0.3.1+.
 #
 
 
@@ -74,7 +76,6 @@ def main():
         return
 
     # Generate file contents
-    undistort = True
     start_frame = 1
     # Backwards compatibility with 3DE4 Release 2.
     if uvtrack_format.SUPPORT_CAMERA_FRAME_OFFSET is True:
@@ -82,7 +83,7 @@ def main():
     data_str = uvtrack_format.generate(
         point_group, camera, points,
         start_frame=start_frame,
-        undistort=undistort
+        fmt=uvtrack_format.UV_TRACK_FORMAT_VERSION_PREFERRED
     )
 
     # Write file.

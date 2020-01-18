@@ -25,7 +25,7 @@ cmake_minimum_required(VERSION 2.8)
 project(mayaMatchMoveSolver)
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 3)
-set(PROJECT_VERSION_PATCH 0)
+set(PROJECT_VERSION_PATCH 2)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
@@ -540,7 +540,7 @@ endif ()
 
 # Use CPack (part of CMake) to generate the packages...
 # If 'CPack' is not included, the 'packages' target will not be generated.
-# include(CPack)
+include(CPack)
 
 if (BUILD_PYTHON)
     add_subdirectory(python)

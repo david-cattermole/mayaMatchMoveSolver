@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -416,22 +416,8 @@ class TransformMatrixCache(object):
                 tfm_nodes.append(node)
         return tfm_nodes
 
-    def process(self, eval_mode=None):
-        """
-        Evaluate all the node attributes at times.
-
-        :param eval_mode: What type of evaluation method to use?
-        :type eval_mode: mmSolver.utils.constant.EVAL_MODE_*
-
-        :rtype: None
-        """
-        if eval_mode is None:
-            eval_mode = const.EVAL_MODE_DEFAULT
-        assert eval_mode in const.EVAL_MODE_LIST
-
-        current_frame = maya.cmds.currentTime(query=True)
-
-        # Get times and nodes.
+    def __get_times_and_nodes(self):
+        """Get times and nodes."""
         times = []
         map_uuid_to_node = dict()
         for uuid in self._data.keys():
@@ -447,43 +433,79 @@ class TransformMatrixCache(object):
                 times += data
         times = list(set(times))
         times = list(sorted(times))
+        return times, map_uuid_to_node
+
+    def __get_process_list(self, map_uuid_to_node):
+        data = []
+        for uuid in self._data.keys():
+            d = self._data.get(uuid, dict())
+            for attr_name in d.keys():
+                d2 = map_uuid_to_node.get(uuid, dict())
+                plug = d2.get(attr_name, dict())
+                plug_name = plug.name()
+                data.append((uuid, attr_name, plug_name))
+        return data
+
+    def __process_with_getattr(self, map_uuid_to_node, t):
+        """Process the TransformMatrixCache, with getAttr functions."""
+        maya.cmds.currentTime(t, update=True)
+        process_list = self.__get_process_list(map_uuid_to_node)
+        for uuid, attr_name, plug_name in process_list:
+            if 'matrix' in attr_name.lower():
+                matrix = maya.cmds.getAttr(plug_name)
+                matrix = OpenMaya2.MMatrix(matrix)
+                self._data[uuid][attr_name][t] = matrix
+            elif 'rotatepivot' in attr_name.lower():
+                value = maya.cmds.getAttr(plug_name)
+                self._data[uuid][attr_name][t] = value
+            else:
+                msg = 'Attribute name is not supported; attr_name=%r'
+                raise ValueError(msg % attr_name)
+        return
+
+    def __process_with_api(self, map_uuid_to_node, ctx):
+        """Process the TransformMatrixCache, with API functions. """
+        process_list = self.__get_process_list(map_uuid_to_node)
+        for uuid, attr_name, plug_name in process_list:
+            if 'matrix' in attr_name.lower():
+                matrix = get_matrix_from_plug_apitwo(plug, ctx)
+                self._data[uuid][attr_name][t] = matrix
+            elif 'rotatepivot' in attr_name.lower():
+                value = get_double_from_plug_apitwo(plug, ctx)
+                self._data[uuid][attr_name][t] = value
+            else:
+                msg = 'Attribute name is not supported; attr_name=%r'
+                raise ValueError(msg % attr_name)
+        return
+
+    def process(self, eval_mode=None):
+        """
+        Evaluate all the node attributes at times.
+
+        :param eval_mode: What type of evaluation method to use?
+        :type eval_mode: mmSolver.utils.constant.EVAL_MODE_*
+
+        :rtype: None
+        """
+        if eval_mode is None:
+            eval_mode = const.EVAL_MODE_DEFAULT
+        assert eval_mode in const.EVAL_MODE_LIST
+
+        current_frame = maya.cmds.currentTime(query=True)
+
+        times, map_uuid_to_node = self.__get_times_and_nodes()
 
         # Query the matrices, looping over time sequentially.
-        for t in times:
-            ctx = create_dg_context_apitwo(t)
-            for uuid in self._data.keys():
-                d = self._data.get(uuid, dict())
-                for attr_name in d.keys():
-                    d2 = map_uuid_to_node.get(uuid, dict())
-                    plug = d2.get(attr_name, dict())
-                    plug_name = plug.name()
-                    maya.cmds.currentTime(t, update=True)
-                    if 'matrix' in attr_name.lower():
-                        # matrix = get_matrix_from_plug_apitwo(plug, ctx)
-                        matrix = None
-                        if eval_mode == const.EVAL_MODE_API_DG_CONTEXT:
-                            matrix = get_matrix_from_plug_apitwo(plug, ctx)
-                        elif eval_mode == const.EVAL_MODE_TIME_SWITCH_GET_ATTR:
-                            matrix = maya.cmds.getAttr(plug_name)
-                            matrix = OpenMaya2.MMatrix(matrix)
-                        else:
-                            msg = 'eval_mode does not have a valid value'
-                            raise ValueError(msg % eval_mode)
-                        self._data[uuid][attr_name][t] = matrix
-                    elif 'rotatepivot' in attr_name.lower():
-                        # value = get_double_from_plug_apitwo(plug, ctx)
-                        value = None
-                        if eval_mode == const.EVAL_MODE_API_DG_CONTEXT:
-                            value = get_double_from_plug_apitwo(plug, ctx)
-                        elif eval_mode == const.EVAL_MODE_TIME_SWITCH_GET_ATTR:
-                            value = maya.cmds.getAttr(plug_name)
-                        else:
-                            msg = 'eval_mode does not have a valid value'
-                            raise ValueError(msg % eval_mode)
-                        self._data[uuid][attr_name][t] = value
-                    else:
-                        msg = 'Attribute name is not supported; attr_name=%r'
-                        raise ValueError(msg % attr_name)
+        if eval_mode == const.EVAL_MODE_TIME_SWITCH_GET_ATTR:
+            for t in times:
+                self.__process_with_getattr(map_uuid_to_node, t)
+        elif eval_mode == const.EVAL_MODE_API_DG_CONTEXT:
+            for t in times:
+                ctx = create_dg_context_apitwo(t)
+                self.__process_with_api(map_uuid_to_node, ctx)
+        else:
+            msg = 'eval_mode does not have a valid value'
+            raise ValueError(msg % eval_mode)
 
         if eval_mode == const.EVAL_MODE_TIME_SWITCH_GET_ATTR:
             maya.cmds.currentTime(current_frame, update=True)

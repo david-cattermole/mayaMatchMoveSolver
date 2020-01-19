@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Paste Camera (MM Solver)...
 #
-# 3DE4.script.version:  v1.0
+# 3DE4.script.version:  v1.2
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Camera
 # 3DE4.script.gui:      Object Browser::Context Menu Cameras
@@ -101,7 +101,6 @@ ATTR_TRANSLATE_LABEL = 'Translate'
 ATTR_ROTATE_LABEL = 'Rotate'
 
 SEP_01_WIDGET = 'separator_01_widget'
-SEP_02_WIDGET = 'separator_02_widget'
 SEP_03_WIDGET = 'separator_03_widget'
 SEP_04_WIDGET = 'separator_04_widget'
 SEP_05_WIDGET = 'separator_05_widget'
@@ -124,7 +123,6 @@ BUILD_WIDGET_LIST = [
     ATTR_ROTATE_WIDGET,
 
     SEP_01_WIDGET,
-    SEP_02_WIDGET,
     SEP_03_WIDGET,
     SEP_04_WIDGET,
     SEP_05_WIDGET,
@@ -139,12 +137,15 @@ def _parse_data(file_path):
     :type file_path: str
 
     :returns: The data structure contained in the file path.
-    :rtype: dict
+    :rtype: dict or None
     """
     assert file_path is not None
     assert isinstance(file_path, basestring)
     assert len(file_path) > 0
-    file_data = mmcamera_format.parse(file_path)
+    try:
+        file_data = mmcamera_format.parse(file_path)
+    except Exception as e:
+        file_data = None
     return file_data
 
 
@@ -364,7 +365,7 @@ def _build_widgets_with_data(req, pgroup_id, cam_id, lens_id, file_data):
             tde4.postQuestionRequester(TITLE, msg, 'Ok')
             return
 
-    tde4.addSeparatorWidget(req, SEP_02_WIDGET)
+    tde4.addSeparatorWidget(req, SEP_01_WIDGET)
 
     if plate_path:
         tde4.addToggleWidget(req, PLATE_LOAD_WIDGET, PLATE_LOAD_LABEL, True)
@@ -427,9 +428,12 @@ def _build_widgets_with_data(req, pgroup_id, cam_id, lens_id, file_data):
     return
 
 
-def _build_gui():
+def _build_gui(file_path):
     """
     Build the widgets at the top of the window.
+
+    :param file_path: The initial file path to parse.
+    :type file_path: basestring or None
 
     :returns: 3DEqualizer UI request id.
     """
@@ -438,7 +442,6 @@ def _build_gui():
     #  path as a directory to search.
     cwd_path = os.getcwd()
     proj_path = tde4.getProjectPath()
-    file_path = None
     if mmcamera_format.SUPPORT_CLIPBOARD is True:
         file_path = tde4.getClipboardString()
 
@@ -464,8 +467,6 @@ def _build_gui():
         FILE_BROWSER_WIDGET,
         '_build_widgets'
     )
-
-    tde4.addSeparatorWidget(window_requester, SEP_01_WIDGET)
 
     pgroup_id, cam_id, lens_id = _query_selection_state()
     has_vaild_data = _file_data_has_valid_data(file_data)
@@ -517,9 +518,12 @@ if pgroup_id and cam_id and lens_id:
     try:
         requester = _paste_camera_mmsolver_requester
         _remove_all_dynamic_widgets(requester, '', 0)
+        file_path = tde4.getWidgetValue(requester, FILE_BROWSER_WIDGET) or None
     except (ValueError, NameError, TypeError):
-        requester = _build_gui()
-        _paste_camera_mmsolver_requester = requester
+        file_path = None
+
+    requester = _build_gui(file_path)
+    _paste_camera_mmsolver_requester = requester
 
     button_pressed = tde4.postCustomRequester(
         _paste_camera_mmsolver_requester,

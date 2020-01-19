@@ -1,6 +1,6 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Export 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version:  v1.6
+# 3DE4.script.version:  v1.7
 #
 # 3DE4.script.gui:      Main Window::3DE4::File::Export
 # 3DE4.script.gui:      Object Browser::Context Menu Point
@@ -93,7 +93,7 @@ def main():
         data_str = uvtrack_format.generate(
             point_group, camera, points,
             start_frame=start_frame,
-            fmt=uvtrack_format.UV_TRACK_FORMAT_VERSION_3,
+            fmt=uvtrack_format.UV_TRACK_FORMAT_VERSION_PREFERRED,
         )
 
         # Write file.

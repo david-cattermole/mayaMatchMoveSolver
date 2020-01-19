@@ -79,16 +79,27 @@ def main():
             end_frame,
         )
 
+        # Get Camera
         cam = mmapi.Camera(shape=cam_shp)
+
+        # Get or create Marker Group.
+        mkr_grp = None
+        mkr_grp_nodes = maya.cmds.ls(cam_tfm, dag=True, long=True,
+                                     type='mmMarkerGroupTransform') or []
+        mkr_grp_nodes = sorted(mkr_grp_nodes)
+        if len(mkr_grp_nodes) == 0:
+            mkr_grp = markergroup.MarkerGroup().create_node(cam=cam)
+        else:
+            mkr_grp = markergroup.MarkerGroup(node=mkr_grp_nodes[0])
+
+        # Create Marker nodes
         mkr_list = mayareadfile.create_nodes(
             mkr_data_list,
             cam=cam,
-            mkr_grp=None,
+            mkr_grp=mkr_grp,
             with_bundles=True,
         )
         mkr_nodes = [mkr.get_node() for mkr in mkr_list]
-    except:
-        raise
     finally:
         utils_viewport.viewport_turn_on()
     if len(mkr_nodes) > 0:

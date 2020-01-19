@@ -19,6 +19,8 @@
 The 'Convert to Marker' library functions.
 """
 
+import itertools
+
 import maya.cmds
 import maya.mel
 
@@ -32,39 +34,35 @@ LOG = mmSolver.logger.get_logger()
 def convert_nodes_to_marker_data_list(cam_tfm, cam_shp,
                                       nodes,
                                       start_frame, end_frame):
-    # Create nodes and objects for loop.
-    node_pairs = []
-    reproj_nodes = []
+    cur_time = maya.cmds.currentTime(query=True)
     mkr_data_list = []
+    frames = range(start_frame, end_frame + 1)
     for node in nodes:
-        reproj = reproject_utils.create_reprojection_on_camera(cam_tfm, cam_shp)
-        reproject_utils.connect_transform_to_reprojection(node, reproj)
-        reproj_nodes.append(reproj)
+        image_width = maya.cmds.getAttr(cam_shp + '.horizontalFilmAperture')
+        image_height = maya.cmds.getAttr(cam_shp + '.verticalFilmAperture')
+        image_width *= 1000.0
+        image_height *= 1000.0
+        values = maya.cmds.mmReprojection(
+            node,
+            time=frames,
+            imageResolution=(image_width, image_height),
+            camera=(cam_tfm, cam_shp),
+            asNormalizedCoordinate=True)
+        assert (len(frames) * 3) == len(values)
 
         mkr_data = loadmkr_interface.MarkerData()
         mkr_data.set_name(node)
+        mkr_data.weight.set_value(start_frame, 1.0)
+
+        iterator_u = itertools.islice(values, 0, len(values), 3)
+        iterator_v = itertools.islice(values, 1, len(values), 3)
+        for frame, mkr_u, mkr_v in zip(frames, iterator_u, iterator_v):
+            mkr_data.enable.set_value(frame, True)
+            # TODO: The values calculated are slightly wrong in Y (V
+            # axis), this looks like an aspect ratio problem overall.
+            mkr_data.x.set_value(frame, mkr_u)
+            mkr_data.y.set_value(frame, mkr_v)
         mkr_data_list.append(mkr_data)
-
-        node_pairs.append((node, reproj, mkr_data))
-
-    # Query Screen-space coordinates across time for all nodes
-    cur_time = maya.cmds.currentTime(query=True)
-    for f in xrange(start_frame, end_frame + 1):
-        maya.cmds.currentTime(f, edit=True, update=True)
-        for node, reproj, mkr_data in node_pairs:
-            node_attr = reproj + '.outNormCoord'
-            mkr_u = maya.cmds.getAttr(node_attr + 'X')
-            mkr_v = maya.cmds.getAttr(node_attr + 'Y')
-            mkr_enable = True
-            mkr_weight = 1.0
-
-            mkr_data.weight.set_value(f, mkr_weight)
-            mkr_data.enable.set_value(f, mkr_enable)
-            mkr_data.x.set_value(f, mkr_u)
-            mkr_data.y.set_value(f, mkr_v)
-
-    if len(reproj_nodes) > 0:
-        maya.cmds.delete(reproj_nodes)
 
     maya.cmds.currentTime(cur_time, edit=True, update=True)
     return mkr_data_list

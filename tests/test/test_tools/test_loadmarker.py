@@ -60,6 +60,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             ('match_mover', 'loadmarker.rz2'),
             ('uvtrack', 'test_v1.uv'),
             ('uvtrack', 'test_v3.uv'),
+            ('uvtrack', 'test_v4.uv'),
         )
         for dir_name, file_name in values:
             path = self.get_data_path(dir_name, file_name)
@@ -75,7 +76,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
 
             file_info_data = lib_utils.get_file_info_strings(path)
             assert isinstance(file_info_data, dict)
-            assert len(file_info_data) == 10
+            assert len(file_info_data) == 11
             keys = file_info_data.keys()
             assert 'fmt' in keys
             assert 'fmt_name' in keys
@@ -87,6 +88,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             assert 'lens_dist' in keys
             assert 'lens_undist' in keys
             assert 'positions' in keys
+            assert 'has_camera_fov' in keys
 
             start_dir = lib_utils.get_start_directory(path)
             assert os.path.isdir(start_dir) is True
@@ -114,6 +116,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             'test_v1.uv',
             'test_v3.uv',  # only contains 1 point
             'test_v3_with_3d_point.uv',
+            'test_v4.uv',  # only contains 1 point
         ]
         for file_name in file_names:
             path = self.get_data_path('uvtrack', file_name)
@@ -127,6 +130,9 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         return
 
     def test_loadmarker_rz2_format(self):
+        cam = lib_utils.create_new_camera()
+        mkr_grp = lib_utils.create_new_marker_group(cam)
+
         mkr_data_list = []
         paths = [
             self.get_data_path('match_mover', 'loadmarker.rz2'),
@@ -143,7 +149,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
 
         # Create the markers
         num_nodes1 = len(maya.cmds.ls())
-        marker_read.create_nodes(mkr_data_list)
+        marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
         num_nodes2 = len(maya.cmds.ls())
         self.assertGreater(num_nodes2, num_nodes1)
 
@@ -167,10 +173,14 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         """
         Test loading markers using the '.uv' format.
         """
+        cam = lib_utils.create_new_camera()
+        mkr_grp = lib_utils.create_new_marker_group(cam)
+
         mkr_data_list = []
         paths = [
             self.get_data_path('uvtrack', 'test_v1.uv'),
             self.get_data_path('uvtrack', 'test_v3.uv'),
+            self.get_data_path('uvtrack', 'test_v4.uv'),
             self.get_data_path('uvtrack', 'loadmarker_corners.uv'),
             self.get_data_path('uvtrack', 'cameraTrackRnD.uv'),
             self.get_data_path('uvtrack', 'stA.uv'),
@@ -186,7 +196,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
 
         # Create the markers
         num_nodes1 = len(maya.cmds.ls())
-        marker_read.create_nodes(mkr_data_list)
+        marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
         num_nodes2 = len(maya.cmds.ls())
         self.assertGreater(num_nodes2, num_nodes1)
 
@@ -210,6 +220,9 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         """
         Test loading markers using the '.uv' format.
         """
+        cam = lib_utils.create_new_camera()
+        mkr_grp = lib_utils.create_new_marker_group(cam)
+
         mkr_data_list = []
         paths = [
             (self.get_data_path('3de_v4', 'loadmarker_corners.txt'), (1920.0, 1080.0)),
@@ -228,7 +241,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
 
         # Create the markers
         num_nodes1 = len(maya.cmds.ls())
-        marker_read.create_nodes(mkr_data_list)
+        marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
         num_nodes2 = len(maya.cmds.ls())
         self.assertGreater(num_nodes2, num_nodes1)
 

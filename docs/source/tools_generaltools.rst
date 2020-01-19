@@ -24,8 +24,9 @@ Usage (to *apply* centering effect):
    - The active viewport camera will be centered on the selected
      transform node.
 
-4) Use the Pan/Zoom tool (default hotkey is '\' key), to zoom in and
-   out. Play the Maya file and use the centered view as needed.
+4) Use the Pan/Zoom tool (default hotkey is backslash (' \\ ') key),
+   to zoom in and out. Play the Maya file and use the centered view as
+   needed.
 
 Usage (to *remove* centering effect):
 
@@ -35,10 +36,10 @@ Usage (to *remove* centering effect):
      not reset the view.
 
    - The pan/zoom will still be active. To reset the viewport camera,
-     turn off Pan/Zoom on the viewport camera (default hotkey is '\'
-     key).
+     turn off Pan/Zoom on the viewport camera (default hotkey is
+     backslash (' \\ ') key).
 
-Run this Python command:
+To run the tool, use this Python command:
 
 .. code:: python
 
@@ -46,7 +47,7 @@ Run this Python command:
 
     # Apply Centering onto active camera
     tool.main()
-
+v
     # Remove Centering from active camera
     tool.remove()
 
@@ -64,7 +65,7 @@ Usage:
 
 3) Keyframe values will be smoothed.
 
-Run this Python command:
+To run the tool, use this Python command:
 
 .. code:: python
 
@@ -100,11 +101,78 @@ Usage:
 
 4) A new locator is created under the active camera
 
-Run this Python command:
+To run the tool, use this Python command:
 
 .. code:: python
 
     import mmSolver.tools.screenspacetransform.tool as tool
+    tool.main()
+
+Create Screen-Space Motion Trail
+--------------------------------
+
+The Screen-Space Motion Trail tool creates a non-editable curve that
+shows the screen-space position of a transform across multiple frames.
+
+With default options the tool can be used to visualise the shutter
+time of a Marker (or any other transform), assuming a shutter angle of
+180 degrees (half a frame).
+
+The user may change the default options after the motion trail is
+created by selecting the Motion Trail node under the camera and
+editing the attributes in the Channel Box.
+
+Beware of small `increment` values, and large frame ranges. These will
+cause slow-downs in the playback of the Maya scene.
+
+.. list-table:: Motion Trail Attributes
+   :widths: auto
+   :header-rows: 1
+
+   * - Attribute
+     - Type
+     - Description
+
+   * - Use Frame Range
+     - On/Off
+     - Use the frame range, or the pre/post-frame values.
+
+   * - Pre-Frame
+     - Number
+     - The number of frames to display before the current frame.
+
+   * - Post-Frame
+     - Number
+     - The number of frames to display after the current frame.
+
+   * - Frame Range Start
+     - Number
+     - The starting frame number, if Use Frame Range is on.
+
+   * - Frame Range Start
+     - Number
+     - The ending frame number, if Use Frame Range is on.
+
+   * - Increment
+     - Number
+     - The increment for each sample of the motion trail.
+
+Usage:
+
+1) Select transform nodes.
+
+2) Activate viewport.
+
+3) Run tool.
+
+4) A temporary null is created (required for the tool to work), and a
+   motion trail parented under the camera is created.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.screenspacemotiontrail.tool as tool
     tool.main()
 
 Channel Sensitivity
@@ -126,7 +194,7 @@ Usage:
 
 3) Middle-mouse drag in the viewport to change the attribute value.
 
-Run this Python command:
+To run the tool, use this Python command:
 
 .. code:: python
 
@@ -151,7 +219,7 @@ Usage:
 
 5) Right-click and run "Paste Camera (MM Solver)...".
 
-Run this Python command:
+To run the tool, use this Python command:
 
 .. code:: python
 
@@ -176,7 +244,7 @@ Usage:
      Markers will named ``marker`` and Bundles will be named
      ``bundle``.
 
-Run this Python command:
+To run the tool, use this Python command:
 
 .. code:: python
 
@@ -200,7 +268,7 @@ Usage:
    - Markers and Bundles are renamed based on metadata, if metadata is
      not found, the Marker/Bundle is not renamed.
 
-Run this Python command:
+To run the tool, use this Python command:
 
 .. code:: python
 
@@ -228,7 +296,7 @@ Usage:
      and will stay in the same position in world-space for all
      keyframes.
 
-Run this Python command:
+To run the tool, use this Python command:
 
 .. code:: python
 
@@ -254,7 +322,7 @@ Usage:
      be unparented into root Maya Outliner (the nodes will not be
      parented under any node).
 
-Run this Python command:
+To run the tool, use this Python command:
 
 .. code:: python
 
@@ -283,7 +351,7 @@ Usage:
    - The source node is baked at the same times as the Controller is
      keyed, and the Controller is deleted.
 
-Run this Python command:
+To run the tool, use this Python command:
 
 .. code:: python
 

@@ -26,6 +26,7 @@
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
 #include <maya/MFnNumericAttribute.h>
+#include <maya/MFnEnumAttribute.h>
 #include <maya/MFnCompoundAttribute.h>
 
 #include <utilities/debugUtils.h>
@@ -49,8 +50,13 @@ MObject MMMarkerScaleNode::a_filmOffset;
 MObject MMMarkerScaleNode::a_horizontalFilmOffset;
 MObject MMMarkerScaleNode::a_verticalFilmOffset;
 MObject MMMarkerScaleNode::a_depth;
+MObject MMMarkerScaleNode::a_overscanMode;
 MObject MMMarkerScaleNode::a_overscan;
+MObject MMMarkerScaleNode::a_overscanX;
+MObject MMMarkerScaleNode::a_overscanY;
 MObject MMMarkerScaleNode::a_overscanInverse;
+MObject MMMarkerScaleNode::a_overscanInverseX;
+MObject MMMarkerScaleNode::a_overscanInverseY;
 
 // Output Attributes
 MObject MMMarkerScaleNode::a_outTranslate;
@@ -88,8 +94,13 @@ MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
         MDataHandle filmBackOffsetXHandle = data.inputValue(a_horizontalFilmOffset);
         MDataHandle filmBackOffsetYHandle = data.inputValue(a_verticalFilmOffset);
         MDataHandle depthHandle = data.inputValue(a_depth);
+        MDataHandle overscanModeHandle = data.inputValue(a_overscanMode, &status);
         MDataHandle overscanHandle = data.inputValue(a_overscan);
+        MDataHandle overscanXHandle = data.inputValue(a_overscanX);
+        MDataHandle overscanYHandle = data.inputValue(a_overscanY);
         MDataHandle overscanInvHandle = data.inputValue(a_overscanInverse);
+        MDataHandle overscanInvXHandle = data.inputValue(a_overscanInverseX);
+        MDataHandle overscanInvYHandle = data.inputValue(a_overscanInverseY);
 
         // Get value
         double focalLength = focalLengthHandle.asDouble();
@@ -98,8 +109,13 @@ MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
         double filmBackOffsetX = filmBackOffsetXHandle.asDouble() * INCH_TO_MM;
         double filmBackOffsetY = filmBackOffsetYHandle.asDouble() * INCH_TO_MM;
         double depth = depthHandle.asDouble();
+        short overscanMode = overscanModeHandle.asShort();
         double overscan = overscanHandle.asDouble();
+        double overscanX = overscanXHandle.asDouble();
+        double overscanY = overscanYHandle.asDouble();
         double overscanInverse = 1.0 / overscanInvHandle.asDouble();
+        double overscanInverseX = 1.0 / overscanInvXHandle.asDouble();
+        double overscanInverseY = 1.0 / overscanInvYHandle.asDouble();
 
         double scale = 0.0;
         getCameraPlaneScale(filmBackX, focalLength, scale);
@@ -112,17 +128,43 @@ MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
         double scaleY = scale * depth * 2.0 * (filmBackY/filmBackX);
         double scaleZ = depth;
 
-        // Apply Overscan factor (deprecated)
-        translateX *= overscan;
-        translateY *= overscan;
-        scaleX *= overscan;
-        scaleY *= overscan;
+        // Apply Overscan factor
+        if (overscanMode == 0) {
+            // Uniform overscan
+            translateX *= overscan;
+            translateY *= overscan;
+            scaleX *= overscan;
+            scaleY *= overscan;
+        } else if (overscanMode == 1) {
+            // overscan X and Y
+            translateX *= overscanX;
+            translateY *= overscanY;
+            scaleX *= overscanX;
+            scaleY *= overscanY;
+        } else {
+            ERR("invalid overscan value: " << overscanMode);
+        }
 
         // Apply Overscan Inverse factor
-        translateX *= overscanInverse;
-        translateY *= overscanInverse;
-        scaleX *= overscanInverse;
-        scaleY *= overscanInverse;
+        //
+        // Reduces the size of the "display box", therefore adding
+        // empty areas to the plate.
+        //
+        if (overscanMode == 0) {
+            // Uniform overscan
+            translateX *= overscanInverse;
+            translateY *= overscanInverse;
+            scaleX *= overscanInverse;
+            scaleY *= overscanInverse;
+        } else if (overscanMode == 1) {
+            // overscan X and Y
+            translateX *= overscanInverseX;
+            translateY *= overscanInverseY;
+            scaleX *= overscanInverseX;
+            scaleY *= overscanInverseY;
+        } else {
+            ERR("invalid overscan value: " << overscanMode);
+        }
 
         // Output Translate
         MDataHandle outTranslateXHandle = data.outputValue(a_outTranslateX);
@@ -158,6 +200,7 @@ void *MMMarkerScaleNode::creator() {
 MStatus MMMarkerScaleNode::initialize() {
     MStatus status;
     MFnNumericAttribute numericAttr;
+    MFnEnumAttribute enumAttr;
     MFnCompoundAttribute compoundAttr;
 
     // Focal Length (millimetres)
@@ -218,6 +261,16 @@ MStatus MMMarkerScaleNode::initialize() {
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_depth));
 
+    // Overscan Mode; 0='uniform', 1='overscan x and y'
+    a_overscanMode = enumAttr.create(
+        "overscanMode", "ovrscnmd", 0, &status);
+    CHECK_MSTATUS(status);
+    CHECK_MSTATUS(enumAttr.addField("Uniform", 0));
+    CHECK_MSTATUS(enumAttr.addField("Overscan X and Y", 1));
+    CHECK_MSTATUS(enumAttr.setStorable(true));
+    CHECK_MSTATUS(enumAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(a_overscanMode));
+
     // Overscan
     a_overscan = numericAttr.create(
             "overscan", "ovrscn",
@@ -225,8 +278,26 @@ MStatus MMMarkerScaleNode::initialize() {
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(numericAttr.setHidden(true));
-    CHECK_MSTATUS(numericAttr.setNiceNameOverride("Overscan (Obsolete)"));
+    CHECK_MSTATUS(numericAttr.setNiceNameOverride("Uniform Overscan"));
     CHECK_MSTATUS(addAttribute(a_overscan));
+
+    // Overscan X
+    a_overscanX = numericAttr.create(
+            "overscanX", "ovrscnx",
+            MFnNumericData::kDouble, 1.0);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(numericAttr.setHidden(true));
+    CHECK_MSTATUS(addAttribute(a_overscanX));
+
+    // Overscan Y
+    a_overscanY = numericAttr.create(
+            "overscanY", "ovrscny",
+            MFnNumericData::kDouble, 1.0);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(numericAttr.setHidden(true));
+    CHECK_MSTATUS(addAttribute(a_overscanY));
 
     // Overscan Inverse
     a_overscanInverse = numericAttr.create(
@@ -234,7 +305,24 @@ MStatus MMMarkerScaleNode::initialize() {
             MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(numericAttr.setNiceNameOverride("Uniform Overscan Inverse"));
     CHECK_MSTATUS(addAttribute(a_overscanInverse));
+
+    // Overscan Inverse X
+    a_overscanInverseX = numericAttr.create(
+            "overscanInverseX", "ovrscninvx",
+            MFnNumericData::kDouble, 1.0);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(a_overscanInverseX));
+
+    // Overscan Inverse Y
+    a_overscanInverseY = numericAttr.create(
+            "overscanInverseY", "ovrscninvy",
+            MFnNumericData::kDouble, 1.0);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(a_overscanInverseY));
 
     // Out Translate X
     a_outTranslateX = numericAttr.create(
@@ -372,6 +460,15 @@ MStatus MMMarkerScaleNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outScaleY));
     CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outScaleZ));
 
+    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outTranslate));
+    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outTranslateX));
+    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outTranslateY));
+    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outTranslateZ));
+    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outScale));
+    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outScaleX));
+    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outScaleY));
+    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outScaleZ));
+
     CHECK_MSTATUS(attributeAffects(a_overscan, a_outTranslate));
     CHECK_MSTATUS(attributeAffects(a_overscan, a_outTranslateX));
     CHECK_MSTATUS(attributeAffects(a_overscan, a_outTranslateY));
@@ -381,6 +478,24 @@ MStatus MMMarkerScaleNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_overscan, a_outScaleY));
     CHECK_MSTATUS(attributeAffects(a_overscan, a_outScaleZ));
 
+    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outTranslate));
+    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outTranslateX));
+    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outTranslateY));
+    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outTranslateZ));
+    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outScale));
+    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outScaleX));
+    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outScaleY));
+    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outScaleZ));
+
+    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outTranslate));
+    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outTranslateX));
+    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outTranslateY));
+    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outTranslateZ));
+    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outScale));
+    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outScaleX));
+    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outScaleY));
+    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outScaleZ));
+
     CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outTranslate));
     CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outTranslateX));
     CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outTranslateY));
@@ -389,6 +504,24 @@ MStatus MMMarkerScaleNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outScaleX));
     CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outScaleY));
     CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outScaleZ));
+
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outTranslate));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outTranslateX));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outTranslateY));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outTranslateZ));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outScale));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outScaleX));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outScaleY));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outScaleZ));
+
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outTranslate));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outTranslateX));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outTranslateY));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outTranslateZ));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outScale));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outScaleX));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outScaleY));
+    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outScaleZ));
 
     CHECK_MSTATUS(attributeAffects(a_depth, a_outTranslate));
     CHECK_MSTATUS(attributeAffects(a_depth, a_outTranslateX));

@@ -248,7 +248,6 @@ def get_frame_range_from_file_pattern(file_path_pattern, fallback_range=None):
         end = max(end, frame)
     frame_range = time_utils.FrameRange(start, end)
     if start > end:
-        # frame_range = time_utils.FrameRange(None, None)
         frame_range = fallback_range
     return frame_range
 

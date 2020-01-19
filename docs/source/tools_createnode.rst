@@ -116,6 +116,10 @@ task needed for solving 3D objects and cameras.
 
 3) Press the **Load** button.
 
+When the **Load** button is run, the options used in the Load Marker UI
+will be saved to the user's home directory. The saved options are
+automatically restored when the Load Marker UI is re-opened.
+
 .. list-table:: Load Marker Options
    :widths: auto
    :header-rows: 1
@@ -140,6 +144,13 @@ task needed for solving 3D objects and cameras.
      - will allow choosing the type of 2D point data to create or
        load. Some formats (for example ``.uv``) can store both
        undistorted and distorted 2D data.
+
+   * - Use Embedded Overscan
+     - will use the camera field of view (FOV) embedded inside the
+       file to automatically calculate the correct 2D
+       position. ``.uv`` is the only currently supported format. Use
+       ``Copy Tracks (MM Solver)`` or ``Export Tracks (MM Solver)``
+       version 1.7+ inside 3DEqualizer for this feature to be enabled.
 
    * - Load Bundle Positions
      - will allow loading 3D point information saved along with the 2D

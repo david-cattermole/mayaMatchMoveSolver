@@ -174,7 +174,7 @@ Solver Basic
 Solver Standard
 ---------------
 
-.. autoclass:: mmSolver.api.SolverBasic
+.. autoclass:: mmSolver.api.SolverStandard
    :members:
    :undoc-members:
    :special-members:

@@ -76,10 +76,6 @@ def viewport1_turn_on():
     return
 
 
-viewport_turn_off = viewport1_turn_off
-viewport_turn_on = viewport1_turn_on
-
-
 def viewport2_turn_off():
     """
     Turn off Viewport 2.
@@ -97,6 +93,40 @@ def viewport2_turn_on():
     ..note:: This is not supported below Maya 2017.
     """
     set_viewport2_active_state(True)
+    return
+
+
+def viewport_turn_off():
+    """
+    Turn off Viewport.
+
+    .. note:: This will automatically switch to the fastest
+        implementation based on the version Maya.
+    """
+    if maya.cmds.about(apiVersion=True) >= 201700:
+        # TODO: Detect the currently used Viewport renderer, and only
+        # use viewport2 pause feature if viewport 2 is currently
+        # active.
+        set_viewport2_active_state(False)
+    else:
+        viewport1_turn_off()
+    return
+
+
+def viewport_turn_on():
+    """
+    Turn on the Viewport.
+
+    .. note:: This will automatically switch to the fastest
+        implementation based on the version Maya.
+    """
+    if maya.cmds.about(apiVersion=True) >= 201700:
+        # TODO: Detect the currently used Viewport renderer, and only
+        # use viewport2 pause feature if viewport 2 is currently
+        # active.
+        set_viewport2_active_state(True)
+    else:
+        viewport1_turn_on()
     return
 
 

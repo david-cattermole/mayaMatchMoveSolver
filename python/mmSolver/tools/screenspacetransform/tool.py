@@ -51,7 +51,8 @@ def main():
         return
     cam_tfm, cam_shp = viewport_utils.get_viewport_camera(editor)
     if cam_tfm is None or cam_shp is None:
-        LOG.error('Please select a camera; cam_tfm=%r cam_shp=%r', cam_tfm, cam_shp)
+        LOG.error('Please select a camera; cam_tfm=%r cam_shp=%r',
+                  cam_tfm, cam_shp)
         return
     cam = mmapi.Camera(transform=cam_tfm, shape=cam_shp)
     img_width = maya.cmds.getAttr(cam_shp + '.horizontalFilmAperture') * 100.0

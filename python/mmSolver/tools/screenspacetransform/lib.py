@@ -39,7 +39,8 @@ def create_screen_space_locator(cam, name=None):
     mkr_grp_node = mkr_grp.get_node()
     maya.cmds.setAttr(mkr_grp_node + '.depth', 1.0)
     maya.cmds.setAttr(mkr_grp_node + '.depth', lock=True)
-    maya.cmds.setAttr(mkr_grp_node + '.overscan', lock=True)
+    maya.cmds.setAttr(mkr_grp_node + '.overscanX', lock=True)
+    maya.cmds.setAttr(mkr_grp_node + '.overscanY', lock=True)
 
     depth_tfm = maya.cmds.createNode('transform',
                                      name='depth',

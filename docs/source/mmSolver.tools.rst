@@ -33,6 +33,7 @@ mmSolver.tools
    mmSolver.tools.raycastmarker
    mmSolver.tools.reparent
    mmSolver.tools.reprojectbundle
+   mmSolver.tools.screenspacemotiontrail
    mmSolver.tools.screenspacetransform
    mmSolver.tools.screenzmanipulator
    mmSolver.tools.selection

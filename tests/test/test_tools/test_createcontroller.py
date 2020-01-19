@@ -393,6 +393,8 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
 
         tfm_a = 'rig:FKShoulder_L'
         tfm_b = 'rig:FKElbow_L'
+        matrix_a1 = maya.cmds.xform(tfm_a, query=True, matrix=True, worldSpace=True)
+        matrix_b1 = maya.cmds.xform(tfm_b, query=True, matrix=True, worldSpace=True)
 
         ctrls = lib.create([tfm_a, tfm_b])
         ctrl_a, ctrl_b = ctrls
@@ -404,6 +406,18 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         path = self.get_data_path('controller_remove_riggedCharacter_before.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        # Test created control matrixes.
+        matrix_a2 = maya.cmds.xform(ctrl_a, query=True, matrix=True, worldSpace=True)
+        matrix_b2 = maya.cmds.xform(ctrl_b, query=True, matrix=True, worldSpace=True)
+        self.assertGreater(
+            closeness.compare_floats(matrix_a1, matrix_a2),
+            closeness.DEFAULT_SIGNIFICANT_DIGITS
+        )
+        self.assertGreater(
+            closeness.compare_floats(matrix_b1, matrix_b2),
+            closeness.DEFAULT_SIGNIFICANT_DIGITS
+        )
 
         lib.remove(ctrls)
 
@@ -455,7 +469,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         """
         path = self.get_data_path('scenes', 'rigHierachy.ma')
         maya.cmds.file(path, open=True, force=True)
-        
+
         tfm_a = 'rig:FKShoulder_L'
         tfm_b = 'rig:FKElbow_L'
 

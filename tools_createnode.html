@@ -86,7 +86,7 @@ are not supported to create Markers.</p>
 <div class="section" id="load-markers">
 <span id="load-markers-ref"></span><h2>Load Markers<a class="headerlink" href="#load-markers" title="Permalink to this headline">¶</a></h2>
 <div class="figure align-right" id="id1">
-<a class="reference internal image-reference" href="_images/tools_loadmarker_overview.png"><img alt="Load Markers UI" src="_images/tools_loadmarker_overview.png" style="width: 492.5px; height: 431.5px;" /></a>
+<a class="reference internal image-reference" href="_images/tools_loadmarker_overview.png"><img alt="Load Markers UI" src="_images/tools_loadmarker_overview.png" style="width: 416.0px; height: 506.5px;" /></a>
 <p class="caption"><span class="caption-text">Load Markers UI</span></p>
 </div>
 <p>The Load Markers UI allows loading of <code class="docutils literal"><span class="pre">.uv</span></code> (mmSolver), <code class="docutils literal"><span class="pre">.txt</span></code>
@@ -147,6 +147,9 @@ Clipboard, then the Load Marker UI will auto-load the file path.</li>
 <li>Choose your options.</li>
 <li>Press the <strong>Load</strong> button.</li>
 </ol>
+<p>When the <strong>Load</strong> button is run, the options used in the Load Marker UI
+will be saved to the user&#8217;s home directory. The saved options are
+automatically restored when the Load Marker UI is re-opened.</p>
 <table border="1" class="colwidths-auto docutils" id="id2">
 <caption><span class="caption-text">Load Marker Options</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <thead valign="bottom">
@@ -173,12 +176,19 @@ Group, using the <code class="docutils literal"><span class="pre">&lt;Create</sp
 load. Some formats (for example <code class="docutils literal"><span class="pre">.uv</span></code>) can store both
 undistorted and distorted 2D data.</td>
 </tr>
-<tr class="row-even"><td>Load Bundle Positions</td>
+<tr class="row-even"><td>Use Embedded Overscan</td>
+<td>will use the camera field of view (FOV) embedded inside the
+file to automatically calculate the correct 2D
+position. <code class="docutils literal"><span class="pre">.uv</span></code> is the only currently supported format. Use
+<code class="docutils literal"><span class="pre">Copy</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code> or <code class="docutils literal"><span class="pre">Export</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code>
+version 1.7+ inside 3DEqualizer for this feature to be enabled.</td>
+</tr>
+<tr class="row-odd"><td>Load Bundle Positions</td>
 <td>will allow loading 3D point information saved along with the 2D
 Marker data. Only some formats (for example <code class="docutils literal"><span class="pre">.uv</span></code>) can store
 both 2D and 3D data in one file.</td>
 </tr>
-<tr class="row-odd"><td>Image Resolution</td>
+<tr class="row-even"><td>Image Resolution</td>
 <td>is for use with 3DEqualizer4 <code class="docutils literal"><span class="pre">.txt</span></code> files, which are stored
 with plate resolution embedded into the 2D data. Use this field
 to choose the correct plate resolution for the 2D data that was
@@ -190,7 +200,7 @@ exported.</td>
 <div class="section" id="updating-replacing-markers-in-maya">
 <h3>Updating / Replacing Markers in Maya<a class="headerlink" href="#updating-replacing-markers-in-maya" title="Permalink to this headline">¶</a></h3>
 <div class="figure align-right" id="id3">
-<a class="reference internal image-reference" href="_images/tools_loadmarker_load_mode_replace.png"><img alt="Replace the selected Marker nodes." src="_images/tools_loadmarker_load_mode_replace.png" style="width: 394.0px; height: 345.2px;" /></a>
+<a class="reference internal image-reference" href="_images/tools_loadmarker_load_mode_replace.png"><img alt="Replace the selected Marker nodes." src="_images/tools_loadmarker_load_mode_replace.png" style="width: 332.8px; height: 405.2px;" /></a>
 <p class="caption"><span class="caption-text">Replace the selected Marker nodes.</span></p>
 </div>
 <p>Marker nodes in Maya can be overwritten with newly tracked data.</p>

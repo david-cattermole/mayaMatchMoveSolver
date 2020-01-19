@@ -65,7 +65,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140137067841744'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140137067841744'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='140137067841872'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139806625658256'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139806625658256'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='139806625658384'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -461,6 +461,14 @@ made.</p>
 <dt id="mmSolver.utils.config.get_config">
 <code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_config</code><span class="sig-paren">(</span><em>file_name</em>, <em>search=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a config file as a Config class object.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;myConfigFile.json&quot;</span><span class="p">)</span>
+<span class="go">&lt;mmSolver.utils.config.Config object at 0x0000016993BF5160&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;/path/to/config/file.json&quot;</span><span class="p">)</span>
+<span class="go">&lt;mmSolver.utils.config.Config object at 0x0000016993BF5748&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;non_existant_file.json&quot;</span><span class="p">)</span>
+<span class="go">None</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -468,9 +476,9 @@ made.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>file_name</strong> (<em>str</em>) &#8211; The name of the config file, or an absolute file
 path.</li>
-<li><strong>search</strong> (<em>str</em><em> or </em><em>[</em><em>str</em><em>, </em><em>.</em><em>] or </em><em>None</em>) &#8211; An environment variable to parse for search paths, 
-or a list of given search directory paths, or if set 
-to None, use the default environment variable for 
+<li><strong>search</strong> (<em>str</em><em> or </em><em>[</em><em>str</em><em>, </em><em>.</em><em>] or </em><em>None</em>) &#8211; An environment variable to parse for search paths,
+or a list of given search directory paths, or if set
+to None, use the default environment variable for
 mmSolver.</li>
 </ul>
 </td>
@@ -499,7 +507,7 @@ check and create files/directories as needed.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; A list of string arguments to be joined to the 
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; A list of string arguments to be joined to the
 returned path.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An absolute path to a config directory that may or may not exist.</td>
@@ -956,6 +964,10 @@ will always have unique node names.</dd>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Valid Maya DAG node path.</td>
 </tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The parent nodes of node, in order from node upwards.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[basestring, .]</td>
+</tr>
 </tbody>
 </table>
 </dd></dl>
@@ -1106,7 +1118,26 @@ will always have unique node names.</dd>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Tuple of camera transform and shape nodes, or (None, None)</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(str, str) or (None, None)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.get_all_parent_nodes">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_all_parent_nodes</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_all_parent_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parent nodes above the given node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; The node name to get the parents of.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of parent nodes, in order of deepest to shallowest.
+Nodes unparented into world will have empty lists returned.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[str, .]</td>
 </tr>
 </tbody>
 </table>
@@ -1325,6 +1356,7 @@ given, or None if no point was found.</p>
 <dt id="mmSolver.utils.reproject.get_camera_direction_to_point">
 <code class="descclassname">mmSolver.utils.reproject.</code><code class="descname">get_camera_direction_to_point</code><span class="sig-paren">(</span><em>camera_node</em>, <em>point_node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.reproject.get_camera_direction_to_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the direction of the camera toward a given point.</p>
+<p>The direction vector is normalised.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1565,6 +1597,27 @@ smoothing. 1.0 or below has no effect.</li>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Start frame and end frame as FrameRange tuple.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(int, int)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.time.get_keyframe_times_for_node_attrs">
+<code class="descclassname">mmSolver.utils.time.</code><code class="descname">get_keyframe_times_for_node_attrs</code><span class="sig-paren">(</span><em>nodes</em>, <em>attrs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.time.get_keyframe_times_for_node_attrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query keyframe times on each node attribute (sparse keys)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Nodes to query from.</li>
+<li><strong>attrs</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Attributes to query keyframes from.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">{str: [int, ..]}</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1877,13 +1930,15 @@ renamed or re-parented.</p>
 
 <dl class="method">
 <dt id="mmSolver.utils.transform.TransformMatrixCache.process">
-<code class="descname">process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.process" title="Permalink to this definition">¶</a></dt>
+<code class="descname">process</code><span class="sig-paren">(</span><em>eval_mode=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache.process" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate all the node attributes at times.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>eval_mode</strong> (<em>mmSolver.utils.constant.EVAL_MODE_*</em>) &#8211; What type of evaluation method to use?</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
 </tr>
 </tbody>
 </table>
@@ -1930,7 +1985,7 @@ no cached value exists, None is returned in that
 list entry.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[maya.api.OpenMaya.MMatrix, .]</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[maya.api.OpenMaya.MMatrix or None, .]</p>
 </td>
 </tr>
 </tbody>
@@ -1958,7 +2013,7 @@ no cached value exists, None is returned in that
 list entry.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[maya.api.OpenMaya.MMatrix, .]</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[maya.api.OpenMaya.MMatrix or None, .]</p>
 </td>
 </tr>
 </tbody>
@@ -1987,7 +2042,7 @@ if rotate_order is None.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[maya.api.OpenMaya.MTransformationMatrix, .]</p>
 </td>
 </tr>
 </tbody>
@@ -2023,7 +2078,7 @@ desired rotation order.</p>
 
 <dl class="function">
 <dt id="mmSolver.utils.transform.set_transform_values">
-<code class="descclassname">mmSolver.utils.transform.</code><code class="descname">set_transform_values</code><span class="sig-paren">(</span><em>tfm_matrix_cache</em>, <em>times</em>, <em>src_tfm_node</em>, <em>dst_tfm_node</em>, <em>rotate_order=None</em>, <em>delete_static_anim_curves=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.set_transform_values" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.transform.</code><code class="descname">set_transform_values</code><span class="sig-paren">(</span><em>tfm_matrix_cache</em>, <em>times</em>, <em>src_tfm_node</em>, <em>dst_tfm_node</em>, <em>rotate_order=None</em>, <em>delete_static_anim_curves=False</em>, <em>eval_mode=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.set_transform_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set transform node values on a destination node at times,
 using previously evaluated cached values.</p>
 <p>src_tfm_node is used to look-up into the cache for values.
@@ -2049,6 +2104,7 @@ or use the existing rotation on the dst_node
 if rotate_order is None.</li>
 <li><strong>delete_static_anim_curves</strong> (<em>bool</em>) &#8211; If an animation curve is static,
 it will be deleted.</li>
+<li><strong>eval_mode</strong> (<em>mmSolver.utils.constant.EVAL_MODE_*</em>) &#8211; What type of evaluation method to use?</li>
 </ul>
 </td>
 </tr>
@@ -2127,18 +2183,6 @@ None to generate a random UUID.</td>
 </dd></dl>
 
 <dl class="function">
-<dt id="mmSolver.utils.viewport.viewport_turn_off">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_off" title="Permalink to this definition">¶</a></dt>
-<dd><p>Turn off Maya UI.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.viewport.viewport_turn_on">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_on" title="Permalink to this definition">¶</a></dt>
-<dd><p>Turn on Maya UI.</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="mmSolver.utils.viewport.viewport2_turn_off">
 <code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport2_turn_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport2_turn_off" title="Permalink to this definition">¶</a></dt>
 <dd><p>Turn off Viewport 2.</p>
@@ -2150,6 +2194,28 @@ None to generate a random UUID.</td>
 <code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport2_turn_on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport2_turn_on" title="Permalink to this definition">¶</a></dt>
 <dd><p>Turn on Viewport 2.</p>
 <p>..note:: This is not supported below Maya 2017.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.viewport_turn_off">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off Viewport.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This will automatically switch to the fastest
+implementation based on the version Maya.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.viewport.viewport_turn_on">
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn on the Viewport.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This will automatically switch to the fastest
+implementation based on the version Maya.</p>
+</div>
 </dd></dl>
 
 <dl class="function">

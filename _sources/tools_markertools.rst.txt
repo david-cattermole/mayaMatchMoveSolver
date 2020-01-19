@@ -101,11 +101,11 @@ Run this Python command:
 Project Marker on Mesh (Ray-Cast)
 ---------------------------------
 
-Ray casts (project) the selected marker's bundle nodes on mesh nodes
+Ray-casts each bundle connected to the selected markers on to the mesh
 from the associated camera.
 
-Select markers and mesh objects to ray cast on, if not mesh objects
-tool will ray cast on all visible mesh objects.
+Select markers and mesh objects to ray-cast on to, if no mesh objects
+are selected the tool will ray-cast on to all visible mesh objects.
 
 If a bundle translate attribute is locked, it will be unlocked, then
 projected, and then the lock state will be reverted to the original

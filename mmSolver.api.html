@@ -1847,10 +1847,10 @@ and return.</p>
 <div class="section" id="solver-standard">
 <h3>Solver Standard<a class="headerlink" href="#solver-standard" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt>
-<em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">SolverBasic</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span></dt>
-<dd><p>The basic  solver for mmSolver.</p>
-<p>This solver is designed for ONLY Animated attributes.</p>
+<dt id="mmSolver.api.SolverStandard">
+<em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">SolverStandard</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard" title="Permalink to this definition">¶</a></dt>
+<dd><p>The standard solver for mmSolver.</p>
+<p>This solver is designed for Animated and Static attributes.</p>
 <p>Parameters for solver:
 - Frame Range - with options:</p>
 <blockquote>
@@ -1861,57 +1861,128 @@ and return.</p>
 <li>&#8220;Custom&#8221;</li>
 </ul>
 </div></blockquote>
+<ul class="simple">
+<li>Root Frames - A list of integer frame numbers.</li>
+<li>Solver Method
+- &#8220;Solve Everything at Once&#8221; option - On or Off
+- &#8220;Solve Root Frames Only&#8221; option - On or Off</li>
+</ul>
 <p>If a Solver is &#8216;Single Frame&#8217; (current frame), then we solve both
-animated attributes on the current frame, in a single step
+animated and static attributes on the current frame, in a single step
 and return.</p>
+<p>If the &#8216;Solver Root Frames Only&#8217; option is On, then we only solve the
+root frames, with both animated and static attributes.</p>
+<p>If the &#8216;Solver Root Frames Only&#8217; is Off, then we first solve the root
+frames with both animated and static attributes, then secondly we solve
+only animated attributes for the entire frame range.</p>
+<p>If the &#8216;Solve Everything at Once&#8217; option is On, then the second solve
+step contains static and animated attributes (not just animated),
+and all frames are solved as one big crunch.</p>
+<p>TODO: Before solving root frames we should query the current
+animated attribute values at each root frame, store it, then
+remove all keyframes between the first and last frames to
+solve. Lastly we should re-keyframe the values at the animated
+frames, and ensure the keyframe tangents are linear. This will
+ensure that animated keyframe values do not affect a re-solve.
+Only the root frames need to be initialized with good values.</p>
 <dl class="method">
-<dt>
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.__init__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">get_use_single_frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.get_use_single_frame">
+<code class="descname">get_use_single_frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_use_single_frame" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">set_use_single_frame</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.set_use_single_frame">
+<code class="descname">set_use_single_frame</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_use_single_frame" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">get_single_frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.get_single_frame">
+<code class="descname">get_single_frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_single_frame" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">set_single_frame</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.set_single_frame">
+<code class="descname">set_single_frame</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_single_frame" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">get_anim_iteration_num</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.get_only_root_frames">
+<code class="descname">get_only_root_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_only_root_frames" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">set_anim_iteration_num</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.set_only_root_frames">
+<code class="descname">set_only_root_frames</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_only_root_frames" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">get_lineup_iteration_num</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.get_global_solve">
+<code class="descname">get_global_solve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_global_solve" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">set_lineup_iteration_num</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.set_global_solve">
+<code class="descname">set_global_solve</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_global_solve" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">get_frame_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.get_root_frame_strategy">
+<code class="descname">get_root_frame_strategy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_root_frame_strategy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.set_root_frame_strategy">
+<code class="descname">set_root_frame_strategy</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_root_frame_strategy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.get_block_iteration_num">
+<code class="descname">get_block_iteration_num</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_block_iteration_num" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.set_block_iteration_num">
+<code class="descname">set_block_iteration_num</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_block_iteration_num" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.get_root_iteration_num">
+<code class="descname">get_root_iteration_num</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_root_iteration_num" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.set_root_iteration_num">
+<code class="descname">set_root_iteration_num</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_root_iteration_num" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.get_anim_iteration_num">
+<code class="descname">get_anim_iteration_num</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_anim_iteration_num" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.set_anim_iteration_num">
+<code class="descname">set_anim_iteration_num</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_anim_iteration_num" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.get_lineup_iteration_num">
+<code class="descname">get_lineup_iteration_num</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_lineup_iteration_num" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.set_lineup_iteration_num">
+<code class="descname">set_lineup_iteration_num</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_lineup_iteration_num" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.get_frame_list">
+<code class="descname">get_frame_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_frame_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get frame objects attached to the solver.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1926,48 +1997,99 @@ and return.</p>
 </dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">get_frame_list_length</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.get_frame_list_length">
+<code class="descname">get_frame_list_length</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_frame_list_length" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">add_frame</code><span class="sig-paren">(</span><em>frm</em><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.add_frame">
+<code class="descname">add_frame</code><span class="sig-paren">(</span><em>frm</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.add_frame" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">add_frame_list</code><span class="sig-paren">(</span><em>frm_list</em><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.add_frame_list">
+<code class="descname">add_frame_list</code><span class="sig-paren">(</span><em>frm_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.add_frame_list" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">remove_frame</code><span class="sig-paren">(</span><em>frm</em><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.remove_frame">
+<code class="descname">remove_frame</code><span class="sig-paren">(</span><em>frm</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.remove_frame" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">remove_frame_list</code><span class="sig-paren">(</span><em>frm_list</em><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.remove_frame_list">
+<code class="descname">remove_frame_list</code><span class="sig-paren">(</span><em>frm_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.remove_frame_list" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">set_frame_list</code><span class="sig-paren">(</span><em>frm_list</em><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.set_frame_list">
+<code class="descname">set_frame_list</code><span class="sig-paren">(</span><em>frm_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_frame_list" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">clear_frame_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.clear_frame_list">
+<code class="descname">clear_frame_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.clear_frame_list" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">compile</code><span class="sig-paren">(</span><em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span></dt>
+<dt id="mmSolver.api.SolverStandard.get_root_frame_list">
+<code class="descname">get_root_frame_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_root_frame_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get frame objects attached to the solver.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">frame objects.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of frame.Frame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.get_root_frame_list_length">
+<code class="descname">get_root_frame_list_length</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_root_frame_list_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.add_root_frame">
+<code class="descname">add_root_frame</code><span class="sig-paren">(</span><em>frm</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.add_root_frame" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.add_root_frame_list">
+<code class="descname">add_root_frame_list</code><span class="sig-paren">(</span><em>frm_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.add_root_frame_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.remove_root_frame">
+<code class="descname">remove_root_frame</code><span class="sig-paren">(</span><em>frm</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.remove_root_frame" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.remove_root_frame_list">
+<code class="descname">remove_root_frame_list</code><span class="sig-paren">(</span><em>frm_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.remove_root_frame_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.set_root_frame_list">
+<code class="descname">set_root_frame_list</code><span class="sig-paren">(</span><em>frm_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_root_frame_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.clear_root_frame_list">
+<code class="descname">clear_root_frame_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.clear_root_frame_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.compile">
+<code class="descname">compile</code><span class="sig-paren">(</span><em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.compile" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt>
-<code class="descname">__module__</code><em class="property"> = 'mmSolver._api.solverbasic'</em></dt>
+<dt id="mmSolver.api.SolverStandard.__module__">
+<code class="descname">__module__</code><em class="property"> = 'mmSolver._api.solverstandard'</em><a class="headerlink" href="#mmSolver.api.SolverStandard.__module__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

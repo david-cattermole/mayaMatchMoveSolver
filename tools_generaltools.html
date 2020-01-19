@@ -74,8 +74,9 @@ selected transform node.</p>
 transform node.</li>
 </ul>
 </li>
-<li>Use the Pan/Zoom tool (default hotkey is &#8216;&#8217; key), to zoom in and
-out. Play the Maya file and use the centered view as needed.</li>
+<li>Use the Pan/Zoom tool (default hotkey is backslash (&#8216; \ &#8216;) key),
+to zoom in and out. Play the Maya file and use the centered view as
+needed.</li>
 </ol>
 <p>Usage (to <em>remove</em> centering effect):</p>
 <ol class="arabic simple">
@@ -83,21 +84,23 @@ out. Play the Maya file and use the centered view as needed.</li>
 <li>The active viewport will no longer center on an object, but will
 not reset the view.</li>
 <li>The pan/zoom will still be active. To reset the viewport camera,
-turn off Pan/Zoom on the viewport camera (default hotkey is &#8216;&#8217;
-key).</li>
+turn off Pan/Zoom on the viewport camera (default hotkey is
+backslash (&#8216; \ &#8216;) key).</li>
 </ul>
 </li>
 </ol>
-<p>Run this Python command:</p>
+<p>To run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.centertwodee.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 
 <span class="c1"># Apply Centering onto active camera</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
-
-<span class="c1"># Remove Centering from active camera</span>
-<span class="n">tool</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
 </pre></div>
 </div>
+<dl class="docutils">
+<dt>v</dt>
+<dd># Remove Centering from active camera
+tool.remove()</dd>
+</dl>
 </div>
 <div class="section" id="smooth-keyframes">
 <h2>Smooth Keyframes<a class="headerlink" href="#smooth-keyframes" title="Permalink to this headline">¶</a></h2>
@@ -109,7 +112,7 @@ a UI to change the affect of the Smoothing function.</p>
 <li>Run &#8216;Smooth Selected Keyframes&#8217; tool.</li>
 <li>Keyframe values will be smoothed.</li>
 </ol>
-<p>Run this Python command:</p>
+<p>To run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.smoothkeyframes.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 
 <span class="c1"># Smooth the selected Keyframes</span>
@@ -137,8 +140,69 @@ screen X/Y or screen depth.</p>
 <li>Run tool.</li>
 <li>A new locator is created under the active camera</li>
 </ol>
-<p>Run this Python command:</p>
+<p>To run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenspacetransform.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-screen-space-motion-trail">
+<h2>Create Screen-Space Motion Trail<a class="headerlink" href="#create-screen-space-motion-trail" title="Permalink to this headline">¶</a></h2>
+<p>The Screen-Space Motion Trail tool creates a non-editable curve that
+shows the screen-space position of a transform across multiple frames.</p>
+<p>With default options the tool can be used to visualise the shutter
+time of a Marker (or any other transform), assuming a shutter angle of
+180 degrees (half a frame).</p>
+<p>The user may change the default options after the motion trail is
+created by selecting the Motion Trail node under the camera and
+editing the attributes in the Channel Box.</p>
+<p>Beware of small <cite>increment</cite> values, and large frame ranges. These will
+cause slow-downs in the playback of the Maya scene.</p>
+<table border="1" class="colwidths-auto docutils" id="id1">
+<caption><span class="caption-text">Motion Trail Attributes</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Attribute</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Use Frame Range</td>
+<td>On/Off</td>
+<td>Use the frame range, or the pre/post-frame values.</td>
+</tr>
+<tr class="row-odd"><td>Pre-Frame</td>
+<td>Number</td>
+<td>The number of frames to display before the current frame.</td>
+</tr>
+<tr class="row-even"><td>Post-Frame</td>
+<td>Number</td>
+<td>The number of frames to display after the current frame.</td>
+</tr>
+<tr class="row-odd"><td>Frame Range Start</td>
+<td>Number</td>
+<td>The starting frame number, if Use Frame Range is on.</td>
+</tr>
+<tr class="row-even"><td>Frame Range Start</td>
+<td>Number</td>
+<td>The ending frame number, if Use Frame Range is on.</td>
+</tr>
+<tr class="row-odd"><td>Increment</td>
+<td>Number</td>
+<td>The increment for each sample of the motion trail.</td>
+</tr>
+</tbody>
+</table>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select transform nodes.</li>
+<li>Activate viewport.</li>
+<li>Run tool.</li>
+<li>A temporary null is created (required for the tool to work), and a
+motion trail parented under the camera is created.</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenspacemotiontrail.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -159,7 +223,7 @@ change the sensitivity.</li>
 <li>Select an Attribute in the Channel Box.</li>
 <li>Middle-mouse drag in the viewport to change the attribute value.</li>
 </ol>
-<p>Run this Python command:</p>
+<p>To run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.channelsen.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
@@ -177,7 +241,7 @@ file path onto the OS Copy/Paste clipboard.</p>
 <li>Select Camera in Object Browser.</li>
 <li>Right-click and run &#8220;Paste Camera (MM Solver)...&#8221;.</li>
 </ol>
-<p>Run this Python command:</p>
+<p>To run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.copypastecamera.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
@@ -198,7 +262,7 @@ Markers will named <code class="docutils literal"><span class="pre">marker</span
 </ul>
 </li>
 </ol>
-<p>Run this Python command:</p>
+<p>To run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.markerbundlerename.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
@@ -218,7 +282,7 @@ not found, the Marker/Bundle is not renamed.</li>
 </ul>
 </li>
 </ol>
-<p>Run this Python command:</p>
+<p>To run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.markerbundlerenamewithmetadata.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
@@ -243,7 +307,7 @@ keyframes.</li>
 </ul>
 </li>
 </ol>
-<p>Run this Python command:</p>
+<p>To run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">reparent_under_node</span><span class="p">()</span>
 </pre></div>
@@ -267,7 +331,7 @@ parented under any node).</li>
 </ul>
 </li>
 </ol>
-<p>Run this Python command:</p>
+<p>To run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">unparent_to_world</span><span class="p">()</span>
 </pre></div>
@@ -292,7 +356,7 @@ keyed, and the Controller is deleted.</li>
 </ul>
 </li>
 </ol>
-<p>Run this Python command:</p>
+<p>To run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createcontroller.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 
 <span class="c1"># Create a Controller</span>
@@ -317,6 +381,7 @@ keyed, and the Controller is deleted.</li>
 <li><a class="reference internal" href="#center-2d-on-selection">Center 2D On Selection</a></li>
 <li><a class="reference internal" href="#smooth-keyframes">Smooth Keyframes</a></li>
 <li><a class="reference internal" href="#screen-space-transform">Screen-Space Transform</a></li>
+<li><a class="reference internal" href="#create-screen-space-motion-trail">Create Screen-Space Motion Trail</a></li>
 <li><a class="reference internal" href="#channel-sensitivity">Channel Sensitivity</a></li>
 <li><a class="reference internal" href="#copy-camera-to-clipboard">Copy Camera to Clipboard</a></li>
 <li><a class="reference internal" href="#marker-bundle-rename">Marker Bundle Rename</a></li>

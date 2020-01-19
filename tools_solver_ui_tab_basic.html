@@ -62,9 +62,43 @@
 <a class="reference internal image-reference" href="_images/tools_solver_ui_solver_tab_basic.png"><img alt="Solver Basic Tab" src="_images/tools_solver_ui_solver_tab_basic.png" style="width: 80%;" /></a>
 <p class="caption"><span class="caption-text">Solver Basic Tab</span></p>
 </div>
-<div class="section" id="strategy">
-<h2>Strategy<a class="headerlink" href="#strategy" title="Permalink to this headline">¶</a></h2>
-<p>Text.</p>
+<p>The Basic solver tab contains a stripped-down solver with minimal
+options designed for simple per-frame animated attribute solving.</p>
+<div class="section" id="frames">
+<h2>Frames<a class="headerlink" href="#frames" title="Permalink to this headline">¶</a></h2>
+<p>The Frames option defines the list of frames to be solved.</p>
+<p>Choose one of the options:</p>
+<table border="1" class="colwidths-auto docutils" id="id2">
+<caption><span class="caption-text">Frames</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Current Frame</td>
+<td>Use the current Maya frame number to solve.</td>
+</tr>
+<tr class="row-odd"><td>Timeline (Inner)</td>
+<td>Use the frame range of the timeline inner bar.</td>
+</tr>
+<tr class="row-even"><td>Timeline (Outer)</td>
+<td>Use the frame range of the timeline outer bar.</td>
+</tr>
+<tr class="row-odd"><td>Custom Frames</td>
+<td>Manually type the frame numbers to be solved.</td>
+</tr>
+</tbody>
+</table>
+<p>The frame numbers can be entered as &#8216;#-#&#8217; to define a range, or
+&#8216;#,#,#,#&#8217; to define a list of individual frame numbers. Examples are
+&#8216;1,10,20,30,40,50&#8217; or &#8216;10-20,30,40-50&#8217;.</p>
+<p>The &#8216;by # frames&#8217; option allow skipping the every # frames. For
+example, with a value of &#8216;by 2 frames&#8217;, the every second frame is
+chosen; 1, 3, 5, 7, 9, etc. Using this tool can speed up solving a
+limited number of frames to build confidence in the solver attributes
+currently created, and then reducing this number to &#8216;1&#8217; to solve each
+frame.</p>
 </div>
 </div>
 
@@ -77,7 +111,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Basic Solver Tab</a><ul>
-<li><a class="reference internal" href="#strategy">Strategy</a></li>
+<li><a class="reference internal" href="#frames">Frames</a></li>
 </ul>
 </li>
 </ul>

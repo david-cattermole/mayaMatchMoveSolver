@@ -62,9 +62,62 @@
 <a class="reference internal image-reference" href="_images/tools_solver_ui_solver_tab_standard.png"><img alt="Solver Standard Tab" src="_images/tools_solver_ui_solver_tab_standard.png" style="width: 80%;" /></a>
 <p class="caption"><span class="caption-text">Solver Standard Tab</span></p>
 </div>
-<div class="section" id="strategy">
-<h2>Strategy<a class="headerlink" href="#strategy" title="Permalink to this headline">¶</a></h2>
-<p>Text.</p>
+<p>The Standard solver tab can solve both animated and static attributes.</p>
+<p>When the Standard solver is executed, first the static and animated
+attributes are solved using the &#8216;Root Frames&#8217; option. After the &#8216;Root
+Frames&#8217; are solved, the animated attributes are solved per-frame using
+the &#8216;Frames&#8217; option.</p>
+<p>If &#8216;Frames&#8217; is set to &#8216;Current Frame&#8217;, then both static and animated
+attributes are solved on the current frame. The user must take care to
+ensure it is possible to solve the static attributes using only this
+frame.</p>
+<p>If the &#8216;Solve Only Root Frames&#8217; option is checked, the second solve
+using the Frames is not run, only the Root Frames are solved.</p>
+<p>If &#8216;Solve All At Once&#8217; option is checked, the Root Frames and Frames
+are combined and both static and animated attributes are solved in one
+solve process. Solving many attributes and frames in this way is very
+slow and should be avoided.</p>
+<div class="section" id="frames">
+<h2>Frames<a class="headerlink" href="#frames" title="Permalink to this headline">¶</a></h2>
+<p>The Frames option defines the list of frames to be solved.</p>
+<p>Choose one of the options:</p>
+<table border="1" class="colwidths-auto docutils" id="id2">
+<caption><span class="caption-text">Frames</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Current Frame</td>
+<td>Use the current Maya frame number to solve.</td>
+</tr>
+<tr class="row-odd"><td>Timeline (Inner)</td>
+<td>Use the frame range of the timeline inner bar.</td>
+</tr>
+<tr class="row-even"><td>Timeline (Outer)</td>
+<td>Use the frame range of the timeline outer bar.</td>
+</tr>
+<tr class="row-odd"><td>Custom Frames</td>
+<td>Manually type the frame numbers to be solved.</td>
+</tr>
+</tbody>
+</table>
+<p>The frame numbers can be entered as &#8216;#-#&#8217; to define a range, or
+&#8216;#,#,#,#&#8217; to define a list of individual frame numbers. Examples are
+&#8216;1,10,20,30,40,50&#8217; or &#8216;10-20,30,40-50&#8217;.</p>
+<p>The &#8216;by # frames&#8217; option allow skipping the every # frames. For
+example, with a value of &#8216;by 2 frames&#8217;, the every second frame is
+chosen; 1, 3, 5, 7, 9, etc. Using this tool can speed up solving a
+limited number of frames to build confidence in the solver attributes
+currently created, and then reducing this number to &#8216;1&#8217; to solve each
+frame.</p>
+</div>
+<div class="section" id="root-frames">
+<h2>Root Frames<a class="headerlink" href="#root-frames" title="Permalink to this headline">¶</a></h2>
+<p>The &#8216;Root Frames&#8217; are used to solve static and animated attributes.</p>
+<p>Beside the &#8216;Root Frames&#8217; field are buttons for adding, removing and
+changing the current frame to the next/previous root frame.</p>
 </div>
 </div>
 
@@ -77,7 +130,8 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Standard Solver Tab</a><ul>
-<li><a class="reference internal" href="#strategy">Strategy</a></li>
+<li><a class="reference internal" href="#frames">Frames</a></li>
+<li><a class="reference internal" href="#root-frames">Root Frames</a></li>
 </ul>
 </li>
 </ul>

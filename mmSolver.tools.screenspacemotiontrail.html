@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mmSolver.tools.screenspacemotiontrail &#8212; mayaMatchMoveSolver master documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'master',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.tools.screenspacetransform" href="mmSolver.tools.screenspacetransform.html" />
+    <link rel="prev" title="mmSolver.tools.reprojectbundle" href="mmSolver.tools.reprojectbundle.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.screenspacetransform.html" title="mmSolver.tools.screenspacetransform"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.reprojectbundle.html" title="mmSolver.tools.reprojectbundle"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-mmSolver.tools.screenspacemotiontrail">
+<span id="mmsolver-tools-screenspacemotiontrail"></span><h1>mmSolver.tools.screenspacemotiontrail<a class="headerlink" href="#module-mmSolver.tools.screenspacemotiontrail" title="Permalink to this headline">¶</a></h1>
+<p>Create a Screen-space motion trail visualisation.</p>
+<div class="section" id="module-mmSolver.tools.screenspacemotiontrail.tool">
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.screenspacemotiontrail.tool" title="Permalink to this headline">¶</a></h2>
+<p>Create a screen-space motion trail, for the selected transform nodes.</p>
+<dl class="function">
+<dt id="mmSolver.tools.screenspacemotiontrail.tool.main">
+<code class="descclassname">mmSolver.tools.screenspacemotiontrail.tool.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.screenspacemotiontrail.tool.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a screen-space motion trail, for the selected objects,
+though the active viewport&#8217;s camera.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.tools.screenspacemotiontrail.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.screenspacemotiontrail.lib" title="Permalink to this headline">¶</a></h2>
+<p>Functions to help create a screen-space motion trail.</p>
+<dl class="function">
+<dt id="mmSolver.tools.screenspacemotiontrail.lib.create_motion_trail_setup">
+<code class="descclassname">mmSolver.tools.screenspacemotiontrail.lib.</code><code class="descname">create_motion_trail_setup</code><span class="sig-paren">(</span><em>node_tfm</em>, <em>trail_handle_grp</em>, <em>name</em>, <em>use_frame_range</em>, <em>start_frame</em>, <em>end_frame</em>, <em>pre_frame</em>, <em>post_frame</em>, <em>increment</em>, <em>update_mode</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.screenspacemotiontrail.lib.create_motion_trail_setup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.screenspacemotiontrail.lib.create_screen_space_motion_trail">
+<code class="descclassname">mmSolver.tools.screenspacemotiontrail.lib.</code><code class="descname">create_screen_space_motion_trail</code><span class="sig-paren">(</span><em>cam</em>, <em>tfm</em>, <em>name=None</em>, <em>use_frame_range=None</em>, <em>pre_frame=None</em>, <em>post_frame=None</em>, <em>start_frame=None</em>, <em>end_frame=None</em>, <em>increment=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.screenspacemotiontrail.lib.create_screen_space_motion_trail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Screen-Space Maya Locator that may be solved in Screen XYZ.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.tools.screenspacemotiontrail.constant">
+<span id="constant"></span><h2>Constant<a class="headerlink" href="#module-mmSolver.tools.screenspacemotiontrail.constant" title="Permalink to this headline">¶</a></h2>
+<p>Constant values for screen-space motion trail tool.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.screenspacemotiontrail</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.screenspacemotiontrail.tool">Tool</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.screenspacemotiontrail.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.screenspacemotiontrail.constant">Constant</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.tools.reprojectbundle.html"
+                        title="previous chapter">mmSolver.tools.reprojectbundle</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.tools.screenspacetransform.html"
+                        title="next chapter">mmSolver.tools.screenspacetransform</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.screenspacemotiontrail.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.screenspacetransform.html" title="mmSolver.tools.screenspacetransform"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.reprojectbundle.html" title="mmSolver.tools.reprojectbundle"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+    </div>
+  </body>
+</html>

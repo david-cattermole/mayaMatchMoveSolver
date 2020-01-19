@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""
-Convert a 3D transform into a screen-space transform.
-"""
+"""Constant values for screen-space motion trail tool. """
+
+TEMP_OBJECT_NAME = 'MOTION_PATH_NULLS'
+MOTION_PATH_GROUP_NAME = 'motionPathGroup'

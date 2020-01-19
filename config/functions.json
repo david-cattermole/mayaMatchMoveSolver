@@ -347,6 +347,15 @@
                 "mmSolver.tools.smoothkeyframes.tool.smooth_selected_keyframes();"
             ]
         },
+        "create_screen_space_motion_trail": {
+            "name": "Create Screen-Space Motion Trail",
+            "name_shelf": "ScrnMT",
+            "tooltip": "Create a Screen-Space Motion Trail on selected objects.",
+            "command": [
+                "import mmSolver.tools.screenspacemotiontrail.tool;",
+                "mmSolver.tools.screenspacemotiontrail.tool.main();"
+            ]
+        },
         "show_deviation_curves": {
             "name": "Show Deviation Curves",
             "name_shelf": "ShwDev",

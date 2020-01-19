@@ -48,6 +48,7 @@
             "general_tools/smooth_keyframes_ui",
             "general_tools/screen_z_transform_bake",
             "general_tools/channel_sensitivity_ui",
+            "general_tools/create_screen_space_motion_trail",
             "general_tools/---Naming",
             "general_tools/marker_bundle_rename",
             "general_tools/marker_bundle_rename_with_metadata",

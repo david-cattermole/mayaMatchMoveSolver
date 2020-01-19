@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -207,7 +207,6 @@ def _get_node_parent_map(nodes):
 
 
 def create(nodes,
-           sparse=True,
            current_frame=None,
            eval_mode=None):
     """
@@ -215,9 +214,6 @@ def create(nodes,
 
     :param nodes: The nodes to create Controller for.
     :type nodes: [str, ..]
-
-    :param sparse:
-    :type sparse: bool
 
     :param current_frame: What frame number is considered to be
                           'current' when evaluating transforms without
@@ -230,11 +226,8 @@ def create(nodes,
     :returns: List of controller transform nodes.
     :rtype: [str, ..]
     """
-    # LOG.warn('create: nodes=%r sparse=%r current_frame=%r eval_mode=%r',
-    #          nodes, sparse, current_frame, eval_mode)
     if current_frame is None:
         current_frame = maya.cmds.currentTime(query=True)
-    # LOG.warn('current_frame=%r', current_frame)
     assert current_frame is not None
     sparse = False
 
@@ -247,7 +240,6 @@ def create(nodes,
     keyable_attrs = set()
     for node in nodes:
         keyable_attrs |= _get_keyable_attrs(node, const.TFM_ATTRS)
-    # LOG.warn('keyable_attrs=%s', pprint.pformat(keyable_attrs))
 
     # Query keyframe times on each node attribute
     start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
@@ -261,24 +253,17 @@ def create(nodes,
         nodes,
         const.TFM_ATTRS
     )
-    # LOG.warn('key_times_map=%s', pprint.pformat(key_times_map))
-    # LOG.warn('fallback_frame_range=%s', pprint.pformat(fallback_frame_range))
-    # LOG.warn('fallback_times=%s', pprint.pformat(fallback_times))
 
     # Query the transform matrix for the nodes
     cache = tfm_utils.TransformMatrixCache()
-    # LOG.warn('tfm_nodes=%r', tfm_nodes)
     for tfm_node in tfm_nodes:
         node = tfm_node.get_node()
-        # times = keytime_obj.get_times(node, sparse) or fallback_times
         times = key_times_map.get(node, [current_frame])
         cache.add_node(tfm_node, times)
     cache.process(eval_mode=eval_mode)
 
     depth_to_tfm_node_map = _sort_hierarchy_depth_to_tfm_nodes(tfm_nodes)
     nodes_parent = _get_node_parent_map(nodes)
-    # LOG.warn('nodes_parent=%s', pprint.pformat(nodes_parent))
-    # LOG.warn('depth_to_tfm_node_map=%s', pprint.pformat(depth_to_tfm_node_map))
 
     # Create new (locator) node for each input node
     ctrl_list = []
@@ -309,16 +294,12 @@ def create(nodes,
             node_to_ctrl_map[node] = tfm
     ctrl_tfm_nodes = [tfm_utils.TransformNode(node=tfm)
                       for tfm in ctrl_list]
-    # LOG.warn('node_to_ctrl_map=%s', pprint.pformat(node_to_ctrl_map))
-    # LOG.warn('ctrl_tfm_nodes=%s', pprint.pformat(ctrl_tfm_nodes))
 
     # Set transform matrix on new node
     anim_curves = []
     for src, dst in zip(tfm_nodes, ctrl_tfm_nodes):
         src_node = src.get_node()
-        # times = keytime_obj.get_times(src_node, sparse) or fallback_times
         src_times = key_times_map.get(src_node, [current_frame])
-        # LOG.warn('src_times=%r', src_times)
         assert len(src_times) > 0
         tfm_utils.set_transform_values(
             cache,
@@ -326,20 +307,20 @@ def create(nodes,
             src, dst,
             delete_static_anim_curves=False
         )
-        if sparse is True:
-            # Remove keyframes
-            src_times = keytime_obj.get_times(src_node, sparse) or []
-            dst_node = dst.get_node()
-            if len(src_times) == 0:
-                time_range = keytime_obj.get_frame_range_for_node(src_node)
-                assert time_range[0] is not None
-                assert time_range[1] is not None
-                maya.cmds.cutKey(
-                    dst_node,
-                    attribute=const.TFM_ATTRS,
-                    time=time_range,
-                    clear=True
-                )
+        # if sparse is True:
+        #     # Remove keyframes
+        #     src_times = keytime_obj.get_times(src_node, sparse) or []
+        #     dst_node = dst.get_node()
+        #     if len(src_times) == 0:
+        #         time_range = keytime_obj.get_frame_range_for_node(src_node)
+        #         assert time_range[0] is not None
+        #         assert time_range[1] is not None
+        #         maya.cmds.cutKey(
+        #             dst_node,
+        #             attribute=const.TFM_ATTRS,
+        #             time=time_range,
+        #             clear=True
+        #         )
         src_had_keys = key_times_map.get(src_node) is not None
         if src_had_keys is True:
             continue
@@ -352,7 +333,6 @@ def create(nodes,
         )
     anim_curves = [n for n in anim_curves
                    if node_utils.node_is_referenced(n) is False]
-    # LOG.warn('anim_curves=%s', pprint.pformat(anim_curves))
     if len(anim_curves) > 0:
         maya.cmds.delete(anim_curves)
 
@@ -378,7 +358,6 @@ def create(nodes,
 
 
 def remove(nodes,
-           sparse=True,
            current_frame=None,
            eval_mode=None):
     """
@@ -393,9 +372,6 @@ def remove(nodes,
     :param nodes: The nodes to delete.
     :type nodes: [str, ..]
 
-    :param sparse:
-    :type sparse: bool
-
     :param current_frame: What frame number is considered to be
                           'current' when evaluating transforms without
                           any keyframes.
@@ -408,8 +384,6 @@ def remove(nodes,
               longer controlled.
     :rtype: [str, ..]
     """
-    # LOG.warn('remove: nodes=%r sparse=%r current_frame=%r eval_mode=%r',
-    #          nodes, sparse, current_frame, eval_mode)
     if current_frame is None:
         current_frame = maya.cmds.currentTime(query=True)
     assert current_frame is not None
@@ -455,7 +429,6 @@ def remove(nodes,
     cache = tfm_utils.TransformMatrixCache()
     for src_node, (constraints, dst_nodes) in ctrl_to_ctrlled_map.items():
         times = key_times_map.get(src_node, [current_frame])
-        # LOG.info('add node times=%r', times)
         assert len(times) > 0
         ctrl = tfm_utils.TransformNode(node=src_node)
         cache.add_node(ctrl, times)
@@ -480,7 +453,6 @@ def remove(nodes,
 
     # Set keyframes (per-frame) on controlled nodes
     for ctrl_node, (_, ctrlled_nodes) in ctrl_to_ctrlled_map.items():
-        # times = keytime_obj.get_times(ctrl_node, sparse) or fallback_times
         times = key_times_map.get(ctrl_node, [current_frame])
         ctrl = tfm_utils.TransformNode(node=ctrl_node)
         for ctrlled_node in ctrlled_nodes:

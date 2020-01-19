@@ -453,12 +453,10 @@ class TransformMatrixCache(object):
         for uuid, attr_name, plug_name in process_list:
             if 'matrix' in attr_name.lower():
                 matrix = maya.cmds.getAttr(plug_name)
-                # LOG.warn("matrix: %r = %r", plug_name, matrix)
                 matrix = OpenMaya2.MMatrix(matrix)
                 self._data[uuid][attr_name][t] = matrix
             elif 'rotatepivot' in attr_name.lower():
                 value = maya.cmds.getAttr(plug_name)
-                # LOG.warn("pivot: %r = %r", plug_name, value)
                 self._data[uuid][attr_name][t] = value
             else:
                 msg = 'Attribute name is not supported; attr_name=%r'
@@ -492,7 +490,6 @@ class TransformMatrixCache(object):
         if eval_mode is None:
             eval_mode = const.EVAL_MODE_DEFAULT
         assert eval_mode in const.EVAL_MODE_LIST
-        # LOG.warn("eval_mode: %r", eval_mode)
 
         current_frame = maya.cmds.currentTime(query=True)
         times, map_uuid_to_node = self.__get_times_and_nodes()
@@ -614,7 +611,6 @@ def get_transform_matrix_list(tfm_matrix_cache,
     src_node_uuid = src_tfm_node.get_node_uuid()
     src_node_attrs = tfm_matrix_cache.get_attrs_for_node(src_node_uuid)
     with_pivot = len(src_node_attrs) > 1
-    # LOG.warn("with_pivot: %r", with_pivot)
     world_mat_list = []
     if with_pivot is False:
         world_mat_list = tfm_matrix_cache.get_node_attr(
@@ -687,7 +683,6 @@ def get_transform_matrix_list(tfm_matrix_cache,
     # Get transform
     matrix_list = []
     for t, world_mat in zip(times, world_mat_list):
-        # LOG.info('get transform time=%r world_mat=%r', t, world_mat)
         assert world_mat is not None
         par_inv_mat = None
         if True:
@@ -701,11 +696,7 @@ def get_transform_matrix_list(tfm_matrix_cache,
                 parent_inv_matrix_plug,
                 ctx
             )
-        # LOG.info('par_inv_mat=%r', par_inv_mat)
-        local_mat = world_mat
-        # local_mat = world_mat * par_inv_mat
-        # local_mat = par_inv_mat * world_mat
-        local_mat = OpenMaya2.MTransformationMatrix(local_mat)
+        local_mat = OpenMaya2.MTransformationMatrix(world_mat)
         local_mat.reorderRotation(rotate_order)
         matrix_list.append(local_mat)
 
@@ -850,7 +841,6 @@ def set_transform_values(tfm_matrix_cache,
     dst_node = dst_tfm_node.get_node()
     prv_rot = None
     for t, world_mat in zip(times, world_mat_list):
-        # LOG.warn('set_transform t=%r world_mat=%r', t, world_mat.asMatrix())
         assert t is not None
         assert world_mat is not None
 
@@ -899,8 +889,6 @@ def set_transform_values(tfm_matrix_cache,
         values = trans + rot + scl
         assert len(attrs) == len(values)
         for attr, v in zip(attrs, values):
-            # LOG.warn('key; node=%r attr=%r time=%r value=%r',
-            #          dst_node, attr, t, v)
             maya.cmds.setKeyframe(dst_node, attribute=attr, time=t, value=v)
 
     if delete_static_anim_curves is True:

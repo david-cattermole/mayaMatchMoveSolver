@@ -49,12 +49,12 @@ def create():
     Create a controller for selected nodes.
     """
     nodes = maya.cmds.ls(selection=True, long=True) or []
-    ctrls = lib.create(nodes, sparse=True)
+    ctrls = lib.create(nodes)
     if len(ctrls) > 0:
         maya.cmds.select(ctrls, replace=True)
     # Trigger Maya to refresh.
     frame = maya.cmds.currentTime(query=True)
-    maya.cmds.currentTime(frame, update=True)
+    maya.cmds.currentTime(frame, edit=True, update=True)
     maya.cmds.refresh(currentView=True, force=False)
     return
 
@@ -69,6 +69,6 @@ def remove():
         maya.cmds.select(orig_nodes, replace=True)
     # Trigger Maya to refresh.
     frame = maya.cmds.currentTime(query=True)
-    maya.cmds.currentTime(frame, update=True)
+    maya.cmds.currentTime(frame, edit=True, update=True)
     maya.cmds.refresh(currentView=True, force=False)
     return

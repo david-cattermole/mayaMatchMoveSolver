@@ -41,7 +41,13 @@ Ideas::
 
 import maya.cmds
 
+import mmSolver.logger
+
+import mmSolver.utils.viewport as viewport
 import mmSolver.tools.createcontroller.lib as lib
+
+
+LOG = mmSolver.logger.get_logger()
 
 
 def create():
@@ -49,11 +55,15 @@ def create():
     Create a controller for selected nodes.
     """
     nodes = maya.cmds.ls(selection=True, long=True) or []
-    ctrls = lib.create(nodes)
-    if len(ctrls) > 0:
-        maya.cmds.select(ctrls, replace=True)
-    # Trigger Maya to refresh.
     frame = maya.cmds.currentTime(query=True)
+    try:
+        viewport.viewport_turn_off()
+        ctrls = lib.create(nodes)
+        if len(ctrls) > 0:
+            maya.cmds.select(ctrls, replace=True)
+    finally:
+        viewport.viewport_turn_on()
+    # Trigger Maya to refresh.
     maya.cmds.currentTime(frame, edit=True, update=True)
     maya.cmds.refresh(currentView=True, force=False)
     return
@@ -64,11 +74,15 @@ def remove():
     Remove selected controllers and bake data on controlled nodes.
     """
     nodes = maya.cmds.ls(selection=True, long=True) or []
-    orig_nodes = lib.remove(nodes)
-    if len(orig_nodes) > 0:
-        maya.cmds.select(orig_nodes, replace=True)
-    # Trigger Maya to refresh.
     frame = maya.cmds.currentTime(query=True)
+    try:
+        viewport.viewport_turn_off()
+        orig_nodes = lib.remove(nodes)
+        if len(orig_nodes) > 0:
+            maya.cmds.select(orig_nodes, replace=True)
+    finally:
+        viewport.viewport_turn_on()
+    # Trigger Maya to refresh.
     maya.cmds.currentTime(frame, edit=True, update=True)
     maya.cmds.refresh(currentView=True, force=False)
     return

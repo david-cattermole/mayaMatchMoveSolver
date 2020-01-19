@@ -443,36 +443,36 @@ class TransformMatrixCache(object):
                 d2 = map_uuid_to_node.get(uuid, dict())
                 plug = d2.get(attr_name, dict())
                 plug_name = plug.name()
-                data.append((uuid, attr_name, plug_name))
+                data.append((uuid, attr_name, plug, plug_name))
         return data
 
-    def __process_with_getattr(self, map_uuid_to_node, t):
+    def __process_with_getattr(self, map_uuid_to_node, time):
         """Process the TransformMatrixCache, with getAttr functions."""
-        maya.cmds.currentTime(t, update=True)
+        maya.cmds.currentTime(time, update=True)
         process_list = self.__get_process_list(map_uuid_to_node)
-        for uuid, attr_name, plug_name in process_list:
+        for uuid, attr_name, plug, plug_name in process_list:
             if 'matrix' in attr_name.lower():
                 matrix = maya.cmds.getAttr(plug_name)
                 matrix = OpenMaya2.MMatrix(matrix)
-                self._data[uuid][attr_name][t] = matrix
+                self._data[uuid][attr_name][time] = matrix
             elif 'rotatepivot' in attr_name.lower():
                 value = maya.cmds.getAttr(plug_name)
-                self._data[uuid][attr_name][t] = value
+                self._data[uuid][attr_name][time] = value
             else:
                 msg = 'Attribute name is not supported; attr_name=%r'
                 raise ValueError(msg % attr_name)
         return
 
-    def __process_with_api(self, map_uuid_to_node, ctx):
+    def __process_with_api(self, map_uuid_to_node, time, ctx):
         """Process the TransformMatrixCache, with API functions. """
         process_list = self.__get_process_list(map_uuid_to_node)
-        for uuid, attr_name, plug_name in process_list:
+        for uuid, attr_name, plug, plug_name in process_list:
             if 'matrix' in attr_name.lower():
                 matrix = get_matrix_from_plug_apitwo(plug, ctx)
-                self._data[uuid][attr_name][t] = matrix
+                self._data[uuid][attr_name][time] = matrix
             elif 'rotatepivot' in attr_name.lower():
                 value = get_double_from_plug_apitwo(plug, ctx)
-                self._data[uuid][attr_name][t] = value
+                self._data[uuid][attr_name][time] = value
             else:
                 msg = 'Attribute name is not supported; attr_name=%r'
                 raise ValueError(msg % attr_name)
@@ -501,7 +501,7 @@ class TransformMatrixCache(object):
         elif eval_mode == const.EVAL_MODE_API_DG_CONTEXT:
             for t in times:
                 ctx = create_dg_context_apitwo(t)
-                self.__process_with_api(map_uuid_to_node, ctx)
+                self.__process_with_api(map_uuid_to_node, t, ctx)
         else:
             msg = 'eval_mode does not have a valid value'
             raise ValueError(msg % eval_mode)

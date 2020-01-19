@@ -1,4 +1,4 @@
-# Copyright (C) 2018 David Cattermole.
+# Copyright (C) 2018, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -22,6 +22,7 @@ The Load Marker tool - user facing.
 import os
 import os.path
 import pprint
+import math
 
 import maya.cmds
 
@@ -31,6 +32,7 @@ import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.camera as camera_utils
 import mmSolver.tools.loadmarker.lib.formatmanager as formatmanager
 import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
+import mmSolver.tools.loadmarker.lib.interface as interface
 import mmSolver.api as mmapi
 
 
@@ -239,6 +241,7 @@ def get_file_info_strings(file_path):
         'lens_dist': '?',
         'lens_undist': '?',
         'positions': '?',
+        'has_camera_fov': '?',
     }
     file_info, mkr_data_list = mayareadfile.read(file_path)
     if isinstance(mkr_data_list, list) is False:
@@ -274,6 +277,7 @@ def get_file_info_strings(file_path):
     info['lens_dist'] = file_info.marker_distorted
     info['lens_undist'] = file_info.marker_undistorted
     info['positions'] = file_info.bundle_positions
+    info['has_camera_fov'] = bool(file_info.camera_field_of_view)
     return info
 
 
@@ -356,6 +360,7 @@ def create_new_marker_group(cam):
     :returns: MarkerGroup object.
     :rtype: MarkerGroup
     """
+    assert isinstance(cam, mmapi.Camera)
     mkr_grp = mmapi.MarkerGroup().create_node(cam=cam)
     return mkr_grp
 

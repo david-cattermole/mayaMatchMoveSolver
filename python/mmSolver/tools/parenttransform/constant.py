@@ -16,5 +16,22 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Convert a 3D transform into a screen-space transform.
+Constant values for the parent transforms tool.
 """
+
+TRANSLATE_ATTRS = [
+    'translateX', 'translateY', 'translateZ'
+]
+
+ROTATE_ATTRS = [
+    'rotateX', 'rotateY', 'rotateZ'
+]
+
+SCALE_ATTRS = [
+    'scaleX', 'scaleY', 'scaleZ'
+]
+
+TFM_ATTRS = []
+TFM_ATTRS += TRANSLATE_ATTRS
+TFM_ATTRS += ROTATE_ATTRS
+TFM_ATTRS += SCALE_ATTRS

@@ -25,6 +25,8 @@ import maya.cmds
 
 import mmSolver.logger
 
+import mmSolver.utils.node as node_utils
+
 LOG = mmSolver.logger.get_logger()
 
 FrameRange = collections.namedtuple(
@@ -57,3 +59,38 @@ def get_maya_timeline_range_outer():
     e = maya.cmds.playbackOptions(query=True, animationEndTime=True)
     frmrange = FrameRange(int(s), int(e))
     return frmrange
+
+
+def get_keyframe_times_for_node_attrs(nodes, attrs):
+    """
+    Query keyframe times on each node attribute (sparse keys)
+
+    :param nodes: Nodes to query from.
+    :type nodes: [str, ..]
+
+    :param attrs: Attributes to query keyframes from.
+    :type attrs: [str, ..]
+
+    :returns: {str: [int, ..]}
+    """
+    key_times_map = collections.defaultdict(set)
+    for node in nodes:
+        for attr in attrs:
+            plug = node + '.' + attr
+            attr_exists = node_utils.attribute_exists(attr, node)
+            if attr_exists is False:
+                continue
+            settable = maya.cmds.getAttr(plug, settable=True)
+            if settable is False:
+                continue
+            times = maya.cmds.keyframe(
+                plug,
+                query=True,
+                timeChange=True
+            ) or []
+            if len(times) == 0:
+                continue
+            times = [int(t) for t in times]
+            key_times_map[node] |= set(times)
+    key_times_map = {k: list(v) for k, v in key_times_map.items()}
+    return key_times_map

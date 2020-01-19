@@ -33,6 +33,8 @@ def get_camera_direction_to_point(camera_node, point_node):
     """
     Get the direction of the camera toward a given point.
 
+    The direction vector is normalised.
+
     :param camera_node: Camera transform node.
     :type camera_node: str
 

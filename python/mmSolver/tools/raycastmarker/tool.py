@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Anil Reddy.
+# Copyright (C) 2019, 2020, Anil Reddy, David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -21,6 +21,7 @@ This is a Ray cast Markers tool.
 
 import maya.cmds
 import maya.OpenMaya
+import mmSolver.utils.node as node_utils
 import mmSolver.utils.raytrace as raytrace_utils
 import mmSolver.utils.reproject as reproject_utils
 import mmSolver.api as mmapi
@@ -30,12 +31,39 @@ import mmSolver.logger
 LOG = mmSolver.logger.get_logger()
 
 
-def main():
-    """
-    Ray casts selected markers bundles on mesh from the associated camera.
+def _node_is_visible(node, cache):
+    visible = cache.get(node)
+    if visible is not None:
+        return visible
+    intermed = maya.cmds.getAttr(node + '.intermediateObject')
+    vis = maya.cmds.getAttr(node + '.visibility')
+    lod_vis = maya.cmds.getAttr(node + '.lodVisibility')
+    return (intermed is False) and (vis is True) and (lod_vis is True)
 
-    Select markers and mesh objects to ray cast on, if not mesh
-    objects tool will ray cast on all visible mesh objects.
+
+def _visible(node, cache):
+    visible = _node_is_visible(node, cache)
+    cache[node] = visible
+    if visible is False:
+        return False
+    # Note: We assume the node paths from 'get_node_parents' will
+    # always be full paths.
+    parents = node_utils.get_node_parents(node)
+    for parent in parents:
+        visible = _node_is_visible(parent, cache)
+        cache[parent] = visible
+        if visible is False:
+            return False
+    return True
+
+
+def main():
+    """Ray-casts each bundle connected to the selected markers on to the
+    mesh from the associated camera.
+
+    Select markers and mesh objects to ray-cast on to, if no mesh
+    objects are selected the tool will ray-cast on to all visible mesh
+    objects.
 
     If a bundle translate attribute is locked, it will be
     unlocked, then projected, and then the lock state will
@@ -45,6 +73,7 @@ def main():
 
         >>> import mmSolver.tools.raycastmarker.tool as tool
         >>> tool.main()
+
     """
     selection = maya.cmds.ls(selection=True) or []
     if not selection:
@@ -65,7 +94,9 @@ def main():
     if len(selected_meshes) > 0:
         meshes = selected_meshes
     else:
-        meshes = maya.cmds.ls(type='mesh', visible=True) or []
+        meshes = maya.cmds.ls(type='mesh', visible=True, long=True) or []
+        cache = {}
+        meshes = [n for n in meshes if _visible(n, cache)]
 
     max_dist = 9999999999.0
     bnd_nodes = []
@@ -76,8 +107,10 @@ def main():
             continue
         mkr_node = mkr.get_node()
         camera = mkr.get_camera()
-        camera = camera.get_transform_node()
-        direction = reproject_utils.get_camera_direction_to_point(camera, mkr_node)
+        cam_tfm = camera.get_transform_node()
+        direction = reproject_utils.get_camera_direction_to_point(
+            cam_tfm, mkr_node
+        )
         origin_point = maya.cmds.xform(
             mkr_node, query=True,
             translation=True,
@@ -116,7 +149,7 @@ def main():
             value = plug_lock_state.get(plug_name)
             maya.cmds.setAttr(plug_name, lock=value)
         bnd_nodes.append(bnd_node)
-        
+
     if len(bnd_nodes) > 0:
         maya.cmds.select(bnd_nodes)
     else:

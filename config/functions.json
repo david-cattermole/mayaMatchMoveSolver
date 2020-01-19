@@ -347,6 +347,15 @@
                 "mmSolver.tools.smoothkeyframes.tool.smooth_selected_keyframes();"
             ]
         },
+        "create_screen_space_motion_trail": {
+            "name": "Create Screen-Space Motion Trail",
+            "name_shelf": "ScrnMT",
+            "tooltip": "Create a Screen-Space Motion Trail on selected objects.",
+            "command": [
+                "import mmSolver.tools.screenspacemotiontrail.tool;",
+                "mmSolver.tools.screenspacemotiontrail.tool.main();"
+            ]
+        },
         "show_deviation_curves": {
             "name": "Show Deviation Curves",
             "name_shelf": "ShwDev",
@@ -428,6 +437,24 @@
             "command": [
                 "import mmSolver.tools.createcontroller.tool;",
                 "mmSolver.tools.createcontroller.tool.remove();"
+            ]
+        },
+        "parent_transforms": {
+            "name": "Parent Transforms",
+            "name_shelf": "Prnt",
+            "tooltip": "Create Controller for selected nodes.",
+            "command": [
+                "import mmSolver.tools.parenttransform.tool;",
+                "mmSolver.tools.parenttransform.tool.parent();"
+            ]
+        },
+        "unparent_transforms": {
+            "name": "Unparent Transforms",
+            "name_shelf": "UnPrnt",
+            "tooltip": "Unparent the selected nodes to world.",
+            "command": [
+                "import mmSolver.tools.parenttransform.tool;",
+                "mmSolver.tools.parenttransform.tool.unparent();"
             ]
         },
         "deform_marker": {

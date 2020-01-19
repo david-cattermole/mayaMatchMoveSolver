@@ -1,6 +1,6 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Export 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version:  v1.6
+# 3DE4.script.version:  v1.7
 #
 # 3DE4.script.gui:      Main Window::3DE4::File::Export
 # 3DE4.script.gui:      Object Browser::Context Menu Point
@@ -54,6 +54,7 @@ UV_TRACK_FORMAT_VERSION_UNKNOWN = -1
 UV_TRACK_FORMAT_VERSION_1 = 1
 UV_TRACK_FORMAT_VERSION_2 = 2
 UV_TRACK_FORMAT_VERSION_3 = 3
+UV_TRACK_FORMAT_VERSION_4 = 4
 
 UV_TRACK_HEADER_VERSION_2 = {
     'version': UV_TRACK_FORMAT_VERSION_2,
@@ -63,9 +64,13 @@ UV_TRACK_HEADER_VERSION_3 = {
     'version': UV_TRACK_FORMAT_VERSION_3,
 }
 
+UV_TRACK_HEADER_VERSION_4 = {
+    'version': UV_TRACK_FORMAT_VERSION_4,
+}
+
 # Preferred UV Track format version (changes the format
 # version used for writing data).
-UV_TRACK_FORMAT_VERSION_PREFERRED = UV_TRACK_FORMAT_VERSION_3
+UV_TRACK_FORMAT_VERSION_PREFERRED = UV_TRACK_FORMAT_VERSION_4
 
 # Do we have support for new features of 3DE tde4 module?
 SUPPORT_PERSISTENT_ID = 'getPointPersistentID' in dir(tde4)
@@ -120,7 +125,7 @@ def main():
         data_str = generate(
             point_group, camera, points,
             start_frame=start_frame,
-            fmt=UV_TRACK_FORMAT_VERSION_3,
+            fmt=UV_TRACK_FORMAT_VERSION_PREFERRED,
         )
 
         # Write file.
@@ -311,6 +316,8 @@ def generate(point_group, camera, points, fmt=None, **kwargs):
         data = _generate_v2(point_group, camera, points, **kwargs)
     elif fmt == UV_TRACK_FORMAT_VERSION_3:
         data = _generate_v3(point_group, camera, points, **kwargs)
+    elif fmt == UV_TRACK_FORMAT_VERSION_4:
+        data = _generate_v4(point_group, camera, points, **kwargs)
     return data
 
 
@@ -426,9 +433,40 @@ def _generate_v1(point_group, camera, points, start_frame=None, undistort=False)
     return data_str
 
 
-def _generate_v2_and_v3(point_group, camera, points,
-                        version=None,
-                        **kwargs):
+
+def _generate_camera_data(camera, lens, frame0):
+    camera_data = {}
+    cam_num_frames = tde4.getCameraNoFrames(camera)
+
+    img_width = tde4.getCameraImageWidth(camera)
+    img_height = tde4.getCameraImageHeight(camera)
+    camera_data['resolution'] = (img_width, img_height)
+
+    film_back_x = tde4.getLensFBackWidth(lens)
+    film_back_y = tde4.getLensFBackHeight(lens)
+    camera_data['film_back_cm'] = (film_back_x, film_back_y)
+
+    lco_x = tde4.getLensLensCenterX(lens)
+    lco_y = tde4.getLensLensCenterY(lens)
+    camera_data['lens_center_offset_cm'] = (lco_x, lco_y)
+
+    camera_data['per_frame'] = []
+    for frame in range(1, cam_num_frames):
+        # Note: In 3DEqualizer, film back and lens center is assumed
+        # to be static, only focal length can be dynamic.
+        focal_length = tde4.getCameraFocalLength(camera, frame)
+        frame_data = {
+            'frame': frame + frame0,
+            'focal_length_cm': focal_length,
+        }
+        camera_data['per_frame'].append(frame_data)
+
+    return camera_data
+
+
+def _generate_v2_v3_and_v4(point_group, camera, points,
+                           version=None,
+                           **kwargs):
     """
     Generate the UV file format contents, using JSON format.
 
@@ -467,7 +505,8 @@ def _generate_v2_and_v3(point_group, camera, points,
     assert isinstance(points, (list, tuple))
     assert isinstance(version, (int, long))
     assert version in [UV_TRACK_FORMAT_VERSION_2,
-                       UV_TRACK_FORMAT_VERSION_3]
+                       UV_TRACK_FORMAT_VERSION_3,
+                       UV_TRACK_FORMAT_VERSION_4]
 
     start_frame = kwargs.get('start_frame')
     assert start_frame is None or isinstance(start_frame, int)
@@ -482,8 +521,13 @@ def _generate_v2_and_v3(point_group, camera, points,
     data = None
     if version == UV_TRACK_FORMAT_VERSION_2:
         data = UV_TRACK_HEADER_VERSION_2.copy()
-    else:
+    elif version == UV_TRACK_FORMAT_VERSION_3:
         data = UV_TRACK_HEADER_VERSION_3.copy()
+    elif version == UV_TRACK_FORMAT_VERSION_4:
+        data = UV_TRACK_HEADER_VERSION_4.copy()
+    else:
+        raise ValueError("Version number is invalid; %r" % version)
+
     cam_num_frames = tde4.getCameraNoFrames(camera)
     camera_fov = tde4.getCameraFOV(camera)
 
@@ -517,7 +561,8 @@ def _generate_v2_and_v3(point_group, camera, points,
         valid_mode = _get_point_valid_mode(point_group, point)
 
         # Get the 3D point position
-        if version == UV_TRACK_FORMAT_VERSION_3:
+        if version in [UV_TRACK_FORMAT_VERSION_3,
+                       UV_TRACK_FORMAT_VERSION_4]:
             point_data['3d'] = _get_3d_data_from_point(point_group, point)
 
         # Write per-frame position data
@@ -562,12 +607,17 @@ def _generate_v2_and_v3(point_group, camera, points,
                 'pos': pos_undist,
                 'weight': weight
             }
-            if version == UV_TRACK_FORMAT_VERSION_3:
+            if version in [UV_TRACK_FORMAT_VERSION_3,
+                           UV_TRACK_FORMAT_VERSION_4]:
                 frame_data['pos_dist'] = pos
             point_data['per_frame'].append(frame_data)
             frame += 1
 
         data['points'].append(point_data)
+
+    if version == UV_TRACK_FORMAT_VERSION_4:
+        lens = tde4.getCameraLens(camera)
+        data['camera'] = _generate_camera_data(camera, lens, frame0)
 
     data_str = json.dumps(data)
     return data_str
@@ -608,7 +658,7 @@ def _generate_v2(point_group, camera, points,
     :returns: A JSON format string, with the UV Track data in it.
     :rtype: str
     """
-    return _generate_v2_and_v3(
+    return _generate_v2_v3_and_v4(
         point_group,
         camera,
         points,
@@ -650,11 +700,52 @@ def _generate_v3(point_group, camera, points,
     :returns: A JSON format string, with the UV Track data in it.
     :rtype: str
     """
-    return _generate_v2_and_v3(
+    return _generate_v2_v3_and_v4(
         point_group,
         camera,
         points,
         version=UV_TRACK_FORMAT_VERSION_3,
+        start_frame=start_frame
+    )
+
+
+def _generate_v4(point_group, camera, points,
+                 start_frame=None):
+    """
+    Generate the UV file format contents, using JSON format.
+
+    Each point will store:
+    - Point name
+    - X, Y position (in UV coordinates, per-frame) as distorted and
+      undistorted
+    - Point weight (per-frame)
+    - Point Set name
+    - Point 'Persistent ID'
+    - 3D Point X, Y and Z
+    - 3D Point X, Y and Z locked status.
+
+    :param point_group: The 3DE Point Group containing 'points'
+    :type point_group: str
+
+    :param camera: The 3DE Camera containing 2D 'points' data.
+    :type camera: str
+
+    :param points: The list of 3DE Points representing 2D data to
+                   save.
+    :type points: list of str
+
+    :param start_frame: The frame number to be considered at
+                        'first frame'. Defaults to 1001 if set to None.
+    :type start_frame: None or int
+
+    :returns: A JSON format string, with the UV Track data in it.
+    :rtype: str
+    """
+    return _generate_v2_v3_and_v4(
+        point_group,
+        camera,
+        points,
+        version=UV_TRACK_FORMAT_VERSION_4,
         start_frame=start_frame
     )
 

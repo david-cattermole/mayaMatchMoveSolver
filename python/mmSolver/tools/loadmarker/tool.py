@@ -26,11 +26,8 @@ import mmSolver.api as mmapi
 LOG = mmSolver.logger.get_logger()
 
 
-# def main(file_path, cam=None, **kwargs):
-#     raise NotImplementedError
-
-
 def open_window():
+    """Open the Load Marker GUI."""
     mmapi.load_plugin()
     import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
     loadmarker_window.main()

@@ -16,5 +16,5 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Convert a 3D transform into a screen-space transform.
+Mimic the parent and unparent tool in Maya.
 """

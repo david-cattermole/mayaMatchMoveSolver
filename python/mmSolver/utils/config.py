@@ -73,6 +73,8 @@ def get_dirs(envvar):
 def _split_key(key):
     """
     Split a key into separate name hierarchy, with a '/' character.
+
+    :rtype: [str, ..]
     """
     args = key.split('/')
     args = [k for k in args if len(k) > 0]
@@ -323,7 +325,7 @@ class Config(object):
         if self._auto_read is True and len(self._values) == 0:
             self.read()
         data = self._values
-        if data is None:
+        if data is None or len(data) == 0:
             return default_value
         value = get_value(data, key, default_value=default_value)
         return value
@@ -342,13 +344,20 @@ def get_config(file_name, search=None):
     """
     Read a config file as a Config class object.
 
+    >>> get_config("myConfigFile.json")
+    <mmSolver.utils.config.Config object at 0x0000016993BF5160>
+    >>> get_config("/path/to/config/file.json")
+    <mmSolver.utils.config.Config object at 0x0000016993BF5748>
+    >>> get_config("non_existant_file.json")
+    None
+
     :param file_name: The name of the config file, or an absolute file
                       path.
     :type file_name: str
 
-    :param search: An environment variable to parse for search paths, 
-                   or a list of given search directory paths, or if set 
-                   to None, use the default environment variable for 
+    :param search: An environment variable to parse for search paths,
+                   or a list of given search directory paths, or if set
+                   to None, use the default environment variable for
                    mmSolver.
     :type search: str or [str, ..] or None
 
@@ -379,7 +388,7 @@ def get_home_dir_path(*args):
     .. note:: The path returned may not exist! It is up to the user to
               check and create files/directories as needed.
 
-    :param args: A list of string arguments to be joined to the 
+    :param args: A list of string arguments to be joined to the
                  returned path.
     :type args: [str, ..]
 

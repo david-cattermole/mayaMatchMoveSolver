@@ -37,8 +37,8 @@ def _create_trail_frame_attrs(node,
                               use_frame_range,
                               start_frame,
                               end_frame,
-                              pre_frames,
-                              post_frames,
+                              pre_frame,
+                              post_frame,
                               increment,
                               keyable=None):
     if keyable is None:
@@ -67,7 +67,7 @@ def _create_trail_frame_attrs(node,
             minValue=0.0,
         )
         maya.cmds.setAttr(plug_name, keyable=keyable)
-        maya.cmds.setAttr(plug_name, pre_frames)
+        maya.cmds.setAttr(plug_name, pre_frame)
 
     attr_name = 'postFrame'
     if attr_name not in all_attrs:
@@ -79,7 +79,7 @@ def _create_trail_frame_attrs(node,
             minValue=0.0,
         )
         maya.cmds.setAttr(plug_name, keyable=keyable)
-        maya.cmds.setAttr(plug_name, post_frames)
+        maya.cmds.setAttr(plug_name, post_frame)
 
     attr_name = 'frameRangeStart'
     if attr_name not in all_attrs:
@@ -113,7 +113,7 @@ def _create_trail_frame_attrs(node,
             minValue=0.02,
         )
         maya.cmds.setAttr(plug_name, keyable=keyable)
-        maya.cmds.setAttr(plug_name, post_frames)
+        maya.cmds.setAttr(plug_name, post_frame)
     return
 
 
@@ -123,8 +123,8 @@ def create_motion_trail_setup(node_tfm,
                               use_frame_range,
                               start_frame,
                               end_frame,
-                              pre_frames,
-                              post_frames,
+                              pre_frame,
+                              post_frame,
                               increment,
                               update_mode):
     handle_tfm, trail_shp = maya.cmds.snapshot(
@@ -150,8 +150,8 @@ def create_motion_trail_setup(node_tfm,
         use_frame_range,
         start_frame,
         end_frame,
-        pre_frames,
-        post_frames,
+        pre_frame,
+        post_frame,
         increment,
         keyable=False)
 
@@ -162,8 +162,8 @@ def create_motion_trail_setup(node_tfm,
         use_frame_range,
         start_frame,
         end_frame,
-        pre_frames,
-        post_frames,
+        pre_frame,
+        post_frame,
         increment,
         keyable=True)
 
@@ -205,8 +205,8 @@ def create_motion_trail_setup(node_tfm,
 def create_screen_space_motion_trail(cam, tfm,
                                      name=None,
                                      use_frame_range=None,
-                                     pre_frames=None,
-                                     post_frames=None,
+                                     pre_frame=None,
+                                     post_frame=None,
                                      start_frame=None,
                                      end_frame=None,
                                      increment=None):
@@ -220,20 +220,20 @@ def create_screen_space_motion_trail(cam, tfm,
 
     frame_range = time_utils.get_maya_timeline_range_inner()
     if use_frame_range is None:
-        use_frame_range = True
-    if pre_frames is None:
-        pre_frames = 0.5
-    if post_frames is None:
-        post_frames = 0.5
+        use_frame_range = const.USE_FRAME_RANGE_DEFAULT
+    if pre_frame is None:
+        pre_frame = const.PRE_FRAME_DEFAULT
+    if post_frame is None:
+        post_frame = const.POST_FRAME_DEFAULT
     if start_frame is None:
         start_frame = frame_range.start
     if end_frame is None:
         end_frame = frame_range.end
     if increment is None:
         if use_frame_range:
-            increment = 1.0
+            increment = const.FRAME_RANGE_INCREMENT_DEFAULT
         else:
-            increment = 0.5
+            increment = const.PER_FRAME_INCREMENT_DEFAULT
 
     tfm_attrs = [
         'translateX', 'translateY', 'translateZ',
@@ -312,8 +312,8 @@ def create_screen_space_motion_trail(cam, tfm,
         use_frame_range,
         start_frame,
         end_frame,
-        pre_frames,
-        post_frames,
+        pre_frame,
+        post_frame,
         increment,
         update_mode,
     )

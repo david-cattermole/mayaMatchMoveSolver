@@ -960,14 +960,8 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.setAttr(cube[0] + ".sz", 1.68658365)
 
         # Marker Group
-        mkr_grp = maya.cmds.createNode('transform',
-                                       name='markerGroup',
-                                       parent=cam_tfm)
-        mkr_scl = maya.cmds.createNode('mmMarkerScale')
-        maya.cmds.connectAttr(cam_shp + '.focalLength', mkr_scl + '.focalLength')
-        maya.cmds.connectAttr(cam_shp + '.cameraAperture', mkr_scl + '.cameraAperture')
-        maya.cmds.connectAttr(cam_shp + '.filmOffset', mkr_scl + '.filmOffset')
-        maya.cmds.connectAttr(mkr_scl + '.outScale', mkr_grp + '.scale')
+        mkr_grp = mmapi.MarkerGroup().create_node(cam=cam)
+        mkr_grp_node = mkr_grp.get_node()
 
         # Bundle Group
         bnd_grp = maya.cmds.createNode('transform', name='bundleGroup')
@@ -1052,19 +1046,23 @@ class TestSolve(test_api_utils.APITestCase):
         }
         mkr_fg_grp = maya.cmds.createNode('transform',
                                           name='fg',
-                                          parent=mkr_grp)
+                                          parent=mkr_grp_node)
         mkr_bg_grp = maya.cmds.createNode('transform',
                                           name='bg',
-                                          parent=mkr_grp)
+                                          parent=mkr_grp_node)
         path = self.get_data_path('match_mover', 'loadmarker.rz2')
         _, mkr_data_list = marker_read.read(path)
         print 'mkr_data_list', mkr_data_list
-        mkr_list = marker_read.create_nodes(mkr_data_list, cam=cam)
+        mkr_list = marker_read.create_nodes(
+            mkr_data_list,
+            cam=cam,
+            mkr_grp=mkr_grp
+        )
         mkr_fg_list = []
         mkr_bg_list = []
         for mkr in mkr_list:
             mkr_node = mkr.get_node()
-            mgrp = mkr_grp
+            mgrp = mkr_grp_node
             bgrp = bnd_grp
             pos = None
             for name in fg_points:

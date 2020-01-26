@@ -199,7 +199,7 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             mkr=len(mkr_list),
             bnd=len(bnd_list),
         )
-        self.info_label.setText(text)
+        self.ui.info_label.setText(text)
         return
 
     def updateToggleButtons(self):
@@ -323,7 +323,6 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         value = lib_col.get_object_toggle_camera_from_collection(col)
         value = not value
         lib_col.set_object_toggle_camera_on_collection(col, value)
-
         self.dataChanged.emit()
         return
 
@@ -335,7 +334,6 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         value = lib_col.get_object_toggle_marker_from_collection(col)
         value = not value
         lib_col.set_object_toggle_marker_on_collection(col, value)
-
         self.dataChanged.emit()
         return
 
@@ -347,7 +345,6 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         value = lib_col.get_object_toggle_bundle_from_collection(col)
         value = not value
         lib_col.set_object_toggle_bundle_on_collection(col, value)
-
         self.dataChanged.emit()
         return
 
@@ -359,7 +356,6 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         """
         select_indexes = [idx for idx in selected.indexes()]
         deselect_indexes = [idx for idx in deselected.indexes()]
-
         select_nodes = _lookupNodes(
             select_indexes,
             self.filterModel
@@ -368,7 +364,6 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             deselect_indexes,
             self.filterModel
         )
-
         lib_maya_utils.add_scene_selection(select_nodes)
         lib_maya_utils.remove_scene_selection(deselect_nodes)
         return

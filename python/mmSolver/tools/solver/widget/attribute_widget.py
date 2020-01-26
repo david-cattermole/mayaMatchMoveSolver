@@ -201,7 +201,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         text = text.format(anm=len(anm_list),
                            stc=len(stc_list),
                            lck=len(lck_list))
-        self.info_label.setText(text)
+        self.ui.info_label.setText(text)
         return
 
     def updateToggleButtons(self):
@@ -332,7 +332,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         value = lib_col.get_attribute_toggle_animated_from_collection(col)
         value = not value
         lib_col.set_attribute_toggle_animated_on_collection(col, value)
-
         self.dataChanged.emit()
         return
 
@@ -344,7 +343,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         value = lib_col.get_attribute_toggle_static_from_collection(col)
         value = not value
         lib_col.set_attribute_toggle_static_on_collection(col, value)
-
         self.dataChanged.emit()
         return
 
@@ -356,7 +354,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         value = lib_col.get_attribute_toggle_locked_from_collection(col)
         value = not value
         lib_col.set_attribute_toggle_locked_on_collection(col, value)
-
         self.dataChanged.emit()
         return
 

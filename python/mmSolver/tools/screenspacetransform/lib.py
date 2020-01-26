@@ -1,3 +1,20 @@
+# Copyright (C) 2019 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Position locator at the screen-space position.
 """
@@ -22,7 +39,8 @@ def create_screen_space_locator(cam, name=None):
     mkr_grp_node = mkr_grp.get_node()
     maya.cmds.setAttr(mkr_grp_node + '.depth', 1.0)
     maya.cmds.setAttr(mkr_grp_node + '.depth', lock=True)
-    maya.cmds.setAttr(mkr_grp_node + '.overscan', lock=True)
+    maya.cmds.setAttr(mkr_grp_node + '.overscanX', lock=True)
+    maya.cmds.setAttr(mkr_grp_node + '.overscanY', lock=True)
 
     depth_tfm = maya.cmds.createNode('transform',
                                      name='depth',

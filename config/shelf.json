@@ -47,6 +47,7 @@
             "general_tools/gen_tools_popup/smooth_keyframes_ui",
             "general_tools/gen_tools_popup/screen_z_transform_bake",
             "general_tools/gen_tools_popup/channel_sensitivity_ui",
+            "general_tools/gen_tools_popup/create_screen_space_motion_trail",
             "general_tools/gen_tools_popup/---Naming",
             "general_tools/gen_tools_popup/marker_bundle_rename",
             "general_tools/gen_tools_popup/marker_bundle_rename_with_metadata",

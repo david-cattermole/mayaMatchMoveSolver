@@ -19,6 +19,7 @@
 The main window for the 'Solver' tool.
 """
 
+import os
 import datetime
 import uuid
 from functools import partial
@@ -629,6 +630,28 @@ class SolverWindow(BaseWindow):
         return
 
 
+def loadAllResources():
+    base_install_location = os.environ.get('MMSOLVER_LOCATION', None)
+    assert base_install_location is not None
+    fallback = os.path.join(base_install_location, 'resources')
+    resource_paths = os.environ.get('MMSOLVER_RESOURCE_PATH', fallback)
+    assert isinstance(resource_paths, basestring)
+    resource_paths = resource_paths.split(os.pathsep)
+    for directory_path in resource_paths:
+        if not os.path.isdir(directory_path):
+            continue
+        file_names = os.listdir(directory_path)
+        for file_name in file_names:
+            file_path = os.path.join(directory_path, file_name)
+            if os.path.isfile(file_path):
+                is_registered = QtCore.QResource.registerResource(file_path)
+                if is_registered:
+                    LOG.info("Resource registered: %r", file_path)
+                else:
+                    LOG.warn("Resource failed to register: %r", file_path)
+    return
+
+
 def main(show=True, auto_raise=True, delete=False):
     """
     Open the Solver UI window.
@@ -650,6 +673,7 @@ def main(show=True, auto_raise=True, delete=False):
     # Force the Plug-in to load.  If the plug-in cannot load, the UI
     # will not open and an error will be given.
     lib_maya_utils.ensure_plugin_loaded()
+    loadAllResources()
 
     win = SolverWindow.open_window(
         show=show,

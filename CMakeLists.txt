@@ -484,15 +484,23 @@ endif ()
 # Install Icons.
 if (BUILD_ICONS)
     install(DIRECTORY "icons/"
+            DESTINATION "${MODULE_FULL_NAME}/resources"
+            FILES_MATCHING PATTERN "*.rcc"
+            PATTERN "icons/edit" EXCLUDE
+            PATTERN "icons/library" EXCLUDE
+            PATTERN "icons/ui" EXCLUDE)
+    install(DIRECTORY "icons/"
             DESTINATION "${MODULE_FULL_NAME}/icons"
             FILES_MATCHING PATTERN "*.png"
             PATTERN "icons/edit" EXCLUDE
-            PATTERN "icons/library" EXCLUDE)
+            PATTERN "icons/library" EXCLUDE
+            PATTERN "icons/ui" EXCLUDE)
     install(DIRECTORY "icons/"
             DESTINATION "${MODULE_FULL_NAME}/icons"
             FILES_MATCHING PATTERN "*.svg"
             PATTERN "icons/edit" EXCLUDE
-            PATTERN "icons/library" EXCLUDE)
+            PATTERN "icons/library" EXCLUDE
+            PATTERN "icons/ui" EXCLUDE)
 endif ()
 
 
@@ -548,6 +556,10 @@ endif ()
 
 if (BUILD_DOCS)
     add_subdirectory(docs)
+endif ()
+
+if (BUILD_ICONS)
+    add_subdirectory(icons)
 endif ()
 
 if (BUILD_TESTS)

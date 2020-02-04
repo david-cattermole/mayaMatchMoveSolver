@@ -66,9 +66,11 @@ This section of the UI shows the Attributes solved.
    * - Field
      - Description
    * - Attr
-     - Description
+     - The ``Attribute`` column displays nodes and attributes added
+       into the active Collection.
    * - State
-     - description.
+     - The State column displays if the attribute is Static or
+       Animated.
 
 Solver Tabs
 ~~~~~~~~~~~
@@ -106,12 +108,14 @@ overall use of the Solver UI, such as Collections.
 
    * - Name
      - Description
-   * - name1
-     - Description
-   * - name2
-     - description.
-   * - name3
-     - description.
+   * - New Collection
+     - Create a new Collection node.
+   * - Rename Collection
+     - Renames the active Collection with a pop-up dialog.
+   * - Remove Collection
+     - Deletes the active Collection.
+   * - Close Window
+     - Closes the Solver UI window.
 
 Edit Menu
 +++++++++
@@ -130,15 +134,28 @@ solve or the usage of the Solver UI.
 
    * - Name
      - Description
-   * - name1
-     - Description
-   * - name2
-     - description.
-   * - name3
-     - description.
+   * - Undo (without UI update)
+     - Performs an undo operation, while stopping the viewport from
+       evaluating.
+   * - Redo (without UI update)
+     - Performs a redo operation, while stopping the viewport from
+       evaluating.
+   * - Auto-Update Solver Validation
+     - When an option in the UI changes, the Solver Validation will be
+       re-evaluated.
+   * - Pre-Solve Force Evaluation
+     - Before a Solve is performed mmSolver will update the DG Node
+       Graph.
+   * - Refresh Viewport
+     - The viewport will be updated during a solve.
+   * - Force DG Update
+     - mmSolver will ensure Maya updates the DG Node Graph.
 
 View Menu
 +++++++++
+
+The ``View`` menu controls the visibility of the Solver UI, and parts of
+the Maya Viewport during solves.
 
 .. figure:: images/tools_solver_ui_menu_view.png
     :alt: View Menu
@@ -151,15 +168,33 @@ View Menu
 
    * - Name
      - Description
-   * - name1
-     - Description
-   * - name2
-     - description.
-   * - name3
-     - description.
+   * - Weight Column
+     - The Marker weight column is displayed.
+   * - Frame Deviation
+     - The Marker per-frame deviation column is displayed.
+   * - Average Deviation
+     - The Marker average deviation column is displayed.
+   * - Maximum Deviation
+     - The Marker maximum deviation column is displayed.
+   * - Display Attribute State
+     - The attribute state column is displayed.
+   * - Display Attribute Min/Max
+     - The minimum and maximum value attribute columns are displayed.
+   * - Display Image Planes
+     - Image Planes will be visible while a solve is calculating,
+       otherwise all Image Planes are hidden.
+   * - Display Meshes
+     - Polygon meshes will be visible while a solve is calculating,
+       otherwise all meshes are hidden.
+   * - Isolate Objects
+     - mmSolver will hide all objects not used in a solve, while a
+       solve is calculated.
 
 Log Menu
 ++++++++
+
+The ``Log`` menu allows configuration of the logged messages in the Script
+Editor.
 
 .. figure:: images/tools_solver_ui_menu_log.png
     :alt: Log Menu
@@ -172,12 +207,20 @@ Log Menu
 
    * - Name
      - Description
-   * - name1
-     - Description
-   * - name2
-     - description.
-   * - name3
-     - description.
+   * - Errors
+     - Only errors will be displayed in the Script Editor.
+   * - Warnings
+     - Only warnings and errors will be displayed in the Script
+       Editor.
+   * - Info
+     - Only info-level, warnings and errors will be displayed in the
+       Script Editor.
+   * - Verbose
+     - Only extra information messages as well as warnings and errors
+       will be displayed in the Script Editor.
+   * - Debug
+     - Only low-level debug information is displayed in the Script
+       Editor, to help developers debug.
 
 Python Function
 ~~~~~~~~~~~~~~~

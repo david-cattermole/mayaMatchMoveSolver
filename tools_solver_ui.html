@@ -118,10 +118,12 @@ valid frames.</td>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Attr</td>
-<td>Description</td>
+<td>The <code class="docutils literal"><span class="pre">Attribute</span></code> column displays nodes and attributes added
+into the active Collection.</td>
 </tr>
 <tr class="row-odd"><td>State</td>
-<td>description.</td>
+<td>The State column displays if the attribute is Static or
+Animated.</td>
 </tr>
 </tbody>
 </table>
@@ -170,14 +172,17 @@ overall use of the Solver UI, such as Collections.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>name1</td>
-<td>Description</td>
+<tr class="row-even"><td>New Collection</td>
+<td>Create a new Collection node.</td>
 </tr>
-<tr class="row-odd"><td>name2</td>
-<td>description.</td>
+<tr class="row-odd"><td>Rename Collection</td>
+<td>Renames the active Collection with a pop-up dialog.</td>
 </tr>
-<tr class="row-even"><td>name3</td>
-<td>description.</td>
+<tr class="row-even"><td>Remove Collection</td>
+<td>Deletes the active Collection.</td>
+</tr>
+<tr class="row-odd"><td>Close Window</td>
+<td>Closes the Solver UI window.</td>
 </tr>
 </tbody>
 </table>
@@ -197,20 +202,35 @@ solve or the usage of the Solver UI.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>name1</td>
-<td>Description</td>
+<tr class="row-even"><td>Undo (without UI update)</td>
+<td>Performs an undo operation, while stopping the viewport from
+evaluating.</td>
 </tr>
-<tr class="row-odd"><td>name2</td>
-<td>description.</td>
+<tr class="row-odd"><td>Redo (without UI update)</td>
+<td>Performs a redo operation, while stopping the viewport from
+evaluating.</td>
 </tr>
-<tr class="row-even"><td>name3</td>
-<td>description.</td>
+<tr class="row-even"><td>Auto-Update Solver Validation</td>
+<td>When an option in the UI changes, the Solver Validation will be
+re-evaluated.</td>
+</tr>
+<tr class="row-odd"><td>Pre-Solve Force Evaluation</td>
+<td>Before a Solve is performed mmSolver will update the DG Node
+Graph.</td>
+</tr>
+<tr class="row-even"><td>Refresh Viewport</td>
+<td>The viewport will be updated during a solve.</td>
+</tr>
+<tr class="row-odd"><td>Force DG Update</td>
+<td>mmSolver will ensure Maya updates the DG Node Graph.</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="view-menu">
 <h3>View Menu<a class="headerlink" href="#view-menu" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">View</span></code> menu controls the visibility of the Solver UI, and parts of
+the Maya Viewport during solves.</p>
 <div class="figure align-right">
 <a class="reference internal image-reference" href="_images/tools_solver_ui_menu_view.png"><img alt="View Menu" src="_images/tools_solver_ui_menu_view.png" style="width: 177.5px; height: 250.0px;" /></a>
 </div>
@@ -222,20 +242,43 @@ solve or the usage of the Solver UI.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>name1</td>
-<td>Description</td>
+<tr class="row-even"><td>Weight Column</td>
+<td>The Marker weight column is displayed.</td>
 </tr>
-<tr class="row-odd"><td>name2</td>
-<td>description.</td>
+<tr class="row-odd"><td>Frame Deviation</td>
+<td>The Marker per-frame deviation column is displayed.</td>
 </tr>
-<tr class="row-even"><td>name3</td>
-<td>description.</td>
+<tr class="row-even"><td>Average Deviation</td>
+<td>The Marker average deviation column is displayed.</td>
+</tr>
+<tr class="row-odd"><td>Maximum Deviation</td>
+<td>The Marker maximum deviation column is displayed.</td>
+</tr>
+<tr class="row-even"><td>Display Attribute State</td>
+<td>The attribute state column is displayed.</td>
+</tr>
+<tr class="row-odd"><td>Display Attribute Min/Max</td>
+<td>The minimum and maximum value attribute columns are displayed.</td>
+</tr>
+<tr class="row-even"><td>Display Image Planes</td>
+<td>Image Planes will be visible while a solve is calculating,
+otherwise all Image Planes are hidden.</td>
+</tr>
+<tr class="row-odd"><td>Display Meshes</td>
+<td>Polygon meshes will be visible while a solve is calculating,
+otherwise all meshes are hidden.</td>
+</tr>
+<tr class="row-even"><td>Isolate Objects</td>
+<td>mmSolver will hide all objects not used in a solve, while a
+solve is calculated.</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="log-menu">
 <h3>Log Menu<a class="headerlink" href="#log-menu" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">Log</span></code> menu allows configuration of the logged messages in the Script
+Editor.</p>
 <div class="figure align-right">
 <a class="reference internal image-reference" href="_images/tools_solver_ui_menu_log.png"><img alt="Log Menu" src="_images/tools_solver_ui_menu_log.png" style="width: 97.0px; height: 126.0px;" /></a>
 </div>
@@ -247,14 +290,24 @@ solve or the usage of the Solver UI.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>name1</td>
-<td>Description</td>
+<tr class="row-even"><td>Errors</td>
+<td>Only errors will be displayed in the Script Editor.</td>
 </tr>
-<tr class="row-odd"><td>name2</td>
-<td>description.</td>
+<tr class="row-odd"><td>Warnings</td>
+<td>Only warnings and errors will be displayed in the Script
+Editor.</td>
 </tr>
-<tr class="row-even"><td>name3</td>
-<td>description.</td>
+<tr class="row-even"><td>Info</td>
+<td>Only info-level, warnings and errors will be displayed in the
+Script Editor.</td>
+</tr>
+<tr class="row-odd"><td>Verbose</td>
+<td>Only extra information messages as well as warnings and errors
+will be displayed in the Script Editor.</td>
+</tr>
+<tr class="row-even"><td>Debug</td>
+<td>Only low-level debug information is displayed in the Script
+Editor, to help developers debug.</td>
 </tr>
 </tbody>
 </table>

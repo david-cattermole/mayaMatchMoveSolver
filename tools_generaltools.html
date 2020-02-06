@@ -65,7 +65,9 @@ tasks.</p>
 <p>Forces the active viewport camera to lock it’s center to the currently
 selected transform node.</p>
 <p>A viewport camera can only center on one node at a time.</p>
-<p>Usage (to <em>apply</em> centering effect):</p>
+<p>While centering is turned on, it overrides Maya&#8217;s normal 2D Pan/Zoom
+settings.</p>
+<p>Usage to <em>apply</em> the centering effect:</p>
 <ol class="arabic simple">
 <li>Select transform node.</li>
 <li>Activate a 3D viewport.</li>
@@ -78,7 +80,7 @@ transform node.</li>
 to zoom in and out. Play the Maya file and use the centered view as
 needed.</li>
 </ol>
-<p>Usage (to <em>remove</em> centering effect):</p>
+<p>Usage to <em>remove</em> centering effect:</p>
 <ol class="arabic simple">
 <li>Run &#8216;Remove 2D Center&#8217; tool.<ul>
 <li>The active viewport will no longer center on an object, but will
@@ -94,13 +96,11 @@ backslash (&#8216; \ &#8216;) key).</li>
 
 <span class="c1"># Apply Centering onto active camera</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+
+<span class="c1"># Remove Centering from active camera</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
 </pre></div>
 </div>
-<dl class="docutils">
-<dt>v</dt>
-<dd># Remove Centering from active camera
-tool.remove()</dd>
-</dl>
 </div>
 <div class="section" id="smooth-keyframes">
 <h2>Smooth Keyframes<a class="headerlink" href="#smooth-keyframes" title="Permalink to this headline">¶</a></h2>

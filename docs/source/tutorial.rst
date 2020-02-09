@@ -104,3 +104,19 @@ release.
 .. raw:: html
 
     <iframe width="560" height="315" src="https://www.youtube.com/embed/0loeqQeFnZ8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+Solving Door Motion with an Edge
+--------------------------------
+
+This video by Michael Karp shows how to use mmSolver to solve the
+position of a static table in a 3D scene, after a camera has already
+been tracked.
+
+Secondly, a door rotation is solved by tracking the edge of
+door. Using this technique, the tracked 2D marker node does not need
+to stick to the same feature on the door, only the edge of the door.
+
+.. raw:: html
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/u0cU7X1b7zE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

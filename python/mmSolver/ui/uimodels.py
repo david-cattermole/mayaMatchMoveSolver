@@ -256,7 +256,7 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
             return False
         node = index.internalPointer()
 
-        if not self.indexEditable():
+        if not self.indexEditable(index):
             LOG.warning('setData not editable: %r %r %r', index, value, node)
             return False
 

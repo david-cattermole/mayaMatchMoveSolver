@@ -21,6 +21,8 @@ Get the Qt.py code.
 
 import sys
 import os
+
+sys.path.append(os.path.dirname(__file__))
 import download_unpack
 
 

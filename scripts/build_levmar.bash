@@ -37,7 +37,7 @@ cd ${ROOT}
 INSTALL_DIR="${ROOT}/install/levmar"
 
 # Extract LevMar
-python "${THIS_DIR}/get_levmar.py" "${ROOT}/archives" "${ROOT}/working" "${ROOT}/patches"
+python2 "${THIS_DIR}/get_levmar.py" "${ROOT}/archives" "${ROOT}/working" "${ROOT}/patches"
 
 # Build Library
 mkdir -p build

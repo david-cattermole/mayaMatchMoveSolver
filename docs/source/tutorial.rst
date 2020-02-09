@@ -20,14 +20,14 @@ These video uses mmSolver v0.2.0 (beta).
 
 .. raw:: html
 
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/SJoNEShPyms" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="720" height="405" src="https://www.youtube.com/embed/SJoNEShPyms" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 *Part 2*
 
 .. raw:: html
 
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/yS1kJJkosqA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="720" height="405" src="https://www.youtube.com/embed/yS1kJJkosqA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 Camera and Object Solve
@@ -41,7 +41,7 @@ This video uses mmSolver v0.2.0 (beta).
 
 .. raw:: html
 
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/z6lziVV3BcY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="720" height="405" src="https://www.youtube.com/embed/z6lziVV3BcY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 Multi-Camera and Object Solve
@@ -58,7 +58,7 @@ This video uses mmSolver v0.2.1.
 
 .. raw:: html
 
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/2tOCVOoPaR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="720" height="405" src="https://www.youtube.com/embed/2tOCVOoPaR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 Hierarchical Object Solve
@@ -78,7 +78,7 @@ This video uses mmSolver v0.1.1.
 
 .. raw:: html
 
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/wk7GwEbKRCs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="720" height="405" src="https://www.youtube.com/embed/wk7GwEbKRCs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 Character Rotomation Solving
 ----------------------------
@@ -90,7 +90,7 @@ features to improve this workflow.
 
 .. raw:: html
 
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/ck6HU7nzpkQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="720" height="405" src="https://www.youtube.com/embed/ck6HU7nzpkQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 Nodal Camera and Object Solve
@@ -103,7 +103,7 @@ release.
 
 .. raw:: html
 
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/0loeqQeFnZ8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="720" height="405" src="https://www.youtube.com/embed/0loeqQeFnZ8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 Solving Door Motion with an Edge
@@ -119,4 +119,4 @@ to stick to the same feature on the door, only the edge of the door.
 
 .. raw:: html
 
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/u0cU7X1b7zE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="720" height="405" src="https://www.youtube.com/embed/u0cU7X1b7zE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

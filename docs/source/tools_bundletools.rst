@@ -50,14 +50,22 @@ Run this Python command:
 Triangulate Bundle
 ------------------
 
-Calculate a 3D position of a bundle, based on the camera and 2D marker.
+Calculate a 3D position of a bundle, based on the camera and 2D markers.
+
+The *Triangulate Bundle* tool will calculate a 3D position for a
+bundle, based on the 2D positions of the Markers.
+
+The current implementation uses the first and last enabled frames of
+the Marker to calculate the triangulation. No iterative solver is used
+for the triangulation.
 
 Usage:
 
-1) Select Markers or Bundles
+1) Select Markers or Bundles (or both)
 
-3) Run tool.
+2) Run *Triangulate Bundle* tool.
 
+   - The Bundles are triangulated in TX, TY and TZ.
 
 Run this Python command:
 

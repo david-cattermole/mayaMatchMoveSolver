@@ -79,6 +79,17 @@ Aim at Camera
 
 Aim the selected transform nodes toward the active viewport camera.
 
+Usage:
+
+1) Select a transform node.
+
+2) Select active viewport.
+
+3) Run *Aim at Camera* tool.
+
+   - The selected transform nodes will be aimed at the active
+     viewport's camera.
+
 .. note::
 
     This tool is deprecated and hidden from the menus. Use the

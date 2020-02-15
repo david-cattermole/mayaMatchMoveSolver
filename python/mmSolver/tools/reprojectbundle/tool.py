@@ -91,7 +91,7 @@ def main():
         mkr_node_full = mkr.get_node()
         mkr_nodes.append(mkr_node_full)
 
-    # Get  list of markers to operate on.
+    # Get list of markers to operate on.
     mkr_list = []
     have_mkr_nodes = []
     attrs = ['translateX', 'translateY', 'translateZ']

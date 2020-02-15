@@ -5,7 +5,7 @@ mmSolver.tools
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    mmSolver.tools.aboutwindow
    mmSolver.tools.attachbundletocurve

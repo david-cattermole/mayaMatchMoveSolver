@@ -194,9 +194,18 @@ Usage:
 
 2) Activate viewport.
 
-3) Run tool.
+3) Run *Screen-Space Transform Bake* tool.
 
-4) A new locator is created under the active camera
+   - A new locator is created under the active Camera.
+
+4) Delete the keyframes/connects on the selected transform node, using
+   ``Channel Box > (Right Click) > Break Connections``.
+
+5) Use a Maya *Point Constraint* to drive the transform(s) from step
+   1, with the screen-space transform as the driver.
+
+   - Select screen-space transform node first, then select (step 1)
+     transform nodes second and create a *Point Constraint*.
 
 To run the tool, use this Python command:
 

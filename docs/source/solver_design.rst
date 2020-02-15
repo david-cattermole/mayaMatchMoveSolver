@@ -230,7 +230,10 @@ Primary Frames / Root Frames.
 Solver Options
 ^^^^^^^^^^^^^^
 
-Like many solvers, the MM Solver has options.
+Like many solvers, the MM Solver has options, however the options are
+hidden from the Solver UI and are set automatically by the Python API.
+
+This options are for developers of MM Solver.
 
 Iterations : integer
     Maximum number of iterations

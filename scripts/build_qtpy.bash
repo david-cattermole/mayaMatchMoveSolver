@@ -37,7 +37,7 @@ cd ${ROOT}
 INSTALL_DIR="${ROOT}/install/qtpy"
 
 # Extract Qt.py
-python "${THIS_DIR}/get_qtpy.py" "${ROOT}/archives" "${ROOT}/working" "${ROOT}/patches"
+python2 "${THIS_DIR}/get_qtpy.py" "${ROOT}/archives" "${ROOT}/working" "${ROOT}/patches"
 
 # Copy file to install
 mkdir -p ${INSTALL_DIR}

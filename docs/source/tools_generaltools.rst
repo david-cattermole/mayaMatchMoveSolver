@@ -13,7 +13,10 @@ selected transform node.
 
 A viewport camera can only center on one node at a time.
 
-Usage (to *apply* centering effect):
+While centering is turned on, it overrides Maya's normal 2D Pan/Zoom
+settings.
+
+Usage to *apply* the centering effect:
 
 1) Select transform node.
 
@@ -28,7 +31,7 @@ Usage (to *apply* centering effect):
    to zoom in and out. Play the Maya file and use the centered view as
    needed.
 
-Usage (to *remove* centering effect):
+Usage to *remove* centering effect:
 
 1) Run 'Remove 2D Center' tool.
 
@@ -47,7 +50,7 @@ To run the tool, use this Python command:
 
     # Apply Centering onto active camera
     tool.main()
-v
+
     # Remove Centering from active camera
     tool.remove()
 

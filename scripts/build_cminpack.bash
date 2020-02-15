@@ -37,7 +37,7 @@ cd ${ROOT}
 INSTALL_DIR="${ROOT}/install/cminpack"
 
 # Extract LevMar
-python "${THIS_DIR}/get_cminpack.py" "${ROOT}/archives" "${ROOT}/working" "${ROOT}/patches"
+python2 "${THIS_DIR}/get_cminpack.py" "${ROOT}/archives" "${ROOT}/working" "${ROOT}/patches"
 
 # Build Library
 mkdir -p build

@@ -88,9 +88,9 @@ def main():
                                      type='mmMarkerGroupTransform') or []
         mkr_grp_nodes = sorted(mkr_grp_nodes)
         if len(mkr_grp_nodes) == 0:
-            mkr_grp = markergroup.MarkerGroup().create_node(cam=cam)
+            mkr_grp = mmapi.MarkerGroup().create_node(cam=cam)
         else:
-            mkr_grp = markergroup.MarkerGroup(node=mkr_grp_nodes[0])
+            mkr_grp = mmapi.MarkerGroup(node=mkr_grp_nodes[0])
 
         # Create Marker nodes
         mkr_list = mayareadfile.create_nodes(

@@ -100,10 +100,38 @@ Run this Python command:
 Attach Bundle to Curve
 ----------------------
 
+The *Attach Bundle to Curve* tool will connect a Bundle to Maya NURBS
+curve, and provide an attribute *Along Curve* used to position the
+Bundle along the curve.
+
+The *Along Curve* attribute can be solved in mmSolver with other
+parameters, and may be solved either static or animated.
+
+Usage:
+
+1) Select a NURBS curve and a Bundle node
+
+2) Run *Attach Bundle to Curve* tool.
+
+   - The Bundle TX, TY, and TZ are connected to the NURBS curve.
+
+   - An *Along Curve* attribute is created.
+
+3) Add *Along Curve* attribute into the Solver UI.
+
+4) Solve the *Along Curve* attribute.
+
+   - The *Along Curve* attribute may be solved animated or static.
+
+.. note::
+
+    The Bundle will be connected to the curve in world-space. This
+    means the bundle may be unparented from any transform and will
+    still follow the curve in world-space.
+
 Run this Python command:
 
 .. code:: python
 
     import mmSolver.tools.attachbundletocurve.tool
     mmSolver.tools.attachbundletocurve.tool.main()
-    

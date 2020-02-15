@@ -38,7 +38,7 @@ Usage:
 
 1) Select Markers or Bundles
 
-3) Run tool.
+2) Run tool.
 
 Run this Python command:
 

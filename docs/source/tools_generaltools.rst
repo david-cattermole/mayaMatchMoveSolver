@@ -28,7 +28,7 @@ Usage to *apply* the centering effect:
      transform node.
 
 4) Use the Pan/Zoom tool (default hotkey is backslash (' \\ ') key),
-   to zoom in and out. Play the Maya file and use the centered view as
+   to zoom in and out. Play the Maya timeline and use the centered view as
    needed.
 
 Usage to *remove* centering effect:
@@ -228,7 +228,7 @@ The user may change the default options after the motion trail is
 created by selecting the Motion Trail node under the camera and
 editing the attributes in the Channel Box.
 
-Beware of small `increment` values, and large frame ranges. These will
+Beware of small *increment* values, and large frame ranges. These will
 cause slow-downs in the playback of the Maya scene.
 
 .. list-table:: Motion Trail Attributes
@@ -323,7 +323,7 @@ Usage:
 
 4) Select Camera in Object Browser.
 
-5) Right-click and run "Paste Camera (MM Solver)...".
+5) Right-click and run *Paste Camera (MM Solver)...*.
 
 To run the tool, use this Python command:
 

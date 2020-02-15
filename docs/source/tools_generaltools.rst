@@ -57,18 +57,44 @@ To run the tool, use this Python command:
 Smooth Keyframes
 ----------------
 
-Smooth the selected keyframes in the Graph Editor. This tool also has
-a UI to change the affect of the Smoothing function.
+Smooth the selected keyframes in the Graph Editor, along with a UI to
+change the affect of the Smoothing function. The UI values are saved
+into the home directory and will be re-used when a new Maya session is
+opened.
+
+The Smooth Keyframes tool allows smoothing of only specific keyframes,
+even if the curve is not baked per-frame. The tool will also attempt
+to control the smoothed values as they blend into unsmoothed
+values. This allows smoothing a specific area of an animation curve,
+while preserving other parts and avoiding bumps at the boundry.
 
 Usage:
 
-1) Select keyframes in Graph Editor.
+1) Use the menu ``mmSolver > General Tools > Smooth Keyframes UI``.
 
-2) Run 'Smooth Selected Keyframes' tool.
+2) Edit the options in the UI.
 
-3) Keyframe values will be smoothed.
+   - *Function* controls the type of smoothing that is calculated.
 
-To run the tool, use this Python command:
+   - *Smooth Width* controls how much the smoothing function will be
+     applied. The width is number of frames to be used for smoothing,
+     for example a value of 1 means "no smoothing", a value of 2 means
+     "use previous and next frame", and 5 means "use previous 4 and
+     next 4 frames".
+
+   - *Blend Width* controls the blend, in frames, between the smoothed
+     values and the surrounding values.
+
+3) Select keyframes in Graph Editor.
+
+4) Run 'Smooth Selected Keyframes' tool.
+
+5) Keyframe values will be smoothed.
+
+6) Repeat steps 3 to 5 as required.
+
+You can use the below Python code on a hotkey of your choosing. To
+run the tool, use this Python command:
 
 .. code:: python
 
@@ -79,6 +105,74 @@ To run the tool, use this Python command:
 
     # Open the Smooth Keyframes UI.
     tool.main()
+
+Blend Width
++++++++++++
+
+When the *Smooth Keyframes* tool is run the selected keyframes are
+smoothed as well as frames surrounding the selected keyframes. The
+surrounding keyframes are blended together with the smoothed
+keyframes. The *Blend Width* value controls the number of frames to
+blend.
+
+The image below shows the effect of the *Blend Width* value.
+
+.. figure:: images/tools_smooth_keyframes_blend.gif
+    :alt: Selected Keyframes Blending Value
+    :align: center
+    :width: 90%
+
+Function Average
+++++++++++++++++
+
+The *Average* smoothing function will average the surrounding keyframe
+values equally.
+
+The image below shows the effect of the *Smooth Width* with the
+*Average* function.
+
+.. figure:: images/tools_smooth_keyframes_average.gif
+    :alt: Smooth Keyframes with Average
+    :align: center
+    :width: 90%
+
+            Function Gaussian
++++++++++++++++++
+
+The *Gaussian* smoothing function performs a strong smooth on the
+keyframes. The *Gaussian* function can be used to make a curve very
+flat, without any changes. Unlike the *Fourier* function, the
+*Gaussian* function will change already smooth keyframes.
+
+This function is similar to 2D image Gaussian blurring.
+
+The image below shows the effect of the *Smooth Width* with the
+*Gaussian* function.
+
+.. figure:: images/tools_smooth_keyframes_gaussian.gif
+    :alt: Smooth Keyframes with Gaussian
+    :align: center
+    :width: 90%
+
+Function Fourier
+++++++++++++++++
+
+The *Fourier* smoothing function performs a high-pass-filter to the
+selected keyframes. Keyframes with rapid changes are smoothed more
+than already smoothed values.
+
+This function is similar to 2D image high-pass filtering techniques,
+to remove *high-contrast* edge detail.
+
+The image below shows the effect of the *Smooth Width* with the
+*Fourier* function.
+
+.. figure:: images/tools_smooth_keyframes_fourier.gif
+    :alt: Smooth Keyframes with Fourier
+    :align: center
+    :width: 90%
+
+.. _screen-space-transform-ref:
 
 Screen-Space Transform
 ----------------------

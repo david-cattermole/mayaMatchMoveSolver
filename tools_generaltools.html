@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Licenses" href="licenses.html" />
+    <link rel="next" title="Solver Design" href="solver_design.html" />
     <link rel="prev" title="Marker Tools" href="tools_markertools.html" /> 
   </head>
   <body role="document">
@@ -40,7 +40,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="licenses.html" title="Licenses"
+          <a href="solver_design.html" title="Solver Design"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="tools_markertools.html" title="Marker Tools"
@@ -77,7 +77,7 @@ transform node.</li>
 </ul>
 </li>
 <li>Use the Pan/Zoom tool (default hotkey is backslash (&#8216; \ &#8216;) key),
-to zoom in and out. Play the Maya file and use the centered view as
+to zoom in and out. Play the Maya timeline and use the centered view as
 needed.</li>
 </ol>
 <p>Usage to <em>remove</em> centering effect:</p>
@@ -104,15 +104,36 @@ backslash (&#8216; \ &#8216;) key).</li>
 </div>
 <div class="section" id="smooth-keyframes">
 <h2>Smooth Keyframes<a class="headerlink" href="#smooth-keyframes" title="Permalink to this headline">¶</a></h2>
-<p>Smooth the selected keyframes in the Graph Editor. This tool also has
-a UI to change the affect of the Smoothing function.</p>
+<p>Smooth the selected keyframes in the Graph Editor, along with a UI to
+change the affect of the Smoothing function. The UI values are saved
+into the home directory and will be re-used when a new Maya session is
+opened.</p>
+<p>The Smooth Keyframes tool allows smoothing of only specific keyframes,
+even if the curve is not baked per-frame. The tool will also attempt
+to control the smoothed values as they blend into unsmoothed
+values. This allows smoothing a specific area of an animation curve,
+while preserving other parts and avoiding bumps at the boundry.</p>
 <p>Usage:</p>
 <ol class="arabic simple">
+<li>Use the menu <code class="docutils literal"><span class="pre">mmSolver</span> <span class="pre">&gt;</span> <span class="pre">General</span> <span class="pre">Tools</span> <span class="pre">&gt;</span> <span class="pre">Smooth</span> <span class="pre">Keyframes</span> <span class="pre">UI</span></code>.</li>
+<li>Edit the options in the UI.<ul>
+<li><em>Function</em> controls the type of smoothing that is calculated.</li>
+<li><em>Smooth Width</em> controls how much the smoothing function will be
+applied. The width is number of frames to be used for smoothing,
+for example a value of 1 means &#8220;no smoothing&#8221;, a value of 2 means
+&#8220;use previous and next frame&#8221;, and 5 means &#8220;use previous 4 and
+next 4 frames&#8221;.</li>
+<li><em>Blend Width</em> controls the blend, in frames, between the smoothed
+values and the surrounding values.</li>
+</ul>
+</li>
 <li>Select keyframes in Graph Editor.</li>
 <li>Run &#8216;Smooth Selected Keyframes&#8217; tool.</li>
 <li>Keyframe values will be smoothed.</li>
+<li>Repeat steps 3 to 5 as required.</li>
 </ol>
-<p>To run the tool, use this Python command:</p>
+<p>You can use the below Python code on a hotkey of your choosing. To
+run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.smoothkeyframes.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 
 <span class="c1"># Smooth the selected Keyframes</span>
@@ -122,9 +143,55 @@ a UI to change the affect of the Smoothing function.</p>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
+<div class="section" id="blend-width">
+<h3>Blend Width<a class="headerlink" href="#blend-width" title="Permalink to this headline">¶</a></h3>
+<p>When the <em>Smooth Keyframes</em> tool is run the selected keyframes are
+smoothed as well as frames surrounding the selected keyframes. The
+surrounding keyframes are blended together with the smoothed
+keyframes. The <em>Blend Width</em> value controls the number of frames to
+blend.</p>
+<p>The image below shows the effect of the <em>Blend Width</em> value.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/tools_smooth_keyframes_blend.gif"><img alt="Selected Keyframes Blending Value" src="_images/tools_smooth_keyframes_blend.gif" style="width: 90%;" /></a>
+</div>
+</div>
+<div class="section" id="function-average">
+<h3>Function Average<a class="headerlink" href="#function-average" title="Permalink to this headline">¶</a></h3>
+<p>The <em>Average</em> smoothing function will average the surrounding keyframe
+values equally.</p>
+<p>The image below shows the effect of the <em>Smooth Width</em> with the
+<em>Average</em> function.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/tools_smooth_keyframes_average.gif"><img alt="Smooth Keyframes with Average" src="_images/tools_smooth_keyframes_average.gif" style="width: 90%;" /></a>
+</div>
+<hr class="docutils" />
+<p>The <em>Gaussian</em> smoothing function performs a strong smooth on the
+keyframes. The <em>Gaussian</em> function can be used to make a curve very
+flat, without any changes. Unlike the <em>Fourier</em> function, the
+<em>Gaussian</em> function will change already smooth keyframes.</p>
+<p>This function is similar to 2D image Gaussian blurring.</p>
+<p>The image below shows the effect of the <em>Smooth Width</em> with the
+<em>Gaussian</em> function.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/tools_smooth_keyframes_gaussian.gif"><img alt="Smooth Keyframes with Gaussian" src="_images/tools_smooth_keyframes_gaussian.gif" style="width: 90%;" /></a>
+</div>
+</div>
+<div class="section" id="function-fourier">
+<h3>Function Fourier<a class="headerlink" href="#function-fourier" title="Permalink to this headline">¶</a></h3>
+<p>The <em>Fourier</em> smoothing function performs a high-pass-filter to the
+selected keyframes. Keyframes with rapid changes are smoothed more
+than already smoothed values.</p>
+<p>This function is similar to 2D image high-pass filtering techniques,
+to remove <em>high-contrast</em> edge detail.</p>
+<p>The image below shows the effect of the <em>Smooth Width</em> with the
+<em>Fourier</em> function.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/tools_smooth_keyframes_fourier.gif"><img alt="Smooth Keyframes with Fourier" src="_images/tools_smooth_keyframes_fourier.gif" style="width: 90%;" /></a>
+</div>
+</div>
 </div>
 <div class="section" id="screen-space-transform">
-<h2>Screen-Space Transform<a class="headerlink" href="#screen-space-transform" title="Permalink to this headline">¶</a></h2>
+<span id="screen-space-transform-ref"></span><h2>Screen-Space Transform<a class="headerlink" href="#screen-space-transform" title="Permalink to this headline">¶</a></h2>
 <p>Convert a Maya transform node into a screen-space transform. This tool
 will not modify the originally selected node, but will only create a
 new node with new values.</p>
@@ -137,8 +204,18 @@ screen X/Y or screen depth.</p>
 <ol class="arabic simple">
 <li>Select transform nodes.</li>
 <li>Activate viewport.</li>
-<li>Run tool.</li>
-<li>A new locator is created under the active camera</li>
+<li>Run <em>Screen-Space Transform Bake</em> tool.<ul>
+<li>A new locator is created under the active Camera.</li>
+</ul>
+</li>
+<li>Delete the keyframes/connects on the selected transform node, using
+<code class="docutils literal"><span class="pre">Channel</span> <span class="pre">Box</span> <span class="pre">&gt;</span> <span class="pre">(Right</span> <span class="pre">Click)</span> <span class="pre">&gt;</span> <span class="pre">Break</span> <span class="pre">Connections</span></code>.</li>
+<li>Use a Maya <em>Point Constraint</em> to drive the transform(s) from step
+1, with the screen-space transform as the driver.<ul>
+<li>Select screen-space transform node first, then select (step 1)
+transform nodes second and create a <em>Point Constraint</em>.</li>
+</ul>
+</li>
 </ol>
 <p>To run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenspacetransform.tool</span> <span class="k">as</span> <span class="nn">tool</span>
@@ -156,7 +233,7 @@ time of a Marker (or any other transform), assuming a shutter angle of
 <p>The user may change the default options after the motion trail is
 created by selecting the Motion Trail node under the camera and
 editing the attributes in the Channel Box.</p>
-<p>Beware of small <cite>increment</cite> values, and large frame ranges. These will
+<p>Beware of small <em>increment</em> values, and large frame ranges. These will
 cause slow-downs in the playback of the Maya scene.</p>
 <table border="1" class="colwidths-auto docutils" id="id1">
 <caption><span class="caption-text">Motion Trail Attributes</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
@@ -239,7 +316,7 @@ file path onto the OS Copy/Paste clipboard.</p>
 <li>Run tool.</li>
 <li>Open 3DEqualizer</li>
 <li>Select Camera in Object Browser.</li>
-<li>Right-click and run &#8220;Paste Camera (MM Solver)...&#8221;.</li>
+<li>Right-click and run <em>Paste Camera (MM Solver)...</em>.</li>
 </ol>
 <p>To run the tool, use this Python command:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.copypastecamera.tool</span> <span class="k">as</span> <span class="nn">tool</span>
@@ -379,7 +456,12 @@ keyed, and the Controller is deleted.</li>
   <ul>
 <li><a class="reference internal" href="#">General Tools</a><ul>
 <li><a class="reference internal" href="#center-2d-on-selection">Center 2D On Selection</a></li>
-<li><a class="reference internal" href="#smooth-keyframes">Smooth Keyframes</a></li>
+<li><a class="reference internal" href="#smooth-keyframes">Smooth Keyframes</a><ul>
+<li><a class="reference internal" href="#blend-width">Blend Width</a></li>
+<li><a class="reference internal" href="#function-average">Function Average</a></li>
+<li><a class="reference internal" href="#function-fourier">Function Fourier</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#screen-space-transform">Screen-Space Transform</a></li>
 <li><a class="reference internal" href="#create-screen-space-motion-trail">Create Screen-Space Motion Trail</a></li>
 <li><a class="reference internal" href="#channel-sensitivity">Channel Sensitivity</a></li>
@@ -397,8 +479,8 @@ keyed, and the Controller is deleted.</li>
   <p class="topless"><a href="tools_markertools.html"
                         title="previous chapter">Marker Tools</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="licenses.html"
-                        title="next chapter">Licenses</a></p>
+  <p class="topless"><a href="solver_design.html"
+                        title="next chapter">Solver Design</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -430,7 +512,7 @@ keyed, and the Controller is deleted.</li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="licenses.html" title="Licenses"
+          <a href="solver_design.html" title="Solver Design"
              >next</a> |</li>
         <li class="right" >
           <a href="tools_markertools.html" title="Marker Tools"

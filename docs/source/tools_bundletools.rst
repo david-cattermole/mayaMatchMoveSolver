@@ -30,7 +30,11 @@ Move Bundle to Marker (current frame)
 
 Moves the Bundle under it's attached Marker, in screen-space. This
 will make the Marker and Bundle line up perfectly, but will remove
-depth information from the Bundle.
+depth information from the Bundle. This tool only works on the
+**current frame**.
+
+The Bundle is placed at a distance 10 times the distance between the
+Camera and Marker.
 
 An alternative name for this tool is `Re-Project Bundle`.
 

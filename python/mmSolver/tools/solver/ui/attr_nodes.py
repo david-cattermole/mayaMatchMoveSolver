@@ -68,10 +68,22 @@ class PlugNode(nodes.Node):
         return ''
 
     def minValue(self):
+        LOG.debug('GET MIN_VALUE: %r', self.__class__.__name__)
         return ''
 
     def maxValue(self):
+        LOG.debug('GET MAX_VALUE: %r', self.__class__.__name__
         return ''
+
+    def setMinValue(self, value):
+        LOG.debug('SET MIN_VALUE: %r %r', self.__class__.__name__, value
+        # TODO: Set the minimum value.
+        return
+
+    def setMaxValue(self, value):
+        LOG.debug('SET MAX_VALUE: %r %r', self.__class__.__name__, value
+        # TODO: Set the maximum value.
+        return
 
 
 class AttrNode(PlugNode):
@@ -118,6 +130,16 @@ class AttrNode(PlugNode):
         if v is None:
             return const.ATTR_DEFAULT_MAX_UI_VALUE
         return str(v)
+
+    def setMinValue(self, value):
+        LOG.debug('SET MIN_VALUE: %r %r', self.__class__.__name__, value)
+        # TODO: Set the minimum value.
+        return
+
+    def setMaxValue(self, value):
+        LOG.debug('SET MAX_VALUE: %r %r', self.__class__.__name__, value)
+        # TODO: Set the maximum value.
+        return
 
     def mayaNodeName(self):
         return 'node'
@@ -194,7 +216,24 @@ class AttrModel(uimodels.ItemModel):
         set_attr_dict = {
             # const.ATTR_COLUMN_NAME_ATTRIBUTE: 'setName',
             # const.ATTR_COLUMN_NAME_STATE: 'setState',
-            # const.ATTR_COLUMN_NAME_VALUE_MIN: 'setMinValue',
-            # const.ATTR_COLUMN_NAME_VALUE_MAX: 'setMaxValue',
+            const.ATTR_COLUMN_NAME_VALUE_MIN: 'setMinValue',
+            const.ATTR_COLUMN_NAME_VALUE_MAX: 'setMaxValue',
         }
         return self._getSetAttrFuncFromIndex(index, set_attr_dict)
+
+    def indexEnabled(self, index):
+        node = index.internalPointer()
+        return node.enabled()
+
+    def indexEditable(self, index):
+        # TODO: Control the editable flag based on the index.
+        node = index.internalPointer()
+        if node is None:
+            return False
+        editable = False
+        if isinstance(node, AttrNode):
+            column_name = self.getColumnNameFromIndex(index)
+            if column_name in [const.ATTR_COLUMN_NAME_VALUE_MIN,
+                               const.ATTR_COLUMN_NAME_VALUE_MAX]:
+                editable = True
+        return editable

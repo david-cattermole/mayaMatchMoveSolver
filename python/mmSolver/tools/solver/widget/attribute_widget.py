@@ -40,6 +40,8 @@ import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.ui.attr_nodes as attr_nodes
 import mmSolver.tools.solver.ui.convert_to_ui as convert_to_ui
 import mmSolver.tools.solver.widget.nodebrowser_widget as nodebrowser_widget
+import mmSolver.tools.solver.widget.nodebrowser_utils as nodebrowser_utils
+import mmSolver.tools.solver.widget.attribute_treeview as attr_treeview
 import mmSolver.tools.solver.constant as const
 
 
@@ -54,15 +56,21 @@ def _populateWidgetsEnabled(widgets):
     return
 
 
-def _lookupAttrNodes(indexes, model):
+def _lookupMayaNodesFromAttrUINodes(indexes, model):
     maya_nodes = []
     for idx in indexes:
         ui_node = lib_uiquery.get_ui_node_from_index(idx, model)
         if ui_node is None:
             continue
-
-        nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'data')
-        maya_nodes += [x.get_node() for x in nodes]
+        if isinstance(ui_node, attr_nodes.AttrNode):
+            nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'data')
+            maya_nodes += [x.get_node() for x in nodes]
+        elif isinstance(ui_node, attr_nodes.MayaNode):
+            node_uuid = ui_node.data().get('uuid')
+            node_names = lib_maya_utils.get_node_names_from_uuids([node_uuid])
+            maya_nodes += node_names
+        else:
+            LOG.error("Invalid node type: %r", ui_node)
     return maya_nodes
 
 
@@ -71,13 +79,13 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
     def __init__(self, parent=None, *args, **kwargs):
         super(AttributeBrowserWidget, self).__init__(*args, **kwargs)
 
-        self.title_label.setText('Output Attributes')
+        self.ui.title_label.setText('Output Attributes')
 
         self.createToolButtons()
         self.createTreeView()
 
         self.dataChanged.connect(self.updateModel)
-        
+
         self.callback_manager = maya_callbacks.CallbackManager()
         return
 
@@ -94,17 +102,17 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.toggleAnimated_toolButton = QtWidgets.QToolButton(self)
         self.toggleAnimated_toolButton.setText('ANM')
         self.toggleAnimated_toolButton.setCheckable(True)
-        self.toggleButtons_layout.addWidget(self.toggleAnimated_toolButton)
+        self.ui.toggleButtons_layout.addWidget(self.toggleAnimated_toolButton)
 
         self.toggleStatic_toolButton = QtWidgets.QToolButton(self)
         self.toggleStatic_toolButton.setText('STC')
         self.toggleStatic_toolButton.setCheckable(True)
-        self.toggleButtons_layout.addWidget(self.toggleStatic_toolButton)
+        self.ui.toggleButtons_layout.addWidget(self.toggleStatic_toolButton)
 
         self.toggleLocked_toolButton = QtWidgets.QToolButton(self)
         self.toggleLocked_toolButton.setText('LCK')
         self.toggleLocked_toolButton.setCheckable(True)
-        self.toggleButtons_layout.addWidget(self.toggleLocked_toolButton)
+        self.ui.toggleButtons_layout.addWidget(self.toggleLocked_toolButton)
 
         self.toggleAnimated_toolButton.clicked.connect(self.toggleAnimatedClicked)
         self.toggleStatic_toolButton.clicked.connect(self.toggleStaticClicked)
@@ -115,12 +123,18 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         """
         Set up the tree view.
         """
+        self.treeView = attr_treeview.AttributeTreeView()
+        self.ui.treeViewLayout.addWidget(self.treeView)
+
         root = attr_nodes.PlugNode('root')
         self.model = attr_nodes.AttrModel(root, font=self.font)
         self.filterModel = QtCore.QSortFilterProxyModel()
         self.filterModel.setSourceModel(self.model)
         self.filterModel.setDynamicSortFilter(False)
-        self.header = QtWidgets.QHeaderView(QtCore.Qt.Horizontal, parent=self.treeView)
+        self.header = QtWidgets.QHeaderView(
+            QtCore.Qt.Horizontal,
+            parent=self.treeView
+        )
         Qt.QtCompat.QHeaderView.setSectionResizeMode(
             self.header, QtWidgets.QHeaderView.ResizeToContents
         )
@@ -132,6 +146,14 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.treeView.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.selModel = self.treeView.selectionModel()
         self.selModel.selectionChanged.connect(self.selectionChanged)
+
+        # Always hide the UUID Column - it's used for selection of
+        # ModelIndexes with Maya node UUIDs only.
+        hidden = True
+        column = self.model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_UUID
+        )
+        self.treeView.setColumnHidden(column, hidden)
         return
 
     def populateModel(self, model):
@@ -194,7 +216,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         text = text.format(anm=len(anm_list),
                            stc=len(stc_list),
                            lck=len(lck_list))
-        self.info_label.setText(text)
+        self.ui.info_label.setText(text)
         return
 
     def updateToggleButtons(self):
@@ -325,7 +347,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         value = lib_col.get_attribute_toggle_animated_from_collection(col)
         value = not value
         lib_col.set_attribute_toggle_animated_on_collection(col, value)
-
         self.dataChanged.emit()
         return
 
@@ -337,7 +358,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         value = lib_col.get_attribute_toggle_static_from_collection(col)
         value = not value
         lib_col.set_attribute_toggle_static_on_collection(col, value)
-
         self.dataChanged.emit()
         return
 
@@ -349,22 +369,40 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         value = lib_col.get_attribute_toggle_locked_from_collection(col)
         value = not value
         lib_col.set_attribute_toggle_locked_on_collection(col, value)
-
         self.dataChanged.emit()
+        return
+
+    @QtCore.Slot(list)
+    def setNodeSelection(self, values):
+        """
+        Override the tree view selection based on Maya Node UUIDs.
+        """
+        nodebrowser_utils.setNodeSelectionWithUUID(
+            self.treeView,
+            self.model,
+            self.filterModel,
+            self.selModel,
+            const.ATTR_COLUMN_NAME_UUID,
+            values,
+        )
         return
 
     @QtCore.Slot(QtCore.QItemSelection, QtCore.QItemSelection)
     def selectionChanged(self, selected, deselected):
         select_indexes = [idx for idx in selected.indexes()]
         deselect_indexes = [idx for idx in deselected.indexes()]
-        select_nodes = _lookupAttrNodes(
+        select_nodes = _lookupMayaNodesFromAttrUINodes(
             select_indexes,
             self.filterModel)
-        deselect_nodes = _lookupAttrNodes(
+        deselect_nodes = _lookupMayaNodesFromAttrUINodes(
             deselect_indexes,
             self.filterModel)
-        lib_maya_utils.add_scene_selection(select_nodes)
-        lib_maya_utils.remove_scene_selection(deselect_nodes)
+        try:
+            mmapi.set_solver_running(True) # disable selection callback.
+            lib_maya_utils.add_scene_selection(select_nodes)
+            lib_maya_utils.remove_scene_selection(deselect_nodes)
+        finally:
+            mmapi.set_solver_running(False) # enable selection callback
         return
 
     @QtCore.Slot(bool)

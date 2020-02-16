@@ -24,12 +24,16 @@ qtpyutils.override_binding_order()
 
 import Qt.QtCore as QtCore
 
+import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
-import mmSolver.ui.nodes as nodes
+import mmSolver.ui.nodes as uinodes
 import mmSolver.tools.solver.constant as const
 
 
-class ObjectNode(nodes.Node):
+LOG = mmSolver.logger.get_logger()
+
+
+class ObjectNode(uinodes.Node):
     def __init__(self, name,
                  parent=None,
                  data=None,
@@ -52,6 +56,13 @@ class ObjectNode(nodes.Node):
             checkable=checkable,
             neverHasChildren=neverHasChildren)
         self.typeInfo = 'object'
+
+    def uuid(self):
+        uuid = ''
+        d = self.data()
+        if not d:
+            return uuid
+        return d.get('uuid', '')
 
     def weight(self):
         return const.OBJECT_DEFAULT_WEIGHT_UI_VALUE
@@ -251,8 +262,10 @@ class BundleNode(ObjectNode):
 
 
 class ObjectModel(uimodels.ItemModel):
+
     def __init__(self, root, font=None):
         super(ObjectModel, self).__init__(root, font=font)
+        return
 
     def defaultNodeType(self):
         return MarkerNode
@@ -264,6 +277,7 @@ class ObjectModel(uimodels.ItemModel):
             2: const.OBJECT_COLUMN_NAME_DEVIATION_FRAME,
             3: const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE,
             4: const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM,
+            5: const.OBJECT_COLUMN_NAME_UUID,
         }
         return column_names
 
@@ -274,6 +288,7 @@ class ObjectModel(uimodels.ItemModel):
             const.OBJECT_COLUMN_NAME_DEVIATION_FRAME: QtCore.Qt.AlignCenter,
             const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE: QtCore.Qt.AlignCenter,
             const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: QtCore.Qt.AlignCenter,
+            const.OBJECT_COLUMN_NAME_UUID: QtCore.Qt.AlignRight,
         }
         return values
 
@@ -284,6 +299,8 @@ class ObjectModel(uimodels.ItemModel):
             const.OBJECT_COLUMN_NAME_DEVIATION_FRAME: 'deviation',
             const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE: 'avgDeviation',
             const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: 'maxDeviation',
+            const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: 'maxDeviation',
+            const.OBJECT_COLUMN_NAME_UUID: 'uuid',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 

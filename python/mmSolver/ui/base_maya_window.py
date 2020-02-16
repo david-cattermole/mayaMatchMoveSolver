@@ -159,8 +159,17 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
         if cls.instance.isHidden():
             if show is True:
                 cls.instance.show()
-        else:
-            if auto_raise is True:
-                cls.instance.raise_()
-                cls.instance.activateWindow()
+        if auto_raise is True:
+            # Force the window state to bring the window to the
+            # front, and "restore" the state, even if the window
+            # is minimised. Confirmed to work on MS Windows 10.
+            state = cls.instance.windowState()
+            state = QtCore.Qt.WindowNoState
+            state |= QtCore.Qt.WindowActive
+            cls.instance.setWindowState(state)
+
+            cls.instance.raise_()
+            cls.instance.show()
+            cls.instance.activateWindow()
+
         return cls.instance

@@ -28,7 +28,7 @@ import Qt.QtCore as QtCore
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.ui.converttypes as converttypes
-import mmSolver.ui.nodes as nodes
+import mmSolver.ui.nodes as uinodes
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.logger
 
@@ -75,6 +75,7 @@ def getNameFromDict(index, names_dict, lookup_dict):
 
 
 class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
+
     def __init__(self, rootNode, font=None):
         super(ItemModel, self).__init__()
         self._rootNode = None
@@ -82,7 +83,7 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         self.setRootNode(rootNode)
 
     def defaultNodeType(self):
-        return nodes.Node
+        return uinodes.Node
 
     def columnNames(self):
         column_names = {
@@ -193,6 +194,7 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         del self._rootNode
         self._rootNode = rootNode
         self.endResetModel()
+        return
 
     def getNode(self, index):
         node = None
@@ -256,7 +258,7 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
             return False
         node = index.internalPointer()
 
-        if not self.indexEditable():
+        if not self.indexEditable(index):
             LOG.warning('setData not editable: %r %r %r', index, value, node)
             return False
 
@@ -316,8 +318,7 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
     def index(self, row, column, parent):
         parentNode = self.getNode(parent)
         if row < 0 and row >= parentNode.childCount():
-            pass
-            # LOG.warning('ItemModel index: %r', row)
+            return QtCore.QModelIndex()
         childItem = parentNode.child(row)
         if childItem:
             return self.createIndex(row, column, childItem)
@@ -354,7 +355,7 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
             self._node_list = list(node_list)
 
     def defaultNodeType(self):
-        return nodes.Node
+        return uinodes.Node
 
     def columnNames(self):
         column_names = {

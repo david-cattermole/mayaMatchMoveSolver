@@ -22,6 +22,8 @@ Get the CMinpack source code.
 import sys
 import os
 import shutil
+
+sys.path.append(os.path.dirname(__file__))
 import download_unpack
 
 

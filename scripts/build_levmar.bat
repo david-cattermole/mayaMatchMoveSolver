@@ -30,7 +30,7 @@ CHDIR %ROOT%
 SET INSTALL_DIR="%ROOT%\install\levmar"
 
 :: Extract LevMar
-python "%THIS_DIR%get_levmar.py" "%ROOT%\archives" "%ROOT%\working" "%ROOT%\patches"
+python2.exe "%THIS_DIR%get_levmar.py" "%ROOT%\archives" "%ROOT%\working" "%ROOT%\patches"
 
 :: Build Library
 MKDIR build

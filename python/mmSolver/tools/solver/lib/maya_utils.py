@@ -112,6 +112,19 @@ def remove_scene_selection(nodes):
     return
 
 
+def get_node_names_from_uuids(uuids):
+    """Get the full DAG path for the given UUIDs.
+
+    :param uuids: The UUIDs of Maya nodes.
+    :type uuids: list of str
+
+    :return: List of full path node names.
+    :rtype: list of str or empty list
+    """
+    sel = maya.cmds.ls(uuids, long=True) or []
+    return sel
+
+
 def get_current_frame():
     """
     Get the current Maya frame number.

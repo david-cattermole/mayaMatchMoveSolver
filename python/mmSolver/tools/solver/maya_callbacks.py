@@ -20,6 +20,7 @@ Set up callbacks for Maya events.
 """
 
 import collections
+import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
@@ -28,11 +29,13 @@ import mmSolver.ui.uiutils as uiutils
 import mmSolver.utils.node as node_utils
 
 TYPE_NEW_SCENE = 'new_scene'
+TYPE_SELECTION_CHANGED = 'selection_changed'
 TYPE_ATTRIBUTE = 'attribute'
 TYPE_COLLECTION = 'collection'
 TYPE_MARKER = 'marker'
 TYPE_LIST = [
     TYPE_NEW_SCENE,
+    TYPE_SELECTION_CHANGED,
     TYPE_ATTRIBUTE,
     TYPE_MARKER,
     TYPE_COLLECTION,
@@ -204,6 +207,9 @@ def add_callbacks_attribute(node_uuid, node_path, update_func):
 def add_callbacks_to_collection(node_uuid, node_path, update_func):
     """
     Add all callbacks for a node from a 'Collection' class.
+
+    :return: List of callback ids created.
+    :rtype: list of maya.OpenMaya.MCallbackId
     """
     callback_ids = []
     node_mobj = node_utils.get_as_object(node_path)
@@ -228,6 +234,8 @@ def add_callbacks_to_marker(node_uuid, node_path, update_func):
           not live under camera anymore), specific to marker
           objects.
 
+    :return: List of callback ids created.
+    :rtype: list of maya.OpenMaya.MCallbackId
     """
     callback_ids = []
     node_mobj = node_utils.get_as_object(node_path)
@@ -265,6 +273,9 @@ def add_callbacks_to_marker(node_uuid, node_path, update_func):
 def add_callbacks_to_marker_group(node_uuid, node_path, update_func):
     """
     Add all callbacks for a node from a 'MarkerGroup' class.
+
+    :return: List of callback ids created.
+    :rtype: list of maya.OpenMaya.MCallbackId
     """
     callback_ids = []
     node_mobj = node_utils.get_as_object(node_path)
@@ -284,6 +295,9 @@ def add_callbacks_to_marker_group(node_uuid, node_path, update_func):
 def add_callbacks_to_bundle(node_uuid, node_path, update_func):
     """
     Add all callbacks for a node from a 'Bundle' class.
+
+    :return: List of callback ids created.
+    :rtype: list of maya.OpenMaya.MCallbackId
     """
     callback_ids = []
     node_mobj = node_utils.get_as_object(node_path)
@@ -319,7 +333,10 @@ def add_callbacks_to_bundle(node_uuid, node_path, update_func):
 
 def add_callbacks_to_camera(node_uuid, node_path, update_func):
     """
-    Add all callbacks for a node from a 'Marker' class.
+    Add all callbacks for a node from a 'Camera' class.
+
+    :return: List of callback ids created.
+    :rtype: list of maya.OpenMaya.MCallbackId
     """
     callback_ids = []
     node_mobj = node_utils.get_as_object(node_path)
@@ -340,6 +357,40 @@ def add_callbacks_to_camera(node_uuid, node_path, update_func):
         node_deleted_func,
         clientData,
     )
+    callback_ids.append(callback_id)
+    return callback_ids
+
+
+def add_selection_changed_callback(obj_UI):
+    """
+    Add a selection event callback to Maya.
+
+    Note we can get all Event Message and Condition names::
+
+    >>> import maya.OpenMaya as OpenMaya
+    >>> array = []
+    >>> OpenMaya.MEventMessage.getEventNames(array)
+    >>> for x in sorted(array): print x
+    >>> OpenMaya.MConditionMessage.getConditionNames(array)
+    >>> for x in sorted(array): print x
+    >>>
+
+    :param obj_UI: Expected to be an instance of the Solver UI
+                   window class (Qt).
+    :type obj_UI: SolverWindow
+
+    :return: List of callback ids created.
+    :rtype: list of maya.OpenMaya.MCallbackId
+    """
+    callback_ids = []
+
+    clientData = obj_UI
+    func = selection_changed_func
+    callback_id = OpenMaya.MEventMessage.addEventCallback(
+        "SelectionChanged",
+        func,
+        clientData)
+
     callback_ids.append(callback_id)
     return callback_ids
 
@@ -484,4 +535,28 @@ def new_scene_func(clientData):
     except RuntimeError:
         msg = 'New Maya Scene callback failed to close UI: ui=%r'
         LOG.warning(msg, clientData)
+    return
+
+
+def selection_changed_func(clientData):
+    """The Maya selection has changed, we must synchronize the Maya
+    selection with the Solver UI.
+
+    :param clientData: The Qt window object class.
+    :type clientData: SolverWindow
+
+    :return: Nothing.
+    :rtype: None
+    """
+    if mmapi.is_solver_running() is True:
+        return
+    # TODO: Try not to run this function many, many times at once. We
+    # could keep a timer and only update every 0.01 seconds? Or
+    # perhaps we can try to get the current "chunk" or the current
+    # process and only run this function when Maya is idle?
+    #
+    # TODO: Try to detect any times when a user won't want to update
+    # the Solver UI selection syncing.
+    sel_uuids = maya.cmds.ls(selection=True, uuid=True) or []
+    clientData.setNodeSelection(sel_uuids)
     return

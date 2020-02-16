@@ -34,7 +34,7 @@ import mmSolver.tools.solver.widget.ui_nodebrowser_widget as ui_nodebrowser_widg
 LOG = mmSolver.logger.get_logger()
 
 
-class NodeBrowserWidget(QtWidgets.QWidget, ui_nodebrowser_widget.Ui_Form):
+class NodeBrowserWidget(QtWidgets.QWidget):
 
     nodeAdded = QtCore.Signal()
     nodeRemoved = QtCore.Signal()
@@ -42,14 +42,15 @@ class NodeBrowserWidget(QtWidgets.QWidget, ui_nodebrowser_widget.Ui_Form):
     dataChanged = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
-        super(NodeBrowserWidget, self).__init__(*args, **kwargs)
-        self.setupUi(self)
+        super(NodeBrowserWidget, self).__init__(parent=parent, *args, **kwargs)
+        self.ui = ui_nodebrowser_widget.Ui_Form()
+        self.ui.setupUi(self)
 
         # Add and Remove buttons
-        self.add_toolButton.clicked.connect(
+        self.ui.add_toolButton.clicked.connect(
             self.addClicked
         )
-        self.remove_toolButton.clicked.connect(
+        self.ui.remove_toolButton.clicked.connect(
             self.removeClicked
         )
         return

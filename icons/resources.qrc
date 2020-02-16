@@ -1,6 +1,9 @@
 <RCC>
   <qresource>
     <file alias="mmSolver_attr.png">ui/mmSolver_attr.png</file>
+    <file alias="mmSolver_attr_x.png">ui/mmSolver_attr_x.png</file>
+    <file alias="mmSolver_attr_y.png">ui/mmSolver_attr_y.png</file>
+    <file alias="mmSolver_attr_z.png">ui/mmSolver_attr_z.png</file>
     <file alias="mmSolver_node.png">ui/mmSolver_node.png</file>
     <file alias="mmSolver_plug.png">ui/mmSolver_plug.png</file>
     <file alias="mmSolver_bundle.png">ui/mmSolver_bundle.png</file>

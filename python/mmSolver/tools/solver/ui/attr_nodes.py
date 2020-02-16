@@ -44,7 +44,7 @@ class PlugNode(nodes.Node):
                  checkable=False,
                  neverHasChildren=False):
         if icon is None:
-            icon = ':/mmSolver_plug.png'
+            icon = const.PLUG_ICON_NAME
         super(PlugNode, self).__init__(
             name,
             data=data,
@@ -78,7 +78,16 @@ class AttrNode(PlugNode):
     def __init__(self, name,
                  data=None,
                  parent=None):
-        icon = ':/mmSolver_attr.png'
+        icon = const.ATTR_ICON_NAME
+        attrs_x = ['translateX', 'rotateX', 'scaleX']
+        attrs_y = ['translateY', 'rotateY', 'scaleY']
+        attrs_z = ['translateZ', 'rotateZ', 'scaleZ']
+        if name in attrs_x:
+            icon = const.ATTR_X_ICON_NAME
+        elif name in attrs_y:
+            icon = const.ATTR_Y_ICON_NAME
+        elif name in attrs_z:
+            icon = const.ATTR_Z_ICON_NAME
         super(AttrNode, self).__init__(
             name,
             data=data,
@@ -133,7 +142,7 @@ class MayaNode(PlugNode):
     def __init__(self, name,
                  data=None,
                  parent=None):
-        icon = ':/mmSolver_node.png'
+        icon = const.NODE_ICON_NAME
         super(MayaNode, self).__init__(
             name,
             data=data,

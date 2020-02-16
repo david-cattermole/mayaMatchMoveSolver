@@ -314,3 +314,16 @@ SOLVER_STD_DESC_DEFAULT = (
     'Solve animated and static attributes on root frames, '
     'then solve animated attributes on frames.'
 )
+
+# Icon names
+OBJECT_ICON_NAME = ':/mmSolver_object.png'
+MARKER_ICON_NAME = ':/mmSolver_marker.png'
+BUNDLE_ICON_NAME = ':/mmSolver_bundle.png'
+CAMERA_ICON_NAME = ':/mmSolver_camera.png'
+PLUG_ICON_NAME = ':/mmSolver_plug.png'
+NODE_ICON_NAME = ':/mmSolver_node.png'
+ATTR_ICON_NAME = ':/mmSolver_attr.png'
+ATTR_X_ICON_NAME = ':/mmSolver_attr_x.png'
+ATTR_Y_ICON_NAME = ':/mmSolver_attr_y.png'
+ATTR_Z_ICON_NAME = ':/mmSolver_attr_z.png'
+SOLVER_STEP_ICON_NAME = ':/mmSolver_solverStep.png'

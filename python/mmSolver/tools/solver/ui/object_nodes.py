@@ -44,7 +44,7 @@ class ObjectNode(uinodes.Node):
                  checkable=False,
                  neverHasChildren=False):
         if icon is None:
-            icon = ':/mmSolver_object.png'
+            icon = const.OBJECT_ICON_NAME
         super(ObjectNode, self).__init__(
             name,
             data=data,
@@ -81,7 +81,7 @@ class MarkerNode(ObjectNode):
     def __init__(self, name,
                  data=None,
                  parent=None):
-        icon = ':/mmSolver_marker.png'
+        icon = const.MARKER_ICON_NAME
         super(MarkerNode, self).__init__(
             name,
             data=data,
@@ -165,7 +165,7 @@ class CameraNode(ObjectNode):
     def __init__(self, name,
                  data=None,
                  parent=None):
-        icon = ':/mmSolver_camera.png'
+        icon = const.CAMERA_ICON_NAME
         super(CameraNode, self).__init__(
             name,
             data=data,
@@ -238,7 +238,7 @@ class BundleNode(ObjectNode):
     def __init__(self, name,
                  data=None,
                  parent=None):
-        icon = ':/mmSolver_bundle.png'
+        icon = const.BUNDLE_ICON_NAME
         super(BundleNode, self).__init__(
             name,
             data=data,

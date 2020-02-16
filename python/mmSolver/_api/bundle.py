@@ -134,6 +134,19 @@ class Bundle(object):
             self._mfn = OpenMaya.MFnDagNode()
         return
 
+    def get_node_uid(self):
+        """
+        Get the bundle transform unique identifier.
+
+        :return: The bundle UUID or None
+        :rtype: None or str or unicode
+        """
+        node = self.get_node()
+        if node is None:
+            return None
+        uids = maya.cmds.ls(node, uuid=True) or []
+        return uids[0]
+
     ############################################################################
 
     def create_node(self,

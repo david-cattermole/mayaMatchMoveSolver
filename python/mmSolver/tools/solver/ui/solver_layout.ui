@@ -16,7 +16,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,1,0,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1,0,0,0">
    <property name="spacing">
     <number>1</number>
    </property>
@@ -62,7 +62,7 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout">
+       <layout class="QVBoxLayout" name="objectVerticalLayout">
         <property name="spacing">
          <number>1</number>
         </property>
@@ -96,7 +96,7 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <layout class="QVBoxLayout" name="attributeVerticalLayout">
         <property name="spacing">
          <number>1</number>
         </property>
@@ -149,7 +149,7 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_9">
+     <layout class="QVBoxLayout" name="solveStateVerticalLayout">
       <property name="spacing">
        <number>1</number>
       </property>

@@ -39,6 +39,8 @@ import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.ui.object_nodes as object_nodes
 import mmSolver.tools.solver.ui.convert_to_ui as convert_to_ui
 import mmSolver.tools.solver.widget.nodebrowser_widget as nodebrowser_widget
+import mmSolver.tools.solver.widget.nodebrowser_utils as nodebrowser_utils
+import mmSolver.tools.solver.widget.object_treeview as object_treeview
 import mmSolver.tools.solver.constant as const
 
 
@@ -53,7 +55,7 @@ def _populateWidgetsEnabled(widgets):
     return
 
 
-def _lookupNodes(indexes, model):
+def _lookupUINodesFromIndexes(indexes, model):
     """
     Find the UI nodes, from the list of Qt indexes.
     """
@@ -68,7 +70,7 @@ def _lookupNodes(indexes, model):
         typeInfo = ui_node.typeInfo
         nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], typeInfo)
         if typeInfo == 'camera':
-            maya_nodes += [x.get_shape_node() for x in nodes]
+            maya_nodes += [x.get_transform_node() for x in nodes]
         else:
             # For bundles and markers
             maya_nodes += [x.get_node() for x in nodes]
@@ -78,9 +80,10 @@ def _lookupNodes(indexes, model):
 class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
 
     def __init__(self, parent=None, *args, **kwargs):
-        super(ObjectBrowserWidget, self).__init__(*args, **kwargs)
+        super(ObjectBrowserWidget, self).__init__(
+            parent=parent, *args, **kwargs)
 
-        self.title_label.setText('Input Objects')
+        self.ui.title_label.setText('Input Objects')
 
         self.createToolButtons()
         self.createTreeView()
@@ -103,17 +106,17 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.toggleCamera_toolButton = QtWidgets.QToolButton(self)
         self.toggleCamera_toolButton.setText('CAM')
         self.toggleCamera_toolButton.setCheckable(True)
-        self.toggleButtons_layout.addWidget(self.toggleCamera_toolButton)
+        self.ui.toggleButtons_layout.addWidget(self.toggleCamera_toolButton)
 
         self.toggleMarker_toolButton = QtWidgets.QToolButton(self)
         self.toggleMarker_toolButton.setText('MKR')
         self.toggleMarker_toolButton.setCheckable(True)
-        self.toggleButtons_layout.addWidget(self.toggleMarker_toolButton)
+        self.ui.toggleButtons_layout.addWidget(self.toggleMarker_toolButton)
 
         self.toggleBundle_toolButton = QtWidgets.QToolButton(self)
         self.toggleBundle_toolButton.setText('BND')
         self.toggleBundle_toolButton.setCheckable(True)
-        self.toggleButtons_layout.addWidget(self.toggleBundle_toolButton)
+        self.ui.toggleButtons_layout.addWidget(self.toggleBundle_toolButton)
 
         self.toggleCamera_toolButton.clicked.connect(self.toggleCameraClicked)
         self.toggleMarker_toolButton.clicked.connect(self.toggleMarkerClicked)
@@ -124,6 +127,9 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         """
         Set up the tree view.
         """
+        self.treeView = object_treeview.ObjectTreeView()
+        self.ui.treeViewLayout.addWidget(self.treeView)
+
         root = object_nodes.ObjectNode('root')
         self.model = object_nodes.ObjectModel(root, font=self.font)
         self.filterModel = QtCore.QSortFilterProxyModel()
@@ -143,6 +149,14 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.treeView.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.selModel = self.treeView.selectionModel()
         self.selModel.selectionChanged.connect(self.selectionChanged)
+
+        # Always hide the UUID Column - it's used for selection of
+        # ModelIndexes with Maya node UUIDs only.
+        hidden = True
+        column = self.model.getColumnIndexFromColumnName(
+            const.OBJECT_COLUMN_NAME_UUID
+        )
+        self.treeView.setColumnHidden(column, hidden)
         return
 
     def populateModel(self, model):
@@ -194,7 +208,7 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             mkr=len(mkr_list),
             bnd=len(bnd_list),
         )
-        self.info_label.setText(text)
+        self.ui.info_label.setText(text)
         return
 
     def updateToggleButtons(self):
@@ -318,7 +332,6 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         value = lib_col.get_object_toggle_camera_from_collection(col)
         value = not value
         lib_col.set_object_toggle_camera_on_collection(col, value)
-
         self.dataChanged.emit()
         return
 
@@ -330,7 +343,6 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         value = lib_col.get_object_toggle_marker_from_collection(col)
         value = not value
         lib_col.set_object_toggle_marker_on_collection(col, value)
-
         self.dataChanged.emit()
         return
 
@@ -342,8 +354,22 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         value = lib_col.get_object_toggle_bundle_from_collection(col)
         value = not value
         lib_col.set_object_toggle_bundle_on_collection(col, value)
-
         self.dataChanged.emit()
+        return
+
+    @QtCore.Slot(list)
+    def setNodeSelection(self, values):
+        """
+        Override the tree view selection based on Maya Node UUIDs.
+        """
+        nodebrowser_utils.setNodeSelectionWithUUID(
+            self.treeView,
+            self.model,
+            self.filterModel,
+            self.selModel,
+            const.OBJECT_COLUMN_NAME_UUID,
+            values,
+        )
         return
 
     @QtCore.Slot(QtCore.QItemSelection, QtCore.QItemSelection)
@@ -354,16 +380,14 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         """
         select_indexes = [idx for idx in selected.indexes()]
         deselect_indexes = [idx for idx in deselected.indexes()]
-
-        select_nodes = _lookupNodes(
+        select_nodes = _lookupUINodesFromIndexes(
             select_indexes,
             self.filterModel
         )
-        deselect_nodes = _lookupNodes(
+        deselect_nodes = _lookupUINodesFromIndexes(
             deselect_indexes,
             self.filterModel
         )
-
         lib_maya_utils.add_scene_selection(select_nodes)
         lib_maya_utils.remove_scene_selection(deselect_nodes)
         return

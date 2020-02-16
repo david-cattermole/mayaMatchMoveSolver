@@ -216,6 +216,7 @@ OBJECT_COLUMN_NAME_WEIGHT = 'Weight'
 OBJECT_COLUMN_NAME_DEVIATION_FRAME = 'Frame Dev (px)'
 OBJECT_COLUMN_NAME_DEVIATION_AVERAGE = 'Avg Dev (px)'
 OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM = 'Max Dev (px @ frame)'
+OBJECT_COLUMN_NAME_UUID = 'Maya Node UUID'
 
 # The Column Names for the Attribute Model (used to display output
 # Attributes to the user).
@@ -223,6 +224,7 @@ ATTR_COLUMN_NAME_ATTRIBUTE = 'Attr'
 ATTR_COLUMN_NAME_STATE = 'State'
 ATTR_COLUMN_NAME_VALUE_MIN = 'Min'
 ATTR_COLUMN_NAME_VALUE_MAX = 'Max'
+ATTR_COLUMN_NAME_UUID = 'Maya Node UUID'
 
 # The Column Names for the Solver Model (used to display Solver Steps
 # to the user).

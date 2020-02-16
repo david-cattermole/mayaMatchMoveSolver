@@ -237,6 +237,19 @@ class Marker(object):
         self.add_attributes()
         return
 
+    def get_node_uid(self):
+        """
+        Get the marker transform unique identifier.
+
+        :return: The marker UUID or None
+        :rtype: None or str or unicode
+        """
+        node = self.get_node()
+        if node is None:
+            return None
+        uids = maya.cmds.ls(node, uuid=True) or []
+        return uids[0]
+
     ############################################################################
 
     def get_deviation_anim_curve_fn(self):

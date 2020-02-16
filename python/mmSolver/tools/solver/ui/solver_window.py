@@ -79,6 +79,14 @@ class SolverWindow(BaseWindow):
         # Callbacks
         self.callback_manager = maya_callbacks.CallbackManager()
 
+        # Add Maya callback to track Selection
+        callback_ids = maya_callbacks.add_selection_changed_callback(self)
+        self.callback_manager.add_node_ids(
+            maya_callbacks.TYPE_SELECTION_CHANGED,
+            None,
+            callback_ids,
+        )
+
         # Add Maya callbacks for the UI
         callback_ids = maya_callbacks.add_callbacks_new_scene(self)
         self.callback_manager.add_node_ids(
@@ -561,6 +569,12 @@ class SolverWindow(BaseWindow):
     @staticmethod
     def displayMeshesWhileSolvingActionToggledCB(value):
         lib_state.set_display_meshes_while_solving_state(value)
+        return
+
+    @QtCore.Slot(list)
+    def setNodeSelection(self, values):
+        self.subForm.object_browser.setNodeSelection(values)
+        self.subForm.attribute_browser.setNodeSelection(values)
         return
 
     def launchHelpCB(self):

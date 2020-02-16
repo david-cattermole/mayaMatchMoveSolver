@@ -63,25 +63,29 @@ def markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd):
         if show_cam is False:
             cam_node = root
         else:
-            cam_shp_node = cam.get_shape_node()
-            cam_name = cam.get_shape_node()
+            cam_tfm_node = cam.get_transform_node()
+            cam_name = cam.get_transform_node()
             cam_name = cam_name.rpartition('|')[-1]
             cam_node = None
-            if cam_shp_node not in cam_nodes_store:
+            if cam_tfm_node not in cam_nodes_store:
+                cam_uuid = cam.get_transform_uid()
                 data = {
+                    'uuid': cam_uuid,
                     'marker': mkr,
                     'camera': cam,
                 }
                 cam_node = object_nodes.CameraNode(cam_name, data=data, parent=root)
-                cam_nodes_store[cam_shp_node] = cam_node
+                cam_nodes_store[cam_tfm_node] = cam_node
             else:
-                cam_node = cam_nodes_store[cam_shp_node]
+                cam_node = cam_nodes_store[cam_tfm_node]
         assert cam_node is not None
 
         # The marker.
         mkr_node = cam_node
         if show_mkr is True:
+            mkr_uuid = mkr.get_node_uid()
             data = {
+                'uuid': mkr_uuid,
                 'marker': mkr,
                 'camera': cam,
             }
@@ -94,10 +98,12 @@ def markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd):
             continue
         bnd_name = bnd.get_node()
         bnd_name = bnd_name.rpartition('|')[-1]
+        bnd_uuid = bnd.get_node_uid()
         data = {
             'marker': mkr,
             'bundle': bnd,
             'camera': cam,
+            'uuid': bnd_uuid,
         }
         assert mkr_node is not None
         bnd_node = object_nodes.BundleNode(bnd_name, data=data, parent=mkr_node)
@@ -137,8 +143,18 @@ def attributesToUINodes(attr_list, show_anm, show_stc, show_lck):
         maya_node = maya_nodes.get(n)
         data = {'data': attr}
         if maya_node is None:
-            maya_node = attr_nodes.MayaNode(n, data=data, parent=root)
+            uuid = attr.get_node_uid()
+            node_data = dict()
+            # Add the first attribute to the MayaNode object.
+            node_data['data'] = [attr]
+            node_data['uuid'] = uuid
+            maya_node = attr_nodes.MayaNode(n, data=node_data, parent=root)
             maya_nodes[n] = maya_node
+        else:
+            # Add subsequent attributes to the MayaNode object.
+            node_data = maya_node.data()
+            node_data['data'].append(attr)
+            maya_node.setData(node_data)
         a = attr.get_attr()
         attr_node = attr_nodes.AttrNode(a, data=data, parent=maya_node)
     return root

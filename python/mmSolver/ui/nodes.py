@@ -20,6 +20,17 @@ Defines a basic node class able to be used for tree data models.
 """
 
 
+def get_nodes_recursively(top_node):
+    nodes = []
+    children = top_node.children()
+    if len(children) > 1:
+        for child in children:
+            nodes += get_nodes_recursively(child)
+    else:
+        nodes.append(top_node)
+    return nodes
+
+
 class Node(object):
     def __init__(self, name,
                  data=None,

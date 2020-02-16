@@ -204,6 +204,9 @@ def add_callbacks_attribute(node_uuid, node_path, update_func):
 def add_callbacks_to_collection(node_uuid, node_path, update_func):
     """
     Add all callbacks for a node from a 'Collection' class.
+
+    :return: List of callback ids created.
+    :rtype: list of maya.OpenMaya.MCallbackId
     """
     callback_ids = []
     node_mobj = node_utils.get_as_object(node_path)
@@ -228,6 +231,8 @@ def add_callbacks_to_marker(node_uuid, node_path, update_func):
           not live under camera anymore), specific to marker
           objects.
 
+    :return: List of callback ids created.
+    :rtype: list of maya.OpenMaya.MCallbackId
     """
     callback_ids = []
     node_mobj = node_utils.get_as_object(node_path)
@@ -265,6 +270,9 @@ def add_callbacks_to_marker(node_uuid, node_path, update_func):
 def add_callbacks_to_marker_group(node_uuid, node_path, update_func):
     """
     Add all callbacks for a node from a 'MarkerGroup' class.
+
+    :return: List of callback ids created.
+    :rtype: list of maya.OpenMaya.MCallbackId
     """
     callback_ids = []
     node_mobj = node_utils.get_as_object(node_path)
@@ -284,6 +292,9 @@ def add_callbacks_to_marker_group(node_uuid, node_path, update_func):
 def add_callbacks_to_bundle(node_uuid, node_path, update_func):
     """
     Add all callbacks for a node from a 'Bundle' class.
+
+    :return: List of callback ids created.
+    :rtype: list of maya.OpenMaya.MCallbackId
     """
     callback_ids = []
     node_mobj = node_utils.get_as_object(node_path)
@@ -319,7 +330,10 @@ def add_callbacks_to_bundle(node_uuid, node_path, update_func):
 
 def add_callbacks_to_camera(node_uuid, node_path, update_func):
     """
-    Add all callbacks for a node from a 'Marker' class.
+    Add all callbacks for a node from a 'Camera' class.
+
+    :return: List of callback ids created.
+    :rtype: list of maya.OpenMaya.MCallbackId
     """
     callback_ids = []
     node_mobj = node_utils.get_as_object(node_path)

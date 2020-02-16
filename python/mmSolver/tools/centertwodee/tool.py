@@ -23,6 +23,7 @@ import warnings
 
 import maya.cmds
 
+import mmSolver.api as mmapi
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.reproject as reproject_utils
@@ -81,11 +82,13 @@ def main():
     if len(nodes) == 0:
         msg = 'No objects selected, removing 2D centering.'
         LOG.warning(msg)
+        mmapi.load_plugin()
         reproject_utils.remove_reprojection_from_camera(cam_tfm, cam_shp)
         reproject_utils.reset_pan_zoom(cam_tfm, cam_shp)
     elif len(nodes) == 1:
         msg = 'Applying 2D centering to %r'
         LOG.warning(msg, nodes)
+        mmapi.load_plugin()
         reproj_nodes = reproject_utils.find_reprojection_nodes(cam_tfm, cam_shp)
         if len(reproj_nodes) > 0:
             maya.cmds.delete(reproj_nodes)
@@ -119,6 +122,7 @@ def remove():
         LOG.warning(msg)
         return
 
+    mmapi.load_plugin()
     reproject_utils.remove_reprojection_from_camera(cam_tfm, cam_shp)
     reproject_utils.reset_pan_zoom(cam_tfm, cam_shp)
     return

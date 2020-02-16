@@ -42,8 +42,6 @@ tests/**/*.tiff
 tests/**/*.iff
 tests/**/*.png
 
-icons/library
-
 external/build/*
 external/install/*
 external/working/*

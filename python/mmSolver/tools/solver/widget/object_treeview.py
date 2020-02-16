@@ -27,10 +27,28 @@ import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
+import mmSolver.tools.solver.ui.object_nodes as object_nodes
+import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
+import mmSolver.tools.solver.lib.attr as lib_attr
+import mmSolver.tools.solver.lib.state as lib_state
+import mmSolver.tools.solver.lib.uiquery as lib_uiquery
+
 import mmSolver.logger
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def _get_selected_maya_nodes(cls_obj):
+    tree_view = cls_obj
+    filter_model = cls_obj.model()
+    ui_nodes = lib_uiquery.get_selected_ui_nodes(
+        tree_view,
+        filter_model,
+    )
+    uuid_list = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'uuid')
+    nodes = lib_maya_utils.get_node_names_from_uuids(uuid_list)
+    return nodes
 
 
 class ObjectTreeView(QtWidgets.QTreeView):
@@ -39,14 +57,37 @@ class ObjectTreeView(QtWidgets.QTreeView):
         super(ObjectTreeView, self).__init__(parent, *args, **kwargs)
         return
 
+    def selection_swap(self):
+        node_list = _get_selected_maya_nodes(self)
+        LOG.debug("Swap Selection: %r", node_list)
+        import mmSolver.tools.selection.tools as tools
+        lib_maya_utils.set_scene_selection(node_list)
+        tools.swap_between_selected_markers_and_bundles()
+        return
+
+    def selection_both_markers_bundles(self):
+        node_list = _get_selected_maya_nodes(self)
+        LOG.debug("Both Markers and Bundles: %r", node_list)
+        import mmSolver.tools.selection.tools as tools
+        lib_maya_utils.set_scene_selection(node_list)
+        tools.select_both_markers_and_bundles()
+        return
+
     def contextMenuEvent(self, event):
-        LOG.info('Object TreeView Context Menu Event: %r', event)
+        LOG.debug('Object TreeView Context Menu Event: %r', event)
         menu = QtWidgets.QMenu(self)
-        cutAct = QtWidgets.QAction('Object Cut Action', self)
-        copyAct = QtWidgets.QAction('Object Copy Action', self)
-        pasteAct = QtWidgets.QAction('Object Paste Action', self)
-        menu.addAction(cutAct)
-        menu.addAction(copyAct)
-        menu.addAction(pasteAct)
+
+        label = 'Select Marker / Bundle'
+        swap_sel_act = QtWidgets.QAction(label, self)
+        swap_sel_act.triggered.connect(
+            self.selection_swap)
+
+        label = 'Select Marker + Bundle'
+        both_sel_act = QtWidgets.QAction(label, self)
+        both_sel_act.triggered.connect(
+            self.selection_both_markers_bundles)
+
+        menu.addAction(swap_sel_act)
+        menu.addAction(both_sel_act)
         menu.exec_(event.globalPos())
         return

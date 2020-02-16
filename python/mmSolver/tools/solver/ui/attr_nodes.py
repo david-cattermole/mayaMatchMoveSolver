@@ -57,6 +57,13 @@ class PlugNode(nodes.Node):
             neverHasChildren=neverHasChildren)
         self.typeInfo = 'plug'
 
+    def uuid(self):
+        uuid = ''
+        d = self.data()
+        if not d:
+            return uuid
+        return d.get('uuid', '')
+
     def state(self):
         return ''
 
@@ -159,6 +166,7 @@ class AttrModel(uimodels.ItemModel):
             1: const.ATTR_COLUMN_NAME_STATE,
             2: const.ATTR_COLUMN_NAME_VALUE_MIN,
             3: const.ATTR_COLUMN_NAME_VALUE_MAX,
+            4: const.ATTR_COLUMN_NAME_UUID,
         }
         return column_names
 
@@ -168,6 +176,7 @@ class AttrModel(uimodels.ItemModel):
             const.ATTR_COLUMN_NAME_STATE: QtCore.Qt.AlignRight,
             const.ATTR_COLUMN_NAME_VALUE_MIN: QtCore.Qt.AlignCenter,
             const.ATTR_COLUMN_NAME_VALUE_MAX: QtCore.Qt.AlignCenter,
+            const.ATTR_COLUMN_NAME_UUID: QtCore.Qt.AlignCenter,
         }
         return values
 
@@ -177,6 +186,7 @@ class AttrModel(uimodels.ItemModel):
             const.ATTR_COLUMN_NAME_STATE: 'state',
             const.ATTR_COLUMN_NAME_VALUE_MIN: 'minValue',
             const.ATTR_COLUMN_NAME_VALUE_MAX: 'maxValue',
+            const.ATTR_COLUMN_NAME_UUID: 'uuid',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 

@@ -121,6 +121,19 @@ class Attribute(object):
             node = node_utils.get_long_name(node)
         return node
 
+    def get_node_uid(self):
+        """
+        Get the Attribute's node unique identifier.
+
+        :return: The marker UUID or None
+        :rtype: None or str or unicode
+        """
+        node = self.get_node()
+        if node is None:
+            return None
+        uids = maya.cmds.ls(node, uuid=True) or []
+        return uids[0]
+
     def get_attr(self, long_name=True):
         name = None
         if self._plug is not None:

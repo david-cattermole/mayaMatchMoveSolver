@@ -40,6 +40,7 @@ import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.ui.attr_nodes as attr_nodes
 import mmSolver.tools.solver.ui.convert_to_ui as convert_to_ui
 import mmSolver.tools.solver.widget.nodebrowser_widget as nodebrowser_widget
+import mmSolver.tools.solver.widget.nodebrowser_utils as nodebrowser_utils
 import mmSolver.tools.solver.widget.attribute_treeview as attr_treeview
 import mmSolver.tools.solver.constant as const
 
@@ -55,15 +56,21 @@ def _populateWidgetsEnabled(widgets):
     return
 
 
-def _lookupAttrNodes(indexes, model):
+def _lookupMayaNodesFromAttrUINodes(indexes, model):
     maya_nodes = []
     for idx in indexes:
         ui_node = lib_uiquery.get_ui_node_from_index(idx, model)
         if ui_node is None:
             continue
-
-        nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'data')
-        maya_nodes += [x.get_node() for x in nodes]
+        if isinstance(ui_node, attr_nodes.AttrNode):
+            nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'data')
+            maya_nodes += [x.get_node() for x in nodes]
+        elif isinstance(ui_node, attr_nodes.MayaNode):
+            node_uuid = ui_node.data().get('uuid')
+            node_names = lib_maya_utils.get_node_names_from_uuids([node_uuid])
+            maya_nodes += node_names
+        else:
+            LOG.error("Invalid node type: %r", ui_node)
     return maya_nodes
 
 
@@ -139,6 +146,14 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.treeView.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.selModel = self.treeView.selectionModel()
         self.selModel.selectionChanged.connect(self.selectionChanged)
+
+        # Always hide the UUID Column - it's used for selection of
+        # ModelIndexes with Maya node UUIDs only.
+        hidden = True
+        column = self.model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_UUID
+        )
+        self.treeView.setColumnHidden(column, hidden)
         return
 
     def populateModel(self, model):
@@ -357,18 +372,37 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.dataChanged.emit()
         return
 
+    @QtCore.Slot(list)
+    def setNodeSelection(self, values):
+        """
+        Override the tree view selection based on Maya Node UUIDs.
+        """
+        nodebrowser_utils.setNodeSelectionWithUUID(
+            self.treeView,
+            self.model,
+            self.filterModel,
+            self.selModel,
+            const.ATTR_COLUMN_NAME_UUID,
+            values,
+        )
+        return
+
     @QtCore.Slot(QtCore.QItemSelection, QtCore.QItemSelection)
     def selectionChanged(self, selected, deselected):
         select_indexes = [idx for idx in selected.indexes()]
         deselect_indexes = [idx for idx in deselected.indexes()]
-        select_nodes = _lookupAttrNodes(
+        select_nodes = _lookupMayaNodesFromAttrUINodes(
             select_indexes,
             self.filterModel)
-        deselect_nodes = _lookupAttrNodes(
+        deselect_nodes = _lookupMayaNodesFromAttrUINodes(
             deselect_indexes,
             self.filterModel)
-        lib_maya_utils.add_scene_selection(select_nodes)
-        lib_maya_utils.remove_scene_selection(deselect_nodes)
+        try:
+            mmapi.set_solver_running(True) # disable selection callback.
+            lib_maya_utils.add_scene_selection(select_nodes)
+            lib_maya_utils.remove_scene_selection(deselect_nodes)
+        finally:
+            mmapi.set_solver_running(False) # enable selection callback
         return
 
     @QtCore.Slot(bool)

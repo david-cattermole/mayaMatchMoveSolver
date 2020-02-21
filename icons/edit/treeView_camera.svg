@@ -17,8 +17,8 @@
    sodipodi:docname="treeView_camera.svg"
    enable-background="new"
    inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\ui\mmSolver_camera.png"
-   inkscape:export-xdpi="36.382427"
-   inkscape:export-ydpi="36.382427">
+   inkscape:export-xdpi="48.000004"
+   inkscape:export-ydpi="48.000004">
   <defs
      id="defs2818">
     <inkscape:path-effect
@@ -133,8 +133,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="5.5"
-     inkscape:cx="1.5099002"
-     inkscape:cy="31.363488"
+     inkscape:cx="12.418991"
+     inkscape:cy="29.545306"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:document-units="px"
@@ -199,7 +199,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -216,19 +216,17 @@
        inkscape:export-ydpi="37.347481">
       <g
          id="g6298">
-	<path
-   id="path6294"
-   d="m 219.2,182.7 c -0.9,0 -1.9,-0.3 -2.6,-1 l -51.4,-44 c -0.5,-0.4 -0.9,-1 -1.1,-1.6 V 164 c 0,6.3 -5.1,11.3 -11.3,11.3 H 28.1 c -6.3,0 -11.3,-5.1 -11.3,-11.3 V 76 c 0,-6.2 5.1,-11.3 11.3,-11.3 h 124.7 c 6.2,0 11.3,5.1 11.3,11.3 v 27.9 c 0.2,-0.6 0.6,-1.2 1.1,-1.6 l 51.4,-44 c 0.7,-0.6 1.7,-1 2.6,-1 0.6,0 1.1,0.1 1.7,0.4 1.4,0.7 2.3,2.1 2.3,3.6 v 117.3 c 0,1.6 -0.9,3 -2.3,3.6 -0.5,0.4 -1.1,0.5 -1.7,0.5 z"
-   inkscape:connector-curvature="0"
-   style="clip-rule:evenodd;fill:#bdbdbd;fill-rule:evenodd" />
-
-	<path
-   id="path6296"
-   d="m 219.2,61.3 v 117.3 l -51.4,-44 v -29.3 l 51.4,-44 m -66.4,7.4 c 4.1,0 7.3,3.3 7.3,7.3 v 88 c 0,4.1 -3.3,7.3 -7.3,7.3 H 28.1 C 24,171.3 20.8,168 20.8,164 V 76 c 0,-4.1 3.3,-7.3 7.3,-7.3 h 124.7 m 66.4,-15.4 c -1.9,0 -3.7,0.7 -5.2,1.9 L 168.1,94.5 V 76 c 0,-8.5 -6.9,-15.3 -15.3,-15.3 H 28.1 c -8.5,0 -15.3,6.9 -15.3,15.3 v 88 c 0,8.5 6.9,15.3 15.3,15.3 h 124.7 c 8.5,0 15.3,-6.9 15.3,-15.3 v -18.6 l 45.9,39.3 c 1.5,1.3 3.3,1.9 5.2,1.9 1.1,0 2.3,-0.2 3.3,-0.7 2.8,-1.3 4.7,-4.1 4.7,-7.3 V 61.3 c 0,-3.1 -1.8,-6 -4.7,-7.3 -1,-0.4 -2.1,-0.7 -3.3,-0.7 z"
-   inkscape:connector-curvature="0"
-   style="fill:#1d1d1d" />
-
-</g>
+        <path
+           id="path6294"
+           d="m 219.2,182.7 c -0.9,0 -1.9,-0.3 -2.6,-1 l -51.4,-44 c -0.5,-0.4 -0.9,-1 -1.1,-1.6 V 164 c 0,6.3 -5.1,11.3 -11.3,11.3 H 28.1 c -6.3,0 -11.3,-5.1 -11.3,-11.3 V 76 c 0,-6.2 5.1,-11.3 11.3,-11.3 h 124.7 c 6.2,0 11.3,5.1 11.3,11.3 v 27.9 c 0.2,-0.6 0.6,-1.2 1.1,-1.6 l 51.4,-44 c 0.7,-0.6 1.7,-1 2.6,-1 0.6,0 1.1,0.1 1.7,0.4 1.4,0.7 2.3,2.1 2.3,3.6 v 117.3 c 0,1.6 -0.9,3 -2.3,3.6 -0.5,0.4 -1.1,0.5 -1.7,0.5 z"
+           inkscape:connector-curvature="0"
+           style="clip-rule:evenodd;fill:#bdbdbd;fill-rule:evenodd" />
+        <path
+           id="path6296"
+           d="m 219.2,61.3 v 117.3 l -51.4,-44 v -29.3 l 51.4,-44 m -66.4,7.4 c 4.1,0 7.3,3.3 7.3,7.3 v 88 c 0,4.1 -3.3,7.3 -7.3,7.3 H 28.1 C 24,171.3 20.8,168 20.8,164 V 76 c 0,-4.1 3.3,-7.3 7.3,-7.3 h 124.7 m 66.4,-15.4 c -1.9,0 -3.7,0.7 -5.2,1.9 L 168.1,94.5 V 76 c 0,-8.5 -6.9,-15.3 -15.3,-15.3 H 28.1 c -8.5,0 -15.3,6.9 -15.3,15.3 v 88 c 0,8.5 6.9,15.3 15.3,15.3 h 124.7 c 8.5,0 15.3,-6.9 15.3,-15.3 v -18.6 l 45.9,39.3 c 1.5,1.3 3.3,1.9 5.2,1.9 1.1,0 2.3,-0.2 3.3,-0.7 2.8,-1.3 4.7,-4.1 4.7,-7.3 V 61.3 c 0,-3.1 -1.8,-6 -4.7,-7.3 -1,-0.4 -2.1,-0.7 -3.3,-0.7 z"
+           inkscape:connector-curvature="0"
+           style="fill:#1d1d1d" />
+      </g>
       <rect
          id="rect6300"
          height="240"

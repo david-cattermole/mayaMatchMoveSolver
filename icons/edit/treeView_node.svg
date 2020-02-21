@@ -101,15 +101,6 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
-    <filter
-       inkscape:collect="always"
-       id="filter6313">
-      <feBlend
-         inkscape:collect="always"
-         mode="lighten"
-         in2="BackgroundImage"
-         id="feBlend6315" />
-    </filter>
     <inkscape:perspective
        id="perspective7505"
        inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
@@ -124,15 +115,6 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
-    <filter
-       inkscape:collect="always"
-       id="filter6313-0">
-      <feBlend
-         inkscape:collect="always"
-         mode="lighten"
-         in2="BackgroundImage"
-         id="feBlend6315-4" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -213,134 +195,16 @@
     </rdf:RDF>
   </metadata>
   <g
-     id="layer1"
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     style="display:none;filter:url(#filter6313)">
-    <g
-       id="g6316"
-       transform="matrix(0.29318182,0,0,0.29318182,-3.0454943,-3.3187913)"
-       inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\ui\mmSolver_camera.png"
-       inkscape:export-xdpi="37.347481"
-       inkscape:export-ydpi="37.347481">
-      <g
-         id="g6298">
-        <path
-           id="path6294"
-           d="m 219.2,182.7 c -0.9,0 -1.9,-0.3 -2.6,-1 l -51.4,-44 c -0.5,-0.4 -0.9,-1 -1.1,-1.6 V 164 c 0,6.3 -5.1,11.3 -11.3,11.3 H 28.1 c -6.3,0 -11.3,-5.1 -11.3,-11.3 V 76 c 0,-6.2 5.1,-11.3 11.3,-11.3 h 124.7 c 6.2,0 11.3,5.1 11.3,11.3 v 27.9 c 0.2,-0.6 0.6,-1.2 1.1,-1.6 l 51.4,-44 c 0.7,-0.6 1.7,-1 2.6,-1 0.6,0 1.1,0.1 1.7,0.4 1.4,0.7 2.3,2.1 2.3,3.6 v 117.3 c 0,1.6 -0.9,3 -2.3,3.6 -0.5,0.4 -1.1,0.5 -1.7,0.5 z"
-           inkscape:connector-curvature="0"
-           style="clip-rule:evenodd;fill:#bdbdbd;fill-rule:evenodd" />
-        <path
-           id="path6296"
-           d="m 219.2,61.3 v 117.3 l -51.4,-44 v -29.3 l 51.4,-44 m -66.4,7.4 c 4.1,0 7.3,3.3 7.3,7.3 v 88 c 0,4.1 -3.3,7.3 -7.3,7.3 H 28.1 C 24,171.3 20.8,168 20.8,164 V 76 c 0,-4.1 3.3,-7.3 7.3,-7.3 h 124.7 m 66.4,-15.4 c -1.9,0 -3.7,0.7 -5.2,1.9 L 168.1,94.5 V 76 c 0,-8.5 -6.9,-15.3 -15.3,-15.3 H 28.1 c -8.5,0 -15.3,6.9 -15.3,15.3 v 88 c 0,8.5 6.9,15.3 15.3,15.3 h 124.7 c 8.5,0 15.3,-6.9 15.3,-15.3 v -18.6 l 45.9,39.3 c 1.5,1.3 3.3,1.9 5.2,1.9 1.1,0 2.3,-0.2 3.3,-0.7 2.8,-1.3 4.7,-4.1 4.7,-7.3 V 61.3 c 0,-3.1 -1.8,-6 -4.7,-7.3 -1,-0.4 -2.1,-0.7 -3.3,-0.7 z"
-           inkscape:connector-curvature="0"
-           style="fill:#1d1d1d" />
-      </g>
-      <rect
-         id="rect6300"
-         height="240"
-         width="240"
-         x="0"
-         y="0"
-         style="clip-rule:evenodd;fill:none;fill-rule:evenodd" />
-      <rect
-         id="rect6302"
-         height="240"
-         width="240"
-         x="0"
-         y="0"
-         style="clip-rule:evenodd;fill:none;fill-rule:evenodd" />
-    </g>
-    <g
-       id="g7921"
-       transform="translate(-90.994247,-69.686545)" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer3"
-     inkscape:label="Layer 2"
-     style="display:none">
-    <polygon
-       id="polygon7913"
-       points="14.389,177.339 101.369,3.125 238.5,3.125 151.522,177.339 "
-       style="display:inline;fill:#ffffff;stroke:#000000;stroke-width:6.25;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter6313)"
-       transform="matrix(0.28138008,0,0,0.28138008,-3.2736645,7.5196023)" />
-    <g
-       style="display:inline;filter:url(#filter6313-0)"
-       id="g7919"
-       transform="matrix(0.28138008,0,0,0.28138008,-5.5410094,5.0735684)">
-      <polyline
-         id="polyline7915"
-         points="171.029,94.268     107.44,58.63 107.44,85.369 8.437,85.369 8.437,103.191 107.44,103.191 107.44,129.949 171.029,94.268   "
-         style="stroke:#000000;stroke-width:5.51590014;stroke-linecap:round;stroke-linejoin:round" />
-      <polyline
-         id="polyline7917"
-         points="    165.348,88.03 101.757,52.393 101.757,79.131 2.758,79.131 2.758,96.955 101.757,96.955 101.757,123.711 165.348,88.03   "
-         style="fill:#ca2027;stroke:#ca2027;stroke-width:5.51590014;stroke-linecap:round;stroke-linejoin:round" />
-    </g>
-  </g>
-  <g
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="nodebox"
      style="display:inline">
     <rect
-       style="display:inline;fill:#ffffff;fill-opacity:0.66850829;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       style="display:inline;fill:#ffffff;fill-opacity:0.66850831;stroke:none;stroke-width:1.35762358;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
        id="rect8799"
-       width="58.997978"
-       height="60.496746"
-       x="3.030654"
-       y="2.2734008" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer4"
-     inkscape:label="axis"
-     style="display:none">
-    <g
-       id="g8738"
-       transform="matrix(0.24881875,0,0,0.24881875,1.8471305,7.2914837)"
-       inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\ui\mmSolver_node.png"
-       inkscape:export-xdpi="36.382427"
-       inkscape:export-ydpi="36.382427">
-      <g
-         id="g8726"
-         transform="translate(-0.70196472,-7.0196468)">
-        <path
-           id="path8722"
-           d="m 13.959,167.258 c -10.352,5.983 -13.915,19.243 -7.928,29.609 5.987,10.366 19.242,13.913 29.602,7.927 l 81.526,-47.07 c 10.35,-5.971 13.912,-19.229 7.927,-29.594 -5.986,-10.367 -19.242,-13.914 -29.602,-7.942 z"
-           inkscape:connector-curvature="0"
-           style="fill:#1e76bb;stroke:#010101;stroke-width:6.25;stroke-linecap:round;stroke-linejoin:round" />
-        <path
-           id="path8724"
-           d="m 22.922,179.375 c 0,2.252 -1.817,4.061 -4.059,4.061 -2.242,0 -4.059,-1.809 -4.059,-4.061 0,-2.248 1.817,-4.057 4.059,-4.057 2.242,0 4.059,1.808 4.059,4.057 z"
-           inkscape:connector-curvature="0"
-           style="fill:#f2f2f2" />
-      </g>
-      <g
-         id="g8732"
-         transform="translate(-0.70196472,-7.0196468)">
-        <path
-           id="path8728"
-           d="m 232.915,167.258 c 10.349,5.983 13.913,19.243 7.927,29.609 -5.986,10.366 -19.243,13.913 -29.603,7.927 l -81.525,-47.07 c -10.351,-5.971 -13.914,-19.229 -7.927,-29.594 5.986,-10.367 19.241,-13.914 29.602,-7.942 z"
-           inkscape:connector-curvature="0"
-           style="fill:#cb2129;stroke:#010101;stroke-width:6.25;stroke-linecap:round;stroke-linejoin:round" />
-        <path
-           id="path8730"
-           d="m 233.209,179.375 c 0,2.252 -1.816,4.061 -4.061,4.061 -2.238,0 -4.057,-1.809 -4.057,-4.061 0,-2.248 1.818,-4.057 4.057,-4.057 2.245,0 4.061,1.808 4.061,4.057 z"
-           inkscape:connector-curvature="0"
-           style="fill:#f2f2f2" />
-      </g>
-      <path
-         id="path8734"
-         d="m 144.41703,111.91335 c 0,11.958 -9.702,21.665 -21.667,21.665 -11.973,0 -21.675,-9.707 -21.675,-21.665 V 17.772353 c 0,-11.9579995 9.702,-21.6669998 21.675,-21.6669998 11.965,0 21.667,9.7090003 21.667,21.6669998 z"
-         inkscape:connector-curvature="0"
-         style="fill:#4bb048;stroke:#010101;stroke-width:6.25;stroke-linecap:round;stroke-linejoin:round" />
-      <path
-         id="path8736"
-         d="m 121.208,18.997 c 0,2.246 -1.817,4.058 -4.058,4.058 -2.241,0 -4.059,-1.812 -4.059,-4.058 0,-2.249 1.817,-4.06 4.059,-4.06 2.241,0 4.058,1.811 4.058,4.06 z"
-         inkscape:connector-curvature="0"
-         style="fill:#f2f2f2" />
-    </g>
+       width="35.677341"
+       height="36.583679"
+       x="14.690971"
+       y="14.229934" />
   </g>
 </svg>

@@ -136,7 +136,7 @@ The image below shows the effect of the *Smooth Width* with the
     :align: center
     :width: 90%
 
-            Function Gaussian
+Function Gaussian
 +++++++++++++++++
 
 The *Gaussian* smoothing function performs a strong smooth on the

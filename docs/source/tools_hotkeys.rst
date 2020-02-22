@@ -49,9 +49,15 @@ viewport.
      - Select both Markers and Bundles
 
    * - Hold-down **A** key
-     - Activate the mmSolver Marking Menu (see below image).
+     - Activate the mmSolver Marking Menu (see below).
+
+Marking Menu
+------------
+
+Along with the default hotkey set, a Maya Marking Menu has been
+created with many common tools in a simple to use menu.
 
 .. figure:: images/tools_marking_menu.png
-    :alt: Node Creation Shelf Icons
+    :alt: mmSolver Marking Menu
     :align: center
-    :width: 80%
+    :width: 50%

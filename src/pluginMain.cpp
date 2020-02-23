@@ -38,6 +38,7 @@
 #include <MMMarkerGroupTransformNode.h>
 #include <yTwistNode.h>
 #include <MMLensEvaluateNode.h>
+#include <MMLensData.h>
 #include <MMReprojectionCmd.h>
 
 
@@ -66,6 +67,15 @@
         return (stat);                                  \
     }
 
+#define REGISTER_DATA(plugin, name,                     \
+                      id, creator,                      \
+                      stat)                             \
+    stat = plugin.registerData(name,                    \
+                               id, creator);            \
+    if (!stat) {                                        \
+        stat.perror(MString(name) + ": registerData");  \
+        return (stat);                                  \
+    }
 
 #define REGISTER_DEFORMER_NODE(plugin, name,                    \
                                id, creator,                     \
@@ -84,6 +94,13 @@
     stat = plugin.deregisterNode(id);                       \
     if (!stat) {                                            \
         stat.perror(MString(name) + ": deregisterNode");    \
+        return (stat);                                      \
+    }
+
+#define DEREGISTER_DATA(plugin, name, id, stat)             \
+    stat = plugin.deregisterData(id);                       \
+    if (!stat) {                                            \
+        stat.perror(MString(name) + ": deregisterData");    \
         return (stat);                                      \
     }
 
@@ -114,6 +131,14 @@
 MStatus initializePlugin(MObject obj) {
     MStatus status;
     MFnPlugin plugin(obj, PLUGIN_COMPANY, PLUGIN_VERSION, "Any");
+
+    // Register data types first, so the nodes and commands below can
+    // reference them.
+    REGISTER_DATA(plugin,
+                  MMLensData::typeName(),
+                  MMLensData::m_id,
+                  MMLensData::creator,
+                  status);
 
     REGISTER_COMMAND(plugin,
                      MMSolverCmd::cmdName(),
@@ -223,5 +248,9 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_NODE(plugin, MMLensEvaluateNode::nodeName(),
                     MMLensEvaluateNode::m_id, status);
 
+    // Unloaded last, so that all nodes needing it are unloaded first
+    // and we won't get a potential crash.
+    DEREGISTER_DATA(plugin, MMLensData::typeName(),
+                    MMLensData::m_id, status);
     return status;
 }

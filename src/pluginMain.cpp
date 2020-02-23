@@ -36,6 +36,7 @@
 #include <MMMarkerScaleNode.h>
 #include <MMReprojectionNode.h>
 #include <MMMarkerGroupTransformNode.h>
+#include <yTwistNode.h>
 #include <MMReprojectionCmd.h>
 
 
@@ -58,6 +59,19 @@
     if (!stat) {                                                   \
         stat.perror(MString(name) + ": registerNode");             \
         return (stat);                                             \
+    }
+
+#define REGISTER_DEFORMER_NODE(plugin, name,                            \
+                               id, creator,                             \
+                               initialize,                              \
+                               type, stat)                              \
+    stat = plugin.registerNode(name,                                    \
+                               id, creator,                             \
+                               initialize,                              \
+                               type);                                   \
+    if (!stat) {                                                        \
+        stat.perror(MString(name) + ": registerDeformerNode");          \
+        return (stat);                                                  \
     }
 
 #define DEREGISTER_NODE(plugin, name, id, stat)          \
@@ -125,12 +139,21 @@ MStatus initializePlugin(MObject obj) {
                   MMMarkerScaleNode::creator,
                   MMMarkerScaleNode::initialize,
                   status);
+
     REGISTER_NODE(plugin,
                   MMReprojectionNode::nodeName(),
                   MMReprojectionNode::m_id,
                   MMReprojectionNode::creator,
                   MMReprojectionNode::initialize,
                   status);
+
+    REGISTER_DEFORMER_NODE(plugin,
+                           yTwistNode::nodeName(),
+                           yTwistNode::m_id,
+                           yTwistNode::creator,
+                           yTwistNode::initialize,
+                           MPxNode::kDeformerNode,
+                           status);
 
     // MM Marker Group transform
     const MString markerGroupClassification = "drawdb/geometry/transform";
@@ -180,5 +203,7 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(), 
                     MMMarkerGroupTransformNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, yTwistNode::nodeName(), yTwistNode::m_id, status);
     return status;
 }

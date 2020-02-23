@@ -236,6 +236,8 @@ set(SOURCE_FILES
         src/MMReprojectionNode.cpp
         src/yTwistNode.h
         src/yTwistNode.cpp
+        src/MMLensEvaluateNode.h
+        src/MMLensEvaluateNode.cpp
         src/MMMarkerGroupTransformNode.h
         src/MMMarkerGroupTransformNode.cpp
         src/MMTestCameraMatrixCmd.h

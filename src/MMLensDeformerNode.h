@@ -42,11 +42,11 @@
 #include <maya/MPoint.h>
 #include <maya/MMatrix.h>
 
-class yTwistNode : public MPxGeometryFilter {
+class MMLensDeformerNode : public MPxGeometryFilter {
 public:
-    yTwistNode();
+    MMLensDeformerNode();
 
-    virtual ~yTwistNode();
+    virtual ~MMLensDeformerNode();
 
     static  void* creator();
 

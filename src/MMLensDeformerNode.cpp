@@ -22,23 +22,23 @@
 
 
 #include <nodeTypeIds.h>
-#include <yTwistNode.h>
+#include <MMLensDeformerNode.h>
 
 
-MTypeId yTwistNode::m_id(MM_LENS_DEFORMER_TYPE_ID);
-MObject yTwistNode::a_angle;
+MTypeId MMLensDeformerNode::m_id(MM_LENS_DEFORMER_TYPE_ID);
+MObject MMLensDeformerNode::a_angle;
 
 
-yTwistNode::yTwistNode() {}
+MMLensDeformerNode::MMLensDeformerNode() {}
 
-yTwistNode::~yTwistNode() {}
+MMLensDeformerNode::~MMLensDeformerNode() {}
 
-void* yTwistNode::creator()
+void* MMLensDeformerNode::creator()
 {
-    return new yTwistNode();
+    return new MMLensDeformerNode();
 }
 
-MStatus yTwistNode::initialize()
+MStatus MMLensDeformerNode::initialize()
 {
     MFnNumericAttribute nAttr;
     a_angle = nAttr.create("angle", "fa", MFnNumericData::kDouble);
@@ -46,23 +46,23 @@ MStatus yTwistNode::initialize()
         nAttr.setKeyable(true);
     addAttribute(a_angle);
 
-    attributeAffects(yTwistNode::a_angle, yTwistNode::outputGeom);
+    attributeAffects(MMLensDeformerNode::a_angle, MMLensDeformerNode::outputGeom);
     return MS::kSuccess;
 }
 
-MString yTwistNode::nodeName() {
-    return MString("yTwist");
+MString MMLensDeformerNode::nodeName() {
+    return MString("MMLensDeformer");
 }
 
 MStatus
-yTwistNode::deform(MDataBlock& block,
+MMLensDeformerNode::deform(MDataBlock& block,
                    MItGeometry& iter,
                    const MMatrix& /*m*/,
                    unsigned int /*multiIndex*/)
 //
 // Method: deform
 //
-// Description:   Deform the point with a yTwist algorithm
+// Description:   Deform the point with a MMLensDeformer algorithm
 //
 // Arguments:
 //   block		: the datablock of the node
@@ -74,7 +74,7 @@ yTwistNode::deform(MDataBlock& block,
 {
     MStatus status = MS::kSuccess;
 
-    // determine the angle of the yTwist
+    // determine the angle of the MMLensDeformer
     MDataHandle angleData = block.inputValue(a_angle, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     double magnitude = angleData.asDouble();

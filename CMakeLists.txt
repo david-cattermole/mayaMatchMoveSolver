@@ -234,8 +234,8 @@ set(SOURCE_FILES
         src/MMMarkerScaleNode.cpp
         src/MMReprojectionNode.h
         src/MMReprojectionNode.cpp
-        src/yTwistNode.h
-        src/yTwistNode.cpp
+        src/MMLensDeformerNode.h
+        src/MMLensDeformerNode.cpp
         src/MMLensData.h
         src/MMLensData.cpp
         src/MMLensEvaluateNode.h

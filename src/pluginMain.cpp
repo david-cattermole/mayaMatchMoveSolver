@@ -36,7 +36,7 @@
 #include <MMMarkerScaleNode.h>
 #include <MMReprojectionNode.h>
 #include <MMMarkerGroupTransformNode.h>
-#include <yTwistNode.h>
+#include <MMLensDeformerNode.h>
 #include <MMLensEvaluateNode.h>
 #include <MMLensData.h>
 #include <MMReprojectionCmd.h>
@@ -186,10 +186,10 @@ MStatus initializePlugin(MObject obj) {
                   status);
 
     REGISTER_DEFORMER_NODE(plugin,
-                           yTwistNode::nodeName(),
-                           yTwistNode::m_id,
-                           yTwistNode::creator,
-                           yTwistNode::initialize,
+                           MMLensDeformerNode::nodeName(),
+                           MMLensDeformerNode::m_id,
+                           MMLensDeformerNode::creator,
+                           MMLensDeformerNode::initialize,
                            MPxNode::kDeformerNode,
                            status);
 
@@ -242,8 +242,8 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(),
                     MMMarkerGroupTransformNode::m_id, status);
 
-    DEREGISTER_NODE(plugin, yTwistNode::nodeName(),
-                    yTwistNode::m_id, status);
+    DEREGISTER_NODE(plugin, MMLensDeformerNode::nodeName(),
+                    MMLensDeformerNode::m_id, status);
 
     DEREGISTER_NODE(plugin, MMLensEvaluateNode::nodeName(),
                     MMLensEvaluateNode::m_id, status);

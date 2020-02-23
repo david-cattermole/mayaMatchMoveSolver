@@ -24,11 +24,13 @@
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
 #include <maya/MFnNumericAttribute.h>
-#include <maya/MFnEnumAttribute.h>
-#include <maya/MFnMatrixAttribute.h>
+#include <maya/MFnTypedAttribute.h>
 #include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnNumericData.h>
-#include <maya/MFnMatrixData.h>
+
+#include <maya/MString.h>
+#include <maya/MTypeId.h>
+#include <maya/MFnPluginData.h>
 
 #include <utilities/debugUtils.h>
 #include <utilities/numberUtils.h>
@@ -38,21 +40,20 @@
 
 #include <nodeTypeIds.h>
 
+#include <MMLensData.h>
 #include <MMLensEvaluateNode.h>
 
 
 MTypeId MMLensEvaluateNode::m_id(MM_LENS_EVALUATE_TYPE_ID);
 
 // Input Attributes
-MObject MMLensEvaluateNode::a_inPointX;
-MObject MMLensEvaluateNode::a_inPointY;
-MObject MMLensEvaluateNode::a_inPointZ;
+MObject MMLensEvaluateNode::a_inLens;
+MObject MMLensEvaluateNode::a_inX;
+MObject MMLensEvaluateNode::a_inY;
 
 // Output Attributes
-MObject MMLensEvaluateNode::a_outPoint;
-MObject MMLensEvaluateNode::a_outPointX;
-MObject MMLensEvaluateNode::a_outPointY;
-MObject MMLensEvaluateNode::a_outPointZ;
+MObject MMLensEvaluateNode::a_outX;
+MObject MMLensEvaluateNode::a_outY;
 
 
 MMLensEvaluateNode::MMLensEvaluateNode() {}
@@ -66,41 +67,32 @@ MString MMLensEvaluateNode::nodeName() {
 MStatus MMLensEvaluateNode::compute(const MPlug &plug, MDataBlock &data) {
     MStatus status = MS::kUnknownParameter;
 
-    if ((plug == a_outPoint)
-        || (plug == a_outPointX)
-        || (plug == a_outPointY)
-        || (plug == a_outPointZ)) {
-        // Get Data Handles
-        MDataHandle inPointXHandle = data.inputValue(
-            a_inPointX, &status);
+    if ((plug == a_outX) || (plug == a_outY)) {
+        // Get Input Positions
+        MDataHandle inXHandle = data.inputValue(a_inX, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        double inPointX = inPointXHandle.asBool();
+        double x = inXHandle.asDouble();
 
-        MDataHandle inPointYHandle = data.inputValue(
-            a_inPointY, &status);
+        MDataHandle inYHandle = data.inputValue(a_inY, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        double inPointY = inPointYHandle.asBool();
+        double y = inYHandle.asDouble();
 
-        MDataHandle inPointZHandle = data.inputValue(
-            a_inPointZ, &status);
+        // Get Input Lens
+        MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        double inPointZ = inPointZHandle.asBool();
+        MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
 
-        // TODO: Query the lens distortion.
-        double outPointX = 0.5;
-        double outPointY = 0.5;
-        double outPointZ = 0.5;
+        // TODO: Evaluate the lens distortion, at (x, y)
+        double out_x = 0.0;
+        double out_y = 0.0;
 
-        // Output Point (camera-space)
-        MDataHandle outPointXHandle = data.outputValue(a_outPointX);
-        MDataHandle outPointYHandle = data.outputValue(a_outPointY);
-        MDataHandle outPointZHandle = data.outputValue(a_outPointZ);
-        outPointXHandle.setDouble(outPointX);
-        outPointYHandle.setDouble(outPointY);
-        outPointZHandle.setDouble(outPointZ);
-        outPointXHandle.setClean();
-        outPointYHandle.setClean();
-        outPointZHandle.setClean();
+        // Output
+        MDataHandle outXHandle = data.outputValue(a_outX);
+        MDataHandle outYHandle = data.outputValue(a_outY);
+        outXHandle.setDouble(out_x);
+        outYHandle.setDouble(out_y);
+        outXHandle.setClean();
+        outYHandle.setClean();
 
         status = MS::kSuccess;
     }
@@ -115,93 +107,64 @@ void *MMLensEvaluateNode::creator() {
 MStatus MMLensEvaluateNode::initialize() {
     MStatus status;
     MFnNumericAttribute numericAttr;
-    MFnEnumAttribute enumAttr;
-    MFnMatrixAttribute matrixAttr;
-    MFnCompoundAttribute compoundAttr;
+    MFnTypedAttribute typedAttr;
 
-    // TODO: Create a "lens model" attribute.
+    // In Lens
+    MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
+    a_inLens = typedAttr.create(
+        "inLens", "ilns",
+        data_type_id);
+    CHECK_MSTATUS(typedAttr.setStorable(false));
+    CHECK_MSTATUS(typedAttr.setKeyable(false));
+    CHECK_MSTATUS(typedAttr.setReadable(true));
+    CHECK_MSTATUS(typedAttr.setWritable(false));
+    CHECK_MSTATUS(addAttribute(a_inLens));
 
-    {
-        // In Point X
-        a_inPointX = numericAttr.create(
-                "inPointX", "ipx",
-                MFnNumericData::kDouble, false);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_inPointX));
+    // In X
+    a_inX = numericAttr.create(
+        "inX", "ix",
+        MFnNumericData::kDouble, false);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(a_inX));
 
-        // In Point Y
-        a_inPointY = numericAttr.create(
-                "inPointY", "ipy",
-                MFnNumericData::kDouble, false);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_inPointY));
+    // In Y
+    a_inY = numericAttr.create(
+        "inY", "iy",
+        MFnNumericData::kDouble, false);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(a_inY));
 
-        // In Point Z
-        a_inPointZ = numericAttr.create(
-                "inPointZ", "ipz",
-                MFnNumericData::kDouble, false);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_inPointZ));
-    }
+    // Out X
+    a_outX = numericAttr.create(
+        "outX", "ox",
+        MFnNumericData::kDouble, 0.0);
+    CHECK_MSTATUS(numericAttr.setStorable(false));
+    CHECK_MSTATUS(numericAttr.setKeyable(false));
+    CHECK_MSTATUS(numericAttr.setReadable(true));
+    CHECK_MSTATUS(numericAttr.setWritable(false));
+    CHECK_MSTATUS(addAttribute(a_outX));
 
-    {
-        // Out Point X
-        a_outPointX = numericAttr.create(
-                "outPointX", "opx",
-                MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(numericAttr.setReadable(true));
-        CHECK_MSTATUS(numericAttr.setWritable(false));
-
-        // Out Point Y
-        a_outPointY = numericAttr.create(
-                "outPointY", "opy",
-                MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(numericAttr.setReadable(true));
-        CHECK_MSTATUS(numericAttr.setWritable(false));
-
-        // Out Point Z
-        a_outPointZ = numericAttr.create(
-                "outPointZ", "opz",
-                MFnNumericData::kDouble, 0.0, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(numericAttr.setReadable(true));
-        CHECK_MSTATUS(numericAttr.setWritable(false));
-
-        // Out Point (parent of outPoint* attributes)
-        a_outPoint = compoundAttr.create("outPoint", "op", &status);
-        CHECK_MSTATUS(status);
-        compoundAttr.addChild(a_outPointX);
-        compoundAttr.addChild(a_outPointY);
-        compoundAttr.addChild(a_outPointZ);
-        CHECK_MSTATUS(addAttribute(a_outPoint));
-    }
-
-    //////////////////////////////////////////////////////////////////////////
+    // Out Y
+    a_outY = numericAttr.create(
+        "outY", "oy",
+        MFnNumericData::kDouble, 0.0);
+    CHECK_MSTATUS(numericAttr.setStorable(false));
+    CHECK_MSTATUS(numericAttr.setKeyable(false));
+    CHECK_MSTATUS(numericAttr.setReadable(true));
+    CHECK_MSTATUS(numericAttr.setWritable(false));
+    CHECK_MSTATUS(addAttribute(a_outY));
 
     // Attribute Affects
-    CHECK_MSTATUS(attributeAffects(a_inPointX, a_outPoint));
-    CHECK_MSTATUS(attributeAffects(a_inPointX, a_outPointX));
-    CHECK_MSTATUS(attributeAffects(a_inPointX, a_outPointY));
-    CHECK_MSTATUS(attributeAffects(a_inPointX, a_outPointZ));
+    CHECK_MSTATUS(attributeAffects(a_inX, a_outX));
+    CHECK_MSTATUS(attributeAffects(a_inX, a_outY));
 
-    CHECK_MSTATUS(attributeAffects(a_inPointY, a_outPoint));
-    CHECK_MSTATUS(attributeAffects(a_inPointY, a_outPointX));
-    CHECK_MSTATUS(attributeAffects(a_inPointY, a_outPointY));
-    CHECK_MSTATUS(attributeAffects(a_inPointY, a_outPointZ));
+    CHECK_MSTATUS(attributeAffects(a_inY, a_outX));
+    CHECK_MSTATUS(attributeAffects(a_inY, a_outY));
 
-    CHECK_MSTATUS(attributeAffects(a_inPointZ, a_outPoint));
-    CHECK_MSTATUS(attributeAffects(a_inPointZ, a_outPointX));
-    CHECK_MSTATUS(attributeAffects(a_inPointZ, a_outPointY));
-    CHECK_MSTATUS(attributeAffects(a_inPointZ, a_outPointZ));
+    CHECK_MSTATUS(attributeAffects(a_inLens, a_outX));
+    CHECK_MSTATUS(attributeAffects(a_inLens, a_outY));
 
     return MS::kSuccess;
 }

@@ -38,6 +38,7 @@
 #include <MMMarkerGroupTransformNode.h>
 #include <MMLensDeformerNode.h>
 #include <MMLensEvaluateNode.h>
+#include <MMLensBasicNode.h>
 #include <MMLensData.h>
 #include <MMReprojectionCmd.h>
 
@@ -178,13 +179,6 @@ MStatus initializePlugin(MObject obj) {
                   MMReprojectionNode::initialize,
                   status);
 
-    REGISTER_NODE(plugin,
-                  MMLensEvaluateNode::nodeName(),
-                  MMLensEvaluateNode::m_id,
-                  MMLensEvaluateNode::creator,
-                  MMLensEvaluateNode::initialize,
-                  status);
-
     REGISTER_DEFORMER_NODE(plugin,
                            MMLensDeformerNode::nodeName(),
                            MMLensDeformerNode::m_id,
@@ -192,6 +186,20 @@ MStatus initializePlugin(MObject obj) {
                            MMLensDeformerNode::initialize,
                            MPxNode::kDeformerNode,
                            status);
+
+    REGISTER_NODE(plugin,
+                  MMLensEvaluateNode::nodeName(),
+                  MMLensEvaluateNode::m_id,
+                  MMLensEvaluateNode::creator,
+                  MMLensEvaluateNode::initialize,
+                  status);
+
+    REGISTER_NODE(plugin,
+                  MMLensBasicNode::nodeName(),
+                  MMLensBasicNode::m_id,
+                  MMLensBasicNode::creator,
+                  MMLensBasicNode::initialize,
+                  status);
 
     // MM Marker Group transform
     const MString markerGroupClassification = "drawdb/geometry/transform";
@@ -247,6 +255,9 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, MMLensEvaluateNode::nodeName(),
                     MMLensEvaluateNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMLensBasicNode::nodeName(),
+                    MMLensBasicNode::m_id, status);
 
     // Unloaded last, so that all nodes needing it are unloaded first
     // and we won't get a potential crash.

@@ -50,16 +50,13 @@ public:
     static MTypeId m_id;
 
     // Input Attributes
-    static MObject a_inPoint;
-    static MObject a_inPointX;
-    static MObject a_inPointY;
-    static MObject a_inPointZ;
+    static MObject a_inLens;
+    static MObject a_inX;
+    static MObject a_inY;
 
     // Output Attributes
-    static MObject a_outPoint;
-    static MObject a_outPointX;
-    static MObject a_outPointY;
-    static MObject a_outPointZ;
+    static MObject a_outX;
+    static MObject a_outY;
 
 };
 

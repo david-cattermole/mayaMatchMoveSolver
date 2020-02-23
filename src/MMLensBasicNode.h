@@ -17,54 +17,45 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Lens Distortion Deformer.
+ * Define a lens. The lens is a simple brownian model.
  */
 
+#ifndef MM_LENS_BASIC_NODE_H
+#define MM_LENS_BASIC_NODE_H
 
-#ifndef MM_LENS_DEFORMER_NODE_H
-#define MM_LENS_DEFORMER_NODE_H
+#include <maya/MPxNode.h>
 
-#include <string.h>
-#include <maya/MIOStream.h>
-#include <math.h>
+#include <maya/MString.h>
+#include <maya/MObject.h>
+#include <maya/MTime.h>
 
-#include <maya/MPxGeometryFilter.h>
-#include <maya/MItGeometry.h>
-
-#include <maya/MTypeId.h>
-#include <maya/MPlug.h>
-#include <maya/MDataBlock.h>
-#include <maya/MDataHandle.h>
-
-#include <maya/MFnNumericAttribute.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MTypeId.h>
 
-#include <maya/MPoint.h>
-#include <maya/MMatrix.h>
 
-class MMLensDeformerNode : public MPxGeometryFilter {
+class MMLensBasicNode : public MPxNode {
 public:
-    MMLensDeformerNode();
+    MMLensBasicNode();
 
-    virtual ~MMLensDeformerNode();
+    virtual ~MMLensBasicNode();
 
-    static void* creator();
+    virtual MStatus compute(const MPlug &plug, MDataBlock &data);
+
+    static void *creator();
 
     static MStatus initialize();
 
     static MString nodeName();
 
-    virtual MStatus deform(MDataBlock&    block,
-                           MItGeometry&   iter,
-                           const MMatrix& mat,
-                           unsigned int   multiIndex);
+    static MTypeId m_id;
 
-public:
-    static  MObject a_inLens;
-    static  MTypeId m_id;
+    // Input Attributes
+    static MObject a_inLens;
+    static MObject a_k1;
+    static MObject a_k2;
 
-private:
-
+    // Output Attributes
+    static MObject a_outLens;
 };
 
-#endif // MM_LENS_DEFORMER_NODE_H
+#endif // MM_LENS_BASIC_NODE_H

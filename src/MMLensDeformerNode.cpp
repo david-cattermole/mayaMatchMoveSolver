@@ -21,32 +21,42 @@
  */
 
 
+#include <maya/MFnTypedAttribute.h>
+
 #include <nodeTypeIds.h>
+
+#include <MMLensData.h>
 #include <MMLensDeformerNode.h>
 
 
 MTypeId MMLensDeformerNode::m_id(MM_LENS_DEFORMER_TYPE_ID);
-MObject MMLensDeformerNode::a_angle;
+
+MObject MMLensDeformerNode::a_inLens;
 
 
 MMLensDeformerNode::MMLensDeformerNode() {}
 
 MMLensDeformerNode::~MMLensDeformerNode() {}
 
-void* MMLensDeformerNode::creator()
-{
+void* MMLensDeformerNode::creator() {
     return new MMLensDeformerNode();
 }
 
-MStatus MMLensDeformerNode::initialize()
-{
-    MFnNumericAttribute nAttr;
-    a_angle = nAttr.create("angle", "fa", MFnNumericData::kDouble);
-        nAttr.setDefault(0.0);
-        nAttr.setKeyable(true);
-    addAttribute(a_angle);
+MStatus MMLensDeformerNode::initialize() {
+    MFnTypedAttribute typedAttr;
+    
+    // In Lens
+    MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
+    a_inLens = typedAttr.create(
+        "inLens", "ilns",
+        data_type_id);
+    CHECK_MSTATUS(typedAttr.setStorable(false));
+    CHECK_MSTATUS(typedAttr.setKeyable(false));
+    CHECK_MSTATUS(typedAttr.setReadable(true));
+    CHECK_MSTATUS(typedAttr.setWritable(false));
+    CHECK_MSTATUS(addAttribute(a_inLens));
 
-    attributeAffects(MMLensDeformerNode::a_angle, MMLensDeformerNode::outputGeom);
+    attributeAffects(MMLensDeformerNode::a_inLens, MMLensDeformerNode::outputGeom);
     return MS::kSuccess;
 }
 
@@ -55,49 +65,42 @@ MString MMLensDeformerNode::nodeName() {
 }
 
 MStatus
-MMLensDeformerNode::deform(MDataBlock& block,
-                   MItGeometry& iter,
-                   const MMatrix& /*m*/,
-                   unsigned int /*multiIndex*/)
-//
-// Method: deform
+MMLensDeformerNode::deform(MDataBlock& data,
+                           MItGeometry& iter,
+                           const MMatrix& /*m*/,
+                           unsigned int /*multiIndex*/) {
 //
 // Description:   Deform the point with a MMLensDeformer algorithm
 //
 // Arguments:
-//   block		: the datablock of the node
+//   data		: the datablock of the node
 //	 iter		: an iterator for the geometry to be deformed
 //   m          : matrix to transform the point into world space
 //	 multiIndex : the index of the geometry that we are deforming
 //
-//
-{
     MStatus status = MS::kSuccess;
 
-    // determine the angle of the MMLensDeformer
-    MDataHandle angleData = block.inputValue(a_angle, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    double magnitude = angleData.asDouble();
-
-    // determine the envelope (this is a global scale factor)
-    MDataHandle envData = block.inputValue(envelope, &status);
+    // Query the envelope (the global multiplier factor for the
+    // deformer)
+    MDataHandle envData = data.inputValue(envelope, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     float env = envData.asFloat();
+    if (env <= 0.0) {
+        return status;
+    }
 
-    // iterate through each point in the geometry
-    //
+    // Get Input Lens
+    MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
+    
+    // Deform each point on the input geometry.
     for ( ; !iter.isDone(); iter.next()) {
         MPoint pt = iter.position();
 
-        // do the twist
-        double ff = magnitude * pt.y * env;
-        if (ff != 0.0) {
-            double cct = cos(ff);
-            double cst = sin(ff);
-            double tt = pt.x * cct - pt.z * cst;
-            pt.z = pt.x * cst + pt.z * cct;
-            pt.x = tt;;
-        }
+        // TODO: Evaluate the lens distortion at (pt.x, pt.y).
+        pt.x += 0.1;
+        pt.y += 0.1;
 
         iter.setPosition(pt);
     }

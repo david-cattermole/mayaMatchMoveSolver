@@ -236,6 +236,8 @@ set(SOURCE_FILES
         src/MMReprojectionNode.cpp
         src/MMLensDeformerNode.h
         src/MMLensDeformerNode.cpp
+        src/MMLensBasicNode.h
+        src/MMLensBasicNode.cpp
         src/MMLensData.h
         src/MMLensData.cpp
         src/MMLensEvaluateNode.h

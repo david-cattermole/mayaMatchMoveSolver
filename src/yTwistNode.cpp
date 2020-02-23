@@ -25,7 +25,7 @@
 #include <yTwistNode.h>
 
 
-MTypeId yTwistNode::m_id(MM_LENS_DISTORTION_DEFORMER_TYPE_ID);
+MTypeId yTwistNode::m_id(MM_LENS_DEFORMER_TYPE_ID);
 MObject yTwistNode::a_angle;
 
 
@@ -90,7 +90,6 @@ yTwistNode::deform(MDataBlock& block,
         MPoint pt = iter.position();
 
         // do the twist
-        //
         double ff = magnitude * pt.y * env;
         if (ff != 0.0) {
             double cct = cos(ff);

@@ -37,14 +37,15 @@
 #include <MMReprojectionNode.h>
 #include <MMMarkerGroupTransformNode.h>
 #include <yTwistNode.h>
+#include <MMLensEvaluateNode.h>
 #include <MMReprojectionCmd.h>
 
 
-#define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
-    stat = plugin.registerCommand( name, creator, syntax);    \
-    if (!stat) {                                              \
-        stat.perror(MString(name) + ": registerCommand");     \
-        return status;                                        \
+#define REGISTER_COMMAND(plugin, name, creator, syntax, stat)   \
+    stat = plugin.registerCommand( name, creator, syntax);      \
+    if (!stat) {                                                \
+        stat.perror(MString(name) + ": registerCommand");       \
+        return status;                                          \
     }
 
 #define DEREGISTER_COMMAND(plugin, name, stat)              \
@@ -54,31 +55,36 @@
         return stat;                                        \
     }
 
-#define REGISTER_NODE(plugin, name, id, creator, initialize, stat) \
-    stat = plugin.registerNode(name, id, creator, initialize);     \
-    if (!stat) {                                                   \
-        stat.perror(MString(name) + ": registerNode");             \
-        return (stat);                                             \
+#define REGISTER_NODE(plugin, name,                     \
+                      id, creator,                      \
+                      initialize, stat)                 \
+    stat = plugin.registerNode(name,                    \
+                               id, creator,             \
+                               initialize);             \
+    if (!stat) {                                        \
+        stat.perror(MString(name) + ": registerNode");  \
+        return (stat);                                  \
     }
 
-#define REGISTER_DEFORMER_NODE(plugin, name,                            \
-                               id, creator,                             \
-                               initialize,                              \
-                               type, stat)                              \
-    stat = plugin.registerNode(name,                                    \
-                               id, creator,                             \
-                               initialize,                              \
-                               type);                                   \
-    if (!stat) {                                                        \
-        stat.perror(MString(name) + ": registerDeformerNode");          \
-        return (stat);                                                  \
+
+#define REGISTER_DEFORMER_NODE(plugin, name,                    \
+                               id, creator,                     \
+                               initialize,                      \
+                               type, stat)                      \
+    stat = plugin.registerNode(name,                            \
+                               id, creator,                     \
+                               initialize,                      \
+                               type);                           \
+    if (!stat) {                                                \
+        stat.perror(MString(name) + ": registerDeformerNode");  \
+        return (stat);                                          \
     }
 
-#define DEREGISTER_NODE(plugin, name, id, stat)          \
-    stat = plugin.deregisterNode(id);                    \
-    if (!stat) {                                         \
-        stat.perror(MString(name) + ": deregisterNode"); \
-        return (stat);                                   \
+#define DEREGISTER_NODE(plugin, name, id, stat)             \
+    stat = plugin.deregisterNode(id);                       \
+    if (!stat) {                                            \
+        stat.perror(MString(name) + ": deregisterNode");    \
+        return (stat);                                      \
     }
 
 #define REGISTER_TRANSFORM(plugin, name,                        \
@@ -87,15 +93,15 @@
                            classification,                      \
                            stat)                                \
     stat = plugin.registerTransform(name,                       \
-                                  tfm_id,                       \
-                                  &tfm_creator,                 \
-                                  &tfm_initialize,              \
-                                  &mtx_creator,                 \
-                                  mtx_id,                       \
-                                  &classification);             \
+                                    tfm_id,                     \
+                                    &tfm_creator,               \
+                                    &tfm_initialize,            \
+                                    &mtx_creator,               \
+                                    mtx_id,                     \
+                                    &classification);           \
     if (!stat) {                                                \
-            stat.perror(MString(name) + ": registerTransform"); \
-            return (stat);                                      \
+        stat.perror(MString(name) + ": registerTransform");     \
+        return (stat);                                          \
     }
 
 
@@ -126,7 +132,7 @@ MStatus initializePlugin(MObject obj) {
                      MMReprojectionCmd::creator,
                      MMReprojectionCmd::newSyntax,
                      status);
-    
+
     REGISTER_COMMAND(plugin,
                      MMTestCameraMatrixCmd::cmdName(),
                      MMTestCameraMatrixCmd::creator,
@@ -145,6 +151,13 @@ MStatus initializePlugin(MObject obj) {
                   MMReprojectionNode::m_id,
                   MMReprojectionNode::creator,
                   MMReprojectionNode::initialize,
+                  status);
+
+    REGISTER_NODE(plugin,
+                  MMLensEvaluateNode::nodeName(),
+                  MMLensEvaluateNode::m_id,
+                  MMLensEvaluateNode::creator,
+                  MMLensEvaluateNode::initialize,
                   status);
 
     REGISTER_DEFORMER_NODE(plugin,
@@ -195,15 +208,20 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
 
-    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), 
+    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(),
                     MMMarkerScaleNode::m_id, status);
 
-    DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(), 
+    DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(),
                     MMReprojectionNode::m_id, status);
 
-    DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(), 
+    DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(),
                     MMMarkerGroupTransformNode::m_id, status);
 
-    DEREGISTER_NODE(plugin, yTwistNode::nodeName(), yTwistNode::m_id, status);
+    DEREGISTER_NODE(plugin, yTwistNode::nodeName(),
+                    yTwistNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMLensEvaluateNode::nodeName(),
+                    MMLensEvaluateNode::m_id, status);
+
     return status;
 }

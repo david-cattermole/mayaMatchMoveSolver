@@ -17,45 +17,29 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Holds Lens Distortion information in the Maya DG.
+ * Fanctor class for the basic brownian lens distortion model.
  */
 
-
-#include <maya/MIOStream.h>
-
-#include <maya/MString.h>
-#include <maya/MArgList.h>
-
-#include <maya/MPxData.h>
-#include <maya/MTypeId.h>
-
+#ifndef MAYA_MM_SOLVER_CORE_LENS_MODEL_BASIC_H
+#define MAYA_MM_SOLVER_CORE_LENS_MODEL_BASIC_H
 
 #include <core/lensModel.h>
 
-
-class MMLensData : public MPxData {
+class LensModelBasic : public LensModel {
 public:
-    MMLensData();
-    virtual ~MMLensData();
 
-    virtual MStatus readASCII(const MArgList&, unsigned& lastElement);
-    virtual MStatus readBinary(istream& in, unsigned length);
-    virtual MStatus writeASCII(ostream& out);
-    virtual MStatus writeBinary(ostream& out);
+    LensModelBasic() : k1(0.0), k2(0.0) {};
 
-    virtual void copy(const MPxData&);
-    MTypeId typeId() const;
-    MString name() const;
-
-    LensModel* getLensModel() const;
-    void setLensModel(LensModel* lensModel);
-
-    static MString typeName();
-
-    static const MString m_typeName;
-    static const MTypeId m_id;
-    static void* creator();
+    virtual void applyModel(double x,
+                            double y,
+                            double &out_x,
+                            double &out_y) const;
 
 private:
-    LensModel* fValue;
+
+    double k1;
+    double k2;
 };
+
+
+#endif // MAYA_MM_SOLVER_CORE_LENS_MODEL_BASIC_H

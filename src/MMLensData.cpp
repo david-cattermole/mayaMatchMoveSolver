@@ -23,6 +23,7 @@
 
 #include <nodeTypeIds.h>
 
+#include <core/lensModel.h>
 #include <MMLensData.h>
 
 
@@ -35,17 +36,17 @@ void* MMLensData::creator() {
 }
 
 MMLensData::MMLensData()
-    :fValue(0), MPxData() {
+    : fValue(NULL), MPxData() {
 }
 
 MMLensData::~MMLensData() {}
 
-double MMLensData::value() const {
+LensModel* MMLensData::getLensModel() const {
     return fValue;
 }
 
-void MMLensData::setValue(double newValue) {
-    fValue = newValue;
+void MMLensData::setLensModel(LensModel* lensModel) {
+    fValue = lensModel;
 }
 
 void MMLensData::copy (const MPxData& other){
@@ -68,26 +69,30 @@ MString MMLensData::typeName() {
 
 MStatus MMLensData::readASCII(const MArgList& args,
                               unsigned& lastParsedElement) {
-    MStatus status;
-    if(args.length() > 0) {
-        fValue = args.asDouble(lastParsedElement++, &status);
-        return status;
-    } else {
-        return MS::kFailure;
-    }
+    // MStatus status;
+    // if(args.length() > 0) {
+    //     fValue = args.asDouble(lastParsedElement++, &status);
+    //     return status;
+    // } else {
+    //     return MS::kFailure;
+    // }
+    return MS::kFailure;
 }
 
 MStatus MMLensData::writeASCII(ostream& out) {
-    out << fValue << " ";
-    return MS::kSuccess;
+    // out << fValue << " ";
+    // return MS::kSuccess;
+    return MS::kFailure;
 }
 
 MStatus MMLensData::readBinary(istream& in, unsigned) {
-    in.read((char*) &fValue, sizeof(fValue));
-    return in.fail() ? MS::kFailure : MS::kSuccess;
+    // in.read((char*) &fValue, sizeof(fValue));
+    // return in.fail() ? MS::kFailure : MS::kSuccess;
+    return MS::kFailure;
 }
 
 MStatus MMLensData::writeBinary(ostream& out) {
-    out.write((char*) &fValue, sizeof( fValue));
-    return out.fail() ? MS::kFailure : MS::kSuccess;
+    // out.write((char*) &fValue, sizeof( fValue));
+    // return out.fail() ? MS::kFailure : MS::kSuccess;
+    return MS::kFailure;
 }

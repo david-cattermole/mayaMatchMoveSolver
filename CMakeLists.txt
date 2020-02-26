@@ -209,6 +209,9 @@ set(SOURCE_FILES
         include/nodeTypeIds.h
         src/core/reprojection.h
         src/core/reprojection.cpp
+        src/core/lensModel.h
+        src/core/lensModelBasic.h
+        src/core/lensModelBasic.cpp
         src/core/bundleAdjust_base.h
         src/core/bundleAdjust_base.cpp
         src/core/bundleAdjust_solveFunc.h

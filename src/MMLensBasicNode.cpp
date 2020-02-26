@@ -40,6 +40,7 @@
 
 #include <nodeTypeIds.h>
 
+#include <core/lensModelBasic.h>
 #include <MMLensData.h>
 #include <MMLensBasicNode.h>
 
@@ -78,16 +79,22 @@ MStatus MMLensBasicNode::compute(const MPlug &plug, MDataBlock &data) {
         double k2 = k2Handle.asDouble();
 
         // Get Input Lens
+        //
+        // TODO: Connect the input lens to the newly created lens
+        // object.
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
 
-        // TODO: Create a lens distortion function to be passed to the MMLensData.
+        // Create a lens distortion function to be passed to the MMLensData.
+        LensModelBasic* lensModel = new LensModelBasic;
 
         // Output Lens
         MDataHandle outLensHandle = data.outputValue(a_outLens);
-        MMLensData * newLensData = new MMLensData;
-        newLensData->setValue(42.0);
+        MMLensData* newLensData = new MMLensData;
+        // Note: MMLensData::setLensModel takes ownership of the lens
+        // model.
+        newLensData->setLensModel(lensModel);
         outLensHandle.setMPxData(newLensData);
         outLensHandle.setClean();
 

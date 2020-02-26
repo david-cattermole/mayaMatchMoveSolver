@@ -18,6 +18,11 @@
  * ====================================================================
  *
  * Lens Distortion Deformer.
+ *
+ * To create this node using MEL, select deformable objects and run:
+ *
+ *   deformer -type mmLensDeformer
+ *
  */
 
 
@@ -61,7 +66,7 @@ MStatus MMLensDeformerNode::initialize() {
 }
 
 MString MMLensDeformerNode::nodeName() {
-    return MString("MMLensDeformer");
+    return MString("mmLensDeformer");
 }
 
 MStatus

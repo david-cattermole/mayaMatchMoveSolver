@@ -115,7 +115,7 @@ MStatus MMLensBasicNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_k1));
 
     // K2
-    a_k1 = numericAttr.create(
+    a_k2 = numericAttr.create(
         "k2", "k2",
         MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));

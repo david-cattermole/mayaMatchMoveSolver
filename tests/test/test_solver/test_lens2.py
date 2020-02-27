@@ -63,6 +63,33 @@ class TestLens2(solverUtils.SolverTestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
         return
 
+    def test_create_lens_deformer_with_layers(self):
+        tfm, creator = maya.cmds.polyPlane(axis=(0.0, 0.0, 1.0))
+        shp = maya.cmds.listRelatives(tfm, shapes=True)[0]
+        lens_a_node = maya.cmds.createNode('mmLensBasic')
+        lens_b_node = maya.cmds.createNode('mmLensBasic')
+        deform_node = maya.cmds.deformer(tfm, type='mmLensDeformer')[0]
+
+        plug = lens_a_node + '.k1'
+        maya.cmds.setAttr(plug, 0.2)
+
+        plug = lens_b_node + '.k2'
+        maya.cmds.setAttr(plug, 0.1)
+
+        src = lens_a_node + '.outLens'
+        dst = lens_b_node + '.inLens'
+        maya.cmds.connectAttr(src, dst)
+
+        src = lens_b_node + '.outLens'
+        dst = deform_node + '.inLens'
+        maya.cmds.connectAttr(src, dst)
+
+        # save the scene
+        path = self.get_data_path('lens2_test_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+        return
+
 
 if __name__ == '__main__':
     prog = unittest.main()

@@ -24,19 +24,33 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         return cam_tfm, cam_shp
 
     def test_reprojection_cmd(self):
+        start = 1001
+        end = 1005
+        maya.cmds.playbackOptions(min=start, max=end)
+
         # Camera
         cam_tfm, cam_shp = self.create_camera('camera')
-        maya.cmds.setAttr(cam_tfm + '.translateX', -2.0)
         maya.cmds.setAttr(cam_tfm + '.translateY', 2.0)
         maya.cmds.setAttr(cam_tfm + '.translateZ', 5)
-        maya.cmds.setAttr(cam_tfm + '.rotateX', 10.0)
+
+        attr = 'translateX'
+        maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=start, value=-2.0)
+        maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=end, value=2.0)
+
+        attr = 'rotateX'
+        maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=start, value=10.0)
+        maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=end, value=12.0)
+
+        attr = 'focalLength'
+        maya.cmds.setKeyframe(cam_shp, attribute=attr, time=start, value=35.0)
+        maya.cmds.setKeyframe(cam_shp, attribute=attr, time=end, value=85.0)
 
         # Input transform
         in_tfm = maya.cmds.createNode('transform', name='INPUT')
         in_shp = maya.cmds.createNode('locator', parent=in_tfm)
 
         pnt_x = -0.5
-        pnt_y = -0.27
+        pnt_y = 2.7
         pnt_z = 0.0
         maya.cmds.setAttr(in_tfm + '.translateX', pnt_x)
         maya.cmds.setAttr(in_tfm + '.translateY', pnt_y)
@@ -98,7 +112,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
             asNormalizedCoordinate=True,
         )
         print 'norm_coord_values_b', repr(norm_coord_values_b)
-        self.assertListEqual(norm_coord_values, norm_coord_values_b) 
+        self.assertListEqual(norm_coord_values, norm_coord_values_b)
 
         marker_coord_values = maya.cmds.mmReprojection(
             in_tfm,
@@ -150,6 +164,25 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         )
         print 'world_point_values_b', repr(world_point_values_b)
         self.assertListEqual(world_point_values, world_point_values_b)
+
+        times = (1001.0, 1002.0, 1003.0, 1004.0, 1005.0,)
+        out_tfm = maya.cmds.createNode('transform', name='OUTPUT')
+        out_shp = maya.cmds.createNode('locator', parent=out_tfm)
+        for i, time in enumerate(times):
+            x = world_point_values[(i * 3) + 0]
+            y = world_point_values[(i * 3) + 1]
+            z = world_point_values[(i * 3) + 2]
+            maya.cmds.setKeyframe(out_tfm, attribute='tx', value=x, time=time)
+            maya.cmds.setKeyframe(out_tfm, attribute='ty', value=y, time=time)
+            maya.cmds.setKeyframe(out_tfm, attribute='tz', value=z, time=time)
+        # Ensure it's the same (with-in a small margin of error)
+        for i, time in enumerate(times):
+            x = world_point_values[(i * 3) + 0]
+            y = world_point_values[(i * 3) + 1]
+            z = world_point_values[(i * 3) + 2]
+            assert self.approx_equal(x, pnt_x), 'X a=%r b=%r' % (x, pnt_x)
+            assert self.approx_equal(y, pnt_y), 'Y a=%r b=%r' % (y, pnt_y)
+            assert self.approx_equal(z, pnt_z), 'Z a=%r b=%r' % (z, pnt_z)
 
         # save the output
         path = self.get_data_path('reprojection_cmd_test_after.ma')

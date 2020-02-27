@@ -85,6 +85,12 @@
 #define FORCE_TRIGGER_EVAL 1
 
 
+// Pre-processor-level on/off switch for re-use of the Marker
+// positions. For solving lens distortion (where the marker positions
+// are dynamic) it doesn't make sense to use a marker cache.
+#define USE_MARKER_POSITION_CACHE 0
+
+
 // Allows us to test (internally), the experimental delta value
 // calculation.
 // #define USE_EXPERIMENTAL_DELTA_VALUE
@@ -502,8 +508,22 @@ void measureErrors(
 
         BundlePtr bnd = marker->getBundle();
 
+        // When using lens distortion, we need to re-compute the
+        // marker positions, since they are affected by lens
+        // distortion.
+#if USE_MARKER_POSITION_CACHE == 1
         // Use pre-computed marker position and weight
         mkr_mpos = ud->markerPosList[i];
+#else
+        status = marker->getPos(mkr_mpos, frame);
+        CHECK_MSTATUS(status);
+        mkr_mpos = mkr_mpos * cameraWorldProjectionMatrix;
+        mkr_mpos.cartesianize();
+        // convert to -0.5 to 0.5, maintaining the aspect
+        // ratio of the film back.
+        mkr_mpos[0] *= 0.5;
+        mkr_mpos[1] *= 0.5 * filmBackInvAspect;
+#endif
         double mkr_weight = ud->markerWeightList[i];
         mkr_weight = std::sqrt(mkr_weight);
 

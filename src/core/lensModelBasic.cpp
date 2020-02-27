@@ -48,11 +48,26 @@ void LensModelBasic::setK2(double value) {
     return;
 }
 
+LensModel* LensModelBasic::getInputLensModel() const {
+    return m_inputLensModel;
+}
+
+void LensModelBasic::setInputLensModel(LensModel* value) {
+    m_inputLensModel = value;
+    return;
+}
 
 void LensModelBasic::applyModel(double xd,
                                 double yd,
                                 double &xu,
                                 double &yu) const {
+    // First compute the lens distortion from the 'previous' lens
+    // model.
+    LensModel* inputLensModel = LensModelBasic::getInputLensModel();
+    if (inputLensModel != NULL) {
+        inputLensModel->applyModel(xd, yd, xd, yd);
+    }
+
     // Brownian lens distortion model.
     //
     // xu = xd + ((xd - xc) * ((k1 * r2) + (k2 * r4)));
@@ -66,6 +81,7 @@ void LensModelBasic::applyModel(double xd,
     //   p1, p2, etc = Nth tangential distortion coefficent
     //   r = sqrt(pow(xd - xc, 2) + pow(yd - yc, 2))
     //
+    // TODO: Expose the lens distortion center as a parameter.
     double xc = 0.0;
     double yc = 0.0;
 

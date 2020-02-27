@@ -40,6 +40,10 @@ public:
 
     void setK2(double value);
 
+    LensModel* getInputLensModel() const;
+
+    void setInputLensModel(LensModel* value);
+
     virtual void applyModel(double x,
                             double y,
                             double &out_x,
@@ -47,6 +51,7 @@ public:
 
 private:
 
+    LensModel* m_inputLensModel;
     double m_k1;
     double m_k2;
 };

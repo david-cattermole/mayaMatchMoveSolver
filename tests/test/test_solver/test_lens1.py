@@ -84,6 +84,54 @@ class TestLens1(solverUtils.SolverTestCase):
             print 'value:', axis, value
         return
 
+    def test_layered_lens_distortion_evaluation(self):
+        tfm_a = maya.cmds.createNode('transform')
+        shp_a = maya.cmds.createNode('locator', parent=tfm_a)
+        tfm_b = maya.cmds.createNode('transform')
+        shp_b = maya.cmds.createNode('locator', parent=tfm_b)
+        lens_a_node = maya.cmds.createNode('mmLensBasic')
+        lens_b_node = maya.cmds.createNode('mmLensBasic')
+        eval_node = maya.cmds.createNode('mmLensEvaluate')
+
+        plug = lens_a_node + '.k1'
+        maya.cmds.setAttr(plug, 0.2)
+
+        plug = lens_b_node + '.k2'
+        maya.cmds.setAttr(plug, 0.1)
+
+        src = lens_a_node + '.outLens'
+        dst = lens_b_node + '.inLens'
+        maya.cmds.connectAttr(src, dst)
+
+        src = lens_b_node + '.outLens'
+        dst = eval_node + '.inLens'
+        maya.cmds.connectAttr(src, dst)
+
+        for axis in ['X', 'Y']:
+            plug = tfm_a + '.translate' + axis
+            maya.cmds.setAttr(plug, 0.5)
+
+            src = tfm_a + '.translate' + axis
+            dst = eval_node + '.in' + axis
+            maya.cmds.connectAttr(src, dst)
+
+            src = eval_node + '.out' + axis
+            dst = tfm_b + '.translate' + axis
+            maya.cmds.connectAttr(src, dst)
+
+        # save the scene
+        path = self.get_data_path('lens1_test_layered_lenses_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        # Compute the DG
+        for axis in ['X', 'Y']:
+            plug = tfm_b + '.translate' + axis
+            print 'trigger:', plug
+            value = maya.cmds.getAttr(plug)
+            print 'value:', axis, value
+        return
+
 
 if __name__ == '__main__':
     prog = unittest.main()

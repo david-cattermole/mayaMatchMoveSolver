@@ -29,13 +29,34 @@
 
 #include <core/lensModelBasic.h>
 
-void LensModelBasic::applyModel(double x,
-                                double y,
-                                double &out_x,
-                                double &out_y) const {
-    // TODO: Add Brownian lens distortion model here.
+
+double LensModelBasic::getK1() const {
+    return m_k1;
+}
+
+void LensModelBasic::setK1(double value) {
+    m_k1 = value;
+    return;
+}
+
+double LensModelBasic::getK2() const {
+    return m_k2;
+}
+
+void LensModelBasic::setK2(double value) {
+    m_k2 = value;
+    return;
+}
+
+
+void LensModelBasic::applyModel(double xd,
+                                double yd,
+                                double &xu,
+                                double &yu) const {
+    // Brownian lens distortion model.
     //
-    // xu = xd + ((xd - dc) * ((k1 * r2) + (k2 * r4)));
+    // xu = xd + ((xd - xc) * ((k1 * r2) + (k2 * r4)));
+    // yu = yd + ((yd - yc) * ((k1 * r2) + (k2 * r4)));
     //
     // where:
     //   xu = undistorted image point
@@ -45,7 +66,14 @@ void LensModelBasic::applyModel(double x,
     //   p1, p2, etc = Nth tangential distortion coefficent
     //   r = sqrt(pow(xd - xc, 2) + pow(yd - yc, 2))
     //
-    out_x = x + 0.1;
-    out_y = y + 0.1;
+    double xc = 0.0;
+    double yc = 0.0;
+
+    double r = sqrt(pow(xd - xc, 2) + pow(yd - yc, 2));
+    double r2 = pow(r, 2);
+    double r4 = pow(r, 4);
+
+    xu = xd + ((xd - xc) * ((m_k1 * r2) + (m_k2 * r4)));
+    yu = yd + ((yd - yc) * ((m_k1 * r2) + (m_k2 * r4)));
     return;
 }

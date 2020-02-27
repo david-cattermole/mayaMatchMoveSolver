@@ -49,7 +49,7 @@ void* MMLensDeformerNode::creator() {
 
 MStatus MMLensDeformerNode::initialize() {
     MFnTypedAttribute typedAttr;
-    
+
     // In Lens
     MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
     a_inLens = typedAttr.create(
@@ -58,7 +58,7 @@ MStatus MMLensDeformerNode::initialize() {
     CHECK_MSTATUS(typedAttr.setStorable(false));
     CHECK_MSTATUS(typedAttr.setKeyable(false));
     CHECK_MSTATUS(typedAttr.setReadable(true));
-    CHECK_MSTATUS(typedAttr.setWritable(false));
+    CHECK_MSTATUS(typedAttr.setWritable(true));
     CHECK_MSTATUS(addAttribute(a_inLens));
 
     attributeAffects(MMLensDeformerNode::a_inLens, MMLensDeformerNode::outputGeom);
@@ -67,6 +67,12 @@ MStatus MMLensDeformerNode::initialize() {
 
 MString MMLensDeformerNode::nodeName() {
     return MString("mmLensDeformer");
+}
+
+// Linear interpolation function, aka 'mix' function
+inline
+double lerp(double a, double b, double x) {
+    return ((1-x) * a) + (x * b);
 }
 
 MStatus
@@ -98,16 +104,25 @@ MMLensDeformerNode::deform(MDataBlock& data,
     MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
-    
-    // Deform each point on the input geometry.
-    for ( ; !iter.isDone(); iter.next()) {
-        MPoint pt = iter.position();
+    if (inputLensData != NULL) {
+        // Get the underlying lens model.
+        LensModel* lensModel = (LensModel*) inputLensData->getValue();
 
-        // TODO: Evaluate the lens distortion at (pt.x, pt.y).
-        pt.x += 0.1;
-        pt.y += 0.1;
+        // Deform each point on the input geometry.
+        for ( ; !iter.isDone(); iter.next()) {
+            MPoint pt = iter.position();
 
-        iter.setPosition(pt);
+            // Evaluate the lens distortion at (pt.x, pt.y).
+            double out_x = pt.x;
+            double out_y = pt.y;
+            if (lensModel != NULL) {
+                lensModel->applyModel(pt.x, pt.y, out_x, out_y);
+            }
+            pt.x = lerp(pt.x, out_x, env);
+            pt.y = lerp(pt.y, out_y, env);
+
+            iter.setPosition(pt);
+        }
     }
     return status;
 }

@@ -36,21 +36,21 @@ void* MMLensData::creator() {
 }
 
 MMLensData::MMLensData()
-    : fValue(NULL), MPxData() {
+    : m_value(NULL), MPxData() {
 }
 
 MMLensData::~MMLensData() {}
 
-LensModel* MMLensData::getLensModel() const {
-    return fValue;
+LensModel* MMLensData::getValue() const {
+    return m_value;
 }
 
-void MMLensData::setLensModel(LensModel* lensModel) {
-    fValue = lensModel;
+void MMLensData::setValue(LensModel* value) {
+    m_value = value;
 }
 
-void MMLensData::copy (const MPxData& other){
-    fValue = ((const MMLensData&)other).fValue;
+void MMLensData::copy(const MPxData& other) {
+    m_value = ((const MMLensData&)other).m_value;
 }
 
 MTypeId MMLensData::typeId() const {
@@ -69,30 +69,17 @@ MString MMLensData::typeName() {
 
 MStatus MMLensData::readASCII(const MArgList& args,
                               unsigned& lastParsedElement) {
-    // MStatus status;
-    // if(args.length() > 0) {
-    //     fValue = args.asDouble(lastParsedElement++, &status);
-    //     return status;
-    // } else {
-    //     return MS::kFailure;
-    // }
-    return MS::kFailure;
+    return MS::kSuccess;
 }
 
 MStatus MMLensData::writeASCII(ostream& out) {
-    // out << fValue << " ";
-    // return MS::kSuccess;
-    return MS::kFailure;
+    return MS::kSuccess;
 }
 
 MStatus MMLensData::readBinary(istream& in, unsigned) {
-    // in.read((char*) &fValue, sizeof(fValue));
-    // return in.fail() ? MS::kFailure : MS::kSuccess;
-    return MS::kFailure;
+    return MS::kSuccess;
 }
 
 MStatus MMLensData::writeBinary(ostream& out) {
-    // out.write((char*) &fValue, sizeof( fValue));
-    // return out.fail() ? MS::kFailure : MS::kSuccess;
-    return MS::kFailure;
+    return MS::kSuccess;
 }

@@ -43,7 +43,6 @@
 #include <MMLensData.h>
 #include <MMLensEvaluateNode.h>
 
-
 MTypeId MMLensEvaluateNode::m_id(MM_LENS_EVALUATE_TYPE_ID);
 
 // Input Attributes
@@ -77,14 +76,20 @@ MStatus MMLensEvaluateNode::compute(const MPlug &plug, MDataBlock &data) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double y = inYHandle.asDouble();
 
+        double out_x = x;
+        double out_y = y;
+
         // Get Input Lens
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
-
-        // TODO: Evaluate the lens distortion, at (x, y)
-        double out_x = 0.0;
-        double out_y = 0.0;
+        if (inputLensData != NULL) {
+            // Evaluate the lens distortion, at (x, y)
+            LensModel* lensModel = (LensModel*) inputLensData->getValue();
+            if (lensModel != NULL) {
+                lensModel->applyModel(x, y, out_x, out_y);
+            }
+        }
 
         // Output
         MDataHandle outXHandle = data.outputValue(a_outX);
@@ -93,7 +98,6 @@ MStatus MMLensEvaluateNode::compute(const MPlug &plug, MDataBlock &data) {
         outYHandle.setDouble(out_y);
         outXHandle.setClean();
         outYHandle.setClean();
-
         status = MS::kSuccess;
     }
 
@@ -117,7 +121,7 @@ MStatus MMLensEvaluateNode::initialize() {
     CHECK_MSTATUS(typedAttr.setStorable(false));
     CHECK_MSTATUS(typedAttr.setKeyable(false));
     CHECK_MSTATUS(typedAttr.setReadable(true));
-    CHECK_MSTATUS(typedAttr.setWritable(false));
+    CHECK_MSTATUS(typedAttr.setWritable(true));
     CHECK_MSTATUS(addAttribute(a_inLens));
 
     // In X
@@ -159,10 +163,8 @@ MStatus MMLensEvaluateNode::initialize() {
     // Attribute Affects
     CHECK_MSTATUS(attributeAffects(a_inX, a_outX));
     CHECK_MSTATUS(attributeAffects(a_inX, a_outY));
-
     CHECK_MSTATUS(attributeAffects(a_inY, a_outX));
     CHECK_MSTATUS(attributeAffects(a_inY, a_outY));
-
     CHECK_MSTATUS(attributeAffects(a_inLens, a_outX));
     CHECK_MSTATUS(attributeAffects(a_inLens, a_outY));
 

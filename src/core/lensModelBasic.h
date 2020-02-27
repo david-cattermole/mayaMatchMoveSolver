@@ -28,7 +28,17 @@
 class LensModelBasic : public LensModel {
 public:
 
-    LensModelBasic() : k1(0.0), k2(0.0) {};
+    LensModelBasic() : m_k1(0.0), m_k2(0.0) {};
+
+    LensModelBasic(double k1, double k2) : m_k1(k1), m_k2(k2) {};
+
+    double getK1() const;
+
+    void setK1(double value);
+
+    double getK2() const;
+
+    void setK2(double value);
 
     virtual void applyModel(double x,
                             double y,
@@ -37,8 +47,8 @@ public:
 
 private:
 
-    double k1;
-    double k2;
+    double m_k1;
+    double m_k2;
 };
 
 

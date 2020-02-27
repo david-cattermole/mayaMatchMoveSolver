@@ -78,6 +78,13 @@ MStatus MMLensBasicNode::compute(const MPlug &plug, MDataBlock &data) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double k2 = k2Handle.asDouble();
 
+        // Create initial plug-in data structure. We don't need to
+        // 'new' the data type directly.
+        MFnPluginData fnPluginData;
+        MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
+        fnPluginData.create(data_type_id, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
         // Get Input Lens
         //
         // TODO: Connect the input lens to the newly created lens
@@ -86,15 +93,20 @@ MStatus MMLensBasicNode::compute(const MPlug &plug, MDataBlock &data) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
 
-        // Create a lens distortion function to be passed to the MMLensData.
-        LensModelBasic* lensModel = new LensModelBasic;
+        // Create a lens distortion function to be passed to the
+        // MMLensData.
+        LensModelBasic* newLensModel = new LensModelBasic();
+        newLensModel->setK1(k1);
+        newLensModel->setK2(k2);
 
         // Output Lens
         MDataHandle outLensHandle = data.outputValue(a_outLens);
-        MMLensData* newLensData = new MMLensData;
-        // Note: MMLensData::setLensModel takes ownership of the lens
+        MMLensData* newLensData = (MMLensData*) fnPluginData.data(&status);
+
+        // Note: MMLensData::setValue takes ownership of the lens
         // model.
-        newLensData->setLensModel(lensModel);
+        newLensData->setValue(newLensModel);
+
         outLensHandle.setMPxData(newLensData);
         outLensHandle.setClean();
 

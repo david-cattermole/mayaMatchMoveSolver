@@ -47,8 +47,8 @@ public:
     MTypeId typeId() const;
     MString name() const;
 
-    LensModel* getLensModel() const;
-    void setLensModel(LensModel* lensModel);
+    LensModel* getValue() const;
+    void setValue(LensModel* value);
 
     static MString typeName();
 
@@ -57,5 +57,5 @@ public:
     static void* creator();
 
 private:
-    LensModel* fValue;
+    LensModel* m_value;
 };

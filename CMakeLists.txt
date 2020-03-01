@@ -241,6 +241,8 @@ set(SOURCE_FILES
         src/MMLensDeformerNode.cpp
         src/MMLensModelBasicNode.h
         src/MMLensModelBasicNode.cpp
+        src/MMLensModelToggleNode.h
+        src/MMLensModelToggleNode.cpp
         src/MMLensData.h
         src/MMLensData.cpp
         src/MMLensEvaluateNode.h

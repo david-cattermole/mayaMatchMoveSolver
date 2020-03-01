@@ -27,6 +27,7 @@ import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
+import mmSolver.ui.uiutils as uiutils
 import mmSolver.tools.solver.widget.ui_nodebrowser_widget as ui_nodebrowser_widget
 
 LOG = mmSolver.logger.get_logger()
@@ -69,6 +70,14 @@ def setNodeSelectionWithUUID(tree_view,
     """
     Override the tree view selection based on Maya Node UUIDs.
     """
+    # Ensure we don't try to access the Qt objects if they no longer
+    # exist in memory.
+    objs = [tree_view, model, filter_model, sel_model]
+    for obj in objs:
+        valid = uiutils.isValidQtObject(obj)
+        if valid is False:
+            return
+
     root_index = tree_view.rootIndex()
     column = model.getColumnIndexFromColumnName(column_name)
     indexes = _lookupIndexesFromMayaNodeUUIDs(

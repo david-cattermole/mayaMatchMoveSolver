@@ -114,11 +114,15 @@ CAMERA_TRANSFORM_NODE_API_TYPES = (
 CAMERA_SHAPE_NODE_API_TYPES = (
     OpenMaya.MFn.kCamera,
 )
+LENS_NODE_TYPE_DEFAULT = 'mmLensModelBasic'
+LENS_DATA_TYPE_ID = 0x0012F184
+LENS_TOGGLE_NODE_NAME = 'lensDistortionToggle1'
 
 
 # Icon names
 MARKER_SHAPE_ICON_NAME = 'out_mmMarkerShape.png'
 BUNDLE_SHAPE_ICON_NAME = 'out_mmBundleShape.png'
+LENS_SHAPE_ICON_NAME = 'out_mmLensShape.png'
 
 
 # Collection Attribute Names

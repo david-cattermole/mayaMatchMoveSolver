@@ -38,7 +38,7 @@
 #include <MMMarkerGroupTransformNode.h>
 #include <MMLensDeformerNode.h>
 #include <MMLensEvaluateNode.h>
-#include <MMLensBasicNode.h>
+#include <MMLensModelBasicNode.h>
 #include <MMLensData.h>
 #include <MMReprojectionCmd.h>
 
@@ -195,10 +195,10 @@ MStatus initializePlugin(MObject obj) {
                   status);
 
     REGISTER_NODE(plugin,
-                  MMLensBasicNode::nodeName(),
-                  MMLensBasicNode::m_id,
-                  MMLensBasicNode::creator,
-                  MMLensBasicNode::initialize,
+                  MMLensModelBasicNode::nodeName(),
+                  MMLensModelBasicNode::m_id,
+                  MMLensModelBasicNode::creator,
+                  MMLensModelBasicNode::initialize,
                   status);
 
     // MM Marker Group transform
@@ -256,8 +256,8 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_NODE(plugin, MMLensEvaluateNode::nodeName(),
                     MMLensEvaluateNode::m_id, status);
 
-    DEREGISTER_NODE(plugin, MMLensBasicNode::nodeName(),
-                    MMLensBasicNode::m_id, status);
+    DEREGISTER_NODE(plugin, MMLensModelBasicNode::nodeName(),
+                    MMLensModelBasicNode::m_id, status);
 
     // Unloaded last, so that all nodes needing it are unloaded first
     // and we won't get a potential crash.

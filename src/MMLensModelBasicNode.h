@@ -20,24 +20,20 @@
  * Define a lens. The lens is a simple brownian model.
  */
 
-#ifndef MM_LENS_BASIC_NODE_H
-#define MM_LENS_BASIC_NODE_H
+#ifndef MM_LENS_MODEL_BASIC_NODE_H
+#define MM_LENS_MODEL_BASIC_NODE_H
 
 #include <maya/MPxNode.h>
-
 #include <maya/MString.h>
 #include <maya/MObject.h>
-#include <maya/MTime.h>
-
-#include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
 
 
-class MMLensBasicNode : public MPxNode {
+class MMLensModelBasicNode : public MPxNode {
 public:
-    MMLensBasicNode();
+    MMLensModelBasicNode();
 
-    virtual ~MMLensBasicNode();
+    virtual ~MMLensModelBasicNode();
 
     virtual MStatus compute(const MPlug &plug, MDataBlock &data);
 
@@ -51,6 +47,7 @@ public:
 
     // Input Attributes
     static MObject a_inLens;
+    static MObject a_enable;
     static MObject a_k1;
     static MObject a_k2;
 
@@ -58,4 +55,4 @@ public:
     static MObject a_outLens;
 };
 
-#endif // MM_LENS_BASIC_NODE_H
+#endif // MM_LENS_MODEL_BASIC_NODE_H

@@ -39,7 +39,7 @@
 
 #include <nodeTypeIds.h>
 
-#include <core/lensModelBasic.h>
+#include <core/lensModel.h>
 #include <MMLensData.h>
 #include <MMLensModelToggleNode.h>
 

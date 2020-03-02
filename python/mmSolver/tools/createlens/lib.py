@@ -246,7 +246,7 @@ def create_image_plane_shader(tfm):
     return sg_node, shd_node, file_node
 
 
-def create_lens_on_camera(cam):
+def create_lens_on_camera(cam, force_create_new=None):
     """
     Create a lens node on the given camera.
 
@@ -257,9 +257,14 @@ def create_lens_on_camera(cam):
 
     """
     assert isinstance(cam, mmapi.Camera)
-    # Create a mmSolver.api.Lens() object, connect lens to the camera.
-    lens = mmapi.Lens().create_node()
-    cam.set_lens(lens)
+    if force_create_new is None:
+        force_create_new = False
+    assert isinstance(force_create_new, bool)
+    lens = cam.get_lens()
+    if lens is None or force_create_new is True:
+        # Create a mmSolver.api.Lens() object, connect lens to the camera.
+        lens = mmapi.Lens().create_node()
+        cam.set_lens(lens)
     return lens
 
 

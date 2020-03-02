@@ -39,11 +39,6 @@ public:
 inline LensModel::~LensModel() {}
 
 
-// typedef int(*FunctPtr)(...params...);
-
-// #define LENS_MODEL_FUNC (*func)(double, double, &double &double)
-// typedef void (LensModel::*MemberFunc)(double x, double y, double &out_x, double &out_y);
-
 typedef void (LensModel::*LensModelMembFn)(double x,
                                            double y,
                                            double &out_x,

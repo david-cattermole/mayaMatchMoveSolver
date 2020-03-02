@@ -24,9 +24,7 @@
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
 #include <maya/MFnNumericAttribute.h>
-#include <maya/MFnEnumAttribute.h>
 #include <maya/MFnTypedAttribute.h>
-#include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnNumericData.h>
 
 #include <maya/MString.h>

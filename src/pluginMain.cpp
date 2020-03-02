@@ -36,6 +36,7 @@
 #include <MMMarkerScaleNode.h>
 #include <MMReprojectionNode.h>
 #include <MMMarkerGroupTransformNode.h>
+#include <MMMarkerTransformNode.h>
 #include <MMLensDeformerNode.h>
 #include <MMLensEvaluateNode.h>
 #include <MMLensModelBasicNode.h>
@@ -221,6 +222,18 @@ MStatus initializePlugin(MObject obj) {
                        markerGroupClassification,
                        status)
 
+    // Marker transform node and matrix
+    const MString markerTfmClassification = "drawdb/geometry/transform";
+    REGISTER_TRANSFORM(plugin,
+                       MMMarkerTransformNode::nodeName(),
+                       MMMarkerTransformNode::m_id,
+                       MMMarkerTransformNode::creator,
+                       MMMarkerTransformNode::initialize,
+                       MMMarkerTransformMatrix::m_id,
+                       MMMarkerTransformMatrix::creator,
+                       markerTfmClassification,
+                       status)
+
     // Run the Python startup function when the plug-in loads.
     bool displayEnabled = false;
     bool undoEnabled = false;
@@ -257,6 +270,9 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(),
                     MMMarkerGroupTransformNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMMarkerTransformNode::nodeName(),
+                    MMMarkerTransformNode::m_id, status);
 
     DEREGISTER_NODE(plugin, MMLensDeformerNode::nodeName(),
                     MMLensDeformerNode::m_id, status);

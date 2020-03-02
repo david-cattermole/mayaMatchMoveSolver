@@ -247,6 +247,10 @@ set(SOURCE_FILES
         src/MMLensData.cpp
         src/MMLensEvaluateNode.h
         src/MMLensEvaluateNode.cpp
+        src/MMMarkerTransformNode.h
+        src/MMMarkerTransformNode.cpp
+        src/MMMarkerTransformMatrix.h
+        src/MMMarkerTransformMatrix.cpp
         src/MMMarkerGroupTransformNode.h
         src/MMMarkerGroupTransformNode.cpp
         src/MMTestCameraMatrixCmd.h

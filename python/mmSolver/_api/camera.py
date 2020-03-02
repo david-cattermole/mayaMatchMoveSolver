@@ -228,8 +228,10 @@ class Camera(object):
         tfm_dag = node_utils.get_as_dag_path(name)
         if tfm_dag is not None:
             assert tfm_dag.apiType() in const.CAMERA_TRANSFORM_NODE_API_TYPES
+            cam_tfm = tfm_dag.fullPathName()
 
             # Get camera shape from transform.
+            cam_shp = None
             dag = node_utils.get_as_dag_path(name)
             num_children = dag.childCount()
             if num_children > 0:
@@ -238,9 +240,11 @@ class Camera(object):
                     if child_obj.apiType() in const.CAMERA_SHAPE_NODE_API_TYPES:
                         dag.push(child_obj)
                         self._mfn_shp = OpenMaya.MFnDagNode(dag)
+                        cam_shp = dag.fullPathName()
                         break
 
             self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
+            _create_lens_toggle_setup(cam_tfm, cam_shp)
 
         if self._mfn_tfm is None or self._mfn_shp is None:
             self._mfn_tfm = OpenMaya.MFnDagNode()
@@ -301,14 +305,17 @@ class Camera(object):
         shp_dag = node_utils.get_as_dag_path(name)
         if shp_dag is not None:
             assert shp_dag.apiType() in const.CAMERA_SHAPE_NODE_API_TYPES
+            cam_shp = shp_dag.fullPathName()
 
             # Get transform from shape.
             tfm_dag = node_utils.get_as_dag_path(name)
             tfm_dag.pop(1)
             assert tfm_dag.apiType() in const.CAMERA_TRANSFORM_NODE_API_TYPES
+            cam_tfm = tfm_dag.fullPathName()
 
             self._mfn_shp = OpenMaya.MFnDagNode(shp_dag)
             self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
+            _create_lens_toggle_setup(cam_tfm, cam_shp)
 
         if self._mfn_tfm is None or self._mfn_shp is None:
             self._mfn_tfm = OpenMaya.MFnDagNode()
@@ -538,6 +545,7 @@ class Camera(object):
         nodes = maya.cmds.listConnections(
             cam_shp + '.inLens',
             source=True,
+            destination=False,
             shapes=False) or []
         if len(nodes) > 0:
             assert len(nodes) == 1

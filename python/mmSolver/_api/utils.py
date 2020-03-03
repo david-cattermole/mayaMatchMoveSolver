@@ -69,6 +69,7 @@ def get_object_type(node):
     - OBJECT_TYPE_BUNDLE
     - OBJECT_TYPE_ATTRIBUTE
     - OBJECT_TYPE_CAMERA
+    - OBJECT_TYPE_LENS
     - OBJECT_TYPE_MARKER_GROUP
     - OBJECT_TYPE_COLLECTION
     - OBJECT_TYPE_UNKNOWN
@@ -133,6 +134,9 @@ def get_object_type(node):
 
     elif node_type == 'imagePlane':
         object_type = const.OBJECT_TYPE_IMAGE_PLANE
+
+    elif node_type.startswith('mmLensModel'):
+        object_type = const.OBJECT_TYPE_LENS
 
     elif node_type == 'mmMarkerGroupTransform':
         object_type = const.OBJECT_TYPE_MARKER_GROUP

@@ -110,7 +110,7 @@ def get_object_type(node):
     if '.' in node:
         object_type = const.OBJECT_TYPE_ATTRIBUTE
 
-    elif ((node_type == 'transform')
+    elif ((node_type in ['transform', 'mmMarkerTransform'])
           and ('locator' in shape_node_types)
           and ('enable' in attrs)
           and ('weight' in attrs)
@@ -121,6 +121,7 @@ def get_object_type(node):
           and ('locator' in shape_node_types)):
         object_type = const.OBJECT_TYPE_BUNDLE
 
+    # TODO: Ensure other types of camera transform nodes are supported.
     elif ((node_type == 'transform') and
           ('camera' in shape_node_types)):
         object_type = const.OBJECT_TYPE_CAMERA

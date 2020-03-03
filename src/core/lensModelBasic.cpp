@@ -87,7 +87,7 @@ void LensModelBasic::applyModel(double xd,
 
     double r = sqrt(pow(xd - xc, 2) + pow(yd - yc, 2));
     double r2 = pow(r, 2);
-    double r4 = pow(r, 4);
+    double r4 = pow(r, 4) * 2.0;
 
     xu = xd + ((xd - xc) * ((m_k1 * r2) + (m_k2 * r4)));
     yu = yd + ((yd - yc) * ((m_k1 * r2) + (m_k2 * r4)));

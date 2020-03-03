@@ -57,6 +57,12 @@ def _gen_two_frame_fwd(int_list):
     :returns: List of integer pairs.
     :rtype: [[int, int], ...]
     """
+    if len(int_list) == 1:
+        num = int_list[0]
+        batch_list = [
+            [frame.Frame(num), frame.Frame(num)]
+        ]
+        return batch_list
     end = len(int_list) - 1
     batch_list = []
     for i in range(end):
@@ -237,7 +243,7 @@ def _compile_multi_inbetween_frames(mkr_list,
                                     all_frame_list,
                                     global_solve,
                                     anim_iter_num,
-                                    test,
+                                    withtest,
                                     verbose):
     if global_solve is True:
         # Do Global Solve with all frames.
@@ -251,7 +257,7 @@ def _compile_multi_inbetween_frames(mkr_list,
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, mkr_list, attr_list, test, cache
+            sol, mkr_list, attr_list, withtest, cache
         )
         for action, vaction in generator:
             yield action, vaction
@@ -267,7 +273,7 @@ def _compile_multi_inbetween_frames(mkr_list,
             sol.set_attributes_use_static(False)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             generator = api_compile.compile_solver_with_cache(
-                sol, mkr_list, attr_list, test, cache
+                sol, mkr_list, attr_list, withtest, cache
             )
             for action, vaction in generator:
                 yield action, vaction
@@ -286,10 +292,58 @@ def _compile_multi_frame(mkr_list,
                          global_solve,
                          root_frame_strategy,
                          triangulate_bundles,
-                         test,
+                         withtest,
                          verbose):
-    assert len(root_frame_list) >= 2
-    assert len(frame_list) >= 2
+    """
+    Generate Actions to solve multiple-frames
+
+    :param mkr_list:
+        Markers to be solved with.
+
+    :param attr_list:
+        Attributes to be solved.
+
+    :param root_frame_list:
+        Frames to solve static and animated attributes.
+
+    :param frame_list:
+        Frames to solve animated attributes.
+
+    :param auto_attr_blocks:
+        Split attributes into stages (based on categories) to be solved together.
+
+    :param block_iter_num:
+        How many iterations to perform for attribute categories.
+
+    :param only_root_frames:
+        Only solve the root frames.
+
+    :param root_iter_num:
+        Number of iterations for root frame solves.
+
+    :param anim_iter_num:
+        Number of iterations for animated attribute solves.
+
+    :param global_solve:
+        Should all frames be solved together, both animated and static
+        attributes?
+
+    :param root_frame_strategy:
+        The strategy ordering of root frames and how to solve them.
+        Value must be one in ROOT_FRAME_STRATEGY_VALUE_LIST
+
+    :param triangulate_bundles:
+        If True, unlocked bundles will be triangulated before being
+        further refined by the solver processes.
+
+    :param withtest:
+        Should validation tests be generated?
+
+    :param verbose:
+        Print out more detail than usual.
+
+    :return: Yields a generator of Actions.
+    """
     root_frame_list_num = [x.get_number() for x in root_frame_list]
     frame_list_num = [x.get_number() for x in frame_list]
     non_root_frame_list_num = set(frame_list_num) - set(root_frame_list_num)
@@ -311,7 +365,7 @@ def _compile_multi_frame(mkr_list,
         # sol.root_frame_list = root_frame_list_num
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, mkr_list, attr_list, test, cache
+            sol, mkr_list, attr_list, withtest, cache
         )
         for action, vaction in generator:
             yield action, vaction
@@ -338,7 +392,7 @@ def _compile_multi_frame(mkr_list,
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
-                sol, new_mkr_list, new_attr_list, test, cache
+                sol, new_mkr_list, new_attr_list, withtest, cache
             )
             for action, vaction in generator:
                 yield action, vaction
@@ -374,7 +428,7 @@ def _compile_multi_frame(mkr_list,
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, root_mkr_list, attr_list, test, cache
+            sol, root_mkr_list, attr_list, withtest, cache
         )
         for action, vaction in generator:
             yield action, vaction
@@ -402,7 +456,7 @@ def _compile_multi_frame(mkr_list,
             attr_list,
             batch_frame_list,
             root_iter_num,
-            test,
+            withtest,
             verbose
         )
         for action, vaction in generator:
@@ -416,7 +470,7 @@ def _compile_multi_frame(mkr_list,
         non_root_frame_list,
         start_frame,
         end_frame,
-        test,
+        withtest,
         verbose
     )
     for action, vaction in generator:
@@ -430,7 +484,7 @@ def _compile_multi_frame(mkr_list,
         all_frame_list,
         global_solve,
         anim_iter_num,
-        test,
+        withtest,
         verbose,
     )
     for action, vaction in generator:
@@ -444,7 +498,7 @@ def _compile_single_frame(mkr_list,
                           block_iter_num,
                           lineup_iter_num,
                           auto_attr_blocks,
-                          test,
+                          withtest,
                           verbose):
     if auto_attr_blocks is True:
         meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
@@ -462,7 +516,7 @@ def _compile_single_frame(mkr_list,
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
-                sol, new_mkr_list, new_attr_list, test, cache
+                sol, new_mkr_list, new_attr_list, withtest, cache
             )
             for action, vaction in generator:
                 yield action, vaction
@@ -477,7 +531,7 @@ def _compile_single_frame(mkr_list,
     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
     cache = api_compile.create_compile_solver_cache()
     generator = api_compile.compile_solver_with_cache(
-        sol, mkr_list, attr_list, test, cache
+        sol, mkr_list, attr_list, withtest, cache
     )
     for action, vaction in generator:
         yield action, vaction

@@ -74,8 +74,8 @@ def convert_ui_nodes_to_nodes(ui_nodes, key):
         node_data = ui_node.data()
         if node_data is None:
             continue
-        mkr_node = node_data.get(key)
-        if mkr_node is None:
+        data_content = node_data.get(key)
+        if data_content is None:
             continue
-        nodes.append(mkr_node)
+        nodes.append(data_content)
     return nodes

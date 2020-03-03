@@ -490,7 +490,9 @@
         },
         "hotkey_switcher": {
             "name": "Hotkey",
+            "name_shelf": "",
             "tooltip": "Switch Hotkey Sets.",
+            "icon_shelf": "hotkeySwitcher_32x32.png",
             "command": [
                 "pass"
             ]

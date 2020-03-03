@@ -57,6 +57,12 @@ def _gen_two_frame_fwd(int_list):
     :returns: List of integer pairs.
     :rtype: [[int, int], ...]
     """
+    if len(int_list) == 1:
+        num = int_list[0]
+        batch_list = [
+            [frame.Frame(num), frame.Frame(num)]
+        ]
+        return batch_list
     end = len(int_list) - 1
     batch_list = []
     for i in range(end):

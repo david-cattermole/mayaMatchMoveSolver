@@ -22,7 +22,7 @@ This tool toggles selected marker lock state
 import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.tools.togglemarkerlock.constant as const
+import mmSolver.tools.togglemarkerlock.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 
@@ -32,23 +32,10 @@ def main():
     Toggles selected marker lock state.
     """
     selection = maya.cmds.ls(selection=True, long=True) or []
-    selected_markers = mmapi.filter_marker_nodes(selection)
-    if len(selected_markers) == 0:
+    selected_marker_nodes = mmapi.filter_marker_nodes(selection)
+    if len(selected_marker_nodes) == 0:
         LOG.warning("Please select marker's to lock or unlock")
         return
 
-    attrs = const.ATTRS
-    marker_attrs = []
-    for marker in selected_markers:
-        for attr in attrs:
-            marker_attrs.append('%s.%s' % (marker, attr))
-
-    is_locked = False
-    for attr in marker_attrs:
-        if maya.cmds.getAttr(attr, lock=True):
-            is_locked = True
-
-    for attr in marker_attrs:
-        lock_value = not is_locked
-        maya.cmds.setAttr(attr, lock=lock_value)
+    lib.markers_lock_toggle(selected_marker_nodes)
     return

@@ -399,6 +399,15 @@ class Marker(object):
         if bnd is not None:
             self.set_bundle(bnd)
 
+        # Connect the marker to the camera.
+        cam = self.get_camera()
+        cam_shp = cam.get_shape_node()
+        tfm = self.get_node()
+        src = cam_shp + '.outLens'
+        dst = tfm + '.inLens'
+        if not maya.cmds.isConnected(src, dst):
+            maya.cmds.connectAttr(src, dst)
+
         return self
 
     def delete_node(self):

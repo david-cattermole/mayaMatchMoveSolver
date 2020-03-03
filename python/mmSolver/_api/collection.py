@@ -504,9 +504,10 @@ class Collection(object):
     def remove_attribute_list(self, attr_list):
         assert isinstance(attr_list, list)
         name_list = []
-        for attr in attr_list:
-            if isinstance(attr, attribute.Attribute):
-                name_list.append(attr.get_name())
+        for attrs in attr_list:
+            for attr in attrs:
+                if isinstance(attr, attribute.Attribute):
+                    name_list.append(attr.get_name())
         self._set.remove_members(name_list)
         self._actions_list = []  # reset argument flag cache.
         return

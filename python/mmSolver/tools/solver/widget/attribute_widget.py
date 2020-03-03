@@ -265,6 +265,9 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
     def addClicked(self):
         """
         Add the selected nodes or node attributes to the data model.
+
+        .. todo:: This function is very slow to run when many (20+)
+           bundles are being added to the list attributes.
         """
         col = lib_state.get_active_collection()
         if col is None:

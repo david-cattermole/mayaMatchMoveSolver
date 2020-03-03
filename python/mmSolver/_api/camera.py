@@ -499,7 +499,7 @@ class Camera(object):
 
     ############################################################################
 
-    def get_lens_enable(self, value):
+    def get_lens_enable(self):
         """
         Get the lens distortion mode of the camera.
         """

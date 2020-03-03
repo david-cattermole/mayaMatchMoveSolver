@@ -457,6 +457,52 @@
                 "mmSolver.tools.parenttransform.tool.unparent();"
             ]
         },
+        "camera_tools": {
+            "name": "Camera Tools",
+            "name_shelf": "Cam",
+            "tooltip": "Camera Tools",
+            "icon_shelf": "createCamera_32x32.png",
+            "command": ["pass"]
+        },
+        "create_camera": {
+            "name": "Create Camera",
+            "name_shelf": "Cam",
+            "tooltip": "Create a new Camera.",
+            "icon_shelf": "createCamera_32x32.png",
+            "command": [
+                "import mmSolver.tools.createcamera.tool;",
+                "mmSolver.tools.createcamera.tool.main();"
+            ]
+        },
+        "create_lens": {
+            "name": "Create Lens",
+            "name_shelf": "Lens",
+            "tooltip": "Create a new Lens.",
+            "icon_shelf": "createLens_32x32.png",
+            "command": [
+                "import mmSolver.tools.createlens.tool;",
+                "mmSolver.tools.createlens.tool.main();"
+            ]
+        },
+        "create_image_plane": {
+            "name": "Create Image Plane",
+            "name_shelf": "ImgPln",
+            "tooltip": "Create a new Image Plane.",
+            "icon_shelf": "createImagePlane_32x32.png",
+            "command": [
+                "import mmSolver.tools.createimageplane.tool;",
+                "mmSolver.tools.createimageplane.tool.main();"
+            ]
+        },
+        "camera_toggle_distortion": {
+            "name": "Toggle Camera Lens Distortion",
+            "name_shelf": "TglDst",
+            "tooltip": "Toggle the use of lens distortion in the active camera.",
+            "command": [
+                "import mmSolver.tools.togglecameradistort.tool;",
+                "mmSolver.tools.togglecameradistort.tool.main();"
+            ]
+        },
         "deform_marker": {
             "name": "Deform Marker",
             "name_shelf": "MkrOff",

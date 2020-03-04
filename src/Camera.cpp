@@ -471,7 +471,7 @@ double Camera::getFilmbackHeightValue(const MTime &time) {
     MStatus status;
     double value = 1.0;
     Attr attr = getFilmbackHeightAttr();
-    status = attr.getValue(value);
+    status = attr.getValue(value, time);
     CHECK_MSTATUS(status);
     return value;
 }
@@ -480,7 +480,7 @@ double Camera::getFilmbackOffsetXValue(const MTime &time) {
     MStatus status;
     double value = 1.0;
     Attr attr = getFilmbackOffsetXAttr();
-    status = attr.getValue(value);
+    status = attr.getValue(value, time);
     CHECK_MSTATUS(status);
     return value;
 }
@@ -489,7 +489,7 @@ double Camera::getFilmbackOffsetYValue(const MTime &time) {
     MStatus status;
     double value = 1.0;
     Attr attr = getFilmbackOffsetYAttr();
-    status = attr.getValue(value);
+    status = attr.getValue(value, time);
     CHECK_MSTATUS(status);
     return value;
 }
@@ -498,7 +498,7 @@ double Camera::getFocalLengthValue(const MTime &time) {
     MStatus status;
     double value = 1.0;
     Attr attr = getFocalLengthAttr();
-    status = attr.getValue(value);
+    status = attr.getValue(value, time);
     CHECK_MSTATUS(status);
     return value;
 }

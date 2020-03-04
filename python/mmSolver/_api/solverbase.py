@@ -97,9 +97,21 @@ class SolverBase(object):
     @abc.abstractmethod
     def compile(self, mkr_list, attr_list, withtest=False):
         """
-        Return a generator, to yield two Action objects.
+        Compile solver into actions.
 
-        Raises 'NotValid', if the compile goes wrong.
+        :raises: 'NotValid', if the compile goes wrong.
+
+        :param mkr_list: List of Markers used in the Solve.
+        :type mkr_list: [Marker, ..]
+
+        :param attr_list: Attributes to be solved for.
+        :type attr_list: [Attribute, ..]
+
+        :param withtest: Should the tests (validation) be generated
+                         along with the real solver steps?
+        :type withtest: bool
+
+        :returns: Return a generator, to yield two Action objects.
         """
         raise NotImplementedError
 

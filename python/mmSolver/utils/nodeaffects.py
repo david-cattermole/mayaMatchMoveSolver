@@ -215,7 +215,7 @@ def find_plugs_affecting_transform(bnd_node, cam_tfm):
                     node_ = tmp.partition('.')[0]
                     attr_ = tmp.partition('.')[-1]
 
-                    affects_this_plug = maya.cmds.affects(attr_, node_)
+                    affects_this_plug = maya.cmds.affects(attr_, node_) or []
                     for attr__ in affects_this_plug:
                         node_attr = node_ + '.' + attr__
                         node_attr = _get_full_path_plug(node_attr)

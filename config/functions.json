@@ -3,9 +3,9 @@
     "data": {
         "solver_tools": {
             "name": "Solver",
-            "name_shelf": "Solver",
+            "name_shelf": "",
             "tooltip": "Open the MM Solver window.",
-            "icon_shelf": "menuIconWindow.png",
+            "icon_shelf": "mmSolverWindow_32x32.png",
             "command": [
                 "import mmSolver.tools.solver.tool;",
                 "mmSolver.tools.solver.tool.open_window();"
@@ -13,9 +13,9 @@
         },
         "open_solver_ui": {
             "name": "Open Solver...",
-            "name_shelf": "Solver",
+            "name_shelf": "",
             "tooltip": "Open the MM Solver window.",
-            "icon_shelf": "menuIconWindow.png",
+            "icon_shelf": "mmSolverWindow_32x32.png",
             "command": [
                 "import mmSolver.tools.solver.tool;",
                 "mmSolver.tools.solver.tool.open_window();"
@@ -490,7 +490,9 @@
         },
         "hotkey_switcher": {
             "name": "Hotkey",
+            "name_shelf": "",
             "tooltip": "Switch Hotkey Sets.",
+            "icon_shelf": "hotkeySwitcher_32x32.png",
             "command": [
                 "pass"
             ]

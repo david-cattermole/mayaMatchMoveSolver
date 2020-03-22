@@ -18,10 +18,3 @@ Library
 .. automodule:: mmSolver.tools.averagemarker.lib
     :members:
     :undoc-members:
-       
-Constants
-+++++++++
-
-.. automodule:: mmSolver.tools.averagemarker.constant
-    :members:
-    :undoc-members:

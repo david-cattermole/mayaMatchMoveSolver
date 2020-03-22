@@ -96,7 +96,7 @@ Camera
 .. autoclass:: mmSolver.api.Camera
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Bundle
 ++++++
@@ -104,7 +104,7 @@ Bundle
 .. autoclass:: mmSolver.api.Bundle
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Marker
 ++++++
@@ -114,7 +114,7 @@ Marker
 .. autoclass:: mmSolver.api.Marker
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autofunction:: mmSolver.api.update_deviation_on_markers
 
@@ -132,7 +132,7 @@ A group containing Marker nodes.
 .. autoclass:: mmSolver.api.MarkerGroup
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Attribute
 +++++++++
@@ -142,7 +142,7 @@ Attribute that will be solved.
 .. autoclass:: mmSolver.api.Attribute
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Frame
 +++++
@@ -150,7 +150,7 @@ Frame
 .. autoclass:: mmSolver.api.Frame
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Solver
 ++++++
@@ -161,7 +161,7 @@ Solver Base
 .. autoclass:: mmSolver.api.SolverBase
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Solver Basic
 ------------
@@ -169,7 +169,7 @@ Solver Basic
 .. autoclass:: mmSolver.api.SolverBasic
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Solver Standard
 ---------------
@@ -177,7 +177,7 @@ Solver Standard
 .. autoclass:: mmSolver.api.SolverStandard
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Solver Step
 ---------------
@@ -185,7 +185,7 @@ Solver Step
 .. autoclass:: mmSolver.api.SolverStep
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Collection
 ++++++++++
@@ -193,7 +193,7 @@ Collection
 .. autoclass:: mmSolver.api.Collection
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autofunction:: mmSolver.api.update_deviation_on_collection
 
@@ -217,7 +217,7 @@ Action
 .. autoclass:: mmSolver.api.Action
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autofunction:: mmSolver.api.action_func_is_mmSolver
 
@@ -231,7 +231,7 @@ Execute
 .. autoclass:: mmSolver.api.ExecuteOptions
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autofunction:: mmSolver.api.createExecuteOptions
 
@@ -245,7 +245,7 @@ SolveResult
 .. autoclass:: mmSolver.api.SolveResult
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autofunction:: mmSolver.api.combine_timer_stats
 
@@ -321,32 +321,32 @@ Exceptions
 .. autoclass:: mmSolver.api.MMException
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autoclass:: mmSolver.api.NotValid
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autoclass:: mmSolver.api.AlreadyLinked
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autoclass:: mmSolver.api.AlreadyUnlinked
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autoclass:: mmSolver.api.NotEnoughMarkers
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autoclass:: mmSolver.api.SolverNotAvailable
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Constants
 +++++++++

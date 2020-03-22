@@ -413,7 +413,7 @@ Below are the some common questions and answers.
 .. _solver-faq-how-to-get-supported-solver-types:
 
 How do I get the list of supported Solver Types?
-------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To dynamically get the supported list of solver types, run this Python
 command in Maya::
@@ -448,7 +448,7 @@ that depending on compilation, some solver types will not be available.
 .. _solver-faq-what-transform-space-is-used-for-solving:
 
 What transform space is used for solving?
------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 *MM Solver* evaluates all *Marker* and *Bundle* screen-space errors in
 **world-space**, but solving is not performed in a transform space.
@@ -457,14 +457,14 @@ Solving is performed directly on *Attribute* values.
 .. _solver-faq-how-to-reduce-attribute-count-with-dag:
 
 How can I use a DAG hierarchy to reduce the number of *Attributes*?
--------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **To be written**
 
 .. _solver-faq-how-to-increase-solve-speed:
 
 How can I make my solves faster?
---------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **To be written**
 

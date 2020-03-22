@@ -1,7 +1,8 @@
 mmSolver.api
 ============
 
-By convention the mmSolver.api functions are expected to be imported into the alias `mmapi`, examples assume this is done.
+By convention the mmSolver.api functions are expected to be imported into
+the alias `mmapi`, examples assume this is done.
 
 .. code:: python
 
@@ -10,26 +11,28 @@ By convention the mmSolver.api functions are expected to be imported into the al
    mmapi.load_plugin()  # Force load the mmSolver plug-in.
 
 Object Overview
-+++++++++++++++
+```````````````
 
 |API Classes Image|
 
-=========== =========================================================
-Class       Description
-=========== =========================================================
-Marker      2D point to determine screen-space features
-Bundle      3D point to determine real-location of 2D feature
-Attribute   Attribute that will be solved
-Camera      Camera to view the world
-Frame       Point in time
-Solver      Options that describe how the solving algorithm will run
-Collection  A set of Markers and Attributes to use during solving
-SolveResult Output of the solver; Details of what happened in a solve
-=========== =========================================================
+==================================== ==============================================================
+Class                                Description
+==================================== ==============================================================
+:py:class:`mmSolver.api.Marker`      2D point to determine screen-space features
+:py:class:`mmSolver.api.Bundle`      3D point to determine real-location of 2D feature
+:py:class:`mmSolver.api.Attribute`   Attribute that will be solved
+:py:class:`mmSolver.api.Camera`      Camera to view the world
+:py:class:`mmSolver.api.Frame`       Point in time
+:py:class:`mmSolver.api.SolverBase`  Options that describe how the solving algorithm will run
+:py:class:`mmSolver.api.Collection`  A set of Markers, Attributes and Solvers to use during solving
+:py:class:`mmSolver.api.SolveResult` Output of the solver; Details of what happened in a solve
+==================================== ==============================================================
 
+The above list of classes is simplified.
+The full list of classes and functions exposed are detailed in :ref:`mmSolver-api-heading`.
 
 Example
-+++++++
+```````
 
 Here is a example of how to use the ``mmSolver`` Python API.
 First a ``Camera``, ``Bundle`` and ``Marker`` are created, these
@@ -73,7 +76,7 @@ an be used to check the Solver output (for example, did an error occur?).
    attr_ty = mmapi.Attribute(bundle_tfm + '.ty')
 
    # Solver
-   sol = mmapi.Solver()
+   sol = mmapi.SolverStep()
    sol.set_verbose(True)
    sol.add_frame(1)
    sol.set_frame_list([1])
@@ -89,6 +92,11 @@ an be used to check the Solver output (for example, did an error occur?).
    # Run solver!
    result = col.execute()
    print 'Solve Error:', result.get_error()
+
+.. _mmSolver-api-heading:
+
+mmSolver API
+````````````
 
 Camera
 ++++++
@@ -155,6 +163,14 @@ Frame
 Solver
 ++++++
 
+Solvers are compiled into individual Python functions to be run.
+To compile the Solvers with a consistent interface and manage new
+solver processes, a `SolverBase` class has been created.
+
+Users are expected to sub-class `SolverBase` and add functionality.
+Pre-existing classes already provide functionality for common solving
+needs.
+
 Solver Base
 -----------
 
@@ -180,7 +196,16 @@ Solver Standard
    :special-members: __init__
 
 Solver Step
----------------
+-----------
+
+The :py:class:`mmSolver.api.SolverStep` is used to represent frames
+to be solved.
+
+.. note::
+
+    For backwards compatibility the SolverStep class can also be accessed
+    with the class name ``mmSolver.api.Solver``. This is deprecated
+    and will be removed in a future version.
 
 .. autoclass:: mmSolver.api.SolverStep
    :members:
@@ -389,4 +414,4 @@ referenced inside the documentation.
 
 .. autoattribute:: mmSolver.api.AUTO_DIFF_TYPE_LIST
 
-.. |API Classes Image| image:: https://raw.githubusercontent.com/david-cattermole/mayaMatchMoveSolver/master/design/api/api_classes_overview.png
+.. |API Classes Image| image:: images/api_classes_overview.png

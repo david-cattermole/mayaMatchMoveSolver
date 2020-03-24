@@ -51,7 +51,7 @@ class SolverStep(solverbase.SolverBase):
 
     - :ref:`solver-design-solver-epsilon-three` - Error factor
 
-    - :ref:`solver-faq-how-to-get-supported-solver-types` - Solver type
+    - Solver type
 
     - Use animated attributes
 
@@ -83,25 +83,60 @@ class SolverStep(solverbase.SolverBase):
     ############################################################################
 
     def get_max_iterations(self):
+        """
+        Get the maximum number of iterations the solve will perform.
+
+        :rtype: int or None
+        """
         return self._data.get('max_iterations')
 
     def set_max_iterations(self, value):
+        """
+        Set the maximum number of iterations.
+
+        :param value: Max iterations number.
+        :type value: int
+        """
         if isinstance(value, int) is False:
             raise TypeError('Expected int value type.')
         self._data['max_iterations'] = value
         return
 
     def get_delta_factor(self):
+        """
+        Get the parameter delta factor.
+
+        :rtype: float or None
+        """
         return self._data.get('delta')
 
     def set_delta_factor(self, value):
+        """
+        Set the parameter delta factor.
+
+        :param value: Delta factor number.
+        :type value: float
+        """
         self._data['delta'] = value
         return
 
     def get_auto_diff_type(self):
+        """
+        Get method used to calculate differencing.
+
+        :rtype: int or None
+        """
         return self._data.get('auto_diff_type')
 
     def set_auto_diff_type(self, value):
+        """
+        Set automatic differencing method.
+
+        :param value:
+            The method to be used. Must be a value in
+            AUTO_DIFF_TYPE_LIST.
+        :type value: int or None
+        """
         if value not in const.AUTO_DIFF_TYPE_LIST:
             msg = 'auto_diff_type must be one of %r; value=%r'
             msg = msg % (const.AUTO_DIFF_TYPE_LIST, value)
@@ -110,43 +145,117 @@ class SolverStep(solverbase.SolverBase):
         return
 
     def get_tau_factor(self):
+        """
+        Get the Tau factor value.
+
+        :rtype: float or None
+        """
         return self._data.get('tau_factor')
 
     def set_tau_factor(self, value):
+        """
+        Set the Tau factor value.
+
+        :param value: Initial damping Tau value.
+        :type value: float
+        """
         self._data['tau_factor'] = value
         return
 
     def get_gradient_error_factor(self):
+        """
+        Get the error factor for steepness changes.
+
+        :rtype: float or None
+        """
         return self._data.get('gradient_error')
 
     def set_gradient_error_factor(self, value):
+        """
+        Set the error factor for steepness changes.
+
+        :param value:
+        :type value:
+        """
         self._data['gradient_error'] = value
         return
 
     def get_parameter_error_factor(self):
+        """
+        Get error level for parameter changes.
+
+        :rtype: float or None
+        """
         return self._data.get('parameter_error')
 
     def set_parameter_error_factor(self, value):
+        """
+        Set error level for parameter changes.
+
+        :param value: Value to set.
+        :type value: float
+        """
         self._data['parameter_error'] = value
         return
 
     def get_error_factor(self):
+        """
+        Get error level for deviation changes.
+
+        :rtype: float or None
+        """
         return self._data.get('error')
 
     def set_error_factor(self, value):
+        """
+        Set error level for deviation changes.
+
+        :param value: Value to set.
+        :type value: float
+        """
         self._data['error'] = value
         return
 
     def get_solver_type(self):
+        """
+        The type of internal solver library to use, as an index.
+
+        See the question
+        :ref:`solver-faq-how-to-get-supported-solver-types`,
+        for more details of the values returned.
+
+        :rtype: int or None
+        """
         return self._data.get('solver_type')
 
     def set_solver_type(self, value):
+        """
+        Set the internal solver library to use for solving.
+
+        See the question
+        :ref:`solver-faq-how-to-get-supported-solver-types`,
+        for more details of the values that can be set.
+
+        :param value: Solver type index number.
+        :type value: int
+        """
         self._data['solver_type'] = value
 
     def get_verbose(self):
+        """
+        Should we print lots of information to the terminal?
+
+        :rtype: bool or None
+        """
         return self._data.get('verbose')
 
     def set_verbose(self, value):
+        """
+        Set verbosity option, yes or no.
+
+        :param value: Turn on verbose mode? Yes or no.
+        :type value: bool
+        """
         if isinstance(value, bool) is False:
             raise TypeError('Expected bool value type.')
         self._data['verbose'] = value

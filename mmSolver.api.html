@@ -1994,7 +1994,7 @@ and will be removed in a future version.</p>
 <li><a class="reference internal" href="solver_design.html#solver-design-solver-epsilon-one"><span class="std std-ref">Epsilon #1 - Acceptable Gradient Change</span></a> - Gradient error factor</li>
 <li><a class="reference internal" href="solver_design.html#solver-design-solver-epsilon-two"><span class="std std-ref">Epsilon #2 - Acceptable Parameter Change</span></a> - Parameter error factor</li>
 <li><a class="reference internal" href="solver_design.html#solver-design-solver-epsilon-three"><span class="std std-ref">Epsilon #3 - Acceptable Deviation Error</span></a> - Error factor</li>
-<li><a class="reference internal" href="solver_design.html#solver-faq-how-to-get-supported-solver-types"><span class="std std-ref">How do I get the list of supported Solver Types?</span></a> - Solver type</li>
+<li>Solver type</li>
 <li>Use animated attributes</li>
 <li>Use static attributes</li>
 <li>Use frame tags</li>
@@ -2022,92 +2022,261 @@ and will be removed in a future version.</p>
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.get_max_iterations">
 <code class="descname">get_max_iterations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_max_iterations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the maximum number of iterations the solve will perform.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.set_max_iterations">
 <code class="descname">set_max_iterations</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_max_iterations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the maximum number of iterations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) &#8211; Max iterations number.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.get_delta_factor">
 <code class="descname">get_delta_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_delta_factor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the parameter delta factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.set_delta_factor">
 <code class="descname">set_delta_factor</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_delta_factor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the parameter delta factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) &#8211; Delta factor number.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.get_auto_diff_type">
 <code class="descname">get_auto_diff_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_auto_diff_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get method used to calculate differencing.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.set_auto_diff_type">
 <code class="descname">set_auto_diff_type</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_auto_diff_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set automatic differencing method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em><em> or </em><em>None</em>) &#8211; The method to be used. Must be a value in
+AUTO_DIFF_TYPE_LIST.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.get_tau_factor">
 <code class="descname">get_tau_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_tau_factor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the Tau factor value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.set_tau_factor">
 <code class="descname">set_tau_factor</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_tau_factor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the Tau factor value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) &#8211; Initial damping Tau value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.get_gradient_error_factor">
 <code class="descname">get_gradient_error_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_gradient_error_factor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the error factor for steepness changes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.set_gradient_error_factor">
 <code class="descname">set_gradient_error_factor</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_gradient_error_factor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the error factor for steepness changes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> &#8211; </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.get_parameter_error_factor">
 <code class="descname">get_parameter_error_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_parameter_error_factor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get error level for parameter changes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.set_parameter_error_factor">
 <code class="descname">set_parameter_error_factor</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_parameter_error_factor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set error level for parameter changes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) &#8211; Value to set.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.get_error_factor">
 <code class="descname">get_error_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_error_factor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get error level for deviation changes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.set_error_factor">
 <code class="descname">set_error_factor</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_error_factor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set error level for deviation changes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) &#8211; Value to set.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.get_solver_type">
 <code class="descname">get_solver_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_solver_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The type of internal solver library to use, as an index.</p>
+<p>See the question
+<a class="reference internal" href="solver_design.html#solver-faq-how-to-get-supported-solver-types"><span class="std std-ref">How do I get the list of supported Solver Types?</span></a>,
+for more details of the values returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.set_solver_type">
 <code class="descname">set_solver_type</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_solver_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the internal solver library to use for solving.</p>
+<p>See the question
+<a class="reference internal" href="solver_design.html#solver-faq-how-to-get-supported-solver-types"><span class="std std-ref">How do I get the list of supported Solver Types?</span></a>,
+for more details of the values that can be set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) &#8211; Solver type index number.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.get_verbose">
 <code class="descname">get_verbose</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_verbose" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Should we print lots of information to the terminal?</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.set_verbose">
 <code class="descname">set_verbose</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_verbose" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set verbosity option, yes or no.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) &#8211; Turn on verbose mode? Yes or no.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.get_attributes_use_animated">

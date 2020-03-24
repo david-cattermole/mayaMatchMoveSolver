@@ -365,7 +365,7 @@ def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
 
     :returns: A generator function yielding a tuple of two Action
               objects. The first object is used for solving, the
-              section Action is for validation of the solve.
+              second Action is for validation of the solve.
     :rtype: (Action, Action or None)
     """
     frame_list = sol.get_frame_list()

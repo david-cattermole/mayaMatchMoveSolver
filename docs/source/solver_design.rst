@@ -247,7 +247,7 @@ peak (the gradient or mountain slope).
     :align: center
     :width: 80%
 
-    Solver Basic Tab
+    Mountain Climbing with Steepest Decent
 
 .. _solver-design-solver-max-iterations:
 

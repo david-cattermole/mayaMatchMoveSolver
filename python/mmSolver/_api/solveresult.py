@@ -121,11 +121,18 @@ class SolveResult(object):
     """
     The information returned from a solve.
 
-    All information from the solver, can then be queryied as
+    All information from the solver, can then be queried as
     needed. This class never modifies data, it only stores and queries
     data.
     """
     def __init__(self, cmd_data):
+        """
+        Create a new SolveResult using command data from
+        *maya.cmds.mmSolver* command.
+
+        :param cmd_data: Command data from mmSolver.
+        :type cmd_data: [[str, ..], ..]
+        """
         if isinstance(cmd_data, list) is False:
             msg = 'cmd_data is of type %r, expected a list object.'
             raise TypeError(msg % type(cmd_data))
@@ -304,7 +311,7 @@ class SolveResult(object):
         Get a list of errors (deviation) for all markers, or the given marker.
 
         :param marker_node: The specific marker node to get an error list for.
-        :type marker_node: str
+        :type marker_node: str or None
 
         :returns: A dict of marker node names and time values, giving
                   the error (deviation).
@@ -453,7 +460,6 @@ def merge_marker_error_list(solres_list):
 
     :returns: Mapping of frame number to error values.
     :rtype: dict
-
     """
     assert isinstance(solres_list, (list, tuple))
     marker_error_list = collections.defaultdict(dict)
@@ -477,7 +483,6 @@ def merge_marker_node_list(solres_list):
 
     :returns: A list of Maya nodes of Markers.
     :rtype: [str, ..]
-
     """
     assert isinstance(solres_list, (list, tuple))
     mkr_nodes = set()

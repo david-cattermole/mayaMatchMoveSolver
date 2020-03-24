@@ -17,6 +17,9 @@
 #
 """
 The basic solver.
+
+The basic solver is designed to solve only simple, per-frame animated
+attributes. Static attributes are not solved at all with this solver.
 """
 
 import mmSolver.logger
@@ -35,18 +38,23 @@ LOG = mmSolver.logger.get_logger()
 
 class SolverBasic(solverbase.SolverBase):
     """
-    The basic  solver for mmSolver.
+    The basic solver for mmSolver.
 
-    This solver is designed for ONLY Animated attributes.
+    This solver will solve Animated attributes only.
 
     Parameters for solver:
+
     - Frame Range - with options:
+
       - "Single Frame"
+
       - "Time Slider (Inner)"
+
       - "Time Slider (Outer)"
+
       - "Custom"
 
-    If a Solver is 'Single Frame' (current frame), then we solve both
+    If a Solver is 'Single Frame' (current frame), then we solve only
     animated attributes on the current frame, in a single step
     and return.
 

@@ -307,6 +307,15 @@ Utilities
 State
 +++++
 
+The state functions are used for getting and setting global states
+(global variables).
+
+.. note::
+
+   Global state must be used carefully. We recommend using
+   try-except-finally_ blocks to ensure global state is returned to the
+   intended values if any exception is raised.
+
 .. autofunction:: mmSolver.api.is_solver_running
 
 .. autofunction:: mmSolver.api.set_solver_running
@@ -421,3 +430,6 @@ referenced inside the documentation.
 .. autoattribute:: mmSolver.api.AUTO_DIFF_TYPE_LIST
 
 .. |API Classes Image| image:: images/api_classes_overview.png
+
+.. _try-except-finally:
+    https://www.w3schools.com/python/python_try_except.asp

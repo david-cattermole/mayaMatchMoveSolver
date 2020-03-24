@@ -280,6 +280,12 @@ SolveResult
 
 .. autofunction:: mmSolver.api.get_max_frame_error
 
+.. autofunction:: mmSolver.api.merge_marker_error_list
+
+.. autofunction:: mmSolver.api.merge_marker_node_list
+
+.. autofunction:: mmSolver.api.format_timestamp
+
 Naming
 ++++++
 

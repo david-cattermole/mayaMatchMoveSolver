@@ -34,8 +34,37 @@ class SolverBase(object):
 
     A Solver Operation may have any number of methods and data, this class
     does not enforce a common method interface (yet).
+
+    The SolverBase class should be sub-classed and then (at least) the
+    'compile' function should be overridden.
     """
     def __init__(self, name=None, data=None, *args, **kwargs):
+        """
+        Initialise a SolverBase.
+
+        This __init__ should be called by sub-classes, for example::
+
+        >>> class MySolver(SolverBase):
+        >>>     def __init__(self, *args, **kwargs):
+        >>>         super(MySolver, self).__init__(*args, **kwargs)
+
+        :param name: The name of the Solver.
+        :type name: basestring
+
+        :param data:
+            The internal data structure to set inside the Solver base.
+            The data holds information about the current options of
+            the solver.
+        :type data: dict
+
+        :param args:
+            Whatever positional arguments to give to the init function.
+        :type args: list
+
+        :param kwargs:
+            Whatever keyword arguments to give to the init function.
+        :type kwargs: dict
+        """
         super(SolverBase, self).__init__(*args, **kwargs)
         self._data = const.SOLVER_DATA_DEFAULT.copy()
         if isinstance(data, dict):

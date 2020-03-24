@@ -8,7 +8,7 @@ mmSolver.tools.loadmarker
 Tool
 ++++
 
-.. automodule:: mmSolver.tools.loadmarker.lib.tool
+.. automodule:: mmSolver.tools.loadmarker.tool
     :members:
     :undoc-members:
 

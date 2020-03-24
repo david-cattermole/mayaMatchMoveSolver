@@ -26,10 +26,3 @@ Key-Time Utilities
 .. automodule:: mmSolver.tools.reparent.keytimeutils
    :members:
    :undoc-members:
-
-Constant
-++++++++
-
-.. automodule:: mmSolver.tools.reparent.constant
-   :members:
-   :undoc-members:

@@ -58,8 +58,15 @@
   <div class="section" id="module-mmSolver.tools.loadmarker">
 <span id="mmsolver-tools-loadmarker"></span><h1>mmSolver.tools.loadmarker<a class="headerlink" href="#module-mmSolver.tools.loadmarker" title="Permalink to this headline">¶</a></h1>
 <p>Tool to load markers into Maya from various thirdparty file formats.</p>
-<div class="section" id="tool">
-<h2>Tool<a class="headerlink" href="#tool" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-mmSolver.tools.loadmarker.tool">
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.loadmarker.tool" title="Permalink to this headline">¶</a></h2>
+<p>The Load Marker tool - user facing.</p>
+<dl class="function">
+<dt id="mmSolver.tools.loadmarker.tool.open_window">
+<code class="descclassname">mmSolver.tools.loadmarker.tool.</code><code class="descname">open_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.tool.open_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the Load Marker GUI.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-mmSolver.tools.loadmarker.lib.mayareadfile">
 <span id="library-basics"></span><h2>Library - Basics<a class="headerlink" href="#module-mmSolver.tools.loadmarker.lib.mayareadfile" title="Permalink to this headline">¶</a></h2>
@@ -674,7 +681,7 @@ static if all values are the same.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) &#8211; The marker file path to get info for.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The file info.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.interface.FileInfo" title="mmSolver.tools.loadmarker.lib.interface.FileInfo">FileInfo</a></td>
 </tr>
@@ -692,16 +699,8 @@ static if all values are the same.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) &#8211; The marker file path to get info for.</td>
 </tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>:return Dictionary of various information about the given</dt>
-<dd>file path.</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Dictionary of various information about the given file path.</td>
+</tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
 </tr>
 </tbody>
@@ -1181,7 +1180,7 @@ UV_TRACK_FORMAT_VERSION_3 formats.</li>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.loadmarker</a><ul>
-<li><a class="reference internal" href="#tool">Tool</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.tool">Tool</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.lib.mayareadfile">Library - Basics</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.lib.formatmanager">Library - Advanced</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.lib.formats">Library - Formats</a></li>

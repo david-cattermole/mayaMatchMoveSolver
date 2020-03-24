@@ -71,7 +71,7 @@ which minimise the <em>measured error</em>.</p>
 <p>The process of applying an <em>optimisation</em> solver to 3D perspective
 cameras, 2D points and 3D points is called Bundle Adjustment (BA). BA is
 traditionally the last step of MatchMove and Photogrammetry solvers
-where the parameter of 3D points (Bundles) and cameras are solved to
+where the parameters of 3D points (Bundles) and cameras are solved to
 produce a 3D Scene with the least possible error.</p>
 <div class="section" id="attributes">
 <h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
@@ -255,62 +255,119 @@ strategy for animated and static attributes is <strong>All Frames</strong></p>
 <li>Hierarchical merging of sub-sequences</li>
 <li>Incremental bundle adjustment</li>
 </ol>
+</div>
 <div class="section" id="solver-options">
-<h4>Solver Options<a class="headerlink" href="#solver-options" title="Permalink to this headline">¶</a></h4>
+<span id="solver-design-solver-options"></span><h3>Solver Options<a class="headerlink" href="#solver-options" title="Permalink to this headline">¶</a></h3>
 <p>Like many solvers, the MM Solver has options, however the options are
 hidden from the Solver UI and are set automatically by the Python API.</p>
-<p>This options are for developers of MM Solver.</p>
-<dl class="docutils">
-<dt>Iterations <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
-<dd><p class="first">Maximum number of iterations</p>
-<p class="last">This option does not directly control the number of evaluations
+<p>To explain the Solver Options below an analogy of climbing a mountain,
+to reach the peak (top of the mountain) is used. Our goal is to find
+the exact parameters that will bring us to the peak of the
+mountain. Our position on the mountain tells us how high we are (the
+deviation level), and the direction upwards to the top of the mountain
+peak (the gradient or mountain slope).</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="_images/algorithm_steepest_decent.png"><img alt="Mountain Climbing" src="_images/algorithm_steepest_decent.png" style="width: 80%;" /></a>
+<p class="caption"><span class="caption-text">Solver Basic Tab</span></p>
+</div>
+<div class="section" id="maximum-number-of-iterations">
+<span id="solver-design-solver-max-iterations"></span><h4>Maximum Number of Iterations<a class="headerlink" href="#maximum-number-of-iterations" title="Permalink to this headline">¶</a></h4>
+<p>Value type: <code class="docutils literal"><span class="pre">integer</span></code></p>
+<p>This option does not directly control the number of evaluations
 the solver may run, but instead controls how many attempts the
 solver will try before giving up.</p>
-</dd>
-<dt>Tau <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first">Initial Damping Factor.</p>
+<p>If the solver attempts to solve more than the maximum iterations the
+solve will stop.</p>
+</div>
+<div class="section" id="tau-initial-damping-factor">
+<span id="solver-design-solver-tau"></span><h4>Tau - Initial Damping Factor<a class="headerlink" href="#tau-initial-damping-factor" title="Permalink to this headline">¶</a></h4>
+<p>Value type: <code class="docutils literal"><span class="pre">float</span></code></p>
+<p>The <em>tau</em> factor determines whether the solver will try to refine the
+current parameters a lot (large tau number), or only a small amount
+(small tau number). Values usually range between +0.0 and +1.0.</p>
 <p>Larger values should be used when the initial unknown parameters
-have high error. This forces the LevMar algorithm to use
+have high error. This forces the Levenberg-Marquet algorithm to use
 steepest-decent, rather than gauss-newton.</p>
-<p class="last">&#8220;The algorithm is not very sensitive to the choice of &#8216;tau&#8217;, but
+<p>&#8220;The algorithm is not very sensitive to the choice of &#8216;tau&#8217;, but
 as a rule of thumb, one should use a small value, eg &#8216;tau = 10-6&#8217;,
 if &#8216;the initial parameters&#8217; are believed to be a good
 approximation to the &#8216;final parameter values&#8217;. Otherwise, use &#8216;tau
 = 10-3&#8217; or even &#8216;tau = 1.0&#8217;.&#8221;</p>
-</dd>
-<dt>Delta <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first">Change to the guessed parameters each iteration</p>
-<p class="last">Each time the solver guesses an unknown parameter value, it adds
-or subtracts the &#8216;delta&#8217; value to the unknown parameter
+</div>
+<div class="section" id="delta-amount-to-change-parameters">
+<span id="solver-design-solver-delta"></span><h4>Delta - Amount to Change Parameters<a class="headerlink" href="#delta-amount-to-change-parameters" title="Permalink to this headline">¶</a></h4>
+<p>Value type: <code class="docutils literal"><span class="pre">float</span></code></p>
+<p>Delta is the amount of change to the guessed parameters at each
+iteration.</p>
+<p>Each time the solver guesses an unknown parameter value, it adds
+or subtracts the &#8216;delta&#8217; value from the unknown parameter
 value. This changes the magnitude of the parameter values in each
 guess. If this value is too small, the change in error level may
 not be detected, if this value is too large the solver will
-over-estimate and will likely lead to poor convergence.</p>
-</dd>
-<dt>Epsilon #1 <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first">Acceptable Gradient Change.</p>
-<p class="last">At the beginning of an solver iteration, if the solver has not
+over-estimate and will likely lead to poor convergence (the solver
+won&#8217;t find a good solution).</p>
+</div>
+<div class="section" id="epsilon-1-acceptable-gradient-change">
+<span id="solver-design-solver-epsilon-one"></span><h4>Epsilon #1 - Acceptable Gradient Change<a class="headerlink" href="#epsilon-1-acceptable-gradient-change" title="Permalink to this headline">¶</a></h4>
+<p>Value type: <code class="docutils literal"><span class="pre">float</span></code></p>
+<p>The gradient error (sometimes named epsilon #1) is used to find when
+the solver has reached the &#8220;top of the mountain peak&#8221;. The gradient is
+represents the slope the solver trying to climb a mountain. When the
+solver reaches a (horizontally) flat area of the mountain, then the
+gradient is low, and will stop the solve. When the solver can find a
+slope (gradient), then the solver can follow the slope of the mountain
+and reach the top of the mountain peak.</p>
+<p>At the beginning of an solver iteration, if the solver has not
 decreased the gradient by at least this value, the solver gives up
 trying to reduce the error any more.</p>
-</dd>
-<dt>Epsilon #2 <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first">Acceptable Parameter Change.</p>
-<p class="last">At the beginning of an solver iteration, if the guessed parameters
+</div>
+<div class="section" id="epsilon-2-acceptable-parameter-change">
+<span id="solver-design-solver-epsilon-two"></span><h4>Epsilon #2 - Acceptable Parameter Change<a class="headerlink" href="#epsilon-2-acceptable-parameter-change" title="Permalink to this headline">¶</a></h4>
+<p>Value type: <code class="docutils literal"><span class="pre">float</span></code></p>
+<p>The parameter error (sometimes named epsilon #2) is used to determine
+the when the solver can stop changing parameter values because the
+new parameter values have not changed enough. Changes to parameters are
+able to move the solved solution to different places on the mountain,
+if the parameter changes are too small then the solver will stop.</p>
+<p>At the beginning of an solver iteration, if the guessed parameters
 do not change by at least this value, the solver gives up trying
 to reduce the error any more.</p>
-</dd>
-<dt>Epsilon #3 <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first">Acceptable Error</p>
-<p class="last">At the beginning of an solver iteration, if the error level is
+</div>
+<div class="section" id="epsilon-3-acceptable-deviation-error">
+<span id="solver-design-solver-epsilon-three"></span><h4>Epsilon #3 - Acceptable Deviation Error<a class="headerlink" href="#epsilon-3-acceptable-deviation-error" title="Permalink to this headline">¶</a></h4>
+<p>Value type: <code class="docutils literal"><span class="pre">float</span></code></p>
+<p>The deviation error (sometimes named epsilon #3 or deviation) is the
+error level that is considered a good solve. To use a mountain
+climbing analogy, the <em>deviation error</em> is the highest mountain peak
+that is good enough for the solver.</p>
+<p>At the beginning of an solver iteration, if the error level is
 below this value, the solver considers the error to be low enough
 for the user&#8217;s needs and stops trying to reduce the error.</p>
-</dd>
-<dt>Auto-Differencing Type <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
-<dd><p class="first">The strategy used to compute the direction the solver should move in.</p>
-<p>0 = &#8216;forward&#8217; (fast but not accurate)</p>
-<p class="last">1 = &#8216;central&#8217; (more accurate but 1/3rd slower to compute initially)</p>
-</dd>
-</dl>
+</div>
+<div class="section" id="auto-differencing-type">
+<span id="solver-design-solver-auto-diff-type"></span><h4>Auto-Differencing Type<a class="headerlink" href="#auto-differencing-type" title="Permalink to this headline">¶</a></h4>
+<p>Value type: <code class="docutils literal"><span class="pre">integer</span></code></p>
+<p>The strategy used to compute the direction (gradient slope) the solver
+should move toward.</p>
+<table border="1" class="colwidths-auto docutils" id="id2">
+<caption><span class="caption-text">Auto-Differencing Types</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Index</th>
+<th class="head">Name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td><code class="docutils literal"><span class="pre">forward</span></code></td>
+<td>Fast but not accurate.</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td><code class="docutils literal"><span class="pre">central</span></code></td>
+<td>More accurate but 1/3rd slower to compute initially.</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -318,7 +375,7 @@ for the user&#8217;s needs and stops trying to reduce the error.</p>
 <h2>General Solving Concepts<a class="headerlink" href="#general-solving-concepts" title="Permalink to this headline">¶</a></h2>
 <p><strong>To be written</strong></p>
 <div class="section" id="over-parameterization">
-<h3>Over-parameterization<a class="headerlink" href="#over-parameterization" title="Permalink to this headline">¶</a></h3>
+<h3>Over-Parameterization<a class="headerlink" href="#over-parameterization" title="Permalink to this headline">¶</a></h3>
 <p>Parameters-errors ratio is too high</p>
 <p><strong>To be written</strong></p>
 </div>
@@ -331,19 +388,58 @@ for the user&#8217;s needs and stops trying to reduce the error.</p>
 <p><strong>To be written</strong></p>
 </div>
 </div>
-<div class="section" id="frequently-asked-questions">
-<h2>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div>What transform space does <em>MM Solver</em> solve in?</div></blockquote>
+<div class="section" id="frequently-asked-questions-faq">
+<span id="solver-faq-heading"></span><h2>Frequently Asked Questions (FAQ)<a class="headerlink" href="#frequently-asked-questions-faq" title="Permalink to this headline">¶</a></h2>
+<p>Below are the some common questions and answers.</p>
+<div class="section" id="how-do-i-get-the-list-of-supported-solver-types">
+<span id="solver-faq-how-to-get-supported-solver-types"></span><h3>How do I get the list of supported Solver Types?<a class="headerlink" href="#how-do-i-get-the-list-of-supported-solver-types" title="Permalink to this headline">¶</a></h3>
+<p>To dynamically get the supported list of solver types, run this Python
+command in Maya:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">loadPlugin</span><span class="p">(</span><span class="s1">&#39;mmSolver&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[u&#39;1=cminpack_lmdif&#39;, u&#39;2=cminpack_lmder&#39;]   # Example output.</span>
+</pre></div>
+</div>
+<p>The full list of solver types supported are listed below. Please note
+that depending on compilation, some solver types will not be available.</p>
+<table border="1" class="colwidths-auto docutils" id="id3">
+<caption><span class="caption-text">Solver Types</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Index</th>
+<th class="head">Name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td><code class="docutils literal"><span class="pre">levmar</span></code></td>
+<td>Use <a class="reference external" href="http://users.ics.forth.gr/~lourakis/levmar/">levmar</a> library with the <code class="docutils literal"><span class="pre">levmar_bc_dif</span></code> function.</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td><code class="docutils literal"><span class="pre">cminpack_lmdif</span></code></td>
+<td>Use <a class="reference external" href="http://devernay.free.fr/hacks/cminpack/index.html">CMinpack</a> library with the <a class="reference external" href="http://devernay.free.fr/hacks/cminpack/lmdif_.html">lmdif</a> function.</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td><code class="docutils literal"><span class="pre">cminpack_lmder</span></code></td>
+<td>Use <a class="reference external" href="http://devernay.free.fr/hacks/cminpack/index.html">CMinpack</a> library with the <a class="reference external" href="http://devernay.free.fr/hacks/cminpack/lmder_.html">lmder</a> function.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="what-transform-space-is-used-for-solving">
+<span id="solver-faq-what-transform-space-is-used-for-solving"></span><h3>What transform space is used for solving?<a class="headerlink" href="#what-transform-space-is-used-for-solving" title="Permalink to this headline">¶</a></h3>
 <p><em>MM Solver</em> evaluates all <em>Marker</em> and <em>Bundle</em> screen-space errors in
 <strong>world-space</strong>, but solving is not performed in a transform space.
 Solving is performed directly on <em>Attribute</em> values.</p>
-<blockquote>
-<div>How can I use a DAG hierarchy to reduce the number of <em>Attributes</em>?</div></blockquote>
+</div>
+<div class="section" id="how-can-i-use-a-dag-hierarchy-to-reduce-the-number-of-attributes">
+<span id="solver-faq-how-to-reduce-attribute-count-with-dag"></span><h3>How can I use a DAG hierarchy to reduce the number of <em>Attributes</em>?<a class="headerlink" href="#how-can-i-use-a-dag-hierarchy-to-reduce-the-number-of-attributes" title="Permalink to this headline">¶</a></h3>
 <p><strong>To be written</strong></p>
-<blockquote>
-<div>How can I make my solves faster?</div></blockquote>
+</div>
+<div class="section" id="how-can-i-make-my-solves-faster">
+<span id="solver-faq-how-to-increase-solve-speed"></span><h3>How can I make my solves faster?<a class="headerlink" href="#how-can-i-make-my-solves-faster" title="Permalink to this headline">¶</a></h3>
 <p><strong>To be written</strong></p>
+</div>
 </div>
 </div>
 
@@ -364,19 +460,32 @@ Solving is performed directly on <em>Attribute</em> values.</p>
 </li>
 <li><a class="reference internal" href="#solving-process">Solving Process</a><ul>
 <li><a class="reference internal" href="#time-static-and-animated-attributes">Time - Static and Animated Attributes</a></li>
-<li><a class="reference internal" href="#solver-strategies">Solver Strategies</a><ul>
-<li><a class="reference internal" href="#solver-options">Solver Options</a></li>
+<li><a class="reference internal" href="#solver-strategies">Solver Strategies</a></li>
+<li><a class="reference internal" href="#solver-options">Solver Options</a><ul>
+<li><a class="reference internal" href="#maximum-number-of-iterations">Maximum Number of Iterations</a></li>
+<li><a class="reference internal" href="#tau-initial-damping-factor">Tau - Initial Damping Factor</a></li>
+<li><a class="reference internal" href="#delta-amount-to-change-parameters">Delta - Amount to Change Parameters</a></li>
+<li><a class="reference internal" href="#epsilon-1-acceptable-gradient-change">Epsilon #1 - Acceptable Gradient Change</a></li>
+<li><a class="reference internal" href="#epsilon-2-acceptable-parameter-change">Epsilon #2 - Acceptable Parameter Change</a></li>
+<li><a class="reference internal" href="#epsilon-3-acceptable-deviation-error">Epsilon #3 - Acceptable Deviation Error</a></li>
+<li><a class="reference internal" href="#auto-differencing-type">Auto-Differencing Type</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a class="reference internal" href="#general-solving-concepts">General Solving Concepts</a><ul>
-<li><a class="reference internal" href="#over-parameterization">Over-parameterization</a></li>
+<li><a class="reference internal" href="#over-parameterization">Over-Parameterization</a></li>
 <li><a class="reference internal" href="#plane-line-and-curve-constraints">Plane, Line and Curve Constraints</a></li>
 <li><a class="reference internal" href="#upper-and-lower-value-bounds">Upper and Lower Value Bounds</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#frequently-asked-questions">Frequently Asked Questions</a></li>
+<li><a class="reference internal" href="#frequently-asked-questions-faq">Frequently Asked Questions (FAQ)</a><ul>
+<li><a class="reference internal" href="#how-do-i-get-the-list-of-supported-solver-types">How do I get the list of supported Solver Types?</a></li>
+<li><a class="reference internal" href="#what-transform-space-is-used-for-solving">What transform space is used for solving?</a></li>
+<li><a class="reference internal" href="#how-can-i-use-a-dag-hierarchy-to-reduce-the-number-of-attributes">How can I use a DAG hierarchy to reduce the number of <em>Attributes</em>?</a></li>
+<li><a class="reference internal" href="#how-can-i-make-my-solves-faster">How can I make my solves faster?</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

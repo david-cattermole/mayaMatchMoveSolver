@@ -16,7 +16,8 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Solver related functions.
+Solver related functions and classes for an individual solver
+operation (step).
 """
 
 import mmSolver.logger
@@ -25,9 +26,6 @@ import mmSolver._api.excep as excep
 import mmSolver._api.constant as const
 import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
-import mmSolver._api.marker as marker
-import mmSolver._api.attribute as attribute
-import mmSolver._api.solveresult as solveresult
 import mmSolver._api.compile as api_compile
 
 LOG = mmSolver.logger.get_logger()
@@ -35,9 +33,43 @@ LOG = mmSolver.logger.get_logger()
 
 class SolverStep(solverbase.SolverBase):
     """
-    SolverStep; the options for how a solver should be executed.
+    Defines an individual invocation of a solver.
+
+    The SolverStep contains the following properties:
+
+    - :ref:`solver-design-solver-max-iterations` Max iterations
+
+    - :ref:`solver-design-solver-delta`
+
+    - :ref:`solver-design-solver-auto-diff-type`
+
+    - :ref:`solver-design-solver-tau` - Tau factor
+
+    - :ref:`solver-design-solver-epsilon-one` - Gradient error factor
+
+    - :ref:`solver-design-solver-epsilon-two` - Parameter error factor
+
+    - :ref:`solver-design-solver-epsilon-three` - Error factor
+
+    - :ref:`solver-faq-how-to-get-supported-solver-types` - Solver type
+
+    - Use animated attributes
+
+    - Use static attributes
+
+    - Use frame tags
+
+    - Frame list
+
+    See the individual methods for more information.
     """
     def __init__(self, *args, **kwargs):
+        """
+        Create a SolverStep class with default values.
+
+        :param args: Not used.
+        :param kwargs: Not used.
+        """
         super(SolverStep, self).__init__(*args, **kwargs)
         self._attributes_use = {
             'animated': True,

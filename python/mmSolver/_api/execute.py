@@ -17,6 +17,13 @@
 #
 """
 Execute a solve.
+
+Executing a solve compiles the Collections (of Markers, Bundles and
+Solvers) and turns it into a SolveResult, as fast as it can.
+
+Executing a solve has options that control the behaviour of how the
+solve is executed. Usually the options are responsible for forcing Maya
+to update in various ways (DG or Viewport.
 """
 
 import time
@@ -62,7 +69,10 @@ def createExecuteOptions(verbose=False,
                          display_grid=True,
                          display_node_types=None):
     """
-    Create ExecuteOptions.
+    Create :py:class:`ExecuteOptions` object.
+
+    If a keyword argument is not given, a reasonable default value is
+    used.
 
     :param verbose: Print extra solver information while a solve is running.
     :type verbose: bool
@@ -114,6 +124,16 @@ def createExecuteOptions(verbose=False,
 
 
 def preSolve_updateProgress(prog_fn, status_fn):
+    """
+    Initialise solver is running, and send info to the Maya GUI before
+    a solve starts.
+
+    :param prog_fn: Function to use for printing progress messages.
+    :type prog_fn: callable or None
+
+    :param status_fn: Function to use for printing status messages.
+    :type status_fn: callable or None
+    """
     LOG.debug('preSolve_updateProgress')
     # Start up solver
     collectionutils.run_progress_func(prog_fn, 0)
@@ -212,14 +232,15 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
     frame', if the current frame is the same as the first
     frame.
 
-    :param action_list:
+    :param action_list: List of :py:class:`Action` objects that are
+                        used in the current solve.
     :type action_list: [Action, .. ]
 
-    :param cur_frame:
+    :param cur_frame: The current frame number.
     :type cur_frame: int or float
 
-    :param options:
-    :type options:
+    :param options: The execution options for the solve.
+    :type options: ExecuteOptions
     """
     LOG.debug('preSolve_triggerEvaluation')
     if options.pre_solve_force_eval is not True:
@@ -244,6 +265,17 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
 
 
 def postSolve_refreshViewport(options, frame):
+    """
+    Refresh the viewport after a solve has finished.
+
+    :param options: The execution options for the current solve.
+    :type options: ExecuteOptions
+
+    :param frame:
+        The list of frame numbers, first item in list is used to
+        refresh the viewport.
+    :type frame: [int or float, ..]
+    """
     LOG.debug(
         'postSolve_refreshViewport: '
         'options=%r '
@@ -268,6 +300,20 @@ def postSolve_refreshViewport(options, frame):
 
 
 def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
+    """
+    Change the viewport state based on the ExecuteOptions given
+
+    :param options: The execution options for the current solve.
+    :type options: ExecuteOptions
+
+    :param panel_objs:
+        The panels and object to isolate, in a list of tuples.
+    :type panel_objs: [(str, [str, ..] or None), ..]
+
+    :param panel_node_type_vis:
+        The panels and node-type visibility options in a list of tuples.
+    :type panel_node_type_vis: [(str, {str: int or bool or None}), ..]
+    """
     LOG.debug(
         'postSolve_setViewportState: '
         'options=%r '
@@ -307,8 +353,44 @@ def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
 def postSolve_setUpdateProgress(progress_min,
                                 progress_value,
                                 progress_max,
-                                solres,  # SolveResult or None
+                                solres,
                                 prog_fn, status_fn):
+    """
+    Update the Maya GUI with progress information, and detects users
+    wanting to cancel the solve.
+
+    :param progress_min:
+        Minimum progress number possible.
+        Usually the number is 0.
+    :type progress_min: int
+
+    :param progress_value:
+        The actual progress value.
+        The value is usually between 0 and 100 (inclusive).
+    :type progress_value: int
+
+    :param progress_max:
+        THe maximum progress number possible.
+        Usually the number is 100.
+    :type progress_max: int
+
+    :param solres:
+        The SolveResult object for the last solved state.
+    :type solres: SolveResult or None
+
+    :param prog_fn: The function used report progress messages to
+                    the user.
+    :type prog_fn: callable or None
+
+    :param status_fn: The function used to report status messages
+                      to the user.
+    :type status_fn: callable or None
+
+    :returns:
+        Should the solver stop executing or not? Has the user
+        cancelled the solve?
+    :rtype: bool
+    """
     LOG.debug(
         'postSolve_setUpdateProgress: '
         'progress_min=%r '
@@ -349,6 +431,19 @@ def postSolve_setUpdateProgress(progress_min,
 
 
 def _run_validate_action(vaction):
+    """
+    Call a single validate action, and see what happens.
+
+    :param vaction: Validation action object to be run.
+    :type vaction: Action
+
+    :return:
+        A tuple of 3 parts; First, did the validation succeed (as
+        boolean)? Second, the user message we present for the state.
+        Third, metrics about the solve (number of parameters, number
+        of errors, and number of frames to solve)
+    :rtype: (bool, str, (int, int, int))
+    """
     num_param = 0
     num_err = 0
     num_frames = 0
@@ -392,6 +487,20 @@ def _run_validate_action(vaction):
 
 
 def _run_validate_action_list(vaction_list):
+    """
+    Calls the validation functions attached to the Action list.
+
+    See :py:func:`_run_validate_action` for more details.
+
+    :param vaction_list: List of validate actions to call.
+    :type vaction_list: [Action, ..]
+
+    :return:
+        A list of validations, with a single valid boolean (did the
+        validation succeed?).
+    :rtype: (bool, [str, ..], [(int, int, int), ..])
+    """
+    assert len(vaction_list) > 0
     valid = True
     message_list = []
     metrics_list = []
@@ -412,6 +521,9 @@ def validate(col):
     :type col: Collection
 
     :return:
+        A list of validations, with a single valid boolean (did the
+        validation succeed?). See :py:func:`_run_validate_action`
+        function return types for more details.
     :rtype: (bool, [str, ..], [(int, int, int), ..])
     """
     valid = False

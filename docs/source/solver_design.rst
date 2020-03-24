@@ -20,7 +20,7 @@ which minimise the *measured error*.
 The process of applying an *optimisation* solver to 3D perspective
 cameras, 2D points and 3D points is called Bundle Adjustment (BA). BA is
 traditionally the last step of MatchMove and Photogrammetry solvers
-where the parameter of 3D points (Bundles) and cameras are solved to
+where the parameters of 3D points (Bundles) and cameras are solved to
 produce a 3D Scene with the least possible error.
 
 Attributes

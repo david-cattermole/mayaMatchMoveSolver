@@ -511,14 +511,14 @@ class Collection(object):
         self._actions_list = []  # reset argument flag cache.
         return
 
-    def set_attribute_list(self, mkr_list):
-        assert isinstance(mkr_list, list)
+    def set_attribute_list(self, attr_list):
+        assert isinstance(attr_list, list)
         before_num = self.get_attribute_list_length()
 
         self.clear_attribute_list()
-        for mkr in mkr_list:
-            if isinstance(mkr, attribute.Attribute):
-                self.add_attribute(mkr)
+        for attr in attr_list:
+            if isinstance(attr, attribute.Attribute):
+                self.add_attribute(attr)
 
         after_num = self.get_attribute_list_length()
         if before_num != after_num:

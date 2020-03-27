@@ -21,8 +21,6 @@ The Load Marker tool - user facing.
 
 import os
 import os.path
-import pprint
-import math
 
 import maya.cmds
 
@@ -32,7 +30,6 @@ import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.camera as camera_utils
 import mmSolver.tools.loadmarker.lib.formatmanager as formatmanager
 import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
-import mmSolver.tools.loadmarker.lib.interface as interface
 import mmSolver.api as mmapi
 
 
@@ -214,7 +211,7 @@ def get_file_info(file_path):
     :param file_path: The marker file path to get info for.
     :type file_path: str
 
-    :return:
+    :return: The file info.
     :rtype: FileInfo
     """
     file_info, _ = mayareadfile.read(file_path)
@@ -228,8 +225,7 @@ def get_file_info_strings(file_path):
     :param file_path: The marker file path to get info for.
     :type file_path: str
 
-    :return Dictionary of various information about the given
-            file path.
+    :return: Dictionary of various information about the given file path.
     :rtype: dict
     """
     info = {

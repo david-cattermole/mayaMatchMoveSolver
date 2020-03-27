@@ -17,6 +17,13 @@
 #
 """
 Querying and setting global state information.
+
+.. note::
+
+   Global state must be used carefully. We recommend using
+   try-except-finally_ blocks to ensure global state is returned to the
+   intended values if any exception is raised.
+
 """
 
 import mmSolver.logger

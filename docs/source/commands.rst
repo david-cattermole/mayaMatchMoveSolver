@@ -21,14 +21,14 @@ Flag                  Type                   Description                        
 -marker (-m)          string, string, string Marker, Camera, Bundle                           None
 -attr (-a)            string, string, string Node attribute, min value and max value          None
 -frame (-f)           long int               Frame number to solve with                       1
--solverType (-st)     unsigned int           Type of solver to use; 0=levmar 1=cminpack_lm    0
+-solverType (-st)     unsigned int           Type of solver to use.                           <auto detected>
 -iterations (-it)     unsigned int           Maximum number of iterations                     20
 -tauFactor (-t)       double                 Initial Damping Factor                           1E-03
 -epsilon1 (-e1)       double                 Acceptable gradient change                       1E-06
 -epsilon2 (-e2)       double                 Acceptable parameter change                      1E-06
 -epsilon3 (-e3)       double                 Acceptable error                                 1E-06
 -delta (-dt)          double                 Change to the guessed parameters each iteration  1E-04
--autoDiffType (-adt)  unsigned int           Auto-differencing type 0=forward 1=central       1 (central)
+-autoDiffType (-adt)  unsigned int           Auto-differencing type 0=forward 1=central       0 (forward)
 -verbose (-v)         bool                   Prints more information                          False
 ===================== ====================== ================================================ ==============
 

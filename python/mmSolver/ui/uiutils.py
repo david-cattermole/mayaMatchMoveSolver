@@ -50,7 +50,7 @@ def getHostApplication():
     """
     result = None
     appName = QtWidgets.QApplication.applicationName()
-    if appName is None or len(appName) == 0:
+    if appName is None or not appName:
         result = 'standalone'
     elif 'maya' in str(appName).lower():
         result = 'maya'
@@ -156,14 +156,18 @@ def getBaseWindow():
     BaseWindow = None
     baseModule = None
     host = getHostApplication()
-    if host == 'standalone':
-        import mmSolver.ui.base_standalone_window as baseModule
-        BaseWindow = baseModule.BaseStandaloneWindow
-    elif host == 'maya':
+    if host == 'maya':
         import mmSolver.ui.base_maya_window as baseModule
         BaseWindow = baseModule.BaseMayaWindow
     else:
         print('Warning: Unknown application host, %r' % host)
+
+        # This use-case is used for Sphinx documentation generation.
+        # QtWidgets.QMainWindow
+        class NullWindow(object):
+            pass
+
+        baseWindow = NullWindow
     return baseModule, BaseWindow
 
 

@@ -17,6 +17,12 @@
 #
 """
 Compile nodes into a set of actions to be performed.
+
+Compiling is performed with Python generators, yielding values, rather
+than computing a full list. Generators are used to speed up the
+compilation process by being able produce validity results quickly
+without waiting for the full compilation only to find an error on the
+first Action.
 """
 
 import collections
@@ -37,6 +43,17 @@ LOG = mmSolver.logger.get_logger()
 
 
 def markersAndCameras_compile_flags(mkr_list):
+    """
+    Compile mmSolver command flags for 'marker' and 'camera'.
+
+    :param mkr_list: List of Markers to compile.
+    :type mkr_list: [Marker, ..]
+
+    :return:
+        Tuple of both 'marker' and 'camera' flags, ready for the
+        mmSolver command.
+    :rtype: ([(str, str, str), ..], [(str, str)])
+    """
     # Get Markers and Cameras
     added_cameras = []
     markers = []
@@ -128,6 +145,27 @@ def _get_attribute_solver_type(attr):
 
 
 def categorise_attributes(attr_list):
+    """
+    Sort Attributes into specific categories.
+
+    Current categories are:
+
+    - Regular
+
+    - Bundle Transform
+
+    - Camera Transform
+
+    - Camera Intrinsic (shape node)
+
+    - Lens Distortion
+
+    :param attr_list: List of Attributes to be categorised.
+    :type attr_list: [Attribute, ..]
+
+    :returns: Create a mapping for Attributes based on different names.
+    :rtype: {str: {str: [Attribute, ..]}}
+    """
     assert isinstance(attr_list, (list, tuple))
     categories = {
         'regular': collections.defaultdict(list),
@@ -157,6 +195,23 @@ def categorise_attributes(attr_list):
 
 
 def attributes_compile_flags(attr_list, use_animated, use_static):
+    """
+    Compile Attributes into flags for mmSolver.
+
+    :param attr_list: List of Attributes to compile
+    :type attr_list: [Attribute, ..]
+
+    :param use_animated: Should we compile Attributes that are animated?
+    :type use_animated: bool
+
+    :param use_static: Should we compile Attributes that are static?
+    :type use_static: bool
+
+    :returns:
+        List of tuples. Attributes in a form to be given to the
+        mmSolver command.
+    :rtype: [(str, str, str, str, str), ..]
+    """
     # Get Attributes
     attrs = []
     for attr in attr_list:
@@ -369,7 +424,7 @@ def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
 
     :returns: A generator function yielding a tuple of two Action
               objects. The first object is used for solving, the
-              section Action is for validation of the solve.
+              second Action is for validation of the solve.
     :rtype: (Action, Action or None)
     """
     frame_list = sol.get_frame_list()

@@ -280,8 +280,9 @@ class Marker(object):
         """
         Set the deviation animCurve function set.
 
-        :param value: AnimCurve object to set, or use 'None' to remove
-        the reference to the existing animCurve object
+        :param value:
+            AnimCurve object to set, or use 'None' to remove the
+            reference to the existing animCurve object
         :type value: maya.OpenMayaAnim.MFnAnimCurve or None
         """
         assert value is None or isinstance(value, OpenMayaAnim.MFnAnimCurve)

@@ -38,13 +38,11 @@ def smooth_selected_keyframes():
     """
     Smooth the selected keyframes in the Graph Editor.
 
-    Usage::
+    Usage:
 
-    1) Select keyframes in Graph Editor.
-
-    2) Run tool
-
-    3) Keyframe values will be smoothed.
+    1. Select keyframes in Graph Editor.
+    2. Run tool
+    3. Keyframe values will be smoothed.
 
     """
     key_attrs = maya.cmds.keyframe(query=True, name=True) or []

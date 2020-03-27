@@ -35,7 +35,7 @@ def run_progress_func(prog_fn, value):
     Call the prog_fn callable function, if it's not None.
 
     :param prog_fn: Callable function to print or save the 'value' argument.
-    :type prog_fn: callable
+    :type prog_fn: callable or None
 
     :param value: Expected to be a percent number from 0 to 100.
     :type value: int or float
@@ -50,7 +50,7 @@ def run_status_func(status_fn, text):
     Call the status_fn callable function, if it's not None.
 
     :param status_fn: Callable function to print or save the 'text' argument.
-    :type status_fn: callable
+    :type status_fn: callable or None
 
     :param text: Text to display as the current status.
     :type text: str

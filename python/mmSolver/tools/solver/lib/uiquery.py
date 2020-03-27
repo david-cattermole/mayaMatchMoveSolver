@@ -69,6 +69,21 @@ def get_selected_ui_table_row(tree_view, model, filter_model):
 
 
 def convert_ui_nodes_to_nodes(ui_nodes, key):
+    """
+    Get the list of Attributes from the UI Attribute objects.
+
+    :param ui_nodes:
+        Nodes from the UI classes. `ui_nodes` is expected to be a list
+        of classes derived from
+        :py:class:`mmSolver.tools.solver.ui.attr_nodes.PlugNode`.
+    :type ui_nodes: [PlugNode, ..]
+
+    :param key: Key to look up on the node, to get the Attribute node.
+    :type key: str
+
+    :return: List of attributes in the UI nodes given.
+    :rtype: [Attribute, ..]
+    """
     nodes = []
     for ui_node in ui_nodes:
         node_data = ui_node.data()

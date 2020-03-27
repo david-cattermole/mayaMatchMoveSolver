@@ -28,7 +28,6 @@ import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
-import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.api as mmapi
 import mmSolver.tools.solver.maya_callbacks as maya_callbacks

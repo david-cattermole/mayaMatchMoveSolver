@@ -170,14 +170,14 @@ Solver Basic Widget
    :undoc-members:
 
 Solver Standard Widget
--------------------
+----------------------
 
 .. automodule:: mmSolver.tools.solver.widget.solver_standard_widget
    :members:
    :undoc-members:
 
 Solver Legacy Widget
--------------------
+--------------------
 
 .. automodule:: mmSolver.tools.solver.widget.solver_legacy_widget
    :members:

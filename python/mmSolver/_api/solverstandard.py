@@ -888,7 +888,7 @@ class SolverStandard(solverbase.SolverBase):
         :type value: int or long
         """
         assert isinstance(value, (int, long))
-        self._data['root_frame_strategy'] = bool(value)
+        self._data['root_frame_strategy'] = value
 
     ############################################################################
 
@@ -911,7 +911,7 @@ class SolverStandard(solverbase.SolverBase):
         """
         assert isinstance(value, (int, long))
         assert value > 0
-        self._data['block_iteration_num'] = bool(value)
+        self._data['block_iteration_num'] = value
 
     def get_root_iteration_num(self):
         """
@@ -932,7 +932,7 @@ class SolverStandard(solverbase.SolverBase):
         """
         assert isinstance(value, (int, long))
         assert value > 0
-        self._data['root_iteration_num'] = bool(value)
+        self._data['root_iteration_num'] = value
 
     def get_anim_iteration_num(self):
         """
@@ -953,7 +953,7 @@ class SolverStandard(solverbase.SolverBase):
         """
         assert isinstance(value, (int, long))
         assert value > 0
-        self._data['anim_iteration_num'] = bool(value)
+        self._data['anim_iteration_num'] = value
 
     def get_lineup_iteration_num(self):
         """
@@ -974,7 +974,7 @@ class SolverStandard(solverbase.SolverBase):
         """
         assert isinstance(value, (int, long))
         assert value > 0
-        self._data['lineup_iteration_num'] = bool(value)
+        self._data['lineup_iteration_num'] = value
 
     ############################################################################
 

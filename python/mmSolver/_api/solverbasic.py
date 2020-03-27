@@ -139,7 +139,7 @@ class SolverBasic(solverbase.SolverBase):
         """
         assert isinstance(value, (int, long))
         assert value > 0
-        self._data['anim_iteration_num'] = bool(value)
+        self._data['anim_iteration_num'] = value
 
     def get_lineup_iteration_num(self):
         """
@@ -160,7 +160,7 @@ class SolverBasic(solverbase.SolverBase):
         """
         assert isinstance(value, (int, long))
         assert value > 0
-        self._data['lineup_iteration_num'] = bool(value)
+        self._data['lineup_iteration_num'] = value
 
     ############################################################################
 

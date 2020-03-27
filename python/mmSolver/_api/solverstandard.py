@@ -731,18 +731,18 @@ class SolverStandard(solverbase.SolverBase):
       - "Solve Everything at Once" option - On or Off
       - "Solve Root Frames Only" option - On or Off
 
-    If a Solver is 'Single Frame' (current frame), then we solve both
+    If a Solver is `Single Frame` (current frame), then we solve both
     animated and static attributes on the current frame, in a single step
     and return.
 
-    If the 'Solver Root Frames Only' option is On, then we only solve the
+    If the `Solver Root Frames Only` option is On, then we only solve the
     root frames, with both animated and static attributes.
 
-    If the 'Solver Root Frames Only' is Off, then we first solve the root
+    If the `Solver Root Frames Only` is Off, then we first solve the root
     frames with both animated and static attributes, then secondly we solve
     only animated attributes for the entire frame range.
 
-    If the 'Solve Everything at Once' option is On, then the second solve
+    If the `Solve Everything at Once` option is On, then the second solve
     step contains static and animated attributes (not just animated),
     and all frames are solved as one big crunch.
     """
@@ -772,15 +772,31 @@ class SolverStandard(solverbase.SolverBase):
     ############################################################################
 
     def get_use_single_frame(self):
+        """
+        Get Use Single Frame value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'use_single_frame',
             const.SOLVER_STD_USE_SINGLE_FRAME_DEFAULT_VALUE)
 
     def set_use_single_frame(self, value):
+        """
+        Set Use Single Frame value.
+
+        :param value: Value to be set.
+        :type value: bool or int or long
+        """
         assert isinstance(value, (bool, int, long))
         self._data['use_single_frame'] = bool(value)
 
     def get_single_frame(self):
+        """
+        Get Single Frame value.
+
+        :rtype: Frame or None
+        """
         value = self._data.get(
             'single_frame',
             const.SOLVER_STD_SINGLE_FRAME_DEFAULT_VALUE)
@@ -790,6 +806,12 @@ class SolverStandard(solverbase.SolverBase):
         return frm
 
     def set_single_frame(self, value):
+        """
+        Set Single Frame value.
+
+        :param value: Value to be set.
+        :type value: Frame or int or long
+        """
         assert isinstance(value, (frame.Frame, int, long))
         number = value
         if isinstance(value, frame.Frame):
@@ -799,74 +821,151 @@ class SolverStandard(solverbase.SolverBase):
     ############################################################################
 
     def get_only_root_frames(self):
+        """
+        Get Only Root Frames value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'only_root_frames',
             const.SOLVER_STD_ONLY_ROOT_FRAMES_DEFAULT_VALUE)
 
     def set_only_root_frames(self, value):
+        """
+        Set Only Root Frames value.
+
+        :param value: Value to be set.
+        :type value: bool or int or long
+        """
         assert isinstance(value, (bool, int, long))
         self._data['only_root_frames'] = bool(value)
 
     ############################################################################
 
     def get_global_solve(self):
+        """
+        Get Global Solve value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'global_solve',
             const.SOLVER_STD_GLOBAL_SOLVE_DEFAULT_VALUE)
 
     def set_global_solve(self, value):
+        """
+        Set Global Solve value.
+
+        :param value: Value to be set.
+        :type value: bool or int or long
+        """
         assert isinstance(value, (bool, int, long))
         self._data['global_solve'] = bool(value)
 
     ############################################################################
 
     def get_root_frame_strategy(self):
+        """
+        Get Root Frame Strategy value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'root_frame_strategy',
             const.SOLVER_STD_ROOT_FRAME_STRATEGY_DEFAULT_VALUE)
 
     def set_root_frame_strategy(self, value):
+        """
+        Set Root Frame Strategy value.
+
+        :param value: Value to be set.
+        :type value: int or long
+        """
         assert isinstance(value, (int, long))
         self._data['root_frame_strategy'] = bool(value)
 
     ############################################################################
 
     def get_block_iteration_num(self):
+        """
+        Get Block Iteration Number value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'block_iteration_num',
             const.SOLVER_STD_BLOCK_ITERATION_NUM_DEFAULT_VALUE)
 
     def set_block_iteration_num(self, value):
+        """
+        Set Block Iteration Number value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
         assert isinstance(value, (int, long))
         assert value > 0
         self._data['block_iteration_num'] = bool(value)
 
     def get_root_iteration_num(self):
+        """
+        Get Root Iteration Number value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'root_iteration_num',
             const.SOLVER_STD_ROOT_ITERATION_NUM_DEFAULT_VALUE)
 
     def set_root_iteration_num(self, value):
+        """
+        Set Root Iteration Number value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
         assert isinstance(value, (int, long))
         assert value > 0
         self._data['root_iteration_num'] = bool(value)
 
     def get_anim_iteration_num(self):
+        """
+        Get Animation Iteration Number value.
+
+        :rtype: int
+        """
         return self._data.get(
             'anim_iteration_num',
             const.SOLVER_STD_ANIM_ITERATION_NUM_DEFAULT_VALUE)
 
     def set_anim_iteration_num(self, value):
+        """
+        Set Animation Iteration Number value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
         assert isinstance(value, (int, long))
         assert value > 0
         self._data['anim_iteration_num'] = bool(value)
 
     def get_lineup_iteration_num(self):
+        """
+        Get Line-up Iteration Number value.
+
+        :rtype: int
+        """
         return self._data.get(
             'lineup_iteration_num',
             const.SOLVER_STD_LINEUP_ITERATION_NUM_DEFAULT_VALUE)
 
     def set_lineup_iteration_num(self, value):
+        """
+        Set Line-up Iteration Number value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
         assert isinstance(value, (int, long))
         assert value > 0
         self._data['lineup_iteration_num'] = bool(value)
@@ -891,6 +990,11 @@ class SolverStandard(solverbase.SolverBase):
         return frm_list
 
     def get_frame_list_length(self):
+        """
+        Return the number of frames in the frame list.
+
+        :rtype: int
+        """
         return len(self.get_frame_list())
 
     def add_frame(self, frm):
@@ -974,6 +1078,11 @@ class SolverStandard(solverbase.SolverBase):
         return frm_list
 
     def get_root_frame_list_length(self):
+        """
+        Return the number of frames in the root frame list.
+
+        :rtype: int
+        """
         return len(self.get_root_frame_list())
 
     def add_root_frame(self, frm):

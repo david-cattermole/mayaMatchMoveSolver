@@ -317,6 +317,7 @@ class SolveResult(object):
                   the error (deviation).
         :rtype: {"marker_node": {float: float}}
         """
+        assert marker_node is None or isinstance(marker_node, (str, unicode))
         v = None
         if marker_node is None:
             v = self._per_marker_per_frame_error.copy()

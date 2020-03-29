@@ -74,6 +74,16 @@ class Camera(object):
             self.set_transform_node(transform)
         return
 
+    def __repr__(self):
+        result = '<{class_name}('.format(class_name=self.__class__.__name__)
+        result += '{hash} tfm_node={tfm_node} shp_node={shp_node}'.format(
+            hash=hex(hash(self)),
+            tfm_node=self.get_transform_node(),
+            shp_node=self.get_shape_node(),
+        )
+        result += ')>'
+        return result
+
     def get_transform_node(self):
         """
         Get the camera transform node.

@@ -45,9 +45,6 @@ def main():
     # getting camera from the selected marker
     cam_from_mkr = mkr.get_camera()
 
-    # For lock state
-    mkr_attrs = const.MKR_ATTRS
-
     new_mkr_nodes = []
     for marker in selected_markers:
         # Get Marker's name
@@ -73,7 +70,7 @@ def main():
             bnd_name = 'dup' + bnd_name
 
         # get attrs lock state
-        lock_value = lib.__get_lock_state(marker, mkr_attrs)
+        lock_value = lib.__get_lock_state(marker, const.MKR_ATTRS)
 
         mkr_name = mmapi.get_new_marker_name(mkr_name)
         new_mkr = mmapi.Marker().create_node(cam=cam_from_mkr,
@@ -88,7 +85,7 @@ def main():
         lib.__copy_key_frames(marker, new_mkr_node)
 
         # set lock state on newly created markers
-        lib.__set_lock_state(new_mkr_node, mkr_attrs, lock_value)
+        lib.__set_lock_state(new_mkr_node, const.MKR_ATTRS, lock_value)
         new_mkr_nodes.append(new_mkr_node)
 
     if len(new_mkr_nodes) > 0:

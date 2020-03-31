@@ -94,9 +94,6 @@ class SolverWindow(BaseWindow):
             None,
             callback_ids,
         )
-
-        # # Update the status with the last solve result
-        # self.updateStatusWithSolveResult()
         return
 
     def __del__(self):
@@ -106,33 +103,6 @@ class SolverWindow(BaseWindow):
         callback_ids = list(self.callback_manager.get_all_ids())
         maya_callbacks.remove_callbacks(callback_ids)
         del self.callback_manager
-
-    # def updateStatusWithSolveResult(self):
-    #     col = lib_state.get_active_collection()
-    #     if col is None:
-    #         return
-    #     info_fn = self.setSolveInfoLine
-    #     solres_list = col.get_last_solve_results()
-    #     timestamp = col.get_last_solve_timestamp()
-    #     total_time = col.get_last_solve_duration()
-
-    #     msg = 'No solve performed.'
-    #     if (len(solres_list) == 0):
-    #         info_fn(msg)
-    #     if timestamp is None:
-    #         timestamp = time.time()
-    #     if total_time is None:
-    #         total_time = 0.0
-
-    #     # We don't want to log every time we open the UI.
-    #     log = None
-    #     lib_collection.log_solve_results(
-    #         log,
-    #         solres_list,
-    #         timestamp=timestamp,
-    #         total_time=total_time,
-    #         status_fn=info_fn)
-    #     return
 
     def addMenuBarContents(self, menubar):
         # File Menu
@@ -335,6 +305,30 @@ class SolverWindow(BaseWindow):
         action.setChecked(value)
         action.toggled.connect(
             self.subForm.attribute_browser.displayMinMaxColumnChanged)
+        view_menu.addAction(action)
+
+        # Display Attribute Stiffness
+        label = 'Display Attribute Stiffness'
+        tooltip = 'Display Attribute Stiffness columns'
+        value = lib_state.get_display_attribute_stiffness_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            self.subForm.attribute_browser.displayStiffnessColumnChanged)
+        view_menu.addAction(action)
+
+        # Display Attribute Smoothness
+        label = 'Display Attribute Smoothness'
+        tooltip = 'Display Attribute Smoothness columns'
+        value = lib_state.get_display_attribute_smoothness_state()
+        action = QtWidgets.QAction(label, view_menu)
+        action.setStatusTip(tooltip)
+        action.setCheckable(True)
+        action.setChecked(value)
+        action.toggled.connect(
+            self.subForm.attribute_browser.displaySmoothnessColumnChanged)
         view_menu.addAction(action)
 
         if Qt.IsPySide2 or Qt.IsPyQt5:

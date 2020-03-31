@@ -188,6 +188,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
                 callback_manager
             )
         root = convert_to_ui.attributesToUINodes(
+            col,
             attr_list,
             show_anm,
             show_stc,
@@ -419,12 +420,26 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
     @QtCore.Slot(bool)
     def displayMinMaxColumnChanged(self, value):
         lib_state.set_display_attribute_min_max_state(value)
-        idx_min = self.model.getColumnIndexFromColumnName(
-            const.ATTR_COLUMN_NAME_VALUE_MIN
+        idx_min_max = self.model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_VALUE_MIN_MAX
         )
-        idx_max = self.model.getColumnIndexFromColumnName(
-            const.ATTR_COLUMN_NAME_VALUE_MAX
+        self.treeView.setColumnHidden(idx_min_max, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayStiffnessColumnChanged(self, value):
+        lib_state.set_display_attribute_stiffness_state(value)
+        idx_stiff = self.model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_VALUE_STIFFNESS
         )
-        self.treeView.setColumnHidden(idx_min, not value)
-        self.treeView.setColumnHidden(idx_max, not value)
+        self.treeView.setColumnHidden(idx_stiff, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displaySmoothnessColumnChanged(self, value):
+        lib_state.set_display_attribute_smoothness_state(value)
+        idx_smooth = self.model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS
+        )
+        self.treeView.setColumnHidden(idx_smooth, not value)
         return

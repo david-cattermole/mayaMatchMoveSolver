@@ -40,7 +40,7 @@ def get_maya_timeline_range_inner():
     Get the Maya frame range (inner bar).
 
     :returns: Start frame and end frame as FrameRange tuple.
-    :rtype: (int, int)
+    :rtype: FrameRange or (int, int)
     """
     s = maya.cmds.playbackOptions(query=True, minTime=True)
     e = maya.cmds.playbackOptions(query=True, maxTime=True)
@@ -53,7 +53,7 @@ def get_maya_timeline_range_outer():
     Get the Maya frame range (outer bar).
 
     :returns: Start frame and end frame as FrameRange tuple.
-    :rtype: (int, int)
+    :rtype: FrameRange or (int, int)
     """
     s = maya.cmds.playbackOptions(query=True, animationStartTime=True)
     e = maya.cmds.playbackOptions(query=True, animationEndTime=True)

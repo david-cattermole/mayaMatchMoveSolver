@@ -82,4 +82,9 @@ if (BUILD_QT_UI)
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/sysinfowindow/ui/sysinfo_layout.ui
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/sysinfowindow/ui/ui_sysinfo_layout.py
             )
+
+    add_ui_compile("setattributedetails"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/setattributedetails/ui/dialog.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/setattributedetails/ui/ui_dialog.py
+            )
 endif ()

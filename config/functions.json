@@ -320,6 +320,15 @@
                 "mmSolver.tools.centertwodee.tool.remove();"
             ]
         },
+        "set_attr_details_ui": {
+            "name": "Edit Attribute Details...",
+            "name_shelf": "Set...",
+            "tooltip": "Open the Edit Attribute Details window.",
+            "command": [
+                "import mmSolver.tools.setattributedetails.tool;",
+                "mmSolver.tools.setattributedetails.tool.open_window();"
+            ]
+        },
         "channel_sensitivity_ui": {
             "name": "Channel Sensitivity UI...",
             "name_shelf": "ChSen",

@@ -127,7 +127,7 @@ class SolverTriangulate(solverbase.SolverBase):
         self.root_frame_list = None
         return
 
-    def compile(self, mkr_list, attr_list):
+    def compile(self, col, mkr_list, attr_list, withtest=False):
         actions = []
         # TODO: Triangulate the (open) bundles here. We triangulate all
         #  valid bundles after the root frames have solved.

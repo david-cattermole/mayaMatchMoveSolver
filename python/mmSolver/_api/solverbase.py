@@ -124,11 +124,14 @@ class SolverBase(object):
         return
 
     @abc.abstractmethod
-    def compile(self, mkr_list, attr_list, withtest=False):
+    def compile(self, col, mkr_list, attr_list, withtest=False):
         """
         Compile solver into actions.
 
         :raises: 'NotValid', if the compile goes wrong.
+
+        :param col: Collection to be compile.
+        :type col: Collection
 
         :param mkr_list: List of Markers used in the Solve.
         :type mkr_list: [Marker, ..]

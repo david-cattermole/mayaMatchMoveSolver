@@ -368,12 +368,15 @@ class SolverStep(solverbase.SolverBase):
 
     ##########################################
 
-    def compile(self, mkr_list, attr_list, withtest=False):
+    def compile(self, col, mkr_list, attr_list, withtest=False):
         """
         Compiles data given into flags for a single run of 'mmSolver'.
 
         :param self: The solver to compile
         :type self: Solver
+
+        :param col: The collection to compile
+        :type col: Collection
 
         :param mkr_list: Markers to measure
         :type mkr_list: list of Marker
@@ -381,8 +384,11 @@ class SolverStep(solverbase.SolverBase):
         :param attr_list: Attributes to solve for
         :type attr_list: list of Attribute
 
-        :return: List of SolverActions to be performed one after the other.
-        :rtype: [SolverAction, ..]
+        :return:
+            Yields a tuple of two Actions at each iteration. First
+            action is the solver action, second action is for
+            validation of the solve.
+        :rtype: (Action, Action)
         """
         assert isinstance(self, solverbase.SolverBase)
         assert isinstance(mkr_list, list)
@@ -412,9 +418,11 @@ class SolverStep(solverbase.SolverBase):
         # Get Attributes
         use_animated = self.get_attributes_use_animated()
         use_static = self.get_attributes_use_static()
-        attrs = api_compile.attributes_compile_flags(attr_list,
-                                                     use_animated,
-                                                     use_static)
+        attrs = api_compile.attributes_compile_flags(
+            col,
+            attr_list,
+            use_animated,
+            use_static)
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
             return

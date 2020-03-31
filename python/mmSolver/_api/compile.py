@@ -38,6 +38,7 @@ import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.marker as marker
 import mmSolver._api.attribute as attribute
+import mmSolver._api.attributeutils as attribute_utils
 
 LOG = mmSolver.logger.get_logger()
 
@@ -190,9 +191,12 @@ def categorise_attributes(attr_list):
     return categories
 
 
-def attributes_compile_flags(attr_list, use_animated, use_static):
+def attributes_compile_flags(col, attr_list, use_animated, use_static):
     """
     Compile Attributes into flags for mmSolver.
+
+    :param col: Collection to be used for min/max, stiffness and smoothness.
+    :type col: Collection
 
     :param attr_list: List of Attributes to compile
     :type attr_list: [Attribute, ..]
@@ -208,7 +212,10 @@ def attributes_compile_flags(attr_list, use_animated, use_static):
         mmSolver command.
     :rtype: [(str, str, str, str, str), ..]
     """
-    # Get Attributes
+    # assert isinstance(col, collection.Collection)
+    assert isinstance(use_animated, bool)
+    assert isinstance(use_static, bool)
+
     attrs = []
     for attr in attr_list:
         assert isinstance(attr, attribute.Attribute)
@@ -222,47 +229,62 @@ def attributes_compile_flags(attr_list, use_animated, use_static):
         # from Maya directly, if Maya doesn't have one, we leave
         # min/max_value as None and pass it to the mmSolver command
         # indicating there is no bound.
-        min_value = attr.get_min_value()
-        max_value = attr.get_max_value()
-        if min_value is None:
-            min_exists = maya.cmds.attributeQuery(
-                attr_name,
-                node=node_name,
-                minExists=True,
-            )
-            if min_exists:
-                min_value = maya.cmds.attributeQuery(
-                    attr_name,
-                    node=node_name,
-                    minimum=True,
-                )
-                if len(min_value) == 1:
-                    min_value = min_value[0]
-                else:
-                    msg = 'Cannot handle attributes with multiple '
-                    msg += 'minimum values; node={0} attr={1}'
-                    msg = msg.format(node_name, attr_name)
-                    raise excep.NotValid(msg)
 
-        if max_value is None:
-            max_exists = maya.cmds.attributeQuery(
+        # Minimum Value
+        min_value = None
+        min_enable = col.get_attribute_min_enable(attr)
+        if min_enable is True:
+            min_value = col.get_attribute_min_value(attr)
+        min_exists = maya.cmds.attributeQuery(
+            attr_name,
+            node=node_name,
+            minExists=True,
+        )
+        if min_exists:
+            maya_min_value = maya.cmds.attributeQuery(
                 attr_name,
                 node=node_name,
-                maxExists=True,
+                minimum=True,
             )
-            if max_exists is True:
-                max_value = maya.cmds.attributeQuery(
-                    attr_name,
-                    node=node_name,
-                    maximum=True,
-                )
-                if len(max_value) == 1:
-                    max_value = max_value[0]
-                else:
-                    msg = 'Cannot handle attributes with multiple '
-                    msg += 'maximum values; node={0} attr={1}'
-                    msg = msg.format(node_name, attr_name)
-                    raise excep.NotValid(msg)
+            if len(maya_min_value) == 1:
+                maya_min_value = maya_min_value[0]
+            else:
+                msg = 'Cannot handle attributes with multiple '
+                msg += 'minimum values; node={0} attr={1}'
+                msg = msg.format(node_name, attr_name)
+                raise excep.NotValid(msg)
+            if min_value is None:
+                min_value = maya_min_value
+            else:
+                min_value = max(min_value, maya_min_value)
+
+        # Maximum Value
+        max_value = None
+        max_enable = col.get_attribute_max_enable(attr)
+        if max_enable is True:
+            max_value = col.get_attribute_max_value(attr)
+        max_exists = maya.cmds.attributeQuery(
+            attr_name,
+            node=node_name,
+            maxExists=True,
+        )
+        if max_exists is True:
+            maya_max_value = maya.cmds.attributeQuery(
+                attr_name,
+                node=node_name,
+                maximum=True,
+            )
+            if len(maya_max_value) == 1:
+                maya_max_value = maya_max_value[0]
+            else:
+                msg = 'Cannot handle attributes with multiple '
+                msg += 'maximum values; node={0} attr={1}'
+                msg = msg.format(node_name, attr_name)
+                raise excep.NotValid(msg)
+            if max_value is None:
+                max_value = maya_max_value
+            else:
+                max_value = min(max_value, maya_max_value)
 
         # Scale and Offset
         scale_value = None
@@ -323,7 +345,7 @@ def frames_compile_flags(frm_list, frame_use_tags):
     return frames
 
 
-def collection_compile(col_node, sol_list, mkr_list, attr_list,
+def collection_compile(col, sol_list, mkr_list, attr_list,
                        withtest=False,
                        prog_fn=None,
                        status_fn=None):
@@ -333,6 +355,7 @@ def collection_compile(col_node, sol_list, mkr_list, attr_list,
     :return: list of SolverActions.
     :rtype: [SolverAction, ..]
     """
+    col_node = col.get_node()
     action_list = []
     vaction_list = []
     if len(sol_list) == 0:
@@ -365,7 +388,7 @@ def collection_compile(col_node, sol_list, mkr_list, attr_list,
     msg = msg.format(repr(col_node))
     for sol in sol_enabled_list:
         assert isinstance(sol, solverbase.SolverBase)
-        for action, vaction in sol.compile(mkr_list, attr_list,
+        for action, vaction in sol.compile(col, mkr_list, attr_list,
                                            withtest=withtest):
             if not isinstance(action, api_action.Action):
                 raise excep.NotValid(msg)
@@ -386,7 +409,7 @@ def create_compile_solver_cache():
     return cache
 
 
-def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
+def compile_solver_with_cache(sol, col, mkr_list, attr_list, withtest, cache):
     """
     Compile a single solver, storing the internals in the given cache,
     and using the cache to speed up future compilations.
@@ -400,7 +423,7 @@ def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
     The cache is expected to be created like so:
     >>> import mmSolver._api.compile
     >>> cache = mmSolver._api.compile.create_compile_solver_cache()
-    >>> compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache)
+    >>> compile_solver_with_cache(sol, col, mkr_list, attr_list, withtest, cache)
 
     Compile unique list of frames to withtest the solver when it changes,
     for example a marker turns off, then only sample the unique sets of
@@ -408,6 +431,9 @@ def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
     and because we know there are no changes in the structure or number of
     errors, we can copy the same mmSolver kwargs multiple times (with the
     frames argument set differently).
+
+    :param col: The Collection to compile.
+    :type col: Collection
 
     :param sol: The solver to compile.
     :type sol: Solver
@@ -425,7 +451,7 @@ def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
     """
     frame_list = sol.get_frame_list()
     if cache is None or withtest is False:
-        for action, vaction in sol.compile(mkr_list, attr_list,
+        for action, vaction in sol.compile(col, mkr_list, attr_list,
                                            withtest=withtest):
             yield action, vaction
     else:
@@ -447,14 +473,14 @@ def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
         # Compile if our testing action is not in the cache.
         if vaction_list is None:
             # Add to the cache
-            for action, vaction in sol.compile(mkr_list, attr_list,
+            for action, vaction in sol.compile(col, mkr_list, attr_list,
                                                withtest=True):
                 cache[hash_string].append(vaction)
                 yield action, vaction
         else:
             # Re-use the cache
             generator = zip(
-                sol.compile(mkr_list, attr_list, withtest=False),
+                sol.compile(col, mkr_list, attr_list, withtest=False),
                 vaction_list
             )
             for (action, _), vaction in generator:

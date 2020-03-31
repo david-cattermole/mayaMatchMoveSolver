@@ -87,6 +87,61 @@ def _create_collection_attributes(node):
     return
 
 
+def _get_attr_detail_name(attr):
+    attr_name = attr.get_attr()
+    attr_name = attr_name.replace('.', '_')
+    aux_name = const.COLLECTION_ATTR_LONG_NAME_ATTR_DETAILS
+    aux_name = aux_name.format(name=attr_name)
+    return aux_name
+
+
+def _get_attr_detail(col, attr, key, default_value):
+    aux_name = _get_attr_detail_name(attr)
+    value = col._get_attr_data(aux_name)
+    if value is None:
+        value = default_value
+        return value
+    value = value.get(attr.get_node_uid(), {})
+    value = value.get(key, default_value)
+    return value
+
+
+def _set_attr_detail(col, attr, key, value):
+    aux_name = _get_attr_detail_name(attr)
+    data = col._get_attr_data(aux_name)
+    node_uid = attr.get_node_uid()
+    if data is None:
+        data = {node_uid: {key: value}}
+    else:
+        data[node_uid][key] = value
+    col._set_attr_data(aux_name, data)
+    return
+
+
+def _get_all_attr_details(col, attr):
+    aux_name = _get_attr_detail_name(attr)
+    value = col._get_attr_data(aux_name)
+    if value is None:
+        return {}
+    value = value.get(attr.get_node_uid(), {})
+    return value
+
+
+def _set_all_attr_details(col, attr, value):
+    aux_name = _get_attr_detail_name(attr)
+    data = col._get_attr_data(aux_name)
+    node_uid = attr.get_node_uid()
+    if data is None:
+        data = {node_uid: {}}
+    else:
+        if value is None:
+            value = {}
+        assert isinstance(value, dict)
+        data[node_uid] = value
+    col._set_attr_data(aux_name, data)
+    return
+
+
 class Collection(object):
     """
     Holds all data needed for a mmSolver run.
@@ -166,11 +221,11 @@ class Collection(object):
         """
         Get data from an attribute on the collection node.
 
-        :param attr_name: The name of the attribute to get data form.
+        :param attr_name: The name of the attribute to get data from.
         :type attr_name: str
 
-        :return: List of data arbitrary structures.
-        :rtype: list of dict
+        :return: Arbitrary data structures; list or dict
+        :rtype: dict or list
         """
         set_node = self._set.get_node()
         return configmaya.get_node_option_structure(set_node, attr_name)
@@ -184,9 +239,6 @@ class Collection(object):
 
         :param data: The data to store.
         :type data: list or dict
-
-        ;return: Nothing.
-        :rtype: None
         """
         set_node = self._set.get_node()
         configmaya.set_node_option_structure(
@@ -539,6 +591,104 @@ class Collection(object):
 
     ############################################################################
 
+    def get_attribute_details(self, attr):
+        value = _get_all_attr_details(self, attr)
+        return value
+
+    def set_attribute_details(self, attr, data):
+        assert isinstance(data, dict)
+        _set_all_attr_details(self, attr, data)
+
+    def get_attribute_min_enable(self, attr):
+        key = 'min_enable'
+        default_value = False
+        value = _get_attr_detail(self, attr, key, default_value)
+        return value
+
+    def set_attribute_min_enable(self, attr, value):
+        assert isinstance(value, bool)
+        key = 'min_enable'
+        _set_attr_detail(self, attr, key, value)
+
+    def get_attribute_min_value(self, attr):
+        key = 'min_value'
+        default_value = -1.0
+        value = _get_attr_detail(self, attr, key, default_value)
+        return value
+
+    def set_attribute_min_value(self, attr, value):
+        assert isinstance(value, float)
+        key = 'min_value'
+        _set_attr_detail(self, attr, key, value)
+
+    def get_attribute_max_enable(self, attr):
+        key = 'max_enable'
+        default_value = False
+        value = _get_attr_detail(self, attr, key, default_value)
+        return value
+
+    def set_attribute_max_enable(self, attr, value):
+        assert isinstance(value, bool)
+        key = 'max_enable'
+        _set_attr_detail(self, attr, key, value)
+
+    def get_attribute_max_value(self, attr):
+        key = 'max_value'
+        default_value = 1.0
+        value = _get_attr_detail(self, attr, key, default_value)
+        return value
+
+    def set_attribute_max_value(self, attr, value):
+        assert isinstance(value, float)
+        key = 'max_value'
+        _set_attr_detail(self, attr, key, value)
+
+    def get_attribute_stiffness_enable(self, attr):
+        key = 'stiffness_enable'
+        default_value = False
+        value = _get_attr_detail(self, attr, key, default_value)
+        return value
+
+    def set_attribute_stiffness_enable(self, attr, value):
+        assert isinstance(value, bool)
+        key = 'stiffness_enable'
+        _set_attr_detail(self, attr, key, value)
+
+    def get_attribute_stiffness_weight(self, attr):
+        key = 'stiffness_weight'
+        default_value = 0.5
+        value = _get_attr_detail(self, attr, key, default_value)
+        return value
+
+    def set_attribute_stiffness_weight(self, attr, value):
+        assert isinstance(value, float)
+        key = 'stiffness_weight'
+        _set_attr_detail(self, attr, key, value)
+
+    def get_attribute_smoothness_enable(self, attr):
+        key = 'smoothness_enable'
+        default_value = False
+        value = _get_attr_detail(self, attr, key, default_value)
+        return value
+
+    def set_attribute_smoothness_enable(self, attr, value):
+        assert isinstance(value, bool)
+        key = 'smoothness_enable'
+        _set_attr_detail(self, attr, key, value)
+
+    def get_attribute_smoothness_weight(self, attr):
+        key = 'smoothness_weight'
+        default_value = 0.5
+        value = _get_attr_detail(self, attr, key, default_value)
+        return value
+
+    def set_attribute_smoothness_weight(self, attr, value):
+        assert isinstance(value, float)
+        key = 'smoothness_weight'
+        _set_attr_detail(self, attr, key, value)
+
+    ############################################################################
+
     # TODO: Add 'logging level' flag to Collection.
 
     def is_valid(self, prog_fn=None, status_fn=None):
@@ -560,12 +710,11 @@ class Collection(object):
         """
         ret = False
         try:
-            col_node = self.get_node()
             sol_list = self.get_solver_list()
             mkr_list = self.get_marker_list()
             attr_list = self.get_attribute_list()
             api_compile.collection_compile(
-                col_node,
+                self,
                 sol_list, mkr_list, attr_list,
                 withtest=True,
                 prog_fn=None, status_fn=None)

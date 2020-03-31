@@ -532,12 +532,11 @@ def validate(col):
 
     s = time.time()
     try:
-        col_node = col.get_node()
         sol_list = col.get_solver_list()
         mkr_list = col.get_marker_list()
         attr_list = col.get_attribute_list()
         action_list, vaction_list = api_compile.collection_compile(
-            col_node,
+            col,
             sol_list, mkr_list, attr_list,
             withtest=True,
             prog_fn=None,
@@ -551,9 +550,10 @@ def validate(col):
         e = time.time()
         LOG.warn('Compile time (validate): %r seconds', e - s)
 
-    valid, message_list, metrics_list = _run_validate_action_list(vaction_list)
-    assert len(message_list) > 0
-    assert len(metrics_list) > 0
+    if len(vaction_list) > 0:
+        valid, message_list, metrics_list = _run_validate_action_list(vaction_list)
+        assert len(message_list) > 0
+        assert len(metrics_list) > 0
     return valid, message_list, metrics_list
 
 
@@ -633,14 +633,13 @@ def execute(col,
         solres_list = []
         withtest = validate_mode in [const.VALIDATE_MODE_PRE_VALIDATE_VALUE,
                                      const.VALIDATE_MODE_AT_RUNTIME_VALUE]
-        col_node = col.get_node()
         sol_list = col.get_solver_list()
         mkr_list = col.get_marker_list()
         attr_list = col.get_attribute_list()
         try:
             s = time.time()
             action_list, vaction_list = api_compile.collection_compile(
-                col_node,
+                col,
                 sol_list,
                 mkr_list,
                 attr_list,

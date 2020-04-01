@@ -38,7 +38,7 @@ import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.marker as marker
 import mmSolver._api.attribute as attribute
-import mmSolver._api.attributeutils as attribute_utils
+# import mmSolver._api.attributeutils as attribute_utils
 
 LOG = mmSolver.logger.get_logger()
 

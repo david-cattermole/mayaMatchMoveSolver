@@ -459,20 +459,6 @@ def set_plane_visibility(model_panel, value):
     return _set_node_type_visibility(model_panel, 'planes', value)
 
 
-def get_camera_visibility(model_panel):
-    """
-    Query the cameras visibility in given model panel.
-    """
-    return _get_node_type_visibility(model_panel, 'cameras')
-
-
-def set_camera_visibility(model_panel, value):
-    """
-    Set the visibility of cameras nodes in the given model panel.
-    """
-    return _set_node_type_visibility(model_panel, 'cameras', value)
-
-
 def get_light_visibility(model_panel):
     """
     Query the lights visibility in given model panel.

@@ -19,6 +19,8 @@
 Attribute nodes for the mmSolver Window UI.
 """
 
+import maya.cmds
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -77,20 +79,49 @@ class PlugNode(nodes.Node):
         return ''
 
 
+def _get_attr_type(attr):
+    if attr is None:
+        return None
+    attr_name = attr.get_attr().lower()
+    attr_type = const.ATTR_TYPE_OTHER
+    if 'translate' in attr_name:
+        attr_type = const.ATTR_TYPE_TRANSLATE
+    elif 'rotate' in attr_name:
+        attr_type = const.ATTR_TYPE_ROTATE
+    elif 'scale' in attr_name:
+        attr_type = const.ATTR_TYPE_SCALE
+    else:
+        node_name = attr.get_node()
+        node_type = maya.cmds.nodeType(node_name)
+        node_type = node_type.lower()
+        if node_type == 'camera':
+            attr_type = const.ATTR_TYPE_CAMERA
+        elif 'lens' in node_type:
+            attr_type = const.ATTR_TYPE_LENS
+    return attr_type
+
+
 class AttrNode(PlugNode):
     def __init__(self, name,
                  data=None,
                  parent=None):
+        attr = None
+        if data is not None:
+            attr = data.get('data')
         icon = const.ATTR_ICON_NAME
-        attrs_x = ['translateX', 'rotateX', 'scaleX']
-        attrs_y = ['translateY', 'rotateY', 'scaleY']
-        attrs_z = ['translateZ', 'rotateZ', 'scaleZ']
-        if name in attrs_x:
-            icon = const.ATTR_X_ICON_NAME
-        elif name in attrs_y:
-            icon = const.ATTR_Y_ICON_NAME
-        elif name in attrs_z:
-            icon = const.ATTR_Z_ICON_NAME
+        attr_type = _get_attr_type(attr)
+        if attr_type == const.ATTR_TYPE_TRANSLATE:
+            icon = const.ATTR_TYPE_TRANSLATE_ICON_NAME
+        elif attr_type == const.ATTR_TYPE_ROTATE:
+            icon = const.ATTR_TYPE_ROTATE_ICON_NAME
+        elif attr_type == const.ATTR_TYPE_SCALE:
+            icon = const.ATTR_TYPE_SCALE_ICON_NAME
+        elif attr_type == const.ATTR_TYPE_CAMERA:
+            icon = const.ATTR_TYPE_CAMERA_ICON_NAME
+        elif attr_type == const.ATTR_TYPE_LENS:
+            icon = const.ATTR_TYPE_LENS_ICON_NAME
+        else:
+            icon = const.ATTR_TYPE_OTHER_ICON_NAME
         super(AttrNode, self).__init__(
             name,
             data=data,

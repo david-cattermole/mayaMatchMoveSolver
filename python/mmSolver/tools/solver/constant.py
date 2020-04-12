@@ -323,6 +323,14 @@ SOLVER_STD_DESC_DEFAULT = (
     'then solve animated attributes on frames.'
 )
 
+# Attribute Type
+ATTR_TYPE_TRANSLATE = 'attr_type_translate'
+ATTR_TYPE_ROTATE = 'attr_type_rotate'
+ATTR_TYPE_SCALE = 'attr_type_scale'
+ATTR_TYPE_CAMERA = 'attr_type_camera'
+ATTR_TYPE_LENS = 'attr_type_lens'
+ATTR_TYPE_OTHER = 'attr_type_other'
+
 # Icon names
 OBJECT_ICON_NAME = ':/mmSolver_object.png'
 MARKER_ICON_NAME = ':/mmSolver_marker.png'
@@ -331,7 +339,10 @@ CAMERA_ICON_NAME = ':/mmSolver_camera.png'
 PLUG_ICON_NAME = ':/mmSolver_plug.png'
 NODE_ICON_NAME = ':/mmSolver_node.png'
 ATTR_ICON_NAME = ':/mmSolver_attr.png'
-ATTR_X_ICON_NAME = ':/mmSolver_attr_x.png'
-ATTR_Y_ICON_NAME = ':/mmSolver_attr_y.png'
-ATTR_Z_ICON_NAME = ':/mmSolver_attr_z.png'
+ATTR_TYPE_TRANSLATE_ICON_NAME = ':/mmSolver_attr_type_translate.png'
+ATTR_TYPE_ROTATE_ICON_NAME = ':/mmSolver_attr_type_rotate.png'
+ATTR_TYPE_SCALE_ICON_NAME = ':/mmSolver_attr_type_scale.png'
+ATTR_TYPE_CAMERA_ICON_NAME = ':/mmSolver_attr_type_camera.png'
+ATTR_TYPE_LENS_ICON_NAME = ':/mmSolver_attr_type_lens.png'
+ATTR_TYPE_OTHER_ICON_NAME = ':/mmSolver_attr_type_other.png'
 SOLVER_STEP_ICON_NAME = ':/mmSolver_solverStep.png'

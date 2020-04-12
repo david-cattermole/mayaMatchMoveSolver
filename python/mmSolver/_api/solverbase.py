@@ -146,4 +146,3 @@ class SolverBase(object):
         :returns: Return a generator, to yield two Action objects.
         """
         raise NotImplementedError
-

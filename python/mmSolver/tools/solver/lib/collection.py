@@ -739,7 +739,7 @@ def run_solve_ui(col,
     :param options: Options for the solver options.
     :type options: mmSolver.api.ExecuteOptions
 
-    :param log_level: How much information should we print out;a
+    :param log_level: How much information should we print out;
                       'error', 'warning', 'info', 'verbose' or 'debug'.
     :type log_level: str
 

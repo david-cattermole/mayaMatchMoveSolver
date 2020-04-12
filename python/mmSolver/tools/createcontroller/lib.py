@@ -307,20 +307,6 @@ def create(nodes,
             src, dst,
             delete_static_anim_curves=False
         )
-        # if sparse is True:
-        #     # Remove keyframes
-        #     src_times = keytime_obj.get_times(src_node, sparse) or []
-        #     dst_node = dst.get_node()
-        #     if len(src_times) == 0:
-        #         time_range = keytime_obj.get_frame_range_for_node(src_node)
-        #         assert time_range[0] is not None
-        #         assert time_range[1] is not None
-        #         maya.cmds.cutKey(
-        #             dst_node,
-        #             attribute=const.TFM_ATTRS,
-        #             time=time_range,
-        #             clear=True
-        #         )
         src_had_keys = key_times_map.get(src_node) is not None
         if src_had_keys is True:
             continue

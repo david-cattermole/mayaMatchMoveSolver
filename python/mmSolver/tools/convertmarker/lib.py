@@ -42,6 +42,8 @@ def convert_nodes_to_marker_data_list(cam_tfm, cam_shp,
         image_height = maya.cmds.getAttr(cam_shp + '.verticalFilmAperture')
         image_width *= 1000.0
         image_height *= 1000.0
+        # BUG: If a camera has 'camera scale' attribute set other than
+        # 1.0, the reprojected values will not be correct.
         values = maya.cmds.mmReprojection(
             node,
             time=frames,

@@ -536,14 +536,18 @@ void measureErrors(
 
         // Is the bundle behind the camera?
         bool behind_camera = false;
+        bool behind_camera_error_factor = 1.0;
         double cam_dot_bnd = cam_dir * bnd_dir;
         // WRN("Camera DOT Bundle: " << cam_dot_bnd);
         if (cam_dot_bnd < 0.0) {
             behind_camera = true;
+            behind_camera_error_factor = 1e+6;
         }
 
         if (writeDebug && debugIsOpen) {
             debugFile << "Bundle: " << bnd->getNodeName()
+                      << std::endl;
+            debugFile << "Behind Camera: " << behind_camera
                       << std::endl;
             debugFile << "Cam DOT Bnd: " << cam_dot_bnd
                       << std::endl;
@@ -578,13 +582,13 @@ void measureErrors(
         double dy = fabs(mkr_mpos.y - bnd_mpos.y) * ud->imageWidth;
         double d = distance_2d(mkr_mpos, bnd_mpos) * ud->imageWidth;
 
-        errors[(i * ERRORS_PER_MARKER) + 0] = dx * mkr_weight;  // X error
-        errors[(i * ERRORS_PER_MARKER) + 1] = dy * mkr_weight;  // Y error
+        errors[(i * ERRORS_PER_MARKER) + 0] = dx * mkr_weight * behind_camera_error_factor;  // X error
+        errors[(i * ERRORS_PER_MARKER) + 1] = dy * mkr_weight * behind_camera_error_factor;  // Y error
 
         // 'ud->errorList' is the deviation shown to the user, it
         // should not have any loss functions or scaling applied to it.
-        ud->errorList[(i * ERRORS_PER_MARKER) + 0] = dx;
-        ud->errorList[(i * ERRORS_PER_MARKER) + 1] = dy;
+        ud->errorList[(i * ERRORS_PER_MARKER) + 0] = dx * behind_camera_error_factor;
+        ud->errorList[(i * ERRORS_PER_MARKER) + 1] = dy * behind_camera_error_factor;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) { error_max = d; }

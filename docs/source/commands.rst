@@ -103,6 +103,10 @@ Python Example:
 ``mmTestCameraMatrix`` Command
 ++++++++++++++++++++++++++++++
 
+`mmTestCameraMatrix` calculates an matrix (not returned) from the
+given camera transform and shape nodes. If the matrix matches the same
+matrix produced by Maya's API, then the command returns true.
+
 This command is used for internal tests only, it has no practical use
 for users.
 

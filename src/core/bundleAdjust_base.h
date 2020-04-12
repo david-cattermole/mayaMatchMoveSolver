@@ -182,11 +182,16 @@ std::vector<SolverTypePair> getSolverTypes();
 SolverTypePair getSolverTypeDefault();
 
 int countUpNumberOfErrors(MarkerPtrList markerList,
+                          StiffAttrsPtrList stiffAttrsList,
+                          SmoothAttrsPtrList smoothAttrsList,
                           MTimeArray frameList,
                           MarkerPtrList &validMarkerList,
                           std::vector<MPoint> &markerPosList,
                           std::vector<double> &markerWeightList,
                           IndexPairList &errorToMarkerList,
+                          int &numberOfMarkerErrors,
+                          int &numberOfAttrStiffnessErrors,
+                          int &numberOfAttrSmoothnessErrors,
                           MStatus &status);
 
 int countUpNumberOfUnknownParameters(AttrPtrList attrList,
@@ -260,7 +265,7 @@ bool set_maya_attribute_values(int numberOfParameters,
                                MAnimCurveChange &curveChange);
 
 
-bool compute_error_stats(int numberOfErrors,
+bool compute_error_stats(int numberOfMarkerErrors,
                          SolverData &userData,
                          double &errorAvg,
                          double &errorMin,
@@ -271,7 +276,9 @@ void print_details(SolverResult &solverResult,
                    SolverData &userData,
                    SolverTimer &timer,
                    int numberOfParameters,
-                   int numberOfErrors,
+                   int numberOfMarkerErrors,
+                   int numberOfAttrStiffnessErrors,
+                   int numberOfAttrSmoothnessErrors,
                    bool verbose,
                    std::vector<double> &paramList,
                    MStringArray &outResult);
@@ -283,6 +290,8 @@ bool solve(SolverOptions &solverOptions,
            BundlePtrList &bundleList,
            AttrPtrList &attrList,
            MTimeArray &frameList,
+           StiffAttrsPtrList &stiffAttrsList,
+           SmoothAttrsPtrList &smoothAttrsList,
            MDGModifier &dgmod,
            MAnimCurveChange &curveChange,
            MComputation &computation,

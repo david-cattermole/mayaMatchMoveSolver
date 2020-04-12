@@ -87,58 +87,62 @@ def _create_collection_attributes(node):
     return
 
 
-def _get_attr_detail_name(attr):
+def _get_auxiliary_attr_name(col, attr, key):
+    col_node_uid = col.get_node_uid()
+    col_node_uid = col_node_uid.replace('-', '_')
     attr_name = attr.get_attr()
     attr_name = attr_name.replace('.', '_')
-    aux_name = const.COLLECTION_ATTR_LONG_NAME_ATTR_DETAILS
-    aux_name = aux_name.format(name=attr_name)
-    return aux_name
+    attr_name = 'aux_{0}_{1}_{2}'.format(col_node_uid, attr_name, key)
+    return attr_name
 
 
-def _get_attr_detail(col, attr, key, default_value):
-    aux_name = _get_attr_detail_name(attr)
-    value = col._get_attr_data(aux_name)
-    if value is None:
+def _get_auxiliary_attr(col, attr, key, default_value):
+    value = None
+    attr_node = attr.get_node()
+    aux_name = _get_auxiliary_attr_name(col, attr, key)
+    plug_name = '{0}.{1}'.format(attr_node, aux_name)
+    exists = node_utils.attribute_exists(aux_name, attr_node)
+    if exists is False:
+        if isinstance(default_value, bool):
+            maya.cmds.addAttr(
+                attr_node,
+                longName=aux_name,
+                keyable=False,
+                hidden=True,
+                attributeType='bool')
+        else:
+            maya.cmds.addAttr(
+                attr_node,
+                longName=aux_name,
+                keyable=False,
+                hidden=True)
+        maya.cmds.setAttr(plug_name, default_value)
         value = default_value
-        return value
-    value = value.get(attr.get_node_uid(), {})
-    value = value.get(key, default_value)
+    else:
+        value = maya.cmds.getAttr(plug_name)
     return value
 
 
-def _set_attr_detail(col, attr, key, value):
-    aux_name = _get_attr_detail_name(attr)
-    data = col._get_attr_data(aux_name)
-    node_uid = attr.get_node_uid()
-    if data is None:
-        data = {node_uid: {key: value}}
-    else:
-        data[node_uid][key] = value
-    col._set_attr_data(aux_name, data)
-    return
-
-
-def _get_all_attr_details(col, attr):
-    aux_name = _get_attr_detail_name(attr)
-    value = col._get_attr_data(aux_name)
-    if value is None:
-        return {}
-    value = value.get(attr.get_node_uid(), {})
-    return value
-
-
-def _set_all_attr_details(col, attr, value):
-    aux_name = _get_attr_detail_name(attr)
-    data = col._get_attr_data(aux_name)
-    node_uid = attr.get_node_uid()
-    if data is None:
-        data = {node_uid: {}}
-    else:
-        if value is None:
-            value = {}
-        assert isinstance(value, dict)
-        data[node_uid] = value
-    col._set_attr_data(aux_name, data)
+def _set_auxiliary_attr(col, attr, key, value):
+    attr_node = attr.get_node()
+    aux_name = _get_auxiliary_attr_name(col, attr, key)
+    plug_name = '{0}.{1}'.format(attr_node, aux_name)
+    exists = node_utils.attribute_exists(aux_name, attr_node)
+    if exists is False:
+        if isinstance(value, bool):
+            maya.cmds.addAttr(
+                attr_node,
+                longName=aux_name,
+                keyable=False,
+                hidden=True,
+                attributeType='bool')
+        else:
+            maya.cmds.addAttr(
+                attr_node,
+                longName=aux_name,
+                keyable=False,
+                hidden=True)
+    maya.cmds.setAttr(plug_name, value)
     return
 
 
@@ -591,101 +595,239 @@ class Collection(object):
 
     ############################################################################
 
-    def get_attribute_details(self, attr):
-        value = _get_all_attr_details(self, attr)
-        return value
-
-    def set_attribute_details(self, attr, data):
-        assert isinstance(data, dict)
-        _set_all_attr_details(self, attr, data)
-
     def get_attribute_min_enable(self, attr):
         key = 'min_enable'
         default_value = False
-        value = _get_attr_detail(self, attr, key, default_value)
+        value = _get_auxiliary_attr(self, attr, key, default_value)
         return value
 
     def set_attribute_min_enable(self, attr, value):
         assert isinstance(value, bool)
         key = 'min_enable'
-        _set_attr_detail(self, attr, key, value)
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_min_enable_plug_name(self, attr):
+        key = 'min_enable'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
 
     def get_attribute_min_value(self, attr):
         key = 'min_value'
         default_value = -1.0
-        value = _get_attr_detail(self, attr, key, default_value)
+        value = _get_auxiliary_attr(self, attr, key, default_value)
         return value
 
     def set_attribute_min_value(self, attr, value):
         assert isinstance(value, float)
         key = 'min_value'
-        _set_attr_detail(self, attr, key, value)
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_min_value_plug_name(self, attr):
+        key = 'min_value'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
 
     def get_attribute_max_enable(self, attr):
         key = 'max_enable'
         default_value = False
-        value = _get_attr_detail(self, attr, key, default_value)
+        value = _get_auxiliary_attr(self, attr, key, default_value)
         return value
 
     def set_attribute_max_enable(self, attr, value):
         assert isinstance(value, bool)
         key = 'max_enable'
-        _set_attr_detail(self, attr, key, value)
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_max_enable_plug_name(self, attr):
+        key = 'max_enable'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
 
     def get_attribute_max_value(self, attr):
         key = 'max_value'
         default_value = 1.0
-        value = _get_attr_detail(self, attr, key, default_value)
+        value = _get_auxiliary_attr(self, attr, key, default_value)
         return value
 
     def set_attribute_max_value(self, attr, value):
         assert isinstance(value, float)
         key = 'max_value'
-        _set_attr_detail(self, attr, key, value)
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_max_value_plug_name(self, attr):
+        key = 'max_value'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
 
     def get_attribute_stiffness_enable(self, attr):
         key = 'stiffness_enable'
         default_value = False
-        value = _get_attr_detail(self, attr, key, default_value)
+        value = _get_auxiliary_attr(self, attr, key, default_value)
         return value
 
     def set_attribute_stiffness_enable(self, attr, value):
         assert isinstance(value, bool)
         key = 'stiffness_enable'
-        _set_attr_detail(self, attr, key, value)
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_stiffness_enable_plug_name(self, attr):
+        key = 'stiffness_enable'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
 
     def get_attribute_stiffness_weight(self, attr):
         key = 'stiffness_weight'
-        default_value = 0.5
-        value = _get_attr_detail(self, attr, key, default_value)
+        default_value = 1.0
+        value = _get_auxiliary_attr(self, attr, key, default_value)
         return value
 
     def set_attribute_stiffness_weight(self, attr, value):
         assert isinstance(value, float)
         key = 'stiffness_weight'
-        _set_attr_detail(self, attr, key, value)
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_stiffness_weight_plug_name(self, attr):
+        key = 'stiffness_weight'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
+
+    def get_attribute_stiffness_variance(self, attr):
+        key = 'stiffness_variance'
+        default_value = 1.0
+        value = _get_auxiliary_attr(self, attr, key, default_value)
+        return value
+
+    def set_attribute_stiffness_variance(self, attr, value):
+        assert isinstance(value, float)
+        key = 'stiffness_variance'
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_stiffness_variance_plug_name(self, attr):
+        key = 'stiffness_variance'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
 
     def get_attribute_smoothness_enable(self, attr):
         key = 'smoothness_enable'
         default_value = False
-        value = _get_attr_detail(self, attr, key, default_value)
+        value = _get_auxiliary_attr(self, attr, key, default_value)
         return value
 
     def set_attribute_smoothness_enable(self, attr, value):
         assert isinstance(value, bool)
         key = 'smoothness_enable'
-        _set_attr_detail(self, attr, key, value)
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_smoothness_enable_plug_name(self, attr):
+        key = 'smoothness_enable'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
 
     def get_attribute_smoothness_weight(self, attr):
         key = 'smoothness_weight'
-        default_value = 0.5
-        value = _get_attr_detail(self, attr, key, default_value)
+        default_value = 1.0
+        value = _get_auxiliary_attr(self, attr, key, default_value)
         return value
 
     def set_attribute_smoothness_weight(self, attr, value):
         assert isinstance(value, float)
         key = 'smoothness_weight'
-        _set_attr_detail(self, attr, key, value)
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_smoothness_weight_plug_name(self, attr):
+        key = 'smoothness_weight'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
+
+    def get_attribute_smoothness_variance(self, attr):
+        key = 'smoothness_variance'
+        default_value = 1.0
+        value = _get_auxiliary_attr(self, attr, key, default_value)
+        return value
+
+    def set_attribute_smoothness_variance(self, attr, value):
+        assert isinstance(value, float)
+        key = 'smoothness_variance'
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_smoothness_variance_plug_name(self, attr):
+        key = 'smoothness_variance'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
+
+    def get_attribute_previous_value(self, attr):
+        key = 'previous_value'
+        default_value = 0.0
+        value = _get_auxiliary_attr(self, attr, key, default_value)
+        return value
+
+    def set_attribute_previous_value(self, attr, value):
+        assert isinstance(value, float)
+        key = 'previous_value'
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_previous_value_plug_name(self, attr):
+        key = 'previous_value'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
+
+    def get_attribute_mean_value(self, attr):
+        key = 'mean_value'
+        default_value = 0.0
+        value = _get_auxiliary_attr(self, attr, key, default_value)
+        return value
+
+    def set_attribute_mean_value(self, attr, value):
+        assert isinstance(value, float)
+        key = 'mean_value'
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_mean_value_plug_name(self, attr):
+        key = 'mean_value'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
+
+    def get_attribute_variance_value(self, attr):
+        key = 'variance_value'
+        default_value = 1.0
+        value = _get_auxiliary_attr(self, attr, key, default_value)
+        return value
+
+    def set_attribute_variance_value(self, attr, value):
+        assert isinstance(value, float)
+        key = 'variance_value'
+        _set_auxiliary_attr(self, attr, key, value)
+
+    def get_attribute_variance_value_plug_name(self, attr):
+        key = 'variance_value'
+        attr_node = attr.get_node()
+        aux_name = _get_auxiliary_attr_name(self, attr, key)
+        plug_name = '{0}.{1}'.format(attr_node, aux_name)
+        return plug_name
 
     ############################################################################
 

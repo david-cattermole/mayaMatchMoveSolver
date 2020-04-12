@@ -94,6 +94,8 @@ struct SolverData {
     BundlePtrList bundleList;
     AttrPtrList attrList;
     MTimeArray frameList;  // Times to solve
+    SmoothAttrsPtrList smoothAttrsList;
+    StiffAttrsPtrList stiffAttrsList;
 
     // Relational mapping indexes.
     std::vector<std::pair<int, int> > paramToAttrList;
@@ -111,6 +113,9 @@ struct SolverData {
     int jacIterNum;
     int solverType;
     double imageWidth;
+    int numberOfMarkerErrors;
+    int numberOfAttrStiffnessErrors;
+    int numberOfAttrSmoothnessErrors;
 
     // Type of solve function call.
     bool isNormalCall;

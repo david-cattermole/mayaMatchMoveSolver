@@ -266,14 +266,16 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(False)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-
+            sol.set_use_smoothness(False)
+            sol.set_use_stiffness(False)
             for action, vaction in sol.compile(col, mkr_list, attr_list,
                                                withtest=withtest):
                 yield (action, vaction)
         else:
             # Multiple frame solve, per-frame
             vaction_cache = api_compile.create_compile_solver_cache()
-            for frm in frame_list:
+            for i, frm in enumerate(frame_list):
+                is_first_frame = i == 0
                 one_frame_list = [frm]
                 sol = solverstep.SolverStep()
                 sol.set_verbose(verbose)
@@ -282,6 +284,8 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_attributes_use_animated(True)
                 sol.set_attributes_use_static(False)
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+                sol.set_use_smoothness(not is_first_frame)
+                sol.set_use_stiffness(not is_first_frame)
 
                 generator = api_compile.compile_solver_with_cache(
                     sol, col, mkr_list, attr_list, withtest, vaction_cache)

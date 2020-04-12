@@ -1,3 +1,5 @@
+.. _solver-design-heading:
+
 Solver Design
 =============
 
@@ -8,6 +10,8 @@ results by utilising the software as it's intended to work.
 This document tries to answer that question;
 
    *How does the MM Solver work?*
+
+.. _solver-design-how-does-it-work:
 
 How does the solver work?
 -------------------------
@@ -22,6 +26,8 @@ cameras, 2D points and 3D points is called Bundle Adjustment (BA). BA is
 traditionally the last step of MatchMove and Photogrammetry solvers
 where the parameters of 3D points (Bundles) and cameras are solved to
 produce a 3D Scene with the least possible error.
+
+.. _solver-design-attributes:
 
 Attributes
 ~~~~~~~~~~
@@ -47,6 +53,8 @@ therefore cannot be modified in the solver either. Due to underlying
 solving algorithm only floating-point attribute values can be solved.
 Commonly solved Attributes are 3D translate and rotate axes.
 
+.. _solver-design-markers-and-bundles:
+
 Markers and Bundles
 ~~~~~~~~~~~~~~~~~~~
 
@@ -70,6 +78,8 @@ the *Bundle* until the difference between all Markers and Bundles is
 zero when looking through each perspective *Camera*. Another way to say
 this is that the *measured error* is the distance between the
 screen-space re-projected 3D Bundles with the linked 2D Markers.
+
+.. _solver-design-solving:
 
 Solving
 ~~~~~~~
@@ -133,6 +143,8 @@ for solving will be:
 #. Solve for Attribute values.
 #. Repeat steps 2-5 until desired result is achieved.
 
+.. _solver-design-solving-process:
+
 Solving Process
 ---------------
 
@@ -171,6 +183,8 @@ The slowest step of the solving process is step 2 as it may be executed
 hundreds or thousands of times, depending on the number of *Attributes*
 and *Markers* that are in the solve.
 
+.. _solver-design-static-and-animated-attributes:
+
 Time - Static and Animated Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -202,6 +216,79 @@ solve increases the number of possible combinations and increases the
 number of solver evaluations required for a low *measured error*.
 Solving Animated and Static values as described is a **Brute Force**
 approach, but other strategies may be used.
+
+.. _solver-design-attribute-details:
+
+Attribute Details
+~~~~~~~~~~~~~~~~~
+
+Attribute Details are properties of an Attribute. Attribute Details
+are used to add constraints such as value limits.
+
+In mmSolver, there are 4 individual details per-attribute; minimum,
+maximum, smoothness and stiffness. See below for more details on how
+each property works.
+
+Minimum and Maximum Limits
+--------------------------
+
+Minimum and maximum limits will force *mmSolver* to solve an attribute
+with-in specific values. Attribute min/max limits apply to both static
+and animated attributes. If a mnimium or maximum value is not set, the
+limit is removed and any value may be used.
+
+*mmSolver* allows a combination of minimum and maximum limits. The
+combinations are; minimum only, maximum only, both minimum and
+maximum, no to limits at all.
+
+Although min and max limits may appear to be an appealling feature,
+often the need to use limits is a sign of problems in your solve.
+Minimum and maximum limits are often not helpful because the solver
+will simply limit the values used rather than reduce the likely-hood
+the solver will try to use values outside the limits.
+
+Minimum and maximum limits are also known as "Upper and Lower Value
+Bounds".
+
+Smoothness and Stiffness
+------------------------
+
+.. figure:: images/smoothnessConstraintGraph.gif
+    :alt: Smoothness Constraint
+    :align: center
+    :width: 80%
+
+Smoothness and stiffness ensures a Animated Attribute curve follows a
+constraint by increasing the error level of the current solve when the
+curve does not behave as expected. By increasing the solver error for
+"bad behaviour" the solver will automatically try to re-distribute the
+error level by changing other Attribute values.
+
+Both *smoothness* and *stiffness* use a similar constraint. The solver
+will increase the error if the solved value varies by more than the
+*variance* compared to a reference value. This encourages the
+solver to reduce "jumps" of more than the *variance* value.
+
+For *smoothness* constraints, the reference value is a smoothed value
+along the curve, based on the previous value. The value at the next
+frame is a predicted value, but is allowed to vary.
+
+For *stiffness* constraints, the reference value is the previous
+solved value. This ensures the solver continues to use the same
+value. *Stiffness* is a useful constraint for curves which should stay
+flat, but will still vary a little. The focal length of a camera might
+be a good example for this type of constraint.
+
+Both *smoothness* and *stiffness* constrains have a *variance* and
+*weight* value for each attribute. The *variance* value controls how
+much the solver can change from the reference value, if the solver
+chooses a value that varies by more than the *variance* a large error
+is given to the solver. The *weight* value controls how strong the
+constraint is used inside the solver; lower values means the
+*stiffness* or *smoothness* has smaller effect, and higher values
+increases the effect.
+
+.. _solver-design-solver-strategies:
 
 Solver Strategies
 ~~~~~~~~~~~~~~~~~
@@ -310,16 +397,16 @@ Epsilon #1 - Acceptable Gradient Change
 Value type: ``float``
 
 The gradient error (sometimes named epsilon #1) is used to find when
-the solver has reached the "top of the mountain peak". The gradient is
-represents the slope the solver trying to climb a mountain. When the
-solver reaches a (horizontally) flat area of the mountain, then the
-gradient is low, and will stop the solve. When the solver can find a
-slope (gradient), then the solver can follow the slope of the mountain
-and reach the top of the mountain peak.
+the solver has reached the "top of the mountain peak". The gradient
+represents the slope of climbing the mountain. When the solver reaches
+a (horizontally) flat area of the mountain, then the gradient is low,
+and will stop the solve. When the solver can find a slope (gradient),
+then the solver can follow the slope of the mountain and reach the top
+of the mountain peak.
 
-At the beginning of an solver iteration, if the solver has not
+At the beginning of a solver iteration, if the solver has not
 decreased the gradient by at least this value, the solver gives up
-trying to reduce the error any more.
+trying to reduce the error any more, and stops solving.
 
 .. _solver-design-solver-epsilon-two:
 
@@ -334,9 +421,9 @@ new parameter values have not changed enough. Changes to parameters are
 able to move the solved solution to different places on the mountain,
 if the parameter changes are too small then the solver will stop.
 
-At the beginning of an solver iteration, if the guessed parameters
-do not change by at least this value, the solver gives up trying
-to reduce the error any more.
+At the beginning of a solver iteration, if the guessed parameters do
+not change by at least this value, the solver gives up trying to
+reduce the error any more.
 
 .. _solver-design-solver-epsilon-three:
 
@@ -350,9 +437,9 @@ error level that is considered a good solve. To use a mountain
 climbing analogy, the *deviation error* is the highest mountain peak
 that is good enough for the solver.
 
-At the beginning of an solver iteration, if the error level is
-below this value, the solver considers the error to be low enough
-for the user's needs and stops trying to reduce the error.
+At the beginning of a solver iteration, if the error level is below
+this value, the solver considers the error to be low enough for the
+user's needs and stops trying to reduce the error.
 
 .. _solver-design-solver-auto-diff-type:
 
@@ -380,6 +467,9 @@ should move toward.
      - ``central``
      - More accurate but 1/3rd slower to compute initially.
 
+In practice, the authors of mmSolver have found ``central``
+dramatically slows down the solver and does not increase accuracy very
+much. It is therefore recommended to use ``forward``.
 
 General Solving Concepts
 ------------------------
@@ -389,17 +479,12 @@ General Solving Concepts
 Over-Parameterization
 ~~~~~~~~~~~~~~~~~~~~~
 
-Parameters-errors ratio is too high
+Parameters-errors ratio is too high.
 
 **To be written**
 
 Plane, Line and Curve Constraints
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**To be written**
-
-Upper and Lower Value Bounds
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **To be written**
 

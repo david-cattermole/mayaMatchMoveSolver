@@ -38,7 +38,6 @@ import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.marker as marker
 import mmSolver._api.attribute as attribute
-# import mmSolver._api.attributeutils as attribute_utils
 
 LOG = mmSolver.logger.get_logger()
 
@@ -212,7 +211,6 @@ def attributes_compile_flags(col, attr_list, use_animated, use_static):
         mmSolver command.
     :rtype: [(str, str, str, str, str), ..]
     """
-    # assert isinstance(col, collection.Collection)
     assert isinstance(use_animated, bool)
     assert isinstance(use_static, bool)
 
@@ -312,6 +310,92 @@ def attributes_compile_flags(col, attr_list, use_animated, use_static):
                  str(scale_value))
             )
     return attrs
+
+
+def attr_stiffness_compile_flags(col, attr_list):
+    """
+    Compile Attributes into flags for mmSolver.
+
+    :param col: Collection to be used for stiffness.
+    :type col: Collection
+
+    :param attr_list: List of Attributes to compile.
+    :type attr_list: [Attribute, ..]
+
+    :returns:
+        List of tuples. Attributes in a form to be given to the
+        mmSolver command.
+    :rtype: [(str, str, str, str, str), ..]
+    """
+    stiffness_flags = []
+    for attr in attr_list:
+        assert isinstance(attr, attribute.Attribute)
+        animated = attr.is_animated()
+        if not animated:
+            continue
+
+        enable = col.get_attribute_stiffness_enable(attr)
+        if enable is not True:
+            continue
+
+        weight = col.get_attribute_stiffness_weight(attr)
+        if weight <= 0.0:
+            continue
+
+        name = attr.get_name()
+        weight_plug_name = col.get_attribute_stiffness_weight_plug_name(attr)
+        prev_plug_name = col.get_attribute_previous_value_plug_name(attr)
+        variance_plug_name = col.get_attribute_stiffness_variance_plug_name(attr)
+        stiffness_flags.append((
+            name,
+            weight_plug_name,
+            variance_plug_name,
+            prev_plug_name)
+        )
+    return stiffness_flags
+
+
+def attr_smoothness_compile_flags(col, attr_list):
+    """
+    Compile Attributes into flags for mmSolver.
+
+    :param col: Collection to be used for smoothness.
+    :type col: Collection
+
+    :param attr_list: List of Attributes to compile.
+    :type attr_list: [Attribute, ..]
+
+    :returns:
+        List of tuples. Attributes in a form to be given to the
+        mmSolver command.
+    :rtype: [(str, str, str, str, str), ..]
+    """
+    smoothness_flags = []
+    for attr in attr_list:
+        assert isinstance(attr, attribute.Attribute)
+        animated = attr.is_animated()
+        if not animated:
+            continue
+
+        enable = col.get_attribute_smoothness_enable(attr)
+        if enable is not True:
+            continue
+
+        weight = col.get_attribute_smoothness_weight(attr)
+        if weight <= 0.0:
+            continue
+
+        name = attr.get_name()
+        weight_plug_name = col.get_attribute_smoothness_weight_plug_name(attr)
+        mean_plug_name = col.get_attribute_mean_value_plug_name(attr)
+        variance_plug_name = col.get_attribute_smoothness_variance_plug_name(attr)
+        smoothness_flags.append((
+            name,
+            weight_plug_name,
+            variance_plug_name,
+            mean_plug_name)
+        )
+    return smoothness_flags
 
 
 def frames_compile_flags(frm_list, frame_use_tags):

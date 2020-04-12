@@ -130,11 +130,16 @@ SolverTypePair getSolverTypeDefault() {
 
 
 int countUpNumberOfErrors(MarkerPtrList markerList,
+                          StiffAttrsPtrList stiffAttrsList,
+                          SmoothAttrsPtrList smoothAttrsList,
                           MTimeArray frameList,
                           MarkerPtrList &validMarkerList,
                           std::vector<MPoint> &markerPosList,
                           std::vector<double> &markerWeightList,
                           IndexPairList &errorToMarkerList,
+                          int &numberOfMarkerErrors,
+                          int &numberOfAttrStiffnessErrors,
+                          int &numberOfAttrSmoothnessErrors,
                           MStatus &status) {
     // Count up number of errors.
     //
@@ -151,7 +156,7 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
     FrameIndexDoubleMappingIt xit;
 
     // Get all the marker data
-    int numErrors = 0;
+    numberOfMarkerErrors = 0;
     for (MarkerPtrListIt mit = markerList.begin(); mit != markerList.end(); ++mit) {
         MarkerPtr marker = *mit;
         for (j = 0; j < (int) frameList.length(); ++j) {
@@ -159,18 +164,18 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
 
             bool enable = false;
             status = marker->getEnable(enable, frame);
-            CHECK_MSTATUS_AND_RETURN(status, numErrors);
+            CHECK_MSTATUS_AND_RETURN(status, numberOfMarkerErrors);
 
             double weight = 0.0;
             status = marker->getWeight(weight, frame);
-            CHECK_MSTATUS_AND_RETURN(status, numErrors);
+            CHECK_MSTATUS_AND_RETURN(status, numberOfMarkerErrors);
 
             if ((enable == true) && (weight > 0.0)) {
                 // First index is into 'markerList'
                 // Second index is into 'frameList'
                 IndexPair markerPair(i, j);
                 errorToMarkerList.push_back(markerPair);
-                numErrors += ERRORS_PER_MARKER;
+                numberOfMarkerErrors += ERRORS_PER_MARKER;
 
                 validMarkerList.push_back(marker);
 
@@ -198,7 +203,7 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
                 double filmBackWidth = camera->getFilmbackWidthValue(frame);
                 double filmBackHeight = camera->getFilmbackHeightValue(frame);
                 double filmBackInvAspect = filmBackHeight / filmBackWidth;
-                double filmBackAspect = filmBackWidth / filmBackHeight;
+                // double filmBackAspect = filmBackWidth / filmBackHeight;
                 CHECK_MSTATUS(status);
                 MPoint marker_pos;
                 status = marker->getPos(marker_pos, frame);
@@ -223,7 +228,6 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
          eit != errorToMarkerList.end(); ++eit) {
         double weight = markerWeightList[i];
 
-        int markerIndex = eit->first;
         int frameIndex = eit->second;
 
         xit = weightMaxPerFrame.find(frameIndex);
@@ -234,6 +238,41 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
         markerWeightList[i] = weight;
         ++i;
     }
+
+    // Compute number of errors from Attributes.
+    double stiffValue = 0.0;
+    for (StiffAttrsPtrListIt ait = stiffAttrsList.begin(); ait != stiffAttrsList.end(); ++ait) {
+        StiffAttrsPtr stiffAttrs = *ait;
+
+        // Determine if the attribute will use stiffness values. Don't
+        // add stiffness to the solver unless it needs
+        // to be calculated.
+        AttrPtr weightAttr = stiffAttrs->weightAttr;
+        weightAttr->getValue(stiffValue);
+        bool useStiffness = static_cast<bool>(stiffValue);
+        if (useStiffness) {
+            numberOfAttrStiffnessErrors++;
+        }
+    }
+
+    double smoothValue = 0.0;
+    for (SmoothAttrsPtrListIt ait = smoothAttrsList.begin(); ait != smoothAttrsList.end(); ++ait) {
+        SmoothAttrsPtr smoothAttrs = *ait;
+
+        // Determine if the attribute will use smoothness values. Don't
+        // add smoothness to the solver unless it needs
+        // to be calculated.
+        AttrPtr weightAttr = smoothAttrs->weightAttr;
+        weightAttr->getValue(smoothValue);
+        bool useSmoothness = static_cast<bool>(smoothValue);
+        if (useSmoothness) {
+            numberOfAttrSmoothnessErrors++;
+        }
+    }
+
+    int numErrors = numberOfMarkerErrors;
+    numErrors += numberOfAttrStiffnessErrors;
+    numErrors += numberOfAttrSmoothnessErrors;
     return numErrors;
 }
 
@@ -771,7 +810,7 @@ bool set_maya_attribute_values(int numberOfParameters,
 
 // Compute the average error based on the error values
 // the solve function last computed.
-bool compute_error_stats(int numberOfErrors,
+bool compute_error_stats(int numberOfMarkerErrors,
                          SolverData &userData,
                          double &errorAvg,
                          double &errorMin,
@@ -779,14 +818,14 @@ bool compute_error_stats(int numberOfErrors,
     errorAvg = 0;
     errorMin = std::numeric_limits<double>::max();
     errorMax = -0.0;
-    for (int i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
+    for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         double err = userData.errorDistanceList[i];
         errorAvg += err;
         if (err < errorMin) { errorMin = err; }
         if (err > errorMax) { errorMax = err; }
     }
-    assert(numberOfErrors > 0);
-    errorAvg /= (double) (numberOfErrors / ERRORS_PER_MARKER);
+    assert(numberOfMarkerErrors > 0);
+    errorAvg /= (double) (numberOfMarkerErrors / ERRORS_PER_MARKER);
     return true;
 }
 
@@ -796,10 +835,15 @@ void print_details(
         SolverData &userData,
         SolverTimer &timer,
         int numberOfParameters,
-        int numberOfErrors,
+        int numberOfMarkerErrors,
+        int numberOfAttrStiffnessErrors,
+        int numberOfAttrSmoothnessErrors,
         bool verbose,
         std::vector<double> &paramList,
         MStringArray &outResult) {
+    int numberOfErrors = numberOfMarkerErrors;
+    numberOfErrors += numberOfAttrStiffnessErrors;
+    numberOfErrors += numberOfAttrSmoothnessErrors;
 
     VRB("Results:");
     if (solverResult.success) {
@@ -965,7 +1009,7 @@ void print_details(
     typedef TimeErrorMapping::iterator TimeErrorMappingIt;
     TimeErrorMapping frameErrorMapping;
     TimeErrorMappingIt ait;
-    for (int i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
+    for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = userData.errorToMarkerList[i];
         MarkerPtr marker = userData.markerList[markerPair.first];
         MTime frame = userData.frameList[markerPair.second];
@@ -1032,6 +1076,8 @@ bool solve(SolverOptions &solverOptions,
            BundlePtrList &bundleList,
            AttrPtrList &attrList,
            MTimeArray &frameList,
+           StiffAttrsPtrList &stiffAttrsList,
+           SmoothAttrsPtrList &smoothAttrsList,
            MDGModifier &dgmod,
            MAnimCurveChange &curveChange,
            MComputation &computation,
@@ -1084,16 +1130,28 @@ bool solve(SolverOptions &solverOptions,
     std::vector<double> jacobianList(1);
 
     int numberOfErrors = 0;
+    int numberOfMarkerErrors = 0;
+    int numberOfAttrStiffnessErrors = 0;
+    int numberOfAttrSmoothnessErrors = 0;
     MarkerPtrList validMarkerList;
     numberOfErrors = countUpNumberOfErrors(
             markerList,
+            stiffAttrsList,
+            smoothAttrsList,
             frameList,
             validMarkerList,
             markerPosList,
             markerWeightList,
             errorToMarkerList,
+            numberOfMarkerErrors,
+            numberOfAttrStiffnessErrors,
+            numberOfAttrSmoothnessErrors,
             status
     );
+    assert(numberOfErrors == (
+            numberOfMarkerErrors
+            + numberOfAttrStiffnessErrors
+            + numberOfAttrSmoothnessErrors));
 
     int numberOfParameters = 0;
     AttrPtrList camStaticAttrList;
@@ -1129,10 +1187,26 @@ bool solve(SolverOptions &solverOptions,
          resultStr = "numberOfErrors=";
          resultStr += string::numberToString<int>(numberOfErrors);
          outResult.append(MString(resultStr.c_str()));
+
+         resultStr = "numberOfMarkerErrors=";
+         resultStr += string::numberToString<int>(numberOfMarkerErrors);
+         outResult.append(MString(resultStr.c_str()));
+
+         resultStr = "numberOfAttrStiffnessErrors=";
+         resultStr += string::numberToString<int>(numberOfAttrStiffnessErrors);
+         outResult.append(MString(resultStr.c_str()));
+
+         resultStr = "numberOfAttrSmoothnessErrors=";
+         resultStr += string::numberToString<int>(numberOfAttrSmoothnessErrors);
+         outResult.append(MString(resultStr.c_str()));
     }
 
     VRB("Number of Parameters; " << numberOfParameters);
-    VRB("Number of Errors; " << numberOfErrors);
+    VRB("Number of Frames; " << frameList.length());
+    VRB("Number of Marker Errors; " << numberOfMarkerErrors);
+    VRB("Number of Attribute Stiffness Errors; " << numberOfAttrStiffnessErrors);
+    VRB("Number of Attribute Smoothness Errors; " << numberOfAttrSmoothnessErrors);
+    VRB("Number of Total Errors; " << numberOfErrors);
     if (numberOfParameters > numberOfErrors) {
         if (printStats == true) {
             // If the user is asking to print statistics, then we have
@@ -1155,7 +1229,7 @@ bool solve(SolverOptions &solverOptions,
     jacobianList.resize((unsigned long) numberOfParameters * numberOfErrors, 0);
 
     std::vector<double> errorDistanceList;
-    errorDistanceList.resize((unsigned long) numberOfErrors / ERRORS_PER_MARKER, 0);
+    errorDistanceList.resize((unsigned long) numberOfMarkerErrors / ERRORS_PER_MARKER, 0);
     assert(errorToMarkerList.size() == errorDistanceList.size());
 
     VRB("Solving...");
@@ -1191,6 +1265,8 @@ bool solve(SolverOptions &solverOptions,
     userData.bundleList = bundleList;
     userData.attrList = attrList;
     userData.frameList = frameList;
+    userData.smoothAttrsList = smoothAttrsList;
+    userData.stiffAttrsList = stiffAttrsList;
 
     userData.paramToAttrList = paramToAttrList;
     userData.errorToMarkerList = errorToMarkerList;
@@ -1205,6 +1281,9 @@ bool solve(SolverOptions &solverOptions,
     userData.iterNum = 0;
     userData.jacIterNum = 0;
     userData.imageWidth = 2048.0;  // TODO: Get actual image plane resolution.
+    userData.numberOfMarkerErrors = numberOfMarkerErrors;
+    userData.numberOfAttrStiffnessErrors = numberOfAttrStiffnessErrors;
+    userData.numberOfAttrSmoothnessErrors = numberOfAttrSmoothnessErrors;
 
     userData.isJacobianCall = false;
     userData.isNormalCall = true;
@@ -1242,6 +1321,9 @@ bool solve(SolverOptions &solverOptions,
         measureErrors(
                 numberOfParameters,
                 numberOfErrors,
+                numberOfMarkerErrors,
+                numberOfAttrStiffnessErrors,
+                numberOfAttrSmoothnessErrors,
                 &errorList[0],
                 &userData,
                 errorAvg,
@@ -1263,7 +1345,7 @@ bool solve(SolverOptions &solverOptions,
         errorMin = 0;
         errorMax = 0;
         compute_error_stats(
-                numberOfErrors, userData,
+                numberOfMarkerErrors, userData,
                 errorAvg, errorMin, errorMax);
         solveResult.errorAvg = errorAvg;
         solveResult.errorMin = errorMin;
@@ -1274,7 +1356,9 @@ bool solve(SolverOptions &solverOptions,
                 userData,
                 timer,
                 numberOfParameters,
-                numberOfErrors,
+                numberOfMarkerErrors,
+                numberOfAttrStiffnessErrors,
+                numberOfAttrSmoothnessErrors,
                 verbose,
                 paramList,
                 outResult);
@@ -1420,7 +1504,7 @@ bool solve(SolverOptions &solverOptions,
     double errorMin = 0;
     double errorMax = 0;
     compute_error_stats(
-            numberOfErrors, userData,
+            numberOfMarkerErrors, userData,
             errorAvg, errorMin, errorMax);
     solveResult.errorAvg = errorAvg;
     solveResult.errorMin = errorMin;
@@ -1431,7 +1515,9 @@ bool solve(SolverOptions &solverOptions,
             userData,
             timer,
             numberOfParameters,
-            numberOfErrors,
+            numberOfMarkerErrors,
+            numberOfAttrStiffnessErrors,
+            numberOfAttrSmoothnessErrors,
             verbose,
             paramList,
             outResult);

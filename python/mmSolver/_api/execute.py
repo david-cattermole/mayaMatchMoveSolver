@@ -35,6 +35,7 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
+import mmSolver.utils.kalmanfilter as kalman
 import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
 import mmSolver._api.compile as api_compile
@@ -664,9 +665,15 @@ def execute(col,
         preSolve_setIsolatedNodes(action_list, options, panels)
         preSolve_triggerEvaluation(action_list, cur_frame, options)
 
+        # Ensure prediction attributes are created and initialised.
+        collectionutils.set_initial_prediction_attributes(
+            col, attr_list, cur_frame
+        )
+
         # Run Solver Actions...
         start = 0
         total = len(action_list)
+        number_of_solves = 0
         for i, (action, vaction) in enumerate(zip(action_list, vaction_list)):
             if isinstance(vaction, api_action.Action) and validate_mode == 'at_runtime':
                 valid, message, metrics = _run_validate_action(vaction)
@@ -717,6 +724,26 @@ def execute(col,
             if solve_data is not None and func_is_mmsolver is True:
                 solres = solveresult.SolveResult(solve_data)
                 solres_list.append(solres)
+
+            if func_is_mmsolver is True and solres.get_success() is True:
+                frame = kwargs.get('frame')
+                if frame is None or len(frame) == 0:
+                    raise excep.NotValid
+                single_frame = frame[0]
+
+                if number_of_solves == 0:
+                    collectionutils.set_initial_prediction_attributes(
+                        col, attr_list, single_frame
+                    )
+                # Count number of solves, so we don't need to set the
+                # initial prediction attributes again.
+                number_of_solves += 1
+
+                # Calculate the mean, variance values, and predict the
+                # next attribute value.
+                collectionutils.compute_attribute_value_prediction(
+                    col, attr_list, single_frame,
+                )
 
             # Update Progress
             interrupt = postSolve_setUpdateProgress(

@@ -48,8 +48,6 @@ dialog.main(col, attr_list)
 
 """
 
-# import pprint
-
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 

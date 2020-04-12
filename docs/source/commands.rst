@@ -88,6 +88,11 @@ MEL Example:
 `mmSolverType` is used to query the current plug-in's available
 solvers.
 
+This tool is commonly used to dynamically query for the different
+types of solvers. See the
+:ref:`solver-faq-how-to-get-supported-solver-types` for more detail on
+this.
+
 Python Example:
 
 .. code:: python

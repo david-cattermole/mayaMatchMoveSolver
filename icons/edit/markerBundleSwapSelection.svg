@@ -76,6 +76,58 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter11808"
+       x="-0.039037677"
+       width="1.0780754"
+       y="-0.03340094"
+       height="1.0668019">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.37135315"
+         id="feGaussianBlur11810" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter11812"
+       x="-0.031858527"
+       width="1.0637171"
+       y="-0.040815502"
+       height="1.081631">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="3.6912018"
+         id="feGaussianBlur11814" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter11816"
+       x="-0.035169763"
+       width="1.0703395"
+       y="-0.036870383"
+       height="1.0737408">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.40992657"
+         id="feGaussianBlur11818" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter11824"
+       x="-0.031858527"
+       width="1.0637171"
+       y="-0.040815502"
+       height="1.081631">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="3.6912018"
+         id="feGaussianBlur11826" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -85,8 +137,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.7781746"
-     inkscape:cx="10.11899"
-     inkscape:cy="32.648588"
+     inkscape:cx="27.263101"
+     inkscape:cy="33.217033"
      inkscape:current-layer="layer5"
      showgrid="false"
      inkscape:document-units="px"
@@ -342,14 +394,14 @@
      style="display:inline">
     <g
        id="g14709"
-       transform="translate(-0.54545455)">
+       transform="translate(3.311492,2.5712974)">
       <text
          inkscape:transform-center-x="-1.1606825e-06"
          inkscape:transform-center-y="0.49714793"
          id="text17748-0"
          y="29.799412"
          x="-0.70019734"
-         style="font-style:normal;font-weight:normal;font-size:78.64445496px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.9661113"
+         style="font-style:normal;font-weight:normal;font-size:78.64445496px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.9661113;filter:url(#filter11816)"
          xml:space="preserve"><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:36.70074844px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:1.9661113"
            y="29.799412"
@@ -371,14 +423,14 @@
     </g>
     <g
        id="g14703"
-       transform="translate(-0.54545449,-0.9090909)">
+       transform="translate(-5.1737898,-1.1662206)">
       <text
          inkscape:transform-center-x="-1.8388803e-06"
          inkscape:transform-center-y="0.49714926"
          id="text17748-5-4"
          y="61.75108"
          x="36.309719"
-         style="font-style:normal;font-weight:normal;font-size:78.64445496px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.9661113"
+         style="font-style:normal;font-weight:normal;font-size:78.64445496px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.9661113;filter:url(#filter11808)"
          xml:space="preserve"><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:36.70074844px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:1.9661113"
            y="61.75108"
@@ -407,11 +459,11 @@
      style="display:inline">
     <g
        id="g14691"
-       transform="matrix(1.0179851,0,0,1.0179851,-0.89665148,0.18181778)">
+       transform="matrix(0.83712224,0,0,0.83712224,5.0531653,5.7101072)">
       <g
          transform="matrix(-0.14186649,0,0,-0.16193809,79.337914,99.138418)"
          id="g3-9-3"
-         style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-opacity:1">
+         style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-opacity:1;filter:url(#filter11812)">
         <path
            inkscape:connector-curvature="0"
            style="clip-rule:evenodd;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
@@ -431,12 +483,12 @@
     </g>
     <g
        id="g14691-2"
-       transform="matrix(-1.0179851,0,0,-1.0179851,64.807611,62.495417)">
+       transform="matrix(-0.83712224,0,0,-0.83712224,59.083916,56.952606)">
       <g
          id="g14742"
          transform="translate(0.44835224,1.9155097)">
         <g
-           style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-opacity:1;filter:url(#filter11824)"
            id="g3-9-3-4"
            transform="matrix(-0.14186649,0,0,-0.16193809,76.301612,95.03048)">
           <path

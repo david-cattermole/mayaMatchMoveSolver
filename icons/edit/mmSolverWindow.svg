@@ -57,6 +57,19 @@
          transform="matrix(0.8,0,0,0.8,10,0)"
          d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z " />
     </marker>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter11684"
+       x="-0.035007518"
+       width="1.070015"
+       y="-0.0370504"
+       height="1.0741009">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.036976955"
+         id="feGaussianBlur11686" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -66,10 +79,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="9.777844"
-     inkscape:cx="-12.97323"
-     inkscape:cy="12.105287"
+     inkscape:cx="5.5500722"
+     inkscape:cy="14.824948"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer5"
+     inkscape:current-layer="g2524"
      showgrid="false"
      units="px"
      inkscape:pagecheckerboard="true"
@@ -102,12 +115,12 @@
          id="path2495"
          d="m 6.4736,4.0543 h 47.45 a 2.3674,2.3674 0 0 1 2.3674,2.3674 v 42.261 a 2.3674,2.3674 0 0 1 -2.3674,2.3674 H 6.4736 A 2.3674,2.3674 0 0 1 4.1062,48.6827 V 6.4217 A 2.3674,2.3674 0 0 1 6.4736,4.0543"
          inkscape:connector-curvature="0"
-         style="fill:#e4e4e4;fill-opacity:1;fill-rule:evenodd" />
+         style="fill:#969696;fill-opacity:1;fill-rule:evenodd" />
       <path
          id="path2497"
          d="m 6.9364,3.9419 c -1.2859,0 -2.3212,1.0352 -2.3212,2.3212 v 4.0794 c 0,1.2859 1.0352,2.3212 2.3212,2.3212 h 46.524 c 1.2859,0 2.3212,-1.0352 2.3212,-2.3212 V 6.2631 c 0,-1.2859 -1.0352,-2.3212 -2.3212,-2.3212 z"
          inkscape:connector-curvature="0"
-         style="fill:#acacac;fill-opacity:1;fill-rule:evenodd" />
+         style="fill:#6e6e6e;fill-opacity:1;fill-rule:evenodd" />
       <path
          id="path2499"
          d="m 52.799,7.0115 -2.706,2.706 m -0.06293,-2.769 2.769,2.769"
@@ -130,16 +143,45 @@
      id="layer5"
      inkscape:label="Layer 5"
      style="display:inline">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="4.1784654"
-       y="6.863214"
-       id="text2592"><tspan
-         sodipodi:role="line"
-         id="tspan2590"
-         x="4.9722152"
-         y="6.863214"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:6.3499999px;font-family:serif;-inkscape-font-specification:'serif Bold';text-align:center;text-anchor:middle;stroke-width:0.26458332">λ= </tspan></text>
+    <g
+       style="display:inline"
+       id="g8948"
+       transform="matrix(1.3654814,0,0,1.3654814,-0.60323878,-1.0571668)">
+      <text
+         id="text2592-5-0-1"
+         y="5.4199243"
+         x="3.6640873"
+         style="font-style:normal;font-weight:normal;font-size:10.84318542px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#020202;fill-opacity:1;stroke:none;stroke-width:0.2710796;filter:url(#filter11684)"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:6.50591087px;font-family:serif;-inkscape-font-specification:'serif Bold';text-align:center;text-anchor:middle;fill:#020202;fill-opacity:1;stroke-width:0.2710796"
+           y="5.4199243"
+           x="4.4773264"
+           id="tspan2590-7-3-5"
+           sodipodi:role="line"><tspan
+   id="tspan8635-8"
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Gabriola;-inkscape-font-specification:'Gabriola Bold';fill:#020202;fill-opacity:1;stroke-width:0.2710796">x=</tspan> </tspan></text>
+      <g
+         transform="matrix(1.0383095,0,0,1.0383095,5.900463,-3.7360542)"
+         id="g8364-0"
+         style="display:inline">
+        <g
+           transform="matrix(0.7206216,0,0,0.7206216,-4.2821221,3.6810529)"
+           id="g8631">
+          <text
+             id="text2592-5-0"
+             y="6.9805093"
+             x="2.8124461"
+             style="font-style:normal;font-weight:normal;font-size:14.49181366px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-width:0.36229533"
+             xml:space="preserve"><tspan
+               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.69508839px;font-family:serif;-inkscape-font-specification:'serif Bold';text-align:center;text-anchor:middle;fill:#dadada;fill-opacity:1;stroke-width:0.36229533"
+               y="6.9805093"
+               x="3.8993323"
+               id="tspan2590-7-3"
+               sodipodi:role="line"><tspan
+   id="tspan8635"
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Gabriola;-inkscape-font-specification:'Gabriola Bold'">x=</tspan> </tspan></text>
+        </g>
+      </g>
+    </g>
   </g>
 </svg>

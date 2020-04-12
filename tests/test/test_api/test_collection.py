@@ -133,7 +133,7 @@ class TestCollection(test_api_utils.APITestCase):
         x.create_node('mySolve')
 
         sol_list0 = []
-        for i in xrange(10):
+        for i in range(10):
             sol = solver.Solver()
             sol_list0.append(sol)
         x.add_solver_list(sol_list0)
@@ -155,13 +155,13 @@ class TestCollection(test_api_utils.APITestCase):
         x.create_node('mySolve')
 
         sol_list1 = []
-        for i in xrange(10):
+        for i in range(10):
             sol = solver.Solver()
             sol_list1.append(sol)
         x.set_solver_list(sol_list1)
         self.assertEqual(x.get_solver_list_length(), 10)
 
-        for i in xrange(0, 10, 2):
+        for i in range(0, 10, 2):
             x.remove_solver(sol_list1[i])
         self.assertEqual(x.get_solver_list_length(), 5)
 
@@ -170,7 +170,7 @@ class TestCollection(test_api_utils.APITestCase):
         x.create_node('mySolve')
 
         sol_list1 = []
-        for i in xrange(10):
+        for i in range(10):
             sol = solver.Solver()
             sol_list1.append(sol)
         x.set_solver_list(sol_list1)
@@ -184,7 +184,7 @@ class TestCollection(test_api_utils.APITestCase):
         x.create_node('mySolve')
 
         sol_list1 = []
-        for i in xrange(10):
+        for i in range(10):
             sol = solver.Solver()
             sol_list1.append(sol)
         x.set_solver_list(sol_list1)
@@ -254,7 +254,7 @@ class TestCollection(test_api_utils.APITestCase):
 
         name = 'myMarker1'
         mkr_list = []
-        for i in xrange(10):
+        for i in range(10):
             mkr = marker.Marker().create_node(name=name)
             mkr_list.append(mkr)
         x.add_marker_list(mkr_list)
@@ -295,7 +295,7 @@ class TestCollection(test_api_utils.APITestCase):
 
         name = 'myMarker1'
         mkr_list = []
-        for i in xrange(10):
+        for i in range(10):
             mkr = marker.Marker().create_node(name=name)
             mkr_list.append(mkr)
         x.add_marker_list(mkr_list)
@@ -320,7 +320,7 @@ class TestCollection(test_api_utils.APITestCase):
         mkr_list = []
         mkr1 = marker.Marker().create_node()
         mkr_list.append(mkr1)
-        for i in xrange(10):
+        for i in range(10):
             mkr = marker.Marker().create_node()
             mkr_list.append(mkr)
 
@@ -345,7 +345,7 @@ class TestCollection(test_api_utils.APITestCase):
 
         attr_list = []
         mkr_list = []
-        for i in xrange(10):
+        for i in range(10):
             mkr = marker.Marker().create_node()
             mkr_list.append(mkr)
 
@@ -367,7 +367,7 @@ class TestCollection(test_api_utils.APITestCase):
         self.assertEqual(x.get_attribute_list_length(), 0)
 
         attr_list2 = []
-        for i in xrange(10):
+        for i in range(10):
             node = maya.cmds.createNode('transform')
             attr = attribute.Attribute(node=node, attr='translateX')
             attr_list2.append(attr)
@@ -416,7 +416,7 @@ class TestCollection(test_api_utils.APITestCase):
         x.create_node('mySolve')
 
         attr_list = []
-        for i in xrange(10):
+        for i in range(10):
             node = maya.cmds.createNode('transform')
             attr = attribute.Attribute(node=node, attr='rotateX')
             attr_list.append(attr)
@@ -450,7 +450,7 @@ class TestCollection(test_api_utils.APITestCase):
         x.create_node('mySolve')
 
         attr_list = []
-        for i in xrange(10):
+        for i in range(10):
             node = maya.cmds.createNode('transform')
             attr = attribute.Attribute(node=node, attr='rotateY')
             attr_list.append(attr)
@@ -473,7 +473,7 @@ class TestCollection(test_api_utils.APITestCase):
         x.create_node('mySolve')
 
         attr_list = []
-        for i in xrange(10):
+        for i in range(10):
             node = maya.cmds.createNode('transform')
             attr = attribute.Attribute(node=node, attr='translateX')
             attr_list.append(attr)
@@ -494,7 +494,7 @@ class TestCollection(test_api_utils.APITestCase):
         x.create_node('mySolve')
 
         attr_list = []
-        for i in xrange(10):
+        for i in range(10):
             node = maya.cmds.createNode('transform')
             attr = attribute.Attribute(node=node, attr='translateX')
             attr_list.append(attr)

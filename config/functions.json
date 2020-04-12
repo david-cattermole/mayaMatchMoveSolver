@@ -3,9 +3,9 @@
     "data": {
         "solver_tools": {
             "name": "Solver",
-            "name_shelf": "Solver",
+            "name_shelf": "",
             "tooltip": "Open the MM Solver window.",
-            "icon_shelf": "menuIconWindow.png",
+            "icon_shelf": "mmSolverWindow_32x32.png",
             "command": [
                 "import mmSolver.tools.solver.tool;",
                 "mmSolver.tools.solver.tool.open_window();"
@@ -13,9 +13,9 @@
         },
         "open_solver_ui": {
             "name": "Open Solver...",
-            "name_shelf": "Solver",
+            "name_shelf": "",
             "tooltip": "Open the MM Solver window.",
-            "icon_shelf": "menuIconWindow.png",
+            "icon_shelf": "mmSolverWindow_32x32.png",
             "command": [
                 "import mmSolver.tools.solver.tool;",
                 "mmSolver.tools.solver.tool.open_window();"
@@ -172,6 +172,12 @@
                 "mmSolver.tools.averagemarker.tool.main();"
             ]
         },
+        "attr_tools": {
+            "name": "Attribute Tools",
+            "name_shelf": "",
+            "tooltip": "Tools to adjust Attributes.",
+            "command": ["pass"]
+        },
         "mb_tools": {
             "name": "Marker-Bundle Tools",
             "name_shelf": "MBLnk",
@@ -318,6 +324,15 @@
             "command": [
                 "import mmSolver.tools.centertwodee.tool;",
                 "mmSolver.tools.centertwodee.tool.remove();"
+            ]
+        },
+        "set_attr_details_ui": {
+            "name": "Set Attribute Details...",
+            "name_shelf": "Attrib",
+            "tooltip": "Open the Edit Attribute Details window.",
+            "command": [
+                "import mmSolver.tools.setattributedetails.tool;",
+                "mmSolver.tools.setattributedetails.tool.open_window();"
             ]
         },
         "channel_sensitivity_ui": {
@@ -490,7 +505,9 @@
         },
         "hotkey_switcher": {
             "name": "Hotkey",
+            "name_shelf": "",
             "tooltip": "Switch Hotkey Sets.",
+            "icon_shelf": "hotkeySwitcher_32x32.png",
             "command": [
                 "pass"
             ]

@@ -168,9 +168,9 @@ def get_viewport2_active_state():
     return not maya.cmds.ogs(query=True, pause=True)
 
 
-def get_active_model_editor():
+def get_active_model_panel():
     """
-    Get the active model editor.
+    Get the active model panel.
 
     :rtype: str or None
     """
@@ -178,6 +178,18 @@ def get_active_model_editor():
     panel_type = maya.cmds.getPanel(typeOf=the_panel)
 
     if panel_type != 'modelPanel':
+        return None
+    return the_panel
+
+
+def get_active_model_editor():
+    """
+    Get the active model editor.
+
+    :rtype: str or None
+    """
+    the_panel = get_active_model_panel()
+    if the_panel is None:
         return None
 
     model_editor = maya.cmds.modelPanel(
@@ -457,20 +469,6 @@ def set_plane_visibility(model_panel, value):
     Set the visibility of plane nodes in the given model panel.
     """
     return _set_node_type_visibility(model_panel, 'planes', value)
-
-
-def get_camera_visibility(model_panel):
-    """
-    Query the cameras visibility in given model panel.
-    """
-    return _get_node_type_visibility(model_panel, 'cameras')
-
-
-def set_camera_visibility(model_panel, value):
-    """
-    Set the visibility of cameras nodes in the given model panel.
-    """
-    return _set_node_type_visibility(model_panel, 'cameras', value)
 
 
 def get_light_visibility(model_panel):

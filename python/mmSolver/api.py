@@ -59,6 +59,8 @@ from mmSolver._api.solverbasic import (
     SolverBasic,
 )
 from mmSolver._api.collectionutils import (
+    run_progress_func,
+    run_status_func,
     is_single_frame,
     disconnect_animcurves,
     reconnect_animcurves,
@@ -165,11 +167,11 @@ from mmSolver._api.state import (
 from mmSolver._api.utils import (
     load_plugin,
     get_object_type,
-    load_plugin,
     get_data_on_node_attr,
     set_data_on_node_attr,
     get_value_on_node_attr,
     set_value_on_node_attr,
+    get_marker_group_above_node,
 )
 from mmSolver.utils.undo import (
     undo_chunk_context,
@@ -251,6 +253,15 @@ __all__ = [
     # Collection
     'update_deviation_on_collection',
 
+    # Collection Utils
+    'run_progress_func',
+    'run_status_func',
+    'is_single_frame',
+    'disconnect_animcurves',
+    'reconnect_animcurves',
+    'clear_attr_keyframes',
+    'generate_isolate_nodes',
+
     # Action
     'action_func_is_mmSolver',
     'func_str_to_callable',
@@ -298,12 +309,12 @@ __all__ = [
     'get_object_type',
     'undo_chunk',
     'undo_chunk_context',
-    'load_plugin',
     'create_anim_curve_node',
     'get_data_on_node_attr',
     'set_data_on_node_attr',
     'get_value_on_node_attr',
     'set_value_on_node_attr',
+    'get_marker_group_above_node',
 
     # Nodes
     'get_long_name',

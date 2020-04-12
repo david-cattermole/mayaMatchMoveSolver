@@ -17,6 +17,12 @@
 #
 """
 Compile nodes into a set of actions to be performed.
+
+Compiling is performed with Python generators, yielding values, rather
+than computing a full list. Generators are used to speed up the
+compilation process by being able produce validity results quickly
+without waiting for the full compilation only to find an error on the
+first Action.
 """
 
 import collections
@@ -37,6 +43,17 @@ LOG = mmSolver.logger.get_logger()
 
 
 def markersAndCameras_compile_flags(mkr_list):
+    """
+    Compile mmSolver command flags for 'marker' and 'camera'.
+
+    :param mkr_list: List of Markers to compile.
+    :type mkr_list: [Marker, ..]
+
+    :return:
+        Tuple of both 'marker' and 'camera' flags, ready for the
+        mmSolver command.
+    :rtype: ([(str, str, str), ..], [(str, str)])
+    """
     # Get Markers and Cameras
     added_cameras = []
     markers = []
@@ -124,6 +141,27 @@ def _get_attribute_solver_type(attr):
 
 
 def categorise_attributes(attr_list):
+    """
+    Sort Attributes into specific categories.
+
+    Current categories are:
+
+    - Regular
+
+    - Bundle Transform
+
+    - Camera Transform
+
+    - Camera Intrinsic (shape node)
+
+    - Lens Distortion
+
+    :param attr_list: List of Attributes to be categorised.
+    :type attr_list: [Attribute, ..]
+
+    :returns: Create a mapping for Attributes based on different names.
+    :rtype: {str: {str: [Attribute, ..]}}
+    """
     assert isinstance(attr_list, (list, tuple))
     categories = {
         'regular': collections.defaultdict(list),
@@ -152,8 +190,30 @@ def categorise_attributes(attr_list):
     return categories
 
 
-def attributes_compile_flags(attr_list, use_animated, use_static):
-    # Get Attributes
+def attributes_compile_flags(col, attr_list, use_animated, use_static):
+    """
+    Compile Attributes into flags for mmSolver.
+
+    :param col: Collection to be used for min/max, stiffness and smoothness.
+    :type col: Collection
+
+    :param attr_list: List of Attributes to compile
+    :type attr_list: [Attribute, ..]
+
+    :param use_animated: Should we compile Attributes that are animated?
+    :type use_animated: bool
+
+    :param use_static: Should we compile Attributes that are static?
+    :type use_static: bool
+
+    :returns:
+        List of tuples. Attributes in a form to be given to the
+        mmSolver command.
+    :rtype: [(str, str, str, str, str), ..]
+    """
+    assert isinstance(use_animated, bool)
+    assert isinstance(use_static, bool)
+
     attrs = []
     for attr in attr_list:
         assert isinstance(attr, attribute.Attribute)
@@ -167,47 +227,62 @@ def attributes_compile_flags(attr_list, use_animated, use_static):
         # from Maya directly, if Maya doesn't have one, we leave
         # min/max_value as None and pass it to the mmSolver command
         # indicating there is no bound.
-        min_value = attr.get_min_value()
-        max_value = attr.get_max_value()
-        if min_value is None:
-            min_exists = maya.cmds.attributeQuery(
-                attr_name,
-                node=node_name,
-                minExists=True,
-            )
-            if min_exists:
-                min_value = maya.cmds.attributeQuery(
-                    attr_name,
-                    node=node_name,
-                    minimum=True,
-                )
-                if len(min_value) == 1:
-                    min_value = min_value[0]
-                else:
-                    msg = 'Cannot handle attributes with multiple '
-                    msg += 'minimum values; node={0} attr={1}'
-                    msg = msg.format(node_name, attr_name)
-                    raise excep.NotValid(msg)
 
-        if max_value is None:
-            max_exists = maya.cmds.attributeQuery(
+        # Minimum Value
+        min_value = None
+        min_enable = col.get_attribute_min_enable(attr)
+        if min_enable is True:
+            min_value = col.get_attribute_min_value(attr)
+        min_exists = maya.cmds.attributeQuery(
+            attr_name,
+            node=node_name,
+            minExists=True,
+        )
+        if min_exists:
+            maya_min_value = maya.cmds.attributeQuery(
                 attr_name,
                 node=node_name,
-                maxExists=True,
+                minimum=True,
             )
-            if max_exists is True:
-                max_value = maya.cmds.attributeQuery(
-                    attr_name,
-                    node=node_name,
-                    maximum=True,
-                )
-                if len(max_value) == 1:
-                    max_value = max_value[0]
-                else:
-                    msg = 'Cannot handle attributes with multiple '
-                    msg += 'maximum values; node={0} attr={1}'
-                    msg = msg.format(node_name, attr_name)
-                    raise excep.NotValid(msg)
+            if len(maya_min_value) == 1:
+                maya_min_value = maya_min_value[0]
+            else:
+                msg = 'Cannot handle attributes with multiple '
+                msg += 'minimum values; node={0} attr={1}'
+                msg = msg.format(node_name, attr_name)
+                raise excep.NotValid(msg)
+            if min_value is None:
+                min_value = maya_min_value
+            else:
+                min_value = max(min_value, maya_min_value)
+
+        # Maximum Value
+        max_value = None
+        max_enable = col.get_attribute_max_enable(attr)
+        if max_enable is True:
+            max_value = col.get_attribute_max_value(attr)
+        max_exists = maya.cmds.attributeQuery(
+            attr_name,
+            node=node_name,
+            maxExists=True,
+        )
+        if max_exists is True:
+            maya_max_value = maya.cmds.attributeQuery(
+                attr_name,
+                node=node_name,
+                maximum=True,
+            )
+            if len(maya_max_value) == 1:
+                maya_max_value = maya_max_value[0]
+            else:
+                msg = 'Cannot handle attributes with multiple '
+                msg += 'maximum values; node={0} attr={1}'
+                msg = msg.format(node_name, attr_name)
+                raise excep.NotValid(msg)
+            if max_value is None:
+                max_value = maya_max_value
+            else:
+                max_value = min(max_value, maya_max_value)
 
         # Scale and Offset
         scale_value = None
@@ -235,6 +310,92 @@ def attributes_compile_flags(attr_list, use_animated, use_static):
                  str(scale_value))
             )
     return attrs
+
+
+def attr_stiffness_compile_flags(col, attr_list):
+    """
+    Compile Attributes into flags for mmSolver.
+
+    :param col: Collection to be used for stiffness.
+    :type col: Collection
+
+    :param attr_list: List of Attributes to compile.
+    :type attr_list: [Attribute, ..]
+
+    :returns:
+        List of tuples. Attributes in a form to be given to the
+        mmSolver command.
+    :rtype: [(str, str, str, str, str), ..]
+    """
+    stiffness_flags = []
+    for attr in attr_list:
+        assert isinstance(attr, attribute.Attribute)
+        animated = attr.is_animated()
+        if not animated:
+            continue
+
+        enable = col.get_attribute_stiffness_enable(attr)
+        if enable is not True:
+            continue
+
+        weight = col.get_attribute_stiffness_weight(attr)
+        if weight <= 0.0:
+            continue
+
+        name = attr.get_name()
+        weight_plug_name = col.get_attribute_stiffness_weight_plug_name(attr)
+        prev_plug_name = col.get_attribute_previous_value_plug_name(attr)
+        variance_plug_name = col.get_attribute_stiffness_variance_plug_name(attr)
+        stiffness_flags.append((
+            name,
+            weight_plug_name,
+            variance_plug_name,
+            prev_plug_name)
+        )
+    return stiffness_flags
+
+
+def attr_smoothness_compile_flags(col, attr_list):
+    """
+    Compile Attributes into flags for mmSolver.
+
+    :param col: Collection to be used for smoothness.
+    :type col: Collection
+
+    :param attr_list: List of Attributes to compile.
+    :type attr_list: [Attribute, ..]
+
+    :returns:
+        List of tuples. Attributes in a form to be given to the
+        mmSolver command.
+    :rtype: [(str, str, str, str, str), ..]
+    """
+    smoothness_flags = []
+    for attr in attr_list:
+        assert isinstance(attr, attribute.Attribute)
+        animated = attr.is_animated()
+        if not animated:
+            continue
+
+        enable = col.get_attribute_smoothness_enable(attr)
+        if enable is not True:
+            continue
+
+        weight = col.get_attribute_smoothness_weight(attr)
+        if weight <= 0.0:
+            continue
+
+        name = attr.get_name()
+        weight_plug_name = col.get_attribute_smoothness_weight_plug_name(attr)
+        mean_plug_name = col.get_attribute_mean_value_plug_name(attr)
+        variance_plug_name = col.get_attribute_smoothness_variance_plug_name(attr)
+        smoothness_flags.append((
+            name,
+            weight_plug_name,
+            variance_plug_name,
+            mean_plug_name)
+        )
+    return smoothness_flags
 
 
 def frames_compile_flags(frm_list, frame_use_tags):
@@ -268,7 +429,7 @@ def frames_compile_flags(frm_list, frame_use_tags):
     return frames
 
 
-def collection_compile(col_node, sol_list, mkr_list, attr_list,
+def collection_compile(col, sol_list, mkr_list, attr_list,
                        withtest=False,
                        prog_fn=None,
                        status_fn=None):
@@ -278,6 +439,7 @@ def collection_compile(col_node, sol_list, mkr_list, attr_list,
     :return: list of SolverActions.
     :rtype: [SolverAction, ..]
     """
+    col_node = col.get_node()
     action_list = []
     vaction_list = []
     if len(sol_list) == 0:
@@ -310,7 +472,7 @@ def collection_compile(col_node, sol_list, mkr_list, attr_list,
     msg = msg.format(repr(col_node))
     for sol in sol_enabled_list:
         assert isinstance(sol, solverbase.SolverBase)
-        for action, vaction in sol.compile(mkr_list, attr_list,
+        for action, vaction in sol.compile(col, mkr_list, attr_list,
                                            withtest=withtest):
             if not isinstance(action, api_action.Action):
                 raise excep.NotValid(msg)
@@ -331,7 +493,7 @@ def create_compile_solver_cache():
     return cache
 
 
-def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
+def compile_solver_with_cache(sol, col, mkr_list, attr_list, withtest, cache):
     """
     Compile a single solver, storing the internals in the given cache,
     and using the cache to speed up future compilations.
@@ -345,7 +507,7 @@ def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
     The cache is expected to be created like so:
     >>> import mmSolver._api.compile
     >>> cache = mmSolver._api.compile.create_compile_solver_cache()
-    >>> compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache)
+    >>> compile_solver_with_cache(sol, col, mkr_list, attr_list, withtest, cache)
 
     Compile unique list of frames to withtest the solver when it changes,
     for example a marker turns off, then only sample the unique sets of
@@ -353,6 +515,9 @@ def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
     and because we know there are no changes in the structure or number of
     errors, we can copy the same mmSolver kwargs multiple times (with the
     frames argument set differently).
+
+    :param col: The Collection to compile.
+    :type col: Collection
 
     :param sol: The solver to compile.
     :type sol: Solver
@@ -365,12 +530,12 @@ def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
 
     :returns: A generator function yielding a tuple of two Action
               objects. The first object is used for solving, the
-              section Action is for validation of the solve.
+              second Action is for validation of the solve.
     :rtype: (Action, Action or None)
     """
     frame_list = sol.get_frame_list()
     if cache is None or withtest is False:
-        for action, vaction in sol.compile(mkr_list, attr_list,
+        for action, vaction in sol.compile(col, mkr_list, attr_list,
                                            withtest=withtest):
             yield action, vaction
     else:
@@ -392,14 +557,14 @@ def compile_solver_with_cache(sol, mkr_list, attr_list, withtest, cache):
         # Compile if our testing action is not in the cache.
         if vaction_list is None:
             # Add to the cache
-            for action, vaction in sol.compile(mkr_list, attr_list,
+            for action, vaction in sol.compile(col, mkr_list, attr_list,
                                                withtest=True):
                 cache[hash_string].append(vaction)
                 yield action, vaction
         else:
             # Re-use the cache
             generator = zip(
-                sol.compile(mkr_list, attr_list, withtest=False),
+                sol.compile(col, mkr_list, attr_list, withtest=False),
                 vaction_list
             )
             for (action, _), vaction in generator:

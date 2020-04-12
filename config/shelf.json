@@ -20,6 +20,8 @@
             "mb_tools/mb_popup/---Marker-Bundle Link",
             "mb_tools/mb_popup/link_marker_bundle",
             "mb_tools/mb_popup/unlink_marker_bundle",
+            "attr_tools/attr_popup/---Attribute Details",
+            "attr_tools/attr_popup/set_attr_details_ui",
             "marker_tools/marker_popup/---Marker",
             "marker_tools/marker_popup/toggle_marker_lock",
             "marker_tools/marker_popup/place_marker_manipulator",
@@ -65,6 +67,10 @@
             "solver_popup": {
                 "popup": true,
                 "popup_button": ["right"]
+            },
+            "attr_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
             },
             "mb_popup": {
                 "popup": true,

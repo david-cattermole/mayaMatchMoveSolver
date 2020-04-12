@@ -124,20 +124,20 @@ def create_anim_curve_node(*args, **kwargs):
     return create_anim_curve_node_apione(*args, **kwargs)
 
 
-def get_anim_curves_from_nodes(nodes, attrs=None):
+def get_anim_curves_from_nodes(nodes_or_plugs, attrs=None):
     """
     Get all animCurve nodes connected to the given nodes.
 
-    :param nodes: List of nodes (or plugs) to query animation curves.
-    :type nodes: [str, ..]
+    :param nodes_or_plugs: List of nodes (or plugs) to query animation curves.
+    :type nodes_or_plugs: [str, ..]
 
     :returns: List of animation nodes. List may be empty if no
               animCurves were found.
     :rtype: [str, ..]
     """
-    assert isinstance(nodes, (list, tuple))
+    assert isinstance(nodes_or_plugs, (list, tuple))
     anim_curve_nodes = maya.cmds.listConnections(
-        nodes,
+        nodes_or_plugs,
         type='animCurve'
     ) or []
     return anim_curve_nodes

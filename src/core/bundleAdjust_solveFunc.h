@@ -36,6 +36,9 @@
 void measureErrors(
         int numberOfParameters,
         int numberOfErrors,
+        int numberOfMarkerErrors,
+        int numberOfAttrStiffnessErrors,
+        int numberOfAttrSmoothnessErrors,
         double *errors,
         SolverData *ud,
         double &error_avg,

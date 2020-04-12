@@ -25,6 +25,7 @@ import mmSolver.utils.node as node_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.undo as undo_utils
 import mmSolver.tools.solver.maya_callbacks as maya_callbacks
+import mmSolver.tools.setattributedetails.tool as set_details_tool
 
 LOG = mmSolver.logger.get_logger()
 
@@ -57,6 +58,12 @@ def add_attributes_to_collection(attr_list, col):
 
 def remove_attr_from_collection(attr_list, col):
     return col.remove_attribute_list(attr_list)
+
+
+def set_details_selected_attributes(attr_list, col):
+    LOG.debug('set_details_selected_attributes: %r', attr_list)
+    set_details_tool.open_window(col=col, attr_list=attr_list)
+    return
 
 
 def lock_selected_attributes(attr_list):
@@ -213,17 +220,18 @@ def add_callbacks_to_attributes(attr_list, update_func, callback_manager):
 def remove_callbacks_from_attributes(attr_list, callback_manager):
     msg = 'Node UUID has multiple paths: node=%r node_uuids=%r'
     callback_type = maya_callbacks.TYPE_ATTRIBUTE
-    for attr_obj in attr_list:
-        node_path = attr_obj.get_node(full_path=True)
-        node_uuids = maya.cmds.ls(node_path, uuid=True) or []
-        if len(node_uuids) != 1:
-            LOG.debug(msg, node_path, node_uuids)
-            continue
-        node_uuid = node_uuids[0]
-        if callback_manager.type_has_node(callback_type, node_uuid) is False:
-            continue
-        callback_manager.remove_type_node_ids(
-            callback_type,
-            node_uuid,
-        )
+    for attr_objs in attr_list:
+        for attr_obj in attr_objs:
+            node_path = attr_obj.get_node(full_path=True)
+            node_uuids = maya.cmds.ls(node_path, uuid=True) or []
+            if len(node_uuids) != 1:
+                LOG.debug(msg, node_path, node_uuids)
+                continue
+            node_uuid = node_uuids[0]
+            if callback_manager.type_has_node(callback_type, node_uuid) is False:
+                continue
+            callback_manager.remove_type_node_ids(
+                callback_type,
+                node_uuid,
+            )
     return

@@ -692,8 +692,11 @@ def query_solver_info_text(col):
         assert isinstance(col, mmapi.Collection)
         compile_collection(col)
         valid, message_list, metrics_list = mmapi.validate(col)
-        assert len(message_list) > 0
-        assert len(metrics_list) > 0
+        # TODO: When there are no attributes ready to be solved with,
+        #  an empty messages list is shown.
+        #
+        # assert len(message_list) > 0
+        # assert len(metrics_list) > 0
         if valid is not True:
             color = const.COLOR_ERROR
             pre_text = '<font color="{color}">'
@@ -736,7 +739,7 @@ def run_solve_ui(col,
     :param options: Options for the solver options.
     :type options: mmSolver.api.ExecuteOptions
 
-    :param log_level: How much information should we print out;a
+    :param log_level: How much information should we print out;
                       'error', 'warning', 'info', 'verbose' or 'debug'.
     :type log_level: str
 

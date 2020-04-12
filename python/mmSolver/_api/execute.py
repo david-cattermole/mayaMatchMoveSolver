@@ -17,6 +17,13 @@
 #
 """
 Execute a solve.
+
+Executing a solve compiles the Collections (of Markers, Bundles and
+Solvers) and turns it into a SolveResult, as fast as it can.
+
+Executing a solve has options that control the behaviour of how the
+solve is executed. Usually the options are responsible for forcing Maya
+to update in various ways (DG or Viewport.
 """
 
 import time
@@ -28,6 +35,7 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
+import mmSolver.utils.kalmanfilter as kalman
 import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
 import mmSolver._api.compile as api_compile
@@ -62,7 +70,10 @@ def createExecuteOptions(verbose=False,
                          display_grid=True,
                          display_node_types=None):
     """
-    Create ExecuteOptions.
+    Create :py:class:`ExecuteOptions` object.
+
+    If a keyword argument is not given, a reasonable default value is
+    used.
 
     :param verbose: Print extra solver information while a solve is running.
     :type verbose: bool
@@ -114,6 +125,16 @@ def createExecuteOptions(verbose=False,
 
 
 def preSolve_updateProgress(prog_fn, status_fn):
+    """
+    Initialise solver is running, and send info to the Maya GUI before
+    a solve starts.
+
+    :param prog_fn: Function to use for printing progress messages.
+    :type prog_fn: callable or None
+
+    :param status_fn: Function to use for printing status messages.
+    :type status_fn: callable or None
+    """
     LOG.debug('preSolve_updateProgress')
     # Start up solver
     collectionutils.run_progress_func(prog_fn, 0)
@@ -212,14 +233,15 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
     frame', if the current frame is the same as the first
     frame.
 
-    :param action_list:
+    :param action_list: List of :py:class:`Action` objects that are
+                        used in the current solve.
     :type action_list: [Action, .. ]
 
-    :param cur_frame:
+    :param cur_frame: The current frame number.
     :type cur_frame: int or float
 
-    :param options:
-    :type options:
+    :param options: The execution options for the solve.
+    :type options: ExecuteOptions
     """
     LOG.debug('preSolve_triggerEvaluation')
     if options.pre_solve_force_eval is not True:
@@ -244,6 +266,17 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
 
 
 def postSolve_refreshViewport(options, frame):
+    """
+    Refresh the viewport after a solve has finished.
+
+    :param options: The execution options for the current solve.
+    :type options: ExecuteOptions
+
+    :param frame:
+        The list of frame numbers, first item in list is used to
+        refresh the viewport.
+    :type frame: [int or float, ..]
+    """
     LOG.debug(
         'postSolve_refreshViewport: '
         'options=%r '
@@ -268,6 +301,20 @@ def postSolve_refreshViewport(options, frame):
 
 
 def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
+    """
+    Change the viewport state based on the ExecuteOptions given
+
+    :param options: The execution options for the current solve.
+    :type options: ExecuteOptions
+
+    :param panel_objs:
+        The panels and object to isolate, in a list of tuples.
+    :type panel_objs: [(str, [str, ..] or None), ..]
+
+    :param panel_node_type_vis:
+        The panels and node-type visibility options in a list of tuples.
+    :type panel_node_type_vis: [(str, {str: int or bool or None}), ..]
+    """
     LOG.debug(
         'postSolve_setViewportState: '
         'options=%r '
@@ -307,8 +354,44 @@ def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
 def postSolve_setUpdateProgress(progress_min,
                                 progress_value,
                                 progress_max,
-                                solres,  # SolveResult or None
+                                solres,
                                 prog_fn, status_fn):
+    """
+    Update the Maya GUI with progress information, and detects users
+    wanting to cancel the solve.
+
+    :param progress_min:
+        Minimum progress number possible.
+        Usually the number is 0.
+    :type progress_min: int
+
+    :param progress_value:
+        The actual progress value.
+        The value is usually between 0 and 100 (inclusive).
+    :type progress_value: int
+
+    :param progress_max:
+        THe maximum progress number possible.
+        Usually the number is 100.
+    :type progress_max: int
+
+    :param solres:
+        The SolveResult object for the last solved state.
+    :type solres: SolveResult or None
+
+    :param prog_fn: The function used report progress messages to
+                    the user.
+    :type prog_fn: callable or None
+
+    :param status_fn: The function used to report status messages
+                      to the user.
+    :type status_fn: callable or None
+
+    :returns:
+        Should the solver stop executing or not? Has the user
+        cancelled the solve?
+    :rtype: bool
+    """
     LOG.debug(
         'postSolve_setUpdateProgress: '
         'progress_min=%r '
@@ -349,6 +432,19 @@ def postSolve_setUpdateProgress(progress_min,
 
 
 def _run_validate_action(vaction):
+    """
+    Call a single validate action, and see what happens.
+
+    :param vaction: Validation action object to be run.
+    :type vaction: Action
+
+    :return:
+        A tuple of 3 parts; First, did the validation succeed (as
+        boolean)? Second, the user message we present for the state.
+        Third, metrics about the solve (number of parameters, number
+        of errors, and number of frames to solve)
+    :rtype: (bool, str, (int, int, int))
+    """
     num_param = 0
     num_err = 0
     num_frames = 0
@@ -392,6 +488,20 @@ def _run_validate_action(vaction):
 
 
 def _run_validate_action_list(vaction_list):
+    """
+    Calls the validation functions attached to the Action list.
+
+    See :py:func:`_run_validate_action` for more details.
+
+    :param vaction_list: List of validate actions to call.
+    :type vaction_list: [Action, ..]
+
+    :return:
+        A list of validations, with a single valid boolean (did the
+        validation succeed?).
+    :rtype: (bool, [str, ..], [(int, int, int), ..])
+    """
+    assert len(vaction_list) > 0
     valid = True
     message_list = []
     metrics_list = []
@@ -412,6 +522,9 @@ def validate(col):
     :type col: Collection
 
     :return:
+        A list of validations, with a single valid boolean (did the
+        validation succeed?). See :py:func:`_run_validate_action`
+        function return types for more details.
     :rtype: (bool, [str, ..], [(int, int, int), ..])
     """
     valid = False
@@ -420,12 +533,11 @@ def validate(col):
 
     s = time.time()
     try:
-        col_node = col.get_node()
         sol_list = col.get_solver_list()
         mkr_list = col.get_marker_list()
         attr_list = col.get_attribute_list()
         action_list, vaction_list = api_compile.collection_compile(
-            col_node,
+            col,
             sol_list, mkr_list, attr_list,
             withtest=True,
             prog_fn=None,
@@ -439,9 +551,10 @@ def validate(col):
         e = time.time()
         LOG.warn('Compile time (validate): %r seconds', e - s)
 
-    valid, message_list, metrics_list = _run_validate_action_list(vaction_list)
-    assert len(message_list) > 0
-    assert len(metrics_list) > 0
+    if len(vaction_list) > 0:
+        valid, message_list, metrics_list = _run_validate_action_list(vaction_list)
+        assert len(message_list) > 0
+        assert len(metrics_list) > 0
     return valid, message_list, metrics_list
 
 
@@ -521,14 +634,13 @@ def execute(col,
         solres_list = []
         withtest = validate_mode in [const.VALIDATE_MODE_PRE_VALIDATE_VALUE,
                                      const.VALIDATE_MODE_AT_RUNTIME_VALUE]
-        col_node = col.get_node()
         sol_list = col.get_solver_list()
         mkr_list = col.get_marker_list()
         attr_list = col.get_attribute_list()
         try:
             s = time.time()
             action_list, vaction_list = api_compile.collection_compile(
-                col_node,
+                col,
                 sol_list,
                 mkr_list,
                 attr_list,
@@ -553,9 +665,15 @@ def execute(col,
         preSolve_setIsolatedNodes(action_list, options, panels)
         preSolve_triggerEvaluation(action_list, cur_frame, options)
 
+        # Ensure prediction attributes are created and initialised.
+        collectionutils.set_initial_prediction_attributes(
+            col, attr_list, cur_frame
+        )
+
         # Run Solver Actions...
         start = 0
         total = len(action_list)
+        number_of_solves = 0
         for i, (action, vaction) in enumerate(zip(action_list, vaction_list)):
             if isinstance(vaction, api_action.Action) and validate_mode == 'at_runtime':
                 valid, message, metrics = _run_validate_action(vaction)
@@ -606,6 +724,26 @@ def execute(col,
             if solve_data is not None and func_is_mmsolver is True:
                 solres = solveresult.SolveResult(solve_data)
                 solres_list.append(solres)
+
+            if func_is_mmsolver is True and solres.get_success() is True:
+                frame = kwargs.get('frame')
+                if frame is None or len(frame) == 0:
+                    raise excep.NotValid
+                single_frame = frame[0]
+
+                if number_of_solves == 0:
+                    collectionutils.set_initial_prediction_attributes(
+                        col, attr_list, single_frame
+                    )
+                # Count number of solves, so we don't need to set the
+                # initial prediction attributes again.
+                number_of_solves += 1
+
+                # Calculate the mean, variance values, and predict the
+                # next attribute value.
+                collectionutils.compute_attribute_value_prediction(
+                    col, attr_list, single_frame,
+                )
 
             # Update Progress
             interrupt = postSolve_setUpdateProgress(

@@ -78,6 +78,14 @@
 #define FRAME_FLAG       "-f"
 #define FRAME_FLAG_LONG  "-frame"
 
+// Attribute Stiffness
+#define STIFFNESS_FLAG       "-asf"
+#define STIFFNESS_FLAG_LONG  "-attrStiffness"
+
+// Attribute Smoothness
+#define SMOOTHNESS_FLAG       "-asm"
+#define SMOOTHNESS_FLAG_LONG  "-attrSmoothness"
+
 // Type of Solver to use.
 //
 // The Type of Solver backend to use for refinement and
@@ -229,7 +237,9 @@ private:
                           //                            1=soft_l1,
                           //                            2=cauchy.
     double m_robustLossScale; // Factor to scale robust loss function by.
-    int m_solverType;   // Solver type to use; 0=levmar, 1=cminpack_lm.
+    int m_solverType;   // Solver type to use; 0=levmar,
+                        //                     1=cminpack_lmdif,
+                        //                     2=cmpinpack_lmder.
 
     // What type of features does the given solver type support?
     bool m_supportAutoDiffForward;
@@ -243,11 +253,13 @@ private:
     bool m_verbose;
 
     // Objects
-    CameraPtrList m_cameraList;
-    MarkerPtrList m_markerList;
-    BundlePtrList m_bundleList;
-    AttrPtrList   m_attrList;
-    MTimeArray m_frameList;
+    CameraPtrList      m_cameraList;
+    MarkerPtrList      m_markerList;
+    BundlePtrList      m_bundleList;
+    AttrPtrList        m_attrList;
+    MTimeArray         m_frameList;
+    StiffAttrsPtrList  m_stiffAttrsList;
+    SmoothAttrsPtrList m_smoothAttrsList;
 
     // Undo/Redo
     MDGModifier m_dgmod;

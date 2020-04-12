@@ -266,6 +266,24 @@ def set_display_attribute_min_max_state(value):
     return set_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX, value)
 
 
+def get_display_attribute_stiffness_state():
+    return get_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_STIFFNESS,
+                          const.SCENE_DATA_DISPLAY_ATTRIBUTE_STIFFNESS_DEFAULT)
+
+
+def set_display_attribute_stiffness_state(value):
+    return set_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_STIFFNESS, value)
+
+
+def get_display_attribute_smoothness_state():
+    return get_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_SMOOTHNESS,
+                          const.SCENE_DATA_DISPLAY_ATTRIBUTE_SMOOTHNESS_DEFAULT)
+
+
+def set_display_attribute_smoothness_state(value):
+    return set_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_SMOOTHNESS, value)
+
+
 def get_log_level():
     return get_state_str(const.SCENE_DATA_LOG_LEVEL,
                          const.SCENE_DATA_LOG_LEVEL_DEFAULT)

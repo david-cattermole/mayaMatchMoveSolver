@@ -66,6 +66,7 @@
 // Solver Utilities
 #include <mayaUtils.h>
 #include <Camera.h>
+#include <Attr.h>
 
 // Local solvers
 #include <core/bundleAdjust_base.h>
@@ -108,10 +109,10 @@ int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
  * Generate a 'dgdirty' MEL command listing all nodes that may be
  * changed by our solve function.
  */
-MString generateDirtyCommand(int numberOfErrors, SolverData *ud) {
+MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
     MString dgDirtyCmd = "dgdirty ";
     MStringArray dgDirtyNodeNames;
-    for (int i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
+    for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = ud->errorToMarkerList[i];
 
         MarkerPtr marker = ud->markerList[markerPair.first];
@@ -451,10 +452,21 @@ void setParameters(
 }
 
 
+inline
+double gaussian(double x, double mean, double sigma) {
+    return std::exp(
+            -(std::pow((x - mean), 2.0) / (2.0 * (std::pow(sigma, 2.0))))
+    );
+}
+
+
 // Measure Errors
 void measureErrors(
         int numberOfParameters,
         int numberOfErrors,
+        int numberOfMarkerErrors,
+        int numberOfAttrStiffnessErrors,
+        int numberOfAttrSmoothnessErrors,
         double *errors,
         SolverData *ud,
         double &error_avg,
@@ -480,10 +492,11 @@ void measureErrors(
     }
 #endif
 
+    // Compute Marker Errors
     MMatrix cameraWorldProjectionMatrix;
     MPoint mkr_mpos;
     MPoint bnd_mpos;
-    for (int i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
+    for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = ud->errorToMarkerList[i];
         MarkerPtr marker = ud->markerList[markerPair.first];
         MTime frame = ud->frameList[markerPair.second];
@@ -523,14 +536,18 @@ void measureErrors(
 
         // Is the bundle behind the camera?
         bool behind_camera = false;
+        bool behind_camera_error_factor = 1.0;
         double cam_dot_bnd = cam_dir * bnd_dir;
         // WRN("Camera DOT Bundle: " << cam_dot_bnd);
         if (cam_dot_bnd < 0.0) {
             behind_camera = true;
+            behind_camera_error_factor = 1e+6;
         }
 
         if (writeDebug && debugIsOpen) {
             debugFile << "Bundle: " << bnd->getNodeName()
+                      << std::endl;
+            debugFile << "Behind Camera: " << behind_camera
                       << std::endl;
             debugFile << "Cam DOT Bnd: " << cam_dot_bnd
                       << std::endl;
@@ -565,17 +582,72 @@ void measureErrors(
         double dy = fabs(mkr_mpos.y - bnd_mpos.y) * ud->imageWidth;
         double d = distance_2d(mkr_mpos, bnd_mpos) * ud->imageWidth;
 
-        errors[(i * ERRORS_PER_MARKER) + 0] = dx * mkr_weight;  // X error
-        errors[(i * ERRORS_PER_MARKER) + 1] = dy * mkr_weight;  // Y error
+        errors[(i * ERRORS_PER_MARKER) + 0] = dx * mkr_weight * behind_camera_error_factor;  // X error
+        errors[(i * ERRORS_PER_MARKER) + 1] = dy * mkr_weight * behind_camera_error_factor;  // Y error
 
         // 'ud->errorList' is the deviation shown to the user, it
         // should not have any loss functions or scaling applied to it.
-        ud->errorList[(i * ERRORS_PER_MARKER) + 0] = dx;
-        ud->errorList[(i * ERRORS_PER_MARKER) + 1] = dy;
+        ud->errorList[(i * ERRORS_PER_MARKER) + 0] = dx * behind_camera_error_factor;
+        ud->errorList[(i * ERRORS_PER_MARKER) + 1] = dy * behind_camera_error_factor;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) { error_max = d; }
         if (d < error_min) { error_min = d; }
+    }
+
+    // Compute the stiffness values for the the attributes of the 'error' array.
+    // Stiffness is an error weighting back to the previous value.
+    double attrValue = 0.0;
+    double stiffValue = 0.0;
+    double stiffWeight = 0.0;
+    double stiffVariance = 1.0;
+    const int stiffIndexOffset = 0;
+    for (int i = 0; i < numberOfAttrStiffnessErrors; ++i) {
+        int indexIntoErrorArray = numberOfMarkerErrors + stiffIndexOffset + i;
+        StiffAttrsPtr stiffAttrs = ud->stiffAttrsList[i];
+        int attrIndex = stiffAttrs->attrIndex;
+        AttrPtr stiffWeightAttr = stiffAttrs->weightAttr;
+        AttrPtr stiffVarianceAttr = stiffAttrs->varianceAttr;
+        AttrPtr stiffValueAttr = stiffAttrs->valueAttr;
+        AttrPtr attr = ud->attrList[attrIndex];
+
+        // Query the current value of the value, and calculate
+        //  the difference between the stiffness value.
+        stiffWeightAttr->getValue(stiffWeight);
+        stiffVarianceAttr->getValue(stiffVariance);
+        stiffValueAttr->getValue(stiffValue);
+        attr->getValue(attrValue);
+
+        double error = ((1.0 / gaussian(attrValue, stiffValue, stiffVariance)) - 1.0);
+        ud->errorList[indexIntoErrorArray] = error * stiffWeight;
+        errors[indexIntoErrorArray] = error * stiffWeight;
+    }
+
+    // Compute the smoothness values for the the attributes of the 'error' array.
+    // Smoothness is an error weighting to the predicted next value that is smooth.
+    double smoothValue = 0.0;
+    double smoothWeight = 0.0;
+    double smoothVariance = 1.0;
+    const int smoothIndexOffset = numberOfAttrStiffnessErrors;
+    for (int i = 0; i < numberOfAttrSmoothnessErrors; ++i) {
+        int indexIntoErrorArray = numberOfMarkerErrors + smoothIndexOffset + i;
+        SmoothAttrsPtr smoothAttrs = ud->smoothAttrsList[i];
+        int attrIndex = smoothAttrs->attrIndex;
+        AttrPtr smoothWeightAttr = smoothAttrs->weightAttr;
+        AttrPtr smoothVarianceAttr = smoothAttrs->varianceAttr;
+        AttrPtr smoothValueAttr = smoothAttrs->valueAttr;
+        AttrPtr attr = ud->attrList[attrIndex];
+
+        // Query the current value of the value, and calculate
+        //  the difference between the smoothness value.
+        smoothWeightAttr->getValue(smoothWeight);
+        smoothVarianceAttr->getValue(smoothVariance);
+        smoothValueAttr->getValue(smoothValue);
+        attr->getValue(attrValue);
+
+        double error = ((1.0 / gaussian(attrValue, smoothValue, smoothVariance)) - 1.0);
+        ud->errorList[indexIntoErrorArray] = error * smoothWeight;
+        errors[indexIntoErrorArray] = error * smoothWeight;
     }
 
     // Changes the errors to be scaled by the loss function.
@@ -670,6 +742,10 @@ int solveFunc(int numberOfParameters,
         ud->computation->setProgress(ud->iterNum);
     }
 
+    int numberOfMarkerErrors = ud->numberOfMarkerErrors;
+    int numberOfAttrStiffnessErrors = ud->numberOfAttrStiffnessErrors;
+    int numberOfAttrSmoothnessErrors = ud->numberOfAttrSmoothnessErrors;
+
     // TODO: Is this not slow to open and close a file at each
     // iteration - is there a more elegant solution?
     std::ofstream debugFile;
@@ -710,7 +786,7 @@ int solveFunc(int numberOfParameters,
 
     bool interactive = ud->mayaSessionState == MGlobal::MMayaState::kInteractive;
     if (interactive) {
-        MString dgDirtyCmd = generateDirtyCommand(numberOfErrors, ud);
+        MString dgDirtyCmd = generateDirtyCommand(numberOfMarkerErrors, ud);
         MGlobal::executeCommand(dgDirtyCmd);
     }
 
@@ -753,6 +829,9 @@ int solveFunc(int numberOfParameters,
 #endif
             measureErrors(numberOfParameters,
                           numberOfErrors,
+                          numberOfMarkerErrors,
+                          numberOfAttrStiffnessErrors,
+                          numberOfAttrSmoothnessErrors,
                           errors,
                           ud,
                           error_avg, error_max, error_min,
@@ -856,6 +935,9 @@ int solveFunc(int numberOfParameters,
 #endif
                 measureErrors(numberOfParameters,
                               numberOfErrors,
+                              numberOfMarkerErrors,
+                              numberOfAttrStiffnessErrors,
+                              numberOfAttrSmoothnessErrors,
                               &errorListA[0],
                               ud,
                               error_avg_tmp,
@@ -942,6 +1024,9 @@ int solveFunc(int numberOfParameters,
 #endif
                         measureErrors(numberOfParameters,
                                       numberOfErrors,
+                                      numberOfMarkerErrors,
+                                      numberOfAttrStiffnessErrors,
+                                      numberOfAttrSmoothnessErrors,
                                       &errorListB[0],
                                       ud,
                                       error_avg_tmp,

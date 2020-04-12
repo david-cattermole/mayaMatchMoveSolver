@@ -1,3 +1,5 @@
+.. _solver-design-heading:
+
 Solver Design
 =============
 
@@ -8,6 +10,8 @@ results by utilising the software as it's intended to work.
 This document tries to answer that question;
 
    *How does the MM Solver work?*
+
+.. _solver-design-how-does-it-work:
 
 How does the solver work?
 -------------------------
@@ -20,8 +24,10 @@ which minimise the *measured error*.
 The process of applying an *optimisation* solver to 3D perspective
 cameras, 2D points and 3D points is called Bundle Adjustment (BA). BA is
 traditionally the last step of MatchMove and Photogrammetry solvers
-where the parameter of 3D points (Bundles) and cameras are solved to
+where the parameters of 3D points (Bundles) and cameras are solved to
 produce a 3D Scene with the least possible error.
+
+.. _solver-design-attributes:
 
 Attributes
 ~~~~~~~~~~
@@ -47,6 +53,8 @@ therefore cannot be modified in the solver either. Due to underlying
 solving algorithm only floating-point attribute values can be solved.
 Commonly solved Attributes are 3D translate and rotate axes.
 
+.. _solver-design-markers-and-bundles:
+
 Markers and Bundles
 ~~~~~~~~~~~~~~~~~~~
 
@@ -70,6 +78,8 @@ the *Bundle* until the difference between all Markers and Bundles is
 zero when looking through each perspective *Camera*. Another way to say
 this is that the *measured error* is the distance between the
 screen-space re-projected 3D Bundles with the linked 2D Markers.
+
+.. _solver-design-solving:
 
 Solving
 ~~~~~~~
@@ -133,6 +143,8 @@ for solving will be:
 #. Solve for Attribute values.
 #. Repeat steps 2-5 until desired result is achieved.
 
+.. _solver-design-solving-process:
+
 Solving Process
 ---------------
 
@@ -171,6 +183,8 @@ The slowest step of the solving process is step 2 as it may be executed
 hundreds or thousands of times, depending on the number of *Attributes*
 and *Markers* that are in the solve.
 
+.. _solver-design-static-and-animated-attributes:
+
 Time - Static and Animated Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -203,6 +217,79 @@ number of solver evaluations required for a low *measured error*.
 Solving Animated and Static values as described is a **Brute Force**
 approach, but other strategies may be used.
 
+.. _solver-design-attribute-details:
+
+Attribute Details
+~~~~~~~~~~~~~~~~~
+
+Attribute Details are properties of an Attribute. Attribute Details
+are used to add constraints such as value limits.
+
+In mmSolver, there are 4 individual details per-attribute; minimum,
+maximum, smoothness and stiffness. See below for more details on how
+each property works.
+
+Minimum and Maximum Limits
+--------------------------
+
+Minimum and maximum limits will force *mmSolver* to solve an attribute
+with-in specific values. Attribute min/max limits apply to both static
+and animated attributes. If a mnimium or maximum value is not set, the
+limit is removed and any value may be used.
+
+*mmSolver* allows a combination of minimum and maximum limits. The
+combinations are; minimum only, maximum only, both minimum and
+maximum, no to limits at all.
+
+Although min and max limits may appear to be an appealling feature,
+often the need to use limits is a sign of problems in your solve.
+Minimum and maximum limits are often not helpful because the solver
+will simply limit the values used rather than reduce the likely-hood
+the solver will try to use values outside the limits.
+
+Minimum and maximum limits are also known as "Upper and Lower Value
+Bounds".
+
+Smoothness and Stiffness
+------------------------
+
+.. figure:: images/smoothnessConstraintGraph.gif
+    :alt: Smoothness Constraint
+    :align: center
+    :width: 80%
+
+Smoothness and stiffness ensures a Animated Attribute curve follows a
+constraint by increasing the error level of the current solve when the
+curve does not behave as expected. By increasing the solver error for
+"bad behaviour" the solver will automatically try to re-distribute the
+error level by changing other Attribute values.
+
+Both *smoothness* and *stiffness* use a similar constraint. The solver
+will increase the error if the solved value varies by more than the
+*variance* compared to a reference value. This encourages the
+solver to reduce "jumps" of more than the *variance* value.
+
+For *smoothness* constraints, the reference value is a smoothed value
+along the curve, based on the previous value. The value at the next
+frame is a predicted value, but is allowed to vary.
+
+For *stiffness* constraints, the reference value is the previous
+solved value. This ensures the solver continues to use the same
+value. *Stiffness* is a useful constraint for curves which should stay
+flat, but will still vary a little. The focal length of a camera might
+be a good example for this type of constraint.
+
+Both *smoothness* and *stiffness* constrains have a *variance* and
+*weight* value for each attribute. The *variance* value controls how
+much the solver can change from the reference value, if the solver
+chooses a value that varies by more than the *variance* a large error
+is given to the solver. The *weight* value controls how strong the
+constraint is used inside the solver; lower values means the
+*stiffness* or *smoothness* has smaller effect, and higher values
+increases the effect.
+
+.. _solver-design-solver-strategies:
+
 Solver Strategies
 ~~~~~~~~~~~~~~~~~
 
@@ -227,83 +314,172 @@ Primary Frames / Root Frames.
 #. Hierarchical merging of sub-sequences
 #. Incremental bundle adjustment
 
+.. _solver-design-solver-options:
+
 Solver Options
-^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~
 
 Like many solvers, the MM Solver has options, however the options are
 hidden from the Solver UI and are set automatically by the Python API.
 
-This options are for developers of MM Solver.
+To explain the Solver Options below an analogy of climbing a mountain,
+to reach the peak (top of the mountain) is used. Our goal is to find
+the exact parameters that will bring us to the peak of the
+mountain. Our position on the mountain tells us how high we are (the
+deviation level), and the direction upwards to the top of the mountain
+peak (the gradient or mountain slope).
 
-Iterations : integer
-    Maximum number of iterations
+.. figure:: images/algorithm_steepest_decent.png
+    :alt: Mountain Climbing
+    :align: center
+    :width: 80%
 
-    This option does not directly control the number of evaluations
-    the solver may run, but instead controls how many attempts the
-    solver will try before giving up.
+    Mountain Climbing with Steepest Decent
 
-Tau : float
-    Initial Damping Factor.
+.. _solver-design-solver-max-iterations:
 
-    Larger values should be used when the initial unknown parameters
-    have high error. This forces the LevMar algorithm to use
-    steepest-decent, rather than gauss-newton.
+Maximum Number of Iterations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    "The algorithm is not very sensitive to the choice of 'tau', but
-    as a rule of thumb, one should use a small value, eg 'tau = 10-6',
-    if 'the initial parameters' are believed to be a good
-    approximation to the 'final parameter values'. Otherwise, use 'tau
-    = 10-3' or even 'tau = 1.0'."
+Value type: ``integer``
 
-Delta : float
-    Change to the guessed parameters each iteration
+This option does not directly control the number of evaluations
+the solver may run, but instead controls how many attempts the
+solver will try before giving up.
 
-    Each time the solver guesses an unknown parameter value, it adds
-    or subtracts the 'delta' value to the unknown parameter
-    value. This changes the magnitude of the parameter values in each
-    guess. If this value is too small, the change in error level may
-    not be detected, if this value is too large the solver will
-    over-estimate and will likely lead to poor convergence.
+If the solver attempts to solve more than the maximum iterations the
+solve will stop.
 
-Epsilon #1 : float
-    Acceptable Gradient Change.
+.. _solver-design-solver-tau:
 
-    At the beginning of an solver iteration, if the solver has not
-    decreased the gradient by at least this value, the solver gives up
-    trying to reduce the error any more.
+Tau - Initial Damping Factor
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Value type: ``float``
 
-Epsilon #2 : float
-    Acceptable Parameter Change.
+The *tau* factor determines whether the solver will try to refine the
+current parameters a lot (large tau number), or only a small amount
+(small tau number). Values usually range between +0.0 and +1.0.
 
-    At the beginning of an solver iteration, if the guessed parameters
-    do not change by at least this value, the solver gives up trying
-    to reduce the error any more.
+Larger values should be used when the initial unknown parameters
+have high error. This forces the Levenberg-Marquet algorithm to use
+steepest-decent, rather than gauss-newton.
 
-Epsilon #3 : float
-    Acceptable Error
+"The algorithm is not very sensitive to the choice of 'tau', but
+as a rule of thumb, one should use a small value, eg 'tau = 10-6',
+if 'the initial parameters' are believed to be a good
+approximation to the 'final parameter values'. Otherwise, use 'tau
+= 10-3' or even 'tau = 1.0'."
 
-    At the beginning of an solver iteration, if the error level is
-    below this value, the solver considers the error to be low enough
-    for the user's needs and stops trying to reduce the error.
+.. _solver-design-solver-delta:
 
-Auto-Differencing Type : integer
-    The strategy used to compute the direction the solver should move in.
+Delta - Amount to Change Parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    0 = 'forward' (fast but not accurate)
+Value type: ``float``
 
-    1 = 'central' (more accurate but 1/3rd slower to compute initially)
+Delta is the amount of change to the guessed parameters at each
+iteration.
 
+Each time the solver guesses an unknown parameter value, it adds
+or subtracts the 'delta' value from the unknown parameter
+value. This changes the magnitude of the parameter values in each
+guess. If this value is too small, the change in error level may
+not be detected, if this value is too large the solver will
+over-estimate and will likely lead to poor convergence (the solver
+won't find a good solution).
+
+.. _solver-design-solver-epsilon-one:
+
+Epsilon #1 - Acceptable Gradient Change
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Value type: ``float``
+
+The gradient error (sometimes named epsilon #1) is used to find when
+the solver has reached the "top of the mountain peak". The gradient
+represents the slope of climbing the mountain. When the solver reaches
+a (horizontally) flat area of the mountain, then the gradient is low,
+and will stop the solve. When the solver can find a slope (gradient),
+then the solver can follow the slope of the mountain and reach the top
+of the mountain peak.
+
+At the beginning of a solver iteration, if the solver has not
+decreased the gradient by at least this value, the solver gives up
+trying to reduce the error any more, and stops solving.
+
+.. _solver-design-solver-epsilon-two:
+
+Epsilon #2 - Acceptable Parameter Change
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Value type: ``float``
+
+The parameter error (sometimes named epsilon #2) is used to determine
+the when the solver can stop changing parameter values because the
+new parameter values have not changed enough. Changes to parameters are
+able to move the solved solution to different places on the mountain,
+if the parameter changes are too small then the solver will stop.
+
+At the beginning of a solver iteration, if the guessed parameters do
+not change by at least this value, the solver gives up trying to
+reduce the error any more.
+
+.. _solver-design-solver-epsilon-three:
+
+Epsilon #3 - Acceptable Deviation Error
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Value type: ``float``
+
+The deviation error (sometimes named epsilon #3 or deviation) is the
+error level that is considered a good solve. To use a mountain
+climbing analogy, the *deviation error* is the highest mountain peak
+that is good enough for the solver.
+
+At the beginning of a solver iteration, if the error level is below
+this value, the solver considers the error to be low enough for the
+user's needs and stops trying to reduce the error.
+
+.. _solver-design-solver-auto-diff-type:
+
+Auto-Differencing Type
+^^^^^^^^^^^^^^^^^^^^^^
+
+Value type: ``integer``
+
+The strategy used to compute the direction (gradient slope) the solver
+should move toward.
+
+.. list-table:: Auto-Differencing Types
+   :widths: auto
+   :header-rows: 1
+
+   * - Index
+     - Name
+     - Description
+
+   * - 0
+     - ``forward``
+     - Fast but not accurate.
+
+   * - 1
+     - ``central``
+     - More accurate but 1/3rd slower to compute initially.
+
+In practice, the authors of mmSolver have found ``central``
+dramatically slows down the solver and does not increase accuracy very
+much. It is therefore recommended to use ``forward``.
 
 General Solving Concepts
 ------------------------
 
 **To be written**
 
-Over-parameterization
+Over-Parameterization
 ~~~~~~~~~~~~~~~~~~~~~
 
-Parameters-errors ratio is too high
+Parameters-errors ratio is too high.
 
 **To be written**
 
@@ -312,25 +488,79 @@ Plane, Line and Curve Constraints
 
 **To be written**
 
-Upper and Lower Value Bounds
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. _solver-faq-heading:
 
-**To be written**
+Frequently Asked Questions (FAQ)
+--------------------------------
 
+Below are the some common questions and answers.
 
-Frequently Asked Questions
---------------------------
+.. _solver-faq-how-to-get-supported-solver-types:
 
-   What transform space does *MM Solver* solve in?
+How do I get the list of supported Solver Types?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To dynamically get the supported list of solver types, run this Python
+command in Maya::
+
+   >>> maya.cmds.loadPlugin('mmSolver')
+   >>> maya.cmds.mmSolverType(query=True, list=True)
+   [u'1=cminpack_lmdif', u'2=cminpack_lmder']   # Example output.
+
+The full list of solver types supported are listed below. Please note
+that depending on compilation, some solver types will not be available.
+
+.. list-table:: Solver Types
+   :widths: auto
+   :header-rows: 1
+
+   * - Index
+     - Name
+     - Description
+
+   * - 0
+     - ``levmar``
+     - Use levmar_ library with the ``levmar_bc_dif`` function.
+
+   * - 1
+     - ``cminpack_lmdif``
+     - Use CMinpack_ library with the lmdif_ function.
+
+   * - 2
+     - ``cminpack_lmder``
+     - Use CMinpack_ library with the lmder_ function.
+
+.. _solver-faq-what-transform-space-is-used-for-solving:
+
+What transform space is used for solving?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 *MM Solver* evaluates all *Marker* and *Bundle* screen-space errors in
 **world-space**, but solving is not performed in a transform space.
 Solving is performed directly on *Attribute* values.
 
-   How can I use a DAG hierarchy to reduce the number of *Attributes*?
+.. _solver-faq-how-to-reduce-attribute-count-with-dag:
+
+How can I use a DAG hierarchy to reduce the number of *Attributes*?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **To be written**
 
-   How can I make my solves faster?
+.. _solver-faq-how-to-increase-solve-speed:
+
+How can I make my solves faster?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **To be written**
+
+.. _levmar:
+   http://users.ics.forth.gr/~lourakis/levmar/
+
+.. _CMinpack:
+   http://devernay.free.fr/hacks/cminpack/index.html
+
+.. _lmdif:
+   http://devernay.free.fr/hacks/cminpack/lmdif_.html
+
+.. _lmder:
+   http://devernay.free.fr/hacks/cminpack/lmder_.html

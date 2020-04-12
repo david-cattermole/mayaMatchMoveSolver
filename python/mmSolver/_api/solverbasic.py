@@ -17,6 +17,9 @@
 #
 """
 The basic solver.
+
+The basic solver is designed to solve only simple, per-frame animated
+attributes. Static attributes are not solved at all with this solver.
 """
 
 import mmSolver.logger
@@ -26,7 +29,6 @@ import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.solverstep as solverstep
-import mmSolver._api.action as api_action
 import mmSolver._api.compile as api_compile
 
 
@@ -35,21 +37,25 @@ LOG = mmSolver.logger.get_logger()
 
 class SolverBasic(solverbase.SolverBase):
     """
-    The basic  solver for mmSolver.
+    The basic solver for mmSolver.
 
-    This solver is designed for ONLY Animated attributes.
+    This solver will solve Animated attributes only.
 
     Parameters for solver:
+
     - Frame Range - with options:
+
       - "Single Frame"
+
       - "Time Slider (Inner)"
+
       - "Time Slider (Outer)"
+
       - "Custom"
 
-    If a Solver is 'Single Frame' (current frame), then we solve both
+    If a Solver is `Single Frame` (current frame), then we solve only
     animated attributes on the current frame, in a single step
     and return.
-
     """
 
     def __init__(self, *args, **kwargs):
@@ -65,15 +71,31 @@ class SolverBasic(solverbase.SolverBase):
     ############################################################################
 
     def get_use_single_frame(self):
+        """
+        Get Use Single Frame value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'use_single_frame',
             const.SOLVER_STD_USE_SINGLE_FRAME_DEFAULT_VALUE)
 
     def set_use_single_frame(self, value):
+        """
+        Set Use Single Frame value.
+
+        :param value: Value to be set.
+        :type value: bool or int or long
+        """
         assert isinstance(value, (bool, int, long))
         self._data['use_single_frame'] = bool(value)
 
     def get_single_frame(self):
+        """
+        Get Single Frame value.
+
+        :rtype: Frame or None
+        """
         value = self._data.get(
             'single_frame',
             const.SOLVER_STD_SINGLE_FRAME_DEFAULT_VALUE)
@@ -83,6 +105,12 @@ class SolverBasic(solverbase.SolverBase):
         return frm
 
     def set_single_frame(self, value):
+        """
+        Set Single Frame value.
+
+        :param value: Value to be set.
+        :type value: Frame or int or long
+        """
         assert isinstance(value, (frame.Frame, int, long))
         number = value
         if isinstance(value, frame.Frame):
@@ -92,24 +120,46 @@ class SolverBasic(solverbase.SolverBase):
     ############################################################################
 
     def get_anim_iteration_num(self):
+        """
+        Get Animation Iteration Number value.
+
+        :rtype: int
+        """
         return self._data.get(
             'anim_iteration_num',
             const.SOLVER_STD_ANIM_ITERATION_NUM_DEFAULT_VALUE)
 
     def set_anim_iteration_num(self, value):
+        """
+        Set Animation Iteration Number value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
         assert isinstance(value, (int, long))
         assert value > 0
-        self._data['anim_iteration_num'] = bool(value)
+        self._data['anim_iteration_num'] = value
 
     def get_lineup_iteration_num(self):
+        """
+        Get Line-up Iteration Number value.
+
+        :rtype: int
+        """
         return self._data.get(
             'lineup_iteration_num',
             const.SOLVER_STD_LINEUP_ITERATION_NUM_DEFAULT_VALUE)
 
     def set_lineup_iteration_num(self, value):
+        """
+        Set Line-up Iteration Number value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
         assert isinstance(value, (int, long))
         assert value > 0
-        self._data['lineup_iteration_num'] = bool(value)
+        self._data['lineup_iteration_num'] = value
 
     ############################################################################
 
@@ -196,7 +246,7 @@ class SolverBasic(solverbase.SolverBase):
 
     ############################################################################
 
-    def compile(self, mkr_list, attr_list, withtest=False):
+    def compile(self, col, mkr_list, attr_list, withtest=False):
         assert isinstance(withtest, bool)
 
         # Options to affect how the solve is constructed.
@@ -207,7 +257,6 @@ class SolverBasic(solverbase.SolverBase):
         lineup_iter_num = self.get_lineup_iteration_num()
         verbose = True
 
-        actions = []
         if use_single_frame is True:
             # Single frame solve
             sol = solverstep.SolverStep()
@@ -217,14 +266,16 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(False)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-
-            for action, vaction in sol.compile(mkr_list, attr_list,
+            sol.set_use_smoothness(False)
+            sol.set_use_stiffness(False)
+            for action, vaction in sol.compile(col, mkr_list, attr_list,
                                                withtest=withtest):
                 yield (action, vaction)
         else:
             # Multiple frame solve, per-frame
             vaction_cache = api_compile.create_compile_solver_cache()
-            for frm in frame_list:
+            for i, frm in enumerate(frame_list):
+                is_first_frame = i == 0
                 one_frame_list = [frm]
                 sol = solverstep.SolverStep()
                 sol.set_verbose(verbose)
@@ -233,12 +284,11 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_attributes_use_animated(True)
                 sol.set_attributes_use_static(False)
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+                sol.set_use_smoothness(not is_first_frame)
+                sol.set_use_stiffness(not is_first_frame)
 
                 generator = api_compile.compile_solver_with_cache(
-                    sol, mkr_list, attr_list,
-                    withtest,
-                    vaction_cache
-                )
+                    sol, col, mkr_list, attr_list, withtest, vaction_cache)
                 for action, vaction in generator:
                     yield action, vaction
         return

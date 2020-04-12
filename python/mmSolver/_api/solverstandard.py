@@ -16,9 +16,8 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-The standard solver.
+The standard solver - allows solving static and animated attributes.
 """
-
 
 import mmSolver.logger
 
@@ -57,6 +56,12 @@ def _gen_two_frame_fwd(int_list):
     :returns: List of integer pairs.
     :rtype: [[int, int], ...]
     """
+    if len(int_list) == 1:
+        num = int_list[0]
+        batch_list = [
+            [frame.Frame(num), frame.Frame(num)]
+        ]
+        return batch_list
     end = len(int_list) - 1
     batch_list = []
     for i in range(end):
@@ -71,37 +76,53 @@ def _gen_two_frame_fwd(int_list):
     return batch_list
 
 
-def _filter_mkr_list_by_frame_list(mkr_list, root_frame_list):
+def _filter_mkr_list_by_frame_list(mkr_list, frame_list):
     """
+    Sort the Markers into used and unused based on the frames needed.
 
     :param mkr_list: List of Markers to filter.
     :type mkr_list: [Marker, ..]
 
-    :param root_frame_list: List of frames to use for filtering.
-    :type root_frame_list: [Frame, ..]
+    :param frame_list: List of frames to use for filtering.
+    :type frame_list: [Frame, ..]
 
     :return: Two lists, one list is for Markers that have 2 or more
-             frames specified in root_frame_list, and the other list is
+             frames specified in frame_list, and the other list is
              for Markers that do not have more than 2 frames in
-             root_frame_list.
+             frame_list.
     :rtype: ([Marker, ..], [Marker, ..])
     """
-    root_frame_list_num = [x.get_number() for x in root_frame_list]
-    root_mkr_list = []
-    non_root_mkr_list = []
+    frame_list_num = [x.get_number() for x in frame_list]
+    used_mkr_list = []
+    unused_mkr_list = []
     for mkr in mkr_list:
         assert isinstance(mkr, marker.Marker) is True
         frame_count = 0
-        for f in root_frame_list_num:
+        for f in frame_list_num:
             frame_count += mkr.get_enable(f)
         if frame_count >= 2:
-            root_mkr_list.append(mkr)
+            used_mkr_list.append(mkr)
         else:
-            non_root_mkr_list.append(mkr)
-    return root_mkr_list, non_root_mkr_list
+            unused_mkr_list.append(mkr)
+    return used_mkr_list, unused_mkr_list
 
 
 def _split_mkr_attr_into_categories(mkr_list, attr_list):
+    """
+    Put Markers and Attributes into categories to be solved individually.
+
+    :param mkr_list: List of Markers.
+    :type mkr_list: [Marker, ..]
+
+    :param attr_list: List of Attributes.
+    :type attr_list: [Attribute, ..]
+
+    :return:
+        List of Markers and List of Attributes. The length of both
+        Marker and Attributes will be the same and are designed to
+        be used together.
+    :rtype: ( [[Marker, ..], ..], [[Attribute, ..]])
+    """
     meta_mkr_list = []
     meta_attr_list = []
 
@@ -154,12 +175,45 @@ def _split_mkr_attr_into_categories(mkr_list, attr_list):
     return meta_mkr_list, meta_attr_list
 
 
-def _compile_multi_root_frames(mkr_list,
+def _compile_multi_root_frames(col,
+                               mkr_list,
                                attr_list,
                                batch_frame_list,
                                root_iter_num,
                                withtest,
                                verbose):
+    """
+    Compile actions for solving Root frames.
+
+    :param mkr_list:
+        List of Markers to use for Root frames.
+    :type mkr_list: [Marker, ..]
+
+    :param attr_list:
+        List of Attributes to use for Root frames.
+    :type attr_list: [Attribute, ..]
+
+    :param batch_frame_list:
+        List of frame lists to be computed successively.
+    :type batch_frame_list: [[int, ..], ..]
+
+    :param root_iter_num:
+        Number of iterations to use, when solving root frames.
+    :type root_iter_num: int
+
+    :param withtest:
+        Compile the test/validation Action, as well as the solve Action?
+    :type withtest: bool
+
+    :param verbose:
+        Print out more detail to 'stdout'.
+    :type verbose: bool
+
+    :return:
+        Yields two Actions at each iteration; first Action is for
+        solving, second Action is to validate the inputs given.
+    :rtype: (Action, Action or None)
+    """
     # Solve root frames.
     for frm_list in batch_frame_list:
         # Get root markers
@@ -187,11 +241,12 @@ def _compile_multi_root_frames(mkr_list,
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(True)
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+        sol.set_use_smoothness(False)
+        sol.set_use_stiffness(False)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, root_mkr_list, root_attr_list, withtest, cache,
-        )
+            sol, col, root_mkr_list, root_attr_list, withtest, cache)
         for action, vaction in generator:
             yield action, vaction
         return
@@ -201,8 +256,40 @@ def _compile_remove_inbetween_frames(attr_list,
                                      non_root_frame_list,
                                      start_frame,
                                      end_frame,
-                                     test,
+                                     withtest,
                                      verbose):
+    """
+    Compile actions to delete keyframes for all attributes with-in a
+    specific start/end frame range.
+
+    :param attr_list:
+        List of Attributes.
+    :type attr_list: [Attribute, ..]
+
+    :param non_root_frame_list:
+        pass
+    :type non_root_frame_list: [[int, ..], ..]
+
+    :param start_frame:
+        pass
+    :type start_frame: Frame
+
+    :param end_frame:
+        pass
+    :type end_frame: Frame
+
+    :param withtest:
+        Compile the test/validation Action, as well as the solve Action?
+    :type withtest: bool
+
+    :param verbose:
+        Print out more detail to 'stdout'.
+    :type verbose: bool
+
+    :return:
+        Yields an Action and None, at each iteration.
+    :rtype: (Action, None)
+    """
     # Solve in-between frames
     attr_names = [x.get_name() for x in attr_list]
 
@@ -232,13 +319,51 @@ def _compile_remove_inbetween_frames(attr_list,
     yield action, None
 
 
-def _compile_multi_inbetween_frames(mkr_list,
+def _compile_multi_inbetween_frames(col,
+                                    mkr_list,
                                     attr_list,
                                     all_frame_list,
                                     global_solve,
                                     anim_iter_num,
-                                    test,
+                                    withtest,
                                     verbose):
+    """
+    Solve only animated attributes on frames between the root frames.
+
+    :param mkr_list:
+        Markers to be solved with.
+    :type mkr_list: [Marker, ..]
+
+    :param attr_list:
+        Attributes to be solved.
+    :type attr_list: [Attribute, ..]
+
+    :param all_frame_list:
+        List of Frames to be solved.
+    :type all_frame_list: [Frame, ..]
+
+    :param global_solve:
+        If True, all attributes and frames will be solved as a single
+        solve, rather than one solve per-frame.
+    :type global_solve: bool
+
+    :param anim_iter_num:
+        Number of iterations for solving animated attributes.
+    :type anim_iter_num: int
+
+    :param withtest:
+        Should validation tests be generated?
+    :type withtest: bool
+
+    :param verbose:
+        Print out more detail than usual.
+    :type verbose: bool
+
+    :return:
+        Yields a generator of two Actions. First Action is for solving,
+        the second Action is for validation of inputs.
+    :rtype: (Action, Action)
+    """
     if global_solve is True:
         # Do Global Solve with all frames.
         sol = solverstep.SolverStep()
@@ -248,16 +373,18 @@ def _compile_multi_inbetween_frames(mkr_list,
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(True)
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+        sol.set_use_smoothness(False)
+        sol.set_use_stiffness(False)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, mkr_list, attr_list, test, cache
-        )
+            sol, col, mkr_list, attr_list, withtest, cache)
         for action, vaction in generator:
             yield action, vaction
     else:
         cache = api_compile.create_compile_solver_cache()
-        for frm in all_frame_list:
+        for i, frm in enumerate(all_frame_list):
+            is_first_frame = i == 0
             one_frame_list = [frm]
             sol = solverstep.SolverStep()
             sol.set_verbose(verbose)
@@ -266,15 +393,18 @@ def _compile_multi_inbetween_frames(mkr_list,
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(False)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+            sol.set_use_smoothness(not is_first_frame)
+            sol.set_use_stiffness(not is_first_frame)
+
             generator = api_compile.compile_solver_with_cache(
-                sol, mkr_list, attr_list, test, cache
-            )
+                sol, col, mkr_list, attr_list, withtest, cache)
             for action, vaction in generator:
                 yield action, vaction
     return
 
 
-def _compile_multi_frame(mkr_list,
+def _compile_multi_frame(col,
+                         mkr_list,
                          attr_list,
                          root_frame_list,
                          frame_list,
@@ -286,10 +416,76 @@ def _compile_multi_frame(mkr_list,
                          global_solve,
                          root_frame_strategy,
                          triangulate_bundles,
-                         test,
+                         withtest,
                          verbose):
-    assert len(root_frame_list) >= 2
-    assert len(frame_list) >= 2
+    """
+    Generate Actions to solve multiple-frames.
+
+    :param mkr_list:
+        Markers to be solved with.
+    :type mkr_list: [Marker, ..]
+
+    :param attr_list:
+        Attributes to be solved.
+    :type attr_list: [Attribute, ..]
+
+    :param root_frame_list:
+        Frames to solve static and animated attributes.
+    :type root_frame_list: [[Frame, ..], ..]
+
+    :param frame_list:
+        Frames to solve animated attributes.
+    :type frame_list: [Frame, ..]
+
+    :param auto_attr_blocks:
+        Split attributes into stages (based on categories) to be
+        solved together.
+    :type auto_attr_blocks: bool
+
+    :param block_iter_num:
+        How many iterations to perform for attribute categories.
+    :type block_iter_num: int
+
+    :param only_root_frames:
+        Only solve the root frames.
+    :param only_root_frames: bool
+
+    :param root_iter_num:
+        Number of iterations for root frame solves.
+    :type root_iter_num: int
+
+    :param anim_iter_num:
+        Number of iterations for animated attribute solves.
+    :type anim_iter_num: int
+
+    :param global_solve:
+        Should all frames be solved together, both animated and static
+        attributes?
+    :type global_solve: bool
+
+    :param root_frame_strategy:
+        The strategy ordering of root frames and how to solve them.
+        Value must be one in ROOT_FRAME_STRATEGY_VALUE_LIST
+    :type root_frame_strategy:
+
+    :param triangulate_bundles:
+        If True, unlocked bundles will be triangulated before being
+        further refined by the solver processes.
+    :type triangulate_bundles: bool
+
+    :param withtest:
+        Should validation tests be generated?
+    :type withtest: bool
+
+    :param verbose:
+        Print out more detail than usual.
+    :type verbose: bool
+
+    :return:
+        Yields a generator of two Actions. First Action is for solving,
+        the second Action is for validation of inputs.
+    :rtype: (Action, Action)
+    """
     root_frame_list_num = [x.get_number() for x in root_frame_list]
     frame_list_num = [x.get_number() for x in frame_list]
     non_root_frame_list_num = set(frame_list_num) - set(root_frame_list_num)
@@ -311,8 +507,7 @@ def _compile_multi_frame(mkr_list,
         # sol.root_frame_list = root_frame_list_num
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, mkr_list, attr_list, test, cache
-        )
+            sol, col, mkr_list, attr_list, withtest, cache)
         for action, vaction in generator:
             yield action, vaction
 
@@ -322,6 +517,14 @@ def _compile_multi_frame(mkr_list,
         mkr_list,
         root_frame_list
     )
+    if len(root_mkr_list) == 0:
+        # TODO: Test we have enough markers to solve with, if not warn
+        #  the user.
+        # action = api_action.Action(func='pass', args=[], kwargs={})
+        # vaction = api_action.Action(func='', args=[], kwargs={})
+        # yield action, vaction
+        LOG.warn("Not enough Markers given for root frames.")
+        return
     if auto_attr_blocks is True:
         meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
             root_mkr_list,
@@ -335,11 +538,12 @@ def _compile_multi_frame(mkr_list,
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(True)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+            sol.set_use_smoothness(False)
+            sol.set_use_stiffness(False)
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
-                sol, new_mkr_list, new_attr_list, test, cache
-            )
+                sol, col, new_mkr_list, new_attr_list, withtest, cache)
             for action, vaction in generator:
                 yield action, vaction
 
@@ -371,11 +575,12 @@ def _compile_multi_frame(mkr_list,
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(True)
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+        sol.set_use_smoothness(False)
+        sol.set_use_stiffness(False)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, root_mkr_list, attr_list, test, cache
-        )
+            sol, col, root_mkr_list, attr_list, withtest, cache)
         for action, vaction in generator:
             yield action, vaction
     else:
@@ -398,11 +603,12 @@ def _compile_multi_frame(mkr_list,
             #  should ensure stability of the solver is maximum.
             raise NotImplementedError
         generator = _compile_multi_root_frames(
+            col,
             mkr_list,
             attr_list,
             batch_frame_list,
             root_iter_num,
-            test,
+            withtest,
             verbose
         )
         for action, vaction in generator:
@@ -416,7 +622,7 @@ def _compile_multi_frame(mkr_list,
         non_root_frame_list,
         start_frame,
         end_frame,
-        test,
+        withtest,
         verbose
     )
     for action, vaction in generator:
@@ -425,12 +631,13 @@ def _compile_multi_frame(mkr_list,
         return
 
     generator = _compile_multi_inbetween_frames(
+        col,
         mkr_list,
         attr_list,
         all_frame_list,
         global_solve,
         anim_iter_num,
-        test,
+        withtest,
         verbose,
     )
     for action, vaction in generator:
@@ -438,14 +645,56 @@ def _compile_multi_frame(mkr_list,
     return
 
 
-def _compile_single_frame(mkr_list,
+def _compile_single_frame(col,
+                          mkr_list,
                           attr_list,
                           single_frame,
                           block_iter_num,
                           lineup_iter_num,
                           auto_attr_blocks,
-                          test,
+                          withtest,
                           verbose):
+    """
+    Compile to Actions for a solve of a single frame.
+
+    :param mkr_list:
+        Markers to be solved with.
+    :type mkr_list: [Marker, ..]
+
+    :param attr_list:
+        Attributes to be solved.
+    :type attr_list: [Attribute, ..]
+
+    :param single_frame:
+        The Frame to solve on.
+    :type single_frame: Frame
+
+    :param auto_attr_blocks:
+        Split attributes into stages (based on categories) to be
+        solved together.
+    :type auto_attr_blocks: bool
+
+    :param block_iter_num:
+        How many iterations to perform for attribute categories.
+    :type block_iter_num: int
+
+    :param lineup_iter_num:
+        pass
+    :type lineup_iter_num: int
+
+    :param withtest:
+        Should validation tests be generated?
+    :type withtest: bool
+
+    :param verbose:
+        Print out more detail than usual.
+    :type verbose: bool
+
+    :return:
+        Yields a generator of two Actions. First Action is for solving,
+        the second Action is for validation of inputs.
+    :rtype: (Action, Action)
+    """
     if auto_attr_blocks is True:
         meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
             mkr_list,
@@ -459,11 +708,12 @@ def _compile_single_frame(mkr_list,
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(True)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+            sol.set_use_smoothness(False)
+            sol.set_use_stiffness(False)
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
-                sol, new_mkr_list, new_attr_list, test, cache
-            )
+                sol, col, new_mkr_list, new_attr_list, withtest, cache)
             for action, vaction in generator:
                 yield action, vaction
 
@@ -475,10 +725,12 @@ def _compile_single_frame(mkr_list,
     sol.set_attributes_use_animated(True)
     sol.set_attributes_use_static(True)
     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+    sol.set_use_smoothness(False)
+    sol.set_use_stiffness(False)
+
     cache = api_compile.create_compile_solver_cache()
     generator = api_compile.compile_solver_with_cache(
-        sol, mkr_list, attr_list, test, cache
-    )
+        sol, col, mkr_list, attr_list, withtest, cache)
     for action, vaction in generator:
         yield action, vaction
     return
@@ -491,40 +743,44 @@ class SolverStandard(solverbase.SolverBase):
     This solver is designed for Animated and Static attributes.
 
     Parameters for solver:
+
     - Frame Range - with options:
+
       - "Single Frame"
       - "Time Slider (Inner)"
       - "Time Slider (Outer)"
       - "Custom"
+
     - Root Frames - A list of integer frame numbers.
+
     - Solver Method
+
       - "Solve Everything at Once" option - On or Off
       - "Solve Root Frames Only" option - On or Off
 
-    If a Solver is 'Single Frame' (current frame), then we solve both
+    If a Solver is `Single Frame` (current frame), then we solve both
     animated and static attributes on the current frame, in a single step
     and return.
 
-    If the 'Solver Root Frames Only' option is On, then we only solve the
+    If the `Solver Root Frames Only` option is On, then we only solve the
     root frames, with both animated and static attributes.
 
-    If the 'Solver Root Frames Only' is Off, then we first solve the root
+    If the `Solver Root Frames Only` is Off, then we first solve the root
     frames with both animated and static attributes, then secondly we solve
     only animated attributes for the entire frame range.
 
-    If the 'Solve Everything at Once' option is On, then the second solve
+    If the `Solve Everything at Once` option is On, then the second solve
     step contains static and animated attributes (not just animated),
     and all frames are solved as one big crunch.
-
-    TODO: Before solving root frames we should query the current
-    animated attribute values at each root frame, store it, then
-    remove all keyframes between the first and last frames to
-    solve. Lastly we should re-keyframe the values at the animated
-    frames, and ensure the keyframe tangents are linear. This will
-    ensure that animated keyframe values do not affect a re-solve.
-    Only the root frames need to be initialized with good values.
-
     """
+
+    # TODO: Before solving root frames we should query the current
+    #  animated attribute values at each root frame, store it, then
+    #  remove all keyframes between the first and last frames to
+    #  solve. Lastly we should re-keyframe the values at the animated
+    #  frames, and ensure the keyframe tangents are linear. This will
+    #  ensure that animated keyframe values do not affect a re-solve.
+    #  Only the root frames need to be initialized with good values.
 
     def __init__(self, *args, **kwargs):
         super(SolverStandard, self).__init__(*args, **kwargs)
@@ -543,15 +799,31 @@ class SolverStandard(solverbase.SolverBase):
     ############################################################################
 
     def get_use_single_frame(self):
+        """
+        Get Use Single Frame value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'use_single_frame',
             const.SOLVER_STD_USE_SINGLE_FRAME_DEFAULT_VALUE)
 
     def set_use_single_frame(self, value):
+        """
+        Set Use Single Frame value.
+
+        :param value: Value to be set.
+        :type value: bool or int or long
+        """
         assert isinstance(value, (bool, int, long))
         self._data['use_single_frame'] = bool(value)
 
     def get_single_frame(self):
+        """
+        Get Single Frame value.
+
+        :rtype: Frame or None
+        """
         value = self._data.get(
             'single_frame',
             const.SOLVER_STD_SINGLE_FRAME_DEFAULT_VALUE)
@@ -561,6 +833,12 @@ class SolverStandard(solverbase.SolverBase):
         return frm
 
     def set_single_frame(self, value):
+        """
+        Set Single Frame value.
+
+        :param value: Value to be set.
+        :type value: Frame or int or long
+        """
         assert isinstance(value, (frame.Frame, int, long))
         number = value
         if isinstance(value, frame.Frame):
@@ -570,77 +848,154 @@ class SolverStandard(solverbase.SolverBase):
     ############################################################################
 
     def get_only_root_frames(self):
+        """
+        Get Only Root Frames value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'only_root_frames',
             const.SOLVER_STD_ONLY_ROOT_FRAMES_DEFAULT_VALUE)
 
     def set_only_root_frames(self, value):
+        """
+        Set Only Root Frames value.
+
+        :param value: Value to be set.
+        :type value: bool or int or long
+        """
         assert isinstance(value, (bool, int, long))
         self._data['only_root_frames'] = bool(value)
 
     ############################################################################
 
     def get_global_solve(self):
+        """
+        Get Global Solve value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'global_solve',
             const.SOLVER_STD_GLOBAL_SOLVE_DEFAULT_VALUE)
 
     def set_global_solve(self, value):
+        """
+        Set Global Solve value.
+
+        :param value: Value to be set.
+        :type value: bool or int or long
+        """
         assert isinstance(value, (bool, int, long))
         self._data['global_solve'] = bool(value)
 
     ############################################################################
 
     def get_root_frame_strategy(self):
+        """
+        Get Root Frame Strategy value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'root_frame_strategy',
             const.SOLVER_STD_ROOT_FRAME_STRATEGY_DEFAULT_VALUE)
 
     def set_root_frame_strategy(self, value):
+        """
+        Set Root Frame Strategy value.
+
+        :param value: Value to be set.
+        :type value: int or long
+        """
         assert isinstance(value, (int, long))
-        self._data['root_frame_strategy'] = bool(value)
+        self._data['root_frame_strategy'] = value
 
     ############################################################################
 
     def get_block_iteration_num(self):
+        """
+        Get Block Iteration Number value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'block_iteration_num',
             const.SOLVER_STD_BLOCK_ITERATION_NUM_DEFAULT_VALUE)
 
     def set_block_iteration_num(self, value):
+        """
+        Set Block Iteration Number value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
         assert isinstance(value, (int, long))
         assert value > 0
-        self._data['block_iteration_num'] = bool(value)
+        self._data['block_iteration_num'] = value
 
     def get_root_iteration_num(self):
+        """
+        Get Root Iteration Number value.
+
+        :rtype: bool
+        """
         return self._data.get(
             'root_iteration_num',
             const.SOLVER_STD_ROOT_ITERATION_NUM_DEFAULT_VALUE)
 
     def set_root_iteration_num(self, value):
+        """
+        Set Root Iteration Number value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
         assert isinstance(value, (int, long))
         assert value > 0
-        self._data['root_iteration_num'] = bool(value)
+        self._data['root_iteration_num'] = value
 
     def get_anim_iteration_num(self):
+        """
+        Get Animation Iteration Number value.
+
+        :rtype: int
+        """
         return self._data.get(
             'anim_iteration_num',
             const.SOLVER_STD_ANIM_ITERATION_NUM_DEFAULT_VALUE)
 
     def set_anim_iteration_num(self, value):
+        """
+        Set Animation Iteration Number value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
         assert isinstance(value, (int, long))
         assert value > 0
-        self._data['anim_iteration_num'] = bool(value)
+        self._data['anim_iteration_num'] = value
 
     def get_lineup_iteration_num(self):
+        """
+        Get Line-up Iteration Number value.
+
+        :rtype: int
+        """
         return self._data.get(
             'lineup_iteration_num',
             const.SOLVER_STD_LINEUP_ITERATION_NUM_DEFAULT_VALUE)
 
     def set_lineup_iteration_num(self, value):
+        """
+        Set Line-up Iteration Number value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
         assert isinstance(value, (int, long))
         assert value > 0
-        self._data['lineup_iteration_num'] = bool(value)
+        self._data['lineup_iteration_num'] = value
 
     ############################################################################
 
@@ -662,6 +1017,11 @@ class SolverStandard(solverbase.SolverBase):
         return frm_list
 
     def get_frame_list_length(self):
+        """
+        Return the number of frames in the frame list.
+
+        :rtype: int
+        """
         return len(self.get_frame_list())
 
     def add_frame(self, frm):
@@ -745,6 +1105,11 @@ class SolverStandard(solverbase.SolverBase):
         return frm_list
 
     def get_root_frame_list_length(self):
+        """
+        Return the number of frames in the root frame list.
+
+        :rtype: int
+        """
         return len(self.get_root_frame_list())
 
     def add_root_frame(self, frm):
@@ -810,7 +1175,7 @@ class SolverStandard(solverbase.SolverBase):
 
     ############################################################################
 
-    def compile(self, mkr_list, attr_list, withtest=False):
+    def compile(self, col, mkr_list, attr_list, withtest=False):
         # Options to affect how the solve is constructed.
         use_single_frame = self.get_use_single_frame()
         single_frame = self.get_single_frame()
@@ -831,6 +1196,7 @@ class SolverStandard(solverbase.SolverBase):
 
         if use_single_frame is True:
             generator = _compile_single_frame(
+                col,
                 mkr_list,
                 attr_list,
                 single_frame,
@@ -844,6 +1210,7 @@ class SolverStandard(solverbase.SolverBase):
                 yield action, vaction
         else:
             generator = _compile_multi_frame(
+                col,
                 mkr_list,
                 attr_list,
                 root_frame_list,

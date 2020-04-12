@@ -18,10 +18,3 @@ Library
 .. automodule:: mmSolver.tools.cameraaim.lib
     :members:
     :undoc-members:
-
-Constants
-+++++++++
-
-.. automodule:: mmSolver.tools.cameraaim.constant
-    :members:
-    :undoc-members:

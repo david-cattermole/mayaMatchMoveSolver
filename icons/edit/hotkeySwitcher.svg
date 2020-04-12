@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="32"
+   height="32"
+   viewBox="0 0 8.4666659 8.4666659"
+   version="1.1"
+   id="svg3732"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="hotkeySwitcher.svg"
+   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\hotkeySwitcher_32x32.png"
+   inkscape:export-xdpi="96.000008"
+   inkscape:export-ydpi="96.000008">
+  <defs
+     id="defs3726">
+    <marker
+       id="Arrow1Mstart"
+       style="overflow:visible"
+       orient="auto"
+       refY="0"
+       refX="0">
+      <path
+         id="path3206"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(0.4,0,0,0.4,4,0)"
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z " />
+    </marker>
+    <marker
+       id="Arrow1Mend"
+       style="overflow:visible"
+       orient="auto"
+       refY="0"
+       refX="0">
+      <path
+         id="path3209"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.4,0,0,-0.4,-4,0)"
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z " />
+    </marker>
+    <marker
+       id="Arrow1Lstart"
+       style="overflow:visible"
+       orient="auto"
+       refY="0"
+       refX="0">
+      <path
+         id="path3200"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(0.8,0,0,0.8,10,0)"
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z " />
+    </marker>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Blur"
+       id="filter1757">
+      <feGaussianBlur
+         stdDeviation="28.78 28.13"
+         result="fbSourceGraphic"
+         id="feGaussianBlur1755" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix1759" />
+      <feGaussianBlur
+         id="feGaussianBlur1761"
+         stdDeviation="28.78 28.13"
+         result="blur"
+         in="fbSourceGraphic" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="13.318098"
+     inkscape:cx="9.4153966"
+     inkscape:cy="17.833048"
+     inkscape:document-units="mm"
+     inkscape:current-layer="g5666-8"
+     showgrid="false"
+     units="px"
+     inkscape:pagecheckerboard="true"
+     inkscape:window-width="1536"
+     inkscape:window-height="801"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     showborder="true" />
+  <metadata
+     id="metadata3729">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="Layer 2"
+     style="display:inline">
+    <g
+       id="g5666-8"
+       transform="matrix(0.00845439,0,0,0.00845439,0.22154392,-0.04815919)"
+       style="fill:#000000;fill-opacity:1">
+      <path
+         id="path5664-7"
+         d="m 872.20032,392.60064 h -346.7 c 0,-105.2 39.7,-110.7 105.5,-119.9 66.8,-9.3 158.4,-22 158.4,-181.699992 0,-16.699996 -13.5,-30.2 -30.2,-30.2 -16.7,0 -30.2,13.500004 -30.2,30.2 0,107.199992 -42.3,112.999992 -106.4,121.899992 -66.5,9.2 -157.4,21.9 -157.4,179.6 h -346.8 c -62.499996,0.1 -113.0999972,50.8 -113.0999972,113.2 v 301.5 c 0,62.4 50.6000012,113.1 113.0999972,113.1 h 753.8 c 62.5,0 113.1,-50.7 113.1,-113.1 v -301.5 c 0,-62.4 -50.6,-113.1 -113.1,-113.1 z"
+         inkscape:connector-curvature="0"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.94625396;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter1757)"
+         sodipodi:nodetypes="sccssscccsssssss" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="Layer 1"
+     style="display:inline"
+     sodipodi:insensitive="true">
+    <g
+       id="g5666"
+       transform="matrix(0.00845439,0,0,0.00845439,0.00299111,-0.38762345)">
+      <path
+         id="path5664"
+         d="M 876.9,402 H 530.2 c 0,-105.2 39.7,-110.7 105.5,-119.9 66.8,-9.3 158.4,-22 158.4,-181.7 0,-16.7 -13.5,-30.2 -30.2,-30.2 -16.7,0 -30.2,13.5 -30.2,30.2 0,107.2 -42.3,113 -106.4,121.9 -66.5,9.2 -157.4,21.9 -157.4,179.6 H 123.1 C 60.6,402 10,452.7 10,515.1 V 816.6 C 10,879 60.6,929.7 123.1,929.7 H 876.9 C 939.4,929.7 990,879 990,816.6 V 515.1 C 990,452.7 939.4,402 876.9,402 Z M 688.5,515.1 h 75.4 v 75.4 h -75.4 z m 113,113.1 v 75.4 H 726.1 V 628.2 Z M 575.4,515.1 h 75.4 v 75.4 h -75.4 z m 113.1,113.1 v 75.4 H 613.1 V 628.2 Z M 462.3,515.1 h 75.4 v 75.4 h -75.4 z m 113.1,113.1 v 75.4 H 500 V 628.2 Z M 349.2,515.1 h 75.4 v 75.4 h -75.4 z m 113.1,113.1 v 75.4 H 386.9 V 628.2 Z M 236.2,515.1 h 75.4 v 75.4 h -75.4 z m 113,113.1 v 75.4 H 273.8 V 628.2 Z M 123.1,515.1 h 75.4 v 75.4 h -75.4 z m 113.1,113.1 v 75.4 h -75.4 v -75.4 z m -37.7,188.4 h -75.4 v -75.4 h 75.4 z m 565.3,0 H 236.2 v -75.4 h 527.7 v 75.4 z m 113.1,0 h -75.4 v -75.4 h 75.4 z m 0,-226.1 h -75.4 v -75.4 h 75.4 z"
+         inkscape:connector-curvature="0"
+         style="fill:#e4e4e4;fill-opacity:1;stroke:none;stroke-width:0.94625396;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+  </g>
+</svg>

@@ -1,7 +1,8 @@
 mmSolver.api
 ============
 
-By convention the mmSolver.api functions are expected to be imported into the alias `mmapi`, examples assume this is done.
+By convention the mmSolver.api functions are expected to be imported into
+the alias `mmapi`, examples assume this is done.
 
 .. code:: python
 
@@ -10,26 +11,28 @@ By convention the mmSolver.api functions are expected to be imported into the al
    mmapi.load_plugin()  # Force load the mmSolver plug-in.
 
 Object Overview
-+++++++++++++++
+```````````````
 
 |API Classes Image|
 
-=========== =========================================================
-Class       Description
-=========== =========================================================
-Marker      2D point to determine screen-space features
-Bundle      3D point to determine real-location of 2D feature
-Attribute   Attribute that will be solved
-Camera      Camera to view the world
-Frame       Point in time
-Solver      Options that describe how the solving algorithm will run
-Collection  A set of Markers and Attributes to use during solving
-SolveResult Output of the solver; Details of what happened in a solve
-=========== =========================================================
+==================================== ==============================================================
+Class                                Description
+==================================== ==============================================================
+:py:class:`mmSolver.api.Marker`      2D point to determine screen-space features
+:py:class:`mmSolver.api.Bundle`      3D point to determine real-location of 2D feature
+:py:class:`mmSolver.api.Attribute`   Attribute that will be solved
+:py:class:`mmSolver.api.Camera`      Camera to view the world
+:py:class:`mmSolver.api.Frame`       Point in time
+:py:class:`mmSolver.api.SolverBase`  Options that describe how the solving algorithm will run
+:py:class:`mmSolver.api.Collection`  A set of Markers, Attributes and Solvers to use during solving
+:py:class:`mmSolver.api.SolveResult` Output of the solver; Details of what happened in a solve
+==================================== ==============================================================
 
+The above list of classes is simplified.
+The full list of classes and functions exposed are detailed in :ref:`mmSolver-api-heading`.
 
 Example
-+++++++
+```````
 
 Here is a example of how to use the ``mmSolver`` Python API.
 First a ``Camera``, ``Bundle`` and ``Marker`` are created, these
@@ -73,7 +76,7 @@ an be used to check the Solver output (for example, did an error occur?).
    attr_ty = mmapi.Attribute(bundle_tfm + '.ty')
 
    # Solver
-   sol = mmapi.Solver()
+   sol = mmapi.SolverStep()
    sol.set_verbose(True)
    sol.add_frame(1)
    sol.set_frame_list([1])
@@ -90,13 +93,18 @@ an be used to check the Solver output (for example, did an error occur?).
    result = col.execute()
    print 'Solve Error:', result.get_error()
 
+.. _mmSolver-api-heading:
+
+mmSolver API
+````````````
+
 Camera
 ++++++
 
 .. autoclass:: mmSolver.api.Camera
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Bundle
 ++++++
@@ -104,7 +112,7 @@ Bundle
 .. autoclass:: mmSolver.api.Bundle
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Marker
 ++++++
@@ -114,7 +122,7 @@ Marker
 .. autoclass:: mmSolver.api.Marker
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autofunction:: mmSolver.api.update_deviation_on_markers
 
@@ -132,7 +140,7 @@ A group containing Marker nodes.
 .. autoclass:: mmSolver.api.MarkerGroup
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Attribute
 +++++++++
@@ -142,7 +150,7 @@ Attribute that will be solved.
 .. autoclass:: mmSolver.api.Attribute
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Frame
 +++++
@@ -150,10 +158,18 @@ Frame
 .. autoclass:: mmSolver.api.Frame
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Solver
 ++++++
+
+Solvers are compiled into individual Python functions to be run.
+To compile the Solvers with a consistent interface and manage new
+solver processes, a `SolverBase` class has been created.
+
+Users are expected to sub-class `SolverBase` and add functionality.
+Pre-existing classes already provide functionality for common solving
+needs.
 
 Solver Base
 -----------
@@ -161,7 +177,7 @@ Solver Base
 .. autoclass:: mmSolver.api.SolverBase
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Solver Basic
 ------------
@@ -169,7 +185,7 @@ Solver Basic
 .. autoclass:: mmSolver.api.SolverBasic
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Solver Standard
 ---------------
@@ -177,15 +193,24 @@ Solver Standard
 .. autoclass:: mmSolver.api.SolverStandard
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Solver Step
----------------
+-----------
+
+The :py:class:`mmSolver.api.SolverStep` is used to represent frames
+to be solved.
+
+.. note::
+
+    For backwards compatibility the SolverStep class can also be accessed
+    with the class name ``mmSolver.api.Solver``. This is deprecated
+    and will be removed in a future version.
 
 .. autoclass:: mmSolver.api.SolverStep
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Collection
 ++++++++++
@@ -193,7 +218,7 @@ Collection
 .. autoclass:: mmSolver.api.Collection
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autofunction:: mmSolver.api.update_deviation_on_collection
 
@@ -217,7 +242,7 @@ Action
 .. autoclass:: mmSolver.api.Action
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autofunction:: mmSolver.api.action_func_is_mmSolver
 
@@ -231,7 +256,7 @@ Execute
 .. autoclass:: mmSolver.api.ExecuteOptions
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autofunction:: mmSolver.api.createExecuteOptions
 
@@ -245,7 +270,7 @@ SolveResult
 .. autoclass:: mmSolver.api.SolveResult
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autofunction:: mmSolver.api.combine_timer_stats
 
@@ -254,6 +279,12 @@ SolveResult
 .. autofunction:: mmSolver.api.get_average_frame_error_list
 
 .. autofunction:: mmSolver.api.get_max_frame_error
+
+.. autofunction:: mmSolver.api.merge_marker_error_list
+
+.. autofunction:: mmSolver.api.merge_marker_node_list
+
+.. autofunction:: mmSolver.api.format_timestamp
 
 Naming
 ++++++
@@ -275,6 +306,15 @@ Utilities
 
 State
 +++++
+
+The state functions are used for getting and setting global states
+(global variables).
+
+.. note::
+
+   Global state must be used carefully. We recommend using
+   try-except-finally_ blocks to ensure global state is returned to the
+   intended values if any exception is raised.
 
 .. autofunction:: mmSolver.api.is_solver_running
 
@@ -321,32 +361,32 @@ Exceptions
 .. autoclass:: mmSolver.api.MMException
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autoclass:: mmSolver.api.NotValid
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autoclass:: mmSolver.api.AlreadyLinked
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autoclass:: mmSolver.api.AlreadyUnlinked
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autoclass:: mmSolver.api.NotEnoughMarkers
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 .. autoclass:: mmSolver.api.SolverNotAvailable
    :members:
    :undoc-members:
-   :special-members:
+   :special-members: __init__
 
 Constants
 +++++++++
@@ -389,4 +429,7 @@ referenced inside the documentation.
 
 .. autoattribute:: mmSolver.api.AUTO_DIFF_TYPE_LIST
 
-.. |API Classes Image| image:: https://raw.githubusercontent.com/david-cattermole/mayaMatchMoveSolver/master/design/api/api_classes_overview.png
+.. |API Classes Image| image:: images/api_classes_overview.png
+
+.. _try-except-finally:
+    https://www.w3schools.com/python/python_try_except.asp

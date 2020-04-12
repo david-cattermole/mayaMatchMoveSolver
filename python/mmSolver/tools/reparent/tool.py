@@ -35,6 +35,11 @@ def reparent_under_node():
     frame = maya.cmds.currentTime(query=True)
     nodes = maya.cmds.ls(selection=True, long=True,
                          type='transform') or []
+    current_eval_manager_mode = maya.cmds.evaluationManager(
+        query=True,
+        mode=True
+    )
+
     if len(nodes) < 2:
         msg = ('Not enough objects selected, '
                'select at least 1 child and 1 parent node.')
@@ -42,6 +47,14 @@ def reparent_under_node():
         return
     try:
         viewport.viewport_turn_off()
+
+        # Force DG mode, because it evaluates with DG Context faster
+        # (in Maya 2017).
+        #
+        # TODO: Test that DG mode is actually faster in Maya versions
+        # other than 2017.
+        maya.cmds.evaluationManager(mode='off')
+
         children = nodes[:-1]
         parent = nodes[-1]
         children_tfm_nodes = [tfm_utils.TransformNode(node=n) for n in children]
@@ -50,6 +63,9 @@ def reparent_under_node():
         children = [tn.get_node() for tn in children_tfm_nodes]
         maya.cmds.select(children, replace=True)
     finally:
+        maya.cmds.evaluationManager(
+            mode=current_eval_manager_mode[0]
+        )
         viewport.viewport_turn_on()
     # Trigger Maya to refresh.
     maya.cmds.currentTime(frame, update=True)
@@ -64,6 +80,11 @@ def unparent_to_world():
     frame = maya.cmds.currentTime(query=True)
     nodes = maya.cmds.ls(selection=True, long=True,
                          type='transform') or []
+    current_eval_manager_mode = maya.cmds.evaluationManager(
+        query=True,
+        mode=True
+    )
+
     if len(nodes) == 0:
         msg = ('Not enough objects selected, '
                'select at least 1 transform node.')
@@ -71,12 +92,24 @@ def unparent_to_world():
         return
     try:
         viewport.viewport_turn_off()
+
+        # Force DG mode, because it evaluates with DG Context faster
+        # (in Maya 2017).
+        #
+        # TODO: Test that DG mode is actually faster in Maya versions
+        # other than 2017.
+        maya.cmds.evaluationManager(mode='off')
+
         tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
         lib.reparent(tfm_nodes, None, sparse=True)
         nodes = [tn.get_node() for tn in tfm_nodes]
         maya.cmds.select(nodes, replace=True)
     finally:
+        maya.cmds.evaluationManager(
+            mode=current_eval_manager_mode[0]
+        )
         viewport.viewport_turn_on()
+
     # Trigger Maya to refresh.
     maya.cmds.currentTime(frame, update=True)
     maya.cmds.refresh(currentView=True, force=False)

@@ -131,12 +131,11 @@ class AttrNode(PlugNode):
         if attr is None or col is None:
             return const.ATTR_DEFAULT_STIFFNESS_UI_VALUE
         stiff_enable = col.get_attribute_stiffness_enable(attr)
-        stiff_value = col.get_attribute_stiffness_weight(attr)
+        stiff_value = col.get_attribute_stiffness_variance(attr)
         if stiff_enable is False or stiff_value is None:
             stiff_value = const.ATTR_DEFAULT_STIFFNESS_UI_VALUE
         if isinstance(stiff_value, float):
-            stiff_value = stiff_value * 100.0
-            stiff_value = str(stiff_value) + '%'
+            stiff_value = str(stiff_value)
         return stiff_value
 
     def smoothnessValue(self):
@@ -145,12 +144,11 @@ class AttrNode(PlugNode):
         if attr is None or col is None:
             return const.ATTR_DEFAULT_SMOOTHNESS_UI_VALUE
         smooth_enable = col.get_attribute_smoothness_enable(attr)
-        smooth_value = col.get_attribute_smoothness_weight(attr)
+        smooth_value = col.get_attribute_smoothness_variance(attr)
         if smooth_enable is False or smooth_value is None:
             smooth_value = const.ATTR_DEFAULT_SMOOTHNESS_UI_VALUE
         if isinstance(smooth_value, float):
-            smooth_value = smooth_value * 100.0
-            smooth_value = str(smooth_value) + '%'
+            smooth_value = str(smooth_value)
         return smooth_value
 
     def mayaNodeName(self):
@@ -198,9 +196,9 @@ class AttrModel(uimodels.ItemModel):
         column_names = {
             0: const.ATTR_COLUMN_NAME_ATTRIBUTE,
             1: const.ATTR_COLUMN_NAME_STATE,
-            2: const.ATTR_COLUMN_NAME_VALUE_MIN_MAX,
+            2: const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS,
             3: const.ATTR_COLUMN_NAME_VALUE_STIFFNESS,
-            4: const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS,
+            4: const.ATTR_COLUMN_NAME_VALUE_MIN_MAX,
             5: const.ATTR_COLUMN_NAME_UUID,
         }
         return column_names

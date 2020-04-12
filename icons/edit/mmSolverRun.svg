@@ -137,7 +137,7 @@
      inkscape:cx="9.9456779"
      inkscape:cy="16.101965"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer5"
+     inkscape:current-layer="g7500"
      showgrid="false"
      units="px"
      inkscape:pagecheckerboard="true"
@@ -169,7 +169,7 @@
        transform="matrix(0.97909483,0,0,0.97909483,1.6467052,-0.29049186)">
       <g
          id="g7500-3"
-         style="display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:0.30640546;stroke-miterlimit:4;stroke-dasharray:none"
+         style="display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.30640545;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          transform="translate(0.02848353,0.14437943)">
         <path
            sodipodi:type="star"
@@ -222,7 +222,8 @@
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="Layer 5"
-     style="display:inline">
+     style="display:inline"
+     sodipodi:insensitive="true">
     <g
        id="g8948"
        transform="matrix(1.0375763,0,0,1.0375763,-0.08573443,-0.25679161)">

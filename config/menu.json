@@ -21,6 +21,8 @@
             "mb_tools/---Marker-Bundle Link",
             "mb_tools/link_marker_bundle",
             "mb_tools/unlink_marker_bundle",
+            "attr_tools/---Attribute Details",
+            "attr_tools/set_attr_details_ui",
             "marker_tools/---Markers",
             "marker_tools/toggle_marker_lock",
             "marker_tools/place_marker_manipulator",
@@ -62,6 +64,10 @@
             "general_tools/copy_camera_to_clipboard"
         ],
         "functions": {
+            "attr_tools": {
+                "name": "Attribute Tools",
+                "tearoff": true
+            },
             "mb_tools": {
                 "name": "Marker-Bundle Tools",
                 "tearoff": true

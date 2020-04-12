@@ -41,8 +41,14 @@ def open_window(col=None, attr_list=None):
         )
         set_attr_details_dialog.warn_user(title, text)
         return
+
     if attr_list is None:
         attr_list = lib.get_selected_maya_attributes()
+        attr_list = lib.input_attributes_filter(attr_list)
+        if len(attr_list) == 0:
+            attr_list = lib.get_selected_node_default_attributes()
+            attr_list = lib.input_attributes_filter(attr_list)
+
     if attr_list is None or len(attr_list) == 0:
         title = 'No Attribute.'
         text = (
@@ -51,11 +57,11 @@ def open_window(col=None, attr_list=None):
         )
         set_attr_details_dialog.warn_user(title, text)
         return
-    detail_values = lib.convert_attributes_to_detail_values(col, attr_list)
-    status, dialog = set_attr_details_dialog.main(detail_values)
+
+    status, dialog = set_attr_details_dialog.main(col, attr_list)
     assert isinstance(dialog, set_attr_details_dialog.Dialog)
     if status is True:
-        new_detail_values = dialog.get_detail_values()
         for attr in attr_list:
+            new_detail_values = dialog.get_detail_values_for_attribute(attr)
             lib.set_attribute_details(col, attr, new_detail_values)
     return

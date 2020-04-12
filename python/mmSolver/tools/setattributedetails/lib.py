@@ -20,13 +20,17 @@ Library functions for Solver UI.
 """
 
 import collections
+import math
 
 import maya.cmds
 import maya.mel
+import maya.OpenMaya as OpenMaya1
+import maya.OpenMayaAnim as OpenMayaAnim1
 
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.animcurve as animcurve_utils
 
 # TODO: Remove the connection between the 'setattributedetails' tool
 #  to the 'solver' tool.
@@ -42,10 +46,27 @@ AttrDetail = collections.namedtuple(
     "AttrDetail",
     (
         "state",
-        "min_enable", "min_value",
-        "max_enable", "max_value",
-        "smoothness_enable", "smoothness_value",
-        "stiffness_enable", "stiffness_value",
+
+        "min_enable",
+        "min_value",
+
+        "max_enable",
+        "max_value",
+
+        "smoothness_enable",
+        "smoothness_variance",
+        "smoothness_weight",
+
+        "stiffness_enable",
+        "stiffness_variance",
+        "stiffness_weight",
+
+        "curve_min",
+        "curve_max",
+        "curve_mean",
+        "curve_variance",
+        "curve_frame_variance",
+        "curve_max_variance",
      )
 )
 
@@ -56,20 +77,145 @@ def create_attr_detail(state=None,
                        max_enable=None,
                        max_value=None,
                        smoothness_enable=None,
-                       smoothness_value=None,
+                       smoothness_variance=None,
+                       smoothness_weight=None,
                        stiffness_enable=None,
-                       stiffness_value=None):
-    # TODO: Add logic for the intended default values.
+                       stiffness_variance=None,
+                       stiffness_weight=None,
+                       curve_min=None,
+                       curve_max=None,
+                       curve_mean=None,
+                       curve_variance=None,
+                       curve_frame_variance=None,
+                       curve_max_variance=None):
     value = AttrDetail(
-        state,
-        min_enable,
-        min_value,
-        max_enable,
-        max_value,
-        smoothness_enable,
-        smoothness_value,
-        stiffness_enable,
-        stiffness_value
+        state=state,
+        min_enable=min_enable,
+        min_value=min_value,
+        max_enable=max_enable,
+        max_value=max_value,
+        smoothness_enable=smoothness_enable,
+        smoothness_variance=smoothness_variance,
+        smoothness_weight=smoothness_weight,
+        stiffness_enable=stiffness_enable,
+        stiffness_variance=stiffness_variance,
+        stiffness_weight=stiffness_weight,
+        curve_min=curve_min,
+        curve_max=curve_max,
+        curve_mean=curve_mean,
+        curve_variance=curve_variance,
+        curve_frame_variance=curve_frame_variance,
+        curve_max_variance=curve_max_variance,
+    )
+    return value
+
+
+def attr_detail_from_previous(value,
+                              state=None,
+                              min_enable=None,
+                              min_value=None,
+                              max_enable=None,
+                              max_value=None,
+                              smoothness_enable=None,
+                              smoothness_variance=None,
+                              smoothness_weight=None,
+                              stiffness_enable=None,
+                              stiffness_variance=None,
+                              stiffness_weight=None,
+                              curve_min=None,
+                              curve_max=None,
+                              curve_mean=None,
+                              curve_variance=None,
+                              curve_frame_variance=None,
+                              curve_max_variance=None):
+    assert isinstance(value, AttrDetail)
+
+    if state is None:
+        state = value.state
+    if min_enable is None:
+        min_enable = value.min_enable
+    if min_value is None:
+        min_value = value.min_value
+    if max_enable is None:
+        max_enable = value.max_enable
+    if max_value is None:
+        max_value = value.max_value
+
+    if stiffness_enable is None:
+        stiffness_enable = value.stiffness_enable
+    if stiffness_weight is None:
+        stiffness_weight = value.stiffness_weight
+    if stiffness_variance is None:
+        stiffness_variance = value.stiffness_variance
+
+    if smoothness_enable is None:
+        smoothness_enable = value.smoothness_enable
+    if smoothness_weight is None:
+        smoothness_weight = value.smoothness_weight
+    if smoothness_variance is None:
+        smoothness_variance = value.smoothness_variance
+
+    if curve_min is None:
+        curve_min = value.curve_min
+    if curve_max is None:
+        curve_max = value.curve_max
+    if curve_mean is None:
+        curve_mean = value.curve_mean
+    if curve_variance is None:
+        curve_variance = value.curve_variance
+    if curve_frame_variance is None:
+        curve_frame_variance = value.curve_frame_variance
+    if curve_max_variance is None:
+        curve_max_variance = value.curve_max_variance
+
+    new_value = create_attr_detail(
+        state=state,
+        min_enable=min_enable,
+        min_value=min_value,
+        max_enable=max_enable,
+        max_value=max_value,
+        smoothness_enable=smoothness_enable,
+        smoothness_variance=smoothness_variance,
+        smoothness_weight=smoothness_weight,
+        stiffness_enable=stiffness_enable,
+        stiffness_variance=stiffness_variance,
+        stiffness_weight=stiffness_weight,
+        curve_min=curve_min,
+        curve_max=curve_max,
+        curve_mean=curve_mean,
+        curve_variance=curve_variance,
+        curve_frame_variance=curve_frame_variance,
+        curve_max_variance=curve_max_variance,
+    )
+    return new_value
+
+
+CurveStatistics = collections.namedtuple(
+    "CurveStatistics",
+    (
+        "min_value",
+        "max_value",
+        "mean_value",
+        "variance",
+        "frame_variance",
+        "max_variance",
+    )
+)
+
+
+def create_curve_statistics(min_value=None,
+                            max_value=None,
+                            mean_value=None,
+                            variance=None,
+                            frame_variance=None,
+                            max_variance=None):
+    value = CurveStatistics(
+        min_value=min_value,
+        max_value=max_value,
+        mean_value=mean_value,
+        variance=variance,
+        frame_variance=frame_variance,
+        max_variance=max_variance,
     )
     return value
 
@@ -184,59 +330,215 @@ def get_selected_maya_attributes():
     return attr_list
 
 
+def get_selected_node_default_attributes():
+    """
+    Get the attributes on the selected nodes.
+
+    :returns: List of mmSolver API Attribute objects.
+    :rtype: [Attribute, ..]
+    """
+    attr_list = []
+    sel = maya.cmds.ls(selection=True, long=True) or []
+    if len(sel) == 0:
+        return attr_list
+
+    for node in sel:
+        node_type = maya.cmds.nodeType(node)
+        obj_type = mmapi.get_object_type(node)
+        attr_names = []
+        if obj_type == mmapi.OBJECT_TYPE_BUNDLE:
+            # Default bundle attributes.
+            attr_names += [
+                'translateX',
+                'translateY',
+                'translateZ',
+            ]
+        elif obj_type == mmapi.OBJECT_TYPE_CAMERA:
+            # Camera default attributes, for both transform and
+            # camera nodes.
+            if node_type == 'transform':
+                attr_names += [
+                    'translateX',
+                    'translateY',
+                    'translateZ',
+                    'rotateX',
+                    'rotateY',
+                    'rotateZ',
+                ]
+            elif node_type == 'camera':
+                attr_names += [
+                    'focalLength',
+                ]
+        else:
+            # Fallback - get all logical attributes.
+            attrs = maya.cmds.listAttr(
+                node,
+                keyable=True,
+                settable=True,
+                scalar=True,
+                shortNames=False,
+            ) or []
+            attr_types = [
+                'doubleLinear',
+                'doubleAngle',
+                'double',
+                'float',
+            ]
+            attr_names += [n for n in attrs
+                           if maya.cmds.attributeQuery(
+                                  n, node=node,
+                                  attributeType=True) in attr_types]
+
+        for attr_name in attr_names:
+            attr_obj = mmapi.Attribute(node=node, attr=attr_name)
+            attr_list.append(attr_obj)
+    return attr_list
+
+
+def input_attributes_filter(attr_list):
+    """
+    Apply logic to remove any non-input attributes from the given list.
+
+    :param attr_list: Attribute list to filter.
+    :type attr_list: [Attribute, ..]
+
+    :returns: List of attributes that are filtered.
+    :rtype: [Attribute, ..]
+    """
+    result = []
+    for attr_obj in attr_list:
+        node = attr_obj.get_node()
+        obj_type = mmapi.get_object_type(node)
+        if obj_type in solver_const.ATTR_INVALID_OBJECT_TYPES:
+            continue
+        result.append(attr_obj)
+    return result
+
+
+def get_curve_statistics(attr):
+    curve = create_curve_statistics()
+
+    plug_name = attr.get_name()
+    anim_curves = animcurve_utils.get_anim_curves_from_nodes([plug_name])
+    if len(anim_curves) == 0:
+        return curve
+    anim_curve_name = anim_curves[0]
+
+    obj = node_utils.get_as_object_apione(anim_curve_name)
+    animfn = OpenMayaAnim1.MFnAnimCurve(obj)
+    animCurveType = animfn.animCurveType()
+
+    ui_unit = OpenMaya1.MTime.uiUnit()
+    num_keys = animfn.numKeys()
+    start_time = animfn.time(0)
+    end_time = animfn.time(num_keys - 1)
+    start_frame = int(start_time.asUnits(ui_unit))
+    end_frame = int(end_time.asUnits(ui_unit))
+    frame_nums = end_frame - start_frame
+
+    values = []
+    curve_min_value = 999999999.0
+    curve_max_value = -999999999.0
+    curve_mean_value = 0.0
+    for i, frame in enumerate(range(start_frame, end_frame + 1)):
+        t = OpenMaya1.MTime(float(frame), ui_unit)
+        value = animfn.evaluate(t)
+        if animCurveType == OpenMayaAnim1.MFnAnimCurve.kAnimCurveTA:
+            value = math.degrees(value)
+        values.append(value)
+        curve_min_value = min(curve_min_value, value)
+        curve_max_value = max(curve_max_value, value)
+        curve_mean_value += value
+    curve_mean_value /= len(values)
+
+    curve_variance = 0.0
+    for value in values:
+        diff = value - curve_mean_value
+        diff = diff * diff
+        curve_variance += diff
+    curve_variance /= len(values)
+    curve_variance = math.sqrt(curve_variance)
+
+    curve_max_variance = 0.0
+    curve_frame_variance = 0.0
+    for i, value in enumerate(values):
+        idx_prev = max(0, i - 1)
+        idx_next = min(i + 1, len(values) - 1)
+        value_prev = values[idx_prev]
+        value_next = values[idx_next]
+        diff = abs(value - value_prev)
+        curve_max_variance = max(curve_max_variance, diff)
+        diff = diff * diff
+        curve_frame_variance += diff
+        diff = abs(value - value_next)
+        curve_max_variance = max(curve_max_variance, diff)
+        diff = diff * diff
+        curve_frame_variance += diff
+    curve_frame_variance /= len(values) * 2
+    curve_frame_variance = math.sqrt(curve_frame_variance)
+
+    curve = create_curve_statistics(
+        min_value=curve_min_value,
+        max_value=curve_max_value,
+        mean_value=curve_mean_value,
+        variance=curve_variance,
+        frame_variance=curve_frame_variance,
+        max_variance=curve_max_variance,
+    )
+    return curve
+
+
 def convert_attributes_to_detail_values(col, attr_list):
     assert isinstance(col, mmapi.Collection)
     assert isinstance(attr_list, (list, tuple))
 
-    # Default values.
-    # TODO: Put these in the constant.py file.
-    state = mmapi.ATTR_STATE_INVALID
-    min_enable = const.MIN_ENABLE_DEFAULT_VALUE
-    min_value = const.MIN_VALUE_DEFAULT_VALUE
-    max_enable = const.MAX_ENABLE_DEFAULT_VALUE
-    max_value = const.MAX_VALUE_DEFAULT_VALUE
-    stiffness_enable = const.STIFFNESS_ENABLE_DEFAULT_VALUE
-    stiffness_value = const.STIFFNESS_VALUE_DEFAULT_VALUE
-    smoothness_enable = const.SMOOTHNESS_ENABLE_DEFAULT_VALUE
-    smoothness_value = const.SMOOTHNESS_VALUE_DEFAULT_VALUE
-
+    values_dict = {}
     for attr in attr_list:
         assert isinstance(attr, mmapi.Attribute)
         attr_state = attr.get_state()
-        state = max(state, attr_state)
+        attr_animated = int(attr_state == mmapi.ATTR_STATE_ANIMATED)
 
-        if min_enable is False and col.get_attribute_min_enable(attr) is True:
-            min_enable = True
-        # TODO: Ensure the first '0.0' value is not counted in the
-        #  'min' function below.
-        min_value = min(min_value, col.get_attribute_min_value(attr))
+        attr_min_enable = col.get_attribute_min_enable(attr)
+        attr_min_value = col.get_attribute_min_value(attr)
 
-        if max_enable is False and col.get_attribute_max_enable(attr) is True:
-            max_enable = True
-        max_value = max(max_value, col.get_attribute_max_value(attr))
+        attr_max_enable = col.get_attribute_max_enable(attr)
+        attr_max_value = col.get_attribute_max_value(attr)
 
-        if stiffness_enable is False and col.get_attribute_stiffness_enable(attr) is True:
-            stiffness_enable = True
-        # TODO: Create an average value as a default.
-        stiffness_value = max(stiffness_value, col.get_attribute_stiffness_weight(attr))
+        attr_stiffness_enable = col.get_attribute_stiffness_enable(attr)
+        attr_stiffness_weight = col.get_attribute_stiffness_weight(attr)
+        attr_stiffness_variance = col.get_attribute_stiffness_variance(attr)
 
-        if smoothness_enable is False and col.get_attribute_smoothness_enable(attr) is True:
-            smoothness_enable = True
-        # TODO: Create an average value as a default.
-        smoothness_value = max(smoothness_value, col.get_attribute_smoothness_weight(attr))
+        attr_smoothness_enable = col.get_attribute_smoothness_enable(attr)
+        attr_smoothness_weight = col.get_attribute_smoothness_weight(attr)
+        attr_smoothness_variance = col.get_attribute_smoothness_variance(attr)
 
-    value = create_attr_detail(
-        state=state,
-        min_enable=min_enable,
-        min_value=min_value,
-        max_enable=max_enable,
-        max_value=max_value,
-        stiffness_enable=stiffness_enable,
-        stiffness_value=stiffness_value,
-        smoothness_enable=smoothness_enable,
-        smoothness_value=smoothness_value,
-    )
-    return value
+        attr_curve = create_curve_statistics()
+        if attr_animated:
+            attr_curve = get_curve_statistics(attr)
+
+        attr_detail = create_attr_detail(
+            state=attr_state,
+            min_enable=attr_min_enable,
+            min_value=attr_min_value,
+            max_enable=attr_max_enable,
+            max_value=attr_max_value,
+            stiffness_enable=attr_stiffness_enable,
+            stiffness_variance=attr_stiffness_variance,
+            stiffness_weight=attr_stiffness_weight,
+            smoothness_enable=attr_smoothness_enable,
+            smoothness_variance=attr_smoothness_variance,
+            smoothness_weight=attr_smoothness_weight,
+            curve_min=attr_curve.min_value,
+            curve_max=attr_curve.max_value,
+            curve_mean=attr_curve.mean_value,
+            curve_variance=attr_curve.variance,
+            curve_frame_variance=attr_curve.frame_variance,
+            curve_max_variance=attr_curve.max_variance,
+        )
+        attr_name = attr.get_name()
+        values_dict[attr_name] = attr_detail
+
+    return values_dict
 
 
 def set_attribute_state(attr, state):
@@ -285,6 +587,8 @@ def set_attribute_details(col, attr, values):
     col.set_attribute_max_enable(attr, values.max_enable)
     col.set_attribute_max_value(attr, values.max_value)
     col.set_attribute_stiffness_enable(attr, values.stiffness_enable)
-    col.set_attribute_stiffness_weight(attr, values.stiffness_value)
+    col.set_attribute_stiffness_variance(attr, values.stiffness_variance)
+    col.set_attribute_stiffness_weight(attr, values.stiffness_weight)
     col.set_attribute_smoothness_enable(attr, values.smoothness_enable)
-    col.set_attribute_smoothness_weight(attr, values.smoothness_value)
+    col.set_attribute_smoothness_variance(attr, values.smoothness_variance)
+    col.set_attribute_smoothness_weight(attr, values.smoothness_weight)

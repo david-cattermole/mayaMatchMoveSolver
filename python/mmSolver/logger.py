@@ -57,6 +57,7 @@ def get_logger(level=None):
     if module is not None:
         module_name = module.__name__
 
+    logging.addLevelName(15, 'VERBOSE')  # between INFO and DEBUG.
     log = logging.getLogger(module_name)
 
     # Turn on debug logging.

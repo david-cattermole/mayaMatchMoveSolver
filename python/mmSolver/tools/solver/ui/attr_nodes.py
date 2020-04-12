@@ -19,6 +19,8 @@
 Attribute nodes for the mmSolver Window UI.
 """
 
+import maya.cmds
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -67,27 +69,59 @@ class PlugNode(nodes.Node):
     def state(self):
         return ''
 
-    def minValue(self):
+    def minMaxValue(self):
         return ''
 
-    def maxValue(self):
+    def stiffnessValue(self):
         return ''
+
+    def smoothnessValue(self):
+        return ''
+
+
+def _get_attr_type(attr):
+    if attr is None:
+        return None
+    attr_name = attr.get_attr().lower()
+    attr_type = const.ATTR_TYPE_OTHER
+    if 'translate' in attr_name:
+        attr_type = const.ATTR_TYPE_TRANSLATE
+    elif 'rotate' in attr_name:
+        attr_type = const.ATTR_TYPE_ROTATE
+    elif 'scale' in attr_name:
+        attr_type = const.ATTR_TYPE_SCALE
+    else:
+        node_name = attr.get_node()
+        node_type = maya.cmds.nodeType(node_name)
+        node_type = node_type.lower()
+        if node_type == 'camera':
+            attr_type = const.ATTR_TYPE_CAMERA
+        elif 'lens' in node_type:
+            attr_type = const.ATTR_TYPE_LENS
+    return attr_type
 
 
 class AttrNode(PlugNode):
     def __init__(self, name,
                  data=None,
                  parent=None):
+        attr = None
+        if data is not None:
+            attr = data.get('data')
         icon = const.ATTR_ICON_NAME
-        attrs_x = ['translateX', 'rotateX', 'scaleX']
-        attrs_y = ['translateY', 'rotateY', 'scaleY']
-        attrs_z = ['translateZ', 'rotateZ', 'scaleZ']
-        if name in attrs_x:
-            icon = const.ATTR_X_ICON_NAME
-        elif name in attrs_y:
-            icon = const.ATTR_Y_ICON_NAME
-        elif name in attrs_z:
-            icon = const.ATTR_Z_ICON_NAME
+        attr_type = _get_attr_type(attr)
+        if attr_type == const.ATTR_TYPE_TRANSLATE:
+            icon = const.ATTR_TYPE_TRANSLATE_ICON_NAME
+        elif attr_type == const.ATTR_TYPE_ROTATE:
+            icon = const.ATTR_TYPE_ROTATE_ICON_NAME
+        elif attr_type == const.ATTR_TYPE_SCALE:
+            icon = const.ATTR_TYPE_SCALE_ICON_NAME
+        elif attr_type == const.ATTR_TYPE_CAMERA:
+            icon = const.ATTR_TYPE_CAMERA_ICON_NAME
+        elif attr_type == const.ATTR_TYPE_LENS:
+            icon = const.ATTR_TYPE_LENS_ICON_NAME
+        else:
+            icon = const.ATTR_TYPE_OTHER_ICON_NAME
         super(AttrNode, self).__init__(
             name,
             data=data,
@@ -110,23 +144,52 @@ class AttrNode(PlugNode):
             state = const.ATTR_STATE_LOCKED
         return state
 
-    def minValue(self):
-        d = self.data().get('data')
-        if d is None:
-            return const.ATTR_DEFAULT_MIN_UI_VALUE
-        v = d.get_min_value()
-        if v is None:
-            return const.ATTR_DEFAULT_MIN_UI_VALUE
-        return str(v)
+    def minMaxValue(self):
+        col = self.data().get('collection')
+        attr = self.data().get('data')
+        if attr is None or col is None:
+            min_value = const.ATTR_DEFAULT_MIN_UI_VALUE
+            max_value = const.ATTR_DEFAULT_MAX_UI_VALUE
+            value = const.ATTR_DEFAULT_MIN_MAX_UI_VALUE
+            value = value.format(min=min_value, max=max_value)
+            return value
+        min_enable = col.get_attribute_min_enable(attr)
+        max_enable = col.get_attribute_max_enable(attr)
+        min_value = col.get_attribute_min_value(attr)
+        max_value = col.get_attribute_max_value(attr)
+        if min_enable is False:
+            min_value = const.ATTR_DEFAULT_MIN_UI_VALUE
+        if max_enable is False:
+            max_value = const.ATTR_DEFAULT_MAX_UI_VALUE
+        value = const.ATTR_DEFAULT_MIN_MAX_UI_VALUE
+        value = value.format(min=min_value, max=max_value)
+        return str(value)
 
-    def maxValue(self):
-        d = self.data().get('data')
-        if d is None:
-            return const.ATTR_DEFAULT_MAX_UI_VALUE
-        v = d.get_max_value()
-        if v is None:
-            return const.ATTR_DEFAULT_MAX_UI_VALUE
-        return str(v)
+    def stiffnessValue(self):
+        col = self.data().get('collection')
+        attr = self.data().get('data')
+        if attr is None or col is None:
+            return const.ATTR_DEFAULT_STIFFNESS_UI_VALUE
+        stiff_enable = col.get_attribute_stiffness_enable(attr)
+        stiff_value = col.get_attribute_stiffness_variance(attr)
+        if stiff_enable is False or stiff_value is None:
+            stiff_value = const.ATTR_DEFAULT_STIFFNESS_UI_VALUE
+        if isinstance(stiff_value, float):
+            stiff_value = str(stiff_value)
+        return stiff_value
+
+    def smoothnessValue(self):
+        col = self.data().get('collection')
+        attr = self.data().get('data')
+        if attr is None or col is None:
+            return const.ATTR_DEFAULT_SMOOTHNESS_UI_VALUE
+        smooth_enable = col.get_attribute_smoothness_enable(attr)
+        smooth_value = col.get_attribute_smoothness_variance(attr)
+        if smooth_enable is False or smooth_value is None:
+            smooth_value = const.ATTR_DEFAULT_SMOOTHNESS_UI_VALUE
+        if isinstance(smooth_value, float):
+            smooth_value = str(smooth_value)
+        return smooth_value
 
     def mayaNodeName(self):
         return 'node'
@@ -173,18 +236,20 @@ class AttrModel(uimodels.ItemModel):
         column_names = {
             0: const.ATTR_COLUMN_NAME_ATTRIBUTE,
             1: const.ATTR_COLUMN_NAME_STATE,
-            2: const.ATTR_COLUMN_NAME_VALUE_MIN,
-            3: const.ATTR_COLUMN_NAME_VALUE_MAX,
-            4: const.ATTR_COLUMN_NAME_UUID,
+            2: const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS,
+            3: const.ATTR_COLUMN_NAME_VALUE_STIFFNESS,
+            4: const.ATTR_COLUMN_NAME_VALUE_MIN_MAX,
+            5: const.ATTR_COLUMN_NAME_UUID,
         }
         return column_names
 
     def columnAlignments(self):
         values = {
             const.ATTR_COLUMN_NAME_ATTRIBUTE: QtCore.Qt.AlignLeft,
-            const.ATTR_COLUMN_NAME_STATE: QtCore.Qt.AlignRight,
-            const.ATTR_COLUMN_NAME_VALUE_MIN: QtCore.Qt.AlignCenter,
-            const.ATTR_COLUMN_NAME_VALUE_MAX: QtCore.Qt.AlignCenter,
+            const.ATTR_COLUMN_NAME_STATE: QtCore.Qt.AlignCenter,
+            const.ATTR_COLUMN_NAME_VALUE_MIN_MAX: QtCore.Qt.AlignCenter,
+            const.ATTR_COLUMN_NAME_VALUE_STIFFNESS: QtCore.Qt.AlignCenter,
+            const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS: QtCore.Qt.AlignCenter,
             const.ATTR_COLUMN_NAME_UUID: QtCore.Qt.AlignCenter,
         }
         return values
@@ -193,17 +258,20 @@ class AttrModel(uimodels.ItemModel):
         get_attr_dict = {
             const.ATTR_COLUMN_NAME_ATTRIBUTE: 'name',
             const.ATTR_COLUMN_NAME_STATE: 'state',
-            const.ATTR_COLUMN_NAME_VALUE_MIN: 'minValue',
-            const.ATTR_COLUMN_NAME_VALUE_MAX: 'maxValue',
+            const.ATTR_COLUMN_NAME_VALUE_MIN_MAX: 'minMaxValue',
+            const.ATTR_COLUMN_NAME_VALUE_STIFFNESS: 'stiffnessValue',
+            const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS: 'smoothnessValue',
             const.ATTR_COLUMN_NAME_UUID: 'uuid',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 
     def getSetAttrFuncFromIndex(self, index):
-        set_attr_dict = {
-            # const.ATTR_COLUMN_NAME_ATTRIBUTE: 'setName',
-            # const.ATTR_COLUMN_NAME_STATE: 'setState',
-            # const.ATTR_COLUMN_NAME_VALUE_MIN: 'setMinValue',
-            # const.ATTR_COLUMN_NAME_VALUE_MAX: 'setMaxValue',
-        }
+        set_attr_dict = {}
         return self._getSetAttrFuncFromIndex(index, set_attr_dict)
+
+    def indexEnabled(self, index):
+        node = index.internalPointer()
+        return node.enabled()
+
+    def indexEditable(self, index):
+        return False

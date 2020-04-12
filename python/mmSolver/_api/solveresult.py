@@ -17,12 +17,6 @@
 #
 """
 The information returned from a solve.
-
-.. todo::
-
-    Make a function to combine a list of SolveResults into a single
-    SolveResult, with some values averaged or added (as required)
-
 """
 
 import collections

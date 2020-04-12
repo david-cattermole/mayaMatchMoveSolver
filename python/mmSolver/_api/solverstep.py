@@ -21,6 +21,7 @@ operation (step).
 """
 
 import mmSolver.logger
+import mmSolver.utils.kalmanfilter as kalman
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
 import mmSolver._api.constant as const
@@ -262,6 +263,22 @@ class SolverStep(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_use_smoothness(self):
+        return self._data.get('smoothness')
+
+    def set_use_smoothness(self, value):
+        assert isinstance(value, (bool, int))
+        self._data['smoothness'] = bool(value)
+
+    def get_use_stiffness(self):
+        return self._data.get('stiffness')
+
+    def set_use_stiffness(self, value):
+        assert isinstance(value, (bool, int))
+        self._data['stiffness'] = bool(value)
+
+    ############################################################################
+
     def get_attributes_use_animated(self):
         return self._attributes_use.get('animated')
 
@@ -368,12 +385,15 @@ class SolverStep(solverbase.SolverBase):
 
     ##########################################
 
-    def compile(self, mkr_list, attr_list, withtest=False):
+    def compile(self, col, mkr_list, attr_list, withtest=False):
         """
         Compiles data given into flags for a single run of 'mmSolver'.
 
         :param self: The solver to compile
         :type self: Solver
+
+        :param col: The collection to compile.
+        :type col: Collection
 
         :param mkr_list: Markers to measure
         :type mkr_list: list of Marker
@@ -381,8 +401,11 @@ class SolverStep(solverbase.SolverBase):
         :param attr_list: Attributes to solve for
         :type attr_list: list of Attribute
 
-        :return: List of SolverActions to be performed one after the other.
-        :rtype: [SolverAction, ..]
+        :return:
+            Yields a tuple of two Actions at each iteration. First
+            action is the solver action, second action is for
+            validation of the solve.
+        :rtype: (Action, Action)
         """
         assert isinstance(self, solverbase.SolverBase)
         assert isinstance(mkr_list, list)
@@ -412,12 +435,30 @@ class SolverStep(solverbase.SolverBase):
         # Get Attributes
         use_animated = self.get_attributes_use_animated()
         use_static = self.get_attributes_use_static()
-        attrs = api_compile.attributes_compile_flags(attr_list,
-                                                     use_animated,
-                                                     use_static)
+        attrs = api_compile.attributes_compile_flags(
+            col,
+            attr_list,
+            use_animated,
+            use_static)
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
             return
+
+        # Stiffness Attribute Flags
+        stiff_flags = None
+        use_stiffness = self.get_use_stiffness()
+        if use_stiffness is True:
+            stiff_flags = api_compile.attr_stiffness_compile_flags(
+                col,
+                attr_list)
+
+        # Smoothness Attribute Flags
+        smooth_flags = None
+        use_smoothness = self.get_use_smoothness()
+        if use_smoothness is True:
+            smooth_flags = api_compile.attr_smoothness_compile_flags(
+                col,
+                attr_list)
 
         # Get Frames
         frm_list = self.get_frame_list()
@@ -431,6 +472,11 @@ class SolverStep(solverbase.SolverBase):
         kwargs['camera'] = cameras
         kwargs['attr'] = attrs
         kwargs['frame'] = frames
+
+        if stiff_flags:
+            kwargs['attrStiffness'] = stiff_flags
+        if smooth_flags:
+            kwargs['attrSmoothness'] = smooth_flags
 
         solver_type = self.get_solver_type()
         if solver_type is not None:

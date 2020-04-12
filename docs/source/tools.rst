@@ -13,6 +13,7 @@ Pages dedicated to specific tools:
     tools_solver_ui
     tools_createnode
     tools_selection
+    tools_attributetools
     tools_markerbundletools
     tools_bundletools
     tools_markertools

@@ -93,21 +93,16 @@ class Attribute(object):
 
             node_obj = self._plug.node()
             self._dependFn = OpenMaya.MFnDependencyNode(node_obj)
-
-        # The minimum and maximum values allowed for the attribute.
-        self._min_value = None
-        self._max_value = None
         return
 
     def __repr__(self):
         result = '<{class_name}('.format(class_name=self.__class__.__name__)
-        result += '{hash} name={name} min={min} max={max}'.format(
+        result += '{hash} name={name}'
+        result += ')>'
+        result = result.format(
             hash=hex(hash(self)),
             name=self.get_name(),
-            min=self.get_min_value(),
-            max=self.get_max_value(),
         )
-        result += ')>'
         return result
 
     def get_node(self, full_path=True):
@@ -125,7 +120,7 @@ class Attribute(object):
         """
         Get the Attribute's node unique identifier.
 
-        :return: The marker UUID or None
+        :return: The Attribute UUID or None
         :rtype: None or str or unicode
         """
         node = self.get_node()
@@ -176,7 +171,7 @@ class Attribute(object):
         OpenMayaAnim.MAnimUtil.findAnimatedPlugs(self._plug.node(),
                                                  animPlugs,
                                                  check_parents)
-        for i in xrange(animPlugs.length()):
+        for i in range(animPlugs.length()):
             plug = animPlugs[i]
             if self._plug.name() == plug.name():
                 state = const.ATTR_STATE_ANIMATED
@@ -194,17 +189,3 @@ class Attribute(object):
 
     def is_locked(self):
         return self.get_state() == const.ATTR_STATE_LOCKED
-
-    def get_min_value(self):
-        return self._min_value
-
-    def set_min_value(self, value):
-        assert value is None or isinstance(value, float)
-        self._min_value = value
-
-    def get_max_value(self):
-        return self._max_value
-
-    def set_max_value(self, value):
-        assert value is None or isinstance(value, float)
-        self._max_value = value

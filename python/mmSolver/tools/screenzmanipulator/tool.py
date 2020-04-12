@@ -19,6 +19,11 @@
 This tool aims the move manipulator tool at the active viewport camera.
 After aiming the move tool at the camera, the screen-space Z axis is
 highlighted, ready to be middle-click dragged.
+
+.. todo::
+   When the user changes the frame number the screen-space Z
+   manipulator should be updated. for the new camera position.
+
 """
 
 import maya.cmds
@@ -40,7 +45,7 @@ def screen_space_z(camera_tfm):
     if not camera_tfm:
         LOG.warning('Please select a viewport')
         return
-        
+
     cam_position = maya.cmds.xform(camera_tfm,
                                    worldSpace=True,
                                    query=True,
@@ -56,11 +61,12 @@ def screen_space_z(camera_tfm):
 def main():
     """
     Main function toggles between screen-space Z and object
+
     :return: None
     """
     selection = maya.cmds.ls(sl=True)
     if not selection:
-        LOG.warning('Please select a object.')
+        LOG.warning('Please select an object.')
         return
 
     active_model_editor = utils_viewport.get_active_model_editor()

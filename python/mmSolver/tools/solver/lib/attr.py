@@ -25,6 +25,7 @@ import mmSolver.utils.node as node_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.undo as undo_utils
 import mmSolver.tools.solver.maya_callbacks as maya_callbacks
+import mmSolver.tools.setattributedetails.tool as set_details_tool
 
 LOG = mmSolver.logger.get_logger()
 
@@ -57,6 +58,12 @@ def add_attributes_to_collection(attr_list, col):
 
 def remove_attr_from_collection(attr_list, col):
     return col.remove_attribute_list(attr_list)
+
+
+def set_details_selected_attributes(attr_list, col):
+    LOG.debug('set_details_selected_attributes: %r', attr_list)
+    set_details_tool.open_window(col=col, attr_list=attr_list)
+    return
 
 
 def lock_selected_attributes(attr_list):

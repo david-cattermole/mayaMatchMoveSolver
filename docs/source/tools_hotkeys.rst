@@ -25,7 +25,7 @@ Inside the *mmSolver* hotkey set there are default hotkeys. The
 default hotkeys are provided as helping shortcuts to speed up the
 workflow with mmSolver.
 
-The **A** key invokes a catch-all tool capiable of performing many
+The **A** key invokes a catch-all tool capable of performing many
 common tasks without needing to move your mouse away from the
 viewport.
 

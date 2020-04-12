@@ -76,6 +76,8 @@ SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION = 'display_object_maximum_deviation'
 SCENE_DATA_DISPLAY_OBJECT_WEIGHT = 'display_object_weight'
 SCENE_DATA_DISPLAY_ATTRIBUTE_STATE = 'display_attribute_state'
 SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX = 'display_attribute_min_max'
+SCENE_DATA_DISPLAY_ATTRIBUTE_STIFFNESS = 'display_attribute_stiffness'
+SCENE_DATA_DISPLAY_ATTRIBUTE_SMOOTHNESS = 'display_attribute_smoothness'
 SCENE_DATA_LOG_LEVEL = 'log_level'
 SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION_DEFAULT = False
 SCENE_DATA_PRE_SOLVE_FORCE_EVAL_DEFAULT = True
@@ -89,7 +91,9 @@ SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION_DEFAULT = True
 SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION_DEFAULT = False
 SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION_DEFAULT = False
 SCENE_DATA_DISPLAY_ATTRIBUTE_STATE_DEFAULT = True
-SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX_DEFAULT = False
+SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX_DEFAULT = True
+SCENE_DATA_DISPLAY_ATTRIBUTE_STIFFNESS_DEFAULT = False
+SCENE_DATA_DISPLAY_ATTRIBUTE_SMOOTHNESS_DEFAULT = False
 SCENE_DATA_LOG_LEVEL_DEFAULT = LOG_LEVEL_INFO
 
 
@@ -171,6 +175,9 @@ OBJECT_DEFAULT_WEIGHT_UI_VALUE = '-'
 OBJECT_DEFAULT_DEVIATION_UI_VALUE = '-'
 ATTR_DEFAULT_MIN_UI_VALUE = '-'
 ATTR_DEFAULT_MAX_UI_VALUE = '-'
+ATTR_DEFAULT_MIN_MAX_UI_VALUE = ' {min}  to  {max} '
+ATTR_DEFAULT_STIFFNESS_UI_VALUE = '-'
+ATTR_DEFAULT_SMOOTHNESS_UI_VALUE = '-'
 
 ATTR_STATE_INVALID = 'Invalid'
 ATTR_STATE_STATIC = 'Static'
@@ -222,8 +229,9 @@ OBJECT_COLUMN_NAME_UUID = 'Maya Node UUID'
 # Attributes to the user).
 ATTR_COLUMN_NAME_ATTRIBUTE = 'Attr'
 ATTR_COLUMN_NAME_STATE = 'State'
-ATTR_COLUMN_NAME_VALUE_MIN = 'Min'
-ATTR_COLUMN_NAME_VALUE_MAX = 'Max'
+ATTR_COLUMN_NAME_VALUE_MIN_MAX = 'Range'
+ATTR_COLUMN_NAME_VALUE_STIFFNESS = 'Stiffness'
+ATTR_COLUMN_NAME_VALUE_SMOOTHNESS = 'Smoothness'
 ATTR_COLUMN_NAME_UUID = 'Maya Node UUID'
 
 # The Column Names for the Solver Model (used to display Solver Steps
@@ -315,6 +323,14 @@ SOLVER_STD_DESC_DEFAULT = (
     'then solve animated attributes on frames.'
 )
 
+# Attribute Type
+ATTR_TYPE_TRANSLATE = 'attr_type_translate'
+ATTR_TYPE_ROTATE = 'attr_type_rotate'
+ATTR_TYPE_SCALE = 'attr_type_scale'
+ATTR_TYPE_CAMERA = 'attr_type_camera'
+ATTR_TYPE_LENS = 'attr_type_lens'
+ATTR_TYPE_OTHER = 'attr_type_other'
+
 # Icon names
 OBJECT_ICON_NAME = ':/mmSolver_object.png'
 MARKER_ICON_NAME = ':/mmSolver_marker.png'
@@ -323,7 +339,10 @@ CAMERA_ICON_NAME = ':/mmSolver_camera.png'
 PLUG_ICON_NAME = ':/mmSolver_plug.png'
 NODE_ICON_NAME = ':/mmSolver_node.png'
 ATTR_ICON_NAME = ':/mmSolver_attr.png'
-ATTR_X_ICON_NAME = ':/mmSolver_attr_x.png'
-ATTR_Y_ICON_NAME = ':/mmSolver_attr_y.png'
-ATTR_Z_ICON_NAME = ':/mmSolver_attr_z.png'
+ATTR_TYPE_TRANSLATE_ICON_NAME = ':/mmSolver_attr_type_translate.png'
+ATTR_TYPE_ROTATE_ICON_NAME = ':/mmSolver_attr_type_rotate.png'
+ATTR_TYPE_SCALE_ICON_NAME = ':/mmSolver_attr_type_scale.png'
+ATTR_TYPE_CAMERA_ICON_NAME = ':/mmSolver_attr_type_camera.png'
+ATTR_TYPE_LENS_ICON_NAME = ':/mmSolver_attr_type_lens.png'
+ATTR_TYPE_OTHER_ICON_NAME = ':/mmSolver_attr_type_other.png'
 SOLVER_STEP_ICON_NAME = ':/mmSolver_solverStep.png'

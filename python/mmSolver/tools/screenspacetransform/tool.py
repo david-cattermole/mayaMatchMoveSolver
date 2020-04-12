@@ -75,6 +75,8 @@ def main():
         grp_node, depth_tfm, loc_tfm, loc_shp = lib.create_screen_space_locator(cam)
         created_loc_tfms.append(loc_tfm)
 
+        # BUG: If a camera has 'camera scale' attribute set other than
+        # 1.0, the reprojected values will not be correct.
         values = maya.cmds.mmReprojection(
             node,
             camera=(cam_tfm, cam_shp),

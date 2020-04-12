@@ -241,4 +241,37 @@ typedef std::vector<std::shared_ptr<Attr> > AttrPtrList;
 typedef AttrPtrList::iterator AttrPtrListIt;
 typedef AttrPtrList::const_iterator AttrPtrListCIt;
 
+
+struct SmoothAttrs {
+    int attrIndex;
+    AttrPtr weightAttr;
+    AttrPtr varianceAttr;
+    AttrPtr valueAttr;
+};
+
+typedef std::vector<SmoothAttrs> SmoothAttrsList;
+typedef SmoothAttrsList::iterator SmoothAttrsListIt;
+
+typedef std::shared_ptr<SmoothAttrs> SmoothAttrsPtr;
+typedef std::vector<std::shared_ptr<SmoothAttrs> > SmoothAttrsPtrList;
+typedef SmoothAttrsPtrList::iterator SmoothAttrsPtrListIt;
+typedef SmoothAttrsPtrList::const_iterator SmoothAttrsPtrListCIt;
+
+
+struct StiffAttrs {
+    int attrIndex;
+    AttrPtr weightAttr;
+    AttrPtr varianceAttr;
+    AttrPtr valueAttr;
+};
+
+typedef std::vector<StiffAttrs> StiffAttrsList;
+typedef StiffAttrsList::iterator StiffAttrsListIt;
+
+typedef std::shared_ptr<StiffAttrs> StiffAttrsPtr;
+typedef std::vector<std::shared_ptr<StiffAttrs> > StiffAttrsPtrList;
+typedef StiffAttrsPtrList::iterator StiffAttrsPtrListIt;
+typedef StiffAttrsPtrList::const_iterator StiffAttrsPtrListCIt;
+
+
 #endif //MAYA_MM_SOLVER_ATTR_H

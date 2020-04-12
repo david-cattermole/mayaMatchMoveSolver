@@ -37,6 +37,7 @@ mmSolver.tools
    mmSolver.tools.screenspacetransform
    mmSolver.tools.screenzmanipulator
    mmSolver.tools.selection
+   mmSolver.tools.setattributedetails
    mmSolver.tools.showdeviationcurves
    mmSolver.tools.smoothkeyframes
    mmSolver.tools.solver

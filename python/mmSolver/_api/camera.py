@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019, 2020 David Cattermole.
+# Copyright (C) 2018, 2019 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -173,7 +173,7 @@ class Camera(object):
         )
         result += ')>'
         return result
-    
+
     def get_transform_node(self):
         """
         Get the camera transform node.

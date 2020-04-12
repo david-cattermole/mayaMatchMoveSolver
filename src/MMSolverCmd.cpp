@@ -43,6 +43,7 @@
 #include <maya/MFnDependencyNode.h>
 
 // Internal Objects
+#include <Attr.h>
 #include <Marker.h>
 #include <Bundle.h>
 #include <Camera.h>
@@ -86,6 +87,16 @@ MSyntax MMSolverCmd::newSyntax() {
                    MSyntax::kString,
                    MSyntax::kString, MSyntax::kString,
                    MSyntax::kString, MSyntax::kString);
+    syntax.addFlag(STIFFNESS_FLAG, STIFFNESS_FLAG_LONG,
+                   MSyntax::kString,
+                   MSyntax::kString,
+                   MSyntax::kString,
+                   MSyntax::kString);
+    syntax.addFlag(SMOOTHNESS_FLAG, SMOOTHNESS_FLAG_LONG,
+                   MSyntax::kString,
+                   MSyntax::kString,
+                   MSyntax::kString,
+                   MSyntax::kString);
     syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG,
                    MSyntax::kLong);
     syntax.addFlag(TAU_FLAG, TAU_FLAG_LONG,
@@ -124,6 +135,8 @@ MSyntax MMSolverCmd::newSyntax() {
     syntax.makeFlagMultiUse(ATTR_FLAG);
     syntax.makeFlagMultiUse(FRAME_FLAG);
     syntax.makeFlagMultiUse(PRINT_STATS_FLAG);
+    syntax.makeFlagMultiUse(STIFFNESS_FLAG);
+    syntax.makeFlagMultiUse(SMOOTHNESS_FLAG);
 
     return syntax;
 }
@@ -287,7 +300,6 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
 
             m_markerList.push_back(marker);
             m_bundleList.push_back(bundle);
-
         }
     }
 
@@ -353,6 +365,118 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
 
             m_attrList.push_back(attr);
             MPlug attrPlug = attr->getPlug();
+        }
+    }
+
+    // Get Stiffness Values
+    unsigned int stiffnessNum = argData.numberOfFlagUses(STIFFNESS_FLAG);
+    for (unsigned int i = 0; i < stiffnessNum; ++i) {
+        MArgList stiffnessArgs;
+        status = argData.getFlagArgumentList(STIFFNESS_FLAG, i, stiffnessArgs);
+        if (status == MStatus::kSuccess) {
+            if (stiffnessArgs.length() != 4) {
+                ERR("Attribute Stiffness argument list must have 4 argument; "
+                            << "\"node.attribute\", "
+                            << "\"node.attributeStiffWeight\", "
+                            << "\"node.attributeStiffVariance\", "
+                            << "\"node.attributeStiffValue\".");
+                continue;
+            }
+
+            // Find the already created Attribute.
+            MString nodeAttrName = stiffnessArgs.asString(0);
+            AttrPtr foundAttr;
+            int foundIndex = 0;
+            for (AttrPtrListIt ait = m_attrList.begin();
+                 ait != m_attrList.end();
+                 ++ait) {
+                AttrPtr attr = *ait;
+                if (nodeAttrName == attr->getName()) {
+                    foundAttr = attr;
+                    break;
+                }
+                foundIndex++;
+            }
+            if (foundAttr->getName() == ".") {
+                ERR("Attribute Stiffness name is not a declared attribute; "
+                            << nodeAttrName);
+                continue;
+            }
+            AttrPtr stiffWeightAttr = AttrPtr(new Attr());
+            MString weightNodeAttrName = stiffnessArgs.asString(1);
+            stiffWeightAttr->setName(weightNodeAttrName);
+
+            AttrPtr stiffVarianceAttr = AttrPtr(new Attr());
+            MString varianceNodeAttrName = stiffnessArgs.asString(2);
+            stiffVarianceAttr->setName(varianceNodeAttrName);
+
+            AttrPtr stiffValueAttr = AttrPtr(new Attr());
+            MString valueNodeAttrName = stiffnessArgs.asString(3);
+            stiffValueAttr->setName(valueNodeAttrName);
+
+            StiffAttrsPtr stiffAttrs = StiffAttrsPtr(new StiffAttrs());
+            stiffAttrs->attrIndex = foundIndex;
+            stiffAttrs->weightAttr = stiffWeightAttr;
+            stiffAttrs->varianceAttr = stiffVarianceAttr;
+            stiffAttrs->valueAttr = stiffValueAttr;
+
+            m_stiffAttrsList.push_back(stiffAttrs);
+        }
+    }
+
+    // Get Smoothness Values
+    unsigned int smoothnessNum = argData.numberOfFlagUses(SMOOTHNESS_FLAG);
+    for (unsigned int i = 0; i < smoothnessNum; ++i) {
+        MArgList smoothnessArgs;
+        status = argData.getFlagArgumentList(SMOOTHNESS_FLAG, i, smoothnessArgs);
+        if (status == MStatus::kSuccess) {
+            if (smoothnessArgs.length() != 4) {
+                ERR("Attribute Smoothness argument list must have 4 argument; "
+                            << "\"node.attribute\", "
+                            << "\"node.attributeSmoothWeight\", "
+                            << "\"node.attributeSmoothVariance\", "
+                            << "\"node.attributeSmoothValue\".");
+                continue;
+            }
+
+            // Find the already created Attribute.
+            MString nodeAttrName = smoothnessArgs.asString(0);
+            AttrPtr foundAttr;
+            int foundIndex = 0;
+            for (AttrPtrListIt ait = m_attrList.begin();
+                 ait != m_attrList.end();
+                 ++ait) {
+                AttrPtr attr = *ait;
+                if (nodeAttrName == attr->getName()) {
+                    foundAttr = attr;
+                    break;
+                }
+                foundIndex++;
+            }
+            if (foundAttr->getName() == ".") {
+                ERR("Attribute Smoothness name is not a declared attribute; "
+                            << nodeAttrName);
+                continue;
+            }
+            AttrPtr smoothWeightAttr = AttrPtr(new Attr());
+            MString weightNodeAttrName = smoothnessArgs.asString(1);
+            smoothWeightAttr->setName(weightNodeAttrName);
+
+            AttrPtr smoothVarianceAttr = AttrPtr(new Attr());
+            MString varianceNodeAttrName = smoothnessArgs.asString(2);
+            smoothVarianceAttr->setName(varianceNodeAttrName);
+
+            AttrPtr smoothValueAttr = AttrPtr(new Attr());
+            MString valueNodeAttrName = smoothnessArgs.asString(3);
+            smoothValueAttr->setName(valueNodeAttrName);
+
+            SmoothAttrsPtr smoothAttrs = SmoothAttrsPtr(new SmoothAttrs());
+            smoothAttrs->attrIndex = foundIndex;
+            smoothAttrs->weightAttr = smoothWeightAttr;
+            smoothAttrs->varianceAttr = smoothVarianceAttr;
+            smoothAttrs->valueAttr = smoothValueAttr;
+
+            m_smoothAttrsList.push_back(smoothAttrs);
         }
     }
 
@@ -565,6 +689,8 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
             m_bundleList,
             m_attrList,
             m_frameList,
+            m_stiffAttrsList,
+            m_smoothAttrsList,
             m_dgmod,
             m_curveChange,
             m_computation,

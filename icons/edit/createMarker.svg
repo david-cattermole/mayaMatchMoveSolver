@@ -13,10 +13,10 @@
    height="64px"
    id="svg2816"
    version="1.1"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="createMarker.svg"
    enable-background="new"
-   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver\icons\createMarker_32x32.png"
+   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\createMarker_32x32.png"
    inkscape:export-xdpi="48"
    inkscape:export-ydpi="48">
   <defs
@@ -84,20 +84,21 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.7781746"
-     inkscape:cx="-32.86664"
-     inkscape:cy="29.54679"
-     inkscape:current-layer="g4482"
+     inkscape:zoom="5.5"
+     inkscape:cx="10.788986"
+     inkscape:cy="37.858408"
+     inkscape:current-layer="layer4"
      showgrid="false"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
-     inkscape:window-width="1916"
-     inkscape:window-height="1986"
-     inkscape:window-x="-14"
-     inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-width="1536"
+     inkscape:window-height="801"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
      showguides="true"
-     inkscape:guide-bbox="true">
+     inkscape:guide-bbox="true"
+     inkscape:pagecheckerboard="true">
     <inkscape:grid
        type="xygrid"
        id="grid4770"
@@ -144,10 +145,37 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Layer 2">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.99999994"
+       x="-0.64074427"
+       y="60.900478"
+       id="text1137-8"><tspan
+         sodipodi:role="line"
+         id="tspan1135-3"
+         x="-0.64074427"
+         y="60.900478"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16.66666603px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:0.99999994">MTools</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-width:0.99999994;"
+       x="-1.0612143"
+       y="60.064159"
+       id="text1137"><tspan
+         sodipodi:role="line"
+         id="tspan1135"
+         x="-1.0612143"
+         y="60.064159"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16.66666603px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#dadada;fill-opacity:1;stroke-width:0.99999994;">MTools</tspan></text>
+  </g>
   <g
      id="layer1"
      inkscape:label="Layer 1"

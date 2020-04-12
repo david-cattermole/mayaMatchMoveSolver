@@ -18,8 +18,9 @@
 """
 Generic data smoothing.
 
-This module is software agnostic and should not rely on any thirdparty software,
-however if numpy is available, an numpy-accelerated code-path will be used.
+This module is software agnostic and should not rely on any thirdparty
+software, however if numpy is available, an numpy-accelerated
+code-path will be used.
 
 Smoothing functions supported:
 

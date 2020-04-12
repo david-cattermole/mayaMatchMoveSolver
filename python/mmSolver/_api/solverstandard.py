@@ -92,19 +92,19 @@ def _filter_mkr_list_by_frame_list(mkr_list, frame_list):
              frame_list.
     :rtype: ([Marker, ..], [Marker, ..])
     """
-    root_frame_list_num = [x.get_number() for x in frame_list]
-    root_mkr_list = []
-    non_root_mkr_list = []
+    frame_list_num = [x.get_number() for x in frame_list]
+    used_mkr_list = []
+    unused_mkr_list = []
     for mkr in mkr_list:
         assert isinstance(mkr, marker.Marker) is True
         frame_count = 0
-        for f in root_frame_list_num:
+        for f in frame_list_num:
             frame_count += mkr.get_enable(f)
         if frame_count >= 2:
-            root_mkr_list.append(mkr)
+            used_mkr_list.append(mkr)
         else:
-            non_root_mkr_list.append(mkr)
-    return root_mkr_list, non_root_mkr_list
+            unused_mkr_list.append(mkr)
+    return used_mkr_list, unused_mkr_list
 
 
 def _split_mkr_attr_into_categories(mkr_list, attr_list):
@@ -175,7 +175,8 @@ def _split_mkr_attr_into_categories(mkr_list, attr_list):
     return meta_mkr_list, meta_attr_list
 
 
-def _compile_multi_root_frames(mkr_list,
+def _compile_multi_root_frames(col,
+                               mkr_list,
                                attr_list,
                                batch_frame_list,
                                root_iter_num,
@@ -240,11 +241,12 @@ def _compile_multi_root_frames(mkr_list,
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(True)
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+        sol.set_use_smoothness(False)
+        sol.set_use_stiffness(False)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, root_mkr_list, root_attr_list, withtest, cache,
-        )
+            sol, col, root_mkr_list, root_attr_list, withtest, cache)
         for action, vaction in generator:
             yield action, vaction
         return
@@ -317,7 +319,8 @@ def _compile_remove_inbetween_frames(attr_list,
     yield action, None
 
 
-def _compile_multi_inbetween_frames(mkr_list,
+def _compile_multi_inbetween_frames(col,
+                                    mkr_list,
                                     attr_list,
                                     all_frame_list,
                                     global_solve,
@@ -370,16 +373,18 @@ def _compile_multi_inbetween_frames(mkr_list,
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(True)
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+        sol.set_use_smoothness(False)
+        sol.set_use_stiffness(False)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, mkr_list, attr_list, withtest, cache
-        )
+            sol, col, mkr_list, attr_list, withtest, cache)
         for action, vaction in generator:
             yield action, vaction
     else:
         cache = api_compile.create_compile_solver_cache()
-        for frm in all_frame_list:
+        for i, frm in enumerate(all_frame_list):
+            is_first_frame = i == 0
             one_frame_list = [frm]
             sol = solverstep.SolverStep()
             sol.set_verbose(verbose)
@@ -388,17 +393,18 @@ def _compile_multi_inbetween_frames(mkr_list,
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(False)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+            sol.set_use_smoothness(not is_first_frame)
+            sol.set_use_stiffness(not is_first_frame)
+
             generator = api_compile.compile_solver_with_cache(
-                sol, mkr_list, attr_list,
-                withtest,
-                cache
-            )
+                sol, col, mkr_list, attr_list, withtest, cache)
             for action, vaction in generator:
                 yield action, vaction
     return
 
 
-def _compile_multi_frame(mkr_list,
+def _compile_multi_frame(col,
+                         mkr_list,
                          attr_list,
                          root_frame_list,
                          frame_list,
@@ -501,8 +507,7 @@ def _compile_multi_frame(mkr_list,
         # sol.root_frame_list = root_frame_list_num
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, mkr_list, attr_list, withtest, cache
-        )
+            sol, col, mkr_list, attr_list, withtest, cache)
         for action, vaction in generator:
             yield action, vaction
 
@@ -512,6 +517,14 @@ def _compile_multi_frame(mkr_list,
         mkr_list,
         root_frame_list
     )
+    if len(root_mkr_list) == 0:
+        # TODO: Test we have enough markers to solve with, if not warn
+        #  the user.
+        # action = api_action.Action(func='pass', args=[], kwargs={})
+        # vaction = api_action.Action(func='', args=[], kwargs={})
+        # yield action, vaction
+        LOG.warn("Not enough Markers given for root frames.")
+        return
     if auto_attr_blocks is True:
         meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
             root_mkr_list,
@@ -525,11 +538,12 @@ def _compile_multi_frame(mkr_list,
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(True)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+            sol.set_use_smoothness(False)
+            sol.set_use_stiffness(False)
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
-                sol, new_mkr_list, new_attr_list, withtest, cache
-            )
+                sol, col, new_mkr_list, new_attr_list, withtest, cache)
             for action, vaction in generator:
                 yield action, vaction
 
@@ -561,11 +575,12 @@ def _compile_multi_frame(mkr_list,
         sol.set_attributes_use_animated(True)
         sol.set_attributes_use_static(True)
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+        sol.set_use_smoothness(False)
+        sol.set_use_stiffness(False)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, root_mkr_list, attr_list, withtest, cache
-        )
+            sol, col, root_mkr_list, attr_list, withtest, cache)
         for action, vaction in generator:
             yield action, vaction
     else:
@@ -588,6 +603,7 @@ def _compile_multi_frame(mkr_list,
             #  should ensure stability of the solver is maximum.
             raise NotImplementedError
         generator = _compile_multi_root_frames(
+            col,
             mkr_list,
             attr_list,
             batch_frame_list,
@@ -615,6 +631,7 @@ def _compile_multi_frame(mkr_list,
         return
 
     generator = _compile_multi_inbetween_frames(
+        col,
         mkr_list,
         attr_list,
         all_frame_list,
@@ -628,7 +645,8 @@ def _compile_multi_frame(mkr_list,
     return
 
 
-def _compile_single_frame(mkr_list,
+def _compile_single_frame(col,
+                          mkr_list,
                           attr_list,
                           single_frame,
                           block_iter_num,
@@ -690,11 +708,12 @@ def _compile_single_frame(mkr_list,
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(True)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+            sol.set_use_smoothness(False)
+            sol.set_use_stiffness(False)
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
-                sol, new_mkr_list, new_attr_list, withtest, cache
-            )
+                sol, col, new_mkr_list, new_attr_list, withtest, cache)
             for action, vaction in generator:
                 yield action, vaction
 
@@ -706,10 +725,12 @@ def _compile_single_frame(mkr_list,
     sol.set_attributes_use_animated(True)
     sol.set_attributes_use_static(True)
     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+    sol.set_use_smoothness(False)
+    sol.set_use_stiffness(False)
+
     cache = api_compile.create_compile_solver_cache()
     generator = api_compile.compile_solver_with_cache(
-        sol, mkr_list, attr_list, withtest, cache
-    )
+        sol, col, mkr_list, attr_list, withtest, cache)
     for action, vaction in generator:
         yield action, vaction
     return
@@ -1154,7 +1175,7 @@ class SolverStandard(solverbase.SolverBase):
 
     ############################################################################
 
-    def compile(self, mkr_list, attr_list, withtest=False):
+    def compile(self, col, mkr_list, attr_list, withtest=False):
         # Options to affect how the solve is constructed.
         use_single_frame = self.get_use_single_frame()
         single_frame = self.get_single_frame()
@@ -1175,6 +1196,7 @@ class SolverStandard(solverbase.SolverBase):
 
         if use_single_frame is True:
             generator = _compile_single_frame(
+                col,
                 mkr_list,
                 attr_list,
                 single_frame,
@@ -1188,6 +1210,7 @@ class SolverStandard(solverbase.SolverBase):
                 yield action, vaction
         else:
             generator = _compile_multi_frame(
+                col,
                 mkr_list,
                 attr_list,
                 root_frame_list,

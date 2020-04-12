@@ -25,6 +25,7 @@ import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.kalmanfilter as kalman
 import mmSolver._api.attribute as attribute
 
 LOG = mmSolver.logger.get_logger()
@@ -242,3 +243,57 @@ def generate_isolate_nodes(kwargs):
         nodes.add(cam_tfm_node)
         nodes.add(cam_shp_node)
     return nodes
+
+
+def set_initial_prediction_attributes(col, attr_list, frame):
+    for attr in attr_list:
+        if not attr.is_animated():
+            # Only animated attributes can be predicted.
+            continue
+        plug_name = attr.get_name()
+        value = maya.cmds.getAttr(plug_name, time=frame)
+        col.set_attribute_previous_value(attr, value)
+        col.set_attribute_mean_value(attr, value)
+        col.set_attribute_variance_value(attr, 1000000.0)
+    return
+
+
+def compute_attribute_value_prediction(col,
+                                       attr_list,
+                                       frame):
+    for attr in attr_list:
+        if not attr.is_animated():
+            # Only animated attributes can be predicted.
+            continue
+
+        # Query values
+        plug_name = attr.get_name()
+        previous_measure = col.get_attribute_previous_value(attr)
+        measure_value = maya.cmds.getAttr(plug_name, time=frame)
+        smooth_variance = col.get_attribute_smoothness_variance(attr)
+
+        previous_mean = col.get_attribute_mean_value(attr)
+        previous_variance = col.get_attribute_variance_value(attr)
+        previous_state = kalman.State(mean=previous_mean,
+                                      variance=previous_variance,
+                                      value=measure_value)
+
+        delta_value = measure_value - previous_measure
+        new_state = kalman.State(mean=measure_value,
+                                 variance=smooth_variance,
+                                 value=measure_value)
+
+        # Measurement update Kalman state with new measurement
+        updated_state = kalman.update(previous_state, new_state)
+
+        # Prediction of next value.
+        delta_state = kalman.State(mean=delta_value,
+                                   variance=smooth_variance,
+                                   value=measure_value)
+        predicted_state = kalman.predict(updated_state, delta_state)
+
+        # Set values
+        col.set_attribute_previous_value(attr, measure_value)
+        col.set_attribute_mean_value(attr, predicted_state.mean)
+        col.set_attribute_variance_value(attr, predicted_state.variance)
+    return

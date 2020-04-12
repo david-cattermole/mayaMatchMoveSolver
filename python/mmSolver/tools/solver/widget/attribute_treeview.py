@@ -47,11 +47,11 @@ def _get_selected_attrs(cls_obj):
     )
     attr_ui_nodes = [x for x in ui_nodes if isinstance(x, attr_nodes.AttrNode)]
     attr_list = lib_uiquery.convert_ui_nodes_to_nodes(attr_ui_nodes, 'data')
-    maya_ui_nodes = [x for x in ui_nodes if isinstance(x, attr_nodes.MayaNode)]
-    for maya_ui_node in maya_ui_nodes:
-        # Maya nodes will contain all the attributes added into the UI
-        # in the 'data' key name on the data of the MayaNode.
-        attr_list += maya_ui_node.data().get('data')
+    # maya_ui_nodes = [x for x in ui_nodes if isinstance(x, attr_nodes.MayaNode)]
+    # for maya_ui_node in maya_ui_nodes:
+    #     # Maya nodes will contain all the attributes added into the UI
+    #     # in the 'data' key name on the data of the MayaNode.
+    #     attr_list += maya_ui_node.data().get('data')
     return attr_list
 
 
@@ -59,6 +59,13 @@ class AttributeTreeView(QtWidgets.QTreeView):
 
     def __init__(self, parent=None, *args, **kwargs):
         super(AttributeTreeView, self).__init__(parent, *args, **kwargs)
+        return
+
+    def set_details_selected_attributes(self):
+        col = lib_state.get_active_collection()
+        attr_list = _get_selected_attrs(self)
+        lib_attr.set_details_selected_attributes(attr_list, col)
+        # TODO: Make sure the view/model is triggered after the window opens.
         return
 
     def lock_selected_attributes(self):
@@ -110,6 +117,11 @@ class AttributeTreeView(QtWidgets.QTreeView):
         LOG.debug('Attribute TreeView Context Menu Event: %r', event)
         menu = QtWidgets.QMenu(self)
 
+        label = 'Edit Details...'
+        edit_act = QtWidgets.QAction(label, self)
+        edit_act.triggered.connect(
+            self.set_details_selected_attributes)
+
         label = 'Lock Attributes'
         lock_act = QtWidgets.QAction(label, self)
         lock_act.triggered.connect(
@@ -155,18 +167,7 @@ class AttributeTreeView(QtWidgets.QTreeView):
         reset_values_act.triggered.connect(
             self.reset_values_on_selected_attributes)
 
-        # label = 'Set Min Value...'
-        # set_attr_min_act = QtWidgets.QAction(label, self)
-        # set_attr_min_act.triggered.connect(
-        #     self.set_attribute_min_value)
-
-        # label = 'Set Max Value...'
-        # set_attr_max_act = QtWidgets.QAction(label, self)
-        # set_attr_max_act.triggered.connect(
-        #     self.set_attribute_max_value)
-
-        menu.addAction(lock_act)
-        menu.addAction(unlock_act)
+        menu.addAction(edit_act)
         menu.addSeparator()
         menu.addAction(set_key_act)
         menu.addSeparator()
@@ -177,8 +178,8 @@ class AttributeTreeView(QtWidgets.QTreeView):
         menu.addAction(break_conn_act)
         menu.addAction(bake_attr_act)
         menu.addAction(reset_values_act)
-        # menu.addSeparator()
-        # menu.addAction(set_attr_min_act)
-        # menu.addAction(set_attr_max_act)
+        menu.addSeparator()
+        menu.addAction(lock_act)
+        menu.addAction(unlock_act)
         menu.exec_(event.globalPos())
         return

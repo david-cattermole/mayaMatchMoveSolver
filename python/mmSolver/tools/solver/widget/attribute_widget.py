@@ -19,6 +19,8 @@
 Attribute Browser.
 """
 
+import time
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -188,6 +190,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
                 callback_manager
             )
         root = convert_to_ui.attributesToUINodes(
+            col,
             attr_list,
             show_anm,
             show_stc,
@@ -264,16 +267,17 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
     def addClicked(self):
         """
         Add the selected nodes or node attributes to the data model.
-
-        .. todo:: This function is very slow to run when many (20+)
-           bundles are being added to the list attributes.
         """
+        s = time.time()
         col = lib_state.get_active_collection()
         if col is None:
             msg = 'Cannot add attributes, active collection is not defined.'
             LOG.warning(msg)
             return
+        e = time.time()
+        LOG.debug("attribute addClicked1: t=%s", e - s)
 
+        s = time.time()
         sel = lib_maya_utils.get_scene_selection()
         attr_list = lib_maya_utils.get_selected_maya_attributes()
         attr_list = lib_maya_utils.input_attributes_filter(attr_list)
@@ -284,8 +288,17 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             msg = 'Please select nodes or attributes in the channel box.'
             LOG.warning(msg)
             return
+        e = time.time()
+        LOG.debug("attribute addClicked2: t=%s", e - s)
 
-        lib_attr.add_attributes_to_collection(attr_list, col)
+        s = time.time()
+        try:
+            mmapi.set_solver_running(True)  # disable selection callback.
+            lib_attr.add_attributes_to_collection(attr_list, col)
+        finally:
+            mmapi.set_solver_running(False)  # enable selection callback
+        e = time.time()
+        LOG.debug("attribute addClicked3: t=%s", e - s)
 
         def update_func():
             if uiutils.isValidQtObject(self) is False:
@@ -295,6 +308,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             return
 
         # Add Callbacks
+        s = time.time()
         callback_manager = self.callback_manager
         if callback_manager is not None:
             lib_attr.add_callbacks_to_attributes(
@@ -302,11 +316,19 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
                 update_func,
                 callback_manager,
             )
+        e = time.time()
+        LOG.debug("attribute addClicked4: t=%s", e - s)
 
+        s = time.time()
         update_func()
+        e = time.time()
+        LOG.debug("attribute addClicked5: t=%s", e - s)
 
         # Restore selection.
+        s = time.time()
         lib_maya_utils.set_scene_selection(sel)
+        e = time.time()
+        LOG.debug("attribute addClicked6: t=%s", e - s)
         return
 
     def removeClicked(self):
@@ -314,31 +336,54 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         Remove the selected nodes or node attributes from the output
         attributes data model.
         """
+        s = time.time()
         col = lib_state.get_active_collection()
         if col is None:
             return
+        e = time.time()
+        LOG.debug("attribute removeClicked1: t=%s", e - s)
 
+        s = time.time()
         sel = lib_maya_utils.get_scene_selection()
         ui_nodes = lib_uiquery.get_selected_ui_nodes(
             self.treeView,
             self.filterModel
         )
         attr_list = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'data')
-        lib_attr.remove_attr_from_collection(attr_list, col)
+        e = time.time()
+        LOG.debug("attribute removeClicked2: t=%s", e - s)
+
+        s = time.time()
+        try:
+            mmapi.set_solver_running(True)  # disable selection callback.
+            lib_attr.remove_attr_from_collection(attr_list, col)
+        finally:
+            mmapi.set_solver_running(False)  # enable selection callback
+        e = time.time()
+        LOG.debug("attribute removeClicked3: t=%s", e - s)
 
         # Remove Callbacks
+        s = time.time()
         callback_manager = self.callback_manager
         if callback_manager is not None:
             lib_attr.remove_callbacks_from_attributes(
                 attr_list,
                 callback_manager
             )
+        e = time.time()
+        LOG.debug("attribute removeClicked4: t=%s", e - s)
 
+        s = time.time()
         self.dataChanged.emit()
         self.viewUpdated.emit()
+        e = time.time()
+        LOG.debug("attribute removeClicked5: t=%s", e - s)
 
         # Restore selection.
+        s = time.time()
         lib_maya_utils.set_scene_selection(sel)
+        e = time.time()
+        LOG.debug("attribute removeClicked5: t=%s", e - s)
         return
 
     def toggleAnimatedClicked(self):
@@ -399,12 +444,15 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         deselect_nodes = _lookupMayaNodesFromAttrUINodes(
             deselect_indexes,
             self.filterModel)
+        # TODO: A node should only be de-selected if all of it's
+        #  attributes are de-selected and the object itself is also
+        #  de-selected.
         try:
-            mmapi.set_solver_running(True) # disable selection callback.
+            mmapi.set_solver_running(True)  # disable selection callback.
             lib_maya_utils.add_scene_selection(select_nodes)
             lib_maya_utils.remove_scene_selection(deselect_nodes)
         finally:
-            mmapi.set_solver_running(False) # enable selection callback
+            mmapi.set_solver_running(False)  # enable selection callback
         return
 
     @QtCore.Slot(bool)
@@ -419,12 +467,26 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
     @QtCore.Slot(bool)
     def displayMinMaxColumnChanged(self, value):
         lib_state.set_display_attribute_min_max_state(value)
-        idx_min = self.model.getColumnIndexFromColumnName(
-            const.ATTR_COLUMN_NAME_VALUE_MIN
+        idx_min_max = self.model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_VALUE_MIN_MAX
         )
-        idx_max = self.model.getColumnIndexFromColumnName(
-            const.ATTR_COLUMN_NAME_VALUE_MAX
+        self.treeView.setColumnHidden(idx_min_max, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displayStiffnessColumnChanged(self, value):
+        lib_state.set_display_attribute_stiffness_state(value)
+        idx_stiff = self.model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_VALUE_STIFFNESS
         )
-        self.treeView.setColumnHidden(idx_min, not value)
-        self.treeView.setColumnHidden(idx_max, not value)
+        self.treeView.setColumnHidden(idx_stiff, not value)
+        return
+
+    @QtCore.Slot(bool)
+    def displaySmoothnessColumnChanged(self, value):
+        lib_state.set_display_attribute_smoothness_state(value)
+        idx_smooth = self.model.getColumnIndexFromColumnName(
+            const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS
+        )
+        self.treeView.setColumnHidden(idx_smooth, not value)
         return

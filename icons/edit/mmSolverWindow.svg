@@ -66,13 +66,13 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="9.777844"
-     inkscape:cx="1.2202872"
-     inkscape:cy="17.64783"
+     inkscape:cx="-12.97323"
+     inkscape:cy="12.105287"
      inkscape:document-units="mm"
-     inkscape:current-layer="g2524"
+     inkscape:current-layer="layer5"
      showgrid="false"
      units="px"
-     inkscape:pagecheckerboard="false"
+     inkscape:pagecheckerboard="true"
      inkscape:window-width="1536"
      inkscape:window-height="801"
      inkscape:window-x="-8"
@@ -97,17 +97,17 @@
      style="display:inline">
     <g
        id="g2524"
-       transform="matrix(0.15061238,0,0,0.15061238,-0.29516548,-0.26405934)">
+       transform="matrix(0.15061238,0,0,0.16563799,-0.29516548,-0.3232888)">
       <path
          id="path2495"
          d="m 6.4736,4.0543 h 47.45 a 2.3674,2.3674 0 0 1 2.3674,2.3674 v 42.261 a 2.3674,2.3674 0 0 1 -2.3674,2.3674 H 6.4736 A 2.3674,2.3674 0 0 1 4.1062,48.6827 V 6.4217 A 2.3674,2.3674 0 0 1 6.4736,4.0543"
          inkscape:connector-curvature="0"
-         style="fill:#e4e4e4;fill-rule:evenodd;fill-opacity:1" />
+         style="fill:#e4e4e4;fill-opacity:1;fill-rule:evenodd" />
       <path
          id="path2497"
          d="m 6.9364,3.9419 c -1.2859,0 -2.3212,1.0352 -2.3212,2.3212 v 4.0794 c 0,1.2859 1.0352,2.3212 2.3212,2.3212 h 46.524 c 1.2859,0 2.3212,-1.0352 2.3212,-2.3212 V 6.2631 c 0,-1.2859 -1.0352,-2.3212 -2.3212,-2.3212 z"
          inkscape:connector-curvature="0"
-         style="fill:#acacac;fill-rule:evenodd;fill-opacity:1" />
+         style="fill:#acacac;fill-opacity:1;fill-rule:evenodd" />
       <path
          id="path2499"
          d="m 52.799,7.0115 -2.706,2.706 m -0.06293,-2.769 2.769,2.769"
@@ -133,13 +133,13 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="4.2596436"
-       y="6.7820358"
+       x="4.1784654"
+       y="6.863214"
        id="text2592"><tspan
          sodipodi:role="line"
          id="tspan2590"
-         x="5.0533934"
-         y="6.7820358"
+         x="4.9722152"
+         y="6.863214"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:6.3499999px;font-family:serif;-inkscape-font-specification:'serif Bold';text-align:center;text-anchor:middle;stroke-width:0.26458332">λ= </tspan></text>
   </g>
 </svg>

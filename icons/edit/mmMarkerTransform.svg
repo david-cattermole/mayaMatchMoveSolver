@@ -14,11 +14,11 @@
    id="svg2816"
    version="1.1"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
-   sodipodi:docname="createMarker.svg"
+   sodipodi:docname="mmMarkerTransform.svg"
    enable-background="new"
-   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\createMarker_32x32.png"
-   inkscape:export-xdpi="48"
-   inkscape:export-ydpi="48">
+   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\out_mmMarkerTransform.png"
+   inkscape:export-xdpi="30.000002"
+   inkscape:export-ydpi="30.000002">
   <defs
      id="defs2818">
     <marker
@@ -63,14 +63,70 @@
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
     <inkscape:perspective
-       id="perspective4434"
+       id="perspective3753"
        inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
        inkscape:vp_z="1 : 0.5 : 1"
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
     <inkscape:perspective
-       id="perspective3043"
+       id="perspective3790"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4468"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4533"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4570"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4607"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3896"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3637"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3695"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3772"
        inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
        inkscape:vp_z="1 : 0.5 : 1"
        inkscape:vp_y="0 : 1000 : 0"
@@ -85,9 +141,9 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="5.5"
-     inkscape:cx="10.788986"
-     inkscape:cy="37.858408"
-     inkscape:current-layer="layer4"
+     inkscape:cx="22.762661"
+     inkscape:cy="29.591915"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
@@ -96,9 +152,8 @@
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     showguides="true"
-     inkscape:guide-bbox="true"
-     inkscape:pagecheckerboard="true">
+     showguides="false"
+     inkscape:guide-bbox="true">
     <inkscape:grid
        type="xygrid"
        id="grid4770"
@@ -116,26 +171,6 @@
        position="32,40"
        id="guide5598"
        inkscape:locked="false" />
-    <sodipodi:guide
-       position="0,0"
-       orientation="0,64"
-       id="guide2858"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="64,0"
-       orientation="-64,0"
-       id="guide2860"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="64,64"
-       orientation="0,-64"
-       id="guide2862"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="0,64"
-       orientation="64,0"
-       id="guide2864"
-       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata2821">
@@ -150,42 +185,17 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:groupmode="layer"
-     id="layer4"
-     inkscape:label="Layer 2">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.99999994"
-       x="-0.64074427"
-       y="60.900478"
-       id="text1137-8"><tspan
-         sodipodi:role="line"
-         id="tspan1135-3"
-         x="-0.64074427"
-         y="60.900478"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16.66666603px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:0.99999994">MTools</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-width:0.99999994;"
-       x="-1.0612143"
-       y="60.064159"
-       id="text1137"><tspan
-         sodipodi:role="line"
-         id="tspan1135"
-         x="-1.0612143"
-         y="60.064159"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16.66666603px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#dadada;fill-opacity:1;stroke-width:0.99999994;">MTools</tspan></text>
-  </g>
-  <g
      id="layer1"
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
+     inkscape:label="Marker"
+     inkscape:groupmode="layer"
+     style="display:inline">
     <g
+       transform="matrix(1.0747959,0,0,1.0740073,-3.2994016,-2.9709409)"
        id="g3874">
       <g
          style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1"
          id="g4482-5"
-         transform="matrix(0.76056132,0,0,0.76056132,8.5234564,1.9576305)">
+         transform="translate(0.9785767,1)">
         <circle
            style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.09090912;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:none"
            id="path4774-7"
@@ -223,41 +233,43 @@
            y="29" />
       </g>
       <g
-         id="g4482">
+         id="g4482-57"
+         style="opacity:1">
         <circle
-           style="fill:#e83b3b;fill-opacity:1;stroke:#e83b3b;stroke-width:0.76056135;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:none"
-           id="path4774"
-           cx="32.117149"
-           cy="25.535032"
-           r="3.4859061" />
+           style="fill:#e83b3b;fill-opacity:1;stroke:#e83b3b;stroke-width:1.09090912;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:none"
+           id="path4774-6"
+           transform="matrix(0.91666667,0,0,0.91666668,4.4999999,5.4166663)"
+           cx="30"
+           cy="29"
+           r="5" />
         <rect
-           style="fill:#e83b3b;fill-opacity:1;stroke:#e83b3b;stroke-width:0.76056105;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-           id="rect4776"
-           width="4.5428858"
-           height="13.690498"
-           x="29.851761"
+           style="fill:#e83b3b;fill-opacity:1;stroke:#e83b3b;stroke-width:0.99999964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect4776-2"
+           width="5.9730697"
+           height="18.000519"
+           x="29.021423"
            y="4.9994812" />
         <rect
-           style="fill:#e83b3b;fill-opacity:1;stroke:#e83b3b;stroke-width:0.76056105;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-           id="rect4776-9"
-           width="4.5428858"
-           height="13.690498"
-           x="29.835466"
-           y="32" />
+           style="fill:#e83b3b;fill-opacity:1;stroke:#e83b3b;stroke-width:0.99999964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect4776-9-4"
+           width="5.9730697"
+           height="18.000519"
+           x="29"
+           y="40.500259" />
         <rect
-           style="fill:#e83b3b;fill-opacity:1;stroke:#e83b3b;stroke-width:0.76056105;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-           id="rect4776-9-7"
-           width="13.690105"
-           height="4.5633678"
-           x="38.962181"
-           y="23.253347" />
+           style="fill:#e83b3b;fill-opacity:1;stroke:#e83b3b;stroke-width:0.99999964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect4776-9-7-5"
+           width="18.000002"
+           height="6"
+           x="40.999969"
+           y="29" />
         <rect
-           style="fill:#e83b3b;fill-opacity:1;stroke:#e83b3b;stroke-width:0.76056105;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-           id="rect4776-9-7-1"
-           width="13.690105"
-           height="4.5633678"
-           x="11.581995"
-           y="23.253347" />
+           style="fill:#e83b3b;fill-opacity:1;stroke:#e83b3b;stroke-width:0.99999964;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect4776-9-7-1-63"
+           width="18.000002"
+           height="6"
+           x="5"
+           y="29" />
       </g>
     </g>
   </g>

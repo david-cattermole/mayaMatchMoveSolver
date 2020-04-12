@@ -168,9 +168,9 @@ def get_viewport2_active_state():
     return not maya.cmds.ogs(query=True, pause=True)
 
 
-def get_active_model_editor():
+def get_active_model_panel():
     """
-    Get the active model editor.
+    Get the active model panel.
 
     :rtype: str or None
     """
@@ -178,6 +178,18 @@ def get_active_model_editor():
     panel_type = maya.cmds.getPanel(typeOf=the_panel)
 
     if panel_type != 'modelPanel':
+        return None
+    return the_panel
+
+
+def get_active_model_editor():
+    """
+    Get the active model editor.
+
+    :rtype: str or None
+    """
+    the_panel = get_active_model_panel()
+    if the_panel is None:
         return None
 
     model_editor = maya.cmds.modelPanel(

@@ -255,12 +255,10 @@ class SolverBasic(solverbase.SolverBase):
         frame_list = self.get_frame_list()
         anim_iter_num = self.get_anim_iteration_num()
         lineup_iter_num = self.get_lineup_iteration_num()
-        verbose = True
 
         if use_single_frame is True:
             # Single frame solve
             sol = solverstep.SolverStep()
-            sol.set_verbose(verbose)
             sol.set_max_iterations(lineup_iter_num)
             sol.set_frame_list([single_frame])
             sol.set_attributes_use_animated(True)
@@ -278,7 +276,6 @@ class SolverBasic(solverbase.SolverBase):
                 is_first_frame = i == 0
                 one_frame_list = [frm]
                 sol = solverstep.SolverStep()
-                sol.set_verbose(verbose)
                 sol.set_max_iterations(anim_iter_num)
                 sol.set_frame_list(one_frame_list)
                 sol.set_attributes_use_animated(True)

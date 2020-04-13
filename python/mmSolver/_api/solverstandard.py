@@ -206,7 +206,7 @@ def _compile_multi_root_frames(col,
     :type withtest: bool
 
     :param verbose:
-        Print out more detail to 'stdout'.
+        Print out more detail to 'stderr'.
     :type verbose: bool
 
     :return:
@@ -235,7 +235,6 @@ def _compile_multi_root_frames(col,
                     root_attr_list.append(attr)
 
         sol = solverstep.SolverStep()
-        sol.set_verbose(verbose)
         sol.set_max_iterations(root_iter_num)
         sol.set_frame_list(frm_list)
         sol.set_attributes_use_animated(True)
@@ -367,7 +366,6 @@ def _compile_multi_inbetween_frames(col,
     if global_solve is True:
         # Do Global Solve with all frames.
         sol = solverstep.SolverStep()
-        sol.set_verbose(verbose)
         sol.set_max_iterations(anim_iter_num)
         sol.set_frame_list(all_frame_list)
         sol.set_attributes_use_animated(True)
@@ -387,7 +385,6 @@ def _compile_multi_inbetween_frames(col,
             is_first_frame = i == 0
             one_frame_list = [frm]
             sol = solverstep.SolverStep()
-            sol.set_verbose(verbose)
             sol.set_max_iterations(anim_iter_num)
             sol.set_frame_list(one_frame_list)
             sol.set_attributes_use_animated(True)
@@ -532,7 +529,6 @@ def _compile_multi_frame(col,
         )
         for new_mkr_list, new_attr_list in zip(meta_mkr_list, meta_attr_list):
             sol = solverstep.SolverStep()
-            sol.set_verbose(verbose)
             sol.set_max_iterations(block_iter_num)
             sol.set_frame_list(root_frame_list)
             sol.set_attributes_use_animated(True)
@@ -569,7 +565,6 @@ def _compile_multi_frame(col,
     if root_frame_strategy == const.ROOT_FRAME_STRATEGY_GLOBAL_VALUE:
         # Global solve of root frames.
         sol = solverstep.SolverStep()
-        sol.set_verbose(verbose)
         sol.set_max_iterations(root_iter_num)
         sol.set_frame_list(root_frame_list)
         sol.set_attributes_use_animated(True)
@@ -702,7 +697,6 @@ def _compile_single_frame(col,
         )
         for new_mkr_list, new_attr_list in zip(meta_mkr_list, meta_attr_list):
             sol = solverstep.SolverStep()
-            sol.set_verbose(verbose)
             sol.set_max_iterations(block_iter_num)
             sol.set_frame_list([single_frame])
             sol.set_attributes_use_animated(True)
@@ -719,7 +713,6 @@ def _compile_single_frame(col,
 
     # Single frame solve
     sol = solverstep.SolverStep()
-    sol.set_verbose(verbose)
     sol.set_max_iterations(lineup_iter_num)
     sol.set_frame_list([single_frame])
     sol.set_attributes_use_animated(True)

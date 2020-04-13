@@ -42,6 +42,7 @@
 #include <limits>
 #include <algorithm>
 #include <math.h>
+#include <stdio.h>
 
 // Standard Utils
 #include <utilities/debugUtils.h>
@@ -688,12 +689,12 @@ void incrementNormalIteration(SolverData *ud,
     ++ud->iterNum;
     // We're not using INFO macro because we don't want a
     // new-line created.
-    if (ud->verbose) {
-        std::cout << "Eval ";
-        std::cout << std::setfill ('0') << std::setw (4) << ud->funcEvalNum;
-        std::cout << " | Normal   ";
-        std::cout << std::setfill ('0') << std::setw (4) << ud->iterNum;
-    }
+    std::cerr << "Eval ";
+    std::cerr << std::right << std::setfill ('0') << std::setw(4)
+              << ud->funcEvalNum;
+    std::cerr << " | Normal   ";
+    std::cerr << std::right << std::setfill ('0') << std::setw(4)
+              << ud->iterNum;
     if (debugIsOpen) {
         debugFile << std::endl
                   << "iteration normal: " << ud->iterNum
@@ -710,12 +711,14 @@ void incrementJacobianIteration(SolverData *ud,
     ++ud->funcEvalNum;
     ++ud->jacIterNum;
     if (ud->verbose) {
-        std::cout << "Eval ";
-        std::cout << std::setfill ('0') << std::setw (4) << ud->funcEvalNum;
-        std::cout << " | Jacobian ";
-        std::cout << std::setfill ('0') << std::setw (4) << ud->jacIterNum;
+        std::cerr << "Eval ";
+        std::cerr << std::right << std::setfill ('0') << std::setw (4)
+                  << ud->funcEvalNum;
+        std::cerr << " | Jacobian ";
+        std::cerr << std::right << std::setfill ('0') << std::setw (4)
+                  << ud->jacIterNum;
         if (ud->doCalcJacobian) {
-            std::cout << std::endl;
+            std::cerr << std::endl;
         }
     }
     if (debugIsOpen) {
@@ -1056,16 +1059,18 @@ int solveFunc(int numberOfParameters,
     ud->timer.funcBenchTimer.stop();
     ud->timer.funcBenchTicks.stop();
 
-    if (ud->verbose) {
-        if (ud->isNormalCall) {
-            std::cout << " | error avg=" << error_avg
-                      << " min=" << error_min
-                      << " max=" << error_max
-                      << std::endl;;
-        } else {
+    if (ud->isNormalCall) {
+        fprintf(
+            stderr,
+            " | error avg %8.4f   min %8.4f   max %8.4f\n",
+            error_avg,
+            error_min,
+            error_max);
+    } else {
+        if (ud->verbose) {
             if (!ud->doCalcJacobian) {
-                std::cout << std::endl;
-            }            
+                std::cerr << std::endl;
+            }
         }
     }
     return SOLVE_FUNC_SUCCESS;

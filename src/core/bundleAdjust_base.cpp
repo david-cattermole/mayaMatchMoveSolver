@@ -865,6 +865,22 @@ void print_details(
     VRB("Function Evaluations: " << solverResult.functionEvals);
     VRB("Jacobian Evaluations: " << solverResult.jacobianEvals);
 
+    if (verbose == false) {
+        if (solverResult.success) {
+            std::cerr << "Solver returned SUCCESS   | ";
+        } else {
+            std::cerr << "Solver returned FAILURE   | ";
+        }
+        fprintf(
+            stderr,
+            "error avg %8.4f   min %8.4f   max %8.4f  iterations %03u\n",
+            solverResult.errorAvg,
+            solverResult.errorMin,
+            solverResult.errorMax,
+            solverResult.iterations);
+        fflush(stderr);
+    }
+
     // Add all the data into the output string from the Maya command.
     std::string resultStr;
     std::string value = string::numberToString<int>(solverResult.success);
@@ -1241,6 +1257,24 @@ bool solve(SolverOptions &solverOptions,
     VRB("Epsilon3=" << solverOptions.eps3);
     VRB("Delta=" << fabs(solverOptions.delta));
     VRB("Auto Differencing Type=" << solverOptions.autoDiffType);
+
+    if ((verbose == false) && (printStats == false)) {
+        std::stringstream ss;
+        ss << "Solving... frames:";
+        for (int i = 0; i < frameList.length(); i++) {
+            MTime frame(frameList[i]);
+            ss << " " << frame;
+        }
+        std::string tmp_string = ss.str();
+
+        int num = 100 - tmp_string.size();
+        if (num < 0) {
+            num = 0;
+        }
+        std::string pad_chars(num, '=');
+
+        std::cerr << tmp_string << " " << pad_chars << std::endl;
+    }
 
     // MComputation helper.
     bool showProgressBar = true;

@@ -700,8 +700,9 @@ def execute(col,
                     with open(options_file_path, 'w') as file_:
                         file_.write(text)
 
-                # Overriding the verbosity, irrespective of what
-                # the solver verbosity value is set to.
+                # Overriding the verbosity, irrespective of what the
+                # solver verbosity value is set to.
+                kwargs['verbose'] = False
                 if log_level is not None and log_level.lower() == 'verbose':
                     kwargs['verbose'] = True
 

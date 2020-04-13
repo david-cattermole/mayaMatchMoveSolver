@@ -82,9 +82,6 @@ Usage:
      "use previous and next frame", and 5 means "use previous 4 and
      next 4 frames".
 
-   - *Blend Width* controls the blend, in frames, between the smoothed
-     values and the surrounding values.
-
 3) Select keyframes in Graph Editor.
 
 4) Run 'Smooth Selected Keyframes' tool.

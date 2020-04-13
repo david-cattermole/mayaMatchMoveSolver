@@ -42,14 +42,6 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
             self.widthSpinBoxValueChanged
         )
 
-        # Blend Width 
-        self.blendWidth_horizontalSlider.valueChanged.connect(
-            self.blendWidthValueChanged
-        )
-        self.blendWidth_spinBox.valueChanged.connect(
-            self.blendWidthSpinBoxValueChanged
-        )
-
         # Populate the UI with data
         self.populateUi()
 
@@ -73,20 +65,6 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
         configmaya.set_scene_option(name, value, add_attr=True)
         LOG.debug('key=%r value=%r', name, value)
 
-    def blendWidthValueChanged(self, value):
-        self.blendWidth_spinBox.setValue(value)
-        name = const.CONFIG_BLEND_WIDTH_KEY
-        value = float(value)
-        configmaya.set_scene_option(name, value, add_attr=True)
-        LOG.debug('key=%r value=%r', name, value)
-
-    def blendWidthSpinBoxValueChanged(self, value):
-        self.blendWidth_horizontalSlider.setValue(value)
-        value = float(value)
-        name = const.CONFIG_BLEND_WIDTH_KEY
-        configmaya.set_scene_option(name, value, add_attr=True)
-        LOG.debug('key=%r value=%r', name, value)
-
     def reset_options(self):
         name = const.CONFIG_MODE_KEY
         value = const.DEFAULT_MODE
@@ -95,11 +73,6 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
 
         name = const.CONFIG_WIDTH_KEY
         value = const.DEFAULT_WIDTH
-        configmaya.set_scene_option(name, value)
-        LOG.debug('key=%r value=%r', name, value)
-
-        name = const.CONFIG_BLEND_WIDTH_KEY
-        value = const.DEFAULT_BLEND_WIDTH
         configmaya.set_scene_option(name, value)
         LOG.debug('key=%r value=%r', name, value)
 
@@ -125,12 +98,4 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
         LOG.debug('key=%r value=%r', name, value)
         self.width_horizontalSlider.setValue(value)
         self.width_spinBox.setValue(value)
-
-        name = const.CONFIG_BLEND_WIDTH_KEY
-        value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_BLEND_WIDTH)
-        LOG.debug('key=%r value=%r', name, value)
-        self.blendWidth_horizontalSlider.setValue(value)
-        self.blendWidth_spinBox.setValue(value)
         return

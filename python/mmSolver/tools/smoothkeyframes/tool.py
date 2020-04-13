@@ -61,10 +61,8 @@ def smooth_selected_keyframes():
         const.CONFIG_WIDTH_KEY,
         default=const.DEFAULT_WIDTH)
 
-    blend_smooth_type = utils_const.SMOOTH_TYPE_GAUSSIAN
-    blend_width = configmaya.get_scene_option(
-        const.CONFIG_BLEND_WIDTH_KEY,
-        default=const.DEFAULT_BLEND_WIDTH)
+    blend_smooth_type = utils_const.SMOOTH_TYPE_AVERAGE
+    blend_width = width
 
     undo_id = 'smoothkeyframes: '
     undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))

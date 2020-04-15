@@ -63,13 +63,20 @@ def _lookupMayaNodesFromAttrUINodes(indexes, model):
         ui_node = lib_uiquery.get_ui_node_from_index(idx, model)
         if ui_node is None:
             continue
+        # For both AttrNode and MayaNodes we ensure we only add a new
+        # Maya node if the existing node name is not in the
+        # accumulated list. We do not remove the order of the nodes
+        # only ensure that no duplicates are added.
         if isinstance(ui_node, attr_nodes.AttrNode):
             nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'data')
-            maya_nodes += [x.get_node() for x in nodes]
+            node_names = [x.get_node() for x in nodes]
+            maya_nodes += [x for x in node_names
+                           if x not in maya_nodes]
         elif isinstance(ui_node, attr_nodes.MayaNode):
             node_uuid = ui_node.data().get('uuid')
             node_names = lib_maya_utils.get_node_names_from_uuids([node_uuid])
-            maya_nodes += node_names
+            maya_nodes += [x for x in node_names
+                           if x not in maya_nodes]
         else:
             LOG.error("Invalid node type: %r", ui_node)
     return maya_nodes
@@ -438,15 +445,20 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
     def selectionChanged(self, selected, deselected):
         select_indexes = [idx for idx in selected.indexes()]
         deselect_indexes = [idx for idx in deselected.indexes()]
+        selected_indexes = self.selModel.selectedRows()
         select_nodes = _lookupMayaNodesFromAttrUINodes(
             select_indexes,
             self.filterModel)
         deselect_nodes = _lookupMayaNodesFromAttrUINodes(
             deselect_indexes,
             self.filterModel)
-        # TODO: A node should only be de-selected if all of it's
-        #  attributes are de-selected and the object itself is also
-        #  de-selected.
+        selected_nodes = _lookupMayaNodesFromAttrUINodes(
+            selected_indexes,
+            self.filterModel)
+        # Because an attribute and node may refer to the same
+        # underlying node name, we must be sure we don't deselect a
+        # node that has other attributes selected.
+        deselect_nodes = list(set(deselect_nodes) - set(selected_nodes))
         try:
             mmapi.set_solver_running(True)  # disable selection callback.
             lib_maya_utils.add_scene_selection(select_nodes)

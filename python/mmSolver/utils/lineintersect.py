@@ -21,7 +21,7 @@ Utility functions for 3D line intersection (for triangulating 3D points).
 .. code::
 
     # Example usage
-    import mmSolver.utils.triangulate as tri_utils
+    import mmSolver.utils.lineintersect as tri_utils
     cam_tfm = '|camera1'
     mkr_node = '|camera1|markerGroup1|marker1_MKR'
     first_frm_num = 1001

@@ -29,8 +29,10 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 
+import mmSolver.api as mmapi
 import mmSolver.tools.solver.ui.attr_nodes as attr_nodes
 import mmSolver.tools.solver.lib.attr as lib_attr
+import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.uiquery as lib_uiquery
 
@@ -62,10 +64,17 @@ class AttributeTreeView(QtWidgets.QTreeView):
         return
 
     def set_details_selected_attributes(self):
-        col = lib_state.get_active_collection()
-        attr_list = _get_selected_attrs(self)
-        lib_attr.set_details_selected_attributes(attr_list, col)
-        # TODO: Make sure the view/model is triggered after the window opens.
+        try:
+            # Disable selection callback.
+            mmapi.set_solver_running(True)
+            col = lib_state.get_active_collection()
+            attr_list = _get_selected_attrs(self)
+            index_list = _get_selected_indexes(self)
+            lib_attr.set_details_selected_attributes(attr_list, col)
+        finally:
+            # Enable selection callback
+            mmapi.set_solver_running(False)
+            # TODO: Force the changed data model to update the UI.
         return
 
     def lock_selected_attributes(self):

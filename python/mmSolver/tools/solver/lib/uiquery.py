@@ -36,13 +36,8 @@ def get_ui_node_from_index(idx, filter_model):
 def get_selected_ui_nodes(tree_view, filter_model):
     node_list = []
     sel_model = tree_view.selectionModel()
-    selection = sel_model.selection()
-    index_list = selection.indexes()
+    index_list = sel_model.selectedRows()
     for idx in index_list:
-        # BUG: If a node is selected, the expected behavour is to
-        # return a list of all attribute nodes, or perhaps the Maya
-        # node. Instead, the current code will only query the first
-        # attribute.
         ui_node = get_ui_node_from_index(idx, filter_model)
         if ui_node is None:
             continue

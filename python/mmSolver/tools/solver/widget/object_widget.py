@@ -388,8 +388,12 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             deselect_indexes,
             self.filterModel
         )
-        lib_maya_utils.add_scene_selection(select_nodes)
-        lib_maya_utils.remove_scene_selection(deselect_nodes)
+        try:
+            mmapi.set_solver_running(True)  # disable selection callback.
+            lib_maya_utils.add_scene_selection(select_nodes)
+            lib_maya_utils.remove_scene_selection(deselect_nodes)
+        finally:
+            mmapi.set_solver_running(False)  # enable selection callback
         return
 
     @QtCore.Slot(bool)

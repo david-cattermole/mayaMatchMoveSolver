@@ -189,3 +189,23 @@ class Attribute(object):
 
     def is_locked(self):
         return self.get_state() == const.ATTR_STATE_LOCKED
+
+    def get_min_value(self):
+        """This function is deprecated,
+        please use Collection.get/set_attribute* functions."""
+        raise NotImplementedError
+
+    def set_min_value(self, value):
+        """This function is deprecated,
+        please use Collection.get/set_attribute* functions."""
+        raise NotImplementedError
+
+    def get_max_value(self):
+        """This function is deprecated,
+        please use Collection.get/set_attribute* functions."""
+        raise NotImplementedError
+
+    def set_max_value(self, value):
+        """This function is deprecated,
+        please use Collection.get/set_attribute* functions."""
+        raise NotImplementedError

@@ -69,7 +69,6 @@ class AttributeTreeView(QtWidgets.QTreeView):
             mmapi.set_solver_running(True)
             col = lib_state.get_active_collection()
             attr_list = _get_selected_attrs(self)
-            index_list = _get_selected_indexes(self)
             lib_attr.set_details_selected_attributes(attr_list, col)
         finally:
             # Enable selection callback

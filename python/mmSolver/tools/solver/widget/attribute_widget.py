@@ -57,6 +57,28 @@ def _populateWidgetsEnabled(widgets):
     return
 
 
+def _convertNodeListToAttrList(node_list):
+    """
+    Convert a list of MayaNode or AttrNode objects to a flat list of
+    Attribute objects.
+
+    :param node_list:
+        A list of PlugNode derived objects, either MayaNode or
+        AttrNode types.
+    :type node_list: [PlugNode, ..]
+
+    :return: List of Attribute objects.
+    :rtype: [Attribute, ..]
+    """
+    attr_list = []
+    for node in node_list:
+        if isinstance(node, list):
+            attr_list += [n for n in node]
+        else:
+            attr_list += [node]
+    return attr_list
+
+
 def _lookupMayaNodesFromAttrUINodes(indexes, model):
     maya_nodes = []
     for idx in indexes:
@@ -343,42 +365,45 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         Remove the selected nodes or node attributes from the output
         attributes data model.
         """
-        s = time.time()
-        col = lib_state.get_active_collection()
-        if col is None:
-            return
-        e = time.time()
-        LOG.debug("attribute removeClicked1: t=%s", e - s)
-
-        s = time.time()
-        sel = lib_maya_utils.get_scene_selection()
-        ui_nodes = lib_uiquery.get_selected_ui_nodes(
-            self.treeView,
-            self.filterModel
-        )
-        attr_list = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'data')
-        e = time.time()
-        LOG.debug("attribute removeClicked2: t=%s", e - s)
-
-        s = time.time()
         try:
             mmapi.set_solver_running(True)  # disable selection callback.
+
+            s = time.time()
+            col = lib_state.get_active_collection()
+            if col is None:
+                return
+            e = time.time()
+            LOG.debug("attribute removeClicked1: t=%s", e - s)
+
+            s = time.time()
+            sel = lib_maya_utils.get_scene_selection()
+            ui_nodes = lib_uiquery.get_selected_ui_nodes(
+                self.treeView,
+                self.filterModel
+            )
+            node_list = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'data')
+            e = time.time()
+            LOG.debug("attribute removeClicked2: t=%s", e - s)
+
+            s = time.time()
+            attr_list = _convertNodeListToAttrList(node_list)
             lib_attr.remove_attr_from_collection(attr_list, col)
+
+            e = time.time()
+            LOG.debug("attribute removeClicked3: t=%s", e - s)
+
+            # Remove Callbacks
+            s = time.time()
+            callback_manager = self.callback_manager
+            if callback_manager is not None:
+                lib_attr.remove_callbacks_from_attributes(
+                    attr_list,
+                    callback_manager
+                )
+            e = time.time()
+            LOG.debug("attribute removeClicked4: t=%s", e - s)
         finally:
             mmapi.set_solver_running(False)  # enable selection callback
-        e = time.time()
-        LOG.debug("attribute removeClicked3: t=%s", e - s)
-
-        # Remove Callbacks
-        s = time.time()
-        callback_manager = self.callback_manager
-        if callback_manager is not None:
-            lib_attr.remove_callbacks_from_attributes(
-                attr_list,
-                callback_manager
-            )
-        e = time.time()
-        LOG.debug("attribute removeClicked4: t=%s", e - s)
 
         s = time.time()
         self.dataChanged.emit()

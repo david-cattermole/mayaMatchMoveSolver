@@ -14,9 +14,9 @@
    id="svg2816"
    version="1.1"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
-   sodipodi:docname="createMarker.svg"
+   sodipodi:docname="convertToMarker.svg"
    enable-background="new"
-   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\createMarker_32x32.png"
+   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\convertToMarker_32x32.png"
    inkscape:export-xdpi="48"
    inkscape:export-ydpi="48">
   <defs
@@ -85,8 +85,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="5.5"
-     inkscape:cx="24.851172"
-     inkscape:cy="31.722385"
+     inkscape:cx="24.305717"
+     inkscape:cy="22.086021"
      inkscape:current-layer="layer4"
      showgrid="false"
      inkscape:document-units="px"
@@ -145,7 +145,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -163,7 +163,7 @@
          id="tspan1135-3"
          x="0.11188768"
          y="61.789471"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.41501617px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:1.04490101">Create</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.41501617px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:1.04490101">Convrt</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:41.7960434px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-width:1.04490101"
@@ -174,7 +174,7 @@
          id="tspan1135"
          x="-0.32746196"
          y="60.9156"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.41501617px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#dadada;fill-opacity:1;stroke-width:1.04490101">Create</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.41501617px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#dadada;fill-opacity:1;stroke-width:1.04490101">Convrt</tspan></text>
   </g>
   <g
      id="layer1"

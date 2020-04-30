@@ -61,6 +61,13 @@
                 "tool.main_prev_frame();"
             ]
         },
+        "file_io_tools": {
+            "name": "File Input/Output Tools",
+            "name_shelf": "",
+            "icon_shelf": "fileInputOutput_32x32.png",
+            "tooltip": "File input and output Tools.",
+            "command": ["pass"]
+        },
         "create_tools": {
             "name": "Create Tools",
             "name_shelf": "Create",
@@ -69,7 +76,7 @@
         },
         "create_marker": {
             "name": "Create Marker",
-            "name_shelf": "Create",
+            "name_shelf": "",
             "tooltip": "Create a new Marker.",
             "icon_shelf": "createMarker_32x32.png",
             "command": [
@@ -81,11 +88,11 @@
             "name": "Marker Tools",
             "name_shelf": "",
             "tooltip": "Marker Tools",
-            "icon_shelf": "createMarker_32x32.png",
+            "icon_shelf": "markerTools_32x32.png",
             "command": ["pass"]
         },
         "toggle_marker_lock": {
-            "name": "Toggle Marker Lock",
+            "name": "Toggle Marker Lock-State",
             "tooltip": "Toggles selected marker lock state.",
             "command": [
                 "import mmSolver.tools.togglemarkerlock.tool;",
@@ -96,7 +103,7 @@
             "name": "Bundle Tools",
             "name_shelf": "",
             "tooltip": "Bundle Tools",
-            "icon_shelf": "createBundle_32x32.png",
+            "icon_shelf": "bundleTools_32x32.png",
             "command": ["pass"]
         },
         "toggle_bundle_lock": {
@@ -142,9 +149,17 @@
                 "mmSolver.tools.raycastmarker.tool.main();"
             ]
         },
+        "aim_at_camera_manipulator": {
+            "name": "Aim At Camera (Screen-Z Manipulator)",
+            "tooltip": "Screen-space Z manipulator.",
+            "command": [
+                "import mmSolver.tools.screenzmanipulator.tool;",
+                "mmSolver.tools.screenzmanipulator.tool.main();"
+            ]
+        },
         "screen_z_manipulator": {
-            "name": "Aim At Camera (Screen Z)",
-            "tooltip": "Screen-space Z.",
+            "name": "Screen-Z Manipulator",
+            "tooltip": "Screen-space Z manipulator.",
             "command": [
                 "import mmSolver.tools.screenzmanipulator.tool;",
                 "mmSolver.tools.screenzmanipulator.tool.main();"
@@ -213,9 +228,9 @@
         },
         "convert_to_marker": {
             "name": "Convert to Marker",
-            "name_shelf": "Convrt",
+            "name_shelf": "",
             "tooltip": "Convert 3D Transform to Marker.",
-            "icon_shelf": "createMarker_32x32.png",
+            "icon_shelf": "convertToMarker_32x32.png",
             "command": [
                 "import mmSolver.tools.convertmarker.tool;",
                 "mmSolver.tools.convertmarker.tool.main();"
@@ -223,9 +238,9 @@
         },
         "load_marker_ui": {
             "name": "Load Marker...",
-            "name_shelf": "Load...",
+            "name_shelf": "",
             "tooltip": "Load Marker.",
-            "icon_shelf": "menuIconFile.png",
+            "icon_shelf": "loadMarker_32x32.png",
             "command": [
                 "import mmSolver.tools.loadmarker.tool;",
                 "mmSolver.tools.loadmarker.tool.open_window();"
@@ -243,7 +258,7 @@
         },
         "create_bundle": {
             "name": "Create Bundle",
-            "name_shelf": "Create",
+            "name_shelf": "",
             "tooltip": "Create Bundle.",
             "icon_shelf": "createBundle_32x32.png",
             "command": [

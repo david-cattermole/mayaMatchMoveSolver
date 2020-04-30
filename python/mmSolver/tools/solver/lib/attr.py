@@ -218,20 +218,30 @@ def add_callbacks_to_attributes(attr_list, update_func, callback_manager):
 
 
 def remove_callbacks_from_attributes(attr_list, callback_manager):
+    """
+    Remove Attribute callbacks from a callback manager.
+
+    :param attr_list: List of attributes to remove callbacks from.
+    :type attr_list: [Attribute, ..]
+
+    :param callback_manager:
+        The callback manager class which holds all references to the
+        callbacks.
+    :type callback_manager: CallbackManager
+    """
     msg = 'Node UUID has multiple paths: node=%r node_uuids=%r'
     callback_type = maya_callbacks.TYPE_ATTRIBUTE
-    for attr_objs in attr_list:
-        for attr_obj in attr_objs:
-            node_path = attr_obj.get_node(full_path=True)
-            node_uuids = maya.cmds.ls(node_path, uuid=True) or []
-            if len(node_uuids) != 1:
-                LOG.debug(msg, node_path, node_uuids)
-                continue
-            node_uuid = node_uuids[0]
-            if callback_manager.type_has_node(callback_type, node_uuid) is False:
-                continue
-            callback_manager.remove_type_node_ids(
-                callback_type,
-                node_uuid,
-            )
+    for attr_obj in attr_list:
+        node_path = attr_obj.get_node(full_path=True)
+        node_uuids = maya.cmds.ls(node_path, uuid=True) or []
+        if len(node_uuids) != 1:
+            LOG.debug(msg, node_path, node_uuids)
+            continue
+        node_uuid = node_uuids[0]
+        if callback_manager.type_has_node(callback_type, node_uuid) is False:
+            continue
+        callback_manager.remove_type_node_ids(
+            callback_type,
+            node_uuid,
+        )
     return

@@ -24,6 +24,7 @@ import maya.OpenMaya
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.utils.node as node_utils
 
 LOG = mmSolver.logger.get_logger()
 
@@ -45,6 +46,7 @@ def create_screen_space_locator(cam, name=None):
     depth_tfm = maya.cmds.createNode('transform',
                                      name='depth',
                                      parent=mkr_grp_node)
+    depth_tfm = node_utils.get_long_name(depth_tfm)
     maya.cmds.setAttr(depth_tfm + '.translateX', lock=True)
     maya.cmds.setAttr(depth_tfm + '.translateY', lock=True)
     maya.cmds.setAttr(depth_tfm + '.translateZ', lock=True)
@@ -63,7 +65,9 @@ def create_screen_space_locator(cam, name=None):
     loc_tfm = maya.cmds.createNode('transform',
                                    name=name,
                                    parent=depth_tfm)
+    loc_tfm = node_utils.get_long_name(loc_tfm)
     loc_shp = maya.cmds.createNode('locator', parent=loc_tfm)
+    loc_shp = node_utils.get_long_name(loc_shp)
     maya.cmds.setAttr(loc_tfm + '.localScaleX', 0.1)
     maya.cmds.setAttr(loc_tfm + '.localScaleY', 0.1)
     maya.cmds.setAttr(loc_tfm + '.localScaleZ', 0.0)

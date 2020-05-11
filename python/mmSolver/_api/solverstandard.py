@@ -21,10 +21,12 @@ The standard solver - allows solving static and animated attributes.
 
 import mmSolver.logger
 
+import mmSolver.utils.animcurve as animcurve_utils
 import mmSolver._api.constant as const
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
 import mmSolver._api.marker as marker
+import mmSolver._api.solverutils as solverutils
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.solverstep as solverstep
 import mmSolver._api.solvertriangulate as solvertriangulate
@@ -413,6 +415,7 @@ def _compile_multi_frame(col,
                          global_solve,
                          root_frame_strategy,
                          triangulate_bundles,
+                         use_euler_filter,
                          withtest,
                          verbose):
     """
@@ -469,6 +472,12 @@ def _compile_multi_frame(col,
         If True, unlocked bundles will be triangulated before being
         further refined by the solver processes.
     :type triangulate_bundles: bool
+
+    :param use_euler_filter:
+        Perform a Euler Filter after solving? A Euler filter will make
+        sure no two keyframes rotate by more than 180 degrees, which
+        will remove "Euler Flipping".
+    :type use_euler_filter: bool
 
     :param withtest:
         Should validation tests be generated?
@@ -625,6 +634,15 @@ def _compile_multi_frame(col,
     if only_root_frames is True:
         return
 
+    # Perform an euler filter on all unlocked rotation attributes.
+    if use_euler_filter is True:
+        generator = solverutils.compile_euler_filter(
+            attr_list,
+            withtest
+        )
+        for action, vaction in generator:
+            yield action, vaction
+
     generator = _compile_multi_inbetween_frames(
         col,
         mkr_list,
@@ -780,6 +798,7 @@ class SolverStandard(solverbase.SolverBase):
         # These variables are not officially supported by the class.
         self._auto_attr_blocks = False
         self._triangulate_bundles = False
+        self._use_euler_filter = True
 
         # These variables are not used by the class.
         self._print_statistics_inputs = False
@@ -1184,6 +1203,7 @@ class SolverStandard(solverbase.SolverBase):
 
         auto_attr_blocks = self._auto_attr_blocks
         triangulate_bundles = self._triangulate_bundles
+        use_euler_filter = self._use_euler_filter
         withtest = True
         verbose = True
 
@@ -1216,6 +1236,7 @@ class SolverStandard(solverbase.SolverBase):
                 global_solve,
                 root_frame_strategy,
                 triangulate_bundles,
+                use_euler_filter,
                 withtest,
                 verbose,
             )

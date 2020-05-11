@@ -27,6 +27,7 @@ import mmSolver.logger
 import mmSolver._api.constant as const
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
+import mmSolver._api.solverutils as solverutils
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.solverstep as solverstep
 import mmSolver._api.compile as api_compile
@@ -60,6 +61,9 @@ class SolverBasic(solverbase.SolverBase):
 
     def __init__(self, *args, **kwargs):
         super(SolverBasic, self).__init__(*args, **kwargs)
+        # These variables are not officially supported by the class.
+        self._use_euler_filter = True
+
         # These variables are not used by the class.
         self._print_statistics_inputs = False
         self._print_statistics_affects = False
@@ -255,6 +259,7 @@ class SolverBasic(solverbase.SolverBase):
         frame_list = self.get_frame_list()
         anim_iter_num = self.get_anim_iteration_num()
         lineup_iter_num = self.get_lineup_iteration_num()
+        use_euler_filter = self._use_euler_filter
 
         if use_single_frame is True:
             # Single frame solve
@@ -288,4 +293,14 @@ class SolverBasic(solverbase.SolverBase):
                     sol, col, mkr_list, attr_list, withtest, vaction_cache)
                 for action, vaction in generator:
                     yield action, vaction
+
+            # Perform an euler filter on all unlocked rotation attributes.
+            if use_euler_filter is True:
+                generator = solverutils.compile_euler_filter(
+                    attr_list,
+                    withtest
+                )
+                for action, vaction in generator:
+                    yield action, vaction
+
         return

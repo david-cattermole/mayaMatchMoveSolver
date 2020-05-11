@@ -143,6 +143,38 @@ def get_anim_curves_from_nodes(nodes_or_plugs, attrs=None):
     return anim_curve_nodes
 
 
+def euler_filter_plug(node_name, attr_name):
+    """
+    Perform Euler filter for the given node attribute.
+    """
+    plug_name = '{0}.{1}'.format(node_name, attr_name)
+    num_keys = maya.cmds.keyframe(
+        plug_name,
+        query=True,
+        keyframeCount=True) or 0
+    if num_keys <= 0:
+        return
+
+    # Perform Euler filter for the entire animation curve.
+    prev_value = 0.0
+    for key_index in xrange(num_keys):
+        value = maya.cmds.keyframe(
+            node_name,
+            query=True,
+            attribute=attr_name,
+            index=key_index,
+            valueChange=True) or None
+        assert value is not None
+        new_value = euler_filter_value(prev_value, value)
+        maya.cmds.keyframe(
+            node_name,
+            query=True,
+            attribute=attr_name,
+            index=key_index,
+            valueChange=new_value)
+    return
+
+
 def euler_filter_value(prev_value, value):
     """
     Perform a 'Euler Filter' on the given rotation values.

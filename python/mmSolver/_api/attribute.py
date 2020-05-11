@@ -151,8 +151,8 @@ class Attribute(object):
         name = None
         node = self.get_node(full_path=full_path)
         attr = self.get_attr(long_name=full_path)
-        if (isinstance(node, (str, unicode)) and
-                isinstance(attr, (str, unicode))):
+        if (isinstance(node, basestring)
+                and isinstance(attr, basestring)):
             name = node + '.' + attr
         return name
 
@@ -189,6 +189,18 @@ class Attribute(object):
 
     def is_locked(self):
         return self.get_state() == const.ATTR_STATE_LOCKED
+
+    def get_attribute_type(self):
+        attr_type = None
+        node_name = self.get_node()
+        attr_name = self.get_attr()
+        if (isinstance(node_name, basestring)
+                and isinstance(attr_name, basestring)):
+            attr_type = maya.cmds.attributeQuery(
+                attr_name,
+                node=node_name,
+                attributeType=True) or None
+        return attr_type
 
     def get_min_value(self):
         """This function is deprecated,

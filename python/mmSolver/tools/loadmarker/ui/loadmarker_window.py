@@ -141,6 +141,7 @@ class LoadMarkerWindow(BaseWindow):
                     # file can be loaded at once.
                     mayareadfile.update_nodes(
                         mkr_list, mkr_data_list,
+                        load_bundle_position=load_bnd_pos,
                         camera_field_of_view=camera_field_of_view
                     )
                 else:

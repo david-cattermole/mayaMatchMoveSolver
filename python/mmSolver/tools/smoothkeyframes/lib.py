@@ -19,6 +19,8 @@
 Functions to support smoothing animation curve keyframes.
 """
 
+import math
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya1
 import maya.OpenMayaAnim as OpenMayaAnim1

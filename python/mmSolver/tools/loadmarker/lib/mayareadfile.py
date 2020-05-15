@@ -322,8 +322,8 @@ def __set_node_data(mkr, bnd, mkr_data,
 def create_nodes(mkr_data_list,
                  cam=None,
                  mkr_grp=None,
-                 with_bundles=True,
-                 load_bundle_position=True,
+                 with_bundles=None,
+                 load_bundle_position=None,
                  camera_field_of_view=None):
     """
     Create Markers for all given MarkerData objects
@@ -352,6 +352,10 @@ def create_nodes(mkr_data_list,
     :returns: List of Markers.
     :rtype: [Marker, ..]
     """
+    if with_bundles is None:
+        with_bundles = True
+    if load_bundle_position is None:
+        load_bundle_position = True
     assert isinstance(cam, mmapi.Camera)
     assert isinstance(mkr_grp, mmapi.MarkerGroup)
     assert isinstance(with_bundles, bool)
@@ -487,7 +491,7 @@ def _update_node(mkr, bnd, mkr_data,
 
 
 def update_nodes(mkr_list, mkr_data_list,
-                 load_bundle_position=True,
+                 load_bundle_position=None,
                  camera_field_of_view=None):
     """
     Update the given mkr_list with data from mkr_data_list.
@@ -509,6 +513,8 @@ def update_nodes(mkr_list, mkr_data_list,
     :returns: List of Marker objects that were changed.
     :rtype: [Marker, ..]
     """
+    if load_bundle_position is None:
+        load_bundle_position = True
     assert isinstance(mkr_list, (list, tuple, set))
     assert isinstance(mkr_data_list, (list, tuple, set))
     assert isinstance(load_bundle_position, bool)

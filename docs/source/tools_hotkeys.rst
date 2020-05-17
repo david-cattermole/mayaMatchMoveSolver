@@ -27,7 +27,10 @@ Default Hotkeys
 
 Inside the *mmSolver* hotkey set there are default hotkeys. The
 default hotkeys are provided as helping shortcuts to speed up the
-workflow with mmSolver.
+workflow with mmSolver. The user may change the hotkeys using Maya's
+native Hotkey tools, see
+:ref:`Customising Default Hotkeys <customising-default-hotkeys-heading>`
+for more information.
 
 The **A** key invokes a catch-all tool capable of performing many
 common tasks without needing to move your mouse away from the
@@ -39,21 +42,58 @@ viewport.
 
    * - Key
      - Description
+     - Link
 
    * - Press **C** key
      - Centre 2D on Selected
+     - :ref:`Link <center-2d-on-selection-tool-ref>`
 
    * - Press **Z** key
      - Zoom / Pan tool (the same one with Maya)
+     - `Maya Zoom Pan tool`_
 
    * - Press **M** key
      - Swap Marker / Bundle Selection
+     - :ref:`Link <toggle-marker-bundle-selection-tool-ref>`
 
    * - Press **N** key
      - Select both Markers and Bundles
+     - :ref:`Link <select-marker-and-bundle-tool-ref>`
+
+   * - Press **D** key
+     - Toggle Screen-Z Manipulator
+     - :ref:`Link <screen-z-manipulator-tool-ref>`
+
+   * - Press **T** key
+     - Activate Place Marker tool, click and drag to move the selected Marker.
+     - :ref:`Link <place-marker-manipulator-tool-ref>`
 
    * - Hold-down **A** key
      - Activate the mmSolver Marking Menu (see below).
+     - :ref:`Link <marking-menu-heading>`
+
+   * - Press **CTRL + P** key
+     - Parent under Node tool.
+     - :ref:`Link <reparent-under-node-tool-ref>`
+
+   * - Press **CTRL + SHIFT + P** key
+     - Unparent to World tool.
+     - :ref:`Link <unparent-to-world-tool-ref>`
+
+   * - Press **ALT + 1** key
+     - Show/Hide geometry in the current viewport.
+     - N/A
+
+   * - Press **ALT + 2** key
+     - Show/Hide Markers, Bundles, Locators and NURBS Curves in the
+       current viewport.
+     - N/A
+
+   * - Press **ALT + 3** key
+     - Show/Hide Maya Image Planes in the current viewport.
+     - N/A
+
+.. _marking-menu-heading:
 
 Marking Menu
 ------------

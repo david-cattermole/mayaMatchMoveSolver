@@ -616,6 +616,10 @@ def execute(col,
     assert 'mmSolver' in dir(maya.cmds)
 
     vp2_state = viewport_utils.get_viewport2_active_state()
+    current_eval_manager_mode = maya.cmds.evaluationManager(
+        query=True,
+        mode=True
+    )
 
     panels = viewport_utils.get_all_model_panels()
     panel_objs, panel_node_type_vis = preSolve_queryViewportState(
@@ -628,6 +632,7 @@ def execute(col,
     try:
         if options.disable_viewport_two is True:
             viewport_utils.set_viewport2_active_state(False)
+        maya.cmds.evaluationManager(mode='off')
         preSolve_updateProgress(prog_fn, status_fn)
 
         # Check for validity and compile actions.
@@ -764,6 +769,9 @@ def execute(col,
         )
         collectionutils.run_status_func(status_fn, 'Solve Ended')
         collectionutils.run_progress_func(prog_fn, 100)
+        maya.cmds.evaluationManager(
+            mode=current_eval_manager_mode[0]
+        )
         api_state.set_solver_running(False)
         if options.disable_viewport_two is True:
             viewport_utils.set_viewport2_active_state(vp2_state)

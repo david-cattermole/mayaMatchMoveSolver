@@ -34,6 +34,7 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.undo as undo_utils
+import mmSolver.utils.tools as tools_utils
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.api as mmapi
@@ -613,7 +614,13 @@ class SolverWindow(BaseWindow):
         undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
         undo_id += ' '
         undo_id += str(uuid.uuid4())
-        with undo_utils.undo_chunk_context(undo_id):
+        with tools_utils.tool_context(use_undo_chunk=True,
+                                      undo_chunk_name=undo_id,
+                                      restore_current_frame=False,
+                                      pre_update_frame=False,
+                                      post_update_frame=False,
+                                      use_dg_evaluation_mode=True,
+                                      disable_viewport=False):
             block = self.blockSignals(True)
             try:
                 mmapi.set_solver_running(True)

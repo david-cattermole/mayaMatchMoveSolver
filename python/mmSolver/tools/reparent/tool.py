@@ -21,7 +21,7 @@ Re-parent transform node to a new parent, across time.
 
 import maya.cmds
 import mmSolver.logger
-import mmSolver.utils.viewport as viewport
+import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.transform as tfm_utils
 import mmSolver.tools.reparent.lib as lib
 
@@ -35,26 +35,17 @@ def reparent_under_node():
     frame = maya.cmds.currentTime(query=True)
     nodes = maya.cmds.ls(selection=True, long=True,
                          type='transform') or []
-    current_eval_manager_mode = maya.cmds.evaluationManager(
-        query=True,
-        mode=True
-    )
 
     if len(nodes) < 2:
         msg = ('Not enough objects selected, '
                'select at least 1 child and 1 parent node.')
         LOG.warn(msg)
         return
-    try:
-        viewport.viewport_turn_off()
-
-        # Force DG mode, because it evaluates with DG Context faster
-        # (in Maya 2017).
-        #
-        # TODO: Test that DG mode is actually faster in Maya versions
-        # other than 2017.
-        maya.cmds.evaluationManager(mode='off')
-
+    with tools_utils.tool_context(disable_viewport=True,
+                                  use_undo_chunk=False,
+                                  use_dg_evaluation_mode=False,
+                                  restore_current_frame=False,
+                                  pre_update_frame=False):
         children = nodes[:-1]
         parent = nodes[-1]
         children_tfm_nodes = [tfm_utils.TransformNode(node=n) for n in children]
@@ -62,11 +53,7 @@ def reparent_under_node():
         lib.reparent(children_tfm_nodes, parent_tfm_node, sparse=True)
         children = [tn.get_node() for tn in children_tfm_nodes]
         maya.cmds.select(children, replace=True)
-    finally:
-        maya.cmds.evaluationManager(
-            mode=current_eval_manager_mode[0]
-        )
-        viewport.viewport_turn_on()
+
     # Trigger Maya to refresh.
     maya.cmds.currentTime(frame, update=True)
     maya.cmds.refresh(currentView=True, force=False)
@@ -80,35 +67,21 @@ def unparent_to_world():
     frame = maya.cmds.currentTime(query=True)
     nodes = maya.cmds.ls(selection=True, long=True,
                          type='transform') or []
-    current_eval_manager_mode = maya.cmds.evaluationManager(
-        query=True,
-        mode=True
-    )
 
     if len(nodes) == 0:
         msg = ('Not enough objects selected, '
                'select at least 1 transform node.')
         LOG.warn(msg)
         return
-    try:
-        viewport.viewport_turn_off()
-
-        # Force DG mode, because it evaluates with DG Context faster
-        # (in Maya 2017).
-        #
-        # TODO: Test that DG mode is actually faster in Maya versions
-        # other than 2017.
-        maya.cmds.evaluationManager(mode='off')
-
+    with tools_utils.tool_context(disable_viewport=True,
+                                  use_undo_chunk=True,
+                                  use_dg_evaluation_mode=False,
+                                  restore_current_frame=False,
+                                  pre_update_frame=False):
         tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
         lib.reparent(tfm_nodes, None, sparse=True)
         nodes = [tn.get_node() for tn in tfm_nodes]
         maya.cmds.select(nodes, replace=True)
-    finally:
-        maya.cmds.evaluationManager(
-            mode=current_eval_manager_mode[0]
-        )
-        viewport.viewport_turn_on()
 
     # Trigger Maya to refresh.
     maya.cmds.currentTime(frame, update=True)

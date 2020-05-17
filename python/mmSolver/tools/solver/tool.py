@@ -23,7 +23,7 @@ import datetime
 import uuid
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
-import mmSolver.utils.undo as undo_utils
+import mmSolver.utils.tools as tools_utils
 import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.lib.state as lib_state
@@ -137,7 +137,13 @@ def run_solve_on_current_frame():
     undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
     undo_id += ' '
     undo_id += str(uuid.uuid4())
-    with undo_utils.undo_chunk_context(undo_id):
+    with tools_utils.tool_context(use_undo_chunk=True,
+                                  undo_chunk_name=undo_id,
+                                  restore_current_frame=False,
+                                  pre_update_frame=False,
+                                  post_update_frame=False,
+                                  use_dg_evaluation_mode=True,
+                                  disable_viewport=False):
         run_solve(override_current_frame=True)
     return
 
@@ -150,7 +156,13 @@ def run_solve_on_all_frames():
     undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
     undo_id += ' '
     undo_id += str(uuid.uuid4())
-    with undo_utils.undo_chunk_context(undo_id):
+    with tools_utils.tool_context(use_undo_chunk=True,
+                                  undo_chunk_name=undo_id,
+                                  restore_current_frame=False,
+                                  pre_update_frame=False,
+                                  post_update_frame=False,
+                                  use_dg_evaluation_mode=True,
+                                  disable_viewport=False):
         run_solve(override_current_frame=False)
     return
 

@@ -28,7 +28,6 @@ Ideas::
 
 """
 
-import pprint
 import collections
 
 import maya.cmds

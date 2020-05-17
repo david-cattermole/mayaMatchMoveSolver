@@ -105,3 +105,32 @@ created with many common tools in a simple to use menu.
     :alt: mmSolver Marking Menu
     :align: center
     :width: 50%
+
+.. _customising-default-hotkeys-heading:
+
+Customising Default Hotkeys
+---------------------------
+
+The default *mmSolver* hotkeys can be edited using Maya's native Hotkey
+configuration tools.
+
+The steps below will explain how to create a new Maya Hotkey Set that
+will extend the mmSolver hotkeys. The same steps can be used to extend
+the default Maya hotkeys.
+
+#. Open Maya.
+#. Open the Hotkey Editor with the menu `Windows > Settings / Preferences
+   > Hotkey Editor`
+#. Choose the Hotkey Set to be extended from the drop-down.
+#. Click the Gear settings icon next the Hotkey Set drop-down and
+   select "Duplicate...".
+
+   #. Enter the name of your custom Hotkey Set to be created.
+
+#. Edit the hotkeys using the Hotkey Editor.
+#. Press *Save and Close* button.
+#. Use the change-hotkey-set-heading_ button on the `mmSolver` shelf
+   to change the active Hotkey Set.
+
+.. _Maya Zoom Pan tool:
+   https://knowledge.autodesk.com/support/maya-lt/learn-explore/caas/CloudHelp/cloudhelp/2019/ENU/MayaLT-TextureBaking/files/GUID-A7CAE8D4-B3B0-4FF8-8405-4DF3427A8DB8-htm.html

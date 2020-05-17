@@ -3,6 +3,8 @@ Hotkeys
 
 Define the hotkeys and hotkey related tools for mmSolver.
 
+.. _change-hotkey-set-heading:
+
 Change Hotkey Set
 -----------------
 
@@ -17,6 +19,8 @@ Editor to change the Hotkey Set.
     :alt: Node Creation Shelf Icons
     :align: center
     :width: 30%
+
+.. _default-hotkeys-heading:
 
 Default Hotkeys
 ---------------

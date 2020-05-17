@@ -5,6 +5,8 @@ The tools on this page are not specific to Markers, Cameras or
 Bundles, but are general tools useful in Maya for many different
 tasks.
 
+.. _center-2d-on-selection-tool-ref:
+
 Center 2D On Selection
 ----------------------
 
@@ -53,6 +55,8 @@ To run the tool, use this Python command:
 
     # Remove Centering from active camera
     tool.remove()
+
+.. _smooth-keyframes-tool-ref:
 
 Smooth Keyframes
 ----------------
@@ -169,7 +173,7 @@ The image below shows the effect of the *Smooth Width* with the
     :align: center
     :width: 90%
 
-.. _screen-space-transform-ref:
+.. _screen-space-transform-tool-ref:
 
 Screen-Space Transform
 ----------------------
@@ -210,6 +214,8 @@ To run the tool, use this Python command:
 
     import mmSolver.tools.screenspacetransform.tool as tool
     tool.main()
+
+.. _create-screen-space-motion-trail-tool-ref:
 
 Create Screen-Space Motion Trail
 --------------------------------
@@ -278,6 +284,8 @@ To run the tool, use this Python command:
     import mmSolver.tools.screenspacemotiontrail.tool as tool
     tool.main()
 
+.. _channel-sensitivity-tool-ref:
+
 Channel Sensitivity
 -------------------
 
@@ -304,6 +312,8 @@ To run the tool, use this Python command:
     import mmSolver.tools.channelsen.tool as tool
     tool.main()
 
+.. _copy-camera-to-clipboard-tool-ref:
+
 Copy Camera to Clipboard
 ------------------------
 
@@ -328,6 +338,8 @@ To run the tool, use this Python command:
 
     import mmSolver.tools.copypastecamera.tool as tool
     tool.main()
+
+.. _marker-bundle-rename-tool-ref:
 
 Marker Bundle Rename
 --------------------
@@ -354,6 +366,8 @@ To run the tool, use this Python command:
     import mmSolver.tools.markerbundlerename.tool as tool
     tool.main()
 
+.. _marker-bundle-rename-with-metadata-tool-ref:
+
 Marker Bundle Rename (with Metadata)
 ------------------------------------
 
@@ -377,6 +391,8 @@ To run the tool, use this Python command:
 
     import mmSolver.tools.markerbundlerenamewithmetadata.tool as tool
     tool.main()
+
+.. _reparent-under-node-tool-ref:
 
 Reparent Under Node
 -------------------
@@ -406,6 +422,8 @@ To run the tool, use this Python command:
     import mmSolver.tools.reparent.tool as tool
     tool.reparent_under_node()
 
+.. _unparent-to-world-tool-ref:
+
 Unparent to World
 -----------------
 
@@ -431,6 +449,8 @@ To run the tool, use this Python command:
 
     import mmSolver.tools.reparent.tool as tool
     tool.unparent_to_world()
+
+.. _create-remove-controller-tool-ref:
 
 Create / Remove Controller
 --------------------------

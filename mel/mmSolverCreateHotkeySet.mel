@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2019 David Cattermole.
+// Copyright (C) 2019, 2020 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -51,6 +51,25 @@ if (`runTimeCommand -exists mmSolver_selectMarkersAndBundles`) {
 if (`runTimeCommand -exists mmSolver_placeMarkerTool`) {
     runTimeCommand -e -delete mmSolver_placeMarkerTool;
 }
+if (`runTimeCommand -exists mmSolver_parentUnderNode`) {
+    runTimeCommand -e -delete mmSolver_parentUnderNode;
+}
+if (`runTimeCommand -exists mmSolver_unparentToWorld`) {
+    runTimeCommand -e -delete mmSolver_unparentToWorld;
+}
+if (`runTimeCommand -exists mmSolver_toggleViewportGeom`) {
+    runTimeCommand -e -delete mmSolver_toggleViewportGeom;
+}
+if (`runTimeCommand -exists mmSolver_toggleViewportCtrls`) {
+    runTimeCommand -e -delete mmSolver_toggleViewportCtrls;
+}
+if (`runTimeCommand -exists mmSolver_toggleViewportImgPlns`) {
+    runTimeCommand -e -delete mmSolver_toggleViewportImgPlns;
+}
+if (`runTimeCommand -exists mmSolver_toggleScreenZManipulator`) {
+    runTimeCommand -e -delete mmSolver_toggleScreenZManipulator;
+}
+
 
 
 //
@@ -104,6 +123,53 @@ runTimeCommand
         -command ("import mmSolver.tools.placemarkermanip.tool as tool;\ntool.main();")
         mmSolver_placeMarkerTool;
 
+runTimeCommand
+        -annotation "Parent Under Node"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.reparent.tool as tool;\ntool.reparent_under_node();")
+        mmSolver_parentUnderNode;
+
+runTimeCommand
+        -annotation "Unparent to World"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.reparent.tool as tool;\ntool.unparent_to_world();")
+        mmSolver_unparentToWorld;
+
+runTimeCommand
+        -annotation "Toggle Viewport Geometry"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.toggleviewportgeom.tool as tool;\ntool.main();")
+        mmSolver_toggleViewportGeom;
+
+runTimeCommand
+        -annotation "Toggle Viewport Locators and NURBS Curves"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.toggleviewportctrls.tool as tool;\ntool.main();")
+        mmSolver_toggleViewportCtrls;
+
+runTimeCommand
+        -annotation "Toggle Viewport Image Planes"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.toggleviewportimgplns.tool as tool;\ntool.main();")
+        mmSolver_toggleViewportImgPlns;
+
+runTimeCommand
+        -annotation "Toggle Screen-Z Manipulator"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.screenzmanipulator.tool as tool;\ntool.main();")
+        mmSolver_toggleScreenZManipulator;
 
 
 //
@@ -145,6 +211,43 @@ nameCommand
         -command ("mmSolver_placeMarkerTool")
         mmSolver_placeMarkerToolNameCommand;
 
+nameCommand
+        -annotation "mmSolver_parentUnderNodeNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_parentUnderNode")
+        mmSolver_parentUnderNodeNameCommand;
+
+nameCommand
+        -annotation "mmSolver_unparentToWorldNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_unparentToWorld")
+        mmSolver_unparentToWorldNameCommand;
+
+nameCommand
+        -annotation "mmSolver_toggleViewportGeomNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_toggleViewportGeom")
+        mmSolver_toggleViewportGeomNameCommand;
+
+nameCommand
+        -annotation "mmSolver_toggleViewportCtrlsNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_toggleViewportCtrls")
+        mmSolver_toggleViewportCtrlsNameCommand;
+
+nameCommand
+        -annotation "mmSolver_toggleViewportImgPlnsNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_toggleViewportImgPlns")
+        mmSolver_toggleViewportImgPlnsNameCommand;
+
+nameCommand
+        -annotation "mmSolver_toggleScreenZManipulatorNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_toggleScreenZManipulator")
+        mmSolver_toggleScreenZManipulatorNameCommand;
+
+
 
 //
 // Delete existing Hotkey set.
@@ -167,8 +270,6 @@ hotkey -keyShortcut "a" -name ("mmSolver_markingMenu_PressNameCommand");
 hotkey -keyShortcut "c" -name ("mmSolver_centerOnSelectedNameCommand");
 hotkey -keyShortcut "c" -releaseName ("");
 
-// hotkey -keyShortcut "\\" -releaseName ("");
-// hotkey -keyShortcut "\\" -name ("");
 hotkey -keyShortcut "z" -releaseName ("TogglePanZoomReleaseNameCommand");
 hotkey -keyShortcut "z" -name ("TogglePanZoomPressNameCommand");
 
@@ -177,6 +278,27 @@ hotkey -keyShortcut "m" -releaseName ("");
 
 hotkey -keyShortcut "n" -name ("mmSolver_selectMarkersAndBundlesNameCommand");
 hotkey -keyShortcut "n" -releaseName ("");
+
+hotkey -keyShortcut "t" -name ("mmSolver_placeMarkerToolNameCommand");
+hotkey -keyShortcut "t" -releaseName ("");
+
+hotkey -keyShortcut "p" -ctl -name ("mmSolver_parentUnderNodeNameCommand");
+hotkey -keyShortcut "p" -releaseName ("");
+
+hotkey -keyShortcut "p" -ctl -sht -name ("mmSolver_unparentToWorldNameCommand");
+hotkey -keyShortcut "p" -sht -releaseName ("");
+
+hotkey -keyShortcut "1" -alt -name ("mmSolver_toggleViewportGeomNameCommand");
+hotkey -keyShortcut "1" -releaseName ("");
+
+hotkey -keyShortcut "2" -alt -name ("mmSolver_toggleViewportCtrlsNameCommand");
+hotkey -keyShortcut "2" -releaseName ("");
+
+hotkey -keyShortcut "3" -alt -name ("mmSolver_toggleViewportImgPlnsNameCommand");
+hotkey -keyShortcut "3" -releaseName ("");
+
+hotkey -keyShortcut "d" -name ("mmSolver_toggleScreenZManipulatorNameCommand");
+hotkey -keyShortcut "d" -releaseName ("");
 
 hotkeyCtx -type "Editor" -addClient "hyperShadePanel";
 hotkeyCtx -type "Editor" -addClient "polyTexturePlacementPanel";

@@ -684,18 +684,6 @@ def get_transform_matrix_list(tfm_matrix_cache,
     matrix_list = []
     for t, world_mat in zip(times, world_mat_list):
         assert world_mat is not None
-        # par_inv_mat = None
-        # if True:
-        #     maya.cmds.currentTime(t, update=True)
-        #     plug_name = parent_inv_matrix_plug.name()
-        #     par_inv_mat = maya.cmds.getAttr(plug_name)
-        #     par_inv_mat = OpenMaya2.MMatrix(par_inv_mat)
-        # else:
-        #     ctx = create_dg_context_apitwo(t)
-        #     par_inv_mat = get_matrix_from_plug_apitwo(
-        #         parent_inv_matrix_plug,
-        #         ctx
-        #     )
         local_mat = OpenMaya2.MTransformationMatrix(world_mat)
         local_mat.reorderRotation(rotate_order)
         matrix_list.append(local_mat)

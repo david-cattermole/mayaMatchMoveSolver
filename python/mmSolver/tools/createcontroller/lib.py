@@ -178,10 +178,10 @@ def _sort_hierarchy_depth_to_nodes(nodes):
 
 
 def _sort_hierarchy_depth_to_tfm_nodes(tfm_nodes):
-    depth_to_tfm_node_map = collections.defaultdict(set)
+    depth_to_tfm_node_map = collections.defaultdict(list)
     for tfm_node in tfm_nodes:
         depth = tfm_node.get_node().count('|')
-        depth_to_tfm_node_map[depth].add(tfm_node)
+        depth_to_tfm_node_map[depth].append(tfm_node)
     return depth_to_tfm_node_map
 
 
@@ -268,11 +268,13 @@ def create(nodes,
     # Create new (locator) node for each input node
     ctrl_list = []
     node_to_ctrl_map = {}
+    node_to_ctrl_tfm_map = {}
     depths = sorted(depth_to_tfm_node_map.keys())
     for depth in depths:
         depth_tfm_nodes = depth_to_tfm_node_map.get(depth)
         assert depth_tfm_nodes is not None
-        for tfm_node in depth_tfm_nodes:
+        sorted_tfm_nodes = sorted(depth_tfm_nodes, key=lambda x: x.get_node())
+        for tfm_node in sorted_tfm_nodes:
             node = tfm_node.get_node()
             node_parent = nodes_parent.get(node)
             if node_parent is not None:
@@ -290,16 +292,17 @@ def create(nodes,
             maya.cmds.createNode('locator', parent=tfm)
             rot_order = maya.cmds.xform(node, query=True, rotateOrder=True)
             maya.cmds.xform(tfm, rotateOrder=rot_order, preserve=True)
+            ctrl_tfm = tfm_utils.TransformNode(node=tfm)
             ctrl_list.append(tfm)
             node_to_ctrl_map[node] = tfm
-    ctrl_tfm_nodes = [tfm_utils.TransformNode(node=tfm)
-                      for tfm in ctrl_list]
+            node_to_ctrl_tfm_map[node] = ctrl_tfm
 
     # Set transform matrix on new node
     anim_curves = []
-    for src, dst in zip(tfm_nodes, ctrl_tfm_nodes):
+    for src in tfm_nodes:
         src_node = src.get_node()
         src_times = key_times_map.get(src_node, [current_frame])
+        dst = node_to_ctrl_tfm_map.get(src_node)
         assert len(src_times) > 0
         tfm_utils.set_transform_values(
             cache,
@@ -336,8 +339,9 @@ def create(nodes,
         maya.cmds.delete(anim_curves)
 
     # Create constraint(s) to previous nodes.
-    for tfm_node, ctrl in zip(tfm_nodes, ctrl_tfm_nodes):
+    for tfm_node in tfm_nodes:
         src_node = tfm_node.get_node()
+        ctrl = node_to_ctrl_tfm_map.get(src_node)
         dst_node = ctrl.get_node()
         _create_constraint(src_node, dst_node)
     return ctrl_list

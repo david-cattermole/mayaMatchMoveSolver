@@ -83,9 +83,70 @@
 <span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes.lib" title="Permalink to this headline">¶</a></h2>
 <p>Functions to support smoothing animation curve keyframes.</p>
 <dl class="function">
+<dt id="mmSolver.tools.smoothkeyframes.lib.calculate_chunks">
+<code class="descclassname">mmSolver.tools.smoothkeyframes.lib.</code><code class="descname">calculate_chunks</code><span class="sig-paren">(</span><em>selected_keyframes</em>, <em>all_times</em>, <em>all_values</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.smoothkeyframes.lib.calculate_chunks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a list of chunks; each chunk is a list of time values.</p>
+<p><cite>all_times</cite> is assumed to already be sorted.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.smoothkeyframes.lib.create_first_last_keyframe_animCurve">
+<code class="descclassname">mmSolver.tools.smoothkeyframes.lib.</code><code class="descname">create_first_last_keyframe_animCurve</code><span class="sig-paren">(</span><em>selected_keyframes</em>, <em>all_times</em>, <em>all_values</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.smoothkeyframes.lib.create_first_last_keyframe_animCurve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.tools.smoothkeyframes.lib.blend_curves_with_difference">
+<code class="descclassname">mmSolver.tools.smoothkeyframes.lib.</code><code class="descname">blend_curves_with_difference</code><span class="sig-paren">(</span><em>selected_keyframes</em>, <em>all_times</em>, <em>value_array</em>, <em>new_value_array</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.smoothkeyframes.lib.blend_curves_with_difference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new array of values based on the difference between
+value_array at the start/end of of each chunk of selected
+keyframes.</p>
+<p>The algorithm works like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#. Calculate chunks.</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li>Create a linear curve between start/end keyframe values of the
+smoothed curve.</li>
+<li>Subtract the linear curve from the smoothed curve.</li>
+<li>Create another linear curve between start/end keyframe values
+of the value curve.</li>
+<li>Subtract the linear curve from the value curve.</li>
+<li>Add the difference between the linear value curve and the
+linear smooth curve, to the smoothed curve.</li>
+<li>Blend between the smooth and original value.</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[float, .]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="mmSolver.tools.smoothkeyframes.lib.smooth_animcurve">
 <code class="descclassname">mmSolver.tools.smoothkeyframes.lib.</code><code class="descname">smooth_animcurve</code><span class="sig-paren">(</span><em>animcurve</em>, <em>selected_keyframes</em>, <em>smooth_type</em>, <em>width</em>, <em>blend_smooth_type</em>, <em>blend_width</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.smoothkeyframes.lib.smooth_animcurve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Smooth the given keyframes for an animCurve.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>animcurve</strong> (<em>str</em>) &#8211; Animation curve node name.</li>
+<li><strong>selected_keyframes</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>] or </em><em>[</em><em>]</em>) &#8211; The frame numbers that are &#8216;selected&#8217; to be smoothed.</li>
+<li><strong>smooth_type</strong> &#8211; What algorithm to use for smoothing.</li>
+<li><strong>width</strong> (<em>float</em>) &#8211; The width of the smoothing kernel; higher values produce more
+smoothing, and is slower to compute.</li>
+<li><strong>blend_smooth_type</strong> &#8211; What algorithm to use for smoothing the blend?</li>
+<li><strong>blend_width</strong> (<em>float</em>) &#8211; The width of the smoothing kernel; higher values produce more
+smoothing, and is slower to compute.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

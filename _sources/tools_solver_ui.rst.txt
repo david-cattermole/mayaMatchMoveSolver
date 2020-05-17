@@ -35,17 +35,22 @@ To display the column visiblity, use the Edit menu.
 
    * - Field
      - Description
+
    * - Node
      - The input Object's Node.
+
    * - Weight
      - The weight the Marker will have in the solver. Higher values
        give an importance to this Marker, at the expense of other
        Markers.
+
    * - Frame Deviation
      - The deviation, in pixels, of the Marker on the current frame.
+
    * - Average Deviation
      - The average deviation, in pixels, of the Marker across all
        valid frames.
+
    * - Maximum Deviation
      - The maximum deviation and frame number on the Marker.
 
@@ -168,24 +173,39 @@ the Maya Viewport during solves.
 
    * - Name
      - Description
+
    * - Weight Column
      - The Marker weight column is displayed.
+
    * - Frame Deviation
      - The Marker per-frame deviation column is displayed.
+
    * - Average Deviation
      - The Marker average deviation column is displayed.
+
    * - Maximum Deviation
      - The Marker maximum deviation column is displayed.
+
    * - Display Attribute State
      - The attribute state column is displayed.
+
    * - Display Attribute Min/Max
      - The minimum and maximum value attribute columns are displayed.
+
+   * - Display Attribute Smoothness
+     - The smoothness variance attribute column is displayed.
+
+   * - Display Attribute Stiffness
+     - The stiffness variance attribute column is displayed.
+
    * - Display Image Planes
      - Image Planes will be visible while a solve is calculating,
        otherwise all Image Planes are hidden.
+
    * - Display Meshes
      - Polygon meshes will be visible while a solve is calculating,
        otherwise all meshes are hidden.
+
    * - Isolate Objects
      - mmSolver will hide all objects not used in a solve, while a
        solve is calculated.

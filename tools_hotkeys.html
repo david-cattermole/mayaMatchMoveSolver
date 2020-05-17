@@ -59,7 +59,7 @@
 <h1>Hotkeys<a class="headerlink" href="#hotkeys" title="Permalink to this headline">¶</a></h1>
 <p>Define the hotkeys and hotkey related tools for mmSolver.</p>
 <div class="section" id="change-hotkey-set">
-<h2>Change Hotkey Set<a class="headerlink" href="#change-hotkey-set" title="Permalink to this headline">¶</a></h2>
+<span id="change-hotkey-set-heading"></span><h2>Change Hotkey Set<a class="headerlink" href="#change-hotkey-set" title="Permalink to this headline">¶</a></h2>
 <p>On the mmSolver shelf is a dynamic-drop-down menu to quickly switch
 the currently active Hotkey Set. This tool will not just work with
 mmSolver hotkeys, but instead it will work with all hotkey sets.</p>
@@ -70,11 +70,14 @@ Editor to change the Hotkey Set.</p>
 </div>
 </div>
 <div class="section" id="default-hotkeys">
-<h2>Default Hotkeys<a class="headerlink" href="#default-hotkeys" title="Permalink to this headline">¶</a></h2>
+<span id="default-hotkeys-heading"></span><h2>Default Hotkeys<a class="headerlink" href="#default-hotkeys" title="Permalink to this headline">¶</a></h2>
 <p>Inside the <em>mmSolver</em> hotkey set there are default hotkeys. The
 default hotkeys are provided as helping shortcuts to speed up the
-workflow with mmSolver.</p>
-<p>The <strong>A</strong> key invokes a catch-all tool capiable of performing many
+workflow with mmSolver. The user may change the hotkeys using Maya&#8217;s
+native Hotkey tools, see
+<a class="reference internal" href="#customising-default-hotkeys-heading"><span class="std std-ref">Customising Default Hotkeys</span></a>
+for more information.</p>
+<p>The <strong>A</strong> key invokes a catch-all tool capable of performing many
 common tasks without needing to move your mouse away from the
 viewport.</p>
 <table border="1" class="colwidths-auto docutils" id="id1">
@@ -82,34 +85,92 @@ viewport.</p>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Key</th>
 <th class="head">Description</th>
+<th class="head">Link</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Press <strong>C</strong> key</td>
 <td>Centre 2D on Selected</td>
+<td><a class="reference internal" href="tools_generaltools.html#center-2d-on-selection-tool-ref"><span class="std std-ref">Link</span></a></td>
 </tr>
 <tr class="row-odd"><td>Press <strong>Z</strong> key</td>
 <td>Zoom / Pan tool (the same one with Maya)</td>
+<td><a class="reference external" href="https://knowledge.autodesk.com/support/maya-lt/learn-explore/caas/CloudHelp/cloudhelp/2019/ENU/MayaLT-TextureBaking/files/GUID-A7CAE8D4-B3B0-4FF8-8405-4DF3427A8DB8-htm.html">Maya Zoom Pan tool</a></td>
 </tr>
 <tr class="row-even"><td>Press <strong>M</strong> key</td>
 <td>Swap Marker / Bundle Selection</td>
+<td><a class="reference internal" href="tools_selection.html#toggle-marker-bundle-selection-tool-ref"><span class="std std-ref">Link</span></a></td>
 </tr>
 <tr class="row-odd"><td>Press <strong>N</strong> key</td>
 <td>Select both Markers and Bundles</td>
+<td><a class="reference internal" href="tools_selection.html#select-marker-and-bundle-tool-ref"><span class="std std-ref">Link</span></a></td>
+</tr>
+<tr class="row-even"><td>Press <strong>D</strong> key</td>
+<td>Toggle Screen-Z Manipulator</td>
+<td><a class="reference internal" href="tools_bundletools.html#screen-z-manipulator-tool-ref"><span class="std std-ref">Link</span></a></td>
+</tr>
+<tr class="row-odd"><td>Press <strong>T</strong> key</td>
+<td>Activate Place Marker tool, click and drag to move the selected Marker.</td>
+<td><a class="reference internal" href="tools_markertools.html#place-marker-manipulator-tool-ref"><span class="std std-ref">Link</span></a></td>
 </tr>
 <tr class="row-even"><td>Hold-down <strong>A</strong> key</td>
 <td>Activate the mmSolver Marking Menu (see below).</td>
+<td><a class="reference internal" href="#marking-menu-heading"><span class="std std-ref">Link</span></a></td>
+</tr>
+<tr class="row-odd"><td>Press <strong>CTRL + P</strong> key</td>
+<td>Parent under Node tool.</td>
+<td><a class="reference internal" href="tools_generaltools.html#reparent-under-node-tool-ref"><span class="std std-ref">Link</span></a></td>
+</tr>
+<tr class="row-even"><td>Press <strong>CTRL + SHIFT + P</strong> key</td>
+<td>Unparent to World tool.</td>
+<td><a class="reference internal" href="tools_generaltools.html#unparent-to-world-tool-ref"><span class="std std-ref">Link</span></a></td>
+</tr>
+<tr class="row-odd"><td>Press <strong>ALT + 1</strong> key</td>
+<td>Show/Hide geometry in the current viewport.</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>Press <strong>ALT + 2</strong> key</td>
+<td>Show/Hide Markers, Bundles, Locators and NURBS Curves in the
+current viewport.</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>Press <strong>ALT + 3</strong> key</td>
+<td>Show/Hide Maya Image Planes in the current viewport.</td>
+<td>N/A</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="marking-menu">
-<h2>Marking Menu<a class="headerlink" href="#marking-menu" title="Permalink to this headline">¶</a></h2>
+<span id="marking-menu-heading"></span><h2>Marking Menu<a class="headerlink" href="#marking-menu" title="Permalink to this headline">¶</a></h2>
 <p>Along with the default hotkey set, a Maya Marking Menu has been
 created with many common tools in a simple to use menu.</p>
 <div class="figure align-center">
 <a class="reference internal image-reference" href="_images/tools_marking_menu.png"><img alt="mmSolver Marking Menu" src="_images/tools_marking_menu.png" style="width: 50%;" /></a>
 </div>
+</div>
+<div class="section" id="customising-default-hotkeys">
+<span id="customising-default-hotkeys-heading"></span><h2>Customising Default Hotkeys<a class="headerlink" href="#customising-default-hotkeys" title="Permalink to this headline">¶</a></h2>
+<p>The default <em>mmSolver</em> hotkeys can be edited using Maya&#8217;s native Hotkey
+configuration tools.</p>
+<p>The steps below will explain how to create a new Maya Hotkey Set that
+will extend the mmSolver hotkeys. The same steps can be used to extend
+the default Maya hotkeys.</p>
+<ol class="arabic simple">
+<li>Open Maya.</li>
+<li>Open the Hotkey Editor with the menu <cite>Windows &gt; Settings / Preferences
+&gt; Hotkey Editor</cite></li>
+<li>Choose the Hotkey Set to be extended from the drop-down.</li>
+<li>Click the Gear settings icon next the Hotkey Set drop-down and
+select &#8220;Duplicate...&#8221;.<ol class="arabic">
+<li>Enter the name of your custom Hotkey Set to be created.</li>
+</ol>
+</li>
+<li>Edit the hotkeys using the Hotkey Editor.</li>
+<li>Press <em>Save and Close</em> button.</li>
+<li>Use the <a class="reference internal" href="#change-hotkey-set-heading">change-hotkey-set-heading</a> button on the <cite>mmSolver</cite> shelf
+to change the active Hotkey Set.</li>
+</ol>
 </div>
 </div>
 
@@ -125,6 +186,7 @@ created with many common tools in a simple to use menu.</p>
 <li><a class="reference internal" href="#change-hotkey-set">Change Hotkey Set</a></li>
 <li><a class="reference internal" href="#default-hotkeys">Default Hotkeys</a></li>
 <li><a class="reference internal" href="#marking-menu">Marking Menu</a></li>
+<li><a class="reference internal" href="#customising-default-hotkeys">Customising Default Hotkeys</a></li>
 </ul>
 </li>
 </ul>

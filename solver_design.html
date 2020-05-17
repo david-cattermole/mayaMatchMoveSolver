@@ -55,7 +55,7 @@
           <div class="body" role="main">
             
   <div class="section" id="solver-design">
-<h1>Solver Design<a class="headerlink" href="#solver-design" title="Permalink to this headline">¶</a></h1>
+<span id="solver-design-heading"></span><h1>Solver Design<a class="headerlink" href="#solver-design" title="Permalink to this headline">¶</a></h1>
 <p>Many users of MatchMove software find that by understanding how the
 underlying processes of the software work they are able to obtain better
 results by utilising the software as it&#8217;s intended to work.</p>
@@ -63,7 +63,7 @@ results by utilising the software as it&#8217;s intended to work.</p>
 <blockquote>
 <div><em>How does the MM Solver work?</em></div></blockquote>
 <div class="section" id="how-does-the-solver-work">
-<h2>How does the solver work?<a class="headerlink" href="#how-does-the-solver-work" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-how-does-it-work"></span><h2>How does the solver work?<a class="headerlink" href="#how-does-the-solver-work" title="Permalink to this headline">¶</a></h2>
 <p>The solver inside MM Solver is an <em>optimisation</em> solver. The solver
 attempts to optimise the <em>measured error</em> with various <em>unknown
 parameter</em> values. The solver&#8217;s purpose is to find the parameter values
@@ -74,7 +74,7 @@ traditionally the last step of MatchMove and Photogrammetry solvers
 where the parameters of 3D points (Bundles) and cameras are solved to
 produce a 3D Scene with the least possible error.</p>
 <div class="section" id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<span id="solver-design-attributes"></span><h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
 <p>In the MM Solver, we refer to <em>unknown parameters</em> as Attributes.
 Attributes are the Maya attributes that are allowed to be modified
 inside the solver. Maya attributes that are not added into the solver
@@ -95,7 +95,7 @@ solving algorithm only floating-point attribute values can be solved.
 Commonly solved Attributes are 3D translate and rotate axes.</p>
 </div>
 <div class="section" id="markers-and-bundles">
-<h3>Markers and Bundles<a class="headerlink" href="#markers-and-bundles" title="Permalink to this headline">¶</a></h3>
+<span id="solver-design-markers-and-bundles"></span><h3>Markers and Bundles<a class="headerlink" href="#markers-and-bundles" title="Permalink to this headline">¶</a></h3>
 <p><em>Markers</em> and <em>Bundles</em> are used to compute the <em>measured error</em> inside
 the solver. The word <em>Marker</em> is used to describe a 2D point on an image
 plane, and <em>Bundle</em> to describe the 3D Point.</p>
@@ -115,7 +115,7 @@ this is that the <em>measured error</em> is the distance between the
 screen-space re-projected 3D Bundles with the linked 2D Markers.</p>
 </div>
 <div class="section" id="solving">
-<h3>Solving<a class="headerlink" href="#solving" title="Permalink to this headline">¶</a></h3>
+<span id="solver-design-solving"></span><h3>Solving<a class="headerlink" href="#solving" title="Permalink to this headline">¶</a></h3>
 <p>Once the solver has <em>Attributes</em>, <em>Cameras</em> and <em>Markers</em> and linked
 <em>Bundles</em>, the solver can start a solve.</p>
 <p>The solver may only start if some conditions are met. One important
@@ -170,7 +170,7 @@ or <em>Bundles</em>.</li>
 </div>
 </div>
 <div class="section" id="solving-process">
-<h2>Solving Process<a class="headerlink" href="#solving-process" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-solving-process"></span><h2>Solving Process<a class="headerlink" href="#solving-process" title="Permalink to this headline">¶</a></h2>
 <p>Each time you execute a solve, the solver goes though a number of steps
 to perform the optimisation and reduce the error.</p>
 <p>This is an overview of the solver&#8217;s process:</p>
@@ -206,7 +206,7 @@ repeat the iteration.</li>
 hundreds or thousands of times, depending on the number of <em>Attributes</em>
 and <em>Markers</em> that are in the solve.</p>
 <div class="section" id="time-static-and-animated-attributes">
-<h3>Time - Static and Animated Attributes<a class="headerlink" href="#time-static-and-animated-attributes" title="Permalink to this headline">¶</a></h3>
+<span id="solver-design-static-and-animated-attributes"></span><h3>Time - Static and Animated Attributes<a class="headerlink" href="#time-static-and-animated-attributes" title="Permalink to this headline">¶</a></h3>
 <p>Up until now we&#8217;ve been concerned with solving a single frame in time.
 Now we need to extend that into multiple frames. In the MM Solver there
 are <em>animated Attributes</em> that change per-frame and <em>static Attributes</em>
@@ -234,8 +234,64 @@ number of solver evaluations required for a low <em>measured error</em>.
 Solving Animated and Static values as described is a <strong>Brute Force</strong>
 approach, but other strategies may be used.</p>
 </div>
+<div class="section" id="attribute-details">
+<span id="solver-design-attribute-details"></span><h3>Attribute Details<a class="headerlink" href="#attribute-details" title="Permalink to this headline">¶</a></h3>
+<p>Attribute Details are properties of an Attribute. Attribute Details
+are used to add constraints such as value limits.</p>
+<p>In mmSolver, there are 4 individual details per-attribute; minimum,
+maximum, smoothness and stiffness. See below for more details on how
+each property works.</p>
+</div>
+</div>
+<div class="section" id="minimum-and-maximum-limits">
+<h2>Minimum and Maximum Limits<a class="headerlink" href="#minimum-and-maximum-limits" title="Permalink to this headline">¶</a></h2>
+<p>Minimum and maximum limits will force <em>mmSolver</em> to solve an attribute
+with-in specific values. Attribute min/max limits apply to both static
+and animated attributes. If a mnimium or maximum value is not set, the
+limit is removed and any value may be used.</p>
+<p><em>mmSolver</em> allows a combination of minimum and maximum limits. The
+combinations are; minimum only, maximum only, both minimum and
+maximum, no to limits at all.</p>
+<p>Although min and max limits may appear to be an appealling feature,
+often the need to use limits is a sign of problems in your solve.
+Minimum and maximum limits are often not helpful because the solver
+will simply limit the values used rather than reduce the likely-hood
+the solver will try to use values outside the limits.</p>
+<p>Minimum and maximum limits are also known as &#8220;Upper and Lower Value
+Bounds&#8221;.</p>
+</div>
+<div class="section" id="smoothness-and-stiffness">
+<h2>Smoothness and Stiffness<a class="headerlink" href="#smoothness-and-stiffness" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/smoothnessConstraintGraph.gif"><img alt="Smoothness Constraint" src="_images/smoothnessConstraintGraph.gif" style="width: 80%;" /></a>
+</div>
+<p>Smoothness and stiffness ensures a Animated Attribute curve follows a
+constraint by increasing the error level of the current solve when the
+curve does not behave as expected. By increasing the solver error for
+&#8220;bad behaviour&#8221; the solver will automatically try to re-distribute the
+error level by changing other Attribute values.</p>
+<p>Both <em>smoothness</em> and <em>stiffness</em> use a similar constraint. The solver
+will increase the error if the solved value varies by more than the
+<em>variance</em> compared to a reference value. This encourages the
+solver to reduce &#8220;jumps&#8221; of more than the <em>variance</em> value.</p>
+<p>For <em>smoothness</em> constraints, the reference value is a smoothed value
+along the curve, based on the previous value. The value at the next
+frame is a predicted value, but is allowed to vary.</p>
+<p>For <em>stiffness</em> constraints, the reference value is the previous
+solved value. This ensures the solver continues to use the same
+value. <em>Stiffness</em> is a useful constraint for curves which should stay
+flat, but will still vary a little. The focal length of a camera might
+be a good example for this type of constraint.</p>
+<p>Both <em>smoothness</em> and <em>stiffness</em> constrains have a <em>variance</em> and
+<em>weight</em> value for each attribute. The <em>variance</em> value controls how
+much the solver can change from the reference value, if the solver
+chooses a value that varies by more than the <em>variance</em> a large error
+is given to the solver. The <em>weight</em> value controls how strong the
+constraint is used inside the solver; lower values means the
+<em>stiffness</em> or <em>smoothness</em> has smaller effect, and higher values
+increases the effect.</p>
 <div class="section" id="solver-strategies">
-<h3>Solver Strategies<a class="headerlink" href="#solver-strategies" title="Permalink to this headline">¶</a></h3>
+<span id="solver-design-solver-strategies"></span><h3>Solver Strategies<a class="headerlink" href="#solver-strategies" title="Permalink to this headline">¶</a></h3>
 <p>Solver strategies are patterns of evaluation that attempt to solve the
 input attributes across time while reducing the number of evaluations
 and increasing solve quality.</p>
@@ -311,15 +367,15 @@ won&#8217;t find a good solution).</p>
 <span id="solver-design-solver-epsilon-one"></span><h4>Epsilon #1 - Acceptable Gradient Change<a class="headerlink" href="#epsilon-1-acceptable-gradient-change" title="Permalink to this headline">¶</a></h4>
 <p>Value type: <code class="docutils literal"><span class="pre">float</span></code></p>
 <p>The gradient error (sometimes named epsilon #1) is used to find when
-the solver has reached the &#8220;top of the mountain peak&#8221;. The gradient is
-represents the slope the solver trying to climb a mountain. When the
-solver reaches a (horizontally) flat area of the mountain, then the
-gradient is low, and will stop the solve. When the solver can find a
-slope (gradient), then the solver can follow the slope of the mountain
-and reach the top of the mountain peak.</p>
-<p>At the beginning of an solver iteration, if the solver has not
+the solver has reached the &#8220;top of the mountain peak&#8221;. The gradient
+represents the slope of climbing the mountain. When the solver reaches
+a (horizontally) flat area of the mountain, then the gradient is low,
+and will stop the solve. When the solver can find a slope (gradient),
+then the solver can follow the slope of the mountain and reach the top
+of the mountain peak.</p>
+<p>At the beginning of a solver iteration, if the solver has not
 decreased the gradient by at least this value, the solver gives up
-trying to reduce the error any more.</p>
+trying to reduce the error any more, and stops solving.</p>
 </div>
 <div class="section" id="epsilon-2-acceptable-parameter-change">
 <span id="solver-design-solver-epsilon-two"></span><h4>Epsilon #2 - Acceptable Parameter Change<a class="headerlink" href="#epsilon-2-acceptable-parameter-change" title="Permalink to this headline">¶</a></h4>
@@ -329,9 +385,9 @@ the when the solver can stop changing parameter values because the
 new parameter values have not changed enough. Changes to parameters are
 able to move the solved solution to different places on the mountain,
 if the parameter changes are too small then the solver will stop.</p>
-<p>At the beginning of an solver iteration, if the guessed parameters
-do not change by at least this value, the solver gives up trying
-to reduce the error any more.</p>
+<p>At the beginning of a solver iteration, if the guessed parameters do
+not change by at least this value, the solver gives up trying to
+reduce the error any more.</p>
 </div>
 <div class="section" id="epsilon-3-acceptable-deviation-error">
 <span id="solver-design-solver-epsilon-three"></span><h4>Epsilon #3 - Acceptable Deviation Error<a class="headerlink" href="#epsilon-3-acceptable-deviation-error" title="Permalink to this headline">¶</a></h4>
@@ -340,9 +396,9 @@ to reduce the error any more.</p>
 error level that is considered a good solve. To use a mountain
 climbing analogy, the <em>deviation error</em> is the highest mountain peak
 that is good enough for the solver.</p>
-<p>At the beginning of an solver iteration, if the error level is
-below this value, the solver considers the error to be low enough
-for the user&#8217;s needs and stops trying to reduce the error.</p>
+<p>At the beginning of a solver iteration, if the error level is below
+this value, the solver considers the error to be low enough for the
+user&#8217;s needs and stops trying to reduce the error.</p>
 </div>
 <div class="section" id="auto-differencing-type">
 <span id="solver-design-solver-auto-diff-type"></span><h4>Auto-Differencing Type<a class="headerlink" href="#auto-differencing-type" title="Permalink to this headline">¶</a></h4>
@@ -368,6 +424,9 @@ should move toward.</p>
 </tr>
 </tbody>
 </table>
+<p>In practice, the authors of mmSolver have found <code class="docutils literal"><span class="pre">central</span></code>
+dramatically slows down the solver and does not increase accuracy very
+much. It is therefore recommended to use <code class="docutils literal"><span class="pre">forward</span></code>.</p>
 </div>
 </div>
 </div>
@@ -376,15 +435,11 @@ should move toward.</p>
 <p><strong>To be written</strong></p>
 <div class="section" id="over-parameterization">
 <h3>Over-Parameterization<a class="headerlink" href="#over-parameterization" title="Permalink to this headline">¶</a></h3>
-<p>Parameters-errors ratio is too high</p>
+<p>Parameters-errors ratio is too high.</p>
 <p><strong>To be written</strong></p>
 </div>
 <div class="section" id="plane-line-and-curve-constraints">
 <h3>Plane, Line and Curve Constraints<a class="headerlink" href="#plane-line-and-curve-constraints" title="Permalink to this headline">¶</a></h3>
-<p><strong>To be written</strong></p>
-</div>
-<div class="section" id="upper-and-lower-value-bounds">
-<h3>Upper and Lower Value Bounds<a class="headerlink" href="#upper-and-lower-value-bounds" title="Permalink to this headline">¶</a></h3>
 <p><strong>To be written</strong></p>
 </div>
 </div>
@@ -460,6 +515,11 @@ Solving is performed directly on <em>Attribute</em> values.</p>
 </li>
 <li><a class="reference internal" href="#solving-process">Solving Process</a><ul>
 <li><a class="reference internal" href="#time-static-and-animated-attributes">Time - Static and Animated Attributes</a></li>
+<li><a class="reference internal" href="#attribute-details">Attribute Details</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#minimum-and-maximum-limits">Minimum and Maximum Limits</a></li>
+<li><a class="reference internal" href="#smoothness-and-stiffness">Smoothness and Stiffness</a><ul>
 <li><a class="reference internal" href="#solver-strategies">Solver Strategies</a></li>
 <li><a class="reference internal" href="#solver-options">Solver Options</a><ul>
 <li><a class="reference internal" href="#maximum-number-of-iterations">Maximum Number of Iterations</a></li>
@@ -476,7 +536,6 @@ Solving is performed directly on <em>Attribute</em> values.</p>
 <li><a class="reference internal" href="#general-solving-concepts">General Solving Concepts</a><ul>
 <li><a class="reference internal" href="#over-parameterization">Over-Parameterization</a></li>
 <li><a class="reference internal" href="#plane-line-and-curve-constraints">Plane, Line and Curve Constraints</a></li>
-<li><a class="reference internal" href="#upper-and-lower-value-bounds">Upper and Lower Value Bounds</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#frequently-asked-questions-faq">Frequently Asked Questions (FAQ)</a><ul>

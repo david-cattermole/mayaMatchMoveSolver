@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Marker Bundle Tools &#8212; mayaMatchMoveSolver master documentation</title>
+    <title>Attribute Tools &#8212; mayaMatchMoveSolver master documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Bundle Tools" href="tools_bundletools.html" />
-    <link rel="prev" title="Attribute Tools" href="tools_attributetools.html" /> 
+    <link rel="next" title="Marker Bundle Tools" href="tools_markerbundletools.html" />
+    <link rel="prev" title="Selection Tools" href="tools_selection.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -40,10 +40,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tools_bundletools.html" title="Bundle Tools"
+          <a href="tools_markerbundletools.html" title="Marker Bundle Tools"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="tools_attributetools.html" title="Attribute Tools"
+          <a href="tools_selection.html" title="Selection Tools"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="tools.html" accesskey="U">Tools</a> &#187;</li> 
@@ -55,26 +55,54 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="marker-bundle-tools">
-<h1>Marker Bundle Tools<a class="headerlink" href="#marker-bundle-tools" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="link-marker-bundle">
-<h2>Link Marker + Bundle<a class="headerlink" href="#link-marker-bundle" title="Permalink to this headline">¶</a></h2>
-<p>Link the selected Marker and Bundle together.</p>
-<p>The link will not succeed if the selected Bundle is already connected to
-a Marker with the same camera, or in other words; A bundle can only have
-one Marker per-camera. This tool checks and adheres to this requirement.</p>
-<p>Run this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.linkmarkerbundle.tool</span> <span class="k">as</span> <span class="nn">tool</span>
-<span class="n">tool</span><span class="o">.</span><span class="n">link_marker_bundle</span><span class="p">()</span>
-</pre></div>
+  <div class="section" id="attribute-tools">
+<h1>Attribute Tools<a class="headerlink" href="#attribute-tools" title="Permalink to this headline">¶</a></h1>
+<p>Attribute tools are used to create and modify attributes, and
+attribute values.</p>
+<div class="section" id="set-attribute-details">
+<h2>Set Attribute Details<a class="headerlink" href="#set-attribute-details" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="images/tools_set_attribute_details_ui.png"><img alt="Set Attribute Details UI" src="images/tools_set_attribute_details_ui.png" /></a>
 </div>
-</div>
-<div class="section" id="unlink-marker-from-all-bundles">
-<h2>Unlink Marker from all Bundles<a class="headerlink" href="#unlink-marker-from-all-bundles" title="Permalink to this headline">¶</a></h2>
-<p>Unlink all the Bundles from all selected Markers.</p>
+<p>The Attribute Details tool is used to add details (properties) to an
+individual Attribute. Details are stored per-collection, therefore a
+Collection must exist to use the tool.</p>
+<p>This tool can be used to:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Set Attribute Details on individual Attributes.</li>
+<li>Change Attribute states; to lock an attribute, or set a keyframe on
+the attribute.</li>
+<li>View the current Attribute Details on an Attribute.</li>
+<li>View the Animation Curve statistics;<ul>
+<li>Minimum value of the animation curve.</li>
+<li>Maximum value of the animation curve.</li>
+<li>Mean (Average) value of the animation curve.</li>
+<li>Variance of the total animation curve.</li>
+<li>Variance (per-frame) of the animation curve; how much does the
+animation curve change per-frame.</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<p>Attribute Details are used by mmSolver to ensure properties are
+maintained while solving. See the Solver Design
+<a class="reference internal" href="solver_design.html#solver-design-attribute-details"><span class="std std-ref">Attribute Details</span></a> page for more information.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Ensure a Collection exists.<ul>
+<li>Open Solver UI, and create Collection node with menu; <cite>File &gt; New
+Collection</cite>.</li>
+</ul>
+</li>
+<li>Select nodes (and attributes in channel box, if required).</li>
+<li>Open <cite>Set Attribute Details</cite> UI.</li>
+<li>Select an Attribute (left-hand side) and modify the Details (right-hand side).</li>
+<li>Click &#8216;Ok&#8217; to accept the changes.</li>
+</ol>
 <p>Run this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.linkmarkerbundle.tool</span> <span class="k">as</span> <span class="nn">tool</span>
-<span class="n">tool</span><span class="o">.</span><span class="n">unlink_marker_bundle</span><span class="p">()</span>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.setattributedetails.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -88,23 +116,22 @@ one Marker per-camera. This tool checks and adheres to this requirement.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Marker Bundle Tools</a><ul>
-<li><a class="reference internal" href="#link-marker-bundle">Link Marker + Bundle</a></li>
-<li><a class="reference internal" href="#unlink-marker-from-all-bundles">Unlink Marker from all Bundles</a></li>
+<li><a class="reference internal" href="#">Attribute Tools</a><ul>
+<li><a class="reference internal" href="#set-attribute-details">Set Attribute Details</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="tools_attributetools.html"
-                        title="previous chapter">Attribute Tools</a></p>
+  <p class="topless"><a href="tools_selection.html"
+                        title="previous chapter">Selection Tools</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="tools_bundletools.html"
-                        title="next chapter">Bundle Tools</a></p>
+  <p class="topless"><a href="tools_markerbundletools.html"
+                        title="next chapter">Marker Bundle Tools</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/tools_markerbundletools.rst.txt"
+      <li><a href="_sources/tools_attributetools.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -132,10 +159,10 @@ one Marker per-camera. This tool checks and adheres to this requirement.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tools_bundletools.html" title="Bundle Tools"
+          <a href="tools_markerbundletools.html" title="Marker Bundle Tools"
              >next</a> |</li>
         <li class="right" >
-          <a href="tools_attributetools.html" title="Attribute Tools"
+          <a href="tools_selection.html" title="Selection Tools"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li> 

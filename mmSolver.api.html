@@ -476,6 +476,22 @@ forming on an imaging sensor.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="mmSolver.api.Bundle.get_node_uid">
+<code class="descname">get_node_uid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Bundle.get_node_uid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the bundle transform unique identifier.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The bundle UUID or None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None or str or unicode</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.api.Bundle.create_node">
 <code class="descname">create_node</code><span class="sig-paren">(</span><em>name='bundle1'</em>, <em>colour=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Bundle.create_node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a Bundle.</p>
@@ -632,6 +648,22 @@ information, in a camera&#8217;s screen-space.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; The existing Maya node.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Marker.get_node_uid">
+<code class="descname">get_node_uid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.get_node_uid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the marker transform unique identifier.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The marker UUID or None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None or str or unicode</td>
 </tr>
 </tbody>
 </table>
@@ -1286,6 +1318,22 @@ index of the mkr_list and attr_list given.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="mmSolver.api.Attribute.get_node_uid">
+<code class="descname">get_node_uid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute.get_node_uid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Attribute&#8217;s node unique identifier.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The Attribute UUID or None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None or str or unicode</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.api.Attribute.get_attr">
 <code class="descname">get_attr</code><span class="sig-paren">(</span><em>long_name=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute.get_attr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1316,24 +1364,37 @@ index of the mkr_list and attr_list given.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="mmSolver.api.Attribute.get_attribute_type">
+<code class="descname">get_attribute_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute.get_attribute_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.api.Attribute.get_min_value">
 <code class="descname">get_min_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute.get_min_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function is deprecated,
+please use Collection.get/set_attribute* functions.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.Attribute.set_min_value">
 <code class="descname">set_min_value</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute.set_min_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function is deprecated,
+please use Collection.get/set_attribute* functions.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.Attribute.get_max_value">
 <code class="descname">get_max_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute.get_max_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function is deprecated,
+please use Collection.get/set_attribute* functions.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.Attribute.set_max_value">
 <code class="descname">set_max_value</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute.set_max_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function is deprecated,
+please use Collection.get/set_attribute* functions.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1600,9 +1661,29 @@ the solver.</li>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverBase.compile">
-<code class="descname">compile</code><span class="sig-paren">(</span><em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBase.compile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a generator, to yield two Action objects.</p>
-<p>Raises &#8216;NotValid&#8217;, if the compile goes wrong.</p>
+<code class="descname">compile</code><span class="sig-paren">(</span><em>col</em>, <em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBase.compile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compile solver into actions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first">&#8216;NotValid&#8217;, if the compile goes wrong.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; Collection to be compile.</li>
+<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of Markers used in the Solve.</li>
+<li><strong>attr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><em>Attribute</em></a><em>, </em><em>.</em><em>]</em>) &#8211; Attributes to be solved for.</li>
+<li><strong>withtest</strong> (<em>bool</em>) &#8211; Should the tests (validation) be generated
+along with the real solver steps?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Return a generator, to yield two Action objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -1798,7 +1879,7 @@ and return.</p>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverBasic.compile">
-<code class="descname">compile</code><span class="sig-paren">(</span><em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBasic.compile" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compile</code><span class="sig-paren">(</span><em>col</em>, <em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBasic.compile" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2217,7 +2298,7 @@ and all frames are solved as one big crunch.</p>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStandard.compile">
-<code class="descname">compile</code><span class="sig-paren">(</span><em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.compile" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compile</code><span class="sig-paren">(</span><em>col</em>, <em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.compile" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2531,6 +2612,26 @@ for more details of the values that can be set.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="mmSolver.api.SolverStep.get_use_smoothness">
+<code class="descname">get_use_smoothness</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_use_smoothness" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStep.set_use_smoothness">
+<code class="descname">set_use_smoothness</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_use_smoothness" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStep.get_use_stiffness">
+<code class="descname">get_use_stiffness</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_use_stiffness" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStep.set_use_stiffness">
+<code class="descname">set_use_stiffness</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_use_stiffness" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.api.SolverStep.get_attributes_use_animated">
 <code class="descname">get_attributes_use_animated</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_attributes_use_animated" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2613,7 +2714,7 @@ for more details of the values that can be set.</p>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.compile">
-<code class="descname">compile</code><span class="sig-paren">(</span><em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.compile" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compile</code><span class="sig-paren">(</span><em>col</em>, <em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.compile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compiles data given into flags for a single run of &#8216;mmSolver&#8217;.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2621,15 +2722,18 @@ for more details of the values that can be set.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>self</strong> (<em>Solver</em>) &#8211; The solver to compile</li>
+<li><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The collection to compile.</li>
 <li><strong>mkr_list</strong> (<em>list of Marker</em>) &#8211; Markers to measure</li>
 <li><strong>attr_list</strong> (<em>list of Attribute</em>) &#8211; Attributes to solve for</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of SolverActions to be performed one after the other.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Yields a tuple of two Actions at each iteration. First
+action is the solver action, second action is for
+validation of the solve.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[SolverAction, .]</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(<a class="reference internal" href="#mmSolver.api.Action" title="mmSolver.api.Action">Action</a>, <a class="reference internal" href="#mmSolver.api.Action" title="mmSolver.api.Action">Action</a>)</p>
 </td>
 </tr>
 </tbody>
@@ -2830,12 +2934,207 @@ exist.</p>
 
 <dl class="method">
 <dt id="mmSolver.api.Collection.set_attribute_list">
-<code class="descname">set_attribute_list</code><span class="sig-paren">(</span><em>mkr_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_list" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_attribute_list</code><span class="sig-paren">(</span><em>attr_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_list" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.Collection.clear_attribute_list">
 <code class="descname">clear_attribute_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.clear_attribute_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_min_enable">
+<code class="descname">get_attribute_min_enable</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_min_enable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_min_enable">
+<code class="descname">set_attribute_min_enable</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_min_enable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_min_enable_plug_name">
+<code class="descname">get_attribute_min_enable_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_min_enable_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_min_value">
+<code class="descname">get_attribute_min_value</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_min_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_min_value">
+<code class="descname">set_attribute_min_value</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_min_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_min_value_plug_name">
+<code class="descname">get_attribute_min_value_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_min_value_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_max_enable">
+<code class="descname">get_attribute_max_enable</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_max_enable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_max_enable">
+<code class="descname">set_attribute_max_enable</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_max_enable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_max_enable_plug_name">
+<code class="descname">get_attribute_max_enable_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_max_enable_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_max_value">
+<code class="descname">get_attribute_max_value</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_max_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_max_value">
+<code class="descname">set_attribute_max_value</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_max_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_max_value_plug_name">
+<code class="descname">get_attribute_max_value_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_max_value_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_stiffness_enable">
+<code class="descname">get_attribute_stiffness_enable</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_stiffness_enable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_stiffness_enable">
+<code class="descname">set_attribute_stiffness_enable</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_stiffness_enable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_stiffness_enable_plug_name">
+<code class="descname">get_attribute_stiffness_enable_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_stiffness_enable_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_stiffness_weight">
+<code class="descname">get_attribute_stiffness_weight</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_stiffness_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_stiffness_weight">
+<code class="descname">set_attribute_stiffness_weight</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_stiffness_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_stiffness_weight_plug_name">
+<code class="descname">get_attribute_stiffness_weight_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_stiffness_weight_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_stiffness_variance">
+<code class="descname">get_attribute_stiffness_variance</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_stiffness_variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_stiffness_variance">
+<code class="descname">set_attribute_stiffness_variance</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_stiffness_variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_stiffness_variance_plug_name">
+<code class="descname">get_attribute_stiffness_variance_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_stiffness_variance_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_smoothness_enable">
+<code class="descname">get_attribute_smoothness_enable</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_smoothness_enable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_smoothness_enable">
+<code class="descname">set_attribute_smoothness_enable</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_smoothness_enable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_smoothness_enable_plug_name">
+<code class="descname">get_attribute_smoothness_enable_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_smoothness_enable_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_smoothness_weight">
+<code class="descname">get_attribute_smoothness_weight</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_smoothness_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_smoothness_weight">
+<code class="descname">set_attribute_smoothness_weight</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_smoothness_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_smoothness_weight_plug_name">
+<code class="descname">get_attribute_smoothness_weight_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_smoothness_weight_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_smoothness_variance">
+<code class="descname">get_attribute_smoothness_variance</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_smoothness_variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_smoothness_variance">
+<code class="descname">set_attribute_smoothness_variance</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_smoothness_variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_smoothness_variance_plug_name">
+<code class="descname">get_attribute_smoothness_variance_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_smoothness_variance_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_previous_value">
+<code class="descname">get_attribute_previous_value</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_previous_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_previous_value">
+<code class="descname">set_attribute_previous_value</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_previous_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_previous_value_plug_name">
+<code class="descname">get_attribute_previous_value_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_previous_value_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_mean_value">
+<code class="descname">get_attribute_mean_value</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_mean_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_mean_value">
+<code class="descname">set_attribute_mean_value</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_mean_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_mean_value_plug_name">
+<code class="descname">get_attribute_mean_value_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_mean_value_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_variance_value">
+<code class="descname">get_attribute_variance_value</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_variance_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_variance_value">
+<code class="descname">set_attribute_variance_value</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_variance_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_variance_value_plug_name">
+<code class="descname">get_attribute_variance_value_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_variance_value_plug_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">

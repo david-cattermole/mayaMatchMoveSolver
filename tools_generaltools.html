@@ -61,7 +61,7 @@
 Bundles, but are general tools useful in Maya for many different
 tasks.</p>
 <div class="section" id="center-2d-on-selection">
-<h2>Center 2D On Selection<a class="headerlink" href="#center-2d-on-selection" title="Permalink to this headline">¶</a></h2>
+<span id="center-2d-on-selection-tool-ref"></span><h2>Center 2D On Selection<a class="headerlink" href="#center-2d-on-selection" title="Permalink to this headline">¶</a></h2>
 <p>Forces the active viewport camera to lock it’s center to the currently
 selected transform node.</p>
 <p>A viewport camera can only center on one node at a time.</p>
@@ -103,7 +103,7 @@ backslash (&#8216; \ &#8216;) key).</li>
 </div>
 </div>
 <div class="section" id="smooth-keyframes">
-<h2>Smooth Keyframes<a class="headerlink" href="#smooth-keyframes" title="Permalink to this headline">¶</a></h2>
+<span id="smooth-keyframes-tool-ref"></span><h2>Smooth Keyframes<a class="headerlink" href="#smooth-keyframes" title="Permalink to this headline">¶</a></h2>
 <p>Smooth the selected keyframes in the Graph Editor, along with a UI to
 change the affect of the Smoothing function. The UI values are saved
 into the home directory and will be re-used when a new Maya session is
@@ -123,8 +123,6 @@ applied. The width is number of frames to be used for smoothing,
 for example a value of 1 means &#8220;no smoothing&#8221;, a value of 2 means
 &#8220;use previous and next frame&#8221;, and 5 means &#8220;use previous 4 and
 next 4 frames&#8221;.</li>
-<li><em>Blend Width</em> controls the blend, in frames, between the smoothed
-values and the surrounding values.</li>
 </ul>
 </li>
 <li>Select keyframes in Graph Editor.</li>
@@ -193,7 +191,7 @@ to remove <em>high-contrast</em> edge detail.</p>
 </div>
 </div>
 <div class="section" id="screen-space-transform">
-<span id="screen-space-transform-ref"></span><h2>Screen-Space Transform<a class="headerlink" href="#screen-space-transform" title="Permalink to this headline">¶</a></h2>
+<span id="screen-space-transform-tool-ref"></span><h2>Screen-Space Transform<a class="headerlink" href="#screen-space-transform" title="Permalink to this headline">¶</a></h2>
 <p>Convert a Maya transform node into a screen-space transform. This tool
 will not modify the originally selected node, but will only create a
 new node with new values.</p>
@@ -226,7 +224,7 @@ transform nodes second and create a <em>Point Constraint</em>.</li>
 </div>
 </div>
 <div class="section" id="create-screen-space-motion-trail">
-<h2>Create Screen-Space Motion Trail<a class="headerlink" href="#create-screen-space-motion-trail" title="Permalink to this headline">¶</a></h2>
+<span id="create-screen-space-motion-trail-tool-ref"></span><h2>Create Screen-Space Motion Trail<a class="headerlink" href="#create-screen-space-motion-trail" title="Permalink to this headline">¶</a></h2>
 <p>The Screen-Space Motion Trail tool creates a non-editable curve that
 shows the screen-space position of a transform across multiple frames.</p>
 <p>With default options the tool can be used to visualise the shutter
@@ -287,7 +285,7 @@ motion trail parented under the camera is created.</li>
 </div>
 </div>
 <div class="section" id="channel-sensitivity">
-<h2>Channel Sensitivity<a class="headerlink" href="#channel-sensitivity" title="Permalink to this headline">¶</a></h2>
+<span id="channel-sensitivity-tool-ref"></span><h2>Channel Sensitivity<a class="headerlink" href="#channel-sensitivity" title="Permalink to this headline">¶</a></h2>
 <p>Channel sensitivity tool helps you to change the value of sensitivity
 of channel slider setting. Using this tool the user to adjust
 attributes in the Channel Box by very small increments, which is
@@ -309,7 +307,7 @@ change the sensitivity.</li>
 </div>
 </div>
 <div class="section" id="copy-camera-to-clipboard">
-<h2>Copy Camera to Clipboard<a class="headerlink" href="#copy-camera-to-clipboard" title="Permalink to this headline">¶</a></h2>
+<span id="copy-camera-to-clipboard-tool-ref"></span><h2>Copy Camera to Clipboard<a class="headerlink" href="#copy-camera-to-clipboard" title="Permalink to this headline">¶</a></h2>
 <p>Saves the selected camera node into a temporary file and saves the
 file path onto the OS Copy/Paste clipboard.</p>
 <p>Usage:</p>
@@ -327,7 +325,7 @@ file path onto the OS Copy/Paste clipboard.</p>
 </div>
 </div>
 <div class="section" id="marker-bundle-rename">
-<h2>Marker Bundle Rename<a class="headerlink" href="#marker-bundle-rename" title="Permalink to this headline">¶</a></h2>
+<span id="marker-bundle-rename-tool-ref"></span><h2>Marker Bundle Rename<a class="headerlink" href="#marker-bundle-rename" title="Permalink to this headline">¶</a></h2>
 <p>Renames selected markers and bundles connected, takes the input name
 given in prompt window.</p>
 <p>Usage:</p>
@@ -348,7 +346,7 @@ Markers will named <code class="docutils literal"><span class="pre">marker</span
 </div>
 </div>
 <div class="section" id="marker-bundle-rename-with-metadata">
-<h2>Marker Bundle Rename (with Metadata)<a class="headerlink" href="#marker-bundle-rename-with-metadata" title="Permalink to this headline">¶</a></h2>
+<span id="marker-bundle-rename-with-metadata-tool-ref"></span><h2>Marker Bundle Rename (with Metadata)<a class="headerlink" href="#marker-bundle-rename-with-metadata" title="Permalink to this headline">¶</a></h2>
 <p>Renames the selected Markers and Bundles using only the metadata saved
 onto the Marker nodes.</p>
 <p>For example, metadata from 3DEqualizer is saved onto the Marker node.</p>
@@ -368,8 +366,8 @@ not found, the Marker/Bundle is not renamed.</li>
 </div>
 </div>
 <div class="section" id="reparent-under-node">
-<h2>Reparent Under Node<a class="headerlink" href="#reparent-under-node" title="Permalink to this headline">¶</a></h2>
-<p>This is equalivent to Maya&#8217;s <em>Parent</em> tool (<cite>p</cite> hotkey), except the
+<span id="reparent-under-node-tool-ref"></span><h2>Reparent Under Node<a class="headerlink" href="#reparent-under-node" title="Permalink to this headline">¶</a></h2>
+<p>This is equivalent to Maya&#8217;s <em>Parent</em> tool (<cite>p</cite> hotkey), except the
 tool will maintain the world-space position of the transform node for
 each keyframe applied to the node.</p>
 <p>Usage:</p>
@@ -393,7 +391,7 @@ keyframes.</li>
 </div>
 </div>
 <div class="section" id="unparent-to-world">
-<h2>Unparent to World<a class="headerlink" href="#unparent-to-world" title="Permalink to this headline">¶</a></h2>
+<span id="unparent-to-world-tool-ref"></span><h2>Unparent to World<a class="headerlink" href="#unparent-to-world" title="Permalink to this headline">¶</a></h2>
 <p>This is equalivent to Maya&#8217;s <em>Unparent</em> tool (<cite>Shift + p</cite> hotkey), except the tool will
 maintain the world-space position of the transform node for each
 keyframe applied to the node.</p>
@@ -417,7 +415,7 @@ parented under any node).</li>
 </div>
 </div>
 <div class="section" id="create-remove-controller">
-<h2>Create / Remove Controller<a class="headerlink" href="#create-remove-controller" title="Permalink to this headline">¶</a></h2>
+<span id="create-remove-controller-tool-ref"></span><h2>Create / Remove Controller<a class="headerlink" href="#create-remove-controller" title="Permalink to this headline">¶</a></h2>
 <p>Create a new transform node to control another node. The <cite>Controller</cite>
 transform node can have a separate hierarchy than the source node.</p>
 <p>Usage:</p>

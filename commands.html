@@ -66,10 +66,10 @@ solve.</p>
 <p>Here is a table of command flags, as currently specified in the command.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="20%" />
-<col width="21%" />
-<col width="45%" />
-<col width="14%" />
+<col width="16%" />
+<col width="28%" />
+<col width="47%" />
+<col width="10%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Flag</th>
@@ -90,14 +90,24 @@ solve.</p>
 <td>None</td>
 </tr>
 <tr class="row-even"><td>-attr (-a)</td>
-<td>string, string, string</td>
-<td>Node attribute, min value and max value</td>
+<td>string, string, string, string, string</td>
+<td>Node attribute, min value, max value, offset and scale</td>
 <td>None</td>
 </tr>
 <tr class="row-odd"><td>-frame (-f)</td>
 <td>long int</td>
 <td>Frame number to solve with</td>
 <td>1</td>
+</tr>
+<tr class="row-even"><td>-attrStiffness (-asf)</td>
+<td>string, string, string, string</td>
+<td>Node attribute, weight plug name, variance plug name, value plug name.</td>
+<td>None</td>
+</tr>
+<tr class="row-odd"><td>-attrSmoothness (-asm)</td>
+<td>string, string, string, string</td>
+<td>Node attribute, weight plug name, variance plug name, value plug name.</td>
+<td>None</td>
 </tr>
 <tr class="row-even"><td>-solverType (-st)</td>
 <td>unsigned int</td>
@@ -163,10 +173,10 @@ from the core solver engines, so the user can do whatever they wish to.</p>
         <span class="p">(</span><span class="s1">&#39;marker2&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle2&#39;</span><span class="p">),</span>
     <span class="p">),</span>
     <span class="n">attr</span><span class="o">=</span><span class="p">(</span>
-        <span class="p">(</span><span class="s1">&#39;node.attr&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;bundle1.tx&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;bundle1.ty&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;bundle1.tz&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;node.attr&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;bundle1.tx&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;bundle1.ty&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;camera1.rx&#39;</span><span class="p">,</span> <span class="s1">&#39;-10.0&#39;</span><span class="p">,</span> <span class="s1">&#39;25.0&#39;</span><span class="p">,</span> <span class="s1">&#39;360.0&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0&#39;</span><span class="p">),</span>
     <span class="p">),</span>
     <span class="n">frame</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">24</span><span class="p">,),</span>
     <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
@@ -178,10 +188,10 @@ from the core solver engines, so the user can do whatever they wish to.</p>
     <span class="o">-</span><span class="n">camera</span> <span class="s2">&quot;camera1&quot;</span> <span class="s2">&quot;cameraShape1&quot;</span>
     <span class="o">-</span><span class="n">marker</span> <span class="s2">&quot;marker1&quot;</span> <span class="s2">&quot;camera1&quot;</span> <span class="s2">&quot;bundle1&quot;</span>
     <span class="o">-</span><span class="n">marker</span> <span class="s2">&quot;marker2&quot;</span> <span class="s2">&quot;camera1&quot;</span> <span class="s2">&quot;bundle2&quot;</span>
-    <span class="o">-</span><span class="n">attr</span> <span class="s2">&quot;node.attr&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span>
-    <span class="o">-</span><span class="n">attr</span> <span class="s2">&quot;bundle1.tx&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span>
-    <span class="o">-</span><span class="n">attr</span> <span class="s2">&quot;bundle1.ty&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span>
-    <span class="o">-</span><span class="n">attr</span> <span class="s2">&quot;bundle1.tz&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span>
+    <span class="o">-</span><span class="n">attr</span> <span class="s2">&quot;node.attr&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span>
+    <span class="o">-</span><span class="n">attr</span> <span class="s2">&quot;bundle1.tx&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span>
+    <span class="o">-</span><span class="n">attr</span> <span class="s2">&quot;bundle1.ty&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span> <span class="s2">&quot;None&quot;</span>
+    <span class="o">-</span><span class="n">attr</span> <span class="s2">&quot;camera1.rx&quot;</span> <span class="s2">&quot;-10.0&quot;</span> <span class="s2">&quot;25.0&quot;</span> <span class="s2">&quot;360.0&quot;</span> <span class="s2">&quot;1.0&quot;</span>
     <span class="o">-</span><span class="n">frame</span> <span class="mi">1</span>
     <span class="o">-</span><span class="n">frame</span> <span class="mi">12</span>
     <span class="o">-</span><span class="n">frame</span> <span class="mi">24</span>
@@ -194,6 +204,10 @@ from the core solver engines, so the user can do whatever they wish to.</p>
 <h2><code class="docutils literal"><span class="pre">mmSolverType</span></code> Command<a class="headerlink" href="#mmsolvertype-command" title="Permalink to this headline">¶</a></h2>
 <p><cite>mmSolverType</cite> is used to query the current plug-in&#8217;s available
 solvers.</p>
+<p>This tool is commonly used to dynamically query for the different
+types of solvers. See the
+<a class="reference internal" href="solver_design.html#solver-faq-how-to-get-supported-solver-types"><span class="std std-ref">How do I get the list of supported Solver Types?</span></a> for more detail on
+this.</p>
 <p>Python Example:</p>
 <div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">solvers</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">default_solver</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -202,6 +216,9 @@ solvers.</p>
 </div>
 <div class="section" id="mmtestcameramatrix-command">
 <h2><code class="docutils literal"><span class="pre">mmTestCameraMatrix</span></code> Command<a class="headerlink" href="#mmtestcameramatrix-command" title="Permalink to this headline">¶</a></h2>
+<p><cite>mmTestCameraMatrix</cite> calculates an matrix (not returned) from the
+given camera transform and shape nodes. If the matrix matches the same
+matrix produced by Maya&#8217;s API, then the command returns true.</p>
 <p>This command is used for internal tests only, it has no practical use
 for users.</p>
 <p>Python Example:</p>

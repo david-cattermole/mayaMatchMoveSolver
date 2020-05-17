@@ -397,7 +397,7 @@ To run the tool, use this Python command:
 Reparent Under Node
 -------------------
 
-This is equalivent to Maya's *Parent* tool (`p` hotkey), except the
+This is equivalent to Maya's *Parent* tool (`p` hotkey), except the
 tool will maintain the world-space position of the transform node for
 each keyframe applied to the node.
 

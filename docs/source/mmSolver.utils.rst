@@ -88,6 +88,13 @@ Time
     :members:
     :undoc-members:
 
+Tools
+++++
+
+.. automodule:: mmSolver.utils.tools
+    :members:
+    :undoc-members:
+
 Transform
 +++++++++
 

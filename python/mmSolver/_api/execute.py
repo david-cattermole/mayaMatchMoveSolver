@@ -35,7 +35,6 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
-import mmSolver.utils.kalmanfilter as kalman
 import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
 import mmSolver._api.compile as api_compile

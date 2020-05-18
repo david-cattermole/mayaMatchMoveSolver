@@ -38,6 +38,12 @@ Convert Types
     :members:
     :undoc-members:
 
+Kalman Filter
++++++++++++++
+
+.. automodule:: mmSolver.utils.kalmanfilter
+    :members:
+    :undoc-members:
 
 Line Intersect
 ++++++++++++++

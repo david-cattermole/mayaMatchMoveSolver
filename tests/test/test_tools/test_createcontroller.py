@@ -381,7 +381,9 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
 
     def test_remove_five(self):
         """
-        Open a rigged character and create a controller.
+        Open a rigged character and create a controller, then remove it.
+
+        This tests what happens to the parented nodes under a controller.
         """
         path = self.get_data_path('scenes', 'rigHierarchy.ma')
         maya.cmds.file(path, open=True, force=True)

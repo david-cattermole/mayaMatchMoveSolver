@@ -1173,15 +1173,12 @@ class TestSolve(test_api_utils.APITestCase):
         attr_cam_ry = mmapi.Attribute(cam_tfm + '.ry')
         attr_cam_rz = mmapi.Attribute(cam_tfm + '.rz')
         attr_cam_focal = mmapi.Attribute(cam_shp + '.focalLength')
-        attr_cam_focal.set_min_value(13.0)
-        attr_cam_focal.set_max_value(15.0)
         col.add_attribute(attr_cam_tx)
         col.add_attribute(attr_cam_ty)
         col.add_attribute(attr_cam_tz)
         col.add_attribute(attr_cam_rx)
         col.add_attribute(attr_cam_ry)
         col.add_attribute(attr_cam_rz)
-        # col.add_attribute(attr_cam_focal)
 
         mkr_list = col.get_marker_list()
         for mkr in mkr_list:

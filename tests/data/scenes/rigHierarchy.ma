@@ -1,5 +1,5 @@
 //Maya ASCII 2017ff05 scene
-//Name: rigHierachy.ma
+//Name: rigHierarchy.ma
 //Last modified: Sun, Jul 28, 2019 03:49:54 PM
 //Codeset: UTF-8
 requires maya "2017ff05";

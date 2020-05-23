@@ -1,5 +1,5 @@
 //Maya ASCII 2017ff05 scene
-//Name: animatedHierachy.ma
+//Name: animatedHierarchy.ma
 //Last modified: Thu, Aug 01, 2019 01:01:17 AM
 //Codeset: UTF-8
 requires maya "2017ff05";

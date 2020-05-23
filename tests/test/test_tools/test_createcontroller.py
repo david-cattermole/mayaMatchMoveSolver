@@ -306,7 +306,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         self.approx_equal(maya.cmds.getAttr(ctrl + '.rotateY', time=mid), 19.545454545454547)
         return
 
-    def create_hierachy_scene(self, start, end):
+    def create_hierarchy_scene(self, start, end):
         maya.cmds.playbackOptions(edit=True, minTime=start)
         maya.cmds.playbackOptions(edit=True, animationStartTime=start)
         maya.cmds.playbackOptions(edit=True, animationEndTime=end)
@@ -340,7 +340,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         """
         start = 1
         end = 100
-        tfm_a, tfm_b = self.create_hierachy_scene(start, end)
+        tfm_a, tfm_b = self.create_hierarchy_scene(start, end)
 
         ctrls = lib.create([tfm_a, tfm_b])
         ctrl_a, ctrl_b = ctrls
@@ -364,7 +364,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         """
         start = 1
         end = 100
-        tfm_a, tfm_b = self.create_hierachy_scene(start, end)
+        tfm_a, tfm_b = self.create_hierarchy_scene(start, end)
 
         ctrls = lib.create([tfm_a, tfm_b])
         ctrl_a, ctrl_b = ctrls
@@ -388,7 +388,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         """
         Open a rigged character and create a controller.
         """
-        path = self.get_data_path('scenes', 'rigHierachy.ma')
+        path = self.get_data_path('scenes', 'rigHierarchy.ma')
         maya.cmds.file(path, open=True, force=True)
 
         tfm_a = 'rig:FKShoulder_L'
@@ -407,7 +407,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
-        # Test created control matrixes.
+        # Test created control matrices.
         matrix_a2 = maya.cmds.xform(ctrl_a, query=True, matrix=True, worldSpace=True)
         matrix_b2 = maya.cmds.xform(ctrl_b, query=True, matrix=True, worldSpace=True)
         self.assertGreater(
@@ -467,7 +467,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         Open a rigged character and create a controller, set some values
         and remove the controller.
         """
-        path = self.get_data_path('scenes', 'rigHierachy.ma')
+        path = self.get_data_path('scenes', 'rigHierarchy.ma')
         maya.cmds.file(path, open=True, force=True)
 
         tfm_a = 'rig:FKShoulder_L'
@@ -528,7 +528,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         """
         Create and destroy controllers on a hierarchy of transforms.
         """
-        path = self.get_data_path('scenes', 'objectHierachy.ma')
+        path = self.get_data_path('scenes', 'objectHierarchy.ma')
         maya.cmds.file(path, open=True, force=True)
 
         tfm_a = 'group1'
@@ -539,7 +539,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrl_a, ctrl_b, ctrl_c = ctrls
 
         # save the output
-        path = self.get_data_path('controller_remove_hierachyOfControls_before.ma')
+        path = self.get_data_path('controller_remove_hierarchyOfControls_before.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -560,7 +560,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         lib.remove([ctrl_a, ctrl_b, ctrl_c])
 
         # save the output
-        path = self.get_data_path('controller_remove_hierachyOfControls_after.ma')
+        path = self.get_data_path('controller_remove_hierarchyOfControls_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
         return

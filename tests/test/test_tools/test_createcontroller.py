@@ -205,7 +205,6 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         rx = maya.cmds.getAttr(node + '.rotateX')
         ry = maya.cmds.getAttr(node + '.rotateY')
         rz = maya.cmds.getAttr(node + '.rotateZ')
-        print('rz: %r' % rz)
         self.assertTrue(self.approx_equal(rx, 0.0))
         self.assertTrue(self.approx_equal(ry, 0.0))
         self.assertTrue(self.approx_equal(rz, 45.0))
@@ -378,10 +377,6 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         path = self.get_data_path('controller_remove_hierarchy_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
-
-        # self.assertEqual(maya.cmds.getAttr(ctrl + '.translateX', time=start), 20.0)
-        # self.assertEqual(maya.cmds.getAttr(ctrl + '.translateY', time=start), 30.0)
-        # self.assertEqual(maya.cmds.getAttr(ctrl + '.translateZ', time=start), 10.0)
         return
 
     def test_remove_five(self):

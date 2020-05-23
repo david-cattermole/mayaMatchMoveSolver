@@ -565,6 +565,82 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
         return
 
+    def test_create_book(self):
+        path = self.get_data_path('scenes', 'bookHierarchy.ma')
+        maya.cmds.file(path, open=True, force=True)
+
+        tfm_a = 'book_GRP'
+        tfm_b = 'spine_GRP'
+        tfm_c = 'front_cover_GRP'
+        tfm_d = 'latch_GRP'
+
+        maya.cmds.setAttr(tfm_a + '.ty', 10.0)
+        maya.cmds.setAttr(tfm_a + '.rz', 90.0)
+        maya.cmds.setAttr(tfm_b + '.rz', 90.0)
+        maya.cmds.setAttr(tfm_c + '.rz', 90.0)
+
+        # save the output
+        path = self.get_data_path('controller_create_bookHierarchy_before.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        ctrls = lib.create([tfm_a, tfm_b, tfm_c, tfm_d])
+        # Note: the controls get re-ordered a little bit; they are not
+        # in the same order as the input
+        ctrl_a, ctrl_d, ctrl_b, ctrl_c = ctrls
+
+        # save the output
+        path = self.get_data_path('controller_create_bookHierarchy_after.ma')
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        # Expected Matrices
+        expected_book_matrix = [
+            0.0, 1.0, 0.0, 0.0,
+            -1.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 10.0, 0.0, 1.0]
+        expected_spine_matrix = [
+            -1.0, 0.0, 0.0, 0.0,
+            0.0, -1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.3518918752670288, 8.476484298706055, 0.0029969215393066406, 1.0]
+        expected_cover_matrix = [
+            0.0, -1.0, 0.0, 0.0,
+            1.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.3488234877586365, 7.9185943603515625, 0.0029969215393066406, 1.0]
+        expected_latch_matrix = [
+            0.0, 1.0, 0.0, 0.0,
+            -1.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.3430972993373871, 11.661497116088867, 0.0001980811357498169, 1.0]
+
+        book_matrix = maya.cmds.xform(ctrl_a, query=True, matrix=True, worldSpace=True)
+        self.assertGreater(
+            closeness.compare_floats(book_matrix, expected_book_matrix),
+            closeness.DEFAULT_SIGNIFICANT_DIGITS
+        )
+
+        spine_matrix = maya.cmds.xform(ctrl_b, query=True, matrix=True, worldSpace=True)
+        self.assertGreater(
+            closeness.compare_floats(spine_matrix, expected_spine_matrix),
+            closeness.DEFAULT_SIGNIFICANT_DIGITS
+        )
+
+        cover_matrix = maya.cmds.xform(ctrl_c, query=True, matrix=True, worldSpace=True)
+        self.assertGreater(
+            closeness.compare_floats(cover_matrix, expected_cover_matrix),
+            closeness.DEFAULT_SIGNIFICANT_DIGITS
+        )
+
+        latch_matrix = maya.cmds.xform(ctrl_d, query=True, matrix=True, worldSpace=True)
+        self.assertGreater(
+            closeness.compare_floats(latch_matrix, expected_latch_matrix),
+            closeness.DEFAULT_SIGNIFICANT_DIGITS
+        )
+        return
+
 
 if __name__ == '__main__':
     prog = unittest.main()

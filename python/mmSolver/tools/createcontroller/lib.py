@@ -307,7 +307,8 @@ def create(nodes,
             cache,
             src_times,
             src, dst,
-            delete_static_anim_curves=False
+            delete_static_anim_curves=False,
+            eval_mode=eval_mode
         )
         src_had_keys = key_times_map.get(src_node) is not None
         if src_had_keys is True:
@@ -401,12 +402,6 @@ def remove(nodes,
     fallback_frame_range = keytime_obj.sum_frame_range_for_nodes(nodes)
     fallback_times = list(range(fallback_frame_range[0],
                                 fallback_frame_range[1]+1))
-
-    # Query transform matrix on controlled nodes.
-    cache = tfm_utils.TransformMatrixCache()
-    for ctrl_node, (constraints, dest_nodes) in ctrl_to_ctrlled_map.items():
-        times = keytime_obj.get_times(ctrl_node, sparse) or fallback_times
-        ctrl = tfm_utils.TransformNode(node=ctrl_node)
 
     # Query keyframe times on each node attribute
     key_times_map = time_utils.get_keyframe_times_for_node_attrs(

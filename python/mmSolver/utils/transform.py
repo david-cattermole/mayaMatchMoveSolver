@@ -365,12 +365,12 @@ class TransformMatrixCache(object):
         with_pivot = detect_rotate_pivot_non_zero(tfm_node)
         attr_names = ['worldMatrix[0]']
         if with_pivot is True:
-            attr_names = [
+            attr_names += [
                 'matrix',
                 'parentInverseMatrix[0]',
                 'rotatePivotX',
                 'rotatePivotY',
-                'rotatePivotZ'
+                'rotatePivotZ',
             ]
         for attr_name in attr_names:
             self.add_node_attr(tfm_node, attr_name, times)
@@ -451,11 +451,12 @@ class TransformMatrixCache(object):
         maya.cmds.currentTime(time, update=True)
         process_list = self.__get_process_list(map_uuid_to_node)
         for uuid, attr_name, plug, plug_name in process_list:
-            if 'matrix' in attr_name.lower():
+            attr_name_lower = attr_name.lower()
+            if 'matrix' in attr_name_lower:
                 matrix = maya.cmds.getAttr(plug_name)
                 matrix = OpenMaya2.MMatrix(matrix)
                 self._data[uuid][attr_name][time] = matrix
-            elif 'rotatepivot' in attr_name.lower():
+            elif 'rotatepivot' in attr_name_lower:
                 value = maya.cmds.getAttr(plug_name)
                 self._data[uuid][attr_name][time] = value
             else:
@@ -467,10 +468,11 @@ class TransformMatrixCache(object):
         """Process the TransformMatrixCache, with API functions. """
         process_list = self.__get_process_list(map_uuid_to_node)
         for uuid, attr_name, plug, plug_name in process_list:
-            if 'matrix' in attr_name.lower():
+            attr_name_lower = attr_name.lower()
+            if 'matrix' in attr_name_lower:
                 matrix = get_matrix_from_plug_apitwo(plug, ctx)
                 self._data[uuid][attr_name][time] = matrix
-            elif 'rotatepivot' in attr_name.lower():
+            elif 'rotatepivot' in attr_name_lower:
                 value = get_double_from_plug_apitwo(plug, ctx)
                 self._data[uuid][attr_name][time] = value
             else:
@@ -566,7 +568,8 @@ class TransformMatrixCache(object):
 def get_transform_matrix_list(tfm_matrix_cache,
                               times,
                               src_tfm_node,
-                              rotate_order=None):
+                              rotate_order=None,
+                              eval_mode=None):
     """
     Get the transform values, as raw MTransformationMatrix.
 
@@ -594,13 +597,9 @@ def get_transform_matrix_list(tfm_matrix_cache,
     assert isinstance(times, (list, tuple))
     assert isinstance(src_tfm_node, TransformNode)
     assert rotate_order is None or isinstance(rotate_order, (str, unicode))
-
-    space = OpenMaya2.MSpace.kWorld
-    attrs = [
-        'translateX', 'translateY', 'translateZ',
-        'rotateX', 'rotateY', 'rotateZ',
-        'scaleX', 'scaleY', 'scaleZ'
-    ]
+    if eval_mode is None:
+        eval_mode = const.EVAL_MODE_DEFAULT
+    assert eval_mode in const.EVAL_MODE_LIST
 
     if rotate_order is None:
         rotate_order = 'xyz'
@@ -619,6 +618,7 @@ def get_transform_matrix_list(tfm_matrix_cache,
             times,
         )
     else:
+        # We must take the pivot point into account in this branch.
         mat_list = tfm_matrix_cache.get_node_attr(
             src_node_uuid,
             'matrix',
@@ -655,30 +655,30 @@ def get_transform_matrix_list(tfm_matrix_cache,
         assert len(rot_piv_z_list) == len(times)
 
         # Reconstruct World-Matrix, accounting for pivot point.
-        space = OpenMaya2.MSpace.kWorld
         loop_iter = zip(mat_list,
                         par_inv_mat_list,
                         rot_piv_x_list,
                         rot_piv_y_list,
                         rot_piv_z_list)
-        for mat, par_inv_mat, rot_piv_x, rot_piv_y, rot_piv_z in loop_iter:
-            assert mat is not None
+        for local_mat, par_inv_mat, rot_piv_x, rot_piv_y, rot_piv_z in loop_iter:
+            assert local_mat is not None
             assert par_inv_mat is not None
             assert rot_piv_x is not None
             assert rot_piv_y is not None
             assert rot_piv_z is not None
-            mat = OpenMaya2.MTransformationMatrix(mat)
-            pivot = OpenMaya2.MVector(rot_piv_x, rot_piv_y, rot_piv_z)
-            trans = mat.translation(space)
-            mat.setTranslation(trans + pivot, space)
-            world_mat = par_inv_mat * mat.asMatrix()
+            mat = OpenMaya2.MTransformationMatrix(local_mat)
+
+            rotate_pivot_mat = OpenMaya2.MMatrix([
+                1.0, 0.0, 0.0, 0.0,
+                0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                rot_piv_x, rot_piv_y, rot_piv_z, 1.0,
+            ])
+            rotate_pivot_mat = local_mat.inverse() * rotate_pivot_mat * local_mat
+
+            world_mat = (mat.asMatrix() * rotate_pivot_mat) * par_inv_mat.inverse()
             world_mat_list.append(world_mat)
     assert len(world_mat_list) == len(times)
-
-    # Get destination node plug.
-    src_node = src_tfm_node.get_node()
-    src_name = src_node + '.parentInverseMatrix[0]'
-    parent_inv_matrix_plug = node_utils.get_as_plug_apitwo(src_name)
 
     # Get transform
     matrix_list = []
@@ -695,16 +695,15 @@ def decompose_matrix(tfm_matrix, prv_rot):
     """
     Decompose a MTransformationMatrix into transform attributes.
 
-    It is assumed the given matrix is already re-ordered into the
-    desired rotation order.
+    .. note::
+        It is assumed the given matrix is already re-ordered into the
+        desired rotation order.
 
     :param tfm_matrix: Transform matrix to be decomposed.
     :type tfm_matrix: maya.api.OpenMaya.MTransformationMatrix
 
     :param prv_rot: The previous rotation values (on the previous frame).
     :type prv_rot: (float, float, float) or None
-
-    :param space: The space to sample the matrix in.
 
     :returns: Tuple of 9 values: TX, TY, TZ, RX, RY, RZ, SX, SY and SZ.
     :rtype: (float, float, float, float, float, float, float, float, float)
@@ -747,9 +746,9 @@ def set_transform_values(tfm_matrix_cache,
     using previously evaluated cached values.
 
     src_tfm_node is used to look-up into the cache for values.
-    dst_tfm_node is the node that will be set values on. It is
+    dst_tfm_node is the node that will have values set on it. It is
     possible to have src_tfm_node and dst_tfm_node reference the same
-    Maya node, or even the same object.
+    Maya node, or even the same TransformNode object.
 
     .. note::
        The function assumes the given destination node has no locked

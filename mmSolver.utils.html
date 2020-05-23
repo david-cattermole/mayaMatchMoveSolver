@@ -69,7 +69,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140081089949904'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140081089949904'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='140081089950032'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139718124478672'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='139718124478672'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='139718124478800'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -798,6 +798,82 @@ value = &#8216;1001,1002,1003-1005,1010-1012&#8217;</p>
 <dt id="mmSolver.utils.converttypes.stringToInteger">
 <code class="descclassname">mmSolver.utils.converttypes.</code><code class="descname">stringToInteger</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.converttypes.stringToInteger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.utils.kalmanfilter">
+<span id="kalman-filter"></span><h2>Kalman Filter<a class="headerlink" href="#module-mmSolver.utils.kalmanfilter" title="Permalink to this headline">¶</a></h2>
+<p>Basic 1-dimensional Kalman filter.</p>
+<p><a class="reference external" href="https://towardsdatascience.com/kalman-filters-a-step-by-step-implementation-guide-in-python-91e7e123b968">https://towardsdatascience.com/kalman-filters-a-step-by-step-implementation-guide-in-python-91e7e123b968</a></p>
+<dl class="class">
+<dt id="mmSolver.utils.kalmanfilter.State">
+<em class="property">class </em><code class="descclassname">mmSolver.utils.kalmanfilter.</code><code class="descname">State</code><span class="sig-paren">(</span><em>value</em>, <em>mean</em>, <em>variance</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.kalmanfilter.State" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="mmSolver.utils.kalmanfilter.State.mean">
+<code class="descname">mean</code><a class="headerlink" href="#mmSolver.utils.kalmanfilter.State.mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.kalmanfilter.State.value">
+<code class="descname">value</code><a class="headerlink" href="#mmSolver.utils.kalmanfilter.State.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.kalmanfilter.State.variance">
+<code class="descname">variance</code><a class="headerlink" href="#mmSolver.utils.kalmanfilter.State.variance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.kalmanfilter.update">
+<code class="descclassname">mmSolver.utils.kalmanfilter.</code><code class="descname">update</code><span class="sig-paren">(</span><em>state_a</em>, <em>state_b</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.kalmanfilter.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the variance and mean.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>state_a</strong> (<a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State"><em>State</em></a>) &#8211; First state.</li>
+<li><strong>state_b</strong> (<a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State"><em>State</em></a>) &#8211; Second state.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">New state.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State">State</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.kalmanfilter.predict">
+<code class="descclassname">mmSolver.utils.kalmanfilter.</code><code class="descname">predict</code><span class="sig-paren">(</span><em>state_a</em>, <em>state_b</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.kalmanfilter.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict the next state, based on two gaussian distribution states.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>state_a</strong> (<a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State"><em>State</em></a>) &#8211; First state.</li>
+<li><strong>state_b</strong> (<a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State"><em>State</em></a>) &#8211; Second state.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">New state, combined of both first and second states.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State">State</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 <div class="section" id="module-mmSolver.utils.lineintersect">
@@ -2097,7 +2173,7 @@ list entry.</p>
 
 <dl class="function">
 <dt id="mmSolver.utils.transform.get_transform_matrix_list">
-<code class="descclassname">mmSolver.utils.transform.</code><code class="descname">get_transform_matrix_list</code><span class="sig-paren">(</span><em>tfm_matrix_cache</em>, <em>times</em>, <em>src_tfm_node</em>, <em>rotate_order=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.get_transform_matrix_list" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.transform.</code><code class="descname">get_transform_matrix_list</code><span class="sig-paren">(</span><em>tfm_matrix_cache</em>, <em>times</em>, <em>src_tfm_node</em>, <em>rotate_order=None</em>, <em>eval_mode=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.get_transform_matrix_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the transform values, as raw MTransformationMatrix.</p>
 <p>This function does not modify the original node in any way.</p>
 <p>src_tfm_node is used to look-up into the cache for values.</p>
@@ -2126,8 +2202,11 @@ if rotate_order is None.</li>
 <dt id="mmSolver.utils.transform.decompose_matrix">
 <code class="descclassname">mmSolver.utils.transform.</code><code class="descname">decompose_matrix</code><span class="sig-paren">(</span><em>tfm_matrix</em>, <em>prv_rot</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.decompose_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decompose a MTransformationMatrix into transform attributes.</p>
-<p>It is assumed the given matrix is already re-ordered into the
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It is assumed the given matrix is already re-ordered into the
 desired rotation order.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2135,7 +2214,6 @@ desired rotation order.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>tfm_matrix</strong> (<em>maya.api.OpenMaya.MTransformationMatrix</em>) &#8211; Transform matrix to be decomposed.</li>
 <li><strong>prv_rot</strong> (<em>(</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>) or </em><em>None</em>) &#8211; The previous rotation values (on the previous frame).</li>
-<li><strong>space</strong> &#8211; The space to sample the matrix in.</li>
 </ul>
 </td>
 </tr>
@@ -2155,9 +2233,9 @@ desired rotation order.</p>
 <dd><p>Set transform node values on a destination node at times,
 using previously evaluated cached values.</p>
 <p>src_tfm_node is used to look-up into the cache for values.
-dst_tfm_node is the node that will be set values on. It is
+dst_tfm_node is the node that will have values set on it. It is
 possible to have src_tfm_node and dst_tfm_node reference the same
-Maya node, or even the same object.</p>
+Maya node, or even the same TransformNode object.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The function assumes the given destination node has no locked
@@ -2835,6 +2913,7 @@ isolate object list.</p>
 <li><a class="reference internal" href="#module-mmSolver.utils.config">Config</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.configmaya">Config Maya</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.converttypes">Convert Types</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.kalmanfilter">Kalman Filter</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.lineintersect">Line Intersect</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.node">Node</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.nodeaffects">Node Affects</a></li>

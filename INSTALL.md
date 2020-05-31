@@ -43,7 +43,7 @@ pipeline provided file and may cause unexpected problems. It is
 recommended to check with your studio's Pipeline team **before**
 installing any custom software.
 
-# Install Module
+# Install Maya Module
 
 ***Maya MatchMove Solver*** can be installed by un-zipping the archive
 (`.zip` or `.tar.gz`) file, and copying the contents into the
@@ -74,7 +74,8 @@ Editor `# root : MM Solver Startup... #`, and a new shelf will
 automatically be created for you named *mmSolver*.
 
 ***Note:*** Please remove the `<module root>/python_qt` directory, if
-`Qt.py`, see the above note *Install Qt.py (in a Professional Environment)*.
+`Qt.py` is already installed, see the above note
+*Install Qt.py (in a Professional Environment)*.
 
 # Project Configuration
 
@@ -104,7 +105,7 @@ The 3DEqualizer tools are for integration into workflows using
 3DEqualizer. These tools have been tested with *3DEqualizer4 Release 5*,
 but may work with older versions.
 
-There are currently two 3DEqualizer tools available:
+There are currently three 3DEqualizer tools available:
 
 | File Name                | Tool Name                       |
 | ------------------------ | ------------------------------- |

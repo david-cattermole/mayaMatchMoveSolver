@@ -550,13 +550,15 @@ def selection_changed_func(clientData):
     """
     if mmapi.is_solver_running() is True:
         return
-    # TODO: Try not to run this function many, many times at once. We
-    # could keep a timer and only update every 0.01 seconds? Or
-    # perhaps we can try to get the current "chunk" or the current
-    # process and only run this function when Maya is idle?
-    #
-    # TODO: Try to detect any times when a user won't want to update
-    # the Solver UI selection syncing.
-    sel_uuids = maya.cmds.ls(selection=True, uuid=True) or []
-    clientData.setNodeSelection(sel_uuids)
+
+    def func():
+        if mmapi.is_solver_running() is True:
+            return
+        sel_uuids = maya.cmds.ls(selection=True, uuid=True) or []
+        valid = uiutils.isValidQtObject(clientData)
+        if clientData is not None and valid is True:
+            clientData.setNodeSelection(sel_uuids)
+        return
+
+    maya.cmds.evalDeferred(func, lowestPriority=True)
     return

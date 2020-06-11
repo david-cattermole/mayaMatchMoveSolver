@@ -9,6 +9,8 @@
             "solver_tools/solver_popup/---Time",
             "solver_tools/solver_popup/navigate_root_frame_prev",
             "solver_tools/solver_popup/navigate_root_frame_next",
+            "solver_tools/solver_popup/edit_root_frame_add",
+            "solver_tools/solver_popup/edit_root_frame_remove",
             "create_marker",
             "mkr_bnd_tools/mkr_bnd_popup/---Selection",
             "mkr_bnd_tools/mkr_bnd_popup/swap_marker_bundles",

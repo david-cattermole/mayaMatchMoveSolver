@@ -61,6 +61,26 @@
                 "tool.main_prev_frame();"
             ]
         },
+        "edit_root_frame_add": {
+            "name": "Add Root Frame",
+            "name_shelf": "",
+            "icon_shelf": "keyFrameAdd_32x32.png",
+            "tooltip": "Add the current frame to the root frame list.",
+            "command": [
+                "import mmSolver.tools.editrootframes.tool as tool;",
+                "tool.main_add_frame();"
+            ]
+        },
+        "edit_root_frame_remove": {
+            "name": "Remove Root Frame",
+            "name_shelf": "",
+            "icon_shelf": "keyFrameRemove_32x32.png",
+            "tooltip": "Remove the current frame from the root frame list.",
+            "command": [
+                "import mmSolver.tools.editrootframes.tool as tool;",
+                "tool.main_remove_frame();"
+            ]
+        },
         "file_io_tools": {
             "name": "File Input/Output Tools",
             "name_shelf": "",

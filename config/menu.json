@@ -16,6 +16,8 @@
             "---Time",
             "navigate_root_frame_prev",
             "navigate_root_frame_next",
+            "edit_root_frame_add",
+            "edit_root_frame_remove",
             "---Tools",
             "mb_tools/---Marker-Bundle Link",
             "mb_tools/link_marker_bundle",

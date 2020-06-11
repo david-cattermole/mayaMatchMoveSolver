@@ -137,14 +137,14 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
     def get_instance(cls):
         instance = None
         if (cls.instance is not None
-                and uiutils.isValidQtObject(cls.instance) is False):
+                and uiutils.isValidQtObject(cls.instance) is True):
             instance = cls.instance
         return instance
 
     @classmethod
     def open_window(cls, show=True, auto_raise=True, delete=False):
         if (cls is not None
-                and uiutils.isValidQtObject(cls.instance) is False):
+                and uiutils.isValidQtObject(cls.instance) is True):
             if delete is True:
                 cls.instance.close()
                 cls.instance.deleteLater()

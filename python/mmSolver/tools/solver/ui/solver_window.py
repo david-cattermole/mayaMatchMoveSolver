@@ -509,6 +509,16 @@ class SolverWindow(BaseWindow):
         self.subForm.collection_widget.removeActiveNode()
         return
 
+    def setActiveCollection(self, col):
+        assert isinstance(col, mmapi.Collection)
+        lib_state.set_active_collection(col)
+        self.triggerCollectionUpdate()
+        return
+
+    def triggerCollectionUpdate(self):
+        self.subForm.collection_widget.itemChanged.emit()
+        return
+
     def undoTriggeredCB(self):
         LOG.debug('undoTriggeredCB')
         validation = lib_state.get_auto_update_solver_validation_state()

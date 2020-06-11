@@ -25,7 +25,6 @@ This module should not have any UI code.
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.utils.converttypes as convert_types
 
 LOG = mmSolver.logger.get_logger()
 

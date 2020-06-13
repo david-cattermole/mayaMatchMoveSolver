@@ -13,7 +13,7 @@ Free FFT and convolution (Python)
 ---------------------------------
 
 The files `./python/mmSolver/utils/_fft_py2.py` and
-`./python/mmSolver/utils/_fft_py3.py` are part of *Project Nayuki*.
+`./python/mmSolver/utils/_fft_py3.py` are part of *Project Nayuki*. ::
 
     Free FFT and convolution (Python)
 
@@ -42,7 +42,7 @@ CMinpack
 CMinpack is used for the optimisation algorithms and is bundled with
 the pre-build binary.
 
-The project home page is at http://devernay.free.fr/hacks/cminpack/
+The project home page is at http://devernay.free.fr/hacks/cminpack/ ::
 
     Minpack Copyright Notice (1999) University of Chicago.  All rights reserved
 
@@ -101,7 +101,7 @@ levmar
 ------
 
 The levmar library is optional and NOT distributed with mmSolver.
-http://users.ics.forth.gr/~lourakis/levmar/
+http://users.ics.forth.gr/~lourakis/levmar/ ::
 
                 GNU GENERAL PUBLIC LICENSE
                    Version 2, June 1991
@@ -449,7 +449,7 @@ Qt.py
 -----
 
 The Qt.py Python module is used for the Qt-based user interfaces and
-is distributed with mmSolver in binary form.
+is distributed with mmSolver. ::
 
     The MIT License (MIT)
 
@@ -478,7 +478,7 @@ FindMaya (CMake)
 
 FindMaya is used to automatically find the current Maya installation.
 The file can be found in the source code for mmSolver at
-`./cmake/modules/FindMaya.cmake`.
+`./cmake/modules/FindMaya.cmake`. ::
 
     Copyright 2011-2012 Francisco Requena <frarees@gmail.com>
 

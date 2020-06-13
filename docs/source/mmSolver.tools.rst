@@ -20,6 +20,7 @@ mmSolver.tools
    mmSolver.tools.createmarker
    mmSolver.tools.deformmarker
    mmSolver.tools.duplicatemarker
+   mmSolver.tools.editrootframes
    mmSolver.tools.hotkeyswitcher
    mmSolver.tools.linkmarkerbundle
    mmSolver.tools.loadmarker

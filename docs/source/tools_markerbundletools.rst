@@ -1,6 +1,8 @@
 Marker Bundle Tools
 ===================
 
+.. _link-marker-and-bundle-tool-ref:
+
 Link Marker + Bundle
 --------------------
 
@@ -16,6 +18,8 @@ Run this Python command:
 
     import mmSolver.tools.linkmarkerbundle.tool as tool
     tool.link_marker_bundle()
+
+.. _unlink-marker-from-all-bundles-tool-ref:
 
 Unlink Marker from all Bundles
 ------------------------------

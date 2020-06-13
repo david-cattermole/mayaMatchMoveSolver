@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #

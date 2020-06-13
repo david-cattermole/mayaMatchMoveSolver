@@ -30,7 +30,9 @@ this may be overridden using "get_dirs", or "get_config" function arguments.
 By default the following paths are searched (in order, top-down):
 
  - ${MMSOLVER_LOCATION}/config (Linux and Windows)
+
  - ${HOME}/.mmSolver (Linux)
+
  - %APPDATA%\mmSolver (Windows)
 
 This allows both a default fallback, and a user specified path.
@@ -161,8 +163,7 @@ def exists(data, key):
     """
     Does the key exist in data?
 
-    :param data: The name of the config file, or an absolute file
-                      path.
+    :param data: The name of the config file, or an absolute file path.
     :type data: dict
 
     :param key: Hierarchy of keys separated by forward slash to search
@@ -170,8 +171,8 @@ def exists(data, key):
                 For example 'data[arg1][arg2][arg3]'.
     :type key: str
 
-    :return:
-    :rtype
+    :return: Boolean, does the 'key' exist in the 'data'?
+    :rtype: bool
     """
     key_list = _split_key(key)
     d = data
@@ -208,8 +209,7 @@ def get_value(data, key, default_value=None):
                           key doesn't exist.
     :type default_value: any type
 
-    :return:
-    :rtype
+    :return: The value type in the key - it could be any type..
     """
     if exists(data, key) is False:
         return default_value

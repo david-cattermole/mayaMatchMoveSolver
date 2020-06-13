@@ -94,7 +94,7 @@ def blend_curves_with_difference(selected_keyframes,
     value_array at the start/end of of each chunk of selected
     keyframes.
 
-    The algorithm works like this::
+    The algorithm works like this:
 
     #. Calculate chunks.
 

@@ -123,7 +123,7 @@ def calculate_approx_intersection_point_between_two_3d_lines(a_pnt, a_dir,
     :type eps: float
 
     :return: Two points to define the closest line intersection.
-    :rtype (MPoint, MPoint)
+    :rtype: (MPoint, MPoint)
     """
     if eps is None:
         eps = 0.0000

@@ -10,7 +10,7 @@ script:
     - cd docs
     - cp source/conf.py.in source/conf.py
     - sed -i 's/@PROJECT_NAME@/mayaMatchMoveSolver/g' source/conf.py
-    - sed -i 's/@PROJECT_COPYRIGHT@/2018, 2019, David Cattermole, Anil Reddy./g' source/conf.py
+    - sed -i 's/@PROJECT_COPYRIGHT@/2018, 2019, 2020, David Cattermole, Anil Reddy./g' source/conf.py
     - sed -i 's/@PROJECT_VERSION@/master/g' source/conf.py
     - make html
     - touch build/html/.nojekyll

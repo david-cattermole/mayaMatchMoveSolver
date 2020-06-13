@@ -1,6 +1,11 @@
 Selection Tools
 ===============
 
+.. figure:: images/tools_shelf_icons_selection.png
+    :alt: Node Selection Shelf Icons
+    :align: center
+    :width: 30%
+
 .. _toggle-marker-bundle-selection-tool-ref:
 
 Toggle Marker / Bundle Selection

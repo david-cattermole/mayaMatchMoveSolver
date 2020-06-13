@@ -13,6 +13,13 @@ command (`mmSolver`).
 
     Solver User Interface
 
+The shelf tools will open or run the solver.
+
+.. figure:: images/tools_shelf_icons_solver.png
+    :alt: Node Solver Shelf Icons
+    :align: center
+    :width: 30%
+
 Input Objects
 ~~~~~~~~~~~~~
 

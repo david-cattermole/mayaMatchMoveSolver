@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Legacy Solver Tab &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Create Node Tools" href="tools_createnode.html" />
     <link rel="prev" title="Standard Solver Tab" href="tools_solver_ui_tab_standard.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -98,8 +89,8 @@ string shown.</p>
 <p>This is a filter of the attributes used in the solve step.</p>
 <p>You may type into this field either one of these options:</p>
 <ul class="simple">
-<li>&#8220;Animated Only&#8221; - Use only the animated attributes</li>
-<li>&#8220;Static + Animated&#8221; - Use the static and animated attributes</li>
+<li>“Animated Only” - Use only the animated attributes</li>
+<li>“Static + Animated” - Use the static and animated attributes</li>
 </ul>
 </div>
 <div class="section" id="strategy">
@@ -108,10 +99,10 @@ string shown.</p>
 ordered in the solving process.</p>
 <p>There are three currently supported strategies:</p>
 <ul class="simple">
-<li>&#8220;Per-Frame&#8221; - Each frame is solved one-by-one.</li>
-<li>&#8220;Two Frames Fwd&#8221; - Each pair of sequential frames are solved
+<li>“Per-Frame” - Each frame is solved one-by-one.</li>
+<li>“Two Frames Fwd” - Each pair of sequential frames are solved
 together; frame 1 and 2, then 2 and 3, then 3 and 4, etc.</li>
-<li>&#8220;All Frames&#8221; - All frame numbers are solved together, at once (also
+<li>“All Frames” - All frame numbers are solved together, at once (also
 called a “global solve”).</li>
 </ul>
 <p>If the “Animated Only” attribute filter is currently used, then the
@@ -127,7 +118,7 @@ is the fastest method, but cannot solve Static attributes.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Legacy Solver Tab</a><ul>
 <li><a class="reference internal" href="#enabled">Enabled</a></li>
@@ -153,12 +144,14 @@ is the fastest method, but cannot solve Static attributes.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -186,8 +179,8 @@ is the fastest method, but cannot solve Static attributes.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

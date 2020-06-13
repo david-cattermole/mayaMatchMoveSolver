@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>mmSolver.ui.shelfutils &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mmSolver.ui.uimodels" href="mmSolver.ui.uimodels.html" />
     <link rel="prev" title="mmSolver.ui.nodes" href="mmSolver.ui.nodes.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -78,17 +69,17 @@
 <dt id="mmSolver.ui.shelfutils.create_shelf">
 <code class="descclassname">mmSolver.ui.shelfutils.</code><code class="descname">create_shelf</code><span class="sig-paren">(</span><em>parent=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_shelf" title="Permalink to this definition">¶</a></dt>
 <dd><p>(Re-)Create a shelf.</p>
-<p>If a shelf with &#8216;name&#8217; is already exists, the exising shelf will
-be deleted, and re-created under the &#8216;parent&#8217; argument given.</p>
+<p>If a shelf with ‘name’ is already exists, the exising shelf will
+be deleted, and re-created under the ‘parent’ argument given.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>parent</strong> (<em>str</em>) &#8211; What layout will this shelf be placed under?</li>
-<li><strong>name</strong> (<em>str</em>) &#8211; Name (label) of the shelf displayed to the user.
+<li><strong>parent</strong> (<em>str</em>) – What layout will this shelf be placed under?</li>
+<li><strong>name</strong> (<em>str</em>) – Name (label) of the shelf displayed to the user.
 The value should only contain characters A-Z
-(or a-z) and underscores &#8216;_&#8217;.</li>
+(or a-z) and underscores ‘_’.</li>
 </ul>
 </td>
 </tr>
@@ -111,17 +102,17 @@ The value should only contain characters A-Z
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>parent</strong> (<em>str</em>) &#8211; What should this control be placed under?</li>
-<li><strong>name</strong> (<em>str</em>) &#8211; Name (label) of the shelf button. Should be under
+<li><strong>parent</strong> (<em>str</em>) – What should this control be placed under?</li>
+<li><strong>name</strong> (<em>str</em>) – Name (label) of the shelf button. Should be under
 seven characters long.</li>
-<li><strong>tooltip</strong> (<em>str</em>) &#8211; The text shown to the user when hovering the mouse
+<li><strong>tooltip</strong> (<em>str</em>) – The text shown to the user when hovering the mouse
 over the shelf button.</li>
-<li><strong>icon</strong> (<em>str</em>) &#8211; Choose the image to display on the shelf button.
+<li><strong>icon</strong> (<em>str</em>) – Choose the image to display on the shelf button.
 Should be 32x32 pixels.</li>
-<li><strong>cmd</strong> (<em>str</em>) &#8211; The command text to run when the shelf button is
+<li><strong>cmd</strong> (<em>str</em>) – The command text to run when the shelf button is
 pressed.</li>
-<li><strong>cmdLanguage</strong> (<em>str</em>) &#8211; What language is &#8216;cmd&#8217; argument in? &#8216;python&#8217;
-or &#8216;mel&#8217;?</li>
+<li><strong>cmdLanguage</strong> (<em>str</em>) – What language is ‘cmd’ argument in? ‘python’
+or ‘mel’?</li>
 </ul>
 </td>
 </tr>
@@ -143,7 +134,7 @@ or &#8216;mel&#8217;?</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parent</strong> (<em>str</em>) &#8211; What should this control be placed under?</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parent</strong> (<em>str</em>) – What should this control be placed under?</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Maya separator UI control path.</td>
 </tr>
@@ -186,12 +177,14 @@ or &#8216;mel&#8217;?</li>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -218,8 +211,8 @@ or &#8216;mel&#8217;?</li>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

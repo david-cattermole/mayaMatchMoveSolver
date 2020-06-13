@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>mmSolver.tools.smoothkeyframes &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mmSolver.tools.solver" href="mmSolver.tools.solver.html" />
     <link rel="prev" title="mmSolver.tools.showdeviationcurves" href="mmSolver.tools.showdeviationcurves.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -101,10 +92,8 @@
 value_array at the start/end of of each chunk of selected
 keyframes.</p>
 <p>The algorithm works like this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#. Calculate chunks.</span>
-</pre></div>
-</div>
 <ol class="arabic simple">
+<li>Calculate chunks.</li>
 <li>Create a linear curve between start/end keyframe values of the
 smoothed curve.</li>
 <li>Subtract the linear curve from the smoothed curve.</li>
@@ -134,13 +123,13 @@ linear smooth curve, to the smoothed curve.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>animcurve</strong> (<em>str</em>) &#8211; Animation curve node name.</li>
-<li><strong>selected_keyframes</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>] or </em><em>[</em><em>]</em>) &#8211; The frame numbers that are &#8216;selected&#8217; to be smoothed.</li>
-<li><strong>smooth_type</strong> &#8211; What algorithm to use for smoothing.</li>
-<li><strong>width</strong> (<em>float</em>) &#8211; The width of the smoothing kernel; higher values produce more
+<li><strong>animcurve</strong> (<em>str</em>) – Animation curve node name.</li>
+<li><strong>selected_keyframes</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>] or </em><em>[</em><em>]</em>) – The frame numbers that are ‘selected’ to be smoothed.</li>
+<li><strong>smooth_type</strong> – What algorithm to use for smoothing.</li>
+<li><strong>width</strong> (<em>float</em>) – The width of the smoothing kernel; higher values produce more
 smoothing, and is slower to compute.</li>
-<li><strong>blend_smooth_type</strong> &#8211; What algorithm to use for smoothing the blend?</li>
-<li><strong>blend_width</strong> (<em>float</em>) &#8211; The width of the smoothing kernel; higher values produce more
+<li><strong>blend_smooth_type</strong> – What algorithm to use for smoothing the blend?</li>
+<li><strong>blend_width</strong> (<em>float</em>) – The width of the smoothing kernel; higher values produce more
 smoothing, and is slower to compute.</li>
 </ul>
 </td>
@@ -168,7 +157,7 @@ smoothing, and is slower to compute.</li>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.smoothkeyframes</a><ul>
 <li><a class="reference internal" href="#module-mmSolver.tools.smoothkeyframes.tool">Tools</a></li>
@@ -195,12 +184,14 @@ smoothing, and is slower to compute.</li>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -227,8 +218,8 @@ smoothing, and is slower to compute.</li>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

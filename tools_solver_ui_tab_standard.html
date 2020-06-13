@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Standard Solver Tab &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Legacy Solver Tab" href="tools_solver_ui_tab_legacy.html" />
     <link rel="prev" title="Basic Solver Tab" href="tools_solver_ui_tab_basic.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -64,16 +55,16 @@
 </div>
 <p>The Standard solver tab can solve both animated and static attributes.</p>
 <p>When the Standard solver is executed, first the static and animated
-attributes are solved using the &#8216;Root Frames&#8217; option. After the &#8216;Root
-Frames&#8217; are solved, the animated attributes are solved per-frame using
-the &#8216;Frames&#8217; option.</p>
-<p>If &#8216;Frames&#8217; is set to &#8216;Current Frame&#8217;, then both static and animated
+attributes are solved using the ‘Root Frames’ option. After the ‘Root
+Frames’ are solved, the animated attributes are solved per-frame using
+the ‘Frames’ option.</p>
+<p>If ‘Frames’ is set to ‘Current Frame’, then both static and animated
 attributes are solved on the current frame. The user must take care to
 ensure it is possible to solve the static attributes using only this
 frame.</p>
-<p>If the &#8216;Solve Only Root Frames&#8217; option is checked, the second solve
+<p>If the ‘Solve Only Root Frames’ option is checked, the second solve
 using the Frames is not run, only the Root Frames are solved.</p>
-<p>If &#8216;Solve All At Once&#8217; option is checked, the Root Frames and Frames
+<p>If ‘Solve All At Once’ option is checked, the Root Frames and Frames
 are combined and both static and animated attributes are solved in one
 solve process. Solving many attributes and frames in this way is very
 slow and should be avoided.</p>
@@ -103,21 +94,23 @@ slow and should be avoided.</p>
 </tr>
 </tbody>
 </table>
-<p>The frame numbers can be entered as &#8216;#-#&#8217; to define a range, or
-&#8216;#,#,#,#&#8217; to define a list of individual frame numbers. Examples are
-&#8216;1,10,20,30,40,50&#8217; or &#8216;10-20,30,40-50&#8217;.</p>
-<p>The &#8216;by # frames&#8217; option allow skipping the every # frames. For
-example, with a value of &#8216;by 2 frames&#8217;, the every second frame is
+<p>The frame numbers can be entered as ‘#-#’ to define a range, or
+‘#,#,#,#’ to define a list of individual frame numbers. Examples are
+‘1,10,20,30,40,50’ or ‘10-20,30,40-50’.</p>
+<p>The ‘by # frames’ option allow skipping the every # frames. For
+example, with a value of ‘by 2 frames’, the every second frame is
 chosen; 1, 3, 5, 7, 9, etc. Using this tool can speed up solving a
 limited number of frames to build confidence in the solver attributes
-currently created, and then reducing this number to &#8216;1&#8217; to solve each
+currently created, and then reducing this number to ‘1’ to solve each
 frame.</p>
 </div>
 <div class="section" id="root-frames">
 <h2>Root Frames<a class="headerlink" href="#root-frames" title="Permalink to this headline">¶</a></h2>
-<p>The &#8216;Root Frames&#8217; are used to solve static and animated attributes.</p>
-<p>Beside the &#8216;Root Frames&#8217; field are buttons for adding, removing and
+<p>The ‘Root Frames’ are used to solve static and animated attributes.</p>
+<p>Beside the ‘Root Frames’ field are buttons for adding, removing and
 changing the current frame to the next/previous root frame.</p>
+<p>For more details on tools to change frame, create or remove root frames,
+see the <a class="reference internal" href="tools_frametools.html#frame-tools-heading"><span class="std std-ref">Frame Tools</span></a>.</p>
 </div>
 </div>
 
@@ -127,7 +120,7 @@ changing the current frame to the next/previous root frame.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Standard Solver Tab</a><ul>
 <li><a class="reference internal" href="#frames">Frames</a></li>
@@ -151,12 +144,14 @@ changing the current frame to the next/previous root frame.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -184,8 +179,8 @@ changing the current frame to the next/previous root frame.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

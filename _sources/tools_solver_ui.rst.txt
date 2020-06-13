@@ -13,6 +13,13 @@ command (`mmSolver`).
 
     Solver User Interface
 
+The shelf tools will open or run the solver.
+
+.. figure:: images/tools_shelf_icons_solver.png
+    :alt: Node Solver Shelf Icons
+    :align: center
+    :width: 30%
+
 Input Objects
 ~~~~~~~~~~~~~
 
@@ -27,7 +34,7 @@ To display the Markers, and the related objects, you may turn on/off
 the ``CAM``, ``MKR`` and ``BND`` buttons.
 
 There are various columns showing attributes of the input Objects.
-To display the column visiblity, use the Edit menu.
+To display the column visibility, use the Edit menu.
 
 .. list-table:: Input Object Fields
    :widths: auto

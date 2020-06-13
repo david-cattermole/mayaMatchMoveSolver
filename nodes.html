@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Nodes &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Commands" href="commands.html" />
     <link rel="prev" title="Solver Design" href="solver_design.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -56,19 +47,19 @@
             
   <div class="section" id="nodes">
 <h1>Nodes<a class="headerlink" href="#nodes" title="Permalink to this headline">¶</a></h1>
-<p>The <code class="docutils literal"><span class="pre">mmSolver</span></code> project defines a number of custom nodes used to help
+<p>The <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> project defines a number of custom nodes used to help
 the solve and workflow.
 The nodes are documented below.</p>
 <div class="section" id="mmmarkergrouptransform-node">
-<h2><code class="docutils literal"><span class="pre">mmMarkerGroupTransform</span></code> Node<a class="headerlink" href="#mmmarkergrouptransform-node" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">mmMarkerGroupTransform</span></code> is a custom transform node and is used to
+<h2><code class="docutils literal notranslate"><span class="pre">mmMarkerGroupTransform</span></code> Node<a class="headerlink" href="#mmmarkergrouptransform-node" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmMarkerGroupTransform</span></code> is a custom transform node and is used to
 group marker objects underneath.</p>
-<p><code class="docutils literal"><span class="pre">mmMarkerGroupTransform</span></code> does not define any custom attributes.</p>
-<p>This node is intended to be used with the <code class="docutils literal"><span class="pre">mmMarkerScale</span></code> node.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mmMarkerGroupTransform</span></code> does not define any custom attributes.</p>
+<p>This node is intended to be used with the <code class="docutils literal notranslate"><span class="pre">mmMarkerScale</span></code> node.</p>
 </div>
 <div class="section" id="mmmarkerscale-node">
-<h2><code class="docutils literal"><span class="pre">mmMarkerScale</span></code> Node<a class="headerlink" href="#mmmarkerscale-node" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">mmMarkerScale</span></code> is used to compute scale and translate values
+<h2><code class="docutils literal notranslate"><span class="pre">mmMarkerScale</span></code> Node<a class="headerlink" href="#mmmarkerscale-node" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">mmMarkerScale</span></code> is used to compute scale and translate values
 for a transform.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -174,9 +165,9 @@ for a transform.</p>
 </table>
 </div>
 <div class="section" id="mmreprojection-node">
-<h2><code class="docutils literal"><span class="pre">mmReprojection</span></code> Node<a class="headerlink" href="#mmreprojection-node" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">mmReprojection</span></code> node computes the screen-space position of an
-input <code class="docutils literal"><span class="pre">transformWorldMatrix</span></code> attribute.
+<h2><code class="docutils literal notranslate"><span class="pre">mmReprojection</span></code> Node<a class="headerlink" href="#mmreprojection-node" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">mmReprojection</span></code> node computes the screen-space position of an
+input <code class="docutils literal notranslate"><span class="pre">transformWorldMatrix</span></code> attribute.
 A Maya camera node must be connected to the camera attributes.
 The camera is used for all camera/screen-space values.
 The node can be used to feed into a camera display pan, effectively
@@ -457,12 +448,12 @@ centering the screen.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Nodes</a><ul>
-<li><a class="reference internal" href="#mmmarkergrouptransform-node"><code class="docutils literal"><span class="pre">mmMarkerGroupTransform</span></code> Node</a></li>
-<li><a class="reference internal" href="#mmmarkerscale-node"><code class="docutils literal"><span class="pre">mmMarkerScale</span></code> Node</a></li>
-<li><a class="reference internal" href="#mmreprojection-node"><code class="docutils literal"><span class="pre">mmReprojection</span></code> Node</a></li>
+<li><a class="reference internal" href="#mmmarkergrouptransform-node"><code class="docutils literal notranslate"><span class="pre">mmMarkerGroupTransform</span></code> Node</a></li>
+<li><a class="reference internal" href="#mmmarkerscale-node"><code class="docutils literal notranslate"><span class="pre">mmMarkerScale</span></code> Node</a></li>
+<li><a class="reference internal" href="#mmreprojection-node"><code class="docutils literal notranslate"><span class="pre">mmReprojection</span></code> Node</a></li>
 </ul>
 </li>
 </ul>
@@ -482,12 +473,14 @@ centering the screen.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -513,8 +506,8 @@ centering the screen.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

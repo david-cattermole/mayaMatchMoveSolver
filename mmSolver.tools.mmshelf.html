@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>mmSolver.tools.mmshelf &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mmSolver.tools.navigaterootframes" href="mmSolver.tools.navigaterootframes.html" />
     <link rel="prev" title="mmSolver.tools.mmmenu" href="mmSolver.tools.mmmenu.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -61,7 +52,7 @@
 <p>Shelves are created automatically based on the configuration options.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">It is possible to create a &#8216;minimal&#8217; set of shelf buttons,
+<p class="last">It is possible to create a ‘minimal’ set of shelf buttons,
 using a Python function so that users and studios may embed
 mmSolver into already existing shelves.</p>
 </div>
@@ -71,7 +62,7 @@ mmSolver into already existing shelves.</p>
 <dl class="function">
 <dt id="mmSolver.tools.mmshelf.tool.build_shelf">
 <code class="descclassname">mmSolver.tools.mmshelf.tool.</code><code class="descname">build_shelf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.mmshelf.tool.build_shelf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build the &#8216;mmSolver&#8217; shelf.</p>
+<dd><p>Build the ‘mmSolver’ shelf.</p>
 </dd></dl>
 
 <dl class="function">
@@ -90,12 +81,12 @@ with the parent shelf and the items will be created.</p>
 <dl class="function">
 <dt id="mmSolver.tools.mmshelf.lib.split_key">
 <code class="descclassname">mmSolver.tools.mmshelf.lib.</code><code class="descname">split_key</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.mmshelf.lib.split_key" title="Permalink to this definition">¶</a></dt>
-<dd><p>Split a key into separate name hierarchy, with a &#8216;/&#8217; character.</p>
+<dd><p>Split a key into separate name hierarchy, with a ‘/’ character.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>str</em>) &#8211; Split this string into a list.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>str</em>) – Split this string into a list.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of keys.</td>
 </tr>
@@ -114,8 +105,8 @@ with the parent shelf and the items will be created.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>key</strong> (<em>str</em>) &#8211; String to look up the function definition.</li>
-<li><strong>data_list</strong> (<em>[</em><em>{..}</em><em>, </em><em>.</em><em>]</em>) &#8211; List of dictionary to look up.</li>
+<li><strong>key</strong> (<em>str</em>) – String to look up the function definition.</li>
+<li><strong>data_list</strong> (<em>[</em><em>{..}</em><em>, </em><em>.</em><em>]</em>) – List of dictionary to look up.</li>
 </ul>
 </td>
 </tr>
@@ -138,8 +129,8 @@ with the parent shelf and the items will be created.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>item</strong> (<em>str</em><em> or </em><em>dict</em>) &#8211; Item to compile.</li>
-<li><strong>funcs</strong> (<em>dict</em>) &#8211; Function data structures.</li>
+<li><strong>item</strong> (<em>str</em><em> or </em><em>dict</em>) – Item to compile.</li>
+<li><strong>funcs</strong> (<em>dict</em>) – Function data structures.</li>
 </ul>
 </td>
 </tr>
@@ -163,9 +154,9 @@ rather than name.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>{str: ..</em><em>, </em><em>.}</em>) &#8211; Search into this data structure for a value.</li>
-<li><strong>name</strong> (<em>str</em>) &#8211; Key to look-up.</li>
-<li><strong>suffix</strong> (<em>str</em>) &#8211; Test the key and suffix.</li>
+<li><strong>data</strong> (<em>{str: ..</em><em>, </em><em>.}</em>) – Search into this data structure for a value.</li>
+<li><strong>name</strong> (<em>str</em>) – Key to look-up.</li>
+<li><strong>suffix</strong> (<em>str</em>) – Test the key and suffix.</li>
 </ul>
 </td>
 </tr>
@@ -189,8 +180,8 @@ list of command items.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>items</strong> &#8211; </li>
-<li><strong>function_defs</strong> &#8211; </li>
+<li><strong>items</strong> – </li>
+<li><strong>function_defs</strong> – </li>
 </ul>
 </td>
 </tr>
@@ -213,8 +204,8 @@ list of command items.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>items_to_create</strong> (<em>[</em><em>{}</em><em>, </em><em>.</em><em>]</em>) &#8211; List of items to be created.</li>
-<li><strong>main_parent</strong> (<em>str</em>) &#8211; The parent index name.</li>
+<li><strong>items_to_create</strong> (<em>[</em><em>{}</em><em>, </em><em>.</em><em>]</em>) – List of items to be created.</li>
+<li><strong>main_parent</strong> (<em>str</em>) – The parent index name.</li>
 </ul>
 </td>
 </tr>
@@ -237,11 +228,11 @@ list of command items.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>parents</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; The list of parent items this item will be created
+<li><strong>parents</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – The list of parent items this item will be created
 under.</li>
-<li><strong>func_def</strong> (<em>{str: ..</em><em>, </em><em>.}</em>) &#8211; Function definition.</li>
-<li><strong>is_first_item</strong> (<em>bool</em>) &#8211; Will this item be the start of the hierarchy?</li>
-<li><strong>is_last_item</strong> (<em>bool</em>) &#8211; Will this item be the end of the hierarchy?</li>
+<li><strong>func_def</strong> (<em>{str: ..</em><em>, </em><em>.}</em>) – Function definition.</li>
+<li><strong>is_first_item</strong> (<em>bool</em>) – Will this item be the start of the hierarchy?</li>
+<li><strong>is_last_item</strong> (<em>bool</em>) – Will this item be the end of the hierarchy?</li>
 </ul>
 </td>
 </tr>
@@ -264,9 +255,9 @@ under.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>shelf</strong> (<em>str</em>) &#8211; Maya shelf UI path.</li>
-<li><strong>func_config_name</strong> (<em>str</em>) &#8211; Function configuration file name.</li>
-<li><strong>shelf_config_name</strong> (<em>str</em>) &#8211; Shelf configuration file name.</li>
+<li><strong>shelf</strong> (<em>str</em>) – Maya shelf UI path.</li>
+<li><strong>func_config_name</strong> (<em>str</em>) – Function configuration file name.</li>
+<li><strong>shelf_config_name</strong> (<em>str</em>) – Shelf configuration file name.</li>
 </ul>
 </td>
 </tr>
@@ -293,7 +284,7 @@ under.</li>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.mmshelf</a><ul>
 <li><a class="reference internal" href="#module-mmSolver.tools.mmshelf.tool">Tool</a></li>
@@ -318,12 +309,14 @@ under.</li>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -350,8 +343,8 @@ under.</li>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Solver Design &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Nodes" href="nodes.html" />
     <link rel="prev" title="Hotkeys" href="tools_hotkeys.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -58,7 +49,7 @@
 <span id="solver-design-heading"></span><h1>Solver Design<a class="headerlink" href="#solver-design" title="Permalink to this headline">¶</a></h1>
 <p>Many users of MatchMove software find that by understanding how the
 underlying processes of the software work they are able to obtain better
-results by utilising the software as it&#8217;s intended to work.</p>
+results by utilising the software as it’s intended to work.</p>
 <p>This document tries to answer that question;</p>
 <blockquote>
 <div><em>How does the MM Solver work?</em></div></blockquote>
@@ -66,7 +57,7 @@ results by utilising the software as it&#8217;s intended to work.</p>
 <span id="solver-design-how-does-it-work"></span><h2>How does the solver work?<a class="headerlink" href="#how-does-the-solver-work" title="Permalink to this headline">¶</a></h2>
 <p>The solver inside MM Solver is an <em>optimisation</em> solver. The solver
 attempts to optimise the <em>measured error</em> with various <em>unknown
-parameter</em> values. The solver&#8217;s purpose is to find the parameter values
+parameter</em> values. The solver’s purpose is to find the parameter values
 which minimise the <em>measured error</em>.</p>
 <p>The process of applying an <em>optimisation</em> solver to 3D perspective
 cameras, 2D points and 3D points is called Bundle Adjustment (BA). BA is
@@ -106,7 +97,7 @@ Solver name <em>Marker</em> is used for the tracking markers placed on the set
 of a film production. <em>Bundles</em> are named as such because they represent
 a bundle of light forming on the imaging sensor.</p>
 <p><em>Markers</em> and <em>Bundles</em> are linked together. The <em>Marker</em> is the
-representation of the <em>Bundle</em> from a camera&#8217;s point of view. There may
+representation of the <em>Bundle</em> from a camera’s point of view. There may
 be multiple 2D <em>Marker</em> representations of the same 3D <em>Bundle</em>.</p>
 <p>Having known 2D Markers of a 3D Bundle looking through a known
 perspective <em>Camera</em> we can calculate a 3D <em>Bundle</em> position by moving
@@ -124,7 +115,7 @@ condition is the number of Attributes verses the number of Markers or
 specifically:</p>
 <blockquote>
 <div>The number of <em>measured errors</em> must be equal to or greater than the
-number of <em>Attribute</em> values you&#8217;re solving.</div></blockquote>
+number of <em>Attribute</em> values you’re solving.</div></blockquote>
 <p>All 3D MatchMove software has this limitation, MM Solver is no
 different. There is a minimum number of Markers required to solve for a
 3D Camera that can move in 6 degrees of freedom (6 DOF: translate X, Y
@@ -142,10 +133,10 @@ solve badly.</p>
 <p>This solver is an optimiser and it needs to be provided with an
 approximation of input attribute values, or in other words; we need to
 animate the camera(s), and place the bundles in the roughly correct
-positions. You don&#8217;t need to do the job of the solver, which is to make
+positions. You don’t need to do the job of the solver, which is to make
 the <em>Cameras</em> and <em>Bundles</em> match perfectly, but you are required to at
 least have <em>Bundles</em> positioned inside the FOV of the camera, and an
-approximate animation of the camera if you&#8217;re solving the camera
+approximate animation of the camera if you’re solving the camera
 parameters.</p>
 <p>The approximate <em>Camera</em> and <em>Bundle</em> positions is why the MM Solver is
 so different from traditional MatchMove solutions, especially
@@ -173,7 +164,7 @@ or <em>Bundles</em>.</li>
 <span id="solver-design-solving-process"></span><h2>Solving Process<a class="headerlink" href="#solving-process" title="Permalink to this headline">¶</a></h2>
 <p>Each time you execute a solve, the solver goes though a number of steps
 to perform the optimisation and reduce the error.</p>
-<p>This is an overview of the solver&#8217;s process:</p>
+<p>This is an overview of the solver’s process:</p>
 <ol class="arabic simple">
 <li>Initialises input data.</li>
 <li>Solve.<ol class="arabic">
@@ -208,7 +199,7 @@ and <em>Markers</em> that are in the solve.</p>
 </div>
 <div class="section" id="time-static-and-animated-attributes">
 <span id="solver-design-static-and-animated-attributes"></span><h2>Time - Static and Animated Attributes<a class="headerlink" href="#time-static-and-animated-attributes" title="Permalink to this headline">¶</a></h2>
-<p>Up until now we&#8217;ve been concerned with solving a single frame in time.
+<p>Up until now we’ve been concerned with solving a single frame in time.
 Now we need to extend that into multiple frames. In the MM Solver there
 are <em>animated Attributes</em> that change per-frame and <em>static Attributes</em>
 that only have one value. Using <em>static Attributes</em> complicates the
@@ -227,7 +218,7 @@ therefore the single value affects the <em>measured error</em> on all frames.
 To solve for the minimum possible <em>measured error</em> for all values it is
 necessary to consider all 4 values together (3 animated values, 1 static
 value), and all combinations of the values. Solving for 4 values rather
-than 3 values doesn&#8217;t sound like it would take much longer to compute,
+than 3 values doesn’t sound like it would take much longer to compute,
 but in fact it takes 3 times longer (3 * 3); this problem is squared
 each time a static value is added. The more static values added to the
 solve increases the number of possible combinations and increases the
@@ -256,8 +247,8 @@ often the need to use limits is a sign of problems in your solve.
 Minimum and maximum limits are often not helpful because the solver
 will simply limit the values used rather than reduce the likely-hood
 the solver will try to use values outside the limits.</p>
-<p>Minimum and maximum limits are also known as &#8220;Upper and Lower Value
-Bounds&#8221;.</p>
+<p>Minimum and maximum limits are also known as “Upper and Lower Value
+Bounds”.</p>
 </div>
 <div class="section" id="smoothness-and-stiffness">
 <h3>Smoothness and Stiffness<a class="headerlink" href="#smoothness-and-stiffness" title="Permalink to this headline">¶</a></h3>
@@ -267,12 +258,12 @@ Bounds&#8221;.</p>
 <p>Smoothness and stiffness ensures a Animated Attribute curve follows a
 constraint by increasing the error level of the current solve when the
 curve does not behave as expected. By increasing the solver error for
-&#8220;bad behaviour&#8221; the solver will automatically try to re-distribute the
+“bad behaviour” the solver will automatically try to re-distribute the
 error level by changing other Attribute values.</p>
 <p>Both <em>smoothness</em> and <em>stiffness</em> use a similar constraint. The solver
 will increase the error if the solved value varies by more than the
 <em>variance</em> compared to a reference value. This encourages the
-solver to reduce &#8220;jumps&#8221; of more than the <em>variance</em> value.</p>
+solver to reduce “jumps” of more than the <em>variance</em> value.</p>
 <p>For <em>smoothness</em> constraints, the reference value is a smoothed value
 along the curve, based on the previous value. The value at the next
 frame is a predicted value, but is allowed to vary.</p>
@@ -329,7 +320,7 @@ peak (the gradient or mountain slope).</p>
 </div>
 <div class="section" id="maximum-number-of-iterations">
 <span id="solver-design-solver-max-iterations"></span><h3>Maximum Number of Iterations<a class="headerlink" href="#maximum-number-of-iterations" title="Permalink to this headline">¶</a></h3>
-<p>Value type: <code class="docutils literal"><span class="pre">integer</span></code></p>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">integer</span></code></p>
 <p>This option does not directly control the number of evaluations
 the solver may run, but instead controls how many attempts the
 solver will try before giving up.</p>
@@ -338,37 +329,37 @@ solve will stop.</p>
 </div>
 <div class="section" id="tau-initial-damping-factor">
 <span id="solver-design-solver-tau"></span><h3>Tau - Initial Damping Factor<a class="headerlink" href="#tau-initial-damping-factor" title="Permalink to this headline">¶</a></h3>
-<p>Value type: <code class="docutils literal"><span class="pre">float</span></code></p>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
 <p>The <em>tau</em> factor determines whether the solver will try to refine the
 current parameters a lot (large tau number), or only a small amount
 (small tau number). Values usually range between +0.0 and +1.0.</p>
 <p>Larger values should be used when the initial unknown parameters
 have high error. This forces the Levenberg-Marquet algorithm to use
 steepest-decent, rather than gauss-newton.</p>
-<p>&#8220;The algorithm is not very sensitive to the choice of &#8216;tau&#8217;, but
-as a rule of thumb, one should use a small value, eg &#8216;tau = 10-6&#8217;,
-if &#8216;the initial parameters&#8217; are believed to be a good
-approximation to the &#8216;final parameter values&#8217;. Otherwise, use &#8216;tau
-= 10-3&#8217; or even &#8216;tau = 1.0&#8217;.&#8221;</p>
+<p>“The algorithm is not very sensitive to the choice of ‘tau’, but
+as a rule of thumb, one should use a small value, eg ‘tau = 10-6’,
+if ‘the initial parameters’ are believed to be a good
+approximation to the ‘final parameter values’. Otherwise, use ‘tau
+= 10-3’ or even ‘tau = 1.0’.”</p>
 </div>
 <div class="section" id="delta-amount-to-change-parameters">
 <span id="solver-design-solver-delta"></span><h3>Delta - Amount to Change Parameters<a class="headerlink" href="#delta-amount-to-change-parameters" title="Permalink to this headline">¶</a></h3>
-<p>Value type: <code class="docutils literal"><span class="pre">float</span></code></p>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
 <p>Delta is the amount of change to the guessed parameters at each
 iteration.</p>
 <p>Each time the solver guesses an unknown parameter value, it adds
-or subtracts the &#8216;delta&#8217; value from the unknown parameter
+or subtracts the ‘delta’ value from the unknown parameter
 value. This changes the magnitude of the parameter values in each
 guess. If this value is too small, the change in error level may
 not be detected, if this value is too large the solver will
 over-estimate and will likely lead to poor convergence (the solver
-won&#8217;t find a good solution).</p>
+won’t find a good solution).</p>
 </div>
 <div class="section" id="epsilon-1-acceptable-gradient-change">
 <span id="solver-design-solver-epsilon-one"></span><h3>Epsilon #1 - Acceptable Gradient Change<a class="headerlink" href="#epsilon-1-acceptable-gradient-change" title="Permalink to this headline">¶</a></h3>
-<p>Value type: <code class="docutils literal"><span class="pre">float</span></code></p>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
 <p>The gradient error (sometimes named epsilon #1) is used to find when
-the solver has reached the &#8220;top of the mountain peak&#8221;. The gradient
+the solver has reached the “top of the mountain peak”. The gradient
 represents the slope of climbing the mountain. When the solver reaches
 a (horizontally) flat area of the mountain, then the gradient is low,
 and will stop the solve. When the solver can find a slope (gradient),
@@ -380,7 +371,7 @@ trying to reduce the error any more, and stops solving.</p>
 </div>
 <div class="section" id="epsilon-2-acceptable-parameter-change">
 <span id="solver-design-solver-epsilon-two"></span><h3>Epsilon #2 - Acceptable Parameter Change<a class="headerlink" href="#epsilon-2-acceptable-parameter-change" title="Permalink to this headline">¶</a></h3>
-<p>Value type: <code class="docutils literal"><span class="pre">float</span></code></p>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
 <p>The parameter error (sometimes named epsilon #2) is used to determine
 the when the solver can stop changing parameter values because the
 new parameter values have not changed enough. Changes to parameters are
@@ -392,18 +383,18 @@ reduce the error any more.</p>
 </div>
 <div class="section" id="epsilon-3-acceptable-deviation-error">
 <span id="solver-design-solver-epsilon-three"></span><h3>Epsilon #3 - Acceptable Deviation Error<a class="headerlink" href="#epsilon-3-acceptable-deviation-error" title="Permalink to this headline">¶</a></h3>
-<p>Value type: <code class="docutils literal"><span class="pre">float</span></code></p>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
 <p>The deviation error (sometimes named epsilon #3 or deviation) is the
 error level that is considered a good solve. To use a mountain
 climbing analogy, the <em>deviation error</em> is the highest mountain peak
 that is good enough for the solver.</p>
 <p>At the beginning of a solver iteration, if the error level is below
 this value, the solver considers the error to be low enough for the
-user&#8217;s needs and stops trying to reduce the error.</p>
+user’s needs and stops trying to reduce the error.</p>
 </div>
 <div class="section" id="auto-differencing-type">
 <span id="solver-design-solver-auto-diff-type"></span><h3>Auto-Differencing Type<a class="headerlink" href="#auto-differencing-type" title="Permalink to this headline">¶</a></h3>
-<p>Value type: <code class="docutils literal"><span class="pre">integer</span></code></p>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">integer</span></code></p>
 <p>The strategy used to compute the direction (gradient slope) the solver
 should move toward.</p>
 <table border="1" class="colwidths-auto docutils" id="id2">
@@ -416,18 +407,18 @@ should move toward.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>0</td>
-<td><code class="docutils literal"><span class="pre">forward</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">forward</span></code></td>
 <td>Fast but not accurate.</td>
 </tr>
 <tr class="row-odd"><td>1</td>
-<td><code class="docutils literal"><span class="pre">central</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">central</span></code></td>
 <td>More accurate but 1/3rd slower to compute initially.</td>
 </tr>
 </tbody>
 </table>
-<p>In practice, the authors of mmSolver have found <code class="docutils literal"><span class="pre">central</span></code>
+<p>In practice, the authors of mmSolver have found <code class="docutils literal notranslate"><span class="pre">central</span></code>
 dramatically slows down the solver and does not increase accuracy very
-much. It is therefore recommended to use <code class="docutils literal"><span class="pre">forward</span></code>.</p>
+much. It is therefore recommended to use <code class="docutils literal notranslate"><span class="pre">forward</span></code>.</p>
 </div>
 </div>
 <div class="section" id="general-solving-concepts">
@@ -450,7 +441,7 @@ much. It is therefore recommended to use <code class="docutils literal"><span cl
 <span id="solver-faq-how-to-get-supported-solver-types"></span><h3>How do I get the list of supported Solver Types?<a class="headerlink" href="#how-do-i-get-the-list-of-supported-solver-types" title="Permalink to this headline">¶</a></h3>
 <p>To dynamically get the supported list of solver types, run this Python
 command in Maya:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">loadPlugin</span><span class="p">(</span><span class="s1">&#39;mmSolver&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">loadPlugin</span><span class="p">(</span><span class="s1">&#39;mmSolver&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">[u&#39;1=cminpack_lmdif&#39;, u&#39;2=cminpack_lmder&#39;]   # Example output.</span>
 </pre></div>
@@ -467,15 +458,15 @@ that depending on compilation, some solver types will not be available.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>0</td>
-<td><code class="docutils literal"><span class="pre">levmar</span></code></td>
-<td>Use <a class="reference external" href="http://users.ics.forth.gr/~lourakis/levmar/">levmar</a> library with the <code class="docutils literal"><span class="pre">levmar_bc_dif</span></code> function.</td>
+<td><code class="docutils literal notranslate"><span class="pre">levmar</span></code></td>
+<td>Use <a class="reference external" href="http://users.ics.forth.gr/~lourakis/levmar/">levmar</a> library with the <code class="docutils literal notranslate"><span class="pre">levmar_bc_dif</span></code> function.</td>
 </tr>
 <tr class="row-odd"><td>1</td>
-<td><code class="docutils literal"><span class="pre">cminpack_lmdif</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">cminpack_lmdif</span></code></td>
 <td>Use <a class="reference external" href="http://devernay.free.fr/hacks/cminpack/index.html">CMinpack</a> library with the <a class="reference external" href="http://devernay.free.fr/hacks/cminpack/lmdif_.html">lmdif</a> function.</td>
 </tr>
 <tr class="row-even"><td>2</td>
-<td><code class="docutils literal"><span class="pre">cminpack_lmder</span></code></td>
+<td><code class="docutils literal notranslate"><span class="pre">cminpack_lmder</span></code></td>
 <td>Use <a class="reference external" href="http://devernay.free.fr/hacks/cminpack/index.html">CMinpack</a> library with the <a class="reference external" href="http://devernay.free.fr/hacks/cminpack/lmder_.html">lmder</a> function.</td>
 </tr>
 </tbody>
@@ -504,7 +495,7 @@ Solving is performed directly on <em>Attribute</em> values.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Solver Design</a><ul>
 <li><a class="reference internal" href="#how-does-the-solver-work">How does the solver work?</a></li>
@@ -560,12 +551,14 @@ Solving is performed directly on <em>Attribute</em> values.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -591,8 +584,8 @@ Solving is performed directly on <em>Attribute</em> values.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

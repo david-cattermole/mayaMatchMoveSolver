@@ -95,7 +95,7 @@ Time
     :undoc-members:
 
 Tools
-++++
++++++
 
 .. automodule:: mmSolver.utils.tools
     :members:

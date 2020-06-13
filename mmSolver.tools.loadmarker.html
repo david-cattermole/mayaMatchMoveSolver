@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>mmSolver.tools.loadmarker &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mmSolver.tools.markerbundlerename" href="mmSolver.tools.markerbundlerename.html" />
     <link rel="prev" title="mmSolver.tools.linkmarkerbundle" href="mmSolver.tools.linkmarkerbundle.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -87,14 +78,14 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mkr_data_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.interface.MarkerData" title="mmSolver.tools.loadmarker.lib.interface.MarkerData"><em>MarkerData</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of MarkerData with data for creating
+<li><strong>mkr_data_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.interface.MarkerData" title="mmSolver.tools.loadmarker.lib.interface.MarkerData"><em>MarkerData</em></a><em>, </em><em>.</em><em>]</em>) – List of MarkerData with data for creating
 markers.</li>
-<li><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) &#8211; Camera to create Markers under.</li>
-<li><strong>mkr_grp</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a>) &#8211; Marker Group, under cam, that the markers will
+<li><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – Camera to create Markers under.</li>
+<li><strong>mkr_grp</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a>) – Marker Group, under cam, that the markers will
 be created under.</li>
-<li><strong>with_bundles</strong> (<em>bool</em>) &#8211; Create a bundle for each Marker.</li>
-<li><strong>load_bundle_position</strong> (<em>bool</em>) &#8211; Apply the 3D positions to bundle.</li>
-<li><strong>camera_field_of_view</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>]</em>) &#8211; The camera field of view of the
+<li><strong>with_bundles</strong> (<em>bool</em>) – Create a bundle for each Marker.</li>
+<li><strong>load_bundle_position</strong> (<em>bool</em>) – Apply the 3D positions to bundle.</li>
+<li><strong>camera_field_of_view</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>]</em>) – The camera field of view of the
 original camera with this 2D data.</li>
 </ul>
 </td>
@@ -119,10 +110,10 @@ The length of both lists must match.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) &#8211; Markers to update.</li>
-<li><strong>mkr_data_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.interface.MarkerData" title="mmSolver.tools.loadmarker.lib.interface.MarkerData"><em>MarkerData</em></a><em>, </em><em>.</em><em>]</em>) &#8211; The MarkerData list to search for a match.</li>
-<li><strong>load_bundle_position</strong> (<em>bool</em>) &#8211; Apply the 3D positions to bundle.</li>
-<li><strong>camera_field_of_view</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>]</em>) &#8211; The camera field of view of the
+<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) – Markers to update.</li>
+<li><strong>mkr_data_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.interface.MarkerData" title="mmSolver.tools.loadmarker.lib.interface.MarkerData"><em>MarkerData</em></a><em>, </em><em>.</em><em>]</em>) – The MarkerData list to search for a match.</li>
+<li><strong>load_bundle_position</strong> (<em>bool</em>) – Apply the 3D positions to bundle.</li>
+<li><strong>camera_field_of_view</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>]</em>) – The camera field of view of the
 original camera with this 2D data.</li>
 </ul>
 </td>
@@ -199,8 +190,8 @@ original camera with this 2D data.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>frame</strong> &#8211; An int for the frame to look up.</li>
-<li><strong>value</strong> &#8211; A dict with keys as the frames to look up.</li>
+<li><strong>frame</strong> – An int for the frame to look up.</li>
+<li><strong>value</strong> – A dict with keys as the frames to look up.</li>
 </ul>
 </td>
 </tr>
@@ -270,7 +261,7 @@ __init__ of a new class.</p>
 <dl class="method">
 <dt id="mmSolver.tools.loadmarker.lib.interface.KeyframeData.set_value">
 <code class="descname">set_value</code><span class="sig-paren">(</span><em>frame</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.interface.KeyframeData.set_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the &#8216;value&#8217;, at &#8216;frame&#8217;.</p>
+<dd><p>Set the ‘value’, at ‘frame’.</p>
 </dd></dl>
 
 <dl class="method">
@@ -580,7 +571,7 @@ static if all values are the same.</p>
 <dt id="mmSolver.tools.loadmarker.lib.utils.get_cameras">
 <code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">get_cameras</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_cameras" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all cameras in the scene file.</p>
-<p>Start-up cameras are ignored (&#8216;persp&#8217;, &#8216;top&#8217;, &#8216;side&#8217;, &#8216;front&#8217;, etc)</p>
+<p>Start-up cameras are ignored (‘persp’, ‘top’, ‘side’, ‘front’, etc)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -643,7 +634,7 @@ static if all values are the same.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> &#8211; File path text.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> – File path text.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Format for the file path, or None if not found.</td>
 </tr>
@@ -661,7 +652,7 @@ static if all values are the same.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<em>str</em>) &#8211; A possible file path string.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<em>str</em>) – A possible file path string.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">File path validity.</td>
 </tr>
@@ -679,7 +670,7 @@ static if all values are the same.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) &#8211; The marker file path to get info for.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) – The marker file path to get info for.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The file info.</td>
 </tr>
@@ -697,7 +688,7 @@ static if all values are the same.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) &#8211; The marker file path to get info for.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) – The marker file path to get info for.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Dictionary of various information about the given file path.</td>
 </tr>
@@ -715,7 +706,7 @@ static if all values are the same.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">String of file filters, separated by &#8216;;;&#8217; characters.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">String of file filters, separated by ‘;;’ characters.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
 </tr>
@@ -731,7 +722,7 @@ static if all values are the same.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> &#8211; An input</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> – An input</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
 </tr>
@@ -763,7 +754,7 @@ static if all values are the same.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) &#8211; The camera to create the Marker Group under.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The camera to create the Marker Group under.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MarkerGroup object.</td>
 </tr>
@@ -776,7 +767,7 @@ static if all values are the same.</p>
 <dl class="function">
 <dt id="mmSolver.tools.loadmarker.lib.utils.get_default_image_resolution">
 <code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">get_default_image_resolution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_default_image_resolution" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get image resolution from Maya Render Settings (Render &#8216;Globals&#8217;).</p>
+<dd><p>Get image resolution from Maya Render Settings (Render ‘Globals’).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -799,14 +790,14 @@ static if all values are the same.</p>
 <dl class="function">
 <dt id="mmSolver.tools.loadmarker.lib.fieldofview.get_camera_field_of_view">
 <code class="descclassname">mmSolver.tools.loadmarker.lib.fieldofview.</code><code class="descname">get_camera_field_of_view</code><span class="sig-paren">(</span><em>cam_shp</em>, <em>frames</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.fieldofview.get_camera_field_of_view" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the Camera&#8217;s field of view with a camera shape node at frames.</p>
+<dd><p>Compute the Camera’s field of view with a camera shape node at frames.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cam_shp</strong> (<em>str</em>) &#8211; Maya camera shape node.</li>
-<li><strong>frames</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) &#8211; List of frames to sample the camera/marker group</li>
+<li><strong>cam_shp</strong> (<em>str</em>) – Maya camera shape node.</li>
+<li><strong>frames</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) – List of frames to sample the camera/marker group</li>
 </ul>
 </td>
 </tr>
@@ -831,9 +822,9 @@ field of view.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) &#8211; The mmSolver.api.Camera object to query field of view from.</li>
-<li><strong>camera_fov</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>, </em><em>.</em><em>]</em>) &#8211; Tuple of camera field of view per-frame values X and Y.</li>
-<li><strong>mkr_grp</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a><em> or </em><em>None</em>) &#8211; The mmapi MarkerGroup object, to be used additionally to the
+<li><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The mmSolver.api.Camera object to query field of view from.</li>
+<li><strong>camera_fov</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>, </em><em>.</em><em>]</em>) – Tuple of camera field of view per-frame values X and Y.</li>
+<li><strong>mkr_grp</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a><em> or </em><em>None</em>) – The mmapi MarkerGroup object, to be used additionally to the
 provided camera to calculate the overscan.</li>
 </ul>
 </td>
@@ -852,7 +843,7 @@ provided camera to calculate the overscan.</li>
 <div class="section" id="module-mmSolver.tools.loadmarker.lib.formats">
 <span id="library-formats"></span><h2>Library - Formats<a class="headerlink" href="#module-mmSolver.tools.loadmarker.lib.formats" title="Permalink to this headline">¶</a></h2>
 <p>File Formats for loadmarker tool.</p>
-<p>This file is used to automatically load all formats so the user doesn&#8217;t need
+<p>This file is used to automatically load all formats so the user doesn’t need
 to import each format individually.</p>
 <span class="target" id="module-mmSolver.tools.loadmarker.lib.formats.rz2"></span><p>Reads a Matchmover rz2 file.</p>
 <dl class="class">
@@ -876,7 +867,9 @@ to import each format individually.</p>
 <dl class="method">
 <dt id="mmSolver.tools.loadmarker.lib.formats.rz2.LoaderRZ2.parse">
 <code class="descname">parse</code><span class="sig-paren">(</span><em>file_path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.formats.rz2.LoaderRZ2.parse" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Parse the given file path.</p>
+<p>Inherit from LoaderBase and override this method.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -885,7 +878,7 @@ to import each format individually.</p>
 The position coordinate (width, height) is the upper-right.</p>
 <p>This format is resolution dependant!</p>
 <p>The file format looks like this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">int</span>     <span class="c1"># Number of track points in the file</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span>     <span class="c1"># Number of track points in the file</span>
 <span class="n">string</span>  <span class="c1"># Name of point</span>
 <span class="nb">int</span>     <span class="c1"># Color of the point</span>
 <span class="nb">int</span>     <span class="c1"># Number of frames</span>
@@ -893,7 +886,7 @@ The position coordinate (width, height) is the upper-right.</p>
 </pre></div>
 </div>
 <p>Simple file with 1 2D track and 1 frame of data:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">1</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>
 <span class="n">My</span> <span class="n">Point</span> <span class="n">Name</span>
 <span class="mi">0</span>
 <span class="mi">1</span>
@@ -927,8 +920,8 @@ The position coordinate (width, height) is the upper-right.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>file_path</strong> (<em>str</em>) &#8211; File path to parse.</li>
-<li><strong>kwargs</strong> &#8211; expected to contain &#8216;image_width&#8217; and &#8216;image_height&#8217;.</li>
+<li><strong>file_path</strong> (<em>str</em>) – File path to parse.</li>
+<li><strong>kwargs</strong> – expected to contain ‘image_width’ and ‘image_height’.</li>
 </ul>
 </td>
 </tr>
@@ -946,14 +939,14 @@ The position coordinate (width, height) is the upper-right.</p>
 <p>The UV coordinate (0.0, 0.0) is the lower-left.
 The UV coordinate (1.0, 1.0) is the upper-right.</p>
 <p>The ASCII file format looks like this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">int</span>     <span class="c1"># Number of track points in the file</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span>     <span class="c1"># Number of track points in the file</span>
 <span class="n">string</span>  <span class="c1"># Name of point</span>
 <span class="nb">int</span>     <span class="c1"># Number of frames</span>
 <span class="nb">int</span> <span class="nb">float</span> <span class="nb">float</span> <span class="nb">float</span>  <span class="c1"># Frame, U coord, V coord, Point Weight</span>
 </pre></div>
 </div>
 <p>Simple ASCII v1 file with 1 2D track and 1 frame of data:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">1</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>
 <span class="n">My</span> <span class="n">Point</span> <span class="n">Name</span>
 <span class="mi">1</span>
 <span class="mi">1</span> <span class="mf">0.0</span> <span class="mf">1.0</span> <span class="mf">1.0</span>
@@ -961,7 +954,7 @@ The UV coordinate (1.0, 1.0) is the upper-right.</p>
 </div>
 <p>The JSON format takes the shape of a dictionary.
 The dictionary looks like this, format version 2:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="s1">&#39;num_points&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="s1">&#39;is_undistorted&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
@@ -981,7 +974,7 @@ The dictionary looks like this, format version 2:</p>
 </pre></div>
 </div>
 <p>Format version 3:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="s1">&#39;num_points&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="s1">&#39;is_undistorted&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Deprecated</span>
@@ -1010,7 +1003,7 @@ The dictionary looks like this, format version 2:</p>
 </pre></div>
 </div>
 <p>Format version 4:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="s1">&#39;num_points&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="s1">&#39;is_undistorted&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Deprecated</span>
@@ -1052,7 +1045,7 @@ The dictionary looks like this, format version 2:</p>
 <dl class="function">
 <dt id="mmSolver.tools.loadmarker.lib.formats.uvtrack.determine_format_version">
 <code class="descclassname">mmSolver.tools.loadmarker.lib.formats.uvtrack.</code><code class="descname">determine_format_version</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.formats.uvtrack.determine_format_version" title="Permalink to this definition">¶</a></dt>
-<dd><p>Work out the format version by reading the &#8216;file_path&#8217;.</p>
+<dd><p>Work out the format version by reading the ‘file_path’.</p>
 <p>returns: The format version, must be one of constants.UV_TRACK_FORMAT_VERSION_LIST</p>
 </dd></dl>
 
@@ -1064,7 +1057,7 @@ The dictionary looks like this, format version 2:</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> &#8211; </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> – </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
 </tr>
@@ -1080,7 +1073,7 @@ The dictionary looks like this, format version 2:</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) &#8211; File path to read.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) – File path to read.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of MarkerData objects.</td>
 </tr>
@@ -1092,12 +1085,12 @@ The dictionary looks like this, format version 2:</p>
 <dt id="mmSolver.tools.loadmarker.lib.formats.uvtrack.parse_v3">
 <code class="descclassname">mmSolver.tools.loadmarker.lib.formats.uvtrack.</code><code class="descname">parse_v3</code><span class="sig-paren">(</span><em>file_path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.formats.uvtrack.parse_v3" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse the UV file format, using JSON.</p>
-<p>Accepts the keyword &#8216;undistorted&#8217;.</p>
+<p>Accepts the keyword ‘undistorted’.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) &#8211; File path to read.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) – File path to read.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of MarkerData objects.</td>
 </tr>
@@ -1109,12 +1102,12 @@ The dictionary looks like this, format version 2:</p>
 <dt id="mmSolver.tools.loadmarker.lib.formats.uvtrack.parse_v4">
 <code class="descclassname">mmSolver.tools.loadmarker.lib.formats.uvtrack.</code><code class="descname">parse_v4</code><span class="sig-paren">(</span><em>file_path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.formats.uvtrack.parse_v4" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse the UV file format, using JSON.</p>
-<p>Accepts the keyword &#8216;undistorted&#8217;, &#8216;overscan_x&#8217; and &#8216;overscan_y&#8217;.</p>
+<p>Accepts the keyword ‘undistorted’, ‘overscan_x’ and ‘overscan_y’.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) &#8211; File path to read.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) – File path to read.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of MarkerData objects.</td>
 </tr>
@@ -1149,8 +1142,8 @@ The dictionary looks like this, format version 2:</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>file_path</strong> (<em>str</em>) &#8211; The file path to parse.</li>
-<li><strong>kwargs</strong> &#8211; The keyword &#8216;undistorted&#8217; is used by
+<li><strong>file_path</strong> (<em>str</em>) – The file path to parse.</li>
+<li><strong>kwargs</strong> – The keyword ‘undistorted’ is used by
 UV_TRACK_FORMAT_VERSION_3 formats.</li>
 </ul>
 </td>
@@ -1177,7 +1170,7 @@ UV_TRACK_FORMAT_VERSION_3 formats.</li>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.loadmarker</a><ul>
 <li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.tool">Tool</a></li>
@@ -1204,12 +1197,14 @@ UV_TRACK_FORMAT_VERSION_3 formats.</li>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -1236,8 +1231,8 @@ UV_TRACK_FORMAT_VERSION_3 formats.</li>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

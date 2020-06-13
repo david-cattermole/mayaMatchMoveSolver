@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Commands &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Configuration" href="configuration.html" />
     <link rel="prev" title="Nodes" href="nodes.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -57,8 +48,8 @@
   <div class="section" id="commands">
 <h1>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="mmsolver-command">
-<h2><code class="docutils literal"><span class="pre">mmSolver</span></code> Command<a class="headerlink" href="#mmsolver-command" title="Permalink to this headline">¶</a></h2>
-<p>The command named <code class="docutils literal"><span class="pre">mmSolver</span></code> is the primary command used to perform a
+<h2><code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> Command<a class="headerlink" href="#mmsolver-command" title="Permalink to this headline">¶</a></h2>
+<p>The command named <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> is the primary command used to perform a
 solve.</p>
 <div class="section" id="flags">
 <h3>Flags<a class="headerlink" href="#flags" title="Permalink to this headline">¶</a></h3>
@@ -159,14 +150,14 @@ solve.</p>
 </div>
 <div class="section" id="return">
 <h3>Return<a class="headerlink" href="#return" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal"><span class="pre">mmSolver</span></code> command will return a list of strings.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> command will return a list of strings.</p>
 <p>The list of strings has a specific structure and stores all the data
 from the core solver engines, so the user can do whatever they wish to.</p>
 </div>
 <div class="section" id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <p>Python Example:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolver</span><span class="p">(</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolver</span><span class="p">(</span>
     <span class="n">camera</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;cameraShape1&#39;</span><span class="p">),</span>
     <span class="n">marker</span><span class="o">=</span><span class="p">(</span>
         <span class="p">(</span><span class="s1">&#39;marker1&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle1&#39;</span><span class="p">),</span>
@@ -184,7 +175,7 @@ from the core solver engines, so the user can do whatever they wish to.</p>
 </pre></div>
 </div>
 <p>MEL Example:</p>
-<div class="code text highlight-default"><div class="highlight"><pre><span></span><span class="n">mmSolver</span>
+<div class="code text highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mmSolver</span>
     <span class="o">-</span><span class="n">camera</span> <span class="s2">&quot;camera1&quot;</span> <span class="s2">&quot;cameraShape1&quot;</span>
     <span class="o">-</span><span class="n">marker</span> <span class="s2">&quot;marker1&quot;</span> <span class="s2">&quot;camera1&quot;</span> <span class="s2">&quot;bundle1&quot;</span>
     <span class="o">-</span><span class="n">marker</span> <span class="s2">&quot;marker2&quot;</span> <span class="s2">&quot;camera1&quot;</span> <span class="s2">&quot;bundle2&quot;</span>
@@ -201,28 +192,28 @@ from the core solver engines, so the user can do whatever they wish to.</p>
 </div>
 </div>
 <div class="section" id="mmsolvertype-command">
-<h2><code class="docutils literal"><span class="pre">mmSolverType</span></code> Command<a class="headerlink" href="#mmsolvertype-command" title="Permalink to this headline">¶</a></h2>
-<p><cite>mmSolverType</cite> is used to query the current plug-in&#8217;s available
+<h2><code class="docutils literal notranslate"><span class="pre">mmSolverType</span></code> Command<a class="headerlink" href="#mmsolvertype-command" title="Permalink to this headline">¶</a></h2>
+<p><cite>mmSolverType</cite> is used to query the current plug-in’s available
 solvers.</p>
 <p>This tool is commonly used to dynamically query for the different
 types of solvers. See the
 <a class="reference internal" href="solver_design.html#solver-faq-how-to-get-supported-solver-types"><span class="std std-ref">How do I get the list of supported Solver Types?</span></a> for more detail on
 this.</p>
 <p>Python Example:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">solvers</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">solvers</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">default_solver</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="mmtestcameramatrix-command">
-<h2><code class="docutils literal"><span class="pre">mmTestCameraMatrix</span></code> Command<a class="headerlink" href="#mmtestcameramatrix-command" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">mmTestCameraMatrix</span></code> Command<a class="headerlink" href="#mmtestcameramatrix-command" title="Permalink to this headline">¶</a></h2>
 <p><cite>mmTestCameraMatrix</cite> calculates an matrix (not returned) from the
 given camera transform and shape nodes. If the matrix matches the same
-matrix produced by Maya&#8217;s API, then the command returns true.</p>
+matrix produced by Maya’s API, then the command returns true.</p>
 <p>This command is used for internal tests only, it has no practical use
 for users.</p>
 <p>Python Example:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">cam_tfm</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cam_tfm&#39;</span><span class="p">)</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cam_tfm</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cam_tfm&#39;</span><span class="p">)</span>
 <span class="n">cam_shp</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;camera&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cam_shp&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">cam_tfm</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmTestCameraMatrix</span><span class="p">(</span><span class="n">cam_tfm</span><span class="p">,</span> <span class="n">cam_shp</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="kc">True</span>
@@ -237,17 +228,17 @@ for users.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Commands</a><ul>
-<li><a class="reference internal" href="#mmsolver-command"><code class="docutils literal"><span class="pre">mmSolver</span></code> Command</a><ul>
+<li><a class="reference internal" href="#mmsolver-command"><code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> Command</a><ul>
 <li><a class="reference internal" href="#flags">Flags</a></li>
 <li><a class="reference internal" href="#return">Return</a></li>
 <li><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#mmsolvertype-command"><code class="docutils literal"><span class="pre">mmSolverType</span></code> Command</a></li>
-<li><a class="reference internal" href="#mmtestcameramatrix-command"><code class="docutils literal"><span class="pre">mmTestCameraMatrix</span></code> Command</a></li>
+<li><a class="reference internal" href="#mmsolvertype-command"><code class="docutils literal notranslate"><span class="pre">mmSolverType</span></code> Command</a></li>
+<li><a class="reference internal" href="#mmtestcameramatrix-command"><code class="docutils literal notranslate"><span class="pre">mmTestCameraMatrix</span></code> Command</a></li>
 </ul>
 </li>
 </ul>
@@ -267,12 +258,14 @@ for users.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -298,8 +291,8 @@ for users.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>General Tools &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Hotkeys" href="tools_hotkeys.html" />
     <link rel="prev" title="Marker Tools" href="tools_markertools.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -65,34 +56,34 @@ tasks.</p>
 <p>Forces the active viewport camera to lock it’s center to the currently
 selected transform node.</p>
 <p>A viewport camera can only center on one node at a time.</p>
-<p>While centering is turned on, it overrides Maya&#8217;s normal 2D Pan/Zoom
+<p>While centering is turned on, it overrides Maya’s normal 2D Pan/Zoom
 settings.</p>
 <p>Usage to <em>apply</em> the centering effect:</p>
 <ol class="arabic simple">
 <li>Select transform node.</li>
 <li>Activate a 3D viewport.</li>
-<li>Run &#8216;Apply 2D Center&#8217; tool.<ul>
+<li>Run ‘Apply 2D Center’ tool.<ul>
 <li>The active viewport camera will be centered on the selected
 transform node.</li>
 </ul>
 </li>
-<li>Use the Pan/Zoom tool (default hotkey is backslash (&#8216; \ &#8216;) key),
+<li>Use the Pan/Zoom tool (default hotkey is backslash (‘ \ ‘) key),
 to zoom in and out. Play the Maya timeline and use the centered view as
 needed.</li>
 </ol>
 <p>Usage to <em>remove</em> centering effect:</p>
 <ol class="arabic simple">
-<li>Run &#8216;Remove 2D Center&#8217; tool.<ul>
+<li>Run ‘Remove 2D Center’ tool.<ul>
 <li>The active viewport will no longer center on an object, but will
 not reset the view.</li>
 <li>The pan/zoom will still be active. To reset the viewport camera,
 turn off Pan/Zoom on the viewport camera (default hotkey is
-backslash (&#8216; \ &#8216;) key).</li>
+backslash (‘ \ ‘) key).</li>
 </ul>
 </li>
 </ol>
 <p>To run the tool, use this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.centertwodee.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.centertwodee.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 
 <span class="c1"># Apply Centering onto active camera</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
@@ -115,24 +106,24 @@ values. This allows smoothing a specific area of an animation curve,
 while preserving other parts and avoiding bumps at the boundry.</p>
 <p>Usage:</p>
 <ol class="arabic simple">
-<li>Use the menu <code class="docutils literal"><span class="pre">mmSolver</span> <span class="pre">&gt;</span> <span class="pre">General</span> <span class="pre">Tools</span> <span class="pre">&gt;</span> <span class="pre">Smooth</span> <span class="pre">Keyframes</span> <span class="pre">UI</span></code>.</li>
+<li>Use the menu <code class="docutils literal notranslate"><span class="pre">mmSolver</span> <span class="pre">&gt;</span> <span class="pre">General</span> <span class="pre">Tools</span> <span class="pre">&gt;</span> <span class="pre">Smooth</span> <span class="pre">Keyframes</span> <span class="pre">UI</span></code>.</li>
 <li>Edit the options in the UI.<ul>
 <li><em>Function</em> controls the type of smoothing that is calculated.</li>
 <li><em>Smooth Width</em> controls how much the smoothing function will be
 applied. The width is number of frames to be used for smoothing,
-for example a value of 1 means &#8220;no smoothing&#8221;, a value of 2 means
-&#8220;use previous and next frame&#8221;, and 5 means &#8220;use previous 4 and
-next 4 frames&#8221;.</li>
+for example a value of 1 means “no smoothing”, a value of 2 means
+“use previous and next frame”, and 5 means “use previous 4 and
+next 4 frames”.</li>
 </ul>
 </li>
 <li>Select keyframes in Graph Editor.</li>
-<li>Run &#8216;Smooth Selected Keyframes&#8217; tool.</li>
+<li>Run ‘Smooth Selected Keyframes’ tool.</li>
 <li>Keyframe values will be smoothed.</li>
 <li>Repeat steps 3 to 5 as required.</li>
 </ol>
 <p>You can use the below Python code on a hotkey of your choosing. To
 run the tool, use this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.smoothkeyframes.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.smoothkeyframes.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 
 <span class="c1"># Smooth the selected Keyframes</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">smooth_selected_keyframes</span><span class="p">()</span>
@@ -209,7 +200,7 @@ screen X/Y or screen depth.</p>
 </ul>
 </li>
 <li>Delete the keyframes/connects on the selected transform node, using
-<code class="docutils literal"><span class="pre">Channel</span> <span class="pre">Box</span> <span class="pre">&gt;</span> <span class="pre">(Right</span> <span class="pre">Click)</span> <span class="pre">&gt;</span> <span class="pre">Break</span> <span class="pre">Connections</span></code>.</li>
+<code class="docutils literal notranslate"><span class="pre">Channel</span> <span class="pre">Box</span> <span class="pre">&gt;</span> <span class="pre">(Right</span> <span class="pre">Click)</span> <span class="pre">&gt;</span> <span class="pre">Break</span> <span class="pre">Connections</span></code>.</li>
 <li>Use a Maya <em>Point Constraint</em> to drive the transform(s) from step
 1, with the screen-space transform as the driver.<ul>
 <li>Select screen-space transform node first, then select (step 1)
@@ -218,7 +209,7 @@ transform nodes second and create a <em>Point Constraint</em>.</li>
 </li>
 </ol>
 <p>To run the tool, use this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenspacetransform.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenspacetransform.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -279,7 +270,7 @@ cause slow-downs in the playback of the Maya scene.</p>
 motion trail parented under the camera is created.</li>
 </ol>
 <p>To run the tool, use this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenspacemotiontrail.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenspacemotiontrail.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -301,7 +292,7 @@ change the sensitivity.</li>
 <li>Middle-mouse drag in the viewport to change the attribute value.</li>
 </ol>
 <p>To run the tool, use this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.channelsen.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.channelsen.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -316,10 +307,10 @@ file path onto the OS Copy/Paste clipboard.</p>
 <li>Run tool.</li>
 <li>Open 3DEqualizer</li>
 <li>Select Camera in Object Browser.</li>
-<li>Right-click and run <em>Paste Camera (MM Solver)...</em>.</li>
+<li>Right-click and run <em>Paste Camera (MM Solver)…</em>.</li>
 </ol>
 <p>To run the tool, use this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.copypastecamera.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.copypastecamera.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -333,14 +324,14 @@ given in prompt window.</p>
 <li>Select Marker (or Bundle) nodes.</li>
 <li>Run tool.<ul>
 <li>A prompt is displayed to enter the new name for the Marker and Bundles.</li>
-<li>If the prompt is left at the default value <code class="docutils literal"><span class="pre">marker</span></code>, then the
-Markers will named <code class="docutils literal"><span class="pre">marker</span></code> and Bundles will be named
-<code class="docutils literal"><span class="pre">bundle</span></code>.</li>
+<li>If the prompt is left at the default value <code class="docutils literal notranslate"><span class="pre">marker</span></code>, then the
+Markers will named <code class="docutils literal notranslate"><span class="pre">marker</span></code> and Bundles will be named
+<code class="docutils literal notranslate"><span class="pre">bundle</span></code>.</li>
 </ul>
 </li>
 </ol>
 <p>To run the tool, use this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.markerbundlerename.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.markerbundlerename.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -360,14 +351,14 @@ not found, the Marker/Bundle is not renamed.</li>
 </li>
 </ol>
 <p>To run the tool, use this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.markerbundlerenamewithmetadata.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.markerbundlerenamewithmetadata.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="reparent-under-node">
 <span id="reparent-under-node-tool-ref"></span><h2>Reparent Under Node<a class="headerlink" href="#reparent-under-node" title="Permalink to this headline">¶</a></h2>
-<p>This is equivalent to Maya&#8217;s <em>Parent</em> tool (<cite>p</cite> hotkey), except the
+<p>This is equivalent to Maya’s <em>Parent</em> tool (<cite>p</cite> hotkey), except the
 tool will maintain the world-space position of the transform node for
 each keyframe applied to the node.</p>
 <p>Usage:</p>
@@ -385,14 +376,14 @@ keyframes.</li>
 </li>
 </ol>
 <p>To run the tool, use this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">reparent_under_node</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="unparent-to-world">
 <span id="unparent-to-world-tool-ref"></span><h2>Unparent to World<a class="headerlink" href="#unparent-to-world" title="Permalink to this headline">¶</a></h2>
-<p>This is equalivent to Maya&#8217;s <em>Unparent</em> tool (<cite>Shift + p</cite> hotkey), except the tool will
+<p>This is equalivent to Maya’s <em>Unparent</em> tool (<cite>Shift + p</cite> hotkey), except the tool will
 maintain the world-space position of the transform node for each
 keyframe applied to the node.</p>
 <p>Usage:</p>
@@ -409,7 +400,7 @@ parented under any node).</li>
 </li>
 </ol>
 <p>To run the tool, use this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">unparent_to_world</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -421,20 +412,20 @@ transform node can have a separate hierarchy than the source node.</p>
 <p>Usage:</p>
 <ol class="arabic simple">
 <li>Select a Maya transform node.</li>
-<li>Run &#8216;Create Controller&#8217; tool.<ul>
-<li>A new &#8216;Controller&#8217; locator node is created at the same position
+<li>Run ‘Create Controller’ tool.<ul>
+<li>A new ‘Controller’ locator node is created at the same position
 as the source transform.</li>
 </ul>
 </li>
 <li>Select and move the created Controller as you wish.</li>
-<li>Select the Controller, run &#8216;Remove Controller&#8217; tool.<ul>
+<li>Select the Controller, run ‘Remove Controller’ tool.<ul>
 <li>The source node is baked at the same times as the Controller is
 keyed, and the Controller is deleted.</li>
 </ul>
 </li>
 </ol>
 <p>To run the tool, use this Python command:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createcontroller.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createcontroller.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 
 <span class="c1"># Create a Controller</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
@@ -452,7 +443,7 @@ keyed, and the Controller is deleted.</li>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">General Tools</a><ul>
 <li><a class="reference internal" href="#center-2d-on-selection">Center 2D On Selection</a></li>
@@ -491,12 +482,14 @@ keyed, and the Controller is deleted.</li>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -523,8 +516,8 @@ keyed, and the Controller is deleted.</li>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

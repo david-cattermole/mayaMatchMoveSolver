@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Solver UI &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Basic Solver Tab" href="tools_solver_ui_tab_basic.html" />
     <link rel="prev" title="Tools" href="tools.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -63,6 +54,10 @@ command (<cite>mmSolver</cite>).</p>
 <a class="reference internal image-reference" href="_images/tools_solver_ui_overview.png"><img alt="Solver User Interface" src="_images/tools_solver_ui_overview.png" style="width: 660.0px; height: 756.0px;" /></a>
 <p class="caption"><span class="caption-text">Solver User Interface</span></p>
 </div>
+<p>The shelf tools will open or run the solver.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/tools_shelf_icons_solver.png"><img alt="Node Solver Shelf Icons" src="_images/tools_shelf_icons_solver.png" style="width: 30%;" /></a>
+</div>
 <div class="section" id="input-objects">
 <h2>Input Objects<a class="headerlink" href="#input-objects" title="Permalink to this headline">¶</a></h2>
 <div class="figure align-right">
@@ -71,9 +66,9 @@ command (<cite>mmSolver</cite>).</p>
 <p>The Objects are the inputs to the current Solve. This will display
 of Markers used for detecting deviation.
 To display the Markers, and the related objects, you may turn on/off
-the <code class="docutils literal"><span class="pre">CAM</span></code>, <code class="docutils literal"><span class="pre">MKR</span></code> and <code class="docutils literal"><span class="pre">BND</span></code> buttons.</p>
+the <code class="docutils literal notranslate"><span class="pre">CAM</span></code>, <code class="docutils literal notranslate"><span class="pre">MKR</span></code> and <code class="docutils literal notranslate"><span class="pre">BND</span></code> buttons.</p>
 <p>There are various columns showing attributes of the input Objects.
-To display the column visiblity, use the Edit menu.</p>
+To display the column visibility, use the Edit menu.</p>
 <table border="1" class="colwidths-auto docutils" id="id2">
 <caption><span class="caption-text">Input Object Fields</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <thead valign="bottom">
@@ -83,7 +78,7 @@ To display the column visiblity, use the Edit menu.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Node</td>
-<td>The input Object&#8217;s Node.</td>
+<td>The input Object’s Node.</td>
 </tr>
 <tr class="row-odd"><td>Weight</td>
 <td>The weight the Marker will have in the solver. Higher values
@@ -118,7 +113,7 @@ valid frames.</td>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Attr</td>
-<td>The <code class="docutils literal"><span class="pre">Attribute</span></code> column displays nodes and attributes added
+<td>The <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> column displays nodes and attributes added
 into the active Collection.</td>
 </tr>
 <tr class="row-odd"><td>State</td>
@@ -162,7 +157,7 @@ but each Solver tab is independent.</p>
 <div class="figure align-right">
 <a class="reference internal image-reference" href="_images/tools_solver_ui_menu_file.png"><img alt="File Menu" src="_images/tools_solver_ui_menu_file.png" style="width: 139.0px; height: 119.0px;" /></a>
 </div>
-<p>The <code class="docutils literal"><span class="pre">File</span></code> menu contains features to create and manipulate the
+<p>The <code class="docutils literal notranslate"><span class="pre">File</span></code> menu contains features to create and manipulate the
 overall use of the Solver UI, such as Collections.</p>
 <table border="1" class="colwidths-auto docutils" id="id4">
 <caption><span class="caption-text">File Menu</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
@@ -192,7 +187,7 @@ overall use of the Solver UI, such as Collections.</p>
 <div class="figure align-right">
 <a class="reference internal image-reference" href="_images/tools_solver_ui_menu_edit.png"><img alt="Edit Menu" src="_images/tools_solver_ui_menu_edit.png" style="width: 192.0px; height: 193.5px;" /></a>
 </div>
-<p>The <code class="docutils literal"><span class="pre">Edit</span></code> menu displays options and features for how to change the
+<p>The <code class="docutils literal notranslate"><span class="pre">Edit</span></code> menu displays options and features for how to change the
 solve or the usage of the Solver UI.</p>
 <table border="1" class="colwidths-auto docutils" id="id5">
 <caption><span class="caption-text">Edit Menu</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
@@ -229,7 +224,7 @@ Graph.</td>
 </div>
 <div class="section" id="view-menu">
 <h3>View Menu<a class="headerlink" href="#view-menu" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal"><span class="pre">View</span></code> menu controls the visibility of the Solver UI, and parts of
+<p>The <code class="docutils literal notranslate"><span class="pre">View</span></code> menu controls the visibility of the Solver UI, and parts of
 the Maya Viewport during solves.</p>
 <div class="figure align-right">
 <a class="reference internal image-reference" href="_images/tools_solver_ui_menu_view.png"><img alt="View Menu" src="_images/tools_solver_ui_menu_view.png" style="width: 177.5px; height: 250.0px;" /></a>
@@ -283,7 +278,7 @@ solve is calculated.</td>
 </div>
 <div class="section" id="log-menu">
 <h3>Log Menu<a class="headerlink" href="#log-menu" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal"><span class="pre">Log</span></code> menu allows configuration of the logged messages in the Script
+<p>The <code class="docutils literal notranslate"><span class="pre">Log</span></code> menu allows configuration of the logged messages in the Script
 Editor.</p>
 <div class="figure align-right">
 <a class="reference internal image-reference" href="_images/tools_solver_ui_menu_log.png"><img alt="Log Menu" src="_images/tools_solver_ui_menu_log.png" style="width: 97.0px; height: 126.0px;" /></a>
@@ -324,22 +319,22 @@ Editor, to help developers debug.</td>
 <p>The commands below are available for this tool, and allow hotkeys or
 custom buttons to be created.</p>
 <p>Open the Solver UI window:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
 <span class="n">solver</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Run the solve, just as if the user presses the &#8220;Solve&#8221; button in the UI:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
+<p>Run the solve, just as if the user presses the “Solve” button in the UI:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
 <span class="n">solver</span><span class="o">.</span><span class="n">run_solve</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Run the solve, with the &#8220;Override Current Frame&#8221; checkbox turned <em>on</em>:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
+<p>Run the solve, with the “Override Current Frame” checkbox turned <em>on</em>:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
 <span class="n">solver</span><span class="o">.</span><span class="n">run_solve_on_current_frame</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Run the solve, with the &#8220;Override Current Frame&#8221; checkbox turned <em>off</em>:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
+<p>Run the solve, with the “Override Current Frame” checkbox turned <em>off</em>:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
 <span class="n">solver</span><span class="o">.</span><span class="n">run_solve_on_all_frames</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -352,7 +347,7 @@ custom buttons to be created.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Solver UI</a><ul>
 <li><a class="reference internal" href="#input-objects">Input Objects</a></li>
@@ -385,12 +380,14 @@ custom buttons to be created.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -417,8 +414,8 @@ custom buttons to be created.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

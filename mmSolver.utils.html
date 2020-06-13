@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>mmSolver.utils &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Licenses" href="licenses.html" />
     <link rel="prev" title="mmSolver.ui.uiutils" href="mmSolver.ui.uiutils.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -56,7 +47,7 @@
             
   <div class="section" id="mmsolver-utils">
 <h1>mmSolver.utils<a class="headerlink" href="#mmsolver-utils" title="Permalink to this headline">¶</a></h1>
-<p>The <code class="docutils literal"><span class="pre">utils</span></code> sub-package.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">utils</span></code> sub-package.</p>
 <div class="section" id="module-mmSolver.utils.animcurve">
 <span id="animcurve"></span><h2>AnimCurve<a class="headerlink" href="#module-mmSolver.utils.animcurve" title="Permalink to this headline">¶</a></h2>
 <p>Animation curve (animCurve) utilities.</p>
@@ -69,20 +60,20 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140587561311248'&gt;</em>, <em>tangent_out_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kTangentGlobal' id='140587561311248'&gt;</em>, <em>anim_type=&lt;Mock name='mock.OpenMayaAnim.MFnAnimCurve.kAnimCurveTL' id='140587561311376'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='139790835438864'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='139790835439056'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='139790835439248'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>times</strong> (<em>list</em>) &#8211; Time values for the animCurve</li>
-<li><strong>values</strong> (<em>list</em>) &#8211; Values for the animCurve.</li>
-<li><strong>node_attr</strong> (<em>str</em>) &#8211; The &#8216;plug&#8217; to connect the animCurve to.</li>
-<li><strong>tangent_in_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kTangent*</em>) &#8211; The &#8220;in&#8221; tangent type for keyframes.</li>
-<li><strong>tangent_out_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kTangent*</em>) &#8211; The &#8220;out&#8221; tangent type for keyframes.</li>
-<li><strong>anim_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kAnimCurve*</em>) &#8211; The type of animation curve node.</li>
-<li><strong>undo_cache</strong> (<em>maya.OpenMayaAnim.MAnimCurveChange</em>) &#8211; The Maya AnimCurve Undo Cache data structure or
+<li><strong>times</strong> (<em>list</em>) – Time values for the animCurve</li>
+<li><strong>values</strong> (<em>list</em>) – Values for the animCurve.</li>
+<li><strong>node_attr</strong> (<em>str</em>) – The ‘plug’ to connect the animCurve to.</li>
+<li><strong>tangent_in_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kTangent*</em>) – The “in” tangent type for keyframes.</li>
+<li><strong>tangent_out_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kTangent*</em>) – The “out” tangent type for keyframes.</li>
+<li><strong>anim_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kAnimCurve*</em>) – The type of animation curve node.</li>
+<li><strong>undo_cache</strong> (<em>maya.OpenMayaAnim.MAnimCurveChange</em>) – The Maya AnimCurve Undo Cache data structure or
 None if no undo is required.</li>
 </ul>
 </td>
@@ -110,7 +101,7 @@ None if no undo is required.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes_or_plugs</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; List of nodes (or plugs) to query animation curves.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes_or_plugs</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – List of nodes (or plugs) to query animation curves.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of animation nodes. List may be empty if no
 animCurves were found.</td>
@@ -130,7 +121,7 @@ animCurves were found.</td>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.euler_filter_value">
 <code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">euler_filter_value</code><span class="sig-paren">(</span><em>prev_value</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.euler_filter_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform a &#8216;Euler Filter&#8217; on the given rotation values.</p>
+<dd><p>Perform a ‘Euler Filter’ on the given rotation values.</p>
 <p>The filter will ensure that each sequential rotation value will be
 with-in +/-360 degrees of the previous value.</p>
 <p>Each axis (X, Y and Z) must be filtered individuality.</p>
@@ -144,8 +135,8 @@ more/less than 360 degrees.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>prev_value</strong> (<em>float</em>) &#8211; The rotation value on the previous frame.</li>
-<li><strong>value</strong> (<em>float</em>) &#8211; The current rotation value.</li>
+<li><strong>prev_value</strong> (<em>float</em>) – The rotation value on the previous frame.</li>
+<li><strong>value</strong> (<em>float</em>) – The current rotation value.</li>
 </ul>
 </td>
 </tr>
@@ -171,7 +162,7 @@ more/less than 360 degrees.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Part of the camera node, must be either a transform
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) – Part of the camera node, must be either a transform
 or shape node.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Two nodes in a tuple, transform then shape node.</td>
@@ -185,8 +176,8 @@ or shape node.</td>
 <dl class="function">
 <dt id="mmSolver.utils.camera.is_startup_cam">
 <code class="descclassname">mmSolver.utils.camera.</code><code class="descname">is_startup_cam</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.is_startup_cam" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the given camera node is a &#8216;startupCamera&#8217;.</p>
-<p>A startup camera is a camera; &#8216;persp&#8217;, &#8216;side&#8217;, &#8216;top&#8217;, &#8216;front&#8217;, etc.</p>
+<dd><p>Return True if the given camera node is a ‘startupCamera’.</p>
+<p>A startup camera is a camera; ‘persp’, ‘side’, ‘top’, ‘front’, etc.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -200,8 +191,8 @@ or shape node.</td>
 <dl class="function">
 <dt id="mmSolver.utils.camera.is_not_startup_cam">
 <code class="descclassname">mmSolver.utils.camera.</code><code class="descname">is_not_startup_cam</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.camera.is_not_startup_cam" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the given camera node is NOT a &#8216;startupCamera&#8217;.</p>
-<p>A startup camera is a camera; &#8216;persp&#8217;, &#8216;side&#8217;, &#8216;top&#8217;, &#8216;front&#8217;, etc.</p>
+<dd><p>Return True if the given camera node is NOT a ‘startupCamera’.</p>
+<p>A startup camera is a camera; ‘persp’, ‘side’, ‘top’, ‘front’, etc.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -221,8 +212,8 @@ or shape node.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cam_tfm</strong> (<em>str</em>) &#8211; Camera transform node.</li>
-<li><strong>cam_shp</strong> (<em>str</em>) &#8211; Camera shape node.</li>
+<li><strong>cam_tfm</strong> (<em>str</em>) – Camera transform node.</li>
+<li><strong>cam_shp</strong> (<em>str</em>) – Camera shape node.</li>
 </ul>
 </td>
 </tr>
@@ -244,8 +235,8 @@ or shape node.</td>
 module is a unified module for working with these configuration files.</p>
 <p>All configuration files are expected to be JSON formatted.</p>
 <p>By default, without any keyword arguments, configuration files are
-searched for in the &#8216;MMSOLVER_CONFIG_PATH&#8217; environment variable, but
-this may be overridden using &#8220;get_dirs&#8221;, or &#8220;get_config&#8221; function arguments.</p>
+searched for in the ‘MMSOLVER_CONFIG_PATH’ environment variable, but
+this may be overridden using “get_dirs”, or “get_config” function arguments.</p>
 <p>By default the following paths are searched (in order, top-down):</p>
 <blockquote>
 <div><ul class="simple">
@@ -255,7 +246,7 @@ this may be overridden using &#8220;get_dirs&#8221;, or &#8220;get_config&#8221;
 </ul>
 </div></blockquote>
 <p>This allows both a default fallback, and a user specified path.
-Additionally, studios may modify the &#8216;.mod&#8217; file to provide an
+Additionally, studios may modify the ‘.mod’ file to provide an
 intermediate studio or project location.</p>
 <dl class="function">
 <dt id="mmSolver.utils.config.get_dirs">
@@ -265,7 +256,7 @@ intermediate studio or project location.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>envvar</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; The environment variable to query for a list
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>envvar</strong> (<em>str</em><em> or </em><em>None</em>) – The environment variable to query for a list
 of directories.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of config directories.</td>
@@ -283,7 +274,7 @@ of directories.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> (<em>str</em>) &#8211; File name to find.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> (<em>str</em>) – File name to find.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Full config file name, or None.</td>
 </tr>
@@ -301,7 +292,7 @@ of directories.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) &#8211; The absolute file path to a config file.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<em>str</em>) – The absolute file path to a config file.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Dictionary, list or None, depending what the given file
 contains.</td>
@@ -321,10 +312,10 @@ contains.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>dict</em><em> or </em><em>list</em>) &#8211; Configuration data to write. The data should be
+<li><strong>data</strong> (<em>dict</em><em> or </em><em>list</em>) – Configuration data to write. The data should be
 plain-old-(Python)data types, like lists, float, int,
 string and dict.</li>
-<li><strong>file_path</strong> (<em>str</em>) &#8211; A valid absolute file path.</li>
+<li><strong>file_path</strong> (<em>str</em>) – A valid absolute file path.</li>
 </ul>
 </td>
 </tr>
@@ -341,20 +332,21 @@ string and dict.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>dict</em>) &#8211; The name of the config file, or an absolute file
-path.</li>
-<li><strong>key</strong> (<em>str</em>) &#8211; Hierarchy of keys separated by forward slash to search
+<li><strong>data</strong> (<em>dict</em>) – The name of the config file, or an absolute file path.</li>
+<li><strong>key</strong> (<em>str</em>) – Hierarchy of keys separated by forward slash to search
 for in the config.
-For example &#8216;data[arg1][arg2][arg3]&#8217;.</li>
+For example ‘data[arg1][arg2][arg3]’.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Boolean, does the ‘key’ exist in the ‘data’?</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>:rtype</p>
 </dd></dl>
 
 <dl class="function">
@@ -362,8 +354,8 @@ For example &#8216;data[arg1][arg2][arg3]&#8217;.</li>
 <code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_value</code><span class="sig-paren">(</span><em>data</em>, <em>key</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a value from the config data.</p>
 <p>If the config data value does not exist, or one of the argument (keys)
-does not exist, &#8216;default_value&#8217; is returned.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="s1">&#39;/path/to/config.json&#39;</span><span class="p">)</span>
+does not exist, ‘default_value’ is returned.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">(</span><span class="s1">&#39;/path/to/config.json&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;key/subkey&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;key/subkey/subsubkey&#39;</span><span class="p">)</span>
@@ -374,21 +366,20 @@ does not exist, &#8216;default_value&#8217; is returned.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>dict</em>) &#8211; The configuration data, as a Python dict (plain-old-data).</li>
-<li><strong>key</strong> (<em>str</em>) &#8211; Hierarchy of keys separated by forward slash to search
+<li><strong>data</strong> (<em>dict</em>) – The configuration data, as a Python dict (plain-old-data).</li>
+<li><strong>key</strong> (<em>str</em>) – Hierarchy of keys separated by forward slash to search
 for in the config.
-For example &#8216;data[arg1][arg2][arg3]&#8217;.</li>
-<li><strong>default_value</strong> (<em>any type</em>) &#8211; The value returned when the config file or
-key doesn&#8217;t exist.</li>
+For example ‘data[arg1][arg2][arg3]’.</li>
+<li><strong>default_value</strong> (<em>any type</em>) – The value returned when the config file or
+key doesn’t exist.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The value type in the key - it could be any type..</p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>:rtype</p>
 </dd></dl>
 
 <dl class="function">
@@ -400,9 +391,9 @@ key doesn&#8217;t exist.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>dict</em>) &#8211; The data to set the value on to.</li>
-<li><strong>key</strong> (<em>str</em>) &#8211; Where to set the value in data</li>
-<li><strong>value</strong> (<em>any</em>) &#8211; The value to set.</li>
+<li><strong>data</strong> (<em>dict</em>) – The data to set the value on to.</li>
+<li><strong>key</strong> (<em>str</em>) – Where to set the value in data</li>
+<li><strong>value</strong> (<em>any</em>) – The value to set.</li>
 </ul>
 </td>
 </tr>
@@ -471,7 +462,7 @@ made.</p>
 <dt id="mmSolver.utils.config.get_config">
 <code class="descclassname">mmSolver.utils.config.</code><code class="descname">get_config</code><span class="sig-paren">(</span><em>file_name</em>, <em>search=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.get_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a config file as a Config class object.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;myConfigFile.json&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;myConfigFile.json&quot;</span><span class="p">)</span>
 <span class="go">&lt;mmSolver.utils.config.Config object at 0x0000016993BF5160&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;/path/to/config/file.json&quot;</span><span class="p">)</span>
 <span class="go">&lt;mmSolver.utils.config.Config object at 0x0000016993BF5748&gt;</span>
@@ -484,9 +475,9 @@ made.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>file_name</strong> (<em>str</em>) &#8211; The name of the config file, or an absolute file
+<li><strong>file_name</strong> (<em>str</em>) – The name of the config file, or an absolute file
 path.</li>
-<li><strong>search</strong> (<em>str</em><em> or </em><em>[</em><em>str</em><em>, </em><em>.</em><em>] or </em><em>None</em>) &#8211; An environment variable to parse for search paths,
+<li><strong>search</strong> (<em>str</em><em> or </em><em>[</em><em>str</em><em>, </em><em>.</em><em>] or </em><em>None</em>) – An environment variable to parse for search paths,
 or a list of given search directory paths, or if set
 to None, use the default environment variable for
 mmSolver.</li>
@@ -517,7 +508,7 @@ check and create files/directories as needed.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; A list of string arguments to be joined to the
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – A list of string arguments to be joined to the
 returned path.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An absolute path to a config directory that may or may not exist.</td>
@@ -554,10 +545,10 @@ returned path.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>node_name</strong> (<em>str</em>) &#8211; Node to get value from. Node must exist before
+<li><strong>node_name</strong> (<em>str</em>) – Node to get value from. Node must exist before
 running function!</li>
-<li><strong>attr_name</strong> (<em>str</em>) &#8211; The name of the attribute to get value from.</li>
-<li><strong>default</strong> (<em>any</em>) &#8211; Value to be returned if the value does not exist.</li>
+<li><strong>attr_name</strong> (<em>str</em>) – The name of the attribute to get value from.</li>
+<li><strong>default</strong> (<em>any</em>) – Value to be returned if the value does not exist.</li>
 </ul>
 </td>
 </tr>
@@ -580,10 +571,10 @@ running function!</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>node_name</strong> (<em>str</em>) &#8211; Node to store value on.</li>
-<li><strong>attr_name</strong> (<em>str</em>) &#8211; Attribute name to store value with.</li>
-<li><strong>value</strong> (<em>bool</em><em>, </em><em>float</em><em>, </em><em>int</em><em> or </em><em>str</em>) &#8211; The value to store.</li>
-<li><strong>add_attr</strong> (<em>bool</em>) &#8211; Add attribute to the given node, if the attribute
+<li><strong>node_name</strong> (<em>str</em>) – Node to store value on.</li>
+<li><strong>attr_name</strong> (<em>str</em>) – Attribute name to store value with.</li>
+<li><strong>value</strong> (<em>bool</em><em>, </em><em>float</em><em>, </em><em>int</em><em> or </em><em>str</em>) – The value to store.</li>
+<li><strong>add_attr</strong> (<em>bool</em>) – Add attribute to the given node, if the attribute
 does not already exist.</li>
 </ul>
 </td>
@@ -604,8 +595,8 @@ does not already exist.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>node_name</strong> (<em>str</em>) &#8211; Node to get data from.</li>
-<li><strong>attr_name</strong> (<em>str</em>) &#8211; The name of the attribute to get data from.</li>
+<li><strong>node_name</strong> (<em>str</em>) – Node to get data from.</li>
+<li><strong>attr_name</strong> (<em>str</em>) – The name of the attribute to get data from.</li>
 </ul>
 </td>
 </tr>
@@ -629,10 +620,10 @@ dictionary.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>node_name</strong> (<em>str</em>) &#8211; Node to store data on.</li>
-<li><strong>attr_name</strong> (<em>str</em>) &#8211; Attribute name to store data with.</li>
-<li><strong>data_struct</strong> (<em>dict</em><em> or </em><em>list</em>) &#8211; The data to store.</li>
-<li><strong>add_attr</strong> (<em>bool</em>) &#8211; Add attribute to the given node, if the attribute
+<li><strong>node_name</strong> (<em>str</em>) – Node to store data on.</li>
+<li><strong>attr_name</strong> (<em>str</em>) – Attribute name to store data with.</li>
+<li><strong>data_struct</strong> (<em>dict</em><em> or </em><em>list</em>) – The data to store.</li>
+<li><strong>add_attr</strong> (<em>bool</em>) – Add attribute to the given node, if the attribute
 does not already exist.</li>
 </ul>
 </td>
@@ -653,12 +644,12 @@ does not already exist.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<em>str</em>) &#8211; Get the option with this name.</li>
-<li><strong>default</strong> (<em>any</em>) &#8211; Value to be returned if the value does not exist.</li>
+<li><strong>name</strong> (<em>str</em>) – Get the option with this name.</li>
+<li><strong>default</strong> (<em>any</em>) – Value to be returned if the value does not exist.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The value of the scene option, or &#8216;default&#8217; if the &#8216;name&#8217;
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The value of the scene option, or ‘default’ if the ‘name’
 does not exist.</p>
 </td>
 </tr>
@@ -678,9 +669,9 @@ does not exist.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<em>str</em>) &#8211; Set the option with this name.</li>
-<li><strong>value</strong> (<em>any</em>) &#8211; Value to set.</li>
-<li><strong>add_attr</strong> (<em>bool</em>) &#8211; Add attribute to the scene, if the attribute
+<li><strong>name</strong> (<em>str</em>) – Set the option with this name.</li>
+<li><strong>value</strong> (<em>any</em>) – Value to set.</li>
+<li><strong>add_attr</strong> (<em>bool</em>) – Add attribute to the scene, if the attribute
 does not already exist.</li>
 </ul>
 </td>
@@ -713,12 +704,12 @@ does not already exist.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<em>str</em>) &#8211; Name key to get from Maya preferences.</li>
-<li><strong>default</strong> (<em>any</em>) &#8211; If the preference option is not found, return this value.</li>
+<li><strong>name</strong> (<em>str</em>) – Name key to get from Maya preferences.</li>
+<li><strong>default</strong> (<em>any</em>) – If the preference option is not found, return this value.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The value found under &#8216;name&#8217;, or the &#8216;default&#8217; value.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The value found under ‘name’, or the ‘default’ value.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int, float or str</p>
@@ -737,8 +728,8 @@ does not already exist.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<em>str</em>) &#8211; Name key to set to Maya preferences.</li>
-<li><strong>value</strong> (<em>int</em><em>, </em><em>float</em><em> or </em><em>str</em>) &#8211; Value to set.</li>
+<li><strong>name</strong> (<em>str</em>) – Name key to set to Maya preferences.</li>
+<li><strong>value</strong> (<em>int</em><em>, </em><em>float</em><em> or </em><em>str</em>) – Value to set.</li>
 </ul>
 </td>
 </tr>
@@ -759,7 +750,7 @@ does not already exist.</li>
 <dl class="function">
 <dt id="mmSolver.utils.converttypes.stringToBoolean">
 <code class="descclassname">mmSolver.utils.converttypes.</code><code class="descname">stringToBoolean</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.converttypes.stringToBoolean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a string into a boolean value, using list of &#8216;TRUE_WORDS&#8217;</p>
+<dd><p>Convert a string into a boolean value, using list of ‘TRUE_WORDS’</p>
 </dd></dl>
 
 <dl class="function">
@@ -772,13 +763,13 @@ does not already exist.</li>
 <dt id="mmSolver.utils.converttypes.stringToIntList">
 <code class="descclassname">mmSolver.utils.converttypes.</code><code class="descname">stringToIntList</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.converttypes.stringToIntList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a string of integer ranges to a list of integers.</p>
-<p>value = &#8216;1001-1101&#8217;
-value = &#8216;1001,1002,1003-1005,1010-1012&#8217;</p>
+<p>value = ‘1001-1101’
+value = ‘1001,1002,1003-1005,1010-1012’</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>str</em>) &#8211; The string value to convert.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>str</em>) – The string value to convert.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of integer numbers parsed from the string.</td>
 </tr>
@@ -836,8 +827,8 @@ value = &#8216;1001,1002,1003-1005,1010-1012&#8217;</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>state_a</strong> (<a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State"><em>State</em></a>) &#8211; First state.</li>
-<li><strong>state_b</strong> (<a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State"><em>State</em></a>) &#8211; Second state.</li>
+<li><strong>state_a</strong> (<a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State"><em>State</em></a>) – First state.</li>
+<li><strong>state_b</strong> (<a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State"><em>State</em></a>) – Second state.</li>
 </ul>
 </td>
 </tr>
@@ -860,8 +851,8 @@ value = &#8216;1001,1002,1003-1005,1010-1012&#8217;</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>state_a</strong> (<a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State"><em>State</em></a>) &#8211; First state.</li>
-<li><strong>state_b</strong> (<a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State"><em>State</em></a>) &#8211; Second state.</li>
+<li><strong>state_a</strong> (<a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State"><em>State</em></a>) – First state.</li>
+<li><strong>state_b</strong> (<a class="reference internal" href="#mmSolver.utils.kalmanfilter.State" title="mmSolver.utils.kalmanfilter.State"><em>State</em></a>) – Second state.</li>
 </ul>
 </td>
 </tr>
@@ -879,7 +870,7 @@ value = &#8216;1001,1002,1003-1005,1010-1012&#8217;</p>
 <div class="section" id="module-mmSolver.utils.lineintersect">
 <span id="line-intersect"></span><h2>Line Intersect<a class="headerlink" href="#module-mmSolver.utils.lineintersect" title="Permalink to this headline">¶</a></h2>
 <p>Utility functions for 3D line intersection (for triangulating 3D points).</p>
-<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Example usage</span>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example usage</span>
 <span class="kn">import</span> <span class="nn">mmSolver.utils.lineintersect</span> <span class="k">as</span> <span class="nn">tri_utils</span>
 <span class="n">cam_tfm</span> <span class="o">=</span> <span class="s1">&#39;|camera1&#39;</span>
 <span class="n">mkr_node</span> <span class="o">=</span> <span class="s1">&#39;|camera1|markerGroup1|marker1_MKR&#39;</span>
@@ -914,7 +905,7 @@ value = &#8216;1001,1002,1003-1005,1010-1012&#8217;</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">This function changes the current maya scene time to the
-frame argument. It is the user&#8217;s responsibility to ensure the
+frame argument. It is the user’s responsibility to ensure the
 frame is maintained before/after the tool using this function
 is finished.</p>
 </div>
@@ -923,9 +914,9 @@ is finished.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>camera_node</strong> (<em>str</em>) &#8211; Camera transform node.</li>
-<li><strong>point_node</strong> (<em>str</em>) &#8211; Transform node to aim at.</li>
-<li><strong>frame</strong> (<em>int</em>) &#8211; The frame to query at.</li>
+<li><strong>camera_node</strong> (<em>str</em>) – Camera transform node.</li>
+<li><strong>point_node</strong> (<em>str</em>) – Transform node to aim at.</li>
+<li><strong>frame</strong> (<em>int</em>) – The frame to query at.</li>
 </ul>
 </td>
 </tr>
@@ -950,20 +941,22 @@ is finished.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>a_pnt</strong> (<em>MPoint</em>) &#8211; Point A.</li>
-<li><strong>a_dir</strong> (<em>MVector</em>) &#8211; Direction A.</li>
-<li><strong>b_pnt</strong> (<em>MPoint</em>) &#8211; Point B</li>
-<li><strong>b_dir</strong> (<em>MVector</em>) &#8211; Direction B.</li>
-<li><strong>eps</strong> (<em>float</em>) &#8211; Direction B.</li>
+<li><strong>a_pnt</strong> (<em>MPoint</em>) – Point A.</li>
+<li><strong>a_dir</strong> (<em>MVector</em>) – Direction A.</li>
+<li><strong>b_pnt</strong> (<em>MPoint</em>) – Point B</li>
+<li><strong>b_dir</strong> (<em>MVector</em>) – Direction B.</li>
+<li><strong>eps</strong> (<em>float</em>) – Direction B.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Two points to define the closest line intersection.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Two points to define the closest line intersection.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(MPoint, MPoint)</p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>:rtype (MPoint, MPoint)</p>
 </dd></dl>
 
 </div>
@@ -983,7 +976,7 @@ is finished.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> &#8211; Node to query.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> – Node to query.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True or False, is it referenced?</td>
 </tr>
@@ -1003,9 +996,9 @@ is finished.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>plug</strong> &#8211; Node.Attr to set.</li>
-<li><strong>value</strong> &#8211; The ne value to set.</li>
-<li><strong>relock</strong> &#8211; If the plug was already locked, should we set the new
+<li><strong>plug</strong> – Node.Attr to set.</li>
+<li><strong>value</strong> – The ne value to set.</li>
+<li><strong>relock</strong> – If the plug was already locked, should we set the new
 value, then re-lock afterward?</li>
 </ul>
 </td>
@@ -1020,17 +1013,17 @@ value, then re-lock afterward?</li>
 <dl class="function">
 <dt id="mmSolver.utils.node.get_long_name">
 <code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_long_name</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_long_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a valid node path, get the &#8216;full path&#8217; node name, or None if invalid.</p>
+<dd><p>Given a valid node path, get the ‘full path’ node name, or None if invalid.</p>
 <dl class="docutils">
 <dt>note::</dt>
-<dd>DG nodes do not have a &#8216;full path&#8217; as they do not have hierarchy and
+<dd>DG nodes do not have a ‘full path’ as they do not have hierarchy and
 will always have unique node names.</dd>
 </dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Maya DG or DAG node path.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) – Maya DG or DAG node path.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Full path node name.</td>
 </tr>
@@ -1048,7 +1041,7 @@ will always have unique node names.</dd>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Valid Maya DAG node path.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) – Valid Maya DAG node path.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The parent nodes of node, in order from node upwards.</td>
 </tr>
@@ -1066,7 +1059,7 @@ will always have unique node names.</dd>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paths</strong> (<em>list of str</em>) &#8211; List of Maya node paths.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paths</strong> (<em>list of str</em>) – List of Maya node paths.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MSelectionList with valid nodes added to list.</td>
 </tr>
@@ -1084,9 +1077,9 @@ will always have unique node names.</dd>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_str</strong> (<em>str</em>) &#8211; Maya node path to be converted.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_str</strong> (<em>str</em>) – Maya node path to be converted.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MDagPath API object or None if the &#8216;node_str&#8217; is invalid.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MDagPath API object or None if the ‘node_str’ is invalid.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">MDagPath or None</td>
 </tr>
@@ -1102,7 +1095,7 @@ will always have unique node names.</dd>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_str</strong> (<em>str</em>) &#8211; Maya node path to be converted.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_str</strong> (<em>str</em>) – Maya node path to be converted.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MObject API object or None, if conversion failed.</td>
 </tr>
@@ -1115,12 +1108,12 @@ will always have unique node names.</dd>
 <dl class="function">
 <dt id="mmSolver.utils.node.get_as_plug_apione">
 <code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_as_plug_apione</code><span class="sig-paren">(</span><em>node_attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_as_plug_apione" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert the given &#8216;node.attr&#8217; path into a MPlug object.</p>
+<dd><p>Convert the given ‘node.attr’ path into a MPlug object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_attr</strong> (<em>str</em>) &#8211; Node attribute string in format &#8216;node.attr&#8217;.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_attr</strong> (<em>str</em>) – Node attribute string in format ‘node.attr’.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MPlug object or None if conversion failed.</td>
 </tr>
@@ -1136,13 +1129,13 @@ will always have unique node names.</dd>
 <dd><p>Get the MDagPath shape nodes under the given MDagPath.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The given &#8216;dag&#8217; MDagPath is not modified during this function.</p>
+<p class="last">The given ‘dag’ MDagPath is not modified during this function.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dag</strong> (<em>maya.OpenMaya.MDagPath</em>) &#8211; The DAG path to get shape nodes from.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dag</strong> (<em>maya.OpenMaya.MDagPath</em>) – The DAG path to get shape nodes from.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
 </tr>
@@ -1200,7 +1193,7 @@ will always have unique node names.</dd>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em><em> or </em><em>unicode</em>) &#8211; The node name to check above for a camera.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em><em> or </em><em>unicode</em>) – The node name to check above for a camera.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Tuple of camera transform and shape nodes, or (None, None)</td>
 </tr>
@@ -1218,7 +1211,7 @@ will always have unique node names.</dd>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; The node name to get the parents of.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) – The node name to get the parents of.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of parent nodes, in order of deepest to shallowest.
 Nodes unparented into world will have empty lists returned.</td>
@@ -1233,13 +1226,13 @@ Nodes unparented into world will have empty lists returned.</td>
 <dt id="mmSolver.utils.node.get_node_wire_colour_rgb">
 <code class="descclassname">mmSolver.utils.node.</code><code class="descname">get_node_wire_colour_rgb</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.get_node_wire_colour_rgb" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current wireframe colour of the node.</p>
-<p>The &#8216;node&#8217; is assumed to a DAG node (capable of having a wireframe
+<p>The ‘node’ is assumed to a DAG node (capable of having a wireframe
 colour).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Maya node path to get wireframe colour from.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) – Maya node path to get wireframe colour from.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Tuple of red, green and blue.</td>
 </tr>
@@ -1253,15 +1246,15 @@ colour).</p>
 <dt id="mmSolver.utils.node.set_node_wire_colour_rgb">
 <code class="descclassname">mmSolver.utils.node.</code><code class="descname">set_node_wire_colour_rgb</code><span class="sig-paren">(</span><em>node</em>, <em>rgb</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.set_node_wire_colour_rgb" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change the wireframe colour of the node.</p>
-<p>The &#8216;node&#8217; is assumed to a DAG node (capable of having a wireframe
+<p>The ‘node’ is assumed to a DAG node (capable of having a wireframe
 colour set).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>node</strong> (<em>str</em>) &#8211; Maya DAG node path.</li>
-<li><strong>rgb</strong> (<em>tuple</em>) &#8211; Colour as R, G, B; Or None to reset to default colour.</li>
+<li><strong>node</strong> (<em>str</em>) – Maya DAG node path.</li>
+<li><strong>rgb</strong> (<em>tuple</em>) – Colour as R, G, B; Or None to reset to default colour.</li>
 </ul>
 </td>
 </tr>
@@ -1276,14 +1269,14 @@ colour set).</p>
 <dt id="mmSolver.utils.node.attribute_exists">
 <code class="descclassname">mmSolver.utils.node.</code><code class="descname">attribute_exists</code><span class="sig-paren">(</span><em>attr</em>, <em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.attribute_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if an attribute exists on the given node.</p>
-<p>This is a Python equivalent of the MEL command &#8216;attributeExists&#8217;.</p>
+<p>This is a Python equivalent of the MEL command ‘attributeExists’.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>attr</strong> (<em>str</em>) &#8211; Attribute name to check for existence.</li>
-<li><strong>node</strong> (<em>str</em>) &#8211; The node to look for the attribute.</li>
+<li><strong>attr</strong> (<em>str</em>) – Attribute name to check for existence.</li>
+<li><strong>node</strong> (<em>str</em>) – The node to look for the attribute.</li>
 </ul>
 </td>
 </tr>
@@ -1304,11 +1297,11 @@ colour set).</p>
 <p>Use the Maya DG graph structure to determine the sparsity structure,
 a relation of cause and effect; which attributes affect which
 markers.</p>
-<p>Answer this question: &#8216;for each marker, determine which attributes
-can affect it&#8217;s bundle.&#8217;</p>
+<p>Answer this question: ‘for each marker, determine which attributes
+can affect it’s bundle.’</p>
 <p>Detect inputs and outputs for marker-bundle relationships. For each
 marker, get the bundle, then find all the attributes that affect the
-bundle (and it&#8217;s parent nodes). If the bundle cannot be affected by
+bundle (and it’s parent nodes). If the bundle cannot be affected by
 any attribute in the solver, print a warning and remove it from the
 solve list.</p>
 <p>This relationship building will be the basis for the mmSolver
@@ -1334,12 +1327,12 @@ markers</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>bnd_node</strong> (<em>str</em>) &#8211; The input node to query.</li>
-<li><strong>cam_tfm</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; The camera that should be considered (optional)</li>
+<li><strong>bnd_node</strong> (<em>str</em>) – The input node to query.</li>
+<li><strong>cam_tfm</strong> (<em>str</em><em> or </em><em>None</em>) – The camera that should be considered (optional)</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Set of Maya attributes in &#8216;node.attr&#8217; string format.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Set of Maya attributes in ‘node.attr’ string format.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[str, .]</p>
@@ -1358,17 +1351,17 @@ markers</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mkr_list</strong> (<em>[</em><em>(</em><em>str</em><em>, </em><em>str</em><em>, </em><em>str</em><em>)</em><em>, </em><em>.</em><em>]</em>) &#8211; Tuple of marker node, bundle node and camera
+<li><strong>mkr_list</strong> (<em>[</em><em>(</em><em>str</em><em>, </em><em>str</em><em>, </em><em>str</em><em>)</em><em>, </em><em>.</em><em>]</em>) – Tuple of marker node, bundle node and camera
 shape node in a list; each list of nodes
 represent a single Marker relationship and will
 be considered in mapping.</li>
-<li><strong>attr_list</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Maya attributes to consider in mapping, in the
-familiar &#8216;node.attr&#8217; string representation.</li>
+<li><strong>attr_list</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Maya attributes to consider in mapping, in the
+familiar ‘node.attr’ string representation.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Boolean matrix of size &#8216;markers x attrs&#8217;. Matrix index
-is &#8216;mapping[marker_index][attr_index]&#8217;, based on the
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Boolean matrix of size ‘markers x attrs’. Matrix index
+is ‘mapping[marker_index][attr_index]’, based on the
 index of the mkr_cam_node_frm_list and attr_list given.</p>
 </td>
 </tr>
@@ -1411,14 +1404,14 @@ and direction</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>source</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) &#8211; Origin point of the ray projection.</li>
-<li><strong>direction</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) &#8211; The direction the ray will travel.</li>
-<li><strong>mesh_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Mesh nodes</li>
-<li><strong>test_both_directions</strong> (<em>bool</em>) &#8211; testing ray direction both sides;
+<li><strong>source</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) – Origin point of the ray projection.</li>
+<li><strong>direction</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) – The direction the ray will travel.</li>
+<li><strong>mesh_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Mesh nodes</li>
+<li><strong>test_both_directions</strong> (<em>bool</em>) – testing ray direction both sides;
 default is False.</li>
-<li><strong>max_dist</strong> (<em>float</em>) &#8211; The maximum distance the ray will travel before
+<li><strong>max_dist</strong> (<em>float</em>) – The maximum distance the ray will travel before
 stopping; default is RAYTRACE_MAX_DIST.</li>
-<li><strong>tolerance</strong> (<em>float</em>) &#8211; The minimum ray trace tolerance; default is
+<li><strong>tolerance</strong> (<em>float</em>) – The minimum ray trace tolerance; default is
 RAYTRACE_EPSILON.</li>
 </ul>
 </td>
@@ -1448,8 +1441,8 @@ given, or None if no point was found.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>camera_node</strong> (<em>str</em>) &#8211; Camera transform node.</li>
-<li><strong>point_node</strong> (<em>str</em>) &#8211; Transform node to aim at.</li>
+<li><strong>camera_node</strong> (<em>str</em>) – Camera transform node.</li>
+<li><strong>point_node</strong> (<em>str</em>) – Transform node to aim at.</li>
 </ul>
 </td>
 </tr>
@@ -1490,8 +1483,8 @@ given, or None if no point was found.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cam_tfm</strong> (<em>str</em>) &#8211; Camera transform node</li>
-<li><strong>cam_shp</strong> (<em>str</em>) &#8211; Camera shape node.</li>
+<li><strong>cam_tfm</strong> (<em>str</em>) – Camera transform node</li>
+<li><strong>cam_shp</strong> (<em>str</em>) – Camera shape node.</li>
 </ul>
 </td>
 </tr>
@@ -1521,7 +1514,7 @@ code-path will be used.</p>
 <li>Fourier (frequency smoothing)</li>
 </ul>
 <p>Example usage:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.utils.smooth</span> <span class="k">as</span> <span class="nn">smooth</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.utils.smooth</span> <span class="k">as</span> <span class="nn">smooth</span>
 <span class="kn">import</span> <span class="nn">mmSolver.utils.constant</span> <span class="k">as</span> <span class="nn">const</span>
 <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">20000.0</span><span class="p">]</span>
 <span class="n">width</span> <span class="o">=</span> <span class="mf">2.0</span>
@@ -1531,20 +1524,20 @@ code-path will be used.</p>
 <dl class="function">
 <dt id="mmSolver.utils.smooth.smooth">
 <code class="descclassname">mmSolver.utils.smooth.</code><code class="descname">smooth</code><span class="sig-paren">(</span><em>smooth_type</em>, <em>value_array</em>, <em>width</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.smooth.smooth" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run a Smoothing function, of any type, just pass a &#8216;smooth type&#8217; in.</p>
+<dd><p>Run a Smoothing function, of any type, just pass a ‘smooth type’ in.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>smooth_type</strong> (<em>SMOOTH_TYPE_*</em>) &#8211; Type of smoothing operation.</li>
-<li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; Input data to smooth.</li>
-<li><strong>width</strong> (<em>float</em>) &#8211; The width to smooth over. Values above 1.0 will
+<li><strong>smooth_type</strong> (<em>SMOOTH_TYPE_*</em>) – Type of smoothing operation.</li>
+<li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) – Input data to smooth.</li>
+<li><strong>width</strong> (<em>float</em>) – The width to smooth over. Values above 1.0 will
 perform smoothing. 1.0 or below has no effect.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed copy of &#8216;value_array&#8217;, using the &#8216;smooth_type&#8217;, given.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed copy of ‘value_array’, using the ‘smooth_type’, given.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[float, .]</p>
@@ -1567,13 +1560,13 @@ perform smoothing. 1.0 or below has no effect.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; Input data to smooth.</li>
-<li><strong>width</strong> (<em>float</em>) &#8211; The width to smooth over. Values above 1.0 will
+<li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) – Input data to smooth.</li>
+<li><strong>width</strong> (<em>float</em>) – The width to smooth over. Values above 1.0 will
 perform smoothing. 1.0 or below has no effect.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed copy of &#8216;value_array&#8217;.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed copy of ‘value_array’.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[float, .]</p>
@@ -1596,13 +1589,13 @@ perform smoothing. 1.0 or below has no effect.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; Input data to smooth.</li>
-<li><strong>width</strong> (<em>float</em>) &#8211; The width to smooth over. Values above 1.0 will perform
+<li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) – Input data to smooth.</li>
+<li><strong>width</strong> (<em>float</em>) – The width to smooth over. Values above 1.0 will perform
 smoothing. 1.0 or below has no effect.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed copy of &#8216;value_array&#8217;.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed copy of ‘value_array’.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[float, .]</p>
@@ -1621,15 +1614,15 @@ smoothing. 1.0 or below has no effect.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; Input data to smooth.</li>
-<li><strong>width</strong> (<em>float</em>) &#8211; The width to smooth over. Values above 1.0 will perform
+<li><strong>value_array</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) – Input data to smooth.</li>
+<li><strong>width</strong> (<em>float</em>) – The width to smooth over. Values above 1.0 will perform
 smoothing. 1.0 or below has no effect.</li>
-<li><strong>filtr</strong> (<em>str</em>) &#8211; Type of frequency-space smoothing filter, &#8216;gaussian&#8217;,
-&#8216;triangle&#8217; or &#8216;box&#8217;. Default filter is &#8216;gaussian&#8217;.</li>
+<li><strong>filtr</strong> (<em>str</em>) – Type of frequency-space smoothing filter, ‘gaussian’,
+‘triangle’ or ‘box’. Default filter is ‘gaussian’.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Smoothed copy of &#8216;value_array&#8217;.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Smoothed copy of ‘value_array’.</p>
 </td>
 </tr>
 </tbody>
@@ -1698,8 +1691,8 @@ smoothing. 1.0 or below has no effect.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Nodes to query from.</li>
-<li><strong>attrs</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Attributes to query keyframes from.</li>
+<li><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Nodes to query from.</li>
+<li><strong>attrs</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Attributes to query keyframes from.</li>
 </ul>
 </td>
 </tr>
@@ -1711,9 +1704,9 @@ smoothing. 1.0 or below has no effect.</li>
 </dd></dl>
 
 </div>
-<div class="section" id="tools">
-<h2>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-mmSolver.utils.tools"></span><p>Utilities for Tools to help develop and standardise inside mmSolver.</p>
+<div class="section" id="module-mmSolver.utils.tools">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.utils.tools" title="Permalink to this headline">¶</a></h2>
+<p>Utilities for Tools to help develop and standardise inside mmSolver.</p>
 <dl class="function">
 <dt id="mmSolver.utils.tools.tool_context">
 <code class="descclassname">mmSolver.utils.tools.</code><code class="descname">tool_context</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.tools.tool_context" title="Permalink to this definition">¶</a></dt>
@@ -1725,7 +1718,7 @@ appropriate in your specific usage. The context is allowed to
 change default values dynamically, for example based on Maya
 version used or if a GUI is available.</p>
 <p>Example usage:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">tool_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">tool_ctx</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">tool_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">tool_ctx</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="c1"># do something with Maya</span>
 <span class="gp">... </span>    <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">)</span>
 </pre></div>
@@ -1735,30 +1728,30 @@ version used or if a GUI is available.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>use_undo_chunk</strong> (<em>bool</em><em> or </em><em>None</em>) &#8211; Treat the commands inside this context as a
-single &#8220;chunk&#8221; of operations. This makes undo&#8217;ing faster, so
-we don&#8217;t need to undo many small changes.</li>
-<li><strong>undo_chunk_name</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; The name of the undo chunk. This is
-displayed to the user in the Script Editor when undo&#8217;ing. This
+<li><strong>use_undo_chunk</strong> (<em>bool</em><em> or </em><em>None</em>) – Treat the commands inside this context as a
+single “chunk” of operations. This makes undo’ing faster, so
+we don’t need to undo many small changes.</li>
+<li><strong>undo_chunk_name</strong> (<em>str</em><em> or </em><em>None</em>) – The name of the undo chunk. This is
+displayed to the user in the Script Editor when undo’ing. This
 name is expected to be unique each time. Using the date/time
 or a UUID for this name may be helpful.</li>
-<li><strong>restore_current_frame</strong> (<em>bool</em><em> or </em><em>None</em>) &#8211; Keep track of the current frame at
+<li><strong>restore_current_frame</strong> (<em>bool</em><em> or </em><em>None</em>) – Keep track of the current frame at
 the start of the context, then restore to the correct frame
 number at the end of the context.</li>
-<li><strong>pre_update_frame</strong> (<em>bool</em><em> or </em><em>None</em>) &#8211; Before starting the context functions,
+<li><strong>pre_update_frame</strong> (<em>bool</em><em> or </em><em>None</em>) – Before starting the context functions,
 make sure the current frame is updated to help trigger Maya
 to evaluate.</li>
-<li><strong>post_update_frame</strong> (<em>bool</em><em> or </em><em>None</em>) &#8211; After finishing the context functions
+<li><strong>post_update_frame</strong> (<em>bool</em><em> or </em><em>None</em>) – After finishing the context functions
 tell Maya to update the frame number to help trigger Maya
 evaluate attributes and nodes. NOTE: This function only works
 if <cite>restore_current_frame</cite> is True.</li>
-<li><strong>use_dg_evaluation_mode</strong> (<em>bool</em><em> or </em><em>None</em>) &#8211; Changes Maya&#8217;s Evaluation mode to
+<li><strong>use_dg_evaluation_mode</strong> (<em>bool</em><em> or </em><em>None</em>) – Changes Maya’s Evaluation mode to
 DG mode for the duration of the context then reset to
 whatever preference the user has (in the
-&#8220;Settings/Preferences&#8221; window). Using DG Evaluation can
+“Settings/Preferences” window). Using DG Evaluation can
 dramatically speed up evaluation across time for many tools in
 mmSolver (as tested on Maya 2017).</li>
-<li><strong>disable_viewport</strong> (<em>bool</em><em> or </em><em>None</em>) &#8211; Turn off the Viewport inside the context
+<li><strong>disable_viewport</strong> (<em>bool</em><em> or </em><em>None</em>) – Turn off the Viewport inside the context
 function, and enable it once the context finishes. This can be
 used to dramatically speed up functions that cause the Maya
 viewport to update many times.</li>
@@ -1802,8 +1795,8 @@ DAG path names.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>plug</strong> (<em>maya.api.OpenMaya.MPlug</em>) &#8211; The node.attribute to query.</li>
-<li><strong>ctx</strong> (<em>maya.api.OpenMaya.MDGContext</em>) &#8211; Time DG Context to query at.</li>
+<li><strong>plug</strong> (<em>maya.api.OpenMaya.MPlug</em>) – The node.attribute to query.</li>
+<li><strong>ctx</strong> (<em>maya.api.OpenMaya.MDGContext</em>) – Time DG Context to query at.</li>
 </ul>
 </td>
 </tr>
@@ -1826,8 +1819,8 @@ DAG path names.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>plug</strong> (<em>maya.api.OpenMaya.MPlug</em>) &#8211; The node.attribute to query.</li>
-<li><strong>ctx</strong> (<em>maya.api.OpenMaya.MDGContext</em>) &#8211; Time DG Context to query at.</li>
+<li><strong>plug</strong> (<em>maya.api.OpenMaya.MPlug</em>) – The node.attribute to query.</li>
+<li><strong>ctx</strong> (<em>maya.api.OpenMaya.MDGContext</em>) – Time DG Context to query at.</li>
 </ul>
 </td>
 </tr>
@@ -1844,15 +1837,15 @@ DAG path names.</li>
 <dl class="function">
 <dt id="mmSolver.utils.transform.get_parent_inverse_matrix_apitwo">
 <code class="descclassname">mmSolver.utils.transform.</code><code class="descname">get_parent_inverse_matrix_apitwo</code><span class="sig-paren">(</span><em>node</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.get_parent_inverse_matrix_apitwo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the matrix value of attribute &#8216;parentInverseMatrix[0]&#8217; at a
+<dd><p>Get the matrix value of attribute ‘parentInverseMatrix[0]’ at a
 given DG Context.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>node</strong> (<em>str</em>) &#8211; Node path to query values on.</li>
-<li><strong>ctx</strong> (<em>maya.api.OpenMaya.MDGContext</em>) &#8211; The (time) context to query the attribute at.</li>
+<li><strong>node</strong> (<em>str</em>) – Node path to query values on.</li>
+<li><strong>ctx</strong> (<em>maya.api.OpenMaya.MDGContext</em>) – The (time) context to query the attribute at.</li>
 </ul>
 </td>
 </tr>
@@ -1869,15 +1862,15 @@ given DG Context.</p>
 <dl class="function">
 <dt id="mmSolver.utils.transform.get_world_matrix_apitwo">
 <code class="descclassname">mmSolver.utils.transform.</code><code class="descname">get_world_matrix_apitwo</code><span class="sig-paren">(</span><em>node</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.get_world_matrix_apitwo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the matrix value of attribute &#8216;worldMatrix[0]&#8217; at a
+<dd><p>Get the matrix value of attribute ‘worldMatrix[0]’ at a
 given DG Context.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>node</strong> (<em>str</em>) &#8211; Node path to query values on.</li>
-<li><strong>ctx</strong> (<em>maya.api.OpenMaya.MDGContext</em>) &#8211; The (time) context to query the attribute at.</li>
+<li><strong>node</strong> (<em>str</em>) – Node path to query values on.</li>
+<li><strong>ctx</strong> (<em>maya.api.OpenMaya.MDGContext</em>) – The (time) context to query the attribute at.</li>
 </ul>
 </td>
 </tr>
@@ -1912,7 +1905,7 @@ pivot.</p>
 <dd><p>Represents a Maya Transform node, and the data associated.</p>
 <p>This object store a reference to Maya node, even if the node is
 renamed or re-parented.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">TransformNode</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">TransformNode</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">get_node</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node_uuid</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">get_node_uuid</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tfm_node_parents</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">get_parents</span><span class="p">()</span>
@@ -1939,7 +1932,7 @@ renamed or re-parented.</p>
 <dl class="method">
 <dt id="mmSolver.utils.transform.TransformNode.get_node_uuid">
 <code class="descname">get_node_uuid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.transform.TransformNode.get_node_uuid" title="Permalink to this definition">¶</a></dt>
-<dd><p>The Maya node&#8217;s UUID.</p>
+<dd><p>The Maya node’s UUID.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1960,7 +1953,7 @@ renamed or re-parented.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Node to set to.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) – Node to set to.</td>
 </tr>
 </tbody>
 </table>
@@ -2004,7 +1997,7 @@ renamed or re-parented.</p>
 <dt id="mmSolver.utils.transform.TransformMatrixCache">
 <em class="property">class </em><code class="descclassname">mmSolver.utils.transform.</code><code class="descname">TransformMatrixCache</code><a class="headerlink" href="#mmSolver.utils.transform.TransformMatrixCache" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hold a list of matrix node/values to be queried and stored in the object.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tfm_node</span> <span class="o">=</span> <span class="n">TransformNode</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tfm_node</span> <span class="o">=</span> <span class="n">TransformNode</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">times</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1001</span><span class="p">,</span> <span class="mi">1101</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tfm_matrix_cache</span> <span class="o">=</span> <span class="n">TransformMatrixCache</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tfm_matrix_cache</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">tfm_node</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
@@ -2027,8 +2020,8 @@ renamed or re-parented.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) &#8211; The transform node.</li>
-<li><strong>times</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) &#8211; List of times to evaluate.</li>
+<li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) – The transform node.</li>
+<li><strong>times</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) – List of times to evaluate.</li>
 </ul>
 </td>
 </tr>
@@ -2048,9 +2041,9 @@ renamed or re-parented.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>str</em>) &#8211; The transform node or the Maya UUID of the node.</li>
-<li><strong>attr_name</strong> (<em>str</em>) &#8211; The attribute name to add.</li>
-<li><strong>times</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) &#8211; List of times to evaluate.</li>
+<li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>str</em>) – The transform node or the Maya UUID of the node.</li>
+<li><strong>attr_name</strong> (<em>str</em>) – The attribute name to add.</li>
+<li><strong>times</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) – List of times to evaluate.</li>
 </ul>
 </td>
 </tr>
@@ -2085,7 +2078,7 @@ renamed or re-parented.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>eval_mode</strong> (<em>mmSolver.utils.constant.EVAL_MODE_*</em>) &#8211; What type of evaluation method to use?</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>eval_mode</strong> (<em>mmSolver.utils.constant.EVAL_MODE_*</em>) – What type of evaluation method to use?</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
 </tr>
@@ -2103,7 +2096,7 @@ pivot point or not.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>str</em>) &#8211; The node to look into the cache with.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>str</em>) – The node to look into the cache with.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of attribute names in the cache for this node.</td>
 </tr>
@@ -2122,10 +2115,10 @@ pivot point or not.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>str</em>) &#8211; The transform node to query.</li>
-<li><strong>attr_name</strong> (<em>str</em>) &#8211; Name of the attribute (previously added to
+<li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>str</em>) – The transform node to query.</li>
+<li><strong>attr_name</strong> (<em>str</em>) – Name of the attribute (previously added to
 the cache).</li>
-<li><strong>times</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) &#8211; The list of times to query from the cache.</li>
+<li><strong>times</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) – The list of times to query from the cache.</li>
 </ul>
 </td>
 </tr>
@@ -2150,10 +2143,10 @@ list entry.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>str</em>) &#8211; The transform node to query.</li>
-<li><strong>attr_name</strong> (<em>str</em>) &#8211; Name of the attribute (previously added to
+<li><strong>tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>str</em>) – The transform node to query.</li>
+<li><strong>attr_name</strong> (<em>str</em>) – Name of the attribute (previously added to
 the cache).</li>
-<li><strong>times</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) &#8211; The list of times to query from the cache.</li>
+<li><strong>times</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) – The list of times to query from the cache.</li>
 </ul>
 </td>
 </tr>
@@ -2182,10 +2175,10 @@ list entry.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>tfm_matrix_cache</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformMatrixCache" title="mmSolver.utils.transform.TransformMatrixCache"><em>TransformMatrixCache</em></a>) &#8211; A cache holding queried matrix values.</li>
-<li><strong>times</strong> (<em>[</em><em>int</em><em> or </em><em>float</em><em>, </em><em>..</em><em>]</em>) &#8211; The times to set transforms values on.</li>
-<li><strong>src_tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) &#8211; Source node to get cached transform values from.</li>
-<li><strong>rotate_order</strong> (<em>str</em>) &#8211; The rotation order to set on the dst_node,
+<li><strong>tfm_matrix_cache</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformMatrixCache" title="mmSolver.utils.transform.TransformMatrixCache"><em>TransformMatrixCache</em></a>) – A cache holding queried matrix values.</li>
+<li><strong>times</strong> (<em>[</em><em>int</em><em> or </em><em>float</em><em>, </em><em>..</em><em>]</em>) – The times to set transforms values on.</li>
+<li><strong>src_tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) – Source node to get cached transform values from.</li>
+<li><strong>rotate_order</strong> (<em>str</em>) – The rotation order to set on the dst_node,
 or use the existing rotation on the dst_node
 if rotate_order is None.</li>
 </ul>
@@ -2212,8 +2205,8 @@ desired rotation order.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>tfm_matrix</strong> (<em>maya.api.OpenMaya.MTransformationMatrix</em>) &#8211; Transform matrix to be decomposed.</li>
-<li><strong>prv_rot</strong> (<em>(</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>) or </em><em>None</em>) &#8211; The previous rotation values (on the previous frame).</li>
+<li><strong>tfm_matrix</strong> (<em>maya.api.OpenMaya.MTransformationMatrix</em>) – Transform matrix to be decomposed.</li>
+<li><strong>prv_rot</strong> (<em>(</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>) or </em><em>None</em>) – The previous rotation values (on the previous frame).</li>
 </ul>
 </td>
 </tr>
@@ -2246,16 +2239,16 @@ attributes.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>tfm_matrix_cache</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformMatrixCache" title="mmSolver.utils.transform.TransformMatrixCache"><em>TransformMatrixCache</em></a>) &#8211; A cache holding queried matrix values.</li>
-<li><strong>times</strong> (<em>[</em><em>int</em><em> or </em><em>float</em><em>, </em><em>..</em><em>]</em>) &#8211; The times to set transforms values on.</li>
-<li><strong>src_tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) &#8211; Source node to get cached transform values from.</li>
-<li><strong>dst_tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) &#8211; Destination node set transform values on.</li>
-<li><strong>rotate_order</strong> (<em>str</em>) &#8211; The rotation order to set on the dst_node,
+<li><strong>tfm_matrix_cache</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformMatrixCache" title="mmSolver.utils.transform.TransformMatrixCache"><em>TransformMatrixCache</em></a>) – A cache holding queried matrix values.</li>
+<li><strong>times</strong> (<em>[</em><em>int</em><em> or </em><em>float</em><em>, </em><em>..</em><em>]</em>) – The times to set transforms values on.</li>
+<li><strong>src_tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) – Source node to get cached transform values from.</li>
+<li><strong>dst_tfm_node</strong> (<a class="reference internal" href="#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a>) – Destination node set transform values on.</li>
+<li><strong>rotate_order</strong> (<em>str</em>) – The rotation order to set on the dst_node,
 or use the existing rotation on the dst_node
 if rotate_order is None.</li>
-<li><strong>delete_static_anim_curves</strong> (<em>bool</em>) &#8211; If an animation curve is static,
+<li><strong>delete_static_anim_curves</strong> (<em>bool</em>) – If an animation curve is static,
 it will be deleted.</li>
-<li><strong>eval_mode</strong> (<em>mmSolver.utils.constant.EVAL_MODE_*</em>) &#8211; What type of evaluation method to use?</li>
+<li><strong>eval_mode</strong> (<em>mmSolver.utils.constant.EVAL_MODE_*</em>) – What type of evaluation method to use?</li>
 </ul>
 </td>
 </tr>
@@ -2274,8 +2267,8 @@ it will be deleted.</li>
 <dt id="mmSolver.utils.undo.wrap_as_undo_chunk">
 <code class="descclassname">mmSolver.utils.undo.</code><code class="descname">wrap_as_undo_chunk</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.undo.wrap_as_undo_chunk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Undo/Redo Chunk Decorator.</p>
-<p>Puts the wrapped &#8216;func&#8217; into a single Maya Undo action.
-If &#8216;func&#8217; raises and exception, we close the chunk.</p>
+<p>Puts the wrapped ‘func’ into a single Maya Undo action.
+If ‘func’ raises and exception, we close the chunk.</p>
 </dd></dl>
 
 <dl class="function">
@@ -2284,13 +2277,13 @@ If &#8216;func&#8217; raises and exception, we close the chunk.</p>
 <dd><p>Create an undo chunk, using a context manager.</p>
 <p>Example usage:
 &gt;&gt;&gt; with undo_chunk_context() as chunk_name:
-...     # do something with Maya
-...     maya.cmds.createNode(&#8216;transform&#8217;)</p>
+…     # do something with Maya
+…     maya.cmds.createNode(‘transform’)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; A string to use as the unique undo chunk name, or
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em><em> or </em><em>None</em>) – A string to use as the unique undo chunk name, or
 None to generate a random UUID.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Yields (returns) the name of the undo chunk.</td>
@@ -2302,11 +2295,11 @@ None to generate a random UUID.</td>
 <dl class="function">
 <dt id="mmSolver.utils.undo.no_undo_context">
 <code class="descclassname">mmSolver.utils.undo.</code><code class="descname">no_undo_context</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.undo.no_undo_context" title="Permalink to this definition">¶</a></dt>
-<dd><p>All statements inside the &#8216;with&#8217; block will not be added to the Undo stack.</p>
+<dd><p>All statements inside the ‘with’ block will not be added to the Undo stack.</p>
 <p>Example usage:
 &gt;&gt;&gt; with no_undo_context():
-...     # do something with Maya, not recorded in undo stack
-...     maya.cmds.createNode(&#8216;transform&#8217;)</p>
+…     # do something with Maya, not recorded in undo stack
+…     maya.cmds.createNode(‘transform’)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2378,7 +2371,7 @@ implementation based on the version Maya.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) &#8211; Set activation of the state.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) – Set activation of the state.</td>
 </tr>
 </tbody>
 </table>
@@ -2435,7 +2428,7 @@ implementation based on the version Maya.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>model_editor</strong> (<em>str</em>) &#8211; The viewport model editor to get the camera from.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>model_editor</strong> (<em>str</em>) – The viewport model editor to get the camera from.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Camera transform and camera shape nodes.</td>
 </tr>
@@ -2457,8 +2450,8 @@ implementation based on the version Maya.</p>
 <dd><p>Get the Renderer Device Name from the Model Editor.</p>
 <p>Query for the name of the draw API used by the Viewport 2.0
 renderer for a 3d modeling viewport. The possible return values
-are &#8220;VirtualDeviceGL&#8221; if Maya is set to use OpenGL for Viewport
-2.0 or &#8220;VirtualDeviceDx11&#8221; if Maya is set to use DirectX for
+are “VirtualDeviceGL” if Maya is set to use OpenGL for Viewport
+2.0 or “VirtualDeviceDx11” if Maya is set to use DirectX for
 Viewport 2.0. If the renderer for the 3d modeling viewport is not
 Viewport 2.0, an empty string will be returned.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -2477,8 +2470,8 @@ Viewport 2.0, an empty string will be returned.</p>
 <dd><p>Get the Renderer Device Name from the Model Panel.</p>
 <p>Query for the name of the draw API used by the Viewport 2.0
 renderer for a 3d modeling viewport. The possible return values
-are &#8220;VirtualDeviceGL&#8221; if Maya is set to use OpenGL for Viewport
-2.0 or &#8220;VirtualDeviceDx11&#8221; if Maya is set to use DirectX for
+are “VirtualDeviceGL” if Maya is set to use OpenGL for Viewport
+2.0 or “VirtualDeviceDx11” if Maya is set to use DirectX for
 Viewport 2.0. If the renderer for the 3d modeling viewport is not
 Viewport 2.0, an empty string will be returned.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -2509,14 +2502,14 @@ Viewport 2?</p>
 <dl class="function">
 <dt id="mmSolver.utils.viewport.get_isolated_nodes">
 <code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_isolated_nodes</code><span class="sig-paren">(</span><em>model_panel</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_isolated_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return nodes that are being isolated for &#8216;model_panel&#8217;.</p>
+<dd><p>Return nodes that are being isolated for ‘model_panel’.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.utils.viewport.set_isolated_nodes">
 <code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_isolated_nodes</code><span class="sig-paren">(</span><em>model_panel</em>, <em>nodes</em>, <em>enable</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_isolated_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Override the isolate objects on &#8216;model_panel&#8217;.</p>
-<p>With an empty list, this function clears the &#8216;model_panel&#8217;s
+<dd><p>Override the isolate objects on ‘model_panel’.</p>
+<p>With an empty list, this function clears the ‘model_panel’s
 isolate object list.</p>
 </dd></dl>
 
@@ -2787,14 +2780,14 @@ isolate object list.</p>
 <dl class="function">
 <dt id="mmSolver.utils.viewport.get_node_type_visibility">
 <code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">get_node_type_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>node_type</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_node_type_visibility" title="Permalink to this definition">¶</a></dt>
-<dd><p>Query the visibility of &#8216;node_type&#8217; in the given model panel.</p>
+<dd><p>Query the visibility of ‘node_type’ in the given model panel.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>model_panel</strong> (<em>str</em>) &#8211; Model panel name to set visibility.</li>
-<li><strong>node_type</strong> (<em>str</em>) &#8211; Node type to get visibility for.</li>
+<li><strong>model_panel</strong> (<em>str</em>) – Model panel name to set visibility.</li>
+<li><strong>node_type</strong> (<em>str</em>) – Node type to get visibility for.</li>
 </ul>
 </td>
 </tr>
@@ -2811,15 +2804,15 @@ isolate object list.</p>
 <dl class="function">
 <dt id="mmSolver.utils.viewport.set_node_type_visibility">
 <code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">set_node_type_visibility</code><span class="sig-paren">(</span><em>model_panel</em>, <em>node_type</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_node_type_visibility" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the visibility of &#8216;node_type&#8217; nodes in the given model panel.</p>
+<dd><p>Set the visibility of ‘node_type’ nodes in the given model panel.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>model_panel</strong> (<em>str</em>) &#8211; Model panel name to set visibility.</li>
-<li><strong>node_type</strong> (<em>str</em>) &#8211; Node type to set visibility for.</li>
-<li><strong>value</strong> (<em>bool</em>) &#8211; Visibility of node type.</li>
+<li><strong>model_panel</strong> (<em>str</em>) – Model panel name to set visibility.</li>
+<li><strong>node_type</strong> (<em>str</em>) – Node type to set visibility for.</li>
+<li><strong>value</strong> (<em>bool</em>) – Visibility of node type.</li>
 </ul>
 </td>
 </tr>
@@ -2868,7 +2861,7 @@ isolate object list.</p>
 
 <dl class="attribute">
 <dt id="mmSolver.utils.constant.CONFIG_HOME_DIR_PATH">
-<code class="descclassname">constant.</code><code class="descname">CONFIG_HOME_DIR_PATH</code><em class="property"> = {'Windows': '${APPDATA}/mmSolver/', 'Linux': '${HOME}/.mmSolver/'}</em><a class="headerlink" href="#mmSolver.utils.constant.CONFIG_HOME_DIR_PATH" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">constant.</code><code class="descname">CONFIG_HOME_DIR_PATH</code><em class="property"> = {'Linux': '${HOME}/.mmSolver/', 'Windows': '${APPDATA}/mmSolver/'}</em><a class="headerlink" href="#mmSolver.utils.constant.CONFIG_HOME_DIR_PATH" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2893,7 +2886,7 @@ isolate object list.</p>
 
 <dl class="attribute">
 <dt id="mmSolver.utils.constant.ROTATE_ORDER_STR_TO_INDEX">
-<code class="descclassname">constant.</code><code class="descname">ROTATE_ORDER_STR_TO_INDEX</code><em class="property"> = {'yxz': 4, 'yzx': 1, 'xyz': 0, 'xzy': 3, 'zxy': 2, 'zyx': 5}</em><a class="headerlink" href="#mmSolver.utils.constant.ROTATE_ORDER_STR_TO_INDEX" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">constant.</code><code class="descname">ROTATE_ORDER_STR_TO_INDEX</code><em class="property"> = {'xyz': 0, 'xzy': 3, 'yxz': 4, 'yzx': 1, 'zxy': 2, 'zyx': 5}</em><a class="headerlink" href="#mmSolver.utils.constant.ROTATE_ORDER_STR_TO_INDEX" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -2905,7 +2898,7 @@ isolate object list.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.utils</a><ul>
 <li><a class="reference internal" href="#module-mmSolver.utils.animcurve">AnimCurve</a></li>
@@ -2921,7 +2914,7 @@ isolate object list.</p>
 <li><a class="reference internal" href="#module-mmSolver.utils.reproject">Re-Project</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.smooth">Smooth</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.time">Time</a></li>
-<li><a class="reference internal" href="#tools">Tools</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.tools">Tools</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.transform">Transform</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.undo">Undo</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.viewport">Viewport</a></li>
@@ -2945,12 +2938,14 @@ isolate object list.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -2976,8 +2971,8 @@ isolate object list.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

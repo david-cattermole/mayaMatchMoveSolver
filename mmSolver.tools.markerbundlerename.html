@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>mmSolver.tools.markerbundlerename &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mmSolver.tools.markerbundlerenamewithmetadata" href="mmSolver.tools.markerbundlerenamewithmetadata.html" />
     <link rel="prev" title="mmSolver.tools.loadmarker" href="mmSolver.tools.loadmarker.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -79,10 +70,10 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>title</strong> (<em>str</em>) &#8211; Dialog box window title.</li>
-<li><strong>message</strong> (<em>str</em>) &#8211; Read-only text to show the user, for making a
+<li><strong>title</strong> (<em>str</em>) – Dialog box window title.</li>
+<li><strong>message</strong> (<em>str</em>) – Read-only text to show the user, for making a
 decision.</li>
-<li><strong>text</strong> (<em>str</em>) &#8211; The initial text to prompt the user as a starting
+<li><strong>text</strong> (<em>str</em>) – The initial text to prompt the user as a starting
 point.</li>
 </ul>
 </td>
@@ -106,13 +97,13 @@ point.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mkr_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Marker nodes to rename.</li>
-<li><strong>bnd_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Bundle nodes to rename.</li>
-<li><strong>mkr_name</strong> (<em>str</em>) &#8211; Rename the markers to this name.</li>
-<li><strong>bnd_name</strong> (<em>str</em>) &#8211; Rename the bundle to this name.</li>
-<li><strong>number_format</strong> (<em>str</em>) &#8211; The name format string for numbering.</li>
-<li><strong>mkr_suffix</strong> (<em>str</em>) &#8211; Set the marker suffix name.</li>
-<li><strong>bnd_suffix</strong> (<em>str</em>) &#8211; Set the bundle suffix name.</li>
+<li><strong>mkr_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Marker nodes to rename.</li>
+<li><strong>bnd_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Bundle nodes to rename.</li>
+<li><strong>mkr_name</strong> (<em>str</em>) – Rename the markers to this name.</li>
+<li><strong>bnd_name</strong> (<em>str</em>) – Rename the bundle to this name.</li>
+<li><strong>number_format</strong> (<em>str</em>) – The name format string for numbering.</li>
+<li><strong>mkr_suffix</strong> (<em>str</em>) – Set the marker suffix name.</li>
+<li><strong>bnd_suffix</strong> (<em>str</em>) – Set the bundle suffix name.</li>
 </ul>
 </td>
 </tr>
@@ -139,7 +130,7 @@ point.</li>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.markerbundlerename</a><ul>
 <li><a class="reference internal" href="#module-mmSolver.tools.markerbundlerename.tool">Tools</a></li>
@@ -164,12 +155,14 @@ point.</li>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -196,8 +189,8 @@ point.</li>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

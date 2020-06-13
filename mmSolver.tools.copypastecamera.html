@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>mmSolver.tools.copypastecamera &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mmSolver.tools.createbundle" href="mmSolver.tools.createbundle.html" />
     <link rel="prev" title="mmSolver.tools.convertmarker" href="mmSolver.tools.convertmarker.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -77,7 +68,7 @@ loading in third-party software (such as 3DEqualizer).</p>
 <span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.copypastecamera.lib" title="Permalink to this headline">¶</a></h2>
 <p>The Copy/Paste Camera library functions.</p>
 <p>The file saved will contain:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Camera</span> <span class="n">Name</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Camera</span> <span class="n">Name</span>
 
 <span class="o">-</span> <span class="n">Image</span> <span class="n">Plane</span> <span class="n">File</span> <span class="n">Path</span>
 
@@ -99,7 +90,7 @@ assumed to be undistorted/flattened). A future version of this tool
 and file format may support lens distortion, if it were saved in Maya
 in a standardized way.</p>
 <p>The JSON dictionary format:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -153,7 +144,7 @@ the values accurately.</td>
 <code class="descclassname">mmSolver.tools.copypastecamera.lib.</code><code class="descname">get_image_path_pattern</code><span class="sig-paren">(</span><em>image_name</em>, <em>use_frame_ext</em>, <em>test_disk=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.copypastecamera.lib.get_image_path_pattern" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the image path pattern, for the given Maya imagePlane path.</p>
 <p>Assumptions:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="s1">&#39;#&#39;</span> <span class="n">character</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">used</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">image_name</span> <span class="n">string</span><span class="o">.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="s1">&#39;#&#39;</span> <span class="n">character</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">used</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">image_name</span> <span class="n">string</span><span class="o">.</span>
 
 <span class="o">-</span> <span class="s1">&#39;?&#39;</span> <span class="n">character</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">used</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">image_name</span> <span class="n">string</span><span class="o">.</span>
 
@@ -174,10 +165,10 @@ path and directory on disk (not just string assumptions).</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>image_name</strong> (<em>str</em>) &#8211; Maya imagePlane file (sequence) path.</li>
-<li><strong>use_frame_ext</strong> (<em>bool</em>) &#8211; The value of imagePlane node&#8217;s
-&#8216;useFrameExtension&#8217; attribute.</li>
-<li><strong>test_disk</strong> (<em>bool</em>) &#8211; Is this function allowed to query the file on
+<li><strong>image_name</strong> (<em>str</em>) – Maya imagePlane file (sequence) path.</li>
+<li><strong>use_frame_ext</strong> (<em>bool</em>) – The value of imagePlane node’s
+‘useFrameExtension’ attribute.</li>
+<li><strong>test_disk</strong> (<em>bool</em>) – Is this function allowed to query the file on
 disk and make calls to the disk? If not we use
 only string manipulation but do not test
 (for example) the actual file existence.</li>
@@ -200,7 +191,7 @@ the values accurately.</p>
 <dl class="function">
 <dt id="mmSolver.tools.copypastecamera.lib.get_frame_range_from_file_pattern">
 <code class="descclassname">mmSolver.tools.copypastecamera.lib.</code><code class="descname">get_frame_range_from_file_pattern</code><span class="sig-paren">(</span><em>file_path_pattern</em>, <em>fallback_range=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.copypastecamera.lib.get_frame_range_from_file_pattern" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a file pattern with &#8216;#&#8217; characters representing the frame
+<dd><p>Given a file pattern with ‘#’ characters representing the frame
 number, get the full frame range on disk.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -228,9 +219,9 @@ number, get the full frame range on disk.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cam_tfm</strong> (<em>str</em>) &#8211; Camera transform node of given image plane shape.</li>
-<li><strong>cam_shp</strong> (<em>str</em>) &#8211; Camera shape node of given image plane shape.</li>
-<li><strong>img_pl_shp</strong> (<em>str</em>) &#8211; Image Plane node shape node to query.</li>
+<li><strong>cam_tfm</strong> (<em>str</em>) – Camera transform node of given image plane shape.</li>
+<li><strong>cam_shp</strong> (<em>str</em>) – Camera shape node of given image plane shape.</li>
+<li><strong>img_pl_shp</strong> (<em>str</em>) – Image Plane node shape node to query.</li>
 </ul>
 </td>
 </tr>
@@ -268,7 +259,7 @@ number, get the full frame range on disk.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.copypastecamera</a><ul>
 <li><a class="reference internal" href="#module-mmSolver.tools.copypastecamera.tool">Tools</a></li>
@@ -293,12 +284,14 @@ number, get the full frame range on disk.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -325,8 +318,8 @@ number, get the full frame range on disk.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

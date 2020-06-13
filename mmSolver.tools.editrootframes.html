@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>mmSolver.ui.converttypes &#8212; mayaMatchMoveSolver master documentation</title>
+    <title>mmSolver.tools.editrootframes &#8212; mayaMatchMoveSolver master documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -18,8 +18,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="mmSolver.ui.nodes" href="mmSolver.ui.nodes.html" />
-    <link rel="prev" title="mmSolver.ui.base_maya_window" href="mmSolver.ui.base_maya_window.html" /> 
+    <link rel="next" title="mmSolver.tools.hotkeyswitcher" href="mmSolver.tools.hotkeyswitcher.html" />
+    <link rel="prev" title="mmSolver.tools.duplicatemarker" href="mmSolver.tools.duplicatemarker.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -31,13 +31,13 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="mmSolver.ui.nodes.html" title="mmSolver.ui.nodes"
+          <a href="mmSolver.tools.hotkeyswitcher.html" title="mmSolver.tools.hotkeyswitcher"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="mmSolver.ui.base_maya_window.html" title="mmSolver.ui.base_maya_window"
+          <a href="mmSolver.tools.duplicatemarker.html" title="mmSolver.tools.duplicatemarker"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="mmSolver.ui.html" accesskey="U">mmSolver.ui</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -46,31 +46,38 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-mmSolver.ui.converttypes">
-<span id="mmsolver-ui-converttypes"></span><h1>mmSolver.ui.converttypes<a class="headerlink" href="#module-mmSolver.ui.converttypes" title="Permalink to this headline">¶</a></h1>
-<p>Conversion functions between various types, for Qt types.</p>
-<p>This module should NOT be imported into any module that may not run with a
-GUI avalable (for example on the farm)</p>
+  <div class="section" id="module-mmSolver.tools.editrootframes">
+<span id="mmsolver-tools-editrootframes"></span><h1>mmSolver.tools.editrootframes<a class="headerlink" href="#module-mmSolver.tools.editrootframes" title="Permalink to this headline">¶</a></h1>
+<p>Edit the list of Root frames currently defined for the active Collection.</p>
+<div class="section" id="tool">
+<h2>Tool<a class="headerlink" href="#tool" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-mmSolver.tools.editrootframes.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.editrootframes.lib" title="Permalink to this headline">¶</a></h2>
+<p>Library functions for editing the root frames defined
+in the active Collection.</p>
+<p>This module should not have any UI code.</p>
 <dl class="function">
-<dt id="mmSolver.ui.converttypes.stringToStrategy">
-<code class="descclassname">mmSolver.ui.converttypes.</code><code class="descname">stringToStrategy</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.converttypes.stringToStrategy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="mmSolver.tools.editrootframes.lib.get_root_frames_list">
+<code class="descclassname">mmSolver.tools.editrootframes.lib.</code><code class="descname">get_root_frames_list</code><span class="sig-paren">(</span><em>col</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.editrootframes.lib.get_root_frames_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Root Frames string, from the currently active Collection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[int, .] or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
-<dt id="mmSolver.ui.converttypes.stringToAttrFilter">
-<code class="descclassname">mmSolver.ui.converttypes.</code><code class="descname">stringToAttrFilter</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.converttypes.stringToAttrFilter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="mmSolver.tools.editrootframes.lib.set_root_frames_list">
+<code class="descclassname">mmSolver.tools.editrootframes.lib.</code><code class="descname">set_root_frames_list</code><span class="sig-paren">(</span><em>col</em>, <em>root_frames_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.editrootframes.lib.set_root_frames_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the Root Frames on the currently active Collection.</p>
+</dd></dl>
 
-<dl class="function">
-<dt id="mmSolver.ui.converttypes.booleanToCheckState">
-<code class="descclassname">mmSolver.ui.converttypes.</code><code class="descname">booleanToCheckState</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.converttypes.booleanToCheckState" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.ui.converttypes.checkStateToBoolean">
-<code class="descclassname">mmSolver.ui.converttypes.</code><code class="descname">checkStateToBoolean</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.converttypes.checkStateToBoolean" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+</div>
 </div>
 
 
@@ -79,16 +86,25 @@ GUI avalable (for example on the farm)</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.editrootframes</a><ul>
+<li><a class="reference internal" href="#tool">Tool</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.editrootframes.lib">Library</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
-  <p class="topless"><a href="mmSolver.ui.base_maya_window.html"
-                        title="previous chapter">mmSolver.ui.base_maya_window</a></p>
+  <p class="topless"><a href="mmSolver.tools.duplicatemarker.html"
+                        title="previous chapter">mmSolver.tools.duplicatemarker</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="mmSolver.ui.nodes.html"
-                        title="next chapter">mmSolver.ui.nodes</a></p>
+  <p class="topless"><a href="mmSolver.tools.hotkeyswitcher.html"
+                        title="next chapter">mmSolver.tools.hotkeyswitcher</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/mmSolver.ui.converttypes.rst.txt"
+      <li><a href="_sources/mmSolver.tools.editrootframes.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -118,13 +134,13 @@ GUI avalable (for example on the farm)</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="mmSolver.ui.nodes.html" title="mmSolver.ui.nodes"
+          <a href="mmSolver.tools.hotkeyswitcher.html" title="mmSolver.tools.hotkeyswitcher"
              >next</a> |</li>
         <li class="right" >
-          <a href="mmSolver.ui.base_maya_window.html" title="mmSolver.ui.base_maya_window"
+          <a href="mmSolver.tools.duplicatemarker.html" title="mmSolver.tools.duplicatemarker"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="mmSolver.ui.html" >mmSolver.ui</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

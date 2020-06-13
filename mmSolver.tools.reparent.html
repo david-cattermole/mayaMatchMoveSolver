@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>mmSolver.tools.reparent &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mmSolver.tools.reprojectbundle" href="mmSolver.tools.reprojectbundle.html" />
     <link rel="prev" title="mmSolver.tools.raycastmarker" href="mmSolver.tools.raycastmarker.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -86,19 +77,19 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>children</strong> (<em>[</em><a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of child nodes to be modified.</li>
-<li><strong>parent</strong> (<a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>None</em>) &#8211; The new parent node for children, or None means
+<li><strong>children</strong> (<em>[</em><a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em>, </em><em>.</em><em>]</em>) – List of child nodes to be modified.</li>
+<li><strong>parent</strong> (<a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>None</em>) – The new parent node for children, or None means
 un-parent.</li>
-<li><strong>sparse</strong> (<em>bool</em>) &#8211; Keyframe animation on the children each frame
+<li><strong>sparse</strong> (<em>bool</em>) – Keyframe animation on the children each frame
 (dense) or sparse (only at keyframes).</li>
-<li><strong>delete_static_anim_curves</strong> (<em>bool</em>) &#8211; Delete any animCurves that all
+<li><strong>delete_static_anim_curves</strong> (<em>bool</em>) – Delete any animCurves that all
 have the same values.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of &#8216;children&#8217; TransformNodes modified, will not
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of ‘children’ TransformNodes modified, will not
 contain child nodes if the child is already parented under
-&#8216;parent&#8217;.</p>
+‘parent’.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[<a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode">TransformNode</a>, .]</p>
@@ -153,7 +144,7 @@ contain child nodes if the child is already parented under
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.reparent</a><ul>
 <li><a class="reference internal" href="#module-mmSolver.tools.reparent.tool">Tool</a></li>
@@ -178,12 +169,14 @@ contain child nodes if the child is already parented under
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -210,8 +203,8 @@ contain child nodes if the child is already parented under
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

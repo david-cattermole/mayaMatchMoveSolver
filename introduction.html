@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Introduction &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorials" href="tutorial.html" />
     <link rel="prev" title="mmSolver - Maya MatchMove Solver" href="index.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -65,13 +56,13 @@ object track by throwing away the initial camera/object trajectory,
 and creating the solve brand new each time. This technique can be very
 efficient in some cases, however sometimes you wish to <em>incrementally</em>
 build a solve, by animating a rough solve first, and giving that as a
-&#8216;hint&#8217; to the solver; &#8220;the camera should be moving approximately like
-this, now refine it.&#8221;</p>
+‘hint’ to the solver; “the camera should be moving approximately like
+this, now refine it.”</p>
 <p>In addition to incremental solving, a common limitation of other
 software, is the inability to represent complex relationships of
 objects, such as object hierarchy, line constraints or plane
 constraints. <cite>mmSolver</cite> can model all of these types of constraints
-and relationships using Autodesk Maya&#8217;s DAG nodes and connections.</p>
+and relationships using Autodesk Maya’s DAG nodes and connections.</p>
 <p>Finally, <cite>mmSolver</cite> also allows solving of <em>specific attributes</em> of
 any node, so you can solve only Translate X, Rotate Y or Scale Z
 independently, or any combination of attributes all at the same
@@ -97,14 +88,14 @@ Camera Focal Length.</p>
 <li>Displays relationships of Cameras, (2D) Markers and (3D) Bundles
 nodes.</li>
 <li>Lists Maya Attributes used for solving.</li>
-<li>Lists individual Solver &#8216;steps&#8217; depicting how the Solver will execute.</li>
+<li>Lists individual Solver ‘steps’ depicting how the Solver will execute.</li>
 <li>Supports creation of mmSolver arguments using a GUI.</li>
 <li>Single-Frame solve override</li>
 </ul>
 </li>
 <li>User Tools<ul>
 <li>Load 2D Tracks (Markers) from Third-Party software<ul>
-<li>Supports 3DEqualizer <a href="#id1"><span class="problematic" id="id2">*</span></a>.txt, MatchMover <a href="#id3"><span class="problematic" id="id4">*</span></a>.rz2 and custom <a href="#id5"><span class="problematic" id="id6">*</span></a>.uv file formats.</li>
+<li>Supports 3DEqualizer .txt, MatchMover .rz2 and custom .uv file formats.</li>
 </ul>
 </li>
 <li>Convert from 3D Transform Nodes to 2D Markers.</li>
@@ -116,7 +107,7 @@ nodes.</li>
 </ul>
 </li>
 <li>Control 2D and 3D node relationships; linking and unlinking nodes.</li>
-<li>And more...</li>
+<li>And more…</li>
 </ul>
 </li>
 <li>Solver Plug-in<ul>
@@ -129,13 +120,13 @@ nodes.</li>
 <li>Multi-camera solving (photogrammetry).</li>
 <li>Marker weights support (force a point to solve with higher weight
 than others).</li>
-<li>Marker &#8216;validity&#8217; support - frames where markers are occluded.</li>
+<li>Marker ‘validity’ support - frames where markers are occluded.</li>
 <li>Full undo/redo support.</li>
 </ul>
 </li>
 <li>Python API<ul>
 <li>Object-Oriented helper classes to create node networks and store the data structure inside a Maya scene.</li>
-<li>Allows storage of multiple &#8216;collections&#8217; of solver arguments in one Maya scene file - all data is stored in the Maya scene file.</li>
+<li>Allows storage of multiple ‘collections’ of solver arguments in one Maya scene file - all data is stored in the Maya scene file.</li>
 <li>Creates Maya nodes to represent Markers and Bundles.</li>
 </ul>
 </li>
@@ -150,7 +141,7 @@ than others).</li>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Introduction</a><ul>
 <li><a class="reference internal" href="#use-cases">Use Cases</a></li>
@@ -174,12 +165,14 @@ than others).</li>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -205,8 +198,8 @@ than others).</li>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

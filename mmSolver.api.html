@@ -1,35 +1,26 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>mmSolver.api &#8212; mayaMatchMoveSolver master documentation</title>
-    
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'master',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mmSolver.logger" href="mmSolver.logger.html" />
     <link rel="prev" title="mmSolver.tools.undoredoscene" href="mmSolver.tools.undoredoscene.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -58,7 +49,7 @@
 <h1>mmSolver.api<a class="headerlink" href="#mmsolver-api" title="Permalink to this headline">¶</a></h1>
 <p>By convention the mmSolver.api functions are expected to be imported into
 the alias <cite>mmapi</cite>, examples assume this is done.</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
 <span class="kn">import</span> <span class="nn">mmSolver.api</span> <span class="k">as</span> <span class="nn">mmapi</span>
 <span class="n">mmapi</span><span class="o">.</span><span class="n">load_plugin</span><span class="p">()</span>  <span class="c1"># Force load the mmSolver plug-in.</span>
 </pre></div>
@@ -77,28 +68,28 @@ the alias <cite>mmapi</cite>, examples assume this is done.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><code class="xref py py-class docutils literal"><span class="pre">mmSolver.api.Marker</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Marker</span></code></a></td>
 <td>2D point to determine screen-space features</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#mmSolver.api.Bundle" title="mmSolver.api.Bundle"><code class="xref py py-class docutils literal"><span class="pre">mmSolver.api.Bundle</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#mmSolver.api.Bundle" title="mmSolver.api.Bundle"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Bundle</span></code></a></td>
 <td>3D point to determine real-location of 2D feature</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><code class="xref py py-class docutils literal"><span class="pre">mmSolver.api.Attribute</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Attribute</span></code></a></td>
 <td>Attribute that will be solved</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><code class="xref py py-class docutils literal"><span class="pre">mmSolver.api.Camera</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Camera</span></code></a></td>
 <td>Camera to view the world</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#mmSolver.api.Frame" title="mmSolver.api.Frame"><code class="xref py py-class docutils literal"><span class="pre">mmSolver.api.Frame</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#mmSolver.api.Frame" title="mmSolver.api.Frame"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Frame</span></code></a></td>
 <td>Point in time</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#mmSolver.api.SolverBase" title="mmSolver.api.SolverBase"><code class="xref py py-class docutils literal"><span class="pre">mmSolver.api.SolverBase</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#mmSolver.api.SolverBase" title="mmSolver.api.SolverBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.SolverBase</span></code></a></td>
 <td>Options that describe how the solving algorithm will run</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><code class="xref py py-class docutils literal"><span class="pre">mmSolver.api.Collection</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Collection</span></code></a></td>
 <td>A set of Markers, Attributes and Solvers to use during solving</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><code class="xref py py-class docutils literal"><span class="pre">mmSolver.api.SolveResult</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.SolveResult</span></code></a></td>
 <td>Output of the solver; Details of what happened in a solve</td>
 </tr>
 </tbody>
@@ -108,15 +99,15 @@ The full list of classes and functions exposed are detailed in <a class="referen
 </div>
 <div class="section" id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
-<p>Here is a example of how to use the <code class="docutils literal"><span class="pre">mmSolver</span></code> Python API.
-First a <code class="docutils literal"><span class="pre">Camera</span></code>, <code class="docutils literal"><span class="pre">Bundle</span></code> and <code class="docutils literal"><span class="pre">Marker</span></code> are created, these
+<p>Here is a example of how to use the <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> Python API.
+First a <code class="docutils literal notranslate"><span class="pre">Camera</span></code>, <code class="docutils literal notranslate"><span class="pre">Bundle</span></code> and <code class="docutils literal notranslate"><span class="pre">Marker</span></code> are created, these
 are used to define the re-projection and perspective.
-Next, <code class="docutils literal"><span class="pre">Attributes</span></code>, <code class="docutils literal"><span class="pre">Solvers</span></code> and <code class="docutils literal"><span class="pre">Frames</span></code> must be created.
-All API objects are then added into the <code class="docutils literal"><span class="pre">Collection</span></code>, and the collection
+Next, <code class="docutils literal notranslate"><span class="pre">Attributes</span></code>, <code class="docutils literal notranslate"><span class="pre">Solvers</span></code> and <code class="docutils literal notranslate"><span class="pre">Frames</span></code> must be created.
+All API objects are then added into the <code class="docutils literal notranslate"><span class="pre">Collection</span></code>, and the collection
 is executed.
-Finally, a <code class="docutils literal"><span class="pre">SolverResult</span></code> is returned from the executed Collection and
+Finally, a <code class="docutils literal notranslate"><span class="pre">SolverResult</span></code> is returned from the executed Collection and
 an be used to check the Solver output (for example, did an error occur?).</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Camera</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Camera</span>
 <span class="n">cam_tfm</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span>
                                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cam_tfm&#39;</span><span class="p">)</span>
 <span class="n">cam_shp</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;camera&#39;</span><span class="p">,</span>
@@ -176,7 +167,7 @@ an be used to check the Solver output (for example, did an error occur?).</p>
 <dd><p>The Camera to view the world and compute re-projection error;
 Markers are attached to cameras.</p>
 <p>Example usage:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cam_tfm</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cam_tfm&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cam_tfm</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cam_tfm&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cam_shp</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;camera&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cam_shp&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">cam_tfm</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cam</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Camera</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">cam_shp</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cam</span><span class="o">.</span><span class="n">get_transform_node</span><span class="p">()</span>
@@ -191,15 +182,15 @@ Markers are attached to cameras.</p>
 <dd><p>Initialise a Camera object.</p>
 <p>Give either a transform or shape node and the object will find
 the other node.</p>
-<p>If no &#8216;transform&#8217; or &#8216;shape&#8217; is given, the Camera is
+<p>If no ‘transform’ or ‘shape’ is given, the Camera is
 uninitialized.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>transform</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; The camera transform node.</li>
-<li><strong>shape</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; The camera shape node.</li>
+<li><strong>transform</strong> (<em>None</em><em> or </em><em>str</em>) – The camera transform node.</li>
+<li><strong>shape</strong> (<em>None</em><em> or </em><em>str</em>) – The camera shape node.</li>
 </ul>
 </td>
 </tr>
@@ -250,7 +241,7 @@ this transform node.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) &#8211; The existing Maya node.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) – The existing Maya node.</td>
 </tr>
 </tbody>
 </table>
@@ -299,7 +290,7 @@ based this shape node.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) &#8211; The existing Maya node.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) – The existing Maya node.</td>
 </tr>
 </tbody>
 </table>
@@ -346,7 +337,7 @@ return a default value if no image is attached.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>times</strong> (<em>float</em>) &#8211; The times to query the deviation on, if not
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>times</strong> (<em>float</em>) – The times to query the deviation on, if not
 given the current frame is used.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The deviation of the marker-to-bundle re-projection in pixels.</td>
@@ -365,7 +356,7 @@ given the current frame is used.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>times</strong> (<em>float</em>) &#8211; The times to query the deviation on, if not
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>times</strong> (<em>float</em>) – The times to query the deviation on, if not
 given the current frame is used.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
@@ -418,10 +409,10 @@ Does the Camera have both transform and shape nodes and they both exist?</p>
 <dt id="mmSolver.api.Bundle">
 <em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">Bundle</code><span class="sig-paren">(</span><em>node=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Bundle" title="Permalink to this definition">¶</a></dt>
 <dd><p>The 3D Bundle object.</p>
-<p>A Bundle is named &#8216;Bundle&#8217; as it represents bundles of light
+<p>A Bundle is named ‘Bundle’ as it represents bundles of light
 forming on an imaging sensor.</p>
 <p>Example usage:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bnd</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Bundle</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bnd</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Bundle</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bnd</span><span class="o">.</span><span class="n">get_node</span><span class="p">()</span>
 <span class="go">&#39;|myNode&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bnd</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Bundle</span><span class="p">()</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;myBundle1&#39;</span><span class="p">)</span>
@@ -432,12 +423,12 @@ forming on an imaging sensor.</p>
 <dl class="method">
 <dt id="mmSolver.api.Bundle.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>node=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Bundle.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a Bundle object initialised with &#8216;node&#8217;.</p>
+<dd><p>Create a Bundle object initialised with ‘node’.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Maya node to attach this object to.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) – Maya node to attach this object to.</td>
 </tr>
 </tbody>
 </table>
@@ -462,12 +453,12 @@ forming on an imaging sensor.</p>
 <dl class="method">
 <dt id="mmSolver.api.Bundle.set_node">
 <code class="descname">set_node</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Bundle.set_node" title="Permalink to this definition">¶</a></dt>
-<dd><p>This Bundle object will affect the given &#8216;node&#8217;.</p>
+<dd><p>This Bundle object will affect the given ‘node’.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Node to set to.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) – Node to set to.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nothing.</td>
 </tr>
@@ -500,9 +491,9 @@ forming on an imaging sensor.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<em>str</em>) &#8211; The name of the newly created Bundle.</li>
-<li><strong>colour</strong> (<em>(</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>) or </em><em>None</em>) &#8211; Colour of bundle as R, G and B.
-&#8216;None&#8217; will leave as default.</li>
+<li><strong>name</strong> (<em>str</em>) – The name of the newly created Bundle.</li>
+<li><strong>colour</strong> (<em>(</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>) or </em><em>None</em>) – Colour of bundle as R, G and B.
+‘None’ will leave as default.</li>
 </ul>
 </td>
 </tr>
@@ -557,7 +548,7 @@ cannot be found.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rgb</strong> (<em>tuple</em>) &#8211; Colour as R, G, B; Or None to reset to default colour.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rgb</strong> (<em>tuple</em>) – Colour as R, G, B; Or None to reset to default colour.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nothing.</td>
 </tr>
@@ -594,9 +585,9 @@ cannot be found.</td>
 <em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">Marker</code><span class="sig-paren">(</span><em>node=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker" title="Permalink to this definition">¶</a></dt>
 <dd><p>The 2D Marker object.</p>
 <p>A Marker defines a wrapper around a Maya node that contains 2D
-information, in a camera&#8217;s screen-space.</p>
+information, in a camera’s screen-space.</p>
 <p>Example usage:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mkr</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Marker</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mkr</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Marker</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mkr</span><span class="o">.</span><span class="n">get_node</span><span class="p">()</span>
 <span class="go">&#39;|myNode&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bnd</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Bundle</span><span class="p">()</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;myBundle1&#39;</span><span class="p">)</span>
@@ -614,8 +605,8 @@ information, in a camera&#8217;s screen-space.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>node</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; The Maya node to connect to.</li>
-<li><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; This is a backwards compatible kwarg for &#8216;node&#8217;.</li>
+<li><strong>node</strong> (<em>None</em><em> or </em><em>str</em>) – The Maya node to connect to.</li>
+<li><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) – This is a backwards compatible kwarg for ‘node’.</li>
 </ul>
 </td>
 </tr>
@@ -647,7 +638,7 @@ information, in a camera&#8217;s screen-space.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; The existing Maya node.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) – The existing Maya node.</td>
 </tr>
 </tbody>
 </table>
@@ -698,7 +689,7 @@ attribute animCurve.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve</em><em> or </em><em>None</em>) &#8211; AnimCurve object to set, or use &#8216;None&#8217; to remove the
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve</em><em> or </em><em>None</em>) – AnimCurve object to set, or use ‘None’ to remove the
 reference to the existing animCurve object</td>
 </tr>
 </tbody>
@@ -714,12 +705,12 @@ reference to the existing animCurve object</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<em>str</em>) &#8211; Name of the marker to create.</li>
-<li><strong>colour</strong> (<em>(</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>) or </em><em>None</em>) &#8211; Colour of marker as R, G and B.
-&#8216;None&#8217; will leave as default.</li>
-<li><strong>cam</strong> (<a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) &#8211; The camera to create the marker underneath.</li>
-<li><strong>mkr_grp</strong> (<a class="reference internal" href="#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a>) &#8211; The marker group to create the marker underneath.</li>
-<li><strong>bnd</strong> (<a class="reference internal" href="#mmSolver.api.Bundle" title="mmSolver.api.Bundle"><em>Bundle</em></a>) &#8211; The bundle to attach to the newly created marker.</li>
+<li><strong>name</strong> (<em>str</em>) – Name of the marker to create.</li>
+<li><strong>colour</strong> (<em>(</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>) or </em><em>None</em>) – Colour of marker as R, G and B.
+‘None’ will leave as default.</li>
+<li><strong>cam</strong> (<a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The camera to create the marker underneath.</li>
+<li><strong>mkr_grp</strong> (<a class="reference internal" href="#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a>) – The marker group to create the marker underneath.</li>
+<li><strong>bnd</strong> (<a class="reference internal" href="#mmSolver.api.Bundle" title="mmSolver.api.Bundle"><em>Bundle</em></a>) – The bundle to attach to the newly created marker.</li>
 </ul>
 </td>
 </tr>
@@ -768,12 +759,12 @@ film back) is not animated over the times given.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>times</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; The times to query the deviation on, if not
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>times</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) – The times to query the deviation on, if not
 given the current frame is used.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The deviation of the marker-to-bundle re-projection
 in pixels. The length of the list returned will
-always equal the length of the &#8216;times&#8217; argument.</td>
+always equal the length of the ‘times’ argument.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[float, .]</td>
 </tr>
@@ -789,7 +780,7 @@ always equal the length of the &#8216;times&#8217; argument.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<em>float</em>) &#8211; The time to query the enable, if not given the
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<em>float</em>) – The time to query the enable, if not given the
 current frame is used.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The enabled state of the marker.</td>
@@ -813,9 +804,9 @@ not given the default Maya outer timeline range is used.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>frame_range_start</strong> (<em>int</em>) &#8211; The frame range start of the marker
+<li><strong>frame_range_start</strong> (<em>int</em>) – The frame range start of the marker
 to consider when no animCurve exists.</li>
-<li><strong>frame_range_end</strong> (<em>int</em>) &#8211; The frame range end of the marker
+<li><strong>frame_range_end</strong> (<em>int</em>) – The frame range end of the marker
 to consider when no animCurve exists.</li>
 </ul>
 </td>
@@ -838,7 +829,7 @@ to consider when no animCurve exists.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<em>float</em>) &#8211; The time to query the weight, if not given the
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<em>float</em>) – The time to query the weight, if not given the
 current frame is used.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The weight of the marker.</td>
@@ -876,9 +867,9 @@ not given the default Maya outer timeline range is used.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>frame_range_start</strong> (<em>int</em>) &#8211; The frame range start of the marker
+<li><strong>frame_range_start</strong> (<em>int</em>) – The frame range start of the marker
 to consider when no animCurve exists.</li>
-<li><strong>frame_range_end</strong> (<em>int</em>) &#8211; The frame range end of the marker
+<li><strong>frame_range_end</strong> (<em>int</em>) – The frame range end of the marker
 to consider when no animCurve exists.</li>
 </ul>
 </td>
@@ -901,7 +892,7 @@ to consider when no animCurve exists.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>times</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; The times to query the deviation on, if not
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>times</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) – The times to query the deviation on, if not
 given the current frame is used.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The deviation of the marker-to-bundle re-projection
@@ -922,8 +913,8 @@ given the current frame is used.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>times</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; Times to set deviation values for.</li>
-<li><strong>values</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; Values of deviation to set at each time.</li>
+<li><strong>times</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) – Times to set deviation values for.</li>
+<li><strong>values</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) – Values of deviation to set at each time.</li>
 </ul>
 </td>
 </tr>
@@ -956,7 +947,7 @@ cannot be found.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rgb</strong> (<em>tuple</em>) &#8211; Colour as R, G, B; Or None to reset to default colour.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rgb</strong> (<em>tuple</em>) – Colour as R, G, B; Or None to reset to default colour.</td>
 </tr>
 </tbody>
 </table>
@@ -986,7 +977,7 @@ cannot be found.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bnd</strong> (<a class="reference internal" href="#mmSolver.api.Bundle" title="mmSolver.api.Bundle"><em>Bundle</em></a>) &#8211; Bundle to connect to.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bnd</strong> (<a class="reference internal" href="#mmSolver.api.Bundle" title="mmSolver.api.Bundle"><em>Bundle</em></a>) – Bundle to connect to.</td>
 </tr>
 </tbody>
 </table>
@@ -1001,7 +992,7 @@ cannot be found.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Camera object, or None if Marker does not have a
-Camera (for example it&#8217;s unparented to world).</td>
+Camera (for example it’s unparented to world).</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None or <a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera">Camera</a></td>
 </tr>
@@ -1014,7 +1005,7 @@ Camera (for example it&#8217;s unparented to world).</td>
 <code class="descname">set_camera</code><span class="sig-paren">(</span><em>cam</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.set_camera" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connect this Marker to the given camera.</p>
 <p>Connecting Markers to cameras happens by parenting a Marker
-under a Camera&#8217;s Marker Group.</p>
+under a Camera’s Marker Group.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">If the <cite>cam</cite> argument is None, the Marker is
@@ -1024,7 +1015,7 @@ disconnected from any camera.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cam</strong> (<em>None</em><em> or </em><a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) &#8211; The camera to connect this Marker to.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cam</strong> (<em>None</em><em> or </em><a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The camera to connect this Marker to.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -1056,7 +1047,7 @@ disconnected from any camera.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mkr_grp</strong> (<a class="reference internal" href="#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a><em> or </em><em>None</em>) &#8211; Marker group object to link to this Marker.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mkr_grp</strong> (<a class="reference internal" href="#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a><em> or </em><em>None</em>) – Marker group object to link to this Marker.</td>
 </tr>
 </tbody>
 </table>
@@ -1073,8 +1064,8 @@ disconnected from any camera.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) &#8211; Marker objects to update deviation on.</li>
-<li><strong>solres_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><em>SolveResult</em></a><em>, </em><em>.</em><em>]</em>) &#8211; The solve results to calculate deviation frames from.</li>
+<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) – Marker objects to update deviation on.</li>
+<li><strong>solres_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><em>SolveResult</em></a><em>, </em><em>.</em><em>]</em>) – The solve results to calculate deviation frames from.</li>
 </ul>
 </td>
 </tr>
@@ -1091,13 +1082,13 @@ disconnected from any camera.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mkr_node</strong> (<em>str</em>) &#8211; The marker transform node to compute with.</li>
-<li><strong>bnd_node</strong> (<em>str</em>) &#8211; The bundle transform node to compute with.</li>
-<li><strong>cam_tfm</strong> (<em>str</em>) &#8211; The camera transform node to compute with.</li>
-<li><strong>cam_shp</strong> (<em>str</em>) &#8211; The camera shape node to compute with.</li>
-<li><strong>times</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) &#8211; The times to query the deviation.</li>
-<li><strong>image_width</strong> (<em>float</em>) &#8211; The width of the matchmove image plate.</li>
-<li><strong>image_height</strong> (<em>float</em>) &#8211; The height of the matchmove image plate.</li>
+<li><strong>mkr_node</strong> (<em>str</em>) – The marker transform node to compute with.</li>
+<li><strong>bnd_node</strong> (<em>str</em>) – The bundle transform node to compute with.</li>
+<li><strong>cam_tfm</strong> (<em>str</em>) – The camera transform node to compute with.</li>
+<li><strong>cam_shp</strong> (<em>str</em>) – The camera shape node to compute with.</li>
+<li><strong>times</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) – The times to query the deviation.</li>
+<li><strong>image_width</strong> (<em>float</em>) – The width of the matchmove image plate.</li>
+<li><strong>image_height</strong> (<em>float</em>) – The height of the matchmove image plate.</li>
 </ul>
 </td>
 </tr>
@@ -1120,7 +1111,7 @@ found it will return current frame.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>selected_markers</strong> (<em>list</em>) &#8211; Markers list.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>selected_markers</strong> (<em>list</em>) – Markers list.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Start and end frame of given markers list.</td>
 </tr>
@@ -1139,13 +1130,13 @@ found it will return current frame.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) &#8211; Markers to consider in mapping.</li>
-<li><strong>attr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><em>Attribute</em></a><em>, </em><em>.</em><em>]</em>) &#8211; Attributes to consider in mapping.</li>
+<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) – Markers to consider in mapping.</li>
+<li><strong>attr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><em>Attribute</em></a><em>, </em><em>.</em><em>]</em>) – Attributes to consider in mapping.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Boolean matrix of size &#8216;markers x attrs&#8217;. Matrix index
-is &#8216;mapping[marker_index][attr_index]&#8217;, based on the
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Boolean matrix of size ‘markers x attrs’. Matrix index
+is ‘mapping[marker_index][attr_index]’, based on the
 index of the mkr_list and attr_list given.</p>
 </td>
 </tr>
@@ -1173,8 +1164,8 @@ index of the mkr_list and attr_list given.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>node</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; Maya node to attach to.</li>
-<li><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; This is a backwards compatible kwarg for &#8216;node&#8217;.</li>
+<li><strong>node</strong> (<em>str</em><em> or </em><em>None</em>) – Maya node to attach to.</li>
+<li><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) – This is a backwards compatible kwarg for ‘node’.</li>
 </ul>
 </td>
 </tr>
@@ -1206,7 +1197,7 @@ index of the mkr_list and attr_list given.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Maya node path.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) – Maya node path.</td>
 </tr>
 </tbody>
 </table>
@@ -1237,8 +1228,8 @@ index of the mkr_list and attr_list given.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<em>str</em>) &#8211; The newly created node&#8217;s name.</li>
-<li><strong>cam</strong> (<a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) &#8211; The camera to attach to.</li>
+<li><strong>name</strong> (<em>str</em>) – The newly created node’s name.</li>
+<li><strong>cam</strong> (<a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The camera to attach to.</li>
 </ul>
 </td>
 </tr>
@@ -1252,7 +1243,7 @@ index of the mkr_list and attr_list given.</p>
 <dl class="method">
 <dt id="mmSolver.api.MarkerGroup.is_valid">
 <code class="descname">is_valid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.MarkerGroup.is_valid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if this object&#8217;s internal Maya representation is valid or not.</p>
+<dd><p>Check if this object’s internal Maya representation is valid or not.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1276,7 +1267,7 @@ index of the mkr_list and attr_list given.</p>
 <em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">Attribute</code><span class="sig-paren">(</span><em>name=None</em>, <em>node=None</em>, <em>attr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Attribute - A variable, or set of variables over time to solve.</p>
 <p>Example usage:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mmSolver.api</span> <span class="k">as</span> <span class="nn">mmapi</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mmSolver.api</span> <span class="k">as</span> <span class="nn">mmapi</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">createNode</span><span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">attr</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Attribute</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s1">&#39;tx&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">attr</span><span class="o">.</span><span class="n">get_node</span><span class="p">()</span>
@@ -1295,16 +1286,16 @@ index of the mkr_list and attr_list given.</p>
 <dt id="mmSolver.api.Attribute.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>name=None</em>, <em>node=None</em>, <em>attr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialise an Attribute object.</p>
-<p>Attribute can use a &#8216;name&#8217;, or &#8216;node&#8217; and &#8216;attr&#8217;.</p>
-<p>A &#8216;name&#8217; is a string of both node and attribute path; <cite>node.attr</cite>.</p>
+<p>Attribute can use a ‘name’, or ‘node’ and ‘attr’.</p>
+<p>A ‘name’ is a string of both node and attribute path; <cite>node.attr</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<em>str</em>) &#8211; Node and attribute path as a single string: &#8216;node.attr&#8217;</li>
-<li><strong>node</strong> (<em>str</em>) &#8211; DG Maya node path.</li>
-<li><strong>attr</strong> (<em>str</em>) &#8211; Long or short attribute name.</li>
+<li><strong>name</strong> (<em>str</em>) – Node and attribute path as a single string: ‘node.attr’</li>
+<li><strong>node</strong> (<em>str</em>) – DG Maya node path.</li>
+<li><strong>attr</strong> (<em>str</em>) – Long or short attribute name.</li>
 </ul>
 </td>
 </tr>
@@ -1320,7 +1311,7 @@ index of the mkr_list and attr_list given.</p>
 <dl class="method">
 <dt id="mmSolver.api.Attribute.get_node_uid">
 <code class="descname">get_node_uid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute.get_node_uid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the Attribute&#8217;s node unique identifier.</p>
+<dd><p>Get the Attribute’s node unique identifier.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1406,7 +1397,7 @@ please use Collection.get/set_attribute* functions.</p>
 <em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">Frame</code><span class="sig-paren">(</span><em>value</em>, <em>tags=None</em>, <em>primary=False</em>, <em>secondary=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hold a time value with tags meta-data.</p>
 <p>Example usage:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">frmA</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">frmA</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">frmA</span><span class="o">.</span><span class="n">get_number</span><span class="p">()</span>
 <span class="go">1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">frmA</span><span class="o">.</span><span class="n">get_tags</span><span class="p">()</span>
@@ -1432,10 +1423,10 @@ please use Collection.get/set_attribute* functions.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>value</strong> (<em>int</em><em> or </em><em>float</em>) &#8211; The frame number.</li>
-<li><strong>tags</strong> (<em>[</em><em>str</em><em>, </em><em>..</em><em> ] or </em><em>None</em>) &#8211; List of string values accocated with this frame number.</li>
-<li><strong>primary</strong> (<em>bool</em>) &#8211; Is this frame &#8216;primary&#8217;?</li>
-<li><strong>secondary</strong> (<em>bool</em>) &#8211; Is this frame &#8216;secondary&#8217;?</li>
+<li><strong>value</strong> (<em>int</em><em> or </em><em>float</em>) – The frame number.</li>
+<li><strong>tags</strong> (<em>[</em><em>str</em><em>, </em><em>..</em><em> ] or </em><em>None</em>) – List of string values accocated with this frame number.</li>
+<li><strong>primary</strong> (<em>bool</em>) – Is this frame ‘primary’?</li>
+<li><strong>secondary</strong> (<em>bool</em>) – Is this frame ‘secondary’?</li>
 </ul>
 </td>
 </tr>
@@ -1448,7 +1439,7 @@ please use Collection.get/set_attribute* functions.</p>
 <code class="descname">get_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Frame.get_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the data of this Frame, both number and tags.</p>
 <p>Data structure returned is:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;number&#39;</span><span class="p">:</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">float</span><span class="p">,</span> 
     <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">strs</span><span class="p">,</span>
 <span class="p">}</span>
@@ -1471,7 +1462,7 @@ please use Collection.get/set_attribute* functions.</p>
 <code class="descname">set_data</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Frame.set_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the internal frame data using once function call.</p>
 <p>Expected data structure is:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;number&#39;</span><span class="p">:</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">float</span><span class="p">,</span> 
     <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">strs</span><span class="p">,</span>
 <span class="p">}</span>
@@ -1481,7 +1472,7 @@ please use Collection.get/set_attribute* functions.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>dict</em>) &#8211; Data structure with both &#8216;number&#8217; and &#8216;tags&#8217; keys.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>dict</em>) – Data structure with both ‘number’ and ‘tags’ keys.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -1513,7 +1504,7 @@ please use Collection.get/set_attribute* functions.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em><em> or </em><em>float</em>) &#8211; the frame number.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em><em> or </em><em>float</em>) – the frame number.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -1545,7 +1536,7 @@ please use Collection.get/set_attribute* functions.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>list</em>) &#8211; List of tags to set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>list</em>) – List of tags to set.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -1561,7 +1552,7 @@ please use Collection.get/set_attribute* functions.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>str</em>) &#8211; Tag name to add.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>str</em>) – Tag name to add.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -1589,13 +1580,13 @@ needs.</p>
 <p>A Solver Operation may have any number of methods and data, this class
 does not enforce a common method interface (yet).</p>
 <p>The SolverBase class should be sub-classed and then (at least) the
-&#8216;compile&#8217; function should be overridden.</p>
+‘compile’ function should be overridden.</p>
 <dl class="method">
 <dt id="mmSolver.api.SolverBase.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>name=None</em>, <em>data=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBase.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialise a SolverBase.</p>
 <p>This __init__ should be called by sub-classes, for example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MySolver</span><span class="p">(</span><span class="n">SolverBase</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MySolver</span><span class="p">(</span><span class="n">SolverBase</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="nb">super</span><span class="p">(</span><span class="n">MySolver</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
@@ -1605,12 +1596,12 @@ does not enforce a common method interface (yet).</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<em>basestring</em>) &#8211; The name of the Solver.</li>
-<li><strong>data</strong> (<em>dict</em>) &#8211; The internal data structure to set inside the Solver base.
+<li><strong>name</strong> (<em>basestring</em>) – The name of the Solver.</li>
+<li><strong>data</strong> (<em>dict</em>) – The internal data structure to set inside the Solver base.
 The data holds information about the current options of
 the solver.</li>
-<li><strong>args</strong> (<em>list</em>) &#8211; Whatever positional arguments to give to the init function.</li>
-<li><strong>kwargs</strong> (<em>dict</em>) &#8211; Whatever keyword arguments to give to the init function.</li>
+<li><strong>args</strong> (<em>list</em>) – Whatever positional arguments to give to the init function.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Whatever keyword arguments to give to the init function.</li>
 </ul>
 </td>
 </tr>
@@ -1653,7 +1644,7 @@ the solver.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) &#8211; The enabled value.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) – The enabled value.</td>
 </tr>
 </tbody>
 </table>
@@ -1667,14 +1658,14 @@ the solver.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first">&#8216;NotValid&#8217;, if the compile goes wrong.</p>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first">‘NotValid’, if the compile goes wrong.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; Collection to be compile.</li>
-<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of Markers used in the Solve.</li>
-<li><strong>attr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><em>Attribute</em></a><em>, </em><em>.</em><em>]</em>) &#8211; Attributes to be solved for.</li>
-<li><strong>withtest</strong> (<em>bool</em>) &#8211; Should the tests (validation) be generated
+<li><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) – Collection to be compile.</li>
+<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) – List of Markers used in the Solve.</li>
+<li><strong>attr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><em>Attribute</em></a><em>, </em><em>.</em><em>]</em>) – Attributes to be solved for.</li>
+<li><strong>withtest</strong> (<em>bool</em>) – Should the tests (validation) be generated
 along with the real solver steps?</li>
 </ul>
 </td>
@@ -1699,10 +1690,10 @@ along with the real solver steps?</li>
 <p>Parameters for solver:</p>
 <ul class="simple">
 <li>Frame Range - with options:<ul>
-<li>&#8220;Single Frame&#8221;</li>
-<li>&#8220;Time Slider (Inner)&#8221;</li>
-<li>&#8220;Time Slider (Outer)&#8221;</li>
-<li>&#8220;Custom&#8221;</li>
+<li>“Single Frame”</li>
+<li>“Time Slider (Inner)”</li>
+<li>“Time Slider (Outer)”</li>
+<li>“Custom”</li>
 </ul>
 </li>
 </ul>
@@ -1712,7 +1703,30 @@ and return.</p>
 <dl class="method">
 <dt id="mmSolver.api.SolverBasic.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBasic.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initialise a SolverBase.</p>
+<p>This __init__ should be called by sub-classes, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MySolver</span><span class="p">(</span><span class="n">SolverBase</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="nb">super</span><span class="p">(</span><span class="n">MySolver</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>basestring</em>) – The name of the Solver.</li>
+<li><strong>data</strong> (<em>dict</em>) – The internal data structure to set inside the Solver base.
+The data holds information about the current options of
+the solver.</li>
+<li><strong>args</strong> (<em>list</em>) – Whatever positional arguments to give to the init function.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Whatever keyword arguments to give to the init function.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverBasic.get_use_single_frame">
@@ -1736,7 +1750,7 @@ and return.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em><em> or </em><em>int</em><em> or </em><em>long</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em><em> or </em><em>int</em><em> or </em><em>long</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -1764,7 +1778,7 @@ and return.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference internal" href="#mmSolver.api.Frame" title="mmSolver.api.Frame"><em>Frame</em></a><em> or </em><em>int</em><em> or </em><em>long</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference internal" href="#mmSolver.api.Frame" title="mmSolver.api.Frame"><em>Frame</em></a><em> or </em><em>int</em><em> or </em><em>long</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -1792,7 +1806,7 @@ and return.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -1820,7 +1834,7 @@ and return.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -1880,7 +1894,29 @@ and return.</p>
 <dl class="method">
 <dt id="mmSolver.api.SolverBasic.compile">
 <code class="descname">compile</code><span class="sig-paren">(</span><em>col</em>, <em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBasic.compile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Compile solver into actions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first">‘NotValid’, if the compile goes wrong.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) – Collection to be compile.</li>
+<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) – List of Markers used in the Solve.</li>
+<li><strong>attr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><em>Attribute</em></a><em>, </em><em>.</em><em>]</em>) – Attributes to be solved for.</li>
+<li><strong>withtest</strong> (<em>bool</em>) – Should the tests (validation) be generated
+along with the real solver steps?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Return a generator, to yield two Action objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -1895,16 +1931,16 @@ and return.</p>
 <p>Parameters for solver:</p>
 <ul class="simple">
 <li>Frame Range - with options:<ul>
-<li>&#8220;Single Frame&#8221;</li>
-<li>&#8220;Time Slider (Inner)&#8221;</li>
-<li>&#8220;Time Slider (Outer)&#8221;</li>
-<li>&#8220;Custom&#8221;</li>
+<li>“Single Frame”</li>
+<li>“Time Slider (Inner)”</li>
+<li>“Time Slider (Outer)”</li>
+<li>“Custom”</li>
 </ul>
 </li>
 <li>Root Frames - A list of integer frame numbers.</li>
 <li>Solver Method<ul>
-<li>&#8220;Solve Everything at Once&#8221; option - On or Off</li>
-<li>&#8220;Solve Root Frames Only&#8221; option - On or Off</li>
+<li>“Solve Everything at Once” option - On or Off</li>
+<li>“Solve Root Frames Only” option - On or Off</li>
 </ul>
 </li>
 </ul>
@@ -1922,7 +1958,30 @@ and all frames are solved as one big crunch.</p>
 <dl class="method">
 <dt id="mmSolver.api.SolverStandard.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initialise a SolverBase.</p>
+<p>This __init__ should be called by sub-classes, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MySolver</span><span class="p">(</span><span class="n">SolverBase</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="nb">super</span><span class="p">(</span><span class="n">MySolver</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>basestring</em>) – The name of the Solver.</li>
+<li><strong>data</strong> (<em>dict</em>) – The internal data structure to set inside the Solver base.
+The data holds information about the current options of
+the solver.</li>
+<li><strong>args</strong> (<em>list</em>) – Whatever positional arguments to give to the init function.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Whatever keyword arguments to give to the init function.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStandard.get_use_single_frame">
@@ -1946,7 +2005,7 @@ and all frames are solved as one big crunch.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em><em> or </em><em>int</em><em> or </em><em>long</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em><em> or </em><em>int</em><em> or </em><em>long</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -1974,7 +2033,7 @@ and all frames are solved as one big crunch.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference internal" href="#mmSolver.api.Frame" title="mmSolver.api.Frame"><em>Frame</em></a><em> or </em><em>int</em><em> or </em><em>long</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference internal" href="#mmSolver.api.Frame" title="mmSolver.api.Frame"><em>Frame</em></a><em> or </em><em>int</em><em> or </em><em>long</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -2002,7 +2061,7 @@ and all frames are solved as one big crunch.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em><em> or </em><em>int</em><em> or </em><em>long</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em><em> or </em><em>int</em><em> or </em><em>long</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -2030,7 +2089,7 @@ and all frames are solved as one big crunch.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em><em> or </em><em>int</em><em> or </em><em>long</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em><em> or </em><em>int</em><em> or </em><em>long</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -2058,7 +2117,7 @@ and all frames are solved as one big crunch.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em><em> or </em><em>long</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em><em> or </em><em>long</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -2086,7 +2145,7 @@ and all frames are solved as one big crunch.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -2114,7 +2173,7 @@ and all frames are solved as one big crunch.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -2142,7 +2201,7 @@ and all frames are solved as one big crunch.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -2170,7 +2229,7 @@ and all frames are solved as one big crunch.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) &#8211; Value to be set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) – Value to be set.</td>
 </tr>
 </tbody>
 </table>
@@ -2299,19 +2358,41 @@ and all frames are solved as one big crunch.</p>
 <dl class="method">
 <dt id="mmSolver.api.SolverStandard.compile">
 <code class="descname">compile</code><span class="sig-paren">(</span><em>col</em>, <em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.compile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Compile solver into actions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first">‘NotValid’, if the compile goes wrong.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) – Collection to be compile.</li>
+<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) – List of Markers used in the Solve.</li>
+<li><strong>attr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><em>Attribute</em></a><em>, </em><em>.</em><em>]</em>) – Attributes to be solved for.</li>
+<li><strong>withtest</strong> (<em>bool</em>) – Should the tests (validation) be generated
+along with the real solver steps?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Return a generator, to yield two Action objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="solver-step">
 <h4>Solver Step<a class="headerlink" href="#solver-step" title="Permalink to this headline">¶</a></h4>
-<p>The <a class="reference internal" href="#mmSolver.api.SolverStep" title="mmSolver.api.SolverStep"><code class="xref py py-class docutils literal"><span class="pre">mmSolver.api.SolverStep</span></code></a> is used to represent frames
+<p>The <a class="reference internal" href="#mmSolver.api.SolverStep" title="mmSolver.api.SolverStep"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.SolverStep</span></code></a> is used to represent frames
 to be solved.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For backwards compatibility the SolverStep class can also be accessed
-with the class name <code class="docutils literal"><span class="pre">mmSolver.api.Solver</span></code>. This is deprecated
+with the class name <code class="docutils literal notranslate"><span class="pre">mmSolver.api.Solver</span></code>. This is deprecated
 and will be removed in a future version.</p>
 </div>
 <dl class="class">
@@ -2343,8 +2424,8 @@ and will be removed in a future version.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>args</strong> &#8211; Not used.</li>
-<li><strong>kwargs</strong> &#8211; Not used.</li>
+<li><strong>args</strong> – Not used.</li>
+<li><strong>kwargs</strong> – Not used.</li>
 </ul>
 </td>
 </tr>
@@ -2374,7 +2455,7 @@ and will be removed in a future version.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) &#8211; Max iterations number.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) – Max iterations number.</td>
 </tr>
 </tbody>
 </table>
@@ -2402,7 +2483,7 @@ and will be removed in a future version.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) &#8211; Delta factor number.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) – Delta factor number.</td>
 </tr>
 </tbody>
 </table>
@@ -2430,7 +2511,7 @@ and will be removed in a future version.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em><em> or </em><em>None</em>) &#8211; The method to be used. Must be a value in
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em><em> or </em><em>None</em>) – The method to be used. Must be a value in
 AUTO_DIFF_TYPE_LIST.</td>
 </tr>
 </tbody>
@@ -2459,7 +2540,7 @@ AUTO_DIFF_TYPE_LIST.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) &#8211; Initial damping Tau value.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) – Initial damping Tau value.</td>
 </tr>
 </tbody>
 </table>
@@ -2487,7 +2568,7 @@ AUTO_DIFF_TYPE_LIST.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> &#8211; </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> – </td>
 </tr>
 </tbody>
 </table>
@@ -2515,7 +2596,7 @@ AUTO_DIFF_TYPE_LIST.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) &#8211; Value to set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) – Value to set.</td>
 </tr>
 </tbody>
 </table>
@@ -2543,7 +2624,7 @@ AUTO_DIFF_TYPE_LIST.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) &#8211; Value to set.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) – Value to set.</td>
 </tr>
 </tbody>
 </table>
@@ -2577,7 +2658,7 @@ for more details of the values that can be set.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) &#8211; Solver type index number.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) – Solver type index number.</td>
 </tr>
 </tbody>
 </table>
@@ -2605,7 +2686,7 @@ for more details of the values that can be set.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) &#8211; Turn on verbose mode? Yes or no.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) – Turn on verbose mode? Yes or no.</td>
 </tr>
 </tbody>
 </table>
@@ -2715,16 +2796,16 @@ for more details of the values that can be set.</p>
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.compile">
 <code class="descname">compile</code><span class="sig-paren">(</span><em>col</em>, <em>mkr_list</em>, <em>attr_list</em>, <em>withtest=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.compile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compiles data given into flags for a single run of &#8216;mmSolver&#8217;.</p>
+<dd><p>Compiles data given into flags for a single run of ‘mmSolver’.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>self</strong> (<em>Solver</em>) &#8211; The solver to compile</li>
-<li><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The collection to compile.</li>
-<li><strong>mkr_list</strong> (<em>list of Marker</em>) &#8211; Markers to measure</li>
-<li><strong>attr_list</strong> (<em>list of Attribute</em>) &#8211; Attributes to solve for</li>
+<li><strong>self</strong> (<em>Solver</em>) – The solver to compile</li>
+<li><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) – The collection to compile.</li>
+<li><strong>mkr_list</strong> (<em>list of Marker</em>) – Markers to measure</li>
+<li><strong>attr_list</strong> (<em>list of Attribute</em>) – Attributes to solve for</li>
 </ul>
 </td>
 </tr>
@@ -2759,8 +2840,8 @@ validation of the solve.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>node</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; Maya node to attach to.</li>
-<li><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) &#8211; This is a backwards compatible kwarg for &#8216;node&#8217;.</li>
+<li><strong>node</strong> (<em>str</em><em> or </em><em>None</em>) – Maya node to attach to.</li>
+<li><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) – This is a backwards compatible kwarg for ‘node’.</li>
 </ul>
 </td>
 </tr>
@@ -3146,10 +3227,10 @@ exist.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>prog_fn</strong> (<em>callable</em>) &#8211; Progress function callback. If not None this
+<li><strong>prog_fn</strong> (<em>callable</em>) – Progress function callback. If not None this
 function will be executed to emit progress
 messages.</li>
-<li><strong>status_fn</strong> (<em>callable</em>) &#8211; Status message function callback. If not
+<li><strong>status_fn</strong> (<em>callable</em>) – Status message function callback. If not
 None this function will be executed each
 time a status message needs to be printed.</li>
 </ul>
@@ -3181,14 +3262,14 @@ time a status message needs to be printed.</li>
 <dl class="function">
 <dt id="mmSolver.api.run_progress_func">
 <code class="descclassname">mmSolver.api.</code><code class="descname">run_progress_func</code><span class="sig-paren">(</span><em>prog_fn</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.run_progress_func" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call the prog_fn callable function, if it&#8217;s not None.</p>
+<dd><p>Call the prog_fn callable function, if it’s not None.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>prog_fn</strong> (<em>callable</em><em> or </em><em>None</em>) &#8211; Callable function to print or save the &#8216;value&#8217; argument.</li>
-<li><strong>value</strong> (<em>int</em><em> or </em><em>float</em>) &#8211; Expected to be a percent number from 0 to 100.</li>
+<li><strong>prog_fn</strong> (<em>callable</em><em> or </em><em>None</em>) – Callable function to print or save the ‘value’ argument.</li>
+<li><strong>value</strong> (<em>int</em><em> or </em><em>float</em>) – Expected to be a percent number from 0 to 100.</li>
 </ul>
 </td>
 </tr>
@@ -3199,14 +3280,14 @@ time a status message needs to be printed.</li>
 <dl class="function">
 <dt id="mmSolver.api.run_status_func">
 <code class="descclassname">mmSolver.api.</code><code class="descname">run_status_func</code><span class="sig-paren">(</span><em>status_fn</em>, <em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.run_status_func" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call the status_fn callable function, if it&#8217;s not None.</p>
+<dd><p>Call the status_fn callable function, if it’s not None.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>status_fn</strong> (<em>callable</em><em> or </em><em>None</em>) &#8211; Callable function to print or save the &#8216;text&#8217; argument.</li>
-<li><strong>text</strong> (<em>str</em>) &#8211; Text to display as the current status.</li>
+<li><strong>status_fn</strong> (<em>callable</em><em> or </em><em>None</em>) – Callable function to print or save the ‘text’ argument.</li>
+<li><strong>text</strong> (<em>str</em>) – Text to display as the current status.</li>
 </ul>
 </td>
 </tr>
@@ -3223,9 +3304,9 @@ frame or not.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> (<em>dict</em>) &#8211; Solver keyword arguments.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> (<em>dict</em>) – Solver keyword arguments.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">If the given &#8216;kwargs&#8217; argument defines only one unique
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">If the given ‘kwargs’ argument defines only one unique
 frame to solve.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
@@ -3244,7 +3325,7 @@ which will not solve values on a single frame.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> (<em>dict</em>) &#8211; Solver keyword arguments.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> (<em>dict</em>) – Solver keyword arguments.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Pairs of source and destination plugs that have been
 disconnected by this function.</td>
@@ -3259,15 +3340,15 @@ disconnected by this function.</td>
 <dt id="mmSolver.api.reconnect_animcurves">
 <code class="descclassname">mmSolver.api.</code><code class="descname">reconnect_animcurves</code><span class="sig-paren">(</span><em>kwargs</em>, <em>save_node_attrs</em>, <em>force_dg_update=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.reconnect_animcurves" title="Permalink to this definition">¶</a></dt>
 <dd><p>Re-connect animation curves previously disconnected using
-&#8216;disconnect_animcurves&#8217; function</p>
+‘disconnect_animcurves’ function</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>kwargs</strong> (<em>dict</em>) &#8211; Solver keyword arguments.</li>
-<li><strong>save_node_attrs</strong> (<em>[</em><em>(</em><em>str</em><em>, </em><em>str</em><em>)</em><em>, </em><em>.</em><em>]</em>) &#8211; List of pairs of Maya node.attrs to be re-connected.</li>
-<li><strong>force_dg_update</strong> (<em>bool</em>) &#8211; Should the DG network be updated?</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Solver keyword arguments.</li>
+<li><strong>save_node_attrs</strong> (<em>[</em><em>(</em><em>str</em><em>, </em><em>str</em><em>)</em><em>, </em><em>.</em><em>]</em>) – List of pairs of Maya node.attrs to be re-connected.</li>
+<li><strong>force_dg_update</strong> (<em>bool</em>) – Should the DG network be updated?</li>
 </ul>
 </td>
 </tr>
@@ -3278,13 +3359,13 @@ disconnected by this function.</td>
 <dl class="function">
 <dt id="mmSolver.api.clear_attr_keyframes">
 <code class="descclassname">mmSolver.api.</code><code class="descname">clear_attr_keyframes</code><span class="sig-paren">(</span><em>kwargs</em>, <em>frames</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.clear_attr_keyframes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluates the animated attributes at &#8216;frames&#8217;, then deletes the
+<dd><p>Evaluates the animated attributes at ‘frames’, then deletes the
 existing animCurves.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> (<em>dict</em>) &#8211; Solver keyword arguments.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> (<em>dict</em>) – Solver keyword arguments.</td>
 </tr>
 </tbody>
 </table>
@@ -3298,7 +3379,7 @@ existing animCurves.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> (<em>dict</em>) &#8211; Solver keyword arguments.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> (<em>dict</em>) – Solver keyword arguments.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of Maya nodes.</td>
 </tr>
@@ -3409,7 +3490,7 @@ existing animCurves.</p>
 <dl class="function">
 <dt id="mmSolver.api.createExecuteOptions">
 <code class="descclassname">mmSolver.api.</code><code class="descname">createExecuteOptions</code><span class="sig-paren">(</span><em>verbose=False</em>, <em>refresh=False</em>, <em>disable_viewport_two=True</em>, <em>force_update=False</em>, <em>do_isolate=False</em>, <em>pre_solve_force_eval=True</em>, <em>display_grid=True</em>, <em>display_node_types=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.createExecuteOptions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create <code class="xref py py-class docutils literal"><span class="pre">ExecuteOptions</span></code> object.</p>
+<dd><p>Create <a class="reference internal" href="#mmSolver.api.ExecuteOptions" title="mmSolver.api.ExecuteOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecuteOptions</span></code></a> object.</p>
 <p>If a keyword argument is not given, a reasonable default value is
 used.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -3417,19 +3498,19 @@ used.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>verbose</strong> (<em>bool</em>) &#8211; Print extra solver information while a solve is running.</li>
-<li><strong>refresh</strong> (<em>bool</em>) &#8211; Should the solver refresh the viewport while solving?</li>
-<li><strong>disable_viewport_two</strong> (<em>bool</em>) &#8211; Turn off Viewport 2.0 update, before solving?</li>
-<li><strong>force_update</strong> (<em>bool</em>) &#8211; Force updating the DG network, to help the
+<li><strong>verbose</strong> (<em>bool</em>) – Print extra solver information while a solve is running.</li>
+<li><strong>refresh</strong> (<em>bool</em>) – Should the solver refresh the viewport while solving?</li>
+<li><strong>disable_viewport_two</strong> (<em>bool</em>) – Turn off Viewport 2.0 update, before solving?</li>
+<li><strong>force_update</strong> (<em>bool</em>) – Force updating the DG network, to help the
 solver in case of a Maya evaluation DG bug.</li>
-<li><strong>do_isolate</strong> (<em>bool</em>) &#8211; Isolate only solving objects while performing
+<li><strong>do_isolate</strong> (<em>bool</em>) – Isolate only solving objects while performing
 the solve.</li>
-<li><strong>pre_solve_force_eval</strong> (<em>bool</em>) &#8211; Before solving, we kick-start the
+<li><strong>pre_solve_force_eval</strong> (<em>bool</em>) – Before solving, we kick-start the
 evaluation by changing time and
 forcing update.</li>
-<li><strong>display_grid</strong> (<em>bool</em>) &#8211; Display grid in the viewport while performing
+<li><strong>display_grid</strong> (<em>bool</em>) – Display grid in the viewport while performing
 the solve?</li>
-<li><strong>display_node_types</strong> &#8211; Allow a dict to be passed to the function
+<li><strong>display_node_types</strong> – Allow a dict to be passed to the function
 specifying the object type and the
 visibility status during solving. This
 allows us to turn on/off any object type
@@ -3451,10 +3532,10 @@ visibility will not be changed.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection object to be validated.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) – The Collection object to be validated.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of validations, with a single valid boolean (did the
-validation succeed?). See <code class="xref py py-func docutils literal"><span class="pre">_run_validate_action()</span></code>
+validation succeed?). See <code class="xref py py-func docutils literal notranslate"><span class="pre">_run_validate_action()</span></code>
 function return types for more details.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">(bool, [str, .], [(int, int, int), .])</td>
@@ -3466,7 +3547,7 @@ function return types for more details.</td>
 <dl class="function">
 <dt id="mmSolver.api.execute">
 <code class="descclassname">mmSolver.api.</code><code class="descname">execute</code><span class="sig-paren">(</span><em>col</em>, <em>options=None</em>, <em>validate_mode=None</em>, <em>log_level=None</em>, <em>prog_fn=None</em>, <em>status_fn=None</em>, <em>info_fn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.execute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compile the collection, then pass that data to the &#8216;mmSolver&#8217; command.</p>
+<dd><p>Compile the collection, then pass that data to the ‘mmSolver’ command.</p>
 <p>The mmSolver command will return a list of strings, which will then be
 passed to the SolveResult class so the user can query the raw data
 using an interface.</p>
@@ -3475,16 +3556,16 @@ using an interface.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) &#8211; The Collection to execute.</li>
-<li><strong>options</strong> (<a class="reference internal" href="#mmSolver.api.ExecuteOptions" title="mmSolver.api.ExecuteOptions"><em>ExecuteOptions</em></a>) &#8211; The options for the execution.</li>
-<li><strong>validate_mode</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; How should the solve validate? Must be one of
+<li><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) – The Collection to execute.</li>
+<li><strong>options</strong> (<a class="reference internal" href="#mmSolver.api.ExecuteOptions" title="mmSolver.api.ExecuteOptions"><em>ExecuteOptions</em></a>) – The options for the execution.</li>
+<li><strong>validate_mode</strong> (<em>str</em><em> or </em><em>None</em>) – How should the solve validate? Must be one of
 the VALIDATE_MODE_VALUE_LIST values.</li>
-<li><strong>log_level</strong> (<em>str</em>) &#8211; The log level for the execution.</li>
-<li><strong>prog_fn</strong> (<em>callable</em><em> or </em><em>None</em>) &#8211; The function used report progress messages to
+<li><strong>log_level</strong> (<em>str</em>) – The log level for the execution.</li>
+<li><strong>prog_fn</strong> (<em>callable</em><em> or </em><em>None</em>) – The function used report progress messages to
 the user.</li>
-<li><strong>status_fn</strong> (<em>callable</em><em> or </em><em>None</em>) &#8211; The function used to report status messages
+<li><strong>status_fn</strong> (<em>callable</em><em> or </em><em>None</em>) – The function used to report status messages
 to the user.</li>
-<li><strong>info_fn</strong> (<em>callable</em><em> or </em><em>None</em>) &#8211; The function used to report information
+<li><strong>info_fn</strong> (<em>callable</em><em> or </em><em>None</em>) – The function used to report information
 messages to the user.</li>
 </ul>
 </td>
@@ -3518,7 +3599,7 @@ data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cmd_data</strong> (<em>[</em><em>[</em><em>str</em><em>, </em><em>.</em><em>]</em><em>, </em><em>.</em><em>]</em>) &#8211; Command data from mmSolver.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cmd_data</strong> (<em>[</em><em>[</em><em>str</em><em>, </em><em>.</em><em>]</em><em>, </em><em>.</em><em>]</em>) – Command data from mmSolver.</td>
 </tr>
 </tbody>
 </table>
@@ -3541,7 +3622,7 @@ raw data and re-initializing the object with this data.</p>
 <dl class="method">
 <dt id="mmSolver.api.SolveResult.get_final_error">
 <code class="descname">get_final_error</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolveResult.get_final_error" title="Permalink to this definition">¶</a></dt>
-<dd><p>The single error value representing the solve at it&#8217;s last state.</p>
+<dd><p>The single error value representing the solve at it’s last state.</p>
 </dd></dl>
 
 <dl class="method">
@@ -3595,12 +3676,12 @@ printed out.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>marker_node</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; The specific marker node to get an error list for.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>marker_node</strong> (<em>str</em><em> or </em><em>None</em>) – The specific marker node to get an error list for.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict of marker node names and time values, giving
 the error (deviation).</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">{&#8220;marker_node&#8221;: {float: float}}</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">{“marker_node”: {float: float}}</td>
 </tr>
 </tbody>
 </table>
@@ -3616,7 +3697,7 @@ the error (deviation).</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>solres_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><em>SolveResult</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of SolveResult to combine together.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>solres_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><em>SolveResult</em></a><em>, </em><em>.</em><em>]</em>) – List of SolveResult to combine together.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A map of time statistics, accumulated over all runs
 of the Solver.</td>
@@ -3630,15 +3711,15 @@ of the Solver.</td>
 <dl class="function">
 <dt id="mmSolver.api.merge_frame_error_list">
 <code class="descclassname">mmSolver.api.</code><code class="descname">merge_frame_error_list</code><span class="sig-paren">(</span><em>solres_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.merge_frame_error_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Combine a &#8216;frame_error_list&#8217; from a list of SolveResult objects.</p>
-<p>The &#8216;solres_list&#8217; is assumed to represent sequential solver
+<dd><p>Combine a ‘frame_error_list’ from a list of SolveResult objects.</p>
+<p>The ‘solres_list’ is assumed to represent sequential solver
 executions; The order of this list is important, because only
 the last solved error value is used.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>solres_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><em>SolveResult</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of SolveResult to merge together.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>solres_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><em>SolveResult</em></a><em>, </em><em>.</em><em>]</em>) – List of SolveResult to merge together.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Mapping of frame number to error values.</td>
 </tr>
@@ -3656,7 +3737,7 @@ the last solved error value is used.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>frame_error_list</strong> (<em>{float: float}</em>) &#8211; Mapping of frame and error deviation.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>frame_error_list</strong> (<em>{float: float}</em>) – Mapping of frame and error deviation.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Average error across all frames.</td>
 </tr>
@@ -3675,7 +3756,7 @@ the last solved error value is used.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>frame_error_list</strong> (<em>{float: float}</em>) &#8211; Mapping of frame and error deviation.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>frame_error_list</strong> (<em>{float: float}</em>) – Mapping of frame and error deviation.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The frame and error with the maximum amount of error.</td>
 </tr>
@@ -3688,10 +3769,10 @@ the last solved error value is used.</p>
 <dl class="function">
 <dt id="mmSolver.api.merge_marker_error_list">
 <code class="descclassname">mmSolver.api.</code><code class="descname">merge_marker_error_list</code><span class="sig-paren">(</span><em>solres_list</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.merge_marker_error_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Combine a &#8216;marker_error_list&#8217; from a list of SolveResult objects.</p>
+<dd><p>Combine a ‘marker_error_list’ from a list of SolveResult objects.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The &#8216;solres_list&#8217; is assumed to represent sequential
+<p class="last">The ‘solres_list’ is assumed to represent sequential
 solver executions; The order of this list is important, because
 only the last solved error value is used.</p>
 </div>
@@ -3699,7 +3780,7 @@ only the last solved error value is used.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>solres_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><em>SolveResult</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of SolveResult to merge together.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>solres_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><em>SolveResult</em></a><em>, </em><em>.</em><em>]</em>) – List of SolveResult to merge together.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Mapping of frame number to error values.</td>
 </tr>
@@ -3717,7 +3798,7 @@ only the last solved error value is used.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>solres_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><em>SolveResult</em></a><em>, </em><em>.</em><em>]</em>) &#8211; List of SolveResult to merge together.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>solres_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><em>SolveResult</em></a><em>, </em><em>.</em><em>]</em>) – List of SolveResult to merge together.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of Maya nodes of Markers.</td>
 </tr>
@@ -3730,12 +3811,12 @@ only the last solved error value is used.</p>
 <dl class="function">
 <dt id="mmSolver.api.format_timestamp">
 <code class="descclassname">mmSolver.api.</code><code class="descname">format_timestamp</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.format_timestamp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a &#8216;UNIX Epoch&#8217; float number to a human-readable Timestamp.</p>
+<dd><p>Convert a ‘UNIX Epoch’ float number to a human-readable Timestamp.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) &#8211; Input UNIX Epoch as returned by &#8216;time.time()&#8217; function.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>float</em>) – Input UNIX Epoch as returned by ‘time.time()’ function.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Human (and machine) readable timestamp.</td>
 </tr>
@@ -3753,14 +3834,14 @@ only the last solved error value is used.</p>
 <code class="descclassname">mmSolver.api.</code><code class="descname">find_valid_maya_node_name</code><span class="sig-paren">(</span><em>name</em>, <em>prefix=None</em>, <em>auto_add_num=True</em>, <em>auto_add_num_padding=3</em>, <em>auto_inc=True</em>, <em>auto_inc_try_limit=999</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.find_valid_maya_node_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a new valid Maya name - canonical function to get valid Maya node names.</p>
 <p>Examples of auto-adding a number suffix:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_valid_maya_node_name</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_valid_maya_node_name</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
 <span class="go">name_001</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">find_valid_maya_node_name</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">auto_add_num_padding</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="go">name_0001</span>
 </pre></div>
 </div>
 <p>Examples of auto-incrementing:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_valid_maya_node_name</span><span class="p">(</span><span class="s1">&#39;name_01&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">find_valid_maya_node_name</span><span class="p">(</span><span class="s1">&#39;name_01&#39;</span><span class="p">)</span>
 <span class="go">name_02</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">find_valid_maya_node_name</span><span class="p">(</span><span class="s1">&#39;name_001&#39;</span><span class="p">)</span>
 <span class="go">name_002</span>
@@ -3773,14 +3854,14 @@ only the last solved error value is used.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<em>str</em>) &#8211; The name string to validate.</li>
-<li><strong>prefix</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; Prefix to add to name in case of invalid first character.</li>
-<li><strong>auto_add_num</strong> (<em>bool</em>) &#8211; If given a node with no number in it, should
+<li><strong>name</strong> (<em>str</em>) – The name string to validate.</li>
+<li><strong>prefix</strong> (<em>str</em><em> or </em><em>None</em>) – Prefix to add to name in case of invalid first character.</li>
+<li><strong>auto_add_num</strong> (<em>bool</em>) – If given a node with no number in it, should
 we add a number automatically?</li>
-<li><strong>auto_add_num_padding</strong> (<em>int</em>) &#8211; Padding of the number to add,
-2 = &#8216;01&#8217;, 3 = &#8216;001&#8217;, 4 = &#8216;0001&#8217;.</li>
-<li><strong>auto_inc</strong> (<em>bool</em>) &#8211; Should we auto-increment the number in the name?</li>
-<li><strong>auto_inc_try_limit</strong> (<em>int</em>) &#8211; When trying to find a non-existing Maya
+<li><strong>auto_add_num_padding</strong> (<em>int</em>) – Padding of the number to add,
+2 = ‘01’, 3 = ‘001’, 4 = ‘0001’.</li>
+<li><strong>auto_inc</strong> (<em>bool</em>) – Should we auto-increment the number in the name?</li>
+<li><strong>auto_inc_try_limit</strong> (<em>int</em>) – When trying to find a non-existing Maya
 node name, how many times can we
 increment until we give up?</li>
 </ul>
@@ -3799,17 +3880,17 @@ increment until we give up?</li>
 <dl class="function">
 <dt id="mmSolver.api.get_new_marker_name">
 <code class="descclassname">mmSolver.api.</code><code class="descname">get_new_marker_name</code><span class="sig-paren">(</span><em>name</em>, <em>prefix=None</em>, <em>suffix=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_new_marker_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a name for a marker object, using &#8216;name&#8217; as the base
+<dd><p>Create a name for a marker object, using ‘name’ as the base
 identifier.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<em>str</em>) &#8211; Name of object.</li>
-<li><strong>prefix</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; Prefix of the marker, if a number is the first
+<li><strong>name</strong> (<em>str</em>) – Name of object.</li>
+<li><strong>prefix</strong> (<em>str</em><em> or </em><em>None</em>) – Prefix of the marker, if a number is the first
 character. If None, a default name is added.</li>
-<li><strong>suffix</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; Suffix of the marker, added to the name. If None, a
+<li><strong>suffix</strong> (<em>str</em><em> or </em><em>None</em>) – Suffix of the marker, added to the name. If None, a
 default name is added.</li>
 </ul>
 </td>
@@ -3827,17 +3908,17 @@ default name is added.</li>
 <dl class="function">
 <dt id="mmSolver.api.get_new_bundle_name">
 <code class="descclassname">mmSolver.api.</code><code class="descname">get_new_bundle_name</code><span class="sig-paren">(</span><em>name</em>, <em>prefix=None</em>, <em>suffix=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_new_bundle_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a name for a bundle object, using &#8216;name&#8217; as the base
+<dd><p>Create a name for a bundle object, using ‘name’ as the base
 identifier.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<em>str</em>) &#8211; Name of object.</li>
-<li><strong>prefix</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; Prefix of the bundle, if a number is the first
+<li><strong>name</strong> (<em>str</em>) – Name of object.</li>
+<li><strong>prefix</strong> (<em>str</em><em> or </em><em>None</em>) – Prefix of the bundle, if a number is the first
 character. If None, a default name is added.</li>
-<li><strong>suffix</strong> (<em>str</em><em> or </em><em>None</em>) &#8211; Suffix of the bundle, added to the name. If None, a
+<li><strong>suffix</strong> (<em>str</em><em> or </em><em>None</em>) – Suffix of the bundle, added to the name. If None, a
 default name is added.</li>
 </ul>
 </td>
@@ -3894,7 +3975,7 @@ types and the expected input node type.</p>
 <li>Bundle - transform nodes</li>
 <li>Attribute - plug path (node.attr)</li>
 <li>Camera - transform or shape node</li>
-<li>Marker Group - transform &#8216;mmMarkerGroupTransform&#8217; node</li>
+<li>Marker Group - transform ‘mmMarkerGroupTransform’ node</li>
 <li>Collection - set node</li>
 </ul>
 </div>
@@ -3902,7 +3983,7 @@ types and the expected input node type.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) &#8211; Maya node path to get type of.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em>) – Maya node path to get type of.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The object type string; One of the values in OBJECT_TYPE_LIST</td>
 </tr>
@@ -3920,7 +4001,7 @@ types and the expected input node type.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em><em> or </em><em>unicode</em>) &#8211; The node name to check above for a marker group.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>str</em><em> or </em><em>unicode</em>) – The node name to check above for a marker group.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">String of marker group found, or None.</td>
 </tr>
@@ -3965,7 +4046,7 @@ intended values if any exception is raised.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) &#8211; Value of the solver running, True or False.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) – Value of the solver running, True or False.</td>
 </tr>
 </tbody>
 </table>
@@ -3995,7 +4076,7 @@ intended values if any exception is raised.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) &#8211; Value of the interrupt, True or False.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) – Value of the interrupt, True or False.</td>
 </tr>
 </tbody>
 </table>
@@ -4004,7 +4085,7 @@ intended values if any exception is raised.</p>
 </div>
 <div class="section" id="node-conversions">
 <h3>Node Conversions<a class="headerlink" href="#node-conversions" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="xref py py-mod docutils literal"><span class="pre">mmSolver.api</span></code> module provides functions to convert between
+<p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">mmSolver.api</span></code> module provides functions to convert between
 various node types. Currently the following conversions are supported:</p>
 <ul class="simple">
 <li>Bundles -&gt; Markers</li>
@@ -4015,12 +4096,12 @@ various node types. Currently the following conversions are supported:</p>
 <dt id="mmSolver.api.get_marker_nodes_from_bundle_nodes">
 <code class="descclassname">mmSolver.api.</code><code class="descname">get_marker_nodes_from_bundle_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_marker_nodes_from_bundle_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of marker nodes from the given list of bundle nodes</p>
-<p>Bundle nodes are automatically filtered from the given &#8216;nodes&#8217;.</p>
+<p>Bundle nodes are automatically filtered from the given ‘nodes’.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Candidates for bundle nodes to search with.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Candidates for bundle nodes to search with.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of marker nodes attached to the given bundle nodes.</td>
 </tr>
@@ -4038,7 +4119,7 @@ various node types. Currently the following conversions are supported:</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Maya nodes to convert into Bundles (expected to be
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Maya nodes to convert into Bundles (expected to be
 Marker nodes, but other node types will not cause
 errors).</td>
 </tr>
@@ -4053,12 +4134,12 @@ errors).</td>
 <dl class="function">
 <dt id="mmSolver.api.get_camera_nodes_from_marker_nodes">
 <code class="descclassname">mmSolver.api.</code><code class="descname">get_camera_nodes_from_marker_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_camera_nodes_from_marker_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the list of Camera nodes that are &#8216;connected&#8217; to the markers nodes.</p>
+<dd><p>Get the list of Camera nodes that are ‘connected’ to the markers nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) &#8211; Marker nodes.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Marker nodes.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of camera transform and shape tuples.</td>
 </tr>
@@ -4077,19 +4158,19 @@ errors).</td>
 <dd><p>Return nodes sorted into mmSolver-specific object type categories.</p>
 <p>Supported categories are:</p>
 <ul class="simple">
-<li>&#8216;camera&#8217;</li>
-<li>&#8216;marker&#8217;</li>
-<li>&#8216;markergroup&#8217;</li>
-<li>&#8216;bundle&#8217;</li>
-<li>&#8216;attribute&#8217;</li>
-<li>&#8216;collection&#8217;</li>
-<li>&#8216;other&#8217;</li>
+<li>‘camera’</li>
+<li>‘marker’</li>
+<li>‘markergroup’</li>
+<li>‘bundle’</li>
+<li>‘attribute’</li>
+<li>‘collection’</li>
+<li>‘other’</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list of str</em>) &#8211; Maya nodes to categorise.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list of str</em>) – Maya nodes to categorise.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Dictionary with lists for each object type.</td>
 </tr>
@@ -4102,12 +4183,12 @@ errors).</td>
 <dl class="function">
 <dt id="mmSolver.api.filter_marker_nodes">
 <code class="descclassname">mmSolver.api.</code><code class="descname">filter_marker_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.filter_marker_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter the given &#8216;nodes&#8217; by only the Marker nodes.</p>
+<dd><p>Filter the given ‘nodes’ by only the Marker nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) &#8211; List of nodes to query.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) – List of nodes to query.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of Marker nodes, or empty list if no Marker nodes.</td>
 </tr>
@@ -4120,12 +4201,12 @@ errors).</td>
 <dl class="function">
 <dt id="mmSolver.api.filter_marker_group_nodes">
 <code class="descclassname">mmSolver.api.</code><code class="descname">filter_marker_group_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.filter_marker_group_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter the given &#8216;nodes&#8217; by only the MarkerGroup nodes.</p>
+<dd><p>Filter the given ‘nodes’ by only the MarkerGroup nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) &#8211; List of nodes to query.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) – List of nodes to query.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of MarkerGroup nodes, or empty list if no MarkerGroup nodes.</td>
 </tr>
@@ -4138,12 +4219,12 @@ errors).</td>
 <dl class="function">
 <dt id="mmSolver.api.filter_bundle_nodes">
 <code class="descclassname">mmSolver.api.</code><code class="descname">filter_bundle_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.filter_bundle_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter the given &#8216;nodes&#8217; by only the Bundle nodes.</p>
+<dd><p>Filter the given ‘nodes’ by only the Bundle nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) &#8211; List of nodes to query.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) – List of nodes to query.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of Bundle nodes, or empty list if no Bundle nodes.</td>
 </tr>
@@ -4156,12 +4237,12 @@ errors).</td>
 <dl class="function">
 <dt id="mmSolver.api.filter_camera_nodes">
 <code class="descclassname">mmSolver.api.</code><code class="descname">filter_camera_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.filter_camera_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter the given &#8216;nodes&#8217; by only the camera nodes.</p>
+<dd><p>Filter the given ‘nodes’ by only the camera nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) &#8211; List of nodes to query.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) – List of nodes to query.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of camera nodes, or empty list if no camera nodes.</td>
 </tr>
@@ -4174,12 +4255,12 @@ errors).</td>
 <dl class="function">
 <dt id="mmSolver.api.filter_collection_nodes">
 <code class="descclassname">mmSolver.api.</code><code class="descname">filter_collection_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.filter_collection_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter the given &#8216;nodes&#8217; by only the Collection nodes.</p>
+<dd><p>Filter the given ‘nodes’ by only the Collection nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) &#8211; List of nodes to query.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) – List of nodes to query.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of Collection nodes, or empty list if no Collection nodes.</td>
 </tr>
@@ -4225,7 +4306,7 @@ errors).</td>
 <dl class="class">
 <dt id="mmSolver.api.SolverNotAvailable">
 <em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">SolverNotAvailable</code><a class="headerlink" href="#mmSolver.api.SolverNotAvailable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raised when the mmSolver cannot be used (because the plug-in isn&#8217;t loaded).</p>
+<dd><p>Raised when the mmSolver cannot be used (because the plug-in isn’t loaded).</p>
 </dd></dl>
 
 </div>
@@ -4329,7 +4410,7 @@ referenced inside the documentation.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.api</a><ul>
 <li><a class="reference internal" href="#object-overview">Object Overview</a></li>
@@ -4380,12 +4461,14 @@ referenced inside the documentation.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -4411,8 +4494,8 @@ referenced inside the documentation.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.6.
+        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

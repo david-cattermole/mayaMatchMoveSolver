@@ -34,7 +34,7 @@ To display the Markers, and the related objects, you may turn on/off
 the ``CAM``, ``MKR`` and ``BND`` buttons.
 
 There are various columns showing attributes of the input Objects.
-To display the column visiblity, use the Edit menu.
+To display the column visibility, use the Edit menu.
 
 .. list-table:: Input Object Fields
    :widths: auto

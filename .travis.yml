@@ -5,7 +5,7 @@ python:
 sudo: false
 cache: pip
 
-install: "pip install sphinx~=1.5.3"
+install: "pip install sphinx~=1.8.5"
 script:
     - cd docs
     - cp source/conf.py.in source/conf.py

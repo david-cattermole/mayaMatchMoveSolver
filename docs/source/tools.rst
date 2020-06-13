@@ -19,6 +19,7 @@ Pages dedicated to specific tools:
     tools_createnode
     tools_selection
     tools_attributetools
+    tools_frametools
     tools_markerbundletools
     tools_bundletools
     tools_markertools

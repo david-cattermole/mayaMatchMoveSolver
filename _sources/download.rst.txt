@@ -3,7 +3,7 @@
 Download
 ========
 
-Download the latest release **mmSolver v0.3.4**:
+Download the latest release **mmSolver v0.3.5**:
 
 .. list-table:: Downloads
    :widths: auto
@@ -15,35 +15,35 @@ Download the latest release **mmSolver v0.3.4**:
 
    * - Linux
      - Maya 2016
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.4/mayaMatchMoveSolver-0.3.4-maya2016-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.5/mayaMatchMoveSolver-0.3.5-maya2016-linux.tar.gz>`_
 
    * - Linux
      - Maya 2017
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.4/mayaMatchMoveSolver-0.3.4-maya2017-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.5/mayaMatchMoveSolver-0.3.5-maya2017-linux.tar.gz>`_
 
    * - Linux
      - Maya 2018
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.4/mayaMatchMoveSolver-0.3.4-maya2018-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.5/mayaMatchMoveSolver-0.3.5-maya2018-linux.tar.gz>`_
 
    * - Linux
      - Maya 2019
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.4/mayaMatchMoveSolver-0.3.4-maya2019-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.5/mayaMatchMoveSolver-0.3.5-maya2019-linux.tar.gz>`_
 
    * - Windows
      - Maya 2016
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.4/mayaMatchMoveSolver-0.3.4-maya2016-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.5/mayaMatchMoveSolver-0.3.5-maya2016-win64.zip>`_
 
    * - Windows
      - Maya 2017
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.4/mayaMatchMoveSolver-0.3.4-maya2017-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.5/mayaMatchMoveSolver-0.3.5-maya2017-win64.zip>`_
 
    * - Windows
      - Maya 2018
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.4/mayaMatchMoveSolver-0.3.4-maya2018-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.5/mayaMatchMoveSolver-0.3.5-maya2018-win64.zip>`_
 
    * - Windows
      - Maya 2019
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.4/mayaMatchMoveSolver-0.3.4-maya2019-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.5/mayaMatchMoveSolver-0.3.5-maya2019-win64.zip>`_
 
 Older versions and full release notes can be found on the GitHub releases_ page.
 

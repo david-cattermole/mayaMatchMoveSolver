@@ -431,7 +431,7 @@ def attributes_compile_flags(col, attr_list,
             else:
                 msg = 'Cannot handle attributes with multiple '
                 msg += 'minimum values; node={0} attr={1}'
-                msg = msg.format(node_name, attr_name)
+                msg = msg.format(repr(node_name), repr(attr_name))
                 raise excep.NotValid(msg)
             if min_value is None:
                 min_value = maya_min_value
@@ -459,7 +459,7 @@ def attributes_compile_flags(col, attr_list,
             else:
                 msg = 'Cannot handle attributes with multiple '
                 msg += 'maximum values; node={0} attr={1}'
-                msg = msg.format(node_name, attr_name)
+                msg = msg.format(repr(node_name), repr(attr_name))
                 raise excep.NotValid(msg)
             if max_value is None:
                 max_value = maya_max_value

@@ -182,6 +182,7 @@ def _compile_multi_root_frames(col,
                                attr_list,
                                batch_frame_list,
                                root_iter_num,
+                               precomputed_data,
                                withtest,
                                verbose):
     """
@@ -244,6 +245,7 @@ def _compile_multi_root_frames(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
@@ -326,6 +328,7 @@ def _compile_multi_inbetween_frames(col,
                                     all_frame_list,
                                     global_solve,
                                     anim_iter_num,
+                                    precomputed_data,
                                     withtest,
                                     verbose):
     """
@@ -375,6 +378,7 @@ def _compile_multi_inbetween_frames(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
@@ -394,6 +398,7 @@ def _compile_multi_inbetween_frames(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(not is_first_frame)
             sol.set_use_stiffness(not is_first_frame)
+            sol.set_precomputed_data(precomputed_data)
 
             generator = api_compile.compile_solver_with_cache(
                 sol, col, mkr_list, attr_list, withtest, cache)
@@ -416,6 +421,7 @@ def _compile_multi_frame(col,
                          root_frame_strategy,
                          triangulate_bundles,
                          use_euler_filter,
+                         precomputed_data,
                          withtest,
                          verbose):
     """
@@ -545,6 +551,7 @@ def _compile_multi_frame(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_precomputed_data(precomputed_data)
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
@@ -581,6 +588,7 @@ def _compile_multi_frame(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
@@ -612,6 +620,7 @@ def _compile_multi_frame(col,
             attr_list,
             batch_frame_list,
             root_iter_num,
+            precomputed_data,
             withtest,
             verbose
         )
@@ -650,6 +659,7 @@ def _compile_multi_frame(col,
         all_frame_list,
         global_solve,
         anim_iter_num,
+        precomputed_data,
         withtest,
         verbose,
     )
@@ -665,6 +675,7 @@ def _compile_single_frame(col,
                           block_iter_num,
                           lineup_iter_num,
                           auto_attr_blocks,
+                          precomputed_data,
                           withtest,
                           verbose):
     """
@@ -722,6 +733,7 @@ def _compile_single_frame(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_precomputed_data(precomputed_data)
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
@@ -738,6 +750,7 @@ def _compile_single_frame(col,
     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
     sol.set_use_smoothness(False)
     sol.set_use_stiffness(False)
+    sol.set_precomputed_data(precomputed_data)
 
     cache = api_compile.create_compile_solver_cache()
     generator = api_compile.compile_solver_with_cache(
@@ -1206,6 +1219,7 @@ class SolverStandard(solverbase.SolverBase):
         use_euler_filter = self._use_euler_filter
         withtest = True
         verbose = True
+        precomputed_data = self.get_precomputed_data()
 
         if use_single_frame is True:
             generator = _compile_single_frame(
@@ -1216,6 +1230,7 @@ class SolverStandard(solverbase.SolverBase):
                 block_iter_num,
                 lineup_iter_num,
                 auto_attr_blocks,
+                precomputed_data,
                 withtest,
                 verbose,
             )
@@ -1237,6 +1252,7 @@ class SolverStandard(solverbase.SolverBase):
                 root_frame_strategy,
                 triangulate_bundles,
                 use_euler_filter,
+                precomputed_data,
                 withtest,
                 verbose,
             )

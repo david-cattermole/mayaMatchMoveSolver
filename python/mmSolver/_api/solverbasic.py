@@ -260,6 +260,7 @@ class SolverBasic(solverbase.SolverBase):
         anim_iter_num = self.get_anim_iteration_num()
         lineup_iter_num = self.get_lineup_iteration_num()
         use_euler_filter = self._use_euler_filter
+        precomputed_data = self.get_precomputed_data()
 
         if use_single_frame is True:
             # Single frame solve
@@ -271,6 +272,7 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_precomputed_data(precomputed_data)
             for action, vaction in sol.compile(col, mkr_list, attr_list,
                                                withtest=withtest):
                 yield (action, vaction)
@@ -288,6 +290,7 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
                 sol.set_use_smoothness(not is_first_frame)
                 sol.set_use_stiffness(not is_first_frame)
+                sol.set_precomputed_data(precomputed_data)
 
                 generator = api_compile.compile_solver_with_cache(
                     sol, col, mkr_list, attr_list, withtest, vaction_cache)

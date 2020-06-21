@@ -42,19 +42,143 @@ import mmSolver._api.attribute as attribute
 LOG = mmSolver.logger.get_logger()
 
 
-def markersAndCameras_compile_flags(mkr_list):
+class DictGetOrCall(dict):
+
+    """Wrapper around a normal 'dict', but we treat the dict as a cache,
+    and if the cache is empty we will call a function to get the value.
+    """
+
+    def get_or_call(self, key, func):
+        """
+        Get a key from a cache, or call a function to get the value.
+
+        :type key: str
+        :type func: callable
+        """
+        value = self.get(key)
+        if value is None:
+            assert callable(func) is True
+            value = func()
+        return value
+
+
+def _get_bundle_node_name_from_marker(mkr):
+    assert isinstance(mkr, marker.Marker)
+    bnd = mkr.get_bundle()
+    if bnd is None:
+        LOG.warn(
+            'Cannot find bundle from marker, skipping; mkr_node=%r',
+            mkr.get_node())
+        return None
+    bnd_node = bnd.get_node()
+    if bnd_node is None:
+        LOG.warn(
+            'Bundle node is invalid, skipping; mkr_node=%r',
+            mkr.get_node())
+        return None
+    return bnd_node
+
+
+def _get_camera_nodes_from_marker(mkr):
+    cam = mkr.get_camera()
+    if cam is None:
+        LOG.warn(
+            'Cannot find camera from marker; mkr=%r',
+            mkr.get_node())
+        return None
+    cam_tfm_node = cam.get_transform_node()
+    cam_shp_node = cam.get_shape_node()
+    assert isinstance(cam_tfm_node, basestring)
+    assert isinstance(cam_shp_node, basestring)
+    return cam_tfm_node, cam_shp_node
+
+
+def _get_attribute_type_from_attr(node_name, attr_name):
+    return maya.cmds.attributeQuery(
+        attr_name,
+        node=node_name,
+        attributeType=True)
+
+
+def _get_maya_min_exists_from_attr(node_name, attr_name):
+    return maya.cmds.attributeQuery(
+        attr_name,
+        node=node_name,
+        minExists=True)
+
+
+def _get_maya_min_value_from_attr(node_name, attr_name):
+    return maya.cmds.attributeQuery(
+        attr_name,
+        node=node_name,
+        minimum=True)
+
+
+def _get_maya_max_exists_from_attr(node_name, attr_name):
+    return maya.cmds.attributeQuery(
+        attr_name,
+        node=node_name,
+        maxExists=True)
+
+
+def _get_maya_max_value_from_attr(node_name, attr_name):
+    return maya.cmds.attributeQuery(
+        attr_name,
+        node=node_name,
+        maximum=True)
+
+
+def get_markers_static_values(mkr_list):
+    """
+    Get static values from markers.
+
+    This is intended to be used as cached values for future functions.
+    The values computed in this function should not be dependant on time.
+
+    :param mkr_list: List of Markers to compile.
+    :type mkr_list: [Marker, ..]
+
+    :returns: dictionary with marker nodes as keys, and values for
+        each marker.
+    :rtype: {str: {stc: any}, ..}, ..}
+    """
+    cache = collections.defaultdict(dict)
+    for mkr in mkr_list:
+        assert isinstance(mkr, marker.Marker)
+        mkr_node = mkr.get_node()
+        assert isinstance(mkr_node, basestring)
+
+        bnd_node = _get_bundle_node_name_from_marker(mkr)
+        if bnd_node is None:
+            continue
+        cache[mkr_node]['bundle_node_name'] = bnd_node
+
+        cam_nodes = _get_camera_nodes_from_marker(mkr)
+        if cam_nodes is None:
+            continue
+        cache[mkr_node]['camera_node_names'] = cam_nodes
+    return dict(cache)
+
+
+def markersAndCameras_compile_flags(mkr_list, mkr_static_values=None):
     """
     Compile mmSolver command flags for 'marker' and 'camera'.
 
     :param mkr_list: List of Markers to compile.
     :type mkr_list: [Marker, ..]
 
+    :param mkr_static_values: Marker static values that can optionally
+        be used to speed up compiling.
+
     :return:
         Tuple of both 'marker' and 'camera' flags, ready for the
         mmSolver command.
     :rtype: ([(str, str, str), ..], [(str, str)])
     """
-    # Get Markers and Cameras
+    if mkr_static_values is None:
+        mkr_static_values = dict()
+    assert isinstance(mkr_static_values, dict)
+
     added_cameras = []
     markers = []
     cameras = []
@@ -62,27 +186,21 @@ def markersAndCameras_compile_flags(mkr_list):
         assert isinstance(mkr, marker.Marker)
         mkr_node = mkr.get_node()
         assert isinstance(mkr_node, basestring)
-        bnd = mkr.get_bundle()
-        if bnd is None:
-            msg = 'Cannot find bundle from marker, skipping; mkr_node={0}'
-            msg = msg.format(repr(mkr_node))
-            LOG.warning(msg)
-            continue
-        bnd_node = bnd.get_node()
+        mkr_cache = DictGetOrCall(mkr_static_values.get(mkr_node, dict()))
+
+        bnd_node = mkr_cache.get_or_call(
+            'bundle_node_name',
+            lambda: _get_bundle_node_name_from_marker(mkr))
         if bnd_node is None:
-            msg = 'Bundle node is invalid, skipping; mkr_node={0}'
-            msg = msg.format(repr(mkr_node))
-            LOG.warning(msg)
             continue
-        cam = mkr.get_camera()
-        if cam is None:
-            msg = 'Cannot find camera from marker; mkr={0}'
-            msg = msg.format(mkr.get_node())
-            LOG.warning(msg)
-        cam_tfm_node = cam.get_transform_node()
-        cam_shp_node = cam.get_shape_node()
-        assert isinstance(cam_tfm_node, basestring)
-        assert isinstance(cam_shp_node, basestring)
+
+        cam_nodes = mkr_cache.get_or_call(
+            'camera_node_names',
+            lambda: _get_camera_nodes_from_marker(mkr))
+        if cam_nodes is None:
+            continue
+        cam_tfm_node, cam_shp_node = cam_nodes
+
         markers.append((mkr_node, cam_shp_node, bnd_node))
         if cam_shp_node not in added_cameras:
             cameras.append((cam_tfm_node, cam_shp_node))
@@ -190,11 +308,65 @@ def categorise_attributes(attr_list):
     return categories
 
 
-def attributes_compile_flags(col, attr_list, use_animated, use_static):
+def get_attributes_static_values(col, attr_list):
+    """
+    Get static values from attributes.
+
+    The static values can then be re-used as cached values.
+    The values computed in this function should *not* be dependant on time.
+
+    :param col: Collection to be used for min/max values.
+    :type col: Collection
+
+    :param attr_list: List of Attributes to compile
+    :type attr_list: [Attribute, ..]
+
+    :returns: A dictionary of per-attribute static values.
+    :rtype: {str: {stc: any}, ..}, ..}
+    """
+    cache = collections.defaultdict(dict)
+    for attr in attr_list:
+        assert isinstance(attr, attribute.Attribute)
+        name = attr.get_name()
+        node_name = attr.get_node()
+        attr_name = attr.get_attr()
+        cache[name]['node_name'] = node_name
+        cache[name]['attr_name'] = attr_name
+
+        # Attribute State.
+        cache[name]['is_locked'] = attr.is_locked()
+        cache[name]['is_animated'] = attr.is_animated()
+        cache[name]['is_static'] = attr.is_static()
+        cache[name]['attribute_type'] = _get_attribute_type_from_attr(
+            node_name, attr_name)
+
+        # Minimum Value
+        cache[name]['solver_min_enable'] = col.get_attribute_min_enable(attr)
+        cache[name]['solver_min_value'] = col.get_attribute_min_value(attr)
+        exists = _get_maya_min_exists_from_attr(node_name, attr_name)
+        cache[name]['maya_min_exists'] = exists
+        if exists:
+            cache[name]['maya_min_value'] = _get_maya_min_value_from_attr(
+                node_name, attr_name)
+
+        # Maximum Value
+        cache[name]['solver_max_enable'] = col.get_attribute_max_enable(attr)
+        cache[name]['solver_max_value'] = col.get_attribute_max_value(attr)
+        exists = _get_maya_max_exists_from_attr(node_name, attr_name)
+        cache[name]['maya_max_exists'] = exists
+        if exists:
+            cache[name]['maya_max_value'] = _get_maya_max_value_from_attr(
+                node_name, attr_name)
+    return dict(cache)
+
+
+def attributes_compile_flags(col, attr_list,
+                             use_animated, use_static,
+                             attr_static_values=None):
     """
     Compile Attributes into flags for mmSolver.
 
-    :param col: Collection to be used for min/max, stiffness and smoothness.
+    :param col: Collection to be used for min/max values,
     :type col: Collection
 
     :param attr_list: List of Attributes to compile
@@ -206,6 +378,9 @@ def attributes_compile_flags(col, attr_list, use_animated, use_static):
     :param use_static: Should we compile Attributes that are static?
     :type use_static: bool
 
+    :param attr_static_values: Attribute static values that can optionally
+        be used to speed up compiling.
+
     :returns:
         List of tuples. Attributes in a form to be given to the
         mmSolver command.
@@ -213,15 +388,22 @@ def attributes_compile_flags(col, attr_list, use_animated, use_static):
     """
     assert isinstance(use_animated, bool)
     assert isinstance(use_static, bool)
+    if attr_static_values is None:
+        attr_static_values = dict()
+    assert isinstance(attr_static_values, dict)
 
     attrs = []
     for attr in attr_list:
         assert isinstance(attr, attribute.Attribute)
-        if attr.is_locked():
-            continue
         name = attr.get_name()
-        node_name = attr.get_node()
-        attr_name = attr.get_attr()
+        attr_cache = DictGetOrCall(attr_static_values.get(name, dict()))
+
+        locked = attr_cache.get_or_call('is_locked', attr.is_locked)
+        if locked is True:
+            continue
+
+        node_name = attr_cache.get_or_call('node_name', attr.get_node)
+        attr_name = attr_cache.get_or_call('attr_name', attr.get_attr)
 
         # If the user does not specify a min/max value then we get it
         # from Maya directly, if Maya doesn't have one, we leave
@@ -230,20 +412,20 @@ def attributes_compile_flags(col, attr_list, use_animated, use_static):
 
         # Minimum Value
         min_value = None
-        min_enable = col.get_attribute_min_enable(attr)
+        min_enable = attr_cache.get_or_call(
+            'solver_min_enable',
+            lambda: col.get_attribute_min_enable(attr))
         if min_enable is True:
-            min_value = col.get_attribute_min_value(attr)
-        min_exists = maya.cmds.attributeQuery(
-            attr_name,
-            node=node_name,
-            minExists=True,
-        )
-        if min_exists:
-            maya_min_value = maya.cmds.attributeQuery(
-                attr_name,
-                node=node_name,
-                minimum=True,
-            )
+            min_value = attr_cache.get_or_call(
+                'solver_min_value',
+                lambda: col.get_attribute_min_value(attr))
+        maya_min_exists = attr_cache.get_or_call(
+            'maya_min_exists',
+            lambda: _get_maya_min_exists_from_attr(node_name, attr_name))
+        if maya_min_exists is True:
+            maya_min_value = attr_cache.get_or_call(
+                'maya_min_value',
+                lambda: _get_maya_min_value_from_attr(node_name, attr_name))
             if len(maya_min_value) == 1:
                 maya_min_value = maya_min_value[0]
             else:
@@ -258,20 +440,20 @@ def attributes_compile_flags(col, attr_list, use_animated, use_static):
 
         # Maximum Value
         max_value = None
-        max_enable = col.get_attribute_max_enable(attr)
+        max_enable = attr_cache.get_or_call(
+            'solver_max_enable',
+            lambda: col.get_attribute_max_enable(attr))
         if max_enable is True:
-            max_value = col.get_attribute_max_value(attr)
-        max_exists = maya.cmds.attributeQuery(
-            attr_name,
-            node=node_name,
-            maxExists=True,
-        )
-        if max_exists is True:
-            maya_max_value = maya.cmds.attributeQuery(
-                attr_name,
-                node=node_name,
-                maximum=True,
-            )
+            max_value = attr_cache.get_or_call(
+                'solver_max_value',
+                lambda: col.get_attribute_max_value(attr))
+        maya_max_exists = attr_cache.get_or_call(
+            'maya_max_exists',
+            lambda: _get_maya_max_exists_from_attr(node_name, attr_name))
+        if maya_max_exists is True:
+            maya_max_value = attr_cache.get_or_call(
+                'maya_max_value',
+                lambda: _get_maya_max_value_from_attr(node_name, attr_name))
             if len(maya_max_value) == 1:
                 maya_max_value = maya_max_value[0]
             else:
@@ -287,15 +469,14 @@ def attributes_compile_flags(col, attr_list, use_animated, use_static):
         # Scale and Offset
         scale_value = None
         offset_value = None
-        attr_type = maya.cmds.attributeQuery(
-            attr_name,
-            node=node_name,
-            attributeType=True)
+        attr_type = attr_cache.get_or_call(
+            'attribute_type',
+            lambda: _get_attribute_type_from_attr(node_name, attr_name))
         if attr_type.endswith('Angle'):
             offset_value = 360.0
 
-        animated = attr.is_animated()
-        static = attr.is_static()
+        animated = attr_cache.get_or_call('is_animated', attr.is_animated)
+        static = attr_cache.get_or_call('is_static', attr.is_static)
         use = False
         if use_animated and animated is True:
             use = True
@@ -307,12 +488,11 @@ def attributes_compile_flags(col, attr_list, use_animated, use_static):
                  str(min_value),
                  str(max_value),
                  str(offset_value),
-                 str(scale_value))
-            )
+                 str(scale_value)))
     return attrs
 
 
-def attr_stiffness_compile_flags(col, attr_list):
+def get_attr_stiffness_static_values(col, attr_list):
     """
     Compile Attributes into flags for mmSolver.
 
@@ -322,30 +502,90 @@ def attr_stiffness_compile_flags(col, attr_list):
     :param attr_list: List of Attributes to compile.
     :type attr_list: [Attribute, ..]
 
+    :returns: dictionary with attribute plugs as keys, and values for
+        each attribute.
+    :rtype: {str: {stc: any}, ..}, ..}
+    """
+    cache = collections.defaultdict(dict)
+    for attr in attr_list:
+        assert isinstance(attr, attribute.Attribute)
+        name = attr.get_name()
+        enable = col.get_attribute_stiffness_enable(attr)
+        weight = col.get_attribute_stiffness_weight(attr)
+
+        weight_plug_name = col.get_attribute_stiffness_weight_plug_name(attr)
+        prev_plug_name = col.get_attribute_previous_value_plug_name(attr)
+        variance_plug_name = col.get_attribute_stiffness_variance_plug_name(attr)
+
+        cache[name]['enable'] = enable
+        cache[name]['weight'] = weight
+        cache[name]['weight_plug'] = weight_plug_name
+        cache[name]['previous_plug'] = prev_plug_name
+        cache[name]['variance_plug'] = variance_plug_name
+    return dict(cache)
+
+
+def attr_stiffness_compile_flags(col, attr_list,
+                                 attr_static_values=None,
+                                 attr_stiff_static_values=None):
+    """
+    Compile Attributes into flags for mmSolver.
+
+    :param col: Collection to be used for stiffness.
+    :type col: Collection
+
+    :param attr_list: List of Attributes to compile.
+    :type attr_list: [Attribute, ..]
+
+    :param attr_static_values: Attribute static values that can optionally
+        be used to speed up compiling.
+
+    :param attr_stiff_static_values: Attribute stiffness static values that
+        can optionally be used to speed up compiling.
+
     :returns:
         List of tuples. Attributes in a form to be given to the
         mmSolver command.
     :rtype: [(str, str, str, str, str), ..]
     """
+    if attr_static_values is None:
+        attr_static_values = dict()
+    if attr_stiff_static_values is None:
+        attr_stiff_static_values = dict()
+    assert isinstance(attr_static_values, dict)
+    assert isinstance(attr_stiff_static_values, dict)
+
     stiffness_flags = []
     for attr in attr_list:
         assert isinstance(attr, attribute.Attribute)
-        animated = attr.is_animated()
+        name = attr.get_name()
+        attr_cache = DictGetOrCall(attr_static_values.get(name, dict()))
+        stiff_cache = DictGetOrCall(attr_stiff_static_values.get(name, dict()))
+
+        animated = attr_cache.get_or_call('is_animated', attr.is_animated)
         if not animated:
             continue
 
-        enable = col.get_attribute_stiffness_enable(attr)
+        enable = stiff_cache.get_or_call(
+            'enable', lambda: col.get_attribute_stiffness_enable(attr))
         if enable is not True:
             continue
 
-        weight = col.get_attribute_stiffness_weight(attr)
+        weight = stiff_cache.get_or_call(
+            'weight', lambda: col.get_attribute_stiffness_weight(attr))
         if weight <= 0.0:
             continue
 
-        name = attr.get_name()
-        weight_plug_name = col.get_attribute_stiffness_weight_plug_name(attr)
-        prev_plug_name = col.get_attribute_previous_value_plug_name(attr)
-        variance_plug_name = col.get_attribute_stiffness_variance_plug_name(attr)
+        weight_plug_name = stiff_cache.get_or_call(
+            'weight_plug',
+            lambda: col.get_attribute_stiffness_weight_plug_name(attr))
+        prev_plug_name = stiff_cache.get_or_call(
+            'previous_plug',
+            lambda: col.get_attribute_previous_value_plug_name(attr))
+        variance_plug_name = stiff_cache.get_or_call(
+            'variance_plug',
+            lambda: col.get_attribute_stiffness_variance_plug_name(attr))
+
         stiffness_flags.append((
             name,
             weight_plug_name,
@@ -355,7 +595,7 @@ def attr_stiffness_compile_flags(col, attr_list):
     return stiffness_flags
 
 
-def attr_smoothness_compile_flags(col, attr_list):
+def get_attr_smoothness_static_values(col, attr_list):
     """
     Compile Attributes into flags for mmSolver.
 
@@ -365,30 +605,90 @@ def attr_smoothness_compile_flags(col, attr_list):
     :param attr_list: List of Attributes to compile.
     :type attr_list: [Attribute, ..]
 
+    :returns: dictionary with attribute plugs as keys, and values for
+        each attribute.
+    :rtype: {str: {stc: any}, ..}, ..}
+    """
+    cache = collections.defaultdict(dict)
+    for attr in attr_list:
+        assert isinstance(attr, attribute.Attribute)
+        name = attr.get_name()
+        enable = col.get_attribute_smoothness_enable(attr)
+        weight = col.get_attribute_smoothness_weight(attr)
+
+        weight_plug_name = col.get_attribute_smoothness_weight_plug_name(attr)
+        mean_plug_name = col.get_attribute_mean_value_plug_name(attr)
+        variance_plug_name = col.get_attribute_smoothness_variance_plug_name(attr)
+
+        cache[name]['enable'] = enable
+        cache[name]['weight'] = weight
+        cache[name]['weight_plug'] = weight_plug_name
+        cache[name]['mean_plug'] = mean_plug_name
+        cache[name]['variance_plug'] = variance_plug_name
+    return dict(cache)
+
+
+def attr_smoothness_compile_flags(col, attr_list,
+                                  attr_static_values=None,
+                                  attr_smooth_static_values=None):
+    """
+    Compile Attributes into flags for mmSolver.
+
+    :param col: Collection to be used for smoothness.
+    :type col: Collection
+
+    :param attr_list: List of Attributes to compile.
+    :type attr_list: [Attribute, ..]
+
+    :param attr_static_values: Attribute static values that can optionally
+        be used to speed up compiling.
+
+    :param attr_smooth_static_values: Attribute smoothness static values that
+        can optionally be used to speed up compiling.
+
     :returns:
         List of tuples. Attributes in a form to be given to the
         mmSolver command.
     :rtype: [(str, str, str, str, str), ..]
     """
+    if attr_static_values is None:
+        attr_static_values = dict()
+    if attr_smooth_static_values is None:
+        attr_smooth_static_values = dict()
+    assert isinstance(attr_static_values, dict)
+    assert isinstance(attr_smooth_static_values, dict)
+
     smoothness_flags = []
     for attr in attr_list:
         assert isinstance(attr, attribute.Attribute)
-        animated = attr.is_animated()
+        name = attr.get_name()
+        attr_cache = DictGetOrCall(attr_static_values.get(name, dict()))
+        smooth_cache = DictGetOrCall(attr_smooth_static_values.get(name, dict()))
+
+        animated = attr_cache.get_or_call('is_animated', attr.is_animated)
         if not animated:
             continue
 
-        enable = col.get_attribute_smoothness_enable(attr)
+        enable = smooth_cache.get_or_call(
+            'enable', lambda: col.get_attribute_smoothness_enable(attr))
         if enable is not True:
             continue
 
-        weight = col.get_attribute_smoothness_weight(attr)
+        weight = smooth_cache.get_or_call(
+            'weight', lambda: col.get_attribute_smoothness_weight(attr))
         if weight <= 0.0:
             continue
 
-        name = attr.get_name()
-        weight_plug_name = col.get_attribute_smoothness_weight_plug_name(attr)
-        mean_plug_name = col.get_attribute_mean_value_plug_name(attr)
-        variance_plug_name = col.get_attribute_smoothness_variance_plug_name(attr)
+        weight_plug_name = smooth_cache.get_or_call(
+            'weight_plug',
+            lambda: col.get_attribute_smoothness_weight_plug_name(attr))
+        mean_plug_name = smooth_cache.get_or_call(
+            'mean_plug',
+            lambda: col.get_attribute_mean_value_plug_name(attr))
+        variance_plug_name = smooth_cache.get_or_call(
+            'variance_plug',
+            lambda: col.get_attribute_smoothness_variance_plug_name(attr))
+
         smoothness_flags.append((
             name,
             weight_plug_name,
@@ -466,12 +766,26 @@ def collection_compile(col, sol_list, mkr_list, attr_list,
         msg = msg.format(repr(col_node))
         raise excep.NotValid(msg)
 
+    # Query and cache static values from Maya, so we don't need to
+    # re-compute the values inside Solvers.
+    attr_static_values = get_attributes_static_values(col, attr_list)
+    attr_stiff_static_values = get_attr_stiffness_static_values(col, attr_list)
+    attr_smooth_static_values = get_attr_smoothness_static_values(col, attr_list)
+    mkr_static_values = get_markers_static_values(mkr_list)
+    precomputed_data = {
+        solverbase.MARKER_STATIC_VALUES_KEY: mkr_static_values,
+        solverbase.ATTR_STATIC_VALUES_KEY: attr_static_values,
+        solverbase.ATTR_STIFFNESS_STATIC_VALUES_KEY: attr_stiff_static_values,
+        solverbase.ATTR_SMOOTHNESS_STATIC_VALUES_KEY: attr_smooth_static_values,
+    }
+
     # Compile all the solvers
     msg = 'Collection is not valid, failed to compile solver;'
     msg += ' collection={0}'
     msg = msg.format(repr(col_node))
     for sol in sol_enabled_list:
         assert isinstance(sol, solverbase.SolverBase)
+        sol.set_precomputed_data(precomputed_data)
         for action, vaction in sol.compile(col, mkr_list, attr_list,
                                            withtest=withtest):
             if not isinstance(action, api_action.Action):

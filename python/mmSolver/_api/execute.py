@@ -134,7 +134,6 @@ def preSolve_updateProgress(prog_fn, status_fn):
     :param status_fn: Function to use for printing status messages.
     :type status_fn: callable or None
     """
-    LOG.debug('preSolve_updateProgress')
     # Start up solver
     collectionutils.run_progress_func(prog_fn, 0)
     ts = solveresult.format_timestamp(time.time())
@@ -155,7 +154,6 @@ def preSolve_queryViewportState(options, panels):
     :param panels:
     :return:
     """
-    LOG.debug('preSolve_queryViewportState')
     panel_objs = {}
     panel_node_type_vis = collections.defaultdict(dict)
     if options.refresh is not True:
@@ -194,10 +192,8 @@ def preSolve_setIsolatedNodes(actions_list, options, panels):
     Note; This assumes the isolated objects are visible, but
     they may actually be hidden.
     """
-    LOG.debug('preSolve_setIsolatedNodes')
     if options.refresh is not True:
         return
-    s = time.time()
     if options.do_isolate is True:
         isolate_nodes = set()
         for action in actions_list:
@@ -218,9 +214,6 @@ def preSolve_setIsolatedNodes(actions_list, options, panels):
                     continue
                 assert isinstance(value, bool)
                 viewport_utils.set_node_type_visibility(panel, node_type, value)
-
-    e = time.time()
-    LOG.debug('Perform Pre-Isolate; time=%r', e - s)
     return
 
 
@@ -242,10 +235,8 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
     :param options: The execution options for the solve.
     :type options: ExecuteOptions
     """
-    LOG.debug('preSolve_triggerEvaluation')
     if options.pre_solve_force_eval is not True:
         return
-    s = time.time()
     frame_list = []
     for action in action_list:
         kwargs = action.kwargs
@@ -259,8 +250,6 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
             edit=True,
             update=options.force_update,
             )
-    e = time.time()
-    LOG.debug('Update previous of current time; time=%r', e - s)
     return
 
 
@@ -276,26 +265,16 @@ def postSolve_refreshViewport(options, frame):
         refresh the viewport.
     :type frame: [int or float, ..]
     """
-    LOG.debug(
-        'postSolve_refreshViewport: '
-        'options=%r '
-        'frame=%r ',
-        options,
-        frame)
-    
     # Refresh the Viewport.
     if options.refresh is not True:
         return
 
-    s = time.time()
     maya.cmds.currentTime(
         frame[0],
         edit=True,
         update=options.force_update,
     )
     maya.cmds.refresh()
-    e = time.time()
-    LOG.debug('Refresh Viewport; time=%r', e - s)
     return
 
 
@@ -314,17 +293,8 @@ def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
         The panels and node-type visibility options in a list of tuples.
     :type panel_node_type_vis: [(str, {str: int or bool or None}), ..]
     """
-    LOG.debug(
-        'postSolve_setViewportState: '
-        'options=%r '
-        'panel_objs=%r '
-        'panel_node_type_vis=%r',
-        options,
-        panel_objs,
-        panel_node_type_vis)
     if options.refresh is not True:
         return
-    s = time.time()
 
     # Isolate Objects restore.
     for panel, objs in panel_objs.items():
@@ -340,13 +310,9 @@ def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
     # Show menu restore.
     for panel, node_types_vis in panel_node_type_vis.items():
         for node_type, value in node_types_vis.items():
-            LOG.debug('turn on node_type=%r with value=%r', node_type, value)
             if value is None:
                 continue
             viewport_utils.set_node_type_visibility(panel, node_type, value)
-
-    e = time.time()
-    LOG.debug('Finally; reset isolate selected; time=%r', e - s)
     return
 
 
@@ -391,19 +357,6 @@ def postSolve_setUpdateProgress(progress_min,
         cancelled the solve?
     :rtype: bool
     """
-    LOG.debug(
-        'postSolve_setUpdateProgress: '
-        'progress_min=%r '
-        'progress_value=%r '
-        'progress_max=%r '
-        'solres=%r '
-        'prog_fn=%r '
-        'status_fn=%r',
-        progress_min,
-        progress_value,
-        progress_max,
-        solres,
-        prog_fn, status_fn)
     stop_solving = False
 
     # Update progress
@@ -421,7 +374,7 @@ def postSolve_setUpdateProgress(progress_min,
         msg = 'Cancelled by User'
         api_state.set_user_interrupt(False)
         collectionutils.run_status_func(status_fn, 'WARNING: ' + msg)
-        LOG.warning(msg)
+        LOG.warn(msg)
         stop_solving = True
     if (solres is not None) and (solres.get_success() is False):
         msg = 'Solver failed!!!'
@@ -530,7 +483,6 @@ def validate(col):
     message_list = []
     metrics_list = []
 
-    s = time.time()
     try:
         sol_list = col.get_solver_list()
         mkr_list = col.get_marker_list()
@@ -546,9 +498,6 @@ def validate(col):
         message_list.append(str(e))
         metrics_list.append((0, 0, 0))
         return valid, message_list, metrics_list
-    finally:
-        e = time.time()
-        LOG.warn('Compile time (validate): %r seconds', e - s)
 
     if len(vaction_list) > 0:
         valid, message_list, metrics_list = _run_validate_action_list(vaction_list)
@@ -642,7 +591,6 @@ def execute(col,
         mkr_list = col.get_marker_list()
         attr_list = col.get_attribute_list()
         try:
-            s = time.time()
             action_list, vaction_list = api_compile.collection_compile(
                 col,
                 sol_list,
@@ -652,17 +600,15 @@ def execute(col,
                 prog_fn=prog_fn,
                 status_fn=status_fn
             )
-            e = time.time()
-            LOG.debug('compile time (execute): %r', e - s)
         except excep.NotValid as e:
-            LOG.warning(e)
+            LOG.warn(e)
             return solres_list
         collectionutils.run_progress_func(prog_fn, 1)
 
         if validate_mode == 'pre_validate':
             valid, msg, metrics_list = _run_validate_action_list(vaction_list)
             if valid is not True:
-                LOG.warning(msg)
+                LOG.warn(msg)
                 return solres_list
 
         # Prepare frame solve

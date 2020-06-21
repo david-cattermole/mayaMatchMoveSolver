@@ -182,56 +182,19 @@ class CameraNode(ObjectNode):
         """
         Get the current deviation of the for the camera.
         """
-        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
-        d = self.data()
-        if not d:
-            return dev
-        cam = d.get('camera')
-        if cam is None:
-            return dev
-        dev_value = cam.get_deviation()
-        if dev_value is None:
-            return dev
-        if dev_value < 0:
-            return dev
-        return '%.2f' % dev_value
+        return '-'
 
     def avgDeviation(self):
         """
         Get the average deviation value of the camera.
         """
-        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
-        d = self.data()
-        if not d:
-            return dev
-        cam = d.get('camera')
-        if cam is None:
-            return dev
-        dev_value = cam.get_average_deviation()
-        if dev_value is None:
-            return dev
-        if dev_value < 0:
-            return dev
-        return '%.2f' % dev_value
-
+        return '-'
 
     def maxDeviation(self):
         """
         Get the average deviation value of the camera.
         """
-        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
-        d = self.data()
-        if not d:
-            return dev
-        cam = d.get('camera')
-        if cam is None:
-            return dev
-        dev_value, dev_frame = cam.get_maximum_deviation()
-        if dev_value is None:
-            return dev
-        if dev_value < 0:
-            return dev
-        return '%.2f @ %s' % (dev_value, dev_frame)
+        return '-'
 
 
 class BundleNode(ObjectNode):

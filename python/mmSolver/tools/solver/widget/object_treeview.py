@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Object Browser widget.
+Object Browser tree view.
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils

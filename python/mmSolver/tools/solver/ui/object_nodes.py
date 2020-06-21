@@ -262,7 +262,6 @@ class ObjectModel(uimodels.ItemModel):
             const.OBJECT_COLUMN_NAME_DEVIATION_FRAME: 'deviation',
             const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE: 'avgDeviation',
             const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: 'maxDeviation',
-            const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: 'maxDeviation',
             const.OBJECT_COLUMN_NAME_UUID: 'uuid',
         }
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)

@@ -21,7 +21,6 @@ The standard solver - allows solving static and animated attributes.
 
 import mmSolver.logger
 
-import mmSolver.utils.animcurve as animcurve_utils
 import mmSolver._api.constant as const
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
@@ -137,17 +136,6 @@ def _split_mkr_attr_into_categories(mkr_list, attr_list):
     )
     for category in ATTR_CATEGORIES:
         category_node_attrs = attrs_in_categories[category]
-
-        # num_attrs = [len(v) for k, v in category_node_attrs.items()]
-        # num_attrs = sum(num_attrs)
-
-        # msg = 'Attribute Category=%r'
-        # LOG.warn(msg, category)
-        # msg = '-> Number of Nodes=%r'
-        # LOG.warn(msg, len(category_node_attrs.keys()))
-        # msg = '-> Number Of Attributes=%r'
-        # LOG.warn(msg, num_attrs)
-
         for node, attrs in category_node_attrs.items():
             if len(attrs) == 0:
                 continue

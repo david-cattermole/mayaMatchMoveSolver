@@ -267,7 +267,5 @@ class ObjectModel(uimodels.ItemModel):
         return self._getGetAttrFuncFromIndex(index, get_attr_dict)
 
     def getSetAttrFuncFromIndex(self, index):
-        set_attr_dict = {
-            const.OBJECT_COLUMN_NAME_NODE: 'setName',
-        }
+        set_attr_dict = {}
         return self._getGetAttrFuncFromIndex(index, set_attr_dict)

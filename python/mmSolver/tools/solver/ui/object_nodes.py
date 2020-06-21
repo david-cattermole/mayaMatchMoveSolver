@@ -269,3 +269,10 @@ class ObjectModel(uimodels.ItemModel):
     def getSetAttrFuncFromIndex(self, index):
         set_attr_dict = {}
         return self._getGetAttrFuncFromIndex(index, set_attr_dict)
+
+    def indexEnabled(self, index):
+        node = index.internalPointer()
+        return node.enabled()
+
+    def indexEditable(self, index):
+        return False

@@ -85,6 +85,45 @@ def _create_marker_attributes(node):
         plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
 
+    attr = const.MARKER_ATTR_LONG_NAME_AVG_DEVIATION
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='double',
+            minValue=-1.0,
+            defaultValue=-1.0,
+            keyable=True
+        )
+        plug = '{0}.{1}'.format(node, attr)
+        maya.cmds.setAttr(plug, lock=True)
+
+    attr = const.MARKER_ATTR_LONG_NAME_MAX_DEVIATION
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='double',
+            minValue=-1.0,
+            defaultValue=-1.0,
+            keyable=True
+        )
+        plug = '{0}.{1}'.format(node, attr)
+        maya.cmds.setAttr(plug, lock=True)
+
+    attr = const.MARKER_ATTR_LONG_NAME_MAX_DEV_FRAME
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='long',
+            minValue=-1,
+            defaultValue=-1,
+            keyable=True
+        )
+        plug = '{0}.{1}'.format(node, attr)
+        maya.cmds.setAttr(plug, lock=True)
+
     attr = const.MARKER_ATTR_LONG_NAME_BUNDLE
     if not node_utils.attribute_exists(attr, node):
         maya.cmds.addAttr(
@@ -591,34 +630,74 @@ class Marker(object):
         Calculate a single float number (in pixels) representing the
         average deviation of this Marker.
         """
-        dev = -1.0
-
-        frames = self._get_enabled_solved_frames()
-        if len(frames) == 0:
-            return dev
-
-        dev_list = self.get_deviation(times=frames)
-        dev = sum(dev_list) / len(dev_list)
+        node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
+        attr_name = const.MARKER_ATTR_LONG_NAME_AVG_DEVIATION
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        dev = maya.cmds.getAttr(plug_name)
         return dev
+
+    def set_average_deviation(self, value):
+        """
+        Calculate a single float number (in pixels) representing the
+        average deviation of this Marker.
+        """
+        node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
+        attr_name = const.MARKER_ATTR_LONG_NAME_AVG_DEVIATION
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        try:
+            maya.cmds.setAttr(plug_name, lock=False)
+            maya.cmds.setAttr(plug_name, value)
+        finally:
+            maya.cmds.setAttr(plug_name, lock=True)
+        return
 
     def get_maximum_deviation(self):
         """
         Return a tuple of (value, frame) for the deviation
         value and frame number that is the highest.
         """
-        max_dev = -1.0
-        max_frm = -1.0
+        node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
+        attr_name = const.MARKER_ATTR_LONG_NAME_MAX_DEVIATION
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        max_dev = maya.cmds.getAttr(plug_name)
 
-        frames = self._get_enabled_solved_frames()
-        if len(frames) == 0:
-            return max_dev, max_frm
-
-        dev_list = self.get_deviation(times=frames)
-        for dev, frm in zip(dev_list, frames):
-            if dev > max_dev:
-                max_dev = dev
-                max_frm = frm
+        attr_name = const.MARKER_ATTR_LONG_NAME_MAX_DEV_FRAME
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        max_frm = maya.cmds.getAttr(plug_name)
         return max_dev, max_frm
+
+    def set_maximum_deviation(self, max_dev, max_frm):
+        """
+        Return a tuple of (value, frame) for the deviation
+        value and frame number that is the highest.
+        """
+        node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
+        attr_name = const.MARKER_ATTR_LONG_NAME_MAX_DEVIATION
+        value_plug = '{0}.{1}'.format(node, attr_name)
+
+        attr_name = const.MARKER_ATTR_LONG_NAME_MAX_DEV_FRAME
+        frame_plug = '{0}.{1}'.format(node, attr_name)
+        try:
+            maya.cmds.setAttr(value_plug, lock=False)
+            maya.cmds.setAttr(frame_plug, lock=False)
+            maya.cmds.setAttr(value_plug, max_dev)
+            maya.cmds.setAttr(frame_plug, max_frm)
+        finally:
+            maya.cmds.setAttr(value_plug, lock=True)
+            maya.cmds.setAttr(frame_plug, lock=True)
+        return
 
     def get_deviation_frames(self,
                              frame_range_start=None,
@@ -683,11 +762,12 @@ class Marker(object):
     def _get_enabled_solved_frames(self,
                                    frame_range_start=None,
                                    frame_range_end=None):
-        enable_frames = self.get_enabled_frames()
-        if len(enable_frames) == 0:
-            enable_frames = [maya.cmds.currentTime(query=True)]
-        assert len(enable_frames) > 0
-        enable_frames_set = set(enable_frames)
+        """
+        Calculate the frames that are both solved and enabled.
+        """
+        enable_frames_set = set(self.get_enabled_frames())
+        if len(enable_frames_set) == 0:
+            enable_frames_set = set([maya.cmds.currentTime(query=True)])
 
         dev_frames_set = set(self.get_deviation_frames(
             frame_range_start=frame_range_start,
@@ -1152,4 +1232,13 @@ def update_deviation_on_markers(mkr_list, solres_list):
                     idx += 1
             assert idx == (len(deviation_list))
             mkr.set_deviation(frm_list, dev_list)
+
+            # Average Deviation
+            avg_dev = markerutils.calculate_average_deviation(dev_list)
+            mkr.set_average_deviation(avg_dev)
+
+            # Max Deviation
+            max_dev, max_frm = markerutils.calculate_maximum_deviation(
+                frm_list, dev_list)
+            mkr.set_maximum_deviation(max_dev, int(max_frm))
     return

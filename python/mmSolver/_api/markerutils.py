@@ -191,3 +191,31 @@ def find_marker_attr_mapping(mkr_list, attr_list):
         (e-s) / num_iters
     )
     return mapping
+
+
+def calculate_average_deviation(dev_list):
+    """
+    Calculate a single float number (in pixels) representing the
+    average deviation of this Marker.
+    """
+    if len(dev_list) == 0:
+        return -1.0
+    dev = sum(dev_list) / len(dev_list)
+    return dev
+
+
+def calculate_maximum_deviation(frames, dev_list):
+    """
+    Return a tuple of (value, frame) for the deviation
+    value and frame number that is the highest.
+    """
+    max_dev = -1.0
+    max_frm = -1
+    if len(frames) == 0 or len(dev_list) == 0:
+        return max_dev, max_frm
+    assert len(frames) == len(dev_list)
+    for dev, frm in zip(dev_list, frames):
+        if dev > max_dev:
+            max_dev = dev
+            max_frm = frm
+    return max_dev, max_frm

@@ -271,8 +271,12 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             return
         show_state = lib_state.get_display_attribute_state_state()
         show_min_max = lib_state.get_display_attribute_min_max_state()
+        show_stiffness = lib_state.get_display_attribute_stiffness_state()
+        show_smoothness = lib_state.get_display_attribute_smoothness_state()
         self.displayStateColumnChanged(show_state)
         self.displayMinMaxColumnChanged(show_min_max)
+        self.displayStiffnessColumnChanged(show_stiffness)
+        self.displaySmoothnessColumnChanged(show_smoothness)
         return
 
     def updateModel(self):

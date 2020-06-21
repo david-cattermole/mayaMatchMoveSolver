@@ -21,7 +21,6 @@ operation (step).
 """
 
 import mmSolver.logger
-import mmSolver.utils.kalmanfilter as kalman
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
 import mmSolver._api.constant as const

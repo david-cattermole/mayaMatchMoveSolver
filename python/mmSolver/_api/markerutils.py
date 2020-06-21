@@ -43,7 +43,7 @@ def calculate_marker_deviation(mkr_node,
 
     :param mkr_node: The marker transform node to compute with.
     :type mkr_node: str
-    
+
     :param bnd_node: The bundle transform node to compute with.
     :type bnd_node: str
 
@@ -52,13 +52,13 @@ def calculate_marker_deviation(mkr_node,
 
     :param cam_shp: The camera shape node to compute with.
     :type cam_shp: str
-    
+
     :param times: The times to query the deviation.
     :type times: [float, ..]
 
     :param image_width: The width of the matchmove image plate.
     :type image_width: float
-    
+
     :param image_height: The height of the matchmove image plate.
     :type image_height: float
 

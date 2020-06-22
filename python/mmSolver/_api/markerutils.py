@@ -198,6 +198,7 @@ def calculate_average_deviation(dev_list):
     Calculate a single float number (in pixels) representing the
     average deviation of this Marker.
     """
+    dev_list = [d for d in dev_list if d > 0.0]
     if len(dev_list) == 0:
         return -1.0
     dev = sum(dev_list) / len(dev_list)

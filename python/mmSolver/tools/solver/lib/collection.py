@@ -649,18 +649,12 @@ def execute_collection(col,
     )
 
     # Calculate marker deviation, and set it on the marker.
-    s = time.time()
     mkr_nodes = mmapi.merge_marker_node_list(solres_list)
     mkr_list = [mmapi.Marker(node=n) for n in mkr_nodes]
     mmapi.update_deviation_on_markers(mkr_list, solres_list)
-    e = time.time()
-    LOG.debug('Update Deviation on Markers; time=%r', e - s)
 
     # Set keyframe data on the collection for the solver
-    s = time.time()
     mmapi.update_deviation_on_collection(col, solres_list)
-    e = time.time()
-    LOG.debug('Update Deviation on collection; time=%r', e - s)
     return
 
 

@@ -55,6 +55,7 @@
 #include <maya/MFnCamera.h>
 #include <maya/MComputation.h>
 #include <maya/MProfiler.h>
+#include <maya/MStreamUtils.h>
 
 // Local
 #include <core/bundleAdjust_base.h>
@@ -867,18 +868,21 @@ void print_details(
 
     if (verbose == false) {
         if (solverResult.success) {
-            std::cerr << "Solver returned SUCCESS   | ";
+            MStreamUtils::stdErrorStream() << "Solver returned SUCCESS   | ";
         } else {
-            std::cerr << "Solver returned FAILURE   | ";
+            MStreamUtils::stdErrorStream() << "Solver returned FAILURE   | ";
         }
-        fprintf(
-            stderr,
-            "error avg %8.4f   min %8.4f   max %8.4f  iterations %03u\n",
+
+        char formatBuffer[128];
+        sprintf(
+            formatBuffer,
+            "error avg %8.4f   min %8.4f   max %8.4f  iterations %03u",
             solverResult.errorAvg,
             solverResult.errorMin,
             solverResult.errorMax,
             solverResult.iterations);
-        fflush(stderr);
+        MStreamUtils::stdErrorStream() << std::string(formatBuffer)
+                                       << std::endl;
     }
 
     // Add all the data into the output string from the Maya command.
@@ -1273,7 +1277,7 @@ bool solve(SolverOptions &solverOptions,
         }
         std::string pad_chars(num, '=');
 
-        std::cerr << tmp_string << " " << pad_chars << std::endl;
+        MStreamUtils::stdErrorStream() << tmp_string << " " << pad_chars << std::endl;
     }
 
     // MComputation helper.

@@ -63,6 +63,7 @@
 #include <maya/MComputation.h>
 #include <maya/MProfiler.h>
 #include <maya/MGlobal.h>
+#include <maya/MStreamUtils.h>
 
 // Solver Utilities
 #include <mayaUtils.h>
@@ -689,12 +690,12 @@ void incrementNormalIteration(SolverData *ud,
     ++ud->iterNum;
     // We're not using INFO macro because we don't want a
     // new-line created.
-    std::cerr << "Eval ";
-    std::cerr << std::right << std::setfill ('0') << std::setw(4)
-              << ud->funcEvalNum;
-    std::cerr << " | Normal   ";
-    std::cerr << std::right << std::setfill ('0') << std::setw(4)
-              << ud->iterNum;
+    MStreamUtils::stdErrorStream() << "Eval ";
+    MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw(4)
+                                   << ud->funcEvalNum;
+    MStreamUtils::stdErrorStream() << " | Normal   ";
+    MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw(4)
+                                   << ud->iterNum;
     if (debugIsOpen) {
         debugFile << std::endl
                   << "iteration normal: " << ud->iterNum
@@ -1060,12 +1061,14 @@ int solveFunc(int numberOfParameters,
     ud->timer.funcBenchTicks.stop();
 
     if (ud->isNormalCall) {
-        fprintf(
-            stderr,
-            " | error avg %8.4f   min %8.4f   max %8.4f\n",
+        char formatBuffer[128];
+        sprintf(
+            formatBuffer,
+            " | error avg %8.4f   min %8.4f   max %8.4f",
             error_avg,
             error_min,
             error_max);
+        MStreamUtils::stdErrorStream() << std::string(formatBuffer) << std::endl;
     } else {
         if (ud->verbose) {
             if (!ud->doCalcJacobian) {

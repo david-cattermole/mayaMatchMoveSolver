@@ -507,11 +507,16 @@ class Marker(object):
         image_width = float(image_width)
         image_height = image_width * (vfa / hfa)
 
+        weights_list = [self.get_weight(time=t) for t in times]
+        enabled_list = [self.get_enable(time=t) for t in times]
+
         bnd_node = bnd.get_node()
         dev_list = markerutils.calculate_marker_deviation(
             node, bnd_node,
             cam_tfm, cam_shp,
             times,
+            weights_list,
+            enabled_list,
             image_width, image_height
         )
         if dev_list is None:

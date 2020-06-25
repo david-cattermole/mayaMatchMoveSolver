@@ -550,15 +550,8 @@ def selection_changed_func(clientData):
     """
     if mmapi.is_solver_running() is True:
         return
-
-    def func():
-        if mmapi.is_solver_running() is True:
-            return
-        sel_uuids = maya.cmds.ls(selection=True, uuid=True) or []
-        valid = uiutils.isValidQtObject(clientData)
-        if clientData is not None and valid is True:
-            clientData.setNodeSelection(sel_uuids)
-        return
-
-    maya.cmds.evalDeferred(func, lowestPriority=True)
+    sel_uuids = maya.cmds.ls(selection=True, uuid=True) or []
+    valid = uiutils.isValidQtObject(clientData)
+    if clientData is not None and valid is True:
+        clientData.setNodeSelection(sel_uuids)
     return

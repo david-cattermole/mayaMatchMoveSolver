@@ -49,7 +49,7 @@ def getNameFromDict(index, names_dict, lookup_dict):
        lookup_dict = {
            'Column': 'name',
        }
-       x = getNamefromDict(index, names_dict, lookup_dict)
+       x = getNameFromDict(index, names_dict, lookup_dict)
        # x equals 'name'
 
     :param index: Index to look up.

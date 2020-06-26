@@ -23,6 +23,7 @@ import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
 import Qt.QtCore as QtCore
+import Qt.QtGui as QtGui
 
 import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
@@ -57,6 +58,9 @@ class ObjectNode(uinodes.Node):
             neverHasChildren=neverHasChildren)
         self.typeInfo = 'object'
 
+    def objectColor(self):
+        return None
+
     def uuid(self):
         uuid = ''
         d = self.data()
@@ -90,6 +94,17 @@ class MarkerNode(ObjectNode):
             selectable=True,
             editable=False)
         self.typeInfo = 'marker'
+
+    def objectColor(self):
+        color = None
+        d = self.data()
+        mkr = d.get('marker')
+        if mkr is None:
+            return color
+        enable = bool(mkr.get_enable())
+        if enable is False:
+            color = QtGui.QColor(QtCore.Qt.darkGray)
+        return color
 
     def weight(self):
         """
@@ -175,6 +190,9 @@ class CameraNode(ObjectNode):
             editable=False)
         self.typeInfo = 'camera'
 
+    def objectColor(self):
+        return None
+
     def weight(self):
         return const.OBJECT_DEFAULT_WEIGHT_UI_VALUE
 
@@ -210,6 +228,9 @@ class BundleNode(ObjectNode):
             selectable=True,
             editable=False)
         self.typeInfo = 'bundle'
+
+    def objectColor(self):
+        return None
 
     def weight(self):
         return const.OBJECT_DEFAULT_WEIGHT_UI_VALUE
@@ -264,11 +285,17 @@ class ObjectModel(uimodels.ItemModel):
             const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: 'maxDeviation',
             const.OBJECT_COLUMN_NAME_UUID: 'uuid',
         }
-        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
+        return self._getLookUpFuncFromIndex(index, get_attr_dict)
+
+    def getColorFuncFromIndex(self, index):
+        color_dict = {
+            const.OBJECT_COLUMN_NAME_NODE: 'objectColor',
+        }
+        return self._getLookUpFuncFromIndex(index, color_dict)
 
     def getSetAttrFuncFromIndex(self, index):
         set_attr_dict = {}
-        return self._getGetAttrFuncFromIndex(index, set_attr_dict)
+        return self._getLookUpFuncFromIndex(index, set_attr_dict)
 
     def indexEnabled(self, index):
         node = index.internalPointer()

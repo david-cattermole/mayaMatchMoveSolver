@@ -51,6 +51,7 @@ class Node(object):
         self._name = name
         self._toolTip = toolTip
         self._statusTip = statusTip
+        self._color = None
         if isinstance(data, dict):
             data = data.copy()
         self._data = data
@@ -94,6 +95,12 @@ class Node(object):
 
     def setStatusTip(self, statusTip):
         self._statusTip = statusTip
+
+    def color(self):
+        return self._color
+
+    def setColor(self, color):
+        self._color = color
 
     def data(self):
         if self._data is None:
@@ -236,4 +243,3 @@ class Node(object):
         result = self.allTags()
         result = '|'.join(result)
         return result
-

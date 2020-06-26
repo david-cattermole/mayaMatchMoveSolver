@@ -47,7 +47,7 @@ class CollectionWidget(QtWidgets.QWidget, ui_collection_widget.Ui_Form):
     itemChanged = QtCore.Signal()
     nameChanged = QtCore.Signal()
     selectClicked = QtCore.Signal()
-    
+
     def __init__(self, parent=None, *args, **kwargs):
         super(CollectionWidget, self).__init__(*args, **kwargs)
         self.setupUi(self)
@@ -77,7 +77,7 @@ class CollectionWidget(QtWidgets.QWidget, ui_collection_widget.Ui_Form):
             string_data_list.append((node, col))
         model.setStringDataList(string_data_list)
         return
-    
+
     def updateModel(self):
         """
         Refresh the name_comboBox with the current Maya scene state.
@@ -161,6 +161,13 @@ class CollectionWidget(QtWidgets.QWidget, ui_collection_widget.Ui_Form):
         col = lib_state.get_active_collection()
         if col is None:
             LOG.warning('No active collection to delete.')
+            return
+        title = 'Remove Collection?'
+        text = 'Would you like to remove the current Collection?'
+        text += '\n\nRemove "' + str(col.get_node()) + '"?'
+        clicked_button = QtWidgets.QMessageBox.question(self, title, text)
+        if clicked_button != QtWidgets.QMessageBox.Yes:
+            LOG.warn('User cancelled operation.')
             return
 
         cols = lib_col.get_collections()

@@ -119,7 +119,7 @@ class SolverWindow(BaseWindow):
         file_menu.addAction(action)
 
         # Rename Collection
-        label = 'Rename Collection'
+        label = 'Rename Collection...'
         tooltip = 'Rename a Collection node.'
         action = QtWidgets.QAction(label, file_menu)
         action.setStatusTip(tooltip)
@@ -129,7 +129,7 @@ class SolverWindow(BaseWindow):
         file_menu.addSeparator()
 
         # Remove Collection
-        label = 'Remove Collection'
+        label = 'Remove Collection...'
         tooltip = 'Remove a Collection node.'
         action = QtWidgets.QAction(label, file_menu)
         action.setStatusTip(tooltip)

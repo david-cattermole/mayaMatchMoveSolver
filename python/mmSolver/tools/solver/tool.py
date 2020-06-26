@@ -175,5 +175,10 @@ def open_window():
     """
     Open the Solver UI window.
     """
+    col = lib_state.get_active_collection()
+    if col is None:
+        msg = 'No active Collection found, creating new Collection...'
+        LOG.warn(msg)
+        lib_col.create_collection()
     solver_window.main()
     return

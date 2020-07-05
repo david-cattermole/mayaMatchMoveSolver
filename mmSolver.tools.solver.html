@@ -2250,6 +2250,11 @@ of classes derived from
 <dt id="mmSolver.tools.solver.ui.object_nodes.ObjectNode">
 <em class="property">class </em><code class="descclassname">mmSolver.tools.solver.ui.object_nodes.</code><code class="descname">ObjectNode</code><span class="sig-paren">(</span><em>name</em>, <em>parent=None</em>, <em>data=None</em>, <em>icon=None</em>, <em>enabled=True</em>, <em>editable=False</em>, <em>selectable=True</em>, <em>checkable=False</em>, <em>neverHasChildren=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.ObjectNode" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="mmSolver.tools.solver.ui.object_nodes.ObjectNode.objectColor">
+<code class="descname">objectColor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.ObjectNode.objectColor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.tools.solver.ui.object_nodes.ObjectNode.uuid">
 <code class="descname">uuid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.ObjectNode.uuid" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2280,6 +2285,11 @@ of classes derived from
 <dt id="mmSolver.tools.solver.ui.object_nodes.MarkerNode">
 <em class="property">class </em><code class="descclassname">mmSolver.tools.solver.ui.object_nodes.</code><code class="descname">MarkerNode</code><span class="sig-paren">(</span><em>name</em>, <em>data=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.MarkerNode" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="mmSolver.tools.solver.ui.object_nodes.MarkerNode.objectColor">
+<code class="descname">objectColor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.MarkerNode.objectColor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.tools.solver.ui.object_nodes.MarkerNode.weight">
 <code class="descname">weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.MarkerNode.weight" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current weight value of the marker.</p>
@@ -2309,6 +2319,11 @@ of classes derived from
 <dt id="mmSolver.tools.solver.ui.object_nodes.CameraNode">
 <em class="property">class </em><code class="descclassname">mmSolver.tools.solver.ui.object_nodes.</code><code class="descname">CameraNode</code><span class="sig-paren">(</span><em>name</em>, <em>data=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.CameraNode" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="mmSolver.tools.solver.ui.object_nodes.CameraNode.objectColor">
+<code class="descname">objectColor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.CameraNode.objectColor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.tools.solver.ui.object_nodes.CameraNode.weight">
 <code class="descname">weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.CameraNode.weight" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2337,6 +2352,11 @@ of classes derived from
 <dt id="mmSolver.tools.solver.ui.object_nodes.BundleNode">
 <em class="property">class </em><code class="descclassname">mmSolver.tools.solver.ui.object_nodes.</code><code class="descname">BundleNode</code><span class="sig-paren">(</span><em>name</em>, <em>data=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.BundleNode" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="mmSolver.tools.solver.ui.object_nodes.BundleNode.objectColor">
+<code class="descname">objectColor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.BundleNode.objectColor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.tools.solver.ui.object_nodes.BundleNode.weight">
 <code class="descname">weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.BundleNode.weight" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2382,8 +2402,23 @@ of classes derived from
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="mmSolver.tools.solver.ui.object_nodes.ObjectModel.getColorFuncFromIndex">
+<code class="descname">getColorFuncFromIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.ObjectModel.getColorFuncFromIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.tools.solver.ui.object_nodes.ObjectModel.getSetAttrFuncFromIndex">
 <code class="descname">getSetAttrFuncFromIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.ObjectModel.getSetAttrFuncFromIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.tools.solver.ui.object_nodes.ObjectModel.indexEnabled">
+<code class="descname">indexEnabled</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.ObjectModel.indexEnabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.tools.solver.ui.object_nodes.ObjectModel.indexEditable">
+<code class="descname">indexEditable</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.solver.ui.object_nodes.ObjectModel.indexEditable" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

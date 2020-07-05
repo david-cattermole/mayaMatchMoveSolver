@@ -60,7 +60,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='140083218011344'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='140083218011536'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='140083218011728'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='139964025304272'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='139964025304464'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='139964025304656'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1630,6 +1630,32 @@ smoothing. 1.0 or below has no effect.</li>
 </dd></dl>
 
 </div>
+<div class="section" id="module-mmSolver.utils.sort">
+<span id="sort"></span><h2>Sort<a class="headerlink" href="#module-mmSolver.utils.sort" title="Permalink to this headline">¶</a></h2>
+<p>Sorting utilities.</p>
+<dl class="function">
+<dt id="mmSolver.utils.sort.sort_strings_with_digits">
+<code class="descclassname">mmSolver.utils.sort.</code><code class="descname">sort_strings_with_digits</code><span class="sig-paren">(</span><em>items</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.sort.sort_strings_with_digits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort the given iterable in the way that humans expect.</p>
+<p>For example, using the built-in Python ‘sorted’ function without
+extra arguments sorts:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a1&#39;</span><span class="p">,</span> <span class="s1">&#39;a2&#39;</span><span class="p">,</span> <span class="s1">&#39;a10&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">[&#39;a1&#39;, &#39;a10&#39;, &#39;a2&#39;]</span>
+</pre></div>
+</div>
+<p>This function will correctly sort the numbers on the ends of the
+letters as a human would expect:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a1&#39;</span><span class="p">,</span> <span class="s1">&#39;a2&#39;</span><span class="p">,</span> <span class="s1">&#39;a10&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sort_strings_with_digits</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">[&#39;a1&#39;, &#39;a2&#39;, &#39;a10&#39;]</span>
+</pre></div>
+</div>
+<p>Helpful function from:
+<a class="reference external" href="https://stackoverflow.com/questions/2669059/how-to-sort-alpha-numeric-set-in-python">https://stackoverflow.com/questions/2669059/how-to-sort-alpha-numeric-set-in-python</a></p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-mmSolver.utils.time">
 <span id="time"></span><h2>Time<a class="headerlink" href="#module-mmSolver.utils.time" title="Permalink to this headline">¶</a></h2>
 <p>Time related utilities.</p>
@@ -2913,6 +2939,7 @@ isolate object list.</p>
 <li><a class="reference internal" href="#module-mmSolver.utils.raytrace">Raytrace</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.reproject">Re-Project</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.smooth">Smooth</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.sort">Sort</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.time">Time</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.tools">Tools</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.transform">Transform</a></li>

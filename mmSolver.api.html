@@ -848,8 +848,22 @@ average deviation of this Marker.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="mmSolver.api.Marker.set_average_deviation">
+<code class="descname">set_average_deviation</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.set_average_deviation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a single float number (in pixels) representing the
+average deviation of this Marker.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.api.Marker.get_maximum_deviation">
 <code class="descname">get_maximum_deviation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.get_maximum_deviation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a tuple of (value, frame) for the deviation
+value and frame number that is the highest.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Marker.set_maximum_deviation">
+<code class="descname">set_maximum_deviation</code><span class="sig-paren">(</span><em>max_dev</em>, <em>max_frm</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.set_maximum_deviation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a tuple of (value, frame) for the deviation
 value and frame number that is the highest.</p>
 </dd></dl>
@@ -1075,7 +1089,7 @@ disconnected from any camera.</p>
 
 <dl class="function">
 <dt id="mmSolver.api.calculate_marker_deviation">
-<code class="descclassname">mmSolver.api.</code><code class="descname">calculate_marker_deviation</code><span class="sig-paren">(</span><em>mkr_node</em>, <em>bnd_node</em>, <em>cam_tfm</em>, <em>cam_shp</em>, <em>times</em>, <em>image_width</em>, <em>image_height</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.calculate_marker_deviation" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.api.</code><code class="descname">calculate_marker_deviation</code><span class="sig-paren">(</span><em>mkr_node</em>, <em>bnd_node</em>, <em>cam_tfm</em>, <em>cam_shp</em>, <em>times</em>, <em>weights_list</em>, <em>enabled_list</em>, <em>image_width</em>, <em>image_height</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.calculate_marker_deviation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the 2D-to-3D pixel distance for the given marker.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1645,6 +1659,35 @@ the solver.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em>) – The enabled value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverBase.get_precomputed_data">
+<code class="descname">get_precomputed_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBase.get_precomputed_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get precomputed data that can be re-used inside this Solver.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverBase.set_precomputed_data">
+<code class="descname">set_precomputed_data</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBase.set_precomputed_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the precomputed data (dictionary). This precomputed data will
+be used inside the Solver rather than computing many times.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>dict</em>) – The data structure of the precomputed data to be re-used.</td>
 </tr>
 </tbody>
 </table>

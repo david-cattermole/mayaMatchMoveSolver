@@ -61,7 +61,7 @@
 <span class="n">lookup_dict</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;Column&#39;</span><span class="p">:</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span>
 <span class="p">}</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">getNamefromDict</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">names_dict</span><span class="p">,</span> <span class="n">lookup_dict</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">getNameFromDict</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">names_dict</span><span class="p">,</span> <span class="n">lookup_dict</span><span class="p">)</span>
 <span class="c1"># x equals &#39;name&#39;</span>
 </pre></div>
 </div>
@@ -78,10 +78,11 @@ final look up name.</li>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The name in ‘lookup_dict’ referred to by index in
-‘names_dict’.</p>
+‘names_dict’, or None if the name is not in the
+dictionary.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str or None</p>
 </td>
 </tr>
 </tbody>
@@ -114,6 +115,11 @@ final look up name.</li>
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.ItemModel.getSetAttrFuncFromIndex">
 <code class="descname">getSetAttrFuncFromIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel.getSetAttrFuncFromIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.ui.uimodels.ItemModel.getColorFuncFromIndex">
+<code class="descname">getColorFuncFromIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel.getColorFuncFromIndex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -173,12 +179,12 @@ final look up name.</li>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.ItemModel.columnCount">
-<code class="descname">columnCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='140083207241168'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel.columnCount" title="Permalink to this definition">¶</a></dt>
+<code class="descname">columnCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='139964015415120'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel.columnCount" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.ItemModel.rowCount">
-<code class="descname">rowCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='140083207238672'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel.rowCount" title="Permalink to this definition">¶</a></dt>
+<code class="descname">rowCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='139964015414672'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel.rowCount" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -188,7 +194,7 @@ final look up name.</li>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.ItemModel.setData">
-<code class="descname">setData</code><span class="sig-paren">(</span><em>index</em>, <em>value</em>, <em>role=&lt;MyCustomMock id='140083207241616'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel.setData" title="Permalink to this definition">¶</a></dt>
+<code class="descname">setData</code><span class="sig-paren">(</span><em>index</em>, <em>value</em>, <em>role=&lt;MyCustomMock id='139964015414480'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel.setData" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -213,12 +219,12 @@ final look up name.</li>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.ItemModel.insertRows">
-<code class="descname">insertRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='140083207239696'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel.insertRows" title="Permalink to this definition">¶</a></dt>
+<code class="descname">insertRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='139964015412240'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel.insertRows" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.ItemModel.removeRows">
-<code class="descname">removeRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='140083204658448'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel.removeRows" title="Permalink to this definition">¶</a></dt>
+<code class="descname">removeRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='139964015412176'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.ItemModel.removeRows" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -244,6 +250,11 @@ final look up name.</li>
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.TableModel.getSetAttrFuncFromIndex">
 <code class="descname">getSetAttrFuncFromIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel.getSetAttrFuncFromIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.ui.uimodels.TableModel.getColorFuncFromIndex">
+<code class="descname">getColorFuncFromIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel.getColorFuncFromIndex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -283,12 +294,12 @@ final look up name.</li>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.TableModel.columnCount">
-<code class="descname">columnCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='140083204659152'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel.columnCount" title="Permalink to this definition">¶</a></dt>
+<code class="descname">columnCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='139964015412112'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel.columnCount" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.TableModel.rowCount">
-<code class="descname">rowCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='140083204658576'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel.rowCount" title="Permalink to this definition">¶</a></dt>
+<code class="descname">rowCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='139964015413392'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel.rowCount" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -298,7 +309,7 @@ final look up name.</li>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.TableModel.setData">
-<code class="descname">setData</code><span class="sig-paren">(</span><em>index</em>, <em>value</em>, <em>role=&lt;MyCustomMock id='140083204658192'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel.setData" title="Permalink to this definition">¶</a></dt>
+<code class="descname">setData</code><span class="sig-paren">(</span><em>index</em>, <em>value</em>, <em>role=&lt;MyCustomMock id='139964015413072'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel.setData" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -325,12 +336,12 @@ final look up name.</li>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.TableModel.insertRows">
-<code class="descname">insertRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='140083204660432'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel.insertRows" title="Permalink to this definition">¶</a></dt>
+<code class="descname">insertRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='139964015413200'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel.insertRows" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.TableModel.removeRows">
-<code class="descname">removeRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='140083206181072'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel.removeRows" title="Permalink to this definition">¶</a></dt>
+<code class="descname">removeRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='139964013603920'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.TableModel.removeRows" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -355,7 +366,7 @@ final look up name.</li>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.StringDataListModel.data">
-<code class="descname">data</code><span class="sig-paren">(</span><em>index</em>, <em>role=&lt;MyCustomMock id='140083206182032'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.StringDataListModel.data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">data</code><span class="sig-paren">(</span><em>index</em>, <em>role=&lt;MyCustomMock id='139964013603280'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.StringDataListModel.data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -365,22 +376,22 @@ final look up name.</li>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.StringDataListModel.insertRows">
-<code class="descname">insertRows</code><span class="sig-paren">(</span><em>row</em>, <em>count</em>, <em>parent=&lt;MyCustomMock name='mock()' id='140083206182096'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.StringDataListModel.insertRows" title="Permalink to this definition">¶</a></dt>
+<code class="descname">insertRows</code><span class="sig-paren">(</span><em>row</em>, <em>count</em>, <em>parent=&lt;MyCustomMock name='mock()' id='139964013603344'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.StringDataListModel.insertRows" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.StringDataListModel.removeRows">
-<code class="descname">removeRows</code><span class="sig-paren">(</span><em>row</em>, <em>count</em>, <em>parent=&lt;MyCustomMock name='mock()' id='140083206181328'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.StringDataListModel.removeRows" title="Permalink to this definition">¶</a></dt>
+<code class="descname">removeRows</code><span class="sig-paren">(</span><em>row</em>, <em>count</em>, <em>parent=&lt;MyCustomMock name='mock()' id='139964013604432'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.StringDataListModel.removeRows" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.StringDataListModel.rowCount">
-<code class="descname">rowCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='140083203048400'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.StringDataListModel.rowCount" title="Permalink to this definition">¶</a></dt>
+<code class="descname">rowCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='139964013878096'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.StringDataListModel.rowCount" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.ui.uimodels.StringDataListModel.setData">
-<code class="descname">setData</code><span class="sig-paren">(</span><em>index</em>, <em>value</em>, <em>role=&lt;MyCustomMock id='140083203048464'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.StringDataListModel.setData" title="Permalink to this definition">¶</a></dt>
+<code class="descname">setData</code><span class="sig-paren">(</span><em>index</em>, <em>value</em>, <em>role=&lt;MyCustomMock id='139964013877712'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uimodels.StringDataListModel.setData" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -442,6 +453,11 @@ the combo-box values.</p>
 
 <dl class="method">
 <dt>
+<code class="descname">getColorFuncFromIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
 <code class="descname">indexEnabled</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
@@ -497,12 +513,12 @@ the combo-box values.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">columnCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='140083207241168'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">columnCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='139964015415120'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">rowCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='140083207238672'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">rowCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='139964015414672'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -512,7 +528,7 @@ the combo-box values.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">setData</code><span class="sig-paren">(</span><em>index</em>, <em>value</em>, <em>role=&lt;MyCustomMock id='140083207241616'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">setData</code><span class="sig-paren">(</span><em>index</em>, <em>value</em>, <em>role=&lt;MyCustomMock id='139964015414480'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -537,12 +553,12 @@ the combo-box values.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">insertRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='140083207239696'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">insertRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='139964015412240'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">removeRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='140083204658448'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">removeRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='139964015412176'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -568,6 +584,11 @@ the combo-box values.</p>
 <dl class="method">
 <dt>
 <code class="descname">getSetAttrFuncFromIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">getColorFuncFromIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -607,12 +628,12 @@ the combo-box values.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">columnCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='140083204659152'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">columnCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='139964015412112'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">rowCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='140083204658576'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">rowCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='139964015413392'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -622,7 +643,7 @@ the combo-box values.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">setData</code><span class="sig-paren">(</span><em>index</em>, <em>value</em>, <em>role=&lt;MyCustomMock id='140083204658192'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">setData</code><span class="sig-paren">(</span><em>index</em>, <em>value</em>, <em>role=&lt;MyCustomMock id='139964015413072'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -649,12 +670,12 @@ the combo-box values.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">insertRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='140083204660432'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">insertRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='139964015413200'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">removeRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='140083206181072'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">removeRows</code><span class="sig-paren">(</span><em>position</em>, <em>rows</em>, <em>parent=&lt;MyCustomMock name='mock()' id='139964013603920'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -679,7 +700,7 @@ the combo-box values.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">data</code><span class="sig-paren">(</span><em>index</em>, <em>role=&lt;MyCustomMock id='140083206182032'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">data</code><span class="sig-paren">(</span><em>index</em>, <em>role=&lt;MyCustomMock id='139964013603280'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -689,22 +710,22 @@ the combo-box values.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">insertRows</code><span class="sig-paren">(</span><em>row</em>, <em>count</em>, <em>parent=&lt;MyCustomMock name='mock()' id='140083206182096'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">insertRows</code><span class="sig-paren">(</span><em>row</em>, <em>count</em>, <em>parent=&lt;MyCustomMock name='mock()' id='139964013603344'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">removeRows</code><span class="sig-paren">(</span><em>row</em>, <em>count</em>, <em>parent=&lt;MyCustomMock name='mock()' id='140083206181328'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">removeRows</code><span class="sig-paren">(</span><em>row</em>, <em>count</em>, <em>parent=&lt;MyCustomMock name='mock()' id='139964013604432'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">rowCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='140083203048400'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">rowCount</code><span class="sig-paren">(</span><em>parent=&lt;MyCustomMock name='mock()' id='139964013878096'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">setData</code><span class="sig-paren">(</span><em>index</em>, <em>value</em>, <em>role=&lt;MyCustomMock id='140083203048464'&gt;</em><span class="sig-paren">)</span></dt>
+<code class="descname">setData</code><span class="sig-paren">(</span><em>index</em>, <em>value</em>, <em>role=&lt;MyCustomMock id='139964013877712'&gt;</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>

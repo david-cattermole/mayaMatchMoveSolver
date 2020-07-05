@@ -281,10 +281,13 @@ motion trail parented under the camera is created.</li>
 of channel slider setting. Using this tool the user to adjust
 attributes in the Channel Box by very small increments, which is
 useful for manually adjusting or matching parameters interactively.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/tools_channel_box_sensitivity_ui.png"><img alt="Adjust the Maya Channel Box Sensitivity with a UI" src="_images/tools_channel_box_sensitivity_ui.png" style="width: 40%;" /></a>
+</div>
 <p>Usage:</p>
 <ol class="arabic simple">
 <li>Run tool.<ul>
-<li>A UI will open, click the <cite>Increase</cite> or <cite>Decrease</cite> buttons to
+<li>A UI will open, click the <cite>Up</cite> or <cite>Down</cite> buttons to
 change the sensitivity.</li>
 </ul>
 </li>
@@ -356,6 +359,29 @@ not found, the Marker/Bundle is not renamed.</li>
 </pre></div>
 </div>
 </div>
+<div class="section" id="sort-selected-nodes-in-outliner">
+<span id="sort-selected-nodes-in-outliner-tool-ref"></span><h2>Sort Selected Nodes In Outliner<a class="headerlink" href="#sort-selected-nodes-in-outliner" title="Permalink to this headline">¶</a></h2>
+<p>Alphabetically sorts (re-orders) the selected nodes in the Maya Outliner window.</p>
+<p>This tool avoids the Maya Outliner window’s (interactive) “Sort Order” feature
+and encourages an organised workflow when working with many nodes.</p>
+<p>This tool works on <em>any</em> Transform node, not only mmSolver nodes.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/sort_nodes_in_outliner_compare.png"><img alt="Before/After of all nodes sorted in the Maya Outliner." src="_images/sort_nodes_in_outliner_compare.png" style="width: 80%;" /></a>
+</div>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select transform nodes.</li>
+<li>Run tool.<ul>
+<li>The nodes will be sorted.</li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.sortoutlinernodes.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="reparent-under-node">
 <span id="reparent-under-node-tool-ref"></span><h2>Reparent Under Node<a class="headerlink" href="#reparent-under-node" title="Permalink to this headline">¶</a></h2>
 <p>This is equivalent to Maya’s <em>Parent</em> tool (<cite>p</cite> hotkey), except the
@@ -409,6 +435,8 @@ parented under any node).</li>
 <span id="create-remove-controller-tool-ref"></span><h2>Create / Remove Controller<a class="headerlink" href="#create-remove-controller" title="Permalink to this headline">¶</a></h2>
 <p>Create a new transform node to control another node. The <cite>Controller</cite>
 transform node can have a separate hierarchy than the source node.</p>
+<p>This tool will try to maintain the animated keyframes on the original
+control without baking the animation per-frame.</p>
 <p>Usage:</p>
 <ol class="arabic simple">
 <li>Select a Maya transform node.</li>
@@ -460,6 +488,7 @@ keyed, and the Controller is deleted.</li>
 <li><a class="reference internal" href="#copy-camera-to-clipboard">Copy Camera to Clipboard</a></li>
 <li><a class="reference internal" href="#marker-bundle-rename">Marker Bundle Rename</a></li>
 <li><a class="reference internal" href="#marker-bundle-rename-with-metadata">Marker Bundle Rename (with Metadata)</a></li>
+<li><a class="reference internal" href="#sort-selected-nodes-in-outliner">Sort Selected Nodes In Outliner</a></li>
 <li><a class="reference internal" href="#reparent-under-node">Reparent Under Node</a></li>
 <li><a class="reference internal" href="#unparent-to-world">Unparent to World</a></li>
 <li><a class="reference internal" href="#create-remove-controller">Create / Remove Controller</a></li>

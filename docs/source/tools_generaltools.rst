@@ -463,6 +463,9 @@ Create / Remove Controller
 Create a new transform node to control another node. The `Controller`
 transform node can have a separate hierarchy than the source node.
 
+This tool will try to maintain the animated keyframes on the original
+control without baking the animation per-frame.
+
 Usage:
 
 1) Select a Maya transform node.

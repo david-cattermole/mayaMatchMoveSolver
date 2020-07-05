@@ -34,6 +34,7 @@ import mmSolver.utils.config as config_utils
 import mmSolver.tools.loadmarker.constant as const
 import mmSolver.tools.loadmarker.ui.ui_loadmarker_layout as ui_loadmarker_layout
 import mmSolver.tools.loadmarker.lib.fieldofview as fieldofview
+import mmSolver.tools.loadmarker.lib.fileutils as fileutils
 import mmSolver.tools.loadmarker.lib.utils as lib
 
 LOG = mmSolver.logger.get_logger()
@@ -130,7 +131,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         try:
             clippy = QtGui.QClipboard()
             text = str(clippy.text()).strip()
-            if lib.is_valid_file_path(text):
+            if fileutils.is_valid_file_path(text):
                 self.setFilePath(text)
         except Exception as e:
             msg = 'Could not get file path from clipboard.'
@@ -180,14 +181,14 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         file_path = self.getFilePath()
         if not file_path:
             return
-        file_info = lib.get_file_info(file_path)
+        file_info = fileutils.get_file_info(file_path)
         self.setFileInfo(file_info)
         return
 
     def updateFileInfoText(self):
         file_path = self.getFilePath()
         info_widget = self.fileInfo_plainTextEdit
-        valid = lib.is_valid_file_path(file_path)
+        valid = fileutils.is_valid_file_path(file_path)
         if valid is False:
             text = 'File path is not valid:\n'
             text += repr(file_path)
@@ -202,7 +203,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         text += 'Undistorted Data: {lens_undist}\n'
         text += 'Bundle Positions: {positions}\n'
         text += 'With Camera FOV: {has_camera_fov}\n'
-        info = lib.get_file_info_strings(file_path)
+        info = fileutils.get_file_info_strings(file_path)
 
         # Change point names into single string.
         point_names = info.get('point_names', '')
@@ -290,7 +291,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
     def updateImageResEnabledState(self):
         value = False
         file_path = self.getFilePath()
-        fmt = lib.get_file_path_format(file_path)
+        fmt = fileutils.get_file_path_format(file_path)
         if fmt is None:
             value = False
         else:
@@ -473,7 +474,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
 
     def filePathBrowseClicked(self):
         title = "Select Marker File..."
-        file_filter = lib.get_file_filter()
+        file_filter = fileutils.get_file_filter()
         start_dir = lib.get_start_directory(self.getFilePath())
         result = QtWidgets.QFileDialog.getOpenFileName(
             self,

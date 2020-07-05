@@ -303,7 +303,7 @@ Usage:
 
 1) Run tool.
 
-   - A UI will open, click the `Increase` or `Decrease` buttons to
+   - A UI will open, click the `Up` or `Down` buttons to
      change the sensitivity.
 
 2) Select an Attribute in the Channel Box.

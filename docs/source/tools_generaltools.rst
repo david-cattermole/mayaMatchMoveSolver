@@ -294,6 +294,11 @@ of channel slider setting. Using this tool the user to adjust
 attributes in the Channel Box by very small increments, which is
 useful for manually adjusting or matching parameters interactively.
 
+.. figure:: images/tools_channel_box_sensitivity_ui.png
+    :alt: Adjust the Maya Channel Box Sensitivity with a UI
+    :align: center
+    :width: 40%
+
 Usage:
 
 1) Run tool.

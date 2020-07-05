@@ -21,7 +21,6 @@ Module for reading marker files.
 This should be used by end-users, not the internal modules.
 """
 
-import math
 import os
 
 import maya.cmds

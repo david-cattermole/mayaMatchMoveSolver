@@ -71,6 +71,8 @@ from mmSolver._api.markerutils import (
     calculate_marker_deviation,
     get_markers_start_end_frames,
     find_marker_attr_mapping,
+    calculate_average_deviation,
+    calculate_maximum_deviation,
 )
 from mmSolver._api.naming import (
     find_valid_maya_node_name,
@@ -276,6 +278,8 @@ __all__ = [
     'calculate_marker_deviation',
     'get_markers_start_end_frames',
     'find_marker_attr_mapping',
+    'calculate_average_deviation',
+    'calculate_maximum_deviation',
 
     # Naming
     'find_valid_maya_node_name',

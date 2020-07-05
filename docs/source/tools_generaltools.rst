@@ -294,11 +294,16 @@ of channel slider setting. Using this tool the user to adjust
 attributes in the Channel Box by very small increments, which is
 useful for manually adjusting or matching parameters interactively.
 
+.. figure:: images/tools_channel_box_sensitivity_ui.png
+    :alt: Adjust the Maya Channel Box Sensitivity with a UI
+    :align: center
+    :width: 40%
+
 Usage:
 
 1) Run tool.
 
-   - A UI will open, click the `Increase` or `Decrease` buttons to
+   - A UI will open, click the `Up` or `Down` buttons to
      change the sensitivity.
 
 2) Select an Attribute in the Channel Box.
@@ -392,6 +397,38 @@ To run the tool, use this Python command:
     import mmSolver.tools.markerbundlerenamewithmetadata.tool as tool
     tool.main()
 
+.. _sort-selected-nodes-in-outliner-tool-ref:
+
+Sort Selected Nodes In Outliner
+-------------------------------
+
+Alphabetically sorts (re-orders) the selected nodes in the Maya Outliner window.
+
+This tool avoids the Maya Outliner window's (interactive) "Sort Order" feature
+and encourages an organised workflow when working with many nodes.
+
+This tool works on *any* Transform node, not only mmSolver nodes.
+
+.. figure:: images/sort_nodes_in_outliner_compare.png
+    :alt: Before/After of all nodes sorted in the Maya Outliner.
+    :align: center
+    :width: 80%
+
+Usage:
+
+1) Select transform nodes.
+
+2) Run tool.
+
+   - The nodes will be sorted.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.sortoutlinernodes.tool as tool
+    tool.main()
+
 .. _reparent-under-node-tool-ref:
 
 Reparent Under Node
@@ -457,6 +494,9 @@ Create / Remove Controller
 
 Create a new transform node to control another node. The `Controller`
 transform node can have a separate hierarchy than the source node.
+
+This tool will try to maintain the animated keyframes on the original
+control without baking the animation per-frame.
 
 Usage:
 

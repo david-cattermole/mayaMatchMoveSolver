@@ -21,7 +21,6 @@ The standard solver - allows solving static and animated attributes.
 
 import mmSolver.logger
 
-import mmSolver.utils.animcurve as animcurve_utils
 import mmSolver._api.constant as const
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
@@ -137,17 +136,6 @@ def _split_mkr_attr_into_categories(mkr_list, attr_list):
     )
     for category in ATTR_CATEGORIES:
         category_node_attrs = attrs_in_categories[category]
-
-        # num_attrs = [len(v) for k, v in category_node_attrs.items()]
-        # num_attrs = sum(num_attrs)
-
-        # msg = 'Attribute Category=%r'
-        # LOG.warn(msg, category)
-        # msg = '-> Number of Nodes=%r'
-        # LOG.warn(msg, len(category_node_attrs.keys()))
-        # msg = '-> Number Of Attributes=%r'
-        # LOG.warn(msg, num_attrs)
-
         for node, attrs in category_node_attrs.items():
             if len(attrs) == 0:
                 continue
@@ -182,6 +170,7 @@ def _compile_multi_root_frames(col,
                                attr_list,
                                batch_frame_list,
                                root_iter_num,
+                               precomputed_data,
                                withtest,
                                verbose):
     """
@@ -244,6 +233,7 @@ def _compile_multi_root_frames(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
@@ -326,6 +316,7 @@ def _compile_multi_inbetween_frames(col,
                                     all_frame_list,
                                     global_solve,
                                     anim_iter_num,
+                                    precomputed_data,
                                     withtest,
                                     verbose):
     """
@@ -375,6 +366,7 @@ def _compile_multi_inbetween_frames(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
@@ -394,6 +386,7 @@ def _compile_multi_inbetween_frames(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(not is_first_frame)
             sol.set_use_stiffness(not is_first_frame)
+            sol.set_precomputed_data(precomputed_data)
 
             generator = api_compile.compile_solver_with_cache(
                 sol, col, mkr_list, attr_list, withtest, cache)
@@ -416,6 +409,7 @@ def _compile_multi_frame(col,
                          root_frame_strategy,
                          triangulate_bundles,
                          use_euler_filter,
+                         precomputed_data,
                          withtest,
                          verbose):
     """
@@ -545,6 +539,7 @@ def _compile_multi_frame(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_precomputed_data(precomputed_data)
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
@@ -581,6 +576,7 @@ def _compile_multi_frame(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
@@ -612,6 +608,7 @@ def _compile_multi_frame(col,
             attr_list,
             batch_frame_list,
             root_iter_num,
+            precomputed_data,
             withtest,
             verbose
         )
@@ -650,6 +647,7 @@ def _compile_multi_frame(col,
         all_frame_list,
         global_solve,
         anim_iter_num,
+        precomputed_data,
         withtest,
         verbose,
     )
@@ -665,6 +663,7 @@ def _compile_single_frame(col,
                           block_iter_num,
                           lineup_iter_num,
                           auto_attr_blocks,
+                          precomputed_data,
                           withtest,
                           verbose):
     """
@@ -722,6 +721,7 @@ def _compile_single_frame(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_precomputed_data(precomputed_data)
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
@@ -738,6 +738,7 @@ def _compile_single_frame(col,
     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
     sol.set_use_smoothness(False)
     sol.set_use_stiffness(False)
+    sol.set_precomputed_data(precomputed_data)
 
     cache = api_compile.create_compile_solver_cache()
     generator = api_compile.compile_solver_with_cache(
@@ -1206,6 +1207,7 @@ class SolverStandard(solverbase.SolverBase):
         use_euler_filter = self._use_euler_filter
         withtest = True
         verbose = True
+        precomputed_data = self.get_precomputed_data()
 
         if use_single_frame is True:
             generator = _compile_single_frame(
@@ -1216,6 +1218,7 @@ class SolverStandard(solverbase.SolverBase):
                 block_iter_num,
                 lineup_iter_num,
                 auto_attr_blocks,
+                precomputed_data,
                 withtest,
                 verbose,
             )
@@ -1237,6 +1240,7 @@ class SolverStandard(solverbase.SolverBase):
                 root_frame_strategy,
                 triangulate_bundles,
                 use_euler_filter,
+                precomputed_data,
                 withtest,
                 verbose,
             )

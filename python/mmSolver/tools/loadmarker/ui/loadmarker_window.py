@@ -96,9 +96,12 @@ class LoadMarkerWindow(BaseWindow):
         load_bnd_pos = self.subForm.getLoadBundlePositions()
         undist_mode = self.subForm.getDistortionModeText()
         use_overscan = self.subForm.getUseOverscanValue()
-        camera_field_of_view = self.subForm.getCameraFieldOfViewValue()
         undistorted = undist_mode == const.UNDISTORTION_MODE_VALUE
         width, height = self.subForm.getImageResolution()
+
+        camera_field_of_view = None
+        if use_overscan is True:
+            camera_field_of_view = self.subForm.getCameraFieldOfViewValue()
 
         try:
             self.progressBar.setValue(0)

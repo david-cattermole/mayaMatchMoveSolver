@@ -34,6 +34,7 @@ import mmSolver.utils.config as config_utils
 import mmSolver.tools.loadmarker.constant as const
 import mmSolver.tools.loadmarker.ui.ui_loadmarker_layout as ui_loadmarker_layout
 import mmSolver.tools.loadmarker.lib.fieldofview as fieldofview
+import mmSolver.tools.loadmarker.lib.fileutils as fileutils
 import mmSolver.tools.loadmarker.lib.utils as lib
 
 LOG = mmSolver.logger.get_logger()
@@ -97,6 +98,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.filepath_pushButton.clicked.connect(self.filePathBrowseClicked)
         self.filepath_lineEdit.editingFinished.connect(self.updateFilePathWidget)
         self.overscan_checkBox.toggled.connect(self.setOverscanEnabledState)
+        self.overscan_checkBox.released.connect(self.updateOverscanValues)
         return
 
     def populateUi(self):
@@ -120,17 +122,11 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             const.LOAD_BUNDLE_POS_DEFAULT_VALUE)
         self.loadBndPositions_checkBox.setChecked(value)
 
-        value = get_config_value(
-            config,
-            'data/use_overscan',
-            const.USE_OVERSCAN_DEFAULT_VALUE)
-        self.overscan_checkBox.setChecked(value)
-
         # Get the file path from the clipboard.
         try:
             clippy = QtGui.QClipboard()
             text = str(clippy.text()).strip()
-            if lib.is_valid_file_path(text):
+            if fileutils.is_valid_file_path(text):
                 self.setFilePath(text)
         except Exception as e:
             msg = 'Could not get file path from clipboard.'
@@ -174,20 +170,27 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.populateDistortionModeModel(self.distortionMode_model)
         index = self.distortionMode_model.stringList().index(value)
         self.distortionMode_comboBox.setCurrentIndex(index)
+
+        value = get_config_value(
+            config,
+            'data/use_overscan',
+            const.USE_OVERSCAN_DEFAULT_VALUE)
+        self.overscan_checkBox.setChecked(value)
+        self.updateOverscanValues()
         return
 
     def updateFileInfo(self):
         file_path = self.getFilePath()
         if not file_path:
             return
-        file_info = lib.get_file_info(file_path)
+        file_info = fileutils.get_file_info(file_path)
         self.setFileInfo(file_info)
         return
 
     def updateFileInfoText(self):
         file_path = self.getFilePath()
         info_widget = self.fileInfo_plainTextEdit
-        valid = lib.is_valid_file_path(file_path)
+        valid = fileutils.is_valid_file_path(file_path)
         if valid is False:
             text = 'File path is not valid:\n'
             text += repr(file_path)
@@ -202,7 +205,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         text += 'Undistorted Data: {lens_undist}\n'
         text += 'Bundle Positions: {positions}\n'
         text += 'With Camera FOV: {has_camera_fov}\n'
-        info = lib.get_file_info_strings(file_path)
+        info = fileutils.get_file_info_strings(file_path)
 
         # Change point names into single string.
         point_names = info.get('point_names', '')
@@ -230,31 +233,66 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.markerGroup_label.setEnabled(value)
         self.markerGroup_comboBox.setEnabled(value)
         self.markerGroupUpdate_pushButton.setEnabled(value)
+        self.updateOverscanValues()
         return
 
     def updateOverscanValues(self):
-        x = 100.0
-        y = 100.0
+        label_x = ''
+        label_y = ''
+        data_source = ''
+
+        use_overscan = self.getUseOverscanValue()
+        load_mode_text = self.getLoadModeText()
+        if use_overscan is False:
+            if load_mode_text == const.LOAD_MODE_NEW_VALUE:
+                data_source = 'from default values'
+                label_x = 'Width: %.2f' % 100.0
+                label_y = 'Height: %.2f' % 100.0
+                label_x += '%'
+                label_y += '%'
+                label_y += ' (%s)' % data_source
+            self.overscanX_label.setText(label_x)
+            self.overscanY_label.setText(label_y)
+            return
+
         file_info = self.getFileInfo()
         camera = self.getCameraData()
-        if file_info is not None and camera is not None:
-            mkr_grp = None
-            file_fovs = file_info.camera_field_of_view
-            x, y = fieldofview.calculate_overscan_ratio(
-                camera,
-                mkr_grp,
-                file_fovs
-            )
-            # NOTE: Inverse the overscan value, because the user will
-            # be more comfortable with numbers above 100%.
-            x = 1.0 / x
-            y = 1.0 / y
-            x *= 100.0
-            y *= 100.0
-        label_x = 'Width: %.2f' % x
-        label_y = 'Height: %.2f' % y
-        label_x += '%'
-        label_y += '%'
+        has_file_data = (file_info is not None
+                         and camera is not None
+                         and isinstance(file_info.camera_field_of_view, list))
+        if load_mode_text == const.LOAD_MODE_NEW_VALUE:
+            if has_file_data is True:
+                data_source = 'from file'
+
+                # Purposefully do not allow Marker Group to influence the
+                # value shown to the user.
+                mkr_grp = None
+                file_fovs = file_info.camera_field_of_view
+                x, y = fieldofview.calculate_overscan_ratio(
+                    camera,
+                    mkr_grp,
+                    file_fovs
+                )
+                # NOTE: Inverse the overscan value, because the user will
+                # be more comfortable with numbers above 100%.
+                x = 1.0 / x
+                y = 1.0 / y
+                x *= 100.0
+                y *= 100.0
+            else:
+                data_source = 'from default values'
+                x = 100.0
+                y = 100.0
+            label_x = 'Width: %.2f' % x
+            label_y = 'Height: %.2f' % y
+            label_x += '%'
+            label_y += '%'
+        elif load_mode_text == const.LOAD_MODE_REPLACE_VALUE:
+            label_x = 'Width: ?'
+            label_y = 'Height: ?'
+            data_source = 'from selected Marker'
+
+        label_y += ' (%s)' % data_source
         self.overscanX_label.setText(label_x)
         self.overscanY_label.setText(label_y)
         return
@@ -265,8 +303,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         if file_info is not None:
             value = bool(file_info.camera_field_of_view)
         self.overscan_checkBox.setEnabled(value)
-        self.overscanX_label.setEnabled(value)
-        self.overscanY_label.setEnabled(value)
+        self.setOverscanEnabledState(value)
         return
 
     def updateDistortionModeEnabledState(self):
@@ -290,7 +327,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
     def updateImageResEnabledState(self):
         value = False
         file_path = self.getFilePath()
-        fmt = lib.get_file_path_format(file_path)
+        fmt = fileutils.get_file_path_format(file_path)
         if fmt is None:
             value = False
         else:
@@ -304,7 +341,8 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.imageResHeight_spinBox.setEnabled(value)
         return
 
-    def updateCameraList(self, comboBox, model, all_camera_nodes, selected_cameras, active_camera):
+    def updateCameraList(self, comboBox, model, all_camera_nodes,
+                         selected_cameras, active_camera):
         self.populateCameraModel(model, all_camera_nodes)
         index = self.getDefaultCameraIndex(self.camera_model,
                                            selected_cameras,
@@ -312,10 +350,13 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         comboBox.setCurrentIndex(index)
         return
 
-    def updateMarkerGroupList(self, comboBox, model, active_mkr_grp, mkr_grp_nodes):
+    def updateMarkerGroupList(self, comboBox, model, active_mkr_grp,
+                              mkr_grp_nodes):
         self.populateMarkerGroupModel(model, active_mkr_grp, mkr_grp_nodes)
-        index = self.getDefaultMarkerGroupIndex(self.markerGroup_model, active_mkr_grp, mkr_grp_nodes)
+        index = self.getDefaultMarkerGroupIndex(
+            self.markerGroup_model, active_mkr_grp, mkr_grp_nodes)
         comboBox.setCurrentIndex(index)
+        self.updateOverscanValues()
         return
 
     def populateLoadModeModel(self, model):
@@ -473,7 +514,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
 
     def filePathBrowseClicked(self):
         title = "Select Marker File..."
-        file_filter = lib.get_file_filter()
+        file_filter = fileutils.get_file_filter()
         start_dir = lib.get_start_directory(self.getFilePath())
         result = QtWidgets.QFileDialog.getOpenFileName(
             self,

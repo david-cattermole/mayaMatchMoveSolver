@@ -21,7 +21,6 @@ Module for reading marker files.
 This should be used by end-users, not the internal modules.
 """
 
-import math
 import os
 
 import maya.cmds
@@ -545,9 +544,9 @@ def update_nodes(mkr_list, mkr_data_list,
         bnd = mkr.get_bundle()
         mkr_data = mkr_data_list[0]
         cam_shp = cam.get_shape_node()
+        fallback_overscan = (1.0, 1.0)
         overscan_x, overscan_y = overscan_per_camera.get(
-            cam_shp,
-            (1.0, 1.0)
+            cam_shp, fallback_overscan
         )
         _update_node(
             mkr, bnd, mkr_data,
@@ -568,8 +567,9 @@ def update_nodes(mkr_list, mkr_data_list,
             cam = mkr.get_camera()
             bnd = mkr.get_bundle()
             cam_shp = cam.get_shape_node()
+            fallback_overscan = (1.0, 1.0)
             overscan_x, overscan_y = overscan_per_camera.get(
-                cam_shp, (1.0, 1.0)
+                cam_shp, fallback_overscan,
             )
             _update_node(
                 mkr, bnd, mkr_data,

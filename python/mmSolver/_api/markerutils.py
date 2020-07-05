@@ -36,6 +36,8 @@ def calculate_marker_deviation(mkr_node,
                                bnd_node,
                                cam_tfm, cam_shp,
                                times,
+                               weights_list,
+                               enabled_list,
                                image_width,
                                image_height):
     """
@@ -43,7 +45,7 @@ def calculate_marker_deviation(mkr_node,
 
     :param mkr_node: The marker transform node to compute with.
     :type mkr_node: str
-    
+
     :param bnd_node: The bundle transform node to compute with.
     :type bnd_node: str
 
@@ -52,20 +54,23 @@ def calculate_marker_deviation(mkr_node,
 
     :param cam_shp: The camera shape node to compute with.
     :type cam_shp: str
-    
+
     :param times: The times to query the deviation.
     :type times: [float, ..]
 
     :param image_width: The width of the matchmove image plate.
     :type image_width: float
-    
+
     :param image_height: The height of the matchmove image plate.
     :type image_height: float
 
     :returns: List of pixel deviation values for given times.
     :rtype: [float, ..]
     """
-    dev = [None] * len(times)
+    times_num = len(times)
+    dev = [None] * times_num
+    assert len(weights_list) == times_num
+    assert len(enabled_list) == times_num
 
     # Compute the pixel values.
     mkr_pos = maya.cmds.mmReprojection(
@@ -89,7 +94,12 @@ def calculate_marker_deviation(mkr_node,
     mkr_y = mkr_pos[1:len(mkr_pos):3]
     bnd_x = bnd_pos[0:len(mkr_pos):3]
     bnd_y = bnd_pos[1:len(mkr_pos):3]
-    for i, (mx, my, bx, by) in enumerate(zip(mkr_x, mkr_y, bnd_x, bnd_y)):
+    iterator = enumerate(zip(
+        mkr_x, mkr_y, bnd_x, bnd_y,
+        enabled_list, weights_list))
+    for i, (mx, my, bx, by, enabled, weight) in iterator:
+        if enabled <= 0 or weight <= 0.0:
+            continue
         dx = mx - bx
         dy = my - by
         dev[int(i)] = math.sqrt((dx * dx) + (dy * dy))
@@ -191,3 +201,32 @@ def find_marker_attr_mapping(mkr_list, attr_list):
         (e-s) / num_iters
     )
     return mapping
+
+
+def calculate_average_deviation(dev_list):
+    """
+    Calculate a single float number (in pixels) representing the
+    average deviation of this Marker.
+    """
+    dev_list = [d for d in dev_list if d > 0.0]
+    if len(dev_list) == 0:
+        return -1.0
+    dev = sum(dev_list) / len(dev_list)
+    return dev
+
+
+def calculate_maximum_deviation(frames, dev_list):
+    """
+    Return a tuple of (value, frame) for the deviation
+    value and frame number that is the highest.
+    """
+    max_dev = -1.0
+    max_frm = -1
+    if len(frames) == 0 or len(dev_list) == 0:
+        return max_dev, max_frm
+    assert len(frames) == len(dev_list)
+    for dev, frm in zip(dev_list, frames):
+        if dev > max_dev:
+            max_dev = dev
+            max_frm = frm
+    return max_dev, max_frm

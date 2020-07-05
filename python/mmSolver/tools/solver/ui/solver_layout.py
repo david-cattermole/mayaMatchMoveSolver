@@ -48,6 +48,11 @@ class SolverLayout(QtWidgets.QWidget):
         self.ui = ui_solver_layout.Ui_Form()
         self.ui.setupUi(self)
 
+        # Set the sizing for the Attribute and Object frames, so that
+        # the Splitter will start out with a 50/50 ratio of Objects
+        # to Attributes.
+        self.ui.objectAttribute_splitter.setSizes([50, 50])
+
         # Store the parent window class, so we can set the applyBtn enabled
         # state.
         self._parentObject = parent

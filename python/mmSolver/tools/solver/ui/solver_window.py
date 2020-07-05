@@ -119,7 +119,7 @@ class SolverWindow(BaseWindow):
         file_menu.addAction(action)
 
         # Rename Collection
-        label = 'Rename Collection'
+        label = 'Rename Collection...'
         tooltip = 'Rename a Collection node.'
         action = QtWidgets.QAction(label, file_menu)
         action.setStatusTip(tooltip)
@@ -129,7 +129,7 @@ class SolverWindow(BaseWindow):
         file_menu.addSeparator()
 
         # Remove Collection
-        label = 'Remove Collection'
+        label = 'Remove Collection...'
         tooltip = 'Remove a Collection node.'
         action = QtWidgets.QAction(label, file_menu)
         action.setStatusTip(tooltip)
@@ -297,16 +297,16 @@ class SolverWindow(BaseWindow):
             self.subForm.attribute_browser.displayStateColumnChanged)
         view_menu.addAction(action)
 
-        # Display Attribute Min/Max
-        label = 'Display Attribute Min/Max'
-        tooltip = 'Display Attribute Minimum and Maximum columns'
-        value = lib_state.get_display_attribute_min_max_state()
+        # Display Attribute Smoothness
+        label = 'Display Attribute Smoothness'
+        tooltip = 'Display Attribute Smoothness columns'
+        value = lib_state.get_display_attribute_smoothness_state()
         action = QtWidgets.QAction(label, view_menu)
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
         action.toggled.connect(
-            self.subForm.attribute_browser.displayMinMaxColumnChanged)
+            self.subForm.attribute_browser.displaySmoothnessColumnChanged)
         view_menu.addAction(action)
 
         # Display Attribute Stiffness
@@ -321,16 +321,16 @@ class SolverWindow(BaseWindow):
             self.subForm.attribute_browser.displayStiffnessColumnChanged)
         view_menu.addAction(action)
 
-        # Display Attribute Smoothness
-        label = 'Display Attribute Smoothness'
-        tooltip = 'Display Attribute Smoothness columns'
-        value = lib_state.get_display_attribute_smoothness_state()
+        # Display Attribute Min/Max
+        label = 'Display Attribute Min/Max'
+        tooltip = 'Display Attribute Minimum and Maximum columns'
+        value = lib_state.get_display_attribute_min_max_state()
         action = QtWidgets.QAction(label, view_menu)
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
         action.toggled.connect(
-            self.subForm.attribute_browser.displaySmoothnessColumnChanged)
+            self.subForm.attribute_browser.displayMinMaxColumnChanged)
         view_menu.addAction(action)
 
         if Qt.IsPySide2 or Qt.IsPyQt5:

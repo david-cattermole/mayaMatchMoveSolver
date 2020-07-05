@@ -25,7 +25,14 @@ import uuid
 import mmSolver.logger
 import mmSolver._api.constant as const
 
+
 LOG = mmSolver.logger.get_logger()
+
+# Keys to be used in a 'precomputed data' structure.
+MARKER_STATIC_VALUES_KEY = 'marker_state_values'
+ATTR_STATIC_VALUES_KEY = 'attribute_state_values'
+ATTR_STIFFNESS_STATIC_VALUES_KEY = 'attribute_stiffness_state_values'
+ATTR_SMOOTHNESS_STATIC_VALUES_KEY = 'attribute_smoothness_state_values'
 
 
 class SolverBase(object):
@@ -121,6 +128,28 @@ class SolverBase(object):
         if isinstance(value, bool) is False:
             raise TypeError('Expected bool value type.')
         self._data['enabled'] = value
+        return
+
+    def get_precomputed_data(self):
+        """
+        Get precomputed data that can be re-used inside this Solver.
+
+        :rtype: dict or None
+        """
+        return self._data.get('precomputed_data')
+
+    def set_precomputed_data(self, value):
+        """
+        Set the precomputed data (dictionary). This precomputed data will
+        be used inside the Solver rather than computing many times.
+
+        :param value:
+            The data structure of the precomputed data to be re-used.
+        :type value: dict
+        """
+        if isinstance(value, dict) is False:
+            raise TypeError('Expected dict value type.')
+        self._data['precomputed_data'] = value
         return
 
     @abc.abstractmethod

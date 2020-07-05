@@ -288,7 +288,8 @@ def create(nodes,
                 name=name,
                 parent=node_parent)
             tfm = node_utils.get_long_name(tfm)
-            maya.cmds.createNode('locator', parent=tfm)
+            shape_name = name + 'Shape'
+            maya.cmds.createNode('locator', name=shape_name, parent=tfm)
             rot_order = maya.cmds.xform(node, query=True, rotateOrder=True)
             maya.cmds.xform(tfm, rotateOrder=rot_order, preserve=True)
             ctrl_tfm = tfm_utils.TransformNode(node=tfm)

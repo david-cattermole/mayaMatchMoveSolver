@@ -32,12 +32,14 @@ Usage::
   5) Run 'bake' tool, selected transform nodes are deleted and
       animation is transfered back onto original nodes.
 
-Ideas::
-
-  - Have a flag to allow maintaining the relative hierarchy of the
-    input transforms.
-
 """
+
+
+# Ideas::
+#
+#   - Have a flag to allow maintaining the relative hierarchy of the
+#     input transforms.
+
 
 import maya.cmds
 

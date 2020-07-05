@@ -63,25 +63,24 @@ autodoc_mock_classnames = {
     'QStyledItemDelegate',
 }
 
-# Mock sub-class that will create return new mock sub-classes for
-# specific class names. This is to stop sub-classes from causing auto-
-# doc errors when using classes that cannot exist in the Travis CI context
-# (such as 'maya.cmds').
-#
-# https://stackoverflow.com/questions/38377336/mock-modules-and-subclasses-typeerror-error-when-calling-the-metaclass-bases
-#
-class MyCustomMock(mock.Mock):
-    @classmethod
-    def __getattr__(cls, name):
-        obj = None
-        if name in autodoc_mock_classnames:
-            obj = mock.Mock
-        else:
-            obj = MyCustomMock()
-        return obj
-
-
 if HAS_MOCK is True:
+    # Mock sub-class that will create return new mock sub-classes for
+    # specific class names. This is to stop sub-classes from causing auto-
+    # doc errors when using classes that cannot exist in the Travis CI context
+    # (such as 'maya.cmds').
+    #
+    # https://stackoverflow.com/questions/38377336/mock-modules-and-subclasses-typeerror-error-when-calling-the-metaclass-bases
+    #
+    class MyCustomMock(mock.Mock):
+        @classmethod
+        def __getattr__(cls, name):
+            obj = None
+            if name in autodoc_mock_classnames:
+                obj = mock.Mock
+            else:
+                obj = MyCustomMock()
+            return obj
+
     for mod_name in autodoc_mock_imports:
         sys.modules[mod_name] = MyCustomMock()
 

@@ -548,6 +548,14 @@
         "dummy": {
             "name": "Dummy",
             "tooltip": "A Dummy function to do nothing, used as a placeholder."
+        },
+        "sort_nodes_in_outliner": {
+            "name": "Sort Selected Nodes In Outliner",
+            "tooltip": "Alphabetically sorts the selected transform nodes in the Outliner.",
+            "command": [
+                "import mmSolver.tools.sortoutlinernodes.tool as tool;",
+                "tool.main();"
+            ]
         }
     }
 }

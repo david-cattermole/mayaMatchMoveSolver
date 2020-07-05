@@ -87,6 +87,13 @@ Smooth
     :members:
     :undoc-members:
 
+Sort
+++++
+
+.. automodule:: mmSolver.utils.sort
+    :members:
+    :undoc-members:
+
 Time
 ++++
 

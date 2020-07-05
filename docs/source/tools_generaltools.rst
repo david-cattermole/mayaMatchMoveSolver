@@ -397,6 +397,38 @@ To run the tool, use this Python command:
     import mmSolver.tools.markerbundlerenamewithmetadata.tool as tool
     tool.main()
 
+.. _sort-selected-nodes-in-outliner-tool-ref:
+
+Sort Selected Nodes In Outliner
+-------------------------------
+
+Alphabetically sorts (re-orders) the selected nodes in the Maya Outliner window.
+
+This tool avoids the Maya Outliner window's (interactive) "Sort Order" feature
+and encourages an organised workflow when working with many nodes.
+
+This tool works on *any* Transform node, not only mmSolver nodes.
+
+.. figure:: images/sort_nodes_in_outliner_compare.png
+    :alt: Before/After of all nodes sorted in the Maya Outliner.
+    :align: center
+    :width: 80%
+
+Usage:
+
+1) Select transform nodes.
+
+2) Run tool.
+
+   - The nodes will be sorted.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.sortoutlinernodes.tool as tool
+    tool.main()
+
 .. _reparent-under-node-tool-ref:
 
 Reparent Under Node

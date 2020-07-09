@@ -23,7 +23,7 @@ Required:
 - [CMake 2.8+](https://cmake.org/)
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
 - [CMinpack 1.3.6](https://github.com/devernay/cminpack/releases/tag/v1.3.6)
-- [Python 2.7.x](https://www.python.org/) (for build scripts)
+- [Python 2.7.x or 3.x](https://www.python.org/) (for build scripts)
 - [Qt.py 1.1.0](https://github.com/mottosso/Qt.py/releases/tag/1.1.0) (for GUI support)
 - [Sphinx 1.8.3+](http://www.sphinx-doc.org/en/master/index.html) (for building documentation)
 

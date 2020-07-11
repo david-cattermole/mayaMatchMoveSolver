@@ -30,7 +30,7 @@ CHDIR %ROOT%
 SET INSTALL_DIR="%ROOT%\install\cminpack"
 
 :: Extract LevMar
-python2.exe "%THIS_DIR%get_cminpack.py" "%ROOT%\archives" "%ROOT%\working" "%ROOT%\patches"
+python.exe "%THIS_DIR%get_cminpack.py" "%ROOT%\archives" "%ROOT%\working" "%ROOT%\patches"
 
 :: Build plugin
 MKDIR build

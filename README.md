@@ -32,6 +32,8 @@ changes.
 
 | Releases                                                                              | Description                                 |
 | ------------------------------------------------------------------------------------- | ------------------------------------------- |
+| [v0.3.6](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.6) | UI Performance Improvements and bug fixes.  |
+| [v0.3.5](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.5) | Fixed bugs.                                 |
 | [v0.3.4](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.4) | Added Attribute Details and fixed bugs.     |
 | [v0.3.3](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.3) | Bug fix release.                            |
 | [v0.3.2](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.2) | Added tools and fixed bugs.                 |

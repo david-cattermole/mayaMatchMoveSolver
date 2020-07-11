@@ -36,6 +36,7 @@ if sys.version_info[0] == 2:
 elif sys.version_info[0] == 3:
     import urllib.request as urllib2
 
+
 def download_file(url, out_file, user_agent=None):
     print('Downloading: {}'.format(url))
     filedata = None
@@ -61,7 +62,7 @@ def unpack_zip_archive(input_file, output_dir):
 
 def unpack_tarball_archive(input_file, output_dir):
     with tarfile.open(input_file, 'r') as f:
-        print('Extracting: {}'.format(output_dir)
+        print('Extracting: {}'.format(output_dir))
         f.extractall(output_dir)
     return
 

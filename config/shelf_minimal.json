@@ -19,6 +19,7 @@
             "mkr_bnd_tools/mkr_bnd_popup/link_marker_bundle",
             "mkr_bnd_tools/mkr_bnd_popup/unlink_marker_bundle",
             "attr_tools/attr_popup/---Attribute Details",
+            "attr_tools/attr_popup/open_graph_editor",
             "attr_tools/attr_popup/set_attr_details_ui",
             "marker_tools/marker_popup/---Edit Marker",
             "marker_tools/marker_popup/toggle_marker_lock",

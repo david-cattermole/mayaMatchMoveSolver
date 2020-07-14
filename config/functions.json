@@ -369,6 +369,15 @@
                 "mmSolver.tools.centertwodee.tool.remove();"
             ]
         },
+        "open_graph_editor": {
+            "name": "Graph Editor...",
+            "name_shelf": "GE",
+            "tooltip": "Open the Graph Editor window.",
+            "command_lang": "mel",
+            "command": [
+                "GraphEditor;"
+            ]
+        },
         "set_attr_details_ui": {
             "name": "Set Attribute Details...",
             "name_shelf": "Attrib",

@@ -150,6 +150,7 @@ def create_shelf_button(parent=None,
     if isinstance(icon, basestring):
         image = str(icon)
         image1 = str(icon)
+
     if cmdLanguage is None:
         sourceType = 'python'
     elif isinstance(cmdLanguage, basestring):
@@ -158,10 +159,11 @@ def create_shelf_button(parent=None,
         msg = 'cmdLanguage must be None or str: cmdLanguage=%r'
         LOG.error(msg, cmdLanguage)
         raise ValueError(msg, cmdLanguage)
+    kwargs['sourceType'] = sourceType
+
     if isinstance(cmd, basestring):
         command = str(cmd)
         kwargs['command'] = command
-        kwargs['sourceType'] = sourceType
 
     button = maya.cmds.shelfButton(
         parent=parent,

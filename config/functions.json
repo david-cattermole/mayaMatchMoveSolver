@@ -235,7 +235,7 @@
             "tooltip": "Link the selected Marker and Bundle together.",
             "command": [
                 "import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;",
-            "link_mb_tool.link_marker_bundle();"
+                "link_mb_tool.link_marker_bundle();"
             ]
         },
         "unlink_marker_bundle": {

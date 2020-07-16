@@ -32,6 +32,8 @@ set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodes
 set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
 set(PROJECT_COPYRIGHT "2018, 2019, 2020, David Cattermole, Anil Reddy.")
 
+# Explicitly enable features
+set(CMAKE_MACOSX_RPATH 1)
 
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
@@ -65,6 +67,8 @@ set(MAYA_VERSION "2017" CACHE STRING
         "Maya version number")
 set(MAYA_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH
         "Maya install directory")
+set(DEVKIT_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH
+        "Maya development kit (devkit) directory")
 set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH
         "Maya include directory")
 set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH
@@ -105,16 +109,16 @@ set(BLAS_LIB_NAMES
 set(PREFERRED_SOLVER "cminpack_lmder" CACHE STRING
         "Choices are cminpack_lm, cminpack_lmder or levmar. Which solver is used by default?")
 
-
 # Module paths
-if (UNIX)
+if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+    set(MODULE_OS_NAME mac)
+elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
     set(MODULE_OS_NAME linux)
-elseif (MSVC)
+elseif(CMAKE_SYSTEM_NAME STREQUAL Windows)
     set(MODULE_OS_NAME win64)
 else ()
-    message(FATAL_ERROR "Only Linux and Windows are supported.")
+    message(FATAL_ERROR "Only Linux, MacOS and Windows are supported.")
 endif ()
-
 
 # Module names
 set(MODULE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
@@ -160,18 +164,23 @@ endif ()
 
 
 # Create Module Description file.
-if (UNIX)
+if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+    configure_file(
+            ${CMAKE_CURRENT_SOURCE_DIR}/modules/mayaMatchMoveSolver_mac.mod
+            ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_FULL_NAME}.mod
+            @ONLY)
+elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
     configure_file(
             ${CMAKE_CURRENT_SOURCE_DIR}/modules/mayaMatchMoveSolver_linux.mod
             ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_FULL_NAME}.mod
             @ONLY)
-elseif (MSVC)
+elseif(CMAKE_SYSTEM_NAME STREQUAL Windows)
     configure_file(
             ${CMAKE_CURRENT_SOURCE_DIR}/modules/mayaMatchMoveSolver_windows.mod
             ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_FULL_NAME}.mod
             @ONLY)
 else ()
-    message(FATAL_ERROR "Only Linux and Windows are supported.")
+    message(FATAL_ERROR "Only Linux, MacOS and Windows are supported.")
 endif ()
 
 
@@ -285,6 +294,33 @@ if (MSVC)
     # Must add the plug-in entry/exit points otherwise
     # the plug-in won't load.
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /export:initializePlugin /export:uninitializePlugin")
+else (APPLE)
+    # For MacOS with Clang (which is the supported compiler for Maya
+    # 2018+)
+    set(CMAKE_CXX_FLAGS "")  # Zero out the C++ flags, we have complete control.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -arch x86_64")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x  -stdlib=libc++")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-multichar -Wno-comment -Wno-sign-compare")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-reorder")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-35 -fno-gnu-keywords")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -funsigned-char -fpascal-strings")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCC_GNU_ -DOSMac_ -DOSMacOSX_ -DOSMac_MachO_ -D_LANGUAGE_C_PLUS_PLUS -mmacosx-version-min=10.8")
+
+    # Special MacOS linking stuff
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -headerpad_max_install_names")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework System")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework SystemConfiguration")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework CoreServices")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework Carbon")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework Cocoa")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework ApplicationServices")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework IOKit")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -bundle")
+
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fPIC -fno-strict-aliasing -m64")
 else ()
     # For Linux with GCC
     set(CMAKE_CXX_FLAGS "")  # Zero out the C++ flags, we have complete control.
@@ -312,7 +348,11 @@ endfunction()
 
 if (BUILD_PLUGIN)
     # 'mmSolver' maya plugin library
-    add_library(mmSolver SHARED ${SOURCE_FILES})
+    if (APPLE)
+      add_library(mmSolver MODULE ${SOURCE_FILES})
+    else ()
+      add_library(mmSolver SHARED ${SOURCE_FILES})
+    endif ()
     target_include_directories(mmSolver
             PRIVATE include
             PRIVATE src
@@ -331,6 +371,26 @@ if (BUILD_PLUGIN)
         target_include_directories(mmSolver PUBLIC ${LEVMAR_INCLUDE_DIRS})
         target_link_libraries(mmSolver ${LEVMAR_LIBRARIES})
         add_definitions(-DUSE_SOLVER_LEVMAR)
+
+
+        if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+            # To locate Levmar from the mmSolver dynamic library we
+            # must change the "install name" to a path relative to the
+            # loaded bundle.
+            #
+            # Run:
+            # $ install_name_tool -change liblevmar.dylib @loader_path/../lib/liblevmar.dylib mmSolver.bundle
+            #
+            # NOTE: If ${LEVMAR_LIBRARIES} has more than one library,
+            #  this command will fail.
+            #
+            get_filename_component(LEVMAR_LIBRARY_NAME ${LEVMAR_LIBRARIES} NAME)
+            add_custom_command(TARGET mmSolver
+                POST_BUILD COMMAND
+                ${CMAKE_INSTALL_NAME_TOOL} -change ${LEVMAR_LIBRARIES} @loader_path/../lib/${LEVMAR_LIBRARIES}
+                $<TARGET_FILE:mmSolver>
+            )
+        endif()
     endif ()
 
 
@@ -338,33 +398,58 @@ if (BUILD_PLUGIN)
         target_include_directories(mmSolver PUBLIC ${CMINPACK_INCLUDE_DIRS})
         target_link_libraries(mmSolver ${CMINPACK_LIBRARIES})
         add_definitions(-DUSE_SOLVER_CMINPACK)
+
+        if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+            # To locate CMinpack from the mmSolver dynamic library we
+            # must change the "install name" to a path relative to the
+            # loaded bundle.
+            #
+            # Run:
+            # $ install_name_tool -change libcminpack.1.dylib @loader_path/../lib/libcminpack.1.dylib mmSolver.bundle
+            #
+            # NOTE: If ${CMINPACK_LIBRARIES} has more than one library,
+            #  this command will fail.
+            #
+            get_filename_component(CMINPACK_LIBRARY_NAME ${CMINPACK_LIBRARIES} NAME)
+            add_custom_command(TARGET mmSolver
+                POST_BUILD COMMAND
+                ${CMAKE_INSTALL_NAME_TOOL} -change ${CMINPACK_LIBRARY_NAME} @loader_path/../lib/${CMINPACK_LIBRARY_NAME}
+                $<TARGET_FILE:mmSolver>
+            )
+        endif()
     endif ()
 
     # On Linux the 'm' library is required.
-    if (UNIX)
+    if(CMAKE_SYSTEM_NAME STREQUAL Linux)
         target_link_libraries(mmSolver m)
     endif ()
 
     # no 'lib' prefix to Maya plugin .so files
     set_target_properties(mmSolver PROPERTIES PREFIX "")
 
+    # On Linux, the Maya Plug-In file extension is '.so'.
     # On MacOS, the Maya Plug-In file extension is '.bundle'.
     # On Windows, the Maya Plug-In file extension is '.mll', not '.dll'.
+    set(MAYA_PLUGIN_SUFFIX ".so")
     if (APPLE)
         set(MAYA_PLUGIN_SUFFIX ".bundle")
     elseif (WIN32)
-        set_target_properties(mmSolver PROPERTIES SUFFIX ".mll")
+        set(MAYA_PLUGIN_SUFFIX ".mll")
+    else()
+        message(FATAL_ERROR "Only Linux, MacOS and Windows are supported.")
     endif ()
+    set_target_properties(mmSolver PROPERTIES SUFFIX ${MAYA_PLUGIN_SUFFIX})
 
-    # HACK: On Linux, LD_LIBRARY_PATH cannot be modified at runtime (on
-    # Windows it can), therefore the .mod files *can* change
-    # LD_LIBRARY_PATH, but the changes are not used by 'ld.so', which
-    # resolves the library path. Therefore, to make sure the the libraries
-    # in <module root>/lib are searched for libraries, we add a relative
-    # directory 'RPATH' to the library which tells the library resolution
-    # to search in the 'lib' directory inside the module root. Note: Linux
-    # does not allow run-time changes for security reasons.
-    if (UNIX)
+    if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+        # HACK: On Linux, LD_LIBRARY_PATH cannot be modified at runtime (on
+        # Windows it can), therefore the .mod files *can* change
+        # LD_LIBRARY_PATH, but the changes are not used by 'ld.so', which
+        # resolves the library path. Therefore, to make sure the the libraries
+        # in <module root>/lib are searched for libraries, we add a relative
+        # directory 'RPATH' to the library which tells the library resolution
+        # to search in the 'lib' directory inside the module root. Note: Linux
+        # does not allow run-time changes for security reasons.
+
         # We must escape the '$' symbol to make sure it is passed to the
         # compiler.
         set_target_properties(mmSolver PROPERTIES
@@ -545,7 +630,7 @@ if (WIN32 AND NOT UNIX)
     # .zip file for Windows.
     set(CPACK_GENERATOR "ZIP")
 elseif (UNIX AND NOT WIN32)
-    # .tar.gz for Linux.
+    # .tar.gz for Linux and MacOS.
     set(CPACK_GENERATOR "TGZ")
 endif ()
 

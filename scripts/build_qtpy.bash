@@ -27,7 +27,7 @@ CWD=`pwd`
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # The root of this project.
-PROJECT_ROOT=`readlink -f ${THIS_DIR}/..`
+PROJECT_ROOT=${THIS_DIR}/..
 
 # The root of the project external directory.
 ROOT=${THIS_DIR}/../external/

@@ -25,6 +25,7 @@ Required:
     - [Xcode version 7.3.1 and CMake are required](https://developer.apple.com/download) (Maya 2019)
 - [CMake 2.8+](https://cmake.org/)
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
+- [Maya Development Kit](https://www.autodesk.com/developer-network/platform-technologies/maya)
 - [CMinpack 1.3.6](https://github.com/devernay/cminpack/releases/tag/v1.3.6)
 - [Python 2.7.x](https://www.python.org/) (for build scripts)
 - [Qt.py 1.1.0](https://github.com/mottosso/Qt.py/releases/tag/1.1.0) (for GUI support)

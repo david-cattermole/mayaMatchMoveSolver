@@ -83,13 +83,13 @@ Copy 2D Tracks from 3DEqualizer
     :align: right
     :scale: 20%
 
-To create a ``.uv`` file, you may use the 3DEqualizer ``Copy Tracks
+To create a ``.uv`` file, you may use the 3DEqualizer ``Copy 2D Tracks
 (MM Solver)`` script (see mmSolver installation to install this
 script).
 
 1) In 3DEqualizer, select a 2D Point in the Object or Point Browser.
 
-2) Right-click the point and run ``Copy Tracks (MM Solver)``.
+2) Right-click the point and run ``Copy 2D Tracks (MM Solver)``.
 
    - A ``.uv`` file will be saved into a temporary file, and the file
      path will be on your system copy/paste clipboard, ready to be used in
@@ -97,6 +97,11 @@ script).
 
 3) Next Open Maya and use the file path in the Load Markers UI.
 
+.. note::
+    The ``Copy 2D Tracks`` tool uses the "First Frame is Frame"
+    parameter on the Camera in 3DEqualizer to correctly synchronise
+    frame numbers between Maya and 3DEqualizer. For an efficient workflow,
+    it is recommended to correctly set "First Frame is Frame".
 
 Loading Markers in Maya
 +++++++++++++++++++++++

@@ -109,12 +109,12 @@ format.</p>
 <div class="figure align-right">
 <a class="reference internal image-reference" href="_images/tools_loadmarker_tde_copyTracks.png"><img alt="Copy a 2D Track in 3DE" src="_images/tools_loadmarker_tde_copyTracks.png" style="width: 318.2px; height: 251.2px;" /></a>
 </div>
-<p>To create a <code class="docutils literal notranslate"><span class="pre">.uv</span></code> file, you may use the 3DEqualizer <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">Tracks</span>
+<p>To create a <code class="docutils literal notranslate"><span class="pre">.uv</span></code> file, you may use the 3DEqualizer <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span>
 <span class="pre">(MM</span> <span class="pre">Solver)</span></code> script (see mmSolver installation to install this
 script).</p>
 <ol class="arabic simple">
 <li>In 3DEqualizer, select a 2D Point in the Object or Point Browser.</li>
-<li>Right-click the point and run <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code>.<ul>
+<li>Right-click the point and run <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code>.<ul>
 <li>A <code class="docutils literal notranslate"><span class="pre">.uv</span></code> file will be saved into a temporary file, and the file
 path will be on your system copy/paste clipboard, ready to be used in
 Maya.</li>
@@ -122,6 +122,13 @@ Maya.</li>
 </li>
 <li>Next Open Maya and use the file path in the Load Markers UI.</li>
 </ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span></code> tool uses the “First Frame is Frame”
+parameter on the Camera in 3DEqualizer to correctly synchronise
+frame numbers between Maya and 3DEqualizer. For an efficient workflow,
+it is recommended to correctly set “First Frame is Frame”.</p>
+</div>
 </div>
 <div class="section" id="loading-markers-in-maya">
 <h3>Loading Markers in Maya<a class="headerlink" href="#loading-markers-in-maya" title="Permalink to this headline">¶</a></h3>

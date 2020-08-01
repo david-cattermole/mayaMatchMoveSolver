@@ -97,6 +97,10 @@ script).
 
 3) Next Open Maya and use the file path in the Load Markers UI.
 
+See the video tutorial
+`Using 3DEqualizer with mmSolver - Copy 2D Tracks <https://david-cattermole.github.io/mayaMatchMoveSolver/tutorial.html#using-3dequalizer-with-mmsolver-copy-2d-tracks>`_
+for a step-by-step example of the usage.
+
 .. note::
     The ``Copy 2D Tracks`` tool uses the "First Frame is Frame"
     parameter on the Camera in 3DEqualizer to correctly synchronise

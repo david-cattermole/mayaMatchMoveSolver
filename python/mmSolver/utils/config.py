@@ -92,6 +92,9 @@ def find_path(file_name, search_paths):
     :param file_name: File name to find.
     :type file_name: str
 
+    :param search_paths: The directories to search for the file.
+    :type search_paths: list of str
+
     :return: Full config file name, or None.
     :rtype: str or None
     """

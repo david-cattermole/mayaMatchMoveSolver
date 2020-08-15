@@ -30,6 +30,27 @@ These video uses mmSolver v0.2.0 (beta).
     <iframe width="720" height="405" src="https://www.youtube.com/embed/yS1kJJkosqA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
+Using 3DEqualizer with mmSolver - Copy 2D Tracks
+------------------------------------------------
+
+This video explains how to take 2D tracking data from 3DEqualizer and load it into Maya, for use in mmSolver.
+
+For more information, see the
+`Copy 2D Tracks tool
+<https://david-cattermole.github.io/mayaMatchMoveSolver/tools_createnode.html#copy-2d-tracks-from-3dequalizer>`_
+and
+`Copy Camera to Clipboard tool
+<https://david-cattermole.github.io/mayaMatchMoveSolver/tools_generaltools.html#copy-camera-to-clipboard>`_
+documentation.
+
+This video uses mmSolver v0.3.6.
+
+Thanks to Patcha Saheb for making this video.
+
+.. raw:: html
+
+    <iframe width="720" height="405" src="https://www.youtube.com/embed/ywN_IjyxMbA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 Camera and Object Solve
 -----------------------
 

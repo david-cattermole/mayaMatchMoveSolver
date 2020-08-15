@@ -75,6 +75,10 @@
                 "popup": true,
                 "popup_button": ["left", "right"]
             },
+            "attr_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
             "create_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]

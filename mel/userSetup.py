@@ -61,7 +61,8 @@ def mmsolver_create_hotkey_set():
 
 def mmsolver_startup():
     """
-    Responsible for starting up mmSolver.
+    Responsible for starting up mmSolver, including creating shelves,
+    hotkeys and menus.
     """
     LOG.info('MM Solver Startup...')
 

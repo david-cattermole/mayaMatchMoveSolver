@@ -12,12 +12,12 @@
             "solver_tools/solver_popup/edit_root_frame_add",
             "solver_tools/solver_popup/edit_root_frame_remove",
             "create_marker",
-            "mkr_bnd_tools/mkr_bnd_popup/---Selection",
-            "mkr_bnd_tools/mkr_bnd_popup/swap_marker_bundles",
-            "mkr_bnd_tools/mkr_bnd_popup/select_marker_bundles",
-            "mkr_bnd_tools/mkr_bnd_popup/---Marker-Bundle Link",
-            "mkr_bnd_tools/mkr_bnd_popup/link_marker_bundle",
-            "mkr_bnd_tools/mkr_bnd_popup/unlink_marker_bundle",
+            "mb_tools/mb_popup/---Selection",
+            "mb_tools/mb_popup/swap_marker_bundles",
+            "mb_tools/mb_popup/select_marker_bundles",
+            "mb_tools/mb_popup/---Marker-Bundle Link",
+            "mb_tools/mb_popup/link_marker_bundle",
+            "mb_tools/mb_popup/unlink_marker_bundle",
             "attr_tools/attr_popup/---Attribute Details",
             "attr_tools/attr_popup/open_graph_editor",
             "attr_tools/attr_popup/set_attr_details_ui",
@@ -87,7 +87,7 @@
                 "popup": true,
                 "popup_button": ["left", "right"]
             },
-            "mkr_bnd_popup": {
+            "mb_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
             },

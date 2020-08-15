@@ -29,11 +29,11 @@ this may be overridden using "get_dirs", or "get_config" function arguments.
 
 By default the following paths are searched (in order, top-down):
 
- - ${MMSOLVER_LOCATION}/config (Linux and Windows)
+ - `${HOME}/.mmSolver` (Linux)
 
- - ${HOME}/.mmSolver (Linux)
+ - `%APPDATA%/mmSolver` (Windows)
 
- - %APPDATA%\mmSolver (Windows)
+ - `${MMSOLVER_LOCATION}/config` (Linux and Windows)
 
 This allows both a default fallback, and a user specified path.
 Additionally, studios may modify the '.mod' file to provide an

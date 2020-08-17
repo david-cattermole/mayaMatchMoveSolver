@@ -43,7 +43,7 @@ def screen_space_z(camera_tfm):
     :return: None
     """
     if not camera_tfm:
-        LOG.warning('Please select a viewport')
+        LOG.warn('Please select a viewport')
         return
 
     cam_position = maya.cmds.xform(camera_tfm,
@@ -66,17 +66,17 @@ def main():
     """
     selection = maya.cmds.ls(sl=True)
     if not selection:
-        LOG.warning('Please select an object.')
+        LOG.warn('Please select an object.')
         return
 
     active_model_editor = utils_viewport.get_active_model_editor()
     if not active_model_editor:
-        LOG.warning('Please select a viewport.')
+        LOG.warn('Please select a viewport.')
         return
 
     camera_tfm = utils_viewport.get_viewport_camera(active_model_editor)[0]
     if not camera_tfm:
-        LOG.warning('Please select a viewport.')
+        LOG.warn('Please select a viewport.')
         return
     manip_context = const.MANIP_CONTEXT
 
@@ -101,7 +101,7 @@ def main():
             mode=move_manip_custom
         )
         screen_space_z(camera_tfm)
-        LOG.warning('manipMoveContext to ScreenZ')
+        LOG.info('Move tool set to Screen-Z')
 
     elif move_manip_mode == move_manip_custom:
         maya.cmds.manipMoveContext(
@@ -109,5 +109,5 @@ def main():
             edit=True,
             mode=move_manip_object
         )
-        LOG.warning('manipMoveContext to Object')
+        LOG.info('Move tool set to Object')
     return

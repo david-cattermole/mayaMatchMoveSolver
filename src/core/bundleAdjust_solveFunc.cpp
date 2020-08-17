@@ -340,15 +340,15 @@ double calculateParameterDelta(double value,
         //   - At the very least we should print-out a warning.
         delta = 0.0001;
         WRN("User has requested solving of camera scaleX attribute; "
-                    << "that's not a good idea.");
+            << "that's not a good idea.");
     } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_SY) {
          delta = 0.0001;
         WRN("User has requested solving of camera scaleY attribute; "
-                    << "that's not a good idea.");
+            << "that's not a good idea.");
     } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_SZ) {
          delta = 0.0001;
         WRN("User has requested solving of camera scaleZ attribute; "
-                    << "that's not a good idea.");
+            << "that's not a good idea.");
     } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_FOCAL) {
         // Camera Focal length
          delta = 1.0;  // 1.0 mm.
@@ -700,14 +700,12 @@ void incrementNormalIteration(SolverData *ud,
                               std::ofstream *debugFile) {
     ++ud->funcEvalNum;
     ++ud->iterNum;
-    // We're not using INFO macro because we don't want a
-    // new-line created.
+    MStreamUtils::stdErrorStream() << " | Iteration ";
+    MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw(4)
+                                   << ud->iterNum;
     MStreamUtils::stdErrorStream() << "Eval ";
     MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw(4)
                                    << ud->funcEvalNum;
-    MStreamUtils::stdErrorStream() << " | Normal   ";
-    MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw(4)
-                                   << ud->iterNum;
 #ifdef WITH_DEBUG_FILE
     if (debugIsOpen && debugFile != NULL) {
         (*debugFile) << "\n"
@@ -726,12 +724,12 @@ void incrementJacobianIteration(SolverData *ud,
     ++ud->funcEvalNum;
     ++ud->jacIterNum;
     if (ud->verbose) {
-        std::cerr << "Eval ";
-        std::cerr << std::right << std::setfill ('0') << std::setw (4)
-                  << ud->funcEvalNum;
-        std::cerr << " | Jacobian ";
-        std::cerr << std::right << std::setfill ('0') << std::setw (4)
-                  << ud->jacIterNum;
+        MStreamUtils::stdErrorStream() << " | Jacobian ";
+        MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw (4)
+                                       << ud->jacIterNum;
+        MStreamUtils::stdErrorStream() << "Eval ";
+        MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw (4)
+                                       << ud->funcEvalNum;
         if (ud->doCalcJacobian) {
             MStreamUtils::stdErrorStream() << "\n";
         }

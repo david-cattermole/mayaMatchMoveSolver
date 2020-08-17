@@ -733,7 +733,7 @@ void incrementJacobianIteration(SolverData *ud,
         std::cerr << std::right << std::setfill ('0') << std::setw (4)
                   << ud->jacIterNum;
         if (ud->doCalcJacobian) {
-            std::cerr << std::endl;
+            MStreamUtils::stdErrorStream() << "\n";
         }
     }
     #ifdef WITH_DEBUG_FILE
@@ -1075,11 +1075,11 @@ int solveFunc(int numberOfParameters,
             error_avg,
             error_min,
             error_max);
-        MStreamUtils::stdErrorStream() << std::string(formatBuffer) << std::endl;
+        MStreamUtils::stdErrorStream() << std::string(formatBuffer) << "\n";
     } else {
         if (ud->verbose) {
             if (!ud->doCalcJacobian) {
-                std::cerr << std::endl;
+                std::cerr << "\n";
             }
         }
     }

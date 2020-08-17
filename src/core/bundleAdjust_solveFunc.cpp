@@ -546,7 +546,7 @@ void measureErrors(
 
         // Is the bundle behind the camera?
         bool behind_camera = false;
-        bool behind_camera_error_factor = 1.0;
+        double behind_camera_error_factor = 1.0;
         double cam_dot_bnd = cam_dir * bnd_dir;
         // WRN("Camera DOT Bundle: " << cam_dot_bnd);
         if (cam_dot_bnd < 0.0) {

@@ -405,10 +405,14 @@ void setParameters(
         const int numberOfParameters,
         const double *parameters,
         SolverData *ud,
-        bool writeDebug,
-        std::ofstream &debugFile,
+        std::ofstream *debugFile,
         MStatus &status) {
-    bool debugFileIsOpen = debugFile.is_open();
+    bool debugFileIsOpen = false;
+#ifdef WITH_DEBUG_FILE
+    if (debugFile != NULL) {
+        debugFileIsOpen = debugFile->is_open();
+    }
+#endif
 
     MTime currentFrame = MAnimControl::currentTime();
     for (int i = 0; i < numberOfParameters; ++i) {
@@ -431,11 +435,11 @@ void setParameters(
             frame = ud->frameList[attrPair.second];
         }
 
-        if (writeDebug == true && debugFileIsOpen == true) {
-            debugFile << "i=" << i
-                      << " v=" << value
-                      << std::endl;
+#ifdef WITH_DEBUG_FILE
+        if (debugFileIsOpen && debugFile != NULL) {
+            (*debugFile) << "i=" << i << " v=" << value << "\n";
         }
+#endif
         attr->setValue(value, frame, *ud->dgmod, *ud->curveChange);
     }
 
@@ -474,10 +478,14 @@ void measureErrors(
         double &error_avg,
         double &error_max,
         double &error_min,
-        bool writeDebug,
-        std::ofstream &debugFile,
+        std::ofstream *debugFile,
         MStatus &status) {
-    bool debugIsOpen = debugFile.is_open();
+#ifdef WITH_DEBUG_FILE
+    bool debugIsOpen = false;
+    if (debugFile != NULL) {
+        debugIsOpen = debugFile->is_open();
+    }
+#endif
     error_avg = 0.0;
     error_max = -0.0;
     error_min = std::numeric_limits<double>::max();
@@ -546,34 +554,36 @@ void measureErrors(
             behind_camera_error_factor = 1e+6;
         }
 
-        if (writeDebug && debugIsOpen) {
-            debugFile << "Bundle: " << bnd->getNodeName()
-                      << std::endl;
-            debugFile << "Behind Camera: " << behind_camera
-                      << std::endl;
-            debugFile << "Cam DOT Bnd: " << cam_dot_bnd
-                      << std::endl;
-            debugFile << "bnd_mpos: "
-                      << bnd_mpos_tmp.x << ", "
-                      << bnd_mpos_tmp.y << ", "
-                      << bnd_mpos_tmp.z
-                      << std::endl;
-            debugFile << "cam_pos: "
-                      << cam_pos.x << ", "
-                      << cam_pos.y << ", "
-                      << cam_pos.z
-                      << std::endl;
-            debugFile << "cam_dir: "
-                      << cam_dir.x << ", "
-                      << cam_dir.y << ", "
-                      << cam_dir.z
-                      << std::endl;
-            debugFile << "bnd_dir: "
-                      << bnd_dir.x << ", "
-                      << bnd_dir.y << ", "
-                      << bnd_dir.z
-                      << std::endl;
+#ifdef WITH_DEBUG_FILE
+        if (debugIsOpen && debugFile != NULL) {
+            (*debugFile) << "Bundle: " << bnd->getNodeName()
+                         << "\n";
+            (*debugFile) << "Behind Camera: " << behind_camera
+                         << "\n";
+            (*debugFile) << "Cam DOT Bnd: " << cam_dot_bnd
+                         << "\n";
+            (*debugFile) << "bnd_mpos: "
+                         << bnd_mpos_tmp.x << ", "
+                         << bnd_mpos_tmp.y << ", "
+                         << bnd_mpos_tmp.z
+                         << "\n";
+            (*debugFile) << "cam_pos: "
+                         << cam_pos.x << ", "
+                         << cam_pos.y << ", "
+                         << cam_pos.z
+                         << "\n";
+            (*debugFile) << "cam_dir: "
+                         << cam_dir.x << ", "
+                         << cam_dir.y << ", "
+                         << cam_dir.z
+                         << "\n";
+            (*debugFile) << "bnd_dir: "
+                         << bnd_dir.x << ", "
+                         << bnd_dir.y << ", "
+                         << bnd_dir.z
+                         << "\n";
         }
+#endif
 
         // According to the Ceres solver 'circle_fit.cc'
         // example, using the 'sqrt' distance error function is a
@@ -663,21 +673,23 @@ void measureErrors(
 
     error_avg *= 1.0 / (numberOfErrors / ERRORS_PER_MARKER);
 
-    if (writeDebug && debugIsOpen) {
+#ifdef WITH_DEBUG_FILE
+    if (debugIsOpen && debugFile != NULL) {
         for (int i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
-            debugFile << "error i=" << i
-                      << " x=" << ud->errorList[(i * ERRORS_PER_MARKER) + 0]
-                      << " y=" << ud->errorList[(i * ERRORS_PER_MARKER) + 1]
-                      << std::endl;
-            debugFile << "error dist i=" << i
-                      << " v=" << ud->errorDistanceList[i]
-                      << std::endl;
+            (*debugFile) << "error i=" << i
+                         << " x=" << ud->errorList[(i * ERRORS_PER_MARKER) + 0]
+                         << " y=" << ud->errorList[(i * ERRORS_PER_MARKER) + 1]
+                         << "\n";
+            (*debugFile) << "error dist i=" << i
+                         << " v=" << ud->errorDistanceList[i]
+                         << "\n";
         }
-        debugFile << "emin=" << error_min
-                  << " emax=" << error_max
-                  << " eavg=" << error_avg
-                  << std::endl;
+        (*debugFile) << "emin=" << error_min
+                     << " emax=" << error_max
+                     << " eavg=" << error_avg
+                     << "\n";
     }
+#endif
     return;
 }
 
@@ -685,7 +697,7 @@ void measureErrors(
 // Add another 'normal function' evaluation to the count.
 void incrementNormalIteration(SolverData *ud,
                               bool debugIsOpen,
-                              std::ofstream &debugFile) {
+                              std::ofstream *debugFile) {
     ++ud->funcEvalNum;
     ++ud->iterNum;
     // We're not using INFO macro because we don't want a
@@ -696,11 +708,13 @@ void incrementNormalIteration(SolverData *ud,
     MStreamUtils::stdErrorStream() << " | Normal   ";
     MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw(4)
                                    << ud->iterNum;
-    if (debugIsOpen) {
-        debugFile << std::endl
-                  << "iteration normal: " << ud->iterNum
-                  << std::endl;
+#ifdef WITH_DEBUG_FILE
+    if (debugIsOpen && debugFile != NULL) {
+        (*debugFile) << "\n"
+                     << "iteration normal: " << ud->iterNum
+                     << "\n";
     }
+#endif
     return;
 }
 
@@ -708,7 +722,7 @@ void incrementNormalIteration(SolverData *ud,
 // Add another 'jacobian function' evaluation to the count.
 void incrementJacobianIteration(SolverData *ud,
                                 bool debugIsOpen,
-                                std::ofstream &debugFile) {
+                                std::ofstream *debugFile) {
     ++ud->funcEvalNum;
     ++ud->jacIterNum;
     if (ud->verbose) {
@@ -722,11 +736,13 @@ void incrementJacobianIteration(SolverData *ud,
             std::cerr << std::endl;
         }
     }
-    if (debugIsOpen) {
-        debugFile << std::endl
+    #ifdef WITH_DEBUG_FILE
+    if (debugIsOpen && debugFile != NULL) {
+        (*debugFile) << "\n"
                   << "iteration jacobian: " << ud->jacIterNum
-                  << std::endl;
+                  << "\n";
     }
+    #endif
     return;
 }
 
@@ -750,14 +766,15 @@ int solveFunc(int numberOfParameters,
     int numberOfAttrStiffnessErrors = ud->numberOfAttrStiffnessErrors;
     int numberOfAttrSmoothnessErrors = ud->numberOfAttrSmoothnessErrors;
 
-    // TODO: Is this not slow to open and close a file at each
-    // iteration - is there a more elegant solution?
-    std::ofstream debugFile;
+    std::ofstream *debugFile = NULL;
+    bool debugIsOpen = false;
+#ifdef WITH_DEBUG_FILE
     if (ud->debugFileName.length() > 0) {
         const char *debugFileChar = ud->debugFileName.asChar();
-        debugFile.open(debugFileChar, std::ios_base::app);
+        debugFile->open(debugFileChar, std::ios_base::app);
     }
-    bool debugIsOpen = debugFile.is_open();
+    debugIsOpen = debugFile->is_open();
+#endif
 
     if (ud->isNormalCall) {
         incrementNormalIteration(ud, debugIsOpen, debugFile);
@@ -799,8 +816,6 @@ int solveFunc(int numberOfParameters,
     double error_max = 0;
     double error_min = 0;
     if (!ud->doCalcJacobian) {
-        bool writeDebug = true;
-
         // Set Parameters
         MStatus status;
         {
@@ -815,7 +830,6 @@ int solveFunc(int numberOfParameters,
                     numberOfParameters,
                     parameters,
                     ud,
-                    writeDebug,
                     debugFile,
                     status);
             ud->timer.paramBenchTimer.stop();
@@ -839,7 +853,6 @@ int solveFunc(int numberOfParameters,
                           errors,
                           ud,
                           error_avg, error_max, error_min,
-                          writeDebug,
                           debugFile,
                           status);
             ud->timer.errorBenchTimer.stop();
@@ -848,7 +861,6 @@ int solveFunc(int numberOfParameters,
     } else {
         // Calculate Jacobian Matrix
         MStatus status;
-        bool writeDebug = true;
         assert(ud->solverOptions->solverType == SOLVER_TYPE_CMINPACK_LMDER);
         int autoDiffType = ud->solverOptions->autoDiffType;
 
@@ -864,7 +876,6 @@ int solveFunc(int numberOfParameters,
 
         // Calculate the jacobian matrix.
         MTime currentFrame = MAnimControl::currentTime();
-        writeDebug = true;
         for (int i = 0; i < numberOfParameters; ++i) {
             double ratio = (double) i / (double) numberOfParameters;
             int progressNum = progressMin + static_cast<int>(ratio * progressMax);
@@ -919,7 +930,6 @@ int solveFunc(int numberOfParameters,
                         numberOfParameters,
                         &paramListA[0],
                         ud,
-                        writeDebug,
                         debugFile,
                         status);
                 ud->timer.paramBenchTimer.stop();
@@ -947,7 +957,6 @@ int solveFunc(int numberOfParameters,
                               error_avg_tmp,
                               error_max_tmp,
                               error_min_tmp,
-                              writeDebug,
                               debugFile,
                               status);
                 ud->timer.errorBenchTimer.stop();
@@ -1008,7 +1017,6 @@ int solveFunc(int numberOfParameters,
                         setParameters(numberOfParameters,
                                       &paramListB[0],
                                       ud,
-                                      writeDebug,
                                       debugFile,
                                       status);
                         ud->timer.paramBenchTimer.stop();
@@ -1036,7 +1044,6 @@ int solveFunc(int numberOfParameters,
                                       error_avg_tmp,
                                       error_max_tmp,
                                       error_min_tmp,
-                                      writeDebug,
                                       debugFile,
                                       status);
                         ud->timer.errorBenchTimer.stop();

@@ -44,8 +44,7 @@ void measureErrors(
         double &error_avg,
         double &error_max,
         double &error_min,
-        bool writeDebug,
-        std::ofstream &debugFile,
+        std::ofstream *debugFile,
         MStatus &status);
 
 

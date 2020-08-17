@@ -1354,8 +1354,7 @@ bool solve(SolverOptions &solverOptions,
         double errorMin = 0;
         double errorMax = 0;
         // Never write debug data during statistics gathering.
-        const bool writeDebug = false;
-        std::ofstream debugFile;
+        std::ofstream *debugFile = NULL;
         measureErrors(
                 numberOfParameters,
                 numberOfErrors,
@@ -1367,7 +1366,6 @@ bool solve(SolverOptions &solverOptions,
                 errorAvg,
                 errorMax,
                 errorMin,
-                writeDebug,
                 debugFile,
                 status);
 

@@ -700,10 +700,10 @@ void incrementNormalIteration(SolverData *ud,
                               std::ofstream *debugFile) {
     ++ud->funcEvalNum;
     ++ud->iterNum;
-    MStreamUtils::stdErrorStream() << " | Iteration ";
+    MStreamUtils::stdErrorStream() << "Iteration ";
     MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw(4)
                                    << ud->iterNum;
-    MStreamUtils::stdErrorStream() << "Eval ";
+    MStreamUtils::stdErrorStream() << " | Eval ";
     MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw(4)
                                    << ud->funcEvalNum;
 #ifdef WITH_DEBUG_FILE
@@ -724,10 +724,10 @@ void incrementJacobianIteration(SolverData *ud,
     ++ud->funcEvalNum;
     ++ud->jacIterNum;
     if (ud->verbose) {
-        MStreamUtils::stdErrorStream() << " | Jacobian ";
+        MStreamUtils::stdErrorStream() << "Jacobian ";
         MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw (4)
                                        << ud->jacIterNum;
-        MStreamUtils::stdErrorStream() << "Eval ";
+        MStreamUtils::stdErrorStream() << " | Eval ";
         MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw (4)
                                        << ud->funcEvalNum;
         if (ud->doCalcJacobian) {

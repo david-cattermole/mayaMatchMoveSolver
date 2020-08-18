@@ -868,9 +868,9 @@ void print_details(
 
     if (verbose == false) {
         if (solverResult.success) {
-            MStreamUtils::stdErrorStream() << "Solver returned SUCCESS   | ";
+            MStreamUtils::stdErrorStream() << "Solver returned SUCCESS    | ";
         } else {
-            MStreamUtils::stdErrorStream() << "Solver returned FAILURE   | ";
+            MStreamUtils::stdErrorStream() << "Solver returned FAILURE    | ";
         }
 
         char formatBuffer[128];
@@ -881,6 +881,8 @@ void print_details(
             solverResult.errorMin,
             solverResult.errorMax,
             solverResult.iterations);
+        // Note: We use std::endl to flush the stream, and ensure an
+        //  update for the user.
         MStreamUtils::stdErrorStream() << std::string(formatBuffer)
                                        << std::endl;
     }

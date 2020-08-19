@@ -690,7 +690,6 @@ double parameterBoundFromInternalToExternal(double value,
 double parameterBoundFromExternalToInternal(double value,
                                             double xmin, double xmax,
                                             double offset, double scale){
-    double initial_value = value;
     double initial_xmin = xmin;
     double initial_xmax = xmax;
     double reconvert_value = 0.0;
@@ -1110,7 +1109,6 @@ bool solve(SolverOptions &solverOptions,
            MStringArray &outResult) {
     MStatus status;
     std::string resultStr;
-    int ret = 1;
     MGlobal::MMayaState mayaSessionState = MGlobal::mayaState(&status);
 
     bool verbose = with_verbosity;

@@ -1103,6 +1103,7 @@ bool solve(SolverOptions &solverOptions,
            MDGModifier &dgmod,
            MAnimCurveChange &curveChange,
            MComputation &computation,
+           bool acceptOnlyBetter,
            MString &debugFile,
            MStringArray &printStatsList,
            bool with_verbosity,
@@ -1149,6 +1150,7 @@ bool solve(SolverOptions &solverOptions,
     std::vector<double> markerWeightList;
     std::vector<double> errorList(1);
     std::vector<double> paramList(1);
+    std::vector<double> initialParamList(1);
     std::vector<double> jacobianList(1);
 
     int numberOfErrors = 0;
@@ -1247,6 +1249,7 @@ bool solve(SolverOptions &solverOptions,
     }
 
     paramList.resize((unsigned long) numberOfParameters, 0);
+    initialParamList.resize((unsigned long) numberOfParameters, 0);
     errorList.resize((unsigned long) numberOfErrors, 0);
     jacobianList.resize((unsigned long) numberOfParameters * numberOfErrors, 0);
 
@@ -1348,28 +1351,40 @@ bool solve(SolverOptions &solverOptions,
     userData.verbose = verbose;
     userData.debugFileName = debugFile;
 
-    // Calculate errors and return.
+    // Calculate initial errors.
+    double initialErrorAvg = 0;
+    double initialErrorMin = 0;
+    double initialErrorMax = 0;
+    if (acceptOnlyBetter || printStatsDeviation) {
+        // Never write debug data during statistics gathering.
+        std::ofstream *debugFileStream = NULL;
+
+        measureErrors(
+            numberOfParameters,
+            numberOfErrors,
+            numberOfMarkerErrors,
+            numberOfAttrStiffnessErrors,
+            numberOfAttrSmoothnessErrors,
+            &errorList[0],
+            &userData,
+            initialErrorAvg,
+            initialErrorMax,
+            initialErrorMin,
+            debugFileStream,
+            status);
+
+        initialErrorAvg = 0;
+        initialErrorMin = 0;
+        initialErrorMax = 0;
+        compute_error_stats(
+            numberOfMarkerErrors, userData,
+            initialErrorAvg,
+            initialErrorMin,
+            initialErrorMax);
+    }
+
     if (printStatsDeviation == true) {
         SolverResult solveResult;
-
-        double errorAvg = 0;
-        double errorMin = 0;
-        double errorMax = 0;
-        // Never write debug data during statistics gathering.
-        std::ofstream *debugFile = NULL;
-        measureErrors(
-                numberOfParameters,
-                numberOfErrors,
-                numberOfMarkerErrors,
-                numberOfAttrStiffnessErrors,
-                numberOfAttrSmoothnessErrors,
-                &errorList[0],
-                &userData,
-                errorAvg,
-                errorMax,
-                errorMin,
-                debugFile,
-                status);
 
         solveResult.success = true;
         solveResult.reason_number = 0;
@@ -1378,16 +1393,9 @@ bool solve(SolverOptions &solverOptions,
         solveResult.functionEvals = 0;
         solveResult.jacobianEvals = 0;
         solveResult.errorFinal = 0.0;
-
-        errorAvg = 0;
-        errorMin = 0;
-        errorMax = 0;
-        compute_error_stats(
-                numberOfMarkerErrors, userData,
-                errorAvg, errorMin, errorMax);
-        solveResult.errorAvg = errorAvg;
-        solveResult.errorMin = errorMin;
-        solveResult.errorMax = errorMax;
+        solveResult.errorAvg = initialErrorAvg;
+        solveResult.errorMin = initialErrorMin;
+        solveResult.errorMax = initialErrorMax;
 
         print_details(
                 solveResult,
@@ -1426,6 +1434,8 @@ bool solve(SolverOptions &solverOptions,
 
     VRB("Initial Parameters: ");
     for (int i = 0; i < numberOfParameters; ++i) {
+        // Copy parameter values into the initial parameter list.
+        initialParamList[i] = paramList[i];
         VRB("-> " << paramList[i]);
     }
 
@@ -1523,9 +1533,26 @@ bool solve(SolverOptions &solverOptions,
     timer.solveBenchTimer.stop();
     computation.endComputation();
 
+    // Solve Finished, re-calculate error, and only set parameters if
+    // the average error is lower.
+    bool errorIsBetter = true;
+    double errorAvg = 0;
+    double errorMin = 0;
+    double errorMax = 0;
+    compute_error_stats(
+        numberOfMarkerErrors, userData,
+        errorAvg, errorMin, errorMax);
+    solveResult.errorAvg = errorAvg;
+    solveResult.errorMin = errorMin;
+    solveResult.errorMax = errorMax;
+    if (acceptOnlyBetter) {
+        errorIsBetter = errorAvg <= initialErrorAvg;
+    }
+
     // Set the solved parameters
     VRB("Setting Parameters...");
-    set_maya_attribute_values(
+    if (errorIsBetter) {
+        set_maya_attribute_values(
             numberOfParameters,
             paramToAttrList,
             attrList,
@@ -1533,20 +1560,21 @@ bool solve(SolverOptions &solverOptions,
             frameList,
             dgmod,
             curveChange);
+    } else {
+        // Set the initial parameter values.
+        set_maya_attribute_values(
+            numberOfParameters,
+            paramToAttrList,
+            attrList,
+            paramList,
+            frameList,
+            dgmod,
+            curveChange);
+    }
     VRB("Solved Parameters:");
     for (int i = 0; i < numberOfParameters; ++i) {
         VRB("-> " << paramList[i]);
     }
-
-    double errorAvg = 0;
-    double errorMin = 0;
-    double errorMax = 0;
-    compute_error_stats(
-            numberOfMarkerErrors, userData,
-            errorAvg, errorMin, errorMax);
-    solveResult.errorAvg = errorAvg;
-    solveResult.errorMin = errorMin;
-    solveResult.errorMax = errorMax;
 
     print_details(
             solveResult,

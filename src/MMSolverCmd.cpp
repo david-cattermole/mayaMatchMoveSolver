@@ -121,6 +121,8 @@ MSyntax MMSolverCmd::newSyntax() {
                    MSyntax::kUnsigned);
     syntax.addFlag(ITERATIONS_FLAG, ITERATIONS_FLAG_LONG,
                    MSyntax::kUnsigned);
+    syntax.addFlag(ACCEPT_ONLY_BETTER_FLAG, ACCEPT_ONLY_BETTER_FLAG_LONG,
+                   MSyntax::kBoolean);
     // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
     syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG,
                    MSyntax::kBoolean);
@@ -162,6 +164,13 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     m_debugFile = DEBUG_FILE_DEFAULT_VALUE;
     if (argData.isFlagSet(DEBUG_FILE_FLAG)) {
         status = argData.getFlagArgument(DEBUG_FILE_FLAG, 0, m_debugFile);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Accept Only Better'
+    m_acceptOnlyBetter = ACCEPT_ONLY_BETTER_DEFAULT_VALUE;
+    if (argData.isFlagSet(ACCEPT_ONLY_BETTER_FLAG)) {
+        status = argData.getFlagArgument(ACCEPT_ONLY_BETTER_FLAG, 0, m_acceptOnlyBetter);
         CHECK_MSTATUS(status);
     }
 
@@ -691,6 +700,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
             m_dgmod,
             m_curveChange,
             m_computation,
+            m_acceptOnlyBetter,
             m_debugFile,
             m_printStatsList,
             m_verbose,

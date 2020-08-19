@@ -183,6 +183,11 @@
 #define ROBUST_LOSS_SCALE_FLAG      "-rls"
 #define ROBUST_LOSS_SCALE_FLAG_LONG "-robustLossScale"
 
+// Should the solver print out verbose information while solving?
+// TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
+#define ACCEPT_ONLY_BETTER_FLAG           "-aob"
+#define ACCEPT_ONLY_BETTER_FLAG_LONG      "-acceptOnlyBetter"
+#define ACCEPT_ONLY_BETTER_DEFAULT_VALUE  true
 
 // Should the solver print out verbose information while solving?
 // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
@@ -240,6 +245,7 @@ private:
     int m_solverType;   // Solver type to use; 0=levmar,
                         //                     1=cminpack_lmdif,
                         //                     2=cmpinpack_lmder.
+    bool m_acceptOnlyBetter;
 
     // What type of features does the given solver type support?
     bool m_supportAutoDiffForward;

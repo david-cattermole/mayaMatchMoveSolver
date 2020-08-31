@@ -204,7 +204,6 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
                 double filmBackWidth = camera->getFilmbackWidthValue(frame);
                 double filmBackHeight = camera->getFilmbackHeightValue(frame);
                 double filmBackInvAspect = filmBackHeight / filmBackWidth;
-                // double filmBackAspect = filmBackWidth / filmBackHeight;
                 CHECK_MSTATUS(status);
                 MPoint marker_pos;
                 status = marker->getPos(marker_pos, frame);

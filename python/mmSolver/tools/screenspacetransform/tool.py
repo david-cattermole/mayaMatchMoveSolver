@@ -82,7 +82,7 @@ def main():
             camera=(cam_tfm, cam_shp),
             time=times,
             asMarkerCoordinate=True,
-            imageResolution=(int(img_width), int(img_height)),
+            imageResolution=(img_width, img_height),
         )
         stop = len(values)
         step = 3

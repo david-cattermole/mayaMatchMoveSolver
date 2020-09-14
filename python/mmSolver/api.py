@@ -157,6 +157,9 @@ from mmSolver._api.constant import (
     ROBUST_LOSS_TYPE_CAUCHY_VALUE,
     ROBUST_LOSS_TYPE_VALUE_LIST,
     ROBUST_LOSS_TYPE_DEFAULT_VALUE,
+
+    EVENT_NAME_MARKER_CREATED,
+    EVENT_NAME_LIST,
 )
 from mmSolver._api.state import (
     is_solver_running,
@@ -240,6 +243,8 @@ __all__ = [
     'ROBUST_LOSS_TYPE_CAUCHY_VALUE',
     'ROBUST_LOSS_TYPE_VALUE_LIST',
     'ROBUST_LOSS_TYPE_DEFAULT_VALUE',
+    'EVENT_NAME_MARKER_CREATED',
+    'EVENT_NAME_LIST',
 
     # Exceptions
     'MMException',

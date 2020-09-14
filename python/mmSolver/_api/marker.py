@@ -26,6 +26,7 @@ import maya.OpenMayaAnim as OpenMayaAnim
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.event as event_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.animcurve as anim_utils
 import mmSolver.utils.time as time_utils
@@ -439,6 +440,9 @@ class Marker(object):
         if bnd is not None:
             self.set_bundle(bnd)
 
+        event_utils.trigger_event(
+            const.EVENT_NAME_MARKER_CREATED,
+            mkr=self)
         return self
 
     def delete_node(self):

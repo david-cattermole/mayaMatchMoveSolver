@@ -34,7 +34,6 @@ events.
 
 import time
 import mmSolver.logger
-import mmSolver.utils.event as event_utils
 
 LOG = mmSolver.logger.get_logger()
 

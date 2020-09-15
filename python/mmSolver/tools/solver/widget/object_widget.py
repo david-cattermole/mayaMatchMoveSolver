@@ -174,8 +174,6 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         mkr_list = set()
         bnd_list = set()
 
-        text = 'Camera {cam} | Markers {mkr} | Bundles {bnd}'
-
         col = lib_state.get_active_collection()
         if col is not None:
             marker_list = col.get_marker_list()
@@ -192,7 +190,9 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
                     bnd_node = bnd.get_node()
                     bnd_list.add(bnd_node)
 
-        text = text.format(
+        text = (
+            'Camera {cam} | Markers {mkr} | Bundles {bnd}'
+        ).format(
             cam=len(cam_list),
             mkr=len(mkr_list),
             bnd=len(bnd_list),

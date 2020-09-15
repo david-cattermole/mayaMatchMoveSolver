@@ -464,6 +464,9 @@ class Collection(object):
         if self._set.member_in_set(node) is False:
             self._set.add_member(node)
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+            col=self)
         return
 
     def add_marker_list(self, mkr_list):
@@ -474,6 +477,9 @@ class Collection(object):
                 node_list.append(mkr.get_node())
         self._set.add_members(node_list)
         self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+            col=self)
         return
 
     def remove_marker(self, mkr):
@@ -482,6 +488,9 @@ class Collection(object):
         if self._set.member_in_set(node):
             self._set.remove_member(node)
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+            col=self)
         return
 
     def remove_marker_list(self, mkr_list):
@@ -492,6 +501,9 @@ class Collection(object):
                 node_list.append(mkr.get_node())
         self._set.remove_members(node_list)
         self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+            col=self)
         return
 
     def set_marker_list(self, mkr_list):
@@ -506,6 +518,10 @@ class Collection(object):
         after_num = self.get_marker_list_length()
         if before_num != after_num:
             self._actions_list = []  # reset argument flag cache.
+
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+            col=self)
         return
 
     def clear_marker_list(self):
@@ -518,6 +534,9 @@ class Collection(object):
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+            col=self)
         return
 
     ############################################################################

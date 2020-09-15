@@ -218,23 +218,23 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         is_running = mmapi.is_solver_running()
         if is_running is True:
             return
-        anm_list = []
-        stc_list = []
-        lck_list = []
 
-        text = 'Animated {anm} | Static {stc} | Locked {lck}'
-
+        anm_count = 0
+        stc_count = 0
+        lck_count = 0
         col = lib_state.get_active_collection()
         if col is not None:
             attr_list = col.get_attribute_list()
-            anm_list = [True for attr in attr_list if attr.is_animated()]
-            stc_list = [True for attr in attr_list if attr.is_static()]
-            lck_list = [True for attr in attr_list if attr.is_locked()]
+            attr_state_list = [attr.get_state() for attr in attr_list]
+            anm_count = attr_state_list.count(mmapi.ATTR_STATE_ANIMATED)
+            stc_count = attr_state_list.count(mmapi.ATTR_STATE_STATIC)
+            lck_count = attr_state_list.count(mmapi.ATTR_STATE_LOCKED)
 
-        text = text.format(anm=len(anm_list),
-                           stc=len(stc_list),
-                           lck=len(lck_list))
+        text = (
+            'Animated {anm} | Static {stc} | Locked {lck}'
+        ).format(anm=anm_count, stc=stc_count, lck=lck_count)
         self.ui.info_label.setText(text)
+
         e = time.time()
         LOG.debug('updateInfo: %r', e - s)
         return

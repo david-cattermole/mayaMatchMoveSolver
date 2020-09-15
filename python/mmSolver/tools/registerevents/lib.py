@@ -16,19 +16,16 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Functions to be run when events trigger them.
+Register events for mmSolver.
 
-See the tool.py file to see how these functions are attached to
-events.
+Currently implemented events:
+
+ - When a Marker is created, automatically connect it to the active
+   Collection.
 
 .. note:: Modules are imported inside the functions to avoid slow
     initial module loading, and instead we defer the module import
     until the function is triggered.
-
-.. note:: All functions are expected to be called with one or more
-    individual objects, therefore if a single event operates on one
-    int value, the run function will receive a list of values. This is
-    to avoid performance issues from many triggered events at once.
 
 """
 

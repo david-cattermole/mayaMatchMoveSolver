@@ -177,6 +177,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         return
 
     def populateModel(self, model, col):
+        s = time.time()
         valid = uiutils.isValidQtObject(model)
         if valid is False:
             return
@@ -190,12 +191,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             show_stc = lib_col.get_attribute_toggle_static_from_collection(col)
             show_lck = lib_col.get_attribute_toggle_locked_from_collection(col)
 
-        def update_func():
-            if uiutils.isValidQtObject(self) is False:
-                return
-            self.dataChanged.emit()
-            return
-
         # Add Callbacks
         #
         # When querying attributes, we must make sure they have a Maya
@@ -204,8 +199,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         if callback_manager is not None:
             lib_attr.add_callbacks_to_attributes(
                 attr_list,
-                update_func,
-                callback_manager
+                callback_manager,
             )
         root = convert_to_ui.attributesToUINodes(
             col,
@@ -214,6 +208,9 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             show_stc,
             show_lck)
         model.setRootNode(root)
+
+        e = time.time()
+        LOG.debug('populateModel: %r', e - s)
         return
 
     def updateInfo(self):
@@ -269,6 +266,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         return
 
     def updateModel(self):
+        s = time.time()
         is_running = mmapi.is_solver_running()
         if is_running is True:
             return
@@ -287,9 +285,8 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             expand=True,
             recurse=False)
 
-        block = self.blockSignals(True)
-        self.dataChanged.emit()
-        self.blockSignals(block)
+        e = time.time()
+        LOG.debug('updateModel: %r', e - s)
         return
 
     def addClicked(self):
@@ -327,30 +324,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             mmapi.set_solver_running(False)  # enable selection callback
         e = time.time()
         LOG.debug("attribute addClicked3: t=%s", e - s)
-
-        def update_func():
-            if uiutils.isValidQtObject(self) is False:
-                return
-            self.dataChanged.emit()
-            self.viewUpdated.emit()
-            return
-
-        # Add Callbacks
-        s = time.time()
-        callback_manager = self.callback_manager
-        if callback_manager is not None:
-            lib_attr.add_callbacks_to_attributes(
-                attr_list,
-                update_func,
-                callback_manager,
-            )
-        e = time.time()
-        LOG.debug("attribute addClicked4: t=%s", e - s)
-
-        s = time.time()
-        update_func()
-        e = time.time()
-        LOG.debug("attribute addClicked5: t=%s", e - s)
 
         # Restore selection.
         s = time.time()
@@ -403,12 +376,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             LOG.debug("attribute removeClicked4: t=%s", e - s)
         finally:
             mmapi.set_solver_running(False)  # enable selection callback
-
-        s = time.time()
-        self.dataChanged.emit()
-        self.viewUpdated.emit()
-        e = time.time()
-        LOG.debug("attribute removeClicked5: t=%s", e - s)
 
         # Restore selection.
         s = time.time()

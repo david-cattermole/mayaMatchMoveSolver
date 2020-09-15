@@ -269,23 +269,13 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             return
         lib_marker.add_markers_to_collection(mkr_list, col)
 
-        def update_func():
-            if uiutils.isValidQtObject(self) is False:
-                return
-            self.dataChanged.emit()
-            self.viewUpdated.emit()
-            return
-
         # Add Callbacks
         callback_manager = self.callback_manager
         if callback_manager is not None:
             lib_marker.add_callbacks_to_markers(
                 mkr_list,
-                update_func,
                 callback_manager
             )
-
-        update_func()
 
         # Restore selection.
         lib_maya_utils.set_scene_selection(sel)

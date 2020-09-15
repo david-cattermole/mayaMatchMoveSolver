@@ -19,6 +19,7 @@
 Attribute functions
 """
 
+import time
 import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
@@ -228,7 +229,8 @@ def reset_values_on_selected_attributes(attr_list):
     return
 
 
-def add_callbacks_to_attributes(attr_list, update_func, callback_manager):
+def add_callbacks_to_attributes(attr_list, callback_manager):
+    s = time.time()
     msg = 'Node UUID has multiple paths: node=%r node_uuids=%r'
     callback_type = maya_callbacks.TYPE_ATTRIBUTE
     for attr_obj in attr_list:
@@ -243,13 +245,14 @@ def add_callbacks_to_attributes(attr_list, update_func, callback_manager):
         callback_ids = maya_callbacks.add_callbacks_attribute(
             node_uuid,
             node_path,
-            update_func,
         )
         callback_manager.add_node_ids(
             callback_type,
             node_uuid,
             callback_ids,
         )
+    e = time.time()
+    LOG.debug('add_callbacks_to_attributes: t=%s', e-s)
     return
 
 

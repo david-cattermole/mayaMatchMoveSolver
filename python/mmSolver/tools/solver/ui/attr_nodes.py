@@ -128,7 +128,8 @@ class AttrNode(PlugNode):
             parent=parent,
             icon=icon,
             selectable=True,
-            editable=False)
+            editable=False,
+            neverHasChildren=True)
         self.typeInfo = 'attr'
 
     def state(self):
@@ -212,7 +213,8 @@ class MayaNode(PlugNode):
             parent=parent,
             icon=icon,
             selectable=True,
-            editable=False)
+            editable=False,
+            neverHasChildren=False)
         self.typeInfo = 'node'
 
     def mayaNodeName(self):

@@ -214,6 +214,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         return
 
     def updateInfo(self):
+        s = time.time()
         is_running = mmapi.is_solver_running()
         if is_running is True:
             return
@@ -234,6 +235,8 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
                            stc=len(stc_list),
                            lck=len(lck_list))
         self.ui.info_label.setText(text)
+        e = time.time()
+        LOG.debug('updateInfo: %r', e - s)
         return
 
     def updateToggleButtons(self):

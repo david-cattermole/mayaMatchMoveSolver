@@ -561,6 +561,9 @@ class Collection(object):
         if not self._set.member_in_set(name):
             self._set.add_member(name)
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+            col=self)
         return
 
     def add_attribute_list(self, attr_list):
@@ -571,6 +574,9 @@ class Collection(object):
                 name_list.append(attr.get_name())
         self._set.add_members(name_list)
         self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+            col=self)
         return
 
     def remove_attribute(self, attr):
@@ -579,6 +585,9 @@ class Collection(object):
         if self._set.member_in_set(name):
             self._set.remove_member(name)
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+            col=self)
         return
 
     def remove_attribute_list(self, attr_list):
@@ -589,6 +598,9 @@ class Collection(object):
                 name_list.append(attr.get_name())
         self._set.remove_members(name_list)
         self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+            col=self)
         return
 
     def set_attribute_list(self, attr_list):
@@ -603,6 +615,9 @@ class Collection(object):
         after_num = self.get_attribute_list_length()
         if before_num != after_num:
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+            col=self)
         return
 
     def clear_attribute_list(self):
@@ -615,6 +630,9 @@ class Collection(object):
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+            col=self)
         return
 
     ############################################################################

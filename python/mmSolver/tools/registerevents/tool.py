@@ -61,6 +61,19 @@ def _register_changed_collection_update_solver_ui():
     return
 
 
+def _register_changed_attribute_update_solver_ui():
+    """
+    Called when attributes are changed and the solver UI needs to be updated.
+    """
+    import mmSolver.api as mmapi
+    func = lib.run_update_output_attributes_in_solver_ui
+    event_utils.add_function_to_event(
+        mmapi.EVENT_NAME_ATTRIBUTE_STATE_CHANGED,
+        func,
+        deferred=True)
+    return
+
+
 def register_events():
     """
     Initialises the registry of events for mmSolver.
@@ -71,4 +84,5 @@ def register_events():
     LOG.info('Registering mmSolver Events...')
     _register_created_marker_connect_to_collection()
     _register_changed_collection_update_solver_ui()
+    _register_changed_attribute_update_solver_ui()
     return

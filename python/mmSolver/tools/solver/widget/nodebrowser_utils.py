@@ -42,6 +42,17 @@ def _populateWidgetsEnabled(col, widgets):
     return
 
 
+def _expand_node(tree_view, model, parentIndex, expand=True, recurse=False):
+    tree_view.setExpanded(parentIndex, expand);
+    rows = model.rowCount(parentIndex)
+    for rowNum in range(rows):
+        childIndex = model.index(rowNum, 0, parentIndex)
+        tree_view.setExpanded(childIndex, expand)
+        if recurse is True:
+            _expand_node(tree_view, model, childIndex, expand, recurse=recurse)
+    return
+
+
 def _findIndexWithUUID(node_uuid, parent_index, model, column):
     role = QtCore.Qt.DisplayRole
     data = model.data(parent_index, role)

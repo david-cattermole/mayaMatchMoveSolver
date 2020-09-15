@@ -276,11 +276,16 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         col = lib_state.get_active_collection()
         if col is None:
             return
-        self.treeView.expandAll()
 
         widgets = [self]
         nodebrowser_utils._populateWidgetsEnabled(col, widgets)
         self.populateModel(self.model, col)
+        nodebrowser_utils._expand_node(
+            self.treeView,
+            self.treeView.model(),
+            self.treeView.rootIndex(),
+            expand=True,
+            recurse=False)
 
         block = self.blockSignals(True)
         self.dataChanged.emit()

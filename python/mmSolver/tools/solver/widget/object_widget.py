@@ -238,8 +238,13 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         if col is None:
             return
 
-        self.treeView.expandAll()
         self.populateModel(self.model, col)
+        nodebrowser_utils._expand_node(
+            self.treeView,
+            self.treeView.model(),
+            self.treeView.rootIndex(),
+            expand=True,
+            recurse=True)
 
         widgets = [self]
         nodebrowser_utils._populateWidgetsEnabled(col, widgets)

@@ -85,7 +85,7 @@ def main():
         lib.__copy_key_frames(marker, new_mkr_node)
 
         # set lock state on newly created markers
-        lib.__set_lock_state(new_mkr_node, const.MKR_ATTRS, lock_value)
+        lib.__set_lock_state(marker, new_mkr_node, const.MKR_ATTRS, lock_value)
         new_mkr_nodes.append(new_mkr_node)
 
     if len(new_mkr_nodes) > 0:

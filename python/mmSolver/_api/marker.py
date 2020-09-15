@@ -202,7 +202,7 @@ class Marker(object):
         if name is not None:
             msg = (
                 "mmSolver.api.Marker(name=value), "
-                "'name' is a deprecated flag, use 'node' "
+                "'name' is a deprecated flag, use 'node' keyword. "
             )
             warnings.warn(msg)
             node = name

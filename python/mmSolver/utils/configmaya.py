@@ -283,20 +283,6 @@ def set_scene_option(name, value, add_attr=None):
     return
 
 
-def get_session_option(name, default=None):
-    """
-    Get an option that lives in this Maya instance only.
-    """
-    raise NotImplementedError
-
-
-def set_session_option(name, value):
-    """
-    Set an option that lives in this Maya instance only.
-    """
-    raise NotImplementedError
-
-
 def get_preference_option(name, default=None):
     """
     Get a Maya preference from Maya (optionVar).

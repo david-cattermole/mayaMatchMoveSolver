@@ -47,7 +47,7 @@ def _register_created_marker_connect_to_collection():
 
 def register_events():
     """
-    Initialises the registery of events for mmSolver.
+    Initialises the registry of events for mmSolver.
 
     This function is called at Maya start up, and is used to ensure
     events are connected when the user starts Maya.

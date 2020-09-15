@@ -671,7 +671,7 @@ def loadAllResources():
             if os.path.isfile(file_path):
                 is_registered = QtCore.QResource.registerResource(file_path)
                 if is_registered:
-                    LOG.info("Resource registered: %r", file_path)
+                    LOG.debug("Resource registered: %r", file_path)
                 else:
                     LOG.warn("Resource failed to register: %r", file_path)
     return

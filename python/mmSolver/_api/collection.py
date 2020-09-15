@@ -27,6 +27,7 @@ import maya.OpenMayaAnim as OpenMayaAnim
 
 import mmSolver.logger
 import mmSolver.utils.configmaya as configmaya
+import mmSolver.utils.event as event_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.animcurve as anim_utils
 import mmSolver._api.utils as api_utils
@@ -197,6 +198,10 @@ class Collection(object):
         self._set.create_node(name)
         set_node = self._set.get_node()
         _create_collection_attributes(set_node)
+
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_CREATED,
+            col=self)
         return self
 
     def add_attributes(self):

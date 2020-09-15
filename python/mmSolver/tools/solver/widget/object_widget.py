@@ -88,8 +88,6 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.createToolButtons()
         self.createTreeView()
 
-        self.dataChanged.connect(self.updateModel)
-
         self.callback_manager = maya_callbacks.CallbackManager()
         return
 

@@ -47,14 +47,6 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def _populateWidgetsEnabled(widgets):
-    col = lib_state.get_active_collection()
-    enabled = col is not None
-    for widget in widgets:
-        widget.setEnabled(enabled)
-    return
-
-
 def _lookupUINodesFromIndexes(indexes, model):
     """
     Find the UI nodes, from the list of Qt indexes.
@@ -157,11 +149,10 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.treeView.setColumnHidden(column, hidden)
         return
 
-    def populateModel(self, model):
+    def populateModel(self, model, col):
         valid = uiutils.isValidQtObject(model)
         if valid is False:
             return
-        col = lib_state.get_active_collection()
         mkr_list = []
         show_cam = const.OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE
         show_mkr = const.OBJECT_TOGGLE_MARKER_DEFAULT_VALUE
@@ -243,14 +234,15 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         if is_running is True:
             return
 
-        self.populateModel(self.model)
-        valid = uiutils.isValidQtObject(self.treeView)
-        if valid is False:
+        col = lib_state.get_active_collection()
+        if col is None:
             return
+
         self.treeView.expandAll()
+        self.populateModel(self.model, col)
 
         widgets = [self]
-        _populateWidgetsEnabled(widgets)
+        nodebrowser_utils._populateWidgetsEnabled(col, widgets)
 
         block = self.blockSignals(True)
         self.viewUpdated.emit()

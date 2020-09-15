@@ -33,6 +33,15 @@ import mmSolver.tools.solver.widget.ui_nodebrowser_widget as ui_nodebrowser_widg
 LOG = mmSolver.logger.get_logger()
 
 
+def _populateWidgetsEnabled(col, widgets):
+    enabled = col is not None
+    for widget in widgets:
+        currently_enabled = widget.isEnabled()
+        if currently_enabled != enabled:
+            widget.setEnabled(enabled)
+    return
+
+
 def _findIndexWithUUID(node_uuid, parent_index, model, column):
     role = QtCore.Qt.DisplayRole
     data = model.data(parent_index, role)

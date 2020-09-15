@@ -49,14 +49,6 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def _populateWidgetsEnabled(widgets):
-    col = lib_state.get_active_collection()
-    enabled = col is not None
-    for widget in widgets:
-        widget.setEnabled(enabled)
-    return
-
-
 def _convertNodeListToAttrList(node_list):
     """
     Convert a list of MayaNode or AttrNode objects to a flat list of
@@ -184,11 +176,10 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.treeView.setColumnHidden(column, hidden)
         return
 
-    def populateModel(self, model):
+    def populateModel(self, model, col):
         valid = uiutils.isValidQtObject(model)
         if valid is False:
             return
-        col = lib_state.get_active_collection()
         attr_list = []
         show_anm = const.ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE
         show_stc = const.ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE
@@ -281,14 +272,15 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         is_running = mmapi.is_solver_running()
         if is_running is True:
             return
-        self.populateModel(self.model)
-        valid = uiutils.isValidQtObject(self.treeView)
-        if valid is False:
+
+        col = lib_state.get_active_collection()
+        if col is None:
             return
         self.treeView.expandAll()
 
         widgets = [self]
-        _populateWidgetsEnabled(widgets)
+        nodebrowser_utils._populateWidgetsEnabled(col, widgets)
+        self.populateModel(self.model, col)
 
         block = self.blockSignals(True)
         self.dataChanged.emit()

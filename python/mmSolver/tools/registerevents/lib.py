@@ -34,6 +34,7 @@ events.
 
 import time
 import mmSolver.logger
+import mmSolver.utils.event as event_utils
 
 LOG = mmSolver.logger.get_logger()
 
@@ -57,4 +58,29 @@ def run_connect_markers_to_active_collection(**kwargs):
 
     e = time.time()
     LOG.debug("run_connect_markers_to_active_collection: time=%s", e - s)
+    return
+
+
+def run_update_input_objects_in_solver_ui(**kwargs):
+    LOG.debug("run_update_input_objects_in_solver_ui: %r", kwargs)
+    s = time.time()
+    import mmSolver.tools.solver.ui.solver_window as solver_window
+    win = solver_window.SolverWindow.get_instance()
+    if win is not None:
+        win.triggerInputObjectsUpdate()
+    e = time.time()
+    LOG.debug("run_update_input_objects_in_solver_ui: time=%s", e - s)
+    return
+
+
+def run_update_output_attributes_in_solver_ui(**kwargs):
+    LOG.debug("run_update_output_attributes_in_solver_ui: %r", kwargs)
+    s = time.time()
+    import mmSolver.tools.solver.ui.solver_window as solver_window
+    win = solver_window.SolverWindow.get_instance()
+    if win is not None:
+        win.triggerOutputAttributesUpdate()
+    e = time.time()
+    LOG.debug("run_update_output_attributes_in_solver_ui: time=%s", e - s)
+    return
     return

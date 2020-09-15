@@ -45,6 +45,22 @@ def _register_created_marker_connect_to_collection():
     return
 
 
+def _register_changed_collection_update_solver_ui():
+    """
+    When A Collection has been changed we must update the Solver UI.
+    """
+    import mmSolver.api as mmapi
+    event_utils.add_function_to_event(
+        mmapi.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+        lib.run_update_input_objects_in_solver_ui,
+        deferred=True)
+    event_utils.add_function_to_event(
+        mmapi.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+        lib.run_update_output_attributes_in_solver_ui,
+        deferred=True)
+    return
+
+
 def register_events():
     """
     Initialises the registry of events for mmSolver.
@@ -54,4 +70,5 @@ def register_events():
     """
     LOG.info('Registering mmSolver Events...')
     _register_created_marker_connect_to_collection()
+    _register_changed_collection_update_solver_ui()
     return

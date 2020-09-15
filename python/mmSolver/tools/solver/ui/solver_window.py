@@ -519,6 +519,14 @@ class SolverWindow(BaseWindow):
         self.subForm.collection_widget.itemChanged.emit()
         return
 
+    def triggerInputObjectsUpdate(self):
+        self.subForm.object_browser.dataChanged.emit()
+        return
+
+    def triggerOutputAttributesUpdate(self):
+        self.subForm.attribute_browser.dataChanged.emit()
+        return
+
     def undoTriggeredCB(self):
         LOG.debug('undoTriggeredCB')
         validation = lib_state.get_auto_update_solver_validation_state()

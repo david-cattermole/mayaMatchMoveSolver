@@ -159,6 +159,7 @@ from mmSolver._api.constant import (
     ROBUST_LOSS_TYPE_DEFAULT_VALUE,
 
     EVENT_NAME_MARKER_CREATED,
+    EVENT_NAME_BUNDLE_CREATED,
     EVENT_NAME_LIST,
 )
 from mmSolver._api.state import (
@@ -244,6 +245,7 @@ __all__ = [
     'ROBUST_LOSS_TYPE_VALUE_LIST',
     'ROBUST_LOSS_TYPE_DEFAULT_VALUE',
     'EVENT_NAME_MARKER_CREATED',
+    'EVENT_NAME_BUNDLE_CREATED',
     'EVENT_NAME_LIST',
 
     # Exceptions

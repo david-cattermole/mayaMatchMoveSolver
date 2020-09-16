@@ -171,6 +171,15 @@ def reset_pan_zoom(cam_tfm, cam_shp):
 
 
 def connect_transform_to_reprojection(tfm, reproj):
+    """
+    Connect 'tfm' to the reprojection node, 'reproj'.
+
+    :param tfm: Transform node name to be connected.
+    :type tfm: str
+
+    :param reproj: The re-projection node.
+    :type reproj: str
+    """
     src = tfm + '.worldMatrix'
     dst = reproj + '.transformWorldMatrix'
     maya.cmds.connectAttr(src, dst)

@@ -20,6 +20,7 @@ The main window for the 'Solver' tool.
 """
 
 import os
+import time
 import datetime
 import uuid
 from functools import partial
@@ -58,6 +59,8 @@ class SolverWindow(BaseWindow):
     name = 'SolverWindow'
 
     def __init__(self, parent=None, name=None):
+        s = time.time()
+        s1 = time.time()
         super(SolverWindow, self).__init__(parent, name=name)
         self.setupUi(self)
         self.addSubForm(solver_layout.SolverLayout)
@@ -77,6 +80,8 @@ class SolverWindow(BaseWindow):
 
         # Hide irrelevant stuff
         self.baseHideProgressBar()
+        e1 = time.time()
+        s2 = time.time()
 
         # Callbacks
         self.callback_manager = maya_callbacks.CallbackManager()
@@ -96,6 +101,11 @@ class SolverWindow(BaseWindow):
             None,
             callback_ids,
         )
+        e2 = time.time()
+        e = time.time()
+        LOG.debug('SolverWindow init: %r seconds', e - s)
+        LOG.debug('SolverWindow initA: %r seconds', e1 - s1)
+        LOG.debug('SolverWindow initB: %r seconds', e2 - s2)
         return
 
     def __del__(self):

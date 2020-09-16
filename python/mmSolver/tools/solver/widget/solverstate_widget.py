@@ -45,8 +45,11 @@ class SolverStateWidget(QtWidgets.QWidget, ui_solverstate_widget.Ui_Form):
     infoUpdated = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
+        s = time.time()
         super(SolverStateWidget, self).__init__(*args, **kwargs)
         self.setupUi(self)
+        e = time.time()
+        LOG.debug('SolverStateWidget init: %r seconds', e - s)
         return
 
     def updateModel(self):

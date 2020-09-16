@@ -19,6 +19,8 @@
 Widget class to hold all Solver Settings for the solver GUI.
 """
 
+import time
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -54,6 +56,7 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
     sendWarning = QtCore.Signal(str)
 
     def __init__(self, parent=None, *args, **kwargs):
+        s = time.time()
         super(SolverWidget, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
@@ -104,6 +107,9 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         value = lib_state.get_auto_update_solver_validation_state()
         if value is False:
             self.validate_pushButton.clicked.emit()
+
+        e = time.time()
+        LOG.debug('SolverWidget init: %r seconds', e - s)
         return
 
     def getSolverTabValue(self, col):
@@ -166,7 +172,6 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         return
 
     def updateInfo(self):
-        LOG.debug('RUN solver_widget updateInfo')
         is_running = mmapi.is_solver_running()
         if is_running is True:
             return
@@ -180,22 +185,22 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         return
 
     def runUpdateInfo(self):
-        LOG.debug('RUN solver_widget runUpdateInfo B')
+        s = time.time()
         idx = self.tabWidget.currentIndex()
         tab_widget = self._getTabWidget(idx)
         text = tab_widget.queryInfo()
         self.info_label.setText(text)
+        e = time.time()
+        LOG.debug('SolverWidget runUpdateInfo: %r seconds', e - s)
         return
 
     @QtCore.Slot(bool)
     def autoUpdateSolverValidationChanged(self, value):
-        LOG.debug('autoUpdateSolverValidationChanged: %r', value)
         lib_state.set_auto_update_solver_validation_state(value)
         self.updateInfo()
         return
 
     @QtCore.Slot(str)
     def _sendWarningToUser(self, value):
-        LOG.debug('sendWarningToUser: %r', value)
         self.sendWarning.emit(value)
         return

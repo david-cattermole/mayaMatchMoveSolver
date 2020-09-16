@@ -19,6 +19,8 @@
 Solver Settings 'Basic' widget.
 """
 
+import time
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -79,6 +81,7 @@ class SolverBasicWidget(QtWidgets.QWidget,
     dataChanged = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
+        s = time.time()
         super(SolverBasicWidget, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
@@ -89,6 +92,8 @@ class SolverBasicWidget(QtWidgets.QWidget,
 
         desc = const.SOLVER_BASIC_DESC_DEFAULT
         self.description_label.setText(desc)
+        e = time.time()
+        LOG.debug('SolverBasicWidget init: %r seconds', e - s)
         return
 
     def updateModel(self):

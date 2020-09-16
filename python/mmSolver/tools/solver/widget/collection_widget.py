@@ -19,6 +19,8 @@
 
 """
 
+import time
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -49,6 +51,7 @@ class CollectionWidget(QtWidgets.QWidget, ui_collection_widget.Ui_Form):
     selectClicked = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
+        s = time.time()
         super(CollectionWidget, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
@@ -61,6 +64,8 @@ class CollectionWidget(QtWidgets.QWidget, ui_collection_widget.Ui_Form):
         self.select_pushButton.clicked.connect(self.selectClickedButton)
 
         self.itemChanged.connect(self.updateModel)
+        e = time.time()
+        LOG.debug('CollectionWidget init: %r seconds', e - s)
         return
 
     def populateModel(self, model):

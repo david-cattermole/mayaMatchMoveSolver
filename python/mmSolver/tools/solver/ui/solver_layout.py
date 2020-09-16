@@ -19,6 +19,8 @@
 The Solver layout, the contents of the main solver window.
 """
 
+import time
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -77,6 +79,15 @@ class SolverLayout(QtWidgets.QWidget):
         self.solver_state = solverstate_widget.SolverStateWidget(self)
         self.ui.solverState_layout.addWidget(self.solver_state)
 
+        self.createConnections()
+
+        # Trigger data being updated.
+        self.collection_widget.itemChanged.emit()
+        e = time.time()
+        LOG.debug('SolverLayout init: %r seconds', e - s)
+        return
+
+    def createConnections(self):
         # Signal/Slot Connections are always lazily evaluated, and can
         # only be triggered once (unique connection).
         ct = QtCore.Qt.UniqueConnection
@@ -112,9 +123,6 @@ class SolverLayout(QtWidgets.QWidget):
         self.solver_settings.tabChanged.connect(self.solver_settings.updateInfo, ct)
         self.solver_settings.tabChanged.connect(self.solver_settings.updateModel, ct)
         self.solver_settings.sendWarning.connect(self.setStatusLine, ct)
-
-        # Trigger data being updated.
-        self.collection_widget.itemChanged.emit()
         return
 
     def updateDynamicWindowTitle(self):

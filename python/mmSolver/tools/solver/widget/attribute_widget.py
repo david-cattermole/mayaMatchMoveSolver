@@ -99,6 +99,7 @@ def _lookupMayaNodesFromAttrUINodes(indexes, model):
 class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
 
     def __init__(self, parent=None, *args, **kwargs):
+        s = time.time()
         super(AttributeBrowserWidget, self).__init__(*args, **kwargs)
 
         self.ui.title_label.setText('Output Attributes')
@@ -107,6 +108,8 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.createTreeView()
 
         self.callback_manager = maya_callbacks.CallbackManager()
+        e = time.time()
+        LOG.debug('AttributeBrowserWidget init: %r seconds', e - s)
         return
 
     def __del__(self):

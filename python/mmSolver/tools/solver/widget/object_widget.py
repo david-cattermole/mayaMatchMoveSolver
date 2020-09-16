@@ -19,6 +19,8 @@
 Object Browser widget.
 """
 
+import time
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -72,6 +74,7 @@ def _lookupUINodesFromIndexes(indexes, model):
 class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
 
     def __init__(self, parent=None, *args, **kwargs):
+        s = time.time()
         super(ObjectBrowserWidget, self).__init__(
             parent=parent, *args, **kwargs)
 
@@ -81,6 +84,8 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.createTreeView()
 
         self.callback_manager = maya_callbacks.CallbackManager()
+        e = time.time()
+        LOG.debug('ObjectWidget init: %r seconds', e - s)
         return
 
     def __del__(self):

@@ -18,11 +18,6 @@
 """
 Register events for mmSolver.
 
-Currently implemented events:
-
- - When a Marker is created, automatically connect it to the active
-   Collection.
-
 .. note:: Modules are imported inside the functions to avoid slow
     initial module loading, and instead we defer the module import
     until the function is triggered.
@@ -79,5 +74,4 @@ def run_update_output_attributes_in_solver_ui(**kwargs):
         win.triggerOutputAttributesUpdate()
     e = time.time()
     LOG.debug("run_update_output_attributes_in_solver_ui: time=%s", e - s)
-    return
     return

@@ -23,6 +23,12 @@ Currently implemented events:
  - When a Marker is created, automatically connect it to the active
    Collection.
 
+ - When the list of Markers on a Collection are updated,
+   update the Solver UI Input Objects widget.
+
+ - When the list of Attributes on a Collection are updated,
+   update the Solver UI Output Attributes widget.
+
 """
 
 import mmSolver.logger
@@ -66,10 +72,9 @@ def _register_changed_attribute_update_solver_ui():
     Called when attributes are changed and the solver UI needs to be updated.
     """
     import mmSolver.api as mmapi
-    func = lib.run_update_output_attributes_in_solver_ui
     event_utils.add_function_to_event(
         mmapi.EVENT_NAME_ATTRIBUTE_STATE_CHANGED,
-        func,
+        lib.run_update_output_attributes_in_solver_ui,
         deferred=True)
     return
 

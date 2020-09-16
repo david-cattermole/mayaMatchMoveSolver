@@ -584,7 +584,7 @@ def execute_collection(col,
     :type status_fn: None or function
 
     :param info_fn: A function called with an 'str' argument, to display
-                      solver information to the user.
+                    solver information to the user.
     :type info_fn: None or function
     """
     msg = (

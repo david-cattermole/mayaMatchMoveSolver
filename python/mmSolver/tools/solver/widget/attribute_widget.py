@@ -100,7 +100,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
 
     def __init__(self, parent=None, *args, **kwargs):
         s = time.time()
-        super(AttributeBrowserWidget, self).__init__(*args, **kwargs)
+        super(AttributeBrowserWidget, self).__init__(parent, *args, **kwargs)
 
         self.ui.title_label.setText('Output Attributes')
 

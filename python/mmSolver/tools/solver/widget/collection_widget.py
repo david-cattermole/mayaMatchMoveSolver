@@ -52,7 +52,7 @@ class CollectionWidget(QtWidgets.QWidget, ui_collection_widget.Ui_Form):
 
     def __init__(self, parent=None, *args, **kwargs):
         s = time.time()
-        super(CollectionWidget, self).__init__(*args, **kwargs)
+        super(CollectionWidget, self).__init__(parent, *args, **kwargs)
         self.setupUi(self)
 
         # Collection Combo Box.

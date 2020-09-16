@@ -57,7 +57,7 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
 
     def __init__(self, parent=None, *args, **kwargs):
         s = time.time()
-        super(SolverWidget, self).__init__(*args, **kwargs)
+        super(SolverWidget, self).__init__(parent, *args, **kwargs)
         self.setupUi(self)
 
         # Solver Settings Basic Widget

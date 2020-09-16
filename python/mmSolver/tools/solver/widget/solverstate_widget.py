@@ -62,7 +62,7 @@ class SolverStateWidget(QtWidgets.QWidget, ui_solverstate_widget.Ui_Form):
         total_time = col.get_last_solve_duration()
 
         msg = 'No solve performed.'
-        if (len(solres_list) == 0):
+        if len(solres_list) == 0:
             info_fn(msg)
         if timestamp is None:
             timestamp = time.time()

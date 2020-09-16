@@ -138,10 +138,6 @@ class SolverLayout(QtWidgets.QWidget):
         self._parentObject.window().setWindowTitle(title)
         return
 
-    def updateSolveValidState(self):
-        # TODO: Remove this empty function, it is kept around just because it might be called.
-        return
-
     @QtCore.Slot(str)
     def setStatusLine(self, text):
         valid = uiutils.isValidQtObject(self)

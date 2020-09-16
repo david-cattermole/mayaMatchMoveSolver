@@ -52,7 +52,11 @@ class DictGetOrCall(dict):
         """
         Get a key from a cache, or call a function to get the value.
 
+        :param key: Key string to look up into the dict.
         :type key: str
+
+        :param func: Function to call, the function does not expect any
+            arguments.
         :type func: callable
         """
         value = self.get(key)

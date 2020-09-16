@@ -691,7 +691,7 @@ def loadAllResources():
                 if is_registered:
                     LOG.debug("Resource registered: %r", file_path)
                 else:
-                    LOG.warn("Resource failed to register: %r", file_path)
+                    LOG.error("Resource failed to register: %r", file_path)
     return
 
 

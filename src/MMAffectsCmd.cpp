@@ -295,6 +295,7 @@ MStatus MMAffectsCmd::doIt(const MArgList &args) {
     std::vector<double> paramLowerBoundList;
     std::vector<double> paramUpperBoundList;
     std::vector<double> paramWeightList;
+    BoolList2D paramFrameList;
     numberOfParameters = countUpNumberOfUnknownParameters(
             m_attrList,
             m_frameList,
@@ -306,6 +307,7 @@ MStatus MMAffectsCmd::doIt(const MArgList &args) {
             paramUpperBoundList,
             paramWeightList,
             paramToAttrList,
+            paramFrameList,
             status
     );
     CHECK_MSTATUS_AND_RETURN_IT(status);

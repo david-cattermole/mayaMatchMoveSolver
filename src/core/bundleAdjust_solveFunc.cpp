@@ -263,6 +263,7 @@ void measureErrors(
         int numberOfMarkerErrors,
         int numberOfAttrStiffnessErrors,
         int numberOfAttrSmoothnessErrors,
+        std::vector<bool> frameIndexEnable,
         double *errors,
         SolverData *ud,
         double &error_avg,
@@ -298,6 +299,12 @@ void measureErrors(
     MPoint bnd_mpos;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = ud->errorToMarkerList[i];
+        bool frameIsAffected = frameIndexEnable[markerPair.second];
+        if (frameIsAffected == false) {
+            // Skip evaluation of this marker error.
+            continue;
+        }
+
         MarkerPtr marker = ud->markerList[markerPair.first];
         MTime frame = ud->frameList[markerPair.second];
 
@@ -603,7 +610,9 @@ int solveFunc(int numberOfParameters,
     double error_avg = 0;
     double error_max = 0;
     double error_min = 0;
-    if (!ud->doCalcJacobian) {
+    if (ud->doCalcJacobian == false) {
+        std::vector<bool> frameIndexEnable(ud->frameList.length(), 1);
+
         // Set Parameters
         MStatus status;
         {
@@ -638,6 +647,7 @@ int solveFunc(int numberOfParameters,
                           numberOfMarkerErrors,
                           numberOfAttrStiffnessErrors,
                           numberOfAttrSmoothnessErrors,
+                          frameIndexEnable,
                           errors,
                           ud,
                           error_avg, error_max, error_min,
@@ -703,6 +713,8 @@ int solveFunc(int numberOfParameters,
                     value, delta, 1,
                     attr, cam, currentFrame);
 
+            std::vector<bool> framesMask = ud->paramFrameList[i];
+
             incrementJacobianIteration(ud, debugIsOpen, debugFile);
             paramListA[i] = paramListA[i] + deltaA;
             {
@@ -739,6 +751,7 @@ int solveFunc(int numberOfParameters,
                               numberOfMarkerErrors,
                               numberOfAttrStiffnessErrors,
                               numberOfAttrSmoothnessErrors,
+                              framesMask,
                               &errorListA[0],
                               ud,
                               error_avg_tmp,
@@ -825,6 +838,7 @@ int solveFunc(int numberOfParameters,
                                       numberOfMarkerErrors,
                                       numberOfAttrStiffnessErrors,
                                       numberOfAttrSmoothnessErrors,
+                                      framesMask,
                                       &errorListB[0],
                                       ud,
                                       error_avg_tmp,

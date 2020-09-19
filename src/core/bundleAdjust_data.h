@@ -47,7 +47,6 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-
 // Group all the benchmark timers together.
 struct SolverTimer {
     debug::TimestampBenchmark solveBenchTimer;
@@ -103,6 +102,7 @@ struct SolverData {
     std::vector<std::pair<int, int> > errorToMarkerList;
     std::vector<MPoint> markerPosList;
     std::vector<double> markerWeightList;
+    std::vector<std::vector<bool>> paramFrameList;
 
     // Internal Solver Data.
     std::vector<double> paramList;

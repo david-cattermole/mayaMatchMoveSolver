@@ -824,6 +824,7 @@ bool solve(SolverOptions &solverOptions,
     std::vector<double> paramLowerBoundList;
     std::vector<double> paramUpperBoundList;
     std::vector<double> paramWeightList;
+    BoolList2D paramFrameList;
     numberOfParameters = countUpNumberOfUnknownParameters(
             attrList,
             frameList,
@@ -835,6 +836,7 @@ bool solve(SolverOptions &solverOptions,
             paramUpperBoundList,
             paramWeightList,
             paramToAttrList,
+            paramFrameList,
             status
     );
     CHECK_MSTATUS(status);
@@ -971,6 +973,7 @@ bool solve(SolverOptions &solverOptions,
     userData.errorToMarkerList = errorToMarkerList;
     userData.markerPosList = markerPosList;
     userData.markerWeightList = markerWeightList;
+    userData.paramFrameList = paramFrameList;
 
     userData.paramList = paramList;
     userData.errorList = errorList;
@@ -1015,12 +1018,14 @@ bool solve(SolverOptions &solverOptions,
         // Never write debug data during statistics gathering.
         std::ofstream *debugFileStream = NULL;
 
+        std::vector<bool> frameIndexEnable(frameList.length(), 1);
         measureErrors(
             numberOfParameters,
             numberOfErrors,
             numberOfMarkerErrors,
             numberOfAttrStiffnessErrors,
             numberOfAttrSmoothnessErrors,
+            frameIndexEnable,
             &errorList[0],
             &userData,
             initialErrorAvg,

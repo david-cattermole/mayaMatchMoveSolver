@@ -82,6 +82,7 @@ int countUpNumberOfUnknownParameters(
     std::vector<double> &paramUpperBoundList,
     std::vector<double> &paramWeightList,
     IndexPairList &paramToAttrList,
+    std::vector<std::vector<bool>> &paramFrameList,
     MStatus &status);
 
 void findErrorToParameterRelationship(

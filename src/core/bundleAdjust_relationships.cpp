@@ -225,6 +225,7 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
                                      std::vector<double> &paramUpperBoundList,
                                      std::vector<double> &paramWeightList,
                                      IndexPairList &paramToAttrList,
+                                     BoolList2D &paramFrameList,
                                      MStatus &status) {
     // Count up number of unknown parameters
     int i = 0;      // index of marker
@@ -251,12 +252,19 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
         }
 
         if (attr->isAnimated()) {
+            // Animated parameter (affects a subset of frames -
+            // usually only 1 frame).
             numUnknowns += frameList.length();
             for (j = 0; j < (int) frameList.length(); ++j) {
                 // first index is into 'attrList'
                 // second index is into 'frameList'
                 IndexPair attrPair(i, j);
                 paramToAttrList.push_back(attrPair);
+
+                // Frame to parameter index mapping.
+                std::vector<bool> frameIndexes(frameList.length(), 0);
+                frameIndexes[j] = true;
+                paramFrameList.push_back(frameIndexes);
 
                 // Min / max parameter bounds.
                 double minValue = attr->getMinimumValue();
@@ -276,11 +284,16 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
                 animAttrList.push_back(attr);
             }
         } else if (attr->isFreeToChange()) {
+            // Static parameter (affects all frames)
             ++numUnknowns;
             // first index is into 'attrList'
             // second index is into 'frameList', '-1' means a static value.
             IndexPair attrPair(i, -1);
             paramToAttrList.push_back(attrPair);
+
+            // Frame to parameter index mapping.
+            std::vector<bool> frameIndexes(frameList.length(), 1);
+            paramFrameList.push_back(frameIndexes);
 
             // Min / max parameter bounds.
             double minValue = attr->getMinimumValue();

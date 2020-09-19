@@ -82,17 +82,30 @@ class TestSolver1(solverUtils.SolverTestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+            'frame': frames,
+        }
+
+        assert 'mmAffects' in dir(maya.cmds)
+        affects_mode = 'addAttrsToMarkers'
+        s = time.time()
+        result = maya.cmds.mmAffects(
+            mode=affects_mode,
+            **kwargs)
+        e = time.time()
+        print 'mmAffects time:', e - s
+
         # Run solver!
+        assert 'mmSolver' in dir(maya.cmds)
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
-            iterations=1000,
             solverType=solver_index,
-            frame=frames,
+            iterations=1000,
             verbose=True,
-        )
+            **kwargs)
         e = time.time()
         print 'total time:', e - s
         

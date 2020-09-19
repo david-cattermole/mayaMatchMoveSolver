@@ -235,6 +235,8 @@ set(SOURCE_FILES
         src/Attr.cpp
         src/commonArgFlags.h
         src/commonArgFlags.cpp
+        src/MMAffectsCmd.h
+        src/MMAffectsCmd.cpp
         src/MMMarkerScaleNode.h
         src/MMMarkerScaleNode.cpp
         src/MMReprojectionNode.h

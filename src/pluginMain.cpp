@@ -37,6 +37,7 @@
 #include <MMReprojectionNode.h>
 #include <MMMarkerGroupTransformNode.h>
 #include <MMReprojectionCmd.h>
+#include <MMAffectsCmd.h>
 
 
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
@@ -112,7 +113,13 @@ MStatus initializePlugin(MObject obj) {
                      MMReprojectionCmd::creator,
                      MMReprojectionCmd::newSyntax,
                      status);
-    
+
+    REGISTER_COMMAND(plugin,
+                     MMAffectsCmd::cmdName(),
+                     MMAffectsCmd::creator,
+                     MMAffectsCmd::newSyntax,
+                     status);
+
     REGISTER_COMMAND(plugin,
                      MMTestCameraMatrixCmd::cmdName(),
                      MMTestCameraMatrixCmd::creator,
@@ -125,6 +132,7 @@ MStatus initializePlugin(MObject obj) {
                   MMMarkerScaleNode::creator,
                   MMMarkerScaleNode::initialize,
                   status);
+
     REGISTER_NODE(plugin,
                   MMReprojectionNode::nodeName(),
                   MMReprojectionNode::m_id,
@@ -170,15 +178,16 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMSolverTypeCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, MMAffectsCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
 
-    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(), 
+    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(),
                     MMMarkerScaleNode::m_id, status);
 
-    DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(), 
+    DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(),
                     MMReprojectionNode::m_id, status);
 
-    DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(), 
+    DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(),
                     MMMarkerGroupTransformNode::m_id, status);
     return status;
 }

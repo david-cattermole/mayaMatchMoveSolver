@@ -224,7 +224,7 @@ def find_plugs_affecting_transform(bnd_node, cam_tfm):
                 conn_attrs = list(set(conn_attrs))
 
     # Only unique plugs.
-    plugs = set(plugs)
+    plugs = list(set(plugs))
 
     # Set into cache.
     # _add_to_query_cache(args, plugs)

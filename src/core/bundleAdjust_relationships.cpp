@@ -376,7 +376,7 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
     // Calculate the relationship between attributes and markers.
     markerToAttrMapping.resize(markerList.size());
     i = 0;      // index of marker
-    for (MarkerPtrListCIt mit = markerList.begin(); mit != markerList.end(); ++mit) {
+    for (MarkerPtrListCIt mit = markerList.cbegin(); mit != markerList.cend(); ++mit) {
         MarkerPtr marker = *mit;
         CameraPtr cam = marker->getCamera();
         BundlePtr bundle = marker->getBundle();

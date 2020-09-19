@@ -88,11 +88,6 @@
 #define FORCE_TRIGGER_EVAL 1
 
 
-// Allows us to test (internally), the experimental delta value
-// calculation.
-// #define USE_EXPERIMENTAL_DELTA_VALUE
-
-
 #if MAYA_API_VERSION < 201700
 int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
     int index = -1;
@@ -168,76 +163,8 @@ MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
 }
 
 
-#ifdef USE_EXPERIMENTAL_DELTA_VALUE
-double getDeltaTransformTranslate(MString nodeName,
-                                  CameraPtr cam,
-                                  MTime frame,
-                                  double imageWidth,
-                                  MPoint axis) {
-    const double deltaWidth = 1.0;
-
-    // Bundle Translate or Transform Translate
-    double filmBackWidth = cam->getFilmbackWidthValue(frame);
-    double filmBackHeight = cam->getFilmbackHeightValue(frame);
-    double filmBackInvAspect = filmBackHeight / filmBackWidth;
-
-    // Get bundle world matrix
-    BundlePtr bnd = BundlePtr(new Bundle());
-    bnd->setNodeName(nodeName);
-
-    MMatrix camProjWorldMatrix;
-    cam->getWorldProjMatrix(camProjWorldMatrix, frame);
-
-    MMatrix worldMatrix;
-    bnd->getMatrix(worldMatrix, frame);
-
-    // Create a new vector along the translate axis (x = (1, 0, 0))
-    MPoint point_current;
-    bnd->getPos(point_current);
-    MPoint point_new(axis);
-
-    // Turn this vector into world space - we now have an axis
-    // pointing along the translate axis.
-    point_current = point_current * worldMatrix;
-    point_new = point_new * worldMatrix;
-
-    // Measure the screen-space position at bundle world pos.
-    point_current = point_current * camProjWorldMatrix;
-    point_current.cartesianize();
-    point_current[0] *= 0.5;
-    point_current[1] *= 0.5 * filmBackInvAspect;
-
-    // Measure the screen-space position at bundle world pos plus
-    // translate axis.
-    point_new = point_new * camProjWorldMatrix;
-    point_new.cartesianize();
-    point_new[0] *= 0.5;
-    point_new[1] *= 0.5 * filmBackInvAspect;
-
-    // Compute the screen-space distance between two points.
-    double d = distance_2d(point_current, point_new) * imageWidth;
-    d = deltaWidth / d;
-
-    // Use this screen-space distance as the delta.
-//    WRN("delta node" << nodeName << "d=" << d);
-    return d;
-}
-#endif // USE_EXPERIMENTAL_DELTA_VALUE
-
-
 // Given a specific parameter, calculate the expected 'delta' value of
 // the parameter.
-//
-// To do this calculation, we should take into account the type of
-// attribute this parameter points to. For example, for a
-// 'bundle.translateX' we know the direction (in screen-space) this
-// attribute will move in, and we can calculate how far the attribute
-// value will move, if the bundle is moved forward by '1 percent' of
-// the camera's FOV. Calculating this '1 percent' per-parameter will
-// give us a sense of how much to move each parameter to get a
-// screen-space-"uniform" deviation. A bundle attribute axis that is
-// pointed away from the camera will need to move much farther than an
-// attribute axis pointed orthogonal to the camera's direction.
 double calculateParameterDelta(double value,
                                double delta,
                                double sign,
@@ -248,143 +175,6 @@ double calculateParameterDelta(double value,
 
     double xmin = attr->getMinimumValue();
     double xmax = attr->getMaximumValue();
-
-#ifdef USE_EXPERIMENTAL_DELTA_VALUE
-    // Determine the attribute 'type'.
-    unsigned int object_type = attr->getObjectType();
-    unsigned int attr_type = attr->getSolverAttrType();
-
-    bool has_min = xmin > (-std::numeric_limits<float>::max());
-    bool has_max = xmax < std::numeric_limits<float>::max();
-
-    MDagPath nodeDagPath;
-    getAsDagPath(attr->getNodeName(), nodeDagPath);
-    MString nodeName = nodeDagPath.fullPathName();
-//    WRN("nodeName: " << nodeName
-//        << " attr: " << attr->getAttrName()
-//        << " attr_type: " << attr_type
-//        << " object_type: " << object_type);
-
-    // Switch based on attribute type.
-    MPoint axis_tx(1.0, 0.0, 0.0);
-    MPoint axis_ty(0.0, 1.0, 0.0);
-    MPoint axis_tz(0.0, 0.0, 1.0);
-    if (has_min && has_max) {
-        // Attribute with min/max values.
-        // Use a specific ratio, such as 0.1 percent.
-        delta = std::abs(xmax - xmin) * 0.001;
-    } else if (attr_type == ATTR_SOLVER_TYPE_BUNDLE_TX) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_tx);
-    } else if (attr_type == ATTR_SOLVER_TYPE_BUNDLE_TY) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_ty);
-    } else if (attr_type == ATTR_SOLVER_TYPE_BUNDLE_TZ) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_tz);
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_TX) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_tx);
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_TY) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_ty);
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_TZ) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_tz);
-     } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_RX) {
-        // Camera Rotate X and Y (tilt and pan)
-        // Note: We assume the camera rotation order is ZXY.
-        // All camera rotations should be screen-space FOV degree values.
-
-        // Calculate the Angle of View of the camera, width and height
-        // axis.
-        double filmBackHeight = cam->getFilmbackHeightValue(frame);
-        double focalLength = cam->getFocalLengthValue(frame);
-        double fov_y = 0.;
-        bool asDegrees = true;
-        getAngleOfView(filmBackHeight, focalLength, fov_y, asDegrees);
-        // As a ratio of the camera FOV in width and height, use this
-        // to tilt and pan the camera attributes.
-        delta = fov_y * 0.01;
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_RY) {
-        double filmBackWidth = cam->getFilmbackWidthValue(frame);
-        double focalLength = cam->getFocalLengthValue(frame);
-        double fov_x = 0.;
-        bool asDegrees = true;
-        getAngleOfView(filmBackWidth, focalLength, fov_x, asDegrees);
-        delta = fov_x * 0.01;
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_RZ) {
-        // - Camera Rotate Z (roll)
-        //   - Note: We assume the camera rotation order is ZXY.
-        //   - Use a fixed value? The Camera FOV will not affect this
-        //     method.
-        //   - How-far away from the center of the camera's FOV?
-        delta = 0.1;
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_SX) {
-        // - Camera Scale
-        //   - Throw an error - nobody should solve camera scale.
-        //   - Or should we consider this a transform scale?
-        //   - At the very least we should print-out a warning.
-        delta = 0.0001;
-        WRN("User has requested solving of camera scaleX attribute; "
-            << "that's not a good idea.");
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_SY) {
-         delta = 0.0001;
-        WRN("User has requested solving of camera scaleY attribute; "
-            << "that's not a good idea.");
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_SZ) {
-         delta = 0.0001;
-        WRN("User has requested solving of camera scaleZ attribute; "
-            << "that's not a good idea.");
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_FOCAL) {
-        // Camera Focal length
-         delta = 1.0;  // 1.0 mm.
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_TX) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_tx);
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_TY) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_ty);
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_TZ) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_tz);
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_RX) {
-        // Transform rotate
-        //  Calculate the rotation axis plane's area as seen in the
-        //  current camera's FOV.
-        delta = 0.0001;
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_RY) {
-         delta = 0.0001;
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_RZ) {
-         delta = 0.0001;
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_SX) {
-        // Transform scale
-        // Use a fixed ratio? Like 1 percent. *=1.001 and *=0.999?
-        delta = 0.001;
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_SY) {
-         delta = 0.001;
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_SZ) {
-         delta = 0.001;
-    }
-#endif // USE_EXPERIMENTAL_DELTA_VALUE
 
     // If the value +/- delta would cause the attribute to go
     // out of box-constraints, then we should only use one
@@ -467,7 +257,6 @@ double gaussian(double x, double mean, double sigma) {
 }
 
 
-// Measure Errors
 void measureErrors(
         int numberOfParameters,
         int numberOfErrors,

@@ -810,6 +810,7 @@ bool solve(SolverOptions &solverOptions,
             numberOfAttrSmoothnessErrors,
             status
     );
+    CHECK_MSTATUS(status);
     assert(numberOfErrors == (
             numberOfMarkerErrors
             + numberOfAttrStiffnessErrors
@@ -836,6 +837,7 @@ bool solve(SolverOptions &solverOptions,
             paramToAttrList,
             status
     );
+    CHECK_MSTATUS(status);
     assert(paramLowerBoundList.size() == numberOfParameters);
     assert(paramUpperBoundList.size() == numberOfParameters);
     assert(paramWeightList.size() == numberOfParameters);
@@ -943,14 +945,14 @@ bool solve(SolverOptions &solverOptions,
     bool showProgressBar = true;
     bool isInterruptable = true;
     bool useWaitCursor = true;
-    if (printStats != true) {
+    if (printStats == false) {
         computation.setProgressRange(0, solverOptions.iterMax);
         computation.beginComputation(showProgressBar, isInterruptable, useWaitCursor);
     }
 
     // Start Solving
     SolverTimer timer;
-    if (printStats != true) {
+    if (printStats == false) {
         timer.solveBenchTimer.start();
         timer.solveBenchTicks.start();
     }

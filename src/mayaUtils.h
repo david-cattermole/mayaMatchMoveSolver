@@ -201,8 +201,8 @@ MStatus constructAttrAffectsName(MString attrName,
                                  MString &outAttrName){
     MStatus status = MStatus::kSuccess;
 
-    const MString attrNamePrefix = "attrAffects_";
-    const MString attrNameSuffix = "_attrName_";
+    const MString attrNamePrefix = "node_";
+    const MString attrNameSuffix = "_attr_";
 
     status = attrName.substitute(".", "_");
     CHECK_MSTATUS_AND_RETURN_IT(status);

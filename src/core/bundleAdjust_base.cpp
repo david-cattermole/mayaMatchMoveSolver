@@ -924,13 +924,13 @@ bool solve(SolverOptions &solverOptions,
     if ((verbose == false) && (printStats == false)) {
         std::stringstream ss;
         ss << "Solving... frames:";
-        for (int i = 0; i < frameList.length(); i++) {
+        for (unsigned int i = 0; i < frameList.length(); i++) {
             MTime frame(frameList[i]);
             ss << " " << frame;
         }
         std::string tmp_string = ss.str();
 
-        int num = 100 - tmp_string.size();
+        size_t num = 100 - tmp_string.size();
         if (num < 0) {
             num = 0;
         }
@@ -1145,8 +1145,7 @@ bool solve(SolverOptions &solverOptions,
                 paramUpperBoundList,
                 paramWeightList,
                 userData,
-                solveResult,
-                outResult);
+                solveResult);
 
 #endif // USE_SOLVER_CMINPACK
 
@@ -1172,8 +1171,7 @@ bool solve(SolverOptions &solverOptions,
                 paramUpperBoundList,
                 paramWeightList,
                 userData,
-                solveResult,
-                outResult);
+                solveResult);
 
 #endif // USE_SOLVER_CMINPACK
 

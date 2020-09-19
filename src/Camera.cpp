@@ -664,7 +664,6 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time) {
         int filmFit = 1;
         double imageWidth = 640.0;
         double imageHeight = 480.0;
-        double imageAspectRatio = 1.0;
         double filmWidth = 0.0;
         double filmHeight = 0.0;
         double focal = 0.0;
@@ -723,9 +722,6 @@ MStatus Camera::getProjMatrix(MMatrix &value) {
 MStatus Camera::getWorldPosition(MPoint &value, const MTime &time) {
     MStatus status;
 
-    MTime::Unit unit = MTime::uiUnit();
-    double timeDouble = time.as(unit);
-
     // Get world matrix at time
     MMatrix worldMat;
     status = m_matrix.getValue(worldMat, time);
@@ -749,9 +745,6 @@ MStatus Camera::getWorldPosition(MPoint &value) {
 
 MStatus Camera::getForwardDirection(MVector &value, const MTime &time) {
     MStatus status;
-
-    MTime::Unit unit = MTime::uiUnit();
-    double timeDouble = time.as(unit);
 
     // Get world matrix at time
     MMatrix worldMat;

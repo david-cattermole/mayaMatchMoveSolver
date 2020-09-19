@@ -243,8 +243,7 @@ double calculateParameterDelta(double value,
                                double sign,
                                AttrPtr attr,
                                CameraPtr cam,
-                               MTime frame,
-                               double imageWidth) {
+                               MTime frame) {
     MStatus status = MS::kSuccess;
 
     double xmin = attr->getMinimumValue();
@@ -455,6 +454,8 @@ void setParameters(
     for (int i = 0; i < (int) ud->cameraList.size(); ++i) {
         ud->cameraList[i]->clearAttrValueCache();
     }
+
+    status = MStatus::kSuccess;
 }
 
 
@@ -911,8 +912,7 @@ int solveFunc(int numberOfParameters,
             double value = parameters[i];
             double deltaA = calculateParameterDelta(
                     value, delta, 1,
-                    attr, cam, currentFrame,
-                    ud->imageWidth);
+                    attr, cam, currentFrame);
 
             incrementJacobianIteration(ud, debugIsOpen, debugFile);
             paramListA[i] = paramListA[i] + deltaA;
@@ -988,8 +988,7 @@ int solveFunc(int numberOfParameters,
                 // not needed.
                 double deltaB = calculateParameterDelta(
                         value, delta, -1,
-                        attr, cam, currentFrame,
-                        ud->imageWidth);
+                        attr, cam, currentFrame);
                 if (deltaA == deltaB) {
                     // Set the Jacobian matrix using the previously
                     // calculated errors (original and A).

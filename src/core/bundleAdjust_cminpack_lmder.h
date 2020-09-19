@@ -53,8 +53,7 @@ bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
                              std::vector<double> &paramUpperBoundList,
                              std::vector<double> &paramWeightList,
                              SolverData &userData,
-                             SolverResult &solveResult,
-                             MStringArray &outResult);
+                             SolverResult &solveResult);
 
 
 int solveFunc_cminpack_lmder(void *data,

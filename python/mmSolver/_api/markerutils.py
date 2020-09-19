@@ -178,13 +178,13 @@ def find_marker_attr_mapping(mkr_list, attr_list):
         mkr_node = mkr.get_node()
         bnd_node = bnd.get_node()
         cam_node = cam.get_transform_node()
-        mkr_plugs = affects_utils.find_plugs_affecting_transform(
+        mkr_plugs = set(affects_utils.find_plugs_affecting_transform(
             mkr_node,
-            cam_node)
-        bnd_plugs = affects_utils.find_plugs_affecting_transform(
+            cam_node))
+        bnd_plugs = set(affects_utils.find_plugs_affecting_transform(
             bnd_node,
             None
-        )
+        ))
         assert isinstance(mkr_plugs, set)
         assert isinstance(bnd_plugs, set)
         plugs = set(mkr_plugs.union(bnd_plugs))

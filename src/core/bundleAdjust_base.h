@@ -72,17 +72,6 @@ std::vector<SolverTypePair> getSolverTypes();
 
 SolverTypePair getSolverTypeDefault();
 
-//void findErrorToUnknownRelationship(MarkerPtrList &markerList,
-//                                    AttrPtrList &attrList,
-//                                    MTimeArray &frameList,
-//                                    int numParameters,
-//                                    int numErrors,
-//                                    IndexPairList &paramToAttrList,
-//                                    IndexPairList &errorToMarkerList,
-//                                    BoolList2D &markerToAttrMapping,
-//                                    BoolList2D &errorToParamMapping,
-//                                    MStatus &status);
-
 
 double parameterBoundFromInternalToExternal(double value,
                                             double xmin, double xmax,

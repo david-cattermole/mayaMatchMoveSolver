@@ -65,26 +65,7 @@
 #include <core/bundleAdjust_base.h>
 
 
-// Command arguments and command name
-#define CAMERA_FLAG       "-c"
-#define CAMERA_FLAG_LONG  "-camera"
-
-#define MARKER_FLAG       "-m"
-#define MARKER_FLAG_LONG  "-marker"
-
-#define ATTR_FLAG       "-a"
-#define ATTR_FLAG_LONG  "-attr"
-
-#define FRAME_FLAG       "-f"
-#define FRAME_FLAG_LONG  "-frame"
-
-// Attribute Stiffness
-#define STIFFNESS_FLAG       "-asf"
-#define STIFFNESS_FLAG_LONG  "-attrStiffness"
-
-// Attribute Smoothness
-#define SMOOTHNESS_FLAG       "-asm"
-#define SMOOTHNESS_FLAG_LONG  "-attrSmoothness"
+// Command arguments
 
 // Type of Solver to use.
 //
@@ -227,7 +208,7 @@ public:
     static MString cmdName();
 
 private:
-    MStatus parseArgs( const MArgList& args );
+    MStatus parseArgs(const MArgList& args);
 
     // Solver Information.
     unsigned int m_iterations;

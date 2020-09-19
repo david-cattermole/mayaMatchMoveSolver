@@ -76,6 +76,7 @@ struct SolverOptions {
     int robustLossType;
     double robustLossScale;
     int solverType;
+    bool acceptOnlyBetter;
 
     // All the different supported features by the currently active
     // solver type.

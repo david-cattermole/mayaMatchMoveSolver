@@ -50,121 +50,9 @@
 #include <Bundle.h>
 #include <Attr.h>
 
+#include <core/bundleAdjust_defines.h>
 #include <core/bundleAdjust_data.h>
 #include <core/bundleAdjust_solveFunc.h>
-
-// The different solver types to choose from:
-
-// Dense LM solver using 'levmar',
-#define SOLVER_TYPE_LEVMAR 0
-#define SOLVER_TYPE_LEVMAR_NAME "levmar"
-
-// Dense LM solver using 'cminpack' library.
-#define SOLVER_TYPE_CMINPACK_LMDIF 1
-#define SOLVER_TYPE_CMINPACK_LM_DIF_NAME "cminpack_lmdif"
-
-// Dense LM solver, with custom jacobian, using 'cminpack' library.
-#define SOLVER_TYPE_CMINPACK_LMDER 2
-#define SOLVER_TYPE_CMINPACK_LM_DER_NAME "cminpack_lmder"
-
-// The default solver to use, if all solvers are available.
-#define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LMDER
-
-// Enable the Maya profiling data collection.
-#define MAYA_PROFILE 1
-
-// Enable the use of "debug file" output, so the solver writes out a
-// debug file with all the internal details.
-// #define WITH_DEBUG_FILE 0
-
-// The number of errors that are measured per-marker.
-// There are two measurements per-marker, X and Y.
-//
-// Three measurements were used in the past with
-// success, but tests now prove 2 to reduce error with less
-// iterations, and is significantly faster overall.
-//
-// Do not change this definition.
-#define ERRORS_PER_MARKER (2)
-
-// Text character used to split up a single result string.
-#define CMD_RESULT_SPLIT_CHAR "#"
-
-
-// Print Statistics for mmSolver command.
-//
-// These are the possible values:
-#define PRINT_STATS_MODE_INPUTS   "inputs"
-#define PRINT_STATS_MODE_AFFECTS  "affects"
-#define PRINT_STATS_MODE_DEVIATION   "deviation"
-
-
-// Robust Loss Function Types.
-//
-#define ROBUST_LOSS_TYPE_TRIVIAL  (0)
-#define ROBUST_LOSS_TYPE_SOFT_L_ONE  (1)
-#define ROBUST_LOSS_TYPE_CAUCHY  (2)
-
-
-// CMinpack-specific values for recognising forward or central differencing.
-//
-#define AUTO_DIFF_TYPE_FORWARD (0)
-#define AUTO_DIFF_TYPE_CENTRAL (1)
-
-
-// CMinpack lmdif Solver default flag values
-//
-#define CMINPACK_LMDIF_ITERATIONS_DEFAULT_VALUE  (100)
-#define CMINPACK_LMDIF_TAU_DEFAULT_VALUE  (1.0)
-#define CMINPACK_LMDIF_EPSILON1_DEFAULT_VALUE  (1E-6) // ftol
-#define CMINPACK_LMDIF_EPSILON2_DEFAULT_VALUE  (1E-6) // xtol
-#define CMINPACK_LMDIF_EPSILON3_DEFAULT_VALUE  (1E-6) // gtol
-#define CMINPACK_LMDIF_DELTA_DEFAULT_VALUE  (1E-04)
-// cminpack lmdif only supports forward '0=forward' auto-diff'ing.
-#define CMINPACK_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE  (AUTO_DIFF_TYPE_FORWARD)
-#define CMINPACK_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE  (1)  // default is 'on=1 (mode=1)'
-#define CMINPACK_LMDIF_ROBUST_LOSS_TYPE_DEFAULT_VALUE  (ROBUST_LOSS_TYPE_TRIVIAL)
-#define CMINPACK_LMDIF_ROBUST_LOSS_SCALE_DEFAULT_VALUE 1.0
-#define CMINPACK_LMDIF_SUPPORT_AUTO_DIFF_FORWARD_VALUE true
-#define CMINPACK_LMDIF_SUPPORT_AUTO_DIFF_CENTRAL_VALUE false
-#define CMINPACK_LMDIF_SUPPORT_PARAMETER_BOUNDS_VALUE true
-#define CMINPACK_LMDIF_SUPPORT_ROBUST_LOSS_VALUE false
-
-// CMinpack lmder Solver default flag values
-//
-#define CMINPACK_LMDER_ITERATIONS_DEFAULT_VALUE  (100)
-#define CMINPACK_LMDER_TAU_DEFAULT_VALUE  (1.0)
-#define CMINPACK_LMDER_EPSILON1_DEFAULT_VALUE  (1E-6) // ftol
-#define CMINPACK_LMDER_EPSILON2_DEFAULT_VALUE  (1E-6) // xtol
-#define CMINPACK_LMDER_EPSILON3_DEFAULT_VALUE  (1E-6) // gtol
-#define CMINPACK_LMDER_DELTA_DEFAULT_VALUE  (1E-04)
-// cminpack lmder supports both forward '0=forward' and 'central' auto-diff'ing.
-#define CMINPACK_LMDER_AUTO_DIFF_TYPE_DEFAULT_VALUE  (AUTO_DIFF_TYPE_FORWARD)
-#define CMINPACK_LMDER_AUTO_PARAM_SCALE_DEFAULT_VALUE  (1)  // default is 'on=1 (mode=1)'
-#define CMINPACK_LMDER_ROBUST_LOSS_TYPE_DEFAULT_VALUE  (ROBUST_LOSS_TYPE_TRIVIAL)
-#define CMINPACK_LMDER_ROBUST_LOSS_SCALE_DEFAULT_VALUE 1.0
-#define CMINPACK_LMDER_SUPPORT_AUTO_DIFF_FORWARD_VALUE true
-#define CMINPACK_LMDER_SUPPORT_AUTO_DIFF_CENTRAL_VALUE true
-#define CMINPACK_LMDER_SUPPORT_PARAMETER_BOUNDS_VALUE true
-#define CMINPACK_LMDER_SUPPORT_ROBUST_LOSS_VALUE  false
-
-// Levmar Solver default flag values
-//
-#define LEVMAR_ITERATIONS_DEFAULT_VALUE  (100)
-#define LEVMAR_TAU_DEFAULT_VALUE  (1.0)
-#define LEVMAR_EPSILON1_DEFAULT_VALUE  (1E-6)
-#define LEVMAR_EPSILON2_DEFAULT_VALUE  (1E-6)
-#define LEVMAR_EPSILON3_DEFAULT_VALUE  (1E-6)
-#define LEVMAR_DELTA_DEFAULT_VALUE  (1E-04)
-#define LEVMAR_AUTO_DIFF_TYPE_DEFAULT_VALUE  (AUTO_DIFF_TYPE_FORWARD)
-// LevMar does not have auto-parameter scaling.
-#define LEVMAR_AUTO_PARAM_SCALE_DEFAULT_VALUE  (0)
-#define LEVMAR_ROBUST_LOSS_TYPE_DEFAULT_VALUE  (ROBUST_LOSS_TYPE_TRIVIAL)
-#define LEVMAR_ROBUST_LOSS_SCALE_DEFAULT_VALUE 1.0
-#define LEVMAR_SUPPORT_AUTO_DIFF_FORWARD_VALUE true
-#define LEVMAR_SUPPORT_AUTO_DIFF_CENTRAL_VALUE true
-#define LEVMAR_SUPPORT_PARAMETER_BOUNDS_VALUE true
-#define LEVMAR_SUPPORT_ROBUST_LOSS_VALUE false
 
 
 typedef std::vector<std::vector<bool> > BoolList2D;
@@ -183,28 +71,6 @@ double distance_2d(MPoint a, MPoint b) {
 std::vector<SolverTypePair> getSolverTypes();
 
 SolverTypePair getSolverTypeDefault();
-
-int countUpNumberOfErrors(MarkerPtrList markerList,
-                          StiffAttrsPtrList stiffAttrsList,
-                          SmoothAttrsPtrList smoothAttrsList,
-                          MTimeArray frameList,
-                          MarkerPtrList &validMarkerList,
-                          std::vector<MPoint> &markerPosList,
-                          std::vector<double> &markerWeightList,
-                          IndexPairList &errorToMarkerList,
-                          int &numberOfMarkerErrors,
-                          int &numberOfAttrStiffnessErrors,
-                          int &numberOfAttrSmoothnessErrors,
-                          MStatus &status);
-
-int countUpNumberOfUnknownParameters(AttrPtrList attrList,
-                                     MTimeArray frameList,
-                                     AttrPtrList &camStaticAttrList,
-                                     AttrPtrList &camAnimAttrList,
-                                     AttrPtrList &staticAttrList,
-                                     AttrPtrList &animAttrList,
-                                     IndexPairList &paramToAttrList,
-                                     MStatus &status);
 
 //void findErrorToUnknownRelationship(MarkerPtrList &markerList,
 //                                    AttrPtrList &attrList,
@@ -275,16 +141,30 @@ bool compute_error_stats(int numberOfMarkerErrors,
                          double &errorMax);
 
 
-void print_details(SolverResult &solverResult,
-                   SolverData &userData,
-                   SolverTimer &timer,
-                   int numberOfParameters,
-                   int numberOfMarkerErrors,
-                   int numberOfAttrStiffnessErrors,
-                   int numberOfAttrSmoothnessErrors,
-                   bool verbose,
-                   std::vector<double> &paramList,
-                   MStringArray &outResult);
+void logResultsSolveDetails(SolverResult &solverResult,
+                            SolverData &userData,
+                            SolverTimer &timer,
+                            int numberOfParameters,
+                            int numberOfMarkerErrors,
+                            int numberOfAttrStiffnessErrors,
+                            int numberOfAttrSmoothnessErrors,
+                            bool verbose,
+                            std::vector<double> &paramList,
+                            MStringArray &outResult);
+
+
+MStatus logResultsObjectCounts(int numberOfParameters,
+                               int numberOfErrors,
+                               int numberOfMarkerErrors,
+                               int numberOfAttrStiffnessErrors,
+                               int numberOfAttrSmoothnessErrors,
+                               MStringArray &outResult);
+
+
+MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
+                                         AttrPtrList attrList,
+                                         BoolList2D markerToAttrMapping,
+                                         MStringArray &outResult);
 
 
 bool solve(SolverOptions &solverOptions,
@@ -298,7 +178,6 @@ bool solve(SolverOptions &solverOptions,
            MDGModifier &dgmod,
            MAnimCurveChange &curveChange,
            MComputation &computation,
-           bool acceptOnlyBetter,
            MString &debugFileName,
            MStringArray &printStatsList,
            bool verbose,

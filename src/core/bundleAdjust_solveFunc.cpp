@@ -297,16 +297,19 @@ void measureErrors(
     MMatrix cameraWorldProjectionMatrix;
     MPoint mkr_mpos;
     MPoint bnd_mpos;
+    int numberOfErrorsMeasured = 0;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = ud->errorToMarkerList[i];
-        bool frameIsAffected = frameIndexEnable[markerPair.second];
-        if (frameIsAffected == false) {
-            // Skip evaluation of this marker error.
+        int markerIndex = markerPair.first;
+        int frameIndex = markerPair.second;
+        if (frameIndexEnable[frameIndex] == false) {
+            // Skip evaluation of this marker error. The 'errors' data
+            // is expected to be unchanged from the last evaluation.
             continue;
         }
 
-        MarkerPtr marker = ud->markerList[markerPair.first];
-        MTime frame = ud->frameList[markerPair.second];
+        MarkerPtr marker = ud->markerList[markerIndex];
+        MTime frame = ud->frameList[frameIndex];
 
         CameraPtr camera = marker->getCamera();
         status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
@@ -325,6 +328,7 @@ void measureErrors(
         // Use pre-computed marker position and weight
         mkr_mpos = ud->markerPosList[i];
         double mkr_weight = ud->markerWeightList[i];
+        assert(mkr_weight > 0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
         mkr_weight = std::sqrt(mkr_weight);
 
         // Re-project Bundle into screen-space.
@@ -402,6 +406,15 @@ void measureErrors(
         error_avg += d;
         if (d > error_max) { error_max = d; }
         if (d < error_min) { error_min = d; }
+        ++numberOfErrorsMeasured;
+    }
+    if (numberOfErrorsMeasured == 0) {
+        error_max = 0.0;
+        error_min = 0.0;
+        error_avg = 0.0;
+        ERR("No Marker measurements were taken.");
+    } else {
+        error_avg *= 1.0 / numberOfErrorsMeasured;
     }
 
     // Compute the stiffness values for the the attributes of the 'error' array.
@@ -467,8 +480,8 @@ void measureErrors(
                                   ud->solverOptions->robustLossType,
                                   ud->solverOptions->robustLossScale);
     }
-
-    error_avg *= 1.0 / (numberOfErrors / ERRORS_PER_MARKER);
+    assert(error_max >= error_min);
+    assert(error_min <= error_max);
 
 #ifdef WITH_DEBUG_FILE
     if (debugIsOpen && debugFile != NULL) {
@@ -691,6 +704,9 @@ int solveFunc(int numberOfParameters,
                 paramListA[j] = parameters[j];
             }
             std::vector<double> errorListA(numberOfErrors, 0);
+            for (int j = 0; j < numberOfErrors; ++j) {
+                errorListA[j] = errors[j];
+            }
 
             // Calculate the relative delta for each parameter.
             double delta = ud->solverOptions->delta;
@@ -713,7 +729,7 @@ int solveFunc(int numberOfParameters,
                     value, delta, 1,
                     attr, cam, currentFrame);
 
-            std::vector<bool> framesMask = ud->paramFrameList[i];
+            std::vector<bool> frameIndexEnabled = ud->paramFrameList[i];
 
             incrementJacobianIteration(ud, debugIsOpen, debugFile);
             paramListA[i] = paramListA[i] + deltaA;
@@ -751,7 +767,7 @@ int solveFunc(int numberOfParameters,
                               numberOfMarkerErrors,
                               numberOfAttrStiffnessErrors,
                               numberOfAttrSmoothnessErrors,
-                              framesMask,
+                              frameIndexEnabled,
                               &errorListA[0],
                               ud,
                               error_avg_tmp,
@@ -838,7 +854,7 @@ int solveFunc(int numberOfParameters,
                                       numberOfMarkerErrors,
                                       numberOfAttrStiffnessErrors,
                                       numberOfAttrSmoothnessErrors,
-                                      framesMask,
+                                      frameIndexEnabled,
                                       &errorListB[0],
                                       ud,
                                       error_avg_tmp,

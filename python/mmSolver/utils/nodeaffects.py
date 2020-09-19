@@ -149,6 +149,7 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
 
     # Get camera related to the given bundle.
     if cam_tfm is not None:
+        assert maya.cmds.objExists(cam_tfm) is True
         cam_tfm_node = maya.cmds.ls(cam_tfm, long=True)[0]
         cam_shp_node = maya.cmds.listRelatives(
             cam_tfm,

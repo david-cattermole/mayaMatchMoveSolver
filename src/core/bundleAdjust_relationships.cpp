@@ -361,10 +361,6 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
                                       BoolList2D &markerToAttrMapping,
                                       BoolList2D &errorToParamMapping,
                                       MStatus &status) {
-    ERR("findErrorToParameterRelationship - paramToAttrList: "
-        << paramToAttrList.size());
-    ERR("findErrorToParameterRelationship - errorToMarkerList: "
-        << errorToMarkerList.size());
     status = MStatus::kSuccess;
     int i, j;
 

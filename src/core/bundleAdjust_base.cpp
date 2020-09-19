@@ -1220,7 +1220,7 @@ bool solve(SolverOptions &solverOptions,
             numberOfParameters,
             paramToAttrList,
             attrList,
-            paramList,
+            initialParamList,
             frameList,
             dgmod,
             curveChange);

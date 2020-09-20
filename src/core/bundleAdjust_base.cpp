@@ -848,17 +848,10 @@ bool solve(SolverOptions &solverOptions,
     if (printStatsAffects == true) {
         assert(printStats == true);
         BoolList2D markerToAttrMapping;
-        BoolList2D errorToParamMapping;
-        findErrorToParameterRelationship(
+        findMarkerToAttributeRelationship(
                 markerList,
                 attrList,
-                frameList,
-                numberOfParameters,
-                numberOfErrors,
-                paramToAttrList,
-                errorToMarkerList,
                 markerToAttrMapping,
-                errorToParamMapping,
                 status
         );
         CHECK_MSTATUS(status);

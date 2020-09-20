@@ -351,16 +351,10 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
  *   markers
  *
  */
-void findErrorToParameterRelationship(MarkerPtrList markerList,
-                                      AttrPtrList attrList,
-                                      MTimeArray frameList,
-                                      int numParameters,
-                                      int numErrors,
-                                      IndexPairList paramToAttrList,
-                                      IndexPairList errorToMarkerList,
-                                      BoolList2D &markerToAttrMapping,
-                                      BoolList2D &errorToParamMapping,
-                                      MStatus &status) {
+void findMarkerToAttributeRelationship(MarkerPtrList markerList,
+                                       AttrPtrList attrList,
+                                       BoolList2D &markerToAttrMapping,
+                                       MStatus &status) {
     status = MStatus::kSuccess;
     int i, j;
 
@@ -457,23 +451,40 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
         }
         ++i;
     }
+    return;
+}
 
-    // Calculate the relationship between errors and parameters.
-    /*
-     * For each error, work out which parameters can affect
-     * it. The parameters may be static or animated and thereby each
-     * parameter may affect one or more errors. A single parameter
-     * will affect a range of time values, a static parameter affects
-     * all time values, but a dynamic parameter will be split into
-     * many parameters at different frames, each of those dynamic
-     * parameters will only affect a small number of errors. Our goal
-     * is to compute a boolean for each error and parameter
-     * combination, if the boolean is true the relationship is
-     * positive, if false, the computation is skipped and the error
-     * returned is zero.  This combination is only relevant if the
-     * markerToAttrMapping is already true, otherwise we can assume
-     * such error/parameter combinations will not be required.
-     */
+
+/*
+ * Calculate the relationship between errors and parameters.
+ *
+ * For each error, work out which parameters can affect
+ * it. The parameters may be static or animated and thereby each
+ * parameter may affect one or more errors. A single parameter
+ * will affect a range of time values, a static parameter affects
+ * all time values, but a dynamic parameter will be split into
+ * many parameters at different frames, each of those dynamic
+ * parameters will only affect a small number of errors. Our goal
+ * is to compute a boolean for each error and parameter
+ * combination, if the boolean is true the relationship is
+ * positive, if false, the computation is skipped and the error
+ * returned is zero.  This combination is only relevant if the
+ * markerToAttrMapping is already true, otherwise we can assume
+ * such error/parameter combinations will not be required.
+ */
+void findErrorToParameterRelationship(MarkerPtrList markerList,
+                                      AttrPtrList attrList,
+                                      MTimeArray frameList,
+                                      int numParameters,
+                                      int numErrors,
+                                      IndexPairList paramToAttrList,
+                                      IndexPairList errorToMarkerList,
+                                      BoolList2D markerToAttrMapping,
+                                      BoolList2D &errorToParamMapping,
+                                      MStatus &status){
+    status = MStatus::kSuccess;
+    int i, j;
+
     int markerIndex = 0;
     int markerFrameIndex = 0;
     int attrIndex = 0;

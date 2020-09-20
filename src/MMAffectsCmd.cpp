@@ -317,6 +317,13 @@ MStatus MMAffectsCmd::doIt(const MArgList &args) {
     assert(numberOfParameters >= attrList.size());
 
     BoolList2D markerToAttrMapping;
+    findMarkerToAttributeRelationship(
+            m_markerList,
+            m_attrList,
+            markerToAttrMapping,
+            status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
     BoolList2D errorToParamMapping;
     findErrorToParameterRelationship(
         m_markerList,

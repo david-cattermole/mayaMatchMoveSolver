@@ -86,7 +86,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         # Test the different flags with using a named transform
         # directly, or a single world point (XYZ) argument.
         test_args = [
-            ('coord_values', {'asNormalizedCoordinate': True}),
+            ('coord_values', {'asCoordinate': True}),
             ('pix_coord_values', {'imageResolution': (512, 512),
                                   'asPixelCoordinate': True}),
             ('norm_coord_values', {'asNormalizedCoordinate': True}),

@@ -23,6 +23,28 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         cam_shp = node_utils.get_long_name(cam_shp)
         return cam_tfm, cam_shp
 
+    @staticmethod
+    def compare_explicit_world_point(name, in_tfm,
+                                     cam_tfm, cam_shp,
+                                     pnt_x, pnt_y, pnt_z,
+                                     times,
+                                     **kwargs):
+        values = maya.cmds.mmReprojection(
+            in_tfm,
+            camera=(cam_tfm, cam_shp),
+            time=times,
+            **kwargs
+        )
+        print name, repr(values)
+        values_b = maya.cmds.mmReprojection(
+            worldPoint=(pnt_x, pnt_y, pnt_z),
+            camera=(cam_tfm, cam_shp),
+            time=times,
+            **kwargs
+        )
+        print str(name + '_b'), repr(values_b)
+        return values, values_b
+
     def test_reprojection_cmd(self):
         start = 1001
         end = 1005
@@ -61,108 +83,38 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
-        coord_values = maya.cmds.mmReprojection(
-            in_tfm,
-            camera=(cam_tfm, cam_shp),
-            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
-            asNormalizedCoordinate=True,
-        )
-        print 'coord_values', repr(coord_values)
-        self.assertGreater(len(coord_values), 0)
-        coord_values_b = maya.cmds.mmReprojection(
-            worldPoint=(pnt_x, pnt_y, pnt_z),
-            camera=(cam_tfm, cam_shp),
-            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
-            asNormalizedCoordinate=True,
-        )
-        print 'coord_values_b', repr(coord_values_b)
-        self.assertListEqual(coord_values, coord_values_b)
+        # Test the different flags with using a named transform
+        # directly, or a single world point (XYZ) argument.
+        test_args = [
+            ('coord_values', {'asNormalizedCoordinate': True}),
+            ('pix_coord_values', {'imageResolution': (512, 512),
+                                  'asPixelCoordinate': True}),
+            ('norm_coord_values', {'asNormalizedCoordinate': True}),
+            ('marker_coord_values', {'asMarkerCoordinate': True}),
+            ('camera_point_values', {'asCameraPoint': True}),
+            ('camera_dir_ratio_values', {'withCameraDirectionRatio': True}),
+        ]
+        times = (1001.0, 1002.0, 1003.0, 1004.0, 1005.0)
+        for name, kwargs in test_args:
+            values, values_b = self.compare_explicit_world_point(
+                name,
+                in_tfm, cam_tfm, cam_shp,
+                pnt_x, pnt_y, pnt_z,
+                times,
+                **kwargs)
+            self.assertGreater(len(values), 0)
+            self.assertListEqual(values, values_b)
 
-        pix_coord_values = maya.cmds.mmReprojection(
-            in_tfm,
-            camera=(cam_tfm, cam_shp),
-            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
-            imageResolution=(512, 512),
-            asPixelCoordinate=True,
-        )
-        print 'pix_coord_values', repr(pix_coord_values)
-        self.assertGreater(len(pix_coord_values), 0)
-        pix_coord_values_b = maya.cmds.mmReprojection(
-            worldPoint=(pnt_x, pnt_y, pnt_z),
-            camera=(cam_tfm, cam_shp),
-            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
-            imageResolution=(512, 512),
-            asPixelCoordinate=True,
-        )
-        print 'pix_coord_values_b', repr(pix_coord_values_b)
-        self.assertListEqual(pix_coord_values, pix_coord_values_b)
-
-        norm_coord_values = maya.cmds.mmReprojection(
-            in_tfm,
-            camera=(cam_tfm, cam_shp),
-            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
-            asNormalizedCoordinate=True,
-        )
-        print 'norm_coord_values', repr(norm_coord_values)
-        self.assertGreater(len(norm_coord_values), 0)
-        norm_coord_values_b = maya.cmds.mmReprojection(
-            worldPoint=(pnt_x, pnt_y, pnt_z),
-            camera=(cam_tfm, cam_shp),
-            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
-            asNormalizedCoordinate=True,
-        )
-        print 'norm_coord_values_b', repr(norm_coord_values_b)
-        self.assertListEqual(norm_coord_values, norm_coord_values_b)
-
-        marker_coord_values = maya.cmds.mmReprojection(
-            in_tfm,
-            camera=(cam_tfm, cam_shp),
-            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
-            asMarkerCoordinate=True,
-        )
-        print 'marker_coord_values', repr(marker_coord_values)
-        self.assertGreater(len(marker_coord_values), 0)
-        marker_coord_values_b = maya.cmds.mmReprojection(
-            worldPoint=(pnt_x, pnt_y, pnt_z),
-            camera=(cam_tfm, cam_shp),
-            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
-            asMarkerCoordinate=True,
-        )
-        print 'marker_coord_values_b', repr(marker_coord_values_b)
-        self.assertListEqual(marker_coord_values, marker_coord_values_b)
-
-        camera_point_values = maya.cmds.mmReprojection(
-            in_tfm,
-            camera=(cam_tfm, cam_shp),
-            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
-            asCameraPoint=True,
-        )
-        print 'camera_point_values', repr(camera_point_values)
-        self.assertGreater(len(camera_point_values), 0)
-        camera_point_values_b = maya.cmds.mmReprojection(
-            worldPoint=(pnt_x, pnt_y, pnt_z),
-            camera=(cam_tfm, cam_shp),
-            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
-            asCameraPoint=True,
-        )
-        print 'camera_point_values_b', repr(camera_point_values_b)
-        self.assertListEqual(camera_point_values, camera_point_values_b)
-
-        world_point_values = maya.cmds.mmReprojection(
-            in_tfm,
-            camera=(cam_tfm, cam_shp),
-            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
-            asWorldPoint=True,
-        )
-        print 'world_point_values', repr(world_point_values)
+        # Test World Values
+        name = 'world_point_values'
+        world_point_values, world_point_values_b = \
+            self.compare_explicit_world_point(
+                name,
+                in_tfm, cam_tfm, cam_shp,
+                pnt_x, pnt_y, pnt_z,
+                times,
+                asWorldPoint=True)
         self.assertGreater(len(world_point_values), 0)
-        world_point_values_b = maya.cmds.mmReprojection(
-            worldPoint=(pnt_x, pnt_y, pnt_z),
-            camera=(cam_tfm, cam_shp),
-            time=(1001.0, 1002.0, 1003.0, 1004.0, 1005.0),
-            asWorldPoint=True,
-        )
-        print 'world_point_values_b', repr(world_point_values_b)
         self.assertListEqual(world_point_values, world_point_values_b)
 
         times = (1001.0, 1002.0, 1003.0, 1004.0, 1005.0,)

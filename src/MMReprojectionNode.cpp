@@ -102,6 +102,7 @@ MObject MMReprojectionNode::a_outWorldInverseCameraProjectionMatrix;
 MObject MMReprojectionNode::a_outPan;
 MObject MMReprojectionNode::a_outHorizontalPan;
 MObject MMReprojectionNode::a_outVerticalPan;
+MObject MMReprojectionNode::a_outCameraDirectionRatio;
 
 
 MMReprojectionNode::MMReprojectionNode() {}
@@ -145,7 +146,8 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         || (plug == a_outWorldInverseCameraProjectionMatrix)
         || (plug == a_outPan)
         || (plug == a_outHorizontalPan)
-        || (plug == a_outVerticalPan)) {
+        || (plug == a_outVerticalPan)
+        || (plug == a_outCameraDirectionRatio)) {
         // Get Data Handles
         MDataHandle tfmMatrixHandle = data.inputValue(a_transformWorldMatrix,
                                                       &status);
@@ -320,6 +322,13 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
                 outVerticalPan);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
+        // Camera Direction Ratio - A.K.A. dot product of camera
+        // direction and direction from camera to reprojected point.
+        double outCameraDirectionRatio = 0.0;
+        status = calculateCameraFacingRatio(tfmMatrix, camMatrix,
+                                            outCameraDirectionRatio);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
         // Output Coordinates (-1.0 to 1.0; lower-left corner is -1.0, -1.0)
         MDataHandle outCoordXHandle = data.outputValue(a_outCoordX);
         MDataHandle outCoordYHandle = data.outputValue(a_outCoordY);
@@ -347,7 +356,7 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         outMarkerCoordXHandle.setClean();
         outMarkerCoordYHandle.setClean();
         outMarkerCoordZHandle.setClean();
-        
+
         // Output Pixel Coordinates (0.0 to width; 0.0 to height;
         // lower-left corner is 0.0, 0.0)
         MDataHandle outPixelXHandle = data.outputValue(a_outPixelX);
@@ -423,6 +432,12 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         outVerticalPanHandle.setDouble(outVerticalPan);
         outHorizontalPanHandle.setClean();
         outVerticalPanHandle.setClean();
+
+        // Output Camera Direction Ratio
+        MDataHandle outCameraDirectionRatioHandle = data.outputValue(
+            a_outCameraDirectionRatio);
+        outCameraDirectionRatioHandle.setDouble(outCameraDirectionRatio);
+        outCameraDirectionRatioHandle.setClean();
 
         status = MS::kSuccess;
     }
@@ -971,6 +986,19 @@ MStatus MMReprojectionNode::initialize() {
         CHECK_MSTATUS(addAttribute(a_outPan));
     }
 
+    {
+        // Out Camera Direction Ratio
+        a_outCameraDirectionRatio = numericAttr.create(
+                "outCameraDirectionRatio", "ocdr",
+                MFnNumericData::kDouble, 0.0);
+        CHECK_MSTATUS(numericAttr.setStorable(false));
+        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        CHECK_MSTATUS(numericAttr.setReadable(true));
+        CHECK_MSTATUS(numericAttr.setWritable(false));
+        CHECK_MSTATUS(addAttribute(a_outCameraDirectionRatio));
+    }
+
+
     //////////////////////////////////////////////////////////////////////////
 
     // Attribute Affects
@@ -1002,6 +1030,7 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outPan));
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outHorizontalPan));
     CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outVerticalPan));
+    CHECK_MSTATUS(attributeAffects(a_transformWorldMatrix, a_outCameraDirectionRatio));
 
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outCoord));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outCoordX));
@@ -1032,6 +1061,7 @@ MStatus MMReprojectionNode::initialize() {
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outPan));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outHorizontalPan));
     CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outVerticalPan));
+    CHECK_MSTATUS(attributeAffects(a_cameraWorldMatrix, a_outCameraDirectionRatio));
 
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outCoord));
     CHECK_MSTATUS(attributeAffects(a_applyMatrix, a_outCoordX));

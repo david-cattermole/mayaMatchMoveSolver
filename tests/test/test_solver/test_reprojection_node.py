@@ -57,6 +57,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
             'outWorldCameraProjectionMatrix',
             'outWorldInverseCameraProjectionMatrix',
             'outPan',
+            'outCameraDirectionRatio',
         ]
         for attr in attrs:
             plug = '{0}.{1}'.format(node, attr)
@@ -79,6 +80,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         outWorldCameraProjectionMatrix = data.get('outWorldCameraProjectionMatrix')
         outWorldInverseCameraProjectionMatrix = data.get('outWorldInverseCameraProjectionMatrix')
         outPan = data.get('outPan')
+        outCameraDirectionRatio = data.get('outCameraDirectionRatio')
         print '=== Printing Node ==='
         print 'outCoord', outCoord
         print 'outNormCoord', outNormCoord
@@ -96,6 +98,8 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         print 'outWorldInverseCameraProjectionMatrix', outWorldInverseCameraProjectionMatrix
         print '-' * 5
         print 'outPan', outPan
+        print '-' * 5
+        print 'outCameraDirectionRatio', outCameraDirectionRatio
         print '-' * 40
 
     def check_values(self, data):

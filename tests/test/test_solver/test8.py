@@ -111,10 +111,10 @@ class TestSolver8(solverUtils.SolverTestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
-        assert 'mmAffects' in dir(maya.cmds)
+        assert 'mmSolverAffects' in dir(maya.cmds)
         affects_mode = 'addAttrsToMarkers'
         s = time.time()
-        result = maya.cmds.mmAffects(
+        result = maya.cmds.mmSolverAffects(
             mode=affects_mode,
             **kwargs)
         e = time.time()

@@ -79,7 +79,7 @@ void *MMSolverAffectsCmd::creator() {
 }
 
 MString MMSolverAffectsCmd::cmdName() {
-    return MString("mmAffects");
+    return MString("mmSolverAffects");
 }
 
 

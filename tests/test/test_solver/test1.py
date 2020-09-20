@@ -89,14 +89,14 @@ class TestSolver1(solverUtils.SolverTestCase):
             'frame': frames,
         }
 
-        assert 'mmAffects' in dir(maya.cmds)
+        assert 'mmSolverAffects' in dir(maya.cmds)
         affects_mode = 'addAttrsToMarkers'
         s = time.time()
-        result = maya.cmds.mmAffects(
+        result = maya.cmds.mmSolverAffects(
             mode=affects_mode,
             **kwargs)
         e = time.time()
-        print 'mmAffects time:', e - s
+        print 'mmSolverAffects time:', e - s
 
         # Run solver!
         assert 'mmSolver' in dir(maya.cmds)

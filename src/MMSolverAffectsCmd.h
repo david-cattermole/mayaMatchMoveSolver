@@ -59,12 +59,12 @@
 #define MODE_VALUE_RETURN_STRING "returnString"
 
 
-class MMAffectsCmd : public MPxCommand {
+class MMSolverAffectsCmd : public MPxCommand {
 public:
 
-    MMAffectsCmd() {};
+    MMSolverAffectsCmd() {};
 
-    virtual ~MMAffectsCmd();
+    virtual ~MMSolverAffectsCmd();
 
     virtual bool hasSyntax() const;
     static MSyntax newSyntax();

@@ -36,7 +36,7 @@
 
 
 // Internal
-#include <MMAffectsCmd.h>
+#include <MMSolverAffectsCmd.h>
 #include <commonArgFlags.h>
 #include <mayaUtils.h>
 #include <core/bundleAdjust_defines.h>
@@ -72,28 +72,28 @@
 #include <maya/MFnNumericData.h>
 
 
-MMAffectsCmd::~MMAffectsCmd() {}
+MMSolverAffectsCmd::~MMSolverAffectsCmd() {}
 
-void *MMAffectsCmd::creator() {
-    return new MMAffectsCmd();
+void *MMSolverAffectsCmd::creator() {
+    return new MMSolverAffectsCmd();
 }
 
-MString MMAffectsCmd::cmdName() {
+MString MMSolverAffectsCmd::cmdName() {
     return MString("mmAffects");
 }
 
 
-bool MMAffectsCmd::hasSyntax() const {
+bool MMSolverAffectsCmd::hasSyntax() const {
     return true;
 }
 
 
-bool MMAffectsCmd::isUndoable() const {
+bool MMSolverAffectsCmd::isUndoable() const {
     return true;
 }
 
 
-MSyntax MMAffectsCmd::newSyntax() {
+MSyntax MMSolverAffectsCmd::newSyntax() {
     MSyntax syntax;
     syntax.enableQuery(false);
     syntax.enableEdit(false);
@@ -105,16 +105,16 @@ MSyntax MMAffectsCmd::newSyntax() {
 }
 
 
-MStatus MMAffectsCmd::parseArgs(const MArgList &args) {
+MStatus MMSolverAffectsCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get 'Mode'
-    MMAffectsCmd::m_mode = "";
+    MMSolverAffectsCmd::m_mode = "";
     if (argData.isFlagSet(MODE_FLAG)) {
-        status = argData.getFlagArgument(MODE_FLAG, 0, MMAffectsCmd::m_mode);
+        status = argData.getFlagArgument(MODE_FLAG, 0, MMSolverAffectsCmd::m_mode);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -240,14 +240,14 @@ MStatus setAttrsOnMarkers(MarkerPtrList markerList,
 }
 
 
-MStatus MMAffectsCmd::doIt(const MArgList &args) {
+MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     // Command Outputs
     MStringArray outResult;
 
     // Read all the flag arguments.
-    status = MMAffectsCmd::parseArgs(args);
+    status = MMSolverAffectsCmd::parseArgs(args);
     if (status != MStatus::kSuccess) {
         ERR("Error parsing mmAffects command arguments.");
         return status;
@@ -353,21 +353,21 @@ MStatus MMAffectsCmd::doIt(const MArgList &args) {
             markerToAttrMapping,
             outResult);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        MMAffectsCmd::setResult(outResult);
+        MMSolverAffectsCmd::setResult(outResult);
     } else {
         ERR("Mode value is invalid: mode=" << m_mode << "\n");
     }
     return status;
 }
 
-MStatus MMAffectsCmd::redoIt() {
+MStatus MMSolverAffectsCmd::redoIt() {
     MStatus status;
     m_addAttr_dgmod.doIt();
     m_setAttr_dgmod.doIt();
     return status;
 }
 
-MStatus MMAffectsCmd::undoIt() {
+MStatus MMSolverAffectsCmd::undoIt() {
     MStatus status;
     m_setAttr_dgmod.undoIt();
     m_addAttr_dgmod.undoIt();

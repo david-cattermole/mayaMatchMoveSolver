@@ -671,9 +671,9 @@ MStatus logResultsObjectCounts(int numberOfParameters,
 
 
 MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
-                                      AttrPtrList attrList,
-                                      BoolList2D markerToAttrMapping,
-                                      MStringArray &outResult) {
+                                         AttrPtrList attrList,
+                                         BoolList2D markerToAttrMapping,
+                                         MStringArray &outResult) {
     MStatus status = MStatus::kSuccess;
     std::string resultStr;
 

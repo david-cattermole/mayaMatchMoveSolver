@@ -316,7 +316,7 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     double verticalFilmAperture = 1;
     double horizontalFilmOffset = 0;
     double verticalFilmOffset = 0;
-    int filmFit = 1;
+    short filmFit = 1;
     double nearClipPlane = 0.1;
     double farClipPlane = 1000;
     double cameraScale = 1;

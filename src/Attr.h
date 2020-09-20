@@ -168,6 +168,8 @@ public:
 
     MStatus getValue(int &value, const MTime &time);
 
+    MStatus getValue(short &value, const MTime &time);
+
     MStatus getValue(double &value, const MTime &time);
 
     MStatus getValue(MMatrix &value, const MTime &time);
@@ -175,6 +177,8 @@ public:
     MStatus getValue(bool &value);
 
     MStatus getValue(int &value);
+
+    MStatus getValue(short &value);
 
     MStatus getValue(double &value);
 

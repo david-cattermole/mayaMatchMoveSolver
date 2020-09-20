@@ -105,7 +105,7 @@ MStatus applyFilmFitLogic(
         const double frustumLeft, const double frustumRight,
         const double frustumTop, const double frustumBottom,
         const double imageAspectRatio, const double filmAspectRatio,
-        const int filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
+        const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
         double &filmFitScaleX, double &filmFitScaleY,
         double &screenSizeX, double &screenSizeY,
         double &screenRight, double &screenLeft,
@@ -253,7 +253,7 @@ MStatus getProjectionMatrix(
         const double filmOffsetY,     // inches
         const double imageWidth,      // pixels
         const double imageHeight,     // pixels
-        const int filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
+        const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
         const double nearClipPlane,
         const double farClipPlane,
         const double cameraScale,
@@ -548,8 +548,8 @@ double Camera::getFarClipPlaneValue() {
     return value;
 }
 
-int Camera::getFilmFitValue() {
-    int value = 0;
+short Camera::getFilmFitValue() {
+    short value = 0;
     if (m_filmFitCached) {
         value = m_filmFitValue;
     } else {
@@ -661,7 +661,7 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMatrix floatProjMat = MMatrix(&floatProjMat_maya.matrix[0]);
 #else
-        int filmFit = 1;
+        short filmFit = 1;
         double imageWidth = 640.0;
         double imageHeight = 480.0;
         double filmWidth = 0.0;

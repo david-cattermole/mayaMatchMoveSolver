@@ -543,7 +543,7 @@ void incrementJacobianIteration(SolverData *ud,
     ++ud->funcEvalNum;
     ++ud->jacIterNum;
     if (ud->verbose) {
-        MStreamUtils::stdErrorStream() << "Jacobian ";
+        MStreamUtils::stdErrorStream() << "Jacobian  ";
         MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw (4)
                                        << ud->jacIterNum;
         MStreamUtils::stdErrorStream() << " | Eval ";

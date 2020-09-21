@@ -269,7 +269,7 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
     }
     out_tau = std::max(0.0, out_tau);
     out_tau = std::min(out_tau, 1.0);
-    assert((0.0 <= out_tau) <= 1.0);
+    assert((out_tau >= 0.0) && (out_tau <= 1.0));
 
     // Get 'Epsilon1'
     if (argData.isFlagSet(EPSILON1_FLAG)) {

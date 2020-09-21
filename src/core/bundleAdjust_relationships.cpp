@@ -571,9 +571,9 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
     int attrFrameIndex = 0;
     IndexPair markerIndexPair;
     IndexPair attrIndexPair;
-    unsigned int numberOfMarkers = numMarkerErrors / ERRORS_PER_MARKER;
+    int numberOfMarkers = numMarkerErrors / ERRORS_PER_MARKER;
     errorToParamList.resize(numberOfMarkers);
-    for (unsigned int i = 0; i < numberOfMarkers; ++i) {
+    for (int i = 0; i < numberOfMarkers; ++i) {
         markerIndexPair = errorToMarkerList[i];
         markerIndex = markerIndexPair.first;
         markerFrameIndex = markerIndexPair.second;
@@ -585,7 +585,7 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
 
         // Determine if the marker can affect the attribute.
         errorToParamList[i].resize(numParameters, false);
-        for (unsigned int j = 0; j < numParameters; ++j) {
+        for (int j = 0; j < numParameters; ++j) {
             attrIndexPair = paramToAttrList[j];
             attrIndex = attrIndexPair.first;
             attrFrameIndex = attrIndexPair.second;

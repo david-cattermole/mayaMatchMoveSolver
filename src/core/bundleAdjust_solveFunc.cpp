@@ -348,7 +348,7 @@ void measureErrors(
         bnd_dir.normalize();
         bnd_mpos = bnd_mpos * cameraWorldProjectionMatrix;
         bnd_mpos.cartesianize();
-        // convert to -0.5 to 0.5, maintaining the aspect ratio of the
+        // Convert to -0.5 to 0.5, maintaining the aspect ratio of the
         // film back.
         bnd_mpos[0] *= 0.5;
         bnd_mpos[1] *= 0.5 * filmBackInvAspect;
@@ -403,13 +403,14 @@ void measureErrors(
         double dy = fabs(mkr_mpos.y - bnd_mpos.y) * ud->imageWidth;
         double d = distance_2d(mkr_mpos, bnd_mpos) * ud->imageWidth;
 
-        errors[(i * ERRORS_PER_MARKER) + 0] = dx * mkr_weight * behind_camera_error_factor;  // X error
-        errors[(i * ERRORS_PER_MARKER) + 1] = dy * mkr_weight * behind_camera_error_factor;  // Y error
+        int errorIndex = i * ERRORS_PER_MARKER;
+        errors[errorIndex + 0] = dx * mkr_weight * behind_camera_error_factor;
+        errors[errorIndex + 1] = dy * mkr_weight * behind_camera_error_factor;
 
         // 'ud->errorList' is the deviation shown to the user, it
         // should not have any loss functions or scaling applied to it.
-        ud->errorList[(i * ERRORS_PER_MARKER) + 0] = dx * behind_camera_error_factor;
-        ud->errorList[(i * ERRORS_PER_MARKER) + 1] = dy * behind_camera_error_factor;
+        ud->errorList[errorIndex + 0] = dx * behind_camera_error_factor;
+        ud->errorList[errorIndex + 1] = dy * behind_camera_error_factor;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) { error_max = d; }

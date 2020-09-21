@@ -314,7 +314,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
     assert(paramLowerBoundList.size() == numberOfParameters);
     assert(paramUpperBoundList.size() == numberOfParameters);
     assert(paramWeightList.size() == numberOfParameters);
-    assert(numberOfParameters >= attrList.size());
+    assert(numberOfParameters >= m_attrList.size());
 
     BoolList2D markerToAttrList;
     findMarkerToAttributeRelationship(

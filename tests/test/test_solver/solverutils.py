@@ -19,10 +19,7 @@
 Testing Utilities - base class for the test cases.
 """
 
-import os
-import math
 import time
-import unittest
 
 try:
     import maya.standalone

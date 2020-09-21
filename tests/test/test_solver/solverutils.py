@@ -58,7 +58,8 @@ class SolverTestCase(baseUtils.TestBase):
 
         super(SolverTestCase, self).tearDown()
 
-    def haveSolverType(self, name=None, index=None):
+    @staticmethod
+    def haveSolverType(name=None, index=None):
         has_solver = False
         kwargs = {
             'name': False,

@@ -105,8 +105,18 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             (bundle_01_tfm + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
-            (1),
+            1,
         ]
+
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+            'frame': frames,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
         debug_path = self.get_data_path('solver_min_max_values_staticframe_debug.log')
@@ -165,19 +175,26 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             (bundle_01_tfm + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
-            (1),
+            1,
         ]
+
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+            'frame': frames,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
         debug_path = self.get_data_path('solver_min_max_values_staticframe_lower_bound_only_debug.log')
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
-            frame=frames,
             verbose=True,
             debugFile=debug_path,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s
@@ -226,19 +243,26 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             (bundle_01_tfm + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
-            (1),
+            1,
         ]
+
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+            'frame': frames,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
         debug_path = self.get_data_path('solver_min_max_values_staticframe_upper_bound_only_debug.log')
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
-            frame=frames,
             verbose=True,
             debugFile=debug_path,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s

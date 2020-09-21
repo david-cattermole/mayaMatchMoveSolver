@@ -93,16 +93,23 @@ class TestSolver2(solverUtils.SolverTestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+            'frame': frames,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
+
         # Run solver, with more attributes than markers; We expect an error.
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
             iterations=1000,
             solverType=solver_index,
-            frame=frames,
             verbose=True,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s
@@ -115,14 +122,22 @@ class TestSolver2(solverUtils.SolverTestCase):
             (group_tfm + '.sx', 'None', 'None', 'None', 'None'),
             (group_tfm + '.rz', 'None', 'None', 'None', 'None'),
         ]
+
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+            'frame': frames,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
+
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
             iterations=1000,
-            frame=frames,
             verbose=True,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s

@@ -99,17 +99,24 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
         )
         node_attrs = []
         frames = [
-            (1),
+            1,
         ]
+
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+            'frame': frames,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
 
         # Print Statistics
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
             solverType=solver_index,
-            frame=frames,
             printStatistics=('deviation', 'inputs'),
+            **kwargs
         )
         num_params = result[0]
         num_errors = result[1]

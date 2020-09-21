@@ -74,3 +74,14 @@ class SolverTestCase(baseUtils.TestBase):
         if index is not None:
             has_solver = index in solverTypes
         return has_solver
+
+    @staticmethod
+    def runSolverAffects(affects_mode, **kwargs):
+        assert 'mmSolverAffects' in dir(maya.cmds)
+        s = time.time()
+        result = maya.cmds.mmSolverAffects(
+            mode=affects_mode,
+            **kwargs)
+        e = time.time()
+        print 'mmSolverAffects time:', e - s
+        return result

@@ -107,7 +107,6 @@ class TestSolver8(solverUtils.SolverTestCase):
 
         # save the output
         path = self.get_data_path('solver_test8_%s_before.ma' % solver_name)
-        print 'path:', path
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -118,7 +117,7 @@ class TestSolver8(solverUtils.SolverTestCase):
             mode=affects_mode,
             **kwargs)
         e = time.time()
-        print 'mmAffects time:', e - s
+        print 'mmSolverAffects time:', e - s
 
         # Run solver!
         s = time.time()
@@ -134,7 +133,7 @@ class TestSolver8(solverUtils.SolverTestCase):
         path = self.get_data_path('solver_test8_%s_after.ma' % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
-        
+
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
 

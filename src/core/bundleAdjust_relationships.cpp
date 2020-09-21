@@ -392,12 +392,11 @@ void findMarkerToAttributeRelationship(MarkerPtrList markerList,
         cmd += camName;
         cmd += "\"";
         cmd += ");";
-        WRN("Running: " + cmd);
+        // WRN("Running: " + cmd);
         status = MGlobal::executePythonCommand(
             cmd, bundleAffectsResult,
             display, undoable);
         CHECK_MSTATUS(status);
-        WRN("Python bundleAffectsResult num: " << bundleAffectsResult.length());
 
         // Find list of plug names that are affected by the marker
         // (and camera projection matrix).
@@ -410,12 +409,11 @@ void findMarkerToAttributeRelationship(MarkerPtrList markerList,
         cmd += camName;
         cmd += "\"";
         cmd += ");";
-        WRN("Running: " + cmd);
+        // WRN("Running: " + cmd);
         status = MGlobal::executePythonCommand(
             cmd, markerAffectsResult,
             display, undoable);
         CHECK_MSTATUS(status);
-        WRN("Python markerAffectsResult num: " << markerAffectsResult.length());
 
         // Determine if the marker can affect the attribute.
         j = 0;      // index of attribute

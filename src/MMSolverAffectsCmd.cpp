@@ -253,89 +253,12 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
         return status;
     }
 
-    IndexPairList paramToAttrList;
-    IndexPairList errorToMarkerList;
-    std::vector<MPoint> markerPosList;
-    std::vector<double> markerWeightList;
-    std::vector<double> errorList(1);
-    std::vector<double> paramList(1);
-    std::vector<double> initialParamList(1);
-    std::vector<double> jacobianList(1);
-
-    int numberOfErrors = 0;
-    int numberOfMarkerErrors = 0;
-    int numberOfAttrStiffnessErrors = 0;
-    int numberOfAttrSmoothnessErrors = 0;
-    MarkerPtrList validMarkerList;
-    numberOfErrors = countUpNumberOfErrors(
-            m_markerList,
-            m_stiffAttrsList,
-            m_smoothAttrsList,
-            m_frameList,
-            validMarkerList,
-            markerPosList,
-            markerWeightList,
-            errorToMarkerList,
-            numberOfMarkerErrors,
-            numberOfAttrStiffnessErrors,
-            numberOfAttrSmoothnessErrors,
-            status
-    );
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    assert(numberOfErrors == (
-            numberOfMarkerErrors
-            + numberOfAttrStiffnessErrors
-            + numberOfAttrSmoothnessErrors));
-
-    int numberOfParameters = 0;
-    AttrPtrList camStaticAttrList;
-    AttrPtrList camAnimAttrList;
-    AttrPtrList staticAttrList;
-    AttrPtrList animAttrList;
-    std::vector<double> paramLowerBoundList;
-    std::vector<double> paramUpperBoundList;
-    std::vector<double> paramWeightList;
-    BoolList2D paramFrameList;
-    numberOfParameters = countUpNumberOfUnknownParameters(
-            m_attrList,
-            m_frameList,
-            camStaticAttrList,
-            camAnimAttrList,
-            staticAttrList,
-            animAttrList,
-            paramLowerBoundList,
-            paramUpperBoundList,
-            paramWeightList,
-            paramToAttrList,
-            paramFrameList,
-            status
-    );
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    assert(paramLowerBoundList.size() == numberOfParameters);
-    assert(paramUpperBoundList.size() == numberOfParameters);
-    assert(paramWeightList.size() == numberOfParameters);
-    assert(numberOfParameters >= m_attrList.size());
-
     BoolList2D markerToAttrList;
     findMarkerToAttributeRelationship(
             m_markerList,
             m_attrList,
             markerToAttrList,
             status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-
-    BoolList2D errorToParamList;
-    findErrorToParameterRelationship(
-        m_markerList,
-        m_attrList,
-        m_frameList,
-        numberOfParameters,
-        numberOfMarkerErrors,
-        paramToAttrList,
-        errorToMarkerList,
-        markerToAttrList,
-        errorToParamList,
-        status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_mode == MODE_VALUE_ADD_ATTRS_TO_MARKERS) {

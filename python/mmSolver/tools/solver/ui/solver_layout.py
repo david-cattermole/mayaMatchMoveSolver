@@ -47,6 +47,7 @@ LOG = mmSolver.logger.get_logger()
 class SolverLayout(QtWidgets.QWidget):
     def __init__(self, parent=None, *args, **kwargs):
         super(SolverLayout, self).__init__(*args, **kwargs)
+        s = time.time()
         self.ui = ui_solver_layout.Ui_Form()
         self.ui.setupUi(self)
 

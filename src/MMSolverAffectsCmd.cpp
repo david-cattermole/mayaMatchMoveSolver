@@ -24,7 +24,7 @@
  *   mmAffects
  *       -camera "camera1" "camera1Shape"
  *       -marker "myMarker"
- *       -attr "myBundle.translateX"
+ *       -attr "myBundle.translateX" None None None None
  *       -frame 1
  *       -frame 42
  *       -frame 120

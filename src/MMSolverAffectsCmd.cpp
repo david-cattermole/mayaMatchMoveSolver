@@ -316,25 +316,25 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
     assert(paramWeightList.size() == numberOfParameters);
     assert(numberOfParameters >= attrList.size());
 
-    BoolList2D markerToAttrMapping;
+    BoolList2D markerToAttrList;
     findMarkerToAttributeRelationship(
             m_markerList,
             m_attrList,
-            markerToAttrMapping,
+            markerToAttrList,
             status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    BoolList2D errorToParamMapping;
+    BoolList2D errorToParamList;
     findErrorToParameterRelationship(
         m_markerList,
         m_attrList,
         m_frameList,
         numberOfParameters,
-        numberOfErrors,
+        numberOfMarkerErrors,
         paramToAttrList,
         errorToMarkerList,
-        markerToAttrMapping,
-        errorToParamMapping,
+        markerToAttrList,
+        errorToParamList,
         status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -342,7 +342,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
         status = setAttrsOnMarkers(
             m_markerList,
             m_attrList,
-            markerToAttrMapping,
+            markerToAttrList,
             m_addAttr_dgmod,
             m_setAttr_dgmod);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -350,7 +350,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
         status = logResultsMarkerAffectsAttribute(
             m_markerList,
             m_attrList,
-            markerToAttrMapping,
+            markerToAttrList,
             outResult);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMSolverAffectsCmd::setResult(outResult);

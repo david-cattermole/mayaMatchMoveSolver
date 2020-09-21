@@ -56,6 +56,8 @@
 #include <maya/MComputation.h>
 #include <maya/MProfiler.h>
 #include <maya/MStreamUtils.h>
+#include <maya/MUuid.h>
+#include <maya/MFnAttribute.h>
 
 // Local
 #include <core/bundleAdjust_base.h>
@@ -353,7 +355,7 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
  */
 void findMarkerToAttributeRelationship(MarkerPtrList markerList,
                                        AttrPtrList attrList,
-                                       BoolList2D &markerToAttrMapping,
+                                       BoolList2D &markerToAttrList,
                                        MStatus &status) {
     status = MStatus::kSuccess;
     int i, j;
@@ -368,7 +370,7 @@ void findMarkerToAttributeRelationship(MarkerPtrList markerList,
     MStringArray markerAffectsResult;
 
     // Calculate the relationship between attributes and markers.
-    markerToAttrMapping.resize(markerList.size());
+    markerToAttrList.resize(markerList.size());
     i = 0;      // index of marker
     for (MarkerPtrListCIt mit = markerList.cbegin(); mit != markerList.cend(); ++mit) {
         MarkerPtr marker = *mit;
@@ -418,7 +420,7 @@ void findMarkerToAttributeRelationship(MarkerPtrList markerList,
         // Determine if the marker can affect the attribute.
         j = 0;      // index of attribute
         MString affectedPlugName;
-        markerToAttrMapping[i].resize(attrList.size(), false);
+        markerToAttrList[i].resize(attrList.size(), false);
         for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
             AttrPtr attr = *ait;
 
@@ -434,7 +436,7 @@ void findMarkerToAttributeRelationship(MarkerPtrList markerList,
             for (unsigned int k = 0; k < bundleAffectsResult.length(); ++k) {
                 affectedPlugName = bundleAffectsResult[k];
                 if (attrName == affectedPlugName) {
-                    markerToAttrMapping[i][j] = true;
+                    markerToAttrList[i][j] = true;
                     break;
                 }
             }
@@ -443,7 +445,7 @@ void findMarkerToAttributeRelationship(MarkerPtrList markerList,
             for (unsigned int k = 0; k < markerAffectsResult.length(); ++k) {
                 affectedPlugName = markerAffectsResult[k];
                 if (attrName == affectedPlugName) {
-                    markerToAttrMapping[i][j] = true;
+                    markerToAttrList[i][j] = true;
                     break;
                 }
             }
@@ -451,6 +453,85 @@ void findMarkerToAttributeRelationship(MarkerPtrList markerList,
         }
         ++i;
     }
+    return;
+}
+
+/*
+ * Read the relationship of Marker to Attributes from parsing the
+ * given Markers/Attributes directly.
+ *
+ * This function assumes the use of 'mmSolverAffects' with the
+ * 'addAttrsToMarkers' mode flag has already been run.
+ */
+void getMarkerToAttributeRelationship(MarkerPtrList markerList,
+                                      AttrPtrList attrList,
+                                      BoolList2D &markerToAttrList,
+                                      MStatus &status) {
+    status = MStatus::kSuccess;
+    int i, j;
+
+    // The attribute's 'affect' is assumed to be true if the plug
+    // cannot be found. We go by "assumed innocent until proven
+    // guilty", because an incorrect 'true' value will reduce
+    // performance, but an incorrect 'false' value will lead to
+    // incorrect results.
+    const bool defaultValue = true;
+
+    // Calculate the relationship between attributes and markers.
+    markerToAttrList.resize(markerList.size());
+    i = 0;      // index of marker
+    for (MarkerPtrListCIt mit = markerList.cbegin(); mit != markerList.cend(); ++mit) {
+        MarkerPtr marker = *mit;
+        MObject markerObject = marker->getObject();
+        MFnDependencyNode markerNodeFn(markerObject);
+
+        // Determine if the marker can affect the attribute.
+        j = 0;      // index of attribute
+        MString affectedPlugName;
+        markerToAttrList[i].resize(attrList.size(), defaultValue);
+        for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
+            AttrPtr attr = *ait;
+
+            // Get Attribute's Node Name.
+            MObject attrNodeObject = attr->getObject();
+            MFnDependencyNode attrNodeFn(attrNodeObject);
+            MObject attrObject = attr->getAttribute();
+            MUuid attrUuid = attrNodeFn.uuid(&status);
+            CHECK_MSTATUS(status);
+            MString attrUuidStr = attrUuid.asString();
+
+            // Get Attribute's Name.
+            MFnAttribute attrAttrFn(attrObject);
+            MString nodeAttrName = attrAttrFn.name();
+
+            // Calculate the naming format that is expected to be on
+            // the Marker transform node.
+            MString attrName = "";
+            status = constructAttrAffectsName(
+                nodeAttrName,
+                attrUuidStr,
+                attrName);
+            CHECK_MSTATUS(status);
+
+            // Get plug value
+            bool value = defaultValue;
+            MPlug plug = markerNodeFn.findPlug(attrName, true);
+            bool attrExists = plug.isNull() == false;
+            if (attrExists) {
+                // The Maya attribute is expected to be an integer,
+                // however only 0 and 1 values are currently used.  In
+                // the future we may use values other than 0 and 1.
+                // int temp = plug.asInt(&status);
+                // value = static_cast<bool>(temp);
+                value = plug.asBool(&status);
+            }
+            // WRN("markerToAttrList[" << i << "][" << j << "] = " << value);
+            markerToAttrList[i][j] = value;
+            ++j;
+        }
+        ++i;
+    }
+
     return;
 }
 
@@ -469,21 +550,20 @@ void findMarkerToAttributeRelationship(MarkerPtrList markerList,
  * combination, if the boolean is true the relationship is
  * positive, if false, the computation is skipped and the error
  * returned is zero.  This combination is only relevant if the
- * markerToAttrMapping is already true, otherwise we can assume
+ * markerToAttrList is already true, otherwise we can assume
  * such error/parameter combinations will not be required.
  */
 void findErrorToParameterRelationship(MarkerPtrList markerList,
                                       AttrPtrList attrList,
                                       MTimeArray frameList,
                                       int numParameters,
-                                      int numErrors,
+                                      int numMarkerErrors,
                                       IndexPairList paramToAttrList,
                                       IndexPairList errorToMarkerList,
-                                      BoolList2D markerToAttrMapping,
-                                      BoolList2D &errorToParamMapping,
+                                      BoolList2D markerToAttrList,
+                                      BoolList2D &errorToParamList,
                                       MStatus &status){
     status = MStatus::kSuccess;
-    int i, j;
 
     int markerIndex = 0;
     int markerFrameIndex = 0;
@@ -491,11 +571,9 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
     int attrFrameIndex = 0;
     IndexPair markerIndexPair;
     IndexPair attrIndexPair;
-    errorToParamMapping.resize(numErrors);
-
-    i = 0;      // index of error
-    j = 0;      // index of parameter
-    for (i = 0; i < (numErrors / ERRORS_PER_MARKER); ++i) {
+    unsigned int numberOfMarkers = numMarkerErrors / ERRORS_PER_MARKER;
+    errorToParamList.resize(numberOfMarkers);
+    for (unsigned int i = 0; i < numberOfMarkers; ++i) {
         markerIndexPair = errorToMarkerList[i];
         markerIndex = markerIndexPair.first;
         markerFrameIndex = markerIndexPair.second;
@@ -506,8 +584,8 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
         MTime markerFrame = frameList[markerFrameIndex];
 
         // Determine if the marker can affect the attribute.
-        errorToParamMapping[i].resize(numParameters, false);
-        for (j = 0; j < numParameters; ++j) {
+        errorToParamList[i].resize(numParameters, false);
+        for (unsigned int j = 0; j < numParameters; ++j) {
             attrIndexPair = paramToAttrList[j];
             attrIndex = attrIndexPair.first;
             attrFrameIndex = attrIndexPair.second;
@@ -520,7 +598,7 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
                 attrFrame = frameList[attrFrameIndex];
             }
 
-            bool markerAffectsAttr = markerToAttrMapping[markerIndex][attrIndex];
+            bool markerAffectsAttr = markerToAttrList[markerIndex][attrIndex];
             bool paramAffectsError = markerAffectsAttr;
             if (paramAffectsError == true) {
                 // Time based mapping information.
@@ -534,7 +612,7 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
                     paramAffectsError = true;
                 }
             }
-            errorToParamMapping[i][j] = paramAffectsError;
+            errorToParamList[i][j] = paramAffectsError;
         }
     }
     return;

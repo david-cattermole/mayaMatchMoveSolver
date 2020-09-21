@@ -103,6 +103,7 @@ struct SolverData {
     std::vector<MPoint> markerPosList;
     std::vector<double> markerWeightList;
     std::vector<std::vector<bool>> paramFrameList;
+    std::vector<std::vector<bool>> errorToParamList;
 
     // Internal Solver Data.
     std::vector<double> paramList;

@@ -264,6 +264,7 @@ void measureErrors(
         int numberOfAttrStiffnessErrors,
         int numberOfAttrSmoothnessErrors,
         std::vector<bool> frameIndexEnable,
+        std::vector<bool> skipErrorMeasurements,
         double *errors,
         SolverData *ud,
         double &error_avg,
@@ -305,6 +306,13 @@ void measureErrors(
         if (frameIndexEnable[frameIndex] == false) {
             // Skip evaluation of this marker error. The 'errors' data
             // is expected to be unchanged from the last evaluation.
+            continue;
+        }
+        if (skipErrorMeasurements[i] == false) {
+            // Skip calculation of the error if the mask says not to
+            // calculate it. The skipErrorMeasurements is expected to be
+            // pre-computed and 'know' something this function does
+            // not about the greater structure of the solving problem.
             continue;
         }
 
@@ -655,12 +663,14 @@ int solveFunc(int numberOfParameters,
                                           MProfiler::kColorA_L1,
                                           "measure errors");
 #endif
+            std::vector<bool> skipErrorMeasurements(numberOfErrors, true);
             measureErrors(numberOfParameters,
                           numberOfErrors,
                           numberOfMarkerErrors,
                           numberOfAttrStiffnessErrors,
                           numberOfAttrSmoothnessErrors,
                           frameIndexEnable,
+                          skipErrorMeasurements,
                           errors,
                           ud,
                           error_avg, error_max, error_min,
@@ -729,6 +739,16 @@ int solveFunc(int numberOfParameters,
                     value, delta, 1,
                     attr, cam, currentFrame);
 
+            // Work out which errors (Markers) can be affected by
+            // parameter of 'i'th index.
+            int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
+            std::vector<bool> skipErrorMeasurements(numberOfMarkers, true);
+            assert(ud->errorToParamList.size() == numberOfMarkers);
+            for (int j = 0; j < numberOfMarkers; ++j) {
+                assert(ud->errorToParamList[j].size() == numberOfParameters);
+                skipErrorMeasurements[j] = ud->errorToParamList[j][i];
+            }
+
             std::vector<bool> frameIndexEnabled = ud->paramFrameList[i];
 
             incrementJacobianIteration(ud, debugIsOpen, debugFile);
@@ -762,12 +782,17 @@ int solveFunc(int numberOfParameters,
                                               MProfiler::kColorA_L1,
                                               "measure errors");
 #endif
+                // Based on only the changed attribute value only
+                // measure the markers that can modify the attribute -
+                // we do this using 'frameIndexEnabled' and
+                // 'skipErrorMeasurements'.
                 measureErrors(numberOfParameters,
                               numberOfErrors,
                               numberOfMarkerErrors,
                               numberOfAttrStiffnessErrors,
                               numberOfAttrSmoothnessErrors,
                               frameIndexEnabled,
+                              skipErrorMeasurements,
                               &errorListA[0],
                               ud,
                               error_avg_tmp,
@@ -855,6 +880,7 @@ int solveFunc(int numberOfParameters,
                                       numberOfAttrStiffnessErrors,
                                       numberOfAttrSmoothnessErrors,
                                       frameIndexEnabled,
+                                      skipErrorMeasurements,
                                       &errorListB[0],
                                       ud,
                                       error_avg_tmp,

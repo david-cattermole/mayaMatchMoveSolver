@@ -845,25 +845,6 @@ bool solve(SolverOptions &solverOptions,
     assert(paramWeightList.size() == numberOfParameters);
     assert(numberOfParameters >= attrList.size());
 
-    if (printStatsAffects == true) {
-        assert(printStats == true);
-        BoolList2D markerToAttrMapping;
-        findMarkerToAttributeRelationship(
-                markerList,
-                attrList,
-                markerToAttrMapping,
-                status
-        );
-        CHECK_MSTATUS(status);
-
-        status = logResultsMarkerAffectsAttribute(
-            markerList,
-            attrList,
-            markerToAttrMapping,
-            outResult);
-        CHECK_MSTATUS(status);
-    }
-
     if (printStatsInput == true) {
         assert(printStats == true);
         status = logResultsObjectCounts(
@@ -873,6 +854,28 @@ bool solve(SolverOptions &solverOptions,
             numberOfAttrStiffnessErrors,
             numberOfAttrSmoothnessErrors,
             outResult);
+        CHECK_MSTATUS(status);
+    }
+
+    // Query the relationship by pre-computed attributes on the
+    // Markers. If the attributes do not exist, we assume all markers
+    // affect all attributes (and therefore suffer a performance
+    // problem).
+    BoolList2D markerToAttrList;
+    getMarkerToAttributeRelationship(
+        markerList,
+        attrList,
+        markerToAttrList,
+        status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    if (printStatsAffects == true) {
+        assert(printStats == true);
+        status = logResultsMarkerAffectsAttribute(
+                markerList,
+                attrList,
+                markerToAttrList,
+                outResult);
         CHECK_MSTATUS(status);
     }
 
@@ -907,6 +910,22 @@ bool solve(SolverOptions &solverOptions,
     std::vector<double> errorDistanceList;
     errorDistanceList.resize((unsigned long) numberOfMarkerErrors / ERRORS_PER_MARKER, 0);
     assert(errorToMarkerList.size() == errorDistanceList.size());
+
+    // Expand the 'Marker to Attribute' relationship into errors and
+    // parameter relationships.
+    BoolList2D errorToParamList;
+    findErrorToParameterRelationship(
+        markerList,
+        attrList,
+        frameList,
+        numberOfParameters,
+        numberOfMarkerErrors,
+        paramToAttrList,
+        errorToMarkerList,
+        markerToAttrList,
+        errorToParamList,
+        status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
 
     VRB("Solving...");
     VRB("Solver Type=" << solverOptions.solverType);
@@ -967,6 +986,7 @@ bool solve(SolverOptions &solverOptions,
     userData.markerPosList = markerPosList;
     userData.markerWeightList = markerWeightList;
     userData.paramFrameList = paramFrameList;
+    userData.errorToParamList = errorToParamList;
 
     userData.paramList = paramList;
     userData.errorList = errorList;
@@ -1012,6 +1032,7 @@ bool solve(SolverOptions &solverOptions,
         std::ofstream *debugFileStream = NULL;
 
         std::vector<bool> frameIndexEnable(frameList.length(), 1);
+        std::vector<bool> skipErrorMeasurements(numberOfErrors, 1);
         measureErrors(
             numberOfParameters,
             numberOfErrors,
@@ -1019,6 +1040,7 @@ bool solve(SolverOptions &solverOptions,
             numberOfAttrStiffnessErrors,
             numberOfAttrSmoothnessErrors,
             frameIndexEnable,
+            skipErrorMeasurements,
             &errorList[0],
             &userData,
             initialErrorAvg,

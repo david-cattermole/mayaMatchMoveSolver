@@ -87,19 +87,24 @@ int countUpNumberOfUnknownParameters(
 
 void findMarkerToAttributeRelationship(MarkerPtrList markerList,
                                        AttrPtrList attrList,
-                                       BoolList2D &markerToAttrMapping,
+                                       BoolList2D &markerToAttrList,
                                        MStatus &status);
+
+void getMarkerToAttributeRelationship(MarkerPtrList markerList,
+                                      AttrPtrList attrList,
+                                      BoolList2D &markerToAttrList,
+                                      MStatus &status);
 
 void findErrorToParameterRelationship(
         MarkerPtrList markerList,
         AttrPtrList attrList,
         MTimeArray frameList,
         int numParameters,
-        int numErrors,
+        int numMarkerErrors,
         IndexPairList paramToAttrList,
         IndexPairList errorToMarkerList,
-        BoolList2D markerToAttrMapping,
-        BoolList2D &errorToParamMapping,
+        BoolList2D markerToAttrList,
+        BoolList2D &errorToParamList,
         MStatus &status);
 
 #endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_RELATIONSHIPS_H

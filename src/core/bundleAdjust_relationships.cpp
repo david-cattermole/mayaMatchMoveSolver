@@ -519,11 +519,8 @@ void getMarkerToAttributeRelationship(MarkerPtrList markerList,
                 // The Maya attribute is expected to be an integer,
                 // however only 0 and 1 values are currently used.  In
                 // the future we may use values other than 0 and 1.
-                // int temp = plug.asInt(&status);
-                // value = static_cast<bool>(temp);
-                value = plug.asBool(&status);
+                value = plug.asBool();
             }
-            // WRN("markerToAttrList[" << i << "][" << j << "] = " << value);
             markerToAttrList[i][j] = value;
             ++j;
         }

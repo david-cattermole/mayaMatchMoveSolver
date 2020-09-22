@@ -80,8 +80,8 @@ PROJECT_ROOT=`readlink -f ${DIR}/..`
 CPU_NUM=`nproc --all`
 
 # Build mmSolver project
-mkdir -p build
-cd build
+mkdir -p build_linux_maya2019
+cd build_linux_maya2019
 if [ ${FRESH_BUILD} -eq 1 ]; then
     rm --force -R *
 fi

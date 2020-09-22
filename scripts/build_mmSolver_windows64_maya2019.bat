@@ -87,8 +87,8 @@ SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%
 
 :: Build plugin
-MKDIR build
-CHDIR build
+MKDIR build_windows64_maya2019
+CHDIR build_windows64_maya2019
 IF "%FRESH_BUILD%"=="1" (
     DEL /S /Q *
     FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"

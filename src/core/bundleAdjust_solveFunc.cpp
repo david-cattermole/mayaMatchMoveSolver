@@ -265,6 +265,55 @@ double gaussian(double x, double mean, double sigma) {
 }
 
 
+/*
+ * Compare the previous and new parameters to see which parameters
+ * have changed. This allows us to only update and measure the changed
+ * markers and attributes - speeding up the evaluation.
+ */
+void determineMarkersToBeEvaluated(int numberOfParameters,
+                                   int numberOfMarkers,
+                                   double delta,
+                                   std::vector<double> previousParamList,
+                                   const double *parameters,
+                                   std::vector<std::vector<bool>> errorToParamList,
+                                   std::vector<bool> &evalErrorMeasurements) {
+    std::vector<bool> evalCount(numberOfMarkers, 0);
+
+    // Get all parameters that have changed.
+    double approxDelta = fabs(delta) * 0.5;
+    bool noneChanged = true;
+    std::vector<bool> paramChangedList(numberOfParameters, false);
+    for (int i = 0; i < numberOfParameters; ++i) {
+        bool changed = !number::isApproxEqual<double>(
+            parameters[i], previousParamList[i], approxDelta);
+        paramChangedList[i] = changed;
+        if (changed) {
+            noneChanged = false;
+        }
+    }
+
+    // Find if a marker does not need to be updated at all.
+    for (int i = 0; i < numberOfParameters; ++i) {
+        bool changed = paramChangedList[i];
+        if (noneChanged == true) {
+            changed = true;
+        }
+        for (int j = 0; j < numberOfMarkers; ++j) {
+            if (changed && errorToParamList[j][i]) {
+                evalCount[j] = evalCount[j] + 1;
+            }
+        }
+    }
+
+    // Convert evalCount to list of bools
+    evalErrorMeasurements.resize((unsigned long) numberOfMarkers, false);
+    for (size_t i = 0; i < evalCount.size(); ++i) {
+        evalErrorMeasurements[i] = static_cast<bool>(evalCount[i]);
+    }
+    return;
+}
+
+
 void measureErrors(
         int numberOfParameters,
         int numberOfErrors,
@@ -591,39 +640,17 @@ int solveFunc(int numberOfParameters,
     int numberOfAttrStiffnessErrors = ud->numberOfAttrStiffnessErrors;
     int numberOfAttrSmoothnessErrors = ud->numberOfAttrSmoothnessErrors;
     int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
-
-    // Compare the previous and new parameters to see which parameters
-    // have changed. This allows us to only update and measure the
-    // changed markers and attributes - speeding up the evaluation.
-    std::vector<bool> evalCount(numberOfMarkers, 0);
     assert(ud->errorToParamList.size() == numberOfMarkers);
-    double approxDelta = fabs(ud->solverOptions->delta) * 0.5;
-    bool noneChanged = true;
-    std::vector<bool> paramChangedList(numberOfParameters, false);
-    for (int i = 0; i < numberOfParameters; ++i) {
-        bool changed = !number::isApproxEqual<double>(
-            parameters[i], ud->previousParamList[i], approxDelta);
-        paramChangedList[i] = changed;
-        if (changed) {
-            noneChanged = false;
-        }
-    }
 
-    for (int i = 0; i < numberOfParameters; ++i) {
-        bool changed = paramChangedList[i];
-        if (noneChanged == true) {
-            changed = true;
-        }
-        for (int j = 0; j < numberOfMarkers; ++j) {
-            if (changed && ud->errorToParamList[j][i]) {
-                evalCount[j] = evalCount[j] + 1;
-            }
-        }
-    }
     std::vector<bool> evalErrorMeasurements(numberOfMarkers, false);
-    for (size_t i = 0; i < evalCount.size(); ++i) {
-        evalErrorMeasurements[i] = static_cast<bool>(evalCount[i]);
-    }
+    determineMarkersToBeEvaluated(
+            numberOfParameters,
+            numberOfMarkers,
+            ud->solverOptions->delta,
+            ud->previousParamList,
+            parameters,
+            ud->errorToParamList,
+            evalErrorMeasurements);
 
     std::ofstream *debugFile = NULL;
     bool debugIsOpen = false;

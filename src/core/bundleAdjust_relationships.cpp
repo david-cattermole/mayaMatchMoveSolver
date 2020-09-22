@@ -472,7 +472,7 @@ void getMarkerToAttributeRelationship(MarkerPtrList markerList,
     // cannot be found. We go by "assumed innocent until proven
     // guilty", because an incorrect 'true' value will reduce
     // performance, but an incorrect 'false' value will lead to
-    // incorrect results.
+    // incorrect solver results.
     const bool defaultValue = true;
 
     // Calculate the relationship between attributes and markers.

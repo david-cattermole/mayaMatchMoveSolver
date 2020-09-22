@@ -110,6 +110,7 @@ struct SolverData {
     std::vector<double> errorList;
     std::vector<double> errorDistanceList;
     std::vector<double> jacobianList;
+    std::vector<double> previousParamList;
     int funcEvalNum;
     int iterNum;
     int jacIterNum;

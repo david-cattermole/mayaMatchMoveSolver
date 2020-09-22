@@ -281,7 +281,7 @@ double parameterBoundFromExternalToInternal(double value,
 }
 
 
-bool set_initial_parameters(int numberOfParameters,
+bool get_initial_parameters(int numberOfParameters,
                             std::vector<double> &paramList,
                             std::vector<std::pair<int, int> > &paramToAttrList,
                             AttrPtrList &attrList,
@@ -788,7 +788,7 @@ bool solve(SolverOptions &solverOptions,
     std::vector<double> markerWeightList;
     std::vector<double> errorList(1);
     std::vector<double> paramList(1);
-    std::vector<double> initialParamList(1);
+    std::vector<double> previousParamList(1);
     std::vector<double> jacobianList(1);
 
     int numberOfErrors = 0;
@@ -903,7 +903,7 @@ bool solve(SolverOptions &solverOptions,
     }
 
     paramList.resize((unsigned long) numberOfParameters, 0);
-    initialParamList.resize((unsigned long) numberOfParameters, 0);
+    previousParamList.resize((unsigned long) numberOfParameters, 0);
     errorList.resize((unsigned long) numberOfErrors, 0);
     jacobianList.resize((unsigned long) numberOfParameters * numberOfErrors, 0);
 
@@ -989,6 +989,7 @@ bool solve(SolverOptions &solverOptions,
     userData.errorToParamList = errorToParamList;
 
     userData.paramList = paramList;
+    userData.previousParamList = previousParamList;
     userData.errorList = errorList;
     userData.errorDistanceList = errorDistanceList;
     userData.jacobianList = jacobianList;
@@ -1102,8 +1103,8 @@ bool solve(SolverOptions &solverOptions,
     }
 
     // Set Initial parameters
-    VRB("Set Initial parameters...");
-    set_initial_parameters(numberOfParameters,
+    VRB("Get Initial parameters...");
+    get_initial_parameters(numberOfParameters,
                            paramList,
                            paramToAttrList,
                            attrList,
@@ -1112,8 +1113,8 @@ bool solve(SolverOptions &solverOptions,
 
     VRB("Initial Parameters: ");
     for (int i = 0; i < numberOfParameters; ++i) {
-        // Copy parameter values into the initial parameter list.
-        initialParamList[i] = paramList[i];
+        // Copy parameter values into the 'previous' parameter list.
+        previousParamList[i] = paramList[i];
         VRB("-> " << paramList[i]);
     }
 
@@ -1242,7 +1243,7 @@ bool solve(SolverOptions &solverOptions,
             numberOfParameters,
             paramToAttrList,
             attrList,
-            initialParamList,
+            previousParamList,
             frameList,
             dgmod,
             curveChange);

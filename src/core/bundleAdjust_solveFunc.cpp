@@ -45,6 +45,7 @@
 #include <stdio.h>
 
 // Standard Utils
+#include <utilities/numberUtils.h>
 #include <utilities/debugUtils.h>
 #include <utilities/stringUtils.h>
 
@@ -235,6 +236,13 @@ void setParameters(
     // Commit changed data into Maya
     ud->dgmod->doIt();
 
+    // Save a copy of the parameters - to be used for determining the
+    // the difference between the previous and next parameters to be
+    // set inside Maya.
+    for (int j = 0; j < numberOfParameters; ++j) {
+        ud->previousParamList[j] = parameters[j];
+    }
+
     // Invalidate the Camera Matrix cache.
     //
     // In future we might be able to auto-detect if the camera
@@ -264,7 +272,7 @@ void measureErrors(
         int numberOfAttrStiffnessErrors,
         int numberOfAttrSmoothnessErrors,
         std::vector<bool> frameIndexEnable,
-        std::vector<bool> skipErrorMeasurements,
+        std::vector<bool> evalErrorMeasurements,
         double *errors,
         SolverData *ud,
         double &error_avg,
@@ -308,10 +316,10 @@ void measureErrors(
             // is expected to be unchanged from the last evaluation.
             continue;
         }
-        if (skipErrorMeasurements[i] == false) {
-            // Skip calculation of the error if the mask says not to
-            // calculate it. The skipErrorMeasurements is expected to be
-            // pre-computed and 'know' something this function does
+        if (evalErrorMeasurements[i] == false) {
+            // Skip calculation of the error if evalErrorMeasurements says
+            // not to calculate it. The evalErrorMeasurements is expected
+            // to be pre-computed and 'know' something this function does
             // not about the greater structure of the solving problem.
             continue;
         }
@@ -582,6 +590,40 @@ int solveFunc(int numberOfParameters,
     int numberOfMarkerErrors = ud->numberOfMarkerErrors;
     int numberOfAttrStiffnessErrors = ud->numberOfAttrStiffnessErrors;
     int numberOfAttrSmoothnessErrors = ud->numberOfAttrSmoothnessErrors;
+    int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
+
+    // Compare the previous and new parameters to see which parameters
+    // have changed. This allows us to only update and measure the
+    // changed markers and attributes - speeding up the evaluation.
+    std::vector<bool> evalCount(numberOfMarkers, 0);
+    assert(ud->errorToParamList.size() == numberOfMarkers);
+    double approxDelta = fabs(ud->solverOptions->delta) * 0.5;
+    bool noneChanged = true;
+    std::vector<bool> paramChangedList(numberOfParameters, false);
+    for (int i = 0; i < numberOfParameters; ++i) {
+        bool changed = !number::isApproxEqual<double>(
+            parameters[i], ud->previousParamList[i], approxDelta);
+        paramChangedList[i] = changed;
+        if (changed) {
+            noneChanged = false;
+        }
+    }
+
+    for (int i = 0; i < numberOfParameters; ++i) {
+        bool changed = paramChangedList[i];
+        if (noneChanged == true) {
+            changed = true;
+        }
+        for (int j = 0; j < numberOfMarkers; ++j) {
+            if (changed && ud->errorToParamList[j][i]) {
+                evalCount[j] = evalCount[j] + 1;
+            }
+        }
+    }
+    std::vector<bool> evalErrorMeasurements(numberOfMarkers, false);
+    for (size_t i = 0; i < evalCount.size(); ++i) {
+        evalErrorMeasurements[i] = static_cast<bool>(evalCount[i]);
+    }
 
     std::ofstream *debugFile = NULL;
     bool debugIsOpen = false;
@@ -664,14 +706,13 @@ int solveFunc(int numberOfParameters,
                                           MProfiler::kColorA_L1,
                                           "measure errors");
 #endif
-            std::vector<bool> skipErrorMeasurements(numberOfErrors, true);
             measureErrors(numberOfParameters,
                           numberOfErrors,
                           numberOfMarkerErrors,
                           numberOfAttrStiffnessErrors,
                           numberOfAttrSmoothnessErrors,
                           frameIndexEnable,
-                          skipErrorMeasurements,
+                          evalErrorMeasurements,
                           errors,
                           ud,
                           error_avg, error_max, error_min,
@@ -740,16 +781,6 @@ int solveFunc(int numberOfParameters,
                     value, delta, 1,
                     attr, cam, currentFrame);
 
-            // Work out which errors (Markers) can be affected by
-            // parameter of 'i'th index.
-            int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
-            std::vector<bool> skipErrorMeasurements(numberOfMarkers, true);
-            assert(ud->errorToParamList.size() == numberOfMarkers);
-            for (int j = 0; j < numberOfMarkers; ++j) {
-                assert(ud->errorToParamList[j].size() == numberOfParameters);
-                skipErrorMeasurements[j] = ud->errorToParamList[j][i];
-            }
-
             std::vector<bool> frameIndexEnabled = ud->paramFrameList[i];
 
             incrementJacobianIteration(ud, debugIsOpen, debugFile);
@@ -786,14 +817,14 @@ int solveFunc(int numberOfParameters,
                 // Based on only the changed attribute value only
                 // measure the markers that can modify the attribute -
                 // we do this using 'frameIndexEnabled' and
-                // 'skipErrorMeasurements'.
+                // 'evalErrorMeasurements'.
                 measureErrors(numberOfParameters,
                               numberOfErrors,
                               numberOfMarkerErrors,
                               numberOfAttrStiffnessErrors,
                               numberOfAttrSmoothnessErrors,
                               frameIndexEnabled,
-                              skipErrorMeasurements,
+                              evalErrorMeasurements,
                               &errorListA[0],
                               ud,
                               error_avg_tmp,
@@ -881,7 +912,7 @@ int solveFunc(int numberOfParameters,
                                       numberOfAttrStiffnessErrors,
                                       numberOfAttrSmoothnessErrors,
                                       frameIndexEnabled,
-                                      skipErrorMeasurements,
+                                      evalErrorMeasurements,
                                       &errorListB[0],
                                       ud,
                                       error_avg_tmp,

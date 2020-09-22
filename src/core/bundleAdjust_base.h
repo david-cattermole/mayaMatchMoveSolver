@@ -106,7 +106,8 @@ void applyLossFunctionToErrors(int numberOfErrors,
                                int loss_type,
                                double loss_scale);
 
-bool set_initial_parameters(int numberOfParameters,
+
+bool get_initial_parameters(int numberOfParameters,
                             std::vector<double> &paramList,
                             std::vector<std::pair<int, int> > &paramToAttrList,
                             AttrPtrList &attrList,

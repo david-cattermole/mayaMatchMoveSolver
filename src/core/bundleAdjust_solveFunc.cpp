@@ -360,12 +360,14 @@ void measureErrors(
         IndexPair markerPair = ud->errorToMarkerList[i];
         int markerIndex = markerPair.first;
         int frameIndex = markerPair.second;
-        if (frameIndexEnable[frameIndex] == false) {
+        bool skipFrame = frameIndexEnable[frameIndex] == false;
+        bool skipMarker = evalErrorMeasurements[i] == false;
+        if (skipFrame) {
             // Skip evaluation of this marker error. The 'errors' data
             // is expected to be unchanged from the last evaluation.
             continue;
         }
-        if (evalErrorMeasurements[i] == false) {
+        if (skipMarker) {
             // Skip calculation of the error if evalErrorMeasurements says
             // not to calculate it. The evalErrorMeasurements is expected
             // to be pre-computed and 'know' something this function does

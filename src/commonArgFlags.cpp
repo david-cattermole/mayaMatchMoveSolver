@@ -75,7 +75,6 @@ void createSolveObjectSyntax(MSyntax &syntax) {
     syntax.makeFlagMultiUse(CAMERA_FLAG);
     syntax.makeFlagMultiUse(MARKER_FLAG);
     syntax.makeFlagMultiUse(ATTR_FLAG);
-    syntax.makeFlagMultiUse(PRINT_STATS_FLAG);
     syntax.makeFlagMultiUse(STIFFNESS_FLAG);
     syntax.makeFlagMultiUse(SMOOTHNESS_FLAG);
     return;

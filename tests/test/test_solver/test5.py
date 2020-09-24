@@ -87,7 +87,6 @@ class TestSolver5(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': [1],
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -97,8 +96,9 @@ class TestSolver5(solverUtils.SolverTestCase):
         results = []
         s = time.time()
         for f in range(start, end+1):
-            kwargs['frame'] = f
+            frames = f
             result = maya.cmds.mmSolver(
+                frame=frames,
                 iterations=10,
                 solverType=solver_index,
                 verbose=True,

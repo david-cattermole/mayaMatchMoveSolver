@@ -113,7 +113,6 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': frames,
         }
 
         # save the output
@@ -128,6 +127,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
+            frame=frames,
             iterations=10,
             solverType=solver_index,
             verbose=True,
@@ -171,7 +171,6 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': frames,
         }
 
         # save the output
@@ -186,6 +185,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
+            frame=frames,
             iterations=10,
             solverType=solver_index,
             verbose=True,
@@ -229,7 +229,6 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': frames,
         }
 
         # save the output
@@ -244,6 +243,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
+            frame=frames,
             iterations=10,
             solverType=solver_index,
             verbose=True,

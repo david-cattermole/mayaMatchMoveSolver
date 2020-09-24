@@ -112,7 +112,6 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -122,12 +121,10 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         debug_path = self.get_data_path('solver_min_max_values_staticframe_debug.log')
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
             frame=frames,
             verbose=True,
             debugFile=debug_path,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s
@@ -182,7 +179,6 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -192,6 +188,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         debug_path = self.get_data_path('solver_min_max_values_staticframe_lower_bound_only_debug.log')
         s = time.time()
         result = maya.cmds.mmSolver(
+            frame=frames,
             verbose=True,
             debugFile=debug_path,
             **kwargs
@@ -250,7 +247,6 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -260,6 +256,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         debug_path = self.get_data_path('solver_min_max_values_staticframe_upper_bound_only_debug.log')
         s = time.time()
         result = maya.cmds.mmSolver(
+            frame=frames,
             verbose=True,
             debugFile=debug_path,
             **kwargs

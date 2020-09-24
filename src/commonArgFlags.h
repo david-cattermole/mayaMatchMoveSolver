@@ -71,7 +71,7 @@
 
 
 /*
- * Add flags to the command syntax
+ * Add flags for solver objects to the command syntax
  */
 void createSolveObjectSyntax(MSyntax &syntax);
 
@@ -84,6 +84,18 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
                                   MarkerPtrList      &out_markerList,
                                   BundlePtrList      &out_bundleList,
                                   AttrPtrList        &out_attrList,
-                                  MTimeArray         &out_frameList,
                                   StiffAttrsPtrList  &out_stiffAttrsList,
                                   SmoothAttrsPtrList &out_smoothAttrsList);
+
+
+/*
+ * Add flags for solver frames to the command syntax
+ */
+void createSolveFramesSyntax(MSyntax &syntax);
+
+
+/*
+ * Parse arguments into solver frames.
+ */
+MStatus parseSolveFramesArguments(const MArgDatabase &argData,
+                                  MTimeArray         &out_frameList);

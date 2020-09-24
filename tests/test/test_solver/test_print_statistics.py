@@ -81,7 +81,6 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -89,6 +88,7 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
 
         # Print Statistics
         result = maya.cmds.mmSolver(
+            frame=frames,
             solverType=solver_index,
             verbose=True,
             printStatistics=('inputs', 'affects', 'deviation'),

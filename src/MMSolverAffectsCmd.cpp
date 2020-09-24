@@ -17,7 +17,7 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Command for running mmAffects.
+ * Command for running mmSolverAffects.
  *
  * Example usage (MEL):
  *
@@ -25,12 +25,12 @@
  *       -camera "camera1" "camera1Shape"
  *       -marker "myMarker"
  *       -attr "myBundle.translateX" None None None None
- *       -frame 1
- *       -frame 42
- *       -frame 120
  *       -attrStiffness "myBundle.translateX"
  *       -attrSmoothness "myBundle.translateX"
  *       -mode "addAttrsToMarkers";
+ *
+ * Note: The '-frame' argument is not required for this command. This
+ * command only works with time-independant data.
  *
  */
 
@@ -124,7 +124,6 @@ MStatus MMSolverAffectsCmd::parseArgs(const MArgList &args) {
         m_markerList,
         m_bundleList,
         m_attrList,
-        m_frameList,
         m_stiffAttrsList,
         m_smoothAttrsList);
     CHECK_MSTATUS_AND_RETURN_IT(status);

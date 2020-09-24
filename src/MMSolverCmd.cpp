@@ -120,6 +120,7 @@ MSyntax MMSolverCmd::newSyntax() {
     syntax.enableEdit(false);
 
     createSolveObjectSyntax(syntax);
+    createSolveFramesSyntax(syntax);
     createSolveInfoSyntax(syntax);
     createSolveLogSyntax(syntax);
 
@@ -337,9 +338,13 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_markerList,
         m_bundleList,
         m_attrList,
-        m_frameList,
         m_stiffAttrsList,
         m_smoothAttrsList);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    parseSolveFramesArguments(
+        argData,
+        m_frameList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveInfoArguments(

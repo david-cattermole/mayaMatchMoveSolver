@@ -75,7 +75,6 @@ void createSolveObjectSyntax(MSyntax &syntax) {
     syntax.makeFlagMultiUse(CAMERA_FLAG);
     syntax.makeFlagMultiUse(MARKER_FLAG);
     syntax.makeFlagMultiUse(ATTR_FLAG);
-    syntax.makeFlagMultiUse(FRAME_FLAG);
     syntax.makeFlagMultiUse(PRINT_STATS_FLAG);
     syntax.makeFlagMultiUse(STIFFNESS_FLAG);
     syntax.makeFlagMultiUse(SMOOTHNESS_FLAG);
@@ -88,7 +87,6 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
                                   MarkerPtrList      &out_markerList,
                                   BundlePtrList      &out_bundleList,
                                   AttrPtrList        &out_attrList,
-                                  MTimeArray         &out_frameList,
                                   StiffAttrsPtrList  &out_stiffAttrsList,
                                   SmoothAttrsPtrList &out_smoothAttrsList) {
     MStatus status = MStatus::kSuccess;
@@ -388,6 +386,24 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             out_smoothAttrsList.push_back(smoothAttrs);
         }
     }
+
+    return status;
+}
+
+// #######################
+
+
+void createSolveFramesSyntax(MSyntax &syntax) {
+    syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG,
+                   MSyntax::kLong);
+    syntax.makeFlagMultiUse(FRAME_FLAG);
+    return;
+}
+
+
+MStatus parseSolveFramesArguments(const MArgDatabase &argData,
+                                  MTimeArray         &out_frameList) {
+    MStatus status = MStatus::kSuccess;
 
     // Get 'Frames'
     out_frameList.clear();

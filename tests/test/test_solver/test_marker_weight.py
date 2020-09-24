@@ -145,7 +145,6 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -154,6 +153,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
+            frame=frames,
             verbose=True,
             **kwargs
         )
@@ -205,7 +205,6 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -214,6 +213,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
+            frame=frames,
             verbose=True,
             **kwargs
         )
@@ -271,7 +271,6 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -280,6 +279,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
+            frame=frames,
             verbose=True,
             **kwargs
         )
@@ -331,7 +331,6 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -340,6 +339,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
+            frame=frames,
             verbose=True,
             **kwargs
         )
@@ -393,7 +393,6 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
-            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -402,6 +401,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
+            frame=frames,
             verbose=True,
             **kwargs
         )

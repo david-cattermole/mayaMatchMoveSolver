@@ -137,8 +137,7 @@ class TestTriangulation(solverUtils.SolverTestCase):
             affects_mode,
             camera=cameras,
             marker=markers,
-            attr=node_attrs,
-            frame=frames)
+            attr=node_attrs)
 
         # Run solver!
         s = time.time()

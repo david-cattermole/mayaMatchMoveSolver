@@ -92,7 +92,6 @@ private:
     MarkerPtrList      m_markerList;
     BundlePtrList      m_bundleList;
     AttrPtrList        m_attrList;
-    MTimeArray         m_frameList;
     StiffAttrsPtrList  m_stiffAttrsList;
     SmoothAttrsPtrList m_smoothAttrsList;
 

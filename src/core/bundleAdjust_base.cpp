@@ -680,16 +680,15 @@ MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
     std::vector<bool>::const_iterator cit_inner;
     BoolList2D::const_iterator cit_outer;
     int markerIndex = 0;
-    int attrIndex = 0;
     for (cit_outer = markerToAttrMapping.cbegin();
          cit_outer != markerToAttrMapping.cend();
          ++cit_outer){
 
+        int attrIndex = 0;
         std::vector<bool> inner = *cit_outer;
         for (cit_inner = inner.cbegin();
              cit_inner != inner.cend();
              ++cit_inner){
-
             MarkerPtr marker = markerList[markerIndex];
             AttrPtr attr = attrList[attrIndex];
 

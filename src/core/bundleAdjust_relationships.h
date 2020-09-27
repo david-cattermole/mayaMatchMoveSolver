@@ -84,26 +84,28 @@ int countUpNumberOfUnknownParameters(
     std::vector<std::vector<bool>> &paramFrameList,
     MStatus &status);
 
-void findMarkerToAttributeRelationship(const MarkerPtrList markerList,
-                                       const AttrPtrList attrList,
-                                       BoolList2D &markerToAttrList,
-                                       MStatus &status);
+void findMarkerToAttributeRelationship(
+    const MarkerPtrList markerList,
+    const AttrPtrList attrList,
+    BoolList2D &markerToAttrList,
+    MStatus &status);
 
-void getMarkerToAttributeRelationship(const MarkerPtrList markerList,
-                                      const AttrPtrList attrList,
-                                      BoolList2D &markerToAttrList,
-                                      MStatus &status);
+void getMarkerToAttributeRelationship(
+    const MarkerPtrList markerList,
+    const AttrPtrList attrList,
+    BoolList2D &markerToAttrList,
+    MStatus &status);
 
 void findErrorToParameterRelationship(
-        const MarkerPtrList markerList,
-        const AttrPtrList attrList,
-        const MTimeArray frameList,
-        const int numParameters,
-        const int numMarkerErrors,
-        const IndexPairList paramToAttrList,
-        const IndexPairList errorToMarkerList,
-        const BoolList2D markerToAttrList,
-        BoolList2D &errorToParamList,
-        MStatus &status);
+    const MarkerPtrList markerList,
+    const AttrPtrList attrList,
+    const MTimeArray frameList,
+    const int numParameters,
+    const int numMarkerErrors,
+    const IndexPairList paramToAttrList,
+    const IndexPairList errorToMarkerList,
+    const BoolList2D markerToAttrList,
+    BoolList2D &errorToParamList,
+    MStatus &status);
 
 #endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_RELATIONSHIPS_H

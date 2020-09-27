@@ -67,6 +67,8 @@ SET BUILD_PACKAGE=0
 :: Do not edit below, unless you know what you're doing.
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+:: What type of build? "Release" or "Debug"?
+SET BUILD_TYPE=Release
 
 :: Build options, to allow faster compilation times. (not to be used by
 :: users wanting to build this project.)
@@ -113,7 +115,7 @@ REM To Generate a Visual Studio 'Solution' file
 ) ELSE (
 
     cmake -G "NMake Makefiles" ^
-        -DCMAKE_BUILD_TYPE=Release ^
+        -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
         -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
         -DBUILD_PLUGIN=%BUILD_PLUGIN% ^
         -DBUILD_PYTHON=%BUILD_PYTHON% ^

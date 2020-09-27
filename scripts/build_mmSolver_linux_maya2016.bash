@@ -55,6 +55,8 @@ BUILD_PACKAGE=0
 # Do not edit below, unless you know what you're doing.
 ###############################################################################
 
+# What type of build? "Release" or "Debug"?
+BUILD_TYPE=Release
 
 # Build options, to allow faster compilation times. (not to be used by
 # users wanting to build this project.)
@@ -85,7 +87,7 @@ cd build_linux_maya2016
 if [ ${FRESH_BUILD} -eq 1 ]; then
     rm --force -R *
 fi
-cmake -DCMAKE_BUILD_TYPE=Release \
+cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_INSTALL_PREFIX=${INSTALL_MODULE_DIR} \
       -DBUILD_PLUGIN=${BUILD_PLUGIN} \
       -DBUILD_PYTHON=${BUILD_PYTHON} \

@@ -153,7 +153,7 @@ MStatus logResultsObjectCounts(int numberOfParameters,
 
 MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
                                          AttrPtrList attrList,
-                                         BoolList2D markerToAttrMapping,
+                                         BoolList2D markerToAttrList,
                                          MStringArray &outResult);
 
 

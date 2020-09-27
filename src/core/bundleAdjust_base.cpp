@@ -672,7 +672,7 @@ MStatus logResultsObjectCounts(int numberOfParameters,
 
 MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
                                          AttrPtrList attrList,
-                                         BoolList2D markerToAttrMapping,
+                                         BoolList2D markerToAttrList,
                                          MStringArray &outResult) {
     MStatus status = MStatus::kSuccess;
     std::string resultStr;
@@ -680,8 +680,8 @@ MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
     std::vector<bool>::const_iterator cit_inner;
     BoolList2D::const_iterator cit_outer;
     int markerIndex = 0;
-    for (cit_outer = markerToAttrMapping.cbegin();
-         cit_outer != markerToAttrMapping.cend();
+    for (cit_outer = markerToAttrList.cbegin();
+         cit_outer != markerToAttrList.cend();
          ++cit_outer){
 
         int attrIndex = 0;

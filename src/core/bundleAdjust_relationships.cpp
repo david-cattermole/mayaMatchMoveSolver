@@ -70,11 +70,10 @@
 #include <mayaUtils.h>
 
 
-
-int countUpNumberOfErrors(MarkerPtrList markerList,
-                          StiffAttrsPtrList stiffAttrsList,
-                          SmoothAttrsPtrList smoothAttrsList,
-                          MTimeArray frameList,
+int countUpNumberOfErrors(const MarkerPtrList markerList,
+                          const StiffAttrsPtrList stiffAttrsList,
+                          const SmoothAttrsPtrList smoothAttrsList,
+                          const MTimeArray frameList,
                           MarkerPtrList &validMarkerList,
                           std::vector<MPoint> &markerPosList,
                           std::vector<double> &markerWeightList,
@@ -99,8 +98,8 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
 
     // Get all the marker data
     numberOfMarkerErrors = 0;
-    for (MarkerPtrListIt mit = markerList.begin();
-         mit != markerList.end();
+    for (MarkerPtrListCIt mit = markerList.cbegin();
+         mit != markerList.cend();
          ++mit) {
         MarkerPtr marker = *mit;
         for (j = 0; j < (int) frameList.length(); ++j) {
@@ -166,8 +165,8 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
     // Normalise the weights per-frame, using the weight 'max'
     // computed above.
     i = 0;
-    typedef IndexPairList::const_iterator IndexPairListCit;
-    for (IndexPairListCit eit = errorToMarkerList.begin();
+    typedef IndexPairList::const_iterator IndexPairListCIt;
+    for (IndexPairListCIt eit = errorToMarkerList.begin();
          eit != errorToMarkerList.end();
          ++eit) {
         double weight = markerWeightList[i];
@@ -185,8 +184,8 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
 
     // Compute number of errors from Attributes.
     double stiffValue = 0.0;
-    for (StiffAttrsPtrListIt ait = stiffAttrsList.begin();
-         ait != stiffAttrsList.end();
+    for (StiffAttrsPtrListCIt ait = stiffAttrsList.cbegin();
+         ait != stiffAttrsList.cend();
          ++ait) {
         StiffAttrsPtr stiffAttrs = *ait;
 
@@ -202,8 +201,8 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
     }
 
     double smoothValue = 0.0;
-    for (SmoothAttrsPtrListIt ait = smoothAttrsList.begin();
-         ait != smoothAttrsList.end();
+    for (SmoothAttrsPtrListCIt ait = smoothAttrsList.cbegin();
+         ait != smoothAttrsList.cend();
          ++ait) {
         SmoothAttrsPtr smoothAttrs = *ait;
 
@@ -225,8 +224,8 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
 }
 
 
-int countUpNumberOfUnknownParameters(AttrPtrList attrList,
-                                     MTimeArray frameList,
+int countUpNumberOfUnknownParameters(const AttrPtrList attrList,
+                                     const MTimeArray frameList,
                                      AttrPtrList &camStaticAttrList,
                                      AttrPtrList &camAnimAttrList,
                                      AttrPtrList &staticAttrList,
@@ -242,8 +241,8 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
     int j = 0;      // index of frame
     int numUnknowns = 0;
 
-    for (AttrPtrListIt ait = attrList.begin();
-         ait != attrList.end();
+    for (AttrPtrListCIt ait = attrList.cbegin();
+         ait != attrList.cend();
          ++ait) {
         AttrPtr attr = *ait;
         MObject nodeObj = attr->getObject();
@@ -363,8 +362,8 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
  *   markers
  *
  */
-void findMarkerToAttributeRelationship(MarkerPtrList markerList,
-                                       AttrPtrList attrList,
+void findMarkerToAttributeRelationship(const MarkerPtrList markerList,
+                                       const AttrPtrList attrList,
                                        BoolList2D &markerToAttrList,
                                        MStatus &status) {
     status = MStatus::kSuccess;
@@ -475,8 +474,8 @@ void findMarkerToAttributeRelationship(MarkerPtrList markerList,
  * This function assumes the use of 'mmSolverAffects' with the
  * 'addAttrsToMarkers' mode flag has already been run.
  */
-void getMarkerToAttributeRelationship(MarkerPtrList markerList,
-                                      AttrPtrList attrList,
+void getMarkerToAttributeRelationship(const MarkerPtrList markerList,
+                                      const AttrPtrList attrList,
                                       BoolList2D &markerToAttrList,
                                       MStatus &status) {
     status = MStatus::kSuccess;
@@ -564,14 +563,14 @@ void getMarkerToAttributeRelationship(MarkerPtrList markerList,
  * markerToAttrList is already true, otherwise we can assume
  * such error/parameter combinations will not be required.
  */
-void findErrorToParameterRelationship(MarkerPtrList markerList,
-                                      AttrPtrList attrList,
-                                      MTimeArray frameList,
-                                      int numParameters,
-                                      int numMarkerErrors,
-                                      IndexPairList paramToAttrList,
-                                      IndexPairList errorToMarkerList,
-                                      BoolList2D markerToAttrList,
+void findErrorToParameterRelationship(const MarkerPtrList markerList,
+                                      const AttrPtrList attrList,
+                                      const MTimeArray frameList,
+                                      const int numParameters,
+                                      const int numMarkerErrors,
+                                      const IndexPairList paramToAttrList,
+                                      const IndexPairList errorToMarkerList,
+                                      const BoolList2D markerToAttrList,
                                       BoolList2D &errorToParamList,
                                       MStatus &status){
     status = MStatus::kSuccess;

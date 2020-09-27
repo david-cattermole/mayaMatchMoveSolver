@@ -57,10 +57,10 @@ typedef std::pair<int, int> IndexPair;
 typedef std::vector<std::pair<int, int> > IndexPairList;
 
 int countUpNumberOfErrors(
-    MarkerPtrList markerList,
-    StiffAttrsPtrList stiffAttrsList,
-    SmoothAttrsPtrList smoothAttrsList,
-    MTimeArray frameList,
+    const MarkerPtrList markerList,
+    const StiffAttrsPtrList stiffAttrsList,
+    const SmoothAttrsPtrList smoothAttrsList,
+    const MTimeArray frameList,
     MarkerPtrList &validMarkerList,
     std::vector<MPoint> &markerPosList,
     std::vector<double> &markerWeightList,
@@ -71,8 +71,8 @@ int countUpNumberOfErrors(
     MStatus &status);
 
 int countUpNumberOfUnknownParameters(
-    AttrPtrList attrList,
-    MTimeArray frameList,
+    const AttrPtrList attrList,
+    const MTimeArray frameList,
     AttrPtrList &camStaticAttrList,
     AttrPtrList &camAnimAttrList,
     AttrPtrList &staticAttrList,
@@ -84,25 +84,25 @@ int countUpNumberOfUnknownParameters(
     std::vector<std::vector<bool>> &paramFrameList,
     MStatus &status);
 
-void findMarkerToAttributeRelationship(MarkerPtrList markerList,
-                                       AttrPtrList attrList,
+void findMarkerToAttributeRelationship(const MarkerPtrList markerList,
+                                       const AttrPtrList attrList,
                                        BoolList2D &markerToAttrList,
                                        MStatus &status);
 
-void getMarkerToAttributeRelationship(MarkerPtrList markerList,
-                                      AttrPtrList attrList,
+void getMarkerToAttributeRelationship(const MarkerPtrList markerList,
+                                      const AttrPtrList attrList,
                                       BoolList2D &markerToAttrList,
                                       MStatus &status);
 
 void findErrorToParameterRelationship(
-        MarkerPtrList markerList,
-        AttrPtrList attrList,
-        MTimeArray frameList,
-        int numParameters,
-        int numMarkerErrors,
-        IndexPairList paramToAttrList,
-        IndexPairList errorToMarkerList,
-        BoolList2D markerToAttrList,
+        const MarkerPtrList markerList,
+        const AttrPtrList attrList,
+        const MTimeArray frameList,
+        const int numParameters,
+        const int numMarkerErrors,
+        const IndexPairList paramToAttrList,
+        const IndexPairList errorToMarkerList,
+        const BoolList2D markerToAttrList,
         BoolList2D &errorToParamList,
         MStatus &status);
 

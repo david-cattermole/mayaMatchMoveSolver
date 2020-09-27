@@ -276,7 +276,7 @@ void determineMarkersToBeEvaluated(int numberOfParameters,
                                    std::vector<double> previousParamList,
                                    const double *parameters,
                                    std::vector<std::vector<bool>> errorToParamList,
-                                   std::vector<bool> &evalErrorMeasurements) {
+                                   std::vector<bool> &evalMeasurements) {
     std::vector<int> evalCount(numberOfMarkers, 0);
 
     // Get all parameters that have changed.
@@ -306,9 +306,9 @@ void determineMarkersToBeEvaluated(int numberOfParameters,
     }
 
     // Convert evalCount to list of bools
-    evalErrorMeasurements.resize((unsigned long) numberOfMarkers, false);
+    evalMeasurements.resize((unsigned long) numberOfMarkers, false);
     for (size_t i = 0; i < evalCount.size(); ++i) {
-        evalErrorMeasurements[i] = static_cast<bool>(evalCount[i] > 0);
+        evalMeasurements[i] = static_cast<bool>(evalCount[i] > 0);
     }
     return;
 }
@@ -321,7 +321,7 @@ void measureErrors(
         int numberOfAttrStiffnessErrors,
         int numberOfAttrSmoothnessErrors,
         std::vector<bool> frameIndexEnable,
-        std::vector<bool> evalErrorMeasurements,
+        std::vector<bool> errorMeasurements,
         double *errors,
         SolverData *ud,
         double &error_avg,
@@ -361,15 +361,15 @@ void measureErrors(
         int markerIndex = markerPair.first;
         int frameIndex = markerPair.second;
         bool skipFrame = frameIndexEnable[frameIndex] == false;
-        bool skipMarker = evalErrorMeasurements[i] == false;
+        bool skipMarker = errorMeasurements[i] == false;
         if (skipFrame) {
             // Skip evaluation of this marker error. The 'errors' data
             // is expected to be unchanged from the last evaluation.
             continue;
         }
         if (skipMarker) {
-            // Skip calculation of the error if evalErrorMeasurements says
-            // not to calculate it. The evalErrorMeasurements is expected
+            // Skip calculation of the error if errorMeasurements says
+            // not to calculate it. The errorMeasurements is expected
             // to be pre-computed and 'know' something this function does
             // not about the greater structure of the solving problem.
             continue;
@@ -695,7 +695,7 @@ int solveFunc(int numberOfParameters,
     double error_min = 0;
     if (ud->doCalcJacobian == false) {
         // A normal evaluation of the errors and parameters.
-        std::vector<bool> evalErrorMeasurements(numberOfMarkers, true);
+        std::vector<bool> evalMeasurements(numberOfMarkers, true);
         std::vector<bool> frameIndexEnable(ud->frameList.length(), 1);
 
         // Set Parameters
@@ -733,7 +733,7 @@ int solveFunc(int numberOfParameters,
                           numberOfAttrStiffnessErrors,
                           numberOfAttrSmoothnessErrors,
                           frameIndexEnable,
-                          evalErrorMeasurements,
+                          evalMeasurements,
                           errors,
                           ud,
                           error_avg, error_max, error_min,
@@ -758,7 +758,7 @@ int solveFunc(int numberOfParameters,
         int progressMax = ud->computation->progressMax();
         ud->computation->setProgress(progressMin);
 
-        std::vector<bool> evalErrorMeasurements(numberOfMarkers, false);
+        std::vector<bool> evalMeasurements(numberOfMarkers, false);
         determineMarkersToBeEvaluated(
                 numberOfParameters,
                 numberOfMarkers,
@@ -766,7 +766,7 @@ int solveFunc(int numberOfParameters,
                 ud->previousParamList,
                 parameters,
                 ud->errorToParamList,
-                evalErrorMeasurements);
+                evalMeasurements);
 
         // Calculate the jacobian matrix.
         MTime currentFrame = MAnimControl::currentTime();
@@ -848,14 +848,14 @@ int solveFunc(int numberOfParameters,
                 // Based on only the changed attribute value only
                 // measure the markers that can modify the attribute -
                 // we do this using 'frameIndexEnabled' and
-                // 'evalErrorMeasurements'.
+                // 'evalMeasurements'.
                 measureErrors(numberOfParameters,
                               numberOfErrors,
                               numberOfMarkerErrors,
                               numberOfAttrStiffnessErrors,
                               numberOfAttrSmoothnessErrors,
                               frameIndexEnabled,
-                              evalErrorMeasurements,
+                              evalMeasurements,
                               &errorListA[0],
                               ud,
                               error_avg_tmp,
@@ -943,7 +943,7 @@ int solveFunc(int numberOfParameters,
                                       numberOfAttrStiffnessErrors,
                                       numberOfAttrSmoothnessErrors,
                                       frameIndexEnabled,
-                                      evalErrorMeasurements,
+                                      evalMeasurements,
                                       &errorListB[0],
                                       ud,
                                       error_avg_tmp,

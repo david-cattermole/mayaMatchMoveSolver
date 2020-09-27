@@ -40,7 +40,7 @@ void measureErrors(
         int numberOfAttrStiffnessErrors,
         int numberOfAttrSmoothnessErrors,
         std::vector<bool> frameIndexEnable,
-        std::vector<bool> evalErrorMeasurements,
+        std::vector<bool> errorMeasurements,
         double *errors,
         SolverData *ud,
         double &error_avg,

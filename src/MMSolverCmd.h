@@ -165,7 +165,6 @@
 #define ROBUST_LOSS_SCALE_FLAG_LONG "-robustLossScale"
 
 // Should the solver print out verbose information while solving?
-// TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
 #define ACCEPT_ONLY_BETTER_FLAG           "-aob"
 #define ACCEPT_ONLY_BETTER_FLAG_LONG      "-acceptOnlyBetter"
 #define ACCEPT_ONLY_BETTER_DEFAULT_VALUE  true

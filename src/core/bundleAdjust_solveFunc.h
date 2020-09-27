@@ -34,13 +34,13 @@
 
 
 void measureErrors(
-        int numberOfParameters,
-        int numberOfErrors,
-        int numberOfMarkerErrors,
-        int numberOfAttrStiffnessErrors,
-        int numberOfAttrSmoothnessErrors,
-        std::vector<bool> frameIndexEnable,
-        std::vector<bool> errorMeasurements,
+        const int numberOfParameters,
+        const int numberOfErrors,
+        const int numberOfMarkerErrors,
+        const int numberOfAttrStiffnessErrors,
+        const int numberOfAttrSmoothnessErrors,
+        const std::vector<bool> frameIndexEnable,
+        const std::vector<bool> errorMeasurements,
         double *errors,
         SolverData *ud,
         double &error_avg,
@@ -50,8 +50,8 @@ void measureErrors(
         MStatus &status);
 
 
-int solveFunc(int numberOfParameters,
-              int numberOfErrors,
+int solveFunc(const int numberOfParameters,
+              const int numberOfErrors,
               const double *parameters,
               double *errors,
               double *jacobian,

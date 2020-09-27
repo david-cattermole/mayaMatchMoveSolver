@@ -32,6 +32,7 @@
 #include <limits>
 #include <algorithm>
 #include <cstdlib>
+#include <map>
 
 // Utils
 #include <utilities/debugUtils.h>

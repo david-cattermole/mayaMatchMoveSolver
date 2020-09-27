@@ -32,6 +32,7 @@
 #include <limits>
 #include <algorithm>
 #include <cstdlib>
+#include <map>
 
 // Utils
 #include <utilities/debugUtils.h>
@@ -56,6 +57,8 @@
 #include <maya/MComputation.h>
 #include <maya/MProfiler.h>
 #include <maya/MStreamUtils.h>
+#include <maya/MFnAttribute.h>
+#include <maya/MDagPath.h>
 
 // Local
 #include <core/bundleAdjust_base.h>
@@ -670,6 +673,12 @@ MStatus logResultsObjectCounts(int numberOfParameters,
 }
 
 
+/*
+ * Print out the marker-to-attribute 'affects' relationship.
+ *
+ * markerToAttrList is expected to be pre-computed from the function
+ * 'getMarkerToAttributeRelationship'.
+ */
 MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
                                          AttrPtrList attrList,
                                          BoolList2D markerToAttrList,
@@ -723,6 +732,181 @@ MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
 }
 
 
+/*
+ * Print out if objects added to the solve (such as markers and
+ * attributes) are being used, or are unused.
+ */
+MStatus logResultsSolveObjectUsage(MarkerPtrList usedMarkerList,
+                                   MarkerPtrList unusedMarkerList,
+                                   AttrPtrList usedAttrList,
+                                   AttrPtrList unusedAttrList,
+                                   MStringArray &outResult) {
+    MStatus status = MStatus::kSuccess;
+    std::string resultStr;
+
+    // Append a string with all the *used* marker names.
+    resultStr = "markers_used=";
+    for (MarkerPtrListCIt mit = usedMarkerList.cbegin();
+         mit != usedMarkerList.cend();
+         ++mit){
+        MarkerPtr marker = *mit;
+        const char *markerName = marker->getLongNodeName().asChar();
+        resultStr += markerName;
+        resultStr += CMD_RESULT_SPLIT_CHAR;
+    }
+    outResult.append(MString(resultStr.c_str()));
+
+    // Append a string with all the *unused* marker names.
+    resultStr = "markers_unused=";
+    for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
+         mit != unusedMarkerList.cend();
+         ++mit){
+        MarkerPtr marker = *mit;
+        const char *markerName = marker->getLongNodeName().asChar();
+        resultStr += markerName;
+        resultStr += CMD_RESULT_SPLIT_CHAR;
+    }
+    outResult.append(MString(resultStr.c_str()));
+
+    // Append a string with all the *used* attribute names.
+    resultStr = "attributes_used=";
+    for (AttrPtrListCIt ait = usedAttrList.cbegin();
+         ait != usedAttrList.cend();
+         ++ait){
+        AttrPtr attr = *ait;
+        const char *attrName = attr->getLongName().asChar();
+        resultStr += attrName;
+        resultStr += CMD_RESULT_SPLIT_CHAR;
+    }
+    outResult.append(MString(resultStr.c_str()));
+
+    // Append a string with all the *unused* attribute names.
+    resultStr = "attributes_unused=";
+    for (AttrPtrListCIt ait = unusedAttrList.cbegin();
+         ait != unusedAttrList.cend();
+         ++ait){
+        AttrPtr attr = *ait;
+        // const char *attrName = attr->getName().asChar();
+        const char *attrName = attr->getLongName().asChar();
+        resultStr += attrName;
+        resultStr += CMD_RESULT_SPLIT_CHAR;
+    }
+    outResult.append(MString(resultStr.c_str()));
+
+    return status;
+}
+
+typedef std::map<int, int> IndexCountMap;
+typedef IndexCountMap::iterator IndexCountMapIt;
+
+/*
+ * Loop over original list contents and add the objects into the
+ * respective output list, based on how much it was used (using
+ * indexCountMap).
+ */
+template <class _V, class _T>
+void _splitIntoUsedAndUnusedLists(_T inputList,
+                                  IndexCountMap indexCountMap,
+                                  _T &usedList,
+                                  _T &unusedList) {
+    for (int i = 0; i < inputList.size(); ++i) {
+        bool used = false;
+        _V object = inputList[i];
+        IndexCountMapIt it = indexCountMap.find(i);
+        if (it != indexCountMap.end()) {
+            int count = it->second;
+            if (count > 0) {
+                used = true;
+            }
+        }
+        if (used == true) {
+            usedList.push_back(object);
+        } else {
+            unusedList.push_back(object);
+        }
+    }
+    return;
+}
+
+
+/*
+ * Increment the value of key in the indexCountMap, by 1.
+ *
+ */
+IndexCountMap _incrementMapIndex(int key, IndexCountMap indexCountMap) {
+    IndexCountMapIt it = indexCountMap.find(key);
+    int temp;
+    if (it != indexCountMap.end()) {
+        // Update the value.
+        temp = it->second + 1;
+        indexCountMap.erase(it);
+    } else {
+        // This is the first value to be inserted.
+        temp = 1;
+    }
+    indexCountMap.insert(std::pair<int, int>(key, temp));
+    return indexCountMap;
+}
+
+
+/*
+ * Split the given Markers and Attributes into both used and unused
+ * objects.
+ */
+MStatus splitUsedMarkersAndAttributes(MarkerPtrList markerList,
+                                      AttrPtrList attrList,
+                                      BoolList2D markerToAttrList,
+                                      MarkerPtrList &out_usedMarkerList,
+                                      MarkerPtrList &out_unusedMarkerList,
+                                      AttrPtrList &out_usedAttrList,
+                                      AttrPtrList &out_unusedAttrList) {
+    MStatus status = MStatus::kSuccess;
+
+    IndexCountMap markerIndexUsedCount;
+    IndexCountMap attrIndexUsedCount;
+
+    std::vector<bool>::const_iterator cit_inner;
+    BoolList2D::const_iterator cit_outer;
+    int markerIndex = 0;
+    for (cit_outer = markerToAttrList.cbegin();
+         cit_outer != markerToAttrList.cend();
+         ++cit_outer){
+
+        int attrIndex = 0;
+        std::vector<bool> inner = *cit_outer;
+        for (cit_inner = inner.cbegin();
+             cit_inner != inner.cend();
+             ++cit_inner){
+            MarkerPtr marker = markerList[markerIndex];
+            AttrPtr attr = attrList[attrIndex];
+
+            int value = *cit_inner;
+            if (value == 1){
+                markerIndexUsedCount = _incrementMapIndex(
+                        markerIndex, markerIndexUsedCount);
+                attrIndexUsedCount = _incrementMapIndex(
+                        attrIndex, attrIndexUsedCount);
+            }
+
+            ++attrIndex;
+        }
+        ++markerIndex;
+    }
+
+    _splitIntoUsedAndUnusedLists<MarkerPtr, MarkerPtrList>(
+        markerList,
+        markerIndexUsedCount,
+        out_usedMarkerList,
+        out_unusedMarkerList);
+    _splitIntoUsedAndUnusedLists<AttrPtr, AttrPtrList>(
+        attrList,
+        attrIndexUsedCount,
+        out_usedAttrList,
+        out_unusedAttrList);
+    return status;
+}
+
+
 /*! Solve everything!
  *
  * This function is responsible for taking the given cameras, markers,
@@ -754,6 +938,7 @@ bool solve(SolverOptions &solverOptions,
     bool printStats = false;
     bool printStatsInput = false;
     bool printStatsAffects = false;
+    bool printStatsUsedSolveObjects = false;
     bool printStatsDeviation = false;
     if (printStatsList.length() > 0) {
         for (unsigned int i = 0; i < printStatsList.length(); ++i) {
@@ -762,6 +947,9 @@ bool solve(SolverOptions &solverOptions,
                 printStats = true;
             } else if (printStatsList[i] == PRINT_STATS_MODE_AFFECTS) {
                 printStatsAffects = true;
+                printStats = true;
+            } else if (printStatsList[i] == PRINT_STATS_MODE_USED_SOLVE_OBJECTS) {
+                printStatsUsedSolveObjects = true;
                 printStats = true;
             } else if (printStatsList[i] == PRINT_STATS_MODE_DEVIATION) {
                 printStatsDeviation = true;
@@ -875,6 +1063,37 @@ bool solve(SolverOptions &solverOptions,
                 attrList,
                 markerToAttrList,
                 outResult);
+        CHECK_MSTATUS(status);
+    }
+
+    // Split the used and unused markers and attributes.
+    MarkerPtrList usedMarkerList;
+    MarkerPtrList unusedMarkerList;
+    AttrPtrList usedAttrList;
+    AttrPtrList unusedAttrList;
+    splitUsedMarkersAndAttributes(
+        markerList,
+        attrList,
+        markerToAttrList,
+        usedMarkerList,
+        unusedMarkerList,
+        usedAttrList,
+        unusedAttrList);
+    VRB("Number of Markers; used="
+        << usedMarkerList.size() << " | unused="
+        << unusedMarkerList.size());
+    VRB("Number of Attributes; used="
+        << usedAttrList.size() << " | unused="
+        << unusedAttrList.size());
+
+    if (printStatsUsedSolveObjects == true) {
+        assert(printStats == true);
+        status = logResultsSolveObjectUsage(
+            usedMarkerList,
+            unusedMarkerList,
+            usedAttrList,
+            unusedAttrList,
+            outResult);
         CHECK_MSTATUS(status);
     }
 

@@ -214,6 +214,12 @@ public:
 
     void setSolverAttrType(const unsigned int value);
 
+    MString getLongNodeName();
+
+    MString getLongAttributeName();
+
+    MString getLongName();
+
 private:
     MString m_nodeName;
     MString m_attrName;

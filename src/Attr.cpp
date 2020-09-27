@@ -659,5 +659,38 @@ void Attr::setSolverAttrType(const unsigned int value) {
     m_solverAttrType = value;
 }
 
+MString Attr::getLongNodeName() {
+    MString result;
+    MStatus status;
+
+    MObject nodeObj = Attr::getObject();
+    MDagPath nodeDagPath;
+    status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
+    CHECK_MSTATUS(status);
+
+    MString nodeName = nodeDagPath.fullPathName(&status);
+    CHECK_MSTATUS(status);
+
+    return nodeName;
+}
+
+MString Attr::getLongAttributeName() {
+    MStatus status;
+    MObject attrObj = Attr::getAttribute();
+    MFnAttribute attrMFn(attrObj, &status);
+    CHECK_MSTATUS(status);
+    return attrMFn.name();
+}
+
+MString Attr::getLongName() {
+    MString result;
+    MString nodeName = Attr::getLongNodeName();
+    MString attrName = Attr::getLongAttributeName();
+    result = nodeName;
+    result += ".";
+    result += attrName;
+    return result;
+}
+
 
 #undef USE_DG_CONTEXT_IN_GUI

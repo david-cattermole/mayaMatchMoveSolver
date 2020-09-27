@@ -81,6 +81,8 @@ public:
 
     MStatus getWeight(double &value, const MTime &time);
 
+    MString getLongNodeName();
+
 private:
     MString m_nodeName;
     MObject m_object;

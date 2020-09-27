@@ -99,7 +99,9 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
 
     // Get all the marker data
     numberOfMarkerErrors = 0;
-    for (MarkerPtrListIt mit = markerList.begin(); mit != markerList.end(); ++mit) {
+    for (MarkerPtrListIt mit = markerList.begin();
+         mit != markerList.end();
+         ++mit) {
         MarkerPtr marker = *mit;
         for (j = 0; j < (int) frameList.length(); ++j) {
             MTime frame = frameList[j];
@@ -166,7 +168,8 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
     i = 0;
     typedef IndexPairList::const_iterator IndexPairListCit;
     for (IndexPairListCit eit = errorToMarkerList.begin();
-         eit != errorToMarkerList.end(); ++eit) {
+         eit != errorToMarkerList.end();
+         ++eit) {
         double weight = markerWeightList[i];
 
         int frameIndex = eit->second;
@@ -182,7 +185,9 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
 
     // Compute number of errors from Attributes.
     double stiffValue = 0.0;
-    for (StiffAttrsPtrListIt ait = stiffAttrsList.begin(); ait != stiffAttrsList.end(); ++ait) {
+    for (StiffAttrsPtrListIt ait = stiffAttrsList.begin();
+         ait != stiffAttrsList.end();
+         ++ait) {
         StiffAttrsPtr stiffAttrs = *ait;
 
         // Determine if the attribute will use stiffness values. Don't
@@ -197,7 +202,9 @@ int countUpNumberOfErrors(MarkerPtrList markerList,
     }
 
     double smoothValue = 0.0;
-    for (SmoothAttrsPtrListIt ait = smoothAttrsList.begin(); ait != smoothAttrsList.end(); ++ait) {
+    for (SmoothAttrsPtrListIt ait = smoothAttrsList.begin();
+         ait != smoothAttrsList.end();
+         ++ait) {
         SmoothAttrsPtr smoothAttrs = *ait;
 
         // Determine if the attribute will use smoothness values. Don't
@@ -235,7 +242,9 @@ int countUpNumberOfUnknownParameters(AttrPtrList attrList,
     int j = 0;      // index of frame
     int numUnknowns = 0;
 
-    for (AttrPtrListIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
+    for (AttrPtrListIt ait = attrList.begin();
+         ait != attrList.end();
+         ++ait) {
         AttrPtr attr = *ait;
         MObject nodeObj = attr->getObject();
 
@@ -373,7 +382,9 @@ void findMarkerToAttributeRelationship(MarkerPtrList markerList,
     // Calculate the relationship between attributes and markers.
     markerToAttrList.resize(markerList.size());
     i = 0;      // index of marker
-    for (MarkerPtrListCIt mit = markerList.cbegin(); mit != markerList.cend(); ++mit) {
+    for (MarkerPtrListCIt mit = markerList.cbegin();
+         mit != markerList.cend();
+         ++mit) {
         MarkerPtr marker = *mit;
         CameraPtr cam = marker->getCamera();
         BundlePtr bundle = marker->getBundle();
@@ -420,7 +431,9 @@ void findMarkerToAttributeRelationship(MarkerPtrList markerList,
         j = 0;      // index of attribute
         MString affectedPlugName;
         markerToAttrList[i].resize(attrList.size(), false);
-        for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
+        for (AttrPtrListCIt ait = attrList.begin();
+             ait != attrList.end();
+             ++ait) {
             AttrPtr attr = *ait;
 
             // Get attribute full path.
@@ -479,7 +492,9 @@ void getMarkerToAttributeRelationship(MarkerPtrList markerList,
     // Calculate the relationship between attributes and markers.
     markerToAttrList.resize(markerList.size());
     i = 0;      // index of marker
-    for (MarkerPtrListCIt mit = markerList.cbegin(); mit != markerList.cend(); ++mit) {
+    for (MarkerPtrListCIt mit = markerList.cbegin();
+         mit != markerList.cend();
+         ++mit) {
         MarkerPtr marker = *mit;
         MObject markerObject = marker->getObject();
         MFnDependencyNode markerNodeFn(markerObject);

@@ -169,7 +169,7 @@ bool solve(SolverOptions &solverOptions,
            MComputation &computation,
            MString &debugFileName,
            MStringArray &printStatsList,
-           bool verbose,
+           bool with_verbosity,
            MStringArray &outResult);
 
 #endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H

@@ -615,10 +615,8 @@ void findErrorToParameterRelationship(MarkerPtrList markerList,
                 // Time based mapping information.
                 // Only markers on the current frame can affect the current attribute.
                 if (attrFrameIndex >= 0) {
-                    paramAffectsError = false;
-                    if (number::isApproxEqual<double>(markerFrame.value(), attrFrame.value())) {
-                        paramAffectsError = true;
-                    }
+                    paramAffectsError = number::isApproxEqual<double>(
+                        markerFrame.value(), attrFrame.value());
                 } else {
                     paramAffectsError = true;
                 }

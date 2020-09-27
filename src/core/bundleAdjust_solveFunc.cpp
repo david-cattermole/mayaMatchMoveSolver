@@ -277,7 +277,7 @@ void determineMarkersToBeEvaluated(int numberOfParameters,
                                    const double *parameters,
                                    std::vector<std::vector<bool>> errorToParamList,
                                    std::vector<bool> &evalErrorMeasurements) {
-    std::vector<bool> evalCount(numberOfMarkers, 0);
+    std::vector<int> evalCount(numberOfMarkers, 0);
 
     // Get all parameters that have changed.
     double approxDelta = fabs(delta) * 0.5;
@@ -308,7 +308,7 @@ void determineMarkersToBeEvaluated(int numberOfParameters,
     // Convert evalCount to list of bools
     evalErrorMeasurements.resize((unsigned long) numberOfMarkers, false);
     for (size_t i = 0; i < evalCount.size(); ++i) {
-        evalErrorMeasurements[i] = static_cast<bool>(evalCount[i]);
+        evalErrorMeasurements[i] = static_cast<bool>(evalCount[i] > 0);
     }
     return;
 }

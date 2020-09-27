@@ -644,16 +644,6 @@ int solveFunc(int numberOfParameters,
     int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
     assert(ud->errorToParamList.size() == numberOfMarkers);
 
-    std::vector<bool> evalErrorMeasurements(numberOfMarkers, false);
-    determineMarkersToBeEvaluated(
-            numberOfParameters,
-            numberOfMarkers,
-            ud->solverOptions->delta,
-            ud->previousParamList,
-            parameters,
-            ud->errorToParamList,
-            evalErrorMeasurements);
-
     std::ofstream *debugFile = NULL;
     bool debugIsOpen = false;
 #ifdef WITH_DEBUG_FILE
@@ -704,6 +694,8 @@ int solveFunc(int numberOfParameters,
     double error_max = 0;
     double error_min = 0;
     if (ud->doCalcJacobian == false) {
+        // A normal evaluation of the errors and parameters.
+        std::vector<bool> evalErrorMeasurements(numberOfMarkers, true);
         std::vector<bool> frameIndexEnable(ud->frameList.length(), 1);
 
         // Set Parameters
@@ -765,6 +757,16 @@ int solveFunc(int numberOfParameters,
         int progressMin = ud->computation->progressMin();
         int progressMax = ud->computation->progressMax();
         ud->computation->setProgress(progressMin);
+
+        std::vector<bool> evalErrorMeasurements(numberOfMarkers, false);
+        determineMarkersToBeEvaluated(
+                numberOfParameters,
+                numberOfMarkers,
+                ud->solverOptions->delta,
+                ud->previousParamList,
+                parameters,
+                ud->errorToParamList,
+                evalErrorMeasurements);
 
         // Calculate the jacobian matrix.
         MTime currentFrame = MAnimControl::currentTime();

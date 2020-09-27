@@ -20,8 +20,8 @@
  * Header for mmAffects Maya command.
  */
 
-#ifndef MAYA_MM_AFFECTS_CMD_H
-#define MAYA_MM_AFFECTS_CMD_H
+#ifndef MAYA_MM_SOLVER_AFFECTS_CMD_H
+#define MAYA_MM_SOLVER_AFFECTS_CMD_H
 
 
 // STL
@@ -100,4 +100,4 @@ private:
     MDGModifier m_setAttr_dgmod;
 };
 
-#endif // MAYA_MM_AFFECTS_CMD_H
+#endif // MAYA_MM_SOLVER_AFFECTS_CMD_H

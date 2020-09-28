@@ -389,8 +389,6 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
     return status;
 }
 
-// #######################
-
 
 void createSolveFramesSyntax(MSyntax &syntax) {
     syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG,

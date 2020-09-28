@@ -126,8 +126,8 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
         num_params = result[0]
         num_errors = result[1]
         print('result:', result)
-        self.assertEqual(num_params, 'numberOfParameters=4')
-        self.assertEqual(num_errors, 'numberOfErrors=4')
+        self.assertEqual(num_params, 'numberOfParameters=2')
+        self.assertEqual(num_errors, 'numberOfErrors=2')
 
         # Ensure all unused markers/bundles are found.
         affects_results = [x for x in result

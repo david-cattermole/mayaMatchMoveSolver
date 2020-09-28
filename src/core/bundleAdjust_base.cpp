@@ -60,6 +60,12 @@
 #include <maya/MFnAttribute.h>
 #include <maya/MDagPath.h>
 
+// Solver Utilities
+#include <mayaUtils.h>
+#include <Camera.h>
+#include <Attr.h>
+#include <Marker.h>
+
 // Local
 #include <core/bundleAdjust_base.h>
 #include <core/bundleAdjust_relationships.h>
@@ -68,7 +74,7 @@
 #include <core/bundleAdjust_cminpack_lmdif.h>
 #include <core/bundleAdjust_cminpack_lmder.h>
 #include <core/bundleAdjust_solveFunc.h>
-#include <mayaUtils.h>
+
 
 
 // Get a list of all available solver types (index and name).
@@ -809,6 +815,10 @@ void _splitIntoUsedAndUnusedLists(_T inputList,
                                   IndexCountMap indexCountMap,
                                   _T &usedList,
                                   _T &unusedList) {
+    // Reset data structures
+    usedList.clear();
+    unusedList.clear();
+
     for (int i = 0; i < inputList.size(); ++i) {
         bool used = false;
         _V object = inputList[i];
@@ -969,6 +979,77 @@ bool solve(SolverOptions &solverOptions,
                                    "solve");
 #endif
 
+    // Query the relationship by pre-computed attributes on the
+    // Markers. If the attributes do not exist, we assume all markers
+    // affect all attributes (and therefore suffer a performance
+    // problem).
+    BoolList2D markerToAttrList;
+    getMarkerToAttributeRelationship(
+            markerList,
+            attrList,
+            markerToAttrList,
+            status);
+    CHECK_MSTATUS(status);
+
+    // Split the used and unused markers and attributes.
+    MarkerPtrList usedMarkerList;
+    MarkerPtrList unusedMarkerList;
+    AttrPtrList usedAttrList;
+    AttrPtrList unusedAttrList;
+    splitUsedMarkersAndAttributes(
+            markerList,
+            attrList,
+            markerToAttrList,
+            usedMarkerList,
+            unusedMarkerList,
+            usedAttrList,
+            unusedAttrList);
+
+    // Print warnings about unused solve objects.
+    if (unusedMarkerList.size() > 0) {
+        WRN("Unused Markers detected and ignored:");
+        for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
+             mit != unusedMarkerList.cend();
+             ++mit) {
+            MarkerPtr marker = *mit;
+            const char *markerName = marker->getLongNodeName().asChar();
+            WRN("-> " << markerName);
+        }
+    }
+    if (unusedAttrList.size() > 0) {
+        WRN("Unused Attributes detected and ignored:");
+        for (AttrPtrListCIt ait = unusedAttrList.cbegin();
+             ait != unusedAttrList.cend();
+             ++ait) {
+            AttrPtr attr = *ait;
+            const char *attrName = attr->getLongName().asChar();
+            WRN("-> " << attrName);
+        }
+    }
+
+    // Change the list of Markers and Attributes to filter out unused
+    // objects.
+    bool usedObjectsChanged = false;
+    if (solverOptions.removeUnusedMarkers == false) {
+        usedMarkerList = markerList;
+    } else {
+        usedObjectsChanged = true;
+    }
+    if (solverOptions.removeUnusedAttributes == false) {
+        usedAttrList = attrList;
+    }
+    else {
+        usedObjectsChanged = true;
+    }
+    if (usedObjectsChanged == true) {
+        getMarkerToAttributeRelationship(
+                usedMarkerList,
+                usedAttrList,
+                markerToAttrList,
+                status);
+        CHECK_MSTATUS(status);
+    }
+
     IndexPairList paramToAttrList;
     IndexPairList errorToMarkerList;
     std::vector<MPoint> markerPosList;
@@ -984,10 +1065,12 @@ bool solve(SolverOptions &solverOptions,
     int numberOfAttrSmoothnessErrors = 0;
     MarkerPtrList validMarkerList;
     numberOfErrors = countUpNumberOfErrors(
-            markerList,
+            usedMarkerList,
             stiffAttrsList,
             smoothAttrsList,
             frameList,
+
+            // Outputs
             validMarkerList,
             markerPosList,
             markerWeightList,
@@ -995,8 +1078,7 @@ bool solve(SolverOptions &solverOptions,
             numberOfMarkerErrors,
             numberOfAttrStiffnessErrors,
             numberOfAttrSmoothnessErrors,
-            status
-    );
+            status);
     CHECK_MSTATUS(status);
     assert(numberOfErrors == (
             numberOfMarkerErrors
@@ -1013,8 +1095,10 @@ bool solve(SolverOptions &solverOptions,
     std::vector<double> paramWeightList;
     BoolList2D paramFrameList;
     numberOfParameters = countUpNumberOfUnknownParameters(
-            attrList,
+            usedAttrList,
             frameList,
+
+            // Outputs
             camStaticAttrList,
             camAnimAttrList,
             staticAttrList,
@@ -1024,13 +1108,30 @@ bool solve(SolverOptions &solverOptions,
             paramWeightList,
             paramToAttrList,
             paramFrameList,
-            status
-    );
+            status);
     CHECK_MSTATUS(status);
     assert(paramLowerBoundList.size() == numberOfParameters);
     assert(paramUpperBoundList.size() == numberOfParameters);
     assert(paramWeightList.size() == numberOfParameters);
-    assert(numberOfParameters >= attrList.size());
+    assert(numberOfParameters >= usedAttrList.size());
+
+    // Expand the 'Marker to Attribute' relationship into errors and
+    // parameter relationships.
+    BoolList2D errorToParamList;
+    findErrorToParameterRelationship(
+            usedMarkerList,
+            usedAttrList,
+            frameList,
+            numberOfParameters,
+            numberOfMarkerErrors,
+            paramToAttrList,
+            errorToMarkerList,
+            markerToAttrList,
+
+            // Outputs
+            errorToParamList,
+            status);
+    CHECK_MSTATUS(status);
 
     if (printStatsInput == true) {
         assert(printStats == true);
@@ -1044,48 +1145,6 @@ bool solve(SolverOptions &solverOptions,
         CHECK_MSTATUS(status);
     }
 
-    // Query the relationship by pre-computed attributes on the
-    // Markers. If the attributes do not exist, we assume all markers
-    // affect all attributes (and therefore suffer a performance
-    // problem).
-    BoolList2D markerToAttrList;
-    getMarkerToAttributeRelationship(
-        markerList,
-        attrList,
-        markerToAttrList,
-        status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-
-    if (printStatsAffects == true) {
-        assert(printStats == true);
-        status = logResultsMarkerAffectsAttribute(
-                markerList,
-                attrList,
-                markerToAttrList,
-                outResult);
-        CHECK_MSTATUS(status);
-    }
-
-    // Split the used and unused markers and attributes.
-    MarkerPtrList usedMarkerList;
-    MarkerPtrList unusedMarkerList;
-    AttrPtrList usedAttrList;
-    AttrPtrList unusedAttrList;
-    splitUsedMarkersAndAttributes(
-        markerList,
-        attrList,
-        markerToAttrList,
-        usedMarkerList,
-        unusedMarkerList,
-        usedAttrList,
-        unusedAttrList);
-    VRB("Number of Markers; used="
-        << usedMarkerList.size() << " | unused="
-        << unusedMarkerList.size());
-    VRB("Number of Attributes; used="
-        << usedAttrList.size() << " | unused="
-        << unusedAttrList.size());
-
     if (printStatsUsedSolveObjects == true) {
         assert(printStats == true);
         status = logResultsSolveObjectUsage(
@@ -1097,12 +1156,47 @@ bool solve(SolverOptions &solverOptions,
         CHECK_MSTATUS(status);
     }
 
+    if (printStatsAffects == true) {
+        assert(printStats == true);
+        status = logResultsMarkerAffectsAttribute(
+                usedMarkerList,
+                usedAttrList,
+                markerToAttrList,
+                outResult);
+        CHECK_MSTATUS(status);
+    }
+
+    VRB("Number of Markers; used="
+        << usedMarkerList.size() << " | unused="
+        << unusedMarkerList.size());
+    VRB("Number of Attributes; used="
+        << usedAttrList.size() << " | unused="
+        << unusedAttrList.size());
     VRB("Number of Parameters; " << numberOfParameters);
     VRB("Number of Frames; " << frameList.length());
     VRB("Number of Marker Errors; " << numberOfMarkerErrors);
     VRB("Number of Attribute Stiffness Errors; " << numberOfAttrStiffnessErrors);
     VRB("Number of Attribute Smoothness Errors; " << numberOfAttrSmoothnessErrors);
     VRB("Number of Total Errors; " << numberOfErrors);
+
+    // Bail out of solve if we don't have enough used markers or
+    // attributes.
+    if ((usedMarkerList.size() == 0) || (usedAttrList.size() == 0)) {
+        if (printStats == true) {
+            // If the user is asking to print statistics, then we have
+            // successfully achieved that goal and we cannot continue
+            // to generate statistics, because not enought markers or
+            // attributes were used.
+            return true;
+        }
+        ERR("Solver failure; not enough markers or attributes are not used by solver "
+            << "used markers=" << usedMarkerList.size() << " "
+            << "used attributes=" << usedAttrList.size());
+        resultStr = "success=0";
+        outResult.append(MString(resultStr.c_str()));
+        return false;
+    }
+
     if (numberOfParameters > numberOfErrors) {
         if (printStats == true) {
             // If the user is asking to print statistics, then we have
@@ -1119,6 +1213,8 @@ bool solve(SolverOptions &solverOptions,
         outResult.append(MString(resultStr.c_str()));
         return false;
     }
+    assert(numberOfErrors > 0);
+    assert(numberOfParameters > 0);
 
     paramList.resize((unsigned long) numberOfParameters, 0);
     previousParamList.resize((unsigned long) numberOfParameters, 0);
@@ -1128,22 +1224,6 @@ bool solve(SolverOptions &solverOptions,
     std::vector<double> errorDistanceList;
     errorDistanceList.resize((unsigned long) numberOfMarkerErrors / ERRORS_PER_MARKER, 0);
     assert(errorToMarkerList.size() == errorDistanceList.size());
-
-    // Expand the 'Marker to Attribute' relationship into errors and
-    // parameter relationships.
-    BoolList2D errorToParamList;
-    findErrorToParameterRelationship(
-        markerList,
-        attrList,
-        frameList,
-        numberOfParameters,
-        numberOfMarkerErrors,
-        paramToAttrList,
-        errorToMarkerList,
-        markerToAttrList,
-        errorToParamList,
-        status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
 
     VRB("Solving...");
     VRB("Solver Type=" << solverOptions.solverType);
@@ -1192,9 +1272,9 @@ bool solve(SolverOptions &solverOptions,
     // Solving Objects.
     SolverData userData;
     userData.cameraList = cameraList;
-    userData.markerList = markerList;
+    userData.markerList = usedMarkerList;
     userData.bundleList = bundleList;
-    userData.attrList = attrList;
+    userData.attrList = usedAttrList;
     userData.frameList = frameList;
     userData.smoothAttrsList = smoothAttrsList;
     userData.stiffAttrsList = stiffAttrsList;
@@ -1267,6 +1347,7 @@ bool solve(SolverOptions &solverOptions,
             initialErrorMin,
             debugFileStream,
             status);
+        CHECK_MSTATUS(status);
 
         initialErrorAvg = 0;
         initialErrorMin = 0;
@@ -1325,7 +1406,7 @@ bool solve(SolverOptions &solverOptions,
     get_initial_parameters(numberOfParameters,
                            paramList,
                            paramToAttrList,
-                           attrList,
+                           usedAttrList,
                            frameList,
                            outResult);
 
@@ -1450,7 +1531,7 @@ bool solve(SolverOptions &solverOptions,
         set_maya_attribute_values(
             numberOfParameters,
             paramToAttrList,
-            attrList,
+            usedAttrList,
             paramList,
             frameList,
             dgmod,
@@ -1460,7 +1541,7 @@ bool solve(SolverOptions &solverOptions,
         set_maya_attribute_values(
             numberOfParameters,
             paramToAttrList,
-            attrList,
+            usedAttrList,
             previousParamList,
             frameList,
             dgmod,

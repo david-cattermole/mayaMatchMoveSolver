@@ -59,6 +59,9 @@ typedef std::pair<int, int> IndexPair;
 typedef std::vector<std::pair<int, int> > IndexPairList;
 typedef std::pair<int, std::string> SolverTypePair;
 
+typedef IndexPairList::iterator IndexPairListIt;
+typedef IndexPairList::const_iterator IndexPairListCIt;
+
 
 inline
 double distance_2d(MPoint a, MPoint b) {

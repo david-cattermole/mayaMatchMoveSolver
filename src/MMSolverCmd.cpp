@@ -109,6 +109,11 @@ void createSolveInfoSyntax(MSyntax &syntax) {
                    MSyntax::kUnsigned);
     syntax.addFlag(ACCEPT_ONLY_BETTER_FLAG, ACCEPT_ONLY_BETTER_FLAG_LONG,
                    MSyntax::kBoolean);
+
+    syntax.addFlag(REMOVE_UNUSED_MARKERS_FLAG, REMOVE_UNUSED_MARKERS_FLAG_LONG,
+                   MSyntax::kBoolean);
+    syntax.addFlag(REMOVE_UNUSED_ATTRIBUTES_FLAG, REMOVE_UNUSED_ATTRIBUTES_FLAG_LONG,
+                   MSyntax::kBoolean);
 }
 
 /*
@@ -184,7 +189,9 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
                                 bool &out_supportAutoDiffForward,
                                 bool &out_supportAutoDiffCentral,
                                 bool &out_supportParameterBounds,
-                                bool &out_supportRobustLoss) {
+                                bool &out_supportRobustLoss,
+                                bool &out_removeUnusedMarkers,
+                                bool &out_removeUnusedAttributes) {
     MStatus status = MStatus::kSuccess;
 
     // Get 'Accept Only Better'
@@ -320,6 +327,20 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
+    // Get 'Remove Unused Markers'
+    out_removeUnusedMarkers = REMOVE_UNUSED_MARKERS_DEFAULT_VALUE;
+    if (argData.isFlagSet(REMOVE_UNUSED_MARKERS_FLAG)) {
+        status = argData.getFlagArgument(REMOVE_UNUSED_MARKERS_FLAG, 0, out_removeUnusedMarkers);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Remove Unused Attributes'
+    out_removeUnusedAttributes = REMOVE_UNUSED_ATTRIBUTES_DEFAULT_VALUE;
+    if (argData.isFlagSet(REMOVE_UNUSED_ATTRIBUTES_FLAG)) {
+        status = argData.getFlagArgument(REMOVE_UNUSED_ATTRIBUTES_FLAG, 0, out_removeUnusedAttributes);
+        CHECK_MSTATUS(status);
+    }
+
     return status;
 }
 
@@ -364,7 +385,9 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_supportAutoDiffForward,
         m_supportAutoDiffCentral,
         m_supportParameterBounds,
-        m_supportRobustLoss);
+        m_supportRobustLoss,
+        m_removeUnusedMarkers,
+        m_removeUnusedAttributes);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveLogArguments(
@@ -423,6 +446,8 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     solverOptions.solverSupportsAutoDiffCentral = m_supportAutoDiffCentral;
     solverOptions.solverSupportsParameterBounds = m_supportParameterBounds;
     solverOptions.solverSupportsRobustLoss = m_supportRobustLoss;
+    solverOptions.removeUnusedMarkers = m_removeUnusedMarkers;
+    solverOptions.removeUnusedAttributes = m_removeUnusedAttributes;
 
     MStringArray outResult;
     bool ret = solve(

@@ -169,6 +169,16 @@
 #define ACCEPT_ONLY_BETTER_FLAG_LONG      "-acceptOnlyBetter"
 #define ACCEPT_ONLY_BETTER_DEFAULT_VALUE  true
 
+// If unused Markers are detected, should they automatically be removed?
+#define REMOVE_UNUSED_MARKERS_FLAG           "-rum"
+#define REMOVE_UNUSED_MARKERS_FLAG_LONG      "-removeUnusedMarkers"
+#define REMOVE_UNUSED_MARKERS_DEFAULT_VALUE  true
+
+// If unused Attributes are detected, should they automatically be removed?
+#define REMOVE_UNUSED_ATTRIBUTES_FLAG           "-rua"
+#define REMOVE_UNUSED_ATTRIBUTES_FLAG_LONG      "-removeUnusedAttributes"
+#define REMOVE_UNUSED_ATTRIBUTES_DEFAULT_VALUE  true
+
 // Should the solver print out verbose information while solving?
 // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
 #define VERBOSE_FLAG           "-v"
@@ -225,7 +235,10 @@ private:
     int m_solverType;   // Solver type to use; 0=levmar,
                         //                     1=cminpack_lmdif,
                         //                     2=cmpinpack_lmder.
-    bool m_acceptOnlyBetter;
+    bool m_acceptOnlyBetter;  // Do not accept solved parameter values if
+                              // the average devation is higher than at start.
+    bool m_removeUnusedMarkers;     // Remove unused Markers from solve?
+    bool m_removeUnusedAttributes;  // Remove unused Attributes from solve?
 
     // What type of features does the given solver type support?
     bool m_supportAutoDiffForward;
@@ -238,7 +251,7 @@ private:
     MStringArray m_printStatsList;
     bool m_verbose;
 
-    // Objects
+    // Solver Objects
     CameraPtrList      m_cameraList;
     MarkerPtrList      m_markerList;
     BundlePtrList      m_bundleList;

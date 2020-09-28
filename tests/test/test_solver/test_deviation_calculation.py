@@ -97,6 +97,7 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
             (mkr_topLeft, cam_shp, bnd_topLeft),
             (mkr_middleTop, cam_shp, bnd_middleTop),
         )
+        # Note: For this test, we do not need any attributes to be solved.
         node_attrs = []
         frames = [
             1,
@@ -116,6 +117,7 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
             frame=frames,
             solverType=solver_index,
             printStatistics=('deviation', 'inputs'),
+            removeUnusedMarkers=False,
             **kwargs
         )
         num_params = result[0]

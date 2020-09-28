@@ -70,6 +70,9 @@
 #include <mayaUtils.h>
 
 
+/*
+ * Count up number of errors to be measured in the solve.
+ */
 int countUpNumberOfErrors(const MarkerPtrList markerList,
                           const StiffAttrsPtrList stiffAttrsList,
                           const SmoothAttrsPtrList smoothAttrsList,
@@ -82,8 +85,8 @@ int countUpNumberOfErrors(const MarkerPtrList markerList,
                           int &numberOfAttrStiffnessErrors,
                           int &numberOfAttrSmoothnessErrors,
                           MStatus &status) {
-    // Count up number of errors.
-    //
+    status = MStatus::kSuccess;
+
     // For each marker on each frame that it is valid, we add
     // ERRORS_PER_MARKER errors.
     int i = 0;
@@ -96,8 +99,17 @@ int countUpNumberOfErrors(const MarkerPtrList markerList,
     FrameIndexDoubleMapping weightMaxPerFrame;
     FrameIndexDoubleMappingIt xit;
 
-    // Get all the marker data
+    // Reset data structures, because we assume we start with an empty
+    // data structure.
+    validMarkerList.clear();
+    errorToMarkerList.clear();
+    markerPosList.clear();
+    markerWeightList.clear();
     numberOfMarkerErrors = 0;
+    numberOfAttrStiffnessErrors = 0;
+    numberOfAttrSmoothnessErrors = 0;
+
+    // Get all the marker data
     for (MarkerPtrListCIt mit = markerList.cbegin();
          mit != markerList.cend();
          ++mit) {
@@ -165,9 +177,8 @@ int countUpNumberOfErrors(const MarkerPtrList markerList,
     // Normalise the weights per-frame, using the weight 'max'
     // computed above.
     i = 0;
-    typedef IndexPairList::const_iterator IndexPairListCIt;
-    for (IndexPairListCIt eit = errorToMarkerList.begin();
-         eit != errorToMarkerList.end();
+    for (IndexPairListCIt eit = errorToMarkerList.cbegin();
+         eit != errorToMarkerList.cend();
          ++eit) {
         double weight = markerWeightList[i];
 
@@ -236,10 +247,24 @@ int countUpNumberOfUnknownParameters(const AttrPtrList attrList,
                                      IndexPairList &paramToAttrList,
                                      BoolList2D &paramFrameList,
                                      MStatus &status) {
+    status = MStatus::kSuccess;
+
     // Count up number of unknown parameters
     int i = 0;      // index of marker
     int j = 0;      // index of frame
     int numUnknowns = 0;
+
+    // Reset data structures, because we assume we start with an empty
+    // data structure.
+    paramToAttrList.clear();
+    paramFrameList.clear();
+    paramLowerBoundList.clear();
+    paramUpperBoundList.clear();
+    paramWeightList.clear();
+    camStaticAttrList.clear();
+    camAnimAttrList.clear();
+    staticAttrList.clear();
+    animAttrList.clear();
 
     for (AttrPtrListCIt ait = attrList.cbegin();
          ait != attrList.cend();

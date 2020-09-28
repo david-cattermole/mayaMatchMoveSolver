@@ -340,6 +340,7 @@ void measureErrors(
     error_min = std::numeric_limits<double>::max();
 
 #if FORCE_TRIGGER_EVAL == 1
+    assert(ud->errorToMarkerList.size() > 0);
     {
         MPoint pos;
         int i = 0;

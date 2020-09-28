@@ -77,6 +77,10 @@ struct SolverOptions {
     int solverType;
     bool acceptOnlyBetter;
 
+    // Auto-adjust the input solve objects before solving?
+    bool removeUnusedMarkers;
+    bool removeUnusedAttributes;
+
     // All the different supported features by the currently active
     // solver type.
     bool solverSupportsAutoDiffForward;

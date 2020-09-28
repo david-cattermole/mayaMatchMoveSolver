@@ -34,7 +34,6 @@
 
 
 void measureErrors(
-        const int numberOfParameters,
         const int numberOfErrors,
         const int numberOfMarkerErrors,
         const int numberOfAttrStiffnessErrors,

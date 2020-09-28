@@ -1333,7 +1333,6 @@ bool solve(SolverOptions &solverOptions,
         std::vector<bool> frameIndexEnable(frameList.length(), 1);
         std::vector<bool> skipErrorMeasurements(numberOfErrors, 1);
         measureErrors(
-            numberOfParameters,
             numberOfErrors,
             numberOfMarkerErrors,
             numberOfAttrStiffnessErrors,

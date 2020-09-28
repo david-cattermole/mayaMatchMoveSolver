@@ -315,7 +315,6 @@ void determineMarkersToBeEvaluated(int numberOfParameters,
 
 
 void measureErrors(
-        const int numberOfParameters,
         const int numberOfErrors,
         const int numberOfMarkerErrors,
         const int numberOfAttrStiffnessErrors,
@@ -728,8 +727,7 @@ int solveFunc(const int numberOfParameters,
                                           MProfiler::kColorA_L1,
                                           "measure errors");
 #endif
-            measureErrors(numberOfParameters,
-                          numberOfErrors,
+            measureErrors(numberOfErrors,
                           numberOfMarkerErrors,
                           numberOfAttrStiffnessErrors,
                           numberOfAttrSmoothnessErrors,
@@ -850,8 +848,7 @@ int solveFunc(const int numberOfParameters,
                 // measure the markers that can modify the attribute -
                 // we do this using 'frameIndexEnabled' and
                 // 'evalMeasurements'.
-                measureErrors(numberOfParameters,
-                              numberOfErrors,
+                measureErrors(numberOfErrors,
                               numberOfMarkerErrors,
                               numberOfAttrStiffnessErrors,
                               numberOfAttrSmoothnessErrors,
@@ -938,8 +935,7 @@ int solveFunc(const int numberOfParameters,
                                                       MProfiler::kColorA_L1,
                                                       "measure errors");
 #endif
-                        measureErrors(numberOfParameters,
-                                      numberOfErrors,
+                        measureErrors(numberOfErrors,
                                       numberOfMarkerErrors,
                                       numberOfAttrStiffnessErrors,
                                       numberOfAttrSmoothnessErrors,

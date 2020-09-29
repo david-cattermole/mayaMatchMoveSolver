@@ -44,9 +44,9 @@ def _action_func_is_name(action, name):
     if func is None:
         return False
     if isinstance(func, (basestring, unicode, str)):
-        func_is_mmsolver = '.mmSolver' in func
+        func_is_mmsolver = func.endswith('.' + name)
     elif callable(func):
-        func_is_mmsolver = func.__name__ == 'mmSolver'
+        func_is_mmsolver = func.__name__ == name
     else:
         func_is_mmsolver = False
     return func_is_mmsolver

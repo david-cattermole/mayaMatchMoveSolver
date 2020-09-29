@@ -308,8 +308,8 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
             MString nodeAttrName = stiffnessArgs.asString(0);
             AttrPtr foundAttr;
             int foundIndex = 0;
-            for (AttrPtrListIt ait = out_attrList.begin();
-                 ait != out_attrList.end();
+            for (AttrPtrListCIt ait = attrList.cbegin();
+                 ait != attrList.cend();
                  ++ait) {
                 AttrPtr attr = *ait;
                 if (nodeAttrName == attr->getName()) {
@@ -364,8 +364,8 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
             MString nodeAttrName = smoothnessArgs.asString(0);
             AttrPtr foundAttr;
             int foundIndex = 0;
-            for (AttrPtrListIt ait = out_attrList.begin();
-                 ait != out_attrList.end();
+            for (AttrPtrListCIt ait = attrList.cbegin();
+                 ait != attrList.cend();
                  ++ait) {
                 AttrPtr attr = *ait;
                 if (nodeAttrName == attr->getName()) {

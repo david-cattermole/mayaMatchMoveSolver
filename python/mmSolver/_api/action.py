@@ -30,6 +30,14 @@ Action = collections.namedtuple(
 
 
 def action_func_is_mmSolver(action):
+    return _action_func_is_name(action, 'mmSolver')
+
+
+def action_func_is_mmSolverAffects(action):
+    return _action_func_is_name(action, 'mmSolverAffects')
+
+
+def _action_func_is_name(action, name):
     if action is None:
         return False
     func = action.func

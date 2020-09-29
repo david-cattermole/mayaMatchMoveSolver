@@ -59,8 +59,6 @@ void createSolveObjectSyntax(MSyntax &syntax) {
                    MSyntax::kString,
                    MSyntax::kString, MSyntax::kString,
                    MSyntax::kString, MSyntax::kString);
-    syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG,
-                   MSyntax::kLong);
 
     syntax.makeFlagMultiUse(CAMERA_FLAG);
     syntax.makeFlagMultiUse(MARKER_FLAG);

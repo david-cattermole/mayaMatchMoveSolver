@@ -59,24 +59,12 @@ void createSolveObjectSyntax(MSyntax &syntax) {
                    MSyntax::kString,
                    MSyntax::kString, MSyntax::kString,
                    MSyntax::kString, MSyntax::kString);
-    syntax.addFlag(STIFFNESS_FLAG, STIFFNESS_FLAG_LONG,
-                   MSyntax::kString,
-                   MSyntax::kString,
-                   MSyntax::kString,
-                   MSyntax::kString);
-    syntax.addFlag(SMOOTHNESS_FLAG, SMOOTHNESS_FLAG_LONG,
-                   MSyntax::kString,
-                   MSyntax::kString,
-                   MSyntax::kString,
-                   MSyntax::kString);
     syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG,
                    MSyntax::kLong);
 
     syntax.makeFlagMultiUse(CAMERA_FLAG);
     syntax.makeFlagMultiUse(MARKER_FLAG);
     syntax.makeFlagMultiUse(ATTR_FLAG);
-    syntax.makeFlagMultiUse(STIFFNESS_FLAG);
-    syntax.makeFlagMultiUse(SMOOTHNESS_FLAG);
     return;
 }
 
@@ -85,9 +73,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
                                   CameraPtrList      &out_cameraList,
                                   MarkerPtrList      &out_markerList,
                                   BundlePtrList      &out_bundleList,
-                                  AttrPtrList        &out_attrList,
-                                  StiffAttrsPtrList  &out_stiffAttrsList,
-                                  SmoothAttrsPtrList &out_smoothAttrsList) {
+                                  AttrPtrList        &out_attrList) {
     MStatus status = MStatus::kSuccess;
 
     out_cameraList.clear();
@@ -273,6 +259,37 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             MPlug attrPlug = attr->getPlug();
         }
     }
+
+    return status;
+}
+
+
+void createAttributeDetailsSyntax(MSyntax &syntax) {
+    syntax.addFlag(STIFFNESS_FLAG, STIFFNESS_FLAG_LONG,
+                   MSyntax::kString,
+                   MSyntax::kString,
+                   MSyntax::kString,
+                   MSyntax::kString);
+    syntax.addFlag(SMOOTHNESS_FLAG, SMOOTHNESS_FLAG_LONG,
+                   MSyntax::kString,
+                   MSyntax::kString,
+                   MSyntax::kString,
+                   MSyntax::kString);
+
+    syntax.makeFlagMultiUse(STIFFNESS_FLAG);
+    syntax.makeFlagMultiUse(SMOOTHNESS_FLAG);
+    return;
+}
+
+
+MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
+                                       const AttrPtrList   attrList,
+                                       StiffAttrsPtrList  &out_stiffAttrsList,
+                                       SmoothAttrsPtrList &out_smoothAttrsList) {
+    MStatus status = MStatus::kSuccess;
+
+    out_stiffAttrsList.clear();
+    out_smoothAttrsList.clear();
 
     // Get Stiffness Values
     unsigned int stiffnessNum = argData.numberOfFlagUses(STIFFNESS_FLAG);

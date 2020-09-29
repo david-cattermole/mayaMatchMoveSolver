@@ -23,10 +23,8 @@
  *
  *   mmAffects
  *       -camera "camera1" "camera1Shape"
- *       -marker "myMarker"
- *       -attr "myBundle.translateX" None None None None
- *       -attrStiffness "myBundle.translateX"
- *       -attrSmoothness "myBundle.translateX"
+ *       -marker "myMarker" "camera1Shape" "myBundle"
+ *       -attr "myBundle.translateX" "None" "None" "None" "None"
  *       -mode "addAttrsToMarkers";
  *
  * Note: The '-frame' argument is not required for this command. This
@@ -123,14 +121,17 @@ MStatus MMSolverAffectsCmd::parseArgs(const MArgList &args) {
         m_cameraList,
         m_markerList,
         m_bundleList,
-        m_attrList,
-        m_stiffAttrsList,
-        m_smoothAttrsList);
+        m_attrList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
 
+/*
+ * Create attributes representing the affects relationship, onto the
+ * Marker nodes. This is a technique of persistent storageg, so that
+ * many functions can re-use the (cached) data.
+ */
 MStatus setAttrsOnMarkers(MarkerPtrList markerList,
                           AttrPtrList attrList,
                           BoolList2D markerToAttrMapping,

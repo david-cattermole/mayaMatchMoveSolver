@@ -61,17 +61,17 @@
 #define FRAME_FLAG       "-f"
 #define FRAME_FLAG_LONG  "-frame"
 
-// Attribute Stiffness
+// Attribute (Detail) Stiffness
 #define STIFFNESS_FLAG       "-asf"
 #define STIFFNESS_FLAG_LONG  "-attrStiffness"
 
-// Attribute Smoothness
+// Attribute (Detail) Smoothness
 #define SMOOTHNESS_FLAG       "-asm"
 #define SMOOTHNESS_FLAG_LONG  "-attrSmoothness"
 
 
 /*
- * Add flags for solver objects to the command syntax
+ * Add flags for solver objects to the command syntax.
  */
 void createSolveObjectSyntax(MSyntax &syntax);
 
@@ -83,13 +83,25 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
                                   CameraPtrList      &out_cameraList,
                                   MarkerPtrList      &out_markerList,
                                   BundlePtrList      &out_bundleList,
-                                  AttrPtrList        &out_attrList,
-                                  StiffAttrsPtrList  &out_stiffAttrsList,
-                                  SmoothAttrsPtrList &out_smoothAttrsList);
+                                  AttrPtrList        &out_attrList);
 
 
 /*
- * Add flags for solver frames to the command syntax
+ * Add flags for attribute details to the command syntax.
+ */
+void createAttributeDetailsSyntax(MSyntax &syntax);
+
+
+/*
+ * Parse arguments into attribute details.
+ */
+MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
+                                       const AttrPtrList   attrList,
+                                       StiffAttrsPtrList  &out_stiffAttrsList,
+                                       SmoothAttrsPtrList &out_smoothAttrsList);
+
+/*
+ * Add flags for solver frames to the command syntax.
  */
 void createSolveFramesSyntax(MSyntax &syntax);
 

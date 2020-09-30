@@ -140,6 +140,7 @@ class TestUtils(test_api_utils.APITestCase):
 
         TODO: Does not provide a 'collection' example.
         """
+        # Camera Type
         cam_tfm = maya.cmds.createNode('transform')
         cam_tfm = node_utils.get_long_name(cam_tfm)
         cam_shp = maya.cmds.createNode('camera', parent=cam_tfm)
@@ -149,6 +150,7 @@ class TestUtils(test_api_utils.APITestCase):
         self.assertEqual(tfm_obj_type, const.OBJECT_TYPE_CAMERA)
         self.assertEqual(shp_obj_type, const.OBJECT_TYPE_CAMERA)
 
+        # Marker Type
         mkr = marker.Marker().create_node()
         mkr_node = mkr.get_node()
         obj_type = api_utils.get_object_type(mkr_node)
@@ -159,19 +161,25 @@ class TestUtils(test_api_utils.APITestCase):
         obj_type = api_utils.get_object_type(mkr_shp_node)
         self.assertEqual(obj_type, const.OBJECT_TYPE_UNKNOWN)
 
+        # Marker Group
         node = maya.cmds.createNode('mmMarkerGroupTransform')
         obj_type = api_utils.get_object_type(node)
         self.assertEqual(obj_type, const.OBJECT_TYPE_MARKER_GROUP)
 
+        # A Bundle must be more than just a transform and locator.
+        # Use mmSolver.api.Bundle.create_node() to create a Bundle.
+        #
+        # GitHub Issue #6.
         bnd_node = maya.cmds.createNode('transform')
         bnd_shp_node = maya.cmds.createNode('locator', parent=bnd_node)
         obj_type = api_utils.get_object_type(bnd_node)
-        self.assertEqual(obj_type, const.OBJECT_TYPE_BUNDLE)
+        self.assertEqual(obj_type, const.OBJECT_TYPE_UNKNOWN)
 
         # Giving a shape will not work.
         obj_type = api_utils.get_object_type(bnd_shp_node)
         self.assertEqual(obj_type, const.OBJECT_TYPE_UNKNOWN)
- 
+
+        # Attribute Type
         node_attr = node + '.scaleX'
         obj_type = api_utils.get_object_type(node_attr)
         self.assertEqual(obj_type, const.OBJECT_TYPE_ATTRIBUTE)

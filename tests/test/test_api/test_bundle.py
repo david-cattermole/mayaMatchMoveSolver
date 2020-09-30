@@ -29,6 +29,7 @@ import test.test_api.apiutils as test_api_utils
 import mmSolver._api.utils as api_utils
 import mmSolver._api.bundle as bundle
 import mmSolver._api.marker as marker
+import mmSolver._api.constant as const
 
 
 # @unittest.skip
@@ -41,25 +42,33 @@ class TestBundle(test_api_utils.APITestCase):
         # Create nodes
         y = bundle.Bundle().create_node()
         y_node = y.get_node()
+        y_obj_type = api_utils.get_object_type(y_node)
         self.assertTrue(maya.cmds.objExists(y_node))
         self.assertEqual(y_node, '|bundle1')
+        self.assertEqual(y_obj_type, const.OBJECT_TYPE_BUNDLE)
 
         # Create nodes (again, with explicit node name)
         y = bundle.Bundle().create_node(name='myBundle1')
         y_node = y.get_node()
+        y_obj_type = api_utils.get_object_type(y_node)
         self.assertTrue(maya.cmds.objExists(y_node))
         self.assertEqual(y_node, '|myBundle1')
+        self.assertEqual(y_obj_type, const.OBJECT_TYPE_BUNDLE)
 
         # Set Node via __init__
         z = bundle.Bundle(node=y_node)
         z_node = z.get_node()
+        z_obj_type = api_utils.get_object_type(z_node)
         self.assertEqual(z_node, y_node)
         self.assertEqual(z_node, '|myBundle1')
+        self.assertEqual(z_obj_type, const.OBJECT_TYPE_BUNDLE)
 
         # Set Node via set_node
         x.set_node(y_node)
         x_node = x.get_node()
+        x_obj_type = api_utils.get_object_type(x_node)
         self.assertEqual(x_node, y_node)
+        self.assertEqual(x_obj_type, const.OBJECT_TYPE_BUNDLE)
 
     def test_set_colour_rgb(self):
         """

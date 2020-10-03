@@ -748,56 +748,58 @@ MStatus logResultsSolveObjectUsage(MarkerPtrList usedMarkerList,
                                    AttrPtrList unusedAttrList,
                                    MStringArray &outResult) {
     MStatus status = MStatus::kSuccess;
-    std::string resultStr;
 
     // Append a string with all the *used* marker names.
-    resultStr = "markers_used=";
-    for (MarkerPtrListCIt mit = usedMarkerList.cbegin();
-         mit != usedMarkerList.cend();
-         ++mit){
-        MarkerPtr marker = *mit;
-        const char *markerName = marker->getLongNodeName().asChar();
-        resultStr += markerName;
-        resultStr += CMD_RESULT_SPLIT_CHAR;
+    if (usedMarkerList.size() > 0) {
+        MString markerUsedStr = "markers_used=";
+        for (MarkerPtrListCIt mit = usedMarkerList.cbegin();
+             mit != usedMarkerList.cend();
+             ++mit) {
+            MarkerPtr marker = *mit;
+            markerUsedStr += marker->getLongNodeName();
+            markerUsedStr += CMD_RESULT_SPLIT_CHAR;
+        }
+        outResult.append(markerUsedStr);
     }
-    outResult.append(MString(resultStr.c_str()));
 
     // Append a string with all the *unused* marker names.
-    resultStr = "markers_unused=";
-    for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
-         mit != unusedMarkerList.cend();
-         ++mit){
-        MarkerPtr marker = *mit;
-        const char *markerName = marker->getLongNodeName().asChar();
-        resultStr += markerName;
-        resultStr += CMD_RESULT_SPLIT_CHAR;
+    if (unusedMarkerList.size() > 0) {
+        MString markerUnusedStr = "markers_unused=";
+        for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
+             mit != unusedMarkerList.cend();
+             ++mit) {
+            MarkerPtr marker = *mit;
+            markerUnusedStr += marker->getLongNodeName();
+            markerUnusedStr += CMD_RESULT_SPLIT_CHAR;
+        }
+        outResult.append(markerUnusedStr);
     }
-    outResult.append(MString(resultStr.c_str()));
 
     // Append a string with all the *used* attribute names.
-    resultStr = "attributes_used=";
-    for (AttrPtrListCIt ait = usedAttrList.cbegin();
-         ait != usedAttrList.cend();
-         ++ait){
-        AttrPtr attr = *ait;
-        const char *attrName = attr->getLongName().asChar();
-        resultStr += attrName;
-        resultStr += CMD_RESULT_SPLIT_CHAR;
+    if (usedAttrList.size() > 0) {
+        MString attrUsedStr = "attributes_used=";
+        for (AttrPtrListCIt ait = usedAttrList.cbegin();
+             ait != usedAttrList.cend();
+             ++ait) {
+            AttrPtr attr = *ait;
+            attrUsedStr += attr->getLongName();
+            attrUsedStr += CMD_RESULT_SPLIT_CHAR;
+        }
+        outResult.append(attrUsedStr);
     }
-    outResult.append(MString(resultStr.c_str()));
 
     // Append a string with all the *unused* attribute names.
-    resultStr = "attributes_unused=";
-    for (AttrPtrListCIt ait = unusedAttrList.cbegin();
-         ait != unusedAttrList.cend();
-         ++ait){
-        AttrPtr attr = *ait;
-        // const char *attrName = attr->getName().asChar();
-        const char *attrName = attr->getLongName().asChar();
-        resultStr += attrName;
-        resultStr += CMD_RESULT_SPLIT_CHAR;
+    if (unusedAttrList.size() > 0) {
+        MString attrUnusedStr = "attributes_unused=";
+        for (AttrPtrListCIt ait = unusedAttrList.cbegin();
+             ait != unusedAttrList.cend();
+             ++ait) {
+            AttrPtr attr = *ait;
+            attrUnusedStr += attr->getLongName();
+            attrUnusedStr += CMD_RESULT_SPLIT_CHAR;
+        }
+        outResult.append(attrUnusedStr);
     }
-    outResult.append(MString(resultStr.c_str()));
 
     return status;
 }
@@ -897,7 +899,6 @@ MStatus splitUsedMarkersAndAttributes(MarkerPtrList markerList,
                 attrIndexUsedCount = _incrementMapIndex(
                         attrIndex, attrIndexUsedCount);
             }
-
             ++attrIndex;
         }
         ++markerIndex;

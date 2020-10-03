@@ -25,8 +25,6 @@ compute).
 
 import mmSolver.logger
 import mmSolver._api.frame as frame
-import mmSolver._api.excep as excep
-import mmSolver._api.constant as const
 import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.compile as api_compile
@@ -151,10 +149,6 @@ class SolverAffects(solverbase.SolverBase):
             solverbase.MARKER_STATIC_VALUES_KEY)
         attr_state_values = precomputed_data.get(
             solverbase.ATTR_STATIC_VALUES_KEY)
-        attr_stiff_state_values = precomputed_data.get(
-            solverbase.ATTR_STIFFNESS_STATIC_VALUES_KEY)
-        attr_smooth_state_values = precomputed_data.get(
-            solverbase.ATTR_SMOOTHNESS_STATIC_VALUES_KEY)
 
         # Get Markers and Cameras
         markers, cameras = api_compile.markersAndCameras_compile_flags(

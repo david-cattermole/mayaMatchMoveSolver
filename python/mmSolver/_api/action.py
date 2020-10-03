@@ -62,4 +62,5 @@ def action_to_components(action):
     kwargs = action.kwargs.copy()
     if isinstance(func, basestring):
         func = func_str_to_callable(func)
+    assert callable(func)
     return func, args, kwargs

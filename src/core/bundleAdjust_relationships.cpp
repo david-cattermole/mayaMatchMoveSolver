@@ -205,7 +205,7 @@ int countUpNumberOfErrors(const MarkerPtrList markerList,
         // to be calculated.
         AttrPtr weightAttr = stiffAttrs->weightAttr;
         weightAttr->getValue(stiffValue);
-        bool useStiffness = stiffValue > 0.0;  // static_cast<bool>(stiffValue)
+        bool useStiffness = stiffValue > 0.0;
         if (useStiffness) {
             numberOfAttrStiffnessErrors++;
         }
@@ -222,7 +222,7 @@ int countUpNumberOfErrors(const MarkerPtrList markerList,
         // to be calculated.
         AttrPtr weightAttr = smoothAttrs->weightAttr;
         weightAttr->getValue(smoothValue);
-        bool useSmoothness = smoothValue > 0.0; // static_cast<bool>(smoothValue)
+        bool useSmoothness = smoothValue > 0.0;
         if (useSmoothness) {
             numberOfAttrSmoothnessErrors++;
         }

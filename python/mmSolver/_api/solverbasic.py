@@ -275,7 +275,7 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_precomputed_data(precomputed_data)
             for action, vaction in sol.compile(col, mkr_list, attr_list,
                                                withtest=withtest):
-                yield (action, vaction)
+                yield action, vaction
         else:
             # Multiple frame solve, per-frame
             vaction_cache = api_compile.create_compile_solver_cache()

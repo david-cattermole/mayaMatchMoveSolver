@@ -83,6 +83,15 @@ class PlugNode(nodes.Node):
 
 
 def _get_attr_type(attr):
+    """
+    Categorise the given attribute into a "type", such as translate,
+    rotate, scale, camera and lens.
+
+    :param attr: The attribute to get a type.
+    :type attr: Attribute
+
+    :return: The attribute type, one of ATTR_TYPE_*
+    """
     if attr is None:
         return None
     attr_name = attr.get_attr().lower()

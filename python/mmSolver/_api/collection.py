@@ -89,6 +89,17 @@ def _create_collection_attributes(node):
 
 
 def _get_auxiliary_attr_name(col, attr, key):
+    """Auxiliary attribute names combine four individual parts, the
+    Collection, the node and attribute names, and the key.
+
+    Auxiliary attribute values are dependant on all four bits of data.
+    The Auxiliary attribute data is not just "attached" to the
+    attribute itself, it is also dependant on the Collection.
+
+    When a user changes the "active" collection, the auxiliary
+    attribute values may be different - this is a useful feature, but
+    makes the implementation more complex.
+    """
     col_node_uid = col.get_node_uid()
     col_node_uid = col_node_uid.replace('-', '_')
     attr_name = attr.get_attr()
@@ -98,6 +109,27 @@ def _get_auxiliary_attr_name(col, attr, key):
 
 
 def _get_auxiliary_attr(col, attr, key, default_value):
+    """Look up the auxiliary attribute's value, and return a
+    default_value if no attribute exists.
+
+    :param col: The Collection object to get data for.
+    :type col: Collection
+
+    :param attr: The Attribute object to get data for.
+    :type attr: Attribute
+
+    :param key: The unique 'key name' to look-up. This is the name of
+        the unique auxiliary attribute.
+    :type key: str
+
+    :param default_value: The default value for the attribute, if no
+        auxiliary attribute exists (yet).
+    :type default_value: bool or int or float or str
+
+    :returns: The value for the auxiliary attribute, or fallback to
+        default_value.
+    :rtype: bool or int or float or str
+    """
     value = None
     attr_node = attr.get_node()
     aux_name = _get_auxiliary_attr_name(col, attr, key)
@@ -125,6 +157,26 @@ def _get_auxiliary_attr(col, attr, key, default_value):
 
 
 def _set_auxiliary_attr(col, attr, key, value):
+    """Look up the auxiliary attribute, and set a value on it.
+
+    If no auxiliary attribute exists, a new attribute is created and
+    initialized.
+
+    :param col: The Collection object to set data for.
+    :type col: Collection
+
+    :param attr: The Attribute object to set data for.
+    :type attr: Attribute
+
+    :param key: The unique 'key name' to look-up. This is the name of
+        the unique auxiliary attribute.
+    :type key: str
+
+    :param value: The value for the attribute.
+    :type default_value: bool or int or float or str
+
+    :rtype: None
+    """
     attr_node = attr.get_node()
     aux_name = _get_auxiliary_attr_name(col, attr, key)
     plug_name = '{0}.{1}'.format(attr_node, aux_name)

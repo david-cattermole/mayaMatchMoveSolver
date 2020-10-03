@@ -44,7 +44,7 @@ class SolverAffects(solverbase.SolverBase):
     """
     def __init__(self, *args, **kwargs):
         """
-        Create a SolverStep class with default values.
+        Create a SolverAffects class with default values.
 
         :param args: Not used.
         :param kwargs: Not used.

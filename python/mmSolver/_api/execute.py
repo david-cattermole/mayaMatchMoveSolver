@@ -409,9 +409,10 @@ def _run_validate_action(vaction):
         message = message % (num_param, num_err, num_frames)
         return valid, message, metrics
     vfunc, vargs, vkwargs = api_action.action_to_components(vaction)
+    vfunc_is_mmsolver = api_action.action_func_is_mmSolver(vaction)
 
     num_frames = len(vkwargs.get('frame', []))
-    if num_frames == 0:
+    if num_frames == 0 and vfunc_is_mmsolver is True:
         valid = False
         metrics = (num_param, num_err, num_frames)
         msg = ('Failed to validate number of frames: '
@@ -419,11 +420,12 @@ def _run_validate_action(vaction):
         message = msg % (num_param, num_err, num_frames)
         return valid, message, metrics
 
-    vfunc_is_mmsolver = api_action.action_func_is_mmSolver(vaction)
+    # Run validate function
+    solve_data = vfunc(*vargs, **vkwargs)
+
     if vfunc_is_mmsolver is False:
         return valid, message, metrics
 
-    solve_data = vfunc(*vargs, **vkwargs)
     solres = solveresult.SolveResult(solve_data)
     print_stats = solres.get_print_stats()
     num_param = print_stats.get('number_of_parameters', 0)
@@ -482,7 +484,6 @@ def validate(col):
     valid = False
     message_list = []
     metrics_list = []
-
     try:
         sol_list = col.get_solver_list()
         mkr_list = col.get_marker_list()

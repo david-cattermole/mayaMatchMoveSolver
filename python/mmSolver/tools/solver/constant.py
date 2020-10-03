@@ -173,11 +173,13 @@ STATUS_FINISHED = 'Finished.'
 # Default UI values (displayed in the UI as fall back strings)
 OBJECT_DEFAULT_WEIGHT_UI_VALUE = '-'
 OBJECT_DEFAULT_DEVIATION_UI_VALUE = '-'
+OBJECT_DEFAULT_STATUS_UI_VALUE = '-'
 ATTR_DEFAULT_MIN_UI_VALUE = '-'
 ATTR_DEFAULT_MAX_UI_VALUE = '-'
 ATTR_DEFAULT_MIN_MAX_UI_VALUE = ' {min}  to  {max} '
 ATTR_DEFAULT_STIFFNESS_UI_VALUE = '-'
 ATTR_DEFAULT_SMOOTHNESS_UI_VALUE = '-'
+ATTR_DEFAULT_STATUS_UI_VALUE = '-'
 
 ATTR_STATE_INVALID = 'Invalid'
 ATTR_STATE_STATIC = 'Static'
@@ -219,6 +221,7 @@ ATTR_INVALID_OBJECT_TYPES = [
 # The Column Names for the Object Model (used to display input Objects
 # to the user).
 OBJECT_COLUMN_NAME_NODE = 'Node'
+OBJECT_COLUMN_NAME_STATUS = 'Status'
 OBJECT_COLUMN_NAME_WEIGHT = 'Weight'
 OBJECT_COLUMN_NAME_DEVIATION_FRAME = 'Frame Dev (px)'
 OBJECT_COLUMN_NAME_DEVIATION_AVERAGE = 'Avg Dev (px)'
@@ -228,6 +231,7 @@ OBJECT_COLUMN_NAME_UUID = 'Maya Node UUID'
 # The Column Names for the Attribute Model (used to display output
 # Attributes to the user).
 ATTR_COLUMN_NAME_ATTRIBUTE = 'Attr'
+ATTR_COLUMN_NAME_STATUS = 'Status'
 ATTR_COLUMN_NAME_STATE = 'State'
 ATTR_COLUMN_NAME_VALUE_MIN_MAX = 'Range'
 ATTR_COLUMN_NAME_VALUE_STIFFNESS = 'Stiffness'

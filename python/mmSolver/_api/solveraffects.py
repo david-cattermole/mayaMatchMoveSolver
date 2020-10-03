@@ -34,6 +34,58 @@ import mmSolver._api.compile as api_compile
 LOG = mmSolver.logger.get_logger()
 
 
+def _parse_usage_list(key, in_data):
+    split_char = '#'
+    out_data = [x for x in in_data if x.startswith(key)]
+    out_data = [x.partition(key)[-1] for x in out_data]
+    out_data = split_char.join(out_data)
+    out_data = out_data.split(split_char)
+    out_data = [x for x in out_data if len(x) > 0]
+    return out_data
+
+
+def _runAndSetUsedSolveObjects(col_name, *args, **kwargs):
+    """
+    Call mmSolver, find (un)used objects, then set values for UIs to look up.
+
+    :param col_name:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    # Generate mmSolver command.
+    import maya.cmds
+    solver_args = args
+    solver_kwargs = kwargs.copy()
+    del solver_kwargs['mode']
+    solver_kwargs['frame'] = [1]  # 'mmSolver' must have a frame value
+    solver_kwargs['printStatistics'] = ['usedSolveObjects']
+    data = maya.cmds.mmSolver(*solver_args, **solver_kwargs)
+
+    markers_used = _parse_usage_list('markers_used=', data)
+    markers_unused = _parse_usage_list('markers_unused=', data)
+    attributes_used = _parse_usage_list('attributes_used=', data)
+    attributes_unused = _parse_usage_list('attributes_unused=', data)
+
+    # Set usage value attributes on Markers and Attributes.
+    import mmSolver.api as mmapi
+    for mkr_node in markers_used:
+        mkr = mmapi.Marker(node=mkr_node)
+        mkr.set_used_hint(True)
+    for mkr_node in markers_unused:
+        mkr = mmapi.Marker(node=mkr_node)
+        mkr.set_used_hint(False)
+
+    col = mmapi.Collection(col_name)
+    for node_attr in attributes_used:
+        attr = mmapi.Attribute(name=node_attr)
+        col.set_attribute_used_hint(attr, True)
+    for node_attr in attributes_unused:
+        attr = mmapi.Attribute(name=node_attr)
+        col.set_attribute_used_hint(attr, False)
+    return
+
+
 class SolverAffects(solverbase.SolverBase):
     """
     SolverAffects is a metadata calculation solver. SolverAffects
@@ -145,18 +197,14 @@ class SolverAffects(solverbase.SolverBase):
             args=args,
             kwargs=kwargs
         )
+        yield action, action
 
-        # Check the inputs and outputs are valid.
-        vaction = None
-        if withtest is True:
-            assert api_action.action_func_is_mmSolverAffects(action) is True
-            vfunc = func
-            vargs = list(args)
-            vkwargs = kwargs.copy()
-            vaction = api_action.Action(
-                func=vfunc,
-                args=vargs,
-                kwargs=vkwargs
-            )
-
-        yield action, vaction
+        # Query and set 'used solver object' values on nodes.
+        func = _runAndSetUsedSolveObjects
+        args = [col.get_node()]
+        action = api_action.Action(
+            func=func,
+            args=args,
+            kwargs=kwargs
+        )
+        yield action, action

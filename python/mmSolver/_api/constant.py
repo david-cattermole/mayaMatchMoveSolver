@@ -140,6 +140,7 @@ MARKER_ATTR_LONG_NAME_MAX_DEV_FRAME = 'maximumDeviationFrame'
 MARKER_ATTR_LONG_NAME_BUNDLE = 'bundle'
 MARKER_ATTR_LONG_NAME_MARKER_NAME = 'markerName'
 MARKER_ATTR_LONG_NAME_MARKER_ID = 'markerId'
+MARKER_ATTR_LONG_NAME_MARKER_USED_HINT = 'markerUsedHint'
 
 
 # Default plate fallback values.

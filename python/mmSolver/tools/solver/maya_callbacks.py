@@ -507,8 +507,7 @@ def node_deleted_func(clientData):
     LOG.debug('node_deleted: %r', node_uuid)
     event_utils.trigger_event(
         mmapi.EVENT_NAME_NODE_DELETED,
-        node=node_uuid,
-        previous_name=prevName)
+        node=node_uuid)
     return
 
 
@@ -517,8 +516,7 @@ def membership_change_func(node_obj, clientData):
     LOG.debug('membership_changed: %r', node_uuid)
     event_utils.trigger_event(
         mmapi.EVENT_NAME_MEMBERSHIP_CHANGED,
-        node=node_uuid,
-        previous_name=prevName)
+        node=node_uuid)
     return
 
 

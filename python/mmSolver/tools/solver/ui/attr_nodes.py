@@ -161,8 +161,9 @@ class AttrNode(PlugNode):
         return state
 
     def minMaxValue(self):
-        col = self.data().get('collection')
-        attr = self.data().get('data')
+        d = self.data()
+        col = d.get('collection')
+        attr = d.get('data')
         if attr is None or col is None:
             min_value = const.ATTR_DEFAULT_MIN_UI_VALUE
             max_value = const.ATTR_DEFAULT_MAX_UI_VALUE
@@ -182,8 +183,9 @@ class AttrNode(PlugNode):
         return str(value)
 
     def stiffnessValue(self):
-        col = self.data().get('collection')
-        attr = self.data().get('data')
+        d = self.data()
+        col = d.get('collection')
+        attr = d.get('data')
         if attr is None or col is None:
             return const.ATTR_DEFAULT_STIFFNESS_UI_VALUE
         stiff_enable = col.get_attribute_stiffness_enable(attr)
@@ -195,8 +197,9 @@ class AttrNode(PlugNode):
         return stiff_value
 
     def smoothnessValue(self):
-        col = self.data().get('collection')
-        attr = self.data().get('data')
+        d = self.data()
+        col = d.get('collection')
+        attr = d.get('data')
         if attr is None or col is None:
             return const.ATTR_DEFAULT_SMOOTHNESS_UI_VALUE
         smooth_enable = col.get_attribute_smoothness_enable(attr)

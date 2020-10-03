@@ -61,13 +61,13 @@ class Attribute(object):
         A 'name' is a string of both node and attribute path; `node.attr`.
 
         :param name: Node and attribute path as a single string: 'node.attr'
-        :type name: str
+        :type name: basestring
 
         :param node: DG Maya node path.
-        :type node: str
+        :type node: basestring
 
         :param attr: Long or short attribute name.
-        :type attr: str
+        :type attr: basestring
         """
         if isinstance(name, (str, unicode)):
             assert api_utils.get_object_type(name) == const.OBJECT_TYPE_ATTRIBUTE

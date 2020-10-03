@@ -42,6 +42,7 @@ mmSolver.tools
    mmSolver.tools.showdeviationcurves
    mmSolver.tools.smoothkeyframes
    mmSolver.tools.solver
+   mmSolver.tools.sortoutlinernodes
    mmSolver.tools.surfacerivet
    mmSolver.tools.sysinfowindow
    mmSolver.tools.togglebundlelock

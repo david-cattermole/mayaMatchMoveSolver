@@ -194,10 +194,10 @@ class Marker(object):
         Initialize a Marker, give a name to connect to an existing Maya node.
 
         :param node: The Maya node to connect to.
-        :type node: None or str
+        :type node: None or basestring
 
         :param name: This is a backwards compatible kwarg for 'node'.
-        :type name: None or str
+        :type name: None or basestring
         """
         if name is not None:
             msg = (

@@ -47,13 +47,13 @@
 //#ifndef NDEBUG
 //#  define DBG(x)
 //#else
-#define DBG(x) do { std::cerr << __FILE__  << ':' << __LINE__ << ' ' << x << std::endl; } while (0)
+#define DBG(x) do { std::cerr << __FILE__  << ':' << __LINE__ << ' ' << x << '\n'; } while (0)
 //#endif // NDEBUG
 
-#define VRB(x) do { if (verbose) { std::cerr << x << std::endl; } } while (0)
-#define ERR(x) do { std::cerr << "ERROR: " << x << std::endl; } while (0)
-#define WRN(x) do { std::cerr << "WARNING: " << x << std::endl; } while (0)
-#define INFO(x) do { std::cerr << x << std::endl; } while (0)
+#define VRB(x) do { if (verbose) { std::cerr << x << '\n'; } } while (0)
+#define ERR(x) do { std::cerr << "ERROR: " << x << '\n'; } while (0)
+#define WRN(x) do { std::cerr << "WARNING: " << x << '\n'; } while (0)
+#define INFO(x) do { std::cerr << x << '\n'; } while (0)
 
 
 namespace debug {

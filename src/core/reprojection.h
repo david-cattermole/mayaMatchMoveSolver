@@ -70,5 +70,8 @@ MStatus reprojection(MMatrix tfmMatrix,
                      double &outHorizontalPan,
                      double &outVerticalPan);
 
+MStatus calculateCameraFacingRatio(MMatrix tfmMatrix,
+                                   MMatrix camMatrix,
+                                   double &outCameraDirRatio);
 
 #endif // MAYA_MM_SOLVER_CORE_REPROJECTION_H

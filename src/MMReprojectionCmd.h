@@ -86,6 +86,14 @@
 #define AS_MARKER_COORD_FLAG       "-mcd"
 #define AS_MARKER_COORD_FLAG_LONG  "-asMarkerCoordinate"
 
+// Add Camera Direction Ratio to the list of data returned for each
+// point.
+//
+// This is helpful to find out if a transform is behind the camera or
+// not.
+#define WITH_CAMERA_DIR_RATIO_FLAG       "-wcd"
+#define WITH_CAMERA_DIR_RATIO_FLAG_LONG  "-withCameraDirectionRatio"
+
 
 class MMReprojectionCmd : public MPxCommand {
 public:
@@ -100,7 +108,8 @@ public:
                           m_asCoordinate(false),
                           m_asNormalizedCoordinate(false),
                           m_asMarkerCoordinate(false),
-                          m_asPixelCoordinate(false) {};
+                          m_asPixelCoordinate(false),
+                          m_withCameraDirRatio(false) {};
 
     virtual ~MMReprojectionCmd();
 
@@ -132,6 +141,7 @@ private:
     bool m_asNormalizedCoordinate;
     bool m_asMarkerCoordinate;
     bool m_asPixelCoordinate;
+    bool m_withCameraDirRatio;
 };
 
 #endif // MAYA_MM_REPROJECTION_CMD_H

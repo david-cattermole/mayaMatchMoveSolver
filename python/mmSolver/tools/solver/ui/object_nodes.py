@@ -95,6 +95,17 @@ class MarkerNode(ObjectNode):
             editable=False)
         self.typeInfo = 'marker'
 
+    def status(self):
+        value = const.OBJECT_DEFAULT_STATUS_UI_VALUE
+        d = self.data()
+        mkr = d.get('marker')
+        if mkr is None:
+            return color
+        used = bool(mkr.get_used_hint())
+        if used is True:
+            value = 'used'
+        return value
+
     def objectColor(self):
         color = None
         d = self.data()
@@ -257,18 +268,20 @@ class ObjectModel(uimodels.ItemModel):
     def columnNames(self):
         column_names = {
             0: const.OBJECT_COLUMN_NAME_NODE,
-            1: const.OBJECT_COLUMN_NAME_WEIGHT,
-            2: const.OBJECT_COLUMN_NAME_DEVIATION_FRAME,
-            3: const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE,
-            4: const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM,
-            5: const.OBJECT_COLUMN_NAME_UUID,
+            1: const.OBJECT_COLUMN_NAME_STATUS,
+            2: const.OBJECT_COLUMN_NAME_WEIGHT,
+            3: const.OBJECT_COLUMN_NAME_DEVIATION_FRAME,
+            4: const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE,
+            5: const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM,
+            6: const.OBJECT_COLUMN_NAME_UUID,
         }
         return column_names
 
     def columnAlignments(self):
         values = {
             const.OBJECT_COLUMN_NAME_NODE: QtCore.Qt.AlignLeft,
-            const.OBJECT_COLUMN_NAME_WEIGHT: QtCore.Qt.AlignRight,
+            const.OBJECT_COLUMN_NAME_STATUS: QtCore.Qt.AlignCenter,
+            const.OBJECT_COLUMN_NAME_WEIGHT: QtCore.Qt.AlignCenter,
             const.OBJECT_COLUMN_NAME_DEVIATION_FRAME: QtCore.Qt.AlignCenter,
             const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE: QtCore.Qt.AlignCenter,
             const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: QtCore.Qt.AlignCenter,
@@ -279,6 +292,7 @@ class ObjectModel(uimodels.ItemModel):
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {
             const.OBJECT_COLUMN_NAME_NODE: 'name',
+            const.OBJECT_COLUMN_NAME_STATUS: 'status',
             const.OBJECT_COLUMN_NAME_WEIGHT: 'weight',
             const.OBJECT_COLUMN_NAME_DEVIATION_FRAME: 'deviation',
             const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE: 'avgDeviation',

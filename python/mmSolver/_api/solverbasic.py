@@ -262,6 +262,16 @@ class SolverBasic(solverbase.SolverBase):
         use_euler_filter = self._use_euler_filter
         precomputed_data = self.get_precomputed_data()
 
+        # Pre-calculate the 'affects' relationship.
+        generator = solverutils.compile_solver_affects(
+            col,
+            mkr_list,
+            attr_list,
+            precomputed_data,
+            withtest)
+        for action, vaction in generator:
+            yield action, vaction
+
         if use_single_frame is True:
             # Single frame solve
             sol = solverstep.SolverStep()

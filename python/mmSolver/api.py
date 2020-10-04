@@ -45,6 +45,7 @@ from mmSolver._api.rootframe import (
 from mmSolver._api.action import (
     Action,
     action_func_is_mmSolver,
+    action_func_is_mmSolverAffects,
     func_str_to_callable,
     action_to_components,
 )
@@ -292,6 +293,7 @@ __all__ = [
 
     # Action
     'action_func_is_mmSolver',
+    'action_func_is_mmSolverAffects',
     'func_str_to_callable',
     'action_to_components',
 

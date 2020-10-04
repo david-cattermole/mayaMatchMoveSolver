@@ -145,6 +145,11 @@ public:
     static MObject a_outHorizontalPan;
     static MObject a_outVerticalPan;
 
+    // Camera Direction Ratio - how similar is the (forward) direction
+    // of the camera to the direction of the reprojected point? This
+    // is helpful to find out if a transform is behind the camera or
+    // not.
+    static MObject a_outCameraDirectionRatio;
 };
 
 

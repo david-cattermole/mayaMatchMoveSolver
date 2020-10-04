@@ -153,6 +153,18 @@ def _create_marker_attributes(node):
         )
         plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
+
+    attr = const.MARKER_ATTR_LONG_NAME_MARKER_USED_HINT
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='long',
+            defaultValue=0,
+            keyable=True
+        )
+        plug = '{0}.{1}'.format(node, attr)
+        maya.cmds.setAttr(plug, lock=True)
     return
 
 
@@ -1220,6 +1232,49 @@ class Marker(object):
         # Move the marker under the world root, don't modify the marker in
         # any way otherwise.
         maya.cmds.parent(mkr_node, relative=True, world=True)
+        return
+
+    ############################################################################
+
+    def get_used_hint(self):
+        """
+        Is the Marker used by the solver?
+
+        This attribute does not affect the solve, but is provided as a hint
+        to show users (in UIs), that a marker is unused.
+
+        :rtype: bool
+        """
+        node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
+        attr_name = const.MARKER_ATTR_LONG_NAME_MARKER_USED_HINT
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        used = maya.cmds.getAttr(plug_name)
+        return bool(used)
+
+    def set_used_hint(self, value):
+        """
+        Set the value indicating this Marker is used by the solver.
+
+        See the Marker.get_used_hint() method for details.
+
+        :param value: The value to set, True or False.
+        :type value: bool
+        """
+        assert isinstance(value, bool)
+        node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
+        attr_name = const.MARKER_ATTR_LONG_NAME_MARKER_USED_HINT
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        try:
+            maya.cmds.setAttr(plug_name, lock=False)
+            maya.cmds.setAttr(plug_name, value)
+        finally:
+            maya.cmds.setAttr(plug_name, lock=True)
         return
 
 

@@ -923,6 +923,18 @@ class Collection(object):
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
 
+    def get_attribute_used_hint(self, attr):
+        key = 'used_hint'
+        # By default, we assume the attribute is unused.
+        default_value = False
+        value = _get_auxiliary_attr(self, attr, key, default_value)
+        return value
+
+    def set_attribute_used_hint(self, attr, value):
+        assert isinstance(value, bool)
+        key = 'used_hint'
+        _set_auxiliary_attr(self, attr, key, value)
+
     ############################################################################
 
     # TODO: Add 'logging level' flag to Collection.

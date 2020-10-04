@@ -39,6 +39,9 @@ from mmSolver._api.execute import (
     execute,
 )
 from mmSolver._api.frame import Frame
+from mmSolver._api.rootframe import (
+    get_root_frames_from_markers,
+)
 from mmSolver._api.action import (
     Action,
     action_func_is_mmSolver,
@@ -317,6 +320,9 @@ __all__ = [
     'set_solver_running',
     'get_user_interrupt',
     'set_user_interrupt',
+
+    # Root Frame
+    'get_root_frames_from_markers',
 
     # Node Conversion
     'get_bundle_nodes_from_marker_nodes',

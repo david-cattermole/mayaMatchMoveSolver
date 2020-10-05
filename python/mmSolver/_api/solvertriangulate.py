@@ -189,5 +189,6 @@ class SolverTriangulate(solverbase.SolverBase):
                       args,
                       kwargs
             )
-            actions.append(action)
-        return actions
+            # actions.append(action)
+            yield action, None
+        return

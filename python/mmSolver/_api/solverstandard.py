@@ -239,7 +239,7 @@ def _compile_multi_root_frames(col,
             sol, col, root_mkr_list, root_attr_list, withtest, cache)
         for action, vaction in generator:
             yield action, vaction
-        return
+    return
 
 
 def _compile_remove_inbetween_frames(attr_list,

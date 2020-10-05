@@ -115,12 +115,41 @@ def _markers_to_data_lists(mkr_list,
     return mkr_node_list, mkr_enabled_frames, mkr_min_frames_count
 
 
-def get_root_frames_from_markers(mkr_list, start_frame, end_frame):
-    min_frames_per_marker = 2
-    initial_root_frames = set()
+def get_root_frames_from_markers(mkr_list, min_frames_per_marker,
+                                 start_frame, end_frame):
+    """
+    Get root frames numbers from the markers.
 
+    :param mkr_list:
+        List of Markers to compute root frames from.
+    :type mkr_list: [Marker, ..]
+
+    :param min_frames_per_marker:
+        The number of frames that are required for each marker.
+    :type min_frames_per_marker: int
+
+    :param start_frame:
+        The first frame to consider as a root frame.
+    :type start_frame: int
+
+    :param end_frame:
+        The last frame to consider as a root frame.
+    :type end_frame: int
+    """
+    # In future, this paper has a very promising "key-frame selection
+    # criterion", which could be used to increase quality and speed of
+    # bundle-adjustment.
+    #
+    # Optimal key-frame selection for video-based structure-from-motion
+    #
+    # Park,M.-G. et al.
+    # Electronics Letters(2011),47(25):1367
+    # http://dx.doi.org/10.1049/el.2011.2674
+    #
+    # https://www.researchgate.net/publication/260616120_Optimal_key-frame_selection_for_video-based_structure-from-motion
+    #
     all_frames = range(start_frame, end_frame + 1)
-    root_frames = set(initial_root_frames)
+    root_frames = list()
     mkr_root_frames = collections.defaultdict(set)
     root_frame_mkr_list = collections.defaultdict(set)
 
@@ -152,6 +181,12 @@ def get_root_frames_from_markers(mkr_list, start_frame, end_frame):
             if mkr_counts >= min_frames_count:
                 common_nodes[mkr_node][mkr_counts][f] = nodes
 
+    # Controls how close a frame is before it's considered too close
+    # to use. If we choose key-frames that are too close, there will
+    # not be enough paralax in the solve and therefore a degenerate
+    # solve can be created.
+    close_num = 2
+
     mkr_frames = collections.defaultdict(set)
     for mkr_node in mkr_node_list:
         min_frames_count = mkr_min_frames_count[mkr_node]
@@ -173,7 +208,22 @@ def get_root_frames_from_markers(mkr_list, start_frame, end_frame):
                     f = frame_keys.pop(0)
                 else:
                     f = frame_keys.pop(-1)
+
+                if len(frame_keys) > 0:
+                    # Only test if a frame is too near if we have a
+                    # choice of more frames.
+                    too_near = False
+                    near_frames = range(f - close_num, f + close_num + 1)
+                    for near_frame in near_frames:
+                        if near_frame in root_frames:
+                            too_near = True
+                    if too_near is True:
+                        # Skip this frame, because it's too close to
+                        # another (already selected) root frame.
+                        continue
+
                 mkr_frames[mkr_node].add(f)
-                root_frames.add(f)
+                if f not in root_frames:
+                    root_frames.append(f)
                 i += 1
-    return list(root_frames)
+    return list(sorted(root_frames))

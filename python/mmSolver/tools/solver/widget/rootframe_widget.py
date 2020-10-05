@@ -209,8 +209,9 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
             return
         mkr_list = col.get_marker_list()
         start_frame, end_frame = utils_time.get_maya_timeline_range_inner()
+        min_frames_per_marker = 2
         frame_nums = mmapi.get_root_frames_from_markers(
-            mkr_list, start_frame, end_frame)
+            mkr_list, min_frames_per_marker, start_frame, end_frame)
         roots_string = convert_types.intListToString(frame_nums)
         self.setRootFramesValue(col, roots_string)
         self.rootFrames_lineEdit.setText(roots_string)

@@ -759,11 +759,42 @@ class TestSolve(test_api_utils.APITestCase):
         path = self.get_data_path('scenes', file_name)
         maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
 
+        # Collection
+        col = mmapi.Collection(node='collection1')
+        mkr_list = col.get_marker_list()
+
+        # Frames
+        #
+        # Root Frames are automatically calculated from the markers.
+        root_frm_list = []
+        not_root_frm_list = []
+        start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
+        min_frames_per_marker = 3
+        frame_nums = mmapi.get_root_frames_from_markers(
+            mkr_list, min_frames_per_marker, start_frame, end_frame)
+        for f in frame_nums:
+            frm = mmapi.Frame(f)
+            root_frm_list.append(frm)
+        for f in range(0, 41):
+            frm = mmapi.Frame(f)
+            not_root_frm_list.append(frm)
+
+        # Define Solver
+        sol_list = []
+        sol = mmapi.SolverStandard()
+        sol.set_root_frame_list(root_frm_list)
+        sol.set_frame_list(not_root_frm_list)
+        sol.set_only_root_frames(False)
+        sol.set_global_solve(False)
+        sol.set_single_frame(False)
+        sol.set_root_frame_strategy(mmapi.ROOT_FRAME_STRATEGY_GLOBAL_VALUE)
+        sol_list.append(sol)
+        col.set_solver_list(sol_list)
+
         # Run solver!
         s = time.time()
-        col = mmapi.Collection(node='collection1')
         lib_col.compile_collection(col)
-        solres_list = col.execute()
+        solres_list = mmapi.execute(col)
         e = time.time()
         print 'total time:', e - s
 
@@ -841,14 +872,24 @@ class TestSolve(test_api_utils.APITestCase):
         attr = mmapi.Attribute(node=cam_shp, attr='focalLength')
         cam_attr_list.append(attr)
 
-        # Frame List
+        # Get Markers
+        col = mmapi.Collection(node='collection1')
+        mkr_list = col.get_marker_list()
+
+        # Frames
+        #
+        # Root Frames are automatically calculated from the markers.
         root_frm_list = []
         not_root_frm_list = []
-        f_list = [14, 35, 50, 85]
+        start_frame = 0
+        end_frame = 94
+        min_frames_per_marker = 2
+        f_list = mmapi.get_root_frames_from_markers(
+            mkr_list, min_frames_per_marker, start_frame, end_frame)
         for f in f_list:
             frm = mmapi.Frame(f)
             root_frm_list.append(frm)
-        for f in range(0, 94):
+        for f in range(start_frame, end_frame + 1):
             frm = mmapi.Frame(f)
             not_root_frm_list.append(frm)
 
@@ -1101,6 +1142,8 @@ class TestSolve(test_api_utils.APITestCase):
             # maya.cmds.setAttr(plug_tz, lock=True)
 
         # Frames
+        #
+        # Root Frames are automatically calculated from the markers.
         # prim = [0, 22, 41]
         # sec = [3, 8, 12, 27, 33, 38]
         # prim = [0, 3, 8, 12, 22, 27, 33, 38, 41]
@@ -1134,10 +1177,14 @@ class TestSolve(test_api_utils.APITestCase):
 
         root_frm_list = []
         not_root_frm_list = []
-        for f in [0, 3, 8, 12, 16, 22, 27, 33, 38, 41]:
+        min_frames_per_marker = 2
+        frame_nums = mmapi.get_root_frames_from_markers(
+            mkr_list, min_frames_per_marker, start, end)
+        print 'frame_nums', frame_nums
+        for f in frame_nums:
             frm = mmapi.Frame(f)
             root_frm_list.append(frm)
-        for f in range(0, 41):
+        for f in range(start, end + 1):
             frm = mmapi.Frame(f)
             not_root_frm_list.append(frm)
 

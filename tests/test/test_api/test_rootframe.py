@@ -68,10 +68,11 @@ class TestRootFrame(test_api_utils.APITestCase):
             times, values, mkr_a_node + '.enable')
 
         # Calculate Root Frames
+        min_frames_per_marker = 2
         mkr_list = [mkr_a]
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
         frame_nums = mod.get_root_frames_from_markers(
-            mkr_list, start_frame, end_frame)
+            mkr_list, min_frames_per_marker, start_frame, end_frame)
         print 'frames:', frame_nums
         return
 
@@ -114,10 +115,11 @@ class TestRootFrame(test_api_utils.APITestCase):
             times, values, mkr_c_node + '.enable')
 
         # Calculate Root Frames
+        min_frames_per_marker = 2
         mkr_list = [mkr_a, mkr_b, mkr_c]
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
         frame_nums = mod.get_root_frames_from_markers(
-            mkr_list, start_frame, end_frame)
+            mkr_list, min_frames_per_marker, start_frame, end_frame)
         print 'frames:', frame_nums
         return
 
@@ -155,9 +157,10 @@ class TestRootFrame(test_api_utils.APITestCase):
         )
 
         # Calculate Root Frames
+        min_frames_per_marker = 3
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
         frame_nums = mod.get_root_frames_from_markers(
-            mkr_list, start_frame, end_frame)
+            mkr_list, min_frames_per_marker, start_frame, end_frame)
         print 'frames:', frame_nums
         return
 

@@ -125,7 +125,7 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
-        results = col.execute()
+        results = mmapi.execute(col)
 
         # Set Deviation
         mmapi.update_deviation_on_markers([mkr], results)
@@ -202,7 +202,7 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
-        results = col.execute()
+        results = mmapi.execute(col)
 
         # Set Deviation
         mmapi.update_deviation_on_markers([mkr], results)
@@ -341,7 +341,7 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
-        results = col.execute()
+        results = mmapi.execute(col)
 
         # Ensure the values are correct
         for res in results:
@@ -471,7 +471,7 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
-        results = col.execute()
+        results = mmapi.execute(col)
 
         # Set Deviation
         mmapi.update_deviation_on_markers([mkr], results)
@@ -633,7 +633,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Run solver!
         LOG.warning('Running Solver Test... (it may take some time to finish).')
-        results = col.execute()
+        results = mmapi.execute(col)
 
         # Set Deviation
         mmapi.update_deviation_on_markers(mkr_list, results)
@@ -671,7 +671,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Run solver!
         s = time.time()
-        solres_list = col.execute()
+        solres_list = mmapi.execute(col)
         e = time.time()
         print 'total time:', e - s
 
@@ -733,7 +733,7 @@ class TestSolve(test_api_utils.APITestCase):
         s = time.time()
         col = mmapi.Collection(node='collection1')
         col.set_solver_list(sol_list)
-        solres_list = col.execute()
+        solres_list = mmapi.execute(col)
         e = time.time()
         print 'total time:', e - s
 
@@ -915,7 +915,7 @@ class TestSolve(test_api_utils.APITestCase):
         print 'pre=solve time:', e - s
 
         s = time.time()
-        solres_list = col.execute()
+        solres_list = mmapi.execute(col)
         e = time.time()
         print 'total time:', e - s
 
@@ -1243,7 +1243,7 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
-        results = col.execute()
+        results = mmapi.execute(col)
 
         # Ensure the values are correct
         for res in results:

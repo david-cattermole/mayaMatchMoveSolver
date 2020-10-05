@@ -685,8 +685,6 @@ class TestSolve(test_api_utils.APITestCase):
         sol.set_use_single_frame(False)
         sol.set_global_solve(False)
         sol.set_only_root_frames(False)
-        sol._auto_attr_blocks = True
-        sol._triangulate_bundles = False
         sol_list = [sol]
         print 'Solver:', sol
         e = time.time()
@@ -863,12 +861,7 @@ class TestSolve(test_api_utils.APITestCase):
         sol.set_frame_list(not_root_frm_list)
         sol.set_only_root_frames(False)
         sol.set_global_solve(False)
-        sol._auto_attr_blocks = True
-        sol._triangulate_bundles = False
         sol.set_single_frame(False)
-        sol.set_root_frame_strategy(mmapi.ROOT_FRAME_STRATEGY_GLOBAL_VALUE)
-        # sol._robust_loss_type = mmapi.ROBUST_LOSS_TYPE_TRIVIAL_VALUE
-        # sol._robust_loss_scale = 1.0
         sol_list.append(sol)
 
         attr_list = cam_attr_list + bnd_attr_list
@@ -1127,11 +1120,8 @@ class TestSolve(test_api_utils.APITestCase):
         sol.set_single_frame(False)
         sol.set_root_frame_list(root_frm_list)
         sol.set_frame_list(not_root_frm_list)
-        sol.set_root_frame_strategy(mmapi.ROOT_FRAME_STRATEGY_GLOBAL_VALUE)
         sol.set_only_root_frames(False)
         sol.set_global_solve(False)
-        sol._robust_loss_type = 1
-        sol._robust_loss_scale = 10.0
         sol._auto_attr_blocks = True
         sol._triangulate_bundles = False
         sol_list.append(sol)

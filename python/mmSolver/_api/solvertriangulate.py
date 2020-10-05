@@ -30,6 +30,7 @@ import mmSolver.utils.lineintersect as tri_utils
 import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 import mmSolver._api.bundle as bundle
+import mmSolver._api.frame as frame
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.attribute as attribute
 import mmSolver._api.action as api_action
@@ -126,6 +127,11 @@ class SolverTriangulate(solverbase.SolverBase):
         super(SolverTriangulate, self).__init__(*args, **kwargs)
         self.root_frame_list = None
         return
+
+    # Method exists to be compatible with
+    # 'mmSolver._api.compile.compile_solver_with_cache'.
+    def get_frame_list(self):
+        return [frame.Frame(1)]
 
     def compile(self, col, mkr_list, attr_list, withtest=False):
         actions = []

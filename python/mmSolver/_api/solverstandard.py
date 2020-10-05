@@ -30,6 +30,7 @@ import mmSolver._api.solverbase as solverbase
 import mmSolver._api.solverstep as solverstep
 import mmSolver._api.solvertriangulate as solvertriangulate
 import mmSolver._api.markerutils as markerutils
+import mmSolver._api.rootframe as rootframe
 import mmSolver._api.action as api_action
 import mmSolver._api.compile as api_compile
 
@@ -586,14 +587,25 @@ def _compile_multi_frame(col,
     else:
         # Get the order of frames to solve with.
         batch_frame_list = []
+
         if root_frame_strategy == const.ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE:
+            # Two frames at a time, moving forward.
+            batch_frame_list = _gen_two_frame_fwd(root_frame_list_num)
+
+        elif root_frame_strategy == const.ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE:
             # Two frames at a time, moving forward, plus a global solve
             # at the end.
             batch_frame_list = _gen_two_frame_fwd(root_frame_list_num)
             batch_frame_list.append(root_frame_list)
-        elif root_frame_strategy == const.ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE:
-            # Two frames at a time, moving forward.
-            batch_frame_list = _gen_two_frame_fwd(root_frame_list_num)
+
+        elif root_frame_strategy == const.ROOT_FRAME_STRATEGY_FWD_INCREMENT_VALUE:
+            # 3 frames at a time, incrementing by 3 frames, moving
+            # forward.
+            frame_tmp_list = rootframe.generate_increment_frame_forward(
+                root_frame_list_num)
+            for frame_tmp in frame_tmp_list:
+                batch_frame_list.append([frame.Frame(f) for f in frame_tmp])
+
         else:
             # TODO: Root frame ordering can be determined by the
             #  count of markers available at each frame. After we
@@ -602,6 +614,7 @@ def _compile_multi_frame(col,
             #  highest, then add the next highest, etc. This
             #  should ensure stability of the solver is maximum.
             raise NotImplementedError
+
         generator = _compile_multi_root_frames(
             col,
             mkr_list,

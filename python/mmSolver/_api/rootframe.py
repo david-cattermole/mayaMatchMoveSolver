@@ -56,6 +56,38 @@ LOG = mmSolver.logger.get_logger()
 BUNDLE_ATTR_NAMES = ['translateX', 'translateY', 'translateZ']
 
 
+def generate_increment_frame_forward(int_list):
+    """Convert a list of integers into multiple lists of the same
+    integers, increasing the number of elements by 3 each time.
+
+    Example:
+
+       >>> x = [1, 2]
+       >>> generate_increment_frame_forward(x)
+       [[1, 2]]
+       >>> x = [1, 2, 3, 4, 5]
+       >>> generate_increment_frame_forward(x)
+       [[1, 2, 3], [1, 2, 3, 4, 5]]
+       >>> x = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+       >>> generate_increment_frame_forward(x)
+       [[1, 2, 3], [1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 6, 7, 8, 9]]
+
+    """
+    if len(int_list) < 3:
+        batch_list = [int_list]
+        return batch_list
+    end = len(int_list) - 1
+    batch_list = []
+    for i in range(1, end):
+        s = 0
+        e = i + pow(2, i)
+        frm_list = int_list[s:e]
+        batch_list.append(frm_list)
+        if len(frm_list) >= len(int_list):
+            break
+    return batch_list
+
+
 def _get_minimum_number_of_root_frames_for_marker(mkr):
     min_frames_count = 0
 

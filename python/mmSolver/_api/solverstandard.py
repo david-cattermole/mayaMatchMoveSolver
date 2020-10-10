@@ -45,7 +45,6 @@ ATTR_CATEGORIES = [
     'lens_distortion',
 ]
 
-
 def _gen_two_frame_fwd(int_list):
     """
     Given a list of integers, create list of Frame pairs, moving
@@ -486,6 +485,7 @@ def _compile_multi_frame(col,
         the second Action is for validation of inputs.
     :rtype: (Action, Action)
     """
+    # Get Frame numbers.
     root_frame_list_num = [x.get_number() for x in root_frame_list]
     frame_list_num = [x.get_number() for x in frame_list]
     non_root_frame_list_num = set(frame_list_num) - set(root_frame_list_num)
@@ -1208,6 +1208,16 @@ class SolverStandard(solverbase.SolverBase):
         withtest = True
         verbose = True
         precomputed_data = self.get_precomputed_data()
+
+        # Pre-calculate the 'affects' relationship.
+        generator = solverutils.compile_solver_affects(
+            col,
+            mkr_list,
+            attr_list,
+            precomputed_data,
+            withtest)
+        for action, vaction in generator:
+            yield action, vaction
 
         if use_single_frame is True:
             generator = _compile_single_frame(

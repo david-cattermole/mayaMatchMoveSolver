@@ -30,15 +30,23 @@ Action = collections.namedtuple(
 
 
 def action_func_is_mmSolver(action):
+    return _action_func_is_name(action, 'mmSolver')
+
+
+def action_func_is_mmSolverAffects(action):
+    return _action_func_is_name(action, 'mmSolverAffects')
+
+
+def _action_func_is_name(action, name):
     if action is None:
         return False
     func = action.func
     if func is None:
         return False
     if isinstance(func, (basestring, unicode, str)):
-        func_is_mmsolver = '.mmSolver' in func
+        func_is_mmsolver = func.endswith('.' + name)
     elif callable(func):
-        func_is_mmsolver = func.__name__ == 'mmSolver'
+        func_is_mmsolver = func.__name__ == name
     else:
         func_is_mmsolver = False
     return func_is_mmsolver

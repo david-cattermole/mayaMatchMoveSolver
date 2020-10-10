@@ -67,8 +67,11 @@ C:/Users/<user name>/My Documents/maya/2017/modules/mayaMatchMoveSolver-0.1.0-ma
 
 ## Community
 
-There is a Google Group mailing list, named
- [maya-matchmove-solver](https://groups.google.com/forum/#!forum/maya-matchmove-solver).
+Do you have a question about mmSolver?
+The mailing list is the perfect place to ask!
+
+There is a Google Group mailing list:
+[maya-matchmove-solver](https://groups.google.com/forum/#!forum/maya-matchmove-solver).
 
 The mailing list is a place for user questions and discussions, and
 will have release announcements of new versions.

@@ -7,6 +7,8 @@ attributes.
 
 If you are new to mmSolver, take a look at the video :ref:`tutorial-heading`.
 
+Any questions you have can be asked on the `mailing list`_.
+
 Development of `mmSolver` can be viewed on the GitHub project_ page.
 
 Download
@@ -75,3 +77,6 @@ Indices and tables
 
 .. _project:
    https://github.com/david-cattermole/mayaMatchMoveSolver
+
+.. _mailing list:
+   https://groups.google.com/forum/#!forum/maya-matchmove-solver

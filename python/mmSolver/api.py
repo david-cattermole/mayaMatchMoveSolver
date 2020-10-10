@@ -39,6 +39,9 @@ from mmSolver._api.execute import (
     execute,
 )
 from mmSolver._api.frame import Frame
+from mmSolver._api.rootframe import (
+    get_root_frames_from_markers,
+)
 from mmSolver._api.action import (
     Action,
     action_func_is_mmSolver,
@@ -150,6 +153,7 @@ from mmSolver._api.constant import (
     ROOT_FRAME_STRATEGY_GLOBAL_VALUE,
     ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE,
     ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE,
+    ROOT_FRAME_STRATEGY_FWD_INCREMENT_VALUE,
     ROOT_FRAME_STRATEGY_VALUE_LIST,
     ROOT_FRAME_STRATEGY_DEFAULT_VALUE,
 
@@ -246,6 +250,7 @@ __all__ = [
     'ROOT_FRAME_STRATEGY_GLOBAL_VALUE',
     'ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE',
     'ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE',
+    'ROOT_FRAME_STRATEGY_FWD_INCREMENT_VALUE',
     'ROOT_FRAME_STRATEGY_VALUE_LIST',
     'ROOT_FRAME_STRATEGY_DEFAULT_VALUE',
     'ROBUST_LOSS_TYPE_TRIVIAL_VALUE',
@@ -319,6 +324,9 @@ __all__ = [
     'set_solver_running',
     'get_user_interrupt',
     'set_user_interrupt',
+
+    # Root Frame
+    'get_root_frames_from_markers',
 
     # Node Conversion
     'get_bundle_nodes_from_marker_nodes',

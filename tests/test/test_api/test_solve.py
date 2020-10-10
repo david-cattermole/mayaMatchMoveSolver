@@ -30,6 +30,7 @@ import unittest
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.time as time_utils
 import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
@@ -125,7 +126,7 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
-        results = col.execute()
+        results = mmapi.execute(col)
 
         # Set Deviation
         mmapi.update_deviation_on_markers([mkr], results)
@@ -202,7 +203,7 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
-        results = col.execute()
+        results = mmapi.execute(col)
 
         # Set Deviation
         mmapi.update_deviation_on_markers([mkr], results)
@@ -341,7 +342,7 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
-        results = col.execute()
+        results = mmapi.execute(col)
 
         # Ensure the values are correct
         for res in results:
@@ -471,7 +472,7 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
-        results = col.execute()
+        results = mmapi.execute(col)
 
         # Set Deviation
         mmapi.update_deviation_on_markers([mkr], results)
@@ -557,67 +558,29 @@ class TestSolve(test_api_utils.APITestCase):
         attr_list.append(attr_fl)
 
         # Frames
-        frm_list = []
+        #
+        # Root Frames are automatically calculated from the markers.
         root_frm_list = []
         not_root_frm_list = []
-        all_frames = range(start_frame, end_frame + 1, 1)
-        for f in all_frames:
-            prim = ((float(f) % 20.0) == 0) \
-                   or (f == start_frame) \
-                   or (f == end_frame)
-            sec = prim is not True
-            frm = mmapi.Frame(f, primary=prim, secondary=sec)
-            if prim is True:
-                root_frm_list.append(frm)
-            else:
-                not_root_frm_list.append(frm)
-            frm_list.append(frm)
+        min_frames_per_marker = 2
+        frame_nums = mmapi.get_root_frames_from_markers(
+            mkr_list, min_frames_per_marker, start_frame, end_frame)
+        for f in frame_nums:
+            frm = mmapi.Frame(f)
+            root_frm_list.append(frm)
+        for f in range(start_frame, end_frame + 1):
+            frm = mmapi.Frame(f)
+            not_root_frm_list.append(frm)
 
         # Solvers
         sol_list = []
-        print_stats = False
-        use_solver_steps = False
-        if print_stats is True:
-            # Print statistics
-            stats_sol = mmapi.SolverStep()
-            stats_sol.set_verbose(False)
-            stats_sol.set_frame_list(frm_list)
-            stats_sol.set_print_statistics_inputs(True)
-            stats_sol.set_print_statistics_affects(True)
-            stats_sol.set_print_statistics_deviation(True)
-            sol_list.append(stats_sol)
-        if use_solver_steps is True:
-            # Global solve with every 10th frame (and start/end frames)
-            sol = mmapi.SolverStep()
-            sol.set_verbose(False)
-            sol.set_max_iterations(10)
-            sol.set_frames_use_tags(['primary'])
-            sol.set_attributes_use_static(True)
-            sol.set_attributes_use_animated(True)
-            sol.set_frame_list(frm_list)
-            sol_list.append(sol)
-
-            # Per-frame solvers
-            for frm in frm_list:
-                sol = mmapi.SolverStep()
-                sol.set_verbose(False)
-                sol.set_max_iterations(10)
-                sol.set_frames_use_tags(['primary', 'secondary'])
-                sol.set_attributes_use_static(False)
-                sol.set_attributes_use_animated(True)
-                sol.set_frame_list([frm])
-                sol_list.append(sol)
-        else:
-            # Solver
-            sol = mmapi.SolverStandard()
-            sol.set_root_frame_list(root_frm_list)
-            sol.set_frame_list(not_root_frm_list)
-            sol.set_only_root_frames(False)
-            sol.set_global_solve(False)
-            sol._triangulate_bundles = False
-            sol._auto_attr_blocks = False
-            sol.set_use_single_frame(False)
-            sol_list.append(sol)
+        sol = mmapi.SolverStandard()
+        sol.set_root_frame_list(root_frm_list)
+        sol.set_frame_list(not_root_frm_list)
+        sol.set_only_root_frames(False)
+        sol.set_global_solve(False)
+        sol.set_use_single_frame(False)
+        sol_list.append(sol)
 
         # Collection
         col = mmapi.Collection()
@@ -633,7 +596,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Run solver!
         LOG.warning('Running Solver Test... (it may take some time to finish).')
-        results = col.execute()
+        results = mmapi.execute(col)
 
         # Set Deviation
         mmapi.update_deviation_on_markers(mkr_list, results)
@@ -671,7 +634,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Run solver!
         s = time.time()
-        solres_list = col.execute()
+        solres_list = mmapi.execute(col)
         e = time.time()
         print 'total time:', e - s
 
@@ -722,8 +685,6 @@ class TestSolve(test_api_utils.APITestCase):
         sol.set_use_single_frame(False)
         sol.set_global_solve(False)
         sol.set_only_root_frames(False)
-        sol._auto_attr_blocks = True
-        sol._triangulate_bundles = False
         sol_list = [sol]
         print 'Solver:', sol
         e = time.time()
@@ -733,7 +694,7 @@ class TestSolve(test_api_utils.APITestCase):
         s = time.time()
         col = mmapi.Collection(node='collection1')
         col.set_solver_list(sol_list)
-        solres_list = col.execute()
+        solres_list = mmapi.execute(col)
         e = time.time()
         print 'total time:', e - s
 
@@ -759,11 +720,42 @@ class TestSolve(test_api_utils.APITestCase):
         path = self.get_data_path('scenes', file_name)
         maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
 
+        # Collection
+        col = mmapi.Collection(node='collection1')
+        mkr_list = col.get_marker_list()
+
+        # Frames
+        #
+        # Root Frames are automatically calculated from the markers.
+        root_frm_list = []
+        not_root_frm_list = []
+        start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
+        min_frames_per_marker = 3
+        frame_nums = mmapi.get_root_frames_from_markers(
+            mkr_list, min_frames_per_marker, start_frame, end_frame)
+        for f in frame_nums:
+            frm = mmapi.Frame(f)
+            root_frm_list.append(frm)
+        for f in range(0, 41):
+            frm = mmapi.Frame(f)
+            not_root_frm_list.append(frm)
+
+        # Define Solver
+        sol_list = []
+        sol = mmapi.SolverStandard()
+        sol.set_root_frame_list(root_frm_list)
+        sol.set_frame_list(not_root_frm_list)
+        sol.set_only_root_frames(False)
+        sol.set_global_solve(False)
+        sol.set_single_frame(False)
+        sol.set_root_frame_strategy(mmapi.ROOT_FRAME_STRATEGY_GLOBAL_VALUE)
+        sol_list.append(sol)
+        col.set_solver_list(sol_list)
+
         # Run solver!
         s = time.time()
-        col = mmapi.Collection(node='collection1')
         lib_col.compile_collection(col)
-        solres_list = col.execute()
+        solres_list = mmapi.execute(col)
         e = time.time()
         print 'total time:', e - s
 
@@ -841,14 +833,24 @@ class TestSolve(test_api_utils.APITestCase):
         attr = mmapi.Attribute(node=cam_shp, attr='focalLength')
         cam_attr_list.append(attr)
 
-        # Frame List
+        # Get Markers
+        col = mmapi.Collection(node='collection1')
+        mkr_list = col.get_marker_list()
+
+        # Frames
+        #
+        # Root Frames are automatically calculated from the markers.
         root_frm_list = []
         not_root_frm_list = []
-        f_list = [14, 35, 50, 85]
+        start_frame = 0
+        end_frame = 94
+        min_frames_per_marker = 2
+        f_list = mmapi.get_root_frames_from_markers(
+            mkr_list, min_frames_per_marker, start_frame, end_frame)
         for f in f_list:
             frm = mmapi.Frame(f)
             root_frm_list.append(frm)
-        for f in range(0, 94):
+        for f in range(start_frame, end_frame + 1):
             frm = mmapi.Frame(f)
             not_root_frm_list.append(frm)
 
@@ -859,22 +861,23 @@ class TestSolve(test_api_utils.APITestCase):
         sol.set_frame_list(not_root_frm_list)
         sol.set_only_root_frames(False)
         sol.set_global_solve(False)
-        sol._auto_attr_blocks = True
-        sol._triangulate_bundles = False
         sol.set_single_frame(False)
-        sol.set_root_frame_strategy(mmapi.ROOT_FRAME_STRATEGY_GLOBAL_VALUE)
-        # sol._robust_loss_type = mmapi.ROBUST_LOSS_TYPE_TRIVIAL_VALUE
-        # sol._robust_loss_scale = 1.0
         sol_list.append(sol)
 
-        col = mmapi.Collection(node='collection1')
-        col.set_attribute_list(cam_attr_list + bnd_attr_list)
+        attr_list = cam_attr_list + bnd_attr_list
+        col.set_attribute_list(attr_list)
         col.set_solver_list(sol_list)
         e = time.time()
         print 'pre=solve time:', e - s
 
+        # save the output, before.
+        name = 'test_solve_solveAllFramesCausesStaticAnimCurves_before.ma'
+        path = self.get_data_path(name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
         s = time.time()
-        solres_list = col.execute()
+        solres_list = mmapi.execute(col)
         e = time.time()
         print 'total time:', e - s
 
@@ -899,16 +902,12 @@ class TestSolve(test_api_utils.APITestCase):
 
         http://danielwedge.com/fmatrix/operahouse.html
         """
+        # Time Range
         start = 0
         end = 41
-
-        # Set Time Range
         maya.cmds.playbackOptions(
-            animationStartTime=start,
-            minTime=start,
-            animationEndTime=end,
-            maxTime=end
-        )
+            animationStartTime=start, minTime=start,
+            animationEndTime=end, maxTime=end)
 
         # Camera
         cam_tfm = maya.cmds.createNode('transform',
@@ -1101,43 +1100,18 @@ class TestSolve(test_api_utils.APITestCase):
             # maya.cmds.setAttr(plug_tz, lock=True)
 
         # Frames
-        # prim = [0, 22, 41]
-        # sec = [3, 8, 12, 27, 33, 38]
-        # prim = [0, 3, 8, 12, 22, 27, 33, 38, 41]
-        frm_list = []
-        frm = mmapi.Frame(0, tags=['primary', '1', 'single001'])
-        frm_list.append(frm)
-
-        frm = mmapi.Frame(3, tags=['primary', '1', '2', 'single002'])
-        frm_list.append(frm)
-
-        frm = mmapi.Frame(8, tags=['primary', '2', '3', 'single003'])
-        frm_list.append(frm)
-
-        frm = mmapi.Frame(12, tags=['primary', '3', '4', 'single004'])
-        frm_list.append(frm)
-
-        frm = mmapi.Frame(22, tags=['primary', '4', '5', 'single005'])
-        frm_list.append(frm)
-
-        frm = mmapi.Frame(27, tags=['primary', '5', '6', 'single006'])
-        frm_list.append(frm)
-
-        frm = mmapi.Frame(33, tags=['primary', '6', '7', 'single007'])
-        frm_list.append(frm)
-
-        frm = mmapi.Frame(38, tags=['primary', '7', '8', 'single008'])
-        frm_list.append(frm)
-
-        frm = mmapi.Frame(41, tags=['primary', '8', 'single009'])
-        frm_list.append(frm)
-
+        #
+        # Root Frames are automatically calculated from the markers.
         root_frm_list = []
         not_root_frm_list = []
-        for f in [0, 3, 8, 12, 16, 22, 27, 33, 38, 41]:
+        min_frames_per_marker = 2
+        frame_nums = mmapi.get_root_frames_from_markers(
+            mkr_list, min_frames_per_marker, start, end)
+        print 'frame_nums', frame_nums
+        for f in frame_nums:
             frm = mmapi.Frame(f)
             root_frm_list.append(frm)
-        for f in range(0, 41):
+        for f in range(start, end + 1):
             frm = mmapi.Frame(f)
             not_root_frm_list.append(frm)
 
@@ -1146,11 +1120,8 @@ class TestSolve(test_api_utils.APITestCase):
         sol.set_single_frame(False)
         sol.set_root_frame_list(root_frm_list)
         sol.set_frame_list(not_root_frm_list)
-        sol.set_root_frame_strategy(mmapi.ROOT_FRAME_STRATEGY_GLOBAL_VALUE)
         sol.set_only_root_frames(False)
         sol.set_global_solve(False)
-        sol._robust_loss_type = 1
-        sol._robust_loss_scale = 10.0
         sol._auto_attr_blocks = True
         sol._triangulate_bundles = False
         sol_list.append(sol)
@@ -1196,7 +1167,7 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
-        results = col.execute()
+        results = mmapi.execute(col)
 
         # Ensure the values are correct
         for res in results:

@@ -45,6 +45,7 @@
 #include <stdio.h>
 
 // Standard Utils
+#include <utilities/numberUtils.h>
 #include <utilities/debugUtils.h>
 #include <utilities/stringUtils.h>
 
@@ -86,11 +87,6 @@
 // however it does matter that it's a marker node, if the eval is
 // performed with a bundle node the error continues to happen.
 #define FORCE_TRIGGER_EVAL 1
-
-
-// Allows us to test (internally), the experimental delta value
-// calculation.
-// #define USE_EXPERIMENTAL_DELTA_VALUE
 
 
 #if MAYA_API_VERSION < 201700
@@ -168,224 +164,18 @@ MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
 }
 
 
-#ifdef USE_EXPERIMENTAL_DELTA_VALUE
-double getDeltaTransformTranslate(MString nodeName,
-                                  CameraPtr cam,
-                                  MTime frame,
-                                  double imageWidth,
-                                  MPoint axis) {
-    const double deltaWidth = 1.0;
-
-    // Bundle Translate or Transform Translate
-    double filmBackWidth = cam->getFilmbackWidthValue(frame);
-    double filmBackHeight = cam->getFilmbackHeightValue(frame);
-    double filmBackInvAspect = filmBackHeight / filmBackWidth;
-
-    // Get bundle world matrix
-    BundlePtr bnd = BundlePtr(new Bundle());
-    bnd->setNodeName(nodeName);
-
-    MMatrix camProjWorldMatrix;
-    cam->getWorldProjMatrix(camProjWorldMatrix, frame);
-
-    MMatrix worldMatrix;
-    bnd->getMatrix(worldMatrix, frame);
-
-    // Create a new vector along the translate axis (x = (1, 0, 0))
-    MPoint point_current;
-    bnd->getPos(point_current);
-    MPoint point_new(axis);
-
-    // Turn this vector into world space - we now have an axis
-    // pointing along the translate axis.
-    point_current = point_current * worldMatrix;
-    point_new = point_new * worldMatrix;
-
-    // Measure the screen-space position at bundle world pos.
-    point_current = point_current * camProjWorldMatrix;
-    point_current.cartesianize();
-    point_current[0] *= 0.5;
-    point_current[1] *= 0.5 * filmBackInvAspect;
-
-    // Measure the screen-space position at bundle world pos plus
-    // translate axis.
-    point_new = point_new * camProjWorldMatrix;
-    point_new.cartesianize();
-    point_new[0] *= 0.5;
-    point_new[1] *= 0.5 * filmBackInvAspect;
-
-    // Compute the screen-space distance between two points.
-    double d = distance_2d(point_current, point_new) * imageWidth;
-    d = deltaWidth / d;
-
-    // Use this screen-space distance as the delta.
-//    WRN("delta node" << nodeName << "d=" << d);
-    return d;
-}
-#endif // USE_EXPERIMENTAL_DELTA_VALUE
-
-
 // Given a specific parameter, calculate the expected 'delta' value of
 // the parameter.
-//
-// To do this calculation, we should take into account the type of
-// attribute this parameter points to. For example, for a
-// 'bundle.translateX' we know the direction (in screen-space) this
-// attribute will move in, and we can calculate how far the attribute
-// value will move, if the bundle is moved forward by '1 percent' of
-// the camera's FOV. Calculating this '1 percent' per-parameter will
-// give us a sense of how much to move each parameter to get a
-// screen-space-"uniform" deviation. A bundle attribute axis that is
-// pointed away from the camera will need to move much farther than an
-// attribute axis pointed orthogonal to the camera's direction.
 double calculateParameterDelta(double value,
                                double delta,
                                double sign,
                                AttrPtr attr,
                                CameraPtr cam,
-                               MTime frame,
-                               double imageWidth) {
+                               MTime frame) {
     MStatus status = MS::kSuccess;
 
     double xmin = attr->getMinimumValue();
     double xmax = attr->getMaximumValue();
-
-#ifdef USE_EXPERIMENTAL_DELTA_VALUE
-    // Determine the attribute 'type'.
-    unsigned int object_type = attr->getObjectType();
-    unsigned int attr_type = attr->getSolverAttrType();
-
-    bool has_min = xmin > (-std::numeric_limits<float>::max());
-    bool has_max = xmax < std::numeric_limits<float>::max();
-
-    MDagPath nodeDagPath;
-    getAsDagPath(attr->getNodeName(), nodeDagPath);
-    MString nodeName = nodeDagPath.fullPathName();
-//    WRN("nodeName: " << nodeName
-//        << " attr: " << attr->getAttrName()
-//        << " attr_type: " << attr_type
-//        << " object_type: " << object_type);
-
-    // Switch based on attribute type.
-    MPoint axis_tx(1.0, 0.0, 0.0);
-    MPoint axis_ty(0.0, 1.0, 0.0);
-    MPoint axis_tz(0.0, 0.0, 1.0);
-    if (has_min && has_max) {
-        // Attribute with min/max values.
-        // Use a specific ratio, such as 0.1 percent.
-        delta = std::abs(xmax - xmin) * 0.001;
-    } else if (attr_type == ATTR_SOLVER_TYPE_BUNDLE_TX) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_tx);
-    } else if (attr_type == ATTR_SOLVER_TYPE_BUNDLE_TY) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_ty);
-    } else if (attr_type == ATTR_SOLVER_TYPE_BUNDLE_TZ) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_tz);
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_TX) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_tx);
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_TY) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_ty);
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_TZ) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_tz);
-     } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_RX) {
-        // Camera Rotate X and Y (tilt and pan)
-        // Note: We assume the camera rotation order is ZXY.
-        // All camera rotations should be screen-space FOV degree values.
-
-        // Calculate the Angle of View of the camera, width and height
-        // axis.
-        double filmBackHeight = cam->getFilmbackHeightValue(frame);
-        double focalLength = cam->getFocalLengthValue(frame);
-        double fov_y = 0.;
-        bool asDegrees = true;
-        getAngleOfView(filmBackHeight, focalLength, fov_y, asDegrees);
-        // As a ratio of the camera FOV in width and height, use this
-        // to tilt and pan the camera attributes.
-        delta = fov_y * 0.01;
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_RY) {
-        double filmBackWidth = cam->getFilmbackWidthValue(frame);
-        double focalLength = cam->getFocalLengthValue(frame);
-        double fov_x = 0.;
-        bool asDegrees = true;
-        getAngleOfView(filmBackWidth, focalLength, fov_x, asDegrees);
-        delta = fov_x * 0.01;
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_RZ) {
-        // - Camera Rotate Z (roll)
-        //   - Note: We assume the camera rotation order is ZXY.
-        //   - Use a fixed value? The Camera FOV will not affect this
-        //     method.
-        //   - How-far away from the center of the camera's FOV?
-        delta = 0.1;
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_SX) {
-        // - Camera Scale
-        //   - Throw an error - nobody should solve camera scale.
-        //   - Or should we consider this a transform scale?
-        //   - At the very least we should print-out a warning.
-        delta = 0.0001;
-        WRN("User has requested solving of camera scaleX attribute; "
-            << "that's not a good idea.");
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_SY) {
-         delta = 0.0001;
-        WRN("User has requested solving of camera scaleY attribute; "
-            << "that's not a good idea.");
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_SZ) {
-         delta = 0.0001;
-        WRN("User has requested solving of camera scaleZ attribute; "
-            << "that's not a good idea.");
-    } else if (attr_type == ATTR_SOLVER_TYPE_CAMERA_FOCAL) {
-        // Camera Focal length
-         delta = 1.0;  // 1.0 mm.
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_TX) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_tx);
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_TY) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_ty);
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_TZ) {
-        delta = 0.0001;
-//        delta = getDeltaTransformTranslate(
-//                nodeName, cam, frame,
-//                imageWidth, axis_tz);
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_RX) {
-        // Transform rotate
-        //  Calculate the rotation axis plane's area as seen in the
-        //  current camera's FOV.
-        delta = 0.0001;
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_RY) {
-         delta = 0.0001;
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_RZ) {
-         delta = 0.0001;
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_SX) {
-        // Transform scale
-        // Use a fixed ratio? Like 1 percent. *=1.001 and *=0.999?
-        delta = 0.001;
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_SY) {
-         delta = 0.001;
-    } else if (attr_type == ATTR_SOLVER_TYPE_TRANSFORM_SZ) {
-         delta = 0.001;
-    }
-#endif // USE_EXPERIMENTAL_DELTA_VALUE
 
     // If the value +/- delta would cause the attribute to go
     // out of box-constraints, then we should only use one
@@ -446,6 +236,13 @@ void setParameters(
     // Commit changed data into Maya
     ud->dgmod->doIt();
 
+    // Save a copy of the parameters - to be used for determining the
+    // the difference between the previous and next parameters to be
+    // set inside Maya.
+    for (int j = 0; j < numberOfParameters; ++j) {
+        ud->previousParamList[j] = parameters[j];
+    }
+
     // Invalidate the Camera Matrix cache.
     //
     // In future we might be able to auto-detect if the camera
@@ -455,6 +252,8 @@ void setParameters(
     for (int i = 0; i < (int) ud->cameraList.size(); ++i) {
         ud->cameraList[i]->clearAttrValueCache();
     }
+
+    status = MStatus::kSuccess;
 }
 
 
@@ -466,13 +265,62 @@ double gaussian(double x, double mean, double sigma) {
 }
 
 
-// Measure Errors
+/*
+ * Compare the previous and new parameters to see which parameters
+ * have changed. This allows us to only update and measure the changed
+ * markers and attributes - speeding up the evaluation.
+ */
+void determineMarkersToBeEvaluated(int numberOfParameters,
+                                   int numberOfMarkers,
+                                   double delta,
+                                   std::vector<double> previousParamList,
+                                   const double *parameters,
+                                   std::vector<std::vector<bool>> errorToParamList,
+                                   std::vector<bool> &evalMeasurements) {
+    std::vector<int> evalCount(numberOfMarkers, 0);
+
+    // Get all parameters that have changed.
+    double approxDelta = fabs(delta) * 0.5;
+    bool noneChanged = true;
+    std::vector<bool> paramChangedList(numberOfParameters, false);
+    for (int i = 0; i < numberOfParameters; ++i) {
+        bool changed = !number::isApproxEqual<double>(
+            parameters[i], previousParamList[i], approxDelta);
+        paramChangedList[i] = changed;
+        if (changed) {
+            noneChanged = false;
+        }
+    }
+
+    // Find if a marker does not need to be updated at all.
+    for (int i = 0; i < numberOfParameters; ++i) {
+        bool changed = paramChangedList[i];
+        if (noneChanged == true) {
+            changed = true;
+        }
+        for (int j = 0; j < numberOfMarkers; ++j) {
+            if (changed && errorToParamList[j][i]) {
+                evalCount[j] = evalCount[j] + 1;
+            }
+        }
+    }
+
+    // Convert evalCount to list of bools
+    evalMeasurements.resize((unsigned long) numberOfMarkers, false);
+    for (size_t i = 0; i < evalCount.size(); ++i) {
+        evalMeasurements[i] = static_cast<bool>(evalCount[i] > 0);
+    }
+    return;
+}
+
+
 void measureErrors(
-        int numberOfParameters,
-        int numberOfErrors,
-        int numberOfMarkerErrors,
-        int numberOfAttrStiffnessErrors,
-        int numberOfAttrSmoothnessErrors,
+        const int numberOfErrors,
+        const int numberOfMarkerErrors,
+        const int numberOfAttrStiffnessErrors,
+        const int numberOfAttrSmoothnessErrors,
+        const std::vector<bool> frameIndexEnable,
+        const std::vector<bool> errorMeasurements,
         double *errors,
         SolverData *ud,
         double &error_avg,
@@ -491,6 +339,7 @@ void measureErrors(
     error_min = std::numeric_limits<double>::max();
 
 #if FORCE_TRIGGER_EVAL == 1
+    assert(ud->errorToMarkerList.size() > 0);
     {
         MPoint pos;
         int i = 0;
@@ -506,10 +355,28 @@ void measureErrors(
     MMatrix cameraWorldProjectionMatrix;
     MPoint mkr_mpos;
     MPoint bnd_mpos;
+    int numberOfErrorsMeasured = 0;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = ud->errorToMarkerList[i];
-        MarkerPtr marker = ud->markerList[markerPair.first];
-        MTime frame = ud->frameList[markerPair.second];
+        int markerIndex = markerPair.first;
+        int frameIndex = markerPair.second;
+        bool skipFrame = frameIndexEnable[frameIndex] == false;
+        bool skipMarker = errorMeasurements[i] == false;
+        if (skipFrame) {
+            // Skip evaluation of this marker error. The 'errors' data
+            // is expected to be unchanged from the last evaluation.
+            continue;
+        }
+        if (skipMarker) {
+            // Skip calculation of the error if errorMeasurements says
+            // not to calculate it. The errorMeasurements is expected
+            // to be pre-computed and 'know' something this function does
+            // not about the greater structure of the solving problem.
+            continue;
+        }
+
+        MarkerPtr marker = ud->markerList[markerIndex];
+        MTime frame = ud->frameList[frameIndex];
 
         CameraPtr camera = marker->getCamera();
         status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
@@ -528,6 +395,7 @@ void measureErrors(
         // Use pre-computed marker position and weight
         mkr_mpos = ud->markerPosList[i];
         double mkr_weight = ud->markerWeightList[i];
+        assert(mkr_weight > 0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
         mkr_weight = std::sqrt(mkr_weight);
 
         // Re-project Bundle into screen-space.
@@ -539,7 +407,7 @@ void measureErrors(
         bnd_dir.normalize();
         bnd_mpos = bnd_mpos * cameraWorldProjectionMatrix;
         bnd_mpos.cartesianize();
-        // convert to -0.5 to 0.5, maintaining the aspect ratio of the
+        // Convert to -0.5 to 0.5, maintaining the aspect ratio of the
         // film back.
         bnd_mpos[0] *= 0.5;
         bnd_mpos[1] *= 0.5 * filmBackInvAspect;
@@ -594,17 +462,27 @@ void measureErrors(
         double dy = fabs(mkr_mpos.y - bnd_mpos.y) * ud->imageWidth;
         double d = distance_2d(mkr_mpos, bnd_mpos) * ud->imageWidth;
 
-        errors[(i * ERRORS_PER_MARKER) + 0] = dx * mkr_weight * behind_camera_error_factor;  // X error
-        errors[(i * ERRORS_PER_MARKER) + 1] = dy * mkr_weight * behind_camera_error_factor;  // Y error
+        int errorIndex = i * ERRORS_PER_MARKER;
+        errors[errorIndex + 0] = dx * mkr_weight * behind_camera_error_factor;
+        errors[errorIndex + 1] = dy * mkr_weight * behind_camera_error_factor;
 
         // 'ud->errorList' is the deviation shown to the user, it
         // should not have any loss functions or scaling applied to it.
-        ud->errorList[(i * ERRORS_PER_MARKER) + 0] = dx * behind_camera_error_factor;
-        ud->errorList[(i * ERRORS_PER_MARKER) + 1] = dy * behind_camera_error_factor;
+        ud->errorList[errorIndex + 0] = dx * behind_camera_error_factor;
+        ud->errorList[errorIndex + 1] = dy * behind_camera_error_factor;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) { error_max = d; }
         if (d < error_min) { error_min = d; }
+        ++numberOfErrorsMeasured;
+    }
+    if (numberOfErrorsMeasured == 0) {
+        error_max = 0.0;
+        error_min = 0.0;
+        error_avg = 0.0;
+        ERR("No Marker measurements were taken.");
+    } else {
+        error_avg *= 1.0 / numberOfErrorsMeasured;
     }
 
     // Compute the stiffness values for the the attributes of the 'error' array.
@@ -670,8 +548,8 @@ void measureErrors(
                                   ud->solverOptions->robustLossType,
                                   ud->solverOptions->robustLossScale);
     }
-
-    error_avg *= 1.0 / (numberOfErrors / ERRORS_PER_MARKER);
+    assert(error_max >= error_min);
+    assert(error_min <= error_max);
 
 #ifdef WITH_DEBUG_FILE
     if (debugIsOpen && debugFile != NULL) {
@@ -724,7 +602,7 @@ void incrementJacobianIteration(SolverData *ud,
     ++ud->funcEvalNum;
     ++ud->jacIterNum;
     if (ud->verbose) {
-        MStreamUtils::stdErrorStream() << "Jacobian ";
+        MStreamUtils::stdErrorStream() << "Jacobian  ";
         MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw (4)
                                        << ud->jacIterNum;
         MStreamUtils::stdErrorStream() << " | Eval ";
@@ -747,8 +625,8 @@ void incrementJacobianIteration(SolverData *ud,
 
 // Function run by cminpack algorithm to test the input parameters, p,
 // and compute the output errors, x.
-int solveFunc(int numberOfParameters,
-              int numberOfErrors,
+int solveFunc(const int numberOfParameters,
+              const int numberOfErrors,
               const double *parameters,
               double *errors,
               double *jacobian,
@@ -763,6 +641,8 @@ int solveFunc(int numberOfParameters,
     int numberOfMarkerErrors = ud->numberOfMarkerErrors;
     int numberOfAttrStiffnessErrors = ud->numberOfAttrStiffnessErrors;
     int numberOfAttrSmoothnessErrors = ud->numberOfAttrSmoothnessErrors;
+    int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
+    assert(ud->errorToParamList.size() == numberOfMarkers);
 
     std::ofstream *debugFile = NULL;
     bool debugIsOpen = false;
@@ -813,7 +693,11 @@ int solveFunc(int numberOfParameters,
     double error_avg = 0;
     double error_max = 0;
     double error_min = 0;
-    if (!ud->doCalcJacobian) {
+    if (ud->doCalcJacobian == false) {
+        // A normal evaluation of the errors and parameters.
+        std::vector<bool> evalMeasurements(numberOfMarkers, true);
+        std::vector<bool> frameIndexEnable(ud->frameList.length(), 1);
+
         // Set Parameters
         MStatus status;
         {
@@ -843,11 +727,12 @@ int solveFunc(int numberOfParameters,
                                           MProfiler::kColorA_L1,
                                           "measure errors");
 #endif
-            measureErrors(numberOfParameters,
-                          numberOfErrors,
+            measureErrors(numberOfErrors,
                           numberOfMarkerErrors,
                           numberOfAttrStiffnessErrors,
                           numberOfAttrSmoothnessErrors,
+                          frameIndexEnable,
+                          evalMeasurements,
                           errors,
                           ud,
                           error_avg, error_max, error_min,
@@ -872,6 +757,16 @@ int solveFunc(int numberOfParameters,
         int progressMax = ud->computation->progressMax();
         ud->computation->setProgress(progressMin);
 
+        std::vector<bool> evalMeasurements(numberOfMarkers, false);
+        determineMarkersToBeEvaluated(
+                numberOfParameters,
+                numberOfMarkers,
+                ud->solverOptions->delta,
+                ud->previousParamList,
+                parameters,
+                ud->errorToParamList,
+                evalMeasurements);
+
         // Calculate the jacobian matrix.
         MTime currentFrame = MAnimControl::currentTime();
         for (int i = 0; i < numberOfParameters; ++i) {
@@ -891,6 +786,9 @@ int solveFunc(int numberOfParameters,
                 paramListA[j] = parameters[j];
             }
             std::vector<double> errorListA(numberOfErrors, 0);
+            for (int j = 0; j < numberOfErrors; ++j) {
+                errorListA[j] = errors[j];
+            }
 
             // Calculate the relative delta for each parameter.
             double delta = ud->solverOptions->delta;
@@ -911,8 +809,9 @@ int solveFunc(int numberOfParameters,
             double value = parameters[i];
             double deltaA = calculateParameterDelta(
                     value, delta, 1,
-                    attr, cam, currentFrame,
-                    ud->imageWidth);
+                    attr, cam, currentFrame);
+
+            std::vector<bool> frameIndexEnabled = ud->paramFrameList[i];
 
             incrementJacobianIteration(ud, debugIsOpen, debugFile);
             paramListA[i] = paramListA[i] + deltaA;
@@ -945,11 +844,16 @@ int solveFunc(int numberOfParameters,
                                               MProfiler::kColorA_L1,
                                               "measure errors");
 #endif
-                measureErrors(numberOfParameters,
-                              numberOfErrors,
+                // Based on only the changed attribute value only
+                // measure the markers that can modify the attribute -
+                // we do this using 'frameIndexEnabled' and
+                // 'evalMeasurements'.
+                measureErrors(numberOfErrors,
                               numberOfMarkerErrors,
                               numberOfAttrStiffnessErrors,
                               numberOfAttrSmoothnessErrors,
+                              frameIndexEnabled,
+                              evalMeasurements,
                               &errorListA[0],
                               ud,
                               error_avg_tmp,
@@ -988,8 +892,7 @@ int solveFunc(int numberOfParameters,
                 // not needed.
                 double deltaB = calculateParameterDelta(
                         value, delta, -1,
-                        attr, cam, currentFrame,
-                        ud->imageWidth);
+                        attr, cam, currentFrame);
                 if (deltaA == deltaB) {
                     // Set the Jacobian matrix using the previously
                     // calculated errors (original and A).
@@ -1032,11 +935,12 @@ int solveFunc(int numberOfParameters,
                                                       MProfiler::kColorA_L1,
                                                       "measure errors");
 #endif
-                        measureErrors(numberOfParameters,
-                                      numberOfErrors,
+                        measureErrors(numberOfErrors,
                                       numberOfMarkerErrors,
                                       numberOfAttrStiffnessErrors,
                                       numberOfAttrSmoothnessErrors,
+                                      frameIndexEnabled,
+                                      evalMeasurements,
                                       &errorListB[0],
                                       ud,
                                       error_avg_tmp,

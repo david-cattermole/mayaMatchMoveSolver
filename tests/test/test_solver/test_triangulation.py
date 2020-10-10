@@ -132,6 +132,13 @@ class TestTriangulation(solverUtils.SolverTestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(
+            affects_mode,
+            camera=cameras,
+            marker=markers,
+            attr=node_attrs)
+
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
@@ -140,7 +147,7 @@ class TestTriangulation(solverUtils.SolverTestCase):
             attr=node_attrs,
             frame=frames,
             iterations=10,
-            verbose=True,
+            verbose=True
         )
         e = time.time()
         print 'total time:', e - s

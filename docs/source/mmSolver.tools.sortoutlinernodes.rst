@@ -1,5 +1,5 @@
 mmSolver.tools.sortoutlinernodes
-========================
+================================
 
 .. automodule:: mmSolver.tools.sortoutlinernodes
    :members:

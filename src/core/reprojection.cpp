@@ -206,3 +206,31 @@ MStatus reprojection(MMatrix tfmMatrix,
 
     return status;
 }
+
+MStatus calculateCameraFacingRatio(MMatrix tfmMatrix,
+                                   MMatrix camMatrix,
+                                   double &outCameraDirRatio) {
+    MStatus status = MStatus::kSuccess;
+
+    MPoint tfmPos;
+    tfmPos.x = tfmMatrix[3][0];
+    tfmPos.y = tfmMatrix[3][1];
+    tfmPos.z = tfmMatrix[3][2];
+
+    MPoint camPos;
+    camPos.x = camMatrix[3][0];
+    camPos.y = camMatrix[3][1];
+    camPos.z = camMatrix[3][2];
+
+    MVector tfmDir;
+    tfmDir = tfmPos - camPos;
+    tfmDir.normalize();
+
+    MVector camDir;
+    MVector cameraForwardVector(0.0, 0.0, -1.0);
+    camDir = cameraForwardVector * camMatrix;
+    camDir.normalize();
+
+    outCameraDirRatio = camDir * tfmDir;
+    return status;
+}

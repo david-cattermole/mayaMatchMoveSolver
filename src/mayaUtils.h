@@ -135,6 +135,7 @@ bool hasAttrName(MFnDependencyNode &dependFn, MString attrName) {
 }
 
 
+// Analogous to the Python function "mmSolver.api.get_object_type()"
 inline
 unsigned int computeObjectType(MObject node_obj, MDagPath nodeDagPath) {
     bool hasLocatorShape = false;
@@ -189,6 +190,27 @@ unsigned int computeObjectType(MObject node_obj, MDagPath nodeDagPath) {
         objectType = OBJECT_TYPE_COLLECTION;
     }
     return objectType;
+}
+
+
+// Generate attribute name used to set and look up 'attribute affects'
+// on nodes.
+static inline
+MStatus constructAttrAffectsName(MString attrName,
+                                 MString attrUuidStr,
+                                 MString &outAttrName){
+    MStatus status = MStatus::kSuccess;
+
+    const MString attrNamePrefix = "node_";
+    const MString attrNameSuffix = "_attr_";
+
+    status = attrName.substitute(".", "_");
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    outAttrName = attrNamePrefix + attrUuidStr + attrNameSuffix + attrName;
+    status = outAttrName.substitute("-", "_");
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    return status;
 }
 
 

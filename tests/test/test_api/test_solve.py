@@ -1052,7 +1052,6 @@ class TestSolve(test_api_utils.APITestCase):
                                           parent=mkr_grp_node)
         path = self.get_data_path('match_mover', 'loadmarker.rz2')
         _, mkr_data_list = marker_read.read(path)
-        print 'mkr_data_list', mkr_data_list
         mkr_list = marker_read.create_nodes(
             mkr_data_list,
             cam=cam,

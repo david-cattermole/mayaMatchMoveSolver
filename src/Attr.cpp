@@ -409,6 +409,51 @@ MStatus Attr::getValue(int &value, const MTime &time) {
     return MS::kSuccess;
 }
 
+MStatus Attr::getValue(short &value, const MTime &time) {
+    MStatus status;
+    const bool connected = Attr::isConnected();
+    const bool animated = Attr::isAnimated();
+    MPlug plug = Attr::getPlug();
+
+    MGlobal::MMayaState state = MGlobal::mayaState(&status);
+    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+
+    if (animated) {
+        MFnAnimCurve curveFn(plug, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        double curveValue = 0;
+        status = curveFn.evaluate(time, curveValue);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        value = (short) curveValue;
+    } else if (connected) {
+        if (use_dg_ctx == true) {
+#if MAYA_API_VERSION >= 20180000
+            MDGContext ctx(time);
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asShort(&status);
+#else
+            MDGContext ctx(time);
+            value = plug.asShort(ctx, &status);
+#endif
+        } else {
+            MAnimControl::setCurrentTime(time);
+#if MAYA_API_VERSION >= 20180000
+            MDGContext ctx = MDGContext::current();
+            MDGContextGuard ctxGuard(ctx);
+            value = plug.asShort(&status);
+#else
+            value = plug.asShort(MDGContext::fsNormal, &status);
+#endif
+        }
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    } else {
+        value = plug.asShort();
+    }
+
+    return MS::kSuccess;
+}
+
 MStatus Attr::getValue(double &value, const MTime &time) {
     MStatus status;
     const bool connected = Attr::isConnected();
@@ -498,6 +543,11 @@ MStatus Attr::getValue(bool &value) {
 }
 
 MStatus Attr::getValue(int &value) {
+    MTime time = MAnimControl::currentTime();
+    return Attr::getValue(value, time);
+}
+
+MStatus Attr::getValue(short &value) {
     MTime time = MAnimControl::currentTime();
     return Attr::getValue(value, time);
 }
@@ -607,6 +657,39 @@ unsigned int Attr::getSolverAttrType() const {
 
 void Attr::setSolverAttrType(const unsigned int value) {
     m_solverAttrType = value;
+}
+
+MString Attr::getLongNodeName() {
+    MString result;
+    MStatus status;
+
+    MObject nodeObj = Attr::getObject();
+    MDagPath nodeDagPath;
+    status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
+    CHECK_MSTATUS(status);
+
+    MString nodeName = nodeDagPath.fullPathName(&status);
+    CHECK_MSTATUS(status);
+
+    return nodeName;
+}
+
+MString Attr::getLongAttributeName() {
+    MStatus status;
+    MObject attrObj = Attr::getAttribute();
+    MFnAttribute attrMFn(attrObj, &status);
+    CHECK_MSTATUS(status);
+    return attrMFn.name();
+}
+
+MString Attr::getLongName() {
+    MString result;
+    MString nodeName = Attr::getLongNodeName();
+    MString attrName = Attr::getLongAttributeName();
+    result = nodeName;
+    result += ".";
+    result += attrName;
+    return result;
 }
 
 

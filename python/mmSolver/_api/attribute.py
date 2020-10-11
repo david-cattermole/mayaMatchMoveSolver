@@ -107,13 +107,20 @@ class Attribute(object):
 
     def get_node(self, full_path=True):
         node = None
+        node_uuid = None
         if self._dependFn is not None:
             try:
-                node = self._dependFn.name()
+                node_uuid = self._dependFn.uuid().asString()
             except RuntimeError:
                 pass
-        if node is not None and full_path is True:
-            node = node_utils.get_long_name(node)
+        if node_uuid is not None:
+            if full_path is True:
+                node = node_utils.get_long_name(node_uuid)
+            else:
+                nodes = maya.cmds.ls(node_uuid) or []
+                if len(nodes) > 0:
+                    node = nodes[0]
+        assert node is None or isinstance(node, basestring)
         return node
 
     def get_node_uid(self):

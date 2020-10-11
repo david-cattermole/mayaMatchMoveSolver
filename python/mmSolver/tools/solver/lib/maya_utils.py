@@ -327,6 +327,9 @@ def get_selected_node_default_attributes():
                     'rotateX',
                     'rotateY',
                     'rotateZ',
+                    'scaleX',
+                    'scaleY',
+                    'scaleZ',
                 ]
             elif node_type == 'camera':
                 attr_names += [

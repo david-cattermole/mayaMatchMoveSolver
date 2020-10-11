@@ -88,7 +88,7 @@ class Attribute(object):
                 raise RuntimeError(msg)
 
             node_attr = node + '.' + attr
-            plug = node_utils.get_as_plug(node_attr)
+            plug = node_utils.get_as_plug_apione(node_attr)
             self._plug = plug
 
             node_obj = self._plug.node()

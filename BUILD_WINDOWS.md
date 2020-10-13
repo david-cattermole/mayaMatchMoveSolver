@@ -173,7 +173,8 @@ Advanced options:
 | PREFERRED_SOLVER      | Preferred solver; levmar or cminpack_lm.    |
 
 *WARNING: 'levmar' is GPL licensed. If used with mmSolver, mmSolver
-must not be distributed in binary form to anyone.*
+must not be distributed in binary form to anyone outside your
+organisation.*
 
 You can read any of the build scripts to find out how they work. The
 build scripts can be found in `<project root>\scripts\build_*.bat`.
@@ -181,8 +182,8 @@ build scripts can be found in `<project root>\scripts\build_*.bat`.
 If you are new to building Maya plug-ins using CMake, we recommend 
 watching these videos by Chad Vernon:
 
-* [Compiling Maya Plug-ins with CMake (Part 1)](https://www.youtube.com/watch?v=2mUOt_F2ywo)
-* [Compiling Maya Plug-ins with CMake (Part 2)](https://www.youtube.com/watch?v=C56N5KgDaTg)
+- [Compiling Maya Plug-ins with CMake (Part 1)](https://www.youtube.com/watch?v=2mUOt_F2ywo)
+- [Compiling Maya Plug-ins with CMake (Part 2)](https://www.youtube.com/watch?v=C56N5KgDaTg)
 
 # Building Packages
 
@@ -251,8 +252,8 @@ automatically into the Maya Module (when the build script is run).
 
 *Note:* Sphinx will likely list a number of 'errors' while building
 the documentation, this means the automatic tools failed to find
-documentation. This is normal. A majority of the documentation will be
-present.
+documentation. This is (unfortunately) normal. A majority of the
+documentation will be present.
 
 # Run Test Suite
 

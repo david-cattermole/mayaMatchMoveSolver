@@ -85,7 +85,7 @@ CPU_NUM=`nproc --all`
 mkdir -p build_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
 cd build_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
 if [ ${FRESH_BUILD} -eq 1 ]; then
-    rm --force -R *
+    rm -f -R *
 fi
 cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_INSTALL_PREFIX=${INSTALL_MODULE_DIR} \

@@ -77,8 +77,11 @@ set(SOURCE_FILES
   include/nodeTypeIds.h
   src/core/reprojection.h
   src/core/reprojection.cpp
+  src/core/bundleAdjust_defines.h
   src/core/bundleAdjust_base.h
   src/core/bundleAdjust_base.cpp
+  src/core/bundleAdjust_relationships.h
+  src/core/bundleAdjust_relationships.cpp
   src/core/bundleAdjust_solveFunc.h
   src/core/bundleAdjust_solveFunc.cpp
   src/core/bundleAdjust_levmar_bc_dif.h
@@ -98,6 +101,10 @@ set(SOURCE_FILES
   src/Bundle.cpp
   src/Attr.h
   src/Attr.cpp
+  src/commonArgFlags.h
+  src/commonArgFlags.cpp
+  src/MMSolverAffectsCmd.h
+  src/MMSolverAffectsCmd.cpp
   src/MMMarkerScaleNode.h
   src/MMMarkerScaleNode.cpp
   src/MMReprojectionNode.h

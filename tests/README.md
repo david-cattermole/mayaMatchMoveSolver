@@ -17,7 +17,7 @@ On Windows run:
 > CD <project root>
 > "C:\Program Files\Autodesk\MayaVERSION\bin\mayapy" tests\runTests.py > tests.log
 REM We can test specific files like this:
-> "C:\Program Files\Autodesk\MayaVERSION\bin\mayapy" tests\runTests.py tests/test/test_api/test_attribute.py > tests.log
+> "C:\Program Files\Autodesk\MayaVERSION\bin\mayapy" tests\runTests.py tests\test\test_api\test_attribute.py > tests.log
 ```
 
 Make sure you use the same Maya version 'mayapy' for testing as you

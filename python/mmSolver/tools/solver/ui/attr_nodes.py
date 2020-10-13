@@ -66,6 +66,9 @@ class PlugNode(nodes.Node):
             return uuid
         return d.get('uuid', '')
 
+    def status(self):
+        return ''
+
     def state(self):
         return ''
 
@@ -80,6 +83,15 @@ class PlugNode(nodes.Node):
 
 
 def _get_attr_type(attr):
+    """
+    Categorise the given attribute into a "type", such as translate,
+    rotate, scale, camera and lens.
+
+    :param attr: The attribute to get a type.
+    :type attr: Attribute
+
+    :return: The attribute type, one of ATTR_TYPE_*
+    """
     if attr is None:
         return None
     attr_name = attr.get_attr().lower()
@@ -128,8 +140,21 @@ class AttrNode(PlugNode):
             parent=parent,
             icon=icon,
             selectable=True,
-            editable=False)
+            editable=False,
+            neverHasChildren=True)
         self.typeInfo = 'attr'
+
+    def status(self):
+        value = const.ATTR_DEFAULT_STATUS_UI_VALUE
+        d = self.data()
+        col = d.get('collection')
+        attr = d.get('data')
+        if attr is None or col is None:
+            return value
+        used = col.get_attribute_used_hint(attr)
+        if used is True:
+            value = 'used'
+        return value
 
     def state(self):
         d = self.data().get('data')
@@ -145,8 +170,9 @@ class AttrNode(PlugNode):
         return state
 
     def minMaxValue(self):
-        col = self.data().get('collection')
-        attr = self.data().get('data')
+        d = self.data()
+        col = d.get('collection')
+        attr = d.get('data')
         if attr is None or col is None:
             min_value = const.ATTR_DEFAULT_MIN_UI_VALUE
             max_value = const.ATTR_DEFAULT_MAX_UI_VALUE
@@ -166,8 +192,9 @@ class AttrNode(PlugNode):
         return str(value)
 
     def stiffnessValue(self):
-        col = self.data().get('collection')
-        attr = self.data().get('data')
+        d = self.data()
+        col = d.get('collection')
+        attr = d.get('data')
         if attr is None or col is None:
             return const.ATTR_DEFAULT_STIFFNESS_UI_VALUE
         stiff_enable = col.get_attribute_stiffness_enable(attr)
@@ -179,8 +206,9 @@ class AttrNode(PlugNode):
         return stiff_value
 
     def smoothnessValue(self):
-        col = self.data().get('collection')
-        attr = self.data().get('data')
+        d = self.data()
+        col = d.get('collection')
+        attr = d.get('data')
         if attr is None or col is None:
             return const.ATTR_DEFAULT_SMOOTHNESS_UI_VALUE
         smooth_enable = col.get_attribute_smoothness_enable(attr)
@@ -212,7 +240,8 @@ class MayaNode(PlugNode):
             parent=parent,
             icon=icon,
             selectable=True,
-            editable=False)
+            editable=False,
+            neverHasChildren=False)
         self.typeInfo = 'node'
 
     def mayaNodeName(self):
@@ -235,17 +264,19 @@ class AttrModel(uimodels.ItemModel):
     def columnNames(self):
         column_names = {
             0: const.ATTR_COLUMN_NAME_ATTRIBUTE,
-            1: const.ATTR_COLUMN_NAME_STATE,
-            2: const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS,
-            3: const.ATTR_COLUMN_NAME_VALUE_STIFFNESS,
-            4: const.ATTR_COLUMN_NAME_VALUE_MIN_MAX,
-            5: const.ATTR_COLUMN_NAME_UUID,
+            1: const.ATTR_COLUMN_NAME_STATUS,
+            2: const.ATTR_COLUMN_NAME_STATE,
+            3: const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS,
+            4: const.ATTR_COLUMN_NAME_VALUE_STIFFNESS,
+            5: const.ATTR_COLUMN_NAME_VALUE_MIN_MAX,
+            6: const.ATTR_COLUMN_NAME_UUID,
         }
         return column_names
 
     def columnAlignments(self):
         values = {
             const.ATTR_COLUMN_NAME_ATTRIBUTE: QtCore.Qt.AlignLeft,
+            const.ATTR_COLUMN_NAME_STATUS: QtCore.Qt.AlignCenter,
             const.ATTR_COLUMN_NAME_STATE: QtCore.Qt.AlignCenter,
             const.ATTR_COLUMN_NAME_VALUE_MIN_MAX: QtCore.Qt.AlignCenter,
             const.ATTR_COLUMN_NAME_VALUE_STIFFNESS: QtCore.Qt.AlignCenter,
@@ -257,6 +288,7 @@ class AttrModel(uimodels.ItemModel):
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {
             const.ATTR_COLUMN_NAME_ATTRIBUTE: 'name',
+            const.ATTR_COLUMN_NAME_STATUS: 'status',
             const.ATTR_COLUMN_NAME_STATE: 'state',
             const.ATTR_COLUMN_NAME_VALUE_MIN_MAX: 'minMaxValue',
             const.ATTR_COLUMN_NAME_VALUE_STIFFNESS: 'stiffnessValue',

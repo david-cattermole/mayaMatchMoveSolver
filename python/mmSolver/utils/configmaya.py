@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Configuration module. GitHub issue #17.
+Configuration module for getting/setting config data inside Maya.
 
 There are many places to store and read data from in Maya.
 
@@ -28,11 +28,11 @@ There are many places to store and read data from in Maya.
 Each type of storage can be considered to have a different life-time.
 
 The levels are (in ascending order):
+
 - Maya Node
 - Maya Scene
 - Maya Session
 - Maya Preferences
-
 """
 
 import json
@@ -281,20 +281,6 @@ def set_scene_option(name, value, add_attr=None):
         add_attr=add_attr,
     )
     return
-
-
-def get_session_option(name, default=None):
-    """
-    Get an option that lives in this Maya instance only.
-    """
-    raise NotImplementedError
-
-
-def set_session_option(name, value):
-    """
-    Set an option that lives in this Maya instance only.
-    """
-    raise NotImplementedError
 
 
 def get_preference_option(name, default=None):

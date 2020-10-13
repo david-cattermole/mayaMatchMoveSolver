@@ -108,16 +108,23 @@ class TestSolver6(solverUtils.SolverTestCase):
         results = []
         s = time.time()
 
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
+
         # Solve primary frames (first, middle and last), and sub-divide.
         for frames in framesList:
             result = maya.cmds.mmSolver(
-                camera=cameras,
-                marker=markers,
-                attr=node_attrs,
+                frame=frames,
                 iterations=10,
                 solverType=solver_index,
-                frame=frames,
                 verbose=True,
+                **kwargs
             )
             results.append(result)
 

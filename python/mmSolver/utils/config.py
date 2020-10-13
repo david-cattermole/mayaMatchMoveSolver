@@ -29,11 +29,11 @@ this may be overridden using "get_dirs", or "get_config" function arguments.
 
 By default the following paths are searched (in order, top-down):
 
- - ${MMSOLVER_LOCATION}/config (Linux and Windows)
+ - `${HOME}/.mmSolver` (Linux)
 
- - ${HOME}/.mmSolver (Linux)
+ - `%APPDATA%/mmSolver` (Windows)
 
- - %APPDATA%\mmSolver (Windows)
+ - `${MMSOLVER_LOCATION}/config` (Linux and Windows)
 
 This allows both a default fallback, and a user specified path.
 Additionally, studios may modify the '.mod' file to provide an
@@ -91,6 +91,9 @@ def find_path(file_name, search_paths):
 
     :param file_name: File name to find.
     :type file_name: str
+
+    :param search_paths: The directories to search for the file.
+    :type search_paths: list of str
 
     :return: Full config file name, or None.
     :rtype: str or None
@@ -282,6 +285,32 @@ def set_value(data, key, value):
 
 
 class Config(object):
+    """
+    A configuration file in mmSolver, to read, write, query and edit
+    configuration files.
+
+    `Config` will save a new file, if the given file_name is valid.
+
+    This is an example use::
+
+        >>> file_path = "/absolute/path/to/file.json"
+        >>> config = Config(file_path)
+        >>> config.file_path
+        /absolute/path/to/file.json
+        >>> config.read()  # Read the file, fails if the file does not exist.
+        >>> config.exists("my_option_name")
+        False
+        >>> config.get_value("my_option_name")
+        None
+        >>> config.set_value("my_option_name", 42)
+        >>> config.exists("my_option_name")
+        True
+        >>> config.get_value("my_option_name")
+        42
+        >>> config.write()
+
+    """
+
     def __init__(self, file_path):
         self.file_path = file_path
         self._values = dict()
@@ -293,6 +322,17 @@ class Config(object):
         return self._auto_read
 
     def set_autoread(self, value):
+        """
+        Set auto-read value.
+
+        By default, auto-read is True.
+
+        If auto-read is True, `Config` will read a config file
+        automatically, without the need to call "read()" explicitly.
+
+        :param value: The value to set.
+        :type value: bool
+        """
         assert isinstance(value, bool)
         self._auto_read = value
 
@@ -300,6 +340,18 @@ class Config(object):
         return self._auto_write
 
     def set_autowrite(self, value):
+        """Set auto-write value.
+
+        By default, auto-write is False.
+
+        If auto-write is True, `Config` will write a config file
+        automatically, when the Config object is destructed by Python.
+        Otherwise, the user must call "write()" (which is generally
+        recommended anyway).
+
+        :param value: The value to set.
+        :type value: bool
+        """
         assert isinstance(value, bool)
         self._auto_write = value
 
@@ -308,20 +360,28 @@ class Config(object):
             self.write()
 
     def read(self):
+        """Read the `file_path` contents."""
         data = read_data(self.file_path)
         self._values = data
         self._changed = False
         return
 
     def write(self, human_readable=True):
+        """Write the contents of this object to the `file_path`."""
         write_data(self._values, self.file_path, human_readable)
         self._changed = False
 
     def exists(self, key):
+        """Does the key exist in this config file?"""
         data = self._values
         return exists(data, key)
 
     def get_value(self, key, default_value=None):
+        """
+        Get a value from the Config file.
+
+        If no key exists, returns the default_value.
+        """
         if self._auto_read is True and len(self._values) == 0:
             self.read()
         data = self._values
@@ -331,6 +391,7 @@ class Config(object):
         return value
 
     def set_value(self, key, value):
+        """Set the key/value in the Config file. """
         data = {}
         if isinstance(self._values, dict):
             data = self._values.copy()

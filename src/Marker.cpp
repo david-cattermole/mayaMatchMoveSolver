@@ -26,6 +26,7 @@
 #include <maya/MFnMatrixData.h>
 #include <maya/MMatrix.h>
 #include <maya/MPoint.h>
+#include <maya/MDagPath.h>
 
 #include <memory>
 
@@ -186,4 +187,19 @@ MStatus Marker::getWeight(double &value, const MTime &time) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
+}
+
+MString Marker::getLongNodeName() {
+    MString result;
+    MStatus status;
+
+    MObject nodeObj = Marker::getObject();
+    MDagPath nodeDagPath;
+    status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
+    CHECK_MSTATUS(status);
+
+    MString nodeName = nodeDagPath.fullPathName(&status);
+    CHECK_MSTATUS(status);
+
+    return nodeName;
 }

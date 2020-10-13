@@ -41,6 +41,7 @@ Using the module::
 
 """
 
+import time
 import os
 import os.path
 
@@ -70,6 +71,7 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
     instance = None
 
     def __init__(self, parent, name=None):
+        s = time.time()
         super(BaseMayaWindow, self).__init__()
         self.windowGeometry = None
 
@@ -85,6 +87,8 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
         config_name = type(self).name + '.ini'
         config_path = config_utils.get_home_dir_path(config_name)
         self._settings_path = config_path
+        e = time.time()
+        LOG.debug('BaseMayaWindow init: %r seconds', e - s)
         return
 
     def baseHideStandardButtons(self):
@@ -143,6 +147,7 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
 
     @classmethod
     def open_window(cls, show=True, auto_raise=True, delete=False):
+        s = time.time()
         if (cls is not None
                 and uiutils.isValidQtObject(cls.instance) is True):
             if delete is True:
@@ -172,4 +177,6 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
             cls.instance.show()
             cls.instance.activateWindow()
 
+        e = time.time()
+        LOG.debug('BaseWindow init: %r seconds', e - s)
         return cls.instance

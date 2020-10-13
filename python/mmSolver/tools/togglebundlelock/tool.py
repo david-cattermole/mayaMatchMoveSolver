@@ -34,7 +34,7 @@ def main():
     selection = maya.cmds.ls(selection=True, long=True) or []
     selected_bundles = mmapi.filter_bundle_nodes(selection)
     if len(selected_bundles) == 0:
-        LOG.warning("Please select bundle's to lock or unlock")
+        LOG.warning("Please select bundles to lock or unlock")
         return
 
     attrs = const.ATTRS

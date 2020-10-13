@@ -83,18 +83,26 @@ class TestSolver5(solverUtils.SolverTestCase):
             (cam_tfm + '.ry', 'None', 'None', 'None', 'None'),
         ]
 
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
+
         # Run solver!
         results = []
         s = time.time()
         for f in range(start, end+1):
+            frames = f
             result = maya.cmds.mmSolver(
-                camera=cameras,
-                marker=markers,
-                attr=node_attrs,
+                frame=frames,
                 iterations=10,
                 solverType=solver_index,
-                frame=(f),
                 verbose=True,
+                **kwargs
             )
             results.append(result)
         e = time.time()

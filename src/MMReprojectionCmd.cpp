@@ -53,7 +53,6 @@
 #include <maya/MFnDependencyNode.h>
 
 
-
 MMReprojectionCmd::~MMReprojectionCmd() {}
 
 void *MMReprojectionCmd::creator() {
@@ -106,6 +105,8 @@ MSyntax MMReprojectionCmd::newSyntax() {
     syntax.addFlag(AS_MARKER_COORD_FLAG, AS_MARKER_COORD_FLAG_LONG,
             MSyntax::kBoolean);
     syntax.addFlag(AS_PIXEL_COORD_FLAG, AS_PIXEL_COORD_FLAG_LONG,
+            MSyntax::kBoolean);
+    syntax.addFlag(WITH_CAMERA_DIR_RATIO_FLAG, WITH_CAMERA_DIR_RATIO_FLAG_LONG,
             MSyntax::kBoolean);
 
     syntax.makeFlagMultiUse(TIME_FLAG);
@@ -179,6 +180,16 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         status = argData.getFlagArgument(IMAGE_RES_FLAG, 1, m_imageResY);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    // Get 'With Camera Direction Ratio' flag
+    m_withCameraDirRatio = false;
+    bool withCameraDirRatioFlagIsSet = argData.isFlagSet(
+        WITH_CAMERA_DIR_RATIO_FLAG, &status);
+    if (withCameraDirRatioFlagIsSet == true) {
+         status = argData.getFlagArgument(
+             WITH_CAMERA_DIR_RATIO_FLAG, 0, m_withCameraDirRatio);
+         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get World Flag flag or Get Transforms
@@ -367,10 +378,10 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     std::vector<double> horizontalFilmOffsetList;
     std::vector<double> verticalFilmOffsetList;
 
-    //
+    // Query all the input data at once.
     if (m_nodeList.length() == 0 && m_givenWorldPoint == true) {
-        // We use the given world space point, rather than the list
-        // of transform nodes.
+        // We use the user given world space point argument, rather
+        // than the list of transform nodes as input.
         MMatrix tfmMatrix;
         tfmMatrix[3][0] = m_worldPoint.x;
         tfmMatrix[3][1] = m_worldPoint.y;
@@ -527,6 +538,14 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
             outResult.append(outPixelX);
             outResult.append(outPixelY);
             outResult.append(outPointZ);
+        }
+
+        if (m_withCameraDirRatio == true) {
+            double outCameraDirectionRatio = 0.0;
+            status = calculateCameraFacingRatio(tfmMatrix, camMatrix,
+                                                outCameraDirectionRatio);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            outResult.append(outCameraDirectionRatio);
         }
     }
 

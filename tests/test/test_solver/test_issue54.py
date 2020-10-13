@@ -109,22 +109,29 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
             bnd_translate)
         cam_tfm, cam_shp = cameras[0]
 
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+        }
+
         # save the output
         path = 'solver_test_issue54_initial_value_zero_%s_before.ma'
         path = self.get_data_path(path % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
+
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
+            frame=frames,
             iterations=10,
             solverType=solver_index,
-            frame=frames,
             verbose=True,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s
@@ -160,22 +167,29 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
             bnd_translate)
         cam_tfm, cam_shp = cameras[0]
 
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+        }
+
         # save the output
         path = 'solver_test_issue54_initial_value_twenty_%s_before.ma'
         path = self.get_data_path(path % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
+
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
+            frame=frames,
             iterations=10,
             solverType=solver_index,
-            frame=frames,
             verbose=True,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s
@@ -211,22 +225,29 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
             bnd_translate)
         cam_tfm, cam_shp = cameras[0]
 
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+        }
+
         # save the output
         path = 'solver_test_issue54_initial_value_threeSixty_%s_before.ma'
         path = self.get_data_path(path % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
+
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
+            frame=frames,
             iterations=10,
             solverType=solver_index,
-            frame=frames,
             verbose=True,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s

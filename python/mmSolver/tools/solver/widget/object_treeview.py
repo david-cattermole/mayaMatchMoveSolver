@@ -59,7 +59,7 @@ class ObjectTreeView(QtWidgets.QTreeView):
 
     def selection_swap(self):
         node_list = _get_selected_maya_nodes(self)
-        LOG.debug("Swap Selection: %r", node_list)
+        LOG.debug("Swap Marker/Bundle Selection: %r", node_list)
         import mmSolver.tools.selection.tools as tools
         lib_maya_utils.set_scene_selection(node_list)
         tools.swap_between_selected_markers_and_bundles()
@@ -67,10 +67,18 @@ class ObjectTreeView(QtWidgets.QTreeView):
 
     def selection_both_markers_bundles(self):
         node_list = _get_selected_maya_nodes(self)
-        LOG.debug("Both Markers and Bundles: %r", node_list)
+        LOG.debug("Select Both Markers and Bundles: %r", node_list)
         import mmSolver.tools.selection.tools as tools
         lib_maya_utils.set_scene_selection(node_list)
         tools.select_both_markers_and_bundles()
+        return
+
+    def rename_marker_bundles():
+        node_list = _get_selected_maya_nodes(self)
+        LOG.debug("Rename Markers and Bundles: %r", node_list)
+        import mmSolver.tools.markerbundlerename.tool as tool
+        lib_maya_utils.set_scene_selection(node_list)
+        tool.main()
         return
 
     def contextMenuEvent(self, event):
@@ -87,7 +95,14 @@ class ObjectTreeView(QtWidgets.QTreeView):
         both_sel_act.triggered.connect(
             self.selection_both_markers_bundles)
 
+        label = 'Marker Bundle Rename...'
+        rename_act = QtWidgets.QAction(label, self)
+        rename_act.triggered.connect(
+            self.rename_marker_bundles)
+
         menu.addAction(swap_sel_act)
         menu.addAction(both_sel_act)
+        menu.addSeparator()
+        menu.addAction(rename_act)
         menu.exec_(event.globalPos())
         return

@@ -23,6 +23,7 @@
             "mb_tools/link_marker_bundle",
             "mb_tools/unlink_marker_bundle",
             "attr_tools/---Attribute Details",
+            "attr_tools/open_graph_editor",
             "attr_tools/set_attr_details_ui",
             "marker_tools/---Edit Marker",
             "marker_tools/toggle_marker_lock",

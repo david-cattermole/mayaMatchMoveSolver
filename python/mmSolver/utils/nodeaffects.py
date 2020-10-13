@@ -104,12 +104,12 @@ def _add_to_query_cache(key, value):
     return
 
 
-def find_plugs_affecting_transform(bnd_node, cam_tfm):
+def find_plugs_affecting_transform(tfm_node, cam_tfm):
     """
     Find plugs that affect the world-matrix transform of the node.
 
-    :param bnd_node: The input node to query.
-    :type bnd_node: str
+    :param tfm_node: The input node to query.
+    :type tfm_node: str
 
     :param cam_tfm: The camera that should be considered (optional)
     :type cam_tfm: str or None
@@ -128,14 +128,14 @@ def find_plugs_affecting_transform(bnd_node, cam_tfm):
     # plugs = _get_from_query_cache(args)
     # if plugs is not None:
     #     return plugs
-    # bnd_node, cam_tfm = args
+    # tfm_node, cam_tfm = args
 
-    bnd_node = maya.cmds.ls(bnd_node, long=True)[0]
+    tfm_node = maya.cmds.ls(tfm_node, long=True)[0]
 
     # Get all the parents above this bundle
     parent_nodes = []
     parents = maya.cmds.listRelatives(
-        bnd_node,
+        tfm_node,
         parent=True,
         fullPath=True) or []
     parent_nodes += parents
@@ -145,10 +145,11 @@ def find_plugs_affecting_transform(bnd_node, cam_tfm):
             parent=True,
             fullPath=True) or []
         parent_nodes += parents
+    nodes = [tfm_node] + parent_nodes
 
     # Get camera related to the given bundle.
-    nodes = [bnd_node] + parent_nodes
     if cam_tfm is not None:
+        assert maya.cmds.objExists(cam_tfm) is True
         cam_tfm_node = maya.cmds.ls(cam_tfm, long=True)[0]
         cam_shp_node = maya.cmds.listRelatives(
             cam_tfm,
@@ -224,7 +225,7 @@ def find_plugs_affecting_transform(bnd_node, cam_tfm):
                 conn_attrs = list(set(conn_attrs))
 
     # Only unique plugs.
-    plugs = set(plugs)
+    plugs = list(set(plugs))
 
     # Set into cache.
     # _add_to_query_cache(args, plugs)

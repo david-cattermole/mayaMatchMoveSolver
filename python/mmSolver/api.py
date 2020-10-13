@@ -39,9 +39,13 @@ from mmSolver._api.execute import (
     execute,
 )
 from mmSolver._api.frame import Frame
+from mmSolver._api.rootframe import (
+    get_root_frames_from_markers,
+)
 from mmSolver._api.action import (
     Action,
     action_func_is_mmSolver,
+    action_func_is_mmSolverAffects,
     func_str_to_callable,
     action_to_components,
 )
@@ -149,6 +153,7 @@ from mmSolver._api.constant import (
     ROOT_FRAME_STRATEGY_GLOBAL_VALUE,
     ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE,
     ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE,
+    ROOT_FRAME_STRATEGY_FWD_INCREMENT_VALUE,
     ROOT_FRAME_STRATEGY_VALUE_LIST,
     ROOT_FRAME_STRATEGY_DEFAULT_VALUE,
 
@@ -157,6 +162,18 @@ from mmSolver._api.constant import (
     ROBUST_LOSS_TYPE_CAUCHY_VALUE,
     ROBUST_LOSS_TYPE_VALUE_LIST,
     ROBUST_LOSS_TYPE_DEFAULT_VALUE,
+
+    EVENT_NAME_MARKER_CREATED,
+    EVENT_NAME_BUNDLE_CREATED,
+    EVENT_NAME_COLLECTION_CREATED,
+    EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+    EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+    EVENT_NAME_ATTRIBUTE_STATE_CHANGED,
+    EVENT_NAME_ATTRIBUTE_CONNECTION_CHANGED,
+    EVENT_NAME_NODE_NAME_CHANGED,
+    EVENT_NAME_NODE_DELETED,
+    EVENT_NAME_MEMBERSHIP_CHANGED,
+    EVENT_NAME_LIST,
 )
 from mmSolver._api.state import (
     is_solver_running,
@@ -233,6 +250,7 @@ __all__ = [
     'ROOT_FRAME_STRATEGY_GLOBAL_VALUE',
     'ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE',
     'ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE',
+    'ROOT_FRAME_STRATEGY_FWD_INCREMENT_VALUE',
     'ROOT_FRAME_STRATEGY_VALUE_LIST',
     'ROOT_FRAME_STRATEGY_DEFAULT_VALUE',
     'ROBUST_LOSS_TYPE_TRIVIAL_VALUE',
@@ -240,6 +258,17 @@ __all__ = [
     'ROBUST_LOSS_TYPE_CAUCHY_VALUE',
     'ROBUST_LOSS_TYPE_VALUE_LIST',
     'ROBUST_LOSS_TYPE_DEFAULT_VALUE',
+    'EVENT_NAME_MARKER_CREATED',
+    'EVENT_NAME_BUNDLE_CREATED',
+    'EVENT_NAME_COLLECTION_CREATED',
+    'EVENT_NAME_COLLECTION_MARKERS_CHANGED',
+    'EVENT_NAME_COLLECTION_ATTRS_CHANGED',
+    'EVENT_NAME_ATTRIBUTE_STATE_CHANGED',
+    'EVENT_NAME_ATTRIBUTE_CONNECTION_CHANGED',
+    'EVENT_NAME_NODE_NAME_CHANGED',
+    'EVENT_NAME_NODE_DELETED',
+    'EVENT_NAME_MEMBERSHIP_CHANGED',
+    'EVENT_NAME_LIST',
 
     # Exceptions
     'MMException',
@@ -266,6 +295,7 @@ __all__ = [
 
     # Action
     'action_func_is_mmSolver',
+    'action_func_is_mmSolverAffects',
     'func_str_to_callable',
     'action_to_components',
 
@@ -294,6 +324,9 @@ __all__ = [
     'set_solver_running',
     'get_user_interrupt',
     'set_user_interrupt',
+
+    # Root Frame
+    'get_root_frames_from_markers',
 
     # Node Conversion
     'get_bundle_nodes_from_marker_nodes',

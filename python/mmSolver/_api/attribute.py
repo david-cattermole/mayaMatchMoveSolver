@@ -61,13 +61,13 @@ class Attribute(object):
         A 'name' is a string of both node and attribute path; `node.attr`.
 
         :param name: Node and attribute path as a single string: 'node.attr'
-        :type name: str
+        :type name: basestring
 
         :param node: DG Maya node path.
-        :type node: str
+        :type node: basestring
 
         :param attr: Long or short attribute name.
-        :type attr: str
+        :type attr: basestring
         """
         if isinstance(name, (str, unicode)):
             assert api_utils.get_object_type(name) == const.OBJECT_TYPE_ATTRIBUTE
@@ -88,7 +88,7 @@ class Attribute(object):
                 raise RuntimeError(msg)
 
             node_attr = node + '.' + attr
-            plug = node_utils.get_as_plug(node_attr)
+            plug = node_utils.get_as_plug_apione(node_attr)
             self._plug = plug
 
             node_obj = self._plug.node()
@@ -107,13 +107,20 @@ class Attribute(object):
 
     def get_node(self, full_path=True):
         node = None
+        node_uuid = None
         if self._dependFn is not None:
             try:
-                node = self._dependFn.name()
+                node_uuid = self._dependFn.uuid().asString()
             except RuntimeError:
                 pass
-        if node is not None and full_path is True:
-            node = node_utils.get_long_name(node)
+        if node_uuid is not None:
+            if full_path is True:
+                node = node_utils.get_long_name(node_uuid)
+            else:
+                nodes = maya.cmds.ls(node_uuid) or []
+                if len(nodes) > 0:
+                    node = nodes[0]
+        assert node is None or isinstance(node, basestring)
         return node
 
     def get_node_uid(self):

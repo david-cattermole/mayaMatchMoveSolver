@@ -34,7 +34,7 @@ def main():
     selection = maya.cmds.ls(selection=True, long=True) or []
     selected_marker_nodes = mmapi.filter_marker_nodes(selection)
     if len(selected_marker_nodes) == 0:
-        LOG.warning("Please select marker's to lock or unlock")
+        LOG.warning("Please select markers to lock or unlock")
         return
 
     lib.markers_lock_toggle(selected_marker_nodes)

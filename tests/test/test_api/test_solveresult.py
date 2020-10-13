@@ -239,7 +239,7 @@ class TestSolveResult(test_api_utils.APITestCase):
         # Run solver!
         s = time.time()
         col = mmapi.Collection(node='collection1')
-        solres_list = col.execute()
+        solres_list = mmapi.execute(col)
         e = time.time()
         print 'total time:', e - s
 

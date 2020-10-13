@@ -386,7 +386,7 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
 
     def getColorFuncFromIndex(self, index):
         color_dict = {
-            'Column': 'name',
+            'Column': 'color',
         }
         return self._getLookUpFuncFromIndex(index, color_dict)
 

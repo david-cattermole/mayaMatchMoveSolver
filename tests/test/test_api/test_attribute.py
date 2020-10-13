@@ -84,6 +84,51 @@ class TestAttribute(test_api_utils.APITestCase):
         self.assertEqual(ry.is_animated(), True)
         self.assertEqual(rz.is_locked(), True)
 
+    def test_non_unique_node_name(self):
+        """
+        Test for identical child node names causing Attribute class to
+        incorrectly return the wrong node name.
+
+          -> top_node
+             `-> left
+                 `-> same
+             `-< right
+                 `-> same
+
+        See GitHub issue #153.
+        """
+        top_node = maya.cmds.createNode(
+            'transform', name='top_node')
+        top_node = node_utils.get_long_name(top_node)
+
+        left_node = maya.cmds.createNode(
+            'transform', name='left', parent=top_node)
+        left_node = node_utils.get_long_name(left_node)
+
+        right_node = maya.cmds.createNode(
+            'transform', name='right', parent=top_node)
+        right_node = node_utils.get_long_name(right_node)
+
+        # Same name as right_same_node
+        left_same_node = maya.cmds.createNode(
+            'transform', name='same', parent=left_node)
+        left_same_node = node_utils.get_long_name(left_same_node)
+
+        # Same name as left_same_node
+        right_same_node = maya.cmds.createNode(
+            'transform', name='same', parent=right_node)
+        right_same_node = node_utils.get_long_name(right_same_node)
+
+        left_attr = attribute.Attribute(node=left_same_node, attr='translateX')
+        right_attr = attribute.Attribute(node=right_same_node, attr='translateX')
+
+        self.assertEqual(left_attr.get_node(), '|top_node|left|same')
+        self.assertEqual(left_attr.get_name(), '|top_node|left|same.translateX')
+
+        self.assertEqual(right_attr.get_node(), '|top_node|right|same')
+        self.assertEqual(right_attr.get_name(), '|top_node|right|same.translateX')
+        return
+
 
 if __name__ == '__main__':
     prog = unittest.main()

@@ -24,9 +24,25 @@ solver type.
 
 import mmSolver.logger
 import mmSolver._api.action as api_action
+import mmSolver._api.compile as api_compile
+import mmSolver._api.solveraffects as solveraffects
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def compile_solver_affects(col, mkr_list, attr_list,
+                           precomputed_data,
+                           withtest):
+    sol = solveraffects.SolverAffects()
+    sol.set_precomputed_data(precomputed_data)
+
+    cache = api_compile.create_compile_solver_cache()
+    generator = api_compile.compile_solver_with_cache(
+        sol, col, mkr_list, attr_list, withtest, cache)
+    for action, vaction in generator:
+        yield action, vaction
+    return
 
 
 def compile_euler_filter(attr_list, withtest):

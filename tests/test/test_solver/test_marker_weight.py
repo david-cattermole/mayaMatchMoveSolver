@@ -138,17 +138,24 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
-            (1),
+            1,
         ]
+
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
             frame=frames,
             verbose=True,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s
@@ -191,17 +198,24 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
-            (1),
+            1,
         ]
+
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
             frame=frames,
             verbose=True,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s
@@ -250,17 +264,24 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
-            (1),
+            1,
         ]
+
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
             frame=frames,
             verbose=True,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s
@@ -303,17 +324,24 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
-            (1),
+            1,
         ]
+
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
             frame=frames,
             verbose=True,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s
@@ -358,17 +386,24 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
         frames = [
-            (1),
+            1,
         ]
+
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
             frame=frames,
             verbose=True,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s

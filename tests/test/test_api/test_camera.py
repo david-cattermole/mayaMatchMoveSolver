@@ -25,14 +25,26 @@ import unittest
 
 import maya.cmds
 
-
 import test.test_api.apiutils as test_api_utils
 import mmSolver.utils.node as node_utils
 import mmSolver._api.camera as camera
+import mmSolver._api.constant as const
 
 
 # @unittest.skip
 class TestCamera(test_api_utils.APITestCase):
+
+    @staticmethod
+    def create_camera(name):
+        assert isinstance(name, basestring)
+        cam_tfm = maya.cmds.createNode('transform', name=name)
+        cam_tfm = node_utils.get_long_name(cam_tfm)
+        shp_name = name + 'Shape'
+        cam_shp = maya.cmds.createNode(
+            'camera', name=shp_name, parent=cam_tfm)
+        cam_shp = node_utils.get_long_name(cam_shp)
+        return cam_tfm, cam_shp
+
     def test_init(self):
         x = camera.Camera()
         x_tfm = x.get_transform_node()
@@ -67,20 +79,56 @@ class TestCamera(test_api_utils.APITestCase):
         self.assertEqual(z2_tfm, cam_tfm)
         self.assertEqual(z2_shp, cam_shp)
 
-    # def test_get_transform_node(self):
-    #     pass
+    def test_init_with_non_standard_transform_node(self):
+        """
+        Create a camera with a custom transform node.
 
-    # def test_set_transform_node(self):
-    #     pass
+        Some pipelines custom transform nodes for camera transform
+        nodes.
 
-    # def test_get_shape_node(self):
-    #     pass
+        GitHub issue #123.
+        """
+        custom_node_type = 'mmMarkerGroupTransform'
+        # Create nodes
+        cam_tfm = maya.cmds.createNode(custom_node_type, name='myCamera1')
+        cam_tfm = node_utils.get_long_name(cam_tfm)
+        cam_shp = maya.cmds.createNode('camera', name='myCameraShape1',
+                                       parent=cam_tfm)
+        cam_shp = node_utils.get_long_name(cam_shp)
 
-    # def test_set_shape_node(self):
-    #     pass
+        y = camera.Camera(transform=cam_tfm, shape=cam_shp)
+        y_tfm = y.get_transform_node()
+        y_tfm_uid = y.get_transform_uid()
+        y_tfm_uid_node = node_utils.get_long_name(y_tfm_uid)
+        y_shp = y.get_shape_node()
+        y_shp_uid = y.get_shape_uid()
+        y_shp_uid_node = node_utils.get_long_name(y_shp_uid)
+        self.assertTrue(maya.cmds.objExists(y_tfm))
+        self.assertTrue(maya.cmds.objExists(y_shp))
+        self.assertTrue(maya.cmds.objExists(y_tfm_uid_node))
+        self.assertTrue(maya.cmds.objExists(y_shp_uid_node))
+        self.assertEqual(y_tfm, cam_tfm)
+        self.assertEqual(y_shp, cam_shp)
+        self.assertEqual(y_tfm_uid_node, cam_tfm)
+        self.assertEqual(y_shp_uid_node, cam_shp)
+        return
 
-    # def test_is_valid(self):
-    #     pass
+    def test_get_plate_resolution(self):
+        cam_tfm, cam_shp = self.create_camera('myCamera')
+        x = camera.Camera(transform=cam_tfm, shape=cam_shp)
+        res = x.get_plate_resolution()
+        self.assertTrue(isinstance(res, (tuple, list)))
+        self.assertEqual(len(res), 2)
+        self.assertEqual(res[0], const.DEFAULT_PLATE_WIDTH)
+        self.assertEqual(res[1], const.DEFAULT_PLATE_HEIGHT)
+        return
+
+    def test_is_valid(self):
+        cam_tfm, cam_shp = self.create_camera('myCamera')
+        x = camera.Camera(transform=cam_tfm, shape=cam_shp)
+        valid = x.is_valid()
+        self.assertTrue(valid)
+        return
 
 
 if __name__ == '__main__':

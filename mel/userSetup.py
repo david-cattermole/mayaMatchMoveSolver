@@ -59,9 +59,18 @@ def mmsolver_create_hotkey_set():
     mmSolver.tools.mmhotkeyset.tool.build_hotkey_set()
 
 
+def mmsolver_register_events():
+    """
+    Initialise the built-in (non-maya) events for mmSolver.
+    """
+    import mmSolver.tools.registerevents.tool
+    mmSolver.tools.registerevents.tool.register_events()
+
+
 def mmsolver_startup():
     """
-    Responsible for starting up mmSolver.
+    Responsible for starting up mmSolver, including creating shelves,
+    hotkeys and menus.
     """
     LOG.info('MM Solver Startup...')
 
@@ -89,6 +98,9 @@ def mmsolver_startup():
         LOG.debug('Build Hotkey Set: %r', build_hotkey_set)
         if build_hotkey_set is True:
             maya.utils.executeDeferred(mmsolver_create_hotkey_set)
+
+        # Register Events.
+        maya.utils.executeDeferred(mmsolver_register_events)
     return
 
 

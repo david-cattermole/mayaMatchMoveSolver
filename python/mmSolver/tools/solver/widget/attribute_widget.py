@@ -49,14 +49,6 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def _populateWidgetsEnabled(widgets):
-    col = lib_state.get_active_collection()
-    enabled = col is not None
-    for widget in widgets:
-        widget.setEnabled(enabled)
-    return
-
-
 def _convertNodeListToAttrList(node_list):
     """
     Convert a list of MayaNode or AttrNode objects to a flat list of
@@ -107,16 +99,17 @@ def _lookupMayaNodesFromAttrUINodes(indexes, model):
 class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
 
     def __init__(self, parent=None, *args, **kwargs):
-        super(AttributeBrowserWidget, self).__init__(*args, **kwargs)
+        s = time.time()
+        super(AttributeBrowserWidget, self).__init__(parent, *args, **kwargs)
 
         self.ui.title_label.setText('Output Attributes')
 
         self.createToolButtons()
         self.createTreeView()
 
-        self.dataChanged.connect(self.updateModel)
-
         self.callback_manager = maya_callbacks.CallbackManager()
+        e = time.time()
+        LOG.debug('AttributeBrowserWidget init: %r seconds', e - s)
         return
 
     def __del__(self):
@@ -186,11 +179,11 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.treeView.setColumnHidden(column, hidden)
         return
 
-    def populateModel(self, model):
+    def populateModel(self, model, col):
+        s = time.time()
         valid = uiutils.isValidQtObject(model)
         if valid is False:
             return
-        col = lib_state.get_active_collection()
         attr_list = []
         show_anm = const.ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE
         show_stc = const.ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE
@@ -201,12 +194,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             show_stc = lib_col.get_attribute_toggle_static_from_collection(col)
             show_lck = lib_col.get_attribute_toggle_locked_from_collection(col)
 
-        def update_func():
-            if uiutils.isValidQtObject(self) is False:
-                return
-            self.dataChanged.emit()
-            return
-
         # Add Callbacks
         #
         # When querying attributes, we must make sure they have a Maya
@@ -215,8 +202,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         if callback_manager is not None:
             lib_attr.add_callbacks_to_attributes(
                 attr_list,
-                update_func,
-                callback_manager
+                callback_manager,
             )
         root = convert_to_ui.attributesToUINodes(
             col,
@@ -225,29 +211,35 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             show_stc,
             show_lck)
         model.setRootNode(root)
+
+        e = time.time()
+        LOG.debug('populateModel: %r', e - s)
         return
 
     def updateInfo(self):
+        s = time.time()
         is_running = mmapi.is_solver_running()
         if is_running is True:
             return
-        anm_list = []
-        stc_list = []
-        lck_list = []
 
-        text = 'Animated {anm} | Static {stc} | Locked {lck}'
-
+        anm_count = 0
+        stc_count = 0
+        lck_count = 0
         col = lib_state.get_active_collection()
         if col is not None:
             attr_list = col.get_attribute_list()
-            anm_list = [True for attr in attr_list if attr.is_animated()]
-            stc_list = [True for attr in attr_list if attr.is_static()]
-            lck_list = [True for attr in attr_list if attr.is_locked()]
+            attr_state_list = [attr.get_state() for attr in attr_list]
+            anm_count = attr_state_list.count(mmapi.ATTR_STATE_ANIMATED)
+            stc_count = attr_state_list.count(mmapi.ATTR_STATE_STATIC)
+            lck_count = attr_state_list.count(mmapi.ATTR_STATE_LOCKED)
 
-        text = text.format(anm=len(anm_list),
-                           stc=len(stc_list),
-                           lck=len(lck_list))
+        text = (
+            'Animated {anm} | Static {stc} | Locked {lck}'
+        ).format(anm=anm_count, stc=stc_count, lck=lck_count)
         self.ui.info_label.setText(text)
+
+        e = time.time()
+        LOG.debug('updateInfo: %r', e - s)
         return
 
     def updateToggleButtons(self):
@@ -280,21 +272,27 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         return
 
     def updateModel(self):
+        s = time.time()
         is_running = mmapi.is_solver_running()
         if is_running is True:
             return
-        self.populateModel(self.model)
-        valid = uiutils.isValidQtObject(self.treeView)
-        if valid is False:
+
+        col = lib_state.get_active_collection()
+        if col is None:
             return
-        self.treeView.expandAll()
 
         widgets = [self]
-        _populateWidgetsEnabled(widgets)
+        nodebrowser_utils._populateWidgetsEnabled(col, widgets)
+        self.populateModel(self.model, col)
+        nodebrowser_utils._expand_node(
+            self.treeView,
+            self.treeView.model(),
+            self.treeView.rootIndex(),
+            expand=True,
+            recurse=False)
 
-        block = self.blockSignals(True)
-        self.dataChanged.emit()
-        self.blockSignals(block)
+        e = time.time()
+        LOG.debug('updateModel: %r', e - s)
         return
 
     def addClicked(self):
@@ -332,30 +330,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             mmapi.set_solver_running(False)  # enable selection callback
         e = time.time()
         LOG.debug("attribute addClicked3: t=%s", e - s)
-
-        def update_func():
-            if uiutils.isValidQtObject(self) is False:
-                return
-            self.dataChanged.emit()
-            self.viewUpdated.emit()
-            return
-
-        # Add Callbacks
-        s = time.time()
-        callback_manager = self.callback_manager
-        if callback_manager is not None:
-            lib_attr.add_callbacks_to_attributes(
-                attr_list,
-                update_func,
-                callback_manager,
-            )
-        e = time.time()
-        LOG.debug("attribute addClicked4: t=%s", e - s)
-
-        s = time.time()
-        update_func()
-        e = time.time()
-        LOG.debug("attribute addClicked5: t=%s", e - s)
 
         # Restore selection.
         s = time.time()
@@ -408,12 +382,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             LOG.debug("attribute removeClicked4: t=%s", e - s)
         finally:
             mmapi.set_solver_running(False)  # enable selection callback
-
-        s = time.time()
-        self.dataChanged.emit()
-        self.viewUpdated.emit()
-        e = time.time()
-        LOG.debug("attribute removeClicked5: t=%s", e - s)
 
         # Restore selection.
         s = time.time()

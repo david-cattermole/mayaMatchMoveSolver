@@ -39,8 +39,8 @@ def get_camera(node):
     """
     cam_tfm = None
     cam_shp = None
-    node_type = maya.cmds.nodeType(node)
-    if node_type == 'camera':
+    inherited_node_types = maya.cmds.nodeType(node, inherited=True) or []
+    if 'camera' in inherited_node_types:
         cam_shp = node_utils.get_long_name(node)
         nodes = maya.cmds.listRelatives(
             cam_shp,
@@ -48,7 +48,7 @@ def get_camera(node):
             fullPath=True
         ) or []
         cam_tfm = nodes[0]
-    elif node_type == 'transform':
+    elif 'transform' in inherited_node_types:
         cam_tfm = node_utils.get_long_name(node)
         nodes = maya.cmds.listRelatives(
             cam_tfm,
@@ -62,8 +62,10 @@ def get_camera(node):
             cam_tfm = None
             cam_shp = None
     else:
-        msg = 'Node type not recognised as a camera! node_type=%r'
-        LOG.warn(msg, node_type)
+        node_type = maya.cmds.nodeType(node)
+        msg = ('Node type not recognised as a camera! '
+               'node=%r node_type=%r')
+        LOG.warn(msg, node, node_type)
     return cam_tfm, cam_shp
 
 

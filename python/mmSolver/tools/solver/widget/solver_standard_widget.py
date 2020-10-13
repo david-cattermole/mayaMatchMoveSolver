@@ -19,6 +19,8 @@
 Solver Settings 'Standard' widget.
 """
 
+import time
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -95,6 +97,7 @@ class SolverStandardWidget(QtWidgets.QWidget,
     sendWarning = QtCore.Signal(str)
 
     def __init__(self, parent=None, *args, **kwargs):
+        s = time.time()
         super(SolverStandardWidget, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
@@ -115,6 +118,8 @@ class SolverStandardWidget(QtWidgets.QWidget,
         self.dataChanged.connect(self.updateModel)
         self.frameRange_widget.rangeTypeChanged.connect(self.updateModel)
         self.rootFrames_widget.sendWarning.connect(self._sendWarningToUser)
+        e = time.time()
+        LOG.debug('SolverStandardWidget init: %r seconds', e - s)
         return
 
     def getOnlyRootFramesValue(self, col):

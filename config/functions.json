@@ -235,7 +235,7 @@
             "tooltip": "Link the selected Marker and Bundle together.",
             "command": [
                 "import mmSolver.tools.linkmarkerbundle.tool as link_mb_tool;",
-            "link_mb_tool.link_marker_bundle();"
+                "link_mb_tool.link_marker_bundle();"
             ]
         },
         "unlink_marker_bundle": {
@@ -367,6 +367,15 @@
             "command": [
                 "import mmSolver.tools.centertwodee.tool;",
                 "mmSolver.tools.centertwodee.tool.remove();"
+            ]
+        },
+        "open_graph_editor": {
+            "name": "Graph Editor...",
+            "name_shelf": "GE",
+            "tooltip": "Open the Graph Editor window.",
+            "command_lang": "mel",
+            "command": [
+                "GraphEditor;"
             ]
         },
         "set_attr_details_ui": {

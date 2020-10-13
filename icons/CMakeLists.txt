@@ -31,3 +31,24 @@ add_custom_target(
         DEPENDS ${output_file}
         COMMENT "Building Icons (with Qt Resource Compiler) (${input_file})..."
 )
+
+
+# Install Icons.
+install(DIRECTORY "icons/"
+  DESTINATION "${MODULE_FULL_NAME}/resources"
+  FILES_MATCHING PATTERN "*.rcc"
+  PATTERN "icons/edit" EXCLUDE
+  PATTERN "icons/library" EXCLUDE
+  PATTERN "icons/ui" EXCLUDE)
+install(DIRECTORY "icons/"
+  DESTINATION "${MODULE_FULL_NAME}/icons"
+  FILES_MATCHING PATTERN "*.png"
+  PATTERN "icons/edit" EXCLUDE
+  PATTERN "icons/library" EXCLUDE
+  PATTERN "icons/ui" EXCLUDE)
+install(DIRECTORY "icons/"
+  DESTINATION "${MODULE_FULL_NAME}/icons"
+  FILES_MATCHING PATTERN "*.svg"
+  PATTERN "icons/edit" EXCLUDE
+  PATTERN "icons/library" EXCLUDE
+  PATTERN "icons/ui" EXCLUDE)

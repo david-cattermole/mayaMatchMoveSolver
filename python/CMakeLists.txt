@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -19,6 +19,22 @@
 # Generate .py files from Qt .ui
 
 find_package(Maya REQUIRED)
+
+# Create Python file with some build options baked in.
+if (BUILD_PYTHON)
+    configure_file(
+            ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py.in
+            ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py
+            @ONLY)
+
+    # Create Python file for documentation sphinx build with some build
+    # options baked in.
+    configure_file(
+            ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py.in
+            ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py
+            @ONLY)
+endif ()
+
 
 function(add_ui_compile
         name
@@ -87,4 +103,12 @@ if (BUILD_QT_UI)
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/setattributedetails/ui/dialog.ui
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/setattributedetails/ui/ui_dialog.py
             )
+endif ()
+
+
+# Install Python API and tools
+if (BUILD_PYTHON)
+    install(DIRECTORY "python/"
+            DESTINATION "${MODULE_FULL_NAME}/python"
+            FILES_MATCHING PATTERN "*.py")
 endif ()

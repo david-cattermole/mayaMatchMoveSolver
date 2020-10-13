@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -18,7 +18,7 @@
 #
 # Maya MatchMoveSolver build script.
 #
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.12)
 
 
 # Project configuration.
@@ -32,66 +32,49 @@ set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodes
 set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
 set(PROJECT_COPYRIGHT "2018, 2019, 2020, David Cattermole, Anil Reddy.")
 
-# Explicitly enable features
-set(CMAKE_MACOSX_RPATH 1)
 
 # Add custom modules to the module path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 
 # Build options; What will we build?  This is used mostly for
 # developer debug. If the developer is working on some Python code
 # only, we don't need to wait for the Maya Plug-In to compute each
 # time.
-set(BUILD_PLUGIN 1 CACHE BOOLEAN
-        "Do you want to build the plug-in?")
-set(BUILD_PYTHON 1 CACHE BOOLEAN
-        "Do you want to build and install the Python API and tools?")
-set(BUILD_MEL 1 CACHE BOOLEAN
-        "Do you want to build and install the MEL scripts and tools?")
-set(BUILD_QT_UI 1 CACHE BOOLEAN
-        "Do you want to build the Qt UI files?")
-set(BUILD_DOCS 1 CACHE BOOLEAN
-        "Do you want to build and install the documentation?")
-set(BUILD_ICONS 1 CACHE BOOLEAN
-        "Do you want to build and install the icons?")
-set(BUILD_CONFIG 1 CACHE BOOLEAN
-        "Do you want to build and install the config files?")
-set(BUILD_TESTS 1 CACHE BOOLEAN
-        "Do you want to build the test files?")
+set(BUILD_PLUGIN 1 CACHE BOOLEAN "Do you want to build the plug-in?")
+set(BUILD_PYTHON 1 CACHE BOOLEAN "Do you want to build and install the Python API and tools?")
+set(BUILD_MEL 1 CACHE BOOLEAN "Do you want to build and install the MEL scripts and tools?")
+set(BUILD_3DEQUALIZER 1 CACHE BOOLEAN "Do you want to build and install 3DEqualizer scripts?")
+set(BUILD_SYNTHEYES 1 CACHE BOOLEAN "Do you want to build and install SynthEyes scripts?")
+set(BUILD_QT_UI 1 CACHE BOOLEAN "Do you want to build the Qt UI files?")
+set(BUILD_DOCS 1 CACHE BOOLEAN "Do you want to build and install the documentation?")
+set(BUILD_ICONS 1 CACHE BOOLEAN "Do you want to build and install the icons?")
+set(BUILD_CONFIG 1 CACHE BOOLEAN "Do you want to build and install the config files?")
+set(BUILD_TESTS 1 CACHE BOOLEAN "Do you want to build the test files?")
 
 
 # Maya SDK
-set(MAYA_VERSION "2017" CACHE STRING
-        "Maya version number")
-set(MAYA_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH
-        "Maya install directory")
-set(DEVKIT_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH
-        "Maya development kit (devkit) directory")
-set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH
-        "Maya include directory")
-set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH
-        "Maya library directory")
+set(MAYA_VERSION "2017" CACHE STRING "Maya version number")
+set(MAYA_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH "Maya install directory")
+set(DEVKIT_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH "Maya development kit (devkit) directory")
+set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH "Maya include directory")
+set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH "Maya library directory")
 
 
 # Lev-Mar
 #
 # WARNING: 'Lev-Mar' is GPL licensed and must not be
 # distributed in binary form to anyone.
-set(USE_GPL_LEVMAR 0 CACHE BOOLEAN
-        "Compile with the GPL-licensed Lev-Mar library?")
+set(USE_GPL_LEVMAR 0 CACHE BOOLEAN "Compile with the GPL-licensed Lev-Mar library?")
 set(LEVMAR_ROOT "/usr/local" CACHE PATH "Levmar directory")
-set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH
-        "Levmar include directory")
+set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH "Levmar include directory")
 set(LEVMAR_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
 
 
 # CMinpack
 set(USE_CMINPACK 1 CACHE BOOLEAN "Compile with the cminpack library?")
 set(CMINPACK_ROOT "/usr/local" CACHE PATH "CMinpack directory")
-set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH
-        "cminpack include directory")
+set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH "cminpack include directory")
 set(CMINPACK_LIB_PATH "/usr/local/lib" CACHE PATH "cminpack library directory")
 
 
@@ -99,118 +82,33 @@ set(CMINPACK_LIB_PATH "/usr/local/lib" CACHE PATH "cminpack library directory")
 set(USE_BLAS OFF CACHE BOOLEAN "Should we use BLAS?")
 set(BLAS_INCLUDE_PATH "/usr/include/blas" CACHE PATH "BLAS library directory")
 set(BLAS_LIB_PATH "/usr/lib64/blas" CACHE PATH "BLAS library directory")
-set(BLAS_LIB_NAMES
-        ""
-        CACHE STRING
-        "BLAS libraries to link")
-
+set(BLAS_LIB_NAMES "" CACHE STRING "BLAS libraries to link")
 
 # Default Solver to use.
-set(PREFERRED_SOLVER "cminpack_lmder" CACHE STRING
-        "Choices are cminpack_lm, cminpack_lmder or levmar. Which solver is used by default?")
+set(PREFERRED_SOLVER "cminpack_lmder" CACHE STRING "Choices are cminpack_lm, cminpack_lmder or levmar. Which solver is used by default?")
 
-# Module paths
-if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    set(MODULE_OS_NAME mac)
-elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
-    set(MODULE_OS_NAME linux)
-elseif(CMAKE_SYSTEM_NAME STREQUAL Windows)
-    set(MODULE_OS_NAME win64)
-else ()
-    message(FATAL_ERROR "Only Linux, MacOS and Windows are supported.")
-endif ()
+include(MMSolverUtils)
 
-# Module names
-set(MODULE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
-set(MODULE_FULL_NAME "${MODULE_NAME}-maya${MAYA_VERSION}-${MODULE_OS_NAME}")
-set(MODULE_BUILD_DIR "${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}")
+if(MSVC)
+  add_compile_options(/W4 /WX)
+else()
+  add_compile_options(-W -Wall -Werror -Wpedantic)
+endif()
 
+# Build features
+add_subdirectory(modules)
 
-# Set a default solver
-set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
-if ((USE_GPL_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 1))
-    # Support both levmar and cminpack.
-elseif ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
-    if (NOT (DEFAULT_SOLVER MATCHES "cminpack_lm[a-zA-Z]+"))
-        message(WARNING
-                "Preferred solver cannot be used because it's not enabled. "
-                "preferred=${PREFERRED_SOLVER} "
-                "default=${DEFAULT_SOLVER} "
-                "use_cminpack=${USE_CMINPACK} "
-                "use_gpl_levmar=${USE_GPL_LEVMAR}"
-                )
-        set(DEFAULT_SOLVER "cminpack_lm")
-    endif ()
-elseif ((USE_GPL_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 0))
-    if (NOT (DEFAULT_SOLVER STREQUAL "levmar"))
-        message(WARNING
-                "Preferred solver cannot be used because it's not enabled. "
-                "preferred=${PREFERRED_SOLVER} "
-                "default=${DEFAULT_SOLVER} "
-                "use_cminpack=${USE_CMINPACK} "
-                "use_gpl_levmar=${USE_GPL_LEVMAR}"
-                )
-        set(DEFAULT_SOLVER "levmar")
-    endif ()
-else ()
-    message(FATAL_ERROR
-            " Solver is not available! "
-            "preferred=${PREFERRED_SOLVER} "
-            "default=${DEFAULT_SOLVER} "
-            "use_cminpack=${USE_CMINPACK} "
-            "use_gpl_levmar=${USE_GPL_LEVMAR}"
-            )
-endif ()
+# add_subdirectory(external)
 
-
-# Create Module Description file.
-if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/modules/mayaMatchMoveSolver_mac.mod
-            ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_FULL_NAME}.mod
-            @ONLY)
-elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
-    configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/modules/mayaMatchMoveSolver_linux.mod
-            ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_FULL_NAME}.mod
-            @ONLY)
-elseif(CMAKE_SYSTEM_NAME STREQUAL Windows)
-    configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/modules/mayaMatchMoveSolver_windows.mod
-            ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_FULL_NAME}.mod
-            @ONLY)
-else ()
-    message(FATAL_ERROR "Only Linux, MacOS and Windows are supported.")
-endif ()
-
-
-# Create Python file with some build options baked in.
-if (BUILD_PYTHON)
-    configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py.in
-            ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py
-            @ONLY)
-endif ()
-
-
-# Create C Header file with some build options baked in.
 if (BUILD_PLUGIN)
-    configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h.in
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h
-            @ONLY)
+  add_subdirectory(python)
 endif ()
 
-
-# Create Python file for documentation sphinx build with some build
-# options baked in.
 if (BUILD_PYTHON)
-    configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py.in
-            ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py
-            @ONLY)
+  add_subdirectory(python)
 endif ()
 
+<<<<<<< Updated upstream
 
 # Source
 set(SOURCE_FILES
@@ -466,149 +364,44 @@ if (BUILD_PLUGIN)
             RUNTIME_OUTPUT_DIRECTORY "${MODULE_FULL_NAME}"
             LIBRARY_OUTPUT_DIRECTORY "${MODULE_FULL_NAME}"
             ARCHIVE_OUTPUT_DIRECTORY "${MODULE_FULL_NAME}")
-endif ()
-
-
-# Install the Module Description file.
-install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_FULL_NAME}.mod
-        DESTINATION "./")
-
-
-if (BUILD_PLUGIN)
-    # Install the Plug-In.
-    install(TARGETS mmSolver
-            RUNTIME DESTINATION "${MODULE_FULL_NAME}/plug-ins"
-            LIBRARY DESTINATION "${MODULE_FULL_NAME}/plug-ins")
-
-
-    # Install dynamic libraries; cminpack
-    if (USE_CMINPACK AND CMINPACK_FOUND)
-        if (WIN32)
-            if (EXISTS ${CMINPACK_LIBRARY_DLL})
-                install(FILES ${CMINPACK_LIBRARY_DLL}
-                        DESTINATION "${MODULE_FULL_NAME}/lib/")
-            else ()
-                install(FILES ${CMINPACK_LIBRARY}
-                        DESTINATION "${MODULE_FULL_NAME}/lib/")
-            endif ()
-        elseif (UNIX)
-            # Install both symlink and real library
-            get_filename_component(ABS_CMINPACK_LIBRARY ${CMINPACK_LIBRARY} REALPATH)
-            install(FILES ${CMINPACK_LIBRARY}
-                    DESTINATION "${MODULE_FULL_NAME}/lib/")
-            install(FILES ${ABS_CMINPACK_LIBRARY}
-                    DESTINATION "${MODULE_FULL_NAME}/lib/")
-        endif ()
-    endif ()
-
-    # Install dynamic libraries; levmar
-    if (USE_GPL_LEVMAR AND LEVMAR_FOUND)
-        if (WIN32)
-            if (EXISTS ${LEVMAR_LIBRARY_DLL})
-                install(FILES ${LEVMAR_LIBRARY_DLL}
-                        DESTINATION "${MODULE_FULL_NAME}/lib/")
-            else ()
-                install(FILES ${LEVMAR_LIBRARY}
-                        DESTINATION "${MODULE_FULL_NAME}/lib/")
-            endif ()
-        elseif (UNIX)
-            # Install both symlink and real library
-            get_filename_component(ABS_LEVMAR_LIBRARY ${LEVMAR_LIBRARY} REALPATH)
-            install(FILES ${LEVMAR_LIBRARY}
-                    DESTINATION "${MODULE_FULL_NAME}/lib/")
-            install(FILES ${ABS_LEVMAR_LIBRARY}
-                    DESTINATION "${MODULE_FULL_NAME}/lib/")
-        endif ()
-    endif ()
-endif ()
-
-
-# Install Qt.py, if exists.
-set(QTPY_FILE "${CMAKE_SOURCE_DIR}/external/install/qtpy/Qt.py")
-if (EXISTS ${QTPY_FILE})
-    install(FILES ${QTPY_FILE}
-            DESTINATION "${MODULE_FULL_NAME}/python_qtpy/")
-endif ()
-
-
-# Install Python API and tools
-if (BUILD_PYTHON)
-    install(DIRECTORY "python/"
-            DESTINATION "${MODULE_FULL_NAME}/python"
-            FILES_MATCHING PATTERN "*.py")
-endif ()
-
-
-# Install Maya MEL and Python scripts.
+=======
 if (BUILD_MEL)
-    install(DIRECTORY "mel/"
-            DESTINATION "${MODULE_FULL_NAME}/scripts"
-            FILES_MATCHING PATTERN "*.mel")
-    install(DIRECTORY "mel/"
-            DESTINATION "${MODULE_FULL_NAME}/scripts"
-            FILES_MATCHING PATTERN "*.py")
-    install(DIRECTORY "mel/AETemplates/"
-            DESTINATION "${MODULE_FULL_NAME}/scripts/AETemplates"
-            FILES_MATCHING PATTERN "*.mel")
+  add_subdirectory(mel)
+>>>>>>> Stashed changes
 endif ()
 
-
-# Install 3DEqualizer scripts.
-install(DIRECTORY "3dequalizer/scriptdb/"
-        DESTINATION "${MODULE_FULL_NAME}/3dequalizer"
-        FILES_MATCHING PATTERN "*.py")
-
-
-# Install SynthEyes scripts.
-install(DIRECTORY "syntheyes/"
-        DESTINATION "${MODULE_FULL_NAME}/syntheyes"
-        FILES_MATCHING PATTERN "*.szl")
-
-
-# Install Config.
-if (BUILD_CONFIG)
-    install(DIRECTORY "config/"
-            DESTINATION "${MODULE_FULL_NAME}/config"
-            FILES_MATCHING PATTERN "*.json")
-endif ()
-
-
-# Install Icons.
-if (BUILD_ICONS)
-    install(DIRECTORY "icons/"
-            DESTINATION "${MODULE_FULL_NAME}/resources"
-            FILES_MATCHING PATTERN "*.rcc"
-            PATTERN "icons/edit" EXCLUDE
-            PATTERN "icons/library" EXCLUDE
-            PATTERN "icons/ui" EXCLUDE)
-    install(DIRECTORY "icons/"
-            DESTINATION "${MODULE_FULL_NAME}/icons"
-            FILES_MATCHING PATTERN "*.png"
-            PATTERN "icons/edit" EXCLUDE
-            PATTERN "icons/library" EXCLUDE
-            PATTERN "icons/ui" EXCLUDE)
-    install(DIRECTORY "icons/"
-            DESTINATION "${MODULE_FULL_NAME}/icons"
-            FILES_MATCHING PATTERN "*.svg"
-            PATTERN "icons/edit" EXCLUDE
-            PATTERN "icons/library" EXCLUDE
-            PATTERN "icons/ui" EXCLUDE)
-endif ()
-
-
-# Install Documentation
 if (BUILD_DOCS)
-    install(DIRECTORY "docs/build/html/"
-            DESTINATION "${MODULE_FULL_NAME}/docs/html")
+  add_subdirectory(docs)
 endif ()
+
+if (BUILD_3DEQUALIZER)
+  add_subdirectory(3dequalizer)
+endif ()
+
+if (BUILD_SYNTHEYES)
+  add_subdirectory(syntheyes)
+endif ()
+
+if (BUILD_ICONS)
+  add_subdirectory(icons)
+endif ()
+
+if (BUILD_CONFIG)
+  add_subdirectory(config)
+endif ()
+
+if (BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif ()
+
 
 # Install misc files
 install(FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
-        ${CMAKE_CURRENT_SOURCE_DIR}/INSTALL.md
-        ${CMAKE_CURRENT_SOURCE_DIR}/README.md
-        DESTINATION "${MODULE_FULL_NAME}/")
+  ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
+  ${CMAKE_CURRENT_SOURCE_DIR}/INSTALL.md
+  ${CMAKE_CURRENT_SOURCE_DIR}/README.md
+  DESTINATION "${MODULE_FULL_NAME}/")
 
 
 # Package Configuration.
@@ -627,11 +420,11 @@ set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 1)
 # another build, it's not removed as part of the clean up.
 SET(CPACK_OUTPUT_FILE_PREFIX "../packages")
 if (WIN32 AND NOT UNIX)
-    # .zip file for Windows.
-    set(CPACK_GENERATOR "ZIP")
+  # .zip file for Windows.
+  set(CPACK_GENERATOR "ZIP")
 elseif (UNIX AND NOT WIN32)
-    # .tar.gz for Linux and MacOS.
-    set(CPACK_GENERATOR "TGZ")
+  # .tar.gz for Linux.
+  set(CPACK_GENERATOR "TGZ")
 endif ()
 
 
@@ -642,20 +435,3 @@ endif ()
 # Use CPack (part of CMake) to generate the packages...
 # If 'CPack' is not included, the 'packages' target will not be generated.
 include(CPack)
-
-if (BUILD_PYTHON)
-    add_subdirectory(python)
-endif ()
-
-if (BUILD_DOCS)
-    add_subdirectory(docs)
-endif ()
-
-if (BUILD_ICONS)
-    add_subdirectory(icons)
-endif ()
-
-if (BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(tests)
-endif ()

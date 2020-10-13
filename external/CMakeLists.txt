@@ -16,10 +16,10 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# This CMake script is for building and organising the 'external' dependancies
-# for Maya MatchMove Solver.
+# This CMake script is for building and organising the 'external'
+# dependancies for Maya MatchMove Solver.
 #
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.12)
 find_package(Python2 COMPONENTS Interpreter REQUIRED)
 
 set(ARCHIVES_DIR "${CMAKE_SOURCE_DIR}/archives")
@@ -31,6 +31,14 @@ set(CMINPACK_EXTRACTED_FILE "${WORKING_DIR}/cminpack-1.3.6")
 
 set(LEVMAR_DOWNLOAD_FILE "${ARCHIVES_DIR}/levmar-2.6.tgz")
 set(LEVMAR_EXTRACTED_FILE "${WORKING_DIR}/levmar-2.6")
+
+
+# Install Qt.py, if exists.
+set(QTPY_FILE "${CMAKE_SOURCE_DIR}/external/install/qtpy/Qt.py")
+if (EXISTS ${QTPY_FILE})
+  install(FILES ${QTPY_FILE}
+    DESTINATION "${MODULE_FULL_NAME}/python_qtpy/")
+endif ()
 
 
 # Extract CMinpack

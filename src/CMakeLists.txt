@@ -152,7 +152,7 @@ if (MSVC)
   # the plug-in won't load.
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /export:initializePlugin /export:uninitializePlugin")
 else (APPLE)
-  
+
   # For MacOS with Clang (which is the supported compiler for Maya
   # 2018+)
   set(CMAKE_CXX_FLAGS "")  # Zero out the C++ flags, we have complete control.
@@ -223,7 +223,7 @@ target_link_libraries(mmSolver
 #   target_include_directories(mmSolver PUBLIC ${LEVMAR_INCLUDE_DIRS})
 #   target_link_libraries(mmSolver PUBLIC ${LEVMAR_LIBRARIES})
 #   target_compile_definitions(mmSolver PRIVATE USE_SOLVER_LEVMAR)
-  
+
 #   if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
 #     # To locate Levmar from the mmSolver dynamic library we
 #     # must change the "install name" to a path relative to the
@@ -248,7 +248,7 @@ if (USE_CMINPACK)
   target_link_libraries(mmSolver PUBLIC ${CMINPACK_LIBRARIES})
   target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CMINPACK)
 
-  if(CMAKE_SYSTEM_NAME STREQUAL Darwin)          
+  if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
     # To locate CMinpack from the mmSolver dynamic library we
     # must change the "install name" to a path relative to the
     # loaded bundle.

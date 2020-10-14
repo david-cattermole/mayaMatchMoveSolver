@@ -104,7 +104,6 @@ def get_image_path_tokens(file_path):
     file_frame_ext_match = file_frame_ext_prog.match(tail)
     if file_frame_ext_match:
         grps = file_frame_ext_match.groups()
-        frame_num_padding = len(str(grps[2]))
         data = {
             'name': grps[0],
             'frame': grps[2],

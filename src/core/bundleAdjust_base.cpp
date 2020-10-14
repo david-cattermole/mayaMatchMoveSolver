@@ -821,7 +821,7 @@ void _splitIntoUsedAndUnusedLists(_T inputList,
     usedList.clear();
     unusedList.clear();
 
-    for (int i = 0; i < inputList.size(); ++i) {
+    for (size_t i = 0; i < inputList.size(); ++i) {
         bool used = false;
         _V object = inputList[i];
         IndexCountMapIt it = indexCountMap.find(i);
@@ -1111,10 +1111,10 @@ bool solve(SolverOptions &solverOptions,
             paramFrameList,
             status);
     CHECK_MSTATUS(status);
-    assert(paramLowerBoundList.size() == numberOfParameters);
-    assert(paramUpperBoundList.size() == numberOfParameters);
-    assert(paramWeightList.size() == numberOfParameters);
-    assert(numberOfParameters >= usedAttrList.size());
+    assert(paramLowerBoundList.size() == static_cast<size_t>(numberOfParameters));
+    assert(paramUpperBoundList.size() == static_cast<size_t>(numberOfParameters));
+    assert(paramWeightList.size() == static_cast<size_t>(numberOfParameters));
+    assert(static_cast<size_t>(numberOfParameters) >= usedAttrList.size());
 
     // Expand the 'Marker to Attribute' relationship into errors and
     // parameter relationships.
@@ -1246,9 +1246,7 @@ bool solve(SolverOptions &solverOptions,
         std::string tmp_string = ss.str();
 
         size_t num = 100 - tmp_string.size();
-        if (num < 0) {
-            num = 0;
-        }
+        num = std::min<size_t>(0, num);
         std::string pad_chars(num, '=');
 
         MStreamUtils::stdErrorStream() << tmp_string << " " << pad_chars << std::endl;

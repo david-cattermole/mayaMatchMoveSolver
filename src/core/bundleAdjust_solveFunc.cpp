@@ -169,11 +169,7 @@ MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
 double calculateParameterDelta(double value,
                                double delta,
                                double sign,
-                               AttrPtr attr,
-                               CameraPtr cam,
-                               MTime frame) {
-    MStatus status = MS::kSuccess;
-
+                               AttrPtr attr) {
     double xmin = attr->getMinimumValue();
     double xmax = attr->getMaximumValue();
 
@@ -642,7 +638,7 @@ int solveFunc(const int numberOfParameters,
     int numberOfAttrStiffnessErrors = ud->numberOfAttrStiffnessErrors;
     int numberOfAttrSmoothnessErrors = ud->numberOfAttrSmoothnessErrors;
     int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
-    assert(ud->errorToParamList.size() == numberOfMarkers);
+    assert(ud->errorToParamList.size() == static_cast<size_t>(numberOfMarkers));
 
     std::ofstream *debugFile = NULL;
     bool debugIsOpen = false;
@@ -808,8 +804,7 @@ int solveFunc(const int numberOfParameters,
 
             double value = parameters[i];
             double deltaA = calculateParameterDelta(
-                    value, delta, 1,
-                    attr, cam, currentFrame);
+                    value, delta, 1, attr);
 
             std::vector<bool> frameIndexEnabled = ud->paramFrameList[i];
 
@@ -870,7 +865,7 @@ int solveFunc(const int numberOfParameters,
                 // Set the Jacobian matrix using the previously
                 // calculated errors (original and A).
                 double inv_delta = 1.0 / deltaA;
-                for (int j = 0; j < errorListA.size(); ++j) {
+                for (size_t j = 0; j < errorListA.size(); ++j) {
                     int num = (i * ldfjac) + j;
                     double x = (errorListA[j] - errors[j]) * inv_delta;
                     ud->jacobianList[num] = x;
@@ -891,13 +886,12 @@ int solveFunc(const int numberOfParameters,
                 // something has gone wrong and a second evaluation is
                 // not needed.
                 double deltaB = calculateParameterDelta(
-                        value, delta, -1,
-                        attr, cam, currentFrame);
+                        value, delta, -1, attr);
                 if (deltaA == deltaB) {
                     // Set the Jacobian matrix using the previously
                     // calculated errors (original and A).
                     double inv_delta = 1.0 / deltaA;
-                    for (int j = 0; j < errorListA.size(); ++j) {
+                    for (size_ j = 0; j < errorListA.size(); ++j) {
                         int num = (i * ldfjac) + j;
                         double x = (errorListA[j] - errors[j]) * inv_delta;
                         ud->jacobianList[num] = x;
@@ -956,7 +950,7 @@ int solveFunc(const int numberOfParameters,
                     // calculated errors (A and B).
                     assert(errorListA.size() == errorListB.size());
                     double inv_delta = 0.5 / (fabs(deltaA) + fabs(deltaB));
-                    for (int j = 0; j < errorListA.size(); ++j) {
+                    for (size_t j = 0; j < errorListA.size(); ++j) {
                         int num = (i * ldfjac) + j;
                         double x = (errorListA[j] - errorListB[j]) * inv_delta;
                         ud->jacobianList[num] = x;

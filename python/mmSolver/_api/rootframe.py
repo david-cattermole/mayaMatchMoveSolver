@@ -49,7 +49,6 @@ import collections
 import mmSolver.logger
 import mmSolver._api.constant as const
 import mmSolver._api.attribute as attribute
-import mmSolver._api.attributeutils as attributeutils
 
 
 LOG = mmSolver.logger.get_logger()

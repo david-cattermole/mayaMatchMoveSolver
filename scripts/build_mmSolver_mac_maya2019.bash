@@ -90,8 +90,8 @@ PATH=${PATH}:${DEVKIT_BIN_LOCATION}
 CPU_NUM=`sysctl -n hw.physicalcpu`
 
 # Build mmSolver project
-mkdir -p build
-cd build
+mkdir -p build_mac_maya${MAYA_VERSION}_${BUILD_TYPE}
+cd build_mac_maya${MAYA_VERSION}_${BUILD_TYPE}
 if [ ${FRESH_BUILD} -eq 1 ]; then
     rm -f -R *
 fi

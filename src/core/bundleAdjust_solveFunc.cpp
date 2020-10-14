@@ -891,7 +891,7 @@ int solveFunc(const int numberOfParameters,
                     // Set the Jacobian matrix using the previously
                     // calculated errors (original and A).
                     double inv_delta = 1.0 / deltaA;
-                    for (size_ j = 0; j < errorListA.size(); ++j) {
+                    for (size_t j = 0; j < errorListA.size(); ++j) {
                         int num = (i * ldfjac) + j;
                         double x = (errorListA[j] - errors[j]) * inv_delta;
                         ud->jacobianList[num] = x;

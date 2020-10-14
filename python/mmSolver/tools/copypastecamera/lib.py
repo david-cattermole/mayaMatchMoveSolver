@@ -89,6 +89,14 @@ LOG = mmSolver.logger.get_logger()
 
 def get_image_path_tokens(file_path):
     """
+    Split a file_path in the format of 'file.1001.ext' or
+    'file_1001.ext' into tokens.
+
+    The file_path can be a full path, not just a file name.
+
+    :returns:
+        A dictionary with keys 'name', 'frame' and 'ext', or None.
+    :rtype: dict or None
     """
     data = None
     head, tail = os.path.split(file_path)
@@ -107,6 +115,22 @@ def get_image_path_tokens(file_path):
 
 def get_image_path_single_frame(file_path, test_disk):
     """
+    Determine if the file_path is represents a single file, or not.
+
+    :param image_path:
+        The input image path to test.
+    :type image_path: basestring
+
+    :param test_disk:
+        Should we access the disk to find files, or just test
+        the string and assume the file exists?
+    :type test_disk: bool
+
+    :returns: Image file path and boolean of whether the image path
+              represents an image sequence, or not.
+              Returns (None, None) if the function cannot determine
+              the values accurately.
+    :rtype: (str, bool) or (None, None)
     """
     image_file_path = None
     multi_frame = None
@@ -194,7 +218,7 @@ def get_image_path_pattern(image_name, use_frame_ext, test_disk=None):
         - '*' character is not used in the image_name string.
 
         - An animated image sequence uses the file naming pattern
-          'file.####.ext' or 'file.ext', such as 'image.1001.jpg' 
+          'file.####.ext' or 'file.ext', such as 'image.1001.jpg'
           or 'image.jpg'.
 
     .. note::
@@ -265,6 +289,14 @@ def get_frame_range_from_file_pattern(file_path_pattern, fallback_range=None):
 
 
 def guess_pixel_aspect_ratio(cam_tfm, cam_shp, img_pl_shp, file_path_pattern):
+    """Given a camera node, image plane node and file path pattern try to
+    guess the expected pixel aspect ratio.
+
+    :returns:
+        Pixel aspect ratio (PAR) for the camera, or None if none can be
+        determined.
+    :rtype: float or None
+    """
     ratio = None
 
     plug = '{0}.fit'.format(img_pl_shp)
@@ -305,7 +337,7 @@ def guess_pixel_aspect_ratio(cam_tfm, cam_shp, img_pl_shp, file_path_pattern):
         # glob_pattern = file_path_pattern.replace('#', '?')
         # for path in glob.iglob(glob_pattern):
         #     break
-    
+
     return ratio
 
 
@@ -459,6 +491,9 @@ def query_camera_data(cam_tfm,
 
 def generate(cam_data, plate_data, frame_range):
     """
+    Generate a JSON formatted string from the input data.
+
+    The generated string is then able to be saved to a file.
     """
     data = const.MM_CAMERA_HEADER_VERSION_1.copy()
     data.update(

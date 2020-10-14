@@ -64,68 +64,66 @@ else ()
 endif ()
 
 # Create C Header file with some build options baked in.
-# if (BUILD_PLUGIN)
 configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h.in
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/buildConstant.h
+  ../include/buildConstant.h.in
+  ../include/buildConstant.h
   @ONLY)
-# endif ()
 
 # Source
 set(SOURCE_FILES
-  include/utilities/debugUtils.h
-  include/nodeTypeIds.h
-  src/core/reprojection.h
-  src/core/reprojection.cpp
-  src/core/bundleAdjust_defines.h
-  src/core/bundleAdjust_base.h
-  src/core/bundleAdjust_base.cpp
-  src/core/bundleAdjust_relationships.h
-  src/core/bundleAdjust_relationships.cpp
-  src/core/bundleAdjust_solveFunc.h
-  src/core/bundleAdjust_solveFunc.cpp
-  src/core/bundleAdjust_levmar_bc_dif.h
-  src/core/bundleAdjust_levmar_bc_dif.cpp
-  src/core/bundleAdjust_cminpack_base.h
-  src/core/bundleAdjust_cminpack_base.cpp
-  src/core/bundleAdjust_cminpack_lmdif.h
-  src/core/bundleAdjust_cminpack_lmdif.cpp
-  src/core/bundleAdjust_cminpack_lmder.h
-  src/core/bundleAdjust_cminpack_lmder.cpp
-  src/mayaUtils.h
-  src/Camera.h
-  src/Camera.cpp
-  src/Marker.h
-  src/Marker.cpp
-  src/Bundle.h
-  src/Bundle.cpp
-  src/Attr.h
-  src/Attr.cpp
-  src/commonArgFlags.h
-  src/commonArgFlags.cpp
-  src/MMSolverAffectsCmd.h
-  src/MMSolverAffectsCmd.cpp
-  src/MMMarkerScaleNode.h
-  src/MMMarkerScaleNode.cpp
-  src/MMReprojectionNode.h
-  src/MMReprojectionNode.cpp
-  src/MMMarkerGroupTransformNode.h
-  src/MMMarkerGroupTransformNode.cpp
-  src/MMTestCameraMatrixCmd.h
-  src/MMTestCameraMatrixCmd.cpp
-  src/MMSolverCmd.h
-  src/MMSolverCmd.cpp
-  src/MMSolverTypeCmd.h
-  src/MMSolverTypeCmd.cpp
-  src/MMReprojectionCmd.h
-  src/MMReprojectionCmd.cpp
-  src/pluginMain.cpp
+  ../include/utilities/debugUtils.h
+  ../include/nodeTypeIds.h
+  core/reprojection.h
+  core/reprojection.cpp
+  core/bundleAdjust_defines.h
+  core/bundleAdjust_base.h
+  core/bundleAdjust_base.cpp
+  core/bundleAdjust_relationships.h
+  core/bundleAdjust_relationships.cpp
+  core/bundleAdjust_solveFunc.h
+  core/bundleAdjust_solveFunc.cpp
+  core/bundleAdjust_levmar_bc_dif.h
+  core/bundleAdjust_levmar_bc_dif.cpp
+  core/bundleAdjust_cminpack_base.h
+  core/bundleAdjust_cminpack_base.cpp
+  core/bundleAdjust_cminpack_lmdif.h
+  core/bundleAdjust_cminpack_lmdif.cpp
+  core/bundleAdjust_cminpack_lmder.h
+  core/bundleAdjust_cminpack_lmder.cpp
+  mayaUtils.h
+  Camera.h
+  Camera.cpp
+  Marker.h
+  Marker.cpp
+  Bundle.h
+  Bundle.cpp
+  Attr.h
+  Attr.cpp
+  commonArgFlags.h
+  commonArgFlags.cpp
+  MMSolverAffectsCmd.h
+  MMSolverAffectsCmd.cpp
+  MMMarkerScaleNode.h
+  MMMarkerScaleNode.cpp
+  MMReprojectionNode.h
+  MMReprojectionNode.cpp
+  MMMarkerGroupTransformNode.h
+  MMMarkerGroupTransformNode.cpp
+  MMTestCameraMatrixCmd.h
+  MMTestCameraMatrixCmd.cpp
+  MMSolverCmd.h
+  MMSolverCmd.cpp
+  MMSolverTypeCmd.h
+  MMSolverTypeCmd.cpp
+  MMReprojectionCmd.h
+  MMReprojectionCmd.cpp
+  pluginMain.cpp
   )
 
 
 # Find external packages
 find_package(Maya REQUIRED)
-find_package(LevMar)
+# find_package(LevMar)
 find_package(CMinpack)
 
 
@@ -200,7 +198,6 @@ endif ()
 include(MMSolverUtils)
 
 
-# if (BUILD_PLUGIN)
 # 'mmSolver' maya plugin library
 if (APPLE)
   add_library(mmSolver MODULE ${SOURCE_FILES})
@@ -208,8 +205,8 @@ else ()
   add_library(mmSolver SHARED ${SOURCE_FILES})
 endif ()
 target_include_directories(mmSolver
-  PRIVATE include
-  PRIVATE src
+  PRIVATE ../include
+  PRIVATE .
   PUBLIC ${MAYA_INCLUDE_DIRS}
   )
 target_link_libraries(mmSolver
@@ -219,40 +216,37 @@ target_link_libraries(mmSolver
   ${MAYA_Foundation_LIBRARY}
   )
 
-if (USE_GPL_LEVMAR)
-  message(WARNING
-    "'levmar' library is licensed under GNU GPL and therefore this library "
-    "must not be distributed in binary form.")
-  target_include_directories(mmSolver PUBLIC ${LEVMAR_INCLUDE_DIRS})
-  target_link_libraries(mmSolver PUBLIC ${LEVMAR_LIBRARIES})
-  # add_definitions(-DUSE_SOLVER_LEVMAR)
-  target_compile_definitions(USE_SOLVER_LEVMAR)
-
+# if (USE_GPL_LEVMAR)
+#   message(WARNING
+#     "'levmar' library is licensed under GNU GPL and therefore this library "
+#     "must not be distributed in binary form.")
+#   target_include_directories(mmSolver PUBLIC ${LEVMAR_INCLUDE_DIRS})
+#   target_link_libraries(mmSolver PUBLIC ${LEVMAR_LIBRARIES})
+#   target_compile_definitions(mmSolver PRIVATE USE_SOLVER_LEVMAR)
   
-  if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    # To locate Levmar from the mmSolver dynamic library we
-    # must change the "install name" to a path relative to the
-    # loaded bundle.
-    #
-    # Run:
-    # $ install_name_tool -change liblevmar.dylib @loader_path/../lib/liblevmar.dylib mmSolver.bundle
-    #
-    # NOTE: If ${LEVMAR_LIBRARIES} has more than one library,
-    #  this command will fail.
-    #
-    add_custom_command(TARGET mmSolver
-      POST_BUILD COMMAND
-      ${CMAKE_INSTALL_NAME_TOOL} -change ${LEVMAR_LIBRARIES} @loader_path/../lib/${LEVMAR_LIBRARIES}
-      $<TARGET_FILE:mmSolver>
-      )
-  endif()
-endif ()
+#   if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+#     # To locate Levmar from the mmSolver dynamic library we
+#     # must change the "install name" to a path relative to the
+#     # loaded bundle.
+#     #
+#     # Run:
+#     # $ install_name_tool -change liblevmar.dylib @loader_path/../lib/liblevmar.dylib mmSolver.bundle
+#     #
+#     # NOTE: If ${LEVMAR_LIBRARIES} has more than one library,
+#     #  this command will fail.
+#     #
+#     add_custom_command(TARGET mmSolver
+#       POST_BUILD COMMAND
+#       ${CMAKE_INSTALL_NAME_TOOL} -change ${LEVMAR_LIBRARIES} @loader_path/../lib/${LEVMAR_LIBRARIES}
+#       $<TARGET_FILE:mmSolver>
+#       )
+#   endif()
+# endif ()
 
 if (USE_CMINPACK)
   target_include_directories(mmSolver PUBLIC ${CMINPACK_INCLUDE_DIRS})
   target_link_libraries(mmSolver PUBLIC ${CMINPACK_LIBRARIES})
-  # add_definitions(-DUSE_SOLVER_CMINPACK)
-  target_compile_definitions(USE_SOLVER_CMINPACK)
+  target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CMINPACK)
 
   if(CMAKE_SYSTEM_NAME STREQUAL Darwin)          
     # To locate CMinpack from the mmSolver dynamic library we
@@ -348,24 +342,22 @@ if (USE_CMINPACK AND CMINPACK_FOUND)
   endif ()
 endif ()
 
-# Install dynamic libraries; levmar
-if (USE_GPL_LEVMAR AND LEVMAR_FOUND)
-  if (WIN32)
-    if (EXISTS ${LEVMAR_LIBRARY_DLL})
-      install(FILES ${LEVMAR_LIBRARY_DLL}
-        DESTINATION "${MODULE_FULL_NAME}/lib/")
-    else ()
-      install(FILES ${LEVMAR_LIBRARY}
-        DESTINATION "${MODULE_FULL_NAME}/lib/")
-    endif ()
-  elseif (UNIX)
-    # Install both symlink and real library
-    get_filename_component(ABS_LEVMAR_LIBRARY ${LEVMAR_LIBRARY} REALPATH)
-    install(FILES ${LEVMAR_LIBRARY}
-      DESTINATION "${MODULE_FULL_NAME}/lib/")
-    install(FILES ${ABS_LEVMAR_LIBRARY}
-      DESTINATION "${MODULE_FULL_NAME}/lib/")
-  endif ()
-endif ()
+# # Install dynamic libraries; levmar
+# if (USE_GPL_LEVMAR AND LEVMAR_FOUND)
+#   if (WIN32)
+#     if (EXISTS ${LEVMAR_LIBRARY_DLL})
+#       install(FILES ${LEVMAR_LIBRARY_DLL}
+#         DESTINATION "${MODULE_FULL_NAME}/lib/")
+#     else ()
+#       install(FILES ${LEVMAR_LIBRARY}
+#         DESTINATION "${MODULE_FULL_NAME}/lib/")
+#     endif ()
+#   elseif (UNIX)
+#     # Install both symlink and real library
+#     get_filename_component(ABS_LEVMAR_LIBRARY ${LEVMAR_LIBRARY} REALPATH)
+#     install(FILES ${LEVMAR_LIBRARY}
+#       DESTINATION "${MODULE_FULL_NAME}/lib/")
+#     install(FILES ${ABS_LEVMAR_LIBRARY}
+#       DESTINATION "${MODULE_FULL_NAME}/lib/")
+#   endif ()
 # endif ()
-

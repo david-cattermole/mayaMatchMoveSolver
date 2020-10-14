@@ -101,7 +101,7 @@ add_subdirectory(modules)
 # add_subdirectory(external)
 
 if (BUILD_PLUGIN)
-  add_subdirectory(python)
+  add_subdirectory(src)
 endif ()
 
 if (BUILD_PYTHON)

@@ -23,15 +23,15 @@ find_package(Maya REQUIRED)
 # Create Python file with some build options baked in.
 if (BUILD_PYTHON)
     configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py.in
-            ${CMAKE_CURRENT_SOURCE_DIR}/python/mmSolver/constant.py
+            mmSolver/constant.py.in
+            mmSolver/constant.py
             @ONLY)
 
     # Create Python file for documentation sphinx build with some build
     # options baked in.
     configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py.in
-            ${CMAKE_CURRENT_SOURCE_DIR}/docs/source/conf.py
+            ../docs/source/conf.py.in
+            ../docs/source/conf.py
             @ONLY)
 endif ()
 
@@ -60,48 +60,48 @@ endfunction()
 
 if (BUILD_QT_UI)
     add_ui_compile("base"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/ui/base.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/ui/ui_base.py
+            mmSolver/ui/base.ui
+            mmSolver/ui/ui_base.py
             )
 
     add_ui_compile("channelsen"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/channelsen/ui/channelsen_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/channelsen/ui/ui_channelsen_layout.py
+            mmSolver/tools/channelsen/ui/channelsen_layout.ui
+            mmSolver/tools/channelsen/ui/ui_channelsen_layout.py
             )
 
     add_ui_compile("smoothkeyframes"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/smoothkeyframes/ui/smoothkeys_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/smoothkeyframes/ui/ui_smoothkeys_layout.py
+            mmSolver/tools/smoothkeyframes/ui/smoothkeys_layout.ui
+            mmSolver/tools/smoothkeyframes/ui/ui_smoothkeys_layout.py
             )
 
     add_ui_compile("loadmarker"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/loadmarker/ui/loadmarker_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/loadmarker/ui/ui_loadmarker_layout.py
+            mmSolver/tools/loadmarker/ui/loadmarker_layout.ui
+            mmSolver/tools/loadmarker/ui/ui_loadmarker_layout.py
             )
 
     add_ui_compile("solver_layout"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/solver/ui/solver_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/solver/ui/ui_solver_layout.py
+            mmSolver/tools/solver/ui/solver_layout.ui
+            mmSolver/tools/solver/ui/ui_solver_layout.py
             )
 
     add_ui_compile("solver_widgets"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/solver/widget/nodebrowser_widget.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/solver/widget/ui_nodebrowser_widget.py
+            mmSolver/tools/solver/widget/nodebrowser_widget.ui
+            mmSolver/tools/solver/widget/ui_nodebrowser_widget.py
             )
 
     add_ui_compile("solver_about"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/aboutwindow/ui/about_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/aboutwindow/ui/ui_about_layout.py
+            mmSolver/tools/aboutwindow/ui/about_layout.ui
+            mmSolver/tools/aboutwindow/ui/ui_about_layout.py
             )
 
     add_ui_compile("sysinfo"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/sysinfowindow/ui/sysinfo_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/sysinfowindow/ui/ui_sysinfo_layout.py
+            mmSolver/tools/sysinfowindow/ui/sysinfo_layout.ui
+            mmSolver/tools/sysinfowindow/ui/ui_sysinfo_layout.py
             )
 
     add_ui_compile("setattributedetails"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/setattributedetails/ui/dialog.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/setattributedetails/ui/ui_dialog.py
+            mmSolver/tools/setattributedetails/ui/dialog.ui
+            mmSolver/tools/setattributedetails/ui/ui_dialog.py
             )
 endif ()
 

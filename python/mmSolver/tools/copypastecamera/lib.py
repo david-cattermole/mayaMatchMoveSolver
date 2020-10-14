@@ -245,9 +245,6 @@ def get_image_path_pattern(image_name, use_frame_ext, test_disk=None):
     :rtype: (str, bool) or (None, None)
     """
     assert isinstance(image_name, (str, unicode, basestring))
-    assert '#' not in image_name
-    assert '?' not in image_name
-    assert '*' not in image_name
     if test_disk is None:
         test_disk = False
     assert isinstance(test_disk, bool)

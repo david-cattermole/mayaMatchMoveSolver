@@ -106,6 +106,38 @@ class TestCopyPasteCamera(test_tools_utils.ToolsTestCase):
                 self.assertEqual(multi_frame, True)
         return
 
+    def test_get_image_path_pattern_issue161(self):
+        """
+        Test image paths with '#', '?' or '*' characters in them.
+
+        GitHub issue #161.
+        """
+        path_start = get_path_start()
+
+        paths = [
+            (os.path.join(path_start, 'path', 'to', 'file.1001.jpg'),
+             os.path.join(path_start, 'path', 'to', 'file.####.jpg')),
+
+            (os.path.join(path_start, 'path', 'to', 'file.####.jpg'),
+             os.path.join(path_start, 'path', 'to', 'file.####.jpg')),
+
+            (os.path.join(path_start, 'path', 't#o', 'file.####.jpg'),
+             os.path.join(path_start, 'path', 't#o', 'file.####.jpg')),
+
+            (os.path.join(path_start, 'path', 'to', 'file?.####.jpg'),
+             os.path.join(path_start, 'path', 'to', 'file?.####.jpg')),
+
+            (os.path.join(path_start, 'path', 'to', 'file*.####.jpg'),
+             os.path.join(path_start, 'path', 'to', 'file*.####.jpg')),
+        ]
+        use_frame_ext = True
+        for path, expected_path in paths:
+            image_file_path, multi_frame = lib.get_image_path_pattern(
+                path, use_frame_ext, test_disk=False)
+            self.assertEqual(image_file_path, expected_path)
+            self.assertEqual(multi_frame, True)
+        return
+
 
 if __name__ == '__main__':
     prog = unittest.main()

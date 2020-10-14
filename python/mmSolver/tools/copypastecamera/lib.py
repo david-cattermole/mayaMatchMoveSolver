@@ -130,6 +130,17 @@ def get_image_path_single_frame(file_path, test_disk):
 
 def get_image_path_multi_frame(image_path, test_disk):
     """
+    Determine if the given image_path represents multiple frames or
+    not.
+
+    :param image_path:
+        The input image path to test.
+    :type image_path: basestring
+
+    :param test_disk:
+        Should we access the disk to find multiple frames, or just test
+        the string and assume the files exist?
+    :type test_disk: bool
 
     :returns: Image file path and boolean of whether the image path
               represents an image sequence, or not.
@@ -164,6 +175,7 @@ def get_image_path_multi_frame(image_path, test_disk):
             pattern_grps[2] = '#' * frame_num_padding
             pattern = ''.join(pattern_grps)
             image_file_path = os.path.join(head, pattern)
+            multi_frame = True
     else:
         image_file_path, multi_frame = get_image_path_single_frame(image_path, test_disk)
     return image_file_path, multi_frame

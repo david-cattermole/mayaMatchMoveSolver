@@ -139,6 +139,8 @@ endif ()
 
 
 # Install misc files
+#
+# NOTE: ${MODULE_FULL_NAME} comes from module sub-directory.
 install(FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
   ${CMAKE_CURRENT_SOURCE_DIR}/INSTALL.md
@@ -160,12 +162,12 @@ set(CPACK_PACKAGE_FILE_NAME "${MODULE_FULL_NAME}")
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 1)
 # Put the packages into the source directory, so that when we run
 # another build, it's not removed as part of the clean up.
-SET(CPACK_OUTPUT_FILE_PREFIX "../packages")
+SET(CPACK_OUTPUT_FILE_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/packages")
 if (WIN32 AND NOT UNIX)
   # .zip file for Windows.
   set(CPACK_GENERATOR "ZIP")
 elseif (UNIX AND NOT WIN32)
-  # .tar.gz for Linux.
+  # .tar.gz for Linux and MacOS
   set(CPACK_GENERATOR "TGZ")
 endif ()
 

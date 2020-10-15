@@ -20,28 +20,27 @@
 
 
 # Build Documentation (using Python Sphinx)
-
 set(input_files
-        ${CMAKE_SOURCE_DIR}/docs/source/index.rst
-        ${CMAKE_SOURCE_DIR}/docs/source/introduction.rst
-        ${CMAKE_SOURCE_DIR}/docs/source/commands.rst
-        ${CMAKE_SOURCE_DIR}/docs/source/nodes.rst
-        ${CMAKE_SOURCE_DIR}/docs/source/tools.rst
-        ${CMAKE_SOURCE_DIR}/docs/source/tutorial.rst
-        ${CMAKE_SOURCE_DIR}/docs/source/solver_design.rst
-        ${CMAKE_SOURCE_DIR}/docs/source/references.rst
-        ${CMAKE_SOURCE_DIR}/docs/source/mmSolver.api.rst
-        ${CMAKE_SOURCE_DIR}/docs/source/mmSolver.logger.rst
-        ${CMAKE_SOURCE_DIR}/docs/source/mmSolver.tools.rst
-        ${CMAKE_SOURCE_DIR}/docs/source/mmSolver.ui.rst
-        ${CMAKE_SOURCE_DIR}/docs/source/mmSolver.utils.rst
+        source/index.rst
+        source/introduction.rst
+        source/commands.rst
+        source/nodes.rst
+        source/tools.rst
+        source/tutorial.rst
+        source/solver_design.rst
+        source/references.rst
+        source/mmSolver.api.rst
+        source/mmSolver.logger.rst
+        source/mmSolver.tools.rst
+        source/mmSolver.ui.rst
+        source/mmSolver.utils.rst
         )
-set(output_file ${CMAKE_SOURCE_DIR}/docs/build/html/py-modindex.html)
+set(output_file build/html/py-modindex.html)
 add_custom_command(
         OUTPUT ${output_file}
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/docs/source/index.html ${CMAKE_SOURCE_DIR}/docs/build/html/index.html
+        COMMAND ${CMAKE_COMMAND} -E copy source/index.html build/html/index.html
         COMMAND make html
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS ${input_files}
 )
 add_custom_target(
@@ -54,7 +53,5 @@ if (BUILD_PLUGIN)
 endif ()
 
 # Install Documentation
-if (BUILD_DOCS)
-    install(DIRECTORY "docs/build/html/"
-            DESTINATION "${MODULE_FULL_NAME}/docs/html")
-endif ()
+install(DIRECTORY "build/html/"
+        DESTINATION "${MODULE_FULL_NAME}/docs/html")

@@ -492,6 +492,9 @@ def generate(cam_data, plate_data, frame_range):
     The generated string is then able to be saved to a file.
     """
     data = const.MM_CAMERA_HEADER_VERSION_1.copy()
+    plate_path = plate_data.get('file_path')
+    if plate_path is not None:
+        plate_path = os.path.normpath(plate_path)
     data.update(
         {
             'data': {
@@ -499,7 +502,7 @@ def generate(cam_data, plate_data, frame_range):
                 'start_frame': frame_range.start,
                 'end_frame': frame_range.end,
                 'image': {
-                    'file_path': plate_data.get('file_path'),
+                    'file_path': plate_path,
                     'width': plate_data.get('width'),
                     'height': plate_data.get('height'),
                     'pixel_aspect_ratio': plate_data.get('pixel_aspect'),

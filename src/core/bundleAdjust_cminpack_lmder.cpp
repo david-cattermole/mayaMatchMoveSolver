@@ -66,8 +66,6 @@ bool solve_3d_cminpack_lmder(
         int numberOfErrors,
         std::vector<double> &paramList,
         std::vector<double> &errorList,
-        std::vector<double> &paramLowerBoundList,
-        std::vector<double> &paramUpperBoundList,
         std::vector<double> &paramWeightList,
         SolverData &userData,
         SolverResult &solveResult){

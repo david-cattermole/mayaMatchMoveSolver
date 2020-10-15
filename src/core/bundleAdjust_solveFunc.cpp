@@ -193,11 +193,13 @@ void setParameters(
         SolverData *ud,
         std::ofstream *debugFile,
         MStatus &status) {
-    bool debugFileIsOpen = false;
 #ifdef WITH_DEBUG_FILE
+    bool debugFileIsOpen = false;
     if (debugFile != NULL) {
         debugFileIsOpen = debugFile->is_open();
     }
+#else
+    UNUSED(debugFile);
 #endif
 
     MTime currentFrame = MAnimControl::currentTime();
@@ -329,6 +331,8 @@ void measureErrors(
     if (debugFile != NULL) {
         debugIsOpen = debugFile->is_open();
     }
+#else
+    UNUSED(debugFile);
 #endif
     error_avg = 0.0;
     error_max = -0.0;
@@ -586,6 +590,9 @@ void incrementNormalIteration(SolverData *ud,
                      << "iteration normal: " << ud->iterNum
                      << "\n";
     }
+#else
+    UNUSED(debugIsOpen);
+    UNUSED(debugFile);
 #endif
     return;
 }
@@ -608,13 +615,16 @@ void incrementJacobianIteration(SolverData *ud,
             MStreamUtils::stdErrorStream() << "\n";
         }
     }
-    #ifdef WITH_DEBUG_FILE
+#ifdef WITH_DEBUG_FILE
     if (debugIsOpen && debugFile != NULL) {
         (*debugFile) << "\n"
                   << "iteration jacobian: " << ud->jacIterNum
                   << "\n";
     }
-    #endif
+#else
+    UNUSED(debugIsOpen);
+    UNUSED(debugFile);
+#endif
     return;
 }
 

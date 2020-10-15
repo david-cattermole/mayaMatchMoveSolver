@@ -56,6 +56,14 @@
 #define INFO(x) do { std::cerr << x << '\n'; } while (0)
 
 
+// Used to indicate to the user that a variable is not used, and
+// avoids the compilier from printing warnings/errors about unused
+// variables.
+//
+// https://stackoverflow.com/questions/308277/what-are-the-consequences-of-ignoring-warning-unused-parameter/308286#308286
+#define UNUSED(expr) do { (void)(expr); } while (0)
+
+
 namespace debug {
     typedef unsigned int uint32;
     typedef unsigned long long uint64;

@@ -409,6 +409,7 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
             and file_start_frame is not None
             and file_end_frame is not None
             and plate_path):
+        plate_path = os.path.normpath(plate_path)
         tde4.setCameraPath(cam_id, plate_path)
 
         # Set plate frame range

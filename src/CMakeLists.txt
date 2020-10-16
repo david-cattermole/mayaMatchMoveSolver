@@ -134,7 +134,7 @@ find_package(CMinpack)
 if (MSVC)
   # For Visual Studio 11 2012
   set(CMAKE_CXX_FLAGS "")  # Zero out the C++ flags, we have complete control.
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GS /W4 /Zc:wchar_t /Zi /fp:precise /WX- /Zc:forScope /GR /Gd /EHsc")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GS /Zc:wchar_t /Zi /fp:precise /Zc:forScope /GR /Gd /EHsc")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D \"OSWin_\" /D \"WIN32\" /D \"_WINDOWS\" /D \"_USRDLL\" /D \"NT_PLUGIN\"")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D \"_HAS_ITERATOR_DEBUGGING=0\" /D \"_SECURE_SCL=0\" /D \"_SECURE_SCL_THROWS=0\"")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D \"_SECURE_SCL_DEPRECATE=0\" /D \"_CRT_SECURE_NO_DEPRECATE\" /D \"TBB_USE_DEBUG=0\"")

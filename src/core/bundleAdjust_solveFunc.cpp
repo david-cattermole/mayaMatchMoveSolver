@@ -876,7 +876,7 @@ int solveFunc(const int numberOfParameters,
                 // calculated errors (original and A).
                 double inv_delta = 1.0 / deltaA;
                 for (size_t j = 0; j < errorListA.size(); ++j) {
-                    int num = (i * ldfjac) + j;
+                    size_t num = (i * ldfjac) + j;
                     double x = (errorListA[j] - errors[j]) * inv_delta;
                     ud->jacobianList[num] = x;
                     jacobian[num] = x;
@@ -902,7 +902,7 @@ int solveFunc(const int numberOfParameters,
                     // calculated errors (original and A).
                     double inv_delta = 1.0 / deltaA;
                     for (size_t j = 0; j < errorListA.size(); ++j) {
-                        int num = (i * ldfjac) + j;
+                        size_t num = (i * ldfjac) + j;
                         double x = (errorListA[j] - errors[j]) * inv_delta;
                         ud->jacobianList[num] = x;
                         jacobian[num] = x;
@@ -961,7 +961,7 @@ int solveFunc(const int numberOfParameters,
                     assert(errorListA.size() == errorListB.size());
                     double inv_delta = 0.5 / (fabs(deltaA) + fabs(deltaB));
                     for (size_t j = 0; j < errorListA.size(); ++j) {
-                        int num = (i * ldfjac) + j;
+                        size_t num = (i * ldfjac) + j;
                         double x = (errorListA[j] - errorListB[j]) * inv_delta;
                         ud->jacobianList[num] = x;
                         jacobian[num] = x;

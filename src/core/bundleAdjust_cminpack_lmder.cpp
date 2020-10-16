@@ -236,6 +236,7 @@ int solveFunc_cminpack_lmder(void *data,
                              int ldfjac, 
                              int iflag) {
     assert(ldfjac == n ? m <= n : m);
+    UNUSED(ldfjac);
 
     SolverData *ud = static_cast<SolverData *>(data);
     ud->isPrintCall = iflag == 0;

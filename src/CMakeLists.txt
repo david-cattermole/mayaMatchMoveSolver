@@ -151,7 +151,7 @@ if (MSVC)
   # Must add the plug-in entry/exit points otherwise
   # the plug-in won't load.
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /export:initializePlugin /export:uninitializePlugin")
-else (APPLE)
+elseif (APPLE)
 
   # For MacOS with Clang (which is the supported compiler for Maya
   # 2018+)

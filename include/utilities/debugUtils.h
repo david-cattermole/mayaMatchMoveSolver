@@ -47,47 +47,72 @@
 //#ifndef NDEBUG
 //#  define DBG(x)
 //#else
+#ifdef _WIN32  // Windows MSVC
 #define DBG(x)                                                          \
     __pragma(warning(push))                                             \
     __pragma(warning(disable:4127))                                     \
     do { std::cerr << __FILE__  << ':' << __LINE__ << ' ' << x << '\n'; } while (0); \
     __pragma(warning(pop))
+#else  // Linux and MacOS
+#define DBG(x) do { std::cerr << __FILE__  << ':' << __LINE__ << ' ' << x << '\n'; } while (0)
+#endif
 //#endif // NDEBUG
 
+#ifdef _WIN32  // Windows MSVC
 #define VRB(x)                                                       \
     __pragma(warning(push))                                          \
     __pragma(warning(disable:4127))                                  \
     do { if (verbose) { std::cerr << x << '\n'; } } while (0);       \
     __pragma(warning(pop))
+#else  // Linux and MacOS
+#define VRB(x) do { if (verbose) { std::cerr << x << '\n'; } } while (0)
+#endif
 
+#ifdef _WIN32  // Windows MSVC
 #define ERR(x)                                              \
     __pragma(warning(push))                                 \
     __pragma(warning(disable:4127))                         \
     do { std::cerr << "ERROR: " << x << '\n'; } while (0);  \
     __pragma(warning(pop))
+#else  // Linux and MacOS
+#define ERR(x) do { std::cerr << "ERROR: " << x << '\n'; } while (0)
+#endif
 
+#ifdef _WIN32  // Windows MSVC
 #define WRN(x)                                                  \
     __pragma(warning(push))                                     \
     __pragma(warning(disable:4127))                             \
     do { std::cerr << "WARNING: " << x << '\n'; } while (0);    \
     __pragma(warning(pop))
+#else  // Linux and MacOS
+#define WRN(x) do { std::cerr << "WARNING: " << x << '\n'; } while (0)
+#endif
 
+#ifdef _WIN32  // Windows MSVC
 #define INFO(x)                                                     \
     __pragma(warning(push))                                         \
     __pragma(warning(disable:4127))                                 \
     do { std::cerr << x << '\n'; } while (0);                       \
     __pragma(warning(pop))
+#else  // Linux and MacOS
+#define INFO(x) do { std::cerr << x << '\n'; } while (0)
+#endif
 
 // Used to indicate to the user that a variable is not used, and
 // avoids the compilier from printing warnings/errors about unused
 // variables.
 //
 // https://stackoverflow.com/questions/308277/what-are-the-consequences-of-ignoring-warning-unused-parameter/308286#308286
-#define UNUSED(expr) \
+#ifdef _WIN32  // Windows MSVC
+
+#define UNUSED(expr)                                                \
     __pragma(warning(push))                                         \
     __pragma(warning(disable:4127))                                 \
     do { (void)(expr); } while (0);                                 \
-    __pragma(warning(pop))                                          \
+    __pragma(warning(pop))
+#else  // Linux and MacOS
+#define UNUSED(expr) do { (void)(expr); } while (0)
+#endif
 
 namespace debug {
     typedef unsigned int uint32;

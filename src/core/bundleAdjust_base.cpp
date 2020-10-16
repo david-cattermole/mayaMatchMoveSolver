@@ -804,7 +804,7 @@ MStatus logResultsSolveObjectUsage(MarkerPtrList usedMarkerList,
     return status;
 }
 
-typedef std::map<int, int> IndexCountMap;
+typedef std::map<size_t, int> IndexCountMap;
 typedef IndexCountMap::iterator IndexCountMapIt;
 
 /*
@@ -845,7 +845,7 @@ void _splitIntoUsedAndUnusedLists(_T inputList,
  * Increment the value of key in the indexCountMap, by 1.
  *
  */
-IndexCountMap _incrementMapIndex(int key, IndexCountMap indexCountMap) {
+IndexCountMap _incrementMapIndex(size_t key, IndexCountMap indexCountMap) {
     IndexCountMapIt it = indexCountMap.find(key);
     int temp;
     if (it != indexCountMap.end()) {
@@ -856,7 +856,7 @@ IndexCountMap _incrementMapIndex(int key, IndexCountMap indexCountMap) {
         // This is the first value to be inserted.
         temp = 1;
     }
-    indexCountMap.insert(std::pair<int, int>(key, temp));
+    indexCountMap.insert(std::pair<size_t, int>(key, temp));
     return indexCountMap;
 }
 

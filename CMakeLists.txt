@@ -89,12 +89,6 @@ set(PREFERRED_SOLVER "cminpack_lmder" CACHE STRING "Choices are cminpack_lm, cmi
 
 include(MMSolverUtils)
 
-if(MSVC)
-  add_compile_options(/W4 /WX)
-else()
-  add_compile_options(-W -Wall -Werror -Wpedantic)
-endif()
-
 # Build features
 add_subdirectory(modules)
 

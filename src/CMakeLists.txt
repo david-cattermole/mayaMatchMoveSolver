@@ -126,6 +126,12 @@ find_package(Maya REQUIRED)
 # find_package(LevMar)
 find_package(CMinpack)
 
+# Treat warnings as errors.
+if(MSVC)
+  add_compile_options(/W4 /WX)
+else()
+  add_compile_options(-W -Wall -Werror -Wpedantic)
+endif()
 
 # Compile Flags.
 #

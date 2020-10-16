@@ -21,9 +21,9 @@
 # Builds the Maya MatchMove Solver project.
 
 # Maya
-MAYA_VERSION=2019
-MAYA_LOCATION=/Applications/Autodesk/maya2019/Maya.app/Contents
-DEVKIT_LOCATION=${HOME}/maya2019_devkitBase
+MAYA_VERSION=2018
+MAYA_LOCATION=/Applications/Autodesk/maya2018/Maya.app/Contents
+DEVKIT_LOCATION=${HOME}/maya2018_devkitBase
 DEVKIT_BIN_LOCATION=${DEVKIT_LOCATION}/devkit/bin
 
 # Maya library locations
@@ -48,11 +48,11 @@ WITH_GPL_CODE=0
 
 # Where to install the module?
 #
-# The "${HOME}/Library/Preferences/Autodesk/maya/2019/modules"
+# The "${HOME}/Library/Preferences/Autodesk/maya/2018/modules"
 # directory is automatically searched for Maya module (.mod)
 # files. Therefore we can install directly.
 #
-INSTALL_MODULE_DIR=${HOME}/Library/Preferences/Autodesk/maya/2019/modules
+INSTALL_MODULE_DIR=${HOME}/Library/Preferences/Autodesk/maya/2018/modules
 
 # Build ZIP Package.
 # For developer use. Make ZIP packages ready to distribute to others.

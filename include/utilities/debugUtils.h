@@ -47,22 +47,47 @@
 //#ifndef NDEBUG
 //#  define DBG(x)
 //#else
-#define DBG(x) do { std::cerr << __FILE__  << ':' << __LINE__ << ' ' << x << '\n'; } while (0)
+#define DBG(x)                                                          \
+    __pragma(warning(push))                                             \
+    __pragma(warning(disable:4127))                                     \
+    do { std::cerr << __FILE__  << ':' << __LINE__ << ' ' << x << '\n'; } while (0); \
+    __pragma(warning(pop))
 //#endif // NDEBUG
 
-#define VRB(x) do { if (verbose) { std::cerr << x << '\n'; } } while (0)
-#define ERR(x) do { std::cerr << "ERROR: " << x << '\n'; } while (0)
-#define WRN(x) do { std::cerr << "WARNING: " << x << '\n'; } while (0)
-#define INFO(x) do { std::cerr << x << '\n'; } while (0)
+#define VRB(x)                                                       \
+    __pragma(warning(push))                                          \
+    __pragma(warning(disable:4127))                                  \
+    do { if (verbose) { std::cerr << x << '\n'; } } while (0);       \
+    __pragma(warning(pop))
 
+#define ERR(x)                                              \
+    __pragma(warning(push))                                 \
+    __pragma(warning(disable:4127))                         \
+    do { std::cerr << "ERROR: " << x << '\n'; } while (0);  \
+    __pragma(warning(pop))
+
+#define WRN(x)                                                  \
+    __pragma(warning(push))                                     \
+    __pragma(warning(disable:4127))                             \
+    do { std::cerr << "WARNING: " << x << '\n'; } while (0);    \
+    __pragma(warning(pop))
+
+#define INFO(x)                                                     \
+    __pragma(warning(push))                                         \
+    __pragma(warning(disable:4127))                                 \
+    do { std::cerr << x << '\n'; } while (0);                       \
+    __pragma(warning(pop))
 
 // Used to indicate to the user that a variable is not used, and
 // avoids the compilier from printing warnings/errors about unused
 // variables.
 //
 // https://stackoverflow.com/questions/308277/what-are-the-consequences-of-ignoring-warning-unused-parameter/308286#308286
-#define UNUSED(expr) do { (void)(expr); } while (0)
-
+#define UNUSED(expr) \
+    __pragma(warning(push))                                         \
+    __pragma(warning(disable:4127))                                 \
+    do { (void)(expr); } while (0);                                 \
+    __pragma(warning(pop))                                          \
 
 namespace debug {
     typedef unsigned int uint32;

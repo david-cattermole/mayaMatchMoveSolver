@@ -21,6 +21,6 @@
 
 
 # Install Config.
-install(DIRECTORY "config/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
   DESTINATION "${MODULE_FULL_NAME}/config"
   FILES_MATCHING PATTERN "*.json")

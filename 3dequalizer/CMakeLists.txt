@@ -16,11 +16,11 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# Maya MatchMoveSolver build script.
+# Maya MatchMoveSolver build script, for installing 3DEqualizer scripts.
 #
 
 
 # Install 3DEqualizer scripts.
-install(DIRECTORY "3dequalizer/scriptdb/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scriptdb/"
   DESTINATION "${MODULE_FULL_NAME}/3dequalizer"
   FILES_MATCHING PATTERN "*.py")

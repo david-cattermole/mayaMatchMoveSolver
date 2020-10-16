@@ -20,6 +20,6 @@
 #
 
 # Install SynthEyes scripts.
-install(DIRECTORY "syntheyes/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
   DESTINATION "${MODULE_FULL_NAME}/syntheyes"
   FILES_MATCHING PATTERN "*.szl")

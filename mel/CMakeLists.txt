@@ -16,16 +16,15 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# Maya MatchMoveSolver build script.
+# Install MEL and Python scripts.
 #
 
-# Install Maya MEL and Python scripts.
-install(DIRECTORY "mel/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
   DESTINATION "${MODULE_FULL_NAME}/scripts"
   FILES_MATCHING PATTERN "*.mel")
-install(DIRECTORY "mel/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
   DESTINATION "${MODULE_FULL_NAME}/scripts"
   FILES_MATCHING PATTERN "*.py")
-install(DIRECTORY "mel/AETemplates/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/AETemplates/"
   DESTINATION "${MODULE_FULL_NAME}/scripts/AETemplates"
   FILES_MATCHING PATTERN "*.mel")

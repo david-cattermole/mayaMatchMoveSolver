@@ -18,12 +18,12 @@
 #
 # Build Icons (using Qt Resource Compiler)
 
-set(input_file ${CMAKE_SOURCE_DIR}/icons/resources.qrc)
-set(output_file ${CMAKE_SOURCE_DIR}/icons/resources.rcc)
+set(input_file resources.qrc)
+set(output_file resources.rcc)
 add_custom_command(
         OUTPUT ${output_file}
         COMMAND rcc -binary resources.qrc -o resources.rcc
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/icons
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS ${input_file}
 )
 add_custom_target(
@@ -34,21 +34,21 @@ add_custom_target(
 
 
 # Install Icons.
-install(DIRECTORY "icons/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
   DESTINATION "${MODULE_FULL_NAME}/resources"
   FILES_MATCHING PATTERN "*.rcc"
-  PATTERN "icons/edit" EXCLUDE
-  PATTERN "icons/library" EXCLUDE
-  PATTERN "icons/ui" EXCLUDE)
-install(DIRECTORY "icons/"
+  PATTERN "edit" EXCLUDE
+  PATTERN "library" EXCLUDE
+  PATTERN "ui" EXCLUDE)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
   DESTINATION "${MODULE_FULL_NAME}/icons"
   FILES_MATCHING PATTERN "*.png"
-  PATTERN "icons/edit" EXCLUDE
-  PATTERN "icons/library" EXCLUDE
-  PATTERN "icons/ui" EXCLUDE)
-install(DIRECTORY "icons/"
+  PATTERN "edit" EXCLUDE
+  PATTERN "library" EXCLUDE
+  PATTERN "ui" EXCLUDE)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
   DESTINATION "${MODULE_FULL_NAME}/icons"
   FILES_MATCHING PATTERN "*.svg"
-  PATTERN "icons/edit" EXCLUDE
-  PATTERN "icons/library" EXCLUDE
-  PATTERN "icons/ui" EXCLUDE)
+  PATTERN "edit" EXCLUDE
+  PATTERN "library" EXCLUDE
+  PATTERN "ui" EXCLUDE)

@@ -16,7 +16,15 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# Configure the Maya module file.
+# Configure the Documentation building system.
+
+
+# Create Python file for documentation sphinx build with some build
+# options baked in.
+configure_file(
+  source/conf.py.in
+  source/conf.py
+  @ONLY)
 
 
 # Build Documentation (using Python Sphinx)

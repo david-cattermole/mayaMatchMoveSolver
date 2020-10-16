@@ -16,24 +16,16 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# Generate .py files from Qt .ui
+# Configure and install Python scripts and Qt .ui files.
+#
 
 find_package(Maya REQUIRED)
 
 # Create Python file with some build options baked in.
-if (BUILD_PYTHON)
-    configure_file(
-            mmSolver/constant.py.in
-            mmSolver/constant.py
-            @ONLY)
-
-    # Create Python file for documentation sphinx build with some build
-    # options baked in.
-    configure_file(
-            ../docs/source/conf.py.in
-            ../docs/source/conf.py
-            @ONLY)
-endif ()
+configure_file(
+  mmSolver/constant.py.in
+  mmSolver/constant.py
+  @ONLY)
 
 
 function(add_ui_compile
@@ -107,8 +99,6 @@ endif ()
 
 
 # Install Python API and tools
-if (BUILD_PYTHON)
-    install(DIRECTORY "python/"
-            DESTINATION "${MODULE_FULL_NAME}/python"
-            FILES_MATCHING PATTERN "*.py")
-endif ()
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+        DESTINATION "${MODULE_FULL_NAME}/python"
+        FILES_MATCHING PATTERN "*.py")

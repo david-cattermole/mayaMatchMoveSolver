@@ -340,3 +340,25 @@ have build for.
 
 For more information about testing, see the Testing section in
 [DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
+
+# Build Release Packages from Scratch
+
+If you wish to build a (.tar.gz) package for users to download, there
+are a number of steps to ensure are run correctly in specific
+environments. The commands below are one-liner commands to set up
+everything from scratch and build, then package.
+
+The directories below are hard-coded for the author's computer, you
+may need to change the paths for your environment.
+
+Run in the MacOS Bash terminal:
+```commandline
+# Maya 2018
+$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2016Deploy_mac ; cd ~/dev/mayaMatchMoveSolver_maya2018Deploy_mac ; git fetch --all; git checkout master; git pull; sed 's/BUILD_PACKAGE=0/BUILD_PACKAGE=1/g' scripts/build_mmSolver_mac_maya2018.bash > scripts/build_mmSolver_mac_maya2018.bash ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_mac_maya2018.bash
+
+# Maya 2019
+$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2016Deploy_mac ; cd ~/dev/mayaMatchMoveSolver_maya2019Deploy_mac ; git fetch --all; git checkout master; git pull; sed 's/BUILD_PACKAGE=0/BUILD_PACKAGE=1/g' scripts/build_mmSolver_mac_maya2019.bash > scripts/build_mmSolver_mac_maya2019.bash ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_mac_maya2019.bash
+```
+
+Package files can then be uploaded from the
+"~/dev/mayaMatchMoveSolver_maya*Deploy_mac/packages" folder.

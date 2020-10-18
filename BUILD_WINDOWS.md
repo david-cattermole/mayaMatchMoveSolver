@@ -279,3 +279,48 @@ performance of the test suite greatly.
 
 For more information about testing, see the Testing section in
 [DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
+
+# Build Release Packages from Scratch
+
+If you wish to build a (.zip) package for users to download, there
+are a number of steps to ensure are run correctly in specific
+environments. The commands below are one-liner commands to set up
+everything from scratch and build, then package.
+
+The directories below are hard-coded for the author's computer, you
+may need to change the paths for your environment.
+
+Run in the Git Bash terminal for Windows:
+```commandline
+# Maya 2016
+$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2016Deploy_windows64/; cd ~/dev/mayaMatchMoveSolver_maya2016Deploy_windows64/; git fetch --all; git checkout master; git reset --hard HEAD ; git pull; sed 's/BUILD_PACKAGE=0/BUILD_PACKAGE=1/g' scripts/build_mmSolver_windows64_maya2016.bat > scripts/build_mmSolver_windows64_maya2016.bat; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
+
+# Maya 2017
+$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2017Deploy_windows64/; cd ~/dev/mayaMatchMoveSolver_maya2017Deploy_windows64/; git fetch --all; git checkout master; git reset --hard HEAD ; git pull; sed 's/BUILD_PACKAGE=0/BUILD_PACKAGE=1/g' scripts/build_mmSolver_windows64_maya2017.bat > scripts/build_mmSolver_windows64_maya2017.bat ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
+
+# Maya 2018
+$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2018Deploy_windows64/; cd ~/dev/mayaMatchMoveSolver_maya2018Deploy_windows64/; git fetch --all; git checkout master; git reset --hard HEAD ; git pull; sed 's/BUILD_PACKAGE=0/BUILD_PACKAGE=1/g' scripts/build_mmSolver_windows64_maya2018.bat > scripts/build_mmSolver_windows64_maya2018.bat ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
+
+# Maya 2019
+$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2019Deploy_windows64/; cd ~/dev/mayaMatchMoveSolver_maya2019Deploy_windows64/; git fetch --all; git checkout master; git reset --hard HEAD ; git pull; sed 's/BUILD_PACKAGE=0/BUILD_PACKAGE=1/g' scripts/build_mmSolver_windows64_maya2019.bat > scripts/build_mmSolver_windows64_maya2019.bat ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
+```
+
+Run in the Windows Command Prompt with the needed MSVC compiler environment paths set up:
+(For example run "VS2012 x64 Cross Tools Command Prompt" or "VS2015 x86 x64 Cross Tools Command Prompt")
+```cmd
+REM Maya 2016
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2016Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_qtpy.bat && scripts\build_mmSolver_windows64_maya2016.bat
+
+REM Maya 2017
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2017Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_qtpy.bat && scripts\build_mmSolver_windows64_maya2017.bat
+
+REM Maya 2018
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2018Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_qtpy.bat && scripts\build_mmSolver_windows64_maya2018.bat
+
+REM Maya 2019
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2019Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_qtpy.bat && scripts\build_mmSolver_windows64_maya2019.bat
+```
+
+Package files can then be uploaded from the
+"%userprofile%\dev\mayaMatchMoveSolver_maya*Deploy_windows64\packages"
+folder.

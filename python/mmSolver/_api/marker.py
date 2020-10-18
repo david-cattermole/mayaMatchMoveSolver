@@ -1243,7 +1243,9 @@ class Marker(object):
         This attribute does not affect the solve, but is provided as a hint
         to show users (in UIs), that a marker is unused.
 
-        :rtype: bool
+        :returns: A value of MARKER_USED_HINT_LIST that indicates
+            the current used state hint.
+        :rtype: int
         """
         node = self.get_node()
         if node is None:
@@ -1251,8 +1253,9 @@ class Marker(object):
             return None
         attr_name = const.MARKER_ATTR_LONG_NAME_MARKER_USED_HINT
         plug_name = '{0}.{1}'.format(node, attr_name)
-        used = maya.cmds.getAttr(plug_name)
-        return bool(used)
+        value = maya.cmds.getAttr(plug_name)
+        assert value in const.MARKER_USED_HINT_LIST
+        return value
 
     def set_used_hint(self, value):
         """
@@ -1260,10 +1263,11 @@ class Marker(object):
 
         See the Marker.get_used_hint() method for details.
 
-        :param value: The value to set, True or False.
-        :type value: bool
+        :param value: The value to set, a value in MARKER_USED_HINT_LIST.
+        :type value: int
         """
-        assert isinstance(value, bool)
+        assert isinstance(value, (int, long))
+        assert value in const.MARKER_USED_HINT_LIST
         node = self.get_node()
         if node is None:
             LOG.warn('Could not get Marker node. self=%r', self)

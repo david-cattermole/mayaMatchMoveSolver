@@ -26,6 +26,7 @@ import Qt.QtCore as QtCore
 import Qt.QtGui as QtGui
 
 import mmSolver.logger
+import mmSolver.api as mmapi
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.nodes as uinodes
 import mmSolver.tools.solver.constant as const
@@ -101,9 +102,11 @@ class MarkerNode(ObjectNode):
         mkr = d.get('marker')
         if mkr is None:
             return color
-        used = bool(mkr.get_used_hint())
-        if used is True:
-            value = 'used'
+        used = mkr.get_used_hint()
+        if used == mmapi.MARKER_USED_HINT_USED_VALUE:
+            value = u'\u2714'  # "Heavy Check Mark"
+        elif used == mmapi.MARKER_USED_HINT_NOT_USED_VALUE:
+            value = u'\u2718'  # "Heavy Ballot X"
         return value
 
     def objectColor(self):

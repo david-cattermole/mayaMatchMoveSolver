@@ -926,12 +926,14 @@ class Collection(object):
     def get_attribute_used_hint(self, attr):
         key = 'used_hint'
         # By default, we assume the attribute is unused.
-        default_value = False
+        default_value = const.ATTRIBUTE_USED_HINT_DEFAULT_VALUE
         value = _get_auxiliary_attr(self, attr, key, default_value)
+        assert value in const.ATTRIBUTE_USED_HINT_LIST
         return value
 
     def set_attribute_used_hint(self, attr, value):
-        assert isinstance(value, bool)
+        assert isinstance(value, (int, long))
+        assert value in const.ATTRIBUTE_USED_HINT_LIST
         key = 'used_hint'
         _set_auxiliary_attr(self, attr, key, value)
 

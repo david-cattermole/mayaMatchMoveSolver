@@ -27,6 +27,7 @@ qtpyutils.override_binding_order()
 import Qt.QtCore as QtCore
 
 import mmSolver.logger
+import mmSolver.api as mmapi
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.nodes as nodes
 import mmSolver.tools.solver.constant as const
@@ -152,8 +153,10 @@ class AttrNode(PlugNode):
         if attr is None or col is None:
             return value
         used = col.get_attribute_used_hint(attr)
-        if used is True:
-            value = 'used'
+        if used == mmapi.ATTRIBUTE_USED_HINT_USED_VALUE:
+            value = u'\u2714'  # "Heavy Check Mark"
+        elif used == mmapi.ATTRIBUTE_USED_HINT_NOT_USED_VALUE:
+            value = u'\u2718'  # "Heavy Ballot X"
         return value
 
     def state(self):

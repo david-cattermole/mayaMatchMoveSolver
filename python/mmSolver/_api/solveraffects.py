@@ -24,6 +24,7 @@ compute).
 """
 
 import mmSolver.logger
+import mmSolver._api.constant as const
 import mmSolver._api.frame as frame
 import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
@@ -69,18 +70,18 @@ def _runAndSetUsedSolveObjects(col_name, *args, **kwargs):
     import mmSolver.api as mmapi
     for mkr_node in markers_used:
         mkr = mmapi.Marker(node=mkr_node)
-        mkr.set_used_hint(True)
+        mkr.set_used_hint(const.MARKER_USED_HINT_USED_VALUE)
     for mkr_node in markers_unused:
         mkr = mmapi.Marker(node=mkr_node)
-        mkr.set_used_hint(False)
+        mkr.set_used_hint(const.MARKER_USED_HINT_NOT_USED_VALUE)
 
     col = mmapi.Collection(col_name)
     for node_attr in attributes_used:
         attr = mmapi.Attribute(name=node_attr)
-        col.set_attribute_used_hint(attr, True)
+        col.set_attribute_used_hint(attr, const.ATTRIBUTE_USED_HINT_USED_VALUE)
     for node_attr in attributes_unused:
         attr = mmapi.Attribute(name=node_attr)
-        col.set_attribute_used_hint(attr, False)
+        col.set_attribute_used_hint(attr, const.ATTRIBUTE_USED_HINT_NOT_USED_VALUE)
     return
 
 

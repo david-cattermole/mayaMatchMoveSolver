@@ -49,7 +49,7 @@ INSTALL_MODULE_DIR=${HOME}/maya/2018/modules
 
 # Build ZIP Package.
 # For developer use. Make ZIP packages ready to distribute to others.
-BUILD_PACKAGE=0
+BUILD_PACKAGE=1
 
 
 # Do not edit below, unless you know what you're doing.

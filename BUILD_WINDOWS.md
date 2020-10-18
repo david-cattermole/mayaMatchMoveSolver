@@ -293,16 +293,16 @@ may need to change the paths for your environment.
 Run in the Git Bash terminal for Windows:
 ```commandline
 # Maya 2016
-$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2016Deploy_windows64/; cd ~/dev/mayaMatchMoveSolver_maya2016Deploy_windows64/; git fetch --all; git checkout master; git reset --hard HEAD ; git pull; sed 's/BUILD_PACKAGE=0/BUILD_PACKAGE=1/g' scripts/build_mmSolver_windows64_maya2016.bat > scripts/build_mmSolver_windows64_maya2016.bat; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
+$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2016Deploy_windows64/; cd ~/dev/mayaMatchMoveSolver_maya2016Deploy_windows64/; git fetch --all; git checkout master; git reset --hard HEAD ; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
 
 # Maya 2017
-$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2017Deploy_windows64/; cd ~/dev/mayaMatchMoveSolver_maya2017Deploy_windows64/; git fetch --all; git checkout master; git reset --hard HEAD ; git pull; sed 's/BUILD_PACKAGE=0/BUILD_PACKAGE=1/g' scripts/build_mmSolver_windows64_maya2017.bat > scripts/build_mmSolver_windows64_maya2017.bat ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
+$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2017Deploy_windows64/; cd ~/dev/mayaMatchMoveSolver_maya2017Deploy_windows64/; git fetch --all; git checkout master; git reset --hard HEAD ; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
 
 # Maya 2018
-$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2018Deploy_windows64/; cd ~/dev/mayaMatchMoveSolver_maya2018Deploy_windows64/; git fetch --all; git checkout master; git reset --hard HEAD ; git pull; sed 's/BUILD_PACKAGE=0/BUILD_PACKAGE=1/g' scripts/build_mmSolver_windows64_maya2018.bat > scripts/build_mmSolver_windows64_maya2018.bat ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
+$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2018Deploy_windows64/; cd ~/dev/mayaMatchMoveSolver_maya2018Deploy_windows64/; git fetch --all; git checkout master; git reset --hard HEAD ; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
 
 # Maya 2019
-$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2019Deploy_windows64/; cd ~/dev/mayaMatchMoveSolver_maya2019Deploy_windows64/; git fetch --all; git checkout master; git reset --hard HEAD ; git pull; sed 's/BUILD_PACKAGE=0/BUILD_PACKAGE=1/g' scripts/build_mmSolver_windows64_maya2019.bat > scripts/build_mmSolver_windows64_maya2019.bat ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
+$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2019Deploy_windows64/; cd ~/dev/mayaMatchMoveSolver_maya2019Deploy_windows64/; git fetch --all; git checkout master; git reset --hard HEAD ; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
 ```
 
 Run in the Windows Command Prompt with the needed MSVC compiler environment paths set up:

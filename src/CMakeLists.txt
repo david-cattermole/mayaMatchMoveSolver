@@ -63,12 +63,6 @@ else ()
     )
 endif ()
 
-# Create C Header file with some build options baked in.
-configure_file(
-  ../include/buildConstant.h.in
-  ../include/buildConstant.h
-  @ONLY)
-
 # Source
 set(SOURCE_FILES
   ../include/utilities/debugUtils.h

@@ -23,8 +23,8 @@ find_package(Maya REQUIRED)
 
 # Create Python file with some build options baked in.
 configure_file(
-  mmSolver/constant.py.in
-  mmSolver/constant.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/constant.py.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/constant.py
   @ONLY)
 
 
@@ -32,21 +32,26 @@ function(add_ui_compile
         name
         input_file
         output_file)
+
     set(EXEC_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/compileUI.py)
+
     add_custom_command(
             OUTPUT ${output_file}
             COMMAND ${MAYA_PYTHON_EXECUTABLE} ${EXEC_SCRIPT} ${input_file}
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             DEPENDS ${input_file}
     )
+
     add_custom_target(
             compile_ui_${name} ALL
             DEPENDS ${output_file}
             COMMENT "Compiling Qt UI file (${input_file})..."
     )
+
     if (BUILD_PLUGIN)
         add_dependencies(mmSolver compile_ui_${name})
     endif ()
+
 endfunction()
 
 

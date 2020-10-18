@@ -95,6 +95,7 @@ add_subdirectory(modules)
 # add_subdirectory(external)
 
 if (BUILD_PLUGIN)
+  add_subdirectory(include)
   add_subdirectory(src)
 endif ()
 

@@ -43,7 +43,9 @@ set(input_files
         source/mmSolver.ui.rst
         source/mmSolver.utils.rst
         )
+
 set(output_file build/html/py-modindex.html)
+
 add_custom_command(
         OUTPUT ${output_file}
         COMMAND ${CMAKE_COMMAND} -E copy source/index.html build/html/index.html
@@ -51,11 +53,13 @@ add_custom_command(
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS ${input_files}
 )
+
 add_custom_target(
         build_documentation ALL
         DEPENDS ${output_file}
         COMMENT "Building Documentation (with Sphinx) (${input_file})..."
 )
+
 if (BUILD_PLUGIN)
     add_dependencies(mmSolver build_documentation)
 endif ()

@@ -22,8 +22,8 @@
 # Create Python file for documentation sphinx build with some build
 # options baked in.
 configure_file(
-  source/conf.py.in
-  source/conf.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/source/conf.py.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/source/conf.py
   @ONLY)
 
 

@@ -114,26 +114,73 @@ in a standardized way.</p>
 <dl class="function">
 <dt id="mmSolver.tools.copypastecamera.lib.get_image_path_tokens">
 <code class="descclassname">mmSolver.tools.copypastecamera.lib.</code><code class="descname">get_image_path_tokens</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.copypastecamera.lib.get_image_path_tokens" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Split a file_path in the format of ‘file.1001.ext’ or
+‘file_1001.ext’ into tokens.</p>
+<p>The file_path can be a full path, not just a file name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A dictionary with keys ‘name’, ‘frame’ and ‘ext’, or None.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.tools.copypastecamera.lib.get_image_path_single_frame">
 <code class="descclassname">mmSolver.tools.copypastecamera.lib.</code><code class="descname">get_image_path_single_frame</code><span class="sig-paren">(</span><em>file_path</em>, <em>test_disk</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.copypastecamera.lib.get_image_path_single_frame" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Determine if the file_path is represents a single file, or not.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>image_path</strong> (<em>basestring</em>) – The input image path to test.</li>
+<li><strong>test_disk</strong> (<em>bool</em>) – Should we access the disk to find files, or just test
+the string and assume the file exists?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Image file path and boolean of whether the image path
+represents an image sequence, or not.
+Returns (None, None) if the function cannot determine
+the values accurately.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(str, bool) or (None, None)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.tools.copypastecamera.lib.get_image_path_multi_frame">
 <code class="descclassname">mmSolver.tools.copypastecamera.lib.</code><code class="descname">get_image_path_multi_frame</code><span class="sig-paren">(</span><em>image_path</em>, <em>test_disk</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.copypastecamera.lib.get_image_path_multi_frame" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dd><p>Determine if the given image_path represents multiple frames or
+not.</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Image file path and boolean of whether the image path
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>image_path</strong> (<em>basestring</em>) – The input image path to test.</li>
+<li><strong>test_disk</strong> (<em>bool</em>) – Should we access the disk to find multiple frames, or just test
+the string and assume the files exist?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Image file path and boolean of whether the image path
 represents an image sequence, or not.
 Returns (None, None) if the function cannot determine
-the values accurately.</td>
+the values accurately.</p>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(str, bool) or (None, None)</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(str, bool) or (None, None)</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -151,7 +198,7 @@ the values accurately.</td>
 <span class="o">-</span> <span class="s1">&#39;*&#39;</span> <span class="n">character</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">used</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">image_name</span> <span class="n">string</span><span class="o">.</span>
 
 <span class="o">-</span> <span class="n">An</span> <span class="n">animated</span> <span class="n">image</span> <span class="n">sequence</span> <span class="n">uses</span> <span class="n">the</span> <span class="n">file</span> <span class="n">naming</span> <span class="n">pattern</span>
-  <span class="s1">&#39;file.####.ext&#39;</span> <span class="ow">or</span> <span class="s1">&#39;file.ext&#39;</span><span class="p">,</span> <span class="n">such</span> <span class="k">as</span> <span class="s1">&#39;image.1001.jpg&#39;</span> 
+  <span class="s1">&#39;file.####.ext&#39;</span> <span class="ow">or</span> <span class="s1">&#39;file.ext&#39;</span><span class="p">,</span> <span class="n">such</span> <span class="k">as</span> <span class="s1">&#39;image.1001.jpg&#39;</span>
   <span class="ow">or</span> <span class="s1">&#39;image.jpg&#39;</span><span class="o">.</span>
 </pre></div>
 </div>
@@ -208,7 +255,20 @@ number, get the full frame range on disk.</p>
 <dl class="function">
 <dt id="mmSolver.tools.copypastecamera.lib.guess_pixel_aspect_ratio">
 <code class="descclassname">mmSolver.tools.copypastecamera.lib.</code><code class="descname">guess_pixel_aspect_ratio</code><span class="sig-paren">(</span><em>cam_tfm</em>, <em>cam_shp</em>, <em>img_pl_shp</em>, <em>file_path_pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.copypastecamera.lib.guess_pixel_aspect_ratio" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Given a camera node, image plane node and file path pattern try to
+guess the expected pixel aspect ratio.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Pixel aspect ratio (PAR) for the camera, or None if none can be
+determined.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.tools.copypastecamera.lib.query_plate_data">
@@ -238,7 +298,9 @@ number, get the full frame range on disk.</p>
 <dl class="function">
 <dt id="mmSolver.tools.copypastecamera.lib.generate">
 <code class="descclassname">mmSolver.tools.copypastecamera.lib.</code><code class="descname">generate</code><span class="sig-paren">(</span><em>cam_data</em>, <em>plate_data</em>, <em>frame_range</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.copypastecamera.lib.generate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Generate a JSON formatted string from the input data.</p>
+<p>The generated string is then able to be saved to a file.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.tools.copypastecamera.lib.write_temp_file">

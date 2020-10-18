@@ -49,13 +49,69 @@
 <h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> can be customised using configuration files.  The default
 configuration of <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> is stored in the installation directory
-‘config’ sub-directory, but each file may be overridden by adding a file into the home directory.</p>
-<p>For Linux: <code class="docutils literal notranslate"><span class="pre">${HOME}/.mmSolver</span></code></p>
-<p>For Windows: <code class="docutils literal notranslate"><span class="pre">%APPDATA%/mmSolver</span></code></p>
+‘config’ sub-directory, but each file may be overridden by adding a
+file into the home directory.</p>
 <p>When a new configuration file with the exact file name as a default
 config file is found, it replaces the original. Configuration files
 do not accumulate values.</p>
-<p>For documenatation of the config utility module, see <cite>mmSolver.utils.config</cite>.</p>
+<p>For documentation of the config utility module, see <cite>mmSolver.utils.config</cite>.</p>
+<div class="section" id="overriding-the-mmsolver-shelf-and-menus">
+<h2>Overriding the mmSolver Shelf and Menus<a class="headerlink" href="#overriding-the-mmsolver-shelf-and-menus" title="Permalink to this headline">¶</a></h2>
+<p>To change the mmSolver shelf or menus, you may add or edit the
+configuration files in the home directory. See the <cite>Home Directory
+Configuration</cite> section for the specific directory.</p>
+<p>To override the Maya ‘mmSolver’ shelf and/or menus, follow these steps:</p>
+<ol class="arabic simple">
+<li>Get the default config file.<ol class="arabic">
+<li>Go to the installed directory of mmSolver.</li>
+<li>Go to “config” directory.</li>
+<li>Copy the “shelf.json” and/or “menu.json” files.</li>
+</ol>
+</li>
+<li>Paste the config files into your home directory.<ol class="arabic">
+<li>Go to the Home Directory configuration for your operating system
+(~/.mmSolver on Linux), see <cite>Home Directory Configuration</cite>
+section below for details.</li>
+<li>Paste the files to be overwritten into this directory.</li>
+</ol>
+</li>
+<li>Edit the custom files<ol class="arabic">
+<li>Open the files in a Text Editor.</li>
+<li>Edit the files, but make sure to use JSON syntax.</li>
+<li>Save the files.</li>
+</ol>
+</li>
+<li>Restart Maya to see your changes.</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If the default files are overridden, any changes made to the
+default config files will be overridden by your custom
+shelf. For example, when a new mmSolver version is released,
+new shelves and menus may be added - these new menus will
+not be visible in the overridden configurations.</p>
+</div>
+</div>
+<div class="section" id="home-directory-configuration">
+<h2>Home Directory Configuration<a class="headerlink" href="#home-directory-configuration" title="Permalink to this headline">¶</a></h2>
+<p>To store settings and preferences that persist after Maya is closed,
+files are saved into the home directory.</p>
+<p>The path for these changes are dependant on the Operating System:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">${HOME}/.mmSolver</span></code> (on Linux)</li>
+<li><code class="docutils literal notranslate"><span class="pre">%APPDATA%\mmSolver</span></code> (on Windows)</li>
+</ul>
+<p>You can type these paths into your file manager (for example <cite>Windows
+Explorer</cite>) to go to the directory.</p>
+<p>All of your personal user-settings are stored inside the home
+directory. Copying, or deleting these files will delete or transfer
+the personal preferences too.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Not all settings in mmSolver are stored in the home
+directory, some are stored in the Maya scene file directly.</p>
+</div>
+</div>
 </div>
 
 
@@ -64,6 +120,15 @@ do not accumulate values.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#overriding-the-mmsolver-shelf-and-menus">Overriding the mmSolver Shelf and Menus</a></li>
+<li><a class="reference internal" href="#home-directory-configuration">Home Directory Configuration</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="commands.html"
                         title="previous chapter">Commands</a></p>

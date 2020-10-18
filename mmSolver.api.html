@@ -605,8 +605,8 @@ information, in a camera’s screen-space.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>node</strong> (<em>None</em><em> or </em><em>str</em>) – The Maya node to connect to.</li>
-<li><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) – This is a backwards compatible kwarg for ‘node’.</li>
+<li><strong>node</strong> (<em>None</em><em> or </em><em>basestring</em>) – The Maya node to connect to.</li>
+<li><strong>name</strong> (<em>None</em><em> or </em><em>basestring</em>) – This is a backwards compatible kwarg for ‘node’.</li>
 </ul>
 </td>
 </tr>
@@ -1067,6 +1067,40 @@ disconnected from any camera.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="mmSolver.api.Marker.get_used_hint">
+<code class="descname">get_used_hint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.get_used_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the Marker used by the solver?</p>
+<p>This attribute does not affect the solve, but is provided as a hint
+to show users (in UIs), that a marker is unused.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A value of MARKER_USED_HINT_LIST that indicates
+the current used state hint.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Marker.set_used_hint">
+<code class="descname">set_used_hint</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Marker.set_used_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value indicating this Marker is used by the solver.</p>
+<p>See the Marker.get_used_hint() method for details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) – The value to set, a value in MARKER_USED_HINT_LIST.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="function">
@@ -1307,9 +1341,9 @@ index of the mkr_list and attr_list given.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<em>str</em>) – Node and attribute path as a single string: ‘node.attr’</li>
-<li><strong>node</strong> (<em>str</em>) – DG Maya node path.</li>
-<li><strong>attr</strong> (<em>str</em>) – Long or short attribute name.</li>
+<li><strong>name</strong> (<em>basestring</em>) – Node and attribute path as a single string: ‘node.attr’</li>
+<li><strong>node</strong> (<em>basestring</em>) – DG Maya node path.</li>
+<li><strong>attr</strong> (<em>basestring</em>) – Long or short attribute name.</li>
 </ul>
 </td>
 </tr>
@@ -3259,6 +3293,16 @@ exist.</p>
 <dl class="method">
 <dt id="mmSolver.api.Collection.get_attribute_variance_value_plug_name">
 <code class="descname">get_attribute_variance_value_plug_name</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_variance_value_plug_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.get_attribute_used_hint">
+<code class="descname">get_attribute_used_hint</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.get_attribute_used_hint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.Collection.set_attribute_used_hint">
+<code class="descname">set_attribute_used_hint</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Collection.set_attribute_used_hint" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">

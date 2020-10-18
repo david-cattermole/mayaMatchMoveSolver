@@ -60,7 +60,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='139715129629648'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='139715129629840'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='139715129630032'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='140218160697744'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='140218160697936'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='140218160698128'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -240,9 +240,9 @@ this may be overridden using “get_dirs”, or “get_config” function argume
 <p>By default the following paths are searched (in order, top-down):</p>
 <blockquote>
 <div><ul class="simple">
-<li>${MMSOLVER_LOCATION}/config (Linux and Windows)</li>
-<li>${HOME}/.mmSolver (Linux)</li>
-<li>%APPDATA%mmSolver (Windows)</li>
+<li><cite>${HOME}/.mmSolver</cite> (Linux)</li>
+<li><cite>%APPDATA%/mmSolver</cite> (Windows)</li>
+<li><cite>${MMSOLVER_LOCATION}/config</cite> (Linux and Windows)</li>
 </ul>
 </div></blockquote>
 <p>This allows both a default fallback, and a user specified path.
@@ -742,18 +742,6 @@ does not already exist.</li>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.configmaya.get_session_option">
-<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">get_session_option</code><span class="sig-paren">(</span><em>name</em>, <em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.get_session_option" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get an option that lives in this Maya instance only.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.utils.configmaya.set_session_option">
-<code class="descclassname">mmSolver.utils.configmaya.</code><code class="descname">set_session_option</code><span class="sig-paren">(</span><em>name</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.configmaya.set_session_option" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set an option that lives in this Maya instance only.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1381,14 +1369,14 @@ markers</li>
 </ul>
 <dl class="function">
 <dt id="mmSolver.utils.nodeaffects.find_plugs_affecting_transform">
-<code class="descclassname">mmSolver.utils.nodeaffects.</code><code class="descname">find_plugs_affecting_transform</code><span class="sig-paren">(</span><em>bnd_node</em>, <em>cam_tfm</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.nodeaffects.find_plugs_affecting_transform" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.nodeaffects.</code><code class="descname">find_plugs_affecting_transform</code><span class="sig-paren">(</span><em>tfm_node</em>, <em>cam_tfm</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.nodeaffects.find_plugs_affecting_transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find plugs that affect the world-matrix transform of the node.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>bnd_node</strong> (<em>str</em>) – The input node to query.</li>
+<li><strong>tfm_node</strong> (<em>str</em>) – The input node to query.</li>
 <li><strong>cam_tfm</strong> (<em>str</em><em> or </em><em>None</em>) – The camera that should be considered (optional)</li>
 </ul>
 </td>
@@ -1559,7 +1547,20 @@ given, or None if no point was found.</p>
 <dl class="function">
 <dt id="mmSolver.utils.reproject.connect_transform_to_reprojection">
 <code class="descclassname">mmSolver.utils.reproject.</code><code class="descname">connect_transform_to_reprojection</code><span class="sig-paren">(</span><em>tfm</em>, <em>reproj</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.reproject.connect_transform_to_reprojection" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Connect ‘tfm’ to the reprojection node, ‘reproj’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tfm</strong> (<em>str</em>) – Transform node name to be connected.</li>
+<li><strong>reproj</strong> (<em>str</em>) – The re-projection node.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 <div class="section" id="module-mmSolver.utils.smooth">

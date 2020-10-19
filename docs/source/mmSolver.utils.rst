@@ -38,6 +38,13 @@ Convert Types
     :members:
     :undoc-members:
 
+Event
++++++
+
+.. automodule:: mmSolver.utils.event
+    :members:
+    :undoc-members:
+
 Kalman Filter
 +++++++++++++
 

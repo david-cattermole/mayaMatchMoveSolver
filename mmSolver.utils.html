@@ -60,7 +60,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='139984081551760'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='139984081551952'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='139984081552144'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='140406645141904'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='140406645142096'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='140406645142288'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -837,6 +837,44 @@ value = ‘1001,1002,1003-1005,1010-1012’</p>
 <dl class="function">
 <dt id="mmSolver.utils.converttypes.stringToInteger">
 <code class="descclassname">mmSolver.utils.converttypes.</code><code class="descname">stringToInteger</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.converttypes.stringToInteger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-mmSolver.utils.event">
+<span id="event"></span><h2>Event<a class="headerlink" href="#module-mmSolver.utils.event" title="Permalink to this headline">¶</a></h2>
+<p>Event registry and triggers for python functions.</p>
+<p>The event system modelled is a ‘publish/subscribe’ pattern.
+<a class="reference external" href="https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern">https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern</a></p>
+<p>This module does not use any external python dependencies, but does
+rely on Maya’s in-built ‘maya.utils.executeDeferred()’ function.</p>
+<p>This event system automatically combines multiple functions with
+single objects into a function that is run once with multiple
+arguments.</p>
+<p>Example usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mmSolver.utils.event</span> <span class="k">as</span> <span class="nn">event_utils</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event_utils</span><span class="o">.</span><span class="n">add_function_to_event</span><span class="p">(</span><span class="s1">&#39;my_event&#39;</span><span class="p">,</span> <span class="n">my_function</span><span class="p">,</span> <span class="n">deferred</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event_utils</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span><span class="s1">&#39;my_event&#39;</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="go">{&#39;number&#39;: 42}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">event_utils</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span><span class="s1">&#39;my_event&#39;</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="go">{&#39;number&#39;: [0, 1, 2]}</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="mmSolver.utils.event.trigger_event">
+<code class="descclassname">mmSolver.utils.event.</code><code class="descname">trigger_event</code><span class="sig-paren">(</span><em>event_name</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.event.trigger_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inform the event-driven system that ‘event_name’ has occurred.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.event.add_function_to_event">
+<code class="descclassname">mmSolver.utils.event.</code><code class="descname">add_function_to_event</code><span class="sig-paren">(</span><em>event_name</em>, <em>func</em>, <em>deferred=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.event.add_function_to_event" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -2994,6 +3032,7 @@ isolate object list.</p>
 <li><a class="reference internal" href="#module-mmSolver.utils.config">Config</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.configmaya">Config Maya</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.converttypes">Convert Types</a></li>
+<li><a class="reference internal" href="#module-mmSolver.utils.event">Event</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.kalmanfilter">Kalman Filter</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.lineintersect">Line Intersect</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.node">Node</a></li>

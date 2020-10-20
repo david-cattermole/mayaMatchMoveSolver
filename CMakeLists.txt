@@ -92,7 +92,8 @@ include(MMSolverUtils)
 # Build features
 add_subdirectory(modules)
 
-# add_subdirectory(external)
+# Build external dependancies (including Qt.py).
+add_subdirectory(external)
 
 if (BUILD_PLUGIN)
   add_subdirectory(include)

@@ -58,48 +58,48 @@ endfunction()
 
 if (BUILD_QT_UI)
     add_ui_compile("base"
-            mmSolver/ui/base.ui
-            mmSolver/ui/ui_base.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/ui/base.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/ui/ui_base.py
             )
 
     add_ui_compile("channelsen"
-            mmSolver/tools/channelsen/ui/channelsen_layout.ui
-            mmSolver/tools/channelsen/ui/ui_channelsen_layout.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/channelsen/ui/channelsen_layout.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/channelsen/ui/ui_channelsen_layout.py
             )
 
     add_ui_compile("smoothkeyframes"
-            mmSolver/tools/smoothkeyframes/ui/smoothkeys_layout.ui
-            mmSolver/tools/smoothkeyframes/ui/ui_smoothkeys_layout.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/smoothkeyframes/ui/smoothkeys_layout.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/smoothkeyframes/ui/ui_smoothkeys_layout.py
             )
 
     add_ui_compile("loadmarker"
-            mmSolver/tools/loadmarker/ui/loadmarker_layout.ui
-            mmSolver/tools/loadmarker/ui/ui_loadmarker_layout.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/loadmarker/ui/loadmarker_layout.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/loadmarker/ui/ui_loadmarker_layout.py
             )
 
     add_ui_compile("solver_layout"
-            mmSolver/tools/solver/ui/solver_layout.ui
-            mmSolver/tools/solver/ui/ui_solver_layout.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/ui/solver_layout.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/ui/ui_solver_layout.py
             )
 
     add_ui_compile("solver_widgets"
-            mmSolver/tools/solver/widget/nodebrowser_widget.ui
-            mmSolver/tools/solver/widget/ui_nodebrowser_widget.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/nodebrowser_widget.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/ui_nodebrowser_widget.py
             )
 
     add_ui_compile("solver_about"
-            mmSolver/tools/aboutwindow/ui/about_layout.ui
-            mmSolver/tools/aboutwindow/ui/ui_about_layout.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/aboutwindow/ui/about_layout.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/aboutwindow/ui/ui_about_layout.py
             )
 
     add_ui_compile("sysinfo"
-            mmSolver/tools/sysinfowindow/ui/sysinfo_layout.ui
-            mmSolver/tools/sysinfowindow/ui/ui_sysinfo_layout.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/sysinfowindow/ui/sysinfo_layout.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/sysinfowindow/ui/ui_sysinfo_layout.py
             )
 
     add_ui_compile("setattributedetails"
-            mmSolver/tools/setattributedetails/ui/dialog.ui
-            mmSolver/tools/setattributedetails/ui/ui_dialog.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/setattributedetails/ui/dialog.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/setattributedetails/ui/ui_dialog.py
             )
 endif ()
 

@@ -212,6 +212,9 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         min_frames_per_marker = 2
         frame_nums = mmapi.get_root_frames_from_markers(
             mkr_list, min_frames_per_marker, start_frame, end_frame)
+        if len(frame_nums) < 2:
+            LOG.warn('Auto Root Frames failed to calculate - not enough markers.')
+            return
         roots_string = convert_types.intListToString(frame_nums)
         self.setRootFramesValue(col, roots_string)
         self.rootFrames_lineEdit.setText(roots_string)

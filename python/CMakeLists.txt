@@ -28,12 +28,13 @@ configure_file(
   @ONLY)
 
 
+# Compile a .ui file into a .py file using 'mayapy' command.
 function(add_ui_compile
-        name
-        input_file
-        output_file)
+         name
+         input_file
+         output_file)
 
-    set(EXEC_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/compileUI.py)
+    set(EXEC_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/compileUI.py)
 
     add_custom_command(
             OUTPUT ${output_file}

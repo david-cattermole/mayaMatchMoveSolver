@@ -30,21 +30,23 @@ between point-release versions (v0.1 to v0.2), but major version
 releases should be considered major and may introduce breaking
 changes.
 
-| Releases                                                                              | Description                                 |
-| ------------------------------------------------------------------------------------- | ------------------------------------------- |
-| [v0.3.6](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.6) | UI Performance Improvements and bug fixes.  |
-| [v0.3.5](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.5) | Fixed bugs.                                 |
-| [v0.3.4](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.4) | Added Attribute Details and fixed bugs.     |
-| [v0.3.3](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.3) | Bug fix release.                            |
-| [v0.3.2](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.2) | Added tools and fixed bugs.                 |
-| [v0.3.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.1) | Added tools and fixed bugs.                 |
-| [v0.3.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.0) | Improved solver, GUI and tools              |
-| [v0.2.3](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.3) | Bug fix release                             |
-| [v0.2.2](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.2) | Bug fix release                             |
-| [v0.2.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.1) | Bug fix release                             |
-| [v0.2.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.0) | Improved solver and tools                   |
-| [v0.1.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.1) | Bug fix release                             |
-| [v0.1.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.0) | Initial release                             |
+| Releases                                                                              | Description                                        |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| [v0.3.8](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.8) | Bug fix release.                                   |
+| [v0.3.7](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.7) | Performance, stability improvements and bug fixes. |
+| [v0.3.6](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.6) | UI Performance Improvements and bug fixes.         |
+| [v0.3.5](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.5) | Fixed bugs.                                        |
+| [v0.3.4](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.4) | Added Attribute Details and fixed bugs.            |
+| [v0.3.3](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.3) | Bug fix release.                                   |
+| [v0.3.2](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.2) | Added tools and fixed bugs.                        |
+| [v0.3.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.1) | Added tools and fixed bugs.                        |
+| [v0.3.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.0) | Improved solver, GUI and tools                     |
+| [v0.2.3](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.3) | Bug fix release                                    |
+| [v0.2.2](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.2) | Bug fix release                                    |
+| [v0.2.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.1) | Bug fix release                                    |
+| [v0.2.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.0) | Improved solver and tools                          |
+| [v0.1.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.1) | Bug fix release                                    |
+| [v0.1.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.0) | Initial release                                    |
 
 ## Documentation
 

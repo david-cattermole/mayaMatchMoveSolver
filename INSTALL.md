@@ -9,7 +9,7 @@ page on the GitHub [project page](https://github.com/david-cattermole/mayaMatchM
 | ----------------- | --------------------------- |
 | Linux             | Maya 2016, 2017, 2018, 2019 |
 | Windows           | Maya 2016, 2017, 2018, 2019 |
-| Mac OS X          | *Not Currently Supported*   |
+| Mac OS X          | Maya 2018, 2019             |
 
 Download the archive format (`.zip` or `.tar.gz`) for your Maya
 version and operating system.
@@ -59,6 +59,16 @@ On Linux:
 ~/maya/<Maya Version>/modules
 ```
 
+On MacOS:
+```
+~/Library/Preferences/Autodesk/maya/<Maya Version>/modules
+```
+
+Note: The MacOS Finder App hides the "Library" folder. To open the
+Maya preferences folder, open Finder, and use the menu `Go > Go to
+Folder...`, then type `~/Library/Preferences/Autodesk/maya` and press
+"Go".
+
 You may need to create the *modules* directory manually, as it is not
 created default by Maya.
 
@@ -84,14 +94,18 @@ may want extra customisation.
 
 To make customisations, edit the Maya Module file (ending with `.mod`)
 using a text editor. The following environment variables are defined
-which can control mmSolver's behaviour.
+which can control mmSolver's behaviour. The modified behaviour will be
+for all users loading this module - if the module file is located on
+the network for multiple users changes to this file will affect all
+users.
 
 | Name                       | Description                                                                                            |
 | -------------------------- | ------------------------------------------------------------------------------------------------------ |
-| MMSOLVER_LOAD_AT_STARTUP   | Automatically load mmSolver plug-in at Maya start-up.                                                  |
-| MMSOLVER_CREATE_SHELF      | Automatically create a Maya shelf at start-up.                                                         |
-| MMSOLVER_CREATE_MENU       | Automatically create a Maya menu at start-up.                                                          |
-| MMSOLVER_CREATE_HOTKEY_SET | Automatically create a Maya hotkey set at start-up.                                                    |
+| MMSOLVER_LOAD_AT_STARTUP   | Automatically load mmSolver plug-in at Maya start-up (values of '0' or '1').                           |
+| MMSOLVER_CREATE_SHELF      | Automatically create a Maya shelf at start-up (values of '0' or '1').                                  |
+| MMSOLVER_CREATE_MENU       | Automatically create a Maya menu at start-up (values of '0' or '1').                                   |
+| MMSOLVER_CREATE_HOTKEY_SET | Automatically create a Maya hotkey set at start-up (values of '0' or '1').                             |
+| MMSOLVER_VIEWPORT_MESSAGES | Enable or disable warnings and errors printed to the viewport (values of '0' or '1').                  |
 | MMSOLVER_HELP_SOURCE       | Prefer 'internet' or 'local' source of help? For users with internet restrictions set this to 'local'. |
 | MMSOLVER_DEFAULT_SOLVER    | (Advanced) The default solver to use in mmSolver; 'cminpack_lm' or 'levmar'.                           |
 | MMSOLVER_DEBUG             | (Advanced) Forces mmSolver to print out debug messages. Not for users, for use by developers only.     |

@@ -35,6 +35,7 @@ from mmSolver._api.collection import (
 from mmSolver._api.execute import (
     createExecuteOptions,
     ExecuteOptions,
+    ActionState,
     validate,
     execute,
 )
@@ -163,6 +164,11 @@ from mmSolver._api.constant import (
     ROBUST_LOSS_TYPE_VALUE_LIST,
     ROBUST_LOSS_TYPE_DEFAULT_VALUE,
 
+    VALIDATE_MODE_PRE_VALIDATE_VALUE,
+    VALIDATE_MODE_AT_RUNTIME_VALUE,
+    VALIDATE_MODE_NONE_VALUE,
+    VALIDATE_MODE_VALUE_LIST,
+
     EVENT_NAME_MARKER_CREATED,
     EVENT_NAME_BUNDLE_CREATED,
     EVENT_NAME_COLLECTION_CREATED,
@@ -184,6 +190,10 @@ from mmSolver._api.constant import (
     MARKER_USED_HINT_USED_VALUE,
     MARKER_USED_HINT_NOT_USED_VALUE,
     MARKER_USED_HINT_LIST,
+
+    ACTION_STATUS_SUCCESS,
+    ACTION_STATUS_FAILED,
+    ACTION_STATUS_LIST,
 )
 from mmSolver._api.state import (
     is_solver_running,
@@ -229,6 +239,7 @@ __all__ = [
     'Frame',
     'Solver',  # Backwards compatibility
     'Action',
+    'ActionState',
     'SolverBase',
     'SolverStandard',
     'SolverBasic',
@@ -268,6 +279,10 @@ __all__ = [
     'ROBUST_LOSS_TYPE_CAUCHY_VALUE',
     'ROBUST_LOSS_TYPE_VALUE_LIST',
     'ROBUST_LOSS_TYPE_DEFAULT_VALUE',
+    'VALIDATE_MODE_PRE_VALIDATE_VALUE',
+    'VALIDATE_MODE_AT_RUNTIME_VALUE',
+    'VALIDATE_MODE_NONE_VALUE',
+    'VALIDATE_MODE_VALUE_LIST',
     'EVENT_NAME_MARKER_CREATED',
     'EVENT_NAME_BUNDLE_CREATED',
     'EVENT_NAME_COLLECTION_CREATED',
@@ -287,6 +302,9 @@ __all__ = [
     'MARKER_USED_HINT_USED_VALUE',
     'MARKER_USED_HINT_NOT_USED_VALUE',
     'MARKER_USED_HINT_LIST',
+    'ACTION_STATUS_SUCCESS',
+    'ACTION_STATUS_FAILED',
+    'ACTION_STATUS_LIST',
 
     # Exceptions
     'MMException',

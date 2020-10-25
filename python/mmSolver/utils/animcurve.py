@@ -157,20 +157,24 @@ def euler_filter_plug(node_name, attr_name):
 
     # Perform Euler filter for the entire animation curve.
     prev_value = 0.0
-    for key_index in xrange(num_keys):
-        value = maya.cmds.keyframe(
+    for key_index in range(num_keys):
+        values = maya.cmds.keyframe(
             node_name,
             query=True,
             attribute=attr_name,
-            index=key_index,
+            index=(key_index,),
             valueChange=True) or None
-        assert value is not None
+        assert values is not None
+        # Modulo the keyframe value to ensure the starting value is
+        # not too high to begin with, causing Maximum Recursion
+        # exceptions if the value is too large.
+        value = values[0] % 360.0
         new_value = euler_filter_value(prev_value, value)
         maya.cmds.keyframe(
             node_name,
             query=True,
             attribute=attr_name,
-            index=key_index,
+            index=(key_index,),
             valueChange=new_value)
     return
 

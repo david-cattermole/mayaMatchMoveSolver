@@ -299,6 +299,10 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         """
         Add the selected nodes or node attributes to the data model.
         """
+        # Store the selection, in case any tools or callbacks
+        # accidentally change the scene selection.
+        sel = lib_maya_utils.get_scene_selection()
+
         s = time.time()
         col = lib_state.get_active_collection()
         if col is None:
@@ -309,11 +313,10 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         LOG.debug("attribute addClicked1: t=%s", e - s)
 
         s = time.time()
-        sel = lib_maya_utils.get_scene_selection()
         attr_list = lib_maya_utils.get_selected_maya_attributes()
         attr_list = lib_maya_utils.input_attributes_filter(attr_list)
         if len(attr_list) == 0:
-            attr_list = lib_maya_utils.get_selected_node_default_attributes()
+            attr_list = lib_maya_utils.get_node_default_attributes(sel)
             attr_list = lib_maya_utils.input_attributes_filter(attr_list)
         if len(attr_list) == 0:
             msg = 'Please select nodes or attributes in the channel box.'

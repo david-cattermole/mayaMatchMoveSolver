@@ -282,9 +282,9 @@ def get_selected_maya_attributes():
     ]
     for nodes, attrs in nodes_and_attrs:
         for n in nodes:
+            possible_attrs = maya.cmds.listAttr(n, shortNames=False) or []
+            possible_attrs += maya.cmds.listAttr(n, shortNames=True) or []
             for a in attrs:
-                possible_attrs = maya.cmds.listAttr(n, shortNames=False) or []
-                possible_attrs += maya.cmds.listAttr(n, shortNames=True) or []
                 if a not in possible_attrs:
                     continue
                 attr = mmapi.Attribute(node=n, attr=a)
@@ -293,19 +293,18 @@ def get_selected_maya_attributes():
     return attr_list
 
 
-def get_selected_node_default_attributes():
+def get_node_default_attributes(nodes):
     """
-    Get the attributes on the selected nodes.
+    Get the default attributes for solving on the given nodes.
+
+    :param nodes: List of nodes to be considered.
+    :type nodes: [str, ..]
 
     :returns: List of mmSolver API Attribute objects.
     :rtype: [Attribute, ..]
     """
     attr_list = []
-    sel = maya.cmds.ls(selection=True, long=True) or []
-    if len(sel) == 0:
-        return attr_list
-
-    for node in sel:
+    for node in nodes:
         node_type = maya.cmds.nodeType(node)
         obj_type = mmapi.get_object_type(node)
         attr_names = []

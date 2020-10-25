@@ -123,6 +123,11 @@ def createExecuteOptions(verbose=False,
     return options
 
 
+# More consistently named function name.
+# TODO: The 'createExecuteOptions' name will be deprecated in v0.4.0.
+create_execute_options = createExecuteOptions
+
+
 def preSolve_updateProgress(prog_fn, status_fn):
     """
     Initialise solver is running, and send info to the Maya GUI before

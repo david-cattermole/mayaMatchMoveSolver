@@ -34,6 +34,7 @@ from mmSolver._api.collection import (
 )
 from mmSolver._api.execute import (
     createExecuteOptions,
+    create_execute_options,
     ExecuteOptions,
     ActionState,
     validate,
@@ -336,7 +337,8 @@ __all__ = [
     'action_to_components',
 
     # Execute
-    'createExecuteOptions',
+    'createExecuteOptions',    # Old function name, to be deprecated in v0.4.0.
+    'create_execute_options',  # New function name
     'execute',
     'validate',
 

@@ -123,6 +123,9 @@ def read_data(file_path):
     :rtype: dict, list or None
     """
     LOG.debug('Read Configuration: %r', file_path)
+    data = None
+    if not os.path.isfile(file_path):
+        return data
     with open(file_path, 'rb') as f:
         try:
             text = f.read()
@@ -407,7 +410,8 @@ class Config(object):
 
         If no key exists, returns the default_value.
         """
-        if self._auto_read is True and len(self._values) == 0:
+        if (self._auto_read is True
+                and (self._values is None or len(self._values) == 0)):
             self.read()
         data = self._values
         if data is None or len(data) == 0:

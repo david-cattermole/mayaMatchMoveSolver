@@ -41,6 +41,8 @@ import mmSolver.tools.loadmarker.constant as const
 import mmSolver.tools.loadmarker.ui.loadmarker_layout as loadmarker_layout
 import mmSolver.tools.loadmarker.lib.utils as lib
 import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
+import mmSolver.tools.userpreferences.constant as userprefs_const
+import mmSolver.tools.userpreferences.lib as userprefs_lib
 
 
 LOG = mmSolver.logger.get_logger()
@@ -127,6 +129,15 @@ class LoadMarkerWindow(BaseWindow):
                         else:
                             mkr_grp = mkr_grp_data
                     self.progressBar.setValue(60)
+
+                    # Temporarily disable adding new Markers to the Active
+                    # Collection.
+                    config = userprefs_lib.get_config()
+                    key = userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_KEY
+                    old_value = userprefs_lib.get_value(config, key)
+                    temp_value = userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_NONE_VALUE
+                    userprefs_lib.set_value(config, key, temp_value)
+
                     mayareadfile.create_nodes(
                         mkr_data_list,
                         cam=cam,
@@ -135,6 +146,9 @@ class LoadMarkerWindow(BaseWindow):
                         load_bundle_position=load_bnd_pos,
                         camera_field_of_view=camera_field_of_view,
                     )
+
+                    # Restore original config value.
+                    userprefs_lib.set_value(config, key, old_value)
 
                 elif load_mode == const.LOAD_MODE_REPLACE_VALUE:
                     self.progressBar.setValue(60)

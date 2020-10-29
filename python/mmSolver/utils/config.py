@@ -312,7 +312,7 @@ class Config(object):
     """
 
     def __init__(self, file_path):
-        self.file_path = file_path
+        self._file_path = file_path
         self._values = dict()
         self._changed = False
         self._auto_read = True
@@ -354,6 +354,31 @@ class Config(object):
         """
         assert isinstance(value, bool)
         self._auto_write = value
+
+    def get_file_path(self):
+        return self._file_path
+
+    def set_file_path(self, value):
+        """Set the file path for the Config.
+
+        Setting the file path will automatically invalidate the Config
+        and force a re-read of the config file when a value is next requested.
+
+        .. note:: If the new file path is the same as the old file
+            path, the Config will not be invalidated. Only if the file
+            path changes will the Config be invalidated. To re-read
+            the file, use the Config.read() method.
+
+        :param value: The value to set.
+        :type value: basestring
+        """
+        assert isinstance(value, basestring)
+        if value == self._file_path:
+            # No change to the file path.
+            return
+        self._file_path = value
+        self._values = dict()
+        self._changed = False
 
     def __del__(self):
         if self._auto_write is True and self._changed is True:
@@ -399,6 +424,8 @@ class Config(object):
         self._values = data
         self._changed = True
         return
+
+    file_path = property(get_file_path, set_file_path)
 
 
 def get_config(file_name, search=None):

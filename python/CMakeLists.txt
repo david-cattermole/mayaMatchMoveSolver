@@ -87,4 +87,9 @@ if (BUILD_QT_UI)
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/setattributedetails/ui/dialog.ui
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/setattributedetails/ui/ui_dialog.py
             )
+
+    add_ui_compile("preferences_window"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/userprefswindow/ui/pref_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/userprefswindow/ui/ui_pref_layout.py
+            )
 endif ()

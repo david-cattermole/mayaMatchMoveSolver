@@ -65,6 +65,8 @@
             "general_tools/gen_tools_popup/---Controllers",
             "general_tools/gen_tools_popup/create_controller",
             "general_tools/gen_tools_popup/remove_controller",
+            "general_tools/gen_tools_popup/---Settings & Preferences",
+            "general_tools/gen_tools_popup/user_preferences_window",
             "file_io_tools/file_io_popup/---Input Output",
             "file_io_tools/file_io_popup/load_marker_ui",
             "file_io_tools/file_io_popup/copy_camera_to_clipboard",

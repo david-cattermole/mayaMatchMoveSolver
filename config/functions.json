@@ -565,6 +565,15 @@
                 "import mmSolver.tools.sortoutlinernodes.tool as tool;",
                 "tool.main();"
             ]
+        },
+        "user_preferences_window": {
+            "name": "User Preferences...",
+            "name_shelf": "UsrPrf",
+            "tooltip": "Open the MM Solver User Preferences window.",
+            "command": [
+                "import mmSolver.tools.userprefswindow.tool;",
+                "mmSolver.tools.userprefswindow.tool.open_window();"
+            ]
         }
     }
 }

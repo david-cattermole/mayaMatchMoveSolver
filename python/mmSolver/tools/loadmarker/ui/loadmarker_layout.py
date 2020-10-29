@@ -31,6 +31,7 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.utils.config as config_utils
+import mmSolver.api as mmapi
 import mmSolver.tools.loadmarker.constant as const
 import mmSolver.tools.loadmarker.ui.ui_loadmarker_layout as ui_loadmarker_layout
 import mmSolver.tools.loadmarker.lib.fieldofview as fieldofview
@@ -344,9 +345,8 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
     def updateCameraList(self, comboBox, model, all_camera_nodes,
                          selected_cameras, active_camera):
         self.populateCameraModel(model, all_camera_nodes)
-        index = self.getDefaultCameraIndex(self.camera_model,
-                                           selected_cameras,
-                                           active_camera)
+        index = self.getDefaultCameraIndex(
+            model, selected_cameras, active_camera)
         comboBox.setCurrentIndex(index)
         return
 
@@ -354,7 +354,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
                               mkr_grp_nodes):
         self.populateMarkerGroupModel(model, active_mkr_grp, mkr_grp_nodes)
         index = self.getDefaultMarkerGroupIndex(
-            self.markerGroup_model, active_mkr_grp, mkr_grp_nodes)
+            model, active_mkr_grp, mkr_grp_nodes)
         comboBox.setCurrentIndex(index)
         self.updateOverscanValues()
         return
@@ -438,7 +438,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         :type model: uimodels.StringDataListModel
 
         :param selected_cameras: List of cameras that are selected.
-        :type selected_cameras: list of mmSolver.api.Camera
+        :type selected_cameras: [mmSolver.api.Camera, ..]
 
         :param active_camera: The active camera.
         :type active_camera: mmSolver.api.Camera
@@ -456,6 +456,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
 
         string_data_list = model.stringDataList()
         for cam in selected_cameras:
+            assert isinstance(cam, mmapi.Camera)
             if cam is None:
                 continue
             nodes = [

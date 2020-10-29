@@ -429,6 +429,8 @@ class Config(object):
         self._changed = True
         return
 
+    autoread = property(get_autoread, set_autoread)
+    autowrite = property(get_autowrite, set_autowrite)
     file_path = property(get_file_path, set_file_path)
 
 

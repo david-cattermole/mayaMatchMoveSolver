@@ -355,11 +355,11 @@ Run in the MacOS Bash terminal:
 ```commandline
 # Maya 2018
 $ mkdir -p ~/dev ; cd ~/dev ; git clone https://github.com/david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2018Deploy_mac
-$ cd ~/dev/mayaMatchMoveSolver_maya2018Deploy_mac ; git fetch --all; git checkout -f master; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_mac_maya2018.bash
+$ cd ~/dev/mayaMatchMoveSolver_maya2018Deploy_mac ; git fetch --all; git checkout -f issue146; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_mac_maya2018.bash
 
 # Maya 2019
 $ mkdir -p ~/dev ; cd ~/dev ; git clone https://github.com/david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2019Deploy_mac
-$ cd ~/dev/mayaMatchMoveSolver_maya2019Deploy_mac ; git fetch --all; git checkout -f master; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_mac_maya2019.bash
+$ cd ~/dev/mayaMatchMoveSolver_maya2019Deploy_mac ; git fetch --all; git checkout -f issue146; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_mac_maya2019.bash
 ```
 
 Package files can then be uploaded from the

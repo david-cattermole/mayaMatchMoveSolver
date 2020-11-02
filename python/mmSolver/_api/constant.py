@@ -245,3 +245,13 @@ MARKER_USED_HINT_LIST = [
     MARKER_USED_HINT_USED_VALUE,
     MARKER_USED_HINT_NOT_USED_VALUE,
 ]
+
+
+# Action Status values
+# Used when a test action is run - did it succeed, fail, etc?
+ACTION_STATUS_SUCCESS = 'success'
+ACTION_STATUS_FAILED = 'failed'
+ACTION_STATUS_LIST = [
+    ACTION_STATUS_SUCCESS,
+    ACTION_STATUS_FAILED,
+]

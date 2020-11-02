@@ -69,9 +69,10 @@ def compile_euler_filter(attr_list, withtest):
         if attr_type.endswith('Angle') is False:
             continue
 
-        # Don't modify locked attributes.
-        locked = attr.is_locked()
-        if locked is False:
+        # Don't modify non-animated attributes (this includes
+        # locked attributes).
+        animated = attr.is_animated()
+        if animated is False:
             continue
 
         node_name = attr.get_node()

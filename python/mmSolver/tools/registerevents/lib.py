@@ -26,12 +26,24 @@ Register events for mmSolver.
 
 import time
 import mmSolver.logger
-import mmSolver.utils.event as event_utils
 
 LOG = mmSolver.logger.get_logger()
 
 
 def run_connect_markers_to_active_collection(**kwargs):
+    import mmSolver.tools.userpreferences.constant as userprefs_const
+    import mmSolver.tools.userpreferences.lib as userprefs_lib
+
+    # Enable a toggle to turn on or off this affect.
+    config = userprefs_lib.get_config()
+    key = userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_KEY
+    run_event = userprefs_lib.get_value(config, key)
+    msg = "run_connect_markers_to: run=%r kwargs=%s"
+    LOG.warn(msg, run_event, kwargs)
+    if run_event == userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_NONE_VALUE:
+        LOG.warn("SKIP")
+        return
+
     LOG.debug("run_connect_markers_to_active_collection: %s", kwargs)
     s = time.time()
     import mmSolver.api as mmapi

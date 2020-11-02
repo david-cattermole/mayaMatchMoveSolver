@@ -123,6 +123,11 @@ def createExecuteOptions(verbose=False,
     return options
 
 
+# More consistently named function name.
+# TODO: The 'createExecuteOptions' name will be deprecated in v0.4.0.
+create_execute_options = createExecuteOptions
+
+
 def preSolve_updateProgress(prog_fn, status_fn):
     """
     Initialise solver is running, and send info to the Maya GUI before
@@ -383,6 +388,42 @@ def postSolve_setUpdateProgress(progress_min,
     return stop_solving
 
 
+ActionState = collections.namedtuple(
+    'ActionState',
+    [
+        'status',
+        'message',
+        'error_number',
+        'parameter_number',
+        'frames_number',
+        'frames',
+    ]
+)
+
+
+def _create_action_state(status=None, message=None,
+                         error_number=None,
+                         parameter_number=None,
+                         frames_number=None,
+                         frames=None):
+    assert status is not None
+    assert status in const.ACTION_STATUS_LIST
+    if error_number is None:
+        error_number = 0
+    if parameter_number is None:
+        parameter_number = 0
+    if frames_number is None:
+        frames_number = 0
+    state = ActionState(
+        status=status,
+        message=message,
+        error_number=error_number,
+        parameter_number=parameter_number,
+        frames_number=frames_number,
+        frames=frames)
+    return state
+
+
 def _run_validate_action(vaction):
     """
     Call a single validate action, and see what happens.
@@ -395,50 +436,76 @@ def _run_validate_action(vaction):
         boolean)? Second, the user message we present for the state.
         Third, metrics about the solve (number of parameters, number
         of errors, and number of frames to solve)
-    :rtype: (bool, str, (int, int, int))
+    :rtype: ActionState
     """
-    num_param = 0
-    num_err = 0
-    num_frames = 0
-
-    valid = True
-    message = ('Validated parameters, errors and frames: '
-               'param=%r errors=%r frames=%r')
-    metrics = (num_param, num_err, num_frames)
     if not isinstance(vaction, api_action.Action):
-        message = message % (num_param, num_err, num_frames)
-        return valid, message, metrics
+        state = _create_action_state(
+            status=const.ACTION_STATUS_SUCCESS,
+            message='Action cannot be run.')
+        return state
     vfunc, vargs, vkwargs = api_action.action_to_components(vaction)
     vfunc_is_mmsolver = api_action.action_func_is_mmSolver(vaction)
 
-    num_frames = len(vkwargs.get('frame', []))
+    num_param = 0
+    num_err = 0
+    frames = list(sorted(vkwargs.get('frame', [])))
+    num_frames = len(frames)
     if num_frames == 0 and vfunc_is_mmsolver is True:
-        valid = False
-        metrics = (num_param, num_err, num_frames)
         msg = ('Failed to validate number of frames: '
                'param=%r errors=%r frames=%r')
         message = msg % (num_param, num_err, num_frames)
-        return valid, message, metrics
+        state = _create_action_state(
+            status=const.ACTION_STATUS_FAILED,
+            message=message,
+            error_number=num_err,
+            parameter_number=num_param,
+            frames_number=num_frames,
+            frames=frames)
+        return state
 
     # Run validate function
     solve_data = vfunc(*vargs, **vkwargs)
 
     if vfunc_is_mmsolver is False:
-        return valid, message, metrics
+        msg = ('Validated parameters, errors and frames: '
+               'param=%r errors=%r frames=%r')
+        message = msg % (num_param, num_err, num_frames)
+        state = _create_action_state(
+            status=const.ACTION_STATUS_SUCCESS,
+            message=message,
+            error_number=num_err,
+            parameter_number=num_param,
+            frames_number=num_frames,
+            frames=frames)
+        return state
 
     solres = solveresult.SolveResult(solve_data)
     print_stats = solres.get_print_stats()
     num_param = print_stats.get('number_of_parameters', 0)
     num_err = print_stats.get('number_of_errors', 0)
-    metrics = (num_param, num_err, num_frames)
     if num_param == 0 or num_err == 0 or num_param > num_err:
-        valid = False
-        msg = ('Failed to validate number of parameters and errors: '
-               'param=%r errors=%r frames=%r')
-        message = msg % (num_param, num_err, num_frames)
-        return valid, message, metrics
-    message = message % (num_param, num_err, num_frames)
-    return valid, message, metrics
+        msg = 'Invalid parameters and errors, skipping solve: %r'
+        message = msg % list(sorted(frames))
+        state = _create_action_state(
+            status=const.ACTION_STATUS_FAILED,
+            message=message,
+            error_number=num_err,
+            parameter_number=num_param,
+            frames_number=num_frames,
+            frames=frames)
+        return state
+
+    msg = ('Validated parameters, errors and frames: '
+           'param=%r errors=%r frames=%r')
+    message = msg % (num_param, num_err, num_frames)
+    state = _create_action_state(
+        status=const.ACTION_STATUS_SUCCESS,
+        message=message,
+        error_number=num_err,
+        parameter_number=num_param,
+        frames_number=num_frames,
+        frames=frames)
+    return state
 
 
 def _run_validate_action_list(vaction_list):
@@ -456,34 +523,61 @@ def _run_validate_action_list(vaction_list):
     :rtype: (bool, [str, ..], [(int, int, int), ..])
     """
     assert len(vaction_list) > 0
+    state_list = []
+    for vaction in vaction_list:
+        state = _run_validate_action(vaction)
+        state_list.append(state)
+    assert len(vaction_list) == len(state_list)
+    return state_list
+
+
+def _convert_action_state_to_plain_old_data(state_list):
+    """
+    Convert ActionStates back to the previous supported data structure.
+
+    :param state_list: [ActionState, ..]
+    :return:
+        A list of validations, with a single valid boolean (did the
+        validation succeed?).
+    :rtype: (bool, [str, ..], [(int, int, int), ..])
+    """
     valid = True
     message_list = []
     metrics_list = []
-    for vaction in vaction_list:
-        v, message, metrics = _run_validate_action(vaction)
-        metrics_list.append(metrics)
-        message_list.append(message)
-        if v is not True:
+    for state in state_list:
+        if state.status != const.ACTION_STATUS_SUCCESS:
             valid = False
+        message_list.append(state.message)
+        metrics = (state.error_number or 0,
+                   state.parameter_number or 0,
+                   state.frames_number or 0)
+        metrics_list.append(metrics)
     return valid, message_list, metrics_list
 
 
-def validate(col):
+def validate(col, as_state=None):
     """
     Validates the given collection state, is it ready for solving?
 
     :param col: The Collection object to be validated.
     :type col: Collection
 
+    :param as_state: If True, return an ActionState class, rather
+        than a big plain-old-data structure (documented below).
+    :type as_state: bool
+
     :return:
-        A list of validations, with a single valid boolean (did the
-        validation succeed?). See :py:func:`_run_validate_action`
-        function return types for more details.
-    :rtype: (bool, [str, ..], [(int, int, int), ..])
+        A list of states of the validations, or a list of validations,
+        with a single valid boolean (did the validation succeed?).
+        See :py:func:`_run_validate_action` function return types
+        for more details.
+    :rtype: (bool, [str, ..], [(int, int, int), ..]) or [ActionState, ..]
     """
-    valid = False
-    message_list = []
-    metrics_list = []
+    # TODO Remove the 'as_state' keyword in v0.4.0 release and
+    #  always return the ActionState.
+    if as_state is None:
+        as_state = False
+    state_list = []
     try:
         sol_list = col.get_solver_list()
         mkr_list = col.get_marker_list()
@@ -496,15 +590,23 @@ def validate(col):
             status_fn=None)
     except excep.NotValid as e:
         LOG.warn(e)
-        message_list.append(str(e))
-        metrics_list.append((0, 0, 0))
-        return valid, message_list, metrics_list
+        state = _create_action_state(
+            status=const.ACTION_STATUS_FAILED,
+            message=str(e),
+            error_number=0,
+            parameter_number=0,
+            frames_number=0)
+        state_list.append(state)
+        if as_state is False:
+            return _convert_action_state_to_plain_old_data(state_list)
+        return state_list
 
     if len(vaction_list) > 0:
-        valid, message_list, metrics_list = _run_validate_action_list(vaction_list)
-        assert len(message_list) > 0
-        assert len(metrics_list) > 0
-    return valid, message_list, metrics_list
+        state_list = _run_validate_action_list(vaction_list)
+
+    if as_state is False:
+        return _convert_action_state_to_plain_old_data(state_list)
+    return state_list
 
 
 def execute(col,
@@ -552,11 +654,13 @@ def execute(col,
     if options is None:
         options = createExecuteOptions()
     if validate_mode is None:
-        validate_mode = const.VALIDATE_MODE_NONE_VALUE
+        validate_mode = const.VALIDATE_MODE_PRE_VALIDATE_VALUE
     assert validate_mode in const.VALIDATE_MODE_VALUE_LIST
     if log_level is None:
         log_level = const.LOG_LEVEL_DEFAULT
     assert isinstance(log_level, (str, unicode))
+    validate_runtime = validate_mode == const.VALIDATE_MODE_AT_RUNTIME_VALUE
+    validate_before = validate_mode == const.VALIDATE_MODE_PRE_VALIDATE_VALUE
 
     start_time = time.time()
 
@@ -607,11 +711,10 @@ def execute(col,
             return solres_list
         collectionutils.run_progress_func(prog_fn, 1)
 
-        if validate_mode == 'pre_validate':
-            valid, msg, metrics_list = _run_validate_action_list(vaction_list)
-            if valid is not True:
-                LOG.warn(msg)
-                return solres_list
+        vaction_state_list = []
+        if validate_before is True:
+            vaction_state_list = _run_validate_action_list(vaction_list)
+            assert len(vaction_list) == len(vaction_state_list)
 
         # Prepare frame solve
         preSolve_setIsolatedNodes(action_list, options, panels)
@@ -623,15 +726,27 @@ def execute(col,
         )
 
         # Run Solver Actions...
+        message_hashes = set()
         start = 0
         total = len(action_list)
         number_of_solves = 0
         for i, (action, vaction) in enumerate(zip(action_list, vaction_list)):
-            if isinstance(vaction, api_action.Action) and validate_mode == 'at_runtime':
-                valid, message, metrics = _run_validate_action(vaction)
-                if valid is not True:
-                    LOG.warn(message)
-                    return
+            state = None
+            if len(vaction_state_list) > 0:
+                # We have pre-computed the state list.
+                state = vaction_state_list[i]
+            if isinstance(vaction, api_action.Action) and validate_runtime:
+                # We will calculate the state just-in-time.
+                state = _run_validate_action(vaction)
+            if state is not None:
+                if state.status != const.ACTION_STATUS_SUCCESS:
+                    assert isinstance(state, ActionState)
+                    h = hash(state.message)
+                    if h not in message_hashes:
+                        LOG.warn(state.message)
+                    message_hashes.add(h)
+                    # Skip this action, since the test failed.
+                    continue
 
             func, args, kwargs = api_action.action_to_components(action)
             func_is_mmsolver = api_action.action_func_is_mmSolver(action)

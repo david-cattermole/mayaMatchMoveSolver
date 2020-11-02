@@ -321,6 +321,7 @@ def __set_node_data(mkr, bnd, mkr_data,
 def create_nodes(mkr_data_list,
                  cam=None,
                  mkr_grp=None,
+                 col=None,
                  with_bundles=None,
                  load_bundle_position=None,
                  camera_field_of_view=None):
@@ -337,6 +338,9 @@ def create_nodes(mkr_data_list,
     :param mkr_grp: Marker Group, under cam, that the markers will
                     be created under.
     :type mkr_grp: MarkerGroup
+
+    :param col: Collection to add Markers to.
+    :type col: Collection or None
 
     :param with_bundles: Create a bundle for each Marker.
     :type with_bundles: bool
@@ -357,6 +361,7 @@ def create_nodes(mkr_data_list,
         load_bundle_position = True
     assert isinstance(cam, mmapi.Camera)
     assert isinstance(mkr_grp, mmapi.MarkerGroup)
+    assert col is None or isinstance(col, mmapi.Collection)
     assert isinstance(with_bundles, bool)
     assert isinstance(load_bundle_position, bool)
     assert camera_field_of_view is None \
@@ -390,6 +395,11 @@ def create_nodes(mkr_data_list,
                 overscan_x, overscan_y
             )
             mkr_list.append(mkr)
+
+    if len(mkr_list) > 0 and col is not None:
+        assert isinstance(col, mmapi.Collection)
+        col.add_marker_list(mkr_list)
+
     if len(mkr_nodes) > 0:
         maya.cmds.select(mkr_nodes, replace=True)
     else:

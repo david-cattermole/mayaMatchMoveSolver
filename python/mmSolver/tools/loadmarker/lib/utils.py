@@ -23,12 +23,14 @@ import os
 import os.path
 
 import maya.cmds
+import maya.utils
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.camera as camera_utils
 import mmSolver.api as mmapi
+import mmSolver.tools.userpreferences.lib as userprefs_lib
 
 
 LOG = mmSolver.logger.get_logger()
@@ -233,3 +235,10 @@ def trigger_maya_to_refresh():
     frame = maya.cmds.currentTime(query=True)
     maya.cmds.currentTime(frame, update=True)
     maya.cmds.refresh(currentView=True, force=False)
+
+
+def deferred_revert_of_config_value(config, key, old_value):
+    """Set the user preferences to a value, as a deferred fashion."""
+    maya.utils.executeDeferred(
+        lambda: userprefs_lib.set_value(config, key, old_value))
+    return

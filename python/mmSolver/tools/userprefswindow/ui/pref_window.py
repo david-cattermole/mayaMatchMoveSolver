@@ -66,9 +66,19 @@ class PrefWindow(BaseWindow):
 
     def save_prefs(self):
         config = self._config
-        key = pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY
-        value = self.subForm.getAddNewMarkersToConfigValue()
-        userprefs_lib.set_value(config, key, value)
+
+        options = [
+            (pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY,
+             self.subForm.getAddNewMarkersToConfigValue),
+            (pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY,
+             self.subForm.getSolverUIValidateOnOpenConfigValue),
+            (pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY,
+             self.subForm.getSolverUIShowValidateButtonConfigValue),
+        ]
+        for key, func in options:
+            value = func()
+            userprefs_lib.set_value(config, key, value)
+
         config.write()
         self.close()
         return

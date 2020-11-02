@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>385</width>
-    <height>233</height>
+    <width>436</width>
+    <height>362</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,23 +15,73 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="general_groupBox">
      <property name="title">
-      <string>Preferences</string>
+      <string>General Preferences</string>
      </property>
-     <layout class="QFormLayout" name="formLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="addNewMarkersToLabel">
-        <property name="text">
-         <string>Add New Markers to:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QComboBox" name="addNewMarkersToComboBox"/>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QFormLayout" name="general_formLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="addNewMarkersToLabel">
+          <property name="text">
+           <string>Add New Markers to:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="addNewMarkersToComboBox"/>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="solverUI_groupBox">
+     <property name="title">
+      <string>Solver UI Preferences</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QFormLayout" name="solverUI_formLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="validateSolverOnUIOpenLabel">
+          <property name="text">
+           <string>Validate on open:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="validateSolverOnUIOpenComboBox"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="showValidateButtonLabel">
+          <property name="text">
+           <string>Show Validate Button</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="showValidateButtonComboBox"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

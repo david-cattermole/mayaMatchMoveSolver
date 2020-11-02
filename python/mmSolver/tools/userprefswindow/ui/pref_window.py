@@ -44,7 +44,7 @@ baseModule, BaseWindow = uiutils.getBaseWindow()
 
 class PrefWindow(BaseWindow):
 
-    name = 'PreferencesWindow'
+    name = 'UserPreferencesWindow'
 
     def __init__(self, parent=None, name=None):
         super(PrefWindow, self).__init__(parent, name=name)

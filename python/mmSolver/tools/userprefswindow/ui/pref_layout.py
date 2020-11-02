@@ -42,7 +42,6 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         return
 
     def set_config(self, config):
-        LOG.warn('set_config: %r', config)
         self._config = config
         self.populateUI(self._config)
         return

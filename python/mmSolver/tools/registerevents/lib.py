@@ -26,14 +26,14 @@ Register events for mmSolver.
 
 import time
 import mmSolver.logger
-import mmSolver.tools.userpreferences.constant as userprefs_const
-import mmSolver.tools.userpreferences.lib as userprefs_lib
-import mmSolver.utils.event as event_utils
 
 LOG = mmSolver.logger.get_logger()
 
 
 def run_connect_markers_to_active_collection(**kwargs):
+    import mmSolver.tools.userpreferences.constant as userprefs_const
+    import mmSolver.tools.userpreferences.lib as userprefs_lib
+
     # Enable a toggle to turn on or off this affect.
     config = userprefs_lib.get_config()
     key = userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_KEY

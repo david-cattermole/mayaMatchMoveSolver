@@ -41,6 +41,7 @@ import mmSolver.tools.loadmarker.constant as const
 import mmSolver.tools.loadmarker.ui.loadmarker_layout as loadmarker_layout
 import mmSolver.tools.loadmarker.lib.utils as lib
 import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
+import mmSolver.tools.solver.lib.collection as col_lib
 import mmSolver.tools.userpreferences.constant as userprefs_const
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 
@@ -88,6 +89,7 @@ class LoadMarkerWindow(BaseWindow):
     def apply(self):
         cam = None
         mkr_grp = None
+        col = None
 
         file_path = self.subForm.getFilePath()
         load_mode = self.subForm.getLoadModeText()
@@ -95,6 +97,9 @@ class LoadMarkerWindow(BaseWindow):
         camera_data = self.subForm.getCameraData()
         mkr_grp_text = self.subForm.getMarkerGroupText()
         mkr_grp_data = self.subForm.getMarkerGroupData()
+        add_to_collection = self.subForm.getAddToCollectionValue()
+        collection_text = self.subForm.getCollectionText()
+        collection_data = self.subForm.getCollectionData()
         load_bnd_pos = self.subForm.getLoadBundlePositions()
         undist_mode = self.subForm.getDistortionModeText()
         use_overscan = self.subForm.getUseOverscanValue()
@@ -127,6 +132,7 @@ class LoadMarkerWindow(BaseWindow):
                 self.progressBar.setValue(50)
 
                 if load_mode == const.LOAD_MODE_NEW_VALUE:
+                    # Get Camera and MarkerGroup.
                     if camera_text == const.NEW_CAMERA_VALUE:
                         cam = lib.create_new_camera()
                         mkr_grp = lib.create_new_marker_group(cam)
@@ -138,25 +144,24 @@ class LoadMarkerWindow(BaseWindow):
                             mkr_grp = mkr_grp_data
                     self.progressBar.setValue(60)
 
-                    # Temporarily disable adding new Markers to the Active
-                    # Collection.
-                    config = userprefs_lib.get_config()
-                    key = userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_KEY
-                    old_value = userprefs_lib.get_value(config, key)
-                    temp_value = userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_NONE_VALUE
-                    userprefs_lib.set_value(config, key, temp_value)
+                    # Get Collection
+                    col = None
+                    if add_to_collection is True:
+                        if collection_text == const.NEW_COLLECTION_VALUE:
+                            col = col_lib.create_collection()
+                        else:
+                            col = collection_data
+                    self.progressBar.setValue(70)
 
                     mayareadfile.create_nodes(
                         mkr_data_list,
                         cam=cam,
                         mkr_grp=mkr_grp,
+                        col=col,
                         with_bundles=True,
                         load_bundle_position=load_bnd_pos,
                         camera_field_of_view=camera_field_of_view,
                     )
-
-                    # Restore original config value.
-                    userprefs_lib.set_value(config, key, old_value)
 
                 elif load_mode == const.LOAD_MODE_REPLACE_VALUE:
                     self.progressBar.setValue(60)
@@ -201,6 +206,17 @@ class LoadMarkerWindow(BaseWindow):
                 self.subForm.markerGroup_model,
                 active_mkr_grp,
                 mkr_grp_nodes
+            )
+
+            # Update the list of Collections, and pick the last used
+            # Collection.
+            active_col = col
+            col_list = col_lib.get_collections()
+            self.subForm.updateCollectionList(
+                self.subForm.collection_comboBox,
+                self.subForm.collection_model,
+                active_col,
+                col_list
             )
 
             # Update config file with latest values.

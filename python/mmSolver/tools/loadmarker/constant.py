@@ -50,6 +50,7 @@ LOAD_MODE_REPLACE_VALUE = 'Replace Selected Markers'
 
 NEW_CAMERA_VALUE = '<Create New>'
 NEW_MARKER_GROUP_VALUE = '<Create New>'
+NEW_COLLECTION_VALUE = '<Create New>'
 
 DISTORTION_MODE_VALUE = 'Distorted'
 UNDISTORTION_MODE_VALUE = 'Undistorted'

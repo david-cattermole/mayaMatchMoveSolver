@@ -37,6 +37,11 @@ import mmSolver.tools.loadmarker.ui.ui_loadmarker_layout as ui_loadmarker_layout
 import mmSolver.tools.loadmarker.lib.fieldofview as fieldofview
 import mmSolver.tools.loadmarker.lib.fileutils as fileutils
 import mmSolver.tools.loadmarker.lib.utils as lib
+import mmSolver.tools.solver.lib.state as state_lib
+import mmSolver.tools.solver.lib.collection as col_lib
+import mmSolver.tools.userpreferences.constant as userprefs_const
+import mmSolver.tools.userpreferences.lib as userprefs_lib
+
 
 LOG = mmSolver.logger.get_logger()
 
@@ -63,6 +68,13 @@ def get_config_value(config, key, fallback):
     return value
 
 
+def get_user_prefs_add_marker_to_collection():
+    config = userprefs_lib.get_config()
+    key = userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_KEY
+    value = userprefs_lib.get_value(config, key)
+    return value != userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_NONE_VALUE
+
+
 class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
     def __init__(self, parent=None, *args, **kwargs):
         super(LoadMarkerLayout, self).__init__(*args, **kwargs)
@@ -76,6 +88,9 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
 
         self.markerGroup_model = uimodels.StringDataListModel()
         self.markerGroup_comboBox.setModel(self.markerGroup_model)
+
+        self.collection_model = uimodels.StringDataListModel()
+        self.collection_comboBox.setModel(self.collection_model)
 
         self.distortionMode_model = QtCore.QStringListModel()
         self.distortionMode_comboBox.setModel(self.distortionMode_model)
@@ -93,9 +108,13 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             lambda x: self.updateOverscanValues())
         self.markerGroup_comboBox.currentIndexChanged[str].connect(
             lambda x: self.updateOverscanValues())
+        self.collection_checkBox.clicked[bool].connect(
+            lambda x: self.updateCollectionEnabledState())
 
         self.cameraUpdate_pushButton.clicked.connect(self.cameraUpdateClicked)
         self.markerGroupUpdate_pushButton.clicked.connect(self.markerGroupUpdateClicked)
+        self.collectionUpdate_pushButton.clicked.connect(self.collectionUpdateClicked)
+
         self.filepath_pushButton.clicked.connect(self.filePathBrowseClicked)
         self.filepath_lineEdit.editingFinished.connect(self.updateFilePathWidget)
         self.overscan_checkBox.toggled.connect(self.setOverscanEnabledState)
@@ -153,6 +172,20 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             active_mkr_grp,
             mkr_grp_nodes
         )
+
+        col_list = col_lib.get_collections()
+        active_col = state_lib.get_active_collection()
+        self.updateCollectionList(
+            self.collection_comboBox,
+            self.collection_model,
+            active_col,
+            col_list
+        )
+        # If the user's preferences say to add the marker to the
+        # collection, then turn on the feature.
+        auto_add_marker = get_user_prefs_add_marker_to_collection()
+        self.collection_checkBox.setChecked(auto_add_marker)
+        self.updateCollectionEnabledState()
 
         value = get_config_value(
             config,
@@ -234,6 +267,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.markerGroup_label.setEnabled(value)
         self.markerGroup_comboBox.setEnabled(value)
         self.markerGroupUpdate_pushButton.setEnabled(value)
+        self.updateCollectionEnabledState()
         self.updateOverscanValues()
         return
 
@@ -317,6 +351,12 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.distortionMode_comboBox.setEnabled(value)
         return
 
+    def updateCollectionEnabledState(self):
+        value = self.collection_checkBox.isChecked()
+        self.collection_comboBox.setEnabled(value)
+        self.collectionUpdate_pushButton.setEnabled(value)
+        return
+
     def updateLoadBundlePosEnabledState(self):
         value = False
         file_info = self.getFileInfo()
@@ -357,6 +397,15 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             model, active_mkr_grp, mkr_grp_nodes)
         comboBox.setCurrentIndex(index)
         self.updateOverscanValues()
+        return
+
+    def updateCollectionList(self, comboBox, model, active_col,
+                             col_list):
+        self.populateCollectionModel(model, active_col, col_list)
+        index = self.getDefaultCollectionIndex(
+            model, active_col, col_list)
+        comboBox.setCurrentIndex(index)
+        self.updateCollectionEnabledState()
         return
 
     def populateLoadModeModel(self, model):
@@ -410,6 +459,24 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
                 continue
             node = mkr_grp_node.get_node()
             string_data_list.append((node, mkr_grp_node))
+        model.setStringDataList(string_data_list)
+        return
+
+    def populateCollectionModel(self, model, active_col, col_list):
+        """
+        Add Collections in the scene into the given Collection model.
+
+        :param model: The Qt model to add Collections to.
+        :type model: uimodels.StringDataListModel
+
+        :return:
+        """
+        string_data_list = [
+            (const.NEW_COLLECTION_VALUE, None),
+        ]
+        for col_node in col_list:
+            node = col_node.get_node()
+            string_data_list.append((node, col_node))
         model.setStringDataList(string_data_list)
         return
 
@@ -488,6 +555,31 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             idx = 1
         return idx
 
+    def getDefaultCollectionIndex(self, model, active_col, col_list):
+        """
+        Chooses the index in model for Marker Group
+
+        :param model: The MarkerGroup model.
+        :type model: uimodels.StringDataListModel
+
+        :param col_list: List of Collections in the scene.
+        :type col_list: [mmSolver.api.Collection, ..]
+
+        :return: index number as default item in MarkerGroup list.
+        :rtyle: int
+        """
+        idx = 0  # Create a new Collection
+        if active_col and len(col_list) > 0:
+            # Use the active Collection
+            active_col_node = active_col.get_node()
+            string_data_list = model.stringDataList()
+            for i, (string, _) in enumerate(string_data_list):
+                if string == active_col_node:
+                    LOG.warn("default collection index1: %r", i)
+                    return i
+        LOG.warn("default collection index2: %r", idx)
+        return idx
+
     def cameraUpdateClicked(self):
         all_camera_nodes = lib.get_cameras()
         selected_cameras = lib.get_selected_cameras()
@@ -510,6 +602,17 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             self.markerGroup_model,
             active_mkr_grp,
             mkr_grp_nodes,
+        )
+        return
+
+    def collectionUpdateClicked(self):
+        col_list = col_lib.get_collections()
+        active_col = state_lib.get_active_collection()
+        self.updateCollectionList(
+            self.collection_comboBox,
+            self.collection_model,
+            active_col,
+            col_list,
         )
         return
 
@@ -597,6 +700,24 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         index = self.markerGroup_comboBox.currentIndex()
         model_index = self.markerGroup_model.index(index)
         data = self.markerGroup_model.data(model_index, role=QtCore.Qt.UserRole)
+        return data
+
+    def getAddToCollectionValue(self):
+        value = False
+        enabled = self.collection_checkBox.isEnabled()
+        if not enabled:
+            return value
+        value = self.collection_checkBox.isChecked()
+        return value
+
+    def getCollectionText(self):
+        text = self.collection_comboBox.currentText()
+        return text
+
+    def getCollectionData(self):
+        index = self.collection_comboBox.currentIndex()
+        model_index = self.collection_model.index(index)
+        data = self.collection_model.data(model_index, role=QtCore.Qt.UserRole)
         return data
 
     def getLoadBundlePositions(self):

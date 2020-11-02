@@ -60,7 +60,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='139767054739728'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='139767054739920'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='139767054740112'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='140435963542224'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='140435963542416'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='140435963542608'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -485,6 +485,34 @@ recommended anyway).</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="mmSolver.utils.config.Config.get_file_path">
+<code class="descname">get_file_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.get_file_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.utils.config.Config.set_file_path">
+<code class="descname">set_file_path</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.set_file_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the file path for the Config.</p>
+<p>Setting the file path will automatically invalidate the Config
+and force a re-read of the config file when a value is next requested.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If the new file path is the same as the old file
+path, the Config will not be invalidated. Only if the file
+path changes will the Config be invalidated. To re-read
+the file, use the Config.read() method.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>basestring</em>) – The value to set.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.utils.config.Config.read">
 <code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the <cite>file_path</cite> contents.</p>
@@ -514,6 +542,21 @@ recommended anyway).</p>
 <code class="descname">set_value</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.config.Config.set_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the key/value in the Config file.</p>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.config.Config.autoread">
+<code class="descname">autoread</code><a class="headerlink" href="#mmSolver.utils.config.Config.autoread" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.config.Config.autowrite">
+<code class="descname">autowrite</code><a class="headerlink" href="#mmSolver.utils.config.Config.autowrite" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="mmSolver.utils.config.Config.file_path">
+<code class="descname">file_path</code><a class="headerlink" href="#mmSolver.utils.config.Config.file_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

@@ -105,6 +105,14 @@ class LoadMarkerWindow(BaseWindow):
         if use_overscan is True:
             camera_field_of_view = self.subForm.getCameraFieldOfViewValue()
 
+        # Temporarily disable adding new Markers to the Active
+        # Collection.
+        config = userprefs_lib.get_config()
+        key = userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_KEY
+        old_value = userprefs_lib.get_value(config, key)
+        temp_value = userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_NONE_VALUE
+        userprefs_lib.set_value(config, key, temp_value)
+
         try:
             self.progressBar.setValue(0)
             self.progressBar.show()
@@ -169,6 +177,10 @@ class LoadMarkerWindow(BaseWindow):
         finally:
             self.progressBar.setValue(100)
             self.progressBar.hide()
+
+            # Restore original config value.
+            lib.deferred_revert_of_config_value(config, key, old_value)
+
             # Update the camera comboBox with the created camera, or
             # the last used camera.
             all_camera_nodes = lib.get_cameras()

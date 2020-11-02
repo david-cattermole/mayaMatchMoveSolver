@@ -38,10 +38,7 @@ def run_connect_markers_to_active_collection(**kwargs):
     config = userprefs_lib.get_config()
     key = userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_KEY
     run_event = userprefs_lib.get_value(config, key)
-    msg = "run_connect_markers_to: run=%r kwargs=%s"
-    LOG.warn(msg, run_event, kwargs)
     if run_event == userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_NONE_VALUE:
-        LOG.warn("SKIP")
         return
 
     LOG.debug("run_connect_markers_to_active_collection: %s", kwargs)

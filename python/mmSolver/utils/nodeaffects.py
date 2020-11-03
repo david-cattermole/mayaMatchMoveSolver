@@ -258,8 +258,7 @@ def sort_into_hierarchy_groups(mkr_list, attr_list):
     first, before solving children. This will ensure we minimise the
     base before attempting to solve the children.
 
-    TODO: Write this.
-
     :return:
     """
-    pass
+    # TODO: Write this.
+    raise NotImplementedError

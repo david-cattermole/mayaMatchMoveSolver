@@ -83,9 +83,6 @@ CAMERA_ATTRS = [
 ]
 
 
-__CACHE = dict()
-
-
 def _get_full_path_plug(plug):
     """
     Get convert a 'name.attr' string into the long name equal.
@@ -104,23 +101,6 @@ def _get_full_path_plug(plug):
     return full_path
 
 
-def _clear_query_cache():
-    global __CACHE
-    __CACHE = dict()
-    return
-
-
-def _get_from_query_cache(key):
-    global __CACHE
-    return __CACHE.get(key)
-
-
-def _add_to_query_cache(key, value):
-    global __CACHE
-    __CACHE[key] = value
-    return
-
-
 def find_plugs_affecting_transform(tfm_node, cam_tfm):
     """
     Find plugs that affect the world-matrix transform of the node.
@@ -134,19 +114,6 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
     :returns: Set of Maya attributes in 'node.attr' string format.
     :rtype: [str, ..]
     """
-    # # Read from cache
-    # #
-    # # TODO: Cache invalidation is very important here. We cannot use the
-    # #  cache if a new object has been added to the Maya scene or for a
-    # #  different run of the solver. Each new solve must trigger a fresh
-    # #  cache. We could do this by adding a new argument 'solve id'
-    # #  and hashing it into the dictionary, which is generated new at
-    # #  the start of each new solver.
-    # plugs = _get_from_query_cache(args)
-    # if plugs is not None:
-    #     return plugs
-    # tfm_node, cam_tfm = args
-
     tfm_node = maya.cmds.ls(tfm_node, long=True)[0]
 
     # Get all the parents above this bundle
@@ -243,9 +210,6 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
 
     # Only unique plugs.
     plugs = list(set(plugs))
-
-    # Set into cache.
-    # _add_to_query_cache(args, plugs)
     return plugs
 
 

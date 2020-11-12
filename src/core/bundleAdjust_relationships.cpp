@@ -424,10 +424,7 @@ void findMarkerToAttributeRelationship(const MarkerPtrList markerList,
         cmd += "nodeaffects.find_plugs_affecting_transform(";
         cmd += "\"";
         cmd += bundleName;
-        cmd += "\", \"";
-        cmd += camName;
-        cmd += "\"";
-        cmd += ");";
+        cmd += "\", None);";
         // WRN("Running: " + cmd);
         status = MGlobal::executePythonCommand(
             cmd, bundleAffectsResult,

@@ -57,6 +57,7 @@ and attributes.
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.node as node_utils
 
 
 LOG = mmSolver.logger.get_logger()
@@ -101,37 +102,67 @@ def _get_full_path_plug(plug):
     return full_path
 
 
+def _get_upstream_nodes(node_name):
+    node_types = maya.cmds.nodeType(node_name, inherited=True)
+    out_nodes = []
+    if 'dagNode' in node_types:
+        out_nodes = maya.cmds.listConnections(
+            node_name, source=True, destination=False,
+            plugs=False, shapes=False, connections=False,
+            skipConversionNodes=False) or []
+    else:
+        out_nodes = maya.cmds.listHistory(
+            node_name,
+            allConnections=False,
+            leaf=False,
+            levels=0,
+            pruneDagObjects=False) or []
+    return out_nodes
+
+
+def get_connected_nodes(tfm_node):
+    all_nodes = []
+    node_name = tfm_node
+    out_nodes = _get_upstream_nodes(node_name)
+    all_nodes += out_nodes
+    max_iter_count = 9
+    iter_count = 0
+    while len(out_nodes) > 0:
+        iter_count += 1
+        for node_name in list(out_nodes):
+            out_nodes = _get_upstream_nodes(node_name)
+            out_nodes = list(set(out_nodes).difference(all_nodes))
+            all_nodes += out_nodes
+        if iter_count > max_iter_count:
+            msg = ('Gathering connected nodes exceeded %r iterations,'
+                   ' stopping.')
+            LOG.warn(msg, max_iter_count)
+            break
+    return sorted(list(set(all_nodes)))
+
+
 def find_plugs_affecting_transform(tfm_node, cam_tfm):
     """
     Find plugs that affect the world-matrix transform of the node.
 
+    The 'cam_tfm' argument is for nodes that may be impacted by the
+    screen-space matrix that views the 'tfm_node'.
+
     :param tfm_node: The input node to query.
     :type tfm_node: str
 
-    :param cam_tfm: The camera that should be considered (optional)
+    :param cam_tfm: The camera that should be considered (optional).
     :type cam_tfm: str or None
 
-    :returns: Set of Maya attributes in 'node.attr' string format.
+    :returns:
+        An unordered list of Maya attributes in 'node.attr' string
+        format.
     :rtype: [str, ..]
     """
     tfm_node = maya.cmds.ls(tfm_node, long=True)[0]
 
-    # Get all the parents above this bundle
-    parent_nodes = []
-    parents = maya.cmds.listRelatives(
-        tfm_node,
-        parent=True,
-        fullPath=True) or []
-    parent_nodes += parents
-    while len(parents) > 0:
-        parents = maya.cmds.listRelatives(
-            parents,
-            parent=True,
-            fullPath=True) or []
-        parent_nodes += parents
-    nodes = [tfm_node] + parent_nodes
-
     # Get camera related to the given bundle.
+    camera_nodes = []
     if cam_tfm is not None:
         assert maya.cmds.objExists(cam_tfm) is True
         cam_tfm_node = maya.cmds.ls(cam_tfm, long=True)[0]
@@ -139,10 +170,32 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
             cam_tfm,
             shapes=True,
             fullPath=True)[0]
-        if cam_tfm_node not in nodes:
-            nodes.append(cam_tfm_node)
-        if cam_shp_node not in nodes:
-            nodes.append(cam_shp_node)
+        if cam_tfm_node not in camera_nodes:
+            camera_nodes.append(cam_tfm_node)
+        if cam_shp_node not in camera_nodes:
+            camera_nodes.append(cam_shp_node)
+
+    # Get all the parents above the nodes.
+    parent_nodes = []
+    get_parent_nodes = camera_nodes + [tfm_node]
+    for node in get_parent_nodes:
+        parents = maya.cmds.listRelatives(
+            node,
+            parent=True,
+            fullPath=True) or []
+        parent_nodes += parents
+        while len(parents) > 0:
+            parents = maya.cmds.listRelatives(
+                parents,
+                parent=True,
+                fullPath=True) or []
+            parent_nodes += parents
+    nodes = [tfm_node] + camera_nodes + parent_nodes
+
+    conn_nodes = set()
+    for node in list(nodes):
+        conn_nodes |= set(get_connected_nodes(node))
+    nodes = nodes + list(conn_nodes)
 
     plugs = set()
     for node in nodes:

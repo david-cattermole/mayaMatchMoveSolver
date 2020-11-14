@@ -54,6 +54,9 @@ and attributes.
 
 """
 
+from __future__ import absolute_import
+
+import time
 import maya.cmds
 
 import mmSolver.logger
@@ -62,15 +65,15 @@ import mmSolver.utils.node as node_utils
 
 LOG = mmSolver.logger.get_logger()
 
-VALID_ATTR_TYPES = [
+VALID_ATTR_TYPES = set([
     'double',
     'doubleLinear',
     'doubleAngle',
     'time',
     'float',
-]
+])
 
-CAMERA_ATTRS = [
+CAMERA_ATTRS = set([
     'nearClipPlane',
     'farClipPlane',
     'focalLength',
@@ -81,7 +84,7 @@ CAMERA_ATTRS = [
     'horizontalFilmOffset',
     'verticalFilmOffset',
     'lensSqueezeRatio',
-]
+])
 
 
 def _get_full_path_plug(plug):
@@ -106,21 +109,24 @@ def _get_upstream_nodes(node_name):
     node_types = maya.cmds.nodeType(node_name, inherited=True)
     out_nodes = []
     if 'dagNode' in node_types:
+        LOG.debug('DAG upstream: %r', node_name)
         out_nodes = maya.cmds.listConnections(
             node_name, source=True, destination=False,
             plugs=False, shapes=False, connections=False,
             skipConversionNodes=False) or []
     else:
+        LOG.debug('DG upstream: %r', node_name)
         out_nodes = maya.cmds.listHistory(
             node_name,
-            allConnections=False,
+            allConnections=True,
             leaf=False,
             levels=0,
             pruneDagObjects=False) or []
+    out_nodes = [node_utils.get_long_name(n) for n in out_nodes]
     return out_nodes
 
 
-def get_connected_nodes(tfm_node):
+def _get_connected_nodes(tfm_node):
     all_nodes = []
     node_name = tfm_node
     out_nodes = _get_upstream_nodes(node_name)
@@ -139,6 +145,116 @@ def get_connected_nodes(tfm_node):
             LOG.warn(msg, max_iter_count)
             break
     return sorted(list(set(all_nodes)))
+
+
+def __get_and_fill_cache_value(cache, key, func):
+    if cache is None:
+        return func()
+    value = cache.get(key)
+    if value is None:
+        value = func()
+        cache[key] = value
+    return value
+
+
+def _convert_node_to_plugs(node, attr, node_type,
+                           worldspace_cache=None,
+                           type_cache=None):
+    """Logic to decide if this attribute will affect the node."""
+    plugs = set()
+    node_type_plug = '{0}.{1}'.format(node_type, attr)
+
+    if node_type == 'camera':
+        # If the attribute affects the camera projection matrix, then
+        # it's important to us.
+        if attr not in CAMERA_ATTRS:
+            return plugs
+    else:
+        # All other nodes, skip if world space is not affected
+        ws = __get_and_fill_cache_value(
+            worldspace_cache,
+            node_type_plug,
+            lambda: maya.cmds.attributeQuery(attr, node=node, affectsWorldspace=True))
+        if ws is False:
+            return plugs
+
+    node_attr = '{0}.{1}'.format(node, attr)
+    settable = maya.cmds.getAttr(node_attr, settable=True)
+    if settable is True:
+        typ = __get_and_fill_cache_value(
+            type_cache,
+            node_type_plug,
+            lambda: maya.cmds.getAttr(node_attr, type=True))
+        if typ in VALID_ATTR_TYPES:
+            plugs.add(node_attr)
+        return plugs
+
+    # Get plugs connected to this attribute, recursively
+    conn_attrs = maya.cmds.listConnections(
+        node_attr,
+        source=True,
+        destination=False,
+        plugs=True) or []
+    while len(conn_attrs) > 0:
+        node_attr = conn_attrs.pop()
+        node_attr = _get_full_path_plug(node_attr)
+        settable = maya.cmds.getAttr(node_attr, settable=True)
+        if settable is True:
+            attr = node_attr.rpartition('.')[-1]
+            node_type = maya.cmds.nodeType(node)
+            node_type_plug = '{0}.{1}'.format(node_type, attr)
+            typ = __get_and_fill_cache_value(
+                type_cache,
+                node_type_plug,
+                lambda: maya.cmds.getAttr(node_attr, type=True))
+            if typ in VALID_ATTR_TYPES:
+                plugs.add(node_attr)
+            return plugs
+
+        # Get the plugs that affect this plug.
+        tmp_list = maya.cmds.listConnections(
+            node_attr,
+            source=True,
+            destination=False,
+            plugs=True) or []
+
+        # Filter by valid plug types.
+        for tmp in tmp_list:
+            node_ = tmp.partition('.')[0]
+            attr_ = tmp.partition('.')[-1]
+
+            affects_this_plug = maya.cmds.affects(attr_, node_) or []
+            for attr__ in affects_this_plug:
+                node_attr = node_ + '.' + attr__
+                node_attr = _get_full_path_plug(node_attr)
+                conn_attrs += [node_attr]
+        # Only unique attributes.
+        conn_attrs = list(set(conn_attrs))
+    return plugs
+
+
+def _get_attribute_plugs(nodes):
+    node_type_attrs_cache = dict()
+    worldspace_cache = dict()
+    type_cache = dict()
+    plugs = set()
+    for node in nodes:
+        node_type = maya.cmds.nodeType(node)
+        attrs = __get_and_fill_cache_value(
+            node_type_attrs_cache,
+            node_type,
+            lambda: maya.cmds.listAttr(node, leaf=True, userDefined=False) or [])
+        attrs = set(attrs)
+        for attr in attrs:
+            plugs |= _convert_node_to_plugs(
+                node, attr, node_type,
+                worldspace_cache=worldspace_cache,
+                type_cache=type_cache)
+        user_attrs = maya.cmds.listAttr(node, leaf=True, userDefined=True) or []
+        user_attrs = set(user_attrs).difference(set(attrs))
+        for attr in user_attrs:
+            plugs |= _convert_node_to_plugs(node, attr, node_type)
+    return plugs
 
 
 def find_plugs_affecting_transform(tfm_node, cam_tfm):
@@ -194,72 +310,10 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
 
     conn_nodes = set()
     for node in list(nodes):
-        conn_nodes |= set(get_connected_nodes(node))
+        conn_nodes |= set(_get_connected_nodes(node))
     nodes = nodes + list(conn_nodes)
 
-    plugs = set()
-    for node in nodes:
-        node_type = maya.cmds.nodeType(node)
-        attrs = maya.cmds.listAttr(node, leaf=True) or []
-        for attr in attrs:
-            # Logic to decide if this attribute will affect the node.
-            ws = maya.cmds.attributeQuery(
-                attr,
-                node=node,
-                affectsWorldspace=True)
-            if node_type == 'camera':
-                # If the attribute affects the camera projection matrix, then
-                # it's important to us.
-                if attr not in CAMERA_ATTRS:
-                    continue
-            else:
-                # All other nodes, skip if world space is not affected
-                if ws is False:
-                    continue
-
-            node_attr = node + '.' + attr
-            settable = maya.cmds.getAttr(node_attr, settable=True)
-            if settable is True:
-                typ = maya.cmds.getAttr(node_attr, type=True)
-                if typ in VALID_ATTR_TYPES:
-                    plugs.add(node_attr)
-                continue
-
-            # Get plugs connected to this attribute, recursively
-            conn_attrs = maya.cmds.listConnections(
-                node_attr,
-                source=True,
-                destination=False,
-                plugs=True) or []
-            while len(conn_attrs) > 0:
-                node_attr = conn_attrs.pop()
-                node_attr = _get_full_path_plug(node_attr)
-                settable = maya.cmds.getAttr(node_attr, settable=True)
-                if settable is True:
-                    typ = maya.cmds.getAttr(node_attr, type=True)
-                    if typ in VALID_ATTR_TYPES:
-                        plugs.add(node_attr)
-                    continue
-
-                # Get the plugs that affect this plug.
-                tmp_list = maya.cmds.listConnections(
-                    node_attr,
-                    source=True,
-                    destination=False,
-                    plugs=True) or []
-
-                # Filter by valid plug types.
-                for tmp in tmp_list:
-                    node_ = tmp.partition('.')[0]
-                    attr_ = tmp.partition('.')[-1]
-
-                    affects_this_plug = maya.cmds.affects(attr_, node_) or []
-                    for attr__ in affects_this_plug:
-                        node_attr = node_ + '.' + attr__
-                        node_attr = _get_full_path_plug(node_attr)
-                        conn_attrs += [node_attr]
-                # Only unique attributes.
-                conn_attrs = list(set(conn_attrs))
+    plugs = _get_attribute_plugs(nodes)
 
     # Only unique plugs.
     plugs = list(set(plugs))

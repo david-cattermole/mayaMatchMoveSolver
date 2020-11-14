@@ -19,9 +19,10 @@
 Test functions for 'nodeaffects' utilities module.
 
 The 'nodeaffects' module is responsible for the internals of the
-'maya.cmds.mmSolverAffect' plug-in command.
+'maya.cmds.mmSolverAffects' plug-in command.
 """
 
+import time
 import unittest
 import pprint
 
@@ -144,10 +145,8 @@ class TestNodeAffects(test_utils.UtilsTestCase):
             options='v=0'
         )
         tfm_node = 'null1'
-        nodes = nodeaffects.get_connected_nodes(tfm_node)
         plugs = nodeaffects.find_plugs_affecting_transform(tfm_node, None)
         return
-
 
     def test_find_plugs_affecting_transform_simple_rivet(self):
         """
@@ -166,8 +165,42 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         )
 
         tfm_node = 'rivet1'
-        nodes = nodeaffects.get_connected_nodes(tfm_node)
         plugs = nodeaffects.find_plugs_affecting_transform(tfm_node, None)
+        return
+
+    def test_find_plugs_affecting_transform_rig_rivet(self):
+        """
+        A transform node parented under a 'rivet.mel' rivet.
+
+        GitHub Issue 176.
+        """
+        # Open File Path
+        scenePath = self.get_data_path(
+            'scenes', 'mmSolver_nodeaffects_rig_rivet.ma')
+        maya.cmds.file(
+            scenePath,
+            open=True,
+            force=True,
+            typ='mayaAscii',
+            ignoreVersion=True,
+            options='v=0'
+        )
+
+        tfm_node = 'Avg_Point_03_BND'
+        must_have_plugs = [
+            '|woman_rig2:Group|woman_rig2:Main|woman_rig2:DeformationSystem|woman_rig2:Root_M.translateX',
+            '|woman_rig2:Group|woman_rig2:Main|woman_rig2:MotionSystem|woman_rig2:IKSystem|woman_rig2:IKHandle|woman_rig2:IKScalerRoot_M.translateX',
+            '|woman_rig2:Group|woman_rig2:Main|woman_rig2:MotionSystem|woman_rig2:IKSystem|woman_rig2:IKHandle|woman_rig2:IKRootConstraint|woman_rig2:IKOffsetSpine1_M|woman_rig2:IKExtraSpine1_M|woman_rig2:IKSpine1_M.translateX',
+        ]
+
+        s = time.time()
+        plugs = nodeaffects.find_plugs_affecting_transform(tfm_node, None)
+        e = time.time()
+        print 'Compute time:', e - s
+
+        self.assertGreater(len(plugs), 0)
+        for plug in must_have_plugs:
+            self.assertIn(plug, plugs)
         return
 
 

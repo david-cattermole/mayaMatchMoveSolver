@@ -779,7 +779,6 @@ int solveFunc(const int numberOfParameters,
                 evalMeasurements);
 
         // Calculate the jacobian matrix.
-        MTime currentFrame = MAnimControl::currentTime();
         for (int i = 0; i < numberOfParameters; ++i) {
             double ratio = (double) i / (double) numberOfParameters;
             int progressNum = progressMin + static_cast<int>(ratio * progressMax);

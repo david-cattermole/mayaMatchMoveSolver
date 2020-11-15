@@ -114,6 +114,9 @@ void createSolveInfoSyntax(MSyntax &syntax) {
                    MSyntax::kBoolean);
     syntax.addFlag(REMOVE_UNUSED_ATTRIBUTES_FLAG, REMOVE_UNUSED_ATTRIBUTES_FLAG_LONG,
                    MSyntax::kBoolean);
+
+    syntax.addFlag(TIME_EVAL_MODE_FLAG, TIME_EVAL_MODE_FLAG_LONG,
+                   MSyntax::kUnsigned);
 }
 
 /*
@@ -186,6 +189,7 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
                                 int &out_robustLossType,
                                 double &out_robustLossScale,
                                 int &out_solverType,
+                                int &out_timeEvalMode,
                                 bool &out_acceptOnlyBetter,
                                 bool &out_supportAutoDiffForward,
                                 bool &out_supportAutoDiffCentral,
@@ -207,6 +211,13 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
     out_solverType = solverType.first;
     if (argData.isFlagSet(SOLVER_TYPE_FLAG)) {
         status = argData.getFlagArgument(SOLVER_TYPE_FLAG, 0, out_solverType);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    // Get 'Time Evaluation Mode'
+    out_timeEvalMode = TIME_EVAL_MODE_DEFAULT_VALUE;
+    if (argData.isFlagSet(TIME_EVAL_MODE_FLAG)) {
+        status = argData.getFlagArgument(TIME_EVAL_MODE_FLAG, 0, out_timeEvalMode);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -387,6 +398,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_robustLossType,
         m_robustLossScale,
         m_solverType,
+        m_timeEvalMode,
         m_acceptOnlyBetter,
         m_supportAutoDiffForward,
         m_supportAutoDiffCentral,
@@ -447,6 +459,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     solverOptions.robustLossType = m_robustLossType;
     solverOptions.robustLossScale = m_robustLossScale;
     solverOptions.solverType = m_solverType;
+    solverOptions.timeEvalMode = m_timeEvalMode;
     solverOptions.acceptOnlyBetter = m_acceptOnlyBetter;
     solverOptions.solverSupportsAutoDiffForward = m_supportAutoDiffForward;
     solverOptions.solverSupportsAutoDiffCentral = m_supportAutoDiffCentral;

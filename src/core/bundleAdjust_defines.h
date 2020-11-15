@@ -62,6 +62,11 @@
 // Text character used to split up a single result string.
 #define CMD_RESULT_SPLIT_CHAR "#"
 
+// How to evaluate values at different times?
+//
+// These are the possible values:
+#define TIME_EVAL_MODE_DG_CONTEXT  (0)
+#define TIME_EVAL_MODE_SET_TIME  (1)
 
 // Print Statistics for mmSolver command.
 //

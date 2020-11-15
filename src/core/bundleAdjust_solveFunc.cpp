@@ -338,15 +338,19 @@ void measureErrors(
     error_max = -0.0;
     error_min = std::numeric_limits<double>::max();
 
-#if FORCE_TRIGGER_EVAL == 1
+    // Trigger an DG Evaluation at a different time, to help Maya
+    // evaluate at the correct frame.
+    const int timeEvalMode = ud->solverOptions->timeEvalMode;
     assert(ud->errorToMarkerList.size() > 0);
-    {
+    assert(ud->frameList.length() > 0);
+#if FORCE_TRIGGER_EVAL == 1
+    if (timeEvalMode != TIME_EVAL_MODE_SET_TIME) {
         MPoint pos;
         int i = 0;
         IndexPair markerPair = ud->errorToMarkerList[i];
         MarkerPtr marker = ud->markerList[markerPair.first];
         MTime frame = ud->frameList[markerPair.second];
-        status = marker->getPos(pos, frame + 1);
+        status = marker->getPos(pos, frame + 1, timeEvalMode);
         CHECK_MSTATUS(status);
     }
 #endif
@@ -379,15 +383,16 @@ void measureErrors(
         MTime frame = ud->frameList[frameIndex];
 
         CameraPtr camera = marker->getCamera();
-        status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
+        status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame,
+                                            timeEvalMode);
         CHECK_MSTATUS(status);
 
         MVector cam_dir;
         MPoint cam_pos;
-        camera->getWorldPosition(cam_pos, frame);
-        camera->getForwardDirection(cam_dir, frame);
-        double filmBackWidth = camera->getFilmbackWidthValue(frame);
-        double filmBackHeight = camera->getFilmbackHeightValue(frame);
+        camera->getWorldPosition(cam_pos, frame, timeEvalMode);
+        camera->getForwardDirection(cam_dir, frame, timeEvalMode);
+        double filmBackWidth = camera->getFilmbackWidthValue(frame, timeEvalMode);
+        double filmBackHeight = camera->getFilmbackHeightValue(frame, timeEvalMode);
         double filmBackInvAspect = filmBackHeight / filmBackWidth;
 
         BundlePtr bnd = marker->getBundle();
@@ -400,7 +405,7 @@ void measureErrors(
 
         // Re-project Bundle into screen-space.
         MVector bnd_dir;
-        status = bnd->getPos(bnd_mpos, frame);
+        status = bnd->getPos(bnd_mpos, frame, timeEvalMode);
         CHECK_MSTATUS(status);
         MPoint bnd_mpos_tmp(bnd_mpos);
         bnd_dir = bnd_mpos_tmp - cam_pos;
@@ -503,10 +508,10 @@ void measureErrors(
 
         // Query the current value of the value, and calculate
         //  the difference between the stiffness value.
-        stiffWeightAttr->getValue(stiffWeight);
-        stiffVarianceAttr->getValue(stiffVariance);
-        stiffValueAttr->getValue(stiffValue);
-        attr->getValue(attrValue);
+        stiffWeightAttr->getValue(stiffWeight, timeEvalMode);
+        stiffVarianceAttr->getValue(stiffVariance, timeEvalMode);
+        stiffValueAttr->getValue(stiffValue, timeEvalMode);
+        attr->getValue(attrValue, timeEvalMode);
 
         double error = ((1.0 / gaussian(attrValue, stiffValue, stiffVariance)) - 1.0);
         ud->errorList[indexIntoErrorArray] = error * stiffWeight;
@@ -530,10 +535,10 @@ void measureErrors(
 
         // Query the current value of the value, and calculate
         //  the difference between the smoothness value.
-        smoothWeightAttr->getValue(smoothWeight);
-        smoothVarianceAttr->getValue(smoothVariance);
-        smoothValueAttr->getValue(smoothValue);
-        attr->getValue(attrValue);
+        smoothWeightAttr->getValue(smoothWeight, timeEvalMode);
+        smoothVarianceAttr->getValue(smoothVariance, timeEvalMode);
+        smoothValueAttr->getValue(smoothValue, timeEvalMode);
+        attr->getValue(attrValue, timeEvalMode);
 
         double error = ((1.0 / gaussian(attrValue, smoothValue, smoothVariance)) - 1.0);
         ud->errorList[indexIntoErrorArray] = error * smoothWeight;
@@ -774,7 +779,6 @@ int solveFunc(const int numberOfParameters,
                 evalMeasurements);
 
         // Calculate the jacobian matrix.
-        MTime currentFrame = MAnimControl::currentTime();
         for (int i = 0; i < numberOfParameters; ++i) {
             double ratio = (double) i / (double) numberOfParameters;
             int progressNum = progressMin + static_cast<int>(ratio * progressMax);

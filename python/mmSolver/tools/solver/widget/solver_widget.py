@@ -111,7 +111,7 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
 
         # Show the validate button?
         visible = _getShowValidateButton()
-        self.validate_pushButton.setVisible(visible)
+        self.info_groupBox.setVisible(visible)
 
         self.tabWidget.currentChanged.connect(self._tabChanged)
         self.basic_widget.dataChanged.connect(self._dataChanged)

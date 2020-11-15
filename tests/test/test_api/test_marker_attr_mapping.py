@@ -50,7 +50,7 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
         top = maya.cmds.createNode('transform', name='top2')
         top = maya.cmds.ls(top, long=True)[0]
         multDivide = maya.cmds.createNode('multiplyDivide', name='multDiv')
-        multDivide2 = maya.cmds.createNode('multiplyDivide', name='multDivNotValid')
+        multDivide2 = maya.cmds.createNode('multiplyDivide', name='multDiv2')
         child1 = maya.cmds.createNode('transform', name='child1', parent=top)
         child2 = maya.cmds.createNode('transform', name='child2',
                                       parent=child1)
@@ -145,9 +145,9 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
         assert (dummy + '.rotateY') in ret
         assert (dummy + '.translateY') not in ret
         for r in ret:
-            assert multDivide2 not in r
+            assert nothing not in r
         print 'len(ret):', len(ret)
-        assert len(ret) == 103
+        assert len(ret) == 128
 
         # Test getting the affect mapping between markers and attrs.
         ret = mmapi.find_marker_attr_mapping(mkr_list, attr_list)

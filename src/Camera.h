@@ -162,15 +162,15 @@ public:
 
     Attr &getRenderAspectAttr();
 
-    double getFilmbackWidthValue(const MTime &time);
+    double getFilmbackWidthValue(const MTime &time, const int timeEvalMode);
 
-    double getFilmbackHeightValue(const MTime &time);
+    double getFilmbackHeightValue(const MTime &time, const int timeEvalMode);
 
-    double getFilmbackOffsetXValue(const MTime &time);
+    double getFilmbackOffsetXValue(const MTime &time, const int timeEvalMode);
 
-    double getFilmbackOffsetYValue(const MTime &time);
+    double getFilmbackOffsetYValue(const MTime &time, const int timeEvalMode);
 
-    double getFocalLengthValue(const MTime &time);
+    double getFocalLengthValue(const MTime &time, const int timeEvalMode);
 
     double getCameraScaleValue();
 
@@ -189,23 +189,28 @@ public:
     MStatus getFrustum(
             double &left, double &right,
             double &top, double &bottom,
-            const MTime &time);
+            const MTime &time,
+            const int timeEvalMode);
 
-    MStatus getProjMatrix(MMatrix &value, const MTime &time);
+    MStatus getProjMatrix(MMatrix &value, const MTime &time,
+                          const int timeEvalMode);
 
-    MStatus getProjMatrix(MMatrix &value);
+    MStatus getProjMatrix(MMatrix &value, const int timeEvalMode);
 
-    MStatus getWorldPosition(MPoint &value, const MTime &time);
+    MStatus getWorldPosition(MPoint &value, const MTime &time,
+                             const int timeEvalMode);
 
-    MStatus getWorldPosition(MPoint &value);
+    MStatus getWorldPosition(MPoint &value, const int timeEvalMode);
 
-    MStatus getForwardDirection(MVector &value, const MTime &time);
+    MStatus getForwardDirection(MVector &value, const MTime &time,
+                                const int timeEvalMode);
 
-    MStatus getForwardDirection(MVector &value);
+    MStatus getForwardDirection(MVector &value, const int timeEvalMode);
 
-    MStatus getWorldProjMatrix(MMatrix &value, const MTime &time);
+    MStatus getWorldProjMatrix(MMatrix &value, const MTime &time,
+                               const int timeEvalMode);
 
-    MStatus getWorldProjMatrix(MMatrix &value);
+    MStatus getWorldProjMatrix(MMatrix &value, const int timeEvalMode);
 
     MStatus clearAuxilaryAttrsCache();
 

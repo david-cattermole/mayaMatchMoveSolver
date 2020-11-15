@@ -102,6 +102,7 @@ class TestSolverIssue176(solverUtils.SolverTestCase):
             result = maya.cmds.mmSolver(
                 frame=f,
                 solverType=solver_index,
+                timeEvalMode=1,  # 1 = 'set time' eval mode.
                 iterations=10,
                 verbose=True,
                 **kwargs)

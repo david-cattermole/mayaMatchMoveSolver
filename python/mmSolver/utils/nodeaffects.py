@@ -194,10 +194,7 @@ def _convert_node_to_plugs(node, attr, node_type,
         node_attr,
         source=True,
         destination=False,
-        plugs=True,
-        shapes=False,
-        connections=True,
-        skipConversionNodes=False) or []
+        plugs=True) or []
     while len(conn_attrs) > 0:
         node_attr = conn_attrs.pop()
         node_attr = _get_full_path_plug(node_attr)

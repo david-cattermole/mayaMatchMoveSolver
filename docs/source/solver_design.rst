@@ -217,6 +217,41 @@ number of solver evaluations required for a low *measured error*.
 Solving Animated and Static values as described is a **Brute Force**
 approach, but other strategies may be used.
 
+.. _solver-design-time-evaluation:
+
+Attribute Value Evaluation at Different Times
+---------------------------------------------
+
+This topic is unrelated to the actual solver engine in mmSolver, but
+documents an interesting implementation detail when correctly
+evaluating values at different times in Autodesk Maya. From mmSolver
+v0.3.10 the new mmSolver command flag 'timeEvalMode' was introduced to
+tell Maya how to evaluate values at different times.
+
+There are two different methods to query a value at a specific time,
+**1**) tell the Maya DG network to evaluate a value at a time (using a
+"DG Context"), or **2**) change the Maya scene's current time, then
+query the current value.
+
+Tests have shown that the two different methods do not always evaluate
+the same way and can lead to an incorrect solve if set
+incorrectly. For simple scenes, method **1** works most of the time,
+however when using character rigs or complex node networks and
+evaluating on a single frame, then method **2** is needed to solve
+correctly.
+
+Use method **1** when you are solving multiple frames at once, and you
+ are using the Maya GUI (not Maya Batch or 'mayapy').
+
+Use method **2** when you are evaluting a single frame, or
+when you are not using the Maya GUI such as with Maya Batch or
+'mayapy'.
+
+These different methods do not need to be set manually if you are
+using the mmSolver Solver UI or the mmSolver API. If you are calling
+the 'mmSolver' command directly, then 'timeEvalMode' is important to
+set.
+
 .. _solver-design-attribute-details:
 
 Attribute Details

@@ -74,6 +74,18 @@
 #define SOLVER_TYPE_FLAG           "-st"
 #define SOLVER_TYPE_FLAG_LONG      "-solverType"
 
+// Time Evaluation Mode
+//
+// How should the solver evaluate time? Should we use DG Context, or
+// just changing the scene's current time?
+//
+// TIME_EVAL_MODE_DG_CONTEXT = 'DG Context'
+// TIME_EVAL_MODE_SET_TIME = 'Set Time' - change the scene time value.
+//
+#define TIME_EVAL_MODE_FLAG           "-tem"
+#define TIME_EVAL_MODE_FLAG_LONG      "-timeEvalMode"
+#define TIME_EVAL_MODE_DEFAULT_VALUE  TIME_EVAL_MODE_DG_CONTEXT
+
 // Maximum number of iterations
 //
 // This option does not directly control the number of evaluations the
@@ -235,6 +247,7 @@ private:
     int m_solverType;   // Solver type to use; 0=levmar,
                         //                     1=cminpack_lmdif,
                         //                     2=cmpinpack_lmder.
+    int m_timeEvalMode;  // How to evaluate values at different times?
     bool m_acceptOnlyBetter;  // Do not accept solved parameter values if
                               // the average devation is higher than at start.
     bool m_removeUnusedMarkers;     // Remove unused Markers from solve?

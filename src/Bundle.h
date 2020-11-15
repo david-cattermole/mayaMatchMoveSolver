@@ -53,17 +53,17 @@ public:
 
     Attr &getMatrixAttr();
 
-    MStatus getMatrix(MMatrix &value, const MTime &time);
+    MStatus getMatrix(MMatrix &value, const MTime &time, const int timeEvalMode);
 
-    MStatus getMatrix(MMatrix &value);
+    MStatus getMatrix(MMatrix &value, const int timeEvalMode);
 
-    MStatus getPos(double &x, double &y, double &z, const MTime &time);
+    MStatus getPos(double &x, double &y, double &z, const MTime &time, const int timeEvalMode);
 
-    MStatus getPos(MPoint &point, const MTime &time);
+    MStatus getPos(MPoint &point, const MTime &time, const int timeEvalMode);
 
-    MStatus getPos(double &x, double &y, double &z);
+    MStatus getPos(double &x, double &y, double &z, const int timeEvalMode);
 
-    MStatus getPos(MPoint &point);
+    MStatus getPos(MPoint &point, const int timeEvalMode);
 
 private:
     MString m_nodeName;

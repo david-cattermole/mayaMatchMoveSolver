@@ -298,6 +298,7 @@ bool get_initial_parameters(int numberOfParameters,
                             MStringArray &outResult) {
     std::string resultStr;
     MStatus status = MS::kSuccess;
+    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     MTime currentFrame = MAnimControl::currentTime();
     for (int i = 0; i < numberOfParameters; ++i) {
         IndexPair attrPair = paramToAttrList[i];
@@ -310,7 +311,7 @@ bool get_initial_parameters(int numberOfParameters,
         }
 
         double value = 0.0;
-        status = attr->getValue(value, frame);
+        status = attr->getValue(value, frame, timeEvalMode);
         CHECK_MSTATUS(status);
         if (status != MS::kSuccess) {
             resultStr = "success=0";
@@ -1235,6 +1236,7 @@ bool solve(SolverOptions &solverOptions,
     VRB("Epsilon3=" << solverOptions.eps3);
     VRB("Delta=" << fabs(solverOptions.delta));
     VRB("Auto Differencing Type=" << solverOptions.autoDiffType);
+    VRB("Time Evaluation Mode=" << solverOptions.timeEvalMode);
 
     if ((verbose == false) && (printStats == false)) {
         std::stringstream ss;

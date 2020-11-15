@@ -251,7 +251,7 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
     is_whole_solve_single_frame = len(frame_list) == 1
     if is_whole_solve_single_frame is False:
         maya.cmds.currentTime(
-            cur_frame - 1,
+            cur_frame + 1,
             edit=True,
             update=options.force_update,
             )
@@ -751,8 +751,6 @@ def execute(col,
             func, args, kwargs = api_action.action_to_components(action)
             func_is_mmsolver = api_action.action_func_is_mmSolver(action)
 
-            save_node_attrs = None
-            is_single_frame = None
             if func_is_mmsolver is True:
                 frame = kwargs.get('frame')
                 collectionutils.run_status_func(info_fn, 'Evaluating frames %r' % frame)
@@ -776,16 +774,13 @@ def execute(col,
                 # HACK for single frame solves.
                 save_node_attrs = []
                 is_single_frame = collectionutils.is_single_frame(kwargs)
+                timeEvalMode = const.TIME_EVAL_MODE_DG_CONTEXT
                 if is_single_frame is True:
-                    save_node_attrs = collectionutils.disconnect_animcurves(kwargs)
+                    timeEvalMode = const.TIME_EVAL_MODE_SET_TIME
+                kwargs['timeEvalMode'] = timeEvalMode
 
             # Run Solver Maya plug-in command
             solve_data = func(*args, **kwargs)
-
-            # Revert special HACK for single frame solves
-            if func_is_mmsolver is True:
-                if is_single_frame is True:
-                    collectionutils.reconnect_animcurves(kwargs, save_node_attrs)
 
             # Create SolveResult.
             solres = None

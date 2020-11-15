@@ -102,27 +102,27 @@ def _get_full_path_plug(plug):
     attr = maya.cmds.attributeName(plug, long=True)
     node = maya.cmds.ls(node, long=True)[0]
     full_path = node + '.' + attr
-    return full_path
+    return str(full_path)
 
 
 def _get_upstream_nodes(node_name):
     node_types = maya.cmds.nodeType(node_name, inherited=True)
     out_nodes = []
     if 'dagNode' in node_types:
-        LOG.debug('DAG upstream: %r', node_name)
+        # DAG upstream
         out_nodes = maya.cmds.listConnections(
             node_name, source=True, destination=False,
             plugs=False, shapes=False, connections=False,
             skipConversionNodes=False) or []
     else:
-        LOG.debug('DG upstream: %r', node_name)
+        # DG upstream
         out_nodes = maya.cmds.listHistory(
             node_name,
             allConnections=True,
             leaf=False,
             levels=0,
             pruneDagObjects=False) or []
-    out_nodes = [node_utils.get_long_name(n) for n in out_nodes]
+    out_nodes = [str(node_utils.get_long_name(n)) for n in out_nodes]
     return out_nodes
 
 
@@ -194,7 +194,10 @@ def _convert_node_to_plugs(node, attr, node_type,
         node_attr,
         source=True,
         destination=False,
-        plugs=True) or []
+        plugs=True,
+        shapes=False,
+        connections=True,
+        skipConversionNodes=False) or []
     while len(conn_attrs) > 0:
         node_attr = conn_attrs.pop()
         node_attr = _get_full_path_plug(node_attr)
@@ -209,7 +212,7 @@ def _convert_node_to_plugs(node, attr, node_type,
                 lambda: maya.cmds.getAttr(node_attr, type=True))
             if typ in VALID_ATTR_TYPES:
                 plugs.add(node_attr)
-            return plugs
+            continue
 
         # Get the plugs that affect this plug.
         tmp_list = maya.cmds.listConnections(
@@ -314,9 +317,7 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
     nodes = nodes + list(conn_nodes)
 
     plugs = _get_attribute_plugs(nodes)
-
-    # Only unique plugs.
-    plugs = list(set(plugs))
+    plugs = list(set(plugs))  # Only unique plugs.
     return plugs
 
 
@@ -364,8 +365,6 @@ def sort_into_hierarchy_groups(mkr_list, attr_list):
     This will allow us to solve top-level objects (ie, root level)
     first, before solving children. This will ensure we minimise the
     base before attempting to solve the children.
-
-    :return:
     """
     # TODO: Write this.
     raise NotImplementedError

@@ -105,42 +105,47 @@ solve.</p>
 <td>Type of solver to use.</td>
 <td>&lt;auto detected&gt;</td>
 </tr>
-<tr class="row-odd"><td>-iterations (-it)</td>
+<tr class="row-odd"><td>-timeEvalMode (-tem)</td>
+<td>unsigned int</td>
+<td>How to evalulate values at different times, 0=DG Context 1=Set TIme</td>
+<td>0 (DG Context)</td>
+</tr>
+<tr class="row-even"><td>-iterations (-it)</td>
 <td>unsigned int</td>
 <td>Maximum number of iterations</td>
 <td>20</td>
 </tr>
-<tr class="row-even"><td>-tauFactor (-t)</td>
+<tr class="row-odd"><td>-tauFactor (-t)</td>
 <td>double</td>
 <td>Initial Damping Factor</td>
 <td>1E-03</td>
 </tr>
-<tr class="row-odd"><td>-epsilon1 (-e1)</td>
+<tr class="row-even"><td>-epsilon1 (-e1)</td>
 <td>double</td>
 <td>Acceptable gradient change</td>
 <td>1E-06</td>
 </tr>
-<tr class="row-even"><td>-epsilon2 (-e2)</td>
+<tr class="row-odd"><td>-epsilon2 (-e2)</td>
 <td>double</td>
 <td>Acceptable parameter change</td>
 <td>1E-06</td>
 </tr>
-<tr class="row-odd"><td>-epsilon3 (-e3)</td>
+<tr class="row-even"><td>-epsilon3 (-e3)</td>
 <td>double</td>
 <td>Acceptable error</td>
 <td>1E-06</td>
 </tr>
-<tr class="row-even"><td>-delta (-dt)</td>
+<tr class="row-odd"><td>-delta (-dt)</td>
 <td>double</td>
 <td>Change to the guessed parameters each iteration</td>
 <td>1E-04</td>
 </tr>
-<tr class="row-odd"><td>-autoDiffType (-adt)</td>
+<tr class="row-even"><td>-autoDiffType (-adt)</td>
 <td>unsigned int</td>
 <td>Auto-differencing type 0=forward 1=central</td>
 <td>0 (forward)</td>
 </tr>
-<tr class="row-even"><td>-verbose (-v)</td>
+<tr class="row-odd"><td>-verbose (-v)</td>
 <td>bool</td>
 <td>Prints more information</td>
 <td>False</td>

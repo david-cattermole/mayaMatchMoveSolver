@@ -226,6 +226,35 @@ number of solver evaluations required for a low <em>measured error</em>.
 Solving Animated and Static values as described is a <strong>Brute Force</strong>
 approach, but other strategies may be used.</p>
 </div>
+<div class="section" id="attribute-value-evaluation-at-different-times">
+<span id="solver-design-time-evaluation"></span><h2>Attribute Value Evaluation at Different Times<a class="headerlink" href="#attribute-value-evaluation-at-different-times" title="Permalink to this headline">¶</a></h2>
+<p>This topic is unrelated to the actual solver engine in mmSolver, but
+documents an interesting implementation detail when correctly
+evaluating values at different times in Autodesk Maya. From mmSolver
+v0.3.10 the new mmSolver command flag ‘timeEvalMode’ was introduced to
+tell Maya how to evaluate values at different times.</p>
+<p>There are two different methods to query a value at a specific time,
+<strong>1</strong>) tell the Maya DG network to evaluate a value at a time (using a
+“DG Context”), or <strong>2</strong>) change the Maya scene’s current time, then
+query the current value.</p>
+<p>Tests have shown that the two different methods do not always evaluate
+the same way and can lead to an incorrect solve if set
+incorrectly. For simple scenes, method <strong>1</strong> works most of the time,
+however when using character rigs or complex node networks and
+evaluating on a single frame, then method <strong>2</strong> is needed to solve
+correctly.</p>
+<dl class="docutils">
+<dt>Use method <strong>1</strong> when you are solving multiple frames at once, and you</dt>
+<dd>are using the Maya GUI (not Maya Batch or ‘mayapy’).</dd>
+</dl>
+<p>Use method <strong>2</strong> when you are evaluting a single frame, or
+when you are not using the Maya GUI such as with Maya Batch or
+‘mayapy’.</p>
+<p>These different methods do not need to be set manually if you are
+using the mmSolver Solver UI or the mmSolver API. If you are calling
+the ‘mmSolver’ command directly, then ‘timeEvalMode’ is important to
+set.</p>
+</div>
 <div class="section" id="attribute-details">
 <span id="solver-design-attribute-details"></span><h2>Attribute Details<a class="headerlink" href="#attribute-details" title="Permalink to this headline">¶</a></h2>
 <p>Attribute Details are properties of an Attribute. Attribute Details
@@ -504,6 +533,7 @@ Solving is performed directly on <em>Attribute</em> values.</p>
 <li><a class="reference internal" href="#solving">Solving</a></li>
 <li><a class="reference internal" href="#solving-process">Solving Process</a></li>
 <li><a class="reference internal" href="#time-static-and-animated-attributes">Time - Static and Animated Attributes</a></li>
+<li><a class="reference internal" href="#attribute-value-evaluation-at-different-times">Attribute Value Evaluation at Different Times</a></li>
 <li><a class="reference internal" href="#attribute-details">Attribute Details</a><ul>
 <li><a class="reference internal" href="#minimum-and-maximum-limits">Minimum and Maximum Limits</a></li>
 <li><a class="reference internal" href="#smoothness-and-stiffness">Smoothness and Stiffness</a></li>

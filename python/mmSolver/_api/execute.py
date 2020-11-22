@@ -680,8 +680,10 @@ def execute(col,
         options, panels
     )
 
-    # Save current frame, to revert to later on.
+    # Save scene state, to revert to later on.
     cur_frame = maya.cmds.currentTime(query=True)
+    prev_auto_key_state = maya.cmds.autoKeyframe(query=True, state=True)
+    prev_cycle_check = maya.cmds.cycleCheck(query=True, evaluation=True)
 
     # State information needed to revert reconnect animation curves in
     # 'finally' block.
@@ -693,7 +695,9 @@ def execute(col,
     try:
         if options.disable_viewport_two is True:
             viewport_utils.set_viewport2_active_state(False)
+        maya.cmds.autoKeyframe(edit=True, state=False)
         maya.cmds.evaluationManager(mode='off')
+        maya.cmds.cycleCheck(evaluation=False)
         preSolve_updateProgress(prog_fn, status_fn)
 
         # Check for validity and compile actions.
@@ -854,6 +858,8 @@ def execute(col,
         maya.cmds.evaluationManager(
             mode=current_eval_manager_mode[0]
         )
+        maya.cmds.cycleCheck(evaluation=prev_cycle_check)
+        maya.cmds.autoKeyframe(edit=True, state=prev_auto_key_state)
         api_state.set_solver_running(False)
         if options.disable_viewport_two is True:
             viewport_utils.set_viewport2_active_state(vp2_state)

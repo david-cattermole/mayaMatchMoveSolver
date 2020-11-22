@@ -315,6 +315,7 @@ def _compile_multi_inbetween_frames(col,
                                     attr_list,
                                     all_frame_list,
                                     global_solve,
+                                    eval_complex_graphs,
                                     anim_iter_num,
                                     precomputed_data,
                                     withtest,
@@ -338,6 +339,12 @@ def _compile_multi_inbetween_frames(col,
         If True, all attributes and frames will be solved as a single
         solve, rather than one solve per-frame.
     :type global_solve: bool
+
+    :param eval_complex_graphs:
+        If True, the solve will try to trigger evalation of complex
+        node graphs (such as Mesh Rivets), by changing the timeEvalMode
+        of the mmSolver command.
+    :type eval_complex_graphs: bool
 
     :param anim_iter_num:
         Number of iterations for solving animated attributes.
@@ -378,6 +385,10 @@ def _compile_multi_inbetween_frames(col,
         for i, frm in enumerate(all_frame_list):
             is_first_frame = i == 0
             one_frame_list = [frm]
+            time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
+            if eval_complex_graphs is True:
+                time_eval_mode = const.TIME_EVAL_MODE_SET_TIME
+
             sol = solverstep.SolverStep()
             sol.set_max_iterations(anim_iter_num)
             sol.set_frame_list(one_frame_list)
@@ -386,6 +397,7 @@ def _compile_multi_inbetween_frames(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(not is_first_frame)
             sol.set_use_stiffness(not is_first_frame)
+            sol.set_time_eval_mode(time_eval_mode)
             sol.set_precomputed_data(precomputed_data)
 
             generator = api_compile.compile_solver_with_cache(
@@ -406,6 +418,7 @@ def _compile_multi_frame(col,
                          root_iter_num,
                          anim_iter_num,
                          global_solve,
+                         eval_complex_graphs,
                          root_frame_strategy,
                          triangulate_bundles,
                          use_euler_filter,
@@ -456,6 +469,12 @@ def _compile_multi_frame(col,
         Should all frames be solved together, both animated and static
         attributes?
     :type global_solve: bool
+
+    :param eval_complex_graphs:
+        If True, the solve will try to trigger evalation of complex
+        node graphs (such as Mesh Rivets), by changing the timeEvalMode
+        of the mmSolver command.
+    :type eval_complex_graphs: bool
 
     :param root_frame_strategy:
         The strategy ordering of root frames and how to solve them.
@@ -659,6 +678,7 @@ def _compile_multi_frame(col,
         attr_list,
         all_frame_list,
         global_solve,
+        eval_complex_graphs,
         anim_iter_num,
         precomputed_data,
         withtest,
@@ -914,6 +934,32 @@ class SolverStandard(solverbase.SolverBase):
         """
         assert isinstance(value, (bool, int, long))
         self._data['global_solve'] = bool(value)
+
+    ############################################################################
+
+    def get_eval_complex_graphs(self):
+        """
+        Get 'Evaluate Complex Node Graphs' value.
+
+        :rtype: bool
+        """
+        return self._data.get(
+            'eval_complex_node_graphs',
+            const.SOLVER_STD_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE)
+
+    def set_eval_complex_graphs(self, value):
+        """
+        Set 'Evaluate Complex Node Graph' value.
+
+        If True, the solve will try to trigger evalation of complex
+        node graphs (such as Mesh Rivets), by changing the
+        timeEvalModeq of the mmSolver command.
+
+        :param value: Value to be set.
+        :type value: bool or int or long
+        """
+        assert isinstance(value, (bool, int, long))
+        self._data['eval_complex_node_graphs'] = bool(value)
 
     ############################################################################
 
@@ -1207,6 +1253,7 @@ class SolverStandard(solverbase.SolverBase):
         single_frame = self.get_single_frame()
         only_root_frames = self.get_only_root_frames()
         global_solve = self.get_global_solve()
+        eval_complex_graphs = self.get_eval_complex_graphs()
         block_iter_num = self.get_block_iteration_num()
         root_iter_num = self.get_root_iteration_num()
         anim_iter_num = self.get_anim_iteration_num()
@@ -1260,6 +1307,7 @@ class SolverStandard(solverbase.SolverBase):
                 root_iter_num,
                 anim_iter_num,
                 global_solve,
+                eval_complex_graphs,
                 root_frame_strategy,
                 triangulate_bundles,
                 use_euler_filter,

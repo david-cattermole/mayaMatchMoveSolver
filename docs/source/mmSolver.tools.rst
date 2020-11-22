@@ -49,3 +49,5 @@ mmSolver.tools
    mmSolver.tools.togglemarkerlock
    mmSolver.tools.triangulatebundle
    mmSolver.tools.undoredoscene
+   mmSolver.tools.userpreferences
+   mmSolver.tools.userprefswindow

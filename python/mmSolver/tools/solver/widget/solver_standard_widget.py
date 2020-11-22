@@ -94,6 +94,7 @@ class SolverStandardWidget(QtWidgets.QWidget,
     dataChanged = QtCore.Signal()
     globalSolveChanged = QtCore.Signal()
     onlyRootFramesChanged = QtCore.Signal()
+    evalComplexGraphsChanged = QtCore.Signal()
     sendWarning = QtCore.Signal(str)
 
     def __init__(self, parent=None, *args, **kwargs):
@@ -109,8 +110,7 @@ class SolverStandardWidget(QtWidgets.QWidget,
 
         self.globalSolve_checkBox.toggled.connect(self.globalSolveValueToggled)
         self.onlyRootFrames_checkBox.toggled.connect(self.onlyRootFramesValueToggled)
-
-        self.advanced_pushButton.setHidden(True)
+        self.evalComplexGraphs_checkBox.toggled.connect(self.evalComplexGraphsValueToggled)
 
         desc = const.SOLVER_STD_DESC_DEFAULT
         self.description_label.setText(desc)
@@ -138,6 +138,14 @@ class SolverStandardWidget(QtWidgets.QWidget,
         lib_col_state.set_solver_global_solve_on_collection(col, value)
         return
 
+    def getEvalComplexGraphsValue(self, col):
+        value = lib_col_state.get_solver_eval_complex_graphs_from_collection(col)
+        return value
+
+    def setEvalComplexGraphsValue(self, col, value):
+        lib_col_state.set_solver_eval_complex_graphs_on_collection(col, value)
+        return
+
     def updateModel(self):
         self.frameRange_widget.updateModel()
         self.rootFrames_widget.updateModel()
@@ -149,19 +157,23 @@ class SolverStandardWidget(QtWidgets.QWidget,
         range_type = self.frameRange_widget.getRangeTypeValue(col)
         global_solve = self.getGlobalSolveValue(col)
         only_root_frames = self.getOnlyRootFramesValue(col)
+        eval_complex_graphs = self.getEvalComplexGraphsValue(col)
         global_solve_enabled = True
         only_root_frames_enabled = True
+        eval_complex_graphs_enabled = True
         frameRange_enabled = True
         rootFrames_enabled = True
         if range_type == const.RANGE_TYPE_CURRENT_FRAME_VALUE:
             global_solve_enabled = False
             only_root_frames_enabled = False
+            eval_complex_graphs_enabled = False
             frameRange_enabled = True
             rootFrames_enabled = False
         else:
             if global_solve is True:
                 only_root_frames_enabled = False
                 only_root_frames = False
+                eval_complex_graphs_enabled = False
                 rootFrames_enabled = True
                 frameRange_enabled = True
             if only_root_frames is True:
@@ -169,18 +181,22 @@ class SolverStandardWidget(QtWidgets.QWidget,
                 global_solve = False
                 frameRange_enabled = False
                 rootFrames_enabled = True
+                eval_complex_graphs_enabled = False
 
         block = self.blockSignals(True)
         self.globalSolve_checkBox.setChecked(global_solve)
         self.globalSolve_checkBox.setEnabled(global_solve_enabled)
         self.onlyRootFrames_checkBox.setChecked(only_root_frames)
         self.onlyRootFrames_checkBox.setEnabled(only_root_frames_enabled)
+        self.evalComplexGraphs_checkBox.setChecked(eval_complex_graphs)
+        self.evalComplexGraphs_checkBox.setEnabled(eval_complex_graphs_enabled)
         self.frameRange_widget.setEnabled(frameRange_enabled)
         self.rootFrames_widget.setEnabled(rootFrames_enabled)
         self.blockSignals(block)
 
         self.setGlobalSolveValue(col, global_solve)
         self.setOnlyRootFramesValue(col, only_root_frames)
+        self.setEvalComplexGraphsValue(col, eval_complex_graphs)
         return
 
     def queryInfo(self):
@@ -215,6 +231,16 @@ class SolverStandardWidget(QtWidgets.QWidget,
             self.onlyRootFramesChanged.emit()
         self.setGlobalSolveValue(col, value)
         self.globalSolveChanged.emit()
+        self.dataChanged.emit()
+        return
+
+    @QtCore.Slot(bool)
+    def evalComplexGraphsValueToggled(self, value):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        self.setEvalComplexGraphsValue(col, value)
+        self.evalComplexGraphsChanged.emit()
         self.dataChanged.emit()
         return
 

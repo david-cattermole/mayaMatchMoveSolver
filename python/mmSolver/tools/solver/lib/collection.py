@@ -475,6 +475,8 @@ def compile_collection(col, prog_fn=None):
             frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
             frames = [mmapi.Frame(f) for f in frame_nums]
             sol.set_frame_list(frames)
+            eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+            sol.set_eval_complex_graphs(eval_complex_graphs)
             sol_list.append(sol)
 
     elif solver_tab == const.SOLVER_TAB_STANDARD_VALUE:
@@ -507,8 +509,10 @@ def compile_collection(col, prog_fn=None):
 
             global_solve = col_state.get_solver_global_solve_from_collection(col)
             only_root = col_state.get_solver_only_root_frames_from_collection(col)
+            eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
             sol.set_global_solve(global_solve)
             sol.set_only_root_frames(only_root)
+            sol.set_eval_complex_graphs(eval_complex_graphs)
             sol_list.append(sol)
 
     elif solver_tab.lower() == const.SOLVER_TAB_LEGACY_VALUE:

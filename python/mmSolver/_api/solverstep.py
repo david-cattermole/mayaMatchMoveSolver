@@ -262,6 +262,15 @@ class SolverStep(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_time_eval_mode(self):
+        return self._data.get('time_eval_mode', const.TIME_EVAL_MODE_DEFAULT)
+
+    def set_time_eval_mode(self, value):
+        assert value in const.TIME_EVAL_MODE_LIST
+        self._data['time_eval_mode'] = value
+
+    ############################################################################
+
     def get_use_smoothness(self):
         return self._data.get('smoothness')
 
@@ -535,6 +544,7 @@ class SolverStep(solverbase.SolverBase):
 
         kwargs['robustLossType'] = const.ROBUST_LOSS_TYPE_TRIVIAL_VALUE
         kwargs['robustLossScale'] = 1.0
+        kwargs['timeEvalMode'] = self.get_time_eval_mode()
 
         # TODO: Add 'robustLossType' flag.
         # TODO: Add 'robustLossScale' flag.

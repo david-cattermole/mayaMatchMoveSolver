@@ -31,15 +31,19 @@
     <layout class="QHBoxLayout" name="rootFrames_layout"/>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="extraOptions_layout">
+    <layout class="QHBoxLayout" name="options_layout" stretch="0,0,0">
      <property name="spacing">
-      <number>1</number>
+      <number>10</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" name="options_layout" stretch="0,0">
-       <property name="spacing">
-        <number>0</number>
-       </property>
+      <layout class="QVBoxLayout" name="options1_layout">
+       <item>
+        <widget class="QCheckBox" name="globalSolve_checkBox">
+         <property name="text">
+          <string>Solve All at Once (slow)</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QCheckBox" name="onlyRootFrames_checkBox">
          <property name="text">
@@ -48,11 +52,47 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="globalSolve_checkBox">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::MinimumExpanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>10</width>
+           <height>1</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="options2_layout">
+       <item>
+        <widget class="QCheckBox" name="evalComplexGraphs_checkBox">
          <property name="text">
-          <string>Solve All at Once (slow)</string>
+          <string>Evaluate Complex Node Graphs (eg. Mesh Rivets)</string>
          </property>
         </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::MinimumExpanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>10</width>
+           <height>1</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </item>
@@ -71,13 +111,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="advanced_pushButton">
-       <property name="text">
-        <string>Advanced...</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>

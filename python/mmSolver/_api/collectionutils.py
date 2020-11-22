@@ -19,8 +19,6 @@
 Utilities used with Collection compiled 'kwargs'.
 """
 
-import warnings
-
 import maya.cmds
 import maya.mel
 import maya.OpenMaya as OpenMaya
@@ -93,9 +91,6 @@ def disconnect_animcurves(kwargs):
               disconnected by this function.
     :rtype: [(str, str), ..]
     """
-    msg = 'This function is no longer needed and is deprecated!'
-    warnings.warn(msg, DeprecationWarning)
-
     f = kwargs.get('frame')[0]
     maya.cmds.currentTime(f, edit=True, update=False)
 
@@ -144,9 +139,6 @@ def reconnect_animcurves(kwargs, save_node_attrs, force_dg_update=True):
     :param force_dg_update: Should the DG network be updated?
     :type force_dg_update: bool
     """
-    msg = 'This function is no longer needed and is deprecated!'
-    warnings.warn(msg, DeprecationWarning)
-
     f = kwargs.get('frame')[0]
     maya.cmds.currentTime(f, edit=True, update=False)
 

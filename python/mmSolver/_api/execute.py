@@ -680,13 +680,24 @@ def execute(col,
         options, panels
     )
 
-    # Save current frame, to revert to later on.
+    # Save scene state, to revert to later on.
     cur_frame = maya.cmds.currentTime(query=True)
+    prev_auto_key_state = maya.cmds.autoKeyframe(query=True, state=True)
+    prev_cycle_check = maya.cmds.cycleCheck(query=True, evaluation=True)
+
+    # State information needed to revert reconnect animation curves in
+    # 'finally' block.
+    kwargs = {}
+    save_node_attrs = []
+    func_is_mmsolver = False
+    is_single_frame = False
 
     try:
         if options.disable_viewport_two is True:
             viewport_utils.set_viewport2_active_state(False)
+        maya.cmds.autoKeyframe(edit=True, state=False)
         maya.cmds.evaluationManager(mode='off')
+        maya.cmds.cycleCheck(evaluation=False)
         preSolve_updateProgress(prog_fn, status_fn)
 
         # Check for validity and compile actions.
@@ -772,15 +783,26 @@ def execute(col,
                     kwargs['verbose'] = True
 
                 # HACK for single frame solves.
-                save_node_attrs = []
                 is_single_frame = collectionutils.is_single_frame(kwargs)
-                timeEvalMode = const.TIME_EVAL_MODE_DG_CONTEXT
                 if is_single_frame is True:
-                    timeEvalMode = const.TIME_EVAL_MODE_SET_TIME
-                kwargs['timeEvalMode'] = timeEvalMode
+                    save_node_attrs = collectionutils.disconnect_animcurves(kwargs)
+                else:
+                    # Reset the data structure so in the 'finally'
+                    # block we can detect animcurves are not needing
+                    # to be reset.
+                    save_node_attrs = []
 
             # Run Solver Maya plug-in command
             solve_data = func(*args, **kwargs)
+
+            # Revert special HACK for single frame solves
+            if func_is_mmsolver is True:
+                if is_single_frame is True:
+                    collectionutils.reconnect_animcurves(kwargs, save_node_attrs)
+                    # Reset the data structure so in the 'finally'
+                    # block we can detect animcurves are not needing
+                    # to be reset.
+                    save_node_attrs = []
 
             # Create SolveResult.
             solres = None
@@ -821,6 +843,13 @@ def execute(col,
                 frame = kwargs.get('frame')
                 postSolve_refreshViewport(options, frame)
     finally:
+        # If something has gone wrong, or the user cancels the solver
+        # without finishing, then we make sure to reconnect animcurves
+        # that were disconnected for single frame solves.
+        if func_is_mmsolver is True and is_single_frame is True:
+            if len(save_node_attrs):
+                collectionutils.reconnect_animcurves(kwargs, save_node_attrs)
+
         postSolve_setViewportState(
             options, panel_objs, panel_node_type_vis
         )
@@ -829,6 +858,8 @@ def execute(col,
         maya.cmds.evaluationManager(
             mode=current_eval_manager_mode[0]
         )
+        maya.cmds.cycleCheck(evaluation=prev_cycle_check)
+        maya.cmds.autoKeyframe(edit=True, state=prev_auto_key_state)
         api_state.set_solver_running(False)
         if options.disable_viewport_two is True:
             viewport_utils.set_viewport2_active_state(vp2_state)

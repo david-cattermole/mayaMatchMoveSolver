@@ -344,13 +344,13 @@ void measureErrors(
     assert(ud->errorToMarkerList.size() > 0);
     assert(ud->frameList.length() > 0);
 #if FORCE_TRIGGER_EVAL == 1
-    if (timeEvalMode != TIME_EVAL_MODE_SET_TIME) {
+    {
         MPoint pos;
         int i = 0;
         IndexPair markerPair = ud->errorToMarkerList[i];
         MarkerPtr marker = ud->markerList[markerPair.first];
         MTime frame = ud->frameList[markerPair.second];
-        status = marker->getPos(pos, frame + 1, timeEvalMode);
+        status = marker->getPos(pos, frame + 1, TIME_EVAL_MODE_DG_CONTEXT);
         CHECK_MSTATUS(status);
     }
 #endif

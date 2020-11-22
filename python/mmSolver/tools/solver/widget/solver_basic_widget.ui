@@ -28,30 +28,14 @@
     <layout class="QHBoxLayout" name="frameRange_layout"/>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="extraOptions_layout">
+    <layout class="QVBoxLayout" name="options_layout" stretch="0">
      <property name="spacing">
-      <number>1</number>
+      <number>0</number>
      </property>
      <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Expanding</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="advanced_pushButton">
+      <widget class="QCheckBox" name="evalComplexGraphs_checkBox">
        <property name="text">
-        <string>Advanced...</string>
+        <string>Evaluate Complex Node Graphs (eg. Mesh Rivets)</string>
        </property>
       </widget>
      </item>

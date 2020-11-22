@@ -828,3 +828,46 @@ def set_solver_global_solve_on_collection(col, value):
         default_value=const.SOLVER_GLOBAL_SOLVE_DEFAULT_VALUE,
     )
     return
+
+
+#######################################################################
+
+
+def get_solver_eval_complex_graphs_from_collection(col):
+    """
+    Get the value of solver 'Evaluate Complex Node Graphs', from a Collection.
+
+    :param col: The Collection to query.
+    :type col: Collection
+
+    :returns:
+        A boolean, should the solver try extra hard to evaluate complex node graphs?
+    :rtype: bool
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_EVAL_COMPLEX_GRAPHS_ATTR,
+        attr_type=const.SOLVER_EVAL_COMPLEX_GRAPHS_ATTR_TYPE,
+        default_value=const.SOLVER_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_eval_complex_graphs_on_collection(col, value):
+    """
+    Set the value of solver 'Evaluate Complex Node Graphs' on a Collection.
+
+    :param col: The Collection to change.
+    :type col: Collection
+
+    :param value: Value to set to.
+    :type value: bool
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_EVAL_COMPLEX_GRAPHS_ATTR,
+        value,
+        attr_type=const.SOLVER_EVAL_COMPLEX_GRAPHS_ATTR_TYPE,
+        default_value=const.SOLVER_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE,
+    )
+    return

@@ -319,6 +319,11 @@ SOLVER_GLOBAL_SOLVE_ATTR = 'solver_global_solve'
 SOLVER_GLOBAL_SOLVE_ATTR_TYPE = 'bool'
 SOLVER_GLOBAL_SOLVE_DEFAULT_VALUE = False
 
+# Solver Evaluate Complex Node Graphs (stored on Collection node)
+SOLVER_EVAL_COMPLEX_GRAPHS_ATTR = 'solver_eval_complex_node_graphs'
+SOLVER_EVAL_COMPLEX_GRAPHS_ATTR_TYPE = 'bool'
+SOLVER_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE = False
+
 # Descriptions for solvers
 SOLVER_BASIC_DESC_DEFAULT = (
     'Solve only animated attributes on frames.'

@@ -182,6 +182,15 @@ class Attribute(object):
             plug = animPlugs[i]
             if self._plug.name() == plug.name():
                 state = const.ATTR_STATE_ANIMATED
+                return state
+
+        # If the plug is connected to a Constraint, then it is
+        # considered "free to change", but for the solver we consider
+        # it locked and unchangeable.
+        src_plug = self._plug.source()
+        if src_plug.isNull() is False:
+            state = const.ATTR_STATE_LOCKED
+            return state
 
         if state == const.ATTR_STATE_INVALID:
             state = const.ATTR_STATE_STATIC

@@ -478,7 +478,7 @@ def _compile_multi_frame(col,
 
     :param root_frame_strategy:
         The strategy ordering of root frames and how to solve them.
-        Value must be one in ROOT_FRAME_STRATEGY_VALUE_LIST
+        Value must be one in ROOT_FRAME_STRATEGY_VALUE_LIST.
     :type root_frame_strategy:
 
     :param triangulate_bundles:
@@ -977,10 +977,14 @@ class SolverStandard(solverbase.SolverBase):
         """
         Set Root Frame Strategy value.
 
+        The strategy ordering of root frames and how to solve them.
+        Value must be one in ROOT_FRAME_STRATEGY_VALUE_LIST.
+
         :param value: Value to be set.
         :type value: int or long
         """
         assert isinstance(value, (int, long))
+        assert value in const.ROOT_FRAME_STRATEGY_VALUE_LIST
         self._data['root_frame_strategy'] = value
 
     ############################################################################

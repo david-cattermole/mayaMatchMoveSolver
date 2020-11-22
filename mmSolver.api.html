@@ -1806,6 +1806,34 @@ the solver.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="mmSolver.api.SolverBasic.get_eval_complex_graphs">
+<code class="descname">get_eval_complex_graphs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBasic.get_eval_complex_graphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get ‘Evaluate Complex Node Graphs’ value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverBasic.set_eval_complex_graphs">
+<code class="descname">set_eval_complex_graphs</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBasic.set_eval_complex_graphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set ‘Evaluate Complex Node Graph’ value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em><em> or </em><em>int</em><em> or </em><em>long</em>) – Value to be set.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.api.SolverBasic.get_use_single_frame">
 <code class="descname">get_use_single_frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBasic.get_use_single_frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get Use Single Frame value.</p>
@@ -2173,6 +2201,37 @@ the solver.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="mmSolver.api.SolverStandard.get_eval_complex_graphs">
+<code class="descname">get_eval_complex_graphs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_eval_complex_graphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get ‘Evaluate Complex Node Graphs’ value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.set_eval_complex_graphs">
+<code class="descname">set_eval_complex_graphs</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_eval_complex_graphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set ‘Evaluate Complex Node Graph’ value.</p>
+<p>If True, the solve will try to trigger evalation of complex
+node graphs (such as Mesh Rivets), by changing the
+timeEvalModeq of the mmSolver command.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em><em> or </em><em>int</em><em> or </em><em>long</em>) – Value to be set.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.api.SolverStandard.get_root_frame_strategy">
 <code class="descname">get_root_frame_strategy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_root_frame_strategy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get Root Frame Strategy value.</p>
@@ -2190,6 +2249,8 @@ the solver.</li>
 <dt id="mmSolver.api.SolverStandard.set_root_frame_strategy">
 <code class="descname">set_root_frame_strategy</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_root_frame_strategy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set Root Frame Strategy value.</p>
+<p>The strategy ordering of root frames and how to solve them.
+Value must be one in ROOT_FRAME_STRATEGY_VALUE_LIST.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2768,6 +2829,16 @@ for more details of the values that can be set.</p>
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStep.get_time_eval_mode">
+<code class="descname">get_time_eval_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_time_eval_mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStep.set_time_eval_mode">
+<code class="descname">set_time_eval_mode</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_time_eval_mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.SolverStep.get_use_smoothness">

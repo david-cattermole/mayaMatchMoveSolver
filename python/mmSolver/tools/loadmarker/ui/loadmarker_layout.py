@@ -575,9 +575,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             string_data_list = model.stringDataList()
             for i, (string, _) in enumerate(string_data_list):
                 if string == active_col_node:
-                    LOG.warn("default collection index1: %r", i)
                     return i
-        LOG.warn("default collection index2: %r", idx)
         return idx
 
     def cameraUpdateClicked(self):

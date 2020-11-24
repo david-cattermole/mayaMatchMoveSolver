@@ -1,0 +1,4 @@
+[submodule "tests/data"]
+	path = tests/data
+	url = git@github.com:david-cattermole/mayaMatchMoveSolver-testdata.git
+	branch = main

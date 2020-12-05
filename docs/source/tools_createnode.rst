@@ -87,6 +87,12 @@ To create a ``.uv`` file, you may use the 3DEqualizer ``Copy 2D Tracks
 (MM Solver)`` script (see mmSolver installation to install this
 script).
 
+The ``Copy 2D Tracks (MM Solver)`` is almost identical to the ``Export
+2D Tracks (MM Solver)`` tool. The ``Copy 2D Tracks (MM Solver)`` tool
+will perform run the Export tool with default UI values, save the
+contents a temporary file, and set the OS Copy/Paste buffer to the
+saved file path.
+
 1) In 3DEqualizer, select a 2D Point in the Object or Point Browser.
 
 2) Right-click the point and run ``Copy 2D Tracks (MM Solver)``.

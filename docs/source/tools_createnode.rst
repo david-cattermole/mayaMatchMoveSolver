@@ -45,26 +45,26 @@ Load Markers
     Load Markers UI
 
 The Load Markers UI allows loading of ``.uv`` (mmSolver), ``.txt``
-(3DEqualizer4), ``.rz2`` (Autodesk MatchMover) formated files.
+(3DEqualizer4), ``.rz2`` (Autodesk MatchMover) formatted files.
 
 When opening the UI, the contents of the user’s clipboard is
 queried. If the clipboard is a valid file path, it will be
 automatically pasted into the “File Path”, so you won’t need to
 “Browse” for the file.
 
-In 3DEqualizer, the "Copy 2D Tracks (MM Solver)" is designed to copy
+In 3DEqualizer, the ``Copy 2D Tracks (MM Solver)`` is used to copy
 the selected 2D points to a temporary file path and then place that
 file path on the clipboard automatically. Once the file path is on the
-clipboard, just open the Maya Load Marker tool and the path will be
+clipboard, open the Maya Load Marker tool and the path will be
 read automatically.
 
-The "Camera" list contains all the cameras currently in the Maya
+The ``Camera`` list contains all the cameras currently in the Maya
 scene. If no cameras are available (persp, front, top, left do not
-count), the default option is to create a new camera. The "Update"
-button refreshes the "Camera" list without needing to close and
+count), the default option is to create a new camera. The ``Update``
+button refreshes the ``Camera`` list without needing to close and
 re-open the UI.
 
-Once a file path is given, press the “Load” button.
+Once a file path is given, press the ``Load`` button.
 For ``.txt`` format you will need to enter the Width / Height of the input
 format.
 
@@ -99,13 +99,13 @@ script).
 
 See the video tutorial
 `Using 3DEqualizer with mmSolver - Copy 2D Tracks <https://david-cattermole.github.io/mayaMatchMoveSolver/tutorial.html#using-3dequalizer-with-mmsolver-copy-2d-tracks>`_
-for a step-by-step example of the usage.
+for a step-by-step example of the tool.
 
 .. note::
     The ``Copy 2D Tracks`` tool uses the "First Frame is Frame"
     parameter on the Camera in 3DEqualizer to correctly synchronise
-    frame numbers between Maya and 3DEqualizer. For an efficient workflow,
-    it is recommended to correctly set "First Frame is Frame".
+    frame numbers between Maya and 3DEqualizer. It is recommended to
+    correctly set "First Frame is Frame".
 
 2D Tracks Rolling Shutter Correction
 ++++++++++++++++++++++++++++++++++++

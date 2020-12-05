@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Export 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version:  v1.7
+# 3DE4.script.version:  v1.8
 #
 # 3DE4.script.gui:      Main Window::3DE4::File::Export
 # 3DE4.script.gui:      Object Browser::Context Menu Point
@@ -41,6 +41,8 @@
 #
 #
 
+from __future__ import print_function
+
 import tde4
 import uvtrack_format
 
@@ -60,7 +62,8 @@ def main():
     # check if context menu has been used, and retrieve point...
     point = tde4.getContextMenuObject()
     if point is not None:
-        # retrieve point's parent pgroup (not necessarily being the current one!)...
+        # retrieve point's parent pgroup (not necessarily being the current
+        # one!)...
         point_group = tde4.getContextMenuParentObject()
         points = tde4.getPointList(point_group, 1)
     else:
@@ -78,21 +81,41 @@ def main():
         start_frame = tde4.getCameraFrameOffset(camera)
     pattern = '*' + EXT
 
+    rs_enabled = False
+    rs_distance = None
+    # Backwards compatibility with 3DE4 Release 1.
+    if uvtrack_format.SUPPORT_RS_ENABLED is True:
+        rs_enabled = bool(tde4.getCameraRollingShutterEnabledFlag(camera))
+
     # GUI
     req = tde4.createCustomRequester()
     tde4.addFileWidget(req, 'file_browser_widget', 'Filename...', pattern)
-    tde4.addTextFieldWidget(req, 'start_frame_widget', 'Start Frame', str(start_frame))
-    ret = tde4.postCustomRequester(req, TITLE, 500, 0, 'Ok', 'Cancel')
+    tde4.addTextFieldWidget(
+        req, 'start_frame_widget', 'Start Frame', str(start_frame))
+    if rs_enabled is True:
+        rs_distance = uvtrack_format.get_rs_distance(camera)
+        tde4.addTextFieldWidget(
+            req, 'rs_distance_widget',
+            'Rolling Shutter Content Distance [cm]', str(rs_distance))
+    ret = tde4.postCustomRequester(req, TITLE, 900, 0, 'Ok', 'Cancel')
     if ret == 1:
         # Query GUI Widgets
         path = tde4.getWidgetValue(req, 'file_browser_widget')
         start_frame = tde4.getWidgetValue(req, 'start_frame_widget')
         start_frame = int(start_frame)
+        if rs_enabled is True:
+            rs_distance = tde4.getWidgetValue(req, 'rs_distance_widget')
+            rs_distance = float(rs_distance)
+            with_project_notes = uvtrack_format.SUPPORT_PROJECT_NOTES
+            with_rs_distance = uvtrack_format.SUPPORT_RS_DISTANCE
+            if with_project_notes is True and with_rs_distance is False:
+                uvtrack_format.set_rs_distance_into_project_notes(rs_distance)
 
         # Generate file contents
         data_str = uvtrack_format.generate(
             point_group, camera, points,
             start_frame=start_frame,
+            rs_distance=rs_distance,
             fmt=uvtrack_format.UV_TRACK_FORMAT_VERSION_PREFERRED,
         )
 

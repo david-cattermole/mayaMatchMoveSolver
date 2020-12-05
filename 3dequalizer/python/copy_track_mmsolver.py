@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Copy 2D Tracks (MM Solver)
 #
-# 3DE4.script.version:  v1.7
+# 3DE4.script.version:  v1.8
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Point
 # 3DE4.script.gui:      Object Browser::Context Menu Points
@@ -31,6 +31,14 @@
 # 3DE4.script.comment:  System's clipboard.
 # 3DE4.script.comment:
 # 3DE4.script.comment:  The 2D Tracks are stored distorted and undistorted.
+# 3DE4.script.comment:
+# 3DE4.script.comment:  Rolling Shutter (RS) is supported and exported
+# 3DE4.script.comment:  as undistortion. In 3DE4 r6 the content distance
+# 3DE4.script.comment:  comes from the Camera's Content Distance
+# 3DE4.script.comment:  parameter. In 3DE4 r5 and below the Content
+# 3DE4.script.comment:  Distance defaults to 100.0 cm unless overridden
+# 3DE4.script.comment:  by adding "RS Content Distance = 100.0" or
+# 3DE4.script.comment:  into the Attribute Editor "Project Notes".
 # 3DE4.script.comment:
 # 3DE4.script.comment:  To use the file with MM Solver in Maya, open the
 # 3DE4.script.comment:  Load Markers UI in Maya, the UI will
@@ -43,9 +51,13 @@
 # 3DE4.script.comment:  MM Solver v0.3.1+.
 #
 
+from __future__ import print_function
 
 import tempfile
+import time
+
 import tde4
+
 import uvtrack_format
 
 
@@ -64,7 +76,8 @@ def main():
     # check if context menu has been used, and retrieve point...
     point = tde4.getContextMenuObject()
     if point is not None:
-        # retrieve point's parent pgroup (not necessarily being the current one!)...
+        # retrieve point's parent pgroup (not necessarily being the current
+        # one!)...
         point_group = tde4.getContextMenuParentObject()
         points = tde4.getPointList(point_group, 1)
     else:
@@ -80,9 +93,20 @@ def main():
     # Backwards compatibility with 3DE4 Release 2.
     if uvtrack_format.SUPPORT_CAMERA_FRAME_OFFSET is True:
         start_frame = tde4.getCameraFrameOffset(camera)
+
+    rs_enabled = False
+    rs_distance = None
+    # Backwards compatibility with 3DE4 Release 1.
+    if uvtrack_format.SUPPORT_RS_ENABLED is True:
+        rs_enabled = bool(tde4.getCameraRollingShutterEnabledFlag(camera))
+    if rs_enabled is True:
+        rs_distance = uvtrack_format.get_rs_distance(camera)
+
+    # Generate file contents
     data_str = uvtrack_format.generate(
         point_group, camera, points,
         start_frame=start_frame,
+        rs_distance=rs_distance,
         fmt=uvtrack_format.UV_TRACK_FORMAT_VERSION_PREFERRED
     )
 
@@ -108,7 +132,7 @@ def main():
     else:
         # Cannot set the clipboard, so we'll print to the Python Console
         # and the user can copy it. Pretty bad workaround.
-        print f.name
+        print(f.name)
     return
 
 

@@ -112,9 +112,14 @@ def main():
 
     # Write file.
     file_ext = EXT
+    # Prefix with the current time 'YYYY-MM-DD_HH_MM', for example
+    # '2020-12-04_14_26'.
+    now_str = time.strftime('%Y-%m-%d_%H_%M')
+    prefix = 'tmp_{0}_'.format(now_str)
     f = tempfile.NamedTemporaryFile(
         mode='w+b',
         bufsize=-1,
+        prefix=prefix,
         suffix=file_ext,
         delete=False
     )

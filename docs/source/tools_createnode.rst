@@ -141,6 +141,13 @@ To automatically set the Project Notes with ``RS Content Distance =
 tool with a ``Content Distance`` value of choice which will be saved
 into Project Notes and remembered.
 
+.. note::
+
+   To export 2D Tracks with RS correction with 3DEqualizer4 Release 1
+   or 2, it is recommend to use ``Export 2D Tracks (MM Solver)``,
+   because the ``Copy 2D Tracks (MM Solver)`` tool can only export
+   with the default ``Content Distance`` of ``100`` units.
+
 .. _load-markers-in-maya-ref:
 
 Loading Markers in Maya

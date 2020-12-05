@@ -107,10 +107,7 @@ def main():
         if rs_enabled is True:
             rs_distance = tde4.getWidgetValue(req, 'rs_distance_widget')
             rs_distance = float(rs_distance)
-            with_project_notes = uvtrack_format.SUPPORT_PROJECT_NOTES
-            with_rs_distance = uvtrack_format.SUPPORT_RS_DISTANCE
-            if with_project_notes is True and with_rs_distance is False:
-                uvtrack_format.set_rs_distance_into_project_notes(rs_distance)
+            uvtrack_format.set_rs_distance(camera, rs_distance)
 
         # Generate file contents
         data_str = uvtrack_format.generate(

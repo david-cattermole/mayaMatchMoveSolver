@@ -145,6 +145,7 @@ def set_rs_distance_into_project_notes(rs_distance):
 
 def get_rs_distance(camera):
     if SUPPORT_RS_DISTANCE is True:
+        # For 3DE4 Release 6 and above.
         rs_distance = tde4.getCameraRollingShutterContentDistance(camera)
     else:
         # For 3DE4 Release 5 and below, use the default content
@@ -154,6 +155,18 @@ def get_rs_distance(camera):
         if rs_distance is None:
             rs_distance = RS_DISTANCE_DEFAULT_FALLBACK
     return rs_distance
+
+
+def set_rs_distance(camera, rs_distance):
+    assert isinstance(rs_distance, float)
+    if SUPPORT_RS_DISTANCE is True:
+        # For 3DE4 Release 6 and above.
+        tde4.setCameraRollingShutterContentDistance(camera, rs_distance)
+    elif SUPPORT_PROJECT_NOTES is True:
+        # For 3DE4 Release 2 to Release 5 (with support for project
+        # notes), set a special tag in the 3DE project notes.
+        set_rs_distance_into_project_notes(rs_distance)
+    return
 
 
 def _apply_rs_correction(dt, q_minus, q_center, q_plus):

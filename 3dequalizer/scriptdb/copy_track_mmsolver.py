@@ -129,8 +129,8 @@ def main():
         tde4.postQuestionRequester(TITLE, msg, 'Ok')
         return
 
-    # Generate file contents
-    start_frame = 1
+    start, end, step = tde4.getCameraSequenceAttr(camera)
+    start_frame = start
     # Backwards compatibility with 3DE4 Release 2.
     if SUPPORT_CAMERA_FRAME_OFFSET is True:
         start_frame = tde4.getCameraFrameOffset(camera)

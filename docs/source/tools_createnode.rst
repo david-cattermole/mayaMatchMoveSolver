@@ -107,6 +107,30 @@ for a step-by-step example of the usage.
     frame numbers between Maya and 3DEqualizer. For an efficient workflow,
     it is recommended to correctly set "First Frame is Frame".
 
+2D Tracks Rolling Shutter Correction
+++++++++++++++++++++++++++++++++++++
+
+In 3DEqualizer4 with a Rolling Shutter (RS) enabled camera, the ``Copy 2D
+Tracks (MM Solver)`` and ``Export 2D Tracks (MM Solver)`` (version
+v1.8+) tools will export the 2D data with RS correction.
+
+When exporting RS in 3DEqualizer4 Release 6, the ``(Visualisation
+Only) Content Distance`` camera parameter is used for the RS
+correction calculation.
+
+In 3DEqualizer4 Release 5 and below, the ``Content Distance`` defaults
+to ``100`` units. In 3DEqualizer4 Release 2 and above, to change the
+default ``Content Distance`` you can add a special tag to the Project
+Notes.  On a new line, type ``RS Content Distance = 42.0`` (with your
+choice of number) into the Attribute Editor's Project tab, Project
+Notes field. This value will be remembered as your preference for the
+current 3DEqualizer scene file.
+
+To automatically set the Project Notes with ``RS Content Distance =
+42.0`` you may optionally use the ``Export 2D Tracks (MM Solver)``
+tool with a ``Content Distance`` value of choice which will be saved
+into Project Notes and remembered.
+
 Loading Markers in Maya
 +++++++++++++++++++++++
 

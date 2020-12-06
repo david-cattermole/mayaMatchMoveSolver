@@ -51,7 +51,6 @@
             "general_tools/center_twodee_remove",
             "general_tools/---General",
             "general_tools/smooth_keyframes",
-            "general_tools/smooth_keyframes_ui",
             "general_tools/screen_z_manipulator",
             "general_tools/screen_z_transform_bake",
             "general_tools/channel_sensitivity_ui",

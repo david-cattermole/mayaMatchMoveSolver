@@ -135,6 +135,7 @@ def main():
             meshes,
             test_both_directions=False,
             max_dist=max_dist,
+            use_smooth_mesh=True
         )
         if hit_point is None:
             LOG.warning('%s didn\'t hit the mesh.' % node)

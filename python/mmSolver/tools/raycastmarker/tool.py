@@ -21,52 +21,90 @@ This is a Ray cast Markers tool.
 
 import maya.cmds
 import maya.OpenMaya
-import mmSolver.utils.node as node_utils
-import mmSolver.utils.raytrace as raytrace_utils
-import mmSolver.utils.reproject as reproject_utils
+import mmSolver.utils.tools as tools_utils
+import mmSolver.utils.camera as camera_utils
+import mmSolver.utils.viewport as viewport_utils
+import mmSolver.utils.time as time_utils
+import mmSolver.utils.configmaya as configmaya
 import mmSolver.api as mmapi
 import mmSolver.logger
 
+import mmSolver.tools.raycastmarker.constant as const
+import mmSolver.tools.raycastmarker.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 
 
-def _get_display_layer_visibility(node):
-    vis = True
-    conns = maya.cmds.listConnections(node, type='displayLayer') or []
-    for conn in conns:
-        layer_enabled = maya.cmds.getAttr(conn + '.enabled')
-        if layer_enabled is True:
-            vis = maya.cmds.getAttr(conn + '.visibility')
-            break
-    return vis
+def _get_active_or_selected_camera(cam_node_list):
+    active_cam_tfm = None
+    active_cam_shp = None
+    if len(cam_node_list) > 0:
+        cam_node = cam_node_list[0]
+        active_cam_tfm, active_cam_shp = camera_utils.get_camera(cam_node)
+    else:
+        model_editor = viewport_utils.get_active_model_editor()
+        if model_editor is not None:
+            active_cam_tfm, active_cam_shp = viewport_utils.get_viewport_camera(
+                model_editor)
+    return active_cam_tfm, active_cam_shp
 
 
-def _node_is_visible(node, cache):
-    visible = cache.get(node)
-    if visible is not None:
-        return visible
-    intermed = maya.cmds.getAttr(node + '.intermediateObject')
-    vis = maya.cmds.getAttr(node + '.visibility')
-    lod_vis = maya.cmds.getAttr(node + '.lodVisibility')
-    layer_vis = _get_display_layer_visibility(node)
-    return (intermed is False) and vis and lod_vis and layer_vis
+def _add_unique_markers_to_list(mkr, mkr_list, mkr_uid_list):
+    mkr_uid = mkr.get_node_uid()
+    if mkr_uid not in mkr_uid_list:
+        mkr_list.append(mkr)
+        mkr_uid_list.add(mkr_uid)
+    # return mkr_list, mkr_uid_list
 
 
-def _visible(node, cache):
-    visible = _node_is_visible(node, cache)
-    cache[node] = visible
-    if visible is False:
-        return False
-    # Note: We assume the node paths from 'get_node_parents' will
-    # always be full paths.
-    parents = node_utils.get_node_parents(node)
-    for parent in parents:
-        visible = _node_is_visible(parent, cache)
-        cache[parent] = visible
-        if visible is False:
-            return False
-    return True
+def _get_markers(mkr_node_list, bnd_node_list, active_cam_shp):
+    use_camera = False
+    mkr_list = []
+    mkr_uid_list = set()
+
+    if len(mkr_node_list) > 0:
+        for mkr_node in mkr_node_list:
+            mkr = mmapi.Marker(node=mkr_node)
+            _add_unique_markers_to_list(mkr, mkr_list, mkr_uid_list)
+
+    if len(bnd_node_list) > 0:
+        for bnd_node in bnd_node_list:
+            bnd = mmapi.Bundle(node=bnd_node)
+            bnd_mkr_list = bnd.get_marker_list()
+            if len(bnd_mkr_list) == 1:
+                # There can only be one possible marker to project from
+                mkr = bnd_mkr_list[0]
+                cam = mkr.get_camera()
+                if cam is None:
+                    continue
+                _add_unique_markers_to_list(mkr, mkr_list, mkr_uid_list)
+            else:
+                for mkr in bnd_mkr_list:
+                    cam = mkr.get_camera()
+                    if cam is None:
+                        continue
+                    mkr_cam_shp = cam.get_shape_node()
+                    if active_cam_shp != mkr_cam_shp:
+                        continue
+                    use_camera = True
+                    _add_unique_markers_to_list(mkr, mkr_list, mkr_uid_list)
+    return mkr_list, use_camera
+
+
+def _get_selected_meshes():
+    mesh_nodes = []
+    selected_meshes = maya.cmds.ls(
+        sl=True,
+        type='mesh',
+        dagObjects=True,
+        noIntermediate=True) or []
+    if len(selected_meshes) > 0:
+        mesh_nodes = selected_meshes
+    else:
+        mesh_nodes = maya.cmds.ls(type='mesh', visible=True, long=True) or []
+        cache = {}
+        mesh_nodes = [n for n in mesh_nodes if lib.is_visible_node(n, cache)]
+    return mesh_nodes
 
 
 def main():
@@ -100,79 +138,67 @@ def main():
         LOG.warning('Please select a marker to rayCast.')
         return
 
-    selected_markers = mmapi.filter_marker_nodes(selection)
-    if not selected_markers:
-        LOG.warning('No markers found in the selection list.')
+    node_categories = mmapi.filter_nodes_into_categories(selection)
+    mkr_node_list = node_categories['marker']
+    bnd_node_list = node_categories['bundle']
+    cam_node_list = node_categories['camera']
+    if len(mkr_node_list) == 0 and len(bnd_node_list) == 0:
+        LOG.warn('Please select markers or bundles to ray-cast.')
         return
 
-    meshes = []
-    selected_meshes = maya.cmds.ls(
-        sl=True,
-        type='mesh',
-        dagObjects=True,
-        noIntermediate=True) or []
-    if len(selected_meshes) > 0:
-        meshes = selected_meshes
-    else:
-        meshes = maya.cmds.ls(type='mesh', visible=True, long=True) or []
-        cache = {}
-        meshes = [n for n in meshes if _visible(n, cache)]
+    # The camera used to determine where bundles will be projected from.
+    active_cam_tfm, active_cam_shp = _get_active_or_selected_camera(
+        cam_node_list)
 
-    max_dist = 9999999999.0
-    bnd_nodes = []
-    for node in selected_markers:
-        mkr = mmapi.Marker(node=node)
-        bnd = mkr.get_bundle()
-        if bnd is None:
-            continue
-        mkr_node = mkr.get_node()
-        camera = mkr.get_camera()
-        cam_tfm = camera.get_transform_node()
-        direction = reproject_utils.get_camera_direction_to_point(
-            cam_tfm, mkr_node
-        )
-        origin_point = maya.cmds.xform(
-            mkr_node, query=True,
-            translation=True,
-            worldSpace=True
-        )
+    # Get Markers
+    mkr_list, use_camera = _get_markers(
+        mkr_node_list, bnd_node_list, active_cam_shp)
+    if use_camera and active_cam_shp is None:
+        LOG.warn('Please activate a viewport to ray-cast Bundles from.')
 
-        hit_point = raytrace_utils.closest_intersect(
-            origin_point,
-            direction,
-            meshes,
-            test_both_directions=False,
-            max_dist=max_dist,
-            use_smooth_mesh=True
-        )
-        if hit_point is None:
-            LOG.warning('%s didn\'t hit the mesh.' % node)
-            continue
+    frame_range_mode = configmaya.get_scene_option(
+        const.CONFIG_FRAME_RANGE_MODE_KEY,
+        default=const.DEFAULT_FRAME_RANGE_MODE)
 
-        bnd_node = bnd.get_node()
-        plugs = [
-            '%s.translateX' % bnd_node,
-            '%s.translateY' % bnd_node,
-            '%s.translateZ' % bnd_node
-        ]
-        plug_lock_state = {}
-        for plug_name in plugs:
-            value = maya.cmds.getAttr(plug_name, lock=True)
-            plug_lock_state[plug_name] = value
-            maya.cmds.setAttr(plug_name, lock=False)
-        hit_xyz = (hit_point.x, hit_point.y, hit_point.z)
-        maya.cmds.xform(
-            bnd_node,
-            translation=hit_xyz,
-            worldSpace=True,
-        )
-        for plug_name in plugs:
-            value = plug_lock_state.get(plug_name)
-            maya.cmds.setAttr(plug_name, lock=value)
-        bnd_nodes.append(bnd_node)
+    frame_start = configmaya.get_scene_option(
+        const.CONFIG_FRAME_START_KEY,
+        default=const.DEFAULT_FRAME_START)
+    frame_end = configmaya.get_scene_option(
+        const.CONFIG_FRAME_END_KEY,
+        default=const.DEFAULT_FRAME_END)
+    if frame_range_mode == const.FRAME_RANGE_MODE_CURRENT_FRAME_VALUE:
+        frame_start = int(maya.cmds.currentTime(query=True))
+        frame_end = frame_start
+    elif frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_INNER_VALUE:
+        frame_start, frame_end = time_utils.get_maya_timeline_range_inner()
+    elif frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE:
+        frame_start, frame_end = time_utils.get_maya_timeline_range_outer()
+    frame_range = time_utils.FrameRange(frame_start, frame_end)
 
-    if len(bnd_nodes) > 0:
-        maya.cmds.select(bnd_nodes)
-    else:
-        maya.cmds.select(selection)
+    use_smooth_mesh = True
+    bundle_unlock_relock = configmaya.get_scene_option(
+        const.CONFIG_BUNDLE_UNLOCK_RELOCK_KEY,
+        default=const.DEFAULT_BUNDLE_UNLOCK_RELOCK)
+
+    mesh_nodes = _get_selected_meshes()
+    with tools_utils.tool_context(
+            use_undo_chunk=True,
+            restore_current_frame=True,
+            use_dg_evaluation_mode=True,
+            disable_viewport=True):
+        bnd_nodes = lib.raycast_markers_onto_meshes(
+            mkr_list, mesh_nodes,
+            frame_range=frame_range,
+            unlock_bnd_attrs=bundle_unlock_relock,
+            relock_bnd_attrs=bundle_unlock_relock,
+            use_smooth_mesh=use_smooth_mesh)
+        if len(bnd_nodes) > 0:
+            maya.cmds.select(bnd_nodes)
+        else:
+            maya.cmds.select(selection)
     return
+
+
+def open_window():
+    import mmSolver.tools.raycastmarker.ui.raycastmarker_window as window
+    window.main()

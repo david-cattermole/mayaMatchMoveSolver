@@ -46,6 +46,7 @@
             "bundle_tools/bundle_popup/triangulate_bundle",
             "bundle_tools/bundle_popup/aim_at_camera_manipulator",
             "bundle_tools/bundle_popup/attach_bundle_to_curve",
+            "bundle_tools/bundle_popup/raycast_marker",
             "bundle_tools/bundle_popup/---Create Bundle",
             "bundle_tools/bundle_popup/create_bundle",
             "general_tools/gen_tools_popup/---Viewport",

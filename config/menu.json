@@ -46,6 +46,7 @@
             "bundle_tools/triangulate_bundle",
             "bundle_tools/aim_at_camera_manipulator",
             "bundle_tools/attach_bundle_to_curve",
+            "bundle_tools/raycast_marker",
             "general_tools/---Viewport",
             "general_tools/center_twodee",
             "general_tools/center_twodee_remove",

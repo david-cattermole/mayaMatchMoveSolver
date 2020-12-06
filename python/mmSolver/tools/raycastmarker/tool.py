@@ -81,6 +81,14 @@ def main():
     unlocked, then projected, and then the lock state will
     be reverted to the original value.
 
+    .. note::
+
+        The Marker node is the origin point of the ray-cast, *not* the
+        camera's pivot position. This is intentional. If the user has a single
+        dense (LIDAR) model node it can be helpful to project from a distance
+        away from the camera origin. With a single dense mesh it is difficult
+        to split the model up to use different mesh selections.
+
     Example::
 
         >>> import mmSolver.tools.raycastmarker.tool as tool

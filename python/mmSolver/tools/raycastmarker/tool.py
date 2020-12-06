@@ -31,6 +31,17 @@ import mmSolver.logger
 LOG = mmSolver.logger.get_logger()
 
 
+def _get_display_layer_visibility(node):
+    vis = True
+    conns = maya.cmds.listConnections(node, type='displayLayer') or []
+    for conn in conns:
+        layer_enabled = maya.cmds.getAttr(conn + '.enabled')
+        if layer_enabled is True:
+            vis = maya.cmds.getAttr(conn + '.visibility')
+            break
+    return vis
+
+
 def _node_is_visible(node, cache):
     visible = cache.get(node)
     if visible is not None:
@@ -38,7 +49,8 @@ def _node_is_visible(node, cache):
     intermed = maya.cmds.getAttr(node + '.intermediateObject')
     vis = maya.cmds.getAttr(node + '.visibility')
     lod_vis = maya.cmds.getAttr(node + '.lodVisibility')
-    return (intermed is False) and (vis is True) and (lod_vis is True)
+    layer_vis = _get_display_layer_visibility(node)
+    return (intermed is False) and vis and lod_vis and layer_vis
 
 
 def _visible(node, cache):

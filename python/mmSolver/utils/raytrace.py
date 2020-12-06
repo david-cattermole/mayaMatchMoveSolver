@@ -19,6 +19,7 @@
 Raytracing functions.
 """
 
+import maya.cmds
 import maya.OpenMaya as OpenMaya
 import mmSolver.logger
 import mmSolver.utils.constant as const
@@ -26,12 +27,30 @@ import mmSolver.utils.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
+def _create_smooth_mesh(mesh):
+    smooth_mesh = None
+    is_smooth = maya.cmds.getAttr(mesh + '.displaySmoothMesh') != 0
+    if is_smooth is True:
+        parents = maya.cmds.listRelatives(
+            mesh, parent=True, fullPath=True) or []
+        if len(parents) == 0:
+            return smooth_mesh
+        tfm_node = parents[0]
+        smooth_mesh = maya.cmds.createNode(
+            'mesh', name='tempSmoothMeshShape', parent=tfm_node)
+        src = mesh + '.outSmoothMesh'
+        dst = smooth_mesh + '.inMesh'
+        maya.cmds.connectAttr(src, dst)
+    return smooth_mesh
+
+
 def closest_intersect(source,
                       direction,
                       mesh_nodes,
                       test_both_directions=False,
                       max_dist=None,
-                      tolerance=None):
+                      tolerance=None,
+                      use_smooth_mesh=None):
     """
     Get the closest intersection point on meshes given a source point
     and direction
@@ -57,6 +76,9 @@ def closest_intersect(source,
                       RAYTRACE_EPSILON.
     :type tolerance: float
 
+    :param use_smooth_mesh: Use smooth preview mesh for intersection.
+    :type use_smooth_mesh: bool
+
     :return: The closest world space intersection, over all mesh nodes
              given, or None if no point was found.
     :rtype: maya.OpenMaya.MFloatPoint or None
@@ -77,31 +99,44 @@ def closest_intersect(source,
 
     hit_points = []
     for mesh in mesh_nodes:
-        sel = OpenMaya.MSelectionList()
-        dag = OpenMaya.MDagPath()
-        sel.add(mesh)
-        sel.getDagPath(0, dag)
-        mesh_fn = OpenMaya.MFnMesh(dag)
-        hit_pt = OpenMaya.MFloatPoint()
-        hit = mesh_fn.closestIntersection(
-            source_pt,
-            direction_vec,
-            None,
-            None,
-            False,
-            OpenMaya.MSpace.kWorld,
-            max_dist,
-            test_both_directions,
-            None,
-            hit_pt,
-            None,
-            None,
-            None,
-            None,
-            None,
-            tolerance)
-        if hit is True:
-            hit_points.append(hit_pt)
+        # Generate temp smooth mesh, if needed.
+        is_smooth_mesh = False
+        if use_smooth_mesh is True:
+            smooth_mesh = _create_smooth_mesh(mesh)
+            if smooth_mesh is not None:
+                mesh = smooth_mesh
+                is_smooth_mesh = True
+        # Do ray-tracing
+        try:
+            sel = OpenMaya.MSelectionList()
+            dag = OpenMaya.MDagPath()
+            sel.add(mesh)
+            sel.getDagPath(0, dag)
+            mesh_fn = OpenMaya.MFnMesh(dag)
+            hit_pt = OpenMaya.MFloatPoint()
+            hit = mesh_fn.closestIntersection(
+                source_pt,
+                direction_vec,
+                None,
+                None,
+                False,
+                OpenMaya.MSpace.kWorld,
+                max_dist,
+                test_both_directions,
+                None,
+                hit_pt,
+                None,
+                None,
+                None,
+                None,
+                None,
+                tolerance)
+            if hit is True:
+                hit_points.append(hit_pt)
+        finally:
+            if is_smooth_mesh is True:
+                # Clean up temp smooth mesh.
+                maya.cmds.delete(mesh)
 
     # Get the closest hit point.
     closest_point = None

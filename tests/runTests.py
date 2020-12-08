@@ -83,6 +83,7 @@ def main(path_list):
     results = runner.run(final_suite)
 
     if maya.cmds.about(batch=True):
+        maya.standalone.uninitialize()
         if results.wasSuccessful() is True:
             maya.cmds.quit(force=True)
         else:

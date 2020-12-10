@@ -117,6 +117,9 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
     Convert a list of mmSolver API Attributes into classes to be used
     in the Solver UI.
 
+    :param col: The Collection the Attributes belong to.
+    :param col: Collection
+
     :param attr_list: List of Attributes to convert.
     :type attr_list: [Attribute, ..]
 

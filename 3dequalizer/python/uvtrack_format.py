@@ -790,7 +790,8 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
                 pos_undist = _remove_rs_from_2d_point(
                     point_group, camera, frame, pos_undist, rs_distance)
             if undistort is True or undistort is None:
-                pos_undist = tde4.removeDistortion2D(camera, frame, pos)
+                pos_undist = tde4.removeDistortion2D(
+                    camera, frame, pos_undist)
             weight = _get_point_weight(point_group, point, camera, frame)
 
             f = frame + frame0

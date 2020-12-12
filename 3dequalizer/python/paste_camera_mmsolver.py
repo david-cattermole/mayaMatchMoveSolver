@@ -47,8 +47,6 @@
 #
 
 import os
-import collections
-import tempfile
 import tde4
 import mmcamera_format
 

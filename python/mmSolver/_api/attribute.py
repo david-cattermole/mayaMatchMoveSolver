@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -76,7 +76,6 @@ class Attribute(object):
             attr = part[-1]
 
         self._plug = None
-        self._dependFn = None
         if isinstance(node, (str, unicode)) and isinstance(attr, (str, unicode)):
             assert maya.cmds.objExists(node)
             # Long and short names must be checked.
@@ -90,9 +89,6 @@ class Attribute(object):
             node_attr = node + '.' + attr
             plug = node_utils.get_as_plug_apione(node_attr)
             self._plug = plug
-
-            node_obj = self._plug.node()
-            self._dependFn = OpenMaya.MFnDependencyNode(node_obj)
         return
 
     def __repr__(self):
@@ -106,26 +102,44 @@ class Attribute(object):
         return result
 
     def get_node(self, full_path=True):
+        """
+        Get the node name path from this Attribute.
+
+        :param full_path: If True, the full node name hiearachy will be
+            returned, making sure the name is unique.
+        :type full_path: bool
+
+        :returns: The node name, or None if the Attribute class does
+            not hold a valid node.
+        :rtype: None or basestring
+        """
+        if self._plug is None:
+            return None
         node = None
-        node_uuid = None
-        if self._dependFn is not None:
-            try:
-                node_uuid = self._dependFn.uuid().asString()
-            except RuntimeError:
-                pass
-        if node_uuid is not None:
-            if full_path is True:
-                node = node_utils.get_long_name(node_uuid)
-            else:
-                nodes = maya.cmds.ls(node_uuid) or []
-                if len(nodes) > 0:
-                    node = nodes[0]
+        node_obj = self._plug.node()
+        try:
+            dag_fn = OpenMaya.MFnDagNode(node_obj)
+            node = dag_fn.fullPathName()
+        except RuntimeError:
+            depend_fn = OpenMaya.MFnDependencyNode(node_obj)
+            node = depend_fn.absoluteName()
+        if full_path is False:
+            nodes = maya.cmds.ls(node) or []
+            if len(nodes) > 0:
+                node = nodes[0]
         assert node is None or isinstance(node, basestring)
         return node
 
     def get_node_uid(self):
         """
         Get the Attribute's node unique identifier.
+
+        .. warning::
+            Although this returns a "unique" identifier, there are times
+            when UUIDs are not unique. For example with the same Maya scene
+            file referenced into the Maya scene more than once, the referenced
+            node UUID will not change - each copy of the referenced node
+            will have the same UUID value.
 
         :return: The Attribute UUID or None
         :rtype: None or str or unicode

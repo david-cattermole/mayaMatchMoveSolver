@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2020 David Cattermole
 #
 # This file is part of mmSolver.
 #
@@ -16,22 +16,5 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-mmSolver Menu constant values.
+Smooth Keyframe user interface.
 """
-
-MENU_NAME = 'mmSolver'
-MENU_TEAR_OFF = True
-
-# Configuration file names
-CONFIG_FILE_FUNCTIONS_NAME = 'functions.json'
-CONFIG_FILE_MENU_NAME = 'menu.json'
-
-# Key names in the config.
-NAME_KEY = 'name'
-TOOLTIP_KEY = 'tooltip'
-DIVIDER_KEY = 'divider'
-CMD_LANG_KEY = 'command_lang'
-CMD_KEY = 'command'
-TEAR_OFF_KEY = 'tearoff'
-OPTBOX_KEY = 'option_box'
-OPTBOX_CMD_KEY = 'command_option_box'

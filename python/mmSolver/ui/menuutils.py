@@ -45,7 +45,8 @@ def create_menu_item(parent=None,
                      cmdLanguage=None,
                      divider=None,
                      subMenu=None,
-                     tearOff=None):
+                     tearOff=None,
+                     optionBox=None):
     """
     Create a Menu Item on a menu.
 
@@ -76,6 +77,9 @@ def create_menu_item(parent=None,
                     is not valid for menu items, only sub-menus.
     :type tearOff: bool
 
+    :param optionBox: Create an Option Box, not a menu item.
+    :type optionBox: bool
+
     :returns: Maya menu item UI control path.
     :rtype: str
     """
@@ -88,10 +92,12 @@ def create_menu_item(parent=None,
     assert subMenu is None or isinstance(subMenu, bool)
     assert tearOff is None or isinstance(tearOff, bool)
 
+    if optionBox is None:
+        optionBox = False
+    assert isinstance(optionBox, bool)
+
     label = 'label'
     annotation = ''
-    sourceType = 'python'
-    command = ''
 
     if isinstance(name, basestring):
         label = str(name)
@@ -113,6 +119,9 @@ def create_menu_item(parent=None,
                 raise ValueError(msg, cmdLanguage)
             kwargs['command'] = command
             kwargs['sourceType'] = sourceType
+
+        if optionBox is True:
+            kwargs['optionBox'] = optionBox
 
         item = maya.cmds.menuItem(
             parent=parent,

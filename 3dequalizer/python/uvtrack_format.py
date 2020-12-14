@@ -27,10 +27,12 @@ of the '.uv' file format.
 """
 # 3DE4.script.hide:     true
 
+from __future__ import print_function
 
 import json
-import tde4
 
+import vl_sdv
+import tde4
 
 # UV Track format
 # This is copied from 'mmSolver.tools.loadmarker.constant module',
@@ -63,6 +65,247 @@ SUPPORT_POINT_WEIGHT_BY_FRAME = 'getPointWeightByFrame' in dir(tde4)
 SUPPORT_CLIPBOARD = 'setClipboardString' in dir(tde4)
 SUPPORT_POINT_VALID_MODE = 'getPointValidMode' in dir(tde4)
 SUPPORT_POINT_SURVEY_XYZ_ENABLED = 'getPointSurveyXYZEnabledFlags' in dir(tde4)
+SUPPORT_RS_ENABLED = 'getCameraRollingShutterEnabledFlag' in dir(tde4)
+SUPPORT_RS_DISTANCE = 'getCameraRollingShutterContentDistance' in dir(tde4)
+SUPPORT_PROJECT_NOTES = 'getProjectNotes' in dir(tde4)
+
+# Rolling Shutter values stored in the 3DE4 Attribute Editor Project
+# Notes.
+RS_DISTANCE_DEFAULT_FALLBACK = 100.0
+RS_DISTANCE_PROJECT_NOTES_LABEL = 'RS Content Distance = {number}'
+RS_DISTANCE_KEY = 'rscontentdistance='
+
+
+def _parse_rs_distance_line(line, original_line):
+    value = None
+    msg = ('Could not get Rolling Shutter Content Distance from '
+           '3DE Project Notes.\nLine is incorrectly formatted: %r\n'
+           'Correct formatting is: %r')
+    start, sep, end = line.partition(RS_DISTANCE_KEY)
+    found = len(sep) > 0
+    if found is True:
+        try:
+            value = float(end)
+        except ValueError:
+            print(msg % (original_line, RS_DISTANCE_PROJECT_NOTES_LABEL))
+    return value
+
+
+def _filter_project_notes_line(line):
+    line_to_parse = line.lower()
+
+    # Remove excessive whitespace between words.
+    whitespace_chars = [' ', '\t', '\r', '\v', '\f']
+    for char in whitespace_chars:
+        line_to_parse = line_to_parse.replace(char, '')
+    return line_to_parse
+
+
+def _parse_rs_distance_from_project_notes(notes):
+    rs_distance = None
+    lines = notes.split('\n')
+    for line in lines:
+        line_to_parse = _filter_project_notes_line(line)
+        if RS_DISTANCE_KEY in line_to_parse:
+            rs_distance = _parse_rs_distance_line(line_to_parse, line)
+    return rs_distance
+
+
+def _get_rs_distance_from_project_notes():
+    rs_distance = None
+    if SUPPORT_PROJECT_NOTES is True:
+        notes = tde4.getProjectNotes()
+        rs_distance = _parse_rs_distance_from_project_notes(notes)
+    return rs_distance
+
+
+def set_rs_distance_into_project_notes(rs_distance):
+    assert isinstance(rs_distance, float)
+    assert SUPPORT_PROJECT_NOTES is True
+    notes = tde4.getProjectNotes()
+    label = RS_DISTANCE_PROJECT_NOTES_LABEL.format(number=rs_distance)
+    existing_value = _get_rs_distance_from_project_notes()
+    if existing_value is None:
+        # Add to top of the project notes, in case someone is using
+        # the bottom of the notes to embed JSON data or something like
+        # that.
+        new_notes = label + '\n' + notes
+    else:
+        lines = notes.split('\n')
+        new_lines = []
+        for line in lines:
+            line_to_parse = _filter_project_notes_line(line)
+            if RS_DISTANCE_KEY in line_to_parse:
+                line = label
+            new_lines.append(line)
+        new_notes = '\n'.join(new_lines)
+    tde4.setProjectNotes(new_notes)
+    return
+
+
+def get_rs_distance(camera):
+    if SUPPORT_RS_DISTANCE is True:
+        # For 3DE4 Release 6 and above.
+        rs_distance = tde4.getCameraRollingShutterContentDistance(camera)
+    else:
+        # For 3DE4 Release 5 and below, use the default content
+        # distance value, unless the user overrides it with a
+        # special tag in the 3DE project notes.
+        rs_distance = _get_rs_distance_from_project_notes()
+        if rs_distance is None:
+            rs_distance = RS_DISTANCE_DEFAULT_FALLBACK
+    assert isinstance(rs_distance, float)
+    return rs_distance
+
+
+def set_rs_distance(camera, rs_distance):
+    assert isinstance(rs_distance, float)
+    if SUPPORT_RS_DISTANCE is True:
+        # For 3DE4 Release 6 and above.
+        tde4.setCameraRollingShutterContentDistance(camera, rs_distance)
+    elif SUPPORT_PROJECT_NOTES is True:
+        # For 3DE4 Release 2 to Release 5 (with support for project
+        # notes), set a special tag in the 3DE project notes.
+        set_rs_distance_into_project_notes(rs_distance)
+    return
+
+
+def _apply_rs_correction(dt, q_minus, q_center, q_plus):
+    """
+    Apply time-blend between three different 3D positions.
+
+    :param dt: The blend value between all three positions.
+    :param q_minus: First 3D position.
+    :param q_center: Middle 3D position.
+    :param q_plus: Last 3D position.
+
+    :return: 2D point blended.
+    """
+    a = q_center
+    b = (q_plus - q_minus) / 2.0
+    c = -q_center + (q_plus + q_minus) / 2.0
+    return a + dt * b + dt * dt * c
+
+
+def _convert_2d_to_3d_point_undistort(point_group, camera,
+                                      fbw, fbh, lcox, lcoy,
+                                      camera_fov,
+                                      frame, pos, depth):
+    """
+    Convert a 2D point (undistorted) into a 3D point, in world space.
+
+    :param point_group: Camera Point Group for camera.
+    :param camera: The camera to use for rolling shutter calculations.
+    :param fbw: Camera's film back width value.
+    :param fbh: Camera's film back height value.
+    :param lcox: Camera lens lens center offset X value.
+    :param lcoy: Camera lens lens center offset Y value.
+    :param camera_fov: Camera Field of View as list of left, right,
+                       bottom and top.
+    :param frame: The 2D point's frame number (in internal 3DE frame numbers).
+    :param pos: Input 2D data.
+    :param depth: The content distance to calculate rolling shutter at.
+
+    :return: Corrected 2D point.
+    :rtype: vec2d
+    """
+    focal = tde4.getCameraFocalLength(camera, frame)
+    r3d = vl_sdv.mat3d(tde4.getPGroupRotation3D(point_group, camera, frame))
+    p3d = vl_sdv.vec3d(tde4.getPGroupPosition3D(point_group, camera, frame))
+    left, right, bottom, top = camera_fov
+
+    p2d = [0, 0]
+    p2d[0] = (pos[0] - left) / (right - left)
+    p2d[1] = (pos[1] - bottom) / (top - bottom)
+    p2d = tde4.removeDistortion2D(camera, frame, p2d)
+
+    p2d_cm = vl_sdv.vec2d((p2d[0] - 0.5) * fbw - lcox,
+                          (p2d[1] - 0.5) * fbh - lcoy)
+    homogeneous_point = r3d * vl_sdv.vec3d(p2d_cm[0], p2d_cm[1], -focal).unit()
+    out_point = homogeneous_point * depth + p3d
+    return out_point
+
+
+def _remove_rs_from_2d_point(point_group, camera, frame, input_2d, depth):
+    """
+    Correct Rolling Shutter for the given input_2d point data, on frame.
+
+    :param point_group: Camera Point Group for camera.
+    :param camera: The camera to use for rolling shutter calculations.
+    :param frame: The 2D point's frame number (in internal 3DE frame numbers).
+    :param input_2d: Input 2D data.
+    :param depth: The content distance to calculate rolling shutter at.
+
+    :return: 2D point with corrected position.
+    :rtype: [float, float]
+    """
+    assert isinstance(input_2d, vl_sdv.vec2d)
+    num_frames = tde4.getCameraNoFrames(camera)
+    if num_frames == 1:
+        return input_2d
+
+    # Static camera and lens values.
+    camera_fps = tde4.getCameraFPS(camera)
+    camera_fov = tde4.getCameraFOV(camera)
+    lens = tde4.getCameraLens(camera)
+    fbw = tde4.getLensFBackWidth(lens)
+    fbh = tde4.getLensFBackHeight(lens)
+    lcox = tde4.getLensLensCenterX(lens)
+    lcoy = tde4.getLensLensCenterY(lens)
+    rs_time_shift = tde4.getCameraRollingShutterTimeShift(camera)
+    rs_value = rs_time_shift * camera_fps
+
+    # Sample at previous frame
+    prev_pos = vl_sdv.vec3d(0, 0, 0)
+    prev_frame = frame - 1
+    if frame > 1:
+        prev_pos = _convert_2d_to_3d_point_undistort(
+            point_group, camera,
+            fbw, fbh, lcox, lcoy,
+            camera_fov,
+            prev_frame, input_2d, depth)
+
+    # Sample at next frame
+    next_pos = vl_sdv.vec3d(0, 0, 0)
+    next_frame = frame + 1
+    if frame < num_frames:
+        next_pos = _convert_2d_to_3d_point_undistort(
+            point_group, camera,
+            fbw, fbh, lcox, lcoy,
+            camera_fov,
+            next_frame, input_2d, depth)
+
+    # Sample at current frame
+    curr_pos = _convert_2d_to_3d_point_undistort(
+        point_group, camera,
+        fbw, fbh, lcox, lcoy,
+        camera_fov,
+        frame, input_2d, depth)
+
+    # Blend previous, next and current frame values based on the
+    # position of the 2D point vertical position and the rolling
+    # shutter value.
+    if frame == 1:
+        prev_pos = curr_pos + (curr_pos - next_pos)
+    if frame == num_frames:
+        next_pos = curr_pos + (curr_pos - prev_pos)
+    t = rs_value * (1.0 - input_2d[1])
+    curr_pos = _apply_rs_correction(-t, prev_pos, curr_pos, next_pos)
+
+    # Back-projection
+    focal = tde4.getCameraFocalLength(camera, frame)
+    r3d = vl_sdv.mat3d(tde4.getPGroupRotation3D(point_group, camera, frame))
+    p3d = vl_sdv.vec3d(tde4.getPGroupPosition3D(point_group, camera, frame))
+    d = r3d.trans() * (curr_pos - p3d)
+    p2d = [0, 0]
+    p2d[0] = (d[0] * focal / (-d[2] * fbw)) + (lcox / fbw) + 0.5
+    p2d[1] = (d[1] * focal / (-d[2] * fbh)) + (lcoy / fbh) + 0.5
+    p = tde4.applyDistortion2D(camera, frame, p2d)
+    left, right, bottom, top = camera_fov
+    p = vl_sdv.vec2d((p[0] * (right - left)) + left,
+                     (p[1] * (top - bottom)) + bottom)
+    v = (input_2d + (input_2d - p)).list()
+    return v
 
 
 def _get_point_valid_mode(point_group, point):
@@ -116,16 +359,16 @@ def _is_valid_position(pos_2d, camera_fov, valid_mode):
         pass
     elif valid_mode == 'POINT_VALID_INSIDE_FRAME':
         if ((pos_2d[0] < 0.0)
-            or (pos_2d[0] > 1.0)
-            or (pos_2d[1] < 0.0)
-            or (pos_2d[1] > 1.0)):
+                or (pos_2d[0] > 1.0)
+                or (pos_2d[1] < 0.0)
+                or (pos_2d[1] > 1.0)):
             value = False
     elif valid_mode == 'POINT_VALID_INSIDE_FOV':
         left, right, bottom, top = camera_fov
         if ((pos_2d[0] < left)
-            or (pos_2d[0] > right)
-            or (pos_2d[1] < bottom)
-            or (pos_2d[1] > top)):
+                or (pos_2d[0] > right)
+                or (pos_2d[1] < bottom)
+                or (pos_2d[1] > top)):
             value = False
     return value
 
@@ -224,10 +467,14 @@ def generate(point_group, camera, points, fmt=None, **kwargs):
     :type fmt: None or UV_TRACK_FORMAT_VERSION_*
 
     Supported 'kwargs':
-    - undistort (True or False) - Should points be undistorted?
-                                  (Format v1 and v2)
-    - start_frame - (int) - Frame '1' 3DE should be mapped to this value.
-                    (Format v1, v2 and v3)
+    - undistort - (True or False) Should points be undistorted? (Format
+                   v1 and v2)
+
+    - start_frame - (int) Frame '1' 3DE should be mapped to this
+                     value. (Format v1, v2 and v3)
+
+    - rs_distance - (None or float) The rolling shutter (RS) content
+                    distance. If None, no RS is calculated.
     """
     if fmt is None:
         fmt = UV_TRACK_FORMAT_VERSION_PREFERRED
@@ -243,7 +490,10 @@ def generate(point_group, camera, points, fmt=None, **kwargs):
     return data
 
 
-def _generate_v1(point_group, camera, points, start_frame=None, undistort=False):
+def _generate_v1(point_group, camera, points,
+                 start_frame=None,
+                 undistort=False,
+                 rs_distance=None):
     """
     Generate the UV file format contents, using a basic ASCII format.
 
@@ -271,6 +521,10 @@ def _generate_v1(point_group, camera, points, start_frame=None, undistort=False)
                       data? Yes or no.
     :type undistort: bool
 
+    :param rs_distance: If not None, correct rolling shutter effects on
+        the 2D points at the content distance rs_distance.
+    :type rs_distance: None or float
+
     :returns: A ASCII format string, with the UV Track data in it.
     :rtype: str
     """
@@ -279,9 +533,11 @@ def _generate_v1(point_group, camera, points, start_frame=None, undistort=False)
     assert isinstance(points, (list, tuple))
     assert start_frame is None or isinstance(start_frame, int)
     assert isinstance(undistort, bool)
+    assert rs_distance is None or isinstance(rs_distance, float)
     if start_frame is None:
         start_frame = 1001
     data_str = ''
+
     cam_num_frames = tde4.getCameraNoFrames(camera)
     camera_fov = tde4.getCameraFOV(camera)
 
@@ -334,8 +590,12 @@ def _generate_v1(point_group, camera, points, start_frame=None, undistort=False)
             num_valid_frame += 1
 
             f = frame + frame0
+            if rs_distance is not None:
+                v = vl_sdv.vec2d(v[0], v[1])
+                v = _remove_rs_from_2d_point(
+                    point_group, camera, frame, v, rs_distance)
             if undistort is True:
-                v = tde4.removeDistortion2D(camera, frame,  v)
+                v = tde4.removeDistortion2D(camera, frame, v)
             weight = _get_point_weight(point_group, point, camera, frame)
 
             pos_list.append((f, v))
@@ -418,6 +678,10 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
                       points data? Yes or no.
     :type undistort: bool
 
+    :param rs_distance: If not None, correct rolling shutter effects on
+        the 2D points at the content distance rs_distance.
+    :type rs_distance: None or float
+
     :returns: A JSON format string, with the UV Track data in it.
     :rtype: str
     """
@@ -439,6 +703,9 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
         undistort = kwargs.get('undistort')
         assert isinstance(undistort, bool)
 
+    rs_distance = kwargs.get('rs_distance')
+    assert rs_distance is None or isinstance(rs_distance, float)
+
     data = None
     if version == UV_TRACK_FORMAT_VERSION_2:
         data = UV_TRACK_HEADER_VERSION_2.copy()
@@ -449,6 +716,7 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
     else:
         raise ValueError("Version number is invalid; %r" % version)
 
+    # Static camera and lens values.
     cam_num_frames = tde4.getCameraNoFrames(camera)
     camera_fov = tde4.getCameraFOV(camera)
 
@@ -518,8 +786,13 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
                 continue
 
             pos_undist = pos
+            if rs_distance is not None:
+                pos_undist = vl_sdv.vec2d(pos_undist[0], pos_undist[1])
+                pos_undist = _remove_rs_from_2d_point(
+                    point_group, camera, frame, pos_undist, rs_distance)
             if undistort is True or undistort is None:
-                pos_undist = tde4.removeDistortion2D(camera, frame,  pos)
+                pos_undist = tde4.removeDistortion2D(
+                    camera, frame, pos_undist)
             weight = _get_point_weight(point_group, point, camera, frame)
 
             f = frame + frame0
@@ -546,7 +819,8 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
 
 def _generate_v2(point_group, camera, points,
                  start_frame=None,
-                 undistort=False):
+                 undistort=False,
+                 rs_distance=None):
     """
     Generate the UV file format contents, using JSON format.
 
@@ -576,6 +850,10 @@ def _generate_v2(point_group, camera, points,
                       data? Yes or no.
     :type undistort: bool
 
+    :param rs_distance: If not None, correct rolling shutter effects on
+        the 2D points at the content distance rs_distance.
+    :type rs_distance: None or float
+
     :returns: A JSON format string, with the UV Track data in it.
     :rtype: str
     """
@@ -585,12 +863,14 @@ def _generate_v2(point_group, camera, points,
         points,
         version=UV_TRACK_FORMAT_VERSION_2,
         start_frame=start_frame,
-        undistort=undistort
+        undistort=undistort,
+        rs_distance=rs_distance
     )
 
 
 def _generate_v3(point_group, camera, points,
-                 start_frame=None):
+                 start_frame=None,
+                 rs_distance=None):
     """
     Generate the UV file format contents, using JSON format.
 
@@ -617,6 +897,10 @@ def _generate_v3(point_group, camera, points,
     :param start_frame: The frame number to be considered at
                         'first frame'. Defaults to 1001 if set to None.
     :type start_frame: None or int
+
+    :param rs_distance: If not None, correct rolling shutter effects on
+        the 2D points at the content distance rs_distance.
+    :type rs_distance: None or float
 
     :returns: A JSON format string, with the UV Track data in it.
     :rtype: str
@@ -626,12 +910,14 @@ def _generate_v3(point_group, camera, points,
         camera,
         points,
         version=UV_TRACK_FORMAT_VERSION_3,
-        start_frame=start_frame
+        start_frame=start_frame,
+        rs_distance=rs_distance
     )
 
 
 def _generate_v4(point_group, camera, points,
-                 start_frame=None):
+                 start_frame=None,
+                 rs_distance=None):
     """
     Generate the UV file format contents, using JSON format.
 
@@ -659,6 +945,10 @@ def _generate_v4(point_group, camera, points,
                         'first frame'. Defaults to 1001 if set to None.
     :type start_frame: None or int
 
+    :param rs_distance: If not None, correct rolling shutter effects on
+        the 2D points at the content distance rs_distance.
+    :type rs_distance: None or float
+
     :returns: A JSON format string, with the UV Track data in it.
     :rtype: str
     """
@@ -667,5 +957,6 @@ def _generate_v4(point_group, camera, points,
         camera,
         points,
         version=UV_TRACK_FORMAT_VERSION_4,
-        start_frame=start_frame
+        start_frame=start_frame,
+        rs_distance=rs_distance
     )

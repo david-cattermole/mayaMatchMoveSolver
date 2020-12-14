@@ -56,8 +56,7 @@ def compile_function_definition(item, funcs):
     if isinstance(item, basestring):
         func_def = get_function_definition(item, funcs)
         if func_def is None and '---' in item:
-            func_def = {}
-            func_def['divider'] = True
+            func_def = {'divider': True}
             label = item.strip('-')
             label = label.strip()
             if len(label) > 0:
@@ -75,7 +74,6 @@ def compile_items(items, function_defs):
     for item in items:
         item_hierarchy = split_key(item)
 
-        item_path = ''
         item_keys = list(item_hierarchy)
         sub_items_to_create = []
         for sub_item_num in range(len(item_hierarchy)):
@@ -126,6 +124,20 @@ def create_item(parent_menu, func_def, is_sub_menu):
         subMenu=is_sub_menu,
         tearOff=tearoff
     )
+
+    # Create option box for menu item
+    option_box = func_def.get(const.OPTBOX_KEY, None)
+    if option_box is True:
+        command_language = func_def.get(const.CMD_LANG_KEY, None)
+        command = func_def.get(const.OPTBOX_CMD_KEY, None)
+        if isinstance(command, (list, tuple)):
+            command = str(os.linesep).join(command)
+        menu_utils.create_menu_item(
+            parent=parent_menu,
+            cmd=command,
+            cmdLanguage=command_language,
+            optionBox=option_box,
+        )
     return menu_item
 
 

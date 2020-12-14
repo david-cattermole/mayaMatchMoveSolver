@@ -30,6 +30,8 @@ Copyright (C) {copyrights}
 Authors: {author}
 
 Special Thanks to:
+(alphabetical order)
+Jon Bragado
 Michael Karp
 
 Website: {page}

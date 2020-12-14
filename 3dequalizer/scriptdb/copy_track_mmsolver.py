@@ -142,6 +142,9 @@ def main():
         rs_enabled = bool(tde4.getCameraRollingShutterEnabledFlag(camera))
     if rs_enabled is True:
         rs_distance = get_rs_distance(camera)
+        if (SUPPORT_PROJECT_NOTES is True
+                and SUPPORT_RS_DISTANCE is False):
+            set_rs_distance_into_project_notes(rs_distance)
 
     # Generate file contents
     data_str = generate(
@@ -259,6 +262,7 @@ def get_rs_distance(camera):
         rs_distance = _get_rs_distance_from_project_notes()
         if rs_distance is None:
             rs_distance = RS_DISTANCE_DEFAULT_FALLBACK
+    assert isinstance(rs_distance, float)
     return rs_distance
 
 

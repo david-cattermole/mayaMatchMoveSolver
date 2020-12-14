@@ -101,6 +101,9 @@ def main():
         rs_enabled = bool(tde4.getCameraRollingShutterEnabledFlag(camera))
     if rs_enabled is True:
         rs_distance = uvtrack_format.get_rs_distance(camera)
+        if (uvtrack_format.SUPPORT_PROJECT_NOTES is True
+                and uvtrack_format.SUPPORT_RS_DISTANCE is False):
+            uvtrack_format.set_rs_distance_into_project_notes(rs_distance)
 
     # Generate file contents
     data_str = uvtrack_format.generate(

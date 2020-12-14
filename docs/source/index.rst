@@ -68,6 +68,12 @@ See the :ref:`licenses-heading` for more detail.
 
    licenses
 
+Authors
++++++++
+
+.. include:: ../../AUTHORS.txt
+   :literal:
+
 Indices and tables
 ==================
 

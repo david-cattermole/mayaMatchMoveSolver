@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole
+# Copyright (C) 2020 David Cattermole
 #
 # This file is part of mmSolver.
 #
@@ -16,12 +16,12 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Window for the Smooth Keyframes tool.
+Window for the Raycast Markers tool.
 
 Usage::
 
-   import mmSolver.tools.smoothkeys.ui.smoothkeys_window as smoothkeys_window
-   smoothkeys_window.main()
+   import mmSolver.tools.raycastmarker.ui.raycastmarker_window as window
+   window.main()
 
 """
 
@@ -35,23 +35,22 @@ import Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
-import mmSolver.tools.smoothkeyframes.constant as const
-import mmSolver.tools.smoothkeyframes.tool as tool
-import mmSolver.tools.smoothkeyframes.ui.smoothkeys_layout as smoothkeys_layout
+import mmSolver.tools.raycastmarker.constant as const
+import mmSolver.tools.raycastmarker.tool as tool
+import mmSolver.tools.raycastmarker.ui.raycastmarker_layout as layout
 
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
 
 
-class SmoothKeysWindow(BaseWindow):
-    name = 'SmoothKeysWindow'
+class RayCastMarkerWindow(BaseWindow):
+    name = 'RayCastMarkerWindow'
 
     def __init__(self, parent=None, name=None):
-        super(SmoothKeysWindow, self).__init__(parent,
-                                               name=name)
+        super(RayCastMarkerWindow, self).__init__(parent, name=name)
         self.setupUi(self)
-        self.addSubForm(smoothkeys_layout.SmoothKeysLayout)
+        self.addSubForm(layout.RayCastMarkerLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
         self.setWindowFlags(QtCore.Qt.Tool)
@@ -62,9 +61,8 @@ class SmoothKeysWindow(BaseWindow):
         self.resetBtn.show()
         self.helpBtn.show()
         self.closeBtn.show()
-        self.applyBtn.setText('Smooth')
 
-        self.applyBtn.clicked.connect(tool.smooth_selected_keyframes)
+        self.applyBtn.clicked.connect(tool.main)
         self.resetBtn.clicked.connect(self.reset_options)
         self.helpBtn.clicked.connect(self.help)
 
@@ -79,7 +77,7 @@ class SmoothKeysWindow(BaseWindow):
 
     def help(self):
         src = helputils.get_help_source()
-        page = 'tools_generaltools.html#smooth-keyframes'
+        page = 'tools_markertools.html#project-marker-on-mesh-ray-cast'
         helputils.open_help_in_browser(page=page, help_source=src)
         return
 
@@ -102,7 +100,7 @@ def main(show=True, auto_raise=True, delete=False):
               opened.
     :rtype: SolverWindow or None.
     """
-    win = SmoothKeysWindow.open_window(
+    win = RayCastMarkerWindow.open_window(
         show=show,
         auto_raise=auto_raise,
         delete=delete

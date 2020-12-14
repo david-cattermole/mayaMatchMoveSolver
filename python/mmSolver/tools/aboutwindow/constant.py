@@ -29,6 +29,9 @@ Copyright (C) {copyrights}
 
 Authors: {author}
 
+Special Thanks to:
+Michael Karp
+
 Website: {page}
 
 == License ==

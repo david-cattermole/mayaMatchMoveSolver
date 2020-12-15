@@ -81,22 +81,22 @@ are not supported to create Markers.</p>
 <p class="caption"><span class="caption-text">Load Markers UI</span></p>
 </div>
 <p>The Load Markers UI allows loading of <code class="docutils literal notranslate"><span class="pre">.uv</span></code> (mmSolver), <code class="docutils literal notranslate"><span class="pre">.txt</span></code>
-(3DEqualizer4), <code class="docutils literal notranslate"><span class="pre">.rz2</span></code> (Autodesk MatchMover) formated files.</p>
+(3DEqualizer4), <code class="docutils literal notranslate"><span class="pre">.rz2</span></code> (Autodesk MatchMover) formatted files.</p>
 <p>When opening the UI, the contents of the user’s clipboard is
 queried. If the clipboard is a valid file path, it will be
 automatically pasted into the “File Path”, so you won’t need to
 “Browse” for the file.</p>
-<p>In 3DEqualizer, the “Copy 2D Tracks (MM Solver)” is designed to copy
+<p>In 3DEqualizer, the <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code> is used to copy
 the selected 2D points to a temporary file path and then place that
 file path on the clipboard automatically. Once the file path is on the
-clipboard, just open the Maya Load Marker tool and the path will be
+clipboard, open the Maya Load Marker tool and the path will be
 read automatically.</p>
-<p>The “Camera” list contains all the cameras currently in the Maya
+<p>The <code class="docutils literal notranslate"><span class="pre">Camera</span></code> list contains all the cameras currently in the Maya
 scene. If no cameras are available (persp, front, top, left do not
-count), the default option is to create a new camera. The “Update”
-button refreshes the “Camera” list without needing to close and
+count), the default option is to create a new camera. The <code class="docutils literal notranslate"><span class="pre">Update</span></code>
+button refreshes the <code class="docutils literal notranslate"><span class="pre">Camera</span></code> list without needing to close and
 re-open the UI.</p>
-<p>Once a file path is given, press the “Load” button.
+<p>Once a file path is given, press the <code class="docutils literal notranslate"><span class="pre">Load</span></code> button.
 For <code class="docutils literal notranslate"><span class="pre">.txt</span></code> format you will need to enter the Width / Height of the input
 format.</p>
 <p>Run this Python command:</p>
@@ -105,13 +105,18 @@ format.</p>
 </pre></div>
 </div>
 <div class="section" id="copy-2d-tracks-from-3dequalizer">
-<h3>Copy 2D Tracks from 3DEqualizer<a class="headerlink" href="#copy-2d-tracks-from-3dequalizer" title="Permalink to this headline">¶</a></h3>
+<span id="copy-3de4-2d-tracks-ref"></span><h3>Copy 2D Tracks from 3DEqualizer<a class="headerlink" href="#copy-2d-tracks-from-3dequalizer" title="Permalink to this headline">¶</a></h3>
 <div class="figure align-right">
 <a class="reference internal image-reference" href="_images/tools_loadmarker_tde_copyTracks.png"><img alt="Copy a 2D Track in 3DE" src="_images/tools_loadmarker_tde_copyTracks.png" style="width: 318.2px; height: 251.2px;" /></a>
 </div>
 <p>To create a <code class="docutils literal notranslate"><span class="pre">.uv</span></code> file, you may use the 3DEqualizer <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span>
 <span class="pre">(MM</span> <span class="pre">Solver)</span></code> script (see mmSolver installation to install this
 script).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code> is almost identical to the <code class="docutils literal notranslate"><span class="pre">Export</span>
+<span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code> tool. The <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code> tool
+will perform run the Export tool with default UI values, save the
+contents a temporary file, and set the OS Copy/Paste buffer to the
+saved file path.</p>
 <ol class="arabic simple">
 <li>In 3DEqualizer, select a 2D Point in the Object or Point Browser.</li>
 <li>Right-click the point and run <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code>.<ul>
@@ -124,17 +129,44 @@ Maya.</li>
 </ol>
 <p>See the video tutorial
 <a class="reference external" href="https://david-cattermole.github.io/mayaMatchMoveSolver/tutorial.html#using-3dequalizer-with-mmsolver-copy-2d-tracks">Using 3DEqualizer with mmSolver - Copy 2D Tracks</a>
-for a step-by-step example of the usage.</p>
+for a step-by-step example of the tool.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span></code> tool uses the “First Frame is Frame”
 parameter on the Camera in 3DEqualizer to correctly synchronise
-frame numbers between Maya and 3DEqualizer. For an efficient workflow,
-it is recommended to correctly set “First Frame is Frame”.</p>
+frame numbers between Maya and 3DEqualizer. It is recommended to
+correctly set “First Frame is Frame”.</p>
+</div>
+</div>
+<div class="section" id="d-tracks-rolling-shutter-correction">
+<span id="track-2d-rolling-shutter-correct-ref"></span><h3>2D Tracks Rolling Shutter Correction<a class="headerlink" href="#d-tracks-rolling-shutter-correction" title="Permalink to this headline">¶</a></h3>
+<p>In 3DEqualizer4 with a Rolling Shutter (RS) enabled camera, the <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span>
+<span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code> and <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code> (version
+v1.8+) tools will export the 2D data with RS correction.</p>
+<p>When exporting RS in 3DEqualizer4 Release 6, the <code class="docutils literal notranslate"><span class="pre">(Visualisation</span>
+<span class="pre">Only)</span> <span class="pre">Content</span> <span class="pre">Distance</span></code> camera parameter is used for the RS
+correction calculation.</p>
+<p>In 3DEqualizer4 Release 5 and below, the <code class="docutils literal notranslate"><span class="pre">Content</span> <span class="pre">Distance</span></code> defaults
+to <code class="docutils literal notranslate"><span class="pre">100</span></code> units. In 3DEqualizer4 Release 2 and above, to change the
+default <code class="docutils literal notranslate"><span class="pre">Content</span> <span class="pre">Distance</span></code> you can add a special tag to the Project
+Notes.  On a new line, type <code class="docutils literal notranslate"><span class="pre">RS</span> <span class="pre">Content</span> <span class="pre">Distance</span> <span class="pre">=</span> <span class="pre">42.0</span></code> (with your
+choice of number) into the Attribute Editor’s Project tab, Project
+Notes field. This value will be remembered as your preference for the
+current 3DEqualizer scene file.</p>
+<p>To automatically set the Project Notes with <code class="docutils literal notranslate"><span class="pre">RS</span> <span class="pre">Content</span> <span class="pre">Distance</span> <span class="pre">=</span>
+<span class="pre">42.0</span></code> you may optionally use the <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code>
+tool with a <code class="docutils literal notranslate"><span class="pre">Content</span> <span class="pre">Distance</span></code> value of choice which will be saved
+into Project Notes and remembered.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">To export 2D Tracks with RS correction with 3DEqualizer4 Release 1
+or 2, it is recommend to use <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code>,
+because the <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code> tool can only export
+with the default <code class="docutils literal notranslate"><span class="pre">Content</span> <span class="pre">Distance</span></code> of <code class="docutils literal notranslate"><span class="pre">100</span></code> units.</p>
 </div>
 </div>
 <div class="section" id="loading-markers-in-maya">
-<h3>Loading Markers in Maya<a class="headerlink" href="#loading-markers-in-maya" title="Permalink to this headline">¶</a></h3>
+<span id="load-markers-in-maya-ref"></span><h3>Loading Markers in Maya<a class="headerlink" href="#loading-markers-in-maya" title="Permalink to this headline">¶</a></h3>
 <p>Loading Markers into Maya from external Tracking software is a common
 task needed for solving 3D objects and cameras.</p>
 <ol class="arabic simple">
@@ -199,7 +231,7 @@ exported.</td>
 </table>
 </div>
 <div class="section" id="updating-replacing-markers-in-maya">
-<h3>Updating / Replacing Markers in Maya<a class="headerlink" href="#updating-replacing-markers-in-maya" title="Permalink to this headline">¶</a></h3>
+<span id="update-markers-in-maya-ref"></span><h3>Updating / Replacing Markers in Maya<a class="headerlink" href="#updating-replacing-markers-in-maya" title="Permalink to this headline">¶</a></h3>
 <div class="figure align-right" id="id3">
 <a class="reference internal image-reference" href="_images/tools_loadmarker_load_mode_replace.png"><img alt="Replace the selected Marker nodes." src="_images/tools_loadmarker_load_mode_replace.png" style="width: 332.8px; height: 405.2px;" /></a>
 <p class="caption"><span class="caption-text">Replace the selected Marker nodes.</span></p>
@@ -230,7 +262,7 @@ loaded using 3DEqualizer - there is a link between the 2D data in
 </div>
 </div>
 <div class="section" id="convert-to-marker">
-<h2>Convert to Marker<a class="headerlink" href="#convert-to-marker" title="Permalink to this headline">¶</a></h2>
+<span id="convert-to-marker-ref"></span><h2>Convert to Marker<a class="headerlink" href="#convert-to-marker" title="Permalink to this headline">¶</a></h2>
 <p>Converts the selected transform nodes into screen-space Markers, as
 viewed though the active viewport camera.</p>
 <p>The created markers are named based on the selected transform nodes, and
@@ -252,7 +284,7 @@ across the current timeline’s frame range.</li>
 </div>
 </div>
 <div class="section" id="create-bundle">
-<h2>Create Bundle<a class="headerlink" href="#create-bundle" title="Permalink to this headline">¶</a></h2>
+<span id="create-bundle-ref"></span><h2>Create Bundle<a class="headerlink" href="#create-bundle" title="Permalink to this headline">¶</a></h2>
 <p>Create a default Bundle node.</p>
 <p>If Markers are selected, the Bundle will attempt to attach to it, while
 adhering to the rule; <em>a bundle can only have one marker representation
@@ -277,6 +309,7 @@ for each camera.</em></p>
 <li><a class="reference internal" href="#create-marker">Create Marker</a></li>
 <li><a class="reference internal" href="#load-markers">Load Markers</a><ul>
 <li><a class="reference internal" href="#copy-2d-tracks-from-3dequalizer">Copy 2D Tracks from 3DEqualizer</a></li>
+<li><a class="reference internal" href="#d-tracks-rolling-shutter-correction">2D Tracks Rolling Shutter Correction</a></li>
 <li><a class="reference internal" href="#loading-markers-in-maya">Loading Markers in Maya</a></li>
 <li><a class="reference internal" href="#updating-replacing-markers-in-maya">Updating / Replacing Markers in Maya</a></li>
 </ul>

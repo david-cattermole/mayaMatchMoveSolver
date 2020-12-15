@@ -1354,12 +1354,35 @@ index of the mkr_list and attr_list given.</p>
 <dl class="method">
 <dt id="mmSolver.api.Attribute.get_node">
 <code class="descname">get_node</code><span class="sig-paren">(</span><em>full_path=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute.get_node" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the node name path from this Attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>full_path</strong> (<em>bool</em>) – If True, the full node name hiearachy will be
+returned, making sure the name is unique.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The node name, or None if the Attribute class does
+not hold a valid node.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">None or basestring</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mmSolver.api.Attribute.get_node_uid">
 <code class="descname">get_node_uid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Attribute.get_node_uid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the Attribute’s node unique identifier.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Although this returns a “unique” identifier, there are times
+when UUIDs are not unique. For example with the same Maya scene
+file referenced into the Maya scene more than once, the referenced
+node UUID will not change - each copy of the referenced node
+will have the same UUID value.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

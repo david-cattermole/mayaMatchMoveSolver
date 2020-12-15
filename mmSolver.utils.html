@@ -60,7 +60,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='140110227125712'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='140110227125904'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='140110227126096'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='139620784383888'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='139620784384080'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='139620784384272'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1520,7 +1520,7 @@ base before attempting to solve the children.</p>
 <p>Raytracing functions.</p>
 <dl class="function">
 <dt id="mmSolver.utils.raytrace.closest_intersect">
-<code class="descclassname">mmSolver.utils.raytrace.</code><code class="descname">closest_intersect</code><span class="sig-paren">(</span><em>source</em>, <em>direction</em>, <em>mesh_nodes</em>, <em>test_both_directions=False</em>, <em>max_dist=None</em>, <em>tolerance=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.raytrace.closest_intersect" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.raytrace.</code><code class="descname">closest_intersect</code><span class="sig-paren">(</span><em>source</em>, <em>direction</em>, <em>mesh_nodes</em>, <em>test_both_directions=False</em>, <em>max_dist=None</em>, <em>tolerance=None</em>, <em>use_smooth_mesh=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.raytrace.closest_intersect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the closest intersection point on meshes given a source point
 and direction</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1537,6 +1537,7 @@ default is False.</li>
 stopping; default is RAYTRACE_MAX_DIST.</li>
 <li><strong>tolerance</strong> (<em>float</em>) – The minimum ray trace tolerance; default is
 RAYTRACE_EPSILON.</li>
+<li><strong>use_smooth_mesh</strong> (<em>bool</em>) – Use smooth preview mesh for intersection.</li>
 </ul>
 </td>
 </tr>

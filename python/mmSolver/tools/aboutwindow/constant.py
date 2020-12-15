@@ -33,6 +33,8 @@ Special Thanks to:
 (alphabetical order)
 Jon Bragado
 Michael Karp
+Silvio Castagna Muscella
+Stanley Balu
 
 Website: {page}
 

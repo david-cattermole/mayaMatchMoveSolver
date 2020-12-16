@@ -1,4 +1,4 @@
-# Copyright (C) 2020 John Smith.
+# Copyright (C) 2020 Kazuma Tonegawa.
 #
 # This file is part of mmSolver.
 #

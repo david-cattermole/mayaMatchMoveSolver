@@ -1,4 +1,4 @@
-# Copyright (C) 2020 John Smith.
+# Copyright (C) 2020 Kazuma Tonegawa.
 #
 # This file is part of mmSolver.
 #
@@ -27,8 +27,6 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.tools.removesolvernodes.ui.ui_removesolvernodes_layout as ui_removesolvernodes_layout
-# import mmSolver.tools.removesolvernodes.lib as lib
-
 
 LOG = mmSolver.logger.get_logger()
 

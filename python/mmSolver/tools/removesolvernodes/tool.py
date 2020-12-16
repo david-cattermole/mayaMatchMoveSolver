@@ -1,4 +1,4 @@
-# Copyright (C) 2020 John Smith.
+# Copyright (C) 2020 Kazuma Tonegawa.
 #
 # This file is part of mmSolver.
 #
@@ -18,52 +18,37 @@
 """
 Remove Solver Nodes - user facing.
 """
-from functools import wraps
 
 import mmSolver.logger
 import mmSolver.api as mmapi
 import maya.cmds as cmds
-import mmSolver._api.utils as api_utils
 
 LOG = mmSolver.logger.get_logger()
 
-def undoStack(func):
-    @wraps(func)
-    def wrap(*args, **kwargs):
-        cmds.undoInfo(openChunk=True)
-        try:
-            return func(*args, **kwargs)
-        except Exception:
-            raise
-        finally:
-            cmds.undoInfo(closeChunk=True)
-    return wrap
 
 def filter_nodes(what_to_delete_dict):
     nodes = cmds.ls(long=True) or []
     cmds.select([])
     node_categories = mmapi.filter_nodes_into_categories(nodes)
     unknown_node_found = False
-    print 'filter_nodes run'
+    LOG.info('removesolvernodes: filter_nodes run')
     all_list_to_delete = list()
-    for key in what_to_delete_dict.keys():
-        if key == 'markers' and what_to_delete_dict[key]:
-            all_list_to_delete += \
-                collect_nodes(node_categories, mode='marker')
-        elif key == 'other_nodes' and what_to_delete_dict[key]:
-            all_list_to_delete += collect_misc_nodes()
-        elif key == 'bundles' and what_to_delete_dict[key]:
-            delete_list, unknown_node_found = collect_bundles(node_categories)
-            all_list_to_delete += delete_list
-        elif key == 'marker_groups' and what_to_delete_dict[key]:
-            all_list_to_delete += \
-                collect_nodes(node_categories, mode='markergroup')
-        elif key == 'collections' and what_to_delete_dict[key]:
-            all_list_to_delete += \
-                collect_nodes(node_categories, mode='collection')
+    if what_to_delete_dict.get('markers') is True:
+        all_list_to_delete += collect_nodes(node_categories, mode='marker')
+    if what_to_delete_dict.get('other_nodes') is True:
+        all_list_to_delete += collect_misc_nodes()
+    if what_to_delete_dict.get('bundles') is True:
+        delete_list, unknown_node_found = collect_bundles(node_categories)
+        all_list_to_delete += delete_list
+    if what_to_delete_dict.get('marker_groups') is True:
+        all_list_to_delete += collect_nodes(node_categories, mode='markergroup')
+    if what_to_delete_dict.get('collections') is True:
+        all_list_to_delete += collect_nodes(node_categories, mode='collection')
     return all_list_to_delete, unknown_node_found
 
-def collect_nodes(node_categories, mode='marker'):
+
+def collect_nodes(node_categories, mode=None):
+    assert isinstance(mode, basestring)
     list_to_delete = list()
     for key in sorted(node_categories.keys()):
         if key in ['attribute', 'bundle', 'camera', 'other']:
@@ -71,6 +56,7 @@ def collect_nodes(node_categories, mode='marker'):
         for node in node_categories[mode]:
             list_to_delete.append(node)
     return list_to_delete
+
 
 def collect_misc_nodes():
     misc_nodes = cmds.ls(long=True,
@@ -80,6 +66,7 @@ def collect_misc_nodes():
     other_nodes = cmds.ls('mmSolver*', long=True)
     combined_set = set(misc_nodes+other_nodes)
     return list(combined_set)
+
 
 def collect_bundles(node_categories):
     unknown_node_found = False
@@ -92,15 +79,16 @@ def collect_bundles(node_categories):
                                       fullPath=True)
         if children:
             for child in children:
-                if api_utils.get_object_type(child) != 'bundle':
+                if mmapi.get_object_type(child) != 'bundle':
                     unknown_node_found = True
     return list_to_delete, unknown_node_found
 
-@undoStack
+
 def delete_nodes(nodes_to_delete):
     for node in nodes_to_delete:
         if cmds.objExists(node):
             cmds.delete(node)
+
 
 def main():
     """

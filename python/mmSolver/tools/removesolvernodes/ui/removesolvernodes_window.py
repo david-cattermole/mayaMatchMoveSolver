@@ -7,22 +7,22 @@ Usage::
    removesolvernodes_window.main()
 
 """
+import datetime
+import uuid
 
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
 import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
-
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
+import mmSolver.utils.tools as tools_utils
 import mmSolver.ui.helputils as helputils
 import mmSolver.tools.removesolvernodes.constants as const
 import mmSolver.tools.removesolvernodes.tool as tool
 import mmSolver.tools.removesolvernodes.ui.removesolvernodes_layout as removesolvernodes_layout
-
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
@@ -42,15 +42,14 @@ class RemoveSolverNodesWindow(BaseWindow):
 
         # Standard Buttons
         self.baseHideStandardButtons()
-        # self.applyBtn.show()
+        self.applyBtn.show()
         self.resetBtn.show()
         self.helpBtn.show()
         self.closeBtn.show()
-        # self.applyBtn.setText('Smooth')
-        self.subForm.clean_pushButton.clicked.connect(self.clean)
+        self.applyBtn.setText('Clean')
 
-        # self.applyBtn.clicked.connect(tool.smooth_selected_keyframes)
-        # self.resetBtn.clicked.connect(self.reset_options)
+        self.applyBtn.clicked.connect(self.clean)
+        self.resetBtn.clicked.connect(self.reset_options)
         # self.helpBtn.clicked.connect(self.help)
 
         # Hide irrelevant stuff
@@ -73,8 +72,8 @@ class RemoveSolverNodesWindow(BaseWindow):
         all_list_to_delete, unknown_node_found = tool.filter_nodes(
                                                         what_to_delete_dict
                                                     )
-        print all_list_to_delete
-        print 'unknown_node_found: ', unknown_node_found
+        LOG.info(str(all_list_to_delete))
+        LOG.warning(('unknown_node_found: ', unknown_node_found))
         if unknown_node_found:
             title = 'Confirmation'
             msg = 'Non-bundle nodes found parented under one or more bundle\n'\
@@ -84,7 +83,14 @@ class RemoveSolverNodesWindow(BaseWindow):
             clicked_button = QtWidgets.QMessageBox.question(self, title, msg)
             if clicked_button == QtWidgets.QMessageBox.No:
                 return
-        tool.delete_nodes(all_list_to_delete)
+        undo_id = 'removesolvernodes: '
+        undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
+        undo_id += ' '
+        undo_id += str(uuid.uuid4())
+        with tools_utils.tool_context(use_undo_chunk=True,
+                                      undo_chunk_name=undo_id,
+                                      restore_current_frame=True):
+            tool.delete_nodes(all_list_to_delete)
 
     def help(self):
         src = helputils.get_help_source()
@@ -95,7 +101,7 @@ class RemoveSolverNodesWindow(BaseWindow):
 
 def main(show=True, auto_raise=True, delete=False):
     """
-    Open the Smooth Keyframes UI window.
+    Open the Remove Solver Nodes UI.
 
     :param show: Show the UI.
     :type show: bool
@@ -109,7 +115,7 @@ def main(show=True, auto_raise=True, delete=False):
 
     :returns: A new solver window, or None if the window cannot be
               opened.
-    :rtype: SolverWindow or None.
+    :rtype: RemoveSolverNodesWindow or None.
     """
     win = RemoveSolverNodesWindow.open_window(
         show=show,

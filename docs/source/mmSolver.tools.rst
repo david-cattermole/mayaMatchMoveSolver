@@ -32,6 +32,7 @@ mmSolver.tools
    mmSolver.tools.navigaterootframes
    mmSolver.tools.placemarkermanip
    mmSolver.tools.raycastmarker
+   mmSolver.tools.removesolvernodes
    mmSolver.tools.reparent
    mmSolver.tools.reprojectbundle
    mmSolver.tools.screenspacemotiontrail

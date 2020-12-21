@@ -495,10 +495,10 @@ Remove Solver Nodes
 Remove Solver Nodes tool allows for the removal of 
 some or all nodes related to the matchmoveSolver 
 plugin, allowing for a clean scene to be prepped 
-to passed to other departmetns/vendors.
+to passed to other departments/vendors.
 
-.. figure:: images/tools_channel_box_sensitivity_ui.png
-    :alt: Adjust the Maya Channel Box Sensitivity with a UI
+.. figure:: images/tools_remove_solver_nodes_ui.png.png
+    :alt: Remove Solver Nodes UI
     :align: center
     :width: 40%
 

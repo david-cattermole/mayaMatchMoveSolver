@@ -137,9 +137,9 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.7781746"
-     inkscape:cx="27.263101"
+     inkscape:cx="5.7927678"
      inkscape:cy="33.217033"
-     inkscape:current-layer="layer5"
+     inkscape:current-layer="g14742"
      showgrid="false"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
@@ -476,7 +476,7 @@
          style="display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-opacity:1">
         <path
            inkscape:connector-curvature="0"
-           style="clip-rule:evenodd;fill:#dadada;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+           style="clip-rule:evenodd;fill:#e6e6e6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
            id="path5-5"
            d="m 130.838,381.118 c 1.125,28.749 5.277,54.82 12.695,78.018 7.205,22.53 18.847,40.222 36.812,53.747 52.018,39.16 153.369,16.572 153.369,16.572 l -4.632,-32.843 72.918,42.778 -58.597,58.775 -3.85,-27.303 c 0,0 -100.347,18.529 -163.905,-34.881 -37.659,-31.646 -53.293,-84.021 -51.593,-153.962 0.266,-0.247 4.728,-0.908 6.783,-0.901 z" />
       </g>
@@ -498,13 +498,13 @@
              inkscape:connector-curvature="0" />
         </g>
         <g
-           style="display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-opacity:1"
+           style="display:inline;fill:#e6e6e6;fill-opacity:1;stroke:none;stroke-opacity:1"
            id="g3-9-9"
            transform="matrix(-0.14186649,0,0,-0.16193809,77.63932,96.687092)">
           <path
              d="m 130.838,381.118 c 1.125,28.749 5.277,54.82 12.695,78.018 7.205,22.53 18.847,40.222 36.812,53.747 52.018,39.16 153.369,16.572 153.369,16.572 l -4.632,-32.843 72.918,42.778 -58.597,58.775 -3.85,-27.303 c 0,0 -100.347,18.529 -163.905,-34.881 -37.659,-31.646 -53.293,-84.021 -51.593,-153.962 0.266,-0.247 4.728,-0.908 6.783,-0.901 z"
              id="path5-5-7"
-             style="clip-rule:evenodd;fill:#dadada;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+             style="clip-rule:evenodd;fill:#e6e6e6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
              inkscape:connector-curvature="0" />
         </g>
       </g>

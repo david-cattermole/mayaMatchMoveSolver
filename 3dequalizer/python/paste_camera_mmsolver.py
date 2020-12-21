@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Paste Camera (MM Solver)...
 #
-# 3DE4.script.version:  v1.2
+# 3DE4.script.version:  v1.4
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Camera
 # 3DE4.script.gui:      Object Browser::Context Menu Cameras
@@ -47,8 +47,6 @@
 #
 
 import os
-import collections
-import tempfile
 import tde4
 import mmcamera_format
 
@@ -368,6 +366,7 @@ def _build_widgets_with_data(req, pgroup_id, cam_id, lens_id, file_data):
     tde4.addSeparatorWidget(req, SEP_01_WIDGET)
 
     if plate_path:
+        plate_path = os.path.normpath(plate_path)
         tde4.addToggleWidget(req, PLATE_LOAD_WIDGET, PLATE_LOAD_LABEL, True)
         tde4.addTextFieldWidget(req, PLATE_PATH_WIDGET, PLATE_PATH_LABEL, plate_path)
 

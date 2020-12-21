@@ -167,7 +167,8 @@ def getBaseWindow():
         class NullWindow(object):
             pass
 
-        baseWindow = NullWindow
+        BaseWindow = NullWindow
+
     return baseModule, BaseWindow
 
 

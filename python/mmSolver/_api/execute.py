@@ -35,7 +35,6 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
-import mmSolver.utils.kalmanfilter as kalman
 import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
 import mmSolver._api.compile as api_compile
@@ -124,6 +123,11 @@ def createExecuteOptions(verbose=False,
     return options
 
 
+# More consistently named function name.
+# TODO: The 'createExecuteOptions' name will be deprecated in v0.4.0.
+create_execute_options = createExecuteOptions
+
+
 def preSolve_updateProgress(prog_fn, status_fn):
     """
     Initialise solver is running, and send info to the Maya GUI before
@@ -135,7 +139,6 @@ def preSolve_updateProgress(prog_fn, status_fn):
     :param status_fn: Function to use for printing status messages.
     :type status_fn: callable or None
     """
-    LOG.debug('preSolve_updateProgress')
     # Start up solver
     collectionutils.run_progress_func(prog_fn, 0)
     ts = solveresult.format_timestamp(time.time())
@@ -156,7 +159,6 @@ def preSolve_queryViewportState(options, panels):
     :param panels:
     :return:
     """
-    LOG.debug('preSolve_queryViewportState')
     panel_objs = {}
     panel_node_type_vis = collections.defaultdict(dict)
     if options.refresh is not True:
@@ -195,10 +197,8 @@ def preSolve_setIsolatedNodes(actions_list, options, panels):
     Note; This assumes the isolated objects are visible, but
     they may actually be hidden.
     """
-    LOG.debug('preSolve_setIsolatedNodes')
     if options.refresh is not True:
         return
-    s = time.time()
     if options.do_isolate is True:
         isolate_nodes = set()
         for action in actions_list:
@@ -219,9 +219,6 @@ def preSolve_setIsolatedNodes(actions_list, options, panels):
                     continue
                 assert isinstance(value, bool)
                 viewport_utils.set_node_type_visibility(panel, node_type, value)
-
-    e = time.time()
-    LOG.debug('Perform Pre-Isolate; time=%r', e - s)
     return
 
 
@@ -243,10 +240,8 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
     :param options: The execution options for the solve.
     :type options: ExecuteOptions
     """
-    LOG.debug('preSolve_triggerEvaluation')
     if options.pre_solve_force_eval is not True:
         return
-    s = time.time()
     frame_list = []
     for action in action_list:
         kwargs = action.kwargs
@@ -256,12 +251,10 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
     is_whole_solve_single_frame = len(frame_list) == 1
     if is_whole_solve_single_frame is False:
         maya.cmds.currentTime(
-            cur_frame - 1,
+            cur_frame + 1,
             edit=True,
             update=options.force_update,
             )
-    e = time.time()
-    LOG.debug('Update previous of current time; time=%r', e - s)
     return
 
 
@@ -277,26 +270,16 @@ def postSolve_refreshViewport(options, frame):
         refresh the viewport.
     :type frame: [int or float, ..]
     """
-    LOG.debug(
-        'postSolve_refreshViewport: '
-        'options=%r '
-        'frame=%r ',
-        options,
-        frame)
-    
     # Refresh the Viewport.
     if options.refresh is not True:
         return
 
-    s = time.time()
     maya.cmds.currentTime(
         frame[0],
         edit=True,
         update=options.force_update,
     )
     maya.cmds.refresh()
-    e = time.time()
-    LOG.debug('Refresh Viewport; time=%r', e - s)
     return
 
 
@@ -315,17 +298,8 @@ def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
         The panels and node-type visibility options in a list of tuples.
     :type panel_node_type_vis: [(str, {str: int or bool or None}), ..]
     """
-    LOG.debug(
-        'postSolve_setViewportState: '
-        'options=%r '
-        'panel_objs=%r '
-        'panel_node_type_vis=%r',
-        options,
-        panel_objs,
-        panel_node_type_vis)
     if options.refresh is not True:
         return
-    s = time.time()
 
     # Isolate Objects restore.
     for panel, objs in panel_objs.items():
@@ -341,13 +315,9 @@ def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
     # Show menu restore.
     for panel, node_types_vis in panel_node_type_vis.items():
         for node_type, value in node_types_vis.items():
-            LOG.debug('turn on node_type=%r with value=%r', node_type, value)
             if value is None:
                 continue
             viewport_utils.set_node_type_visibility(panel, node_type, value)
-
-    e = time.time()
-    LOG.debug('Finally; reset isolate selected; time=%r', e - s)
     return
 
 
@@ -392,19 +362,6 @@ def postSolve_setUpdateProgress(progress_min,
         cancelled the solve?
     :rtype: bool
     """
-    LOG.debug(
-        'postSolve_setUpdateProgress: '
-        'progress_min=%r '
-        'progress_value=%r '
-        'progress_max=%r '
-        'solres=%r '
-        'prog_fn=%r '
-        'status_fn=%r',
-        progress_min,
-        progress_value,
-        progress_max,
-        solres,
-        prog_fn, status_fn)
     stop_solving = False
 
     # Update progress
@@ -422,13 +379,49 @@ def postSolve_setUpdateProgress(progress_min,
         msg = 'Cancelled by User'
         api_state.set_user_interrupt(False)
         collectionutils.run_status_func(status_fn, 'WARNING: ' + msg)
-        LOG.warning(msg)
+        LOG.warn(msg)
         stop_solving = True
     if (solres is not None) and (solres.get_success() is False):
         msg = 'Solver failed!!!'
         collectionutils.run_status_func(status_fn, 'ERROR: ' + msg)
         LOG.error(msg)
     return stop_solving
+
+
+ActionState = collections.namedtuple(
+    'ActionState',
+    [
+        'status',
+        'message',
+        'error_number',
+        'parameter_number',
+        'frames_number',
+        'frames',
+    ]
+)
+
+
+def _create_action_state(status=None, message=None,
+                         error_number=None,
+                         parameter_number=None,
+                         frames_number=None,
+                         frames=None):
+    assert status is not None
+    assert status in const.ACTION_STATUS_LIST
+    if error_number is None:
+        error_number = 0
+    if parameter_number is None:
+        parameter_number = 0
+    if frames_number is None:
+        frames_number = 0
+    state = ActionState(
+        status=status,
+        message=message,
+        error_number=error_number,
+        parameter_number=parameter_number,
+        frames_number=frames_number,
+        frames=frames)
+    return state
 
 
 def _run_validate_action(vaction):
@@ -443,48 +436,76 @@ def _run_validate_action(vaction):
         boolean)? Second, the user message we present for the state.
         Third, metrics about the solve (number of parameters, number
         of errors, and number of frames to solve)
-    :rtype: (bool, str, (int, int, int))
+    :rtype: ActionState
     """
+    if not isinstance(vaction, api_action.Action):
+        state = _create_action_state(
+            status=const.ACTION_STATUS_SUCCESS,
+            message='Action cannot be run.')
+        return state
+    vfunc, vargs, vkwargs = api_action.action_to_components(vaction)
+    vfunc_is_mmsolver = api_action.action_func_is_mmSolver(vaction)
+
     num_param = 0
     num_err = 0
-    num_frames = 0
-
-    valid = True
-    message = ('Validated parameters, errors and frames: '
-               'param=%r errors=%r frames=%r')
-    metrics = (num_param, num_err, num_frames)
-    if not isinstance(vaction, api_action.Action):
-        message = message % (num_param, num_err, num_frames)
-        return valid, message, metrics
-    vfunc, vargs, vkwargs = api_action.action_to_components(vaction)
-
-    num_frames = len(vkwargs.get('frame', []))
-    if num_frames == 0:
-        valid = False
-        metrics = (num_param, num_err, num_frames)
+    frames = list(sorted(vkwargs.get('frame', [])))
+    num_frames = len(frames)
+    if num_frames == 0 and vfunc_is_mmsolver is True:
         msg = ('Failed to validate number of frames: '
                'param=%r errors=%r frames=%r')
         message = msg % (num_param, num_err, num_frames)
-        return valid, message, metrics
+        state = _create_action_state(
+            status=const.ACTION_STATUS_FAILED,
+            message=message,
+            error_number=num_err,
+            parameter_number=num_param,
+            frames_number=num_frames,
+            frames=frames)
+        return state
 
-    vfunc_is_mmsolver = api_action.action_func_is_mmSolver(vaction)
-    if vfunc_is_mmsolver is False:
-        return valid, message, metrics
-
+    # Run validate function
     solve_data = vfunc(*vargs, **vkwargs)
+
+    if vfunc_is_mmsolver is False:
+        msg = ('Validated parameters, errors and frames: '
+               'param=%r errors=%r frames=%r')
+        message = msg % (num_param, num_err, num_frames)
+        state = _create_action_state(
+            status=const.ACTION_STATUS_SUCCESS,
+            message=message,
+            error_number=num_err,
+            parameter_number=num_param,
+            frames_number=num_frames,
+            frames=frames)
+        return state
+
     solres = solveresult.SolveResult(solve_data)
     print_stats = solres.get_print_stats()
     num_param = print_stats.get('number_of_parameters', 0)
     num_err = print_stats.get('number_of_errors', 0)
-    metrics = (num_param, num_err, num_frames)
     if num_param == 0 or num_err == 0 or num_param > num_err:
-        valid = False
-        msg = ('Failed to validate number of parameters and errors: '
-               'param=%r errors=%r frames=%r')
-        message = msg % (num_param, num_err, num_frames)
-        return valid, message, metrics
-    message = message % (num_param, num_err, num_frames)
-    return valid, message, metrics
+        msg = 'Invalid parameters and errors, skipping solve: %r'
+        message = msg % list(sorted(frames))
+        state = _create_action_state(
+            status=const.ACTION_STATUS_FAILED,
+            message=message,
+            error_number=num_err,
+            parameter_number=num_param,
+            frames_number=num_frames,
+            frames=frames)
+        return state
+
+    msg = ('Validated parameters, errors and frames: '
+           'param=%r errors=%r frames=%r')
+    message = msg % (num_param, num_err, num_frames)
+    state = _create_action_state(
+        status=const.ACTION_STATUS_SUCCESS,
+        message=message,
+        error_number=num_err,
+        parameter_number=num_param,
+        frames_number=num_frames,
+        frames=frames)
+    return state
 
 
 def _run_validate_action_list(vaction_list):
@@ -502,36 +523,61 @@ def _run_validate_action_list(vaction_list):
     :rtype: (bool, [str, ..], [(int, int, int), ..])
     """
     assert len(vaction_list) > 0
+    state_list = []
+    for vaction in vaction_list:
+        state = _run_validate_action(vaction)
+        state_list.append(state)
+    assert len(vaction_list) == len(state_list)
+    return state_list
+
+
+def _convert_action_state_to_plain_old_data(state_list):
+    """
+    Convert ActionStates back to the previous supported data structure.
+
+    :param state_list: [ActionState, ..]
+    :return:
+        A list of validations, with a single valid boolean (did the
+        validation succeed?).
+    :rtype: (bool, [str, ..], [(int, int, int), ..])
+    """
     valid = True
     message_list = []
     metrics_list = []
-    for vaction in vaction_list:
-        v, message, metrics = _run_validate_action(vaction)
-        metrics_list.append(metrics)
-        message_list.append(message)
-        if v is not True:
+    for state in state_list:
+        if state.status != const.ACTION_STATUS_SUCCESS:
             valid = False
+        message_list.append(state.message)
+        metrics = (state.error_number or 0,
+                   state.parameter_number or 0,
+                   state.frames_number or 0)
+        metrics_list.append(metrics)
     return valid, message_list, metrics_list
 
 
-def validate(col):
+def validate(col, as_state=None):
     """
     Validates the given collection state, is it ready for solving?
 
     :param col: The Collection object to be validated.
     :type col: Collection
 
-    :return:
-        A list of validations, with a single valid boolean (did the
-        validation succeed?). See :py:func:`_run_validate_action`
-        function return types for more details.
-    :rtype: (bool, [str, ..], [(int, int, int), ..])
-    """
-    valid = False
-    message_list = []
-    metrics_list = []
+    :param as_state: If True, return an ActionState class, rather
+        than a big plain-old-data structure (documented below).
+    :type as_state: bool
 
-    s = time.time()
+    :return:
+        A list of states of the validations, or a list of validations,
+        with a single valid boolean (did the validation succeed?).
+        See :py:func:`_run_validate_action` function return types
+        for more details.
+    :rtype: (bool, [str, ..], [(int, int, int), ..]) or [ActionState, ..]
+    """
+    # TODO Remove the 'as_state' keyword in v0.4.0 release and
+    #  always return the ActionState.
+    if as_state is None:
+        as_state = False
+    state_list = []
     try:
         sol_list = col.get_solver_list()
         mkr_list = col.get_marker_list()
@@ -544,18 +590,23 @@ def validate(col):
             status_fn=None)
     except excep.NotValid as e:
         LOG.warn(e)
-        message_list.append(str(e))
-        metrics_list.append((0, 0, 0))
-        return valid, message_list, metrics_list
-    finally:
-        e = time.time()
-        LOG.warn('Compile time (validate): %r seconds', e - s)
+        state = _create_action_state(
+            status=const.ACTION_STATUS_FAILED,
+            message=str(e),
+            error_number=0,
+            parameter_number=0,
+            frames_number=0)
+        state_list.append(state)
+        if as_state is False:
+            return _convert_action_state_to_plain_old_data(state_list)
+        return state_list
 
     if len(vaction_list) > 0:
-        valid, message_list, metrics_list = _run_validate_action_list(vaction_list)
-        assert len(message_list) > 0
-        assert len(metrics_list) > 0
-    return valid, message_list, metrics_list
+        state_list = _run_validate_action_list(vaction_list)
+
+    if as_state is False:
+        return _convert_action_state_to_plain_old_data(state_list)
+    return state_list
 
 
 def execute(col,
@@ -603,31 +654,50 @@ def execute(col,
     if options is None:
         options = createExecuteOptions()
     if validate_mode is None:
-        validate_mode = const.VALIDATE_MODE_NONE_VALUE
+        validate_mode = const.VALIDATE_MODE_PRE_VALIDATE_VALUE
     assert validate_mode in const.VALIDATE_MODE_VALUE_LIST
     if log_level is None:
         log_level = const.LOG_LEVEL_DEFAULT
     assert isinstance(log_level, (str, unicode))
+    validate_runtime = validate_mode == const.VALIDATE_MODE_AT_RUNTIME_VALUE
+    validate_before = validate_mode == const.VALIDATE_MODE_PRE_VALIDATE_VALUE
 
     start_time = time.time()
 
-    # Ensure the plug-in is loaded, so we fail before trying to run.
+    # Ensure the plug-in is loaded, so we (do not) fail before trying
+    # to run.
     api_utils.load_plugin()
     assert 'mmSolver' in dir(maya.cmds)
 
     vp2_state = viewport_utils.get_viewport2_active_state()
+    current_eval_manager_mode = maya.cmds.evaluationManager(
+        query=True,
+        mode=True
+    )
 
     panels = viewport_utils.get_all_model_panels()
     panel_objs, panel_node_type_vis = preSolve_queryViewportState(
         options, panels
     )
 
-    # Save current frame, to revert to later on.
+    # Save scene state, to revert to later on.
     cur_frame = maya.cmds.currentTime(query=True)
+    prev_auto_key_state = maya.cmds.autoKeyframe(query=True, state=True)
+    prev_cycle_check = maya.cmds.cycleCheck(query=True, evaluation=True)
+
+    # State information needed to revert reconnect animation curves in
+    # 'finally' block.
+    kwargs = {}
+    save_node_attrs = []
+    func_is_mmsolver = False
+    is_single_frame = False
 
     try:
         if options.disable_viewport_two is True:
             viewport_utils.set_viewport2_active_state(False)
+        maya.cmds.autoKeyframe(edit=True, state=False)
+        maya.cmds.evaluationManager(mode='off')
+        maya.cmds.cycleCheck(evaluation=False)
         preSolve_updateProgress(prog_fn, status_fn)
 
         # Check for validity and compile actions.
@@ -638,7 +708,6 @@ def execute(col,
         mkr_list = col.get_marker_list()
         attr_list = col.get_attribute_list()
         try:
-            s = time.time()
             action_list, vaction_list = api_compile.collection_compile(
                 col,
                 sol_list,
@@ -648,18 +717,15 @@ def execute(col,
                 prog_fn=prog_fn,
                 status_fn=status_fn
             )
-            e = time.time()
-            LOG.debug('compile time (execute): %r', e - s)
         except excep.NotValid as e:
-            LOG.warning(e)
+            LOG.warn(e)
             return solres_list
         collectionutils.run_progress_func(prog_fn, 1)
 
-        if validate_mode == 'pre_validate':
-            valid, msg, metrics_list = _run_validate_action_list(vaction_list)
-            if valid is not True:
-                LOG.warning(msg)
-                return solres_list
+        vaction_state_list = []
+        if validate_before is True:
+            vaction_state_list = _run_validate_action_list(vaction_list)
+            assert len(vaction_list) == len(vaction_state_list)
 
         # Prepare frame solve
         preSolve_setIsolatedNodes(action_list, options, panels)
@@ -671,21 +737,31 @@ def execute(col,
         )
 
         # Run Solver Actions...
+        message_hashes = set()
         start = 0
         total = len(action_list)
         number_of_solves = 0
         for i, (action, vaction) in enumerate(zip(action_list, vaction_list)):
-            if isinstance(vaction, api_action.Action) and validate_mode == 'at_runtime':
-                valid, message, metrics = _run_validate_action(vaction)
-                if valid is not True:
-                    LOG.warn(message)
-                    return
+            state = None
+            if len(vaction_state_list) > 0:
+                # We have pre-computed the state list.
+                state = vaction_state_list[i]
+            if isinstance(vaction, api_action.Action) and validate_runtime:
+                # We will calculate the state just-in-time.
+                state = _run_validate_action(vaction)
+            if state is not None:
+                if state.status != const.ACTION_STATUS_SUCCESS:
+                    assert isinstance(state, ActionState)
+                    h = hash(state.message)
+                    if h not in message_hashes:
+                        LOG.warn(state.message)
+                    message_hashes.add(h)
+                    # Skip this action, since the test failed.
+                    continue
 
             func, args, kwargs = api_action.action_to_components(action)
             func_is_mmsolver = api_action.action_func_is_mmSolver(action)
 
-            save_node_attrs = None
-            is_single_frame = None
             if func_is_mmsolver is True:
                 frame = kwargs.get('frame')
                 collectionutils.run_status_func(info_fn, 'Evaluating frames %r' % frame)
@@ -700,16 +776,21 @@ def execute(col,
                     with open(options_file_path, 'w') as file_:
                         file_.write(text)
 
-                # Overriding the verbosity, irrespective of what
-                # the solver verbosity value is set to.
+                # Overriding the verbosity, irrespective of what the
+                # solver verbosity value is set to.
+                kwargs['verbose'] = False
                 if log_level is not None and log_level.lower() == 'verbose':
                     kwargs['verbose'] = True
 
                 # HACK for single frame solves.
-                save_node_attrs = []
                 is_single_frame = collectionutils.is_single_frame(kwargs)
                 if is_single_frame is True:
                     save_node_attrs = collectionutils.disconnect_animcurves(kwargs)
+                else:
+                    # Reset the data structure so in the 'finally'
+                    # block we can detect animcurves are not needing
+                    # to be reset.
+                    save_node_attrs = []
 
             # Run Solver Maya plug-in command
             solve_data = func(*args, **kwargs)
@@ -718,6 +799,10 @@ def execute(col,
             if func_is_mmsolver is True:
                 if is_single_frame is True:
                     collectionutils.reconnect_animcurves(kwargs, save_node_attrs)
+                    # Reset the data structure so in the 'finally'
+                    # block we can detect animcurves are not needing
+                    # to be reset.
+                    save_node_attrs = []
 
             # Create SolveResult.
             solres = None
@@ -758,11 +843,23 @@ def execute(col,
                 frame = kwargs.get('frame')
                 postSolve_refreshViewport(options, frame)
     finally:
+        # If something has gone wrong, or the user cancels the solver
+        # without finishing, then we make sure to reconnect animcurves
+        # that were disconnected for single frame solves.
+        if func_is_mmsolver is True and is_single_frame is True:
+            if len(save_node_attrs):
+                collectionutils.reconnect_animcurves(kwargs, save_node_attrs)
+
         postSolve_setViewportState(
             options, panel_objs, panel_node_type_vis
         )
         collectionutils.run_status_func(status_fn, 'Solve Ended')
         collectionutils.run_progress_func(prog_fn, 100)
+        maya.cmds.evaluationManager(
+            mode=current_eval_manager_mode[0]
+        )
+        maya.cmds.cycleCheck(evaluation=prev_cycle_check)
+        maya.cmds.autoKeyframe(edit=True, state=prev_auto_key_state)
         api_state.set_solver_running(False)
         if options.disable_viewport_two is True:
             viewport_utils.set_viewport2_active_state(vp2_state)

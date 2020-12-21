@@ -7,7 +7,14 @@ attributes.
 
 If you are new to mmSolver, take a look at the video :ref:`tutorial-heading`.
 
-Development of the `mmSolver` can be viewed on the GitHub project_ page.
+Any questions you have can be asked on the `mailing list`_.
+
+Development of `mmSolver` can be viewed on the GitHub project_ page.
+
+Download
+++++++++
+
+Go to the download page :ref:`here <download-heading>`.
 
 Usage Guide
 +++++++++++
@@ -20,14 +27,6 @@ An overview of the features available inside mmSolver.
    introduction
    tutorial
    tools
-
-Installation
-++++++++++++
-
-To download mmSolver please go to the GitHub releases_ page.
-
-For installation instructions see the *INSTALL.md* file with mmSolver,
-or the latest install instructions_ on GitHub.
 
 Technical Details
 +++++++++++++++++
@@ -69,6 +68,12 @@ See the :ref:`licenses-heading` for more detail.
 
    licenses
 
+Authors
++++++++
+
+.. include:: ../../AUTHORS.txt
+   :literal:
+
 Indices and tables
 ==================
 
@@ -79,8 +84,5 @@ Indices and tables
 .. _project:
    https://github.com/david-cattermole/mayaMatchMoveSolver
 
-.. _instructions:
-   https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL.md
-
-.. _releases:
-   https://github.com/david-cattermole/mayaMatchMoveSolver/releases
+.. _mailing list:
+   https://groups.google.com/forum/#!forum/maya-matchmove-solver

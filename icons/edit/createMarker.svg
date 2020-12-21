@@ -85,8 +85,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="5.5"
-     inkscape:cx="10.788986"
-     inkscape:cy="37.858408"
+     inkscape:cx="24.851172"
+     inkscape:cy="31.722385"
      inkscape:current-layer="layer4"
      showgrid="false"
      inkscape:document-units="px"
@@ -145,7 +145,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -155,26 +155,26 @@
      inkscape:label="Layer 2">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.99999994"
-       x="-0.64074427"
-       y="60.900478"
+       style="font-style:normal;font-weight:normal;font-size:41.7960434px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.04490101"
+       x="0.11188768"
+       y="61.789471"
        id="text1137-8"><tspan
          sodipodi:role="line"
          id="tspan1135-3"
-         x="-0.64074427"
-         y="60.900478"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16.66666603px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:0.99999994">MTools</tspan></text>
+         x="0.11188768"
+         y="61.789471"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.41501617px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:1.04490101">Create</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-width:0.99999994;"
-       x="-1.0612143"
-       y="60.064159"
+       style="font-style:normal;font-weight:normal;font-size:41.7960434px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-width:1.04490101"
+       x="-0.32746196"
+       y="60.9156"
        id="text1137"><tspan
          sodipodi:role="line"
          id="tspan1135"
-         x="-1.0612143"
-         y="60.064159"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16.66666603px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#dadada;fill-opacity:1;stroke-width:0.99999994;">MTools</tspan></text>
+         x="-0.32746196"
+         y="60.9156"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.41501617px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#dadada;fill-opacity:1;stroke-width:1.04490101">Create</tspan></text>
   </g>
   <g
      id="layer1"

@@ -28,6 +28,8 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.time as utils_time
+import mmSolver.api as mmapi
+
 import mmSolver.ui.converttypes as convert_types
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
@@ -55,10 +57,10 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         self.remove_toolButton.clicked.connect(self.removeClicked)
         self.next_toolButton.clicked.connect(self.nextClicked)
         self.previous_toolButton.clicked.connect(self.previousClicked)
+        self.auto_pushButton.clicked.connect(self.autoClicked)
 
         # These buttons don't work, yet.
         self.selectNode_pushButton.setHidden(True)
-        self.auto_pushButton.setHidden(True)
         return
 
     def getRootFramesValue(self, col):
@@ -199,4 +201,21 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         if previous_frame is None:
             previous_frame = cur_frame
         lib_maya_utils.set_current_frame(previous_frame)
+        return
+
+    def autoClicked(self):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        mkr_list = col.get_marker_list()
+        start_frame, end_frame = utils_time.get_maya_timeline_range_inner()
+        min_frames_per_marker = 2
+        frame_nums = mmapi.get_root_frames_from_markers(
+            mkr_list, min_frames_per_marker, start_frame, end_frame)
+        if len(frame_nums) < 2:
+            LOG.warn('Auto Root Frames failed to calculate - not enough markers.')
+            return
+        roots_string = convert_types.intListToString(frame_nums)
+        self.setRootFramesValue(col, roots_string)
+        self.rootFrames_lineEdit.setText(roots_string)
         return

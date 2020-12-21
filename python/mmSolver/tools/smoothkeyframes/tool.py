@@ -27,7 +27,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.constant as utils_const
 import mmSolver.utils.configmaya as configmaya
-import mmSolver.utils.undo as undo_utils
+import mmSolver.utils.tools as tools_utils
 import mmSolver.tools.smoothkeyframes.constant as const
 import mmSolver.tools.smoothkeyframes.lib as lib
 
@@ -61,16 +61,18 @@ def smooth_selected_keyframes():
         const.CONFIG_WIDTH_KEY,
         default=const.DEFAULT_WIDTH)
 
-    blend_smooth_type = utils_const.SMOOTH_TYPE_GAUSSIAN
-    blend_width = configmaya.get_scene_option(
-        const.CONFIG_BLEND_WIDTH_KEY,
-        default=const.DEFAULT_BLEND_WIDTH)
+    blend_smooth_type = utils_const.SMOOTH_TYPE_AVERAGE
+    blend_width = width
 
     undo_id = 'smoothkeyframes: '
     undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
     undo_id += ' '
     undo_id += str(uuid.uuid4())
-    with undo_utils.undo_chunk_context(undo_id):
+    with tools_utils.tool_context(use_undo_chunk=True,
+                                  undo_chunk_name=undo_id,
+                                  restore_current_frame=True,
+                                  use_dg_evaluation_mode=False,
+                                  disable_viewport=False):
         for key_attr in key_attrs:
             selected_keyframes = maya.cmds.keyframe(
                 key_attr,

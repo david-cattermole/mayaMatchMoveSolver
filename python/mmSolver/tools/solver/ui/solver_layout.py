@@ -19,6 +19,8 @@
 The Solver layout, the contents of the main solver window.
 """
 
+import time
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -44,9 +46,16 @@ LOG = mmSolver.logger.get_logger()
 
 class SolverLayout(QtWidgets.QWidget):
     def __init__(self, parent=None, *args, **kwargs):
+        s = time.time()
         super(SolverLayout, self).__init__(*args, **kwargs)
+        s = time.time()
         self.ui = ui_solver_layout.Ui_Form()
         self.ui.setupUi(self)
+
+        # Set the sizing for the Attribute and Object frames, so that
+        # the Splitter will start out with a 50/50 ratio of Objects
+        # to Attributes.
+        self.ui.objectAttribute_splitter.setSizes([50, 50])
 
         # Store the parent window class, so we can set the applyBtn enabled
         # state.
@@ -72,41 +81,50 @@ class SolverLayout(QtWidgets.QWidget):
         self.solver_state = solverstate_widget.SolverStateWidget(self)
         self.ui.solverState_layout.addWidget(self.solver_state)
 
-        # Populate the UI with data.
-        self.collection_widget.nameChanged.connect(self.updateDynamicWindowTitle)
-        self.collection_widget.itemChanged.connect(self.updateDynamicWindowTitle)
-        # self.collection_widget.itemChanged.connect(self.solver_state.updateStatusWithSolveResult)
-        self.collection_widget.itemChanged.connect(self.object_browser.updateModel)
-        self.collection_widget.itemChanged.connect(self.object_browser.updateInfo)
-        self.collection_widget.itemChanged.connect(self.object_browser.updateToggleButtons)
-        self.collection_widget.itemChanged.connect(self.object_browser.updateColumnVisibility)
-        self.collection_widget.itemChanged.connect(self.attribute_browser.updateModel)
-        self.collection_widget.itemChanged.connect(self.attribute_browser.updateInfo)
-        self.collection_widget.itemChanged.connect(self.attribute_browser.updateToggleButtons)
-        self.collection_widget.itemChanged.connect(self.attribute_browser.updateColumnVisibility)
-        self.collection_widget.itemChanged.connect(self.solver_settings.updateModel)
-        self.collection_widget.itemChanged.connect(self.solver_settings.updateInfo)
-        self.collection_widget.itemChanged.connect(self.solver_state.updateModel)
-
-        self.object_browser.dataChanged.connect(self.object_browser.updateModel)
-        self.object_browser.dataChanged.connect(self.object_browser.updateInfo)
-        self.object_browser.dataChanged.connect(self.solver_settings.updateInfo)
-        self.object_browser.viewUpdated.connect(self.object_browser.updateToggleButtons)
-        self.object_browser.viewUpdated.connect(self.object_browser.updateColumnVisibility)
-
-        self.attribute_browser.dataChanged.connect(self.attribute_browser.updateModel)
-        self.attribute_browser.dataChanged.connect(self.attribute_browser.updateInfo)
-        self.attribute_browser.dataChanged.connect(self.solver_settings.updateInfo)
-        self.attribute_browser.viewUpdated.connect(self.attribute_browser.updateToggleButtons)
-        self.attribute_browser.viewUpdated.connect(self.attribute_browser.updateColumnVisibility)
-
-        self.solver_settings.dataChanged.connect(self.solver_settings.updateInfo)
-        self.solver_settings.tabChanged.connect(self.solver_settings.updateInfo)
-        self.solver_settings.tabChanged.connect(self.solver_settings.updateModel)
-        self.solver_settings.sendWarning.connect(self.setStatusLine)
+        self.createConnections()
 
         # Trigger data being updated.
         self.collection_widget.itemChanged.emit()
+        e = time.time()
+        LOG.debug('SolverLayout init: %r seconds', e - s)
+        return
+
+    def createConnections(self):
+        # Signal/Slot Connections are always lazily evaluated, and can
+        # only be triggered once (unique connection).
+        ct = QtCore.Qt.UniqueConnection
+
+        # Populate the UI with data.
+        self.collection_widget.nameChanged.connect(self.updateDynamicWindowTitle, ct)
+        self.collection_widget.itemChanged.connect(self.updateDynamicWindowTitle, ct)
+        self.collection_widget.itemChanged.connect(self.object_browser.updateModel, ct)
+        self.collection_widget.itemChanged.connect(self.object_browser.updateInfo, ct)
+        self.collection_widget.itemChanged.connect(self.object_browser.updateToggleButtons, ct)
+        self.collection_widget.itemChanged.connect(self.object_browser.updateColumnVisibility, ct)
+        self.collection_widget.itemChanged.connect(self.attribute_browser.updateModel, ct)
+        self.collection_widget.itemChanged.connect(self.attribute_browser.updateInfo, ct)
+        self.collection_widget.itemChanged.connect(self.attribute_browser.updateToggleButtons, ct)
+        self.collection_widget.itemChanged.connect(self.attribute_browser.updateColumnVisibility, ct)
+        self.collection_widget.itemChanged.connect(self.solver_settings.updateModel, ct)
+        self.collection_widget.itemChanged.connect(self.solver_settings.updateInfo, ct)
+        self.collection_widget.itemChanged.connect(self.solver_state.updateModel, ct)
+
+        self.object_browser.dataChanged.connect(self.object_browser.updateModel, ct)
+        self.object_browser.dataChanged.connect(self.object_browser.updateInfo, ct)
+        self.object_browser.dataChanged.connect(self.solver_settings.updateInfo, ct)
+        self.object_browser.viewUpdated.connect(self.object_browser.updateToggleButtons, ct)
+        self.object_browser.viewUpdated.connect(self.object_browser.updateColumnVisibility, ct)
+
+        self.attribute_browser.dataChanged.connect(self.attribute_browser.updateModel, ct)
+        self.attribute_browser.dataChanged.connect(self.attribute_browser.updateInfo, ct)
+        self.attribute_browser.dataChanged.connect(self.solver_settings.updateInfo, ct)
+        self.attribute_browser.viewUpdated.connect(self.attribute_browser.updateToggleButtons, ct)
+        self.attribute_browser.viewUpdated.connect(self.attribute_browser.updateColumnVisibility, ct)
+
+        self.solver_settings.dataChanged.connect(self.solver_settings.updateInfo, ct)
+        self.solver_settings.tabChanged.connect(self.solver_settings.updateInfo, ct)
+        self.solver_settings.tabChanged.connect(self.solver_settings.updateModel, ct)
+        self.solver_settings.sendWarning.connect(self.setStatusLine, ct)
         return
 
     def updateDynamicWindowTitle(self):
@@ -120,10 +138,6 @@ class SolverLayout(QtWidgets.QWidget):
         title = str(const.WINDOW_TITLE_BAR)
         title = title.format(node)
         self._parentObject.window().setWindowTitle(title)
-        return
-
-    def updateSolveValidState(self):
-        # TODO: Remove this empty function, it is kept around just because it might be called.
         return
 
     @QtCore.Slot(str)

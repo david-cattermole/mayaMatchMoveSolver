@@ -5,6 +5,8 @@ The tools on this page are not specific to Markers, Cameras or
 Bundles, but are general tools useful in Maya for many different
 tasks.
 
+.. _center-2d-on-selection-tool-ref:
+
 Center 2D On Selection
 ----------------------
 
@@ -54,6 +56,8 @@ To run the tool, use this Python command:
     # Remove Centering from active camera
     tool.remove()
 
+.. _smooth-keyframes-tool-ref:
+
 Smooth Keyframes
 ----------------
 
@@ -81,9 +85,6 @@ Usage:
      for example a value of 1 means "no smoothing", a value of 2 means
      "use previous and next frame", and 5 means "use previous 4 and
      next 4 frames".
-
-   - *Blend Width* controls the blend, in frames, between the smoothed
-     values and the surrounding values.
 
 3) Select keyframes in Graph Editor.
 
@@ -172,7 +173,7 @@ The image below shows the effect of the *Smooth Width* with the
     :align: center
     :width: 90%
 
-.. _screen-space-transform-ref:
+.. _screen-space-transform-tool-ref:
 
 Screen-Space Transform
 ----------------------
@@ -213,6 +214,8 @@ To run the tool, use this Python command:
 
     import mmSolver.tools.screenspacetransform.tool as tool
     tool.main()
+
+.. _create-screen-space-motion-trail-tool-ref:
 
 Create Screen-Space Motion Trail
 --------------------------------
@@ -281,6 +284,8 @@ To run the tool, use this Python command:
     import mmSolver.tools.screenspacemotiontrail.tool as tool
     tool.main()
 
+.. _channel-sensitivity-tool-ref:
+
 Channel Sensitivity
 -------------------
 
@@ -289,11 +294,16 @@ of channel slider setting. Using this tool the user to adjust
 attributes in the Channel Box by very small increments, which is
 useful for manually adjusting or matching parameters interactively.
 
+.. figure:: images/tools_channel_box_sensitivity_ui.png
+    :alt: Adjust the Maya Channel Box Sensitivity with a UI
+    :align: center
+    :width: 40%
+
 Usage:
 
 1) Run tool.
 
-   - A UI will open, click the `Increase` or `Decrease` buttons to
+   - A UI will open, click the `Up` or `Down` buttons to
      change the sensitivity.
 
 2) Select an Attribute in the Channel Box.
@@ -306,6 +316,8 @@ To run the tool, use this Python command:
 
     import mmSolver.tools.channelsen.tool as tool
     tool.main()
+
+.. _copy-camera-to-clipboard-tool-ref:
 
 Copy Camera to Clipboard
 ------------------------
@@ -332,6 +344,8 @@ To run the tool, use this Python command:
     import mmSolver.tools.copypastecamera.tool as tool
     tool.main()
 
+.. _marker-bundle-rename-tool-ref:
+
 Marker Bundle Rename
 --------------------
 
@@ -357,6 +371,8 @@ To run the tool, use this Python command:
     import mmSolver.tools.markerbundlerename.tool as tool
     tool.main()
 
+.. _marker-bundle-rename-with-metadata-tool-ref:
+
 Marker Bundle Rename (with Metadata)
 ------------------------------------
 
@@ -381,10 +397,44 @@ To run the tool, use this Python command:
     import mmSolver.tools.markerbundlerenamewithmetadata.tool as tool
     tool.main()
 
+.. _sort-selected-nodes-in-outliner-tool-ref:
+
+Sort Selected Nodes In Outliner
+-------------------------------
+
+Alphabetically sorts (re-orders) the selected nodes in the Maya Outliner window.
+
+This tool avoids the Maya Outliner window's (interactive) "Sort Order" feature
+and encourages an organised workflow when working with many nodes.
+
+This tool works on *any* Transform node, not only mmSolver nodes.
+
+.. figure:: images/sort_nodes_in_outliner_compare.png
+    :alt: Before/After of all nodes sorted in the Maya Outliner.
+    :align: center
+    :width: 80%
+
+Usage:
+
+1) Select transform nodes.
+
+2) Run tool.
+
+   - The nodes will be sorted.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.sortoutlinernodes.tool as tool
+    tool.main()
+
+.. _reparent-under-node-tool-ref:
+
 Reparent Under Node
 -------------------
 
-This is equalivent to Maya's *Parent* tool (`p` hotkey), except the
+This is equivalent to Maya's *Parent* tool (`p` hotkey), except the
 tool will maintain the world-space position of the transform node for
 each keyframe applied to the node.
 
@@ -408,6 +458,8 @@ To run the tool, use this Python command:
 
     import mmSolver.tools.reparent.tool as tool
     tool.reparent_under_node()
+
+.. _unparent-to-world-tool-ref:
 
 Unparent to World
 -----------------
@@ -435,11 +487,53 @@ To run the tool, use this Python command:
     import mmSolver.tools.reparent.tool as tool
     tool.unparent_to_world()
 
+.. _remove-solver-nodes-tool-ref:
+
+Remove Solver Nodes
+-------------------
+
+Remove Solver Nodes tool allows for the removal of 
+some or all nodes related to the matchmoveSolver 
+plugin, allowing for a clean scene to be prepped 
+to passed to other departments/vendors.
+
+.. figure:: images/tools_remove_solver_nodes_ui.png
+    :alt: Remove Solver Nodes UI
+    :align: center
+    :width: 40%
+
+Usage:
+
+1) Run tool.
+
+   - A UI will open.
+
+2) Select what type of nodes you wish to remove.
+
+3) Click 'Clean'.
+
+Note that if there are other nodes constrained or 
+connected in some way to the marker or bundle 
+nodes they should be cleaned or baked before 
+removal.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.removesolvernodes.tool as tool
+    tool.main()
+
+.. _create-remove-controller-tool-ref:
+
 Create / Remove Controller
 --------------------------
 
 Create a new transform node to control another node. The `Controller`
 transform node can have a separate hierarchy than the source node.
+
+This tool will try to maintain the animated keyframes on the original
+control without baking the animation per-frame.
 
 Usage:
 

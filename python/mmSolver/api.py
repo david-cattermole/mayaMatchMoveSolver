@@ -35,14 +35,20 @@ from mmSolver._api.collection import (
 from mmSolver._api.lens import Lens
 from mmSolver._api.execute import (
     createExecuteOptions,
+    create_execute_options,
     ExecuteOptions,
+    ActionState,
     validate,
     execute,
 )
 from mmSolver._api.frame import Frame
+from mmSolver._api.rootframe import (
+    get_root_frames_from_markers,
+)
 from mmSolver._api.action import (
     Action,
     action_func_is_mmSolver,
+    action_func_is_mmSolverAffects,
     func_str_to_callable,
     action_to_components,
 )
@@ -72,6 +78,8 @@ from mmSolver._api.markerutils import (
     calculate_marker_deviation,
     get_markers_start_end_frames,
     find_marker_attr_mapping,
+    calculate_average_deviation,
+    calculate_maximum_deviation,
 )
 from mmSolver._api.naming import (
     find_valid_maya_node_name,
@@ -141,6 +149,11 @@ from mmSolver._api.constant import (
     SOLVER_TYPE_CMINPACK_LMDER,
     SOLVER_TYPE_DEFAULT,
 
+    TIME_EVAL_MODE_DG_CONTEXT,
+    TIME_EVAL_MODE_SET_TIME,
+    TIME_EVAL_MODE_DEFAULT,
+    TIME_EVAL_MODE_LIST,
+
     AUTO_DIFF_TYPE_FORWARD,
     AUTO_DIFF_TYPE_CENTRAL,
     AUTO_DIFF_TYPE_LIST,
@@ -148,6 +161,7 @@ from mmSolver._api.constant import (
     ROOT_FRAME_STRATEGY_GLOBAL_VALUE,
     ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE,
     ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE,
+    ROOT_FRAME_STRATEGY_FWD_INCREMENT_VALUE,
     ROOT_FRAME_STRATEGY_VALUE_LIST,
     ROOT_FRAME_STRATEGY_DEFAULT_VALUE,
 
@@ -156,6 +170,37 @@ from mmSolver._api.constant import (
     ROBUST_LOSS_TYPE_CAUCHY_VALUE,
     ROBUST_LOSS_TYPE_VALUE_LIST,
     ROBUST_LOSS_TYPE_DEFAULT_VALUE,
+
+    VALIDATE_MODE_PRE_VALIDATE_VALUE,
+    VALIDATE_MODE_AT_RUNTIME_VALUE,
+    VALIDATE_MODE_NONE_VALUE,
+    VALIDATE_MODE_VALUE_LIST,
+
+    EVENT_NAME_MARKER_CREATED,
+    EVENT_NAME_BUNDLE_CREATED,
+    EVENT_NAME_COLLECTION_CREATED,
+    EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+    EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+    EVENT_NAME_ATTRIBUTE_STATE_CHANGED,
+    EVENT_NAME_ATTRIBUTE_CONNECTION_CHANGED,
+    EVENT_NAME_NODE_NAME_CHANGED,
+    EVENT_NAME_NODE_DELETED,
+    EVENT_NAME_MEMBERSHIP_CHANGED,
+    EVENT_NAME_LIST,
+
+    ATTRIBUTE_USED_HINT_DEFAULT_VALUE,
+    ATTRIBUTE_USED_HINT_USED_VALUE,
+    ATTRIBUTE_USED_HINT_NOT_USED_VALUE,
+    ATTRIBUTE_USED_HINT_LIST,
+
+    MARKER_USED_HINT_DEFAULT_VALUE,
+    MARKER_USED_HINT_USED_VALUE,
+    MARKER_USED_HINT_NOT_USED_VALUE,
+    MARKER_USED_HINT_LIST,
+
+    ACTION_STATUS_SUCCESS,
+    ACTION_STATUS_FAILED,
+    ACTION_STATUS_LIST,
 )
 from mmSolver._api.state import (
     is_solver_running,
@@ -202,6 +247,7 @@ __all__ = [
     'Frame',
     'Solver',  # Backwards compatibility
     'Action',
+    'ActionState',
     'SolverBase',
     'SolverStandard',
     'SolverBasic',
@@ -227,12 +273,17 @@ __all__ = [
     'SOLVER_TYPE_CMINPACK_LMDIF',
     'SOLVER_TYPE_CMINPACK_LMDER',
     'SOLVER_TYPE_DEFAULT',
+    'TIME_EVAL_MODE_DG_CONTEXT',
+    'TIME_EVAL_MODE_SET_TIME',
+    'TIME_EVAL_MODE_DEFAULT',
+    'TIME_EVAL_MODE_LIST',
     'AUTO_DIFF_TYPE_FORWARD',
     'AUTO_DIFF_TYPE_CENTRAL',
     'AUTO_DIFF_TYPE_LIST',
     'ROOT_FRAME_STRATEGY_GLOBAL_VALUE',
     'ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE',
     'ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE',
+    'ROOT_FRAME_STRATEGY_FWD_INCREMENT_VALUE',
     'ROOT_FRAME_STRATEGY_VALUE_LIST',
     'ROOT_FRAME_STRATEGY_DEFAULT_VALUE',
     'ROBUST_LOSS_TYPE_TRIVIAL_VALUE',
@@ -240,6 +291,32 @@ __all__ = [
     'ROBUST_LOSS_TYPE_CAUCHY_VALUE',
     'ROBUST_LOSS_TYPE_VALUE_LIST',
     'ROBUST_LOSS_TYPE_DEFAULT_VALUE',
+    'VALIDATE_MODE_PRE_VALIDATE_VALUE',
+    'VALIDATE_MODE_AT_RUNTIME_VALUE',
+    'VALIDATE_MODE_NONE_VALUE',
+    'VALIDATE_MODE_VALUE_LIST',
+    'EVENT_NAME_MARKER_CREATED',
+    'EVENT_NAME_BUNDLE_CREATED',
+    'EVENT_NAME_COLLECTION_CREATED',
+    'EVENT_NAME_COLLECTION_MARKERS_CHANGED',
+    'EVENT_NAME_COLLECTION_ATTRS_CHANGED',
+    'EVENT_NAME_ATTRIBUTE_STATE_CHANGED',
+    'EVENT_NAME_ATTRIBUTE_CONNECTION_CHANGED',
+    'EVENT_NAME_NODE_NAME_CHANGED',
+    'EVENT_NAME_NODE_DELETED',
+    'EVENT_NAME_MEMBERSHIP_CHANGED',
+    'EVENT_NAME_LIST',
+    'ATTRIBUTE_USED_HINT_DEFAULT_VALUE',
+    'ATTRIBUTE_USED_HINT_USED_VALUE',
+    'ATTRIBUTE_USED_HINT_NOT_USED_VALUE',
+    'ATTRIBUTE_USED_HINT_LIST',
+    'MARKER_USED_HINT_DEFAULT_VALUE',
+    'MARKER_USED_HINT_USED_VALUE',
+    'MARKER_USED_HINT_NOT_USED_VALUE',
+    'MARKER_USED_HINT_LIST',
+    'ACTION_STATUS_SUCCESS',
+    'ACTION_STATUS_FAILED',
+    'ACTION_STATUS_LIST',
 
     # Exceptions
     'MMException',
@@ -266,11 +343,13 @@ __all__ = [
 
     # Action
     'action_func_is_mmSolver',
+    'action_func_is_mmSolverAffects',
     'func_str_to_callable',
     'action_to_components',
 
     # Execute
-    'createExecuteOptions',
+    'createExecuteOptions',    # Old function name, to be deprecated in v0.4.0.
+    'create_execute_options',  # New function name
     'execute',
     'validate',
 
@@ -278,6 +357,8 @@ __all__ = [
     'calculate_marker_deviation',
     'get_markers_start_end_frames',
     'find_marker_attr_mapping',
+    'calculate_average_deviation',
+    'calculate_maximum_deviation',
 
     # Naming
     'find_valid_maya_node_name',
@@ -292,6 +373,9 @@ __all__ = [
     'set_solver_running',
     'get_user_interrupt',
     'set_user_interrupt',
+
+    # Root Frame
+    'get_root_frames_from_markers',
 
     # Node Conversion
     'get_bundle_nodes_from_marker_nodes',

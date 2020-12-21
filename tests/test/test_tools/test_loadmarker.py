@@ -28,12 +28,12 @@ import test.test_tools.toolsutils as test_tools_utils
 import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import mmSolver.tools.loadmarker.lib.interface as interface
 import mmSolver.tools.loadmarker.lib.utils as lib_utils
+import mmSolver.tools.loadmarker.lib.fileutils as lib_fileutils
 import mmSolver.tools.createmarker.tool as create_marker
 
 
 # @unittest.skip
 class TestLoadMarker(test_tools_utils.ToolsTestCase):
-
 
     def test_get_cameras(self):
         """
@@ -65,16 +65,16 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         for dir_name, file_name in values:
             path = self.get_data_path(dir_name, file_name)
 
-            valid = lib_utils.is_valid_file_path(path)
+            valid = lib_fileutils.is_valid_file_path(path)
             assert valid is True
 
-            fmt = lib_utils.get_file_path_format(path)
+            fmt = lib_fileutils.get_file_path_format(path)
             assert fmt is not None
 
-            file_info = lib_utils.get_file_info(path)
+            file_info = lib_fileutils.get_file_info(path)
             assert isinstance(file_info, interface.FileInfo)
 
-            file_info_data = lib_utils.get_file_info_strings(path)
+            file_info_data = lib_fileutils.get_file_info_strings(path)
             assert isinstance(file_info_data, dict)
             assert len(file_info_data) == 11
             keys = file_info_data.keys()

@@ -20,6 +20,7 @@ The main window for the 'Solver' tool.
 """
 
 import os
+import time
 import datetime
 import uuid
 from functools import partial
@@ -34,6 +35,7 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.undo as undo_utils
+import mmSolver.utils.tools as tools_utils
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.api as mmapi
@@ -57,6 +59,8 @@ class SolverWindow(BaseWindow):
     name = 'SolverWindow'
 
     def __init__(self, parent=None, name=None):
+        s = time.time()
+        s1 = time.time()
         super(SolverWindow, self).__init__(parent, name=name)
         self.setupUi(self)
         self.addSubForm(solver_layout.SolverLayout)
@@ -76,6 +80,8 @@ class SolverWindow(BaseWindow):
 
         # Hide irrelevant stuff
         self.baseHideProgressBar()
+        e1 = time.time()
+        s2 = time.time()
 
         # Callbacks
         self.callback_manager = maya_callbacks.CallbackManager()
@@ -95,6 +101,11 @@ class SolverWindow(BaseWindow):
             None,
             callback_ids,
         )
+        e2 = time.time()
+        e = time.time()
+        LOG.debug('SolverWindow init: %r seconds', e - s)
+        LOG.debug('SolverWindow initA: %r seconds', e1 - s1)
+        LOG.debug('SolverWindow initB: %r seconds', e2 - s2)
         return
 
     def __del__(self):
@@ -118,7 +129,7 @@ class SolverWindow(BaseWindow):
         file_menu.addAction(action)
 
         # Rename Collection
-        label = 'Rename Collection'
+        label = 'Rename Collection...'
         tooltip = 'Rename a Collection node.'
         action = QtWidgets.QAction(label, file_menu)
         action.setStatusTip(tooltip)
@@ -128,7 +139,7 @@ class SolverWindow(BaseWindow):
         file_menu.addSeparator()
 
         # Remove Collection
-        label = 'Remove Collection'
+        label = 'Remove Collection...'
         tooltip = 'Remove a Collection node.'
         action = QtWidgets.QAction(label, file_menu)
         action.setStatusTip(tooltip)
@@ -155,7 +166,7 @@ class SolverWindow(BaseWindow):
             edit_menu.addSection('Undo / Redo')
 
         # Undo
-        label = 'Undo (without UI update)'
+        label = 'Undo last command (with disabled viewport)'
         tooltip = ('Undo the Maya scene state, '
                    'without updating the viewport or solver UI')
         action = QtWidgets.QAction(label, edit_menu)
@@ -164,7 +175,7 @@ class SolverWindow(BaseWindow):
         edit_menu.addAction(action)
 
         # Redo
-        label = 'Redo (without UI update)'
+        label = 'Redo last command (with disabled viewport)'
         tooltip = ('Redo the Maya scene state, '
                    'without updating the viewport or solver UI')
         action = QtWidgets.QAction(label, edit_menu)
@@ -296,16 +307,16 @@ class SolverWindow(BaseWindow):
             self.subForm.attribute_browser.displayStateColumnChanged)
         view_menu.addAction(action)
 
-        # Display Attribute Min/Max
-        label = 'Display Attribute Min/Max'
-        tooltip = 'Display Attribute Minimum and Maximum columns'
-        value = lib_state.get_display_attribute_min_max_state()
+        # Display Attribute Smoothness
+        label = 'Display Attribute Smoothness'
+        tooltip = 'Display Attribute Smoothness columns'
+        value = lib_state.get_display_attribute_smoothness_state()
         action = QtWidgets.QAction(label, view_menu)
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
         action.toggled.connect(
-            self.subForm.attribute_browser.displayMinMaxColumnChanged)
+            self.subForm.attribute_browser.displaySmoothnessColumnChanged)
         view_menu.addAction(action)
 
         # Display Attribute Stiffness
@@ -320,16 +331,16 @@ class SolverWindow(BaseWindow):
             self.subForm.attribute_browser.displayStiffnessColumnChanged)
         view_menu.addAction(action)
 
-        # Display Attribute Smoothness
-        label = 'Display Attribute Smoothness'
-        tooltip = 'Display Attribute Smoothness columns'
-        value = lib_state.get_display_attribute_smoothness_state()
+        # Display Attribute Min/Max
+        label = 'Display Attribute Min/Max'
+        tooltip = 'Display Attribute Minimum and Maximum columns'
+        value = lib_state.get_display_attribute_min_max_state()
         action = QtWidgets.QAction(label, view_menu)
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
         action.toggled.connect(
-            self.subForm.attribute_browser.displaySmoothnessColumnChanged)
+            self.subForm.attribute_browser.displayMinMaxColumnChanged)
         view_menu.addAction(action)
 
         if Qt.IsPySide2 or Qt.IsPyQt5:
@@ -508,6 +519,24 @@ class SolverWindow(BaseWindow):
         self.subForm.collection_widget.removeActiveNode()
         return
 
+    def setActiveCollection(self, col):
+        assert isinstance(col, mmapi.Collection)
+        lib_state.set_active_collection(col)
+        self.triggerCollectionUpdate()
+        return
+
+    def triggerCollectionUpdate(self):
+        self.subForm.collection_widget.itemChanged.emit()
+        return
+
+    def triggerInputObjectsUpdate(self):
+        self.subForm.object_browser.dataChanged.emit()
+        return
+
+    def triggerOutputAttributesUpdate(self):
+        self.subForm.attribute_browser.dataChanged.emit()
+        return
+
     def undoTriggeredCB(self):
         LOG.debug('undoTriggeredCB')
         validation = lib_state.get_auto_update_solver_validation_state()
@@ -613,7 +642,13 @@ class SolverWindow(BaseWindow):
         undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
         undo_id += ' '
         undo_id += str(uuid.uuid4())
-        with undo_utils.undo_chunk_context(undo_id):
+        with tools_utils.tool_context(use_undo_chunk=True,
+                                      undo_chunk_name=undo_id,
+                                      restore_current_frame=False,
+                                      pre_update_frame=False,
+                                      post_update_frame=False,
+                                      use_dg_evaluation_mode=True,
+                                      disable_viewport=False):
             block = self.blockSignals(True)
             try:
                 mmapi.set_solver_running(True)
@@ -654,9 +689,9 @@ def loadAllResources():
             if os.path.isfile(file_path):
                 is_registered = QtCore.QResource.registerResource(file_path)
                 if is_registered:
-                    LOG.info("Resource registered: %r", file_path)
+                    LOG.debug("Resource registered: %r", file_path)
                 else:
-                    LOG.warn("Resource failed to register: %r", file_path)
+                    LOG.error("Resource failed to register: %r", file_path)
     return
 
 

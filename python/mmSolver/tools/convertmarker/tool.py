@@ -28,6 +28,7 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.camera as utils_camera
 import mmSolver.utils.viewport as utils_viewport
+import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.time as utils_time
 import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 import mmSolver.tools.convertmarker.lib as lib
@@ -66,9 +67,8 @@ def main():
         return
 
     mmapi.load_plugin()
-    try:
-        utils_viewport.viewport_turn_off()
 
+    with tools_utils.tool_context(pre_update_frame=True):
         # Compute the Marker Data.
         start_frame, end_frame = utils_time.get_maya_timeline_range_outer()
         mkr_data_list = lib.convert_nodes_to_marker_data_list(
@@ -100,8 +100,6 @@ def main():
             with_bundles=True,
         )
         mkr_nodes = [mkr.get_node() for mkr in mkr_list]
-    finally:
-        utils_viewport.viewport_turn_on()
     if len(mkr_nodes) > 0:
         maya.cmds.select(mkr_nodes, replace=True)
     return

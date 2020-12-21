@@ -26,6 +26,7 @@ import maya.OpenMayaAnim as OpenMayaAnim
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.event as event_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.animcurve as anim_utils
 import mmSolver.utils.time as time_utils
@@ -85,6 +86,45 @@ def _create_marker_attributes(node):
         plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
 
+    attr = const.MARKER_ATTR_LONG_NAME_AVG_DEVIATION
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='double',
+            minValue=-1.0,
+            defaultValue=-1.0,
+            keyable=True
+        )
+        plug = '{0}.{1}'.format(node, attr)
+        maya.cmds.setAttr(plug, lock=True)
+
+    attr = const.MARKER_ATTR_LONG_NAME_MAX_DEVIATION
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='double',
+            minValue=-1.0,
+            defaultValue=-1.0,
+            keyable=True
+        )
+        plug = '{0}.{1}'.format(node, attr)
+        maya.cmds.setAttr(plug, lock=True)
+
+    attr = const.MARKER_ATTR_LONG_NAME_MAX_DEV_FRAME
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='long',
+            minValue=-1,
+            defaultValue=-1,
+            keyable=True
+        )
+        plug = '{0}.{1}'.format(node, attr)
+        maya.cmds.setAttr(plug, lock=True)
+
     attr = const.MARKER_ATTR_LONG_NAME_BUNDLE
     if not node_utils.attribute_exists(attr, node):
         maya.cmds.addAttr(
@@ -110,6 +150,18 @@ def _create_marker_attributes(node):
             longName=attr,
             attributeType='long',
             defaultValue=-1
+        )
+        plug = '{0}.{1}'.format(node, attr)
+        maya.cmds.setAttr(plug, lock=True)
+
+    attr = const.MARKER_ATTR_LONG_NAME_MARKER_USED_HINT
+    if not node_utils.attribute_exists(attr, node):
+        maya.cmds.addAttr(
+            node,
+            longName=attr,
+            attributeType='long',
+            defaultValue=0,
+            keyable=True
         )
         plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
@@ -154,15 +206,15 @@ class Marker(object):
         Initialize a Marker, give a name to connect to an existing Maya node.
 
         :param node: The Maya node to connect to.
-        :type node: None or str
+        :type node: None or basestring
 
         :param name: This is a backwards compatible kwarg for 'node'.
-        :type name: None or str
+        :type name: None or basestring
         """
         if name is not None:
             msg = (
                 "mmSolver.api.Marker(name=value), "
-                "'name' is a deprecated flag, use 'node' "
+                "'name' is a deprecated flag, use 'node' keyword. "
             )
             warnings.warn(msg)
             node = name
@@ -246,6 +298,7 @@ class Marker(object):
         """
         node = self.get_node()
         if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
             return None
         uids = maya.cmds.ls(node, uuid=True) or []
         return uids[0]
@@ -266,8 +319,7 @@ class Marker(object):
         if animFn is None:
             node = self.get_node()
             if node is None:
-                msg = 'Could not get Marker node. self=%r'
-                LOG.warning(msg, self)
+                LOG.warn('Could not get Marker node. self=%r', self)
                 return animFn
             plug_name = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_DEVIATION)
             animCurves = maya.cmds.listConnections(plug_name, type='animCurveTU') or []
@@ -409,6 +461,9 @@ class Marker(object):
         if not maya.cmds.isConnected(src, dst):
             maya.cmds.connectAttr(src, dst)
 
+        event_utils.trigger_event(
+            const.EVENT_NAME_MARKER_CREATED,
+            mkr=self)
         return self
 
     def delete_node(self):
@@ -419,6 +474,9 @@ class Marker(object):
         :rtype: Marker
         """
         node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return self
         maya.cmds.delete(node)
         return self
 
@@ -452,18 +510,15 @@ class Marker(object):
         v = None
         node = self.get_node()
         if node is None:
-            msg = 'Could not get Marker node. self=%r'
-            LOG.warning(msg, self)
+            LOG.warn('Could not get Marker node. self=%r', self)
             return v
         cam = self.get_camera()
         if cam is None:
-            msg = 'Could not get Camera node. self=%r'
-            LOG.warning(msg, self)
+            LOG.warn('Could not get Camera node. self=%r', self)
             return v
         bnd = self.get_bundle()
         if bnd is None:
-            msg = 'Could not get Bundle node. self=%r'
-            LOG.warning(msg, self)
+            LOG.warn('Could not get Bundle node. self=%r', self)
             return v
 
         assert len(times) > 0
@@ -477,11 +532,16 @@ class Marker(object):
         image_width = float(image_width)
         image_height = image_width * (vfa / hfa)
 
+        weights_list = [self.get_weight(time=t) for t in times]
+        enabled_list = [self.get_enable(time=t) for t in times]
+
         bnd_node = bnd.get_node()
         dev_list = markerutils.calculate_marker_deviation(
             node, bnd_node,
             cam_tfm, cam_shp,
             times,
+            weights_list,
+            enabled_list,
             image_width, image_height
         )
         if dev_list is None:
@@ -500,12 +560,10 @@ class Marker(object):
         :returns: The enabled state of the marker.
         :rtype: int
         """
-        v = None
         node = self.get_node()
         if node is None:
-            msg = 'Could not get node. self=%r'
-            LOG.warning(msg, self)
-            return v
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
         plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_ENABLE)
         if time is None:
             v = maya.cmds.getAttr(plug)
@@ -544,8 +602,7 @@ class Marker(object):
         times = []
         node = self.get_node()
         if node is None:
-            msg = 'Could not get node. self=%r'
-            LOG.warning(msg, self)
+            LOG.warn('Could not get node. self=%r', self)
             return times
         plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_ENABLE)
 
@@ -582,12 +639,10 @@ class Marker(object):
         :returns: The weight of the marker.
         :rtype: float
         """
-        v = None
         node = self.get_node()
         if node is None:
-            msg = 'Could not get node. self=%r'
-            LOG.warning(msg, self)
-            return v
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
         plug = '{0}.{1}'.format(node, const.MARKER_ATTR_LONG_NAME_WEIGHT)
         if time is None:
             v = maya.cmds.getAttr(plug)
@@ -600,34 +655,74 @@ class Marker(object):
         Calculate a single float number (in pixels) representing the
         average deviation of this Marker.
         """
-        dev = -1.0
-
-        frames = self._get_enabled_solved_frames()
-        if len(frames) == 0:
-            return dev
-
-        dev_list = self.get_deviation(times=frames)
-        dev = sum(dev_list) / len(dev_list)
+        node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
+        attr_name = const.MARKER_ATTR_LONG_NAME_AVG_DEVIATION
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        dev = maya.cmds.getAttr(plug_name)
         return dev
+
+    def set_average_deviation(self, value):
+        """
+        Calculate a single float number (in pixels) representing the
+        average deviation of this Marker.
+        """
+        node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
+        attr_name = const.MARKER_ATTR_LONG_NAME_AVG_DEVIATION
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        try:
+            maya.cmds.setAttr(plug_name, lock=False)
+            maya.cmds.setAttr(plug_name, value)
+        finally:
+            maya.cmds.setAttr(plug_name, lock=True)
+        return
 
     def get_maximum_deviation(self):
         """
         Return a tuple of (value, frame) for the deviation
         value and frame number that is the highest.
         """
-        max_dev = -1.0
-        max_frm = -1.0
+        node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
+        attr_name = const.MARKER_ATTR_LONG_NAME_MAX_DEVIATION
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        max_dev = maya.cmds.getAttr(plug_name)
 
-        frames = self._get_enabled_solved_frames()
-        if len(frames) == 0:
-            return max_dev, max_frm
-
-        dev_list = self.get_deviation(times=frames)
-        for dev, frm in zip(dev_list, frames):
-            if dev > max_dev:
-                max_dev = dev
-                max_frm = frm
+        attr_name = const.MARKER_ATTR_LONG_NAME_MAX_DEV_FRAME
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        max_frm = maya.cmds.getAttr(plug_name)
         return max_dev, max_frm
+
+    def set_maximum_deviation(self, max_dev, max_frm):
+        """
+        Return a tuple of (value, frame) for the deviation
+        value and frame number that is the highest.
+        """
+        node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
+        attr_name = const.MARKER_ATTR_LONG_NAME_MAX_DEVIATION
+        value_plug = '{0}.{1}'.format(node, attr_name)
+
+        attr_name = const.MARKER_ATTR_LONG_NAME_MAX_DEV_FRAME
+        frame_plug = '{0}.{1}'.format(node, attr_name)
+        try:
+            maya.cmds.setAttr(value_plug, lock=False)
+            maya.cmds.setAttr(frame_plug, lock=False)
+            maya.cmds.setAttr(value_plug, max_dev)
+            maya.cmds.setAttr(frame_plug, max_frm)
+        finally:
+            maya.cmds.setAttr(value_plug, lock=True)
+            maya.cmds.setAttr(frame_plug, lock=True)
+        return
 
     def get_deviation_frames(self,
                              frame_range_start=None,
@@ -660,8 +755,7 @@ class Marker(object):
         times = []
         node = self.get_node()
         if node is None:
-            msg = 'Could not get node. self=%r'
-            LOG.warning(msg, self)
+            LOG.warn('Could not get Marker node. self=%r', self)
             return times
         anim_curve_fn = self.get_deviation_anim_curve_fn()
 
@@ -692,11 +786,12 @@ class Marker(object):
     def _get_enabled_solved_frames(self,
                                    frame_range_start=None,
                                    frame_range_end=None):
-        enable_frames = self.get_enabled_frames()
-        if len(enable_frames) == 0:
-            enable_frames = [maya.cmds.currentTime(query=True)]
-        assert len(enable_frames) > 0
-        enable_frames_set = set(enable_frames)
+        """
+        Calculate the frames that are both solved and enabled.
+        """
+        enable_frames_set = set(self.get_enabled_frames())
+        if len(enable_frames_set) == 0:
+            enable_frames_set = set([maya.cmds.currentTime(query=True)])
 
         dev_frames_set = set(self.get_deviation_frames(
             frame_range_start=frame_range_start,
@@ -717,12 +812,10 @@ class Marker(object):
                   (in pixels), for each time given.
         :rtype: [float, ..]
         """
-        v = None
         node = self.get_node()
         if node is None:
-            msg = 'Could not get Marker node. self=%r'
-            LOG.warning(msg, self)
-            return v
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
 
         frames = []
         if times is None:
@@ -772,6 +865,9 @@ class Marker(object):
         assert len(times) == len(values)
 
         node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return
         attr_name = const.MARKER_ATTR_LONG_NAME_DEVIATION
         plug = '{0}.{1}'.format(node, attr_name)
         try:
@@ -795,13 +891,13 @@ class Marker(object):
         """
         node = self.get_node()
         if node is None:
-            msg = 'Could not get node. self=%r'
-            LOG.warning(msg, self)
-            return
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
         shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
         if len(shps) == 0:
-            msg = 'Could not find shape to get colour. node=%r shps=%r'
-            LOG.warning(msg, node, shps)
+            LOG.warn(
+                'Could not find shape to get colour. node=%r shps=%r',
+                node, shps)
             return
         shp = shps[0]
         v = node_utils.get_node_wire_colour_rgb(shp)
@@ -817,13 +913,13 @@ class Marker(object):
         assert rgb is None or isinstance(rgb, (tuple, list))
         node = self.get_node()
         if node is None:
-            msg = 'Could not get node. self=%r'
-            LOG.warning(msg, self)
+            LOG.warn('Could not get Marker node. self=%r', self)
             return
         shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
         if len(shps) == 0:
-            msg = 'Could not find shape to set colour. node=%r shps=%r'
-            LOG.warning(msg, node, shps)
+            LOG.warn(
+                'Could not find shape to set colour. node=%r shps=%r',
+                node, shps)
             return
         shp = shps[0]
         node_utils.set_node_wire_colour_rgb(shp, rgb)
@@ -885,6 +981,9 @@ class Marker(object):
         assert maya.cmds.objExists(bnd_node)
 
         mkr_node = self.get_node()
+        if mkr_node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
         assert isinstance(mkr_node, (str, unicode))
         assert maya.cmds.objExists(mkr_node)
 
@@ -912,7 +1011,13 @@ class Marker(object):
         """
         bnd = self.get_bundle()
         mkr_node = self.get_node()
+        if mkr_node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return
         bnd_node = bnd.get_node()
+        if bnd_node is None:
+            LOG.warn('Could not get Bundle node. self=%r', self)
+            return
         src = bnd_node + '.message'
         dst = mkr_node + '.bundle'
         if maya.cmds.isConnected(src, dst):
@@ -930,6 +1035,9 @@ class Marker(object):
         :rtype: None or Camera
         """
         mkr_node = self.get_node()
+        if mkr_node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
 
         cam_tfm, cam_shp = node_utils.get_camera_above_node(mkr_node)
 
@@ -973,6 +1081,9 @@ class Marker(object):
         assert isinstance(cam, camera.Camera)
 
         mkr_node = self.get_node()
+        if mkr_node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return
         cam_tfm = cam.get_transform_node()
         cam_shp = cam.get_shape_node()
 
@@ -1024,6 +1135,9 @@ class Marker(object):
         :returns: None
         """
         mkr_node = self.get_node()
+        if mkr_node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return
         cam = self.get_camera()
         cam_tfm = cam.get_transform_node()
         cam_shp = cam.get_shape_node()
@@ -1051,6 +1165,9 @@ class Marker(object):
         :rtype: MarkerGroup or None
         """
         mkr_node = self.get_node()
+        if mkr_node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return
 
         mkr_grp_node = api_utils.get_marker_group_above_node(mkr_node)
 
@@ -1080,6 +1197,9 @@ class Marker(object):
         assert isinstance(mkr_grp, markergroup.MarkerGroup)
 
         mkr_node = self.get_node()
+        if mkr_node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return
         mkr_grp_node = mkr_grp.get_node()
 
         # Make sure the camera is valid for us to link to.
@@ -1111,6 +1231,9 @@ class Marker(object):
         Re-parent the current marker to the world; it will live under no
         """
         mkr_node = self.get_node()
+        if mkr_node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return
         cam = self.get_camera()
         cam_tfm = cam.get_transform_node()
         cam_shp = cam.get_shape_node()
@@ -1126,6 +1249,53 @@ class Marker(object):
         # Move the marker under the world root, don't modify the marker in
         # any way otherwise.
         maya.cmds.parent(mkr_node, relative=True, world=True)
+        return
+
+    ############################################################################
+
+    def get_used_hint(self):
+        """
+        Is the Marker used by the solver?
+
+        This attribute does not affect the solve, but is provided as a hint
+        to show users (in UIs), that a marker is unused.
+
+        :returns: A value of MARKER_USED_HINT_LIST that indicates
+            the current used state hint.
+        :rtype: int
+        """
+        node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
+        attr_name = const.MARKER_ATTR_LONG_NAME_MARKER_USED_HINT
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        value = maya.cmds.getAttr(plug_name)
+        assert value in const.MARKER_USED_HINT_LIST
+        return value
+
+    def set_used_hint(self, value):
+        """
+        Set the value indicating this Marker is used by the solver.
+
+        See the Marker.get_used_hint() method for details.
+
+        :param value: The value to set, a value in MARKER_USED_HINT_LIST.
+        :type value: int
+        """
+        assert isinstance(value, (int, long))
+        assert value in const.MARKER_USED_HINT_LIST
+        node = self.get_node()
+        if node is None:
+            LOG.warn('Could not get Marker node. self=%r', self)
+            return None
+        attr_name = const.MARKER_ATTR_LONG_NAME_MARKER_USED_HINT
+        plug_name = '{0}.{1}'.format(node, attr_name)
+        try:
+            maya.cmds.setAttr(plug_name, lock=False)
+            maya.cmds.setAttr(plug_name, value)
+        finally:
+            maya.cmds.setAttr(plug_name, lock=True)
         return
 
 
@@ -1169,4 +1339,13 @@ def update_deviation_on_markers(mkr_list, solres_list):
                     idx += 1
             assert idx == (len(deviation_list))
             mkr.set_deviation(frm_list, dev_list)
+
+            # Average Deviation
+            avg_dev = markerutils.calculate_average_deviation(dev_list)
+            mkr.set_average_deviation(avg_dev)
+
+            # Max Deviation
+            max_dev, max_frm = markerutils.calculate_maximum_deviation(
+                frm_list, dev_list)
+            mkr.set_maximum_deviation(max_dev, int(max_frm))
     return

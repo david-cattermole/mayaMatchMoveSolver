@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Paste Camera (MM Solver)...
 #
-# 3DE4.script.version:  v1.2
+# 3DE4.script.version:  v1.4
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Camera
 # 3DE4.script.gui:      Object Browser::Context Menu Cameras
@@ -46,19 +46,8 @@
 #
 #
 
-
-import sys
-import collections
-import json
 import os
-import collections
-import tempfile
-
-import tde4
-import vl_sdv
-
 import sys
-import collections
 import json
 
 import tde4
@@ -519,14 +508,17 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
             and file_start_frame is not None
             and file_end_frame is not None
             and plate_path):
-        tde4.setCameraPath(cam_id, plate_path)
-
         # Set plate frame range
         file_start = int(file_start_frame)
         file_end = int(file_end_frame)
         tde4.setCameraSequenceAttr(cam_id, file_start, file_end, 1)
         if SUPPORT_CAMERA_FRAME_OFFSET is True:
             tde4.setCameraFrameOffset(cam_id, file_start)
+
+        # Note: It is important to set the file path after the sequence
+        # attributes, otherwise the camera will not show the image.
+        plate_path = os.path.normpath(plate_path)
+        tde4.setCameraPath(cam_id, plate_path)
 
     # Set pixel aspect ratio
     par = options.get('par')
@@ -879,6 +871,7 @@ def _build_widgets_with_data(req, pgroup_id, cam_id, lens_id, file_data):
     tde4.addSeparatorWidget(req, SEP_01_WIDGET)
 
     if plate_path:
+        plate_path = os.path.normpath(plate_path)
         tde4.addToggleWidget(req, PLATE_LOAD_WIDGET, PLATE_LOAD_LABEL, True)
         tde4.addTextFieldWidget(req, PLATE_PATH_WIDGET, PLATE_PATH_LABEL, plate_path)
 

@@ -25,10 +25,12 @@ import mmSolver._api.constant as const
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
 import mmSolver._api.marker as marker
+import mmSolver._api.solverutils as solverutils
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.solverstep as solverstep
 import mmSolver._api.solvertriangulate as solvertriangulate
 import mmSolver._api.markerutils as markerutils
+import mmSolver._api.rootframe as rootframe
 import mmSolver._api.action as api_action
 import mmSolver._api.compile as api_compile
 
@@ -43,7 +45,6 @@ ATTR_CATEGORIES = [
     'camera_intrinsic',
     'lens_distortion',
 ]
-
 
 def _gen_two_frame_fwd(int_list):
     """
@@ -135,17 +136,6 @@ def _split_mkr_attr_into_categories(mkr_list, attr_list):
     )
     for category in ATTR_CATEGORIES:
         category_node_attrs = attrs_in_categories[category]
-
-        # num_attrs = [len(v) for k, v in category_node_attrs.items()]
-        # num_attrs = sum(num_attrs)
-
-        # msg = 'Attribute Category=%r'
-        # LOG.warn(msg, category)
-        # msg = '-> Number of Nodes=%r'
-        # LOG.warn(msg, len(category_node_attrs.keys()))
-        # msg = '-> Number Of Attributes=%r'
-        # LOG.warn(msg, num_attrs)
-
         for node, attrs in category_node_attrs.items():
             if len(attrs) == 0:
                 continue
@@ -180,6 +170,7 @@ def _compile_multi_root_frames(col,
                                attr_list,
                                batch_frame_list,
                                root_iter_num,
+                               precomputed_data,
                                withtest,
                                verbose):
     """
@@ -206,7 +197,7 @@ def _compile_multi_root_frames(col,
     :type withtest: bool
 
     :param verbose:
-        Print out more detail to 'stdout'.
+        Print out more detail to 'stderr'.
     :type verbose: bool
 
     :return:
@@ -235,7 +226,6 @@ def _compile_multi_root_frames(col,
                     root_attr_list.append(attr)
 
         sol = solverstep.SolverStep()
-        sol.set_verbose(verbose)
         sol.set_max_iterations(root_iter_num)
         sol.set_frame_list(frm_list)
         sol.set_attributes_use_animated(True)
@@ -243,13 +233,14 @@ def _compile_multi_root_frames(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
             sol, col, root_mkr_list, root_attr_list, withtest, cache)
         for action, vaction in generator:
             yield action, vaction
-        return
+    return
 
 
 def _compile_remove_inbetween_frames(attr_list,
@@ -324,7 +315,9 @@ def _compile_multi_inbetween_frames(col,
                                     attr_list,
                                     all_frame_list,
                                     global_solve,
+                                    eval_complex_graphs,
                                     anim_iter_num,
+                                    precomputed_data,
                                     withtest,
                                     verbose):
     """
@@ -347,6 +340,12 @@ def _compile_multi_inbetween_frames(col,
         solve, rather than one solve per-frame.
     :type global_solve: bool
 
+    :param eval_complex_graphs:
+        If True, the solve will try to trigger evalation of complex
+        node graphs (such as Mesh Rivets), by changing the timeEvalMode
+        of the mmSolver command.
+    :type eval_complex_graphs: bool
+
     :param anim_iter_num:
         Number of iterations for solving animated attributes.
     :type anim_iter_num: int
@@ -367,7 +366,6 @@ def _compile_multi_inbetween_frames(col,
     if global_solve is True:
         # Do Global Solve with all frames.
         sol = solverstep.SolverStep()
-        sol.set_verbose(verbose)
         sol.set_max_iterations(anim_iter_num)
         sol.set_frame_list(all_frame_list)
         sol.set_attributes_use_animated(True)
@@ -375,6 +373,7 @@ def _compile_multi_inbetween_frames(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
@@ -386,8 +385,11 @@ def _compile_multi_inbetween_frames(col,
         for i, frm in enumerate(all_frame_list):
             is_first_frame = i == 0
             one_frame_list = [frm]
+            time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
+            if eval_complex_graphs is True:
+                time_eval_mode = const.TIME_EVAL_MODE_SET_TIME
+
             sol = solverstep.SolverStep()
-            sol.set_verbose(verbose)
             sol.set_max_iterations(anim_iter_num)
             sol.set_frame_list(one_frame_list)
             sol.set_attributes_use_animated(True)
@@ -395,6 +397,8 @@ def _compile_multi_inbetween_frames(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(not is_first_frame)
             sol.set_use_stiffness(not is_first_frame)
+            sol.set_time_eval_mode(time_eval_mode)
+            sol.set_precomputed_data(precomputed_data)
 
             generator = api_compile.compile_solver_with_cache(
                 sol, col, mkr_list, attr_list, withtest, cache)
@@ -414,8 +418,11 @@ def _compile_multi_frame(col,
                          root_iter_num,
                          anim_iter_num,
                          global_solve,
+                         eval_complex_graphs,
                          root_frame_strategy,
                          triangulate_bundles,
+                         use_euler_filter,
+                         precomputed_data,
                          withtest,
                          verbose):
     """
@@ -463,15 +470,27 @@ def _compile_multi_frame(col,
         attributes?
     :type global_solve: bool
 
+    :param eval_complex_graphs:
+        If True, the solve will try to trigger evalation of complex
+        node graphs (such as Mesh Rivets), by changing the timeEvalMode
+        of the mmSolver command.
+    :type eval_complex_graphs: bool
+
     :param root_frame_strategy:
         The strategy ordering of root frames and how to solve them.
-        Value must be one in ROOT_FRAME_STRATEGY_VALUE_LIST
+        Value must be one in ROOT_FRAME_STRATEGY_VALUE_LIST.
     :type root_frame_strategy:
 
     :param triangulate_bundles:
         If True, unlocked bundles will be triangulated before being
         further refined by the solver processes.
     :type triangulate_bundles: bool
+
+    :param use_euler_filter:
+        Perform a Euler Filter after solving? A Euler filter will make
+        sure no two keyframes rotate by more than 180 degrees, which
+        will remove "Euler Flipping".
+    :type use_euler_filter: bool
 
     :param withtest:
         Should validation tests be generated?
@@ -486,6 +505,7 @@ def _compile_multi_frame(col,
         the second Action is for validation of inputs.
     :rtype: (Action, Action)
     """
+    # Get Frame numbers.
     root_frame_list_num = [x.get_number() for x in root_frame_list]
     frame_list_num = [x.get_number() for x in frame_list]
     non_root_frame_list_num = set(frame_list_num) - set(root_frame_list_num)
@@ -532,7 +552,6 @@ def _compile_multi_frame(col,
         )
         for new_mkr_list, new_attr_list in zip(meta_mkr_list, meta_attr_list):
             sol = solverstep.SolverStep()
-            sol.set_verbose(verbose)
             sol.set_max_iterations(block_iter_num)
             sol.set_frame_list(root_frame_list)
             sol.set_attributes_use_animated(True)
@@ -540,6 +559,7 @@ def _compile_multi_frame(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_precomputed_data(precomputed_data)
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
@@ -569,7 +589,6 @@ def _compile_multi_frame(col,
     if root_frame_strategy == const.ROOT_FRAME_STRATEGY_GLOBAL_VALUE:
         # Global solve of root frames.
         sol = solverstep.SolverStep()
-        sol.set_verbose(verbose)
         sol.set_max_iterations(root_iter_num)
         sol.set_frame_list(root_frame_list)
         sol.set_attributes_use_animated(True)
@@ -577,6 +596,7 @@ def _compile_multi_frame(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
@@ -586,14 +606,25 @@ def _compile_multi_frame(col,
     else:
         # Get the order of frames to solve with.
         batch_frame_list = []
+
         if root_frame_strategy == const.ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE:
+            # Two frames at a time, moving forward.
+            batch_frame_list = _gen_two_frame_fwd(root_frame_list_num)
+
+        elif root_frame_strategy == const.ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE:
             # Two frames at a time, moving forward, plus a global solve
             # at the end.
             batch_frame_list = _gen_two_frame_fwd(root_frame_list_num)
             batch_frame_list.append(root_frame_list)
-        elif root_frame_strategy == const.ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE:
-            # Two frames at a time, moving forward.
-            batch_frame_list = _gen_two_frame_fwd(root_frame_list_num)
+
+        elif root_frame_strategy == const.ROOT_FRAME_STRATEGY_FWD_INCREMENT_VALUE:
+            # 3 frames at a time, incrementing by 3 frames, moving
+            # forward.
+            frame_tmp_list = rootframe.generate_increment_frame_forward(
+                root_frame_list_num)
+            for frame_tmp in frame_tmp_list:
+                batch_frame_list.append([frame.Frame(f) for f in frame_tmp])
+
         else:
             # TODO: Root frame ordering can be determined by the
             #  count of markers available at each frame. After we
@@ -602,12 +633,14 @@ def _compile_multi_frame(col,
             #  highest, then add the next highest, etc. This
             #  should ensure stability of the solver is maximum.
             raise NotImplementedError
+
         generator = _compile_multi_root_frames(
             col,
             mkr_list,
             attr_list,
             batch_frame_list,
             root_iter_num,
+            precomputed_data,
             withtest,
             verbose
         )
@@ -630,13 +663,24 @@ def _compile_multi_frame(col,
     if only_root_frames is True:
         return
 
+    # Perform an euler filter on all unlocked rotation attributes.
+    if use_euler_filter is True:
+        generator = solverutils.compile_euler_filter(
+            attr_list,
+            withtest
+        )
+        for action, vaction in generator:
+            yield action, vaction
+
     generator = _compile_multi_inbetween_frames(
         col,
         mkr_list,
         attr_list,
         all_frame_list,
         global_solve,
+        eval_complex_graphs,
         anim_iter_num,
+        precomputed_data,
         withtest,
         verbose,
     )
@@ -652,6 +696,7 @@ def _compile_single_frame(col,
                           block_iter_num,
                           lineup_iter_num,
                           auto_attr_blocks,
+                          precomputed_data,
                           withtest,
                           verbose):
     """
@@ -702,7 +747,6 @@ def _compile_single_frame(col,
         )
         for new_mkr_list, new_attr_list in zip(meta_mkr_list, meta_attr_list):
             sol = solverstep.SolverStep()
-            sol.set_verbose(verbose)
             sol.set_max_iterations(block_iter_num)
             sol.set_frame_list([single_frame])
             sol.set_attributes_use_animated(True)
@@ -710,6 +754,7 @@ def _compile_single_frame(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_precomputed_data(precomputed_data)
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
@@ -719,7 +764,6 @@ def _compile_single_frame(col,
 
     # Single frame solve
     sol = solverstep.SolverStep()
-    sol.set_verbose(verbose)
     sol.set_max_iterations(lineup_iter_num)
     sol.set_frame_list([single_frame])
     sol.set_attributes_use_animated(True)
@@ -727,6 +771,7 @@ def _compile_single_frame(col,
     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
     sol.set_use_smoothness(False)
     sol.set_use_stiffness(False)
+    sol.set_precomputed_data(precomputed_data)
 
     cache = api_compile.create_compile_solver_cache()
     generator = api_compile.compile_solver_with_cache(
@@ -787,6 +832,7 @@ class SolverStandard(solverbase.SolverBase):
         # These variables are not officially supported by the class.
         self._auto_attr_blocks = False
         self._triangulate_bundles = False
+        self._use_euler_filter = True
 
         # These variables are not used by the class.
         self._print_statistics_inputs = False
@@ -891,6 +937,32 @@ class SolverStandard(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_eval_complex_graphs(self):
+        """
+        Get 'Evaluate Complex Node Graphs' value.
+
+        :rtype: bool
+        """
+        return self._data.get(
+            'eval_complex_node_graphs',
+            const.SOLVER_STD_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE)
+
+    def set_eval_complex_graphs(self, value):
+        """
+        Set 'Evaluate Complex Node Graph' value.
+
+        If True, the solve will try to trigger evalation of complex
+        node graphs (such as Mesh Rivets), by changing the
+        timeEvalModeq of the mmSolver command.
+
+        :param value: Value to be set.
+        :type value: bool or int or long
+        """
+        assert isinstance(value, (bool, int, long))
+        self._data['eval_complex_node_graphs'] = bool(value)
+
+    ############################################################################
+
     def get_root_frame_strategy(self):
         """
         Get Root Frame Strategy value.
@@ -905,10 +977,14 @@ class SolverStandard(solverbase.SolverBase):
         """
         Set Root Frame Strategy value.
 
+        The strategy ordering of root frames and how to solve them.
+        Value must be one in ROOT_FRAME_STRATEGY_VALUE_LIST.
+
         :param value: Value to be set.
         :type value: int or long
         """
         assert isinstance(value, (int, long))
+        assert value in const.ROOT_FRAME_STRATEGY_VALUE_LIST
         self._data['root_frame_strategy'] = value
 
     ############################################################################
@@ -1181,6 +1257,7 @@ class SolverStandard(solverbase.SolverBase):
         single_frame = self.get_single_frame()
         only_root_frames = self.get_only_root_frames()
         global_solve = self.get_global_solve()
+        eval_complex_graphs = self.get_eval_complex_graphs()
         block_iter_num = self.get_block_iteration_num()
         root_iter_num = self.get_root_iteration_num()
         anim_iter_num = self.get_anim_iteration_num()
@@ -1191,8 +1268,20 @@ class SolverStandard(solverbase.SolverBase):
 
         auto_attr_blocks = self._auto_attr_blocks
         triangulate_bundles = self._triangulate_bundles
+        use_euler_filter = self._use_euler_filter
         withtest = True
         verbose = True
+        precomputed_data = self.get_precomputed_data()
+
+        # Pre-calculate the 'affects' relationship.
+        generator = solverutils.compile_solver_affects(
+            col,
+            mkr_list,
+            attr_list,
+            precomputed_data,
+            withtest)
+        for action, vaction in generator:
+            yield action, vaction
 
         if use_single_frame is True:
             generator = _compile_single_frame(
@@ -1203,6 +1292,7 @@ class SolverStandard(solverbase.SolverBase):
                 block_iter_num,
                 lineup_iter_num,
                 auto_attr_blocks,
+                precomputed_data,
                 withtest,
                 verbose,
             )
@@ -1221,8 +1311,11 @@ class SolverStandard(solverbase.SolverBase):
                 root_iter_num,
                 anim_iter_num,
                 global_solve,
+                eval_complex_graphs,
                 root_frame_strategy,
                 triangulate_bundles,
+                use_euler_filter,
+                precomputed_data,
                 withtest,
                 verbose,
             )

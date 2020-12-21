@@ -43,13 +43,14 @@
 #include <MMLensModelToggleNode.h>
 #include <MMLensData.h>
 #include <MMReprojectionCmd.h>
+#include <MMSolverAffectsCmd.h>
 
 
-#define REGISTER_COMMAND(plugin, name, creator, syntax, stat)   \
-    stat = plugin.registerCommand( name, creator, syntax);      \
-    if (!stat) {                                                \
-        stat.perror(MString(name) + ": registerCommand");       \
-        return status;                                          \
+#define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
+    stat = plugin.registerCommand( name, creator, syntax);    \
+    if (!stat) {                                              \
+        stat.perror(MString(name) + ": registerCommand");     \
+        return status;                                        \
     }
 
 #define DEREGISTER_COMMAND(plugin, name, stat)              \
@@ -59,15 +60,11 @@
         return stat;                                        \
     }
 
-#define REGISTER_NODE(plugin, name,                     \
-                      id, creator,                      \
-                      initialize, stat)                 \
-    stat = plugin.registerNode(name,                    \
-                               id, creator,             \
-                               initialize);             \
-    if (!stat) {                                        \
-        stat.perror(MString(name) + ": registerNode");  \
-        return (stat);                                  \
+#define REGISTER_NODE(plugin, name, id, creator, initialize, stat) \
+    stat = plugin.registerNode(name, id, creator, initialize);     \
+    if (!stat) {                                                   \
+        stat.perror(MString(name) + ": registerNode");             \
+        return (stat);                                             \
     }
 
 #define REGISTER_DATA(plugin, name,                     \
@@ -93,11 +90,12 @@
         return (stat);                                          \
     }
 
-#define DEREGISTER_NODE(plugin, name, id, stat)             \
-    stat = plugin.deregisterNode(id);                       \
-    if (!stat) {                                            \
-        stat.perror(MString(name) + ": deregisterNode");    \
-        return (stat);                                      \
+
+#define DEREGISTER_NODE(plugin, name, id, stat)          \
+    stat = plugin.deregisterNode(id);                    \
+    if (!stat) {                                         \
+        stat.perror(MString(name) + ": deregisterNode"); \
+        return (stat);                                   \
     }
 
 #define DEREGISTER_DATA(plugin, name, id, stat)             \
@@ -120,8 +118,8 @@
                                     mtx_id,                     \
                                     &classification);           \
     if (!stat) {                                                \
-        stat.perror(MString(name) + ": registerTransform");     \
-        return (stat);                                          \
+            stat.perror(MString(name) + ": registerTransform"); \
+            return (stat);                                      \
     }
 
 
@@ -159,6 +157,12 @@ MStatus initializePlugin(MObject obj) {
                      MMReprojectionCmd::cmdName(),
                      MMReprojectionCmd::creator,
                      MMReprojectionCmd::newSyntax,
+                     status);
+
+    REGISTER_COMMAND(plugin,
+                     MMSolverAffectsCmd::cmdName(),
+                     MMSolverAffectsCmd::creator,
+                     MMSolverAffectsCmd::newSyntax,
                      status);
 
     REGISTER_COMMAND(plugin,
@@ -260,6 +264,7 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMSolverTypeCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, MMSolverAffectsCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
 
     DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(),

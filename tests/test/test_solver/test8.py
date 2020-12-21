@@ -98,25 +98,36 @@ class TestSolver8(solverUtils.SolverTestCase):
         ]
         frames = [1]
 
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+        }
+
+        # save the output
+        path = self.get_data_path('solver_test8_%s_before.ma' % solver_name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
+
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-        camera=cameras,
-            marker=markers,
-            attr=node_attrs,
             frame=frames,
             iterations=1000,
             solverType=solver_index,
             verbose=True,
-        )
+            **kwargs)
         e = time.time()
         print 'total time:', e - s
 
         # save the output
-        path = self.get_data_path('solver_test8_after.ma')
+        path = self.get_data_path('solver_test8_%s_after.ma' % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
-        
+
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
 

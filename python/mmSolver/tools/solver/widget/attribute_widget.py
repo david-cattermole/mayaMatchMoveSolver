@@ -49,12 +49,26 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def _populateWidgetsEnabled(widgets):
-    col = lib_state.get_active_collection()
-    enabled = col is not None
-    for widget in widgets:
-        widget.setEnabled(enabled)
-    return
+def _convertNodeListToAttrList(node_list):
+    """
+    Convert a list of MayaNode or AttrNode objects to a flat list of
+    Attribute objects.
+
+    :param node_list:
+        A list of PlugNode derived objects, either MayaNode or
+        AttrNode types.
+    :type node_list: [PlugNode, ..]
+
+    :return: List of Attribute objects.
+    :rtype: [Attribute, ..]
+    """
+    attr_list = []
+    for node in node_list:
+        if isinstance(node, list):
+            attr_list += [n for n in node]
+        else:
+            attr_list += [node]
+    return attr_list
 
 
 def _lookupMayaNodesFromAttrUINodes(indexes, model):
@@ -63,13 +77,20 @@ def _lookupMayaNodesFromAttrUINodes(indexes, model):
         ui_node = lib_uiquery.get_ui_node_from_index(idx, model)
         if ui_node is None:
             continue
+        # For both AttrNode and MayaNodes we ensure we only add a new
+        # Maya node if the existing node name is not in the
+        # accumulated list. We do not remove the order of the nodes
+        # only ensure that no duplicates are added.
         if isinstance(ui_node, attr_nodes.AttrNode):
             nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'data')
-            maya_nodes += [x.get_node() for x in nodes]
+            node_names = [x.get_node() for x in nodes]
+            maya_nodes += [x for x in node_names
+                           if x not in maya_nodes]
         elif isinstance(ui_node, attr_nodes.MayaNode):
             node_uuid = ui_node.data().get('uuid')
             node_names = lib_maya_utils.get_node_names_from_uuids([node_uuid])
-            maya_nodes += node_names
+            maya_nodes += [x for x in node_names
+                           if x not in maya_nodes]
         else:
             LOG.error("Invalid node type: %r", ui_node)
     return maya_nodes
@@ -78,16 +99,17 @@ def _lookupMayaNodesFromAttrUINodes(indexes, model):
 class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
 
     def __init__(self, parent=None, *args, **kwargs):
-        super(AttributeBrowserWidget, self).__init__(*args, **kwargs)
+        s = time.time()
+        super(AttributeBrowserWidget, self).__init__(parent, *args, **kwargs)
 
         self.ui.title_label.setText('Output Attributes')
 
         self.createToolButtons()
         self.createTreeView()
 
-        self.dataChanged.connect(self.updateModel)
-
         self.callback_manager = maya_callbacks.CallbackManager()
+        e = time.time()
+        LOG.debug('AttributeBrowserWidget init: %r seconds', e - s)
         return
 
     def __del__(self):
@@ -157,11 +179,11 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.treeView.setColumnHidden(column, hidden)
         return
 
-    def populateModel(self, model):
+    def populateModel(self, model, col):
+        s = time.time()
         valid = uiutils.isValidQtObject(model)
         if valid is False:
             return
-        col = lib_state.get_active_collection()
         attr_list = []
         show_anm = const.ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE
         show_stc = const.ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE
@@ -172,12 +194,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             show_stc = lib_col.get_attribute_toggle_static_from_collection(col)
             show_lck = lib_col.get_attribute_toggle_locked_from_collection(col)
 
-        def update_func():
-            if uiutils.isValidQtObject(self) is False:
-                return
-            self.dataChanged.emit()
-            return
-
         # Add Callbacks
         #
         # When querying attributes, we must make sure they have a Maya
@@ -186,8 +202,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         if callback_manager is not None:
             lib_attr.add_callbacks_to_attributes(
                 attr_list,
-                update_func,
-                callback_manager
+                callback_manager,
             )
         root = convert_to_ui.attributesToUINodes(
             col,
@@ -196,29 +211,35 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             show_stc,
             show_lck)
         model.setRootNode(root)
+
+        e = time.time()
+        LOG.debug('populateModel: %r', e - s)
         return
 
     def updateInfo(self):
+        s = time.time()
         is_running = mmapi.is_solver_running()
         if is_running is True:
             return
-        anm_list = []
-        stc_list = []
-        lck_list = []
 
-        text = 'Animated {anm} | Static {stc} | Locked {lck}'
-
+        anm_count = 0
+        stc_count = 0
+        lck_count = 0
         col = lib_state.get_active_collection()
         if col is not None:
             attr_list = col.get_attribute_list()
-            anm_list = [True for attr in attr_list if attr.is_animated()]
-            stc_list = [True for attr in attr_list if attr.is_static()]
-            lck_list = [True for attr in attr_list if attr.is_locked()]
+            attr_state_list = [attr.get_state() for attr in attr_list]
+            anm_count = attr_state_list.count(mmapi.ATTR_STATE_ANIMATED)
+            stc_count = attr_state_list.count(mmapi.ATTR_STATE_STATIC)
+            lck_count = attr_state_list.count(mmapi.ATTR_STATE_LOCKED)
 
-        text = text.format(anm=len(anm_list),
-                           stc=len(stc_list),
-                           lck=len(lck_list))
+        text = (
+            'Animated {anm} | Static {stc} | Locked {lck}'
+        ).format(anm=anm_count, stc=stc_count, lck=lck_count)
         self.ui.info_label.setText(text)
+
+        e = time.time()
+        LOG.debug('updateInfo: %r', e - s)
         return
 
     def updateToggleButtons(self):
@@ -242,32 +263,46 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             return
         show_state = lib_state.get_display_attribute_state_state()
         show_min_max = lib_state.get_display_attribute_min_max_state()
+        show_stiffness = lib_state.get_display_attribute_stiffness_state()
+        show_smoothness = lib_state.get_display_attribute_smoothness_state()
         self.displayStateColumnChanged(show_state)
         self.displayMinMaxColumnChanged(show_min_max)
+        self.displayStiffnessColumnChanged(show_stiffness)
+        self.displaySmoothnessColumnChanged(show_smoothness)
         return
 
     def updateModel(self):
+        s = time.time()
         is_running = mmapi.is_solver_running()
         if is_running is True:
             return
-        self.populateModel(self.model)
-        valid = uiutils.isValidQtObject(self.treeView)
-        if valid is False:
+
+        col = lib_state.get_active_collection()
+        if col is None:
             return
-        self.treeView.expandAll()
 
         widgets = [self]
-        _populateWidgetsEnabled(widgets)
+        nodebrowser_utils._populateWidgetsEnabled(col, widgets)
+        self.populateModel(self.model, col)
+        nodebrowser_utils._expand_node(
+            self.treeView,
+            self.treeView.model(),
+            self.treeView.rootIndex(),
+            expand=True,
+            recurse=False)
 
-        block = self.blockSignals(True)
-        self.dataChanged.emit()
-        self.blockSignals(block)
+        e = time.time()
+        LOG.debug('updateModel: %r', e - s)
         return
 
     def addClicked(self):
         """
         Add the selected nodes or node attributes to the data model.
         """
+        # Store the selection, in case any tools or callbacks
+        # accidentally change the scene selection.
+        sel = lib_maya_utils.get_scene_selection()
+
         s = time.time()
         col = lib_state.get_active_collection()
         if col is None:
@@ -278,11 +313,10 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         LOG.debug("attribute addClicked1: t=%s", e - s)
 
         s = time.time()
-        sel = lib_maya_utils.get_scene_selection()
         attr_list = lib_maya_utils.get_selected_maya_attributes()
         attr_list = lib_maya_utils.input_attributes_filter(attr_list)
         if len(attr_list) == 0:
-            attr_list = lib_maya_utils.get_selected_node_default_attributes()
+            attr_list = lib_maya_utils.get_node_default_attributes(sel)
             attr_list = lib_maya_utils.input_attributes_filter(attr_list)
         if len(attr_list) == 0:
             msg = 'Please select nodes or attributes in the channel box.'
@@ -300,30 +334,6 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         e = time.time()
         LOG.debug("attribute addClicked3: t=%s", e - s)
 
-        def update_func():
-            if uiutils.isValidQtObject(self) is False:
-                return
-            self.dataChanged.emit()
-            self.viewUpdated.emit()
-            return
-
-        # Add Callbacks
-        s = time.time()
-        callback_manager = self.callback_manager
-        if callback_manager is not None:
-            lib_attr.add_callbacks_to_attributes(
-                attr_list,
-                update_func,
-                callback_manager,
-            )
-        e = time.time()
-        LOG.debug("attribute addClicked4: t=%s", e - s)
-
-        s = time.time()
-        update_func()
-        e = time.time()
-        LOG.debug("attribute addClicked5: t=%s", e - s)
-
         # Restore selection.
         s = time.time()
         lib_maya_utils.set_scene_selection(sel)
@@ -336,48 +346,45 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         Remove the selected nodes or node attributes from the output
         attributes data model.
         """
-        s = time.time()
-        col = lib_state.get_active_collection()
-        if col is None:
-            return
-        e = time.time()
-        LOG.debug("attribute removeClicked1: t=%s", e - s)
-
-        s = time.time()
-        sel = lib_maya_utils.get_scene_selection()
-        ui_nodes = lib_uiquery.get_selected_ui_nodes(
-            self.treeView,
-            self.filterModel
-        )
-        attr_list = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'data')
-        e = time.time()
-        LOG.debug("attribute removeClicked2: t=%s", e - s)
-
-        s = time.time()
         try:
             mmapi.set_solver_running(True)  # disable selection callback.
+
+            s = time.time()
+            col = lib_state.get_active_collection()
+            if col is None:
+                return
+            e = time.time()
+            LOG.debug("attribute removeClicked1: t=%s", e - s)
+
+            s = time.time()
+            sel = lib_maya_utils.get_scene_selection()
+            ui_nodes = lib_uiquery.get_selected_ui_nodes(
+                self.treeView,
+                self.filterModel
+            )
+            node_list = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'data')
+            e = time.time()
+            LOG.debug("attribute removeClicked2: t=%s", e - s)
+
+            s = time.time()
+            attr_list = _convertNodeListToAttrList(node_list)
             lib_attr.remove_attr_from_collection(attr_list, col)
+
+            e = time.time()
+            LOG.debug("attribute removeClicked3: t=%s", e - s)
+
+            # Remove Callbacks
+            s = time.time()
+            callback_manager = self.callback_manager
+            if callback_manager is not None:
+                lib_attr.remove_callbacks_from_attributes(
+                    attr_list,
+                    callback_manager
+                )
+            e = time.time()
+            LOG.debug("attribute removeClicked4: t=%s", e - s)
         finally:
             mmapi.set_solver_running(False)  # enable selection callback
-        e = time.time()
-        LOG.debug("attribute removeClicked3: t=%s", e - s)
-
-        # Remove Callbacks
-        s = time.time()
-        callback_manager = self.callback_manager
-        if callback_manager is not None:
-            lib_attr.remove_callbacks_from_attributes(
-                attr_list,
-                callback_manager
-            )
-        e = time.time()
-        LOG.debug("attribute removeClicked4: t=%s", e - s)
-
-        s = time.time()
-        self.dataChanged.emit()
-        self.viewUpdated.emit()
-        e = time.time()
-        LOG.debug("attribute removeClicked5: t=%s", e - s)
 
         # Restore selection.
         s = time.time()
@@ -438,21 +445,31 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
     def selectionChanged(self, selected, deselected):
         select_indexes = [idx for idx in selected.indexes()]
         deselect_indexes = [idx for idx in deselected.indexes()]
+        selected_indexes = self.selModel.selectedRows()
         select_nodes = _lookupMayaNodesFromAttrUINodes(
             select_indexes,
             self.filterModel)
         deselect_nodes = _lookupMayaNodesFromAttrUINodes(
             deselect_indexes,
             self.filterModel)
-        # TODO: A node should only be de-selected if all of it's
-        #  attributes are de-selected and the object itself is also
-        #  de-selected.
-        try:
-            mmapi.set_solver_running(True)  # disable selection callback.
-            lib_maya_utils.add_scene_selection(select_nodes)
-            lib_maya_utils.remove_scene_selection(deselect_nodes)
-        finally:
-            mmapi.set_solver_running(False)  # enable selection callback
+        selected_nodes = _lookupMayaNodesFromAttrUINodes(
+            selected_indexes,
+            self.filterModel)
+        if self.isActiveWindow() is True:
+            # Only allow Maya selection changes when the user has the
+            # UI focused. This breaks the Maya and Qt selection
+            # callback cycle.
+
+            # Because an attribute and node may refer to the same
+            # underlying node name, we must be sure we don't deselect a
+            # node that has other attributes selected.
+            deselect_nodes = list(set(deselect_nodes) - set(selected_nodes))
+            try:
+                mmapi.set_solver_running(True)  # disable selection callback.
+                lib_maya_utils.add_scene_selection(select_nodes)
+                lib_maya_utils.remove_scene_selection(deselect_nodes)
+            finally:
+                mmapi.set_solver_running(False)  # enable selection callback
         return
 
     @QtCore.Slot(bool)

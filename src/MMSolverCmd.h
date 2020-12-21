@@ -65,26 +65,7 @@
 #include <core/bundleAdjust_base.h>
 
 
-// Command arguments and command name
-#define CAMERA_FLAG       "-c"
-#define CAMERA_FLAG_LONG  "-camera"
-
-#define MARKER_FLAG       "-m"
-#define MARKER_FLAG_LONG  "-marker"
-
-#define ATTR_FLAG       "-a"
-#define ATTR_FLAG_LONG  "-attr"
-
-#define FRAME_FLAG       "-f"
-#define FRAME_FLAG_LONG  "-frame"
-
-// Attribute Stiffness
-#define STIFFNESS_FLAG       "-asf"
-#define STIFFNESS_FLAG_LONG  "-attrStiffness"
-
-// Attribute Smoothness
-#define SMOOTHNESS_FLAG       "-asm"
-#define SMOOTHNESS_FLAG_LONG  "-attrSmoothness"
+// Command arguments
 
 // Type of Solver to use.
 //
@@ -92,6 +73,18 @@
 // guessing of parameter values.
 #define SOLVER_TYPE_FLAG           "-st"
 #define SOLVER_TYPE_FLAG_LONG      "-solverType"
+
+// Time Evaluation Mode
+//
+// How should the solver evaluate time? Should we use DG Context, or
+// just changing the scene's current time?
+//
+// TIME_EVAL_MODE_DG_CONTEXT = 'DG Context'
+// TIME_EVAL_MODE_SET_TIME = 'Set Time' - change the scene time value.
+//
+#define TIME_EVAL_MODE_FLAG           "-tem"
+#define TIME_EVAL_MODE_FLAG_LONG      "-timeEvalMode"
+#define TIME_EVAL_MODE_DEFAULT_VALUE  TIME_EVAL_MODE_DG_CONTEXT
 
 // Maximum number of iterations
 //
@@ -183,6 +176,20 @@
 #define ROBUST_LOSS_SCALE_FLAG      "-rls"
 #define ROBUST_LOSS_SCALE_FLAG_LONG "-robustLossScale"
 
+// Should the solver print out verbose information while solving?
+#define ACCEPT_ONLY_BETTER_FLAG           "-aob"
+#define ACCEPT_ONLY_BETTER_FLAG_LONG      "-acceptOnlyBetter"
+#define ACCEPT_ONLY_BETTER_DEFAULT_VALUE  true
+
+// If unused Markers are detected, should they automatically be removed?
+#define REMOVE_UNUSED_MARKERS_FLAG           "-rum"
+#define REMOVE_UNUSED_MARKERS_FLAG_LONG      "-removeUnusedMarkers"
+#define REMOVE_UNUSED_MARKERS_DEFAULT_VALUE  true
+
+// If unused Attributes are detected, should they automatically be removed?
+#define REMOVE_UNUSED_ATTRIBUTES_FLAG           "-rua"
+#define REMOVE_UNUSED_ATTRIBUTES_FLAG_LONG      "-removeUnusedAttributes"
+#define REMOVE_UNUSED_ATTRIBUTES_DEFAULT_VALUE  true
 
 // Should the solver print out verbose information while solving?
 // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
@@ -222,7 +229,7 @@ public:
     static MString cmdName();
 
 private:
-    MStatus parseArgs( const MArgList& args );
+    MStatus parseArgs(const MArgList& args);
 
     // Solver Information.
     unsigned int m_iterations;
@@ -240,6 +247,11 @@ private:
     int m_solverType;   // Solver type to use; 0=levmar,
                         //                     1=cminpack_lmdif,
                         //                     2=cmpinpack_lmder.
+    int m_timeEvalMode;  // How to evaluate values at different times?
+    bool m_acceptOnlyBetter;  // Do not accept solved parameter values if
+                              // the average devation is higher than at start.
+    bool m_removeUnusedMarkers;     // Remove unused Markers from solve?
+    bool m_removeUnusedAttributes;  // Remove unused Attributes from solve?
 
     // What type of features does the given solver type support?
     bool m_supportAutoDiffForward;
@@ -252,7 +264,7 @@ private:
     MStringArray m_printStatsList;
     bool m_verbose;
 
-    // Objects
+    // Solver Objects
     CameraPtrList      m_cameraList;
     MarkerPtrList      m_markerList;
     BundlePtrList      m_bundleList;

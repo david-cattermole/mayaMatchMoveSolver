@@ -66,12 +66,9 @@ bool solve_3d_cminpack_lmdif(
         int numberOfErrors,
         std::vector<double> &paramList,
         std::vector<double> &errorList,
-        std::vector<double> &paramLowerBoundList,
-        std::vector<double> &paramUpperBoundList,
         std::vector<double> &paramWeightList,
         SolverData &userData,
-        SolverResult &solveResult,
-        MStringArray &outResult){
+        SolverResult &solveResult){
     int solverType = SOLVER_TYPE_CMINPACK_LMDIF;
     int ret = 0;
     std::string resultStr;

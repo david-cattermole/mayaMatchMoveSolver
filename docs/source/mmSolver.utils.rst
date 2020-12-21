@@ -38,6 +38,19 @@ Convert Types
     :members:
     :undoc-members:
 
+Event
++++++
+
+.. automodule:: mmSolver.utils.event
+    :members:
+    :undoc-members:
+
+Kalman Filter
++++++++++++++
+
+.. automodule:: mmSolver.utils.kalmanfilter
+    :members:
+    :undoc-members:
 
 Line Intersect
 ++++++++++++++
@@ -81,10 +94,24 @@ Smooth
     :members:
     :undoc-members:
 
+Sort
+++++
+
+.. automodule:: mmSolver.utils.sort
+    :members:
+    :undoc-members:
+
 Time
 ++++
 
 .. automodule:: mmSolver.utils.time
+    :members:
+    :undoc-members:
+
+Tools
++++++
+
+.. automodule:: mmSolver.utils.tools
     :members:
     :undoc-members:
 

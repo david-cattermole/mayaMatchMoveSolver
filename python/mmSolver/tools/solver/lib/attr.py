@@ -19,11 +19,12 @@
 Attribute functions
 """
 
+import time
 import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.time as time_utils
-import mmSolver.utils.undo as undo_utils
+import mmSolver.utils.tools as tools_utils
 import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 import mmSolver.tools.setattributedetails.tool as set_details_tool
 
@@ -72,7 +73,11 @@ def lock_selected_attributes(attr_list):
     def func(plug_name):
         maya.cmds.setAttr(plug_name, lock=True)
 
-    with undo_utils.undo_chunk_context() as chunk_name:
+    with tools_utils.tool_context(pre_update_frame=False,
+                                  restore_current_frame=False,
+                                  use_undo_chunk=True,
+                                  use_dg_evaluation_mode=False,
+                                  disable_viewport=False):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -83,7 +88,11 @@ def unlock_selected_attributes(attr_list):
     def func(plug_name):
         maya.cmds.setAttr(plug_name, lock=False)
 
-    with undo_utils.undo_chunk_context() as chunk_name:
+    with tools_utils.tool_context(pre_update_frame=False,
+                                  restore_current_frame=False,
+                                  use_undo_chunk=True,
+                                  use_dg_evaluation_mode=False,
+                                  disable_viewport=False):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -94,7 +103,11 @@ def set_keyframe_on_selected_attributes(attr_list):
     def func(plug_name):
         maya.cmds.setKeyframe(plug_name)
 
-    with undo_utils.undo_chunk_context() as chunk_name:
+    with tools_utils.tool_context(pre_update_frame=False,
+                                  restore_current_frame=False,
+                                  use_undo_chunk=True,
+                                  use_dg_evaluation_mode=False,
+                                  disable_viewport=False):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -108,7 +121,11 @@ def delete_keyframe_current_frame_on_selected_attributes(attr_list):
         time_range = (current_frame,)
         maya.cmds.cutKey(node_name, attribute=attr_name, time=time_range)
 
-    with undo_utils.undo_chunk_context() as chunk_name:
+    with tools_utils.tool_context(pre_update_frame=False,
+                                  restore_current_frame=False,
+                                  use_undo_chunk=True,
+                                  use_dg_evaluation_mode=False,
+                                  disable_viewport=False):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -122,7 +139,11 @@ def delete_keyframe_all_frames_on_selected_attributes(attr_list):
         time_range = (frame_range.start, frame_range.end)
         maya.cmds.cutKey(node_name, attribute=attr_name, time=time_range)
 
-    with undo_utils.undo_chunk_context() as chunk_name:
+    with tools_utils.tool_context(pre_update_frame=True,
+                                  restore_current_frame=True,
+                                  use_undo_chunk=True,
+                                  use_dg_evaluation_mode=True,
+                                  disable_viewport=True):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -138,7 +159,11 @@ def delete_static_channel_on_selected_attributes(attr_list):
             staticChannels=True
         )
 
-    with undo_utils.undo_chunk_context() as chunk_name:
+    with tools_utils.tool_context(pre_update_frame=False,
+                                  restore_current_frame=False,
+                                  use_undo_chunk=True,
+                                  use_dg_evaluation_mode=False,
+                                  disable_viewport=False):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -158,7 +183,11 @@ def break_connections_on_selected_attributes(attr_list):
             maya.cmds.disconnectAttr(src, dst)
         return
 
-    with undo_utils.undo_chunk_context() as chunk_name:
+    with tools_utils.tool_context(pre_update_frame=False,
+                                  restore_current_frame=False,
+                                  use_undo_chunk=True,
+                                  use_dg_evaluation_mode=False,
+                                  disable_viewport=False):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -168,7 +197,11 @@ def bake_selected_attributes(attr_list):
     frame_range = time_utils.get_maya_timeline_range_outer()
     plug_names = _get_plug_names_as_set(attr_list)
     plug_names = list(sorted(plug_names))
-    with undo_utils.undo_chunk_context() as chunk_name:
+    with tools_utils.tool_context(pre_update_frame=True,
+                                  restore_current_frame=True,
+                                  use_undo_chunk=True,
+                                  use_dg_evaluation_mode=True,
+                                  disable_viewport=True):
         maya.cmds.bakeResults(
             plug_names,
             time=(frame_range.start, frame_range.end)
@@ -187,12 +220,17 @@ def reset_values_on_selected_attributes(attr_list):
         if len(values) > 0:
             maya.cmds.setAttr(plug_name, values[0])
 
-    with undo_utils.undo_chunk_context() as chunk_name:
+    with tools_utils.tool_context(pre_update_frame=False,
+                                  restore_current_frame=False,
+                                  use_undo_chunk=True,
+                                  use_dg_evaluation_mode=False,
+                                  disable_viewport=False):
         _apply_function_to_attrs(attr_list, func)
     return
 
 
-def add_callbacks_to_attributes(attr_list, update_func, callback_manager):
+def add_callbacks_to_attributes(attr_list, callback_manager):
+    s = time.time()
     msg = 'Node UUID has multiple paths: node=%r node_uuids=%r'
     callback_type = maya_callbacks.TYPE_ATTRIBUTE
     for attr_obj in attr_list:
@@ -207,31 +245,42 @@ def add_callbacks_to_attributes(attr_list, update_func, callback_manager):
         callback_ids = maya_callbacks.add_callbacks_attribute(
             node_uuid,
             node_path,
-            update_func,
         )
         callback_manager.add_node_ids(
             callback_type,
             node_uuid,
             callback_ids,
         )
+    e = time.time()
+    LOG.debug('add_callbacks_to_attributes: t=%s', e-s)
     return
 
 
 def remove_callbacks_from_attributes(attr_list, callback_manager):
+    """
+    Remove Attribute callbacks from a callback manager.
+
+    :param attr_list: List of attributes to remove callbacks from.
+    :type attr_list: [Attribute, ..]
+
+    :param callback_manager:
+        The callback manager class which holds all references to the
+        callbacks.
+    :type callback_manager: CallbackManager
+    """
     msg = 'Node UUID has multiple paths: node=%r node_uuids=%r'
     callback_type = maya_callbacks.TYPE_ATTRIBUTE
-    for attr_objs in attr_list:
-        for attr_obj in attr_objs:
-            node_path = attr_obj.get_node(full_path=True)
-            node_uuids = maya.cmds.ls(node_path, uuid=True) or []
-            if len(node_uuids) != 1:
-                LOG.debug(msg, node_path, node_uuids)
-                continue
-            node_uuid = node_uuids[0]
-            if callback_manager.type_has_node(callback_type, node_uuid) is False:
-                continue
-            callback_manager.remove_type_node_ids(
-                callback_type,
-                node_uuid,
-            )
+    for attr_obj in attr_list:
+        node_path = attr_obj.get_node(full_path=True)
+        node_uuids = maya.cmds.ls(node_path, uuid=True) or []
+        if len(node_uuids) != 1:
+            LOG.debug(msg, node_path, node_uuids)
+            continue
+        node_uuid = node_uuids[0]
+        if callback_manager.type_has_node(callback_type, node_uuid) is False:
+            continue
+        callback_manager.remove_type_node_ids(
+            callback_type,
+            node_uuid,
+        )
     return

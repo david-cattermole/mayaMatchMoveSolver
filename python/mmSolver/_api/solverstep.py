@@ -21,7 +21,6 @@ operation (step).
 """
 
 import mmSolver.logger
-import mmSolver.utils.kalmanfilter as kalman
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
 import mmSolver._api.constant as const
@@ -263,6 +262,15 @@ class SolverStep(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_time_eval_mode(self):
+        return self._data.get('time_eval_mode', const.TIME_EVAL_MODE_DEFAULT)
+
+    def set_time_eval_mode(self, value):
+        assert value in const.TIME_EVAL_MODE_LIST
+        self._data['time_eval_mode'] = value
+
+    ############################################################################
+
     def get_use_smoothness(self):
         return self._data.get('smoothness')
 
@@ -420,8 +428,21 @@ class SolverStep(solverbase.SolverBase):
         kwargs['attr'] = []
         kwargs['frame'] = []
 
+        # Get precomputed data to reduce re-querying Maya for data.
+        precomputed_data = self.get_precomputed_data()
+        mkr_state_values = precomputed_data.get(
+            solverbase.MARKER_STATIC_VALUES_KEY)
+        attr_state_values = precomputed_data.get(
+            solverbase.ATTR_STATIC_VALUES_KEY)
+        attr_stiff_state_values = precomputed_data.get(
+            solverbase.ATTR_STIFFNESS_STATIC_VALUES_KEY)
+        attr_smooth_state_values = precomputed_data.get(
+            solverbase.ATTR_SMOOTHNESS_STATIC_VALUES_KEY)
+
         # Get Markers and Cameras
-        markers, cameras = api_compile.markersAndCameras_compile_flags(mkr_list)
+        markers, cameras = api_compile.markersAndCameras_compile_flags(
+            mkr_list,
+            mkr_static_values=mkr_state_values)
         if len(markers) == 0 and len(cameras) == 0:
             LOG.warning('No Markers or Cameras found!')
             return
@@ -439,7 +460,8 @@ class SolverStep(solverbase.SolverBase):
             col,
             attr_list,
             use_animated,
-            use_static)
+            use_static,
+            attr_static_values=attr_state_values)
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
             return
@@ -450,7 +472,10 @@ class SolverStep(solverbase.SolverBase):
         if use_stiffness is True:
             stiff_flags = api_compile.attr_stiffness_compile_flags(
                 col,
-                attr_list)
+                attr_list,
+                attr_static_values=attr_state_values,
+                attr_stiff_static_values=attr_stiff_state_values,
+            )
 
         # Smoothness Attribute Flags
         smooth_flags = None
@@ -458,7 +483,10 @@ class SolverStep(solverbase.SolverBase):
         if use_smoothness is True:
             smooth_flags = api_compile.attr_smoothness_compile_flags(
                 col,
-                attr_list)
+                attr_list,
+                attr_static_values=attr_state_values,
+                attr_smooth_static_values=attr_smooth_state_values,
+            )
 
         # Get Frames
         frm_list = self.get_frame_list()
@@ -516,6 +544,7 @@ class SolverStep(solverbase.SolverBase):
 
         kwargs['robustLossType'] = const.ROBUST_LOSS_TYPE_TRIVIAL_VALUE
         kwargs['robustLossScale'] = 1.0
+        kwargs['timeEvalMode'] = self.get_time_eval_mode()
 
         # TODO: Add 'robustLossType' flag.
         # TODO: Add 'robustLossScale' flag.

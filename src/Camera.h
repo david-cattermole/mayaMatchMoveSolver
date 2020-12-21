@@ -75,7 +75,7 @@ MStatus applyFilmFitLogic(
         const double frustumLeft, const double frustumRight,
         const double frustumTop, const double frustumBottom,
         const double imageAspectRatio, const double filmAspectRatio,
-        const int filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
+        const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
         double &filmFitScaleX, double &filmFitScaleY,
         double &screenSizeX, double &screenSizeY,
         double &screenRight, double &screenLeft,
@@ -104,7 +104,7 @@ MStatus getProjectionMatrix(
         const double filmOffsetY,     // inches
         const double imageWidth,      // pixels
         const double imageHeight,     // pixels
-        const int filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
+        const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
         const double nearClipPlane,
         const double farClipPlane,
         const double cameraScale,
@@ -162,15 +162,15 @@ public:
 
     Attr &getRenderAspectAttr();
 
-    double getFilmbackWidthValue(const MTime &time);
+    double getFilmbackWidthValue(const MTime &time, const int timeEvalMode);
 
-    double getFilmbackHeightValue(const MTime &time);
+    double getFilmbackHeightValue(const MTime &time, const int timeEvalMode);
 
-    double getFilmbackOffsetXValue(const MTime &time);
+    double getFilmbackOffsetXValue(const MTime &time, const int timeEvalMode);
 
-    double getFilmbackOffsetYValue(const MTime &time);
+    double getFilmbackOffsetYValue(const MTime &time, const int timeEvalMode);
 
-    double getFocalLengthValue(const MTime &time);
+    double getFocalLengthValue(const MTime &time, const int timeEvalMode);
 
     double getCameraScaleValue();
 
@@ -178,7 +178,7 @@ public:
 
     double getFarClipPlaneValue();
 
-    int getFilmFitValue();
+    short getFilmFitValue();
 
     int getRenderWidthValue();
 
@@ -189,23 +189,28 @@ public:
     MStatus getFrustum(
             double &left, double &right,
             double &top, double &bottom,
-            const MTime &time);
+            const MTime &time,
+            const int timeEvalMode);
 
-    MStatus getProjMatrix(MMatrix &value, const MTime &time);
+    MStatus getProjMatrix(MMatrix &value, const MTime &time,
+                          const int timeEvalMode);
 
-    MStatus getProjMatrix(MMatrix &value);
+    MStatus getProjMatrix(MMatrix &value, const int timeEvalMode);
 
-    MStatus getWorldPosition(MPoint &value, const MTime &time);
+    MStatus getWorldPosition(MPoint &value, const MTime &time,
+                             const int timeEvalMode);
 
-    MStatus getWorldPosition(MPoint &value);
+    MStatus getWorldPosition(MPoint &value, const int timeEvalMode);
 
-    MStatus getForwardDirection(MVector &value, const MTime &time);
+    MStatus getForwardDirection(MVector &value, const MTime &time,
+                                const int timeEvalMode);
 
-    MStatus getForwardDirection(MVector &value);
+    MStatus getForwardDirection(MVector &value, const int timeEvalMode);
 
-    MStatus getWorldProjMatrix(MMatrix &value, const MTime &time);
+    MStatus getWorldProjMatrix(MMatrix &value, const MTime &time,
+                               const int timeEvalMode);
 
-    MStatus getWorldProjMatrix(MMatrix &value);
+    MStatus getWorldProjMatrix(MMatrix &value, const int timeEvalMode);
 
     MStatus clearAuxilaryAttrsCache();
 
@@ -250,7 +255,7 @@ private:
     double m_cameraScaleValue;
     double m_nearClipPlaneValue;
     double m_farClipPlaneValue;
-    int    m_filmFitValue;
+    short  m_filmFitValue;
     int    m_renderWidthValue;
     int    m_renderHeightValue;
     double m_renderAspectValue;

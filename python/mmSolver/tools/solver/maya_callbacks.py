@@ -19,7 +19,9 @@
 Set up callbacks for Maya events.
 """
 
+import time
 import collections
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
@@ -27,6 +29,7 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.event as event_utils
 
 TYPE_NEW_SCENE = 'new_scene'
 TYPE_SELECTION_CHANGED = 'selection_changed'
@@ -40,7 +43,6 @@ TYPE_LIST = [
     TYPE_MARKER,
     TYPE_COLLECTION,
 ]
-
 
 LOG = mmSolver.logger.get_logger()
 
@@ -151,7 +153,7 @@ def add_callbacks_new_scene(obj_UI):
     return callback_ids
 
 
-def add_callbacks_attribute(node_uuid, node_path, update_func):
+def add_callbacks_attribute(node_uuid, node_path):
     """
     Add all callbacks for a node from a 'Attribute' class.
 
@@ -165,10 +167,6 @@ def add_callbacks_attribute(node_uuid, node_path, update_func):
     :param node_path: The full node path for the node.
     :type node_path: str
 
-    :param update_func: The function pointer to be called each time
-                        the a change is made.
-    :type update_func: Function
-
     :return: List of callback ids created.
     :rtype: list of maya.OpenMaya.MCallbackId
     """
@@ -176,7 +174,7 @@ def add_callbacks_attribute(node_uuid, node_path, update_func):
     node_mobj = node_utils.get_as_object(node_path)
 
     # Attribute Changed
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MNodeMessage.addAttributeChangedCallback(
         node_mobj,
         attribute_changed_func,
@@ -185,7 +183,7 @@ def add_callbacks_attribute(node_uuid, node_path, update_func):
     callback_ids.append(callback_id)
 
     # Node Name Change
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MNodeMessage.addNameChangedCallback(
         node_mobj,
         node_name_changed_func,
@@ -194,7 +192,7 @@ def add_callbacks_attribute(node_uuid, node_path, update_func):
     callback_ids.append(callback_id)
 
     # Node Has Been Deleted
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MNodeMessage.addNodeDestroyedCallback(
         node_mobj,
         node_deleted_func,
@@ -204,7 +202,7 @@ def add_callbacks_attribute(node_uuid, node_path, update_func):
     return callback_ids
 
 
-def add_callbacks_to_collection(node_uuid, node_path, update_func):
+def add_callbacks_to_collection(node_uuid, node_path):
     """
     Add all callbacks for a node from a 'Collection' class.
 
@@ -214,7 +212,7 @@ def add_callbacks_to_collection(node_uuid, node_path, update_func):
     callback_ids = []
     node_mobj = node_utils.get_as_object(node_path)
 
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MObjectSetMessage.addSetMembersModifiedCallback(
         node_mobj,
         membership_change_func,
@@ -224,7 +222,7 @@ def add_callbacks_to_collection(node_uuid, node_path, update_func):
     return callback_ids
 
 
-def add_callbacks_to_marker(node_uuid, node_path, update_func):
+def add_callbacks_to_marker(node_uuid, node_path):
     """
     Add all callbacks for a node from a 'Marker' class.
 
@@ -241,7 +239,7 @@ def add_callbacks_to_marker(node_uuid, node_path, update_func):
     node_mobj = node_utils.get_as_object(node_path)
 
     # Attribute Changed (if a marker/bundle relationship is changed.)
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MNodeMessage.addAttributeChangedCallback(
         node_mobj,
         attribute_connection_changed_func,
@@ -250,7 +248,7 @@ def add_callbacks_to_marker(node_uuid, node_path, update_func):
     callback_ids.append(callback_id)
 
     # Node Name Change
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MNodeMessage.addNameChangedCallback(
         node_mobj,
         node_name_changed_func,
@@ -260,7 +258,7 @@ def add_callbacks_to_marker(node_uuid, node_path, update_func):
 
     # Node Has Been Deleted
     # TODO: This callback does not seem to be doing anything.
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MNodeMessage.addNodeDestroyedCallback(
         node_mobj,
         node_deleted_func,
@@ -270,7 +268,7 @@ def add_callbacks_to_marker(node_uuid, node_path, update_func):
     return callback_ids
 
 
-def add_callbacks_to_marker_group(node_uuid, node_path, update_func):
+def add_callbacks_to_marker_group(node_uuid, node_path):
     """
     Add all callbacks for a node from a 'MarkerGroup' class.
 
@@ -282,7 +280,7 @@ def add_callbacks_to_marker_group(node_uuid, node_path, update_func):
 
     # Node Has Been Deleted
     # TODO: This callback does not seem to be doing anything.
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MNodeMessage.addNodeDestroyedCallback(
         node_mobj,
         node_deleted_func,
@@ -292,7 +290,7 @@ def add_callbacks_to_marker_group(node_uuid, node_path, update_func):
     return callback_ids
 
 
-def add_callbacks_to_bundle(node_uuid, node_path, update_func):
+def add_callbacks_to_bundle(node_uuid, node_path):
     """
     Add all callbacks for a node from a 'Bundle' class.
 
@@ -303,7 +301,7 @@ def add_callbacks_to_bundle(node_uuid, node_path, update_func):
     node_mobj = node_utils.get_as_object(node_path)
 
     # Attribute Changed (if a marker/bundle relationship is changed.)
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MNodeMessage.addAttributeChangedCallback(
         node_mobj,
         attribute_connection_changed_func,
@@ -312,7 +310,7 @@ def add_callbacks_to_bundle(node_uuid, node_path, update_func):
     callback_ids.append(callback_id)
 
     # Node Name Change
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MNodeMessage.addNameChangedCallback(
         node_mobj,
         node_name_changed_func,
@@ -321,7 +319,7 @@ def add_callbacks_to_bundle(node_uuid, node_path, update_func):
     callback_ids.append(callback_id)
 
     # Node Has Been Deleted
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MNodeMessage.addNodeDestroyedCallback(
         node_mobj,
         node_deleted_func,
@@ -331,7 +329,7 @@ def add_callbacks_to_bundle(node_uuid, node_path, update_func):
     return callback_ids
 
 
-def add_callbacks_to_camera(node_uuid, node_path, update_func):
+def add_callbacks_to_camera(node_uuid, node_path):
     """
     Add all callbacks for a node from a 'Camera' class.
 
@@ -342,7 +340,7 @@ def add_callbacks_to_camera(node_uuid, node_path, update_func):
     node_mobj = node_utils.get_as_object(node_path)
 
     # Node Name Change
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MNodeMessage.addNameChangedCallback(
         node_mobj,
         node_name_changed_func,
@@ -351,7 +349,7 @@ def add_callbacks_to_camera(node_uuid, node_path, update_func):
     callback_ids.append(callback_id)
 
     # Node Has Been Deleted
-    clientData = (node_uuid, update_func)
+    clientData = node_uuid
     callback_id = OpenMaya.MNodeMessage.addNodeDestroyedCallback(
         node_mobj,
         node_deleted_func,
@@ -412,17 +410,12 @@ def attribute_changed_func(callback_msg, plugA, plugB, clientData):
                   not relevant to callback type.
     :type plugB: OpenMaya.MPlug
 
-    :param clientData: Custom data given to the function. Expected to
-                       be a tuple of length 2: (node_uuid, update_func)
-    :type clientData: (str, function)
+    :param clientData: node_uuid given to the function.
+    :type clientData: str
 
     :return: Nothing.
     :rtype: None
     """
-    if mmapi.is_solver_running() is True:
-        return
-    node_uuid = clientData[0]
-    update_func = clientData[1]
     if (callback_msg & OpenMaya.MNodeMessage.kConnectionMade
             or callback_msg & OpenMaya.MNodeMessage.kConnectionBroken
             or callback_msg & OpenMaya.MNodeMessage.kAttributeLocked
@@ -431,7 +424,13 @@ def attribute_changed_func(callback_msg, plugA, plugB, clientData):
             or callback_msg & OpenMaya.MNodeMessage.kAttributeUnkeyable
             or callback_msg & OpenMaya.MNodeMessage.kAttributeRemoved
             or callback_msg & OpenMaya.MNodeMessage.kAttributeRenamed):
-        update_func()
+        if mmapi.is_solver_running() is True:
+            return
+        node_uuid = clientData
+        event_utils.trigger_event(
+            mmapi.EVENT_NAME_ATTRIBUTE_STATE_CHANGED,
+            node=node_uuid,
+            plug=plugA)
     return
 
 
@@ -452,19 +451,20 @@ def attribute_connection_changed_func(callback_msg, plugA, plugB, clientData):
                   not relevant to callback type.
     :type plugB: OpenMaya.MPlug
 
-    :param clientData: Custom data given to the function. Expected to
-                       be a tuple of length 2: (node_uuid, update_func)
-    :type clientData: (str, function)
+    :param clientData: node_uuid given to the function.
+    :type clientData: str
 
     :return: Nothing.
     :rtype: None
     """
-    node_uuid = clientData[0]
-    update_func = clientData[1]
+    node_uuid = clientData
     if (callback_msg & OpenMaya.MNodeMessage.kConnectionMade
-        or callback_msg & OpenMaya.MNodeMessage.kConnectionBroken
-        or callback_msg & OpenMaya.MNodeMessage.kAttributeRemoved):
-        update_func()
+            or callback_msg & OpenMaya.MNodeMessage.kConnectionBroken
+            or callback_msg & OpenMaya.MNodeMessage.kAttributeRemoved):
+        event_utils.trigger_event(
+            mmapi.EVENT_NAME_ATTRIBUTE_CONNECTION_CHANGED,
+            node=node_uuid,
+            plug=plugA)
     return
 
 
@@ -478,16 +478,18 @@ def node_name_changed_func(node, prevName, clientData):
     :param prevName: The name of the node before the change happened.
     :type prevName: str
 
-    :param clientData: Custom data given to the function. Expected to
-                       be a tuple of length 2: (node_uuid, update_func)
-    :type clientData: (str, function)
+    :param clientData: node_uuid given to the function.
+    :type clientData: str
 
     :return: Nothing.
     :rtype: None
     """
-    node_uuid = clientData[0]
-    update_func = clientData[1]
-    update_func()
+    node_uuid = clientData
+    LOG.debug('node_name_changed: %r', node_uuid)
+    event_utils.trigger_event(
+        mmapi.EVENT_NAME_NODE_NAME_CHANGED,
+        node=node_uuid,
+        previous_name=prevName)
     return
 
 
@@ -495,24 +497,26 @@ def node_deleted_func(clientData):
     """
     Callback triggered *after* a node is deleted.
 
-    :param clientData: Custom data given to the function. Expected to
-                       be a tuple of length 2: (node_uuid, update_func)
-    :type clientData: (str, function)
+    :param clientData: node_uuid given to the function.
+    :type clientData: str
 
     :return: Nothing.
     :rtype: None
     """
-    node_uuid = clientData[0]
-    update_func = clientData[1]
-    update_func()
+    node_uuid = clientData
+    LOG.debug('node_deleted: %r', node_uuid)
+    event_utils.trigger_event(
+        mmapi.EVENT_NAME_NODE_DELETED,
+        node=node_uuid)
     return
 
 
 def membership_change_func(node_obj, clientData):
-    node_uuid = clientData[0]
-    LOG.warning('membership_changed: %r', node_uuid)
-    update_func = clientData[1]
-    update_func()
+    node_uuid = clientData
+    LOG.debug('membership_changed: %r', node_uuid)
+    event_utils.trigger_event(
+        mmapi.EVENT_NAME_MEMBERSHIP_CHANGED,
+        node=node_uuid)
     return
 
 
@@ -550,13 +554,8 @@ def selection_changed_func(clientData):
     """
     if mmapi.is_solver_running() is True:
         return
-    # TODO: Try not to run this function many, many times at once. We
-    # could keep a timer and only update every 0.01 seconds? Or
-    # perhaps we can try to get the current "chunk" or the current
-    # process and only run this function when Maya is idle?
-    #
-    # TODO: Try to detect any times when a user won't want to update
-    # the Solver UI selection syncing.
     sel_uuids = maya.cmds.ls(selection=True, uuid=True) or []
-    clientData.setNodeSelection(sel_uuids)
+    valid = uiutils.isValidQtObject(clientData)
+    if clientData is not None and valid is True:
+        clientData.setNodeSelection(sel_uuids)
     return

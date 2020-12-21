@@ -94,6 +94,11 @@ def get_object_type(node):
     assert isinstance(node, basestring)
     assert maya.cmds.objExists(node)
 
+    # Attribute type.
+    if '.' in node:
+        object_type = const.OBJECT_TYPE_ATTRIBUTE
+        return object_type
+
     node_type = maya.cmds.nodeType(node)
     shape_nodes = maya.cmds.listRelatives(
         node,
@@ -105,12 +110,15 @@ def get_object_type(node):
         shape_node_type = maya.cmds.nodeType(shape_node)
         shape_node_types.append(shape_node_type)
     attrs = maya.cmds.listAttr(node)
+    plugs = ['{0}.{1}'.format(node, attr) for attr in attrs
+             if '.' not in attr]
+    locked_attrs = [plug.split('.')[-1] for plug in plugs
+                    if maya.cmds.getAttr(plug, lock=True)]
+    keyable_attrs = [plug.split('.')[-1] for plug in plugs
+                     if maya.cmds.getAttr(plug, keyable=True)]
 
     object_type = const.OBJECT_TYPE_UNKNOWN
-    if '.' in node:
-        object_type = const.OBJECT_TYPE_ATTRIBUTE
-
-    elif ((node_type in ['transform', 'mmMarkerTransform'])
+    if ((node_type in ['transform', 'mmMarkerTransform'])
           and ('locator' in shape_node_types)
           and ('enable' in attrs)
           and ('weight' in attrs)
@@ -118,7 +126,25 @@ def get_object_type(node):
         object_type = const.OBJECT_TYPE_MARKER
 
     elif ((node_type == 'transform')
-          and ('locator' in shape_node_types)):
+          and ('locator' in shape_node_types)
+          and ('rotateX' in locked_attrs)
+          and ('rotateY' in locked_attrs)
+          and ('rotateZ' in locked_attrs)
+          and ('rotateX' not in keyable_attrs)
+          and ('rotateY' not in keyable_attrs)
+          and ('rotateZ' not in keyable_attrs)
+          and ('scaleX' in locked_attrs)
+          and ('scaleY' in locked_attrs)
+          and ('scaleZ' in locked_attrs)
+          and ('scaleX' not in keyable_attrs)
+          and ('scaleY' not in keyable_attrs)
+          and ('scaleZ' not in keyable_attrs)
+          and ('shearXY' in locked_attrs)
+          and ('shearXZ' in locked_attrs)
+          and ('shearYZ' in locked_attrs)
+          and ('shearXY' not in keyable_attrs)
+          and ('shearXZ' not in keyable_attrs)
+          and ('shearYZ' not in keyable_attrs)):
         object_type = const.OBJECT_TYPE_BUNDLE
 
     # TODO: Ensure other types of camera transform nodes are supported.

@@ -104,10 +104,14 @@ def viewport_turn_off():
         implementation based on the version Maya.
     """
     if maya.cmds.about(apiVersion=True) >= 201700:
-        # TODO: Detect the currently used Viewport renderer, and only
-        # use viewport2 pause feature if viewport 2 is currently
+        # Only use viewport2 pause feature if viewport 2 is currently
         # active.
-        set_viewport2_active_state(False)
+        if get_currently_using_viewport2():
+            set_viewport2_active_state(False)
+        else:
+            # Viewport 2.0 is not active, we fall back to viewport 1.0
+            # disabling method.
+            viewport1_turn_off()
     else:
         viewport1_turn_off()
     return
@@ -121,10 +125,14 @@ def viewport_turn_on():
         implementation based on the version Maya.
     """
     if maya.cmds.about(apiVersion=True) >= 201700:
-        # TODO: Detect the currently used Viewport renderer, and only
-        # use viewport2 pause feature if viewport 2 is currently
+        # Only use viewport2 pause feature if viewport 2 is currently
         # active.
-        set_viewport2_active_state(True)
+        if get_currently_using_viewport2():
+            set_viewport2_active_state(True)
+        else:
+            # Viewport 2.0 is not active, we fall back to viewport 1.0
+            # enabling method.
+            viewport1_turn_on()
     else:
         viewport1_turn_on()
     return
@@ -141,6 +149,9 @@ def set_viewport2_active_state(value):
     """
     is_batch = maya.cmds.about(query=True, batch=True)
     if is_batch is True:
+        return
+    is_using_vp2 = get_currently_using_viewport2()
+    if is_using_vp2 is False:
         return
     if maya.cmds.about(apiVersion=True) < 201700:
         LOG.debug('Cannot turn off viewport 2, Maya version cannot do it.')
@@ -162,9 +173,12 @@ def get_viewport2_active_state():
     is_batch = maya.cmds.about(query=True, batch=True)
     if is_batch is True:
         return False
+    is_using_vp2 = get_currently_using_viewport2()
+    if is_using_vp2 is False:
+        return False
     if maya.cmds.about(apiVersion=True) < 201700:
         LOG.debug('Cannot turn off viewport 2, Maya version cannot do it.')
-        return
+        return False
     return not maya.cmds.ogs(query=True, pause=True)
 
 
@@ -235,6 +249,59 @@ def get_all_model_panels():
         if panel_type == 'modelPanel':
             model_panels.append(panel)
     return model_panels
+
+
+def get_model_editor_renderer_device_name(model_editor):
+    """
+    Get the Renderer Device Name from the Model Editor.
+
+    Query for the name of the draw API used by the Viewport 2.0
+    renderer for a 3d modeling viewport. The possible return values
+    are "VirtualDeviceGL" if Maya is set to use OpenGL for Viewport
+    2.0 or "VirtualDeviceDx11" if Maya is set to use DirectX for
+    Viewport 2.0. If the renderer for the 3d modeling viewport is not
+    Viewport 2.0, an empty string will be returned.
+
+    :rtype: str
+    """
+    renderer_name = maya.cmds.modelEditor(
+        model_editor, query=True, rendererDeviceName=True)
+    return renderer_name
+
+
+def get_model_panel_renderer_device_name(model_panel):
+    """
+    Get the Renderer Device Name from the Model Panel.
+
+    Query for the name of the draw API used by the Viewport 2.0
+    renderer for a 3d modeling viewport. The possible return values
+    are "VirtualDeviceGL" if Maya is set to use OpenGL for Viewport
+    2.0 or "VirtualDeviceDx11" if Maya is set to use DirectX for
+    Viewport 2.0. If the renderer for the 3d modeling viewport is not
+    Viewport 2.0, an empty string will be returned.
+
+    :rtype: str
+    """
+    model_editor = maya.cmds.modelPanel(
+        model_panel,
+        query=True,
+        modelEditor=True)
+    renderer_name = get_model_editor_renderer_device_name(model_editor)
+    return renderer_name
+
+
+def get_currently_using_viewport2():
+    """
+    Detect the currently used Viewport renderer devices, are we using
+    Viewport 2?
+
+    :rtype: bool
+    """
+    model_panels = get_all_model_panels()
+    render_devices = [get_model_panel_renderer_device_name(p)
+                      for p in model_panels]
+    using_viewport2 = any([x != '' for x in render_devices])
+    return using_viewport2
 
 
 def get_isolated_nodes(model_panel):

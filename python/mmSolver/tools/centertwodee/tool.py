@@ -58,51 +58,57 @@ def main():
         LOG.warning(msg)
         return
 
-    save_sel = maya.cmds.ls(selection=True, long=True) or []
+    try:
+        mmapi.set_solver_running(True)
 
-    # Create centering node network.
-    nodes = maya.cmds.ls(
-        selection=True,
-        long=True,
-        type='transform',
-    ) or []
+        save_sel = maya.cmds.ls(selection=True, long=True) or []
 
-    # Filter out selected imagePlanes.
-    nodes_tmp = list(nodes)
-    nodes = []
-    for node in nodes_tmp:
-        shps = maya.cmds.listRelatives(
-            node,
-            shapes=True,
-            fullPath=True,
-            type='imagePlane') or []
-        if len(shps) == 0:
-            nodes.append(node)
+        # Get selection
+        nodes = maya.cmds.ls(
+            selection=True,
+            long=True,
+            type='transform',
+        ) or []
 
-    if len(nodes) == 0:
-        msg = 'No objects selected, removing 2D centering.'
-        LOG.warning(msg)
-        mmapi.load_plugin()
-        reproject_utils.remove_reprojection_from_camera(cam_tfm, cam_shp)
-        reproject_utils.reset_pan_zoom(cam_tfm, cam_shp)
-    elif len(nodes) == 1:
-        msg = 'Applying 2D centering to %r'
-        LOG.warning(msg, nodes)
-        mmapi.load_plugin()
-        reproj_nodes = reproject_utils.find_reprojection_nodes(cam_tfm, cam_shp)
-        if len(reproj_nodes) > 0:
-            maya.cmds.delete(reproj_nodes)
+        # Filter out selected imagePlanes.
+        nodes_tmp = list(nodes)
+        nodes = []
+        for node in nodes_tmp:
+            shps = maya.cmds.listRelatives(
+                node,
+                shapes=True,
+                fullPath=True,
+                type='imagePlane') or []
+            if len(shps) == 0:
+                nodes.append(node)
 
-        reproj_node = reproject_utils.create_reprojection_on_camera(
-            cam_tfm, cam_shp)
-        reproject_utils.connect_transform_to_reprojection(
-            nodes[0], reproj_node)
-    elif len(nodes) > 1:
-        msg = 'Please select only 1 node to center on.'
-        LOG.error(msg)
+        # Create centering node network.
+        if len(nodes) == 0:
+            msg = 'No objects selected, removing 2D centering.'
+            LOG.warning(msg)
+            mmapi.load_plugin()
+            reproject_utils.remove_reprojection_from_camera(cam_tfm, cam_shp)
+            reproject_utils.reset_pan_zoom(cam_tfm, cam_shp)
+        elif len(nodes) == 1:
+            msg = 'Applying 2D centering to %r'
+            LOG.warning(msg, nodes)
+            mmapi.load_plugin()
+            reproj_nodes = reproject_utils.find_reprojection_nodes(cam_tfm, cam_shp)
+            if len(reproj_nodes) > 0:
+                maya.cmds.delete(reproj_nodes)
 
-    if len(save_sel) > 0:
-        maya.cmds.select(save_sel, replace=True)
+            reproj_node = reproject_utils.create_reprojection_on_camera(
+                cam_tfm, cam_shp)
+            reproject_utils.connect_transform_to_reprojection(
+                nodes[0], reproj_node)
+        elif len(nodes) > 1:
+            msg = 'Please select only 1 node to center on.'
+            LOG.error(msg)
+
+        if len(save_sel) > 0:
+            maya.cmds.select(save_sel, replace=True)
+    finally:
+        mmapi.set_solver_running(False)
     return
 
 
@@ -122,9 +128,13 @@ def remove():
         LOG.warning(msg)
         return
 
-    mmapi.load_plugin()
-    reproject_utils.remove_reprojection_from_camera(cam_tfm, cam_shp)
-    reproject_utils.reset_pan_zoom(cam_tfm, cam_shp)
+    try:
+        mmapi.set_solver_running(True)
+        mmapi.load_plugin()
+        reproject_utils.remove_reprojection_from_camera(cam_tfm, cam_shp)
+        reproject_utils.reset_pan_zoom(cam_tfm, cam_shp)
+    finally:
+        mmapi.set_solver_running(False)
     return
 
 

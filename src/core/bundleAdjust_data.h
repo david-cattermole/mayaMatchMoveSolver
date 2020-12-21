@@ -47,7 +47,6 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-
 // Group all the benchmark timers together.
 struct SolverTimer {
     debug::TimestampBenchmark solveBenchTimer;
@@ -76,6 +75,12 @@ struct SolverOptions {
     int robustLossType;
     double robustLossScale;
     int solverType;
+    int timeEvalMode;
+    bool acceptOnlyBetter;
+
+    // Auto-adjust the input solve objects before solving?
+    bool removeUnusedMarkers;
+    bool removeUnusedAttributes;
 
     // All the different supported features by the currently active
     // solver type.
@@ -102,12 +107,15 @@ struct SolverData {
     std::vector<std::pair<int, int> > errorToMarkerList;
     std::vector<MPoint> markerPosList;
     std::vector<double> markerWeightList;
+    std::vector<std::vector<bool>> paramFrameList;
+    std::vector<std::vector<bool>> errorToParamList;
 
     // Internal Solver Data.
     std::vector<double> paramList;
     std::vector<double> errorList;
     std::vector<double> errorDistanceList;
     std::vector<double> jacobianList;
+    std::vector<double> previousParamList;
     int funcEvalNum;
     int iterNum;
     int jacIterNum;

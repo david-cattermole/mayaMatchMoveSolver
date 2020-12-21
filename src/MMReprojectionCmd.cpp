@@ -25,6 +25,7 @@
 #include <MMReprojectionCmd.h>
 #include <mayaUtils.h>
 #include <Camera.h>
+#include <core/bundleAdjust_defines.h>
 #include <core/bundleAdjust_base.h>
 #include <core/reprojection.h>
 
@@ -51,7 +52,6 @@
 #include <maya/MMatrixArray.h>
 #include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
-
 
 
 MMReprojectionCmd::~MMReprojectionCmd() {}
@@ -106,6 +106,8 @@ MSyntax MMReprojectionCmd::newSyntax() {
     syntax.addFlag(AS_MARKER_COORD_FLAG, AS_MARKER_COORD_FLAG_LONG,
             MSyntax::kBoolean);
     syntax.addFlag(AS_PIXEL_COORD_FLAG, AS_PIXEL_COORD_FLAG_LONG,
+            MSyntax::kBoolean);
+    syntax.addFlag(WITH_CAMERA_DIR_RATIO_FLAG, WITH_CAMERA_DIR_RATIO_FLAG_LONG,
             MSyntax::kBoolean);
 
     syntax.makeFlagMultiUse(TIME_FLAG);
@@ -179,6 +181,16 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         status = argData.getFlagArgument(IMAGE_RES_FLAG, 1, m_imageResY);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    // Get 'With Camera Direction Ratio' flag
+    m_withCameraDirRatio = false;
+    bool withCameraDirRatioFlagIsSet = argData.isFlagSet(
+        WITH_CAMERA_DIR_RATIO_FLAG, &status);
+    if (withCameraDirRatioFlagIsSet == true) {
+         status = argData.getFlagArgument(
+             WITH_CAMERA_DIR_RATIO_FLAG, 0, m_withCameraDirRatio);
+         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get World Flag flag or Get Transforms
@@ -367,10 +379,12 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     std::vector<double> horizontalFilmOffsetList;
     std::vector<double> verticalFilmOffsetList;
 
-    //
+    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+
+    // Query all the input data at once.
     if (m_nodeList.length() == 0 && m_givenWorldPoint == true) {
-        // We use the given world space point, rather than the list
-        // of transform nodes.
+        // We use the user given world space point argument, rather
+        // than the list of transform nodes as input.
         MMatrix tfmMatrix;
         tfmMatrix[3][0] = m_worldPoint.x;
         tfmMatrix[3][1] = m_worldPoint.y;
@@ -380,16 +394,16 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
             timeList.append(time);
 
             MMatrix camMatrix;
-            status = cameraMatrixAttr.getValue(camMatrix, time);
+            status = cameraMatrixAttr.getValue(camMatrix, time, timeEvalMode);
             camMatrixList.append(camMatrix);
             tfmMatrixList.append(tfmMatrix);
 
             // Possibly Animated
-            focalLength = m_camera.getFocalLengthValue(time);
-            horizontalFilmAperture = m_camera.getFilmbackWidthValue(time);
-            verticalFilmAperture = m_camera.getFilmbackHeightValue(time);
-            horizontalFilmOffset = m_camera.getFilmbackOffsetXValue(time);
-            verticalFilmOffset = m_camera.getFilmbackOffsetYValue(time);
+            focalLength = m_camera.getFocalLengthValue(time, timeEvalMode);
+            horizontalFilmAperture = m_camera.getFilmbackWidthValue(time, timeEvalMode);
+            verticalFilmAperture = m_camera.getFilmbackHeightValue(time, timeEvalMode);
+            horizontalFilmOffset = m_camera.getFilmbackOffsetXValue(time, timeEvalMode);
+            verticalFilmOffset = m_camera.getFilmbackOffsetYValue(time, timeEvalMode);
 
             focalLengthList.push_back(focalLength);
             horizontalFilmApertureList.push_back(horizontalFilmAperture);
@@ -415,17 +429,17 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
 
                 MMatrix camMatrix;
                 MMatrix tfmMatrix;
-                status = cameraMatrixAttr.getValue(camMatrix, time);
-                status = tfmMatrixAttr.getValue(tfmMatrix, time);
+                status = cameraMatrixAttr.getValue(camMatrix, time, timeEvalMode);
+                status = tfmMatrixAttr.getValue(tfmMatrix, time, timeEvalMode);
                 camMatrixList.append(camMatrix);
                 tfmMatrixList.append(tfmMatrix);
 
                 // Possibly Animated
-                focalLength = m_camera.getFocalLengthValue(time);
-                horizontalFilmAperture = m_camera.getFilmbackWidthValue(time);
-                verticalFilmAperture = m_camera.getFilmbackHeightValue(time);
-                horizontalFilmOffset = m_camera.getFilmbackOffsetXValue(time);
-                verticalFilmOffset = m_camera.getFilmbackOffsetYValue(time);
+                focalLength = m_camera.getFocalLengthValue(time, timeEvalMode);
+                horizontalFilmAperture = m_camera.getFilmbackWidthValue(time, timeEvalMode);
+                verticalFilmAperture = m_camera.getFilmbackHeightValue(time, timeEvalMode);
+                horizontalFilmOffset = m_camera.getFilmbackOffsetXValue(time, timeEvalMode);
+                verticalFilmOffset = m_camera.getFilmbackOffsetYValue(time, timeEvalMode);
 
                 focalLengthList.push_back(focalLength);
                 horizontalFilmApertureList.push_back(horizontalFilmAperture);
@@ -527,6 +541,14 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
             outResult.append(outPixelX);
             outResult.append(outPixelY);
             outResult.append(outPointZ);
+        }
+
+        if (m_withCameraDirRatio == true) {
+            double outCameraDirectionRatio = 0.0;
+            status = calculateCameraFacingRatio(tfmMatrix, camMatrix,
+                                                outCameraDirectionRatio);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            outResult.append(outCameraDirectionRatio);
         }
     }
 

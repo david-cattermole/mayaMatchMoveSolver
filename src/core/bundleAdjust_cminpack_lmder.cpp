@@ -66,12 +66,9 @@ bool solve_3d_cminpack_lmder(
         int numberOfErrors,
         std::vector<double> &paramList,
         std::vector<double> &errorList,
-        std::vector<double> &paramLowerBoundList,
-        std::vector<double> &paramUpperBoundList,
         std::vector<double> &paramWeightList,
         SolverData &userData,
-        SolverResult &solveResult,
-        MStringArray &outResult){
+        SolverResult &solveResult){
     int solverType = SOLVER_TYPE_CMINPACK_LMDER;
     int ret = 0;
     std::string resultStr;
@@ -239,6 +236,7 @@ int solveFunc_cminpack_lmder(void *data,
                              int ldfjac, 
                              int iflag) {
     assert(ldfjac == n ? m <= n : m);
+    UNUSED(ldfjac);
 
     SolverData *ud = static_cast<SolverData *>(data);
     ud->isPrintCall = iflag == 0;

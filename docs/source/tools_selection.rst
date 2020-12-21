@@ -1,8 +1,15 @@
 Selection Tools
 ===============
 
-Toggle Marker / Bundle
-----------------------
+.. figure:: images/tools_shelf_icons_selection.png
+    :alt: Node Selection Shelf Icons
+    :align: center
+    :width: 30%
+
+.. _toggle-marker-bundle-selection-tool-ref:
+
+Toggle Marker / Bundle Selection
+--------------------------------
 
 Select the opposite node, if a Marker is selected, select it’s connected
 Bundle, and vice-versa.
@@ -13,6 +20,8 @@ Run this Python command:
 
     import mmSolver.tools.selection.tools as selection_tool
     selection_tool.swap_between_selected_markers_and_bundles()
+
+.. _select-marker-and-bundle-tool-ref:
 
 Select Marker + Bundle
 ----------------------

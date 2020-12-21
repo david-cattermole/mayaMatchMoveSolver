@@ -23,8 +23,6 @@ loading in third-party software (such as 3DEqualizer).
 
 """
 
-
-
 import os
 
 import maya.cmds
@@ -38,6 +36,7 @@ import Qt.QtGui as QtGui
 
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.camera as camera_utils
+import mmSolver.utils.tools as tools_utils
 
 import mmSolver.tools.copypastecamera.constant as const
 import mmSolver.tools.copypastecamera.lib as lib
@@ -93,14 +92,18 @@ def main():
 
     # Node must be transform and have a camera shape node to be valid.
     rotate_order = const.ROTATE_ORDER
-    cam_data = lib.query_camera_data(
-        cam_tfm,
-        cam_shp,
-        frames,
-        rotate_order,
-        test_disk
-    )
-    
+
+    with tools_utils.tool_context(use_undo_chunk=False,
+                                  use_dg_evaluation_mode=True,
+                                  disable_viewport=True):
+        cam_data = lib.query_camera_data(
+            cam_tfm,
+            cam_shp,
+            frames,
+            rotate_order,
+            test_disk
+        )
+
     # Generate file contents.
     data_str = lib.generate(cam_data, plate_data, frame_range)
 

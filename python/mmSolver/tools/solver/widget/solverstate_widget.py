@@ -45,8 +45,11 @@ class SolverStateWidget(QtWidgets.QWidget, ui_solverstate_widget.Ui_Form):
     infoUpdated = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
+        s = time.time()
         super(SolverStateWidget, self).__init__(*args, **kwargs)
         self.setupUi(self)
+        e = time.time()
+        LOG.debug('SolverStateWidget init: %r seconds', e - s)
         return
 
     def updateModel(self):
@@ -62,7 +65,7 @@ class SolverStateWidget(QtWidgets.QWidget, ui_solverstate_widget.Ui_Form):
         total_time = col.get_last_solve_duration()
 
         msg = 'No solve performed.'
-        if (len(solres_list) == 0):
+        if len(solres_list) == 0:
             info_fn(msg)
         if timestamp is None:
             timestamp = time.time()
@@ -77,27 +80,6 @@ class SolverStateWidget(QtWidgets.QWidget, ui_solverstate_widget.Ui_Form):
             timestamp=timestamp,
             total_time=total_time,
             status_fn=info_fn)
-        return
-
-    def updateSolveValidState(self):
-        # self.setStatusLine(const.STATUS_COMPILING)
-        # v = True
-        # col = lib_state.get_active_collection()
-        # if col is None:
-        #     v = False
-        # else:
-        #     v = lib_col.compile_collection(col)
-        # assert isinstance(v, bool) is True
-
-        # # TODO: Sometimes the apply button is falsely disabled,
-        # #   therefore we shouldn't disable it until it's fixed.
-        # # # if self._parentObject is not None:
-        # # #     self._parentObject.applyBtn.setEnabled(v)
-
-        # if v is True:
-        #     self.setStatusLine(const.STATUS_READY)
-        # else:
-        #     self.setStatusLine(const.STATUS_SOLVER_NOT_VALID)
         return
 
     @QtCore.Slot(str)

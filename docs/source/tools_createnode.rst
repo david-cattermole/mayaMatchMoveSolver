@@ -45,26 +45,26 @@ Load Markers
     Load Markers UI
 
 The Load Markers UI allows loading of ``.uv`` (mmSolver), ``.txt``
-(3DEqualizer4), ``.rz2`` (Autodesk MatchMover) formated files.
+(3DEqualizer4), ``.rz2`` (Autodesk MatchMover) formatted files.
 
 When opening the UI, the contents of the user’s clipboard is
 queried. If the clipboard is a valid file path, it will be
 automatically pasted into the “File Path”, so you won’t need to
 “Browse” for the file.
 
-In 3DEqualizer, the "Copy 2D Tracks (MM Solver)" is designed to copy
+In 3DEqualizer, the ``Copy 2D Tracks (MM Solver)`` is used to copy
 the selected 2D points to a temporary file path and then place that
 file path on the clipboard automatically. Once the file path is on the
-clipboard, just open the Maya Load Marker tool and the path will be
+clipboard, open the Maya Load Marker tool and the path will be
 read automatically.
 
-The "Camera" list contains all the cameras currently in the Maya
+The ``Camera`` list contains all the cameras currently in the Maya
 scene. If no cameras are available (persp, front, top, left do not
-count), the default option is to create a new camera. The "Update"
-button refreshes the "Camera" list without needing to close and
+count), the default option is to create a new camera. The ``Update``
+button refreshes the ``Camera`` list without needing to close and
 re-open the UI.
 
-Once a file path is given, press the “Load” button.
+Once a file path is given, press the ``Load`` button.
 For ``.txt`` format you will need to enter the Width / Height of the input
 format.
 
@@ -75,6 +75,8 @@ Run this Python command:
     import mmSolver.tools.loadmarker.ui.loadmarker_window as tool
     tool.main()
 
+.. _copy-3de4-2d-tracks-ref:
+
 Copy 2D Tracks from 3DEqualizer
 +++++++++++++++++++++++++++++++
 
@@ -83,13 +85,19 @@ Copy 2D Tracks from 3DEqualizer
     :align: right
     :scale: 20%
 
-To create a ``.uv`` file, you may use the 3DEqualizer ``Copy Tracks
+To create a ``.uv`` file, you may use the 3DEqualizer ``Copy 2D Tracks
 (MM Solver)`` script (see mmSolver installation to install this
 script).
 
+The ``Copy 2D Tracks (MM Solver)`` is almost identical to the ``Export
+2D Tracks (MM Solver)`` tool. The ``Copy 2D Tracks (MM Solver)`` tool
+will perform run the Export tool with default UI values, save the
+contents a temporary file, and set the OS Copy/Paste buffer to the
+saved file path.
+
 1) In 3DEqualizer, select a 2D Point in the Object or Point Browser.
 
-2) Right-click the point and run ``Copy Tracks (MM Solver)``.
+2) Right-click the point and run ``Copy 2D Tracks (MM Solver)``.
 
    - A ``.uv`` file will be saved into a temporary file, and the file
      path will be on your system copy/paste clipboard, ready to be used in
@@ -97,6 +105,50 @@ script).
 
 3) Next Open Maya and use the file path in the Load Markers UI.
 
+See the video tutorial
+`Using 3DEqualizer with mmSolver - Copy 2D Tracks <https://david-cattermole.github.io/mayaMatchMoveSolver/tutorial.html#using-3dequalizer-with-mmsolver-copy-2d-tracks>`_
+for a step-by-step example of the tool.
+
+.. note::
+    The ``Copy 2D Tracks`` tool uses the "First Frame is Frame"
+    parameter on the Camera in 3DEqualizer to correctly synchronise
+    frame numbers between Maya and 3DEqualizer. It is recommended to
+    correctly set "First Frame is Frame".
+
+.. _track-2d-rolling-shutter-correct-ref:
+
+2D Tracks Rolling Shutter Correction
+++++++++++++++++++++++++++++++++++++
+
+In 3DEqualizer4 with a Rolling Shutter (RS) enabled camera, the ``Copy 2D
+Tracks (MM Solver)`` and ``Export 2D Tracks (MM Solver)`` (version
+v1.8+) tools will export the 2D data with RS correction.
+
+When exporting RS in 3DEqualizer4 Release 6, the ``(Visualisation
+Only) Content Distance`` camera parameter is used for the RS
+correction calculation.
+
+In 3DEqualizer4 Release 5 and below, the ``Content Distance`` defaults
+to ``100`` units. In 3DEqualizer4 Release 2 and above, to change the
+default ``Content Distance`` you can add a special tag to the Project
+Notes.  On a new line, type ``RS Content Distance = 42.0`` (with your
+choice of number) into the Attribute Editor's Project tab, Project
+Notes field. This value will be remembered as your preference for the
+current 3DEqualizer scene file.
+
+To automatically set the Project Notes with ``RS Content Distance =
+42.0`` you may optionally use the ``Export 2D Tracks (MM Solver)``
+tool with a ``Content Distance`` value of choice which will be saved
+into Project Notes and remembered.
+
+.. note::
+
+   To export 2D Tracks with RS correction with 3DEqualizer4 Release 1
+   or 2, it is recommend to use ``Export 2D Tracks (MM Solver)``,
+   because the ``Copy 2D Tracks (MM Solver)`` tool can only export
+   with the default ``Content Distance`` of ``100`` units.
+
+.. _load-markers-in-maya-ref:
 
 Loading Markers in Maya
 +++++++++++++++++++++++
@@ -163,6 +215,7 @@ automatically restored when the Load Marker UI is re-opened.
        to choose the correct plate resolution for the 2D data that was
        exported.
 
+.. _update-markers-in-maya-ref:
 
 Updating / Replacing Markers in Maya
 ++++++++++++++++++++++++++++++++++++
@@ -199,6 +252,7 @@ Marker nodes in Maya can be overwritten with newly tracked data.
    loaded using 3DEqualizer - there is a link between the 2D data in
    3DEqualizer and the Marker node in Maya.
 
+.. _convert-to-marker-ref:
 
 Convert to Marker
 -----------------
@@ -226,6 +280,8 @@ Run this Python command:
 
     import mmSolver.tools.convertmarker.tool as tool
     tool.main()
+
+.. _create-bundle-ref:
 
 Create Bundle
 -------------

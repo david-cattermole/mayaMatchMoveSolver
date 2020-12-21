@@ -30,7 +30,7 @@ produce a 3D Scene with the least possible error.
 .. _solver-design-attributes:
 
 Attributes
-~~~~~~~~~~
+----------
 
 In the MM Solver, we refer to *unknown parameters* as Attributes.
 Attributes are the Maya attributes that are allowed to be modified
@@ -56,7 +56,7 @@ Commonly solved Attributes are 3D translate and rotate axes.
 .. _solver-design-markers-and-bundles:
 
 Markers and Bundles
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 *Markers* and *Bundles* are used to compute the *measured error* inside
 the solver. The word *Marker* is used to describe a 2D point on an image
@@ -82,7 +82,7 @@ screen-space re-projected 3D Bundles with the linked 2D Markers.
 .. _solver-design-solving:
 
 Solving
-~~~~~~~
+-------
 
 Once the solver has *Attributes*, *Cameras* and *Markers* and linked
 *Bundles*, the solver can start a solve.
@@ -186,7 +186,7 @@ and *Markers* that are in the solve.
 .. _solver-design-static-and-animated-attributes:
 
 Time - Static and Animated Attributes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------
 
 Up until now we've been concerned with solving a single frame in time.
 Now we need to extend that into multiple frames. In the MM Solver there
@@ -217,10 +217,45 @@ number of solver evaluations required for a low *measured error*.
 Solving Animated and Static values as described is a **Brute Force**
 approach, but other strategies may be used.
 
+.. _solver-design-time-evaluation:
+
+Attribute Value Evaluation at Different Times
+---------------------------------------------
+
+This topic is unrelated to the actual solver engine in mmSolver, but
+documents an interesting implementation detail when correctly
+evaluating values at different times in Autodesk Maya. From mmSolver
+v0.3.10 the new mmSolver command flag 'timeEvalMode' was introduced to
+tell Maya how to evaluate values at different times.
+
+There are two different methods to query a value at a specific time,
+**1**) tell the Maya DG network to evaluate a value at a time (using a
+"DG Context"), or **2**) change the Maya scene's current time, then
+query the current value.
+
+Tests have shown that the two different methods do not always evaluate
+the same way and can lead to an incorrect solve if set
+incorrectly. For simple scenes, method **1** works most of the time,
+however when using character rigs or complex node networks and
+evaluating on a single frame, then method **2** is needed to solve
+correctly.
+
+Use method **1** when you are solving multiple frames at once, and you
+ are using the Maya GUI (not Maya Batch or 'mayapy').
+
+Use method **2** when you are evaluting a single frame, or
+when you are not using the Maya GUI such as with Maya Batch or
+'mayapy'.
+
+These different methods do not need to be set manually if you are
+using the mmSolver Solver UI or the mmSolver API. If you are calling
+the 'mmSolver' command directly, then 'timeEvalMode' is important to
+set.
+
 .. _solver-design-attribute-details:
 
 Attribute Details
-~~~~~~~~~~~~~~~~~
+-----------------
 
 Attribute Details are properties of an Attribute. Attribute Details
 are used to add constraints such as value limits.
@@ -230,7 +265,7 @@ maximum, smoothness and stiffness. See below for more details on how
 each property works.
 
 Minimum and Maximum Limits
---------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Minimum and maximum limits will force *mmSolver* to solve an attribute
 with-in specific values. Attribute min/max limits apply to both static
@@ -251,7 +286,7 @@ Minimum and maximum limits are also known as "Upper and Lower Value
 Bounds".
 
 Smoothness and Stiffness
-------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. figure:: images/smoothnessConstraintGraph.gif
     :alt: Smoothness Constraint
@@ -291,7 +326,7 @@ increases the effect.
 .. _solver-design-solver-strategies:
 
 Solver Strategies
-~~~~~~~~~~~~~~~~~
+-----------------
 
 Solver strategies are patterns of evaluation that attempt to solve the
 input attributes across time while reducing the number of evaluations
@@ -317,7 +352,7 @@ Primary Frames / Root Frames.
 .. _solver-design-solver-options:
 
 Solver Options
-~~~~~~~~~~~~~~
+--------------
 
 Like many solvers, the MM Solver has options, however the options are
 hidden from the Solver UI and are set automatically by the Python API.
@@ -477,14 +512,14 @@ General Solving Concepts
 **To be written**
 
 Over-Parameterization
-~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^
 
 Parameters-errors ratio is too high.
 
 **To be written**
 
 Plane, Line and Curve Constraints
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **To be written**
 
@@ -498,7 +533,7 @@ Below are the some common questions and answers.
 .. _solver-faq-how-to-get-supported-solver-types:
 
 How do I get the list of supported Solver Types?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To dynamically get the supported list of solver types, run this Python
 command in Maya::
@@ -533,7 +568,7 @@ that depending on compilation, some solver types will not be available.
 .. _solver-faq-what-transform-space-is-used-for-solving:
 
 What transform space is used for solving?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 *MM Solver* evaluates all *Marker* and *Bundle* screen-space errors in
 **world-space**, but solving is not performed in a transform space.
@@ -542,14 +577,14 @@ Solving is performed directly on *Attribute* values.
 .. _solver-faq-how-to-reduce-attribute-count-with-dag:
 
 How can I use a DAG hierarchy to reduce the number of *Attributes*?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **To be written**
 
 .. _solver-faq-how-to-increase-solve-speed:
 
 How can I make my solves faster?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **To be written**
 

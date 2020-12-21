@@ -19,10 +19,7 @@
 Testing Utilities - base class for the test cases.
 """
 
-import os
-import math
 import time
-import unittest
 
 try:
     import maya.standalone
@@ -58,7 +55,8 @@ class SolverTestCase(baseUtils.TestBase):
 
         super(SolverTestCase, self).tearDown()
 
-    def haveSolverType(self, name=None, index=None):
+    @staticmethod
+    def haveSolverType(name=None, index=None):
         has_solver = False
         kwargs = {
             'name': False,
@@ -74,3 +72,14 @@ class SolverTestCase(baseUtils.TestBase):
         if index is not None:
             has_solver = index in solverTypes
         return has_solver
+
+    @staticmethod
+    def runSolverAffects(affects_mode, **kwargs):
+        assert 'mmSolverAffects' in dir(maya.cmds)
+        s = time.time()
+        result = maya.cmds.mmSolverAffects(
+            mode=affects_mode,
+            **kwargs)
+        e = time.time()
+        print 'mmSolverAffects time:', e - s
+        return result

@@ -23,15 +23,22 @@ installed. We can even use 'mayapy' (installed with Maya), rather
 than a standalone Python install.
 """
 
+from __future__ import print_function
+
+import sys
 import os
 import shutil
-import urllib2
 import zipfile
 import tarfile
 
+if sys.version_info[0] == 2:
+    import urllib2
+elif sys.version_info[0] == 3:
+    import urllib.request as urllib2
+
 
 def download_file(url, out_file, user_agent=None):
-    print 'Downloading: {}'.format(url)
+    print('Downloading: {}'.format(url))
     filedata = None
     if user_agent is None:
         filedata = urllib2.urlopen(url)
@@ -40,7 +47,7 @@ def download_file(url, out_file, user_agent=None):
         req.add_header('User-Agent', user_agent)
         filedata = urllib2.urlopen(req)
     data = filedata.read()
-    print 'Saving Archive: {}'.format(out_file)
+    print('Saving Archive: {}'.format(out_file))
     with open(out_file, 'wb') as f:
         f.write(data)
     return out_file
@@ -48,20 +55,20 @@ def download_file(url, out_file, user_agent=None):
 
 def unpack_zip_archive(input_file, output_dir):
     with zipfile.ZipFile(input_file, 'r') as f:
-        print 'Extracting: {}'.format(output_dir)
+        print('Extracting: {}'.format(output_dir))
         f.extractall(output_dir)
     return
 
 
 def unpack_tarball_archive(input_file, output_dir):
     with tarfile.open(input_file, 'r') as f:
-        print 'Extracting: {}'.format(output_dir)
+        print('Extracting: {}'.format(output_dir))
         f.extractall(output_dir)
     return
 
 
 def unpack_archive(input_file, output_dir):
-    print 'Unpacking: {}'.format(input_file)
+    print('Unpacking: {}'.format(input_file))
     if input_file.endswith('.zip'):
         unpack_zip_archive(input_file, output_dir)
     else:
@@ -90,7 +97,7 @@ def onerror(func, path, exc_info):
 
 
 def add_package(name, archive_name, url, archives_dir, working_dir, user_agent=None):
-    print 'Adding Package: {}'.format(name)
+    print('Adding Package: {}'.format(name))
     out_file = os.path.join(archives_dir, archive_name)
     out_file = os.path.abspath(out_file)
     out_dir = os.path.join(working_dir, name)
@@ -103,7 +110,7 @@ def add_package(name, archive_name, url, archives_dir, working_dir, user_agent=N
 
     # Unpack
     if os.path.isdir(out_dir):
-        print 'Cleaning: {}'.format(out_dir)
+        print('Cleaning: {}'.format(out_dir))
         shutil.rmtree(out_dir, ignore_errors=False, onerror=onerror)
     unpack_archive(archive, working_dir)
     return

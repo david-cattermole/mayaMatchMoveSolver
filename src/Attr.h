@@ -164,21 +164,25 @@ public:
 
     bool isConnected();
 
-    MStatus getValue(bool &value, const MTime &time);
+    MStatus getValue(bool &value, const MTime &time, const int timeEvalMode);
 
-    MStatus getValue(int &value, const MTime &time);
+    MStatus getValue(int &value, const MTime &time, const int timeEvalMode);
 
-    MStatus getValue(double &value, const MTime &time);
+    MStatus getValue(short &value, const MTime &time, const int timeEvalMode);
 
-    MStatus getValue(MMatrix &value, const MTime &time);
+    MStatus getValue(double &value, const MTime &time, const int timeEvalMode);
 
-    MStatus getValue(bool &value);
+    MStatus getValue(MMatrix &value, const MTime &time, const int timeEvalMode);
 
-    MStatus getValue(int &value);
+    MStatus getValue(bool &value, const int timeEvalMode);
 
-    MStatus getValue(double &value);
+    MStatus getValue(int &value, const int timeEvalMode);
 
-    MStatus getValue(MMatrix &value);
+    MStatus getValue(short &value, const int timeEvalMode);
+
+    MStatus getValue(double &value, const int timeEvalMode);
+
+    MStatus getValue(MMatrix &value, const int timeEvalMode);
 
     MStatus setValue(const double value, const MTime &time,
                      MDGModifier &dgmod, MAnimCurveChange &animChange);
@@ -209,6 +213,12 @@ public:
     unsigned int getSolverAttrType() const;
 
     void setSolverAttrType(const unsigned int value);
+
+    MString getLongNodeName();
+
+    MString getLongAttributeName();
+
+    MString getLongName();
 
 private:
     MString m_nodeName;

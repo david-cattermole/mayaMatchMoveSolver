@@ -32,6 +32,7 @@
 #include <limits>
 #include <algorithm>
 #include <cstdlib>
+#include <map>
 
 // Utils
 #include <utilities/debugUtils.h>
@@ -55,15 +56,25 @@
 #include <maya/MFnCamera.h>
 #include <maya/MComputation.h>
 #include <maya/MProfiler.h>
+#include <maya/MStreamUtils.h>
+#include <maya/MFnAttribute.h>
+#include <maya/MDagPath.h>
+
+// Solver Utilities
+#include <mayaUtils.h>
+#include <Camera.h>
+#include <Attr.h>
+#include <Marker.h>
 
 // Local
 #include <core/bundleAdjust_base.h>
+#include <core/bundleAdjust_relationships.h>
 #include <core/bundleAdjust_levmar_bc_dif.h>
 #include <core/bundleAdjust_cminpack_base.h>
 #include <core/bundleAdjust_cminpack_lmdif.h>
 #include <core/bundleAdjust_cminpack_lmder.h>
 #include <core/bundleAdjust_solveFunc.h>
-#include <mayaUtils.h>
+
 
 
 // Get a list of all available solver types (index and name).
@@ -126,456 +137,7 @@ SolverTypePair getSolverTypeDefault() {
     }
     SolverTypePair solverType(solverTypeIndex, solverTypeName);
     return solverType;
-}
-
-
-int countUpNumberOfErrors(MarkerPtrList markerList,
-                          StiffAttrsPtrList stiffAttrsList,
-                          SmoothAttrsPtrList smoothAttrsList,
-                          MTimeArray frameList,
-                          MarkerPtrList &validMarkerList,
-                          std::vector<MPoint> &markerPosList,
-                          std::vector<double> &markerWeightList,
-                          IndexPairList &errorToMarkerList,
-                          int &numberOfMarkerErrors,
-                          int &numberOfAttrStiffnessErrors,
-                          int &numberOfAttrSmoothnessErrors,
-                          MStatus &status) {
-    // Count up number of errors.
-    //
-    // For each marker on each frame that it is valid, we add
-    // ERRORS_PER_MARKER errors.
-    int i = 0;
-    int j = 0;
-
-    // For normalising the marker weight per-frame, create a mapping
-    // data structure to use later.
-    typedef std::map<int, double> FrameIndexDoubleMapping;
-    typedef FrameIndexDoubleMapping::iterator FrameIndexDoubleMappingIt;
-    FrameIndexDoubleMapping weightMaxPerFrame;
-    FrameIndexDoubleMappingIt xit;
-
-    // Get all the marker data
-    numberOfMarkerErrors = 0;
-    for (MarkerPtrListIt mit = markerList.begin(); mit != markerList.end(); ++mit) {
-        MarkerPtr marker = *mit;
-        for (j = 0; j < (int) frameList.length(); ++j) {
-            MTime frame = frameList[j];
-
-            bool enable = false;
-            status = marker->getEnable(enable, frame);
-            CHECK_MSTATUS_AND_RETURN(status, numberOfMarkerErrors);
-
-            double weight = 0.0;
-            status = marker->getWeight(weight, frame);
-            CHECK_MSTATUS_AND_RETURN(status, numberOfMarkerErrors);
-
-            if ((enable == true) && (weight > 0.0)) {
-                // First index is into 'markerList'
-                // Second index is into 'frameList'
-                IndexPair markerPair(i, j);
-                errorToMarkerList.push_back(markerPair);
-                numberOfMarkerErrors += ERRORS_PER_MARKER;
-
-                validMarkerList.push_back(marker);
-
-                // Add marker weights, into a cached list to be used
-                // during solving for direct look-up.
-                markerWeightList.push_back(weight);
-
-                // Get maximum weight value of all marker weights
-                // per-frame
-                xit = weightMaxPerFrame.find(j);
-                double weight_max = weight;
-                if (xit != weightMaxPerFrame.end()) {
-                    weight_max = xit->second;
-                    if (weight > weight_max) {
-                        weight_max = weight;
-                    }
-                    weightMaxPerFrame.erase(xit);
-                }
-                weightMaxPerFrame.insert(std::pair<int, double>(j, weight_max));
-
-                // Get Marker Position.
-                MMatrix cameraWorldProjectionMatrix;
-                CameraPtr camera = marker->getCamera();
-                status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
-                double filmBackWidth = camera->getFilmbackWidthValue(frame);
-                double filmBackHeight = camera->getFilmbackHeightValue(frame);
-                double filmBackInvAspect = filmBackHeight / filmBackWidth;
-                // double filmBackAspect = filmBackWidth / filmBackHeight;
-                CHECK_MSTATUS(status);
-                MPoint marker_pos;
-                status = marker->getPos(marker_pos, frame);
-                CHECK_MSTATUS(status);
-                marker_pos = marker_pos * cameraWorldProjectionMatrix;
-                marker_pos.cartesianize();
-                // convert to -0.5 to 0.5, maintaining the aspect
-                // ratio of the film back.
-                marker_pos[0] *= 0.5;
-                marker_pos[1] *= 0.5 * filmBackInvAspect;
-                markerPosList.push_back(marker_pos);
-            }
-        }
-        i++;
-    }
-
-    // Normalise the weights per-frame, using the weight 'max'
-    // computed above.
-    i = 0;
-    typedef IndexPairList::const_iterator IndexPairListCit;
-    for (IndexPairListCit eit = errorToMarkerList.begin();
-         eit != errorToMarkerList.end(); ++eit) {
-        double weight = markerWeightList[i];
-
-        int frameIndex = eit->second;
-
-        xit = weightMaxPerFrame.find(frameIndex);
-        assert(xit != weightMaxPerFrame.end());
-        double weight_max = xit->second;
-
-        weight = weight / weight_max;
-        markerWeightList[i] = weight;
-        ++i;
-    }
-
-    // Compute number of errors from Attributes.
-    double stiffValue = 0.0;
-    for (StiffAttrsPtrListIt ait = stiffAttrsList.begin(); ait != stiffAttrsList.end(); ++ait) {
-        StiffAttrsPtr stiffAttrs = *ait;
-
-        // Determine if the attribute will use stiffness values. Don't
-        // add stiffness to the solver unless it needs
-        // to be calculated.
-        AttrPtr weightAttr = stiffAttrs->weightAttr;
-        weightAttr->getValue(stiffValue);
-        bool useStiffness = static_cast<bool>(stiffValue);
-        if (useStiffness) {
-            numberOfAttrStiffnessErrors++;
-        }
-    }
-
-    double smoothValue = 0.0;
-    for (SmoothAttrsPtrListIt ait = smoothAttrsList.begin(); ait != smoothAttrsList.end(); ++ait) {
-        SmoothAttrsPtr smoothAttrs = *ait;
-
-        // Determine if the attribute will use smoothness values. Don't
-        // add smoothness to the solver unless it needs
-        // to be calculated.
-        AttrPtr weightAttr = smoothAttrs->weightAttr;
-        weightAttr->getValue(smoothValue);
-        bool useSmoothness = static_cast<bool>(smoothValue);
-        if (useSmoothness) {
-            numberOfAttrSmoothnessErrors++;
-        }
-    }
-
-    int numErrors = numberOfMarkerErrors;
-    numErrors += numberOfAttrStiffnessErrors;
-    numErrors += numberOfAttrSmoothnessErrors;
-    return numErrors;
-}
-
-
-int countUpNumberOfUnknownParameters(AttrPtrList attrList,
-                                     MTimeArray frameList,
-                                     AttrPtrList &camStaticAttrList,
-                                     AttrPtrList &camAnimAttrList,
-                                     AttrPtrList &staticAttrList,
-                                     AttrPtrList &animAttrList,
-                                     std::vector<double> &paramLowerBoundList,
-                                     std::vector<double> &paramUpperBoundList,
-                                     std::vector<double> &paramWeightList,
-                                     IndexPairList &paramToAttrList,
-                                     MStatus &status) {
-    // Count up number of unknown parameters
-    int i = 0;      // index of marker
-    int j = 0;      // index of frame
-    int numUnknowns = 0;
-
-    for (AttrPtrListIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
-        AttrPtr attr = *ait;
-        MObject nodeObj = attr->getObject();
-
-        bool attrIsPartOfCamera = false;
-        MFnDependencyNode dependNode(nodeObj);
-        if (nodeObj.apiType() == MFn::kTransform) {
-            MFnDagNode dagNode(nodeObj);
-            for (unsigned int k = 0; k < dagNode.childCount(); ++k) {
-                MObject childObj = dagNode.child(k, &status);
-                CHECK_MSTATUS(status);
-                if (childObj.apiType() == MFn::kCamera) {
-                    attrIsPartOfCamera = true;
-                }
-            }
-        } else if (nodeObj.apiType() == MFn::kCamera) {
-            attrIsPartOfCamera = true;
-        }
-
-        if (attr->isAnimated()) {
-            numUnknowns += frameList.length();
-            for (j = 0; j < (int) frameList.length(); ++j) {
-                // first index is into 'attrList'
-                // second index is into 'frameList'
-                IndexPair attrPair(i, j);
-                paramToAttrList.push_back(attrPair);
-
-                // Min / max parameter bounds.
-                double minValue = attr->getMinimumValue();
-                double maxValue = attr->getMaximumValue();
-                paramLowerBoundList.push_back(minValue);
-                paramUpperBoundList.push_back(maxValue);
-
-                // TODO: Get a weight value from the attribute. Currently
-                // weights are not supported in the Maya mmSolver command.
-                // This is not the same as Marker weights.
-                paramWeightList.push_back(1.0);
-            }
-
-            if (attrIsPartOfCamera) {
-                camAnimAttrList.push_back(attr);
-            } else {
-                animAttrList.push_back(attr);
-            }
-        } else if (attr->isFreeToChange()) {
-            ++numUnknowns;
-            // first index is into 'attrList'
-            // second index is into 'frameList', '-1' means a static value.
-            IndexPair attrPair(i, -1);
-            paramToAttrList.push_back(attrPair);
-
-            // Min / max parameter bounds.
-            double minValue = attr->getMinimumValue();
-            double maxValue = attr->getMaximumValue();
-            paramLowerBoundList.push_back(minValue);
-            paramUpperBoundList.push_back(maxValue);
-
-            // TODO: Get a weight value from the attribute. Currently
-            // weights are not supported in the Maya mmSolver command.
-            // This is not the same as Marker weights.
-            paramWeightList.push_back(1.0);
-
-            if (attrIsPartOfCamera) {
-                camStaticAttrList.push_back(attr);
-            } else {
-                staticAttrList.push_back(attr);
-            }
-        } else {
-            const char *attrName = attr->getName().asChar();
-            ERR("attr is not animated or free: " << attrName);
-        }
-        i++;
-    }
-    return numUnknowns;
-}
-
-
-///*
-// * Use the Maya DG graph structure to determine the
-// * sparsity structure, a relation of cause and effect; which
-// * attributes affect which markers.
-// *
-// * Answer this question: 'for each marker, determine which
-// * attributes can affect it's bundle.'
-// *
-// * Detect inputs and outputs for marker-bundle relationships. For each
-// * marker, get the bundle, then find all the attributes that affect the bundle
-// * (and it's parent nodes). If the bundle cannot be affected by any attribute
-// * in the solver, print a warning and remove it from the solve list.
-// *
-// * This relationship building will be the basis for the Ceres
-// * residual/parameter block creation. Note we do not need to worry about time
-// * in our relationship building, connections cannot be made at different
-// * times (and if they did, that would be stupid). This relationship building
-// * could mean we only need to measure a limited number of bundles, hence
-// * improving performance.
-// *
-// * There are special cases for detecting inputs/outputs between
-// * markers and attributes.
-// *
-// * - Any transform node/attribute above the marker in the DAG that
-// *   affects the world transform.
-// *
-// * - Cameras; transform attributes and focal length will affect all
-// *   markers
-// *
-// */
-//void findErrorToParameterRelationship(MarkerPtrList markerList,
-//                                      AttrPtrList attrList,
-//                                      MTimeArray frameList,
-//                                      int numParameters,
-//                                      int numErrors,
-//                                      IndexPairList paramToAttrList,
-//                                      IndexPairList errorToMarkerList,
-//                                      BoolList2D &markerToAttrMapping,
-//                                      BoolList2D &errorToParamMapping,
-//                                      MStatus &status) {
-//    int i, j;
-//
-//    // Command execution options
-//    bool display = false;  // print out what happens in the python
-//    // command.
-//    bool undoable = false;  // we won't modify the scene in any way,
-//    // only make queries.
-//    MString cmd = "";
-//    MStringArray result1;
-//    MStringArray result2;
-//
-//    // Calculate the relationship between attributes and markers.
-//    markerToAttrMapping.resize(markerList.size());
-//    i = 0;      // index of marker
-//    for (MarkerPtrListCIt mit = markerList.begin(); mit != markerList.end(); ++mit) {
-//        MarkerPtr marker = *mit;
-//        CameraPtr cam = marker->getCamera();
-//        BundlePtr bundle = marker->getBundle();
-//
-//        // Get node names.
-//        const char *markerName = marker->getNodeName().asChar();
-//        const char *camName = cam->getTransformNodeName().asChar();
-//        const char *bundleName = bundle->getNodeName().asChar();
-//
-//        // Find list of plug names that are affected by the bundle.
-//        cmd = "";
-//        cmd += "import mmSolver.api as mmapi;";
-//        cmd += "mmapi.find_attrs_affecting_transform(";
-//        cmd += "\"";
-//        cmd += bundleName;
-//        cmd += "\"";
-//        cmd += ");";
-//        DBG("Running: " + cmd);
-//        status = MGlobal::executePythonCommand(cmd, result1, display, undoable);
-//        DBG("Python result1 num: " << result1.length());
-//
-//        // Find list of plug names that are affected by the marker
-//        // (and camera projection matrix).
-//        cmd = "";
-//        cmd += "import mmSolver.api as mmapi;";
-//        cmd += "mmapi.find_attrs_affecting_transform(";
-//        cmd += "\"";
-//        cmd += markerName;
-//        cmd += "\", ";
-//        cmd += "cam_tfm=\"";
-//        cmd += camName;
-//        cmd += "\"";
-//        cmd += ");";
-//        DBG("Running: " + cmd);
-//        status = MGlobal::executePythonCommand(cmd, result2, display, undoable);
-//        DBG("Python result2 num: " << result2.length());
-//
-//        // Determine if the marker can affect the attribute.
-//        j = 0;      // index of attribute
-//        MString affectedPlugName;
-//        markerToAttrMapping[i].resize(attrList.size(), false);
-//        for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
-//            AttrPtr attr = *ait;
-//
-//            // Get attribute full path.
-//            MPlug plug = attr->getPlug();
-//            MObject attrNode = plug.node();
-//            MFnDagNode attrFnDagNode(attrNode);
-//            MString attrNodeName = attrFnDagNode.fullPathName();
-//            MString attrAttrName = plug.partialName(false, true, true, false, false, true);
-//            MString attrName = attrNodeName + "." + attrAttrName;
-//
-//            // Bundle affects attribute
-//            for (int k = 0; k < result1.length(); ++k) {
-//                affectedPlugName = result1[k];
-//                if (attrName == affectedPlugName) {
-//                    markerToAttrMapping[i][j] = true;
-//                    break;
-//                }
-//            }
-//
-//            // Marker (or camera) affects attribute
-//            for (int k = 0; k < result2.length(); ++k) {
-//                affectedPlugName = result2[k];
-//                if (attrName == affectedPlugName) {
-//                    markerToAttrMapping[i][j] = true;
-//                    break;
-//                }
-//            }
-//            ++j;
-//        }
-//        ++i;
-//    }
-//
-//    // Calculate the relationship between errors and parameters.
-//    /*
-//     * For each error, work out which parameters can affect
-//     * it. The parameters may be static or animated and thereby each
-//     * parameter may affect one or more errors. A single parameter
-//     * will affect a range of time values, a static parameter affects
-//     * all time values, but a dynamic parameter will be split into
-//     * many parameters at different frames, each of those dynamic
-//     * parameters will only affect a small number of errors. Our goal
-//     * is to compute a boolean for each error and parameter
-//     * combination, if the boolean is true the relationship is
-//     * positive, if false, the computation is skipped and the error
-//     * returned is zero.  This combination is only relevant if the
-//     * markerToAttrMapping is already true, otherwise we can assume
-//     * such error/parameter combinations will not be required.
-//     */
-//    int markerIndex = 0;
-//    int markerFrameIndex = 0;
-//    int attrIndex = 0;
-//    int attrFrameIndex = 0;
-//    IndexPair markerIndexPair;
-//    IndexPair attrIndexPair;
-//    errorToParamMapping.resize(numErrors);
-//
-//    i = 0;      // index of error
-//    j = 0;      // index of parameter
-//    for (i = 0; i < (numErrors / ERRORS_PER_MARKER); ++i) {
-//        markerIndexPair = errorToMarkerList[i];
-//        markerIndex = markerIndexPair.first;
-//        markerFrameIndex = markerIndexPair.second;
-//
-//        MarkerPtr marker = markerList[markerIndex];
-//        CameraPtr cam = marker->getCamera();
-//        BundlePtr bundle = marker->getBundle();
-//        MTime markerFrame = frameList[markerFrameIndex];
-//
-//        // Get node names.
-//        const char *markerName = marker->getNodeName().asChar();
-//        const char *camName = cam->getTransformNodeName().asChar();
-//        const char *bundleName = bundle->getNodeName().asChar();
-//
-//        // Determine if the marker can affect the attribute.
-//        errorToParamMapping[i].resize(numParameters, false);
-//        for (j = 0; j < numParameters; ++j) {
-//            attrIndexPair = paramToAttrList[j];
-//            attrIndex = attrIndexPair.first;
-//            attrFrameIndex = attrIndexPair.second;
-//
-//            // If the attrFrameIndex is -1, then the attribute is
-//            // static, not animated.
-//            AttrPtr attr = attrList[attrIndex];
-//            MTime attrFrame(-1.0, MTime::uiUnit());
-//            if (attrFrameIndex >= 0) {
-//                attrFrame = frameList[attrFrameIndex];
-//            }
-//            const char *attrName = attr->getName().asChar();
-//
-//            bool markerAffectsAttr = markerToAttrMapping[markerIndex][attrIndex];
-//            bool paramAffectsError = markerAffectsAttr;
-//            if (paramAffectsError == true) {
-//                // Time based mapping information.
-//                // Only markers on the current frame can affect the current attribute.
-//                if (attrFrameIndex >= 0) {
-//                    paramAffectsError = false;
-//                    if (number::floatApproxEqual(markerFrame.value(), attrFrame.value())) {
-//                        paramAffectsError = true;
-//                    }
-//                } else {
-//                    paramAffectsError = true;
-//                }
-//            }
-//            errorToParamMapping[i][j] = paramAffectsError;
-//        }
-//    }
-//
-//    return;
-//}
+};
 
 
 void lossFunctionTrivial(double z,
@@ -689,7 +251,6 @@ double parameterBoundFromInternalToExternal(double value,
 double parameterBoundFromExternalToInternal(double value,
                                             double xmin, double xmax,
                                             double offset, double scale){
-    double initial_value = value;
     double initial_xmin = xmin;
     double initial_xmax = xmax;
     double reconvert_value = 0.0;
@@ -729,7 +290,7 @@ double parameterBoundFromExternalToInternal(double value,
 }
 
 
-bool set_initial_parameters(int numberOfParameters,
+bool get_initial_parameters(int numberOfParameters,
                             std::vector<double> &paramList,
                             std::vector<std::pair<int, int> > &paramToAttrList,
                             AttrPtrList &attrList,
@@ -737,6 +298,7 @@ bool set_initial_parameters(int numberOfParameters,
                             MStringArray &outResult) {
     std::string resultStr;
     MStatus status = MS::kSuccess;
+    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     MTime currentFrame = MAnimControl::currentTime();
     for (int i = 0; i < numberOfParameters; ++i) {
         IndexPair attrPair = paramToAttrList[i];
@@ -749,7 +311,7 @@ bool set_initial_parameters(int numberOfParameters,
         }
 
         double value = 0.0;
-        status = attr->getValue(value, frame);
+        status = attr->getValue(value, frame, timeEvalMode);
         CHECK_MSTATUS(status);
         if (status != MS::kSuccess) {
             resultStr = "success=0";
@@ -830,7 +392,7 @@ bool compute_error_stats(int numberOfMarkerErrors,
 }
 
 
-void print_details(
+void logResultsSolveDetails(
         SolverResult &solverResult,
         SolverData &userData,
         SolverTimer &timer,
@@ -864,6 +426,27 @@ void print_details(
     VRB("Iterations: " << solverResult.iterations);
     VRB("Function Evaluations: " << solverResult.functionEvals);
     VRB("Jacobian Evaluations: " << solverResult.jacobianEvals);
+
+    if (verbose == false) {
+        if (solverResult.success) {
+            MStreamUtils::stdErrorStream() << "Solver returned SUCCESS    | ";
+        } else {
+            MStreamUtils::stdErrorStream() << "Solver returned FAILURE    | ";
+        }
+
+        char formatBuffer[128];
+        sprintf(
+            formatBuffer,
+            "error avg %8.4f   min %8.4f   max %8.4f  iterations %03u",
+            solverResult.errorAvg,
+            solverResult.errorMin,
+            solverResult.errorMax,
+            solverResult.iterations);
+        // Note: We use std::endl to flush the stream, and ensure an
+        //  update for the user.
+        MStreamUtils::stdErrorStream() << std::string(formatBuffer)
+                                       << std::endl;
+    }
 
     // Add all the data into the output string from the Maya command.
     std::string resultStr;
@@ -1062,6 +645,280 @@ void print_details(
 };
 
 
+MStatus logResultsObjectCounts(int numberOfParameters,
+                               int numberOfErrors,
+                               int numberOfMarkerErrors,
+                               int numberOfAttrStiffnessErrors,
+                               int numberOfAttrSmoothnessErrors,
+                               MStringArray &outResult) {
+    MStatus status = MStatus::kSuccess;
+
+    std::string resultStr;
+    resultStr = "numberOfParameters=";
+    resultStr += string::numberToString<int>(numberOfParameters);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "numberOfErrors=";
+    resultStr += string::numberToString<int>(numberOfErrors);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "numberOfMarkerErrors=";
+    resultStr += string::numberToString<int>(numberOfMarkerErrors);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "numberOfAttrStiffnessErrors=";
+    resultStr += string::numberToString<int>(numberOfAttrStiffnessErrors);
+    outResult.append(MString(resultStr.c_str()));
+
+    resultStr = "numberOfAttrSmoothnessErrors=";
+    resultStr += string::numberToString<int>(numberOfAttrSmoothnessErrors);
+    outResult.append(MString(resultStr.c_str()));
+
+    // TODO: List all the frame numbers that are valid for solving,
+    //  and invalid for solving.
+    return status;
+}
+
+
+/*
+ * Print out the marker-to-attribute 'affects' relationship.
+ *
+ * markerToAttrList is expected to be pre-computed from the function
+ * 'getMarkerToAttributeRelationship'.
+ */
+MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
+                                         AttrPtrList attrList,
+                                         BoolList2D markerToAttrList,
+                                         MStringArray &outResult) {
+    MStatus status = MStatus::kSuccess;
+    std::string resultStr;
+
+    std::vector<bool>::const_iterator cit_inner;
+    BoolList2D::const_iterator cit_outer;
+    int markerIndex = 0;
+    for (cit_outer = markerToAttrList.cbegin();
+         cit_outer != markerToAttrList.cend();
+         ++cit_outer){
+
+        int attrIndex = 0;
+        std::vector<bool> inner = *cit_outer;
+        for (cit_inner = inner.cbegin();
+             cit_inner != inner.cend();
+             ++cit_inner){
+            MarkerPtr marker = markerList[markerIndex];
+            AttrPtr attr = attrList[attrIndex];
+
+            // Get node names.
+            const char *markerName = marker->getNodeName().asChar();
+
+            // Get attribute full path.
+            MPlug plug = attr->getPlug();
+            MObject attrNode = plug.node();
+            MFnDagNode attrFnDagNode(attrNode);
+            MString attrNodeName = attrFnDagNode.fullPathName();
+            MString attrAttrName = plug.partialName(
+                false, true, true, false, false, true);
+            MString attrNameString = attrNodeName + "." + attrAttrName;
+            const char *attrName = attrNameString.asChar();
+
+            int value = *cit_inner;
+            resultStr = "marker_affects_attribute=";
+            resultStr += markerName;
+            resultStr += CMD_RESULT_SPLIT_CHAR;
+            resultStr += attrName;
+            resultStr += CMD_RESULT_SPLIT_CHAR;
+            resultStr += string::numberToString<int>(value);
+            outResult.append(MString(resultStr.c_str()));
+
+            ++attrIndex;
+        }
+
+        ++markerIndex;
+    }
+    return status;
+}
+
+
+/*
+ * Print out if objects added to the solve (such as markers and
+ * attributes) are being used, or are unused.
+ */
+MStatus logResultsSolveObjectUsage(MarkerPtrList usedMarkerList,
+                                   MarkerPtrList unusedMarkerList,
+                                   AttrPtrList usedAttrList,
+                                   AttrPtrList unusedAttrList,
+                                   MStringArray &outResult) {
+    MStatus status = MStatus::kSuccess;
+
+    // Append a string with all the *used* marker names.
+    if (usedMarkerList.size() > 0) {
+        MString markerUsedStr = "markers_used=";
+        for (MarkerPtrListCIt mit = usedMarkerList.cbegin();
+             mit != usedMarkerList.cend();
+             ++mit) {
+            MarkerPtr marker = *mit;
+            markerUsedStr += marker->getLongNodeName();
+            markerUsedStr += CMD_RESULT_SPLIT_CHAR;
+        }
+        outResult.append(markerUsedStr);
+    }
+
+    // Append a string with all the *unused* marker names.
+    if (unusedMarkerList.size() > 0) {
+        MString markerUnusedStr = "markers_unused=";
+        for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
+             mit != unusedMarkerList.cend();
+             ++mit) {
+            MarkerPtr marker = *mit;
+            markerUnusedStr += marker->getLongNodeName();
+            markerUnusedStr += CMD_RESULT_SPLIT_CHAR;
+        }
+        outResult.append(markerUnusedStr);
+    }
+
+    // Append a string with all the *used* attribute names.
+    if (usedAttrList.size() > 0) {
+        MString attrUsedStr = "attributes_used=";
+        for (AttrPtrListCIt ait = usedAttrList.cbegin();
+             ait != usedAttrList.cend();
+             ++ait) {
+            AttrPtr attr = *ait;
+            attrUsedStr += attr->getLongName();
+            attrUsedStr += CMD_RESULT_SPLIT_CHAR;
+        }
+        outResult.append(attrUsedStr);
+    }
+
+    // Append a string with all the *unused* attribute names.
+    if (unusedAttrList.size() > 0) {
+        MString attrUnusedStr = "attributes_unused=";
+        for (AttrPtrListCIt ait = unusedAttrList.cbegin();
+             ait != unusedAttrList.cend();
+             ++ait) {
+            AttrPtr attr = *ait;
+            attrUnusedStr += attr->getLongName();
+            attrUnusedStr += CMD_RESULT_SPLIT_CHAR;
+        }
+        outResult.append(attrUnusedStr);
+    }
+
+    return status;
+}
+
+typedef std::map<size_t, int> IndexCountMap;
+typedef IndexCountMap::iterator IndexCountMapIt;
+
+/*
+ * Loop over original list contents and add the objects into the
+ * respective output list, based on how much it was used (using
+ * indexCountMap).
+ */
+template <class _V, class _T>
+void _splitIntoUsedAndUnusedLists(_T inputList,
+                                  IndexCountMap indexCountMap,
+                                  _T &usedList,
+                                  _T &unusedList) {
+    // Reset data structures
+    usedList.clear();
+    unusedList.clear();
+
+    for (size_t i = 0; i < inputList.size(); ++i) {
+        bool used = false;
+        _V object = inputList[i];
+        IndexCountMapIt it = indexCountMap.find(i);
+        if (it != indexCountMap.end()) {
+            int count = it->second;
+            if (count > 0) {
+                used = true;
+            }
+        }
+        if (used == true) {
+            usedList.push_back(object);
+        } else {
+            unusedList.push_back(object);
+        }
+    }
+    return;
+}
+
+
+/*
+ * Increment the value of key in the indexCountMap, by 1.
+ *
+ */
+IndexCountMap _incrementMapIndex(size_t key, IndexCountMap indexCountMap) {
+    IndexCountMapIt it = indexCountMap.find(key);
+    int temp;
+    if (it != indexCountMap.end()) {
+        // Update the value.
+        temp = it->second + 1;
+        indexCountMap.erase(it);
+    } else {
+        // This is the first value to be inserted.
+        temp = 1;
+    }
+    indexCountMap.insert(std::pair<size_t, int>(key, temp));
+    return indexCountMap;
+}
+
+
+/*
+ * Split the given Markers and Attributes into both used and unused
+ * objects.
+ */
+MStatus splitUsedMarkersAndAttributes(MarkerPtrList markerList,
+                                      AttrPtrList attrList,
+                                      BoolList2D markerToAttrList,
+                                      MarkerPtrList &out_usedMarkerList,
+                                      MarkerPtrList &out_unusedMarkerList,
+                                      AttrPtrList &out_usedAttrList,
+                                      AttrPtrList &out_unusedAttrList) {
+    MStatus status = MStatus::kSuccess;
+
+    IndexCountMap markerIndexUsedCount;
+    IndexCountMap attrIndexUsedCount;
+
+    std::vector<bool>::const_iterator cit_inner;
+    BoolList2D::const_iterator cit_outer;
+    int markerIndex = 0;
+    for (cit_outer = markerToAttrList.cbegin();
+         cit_outer != markerToAttrList.cend();
+         ++cit_outer){
+
+        int attrIndex = 0;
+        std::vector<bool> inner = *cit_outer;
+        for (cit_inner = inner.cbegin();
+             cit_inner != inner.cend();
+             ++cit_inner){
+            MarkerPtr marker = markerList[markerIndex];
+            AttrPtr attr = attrList[attrIndex];
+
+            int value = *cit_inner;
+            if (value == 1){
+                markerIndexUsedCount = _incrementMapIndex(
+                        markerIndex, markerIndexUsedCount);
+                attrIndexUsedCount = _incrementMapIndex(
+                        attrIndex, attrIndexUsedCount);
+            }
+            ++attrIndex;
+        }
+        ++markerIndex;
+    }
+
+    _splitIntoUsedAndUnusedLists<MarkerPtr, MarkerPtrList>(
+        markerList,
+        markerIndexUsedCount,
+        out_usedMarkerList,
+        out_unusedMarkerList);
+    _splitIntoUsedAndUnusedLists<AttrPtr, AttrPtrList>(
+        attrList,
+        attrIndexUsedCount,
+        out_usedAttrList,
+        out_unusedAttrList);
+    return status;
+}
+
+
 /*! Solve everything!
  *
  * This function is responsible for taking the given cameras, markers,
@@ -1087,22 +944,25 @@ bool solve(SolverOptions &solverOptions,
            MStringArray &outResult) {
     MStatus status;
     std::string resultStr;
-    int ret = 1;
     MGlobal::MMayaState mayaSessionState = MGlobal::mayaState(&status);
 
     bool verbose = with_verbosity;
     bool printStats = false;
     bool printStatsInput = false;
-    // bool printStatsAffects = false;  // TODO: Print 'affects' statistics.
+    bool printStatsAffects = false;
+    bool printStatsUsedSolveObjects = false;
     bool printStatsDeviation = false;
     if (printStatsList.length() > 0) {
         for (unsigned int i = 0; i < printStatsList.length(); ++i) {
             if (printStatsList[i] == PRINT_STATS_MODE_INPUTS) {
                 printStatsInput = true;
                 printStats = true;
-            // } else if (printStatsList[i] == PRINT_STATS_MODE_AFFECTS) {
-            //     printStatsAffects = true;
-            //     printStats = true;
+            } else if (printStatsList[i] == PRINT_STATS_MODE_AFFECTS) {
+                printStatsAffects = true;
+                printStats = true;
+            } else if (printStatsList[i] == PRINT_STATS_MODE_USED_SOLVE_OBJECTS) {
+                printStatsUsedSolveObjects = true;
+                printStats = true;
             } else if (printStatsList[i] == PRINT_STATS_MODE_DEVIATION) {
                 printStatsDeviation = true;
                 printStats = true;
@@ -1121,12 +981,84 @@ bool solve(SolverOptions &solverOptions,
                                    "solve");
 #endif
 
+    // Query the relationship by pre-computed attributes on the
+    // Markers. If the attributes do not exist, we assume all markers
+    // affect all attributes (and therefore suffer a performance
+    // problem).
+    BoolList2D markerToAttrList;
+    getMarkerToAttributeRelationship(
+            markerList,
+            attrList,
+            markerToAttrList,
+            status);
+    CHECK_MSTATUS(status);
+
+    // Split the used and unused markers and attributes.
+    MarkerPtrList usedMarkerList;
+    MarkerPtrList unusedMarkerList;
+    AttrPtrList usedAttrList;
+    AttrPtrList unusedAttrList;
+    splitUsedMarkersAndAttributes(
+            markerList,
+            attrList,
+            markerToAttrList,
+            usedMarkerList,
+            unusedMarkerList,
+            usedAttrList,
+            unusedAttrList);
+
+    // Print warnings about unused solve objects.
+    if (unusedMarkerList.size() > 0) {
+        WRN("Unused Markers detected and ignored:");
+        for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
+             mit != unusedMarkerList.cend();
+             ++mit) {
+            MarkerPtr marker = *mit;
+            const char *markerName = marker->getLongNodeName().asChar();
+            WRN("-> " << markerName);
+        }
+    }
+    if (unusedAttrList.size() > 0) {
+        WRN("Unused Attributes detected and ignored:");
+        for (AttrPtrListCIt ait = unusedAttrList.cbegin();
+             ait != unusedAttrList.cend();
+             ++ait) {
+            AttrPtr attr = *ait;
+            const char *attrName = attr->getLongName().asChar();
+            WRN("-> " << attrName);
+        }
+    }
+
+    // Change the list of Markers and Attributes to filter out unused
+    // objects.
+    bool usedObjectsChanged = false;
+    if (solverOptions.removeUnusedMarkers == false) {
+        usedMarkerList = markerList;
+    } else {
+        usedObjectsChanged = true;
+    }
+    if (solverOptions.removeUnusedAttributes == false) {
+        usedAttrList = attrList;
+    }
+    else {
+        usedObjectsChanged = true;
+    }
+    if (usedObjectsChanged == true) {
+        getMarkerToAttributeRelationship(
+                usedMarkerList,
+                usedAttrList,
+                markerToAttrList,
+                status);
+        CHECK_MSTATUS(status);
+    }
+
     IndexPairList paramToAttrList;
     IndexPairList errorToMarkerList;
     std::vector<MPoint> markerPosList;
     std::vector<double> markerWeightList;
     std::vector<double> errorList(1);
     std::vector<double> paramList(1);
+    std::vector<double> previousParamList(1);
     std::vector<double> jacobianList(1);
 
     int numberOfErrors = 0;
@@ -1135,10 +1067,12 @@ bool solve(SolverOptions &solverOptions,
     int numberOfAttrSmoothnessErrors = 0;
     MarkerPtrList validMarkerList;
     numberOfErrors = countUpNumberOfErrors(
-            markerList,
+            usedMarkerList,
             stiffAttrsList,
             smoothAttrsList,
             frameList,
+
+            // Outputs
             validMarkerList,
             markerPosList,
             markerWeightList,
@@ -1146,8 +1080,8 @@ bool solve(SolverOptions &solverOptions,
             numberOfMarkerErrors,
             numberOfAttrStiffnessErrors,
             numberOfAttrSmoothnessErrors,
-            status
-    );
+            status);
+    CHECK_MSTATUS(status);
     assert(numberOfErrors == (
             numberOfMarkerErrors
             + numberOfAttrStiffnessErrors
@@ -1161,9 +1095,12 @@ bool solve(SolverOptions &solverOptions,
     std::vector<double> paramLowerBoundList;
     std::vector<double> paramUpperBoundList;
     std::vector<double> paramWeightList;
+    BoolList2D paramFrameList;
     numberOfParameters = countUpNumberOfUnknownParameters(
-            attrList,
+            usedAttrList,
             frameList,
+
+            // Outputs
             camStaticAttrList,
             camAnimAttrList,
             staticAttrList,
@@ -1172,41 +1109,96 @@ bool solve(SolverOptions &solverOptions,
             paramUpperBoundList,
             paramWeightList,
             paramToAttrList,
-            status
-    );
-    assert(paramLowerBoundList.size() == numberOfParameters);
-    assert(paramUpperBoundList.size() == numberOfParameters);
-    assert(paramWeightList.size() == numberOfParameters);
-    assert(numberOfParameters >= attrList.size());
+            paramFrameList,
+            status);
+    CHECK_MSTATUS(status);
+    assert(paramLowerBoundList.size() == static_cast<size_t>(numberOfParameters));
+    assert(paramUpperBoundList.size() == static_cast<size_t>(numberOfParameters));
+    assert(paramWeightList.size() == static_cast<size_t>(numberOfParameters));
+    assert(static_cast<size_t>(numberOfParameters) >= usedAttrList.size());
+
+    // Expand the 'Marker to Attribute' relationship into errors and
+    // parameter relationships.
+    BoolList2D errorToParamList;
+    findErrorToParameterRelationship(
+            usedMarkerList,
+            usedAttrList,
+            frameList,
+            numberOfParameters,
+            numberOfMarkerErrors,
+            paramToAttrList,
+            errorToMarkerList,
+            markerToAttrList,
+
+            // Outputs
+            errorToParamList,
+            status);
+    CHECK_MSTATUS(status);
 
     if (printStatsInput == true) {
-         resultStr = "numberOfParameters=";
-         resultStr += string::numberToString<int>(numberOfParameters);
-         outResult.append(MString(resultStr.c_str()));
-
-         resultStr = "numberOfErrors=";
-         resultStr += string::numberToString<int>(numberOfErrors);
-         outResult.append(MString(resultStr.c_str()));
-
-         resultStr = "numberOfMarkerErrors=";
-         resultStr += string::numberToString<int>(numberOfMarkerErrors);
-         outResult.append(MString(resultStr.c_str()));
-
-         resultStr = "numberOfAttrStiffnessErrors=";
-         resultStr += string::numberToString<int>(numberOfAttrStiffnessErrors);
-         outResult.append(MString(resultStr.c_str()));
-
-         resultStr = "numberOfAttrSmoothnessErrors=";
-         resultStr += string::numberToString<int>(numberOfAttrSmoothnessErrors);
-         outResult.append(MString(resultStr.c_str()));
+        assert(printStats == true);
+        status = logResultsObjectCounts(
+            numberOfParameters,
+            numberOfErrors,
+            numberOfMarkerErrors,
+            numberOfAttrStiffnessErrors,
+            numberOfAttrSmoothnessErrors,
+            outResult);
+        CHECK_MSTATUS(status);
     }
 
+    if (printStatsUsedSolveObjects == true) {
+        assert(printStats == true);
+        status = logResultsSolveObjectUsage(
+            usedMarkerList,
+            unusedMarkerList,
+            usedAttrList,
+            unusedAttrList,
+            outResult);
+        CHECK_MSTATUS(status);
+    }
+
+    if (printStatsAffects == true) {
+        assert(printStats == true);
+        status = logResultsMarkerAffectsAttribute(
+                usedMarkerList,
+                usedAttrList,
+                markerToAttrList,
+                outResult);
+        CHECK_MSTATUS(status);
+    }
+
+    VRB("Number of Markers; used="
+        << usedMarkerList.size() << " | unused="
+        << unusedMarkerList.size());
+    VRB("Number of Attributes; used="
+        << usedAttrList.size() << " | unused="
+        << unusedAttrList.size());
     VRB("Number of Parameters; " << numberOfParameters);
     VRB("Number of Frames; " << frameList.length());
     VRB("Number of Marker Errors; " << numberOfMarkerErrors);
     VRB("Number of Attribute Stiffness Errors; " << numberOfAttrStiffnessErrors);
     VRB("Number of Attribute Smoothness Errors; " << numberOfAttrSmoothnessErrors);
     VRB("Number of Total Errors; " << numberOfErrors);
+
+    // Bail out of solve if we don't have enough used markers or
+    // attributes.
+    if ((usedMarkerList.size() == 0) || (usedAttrList.size() == 0)) {
+        if (printStats == true) {
+            // If the user is asking to print statistics, then we have
+            // successfully achieved that goal and we cannot continue
+            // to generate statistics, because not enought markers or
+            // attributes were used.
+            return true;
+        }
+        ERR("Solver failure; not enough markers or attributes are not used by solver "
+            << "used markers=" << usedMarkerList.size() << " "
+            << "used attributes=" << usedAttrList.size());
+        resultStr = "success=0";
+        outResult.append(MString(resultStr.c_str()));
+        return false;
+    }
+
     if (numberOfParameters > numberOfErrors) {
         if (printStats == true) {
             // If the user is asking to print statistics, then we have
@@ -1223,8 +1215,11 @@ bool solve(SolverOptions &solverOptions,
         outResult.append(MString(resultStr.c_str()));
         return false;
     }
+    assert(numberOfErrors > 0);
+    assert(numberOfParameters > 0);
 
     paramList.resize((unsigned long) numberOfParameters, 0);
+    previousParamList.resize((unsigned long) numberOfParameters, 0);
     errorList.resize((unsigned long) numberOfErrors, 0);
     jacobianList.resize((unsigned long) numberOfParameters * numberOfErrors, 0);
 
@@ -1241,19 +1236,36 @@ bool solve(SolverOptions &solverOptions,
     VRB("Epsilon3=" << solverOptions.eps3);
     VRB("Delta=" << fabs(solverOptions.delta));
     VRB("Auto Differencing Type=" << solverOptions.autoDiffType);
+    VRB("Time Evaluation Mode=" << solverOptions.timeEvalMode);
+
+    if ((verbose == false) && (printStats == false)) {
+        std::stringstream ss;
+        ss << "Solving... frames:";
+        for (unsigned int i = 0; i < frameList.length(); i++) {
+            MTime frame(frameList[i]);
+            ss << " " << frame;
+        }
+        std::string tmp_string = ss.str();
+
+        size_t num = 100 - tmp_string.size();
+        num = std::min<size_t>(0, num);
+        std::string pad_chars(num, '=');
+
+        MStreamUtils::stdErrorStream() << tmp_string << " " << pad_chars << std::endl;
+    }
 
     // MComputation helper.
     bool showProgressBar = true;
     bool isInterruptable = true;
     bool useWaitCursor = true;
-    if (printStats != true) {
+    if (printStats == false) {
         computation.setProgressRange(0, solverOptions.iterMax);
         computation.beginComputation(showProgressBar, isInterruptable, useWaitCursor);
     }
 
     // Start Solving
     SolverTimer timer;
-    if (printStats != true) {
+    if (printStats == false) {
         timer.solveBenchTimer.start();
         timer.solveBenchTicks.start();
     }
@@ -1261,9 +1273,9 @@ bool solve(SolverOptions &solverOptions,
     // Solving Objects.
     SolverData userData;
     userData.cameraList = cameraList;
-    userData.markerList = markerList;
+    userData.markerList = usedMarkerList;
     userData.bundleList = bundleList;
-    userData.attrList = attrList;
+    userData.attrList = usedAttrList;
     userData.frameList = frameList;
     userData.smoothAttrsList = smoothAttrsList;
     userData.stiffAttrsList = stiffAttrsList;
@@ -1272,8 +1284,11 @@ bool solve(SolverOptions &solverOptions,
     userData.errorToMarkerList = errorToMarkerList;
     userData.markerPosList = markerPosList;
     userData.markerWeightList = markerWeightList;
+    userData.paramFrameList = paramFrameList;
+    userData.errorToParamList = errorToParamList;
 
     userData.paramList = paramList;
+    userData.previousParamList = previousParamList;
     userData.errorList = errorList;
     userData.errorDistanceList = errorDistanceList;
     userData.jacobianList = jacobianList;
@@ -1308,30 +1323,44 @@ bool solve(SolverOptions &solverOptions,
     userData.verbose = verbose;
     userData.debugFileName = debugFile;
 
-    // Calculate errors and return.
+    // Calculate initial errors.
+    double initialErrorAvg = 0;
+    double initialErrorMin = 0;
+    double initialErrorMax = 0;
+    if (solverOptions.acceptOnlyBetter || printStatsDeviation) {
+        // Never write debug data during statistics gathering.
+        std::ofstream *debugFileStream = NULL;
+
+        std::vector<bool> frameIndexEnable(frameList.length(), 1);
+        std::vector<bool> skipErrorMeasurements(numberOfErrors, 1);
+        measureErrors(
+            numberOfErrors,
+            numberOfMarkerErrors,
+            numberOfAttrStiffnessErrors,
+            numberOfAttrSmoothnessErrors,
+            frameIndexEnable,
+            skipErrorMeasurements,
+            &errorList[0],
+            &userData,
+            initialErrorAvg,
+            initialErrorMax,
+            initialErrorMin,
+            debugFileStream,
+            status);
+        CHECK_MSTATUS(status);
+
+        initialErrorAvg = 0;
+        initialErrorMin = 0;
+        initialErrorMax = 0;
+        compute_error_stats(
+            numberOfMarkerErrors, userData,
+            initialErrorAvg,
+            initialErrorMin,
+            initialErrorMax);
+    }
+
     if (printStatsDeviation == true) {
         SolverResult solveResult;
-
-        double errorAvg = 0;
-        double errorMin = 0;
-        double errorMax = 0;
-        // Never write debug data during statistics gathering.
-        const bool writeDebug = false;
-        std::ofstream debugFile;
-        measureErrors(
-                numberOfParameters,
-                numberOfErrors,
-                numberOfMarkerErrors,
-                numberOfAttrStiffnessErrors,
-                numberOfAttrSmoothnessErrors,
-                &errorList[0],
-                &userData,
-                errorAvg,
-                errorMax,
-                errorMin,
-                writeDebug,
-                debugFile,
-                status);
 
         solveResult.success = true;
         solveResult.reason_number = 0;
@@ -1340,18 +1369,11 @@ bool solve(SolverOptions &solverOptions,
         solveResult.functionEvals = 0;
         solveResult.jacobianEvals = 0;
         solveResult.errorFinal = 0.0;
+        solveResult.errorAvg = initialErrorAvg;
+        solveResult.errorMin = initialErrorMin;
+        solveResult.errorMax = initialErrorMax;
 
-        errorAvg = 0;
-        errorMin = 0;
-        errorMax = 0;
-        compute_error_stats(
-                numberOfMarkerErrors, userData,
-                errorAvg, errorMin, errorMax);
-        solveResult.errorAvg = errorAvg;
-        solveResult.errorMin = errorMin;
-        solveResult.errorMax = errorMax;
-
-        print_details(
+        logResultsSolveDetails(
                 solveResult,
                 userData,
                 timer,
@@ -1364,6 +1386,8 @@ bool solve(SolverOptions &solverOptions,
                 outResult);
     }
     if (printStats == true) {
+        // There is no more printing to do, we must solve now if we
+        // want to solve.
         return true;
     }
 
@@ -1378,16 +1402,18 @@ bool solve(SolverOptions &solverOptions,
     }
 
     // Set Initial parameters
-    VRB("Set Initial parameters...");
-    set_initial_parameters(numberOfParameters,
+    VRB("Get Initial parameters...");
+    get_initial_parameters(numberOfParameters,
                            paramList,
                            paramToAttrList,
-                           attrList,
+                           usedAttrList,
                            frameList,
                            outResult);
 
     VRB("Initial Parameters: ");
     for (int i = 0; i < numberOfParameters; ++i) {
+        // Copy parameter values into the 'previous' parameter list.
+        previousParamList[i] = paramList[i];
         VRB("-> " << paramList[i]);
     }
 
@@ -1437,12 +1463,9 @@ bool solve(SolverOptions &solverOptions,
                 numberOfErrors,
                 paramList,
                 errorList,
-                paramLowerBoundList,
-                paramUpperBoundList,
                 paramWeightList,
                 userData,
-                solveResult,
-                outResult);
+                solveResult);
 
 #endif // USE_SOLVER_CMINPACK
 
@@ -1464,12 +1487,9 @@ bool solve(SolverOptions &solverOptions,
                 numberOfErrors,
                 paramList,
                 errorList,
-                paramLowerBoundList,
-                paramUpperBoundList,
                 paramWeightList,
                 userData,
-                solveResult,
-                outResult);
+                solveResult);
 
 #endif // USE_SOLVER_CMINPACK
 
@@ -1485,32 +1505,50 @@ bool solve(SolverOptions &solverOptions,
     timer.solveBenchTimer.stop();
     computation.endComputation();
 
+    // Solve Finished, re-calculate error, and only set parameters if
+    // the average error is lower.
+    bool errorIsBetter = true;
+    double errorAvg = 0;
+    double errorMin = 0;
+    double errorMax = 0;
+    compute_error_stats(
+        numberOfMarkerErrors, userData,
+        errorAvg, errorMin, errorMax);
+    solveResult.errorAvg = errorAvg;
+    solveResult.errorMin = errorMin;
+    solveResult.errorMax = errorMax;
+    if (solverOptions.acceptOnlyBetter) {
+        errorIsBetter = errorAvg <= initialErrorAvg;
+    }
+
     // Set the solved parameters
     VRB("Setting Parameters...");
-    set_maya_attribute_values(
+    if (errorIsBetter) {
+        set_maya_attribute_values(
             numberOfParameters,
             paramToAttrList,
-            attrList,
+            usedAttrList,
             paramList,
             frameList,
             dgmod,
             curveChange);
+    } else {
+        // Set the initial parameter values.
+        set_maya_attribute_values(
+            numberOfParameters,
+            paramToAttrList,
+            usedAttrList,
+            previousParamList,
+            frameList,
+            dgmod,
+            curveChange);
+    }
     VRB("Solved Parameters:");
     for (int i = 0; i < numberOfParameters; ++i) {
         VRB("-> " << paramList[i]);
     }
 
-    double errorAvg = 0;
-    double errorMin = 0;
-    double errorMax = 0;
-    compute_error_stats(
-            numberOfMarkerErrors, userData,
-            errorAvg, errorMin, errorMax);
-    solveResult.errorAvg = errorAvg;
-    solveResult.errorMin = errorMin;
-    solveResult.errorMax = errorMax;
-
-    print_details(
+    logResultsSolveDetails(
             solveResult,
             userData,
             timer,

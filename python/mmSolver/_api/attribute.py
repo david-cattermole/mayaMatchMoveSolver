@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -61,13 +61,13 @@ class Attribute(object):
         A 'name' is a string of both node and attribute path; `node.attr`.
 
         :param name: Node and attribute path as a single string: 'node.attr'
-        :type name: str
+        :type name: basestring
 
         :param node: DG Maya node path.
-        :type node: str
+        :type node: basestring
 
         :param attr: Long or short attribute name.
-        :type attr: str
+        :type attr: basestring
         """
         if isinstance(name, (str, unicode)):
             assert api_utils.get_object_type(name) == const.OBJECT_TYPE_ATTRIBUTE
@@ -76,7 +76,6 @@ class Attribute(object):
             attr = part[-1]
 
         self._plug = None
-        self._dependFn = None
         if isinstance(node, (str, unicode)) and isinstance(attr, (str, unicode)):
             assert maya.cmds.objExists(node)
             # Long and short names must be checked.
@@ -88,11 +87,8 @@ class Attribute(object):
                 raise RuntimeError(msg)
 
             node_attr = node + '.' + attr
-            plug = node_utils.get_as_plug(node_attr)
+            plug = node_utils.get_as_plug_apione(node_attr)
             self._plug = plug
-
-            node_obj = self._plug.node()
-            self._dependFn = OpenMaya.MFnDependencyNode(node_obj)
         return
 
     def __repr__(self):
@@ -106,19 +102,44 @@ class Attribute(object):
         return result
 
     def get_node(self, full_path=True):
+        """
+        Get the node name path from this Attribute.
+
+        :param full_path: If True, the full node name hiearachy will be
+            returned, making sure the name is unique.
+        :type full_path: bool
+
+        :returns: The node name, or None if the Attribute class does
+            not hold a valid node.
+        :rtype: None or basestring
+        """
+        if self._plug is None:
+            return None
         node = None
-        if self._dependFn is not None:
-            try:
-                node = self._dependFn.name()
-            except RuntimeError:
-                pass
-        if node is not None and full_path is True:
-            node = node_utils.get_long_name(node)
+        node_obj = self._plug.node()
+        try:
+            dag_fn = OpenMaya.MFnDagNode(node_obj)
+            node = dag_fn.fullPathName()
+        except RuntimeError:
+            depend_fn = OpenMaya.MFnDependencyNode(node_obj)
+            node = depend_fn.absoluteName()
+        if full_path is False:
+            nodes = maya.cmds.ls(node) or []
+            if len(nodes) > 0:
+                node = nodes[0]
+        assert node is None or isinstance(node, basestring)
         return node
 
     def get_node_uid(self):
         """
         Get the Attribute's node unique identifier.
+
+        .. warning::
+            Although this returns a "unique" identifier, there are times
+            when UUIDs are not unique. For example with the same Maya scene
+            file referenced into the Maya scene more than once, the referenced
+            node UUID will not change - each copy of the referenced node
+            will have the same UUID value.
 
         :return: The Attribute UUID or None
         :rtype: None or str or unicode
@@ -151,8 +172,8 @@ class Attribute(object):
         name = None
         node = self.get_node(full_path=full_path)
         attr = self.get_attr(long_name=full_path)
-        if (isinstance(node, (str, unicode)) and
-                isinstance(attr, (str, unicode))):
+        if (isinstance(node, basestring)
+                and isinstance(attr, basestring)):
             name = node + '.' + attr
         return name
 
@@ -175,6 +196,15 @@ class Attribute(object):
             plug = animPlugs[i]
             if self._plug.name() == plug.name():
                 state = const.ATTR_STATE_ANIMATED
+                return state
+
+        # If the plug is connected to a Constraint, then it is
+        # considered "free to change", but for the solver we consider
+        # it locked and unchangeable.
+        src_plug = self._plug.source()
+        if src_plug.isNull() is False:
+            state = const.ATTR_STATE_LOCKED
+            return state
 
         if state == const.ATTR_STATE_INVALID:
             state = const.ATTR_STATE_STATIC
@@ -189,3 +219,35 @@ class Attribute(object):
 
     def is_locked(self):
         return self.get_state() == const.ATTR_STATE_LOCKED
+
+    def get_attribute_type(self):
+        attr_type = None
+        node_name = self.get_node()
+        attr_name = self.get_attr()
+        if (isinstance(node_name, basestring)
+                and isinstance(attr_name, basestring)):
+            attr_type = maya.cmds.attributeQuery(
+                attr_name,
+                node=node_name,
+                attributeType=True) or None
+        return attr_type
+
+    def get_min_value(self):
+        """This function is deprecated,
+        please use Collection.get/set_attribute* functions."""
+        raise NotImplementedError
+
+    def set_min_value(self, value):
+        """This function is deprecated,
+        please use Collection.get/set_attribute* functions."""
+        raise NotImplementedError
+
+    def get_max_value(self):
+        """This function is deprecated,
+        please use Collection.get/set_attribute* functions."""
+        raise NotImplementedError
+
+    def set_max_value(self, value):
+        """This function is deprecated,
+        please use Collection.get/set_attribute* functions."""
+        raise NotImplementedError

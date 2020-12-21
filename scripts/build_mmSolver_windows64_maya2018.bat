@@ -61,12 +61,14 @@ SET INSTALL_MODULE_DIR="%USERPROFILE%\My Documents\maya\%MAYA_VERSION%\modules"
 
 :: Build ZIP Package.
 :: For developer use. Make ZIP packages ready to distribute to others.
-SET BUILD_PACKAGE=0
+SET BUILD_PACKAGE=1
 
 
 :: Do not edit below, unless you know what you're doing.
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+:: What type of build? "Release" or "Debug"?
+SET BUILD_TYPE=Release
 
 :: Build options, to allow faster compilation times. (not to be used by
 :: users wanting to build this project.)
@@ -87,8 +89,8 @@ SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%
 
 :: Build plugin
-MKDIR build
-CHDIR build
+MKDIR build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
+CHDIR build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
 IF "%FRESH_BUILD%"=="1" (
     DEL /S /Q *
     FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
@@ -113,7 +115,7 @@ REM To Generate a Visual Studio 'Solution' file
 ) ELSE (
 
     cmake -G "NMake Makefiles" ^
-        -DCMAKE_BUILD_TYPE=Release ^
+        -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
         -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
         -DBUILD_PLUGIN=%BUILD_PLUGIN% ^
         -DBUILD_PYTHON=%BUILD_PYTHON% ^

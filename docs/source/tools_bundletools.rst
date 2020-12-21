@@ -3,6 +3,8 @@ Bundle Tools
 
 The tools used to manipulate 3D Bundle nodes.
 
+.. _toggle-bundle-lock-state-tool-ref:
+
 Toggle Bundle Lock State
 ------------------------
 
@@ -25,6 +27,8 @@ Run this Python command:
 
     import mmSolver.tools.togglebundlelock.tool as tool
     tool.toggle_bundle_lock()
+
+.. _move-bundle-to-marker-tool-ref:
 
 Move Bundle to Marker (current frame)
 -------------------------------------
@@ -51,6 +55,8 @@ Run this Python command:
 
     import mmSolver.tools.reprojectbundle.tool as tool
     tool.main()
+
+.. _triangulate-bundle-tool-ref:
 
 Triangulate Bundle
 ------------------
@@ -79,6 +85,8 @@ Run this Python command:
     import mmSolver.tools.triangulatebundle.tool as tool
     tool.main()
 
+.. _aim-at-camera-tool-ref:
+
 Aim at Camera
 -------------
 
@@ -106,6 +114,8 @@ Run this Python command:
 
     import mmSolver.tools.cameraaim.tool as tool
     tool.main()
+
+.. _screen-z-manipulator-tool-ref:
 
 Screen-Z Manipulator
 --------------------
@@ -144,6 +154,8 @@ Run this Python command:
 
     import mmSolver.tools.screenzmanipulator.tool
     mmSolver.tools.screenzmanipulator.tool.main()
+
+.. _attach-bundle-to-curve-tool-ref:
 
 Attach Bundle to Curve
 ----------------------

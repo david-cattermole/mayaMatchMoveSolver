@@ -19,6 +19,8 @@
 Widget class to hold all Solver Settings for the solver GUI.
 """
 
+import time
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -34,6 +36,8 @@ import mmSolver.tools.solver.widget.ui_solver_widget as ui_solver_widget
 import mmSolver.tools.solver.widget.solver_standard_widget as solver_standard_widget
 import mmSolver.tools.solver.widget.solver_basic_widget as solver_basic_widget
 import mmSolver.tools.solver.widget.solver_legacy_widget as solver_legacy_widget
+import mmSolver.tools.userpreferences.constant as userprefs_const
+import mmSolver.tools.userpreferences.lib as userprefs_lib
 
 
 LOG = mmSolver.logger.get_logger()
@@ -47,6 +51,23 @@ def _populateWidgetsEnabled(widgets):
     return
 
 
+def _getShowValidateButton():
+    config = userprefs_lib.get_config()
+    key = userprefs_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY
+    show_validate_btn = userprefs_lib.get_value(config, key)
+    true_value = userprefs_const.SOLVER_UI_SHOW_VALIDATE_BTN_TRUE_VALUE
+    visible = show_validate_btn == true_value
+    return visible
+
+
+def _getValidateOnOpen():
+    config = userprefs_lib.get_config()
+    key = userprefs_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY
+    validate_on_open = userprefs_lib.get_value(config, key)
+    true_value = userprefs_const.SOLVER_UI_VALIDATE_ON_OPEN_TRUE_VALUE
+    return validate_on_open == true_value
+
+
 class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
 
     tabChanged = QtCore.Signal()
@@ -54,7 +75,8 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
     sendWarning = QtCore.Signal(str)
 
     def __init__(self, parent=None, *args, **kwargs):
-        super(SolverWidget, self).__init__(*args, **kwargs)
+        s = time.time()
+        super(SolverWidget, self).__init__(parent, *args, **kwargs)
         self.setupUi(self)
 
         # Solver Settings Basic Widget
@@ -87,6 +109,10 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
 
         self.validate_pushButton.setEnabled(False)
 
+        # Show the validate button?
+        visible = _getShowValidateButton()
+        self.info_groupBox.setVisible(visible)
+
         self.tabWidget.currentChanged.connect(self._tabChanged)
         self.basic_widget.dataChanged.connect(self._dataChanged)
         self.standard_widget.dataChanged.connect(self._dataChanged)
@@ -100,10 +126,15 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         self.standard_widget.frameRange_widget.rangeTypeChanged.connect(self.updateInfo)
         self.validate_pushButton.clicked.connect(self.runUpdateInfo)
 
-        # First time we open this UI, we should update the solver info text.
-        value = lib_state.get_auto_update_solver_validation_state()
-        if value is False:
-            self.validate_pushButton.clicked.emit()
+        # Only run a solver validation if the user wants updates.
+        validate_on_open = _getValidateOnOpen()
+        if validate_on_open:
+            value = lib_state.get_auto_update_solver_validation_state()
+            if value is False:
+                self.validate_pushButton.clicked.emit()
+
+        e = time.time()
+        LOG.debug('SolverWidget init: %r seconds', e - s)
         return
 
     def getSolverTabValue(self, col):
@@ -166,7 +197,6 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         return
 
     def updateInfo(self):
-        LOG.debug('RUN solver_widget updateInfo')
         is_running = mmapi.is_solver_running()
         if is_running is True:
             return
@@ -180,22 +210,22 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         return
 
     def runUpdateInfo(self):
-        LOG.debug('RUN solver_widget runUpdateInfo B')
+        s = time.time()
         idx = self.tabWidget.currentIndex()
         tab_widget = self._getTabWidget(idx)
         text = tab_widget.queryInfo()
         self.info_label.setText(text)
+        e = time.time()
+        LOG.debug('SolverWidget runUpdateInfo: %r seconds', e - s)
         return
 
     @QtCore.Slot(bool)
     def autoUpdateSolverValidationChanged(self, value):
-        LOG.debug('autoUpdateSolverValidationChanged: %r', value)
         lib_state.set_auto_update_solver_validation_state(value)
         self.updateInfo()
         return
 
     @QtCore.Slot(str)
     def _sendWarningToUser(self, value):
-        LOG.debug('sendWarningToUser: %r', value)
         self.sendWarning.emit(value)
         return

@@ -99,16 +99,26 @@ class TestSolver7(solverUtils.SolverTestCase):
         ]
         frames = [1]
 
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+        }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
+
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs,
             frame=frames,
             iterations=1000,
             solverType=solver_index,
             verbose=True,
+            **kwargs
         )
         e = time.time()
         print 'total time:', e - s

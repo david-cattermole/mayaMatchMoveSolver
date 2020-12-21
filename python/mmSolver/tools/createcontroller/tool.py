@@ -32,19 +32,20 @@ Usage::
   5) Run 'bake' tool, selected transform nodes are deleted and
       animation is transfered back onto original nodes.
 
-Ideas::
-
-  - Have a flag to allow maintaining the relative hierarchy of the
-    input transforms.
-
 """
+
+
+# Ideas::
+#
+#   - Have a flag to allow maintaining the relative hierarchy of the
+#     input transforms.
+
 
 import maya.cmds
 
 import mmSolver.logger
 
-import mmSolver.utils.viewport as viewport
-import mmSolver.utils.constant as const
+import mmSolver.utils.tools as tools_utils
 import mmSolver.tools.createcontroller.lib as lib
 
 
@@ -56,33 +57,17 @@ def create():
     Create a controller for selected nodes.
     """
     nodes = maya.cmds.ls(selection=True, long=True) or []
-    frame = maya.cmds.currentTime(query=True)
-    current_eval_manager_mode = maya.cmds.evaluationManager(
-        query=True,
-        mode=True
-    )
-    try:
-        viewport.viewport_turn_off()
-        # Force DG mode, because it evaluates with DG Context faster
-        # (in Maya 2017).
-        #
-        # TODO: Test that DG mode is actually faster in Maya versions
-        # other than 2017.
-        maya.cmds.evaluationManager(mode='off')
-        ctrls = lib.create(
-            nodes,
-            eval_mode=const.EVAL_MODE_TIME_SWITCH_GET_ATTR
-        )
+    with tools_utils.tool_context(use_undo_chunk=True,
+                                  pre_update_frame=True,
+                                  post_update_frame=True,
+                                  restore_current_frame=True,
+                                  use_dg_evaluation_mode=True,
+                                  disable_viewport=True):
+        ctrls = lib.create(nodes)
         if len(ctrls) > 0:
             maya.cmds.select(ctrls, replace=True)
-    finally:
-        maya.cmds.evaluationManager(
-            mode=current_eval_manager_mode[0]
-        )
-        viewport.viewport_turn_on()
 
     # Trigger Maya to refresh.
-    maya.cmds.currentTime(frame, edit=True, update=True)
     maya.cmds.refresh(currentView=True, force=False)
     return
 
@@ -92,35 +77,16 @@ def remove():
     Remove selected controllers and bake data on controlled nodes.
     """
     nodes = maya.cmds.ls(selection=True, long=True) or []
-    frame = maya.cmds.currentTime(query=True)
-    current_eval_manager_mode = maya.cmds.evaluationManager(
-        query=True,
-        mode=True
-    )
-
-    try:
-        viewport.viewport_turn_off()
-
-        # Force DG mode, because it evaluates with DG Context faster
-        # (in Maya 2017).
-        #
-        # TODO: Test that DG mode is actually faster in Maya versions
-        # other than 2017.
-        maya.cmds.evaluationManager(mode='off')
-
-        orig_nodes = lib.remove(
-            nodes,
-            eval_mode=const.EVAL_MODE_TIME_SWITCH_GET_ATTR
-        )
+    with tools_utils.tool_context(use_undo_chunk=True,
+                                  pre_update_frame=True,
+                                  post_update_frame=True,
+                                  restore_current_frame=True,
+                                  use_dg_evaluation_mode=True,
+                                  disable_viewport=True):
+        orig_nodes = lib.remove(nodes)
         if len(orig_nodes) > 0:
             maya.cmds.select(orig_nodes, replace=True)
-    finally:
-        maya.cmds.evaluationManager(
-            mode=current_eval_manager_mode[0]
-        )
-        viewport.viewport_turn_on()
 
     # Trigger Maya to refresh.
-    maya.cmds.currentTime(frame, edit=True, update=True)
     maya.cmds.refresh(currentView=True, force=False)
     return

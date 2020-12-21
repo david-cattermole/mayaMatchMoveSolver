@@ -63,7 +63,7 @@ Features
 
   - Load 2D Tracks (Markers) from Third-Party software
 
-    - Supports 3DEqualizer *.txt, MatchMover *.rz2 and custom *.uv file formats.
+    - Supports 3DEqualizer .txt, MatchMover .rz2 and custom .uv file formats.
 
   - Convert from 3D Transform Nodes to 2D Markers.
 

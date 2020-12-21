@@ -21,7 +21,7 @@ Utility functions for 3D line intersection (for triangulating 3D points).
 .. code::
 
     # Example usage
-    import mmSolver.utils.triangulate as tri_utils
+    import mmSolver.utils.lineintersect as tri_utils
     cam_tfm = '|camera1'
     mkr_node = '|camera1|markerGroup1|marker1_MKR'
     first_frm_num = 1001
@@ -123,7 +123,7 @@ def calculate_approx_intersection_point_between_two_3d_lines(a_pnt, a_dir,
     :type eps: float
 
     :return: Two points to define the closest line intersection.
-    :rtype (MPoint, MPoint)
+    :rtype: (MPoint, MPoint)
     """
     if eps is None:
         eps = 0.0000

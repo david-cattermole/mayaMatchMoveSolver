@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>150</width>
+    <height>129</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="main_verticalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="checkboxes_verticalLayout">
+     <item>
+      <widget class="QCheckBox" name="markers_checkBox">
+       <property name="text">
+        <string>Markers</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="bundles_checkBox">
+       <property name="text">
+        <string>Bundles</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="markerGroup_checkBox">
+       <property name="text">
+        <string>Marker Groups</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="collections_checkBox">
+       <property name="text">
+        <string>Collections</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="otherNodes_checkBox">
+       <property name="text">
+        <string>Other Nodes</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

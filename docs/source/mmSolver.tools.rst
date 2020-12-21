@@ -20,6 +20,7 @@ mmSolver.tools
    mmSolver.tools.createmarker
    mmSolver.tools.deformmarker
    mmSolver.tools.duplicatemarker
+   mmSolver.tools.editrootframes
    mmSolver.tools.hotkeyswitcher
    mmSolver.tools.linkmarkerbundle
    mmSolver.tools.loadmarker
@@ -31,6 +32,7 @@ mmSolver.tools
    mmSolver.tools.navigaterootframes
    mmSolver.tools.placemarkermanip
    mmSolver.tools.raycastmarker
+   mmSolver.tools.removesolvernodes
    mmSolver.tools.reparent
    mmSolver.tools.reprojectbundle
    mmSolver.tools.screenspacemotiontrail
@@ -41,9 +43,12 @@ mmSolver.tools
    mmSolver.tools.showdeviationcurves
    mmSolver.tools.smoothkeyframes
    mmSolver.tools.solver
+   mmSolver.tools.sortoutlinernodes
    mmSolver.tools.surfacerivet
    mmSolver.tools.sysinfowindow
    mmSolver.tools.togglebundlelock
    mmSolver.tools.togglemarkerlock
    mmSolver.tools.triangulatebundle
    mmSolver.tools.undoredoscene
+   mmSolver.tools.userpreferences
+   mmSolver.tools.userprefswindow

@@ -35,7 +35,7 @@ EXT = '.mmcamera'
 PATTERN_RE_FILE_EXT = r'(.{1,})(\.)(.{1,})'
 
 # Regular Expression matching 'file.1001.ext' or 'file_1001.ext'.
-PATTERN_RE_FILE_FRAME_EXT = r'(.{1,})([\.\_])(\d{1,})(\.)(.{1,})'
+PATTERN_RE_FILE_FRAME_EXT = r'(.{1,})([\.\_])([\d\#]{1,})(\.)(.{1,})'
 
 # The format expects rotations in ZXY rotation order only.
 ROTATE_ORDER = 'zxy'

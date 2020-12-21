@@ -23,6 +23,7 @@ import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
+import mmSolver.utils.event as event_utils
 import mmSolver.utils.node as node_utils
 import mmSolver._api.constant as const
 import mmSolver._api.marker
@@ -209,6 +210,10 @@ class Bundle(object):
         else:
             green = (0.0, 1.0, 0.0)
             self.set_colour_rgb(green)
+
+        event_utils.trigger_event(
+            const.EVENT_NAME_BUNDLE_CREATED,
+            bnd=self)
         return self
 
     def delete_node(self):

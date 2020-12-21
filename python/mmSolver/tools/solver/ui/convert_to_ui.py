@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -20,6 +20,8 @@ Convert mmSolver API objects into UI objects that can be used in Qt models.
 """
 
 import mmSolver.logger
+
+import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.solver_step as solver_step
 import mmSolver.tools.solver.ui.attr_nodes as attr_nodes
 import mmSolver.tools.solver.ui.object_nodes as object_nodes
@@ -115,6 +117,9 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
     Convert a list of mmSolver API Attributes into classes to be used
     in the Solver UI.
 
+    :param col: The Collection the Attributes belong to.
+    :param col: Collection
+
     :param attr_list: List of Attributes to convert.
     :type attr_list: [Attribute, ..]
 
@@ -133,23 +138,29 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
     root = attr_nodes.PlugNode('root')
     maya_nodes = dict()
     for attr in attr_list:
-        n = attr.get_node()
-        if attr.is_animated() is True and show_anm is False:
+        attr_state = attr.get_state()
+        is_animated = attr_state == mmapi.ATTR_STATE_ANIMATED
+        is_static = attr_state == mmapi.ATTR_STATE_STATIC
+        is_locked = attr_state == mmapi.ATTR_STATE_LOCKED
+        if is_animated is True and show_anm is False:
             continue
-        elif attr.is_static() is True and show_stc is False:
+        elif is_static is True and show_stc is False:
             continue
-        elif attr.is_locked() is True and show_lck is False:
+        elif is_locked is True and show_lck is False:
             continue
-        maya_node = maya_nodes.get(n)
+        full_name = attr.get_node(full_path=True)
+        maya_node = maya_nodes.get(full_name)
         data = {'data': attr, 'collection': col}
         if maya_node is None:
-            uuid = attr.get_node_uid()
             node_data = dict()
-            # Add the first attribute to the MayaNode object.
+            # Add only the first attribute to the MayaNode
+            # object. Other attributes will be added as they come up.
             node_data['data'] = [attr]
-            node_data['uuid'] = uuid
-            maya_node = attr_nodes.MayaNode(n, data=node_data, parent=root)
-            maya_nodes[n] = maya_node
+            short_name = full_name.rpartition('|')[-1]
+            maya_node = attr_nodes.MayaNode(
+                short_name, data=node_data, parent=root)
+            maya_node.setNeverHasChildren(False)
+            maya_nodes[full_name] = maya_node
         else:
             # Add subsequent attributes to the MayaNode object.
             node_data = maya_node.data()
@@ -157,6 +168,7 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
             maya_node.setData(node_data)
         a = attr.get_attr()
         attr_node = attr_nodes.AttrNode(a, data=data, parent=maya_node)
+        attr_node.setNeverHasChildren(True)
     return root
 
 

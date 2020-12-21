@@ -49,12 +49,14 @@ INSTALL_MODULE_DIR=${HOME}/maya/2017/modules
 
 # Build ZIP Package.
 # For developer use. Make ZIP packages ready to distribute to others.
-BUILD_PACKAGE=0
+BUILD_PACKAGE=1
 
 
 # Do not edit below, unless you know what you're doing.
 ###############################################################################
 
+# What type of build? "Release" or "Debug"?
+BUILD_TYPE=Release
 
 # Build options, to allow faster compilation times. (not to be used by
 # users wanting to build this project.)
@@ -80,12 +82,12 @@ PROJECT_ROOT=`readlink -f ${DIR}/..`
 CPU_NUM=`nproc --all`
 
 # Build mmSolver project
-mkdir -p build
-cd build
+mkdir -p build_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
+cd build_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
 if [ ${FRESH_BUILD} -eq 1 ]; then
     rm --force -R *
 fi
-cmake -DCMAKE_BUILD_TYPE=Release \
+cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_INSTALL_PREFIX=${INSTALL_MODULE_DIR} \
       -DBUILD_PLUGIN=${BUILD_PLUGIN} \
       -DBUILD_PYTHON=${BUILD_PYTHON} \

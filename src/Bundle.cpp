@@ -27,6 +27,7 @@
 #include <maya/MMatrix.h>
 #include <maya/MPoint.h>
 
+#include <core/bundleAdjust_defines.h>
 #include <mayaUtils.h>
 #include <Marker.h>
 #include <Bundle.h>
@@ -76,19 +77,19 @@ Attr &Bundle::getMatrixAttr() {
     return m_matrix;
 }
 
-MStatus Bundle::getMatrix(MMatrix &value, const MTime &time) {
-    return m_matrix.getValue(value, time);
+MStatus Bundle::getMatrix(MMatrix &value, const MTime &time, const int timeEvalMode) {
+    return m_matrix.getValue(value, time, timeEvalMode);
 }
 
-
-MStatus Bundle::getMatrix(MMatrix &value) {
-    return m_matrix.getValue(value);
+MStatus Bundle::getMatrix(MMatrix &value, const int timeEvalMode) {
+    return m_matrix.getValue(value, timeEvalMode);
 }
 
-MStatus Bundle::getPos(double &x, double &y, double &z, const MTime &time) {
+MStatus Bundle::getPos(double &x, double &y, double &z, const MTime &time,
+                       const int timeEvalMode) {
     MStatus status;
     MMatrix matrix;
-    status = Bundle::getMatrix(matrix, time);
+    status = Bundle::getMatrix(matrix, time, timeEvalMode);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     x = matrix(3, 0);
     y = matrix(3, 1);
@@ -96,10 +97,10 @@ MStatus Bundle::getPos(double &x, double &y, double &z, const MTime &time) {
     return status;
 }
 
-MStatus Bundle::getPos(MPoint &point, const MTime &time) {
+MStatus Bundle::getPos(MPoint &point, const MTime &time, const int timeEvalMode) {
     MStatus status;
     MMatrix matrix;
-    status = Bundle::getMatrix(matrix, time);
+    status = Bundle::getMatrix(matrix, time, timeEvalMode);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     point.x = matrix(3, 0);
     point.y = matrix(3, 1);
@@ -109,14 +110,14 @@ MStatus Bundle::getPos(MPoint &point, const MTime &time) {
     return status;
 }
 
-MStatus Bundle::getPos(double &x, double &y, double &z) {
+MStatus Bundle::getPos(double &x, double &y, double &z, const int timeEvalMode) {
     MTime time = MAnimControl::currentTime();
-    MStatus status = Bundle::getPos(x, y, z, time);
+    MStatus status = Bundle::getPos(x, y, z, time, timeEvalMode);
     return status;
 }
 
-MStatus Bundle::getPos(MPoint &point) {
+MStatus Bundle::getPos(MPoint &point, const int timeEvalMode) {
     MTime time = MAnimControl::currentTime();
-    MStatus status = Bundle::getPos(point, time);
+    MStatus status = Bundle::getPos(point, time, timeEvalMode);
     return status;
 }

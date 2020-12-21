@@ -27,6 +27,7 @@ import mmSolver.logger
 import mmSolver._api.constant as const
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
+import mmSolver._api.solverutils as solverutils
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.solverstep as solverstep
 import mmSolver._api.compile as api_compile
@@ -60,6 +61,9 @@ class SolverBasic(solverbase.SolverBase):
 
     def __init__(self, *args, **kwargs):
         super(SolverBasic, self).__init__(*args, **kwargs)
+        # These variables are not officially supported by the class.
+        self._use_euler_filter = True
+
         # These variables are not used by the class.
         self._print_statistics_inputs = False
         self._print_statistics_affects = False
@@ -67,6 +71,28 @@ class SolverBasic(solverbase.SolverBase):
         self._robust_loss_type = 0
         self._robust_loss_scale = 1.0
         return
+
+    ############################################################################
+
+    def get_eval_complex_graphs(self):
+        """
+        Get 'Evaluate Complex Node Graphs' value.
+
+        :rtype: bool
+        """
+        return self._data.get(
+            'eval_complex_node_graphs',
+            const.SOLVER_STD_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE)
+
+    def set_eval_complex_graphs(self, value):
+        """
+        Set 'Evaluate Complex Node Graph' value.
+
+        :param value: Value to be set.
+        :type value: bool or int or long
+        """
+        assert isinstance(value, (bool, int, long))
+        self._data['eval_complex_node_graphs'] = bool(value)
 
     ############################################################################
 
@@ -255,12 +281,23 @@ class SolverBasic(solverbase.SolverBase):
         frame_list = self.get_frame_list()
         anim_iter_num = self.get_anim_iteration_num()
         lineup_iter_num = self.get_lineup_iteration_num()
-        verbose = True
+        use_euler_filter = self._use_euler_filter
+        eval_complex_graphs = self.get_eval_complex_graphs()
+        precomputed_data = self.get_precomputed_data()
+
+        # Pre-calculate the 'affects' relationship.
+        generator = solverutils.compile_solver_affects(
+            col,
+            mkr_list,
+            attr_list,
+            precomputed_data,
+            withtest)
+        for action, vaction in generator:
+            yield action, vaction
 
         if use_single_frame is True:
             # Single frame solve
             sol = solverstep.SolverStep()
-            sol.set_verbose(verbose)
             sol.set_max_iterations(lineup_iter_num)
             sol.set_frame_list([single_frame])
             sol.set_attributes_use_animated(True)
@@ -268,17 +305,21 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_precomputed_data(precomputed_data)
             for action, vaction in sol.compile(col, mkr_list, attr_list,
                                                withtest=withtest):
-                yield (action, vaction)
+                yield action, vaction
         else:
             # Multiple frame solve, per-frame
             vaction_cache = api_compile.create_compile_solver_cache()
             for i, frm in enumerate(frame_list):
                 is_first_frame = i == 0
                 one_frame_list = [frm]
+                time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
+                if eval_complex_graphs is True:
+                    time_eval_mode = const.TIME_EVAL_MODE_SET_TIME
+
                 sol = solverstep.SolverStep()
-                sol.set_verbose(verbose)
                 sol.set_max_iterations(anim_iter_num)
                 sol.set_frame_list(one_frame_list)
                 sol.set_attributes_use_animated(True)
@@ -286,9 +327,21 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
                 sol.set_use_smoothness(not is_first_frame)
                 sol.set_use_stiffness(not is_first_frame)
+                sol.set_time_eval_mode(time_eval_mode)
+                sol.set_precomputed_data(precomputed_data)
 
                 generator = api_compile.compile_solver_with_cache(
                     sol, col, mkr_list, attr_list, withtest, vaction_cache)
                 for action, vaction in generator:
                     yield action, vaction
+
+            # Perform an euler filter on all unlocked rotation attributes.
+            if use_euler_filter is True:
+                generator = solverutils.compile_euler_filter(
+                    attr_list,
+                    withtest
+                )
+                for action, vaction in generator:
+                    yield action, vaction
+
         return

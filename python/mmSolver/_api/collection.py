@@ -27,6 +27,7 @@ import maya.OpenMayaAnim as OpenMayaAnim
 
 import mmSolver.logger
 import mmSolver.utils.configmaya as configmaya
+import mmSolver.utils.event as event_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.animcurve as anim_utils
 import mmSolver._api.utils as api_utils
@@ -88,6 +89,17 @@ def _create_collection_attributes(node):
 
 
 def _get_auxiliary_attr_name(col, attr, key):
+    """Auxiliary attribute names combine four individual parts, the
+    Collection, the node and attribute names, and the key.
+
+    Auxiliary attribute values are dependant on all four bits of data.
+    The Auxiliary attribute data is not just "attached" to the
+    attribute itself, it is also dependant on the Collection.
+
+    When a user changes the "active" collection, the auxiliary
+    attribute values may be different - this is a useful feature, but
+    makes the implementation more complex.
+    """
     col_node_uid = col.get_node_uid()
     col_node_uid = col_node_uid.replace('-', '_')
     attr_name = attr.get_attr()
@@ -97,6 +109,27 @@ def _get_auxiliary_attr_name(col, attr, key):
 
 
 def _get_auxiliary_attr(col, attr, key, default_value):
+    """Look up the auxiliary attribute's value, and return a
+    default_value if no attribute exists.
+
+    :param col: The Collection object to get data for.
+    :type col: Collection
+
+    :param attr: The Attribute object to get data for.
+    :type attr: Attribute
+
+    :param key: The unique 'key name' to look-up. This is the name of
+        the unique auxiliary attribute.
+    :type key: str
+
+    :param default_value: The default value for the attribute, if no
+        auxiliary attribute exists (yet).
+    :type default_value: bool or int or float or str
+
+    :returns: The value for the auxiliary attribute, or fallback to
+        default_value.
+    :rtype: bool or int or float or str
+    """
     value = None
     attr_node = attr.get_node()
     aux_name = _get_auxiliary_attr_name(col, attr, key)
@@ -124,6 +157,26 @@ def _get_auxiliary_attr(col, attr, key, default_value):
 
 
 def _set_auxiliary_attr(col, attr, key, value):
+    """Look up the auxiliary attribute, and set a value on it.
+
+    If no auxiliary attribute exists, a new attribute is created and
+    initialized.
+
+    :param col: The Collection object to set data for.
+    :type col: Collection
+
+    :param attr: The Attribute object to set data for.
+    :type attr: Attribute
+
+    :param key: The unique 'key name' to look-up. This is the name of
+        the unique auxiliary attribute.
+    :type key: str
+
+    :param value: The value for the attribute.
+    :type default_value: bool or int or float or str
+
+    :rtype: None
+    """
     attr_node = attr.get_node()
     aux_name = _get_auxiliary_attr_name(col, attr, key)
     plug_name = '{0}.{1}'.format(attr_node, aux_name)
@@ -197,6 +250,10 @@ class Collection(object):
         self._set.create_node(name)
         set_node = self._set.get_node()
         _create_collection_attributes(set_node)
+
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_CREATED,
+            col=self)
         return self
 
     def add_attributes(self):
@@ -459,6 +516,9 @@ class Collection(object):
         if self._set.member_in_set(node) is False:
             self._set.add_member(node)
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+            col=self)
         return
 
     def add_marker_list(self, mkr_list):
@@ -469,6 +529,9 @@ class Collection(object):
                 node_list.append(mkr.get_node())
         self._set.add_members(node_list)
         self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+            col=self)
         return
 
     def remove_marker(self, mkr):
@@ -477,6 +540,9 @@ class Collection(object):
         if self._set.member_in_set(node):
             self._set.remove_member(node)
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+            col=self)
         return
 
     def remove_marker_list(self, mkr_list):
@@ -487,6 +553,9 @@ class Collection(object):
                 node_list.append(mkr.get_node())
         self._set.remove_members(node_list)
         self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+            col=self)
         return
 
     def set_marker_list(self, mkr_list):
@@ -501,6 +570,10 @@ class Collection(object):
         after_num = self.get_marker_list_length()
         if before_num != after_num:
             self._actions_list = []  # reset argument flag cache.
+
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+            col=self)
         return
 
     def clear_marker_list(self):
@@ -513,6 +586,9 @@ class Collection(object):
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
+            col=self)
         return
 
     ############################################################################
@@ -537,6 +613,9 @@ class Collection(object):
         if not self._set.member_in_set(name):
             self._set.add_member(name)
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+            col=self)
         return
 
     def add_attribute_list(self, attr_list):
@@ -547,6 +626,9 @@ class Collection(object):
                 name_list.append(attr.get_name())
         self._set.add_members(name_list)
         self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+            col=self)
         return
 
     def remove_attribute(self, attr):
@@ -555,6 +637,9 @@ class Collection(object):
         if self._set.member_in_set(name):
             self._set.remove_member(name)
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+            col=self)
         return
 
     def remove_attribute_list(self, attr_list):
@@ -565,6 +650,9 @@ class Collection(object):
                 name_list.append(attr.get_name())
         self._set.remove_members(name_list)
         self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+            col=self)
         return
 
     def set_attribute_list(self, attr_list):
@@ -579,6 +667,9 @@ class Collection(object):
         after_num = self.get_attribute_list_length()
         if before_num != after_num:
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+            col=self)
         return
 
     def clear_attribute_list(self):
@@ -591,6 +682,9 @@ class Collection(object):
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)
             self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(
+            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
+            col=self)
         return
 
     ############################################################################
@@ -828,6 +922,20 @@ class Collection(object):
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
+
+    def get_attribute_used_hint(self, attr):
+        key = 'used_hint'
+        # By default, we assume the attribute is unused.
+        default_value = const.ATTRIBUTE_USED_HINT_DEFAULT_VALUE
+        value = _get_auxiliary_attr(self, attr, key, default_value)
+        assert value in const.ATTRIBUTE_USED_HINT_LIST
+        return value
+
+    def set_attribute_used_hint(self, attr, value):
+        assert isinstance(value, (int, long))
+        assert value in const.ATTRIBUTE_USED_HINT_LIST
+        key = 'used_hint'
+        _set_auxiliary_attr(self, attr, key, value)
 
     ############################################################################
 

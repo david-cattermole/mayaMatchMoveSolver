@@ -18,33 +18,29 @@
 """
 Dialog UI for the Set Attribute Details tool.
 
-Code::
+Example Usage::
 
-import maya.cmds
-import mmSolver.api as mmapi
+ import maya.cmds
+ import mmSolver.api as mmapi
 
+ col_name = 'name'
+ col = mmapi.Collection()
+ if maya.cmds.objExists(col_name):
+     col = mmapi.Collection(node=col_name)
+ else:
+     col = mmapi.Collection().create_node(col_name)
 
-col_name = 'name'
-col = mmapi.Collection()
-if maya.cmds.objExists(col_name):
-    col = mmapi.Collection(node=col_name)
-else:
-    col = mmapi.Collection().create_node(col_name)
+ import mmSolver.tools.setattributedetails.ui.dialog as dialog
+ import mmSolver.tools.setattributedetails.lib as lib
+ import mmSolver.tools.setattributedetails.tool as tool
 
-import mmSolver.tools.setattributedetails.ui.dialog as dialog
-import mmSolver.tools.setattributedetails.lib as lib
-import mmSolver.tools.setattributedetails.tool as tool
-reload(dialog)
-reload(lib)
-reload(tool)
+ attr_list = [
+     mmapi.Attribute(node='pSphere1', attr='translateX'),
+     mmapi.Attribute(node='pSphere1', attr='translateY'),
+     mmapi.Attribute(node='pSphere1', attr='translateZ'),
 
-attr_list = [
-    mmapi.Attribute(node='pSphere1', attr='translateX'),
-    mmapi.Attribute(node='pSphere1', attr='translateY'),
-    mmapi.Attribute(node='pSphere1', attr='translateZ'),
-
-]
-dialog.main(col, attr_list)
+ ]
+ dialog.main(col, attr_list)
 
 """
 

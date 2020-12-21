@@ -28,7 +28,6 @@ Ideas::
 
 """
 
-import pprint
 import collections
 
 import maya.cmds
@@ -178,10 +177,10 @@ def _sort_hierarchy_depth_to_nodes(nodes):
 
 
 def _sort_hierarchy_depth_to_tfm_nodes(tfm_nodes):
-    depth_to_tfm_node_map = collections.defaultdict(set)
+    depth_to_tfm_node_map = collections.defaultdict(list)
     for tfm_node in tfm_nodes:
         depth = tfm_node.get_node().count('|')
-        depth_to_tfm_node_map[depth].add(tfm_node)
+        depth_to_tfm_node_map[depth].append(tfm_node)
     return depth_to_tfm_node_map
 
 
@@ -268,11 +267,13 @@ def create(nodes,
     # Create new (locator) node for each input node
     ctrl_list = []
     node_to_ctrl_map = {}
+    node_to_ctrl_tfm_map = {}
     depths = sorted(depth_to_tfm_node_map.keys())
     for depth in depths:
         depth_tfm_nodes = depth_to_tfm_node_map.get(depth)
         assert depth_tfm_nodes is not None
-        for tfm_node in depth_tfm_nodes:
+        sorted_tfm_nodes = sorted(depth_tfm_nodes, key=lambda x: x.get_node())
+        for tfm_node in sorted_tfm_nodes:
             node = tfm_node.get_node()
             node_parent = nodes_parent.get(node)
             if node_parent is not None:
@@ -287,25 +288,28 @@ def create(nodes,
                 name=name,
                 parent=node_parent)
             tfm = node_utils.get_long_name(tfm)
-            maya.cmds.createNode('locator', parent=tfm)
+            shape_name = name + 'Shape'
+            maya.cmds.createNode('locator', name=shape_name, parent=tfm)
             rot_order = maya.cmds.xform(node, query=True, rotateOrder=True)
             maya.cmds.xform(tfm, rotateOrder=rot_order, preserve=True)
+            ctrl_tfm = tfm_utils.TransformNode(node=tfm)
             ctrl_list.append(tfm)
             node_to_ctrl_map[node] = tfm
-    ctrl_tfm_nodes = [tfm_utils.TransformNode(node=tfm)
-                      for tfm in ctrl_list]
+            node_to_ctrl_tfm_map[node] = ctrl_tfm
 
     # Set transform matrix on new node
     anim_curves = []
-    for src, dst in zip(tfm_nodes, ctrl_tfm_nodes):
+    for src in tfm_nodes:
         src_node = src.get_node()
         src_times = key_times_map.get(src_node, [current_frame])
+        dst = node_to_ctrl_tfm_map.get(src_node)
         assert len(src_times) > 0
         tfm_utils.set_transform_values(
             cache,
             src_times,
             src, dst,
-            delete_static_anim_curves=False
+            delete_static_anim_curves=False,
+            eval_mode=eval_mode
         )
         src_had_keys = key_times_map.get(src_node) is not None
         if src_had_keys is True:
@@ -336,8 +340,9 @@ def create(nodes,
         maya.cmds.delete(anim_curves)
 
     # Create constraint(s) to previous nodes.
-    for tfm_node, ctrl in zip(tfm_nodes, ctrl_tfm_nodes):
+    for tfm_node in tfm_nodes:
         src_node = tfm_node.get_node()
+        ctrl = node_to_ctrl_tfm_map.get(src_node)
         dst_node = ctrl.get_node()
         _create_constraint(src_node, dst_node)
     return ctrl_list
@@ -398,12 +403,6 @@ def remove(nodes,
     fallback_frame_range = keytime_obj.sum_frame_range_for_nodes(nodes)
     fallback_times = list(range(fallback_frame_range[0],
                                 fallback_frame_range[1]+1))
-
-    # Query transform matrix on controlled nodes.
-    cache = tfm_utils.TransformMatrixCache()
-    for ctrl_node, (constraints, dest_nodes) in ctrl_to_ctrlled_map.items():
-        times = keytime_obj.get_times(ctrl_node, sparse) or fallback_times
-        ctrl = tfm_utils.TransformNode(node=ctrl_node)
 
     # Query keyframe times on each node attribute
     key_times_map = time_utils.get_keyframe_times_for_node_attrs(

@@ -49,7 +49,7 @@ def getNameFromDict(index, names_dict, lookup_dict):
        lookup_dict = {
            'Column': 'name',
        }
-       x = getNamefromDict(index, names_dict, lookup_dict)
+       x = getNameFromDict(index, names_dict, lookup_dict)
        # x equals 'name'
 
     :param index: Index to look up.
@@ -58,18 +58,15 @@ def getNameFromDict(index, names_dict, lookup_dict):
                         final look up name.
 
     :returns: The name in 'lookup_dict' referred to by index in
-              'names_dict'.
-    :rtype: str
+              'names_dict', or None if the name is not in the
+              dictionary.
+    :rtype: str or None
     """
     if index not in names_dict:
-        msg = '{0} was not in {1}'
-        msg = msg.format(index, names_dict)
-        raise ValueError(msg)
+        return None
     column_name = names_dict[index]
     if column_name not in lookup_dict:
-        msg = '{0} was not in {1}'
-        msg = msg.format(column_name, names_dict)
-        raise ValueError(msg)
+        return None
     attr_name = lookup_dict[column_name]
     return attr_name
 
@@ -101,13 +98,19 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
         get_attr_dict = {
             'Column': 'name',
         }
-        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
+        return self._getLookUpFuncFromIndex(index, get_attr_dict)
 
     def getSetAttrFuncFromIndex(self, index):
         set_attr_dict = {
             'Column': 'setName',
         }
-        return self._getSetAttrFuncFromIndex(index, set_attr_dict)
+        return self._getLookUpFuncFromIndex(index, set_attr_dict)
+
+    def getColorFuncFromIndex(self, index):
+        color_dict = {
+            'Column': 'color',
+        }
+        return self._getLookUpFuncFromIndex(index, color_dict)
 
     ################################################
 
@@ -141,29 +144,28 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
 
     ####################################################
 
-    def _getGetAttrFuncFromIndex(self, index, get_attr_dict):
+    def _getLookUpFuncFromIndex(self, index, lookup_dict):
         column_index = index.column()
         column_names = self.columnNames()
         name = getNameFromDict(
             column_index,
             column_names,
-            get_attr_dict,
+            lookup_dict,
         )
+        if name is None:
+            return None
         node = index.internalPointer()
         func = getattr(node, name, None)
         return func
 
-    def _getSetAttrFuncFromIndex(self, index, set_attr_dict):
-        column_index = index.column()
-        column_names = self.columnNames()
-        name = getNameFromDict(
-            column_index,
-            column_names,
-            set_attr_dict,
-        )
-        node = index.internalPointer()
-        func = getattr(node, name, None)
-        return func
+    def _getGetAttrFuncFromIndex(self, index, lookup_dict):
+        return self._getLookUpFuncFromIndex(index, lookup_dict)
+
+    def _getSetAttrFuncFromIndex(self, index, lookup_dict):
+        return self._getLookUpFuncFromIndex(index, lookup_dict)
+
+    def _getColorFuncFromIndex(self, index, lookup_dict):
+        return self._getLookUpFuncFromIndex(index, lookup_dict)
 
     def getColumnNameFromIndex(self, index):
         column_index = index.column()
@@ -234,10 +236,17 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
                 value = func()
             return value
 
-        node = index.internalPointer()
         if role == QtCore.Qt.DecorationRole:
             return self.indexIcon(index)
 
+        if role == QtCore.Qt.ForegroundRole:
+            func = self.getColorFuncFromIndex(index)
+            value = None
+            if func is not None:
+                value = func()
+            return value
+
+        node = index.internalPointer()
         if role == QtCore.Qt.ToolTipRole:
             return node.toolTip()
 
@@ -367,13 +376,19 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
         get_attr_dict = {
             'Column': 'name',
         }
-        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
+        return self._getLookUpFuncFromIndex(index, get_attr_dict)
 
     def getSetAttrFuncFromIndex(self, index):
         set_attr_dict = {
             'Column': 'setName',
         }
-        return self._getSetAttrFuncFromIndex(index, set_attr_dict)
+        return self._getLookUpFuncFromIndex(index, set_attr_dict)
+
+    def getColorFuncFromIndex(self, index):
+        color_dict = {
+            'Column': 'color',
+        }
+        return self._getLookUpFuncFromIndex(index, color_dict)
 
     ################################################
 
@@ -404,7 +419,7 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
 
     ################################################
 
-    def _getGetAttrFuncFromIndex(self, index, get_attr_dict):
+    def _getLookUpFuncFromIndex(self, index, lookup_dict):
         row_index = index.row()
         column_index = index.column()
         node = self._node_list[row_index]
@@ -412,23 +427,18 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
         name = getNameFromDict(
             column_index,
             column_names,
-            get_attr_dict,
+            lookup_dict,
         )
+        if name is None:
+            return None
         func = getattr(node, name, None)
         return func
 
-    def _getSetAttrFuncFromIndex(self, index, set_attr_dict):
-        row_index = index.row()
-        column_index = index.column()
-        node = self._node_list[row_index]
-        column_names = self.columnNames()
-        name = getNameFromDict(
-            column_index,
-            column_names,
-            set_attr_dict,
-        )
-        func = getattr(node, name, None)
-        return func
+    def _getGetAttrFuncFromIndex(self, index, lookup_dict):
+        return self._getLookUpFuncFromIndex(index, lookup_dict)
+
+    def _getSetAttrFuncFromIndex(self, index, lookup_dict):
+        return self._getLookUpFuncFromIndex(index, lookup_dict)
 
     def getColumnNameFromIndex(self, index):
         column_index = index.column()

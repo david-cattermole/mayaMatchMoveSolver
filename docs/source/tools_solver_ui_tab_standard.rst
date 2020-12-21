@@ -72,3 +72,6 @@ The 'Root Frames' are used to solve static and animated attributes.
 
 Beside the 'Root Frames' field are buttons for adding, removing and
 changing the current frame to the next/previous root frame.
+
+For more details on tools to change frame, create or remove root frames,
+see the :ref:`Frame Tools <frame-tools-heading>`.

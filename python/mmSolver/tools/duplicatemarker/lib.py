@@ -52,12 +52,12 @@ def __copy_key_frames(source_mkr_node, new_mkr_node):
     return
 
 
-def __get_lock_state(node, attrs):
+def __get_lock_state(node_get, attrs):
     """
-    Gets lock state of given node and attrs
+    Gets lock state of given node_get and attrs
 
-    :param node: Maya node to get Lock state from.
-    :type node : str
+    :param node_get: Maya node to get Lock state from.
+    :type node_get : str
 
     :param attrs: Maya node attribute names.
     :type attrs : [str, ..]
@@ -66,18 +66,21 @@ def __get_lock_state(node, attrs):
     """
     plug_lock_state = {}
     for attr in attrs:
-        plug = '%s.%s' % (node, attr)
+        plug = '%s.%s' % (node_get, attr)
         value = maya.cmds.getAttr(plug, lock=True)
         plug_lock_state[plug] = value
     return plug_lock_state
 
 
-def __set_lock_state(node, attrs, lock_attr_values):
+def __set_lock_state(node_get, node_set, attrs, lock_attr_values):
     """
     Sets lock state for given node and attributes
 
-    :param node: Maya node to set lock state.
-    :type node : str
+    :param node_get: Maya node to query the lock state with.
+    :type node_get : str
+
+    :param node_set: Maya node to set a new lock state on.
+    :type node_set : str
 
     :param attrs: Maya node attribute names to set lock state on.
     :type attrs : [str, ..]
@@ -88,7 +91,8 @@ def __set_lock_state(node, attrs, lock_attr_values):
     :return: None
     """
     for attr in attrs:
-        plug = '%s.%s' % (node, attr)
-        value = lock_attr_values.get(plug)
-        maya.cmds.setAttr(plug, lock=value)
+        query_plug = '%s.%s' % (node_get, attr)
+        set_plug = '%s.%s' % (node_set, attr)
+        value = lock_attr_values.get(query_plug)
+        maya.cmds.setAttr(set_plug, lock=value)
     return

@@ -23,8 +23,10 @@ import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
 import Qt.QtCore as QtCore
+import Qt.QtGui as QtGui
 
 import mmSolver.logger
+import mmSolver.api as mmapi
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.nodes as uinodes
 import mmSolver.tools.solver.constant as const
@@ -56,6 +58,9 @@ class ObjectNode(uinodes.Node):
             checkable=checkable,
             neverHasChildren=neverHasChildren)
         self.typeInfo = 'object'
+
+    def objectColor(self):
+        return None
 
     def uuid(self):
         uuid = ''
@@ -90,6 +95,30 @@ class MarkerNode(ObjectNode):
             selectable=True,
             editable=False)
         self.typeInfo = 'marker'
+
+    def status(self):
+        value = const.OBJECT_DEFAULT_STATUS_UI_VALUE
+        d = self.data()
+        mkr = d.get('marker')
+        if mkr is None:
+            return color
+        used = mkr.get_used_hint()
+        if used == mmapi.MARKER_USED_HINT_USED_VALUE:
+            value = u'\u2714'  # "Heavy Check Mark"
+        elif used == mmapi.MARKER_USED_HINT_NOT_USED_VALUE:
+            value = u'\u2718'  # "Heavy Ballot X"
+        return value
+
+    def objectColor(self):
+        color = None
+        d = self.data()
+        mkr = d.get('marker')
+        if mkr is None:
+            return color
+        enable = bool(mkr.get_enable())
+        if enable is False:
+            color = QtGui.QColor(QtCore.Qt.darkGray)
+        return color
 
     def weight(self):
         """
@@ -175,6 +204,9 @@ class CameraNode(ObjectNode):
             editable=False)
         self.typeInfo = 'camera'
 
+    def objectColor(self):
+        return None
+
     def weight(self):
         return const.OBJECT_DEFAULT_WEIGHT_UI_VALUE
 
@@ -182,56 +214,19 @@ class CameraNode(ObjectNode):
         """
         Get the current deviation of the for the camera.
         """
-        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
-        d = self.data()
-        if not d:
-            return dev
-        cam = d.get('camera')
-        if cam is None:
-            return dev
-        dev_value = cam.get_deviation()
-        if dev_value is None:
-            return dev
-        if dev_value < 0:
-            return dev
-        return '%.2f' % dev_value
+        return '-'
 
     def avgDeviation(self):
         """
         Get the average deviation value of the camera.
         """
-        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
-        d = self.data()
-        if not d:
-            return dev
-        cam = d.get('camera')
-        if cam is None:
-            return dev
-        dev_value = cam.get_average_deviation()
-        if dev_value is None:
-            return dev
-        if dev_value < 0:
-            return dev
-        return '%.2f' % dev_value
-
+        return '-'
 
     def maxDeviation(self):
         """
         Get the average deviation value of the camera.
         """
-        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
-        d = self.data()
-        if not d:
-            return dev
-        cam = d.get('camera')
-        if cam is None:
-            return dev
-        dev_value, dev_frame = cam.get_maximum_deviation()
-        if dev_value is None:
-            return dev
-        if dev_value < 0:
-            return dev
-        return '%.2f @ %s' % (dev_value, dev_frame)
+        return '-'
 
 
 class BundleNode(ObjectNode):
@@ -247,6 +242,9 @@ class BundleNode(ObjectNode):
             selectable=True,
             editable=False)
         self.typeInfo = 'bundle'
+
+    def objectColor(self):
+        return None
 
     def weight(self):
         return const.OBJECT_DEFAULT_WEIGHT_UI_VALUE
@@ -273,18 +271,20 @@ class ObjectModel(uimodels.ItemModel):
     def columnNames(self):
         column_names = {
             0: const.OBJECT_COLUMN_NAME_NODE,
-            1: const.OBJECT_COLUMN_NAME_WEIGHT,
-            2: const.OBJECT_COLUMN_NAME_DEVIATION_FRAME,
-            3: const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE,
-            4: const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM,
-            5: const.OBJECT_COLUMN_NAME_UUID,
+            1: const.OBJECT_COLUMN_NAME_STATUS,
+            2: const.OBJECT_COLUMN_NAME_WEIGHT,
+            3: const.OBJECT_COLUMN_NAME_DEVIATION_FRAME,
+            4: const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE,
+            5: const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM,
+            6: const.OBJECT_COLUMN_NAME_UUID,
         }
         return column_names
 
     def columnAlignments(self):
         values = {
             const.OBJECT_COLUMN_NAME_NODE: QtCore.Qt.AlignLeft,
-            const.OBJECT_COLUMN_NAME_WEIGHT: QtCore.Qt.AlignRight,
+            const.OBJECT_COLUMN_NAME_STATUS: QtCore.Qt.AlignCenter,
+            const.OBJECT_COLUMN_NAME_WEIGHT: QtCore.Qt.AlignCenter,
             const.OBJECT_COLUMN_NAME_DEVIATION_FRAME: QtCore.Qt.AlignCenter,
             const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE: QtCore.Qt.AlignCenter,
             const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: QtCore.Qt.AlignCenter,
@@ -295,17 +295,28 @@ class ObjectModel(uimodels.ItemModel):
     def getGetAttrFuncFromIndex(self, index):
         get_attr_dict = {
             const.OBJECT_COLUMN_NAME_NODE: 'name',
+            const.OBJECT_COLUMN_NAME_STATUS: 'status',
             const.OBJECT_COLUMN_NAME_WEIGHT: 'weight',
             const.OBJECT_COLUMN_NAME_DEVIATION_FRAME: 'deviation',
             const.OBJECT_COLUMN_NAME_DEVIATION_AVERAGE: 'avgDeviation',
             const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: 'maxDeviation',
-            const.OBJECT_COLUMN_NAME_DEVIATION_MAXIMUM: 'maxDeviation',
             const.OBJECT_COLUMN_NAME_UUID: 'uuid',
         }
-        return self._getGetAttrFuncFromIndex(index, get_attr_dict)
+        return self._getLookUpFuncFromIndex(index, get_attr_dict)
+
+    def getColorFuncFromIndex(self, index):
+        color_dict = {
+            const.OBJECT_COLUMN_NAME_NODE: 'objectColor',
+        }
+        return self._getLookUpFuncFromIndex(index, color_dict)
 
     def getSetAttrFuncFromIndex(self, index):
-        set_attr_dict = {
-            const.OBJECT_COLUMN_NAME_NODE: 'setName',
-        }
-        return self._getGetAttrFuncFromIndex(index, set_attr_dict)
+        set_attr_dict = {}
+        return self._getLookUpFuncFromIndex(index, set_attr_dict)
+
+    def indexEnabled(self, index):
+        node = index.internalPointer()
+        return node.enabled()
+
+    def indexEditable(self, index):
+        return False

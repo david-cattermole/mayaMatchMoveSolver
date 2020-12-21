@@ -21,9 +21,11 @@ The Solver UI tool.
 
 import datetime
 import uuid
+
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
-import mmSolver.utils.undo as undo_utils
+import mmSolver.utils.tools as tools_utils
+
 import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.lib.state as lib_state
@@ -90,6 +92,8 @@ def run_solve(override_current_frame=None):
     """
     assert (override_current_frame is None
             or isinstance(override_current_frame, bool))
+    if override_current_frame is None:
+        override_current_frame = False
 
     col = lib_state.get_active_collection()
     if col is None:
@@ -110,7 +114,7 @@ def run_solve(override_current_frame=None):
     # Set 'override current frame' value.
     tab = lib_col_state.get_solver_tab_from_collection(col)
     prev_value = None
-    if override_current_frame is not None:
+    if override_current_frame is True:
         prev_value = __get_override_current_frame_value(col, tab)
         __set_override_current_frame_value(col, layout, tab, override_current_frame)
 
@@ -124,7 +128,7 @@ def run_solve(override_current_frame=None):
     )
 
     # Restore previous value.
-    if override_current_frame is not None:
+    if override_current_frame is True:
         __set_override_current_frame_value(col, layout, tab, prev_value)
     return
 
@@ -137,7 +141,13 @@ def run_solve_on_current_frame():
     undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
     undo_id += ' '
     undo_id += str(uuid.uuid4())
-    with undo_utils.undo_chunk_context(undo_id):
+    with tools_utils.tool_context(use_undo_chunk=True,
+                                  undo_chunk_name=undo_id,
+                                  restore_current_frame=False,
+                                  pre_update_frame=False,
+                                  post_update_frame=False,
+                                  use_dg_evaluation_mode=True,
+                                  disable_viewport=False):
         run_solve(override_current_frame=True)
     return
 
@@ -150,7 +160,13 @@ def run_solve_on_all_frames():
     undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
     undo_id += ' '
     undo_id += str(uuid.uuid4())
-    with undo_utils.undo_chunk_context(undo_id):
+    with tools_utils.tool_context(use_undo_chunk=True,
+                                  undo_chunk_name=undo_id,
+                                  restore_current_frame=False,
+                                  pre_update_frame=False,
+                                  post_update_frame=False,
+                                  use_dg_evaluation_mode=True,
+                                  disable_viewport=False):
         run_solve(override_current_frame=False)
     return
 
@@ -159,5 +175,10 @@ def open_window():
     """
     Open the Solver UI window.
     """
+    col = lib_state.get_active_collection()
+    if col is None:
+        msg = 'No active Collection found, creating new Collection...'
+        LOG.warn(msg)
+        lib_col.create_collection()
     solver_window.main()
     return

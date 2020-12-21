@@ -19,6 +19,8 @@
 Object Browser widget.
 """
 
+import time
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -47,14 +49,6 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def _populateWidgetsEnabled(widgets):
-    col = lib_state.get_active_collection()
-    enabled = col is not None
-    for widget in widgets:
-        widget.setEnabled(enabled)
-    return
-
-
 def _lookupUINodesFromIndexes(indexes, model):
     """
     Find the UI nodes, from the list of Qt indexes.
@@ -80,6 +74,7 @@ def _lookupUINodesFromIndexes(indexes, model):
 class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
 
     def __init__(self, parent=None, *args, **kwargs):
+        s = time.time()
         super(ObjectBrowserWidget, self).__init__(
             parent=parent, *args, **kwargs)
 
@@ -88,9 +83,9 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.createToolButtons()
         self.createTreeView()
 
-        self.dataChanged.connect(self.updateModel)
-
         self.callback_manager = maya_callbacks.CallbackManager()
+        e = time.time()
+        LOG.debug('ObjectWidget init: %r seconds', e - s)
         return
 
     def __del__(self):
@@ -159,11 +154,10 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.treeView.setColumnHidden(column, hidden)
         return
 
-    def populateModel(self, model):
+    def populateModel(self, model, col):
         valid = uiutils.isValidQtObject(model)
         if valid is False:
             return
-        col = lib_state.get_active_collection()
         mkr_list = []
         show_cam = const.OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE
         show_mkr = const.OBJECT_TOGGLE_MARKER_DEFAULT_VALUE
@@ -185,8 +179,6 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         mkr_list = set()
         bnd_list = set()
 
-        text = 'Camera {cam} | Markers {mkr} | Bundles {bnd}'
-
         col = lib_state.get_active_collection()
         if col is not None:
             marker_list = col.get_marker_list()
@@ -203,7 +195,9 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
                     bnd_node = bnd.get_node()
                     bnd_list.add(bnd_node)
 
-        text = text.format(
+        text = (
+            'Camera {cam} | Markers {mkr} | Bundles {bnd}'
+        ).format(
             cam=len(cam_list),
             mkr=len(mkr_list),
             bnd=len(bnd_list),
@@ -245,14 +239,20 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         if is_running is True:
             return
 
-        self.populateModel(self.model)
-        valid = uiutils.isValidQtObject(self.treeView)
-        if valid is False:
+        col = lib_state.get_active_collection()
+        if col is None:
             return
-        self.treeView.expandAll()
+
+        self.populateModel(self.model, col)
+        nodebrowser_utils._expand_node(
+            self.treeView,
+            self.treeView.model(),
+            self.treeView.rootIndex(),
+            expand=True,
+            recurse=True)
 
         widgets = [self]
-        _populateWidgetsEnabled(widgets)
+        nodebrowser_utils._populateWidgetsEnabled(col, widgets)
 
         block = self.blockSignals(True)
         self.viewUpdated.emit()
@@ -274,23 +274,13 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             return
         lib_marker.add_markers_to_collection(mkr_list, col)
 
-        def update_func():
-            if uiutils.isValidQtObject(self) is False:
-                return
-            self.dataChanged.emit()
-            self.viewUpdated.emit()
-            return
-
         # Add Callbacks
         callback_manager = self.callback_manager
         if callback_manager is not None:
             lib_marker.add_callbacks_to_markers(
                 mkr_list,
-                update_func,
                 callback_manager
             )
-
-        update_func()
 
         # Restore selection.
         lib_maya_utils.set_scene_selection(sel)
@@ -388,8 +378,16 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             deselect_indexes,
             self.filterModel
         )
-        lib_maya_utils.add_scene_selection(select_nodes)
-        lib_maya_utils.remove_scene_selection(deselect_nodes)
+        if self.isActiveWindow() is True:
+            # Only allow Maya selection changes when the user has the
+            # UI focused. This breaks the Maya and Qt selection
+            # callback cycle.
+            try:
+                mmapi.set_solver_running(True)  # disable selection callback.
+                lib_maya_utils.add_scene_selection(select_nodes)
+                lib_maya_utils.remove_scene_selection(deselect_nodes)
+            finally:
+                mmapi.set_solver_running(False)  # enable selection callback
         return
 
     @QtCore.Slot(bool)

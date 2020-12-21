@@ -54,9 +54,35 @@ autodoc_mock_imports = [
     'maya.api.OpenMayaAnim',
 ]
 
+# Class names that are sub-classed in our code, that we must mock.
+autodoc_mock_classnames = {
+    'QWidget',
+    'QAbstractItemModel',
+    'QAbstractTableModel',
+    'QAbstractListModel',
+    'QStyledItemDelegate',
+}
+
 if HAS_MOCK is True:
+    # Mock sub-class that will create return new mock sub-classes for
+    # specific class names. This is to stop sub-classes from causing auto-
+    # doc errors when using classes that cannot exist in the Travis CI context
+    # (such as 'maya.cmds').
+    #
+    # https://stackoverflow.com/questions/38377336/mock-modules-and-subclasses-typeerror-error-when-calling-the-metaclass-bases
+    #
+    class MyCustomMock(mock.Mock):
+        @classmethod
+        def __getattr__(cls, name):
+            obj = None
+            if name in autodoc_mock_classnames:
+                obj = mock.Mock
+            else:
+                obj = MyCustomMock()
+            return obj
+
     for mod_name in autodoc_mock_imports:
-        sys.modules[mod_name] = mock.Mock()
+        sys.modules[mod_name] = MyCustomMock()
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -75,6 +101,7 @@ extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
+    # 'sphinx.ext.autosectionlabel',
 ]
 
 # autodoc options.

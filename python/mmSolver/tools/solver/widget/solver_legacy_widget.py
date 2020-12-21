@@ -22,6 +22,8 @@ This widget holds the older 'legacy' solver, which contains solver
 steps as a TableView for users to manipulate.
 """
 
+import time
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -60,6 +62,7 @@ class SolverLegacyWidget(QtWidgets.QWidget,
     dataChanged = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
+        s = time.time()
         super(SolverLegacyWidget, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
@@ -76,6 +79,8 @@ class SolverLegacyWidget(QtWidgets.QWidget,
 
         # Ensure the model is updated when data is changed.
         self.dataChanged.connect(self.updateModel)
+        e = time.time()
+        LOG.debug('SolverLegacyWidget init: %r seconds', e - s)
         return
 
     def createTableView(self):

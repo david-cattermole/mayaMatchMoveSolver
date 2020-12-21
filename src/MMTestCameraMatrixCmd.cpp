@@ -23,8 +23,9 @@
  * success = maya.cmds.mmTestCameraMatrix('myCameraTransform', 'myCameraShape')
  */
 
-//
+// Internal
 #include <MMTestCameraMatrixCmd.h>
+#include <core/bundleAdjust_defines.h>
 #include <mayaUtils.h>
 
 // STL
@@ -137,6 +138,7 @@ MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
 //                     error is caught using a "catch" statement.
 //
     MStatus status = MStatus::kSuccess;
+    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     // DBG("MMTestCameraMatrixCmd::doIt()");
 
     // Read all the arguments.
@@ -154,14 +156,14 @@ MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
     // Maya World Matrix
     MMatrix worldMatrix_maya;
     Attr matrixAttr = m_camera->getMatrixAttr();
-    status = matrixAttr.getValue(worldMatrix_maya);
+    status = matrixAttr.getValue(worldMatrix_maya, timeEvalMode);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     worldMatrix_maya = worldMatrix_maya.inverse();
     MMatrix value_maya = worldMatrix_maya * projMatrix_maya;
 
     // MM Solver World Projection Matrix
     MMatrix value;
-    m_camera->getWorldProjMatrix(value);
+    m_camera->getWorldProjMatrix(value, timeEvalMode);
 
     // Compare Maya verses MM Solver projection matrix
     double tolerance = 1.0e-4;  // acceptable error margin.

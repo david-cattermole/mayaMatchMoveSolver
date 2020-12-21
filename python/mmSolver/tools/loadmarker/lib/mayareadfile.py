@@ -21,7 +21,6 @@ Module for reading marker files.
 This should be used by end-users, not the internal modules.
 """
 
-import math
 import os
 
 import maya.cmds
@@ -322,8 +321,9 @@ def __set_node_data(mkr, bnd, mkr_data,
 def create_nodes(mkr_data_list,
                  cam=None,
                  mkr_grp=None,
-                 with_bundles=True,
-                 load_bundle_position=True,
+                 col=None,
+                 with_bundles=None,
+                 load_bundle_position=None,
                  camera_field_of_view=None):
     """
     Create Markers for all given MarkerData objects
@@ -339,6 +339,9 @@ def create_nodes(mkr_data_list,
                     be created under.
     :type mkr_grp: MarkerGroup
 
+    :param col: Collection to add Markers to.
+    :type col: Collection or None
+
     :param with_bundles: Create a bundle for each Marker.
     :type with_bundles: bool
 
@@ -352,8 +355,13 @@ def create_nodes(mkr_data_list,
     :returns: List of Markers.
     :rtype: [Marker, ..]
     """
+    if with_bundles is None:
+        with_bundles = True
+    if load_bundle_position is None:
+        load_bundle_position = True
     assert isinstance(cam, mmapi.Camera)
     assert isinstance(mkr_grp, mmapi.MarkerGroup)
+    assert col is None or isinstance(col, mmapi.Collection)
     assert isinstance(with_bundles, bool)
     assert isinstance(load_bundle_position, bool)
     assert camera_field_of_view is None \
@@ -387,6 +395,11 @@ def create_nodes(mkr_data_list,
                 overscan_x, overscan_y
             )
             mkr_list.append(mkr)
+
+    if len(mkr_list) > 0 and col is not None:
+        assert isinstance(col, mmapi.Collection)
+        col.add_marker_list(mkr_list)
+
     if len(mkr_nodes) > 0:
         maya.cmds.select(mkr_nodes, replace=True)
     else:
@@ -487,7 +500,7 @@ def _update_node(mkr, bnd, mkr_data,
 
 
 def update_nodes(mkr_list, mkr_data_list,
-                 load_bundle_position=True,
+                 load_bundle_position=None,
                  camera_field_of_view=None):
     """
     Update the given mkr_list with data from mkr_data_list.
@@ -509,6 +522,8 @@ def update_nodes(mkr_list, mkr_data_list,
     :returns: List of Marker objects that were changed.
     :rtype: [Marker, ..]
     """
+    if load_bundle_position is None:
+        load_bundle_position = True
     assert isinstance(mkr_list, (list, tuple, set))
     assert isinstance(mkr_data_list, (list, tuple, set))
     assert isinstance(load_bundle_position, bool)
@@ -539,9 +554,9 @@ def update_nodes(mkr_list, mkr_data_list,
         bnd = mkr.get_bundle()
         mkr_data = mkr_data_list[0]
         cam_shp = cam.get_shape_node()
+        fallback_overscan = (1.0, 1.0)
         overscan_x, overscan_y = overscan_per_camera.get(
-            cam_shp,
-            (1.0, 1.0)
+            cam_shp, fallback_overscan
         )
         _update_node(
             mkr, bnd, mkr_data,
@@ -562,8 +577,9 @@ def update_nodes(mkr_list, mkr_data_list,
             cam = mkr.get_camera()
             bnd = mkr.get_bundle()
             cam_shp = cam.get_shape_node()
+            fallback_overscan = (1.0, 1.0)
             overscan_x, overscan_y = overscan_per_camera.get(
-                cam_shp, (1.0, 1.0)
+                cam_shp, fallback_overscan,
             )
             _update_node(
                 mkr, bnd, mkr_data,

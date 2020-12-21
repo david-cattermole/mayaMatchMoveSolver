@@ -487,6 +487,43 @@ To run the tool, use this Python command:
     import mmSolver.tools.reparent.tool as tool
     tool.unparent_to_world()
 
+.. _remove-solver-nodes-tool-ref:
+
+Remove Solver Nodes
+-------------------
+
+Remove Solver Nodes tool allows for the removal of 
+some or all nodes related to the matchmoveSolver 
+plugin, allowing for a clean scene to be prepped 
+to passed to other departments/vendors.
+
+.. figure:: images/tools_remove_solver_nodes_ui.png
+    :alt: Remove Solver Nodes UI
+    :align: center
+    :width: 40%
+
+Usage:
+
+1) Run tool.
+
+   - A UI will open.
+
+2) Select what type of nodes you wish to remove.
+
+3) Click 'Clean'.
+
+Note that if there are other nodes constrained or 
+connected in some way to the marker or bundle 
+nodes they should be cleaned or baked before 
+removal.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.removesolvernodes.tool as tool
+    tool.main()
+
 .. _create-remove-controller-tool-ref:
 
 Create / Remove Controller

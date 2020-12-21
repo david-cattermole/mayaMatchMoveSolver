@@ -497,7 +497,7 @@ some or all nodes related to the matchmoveSolver
 plugin, allowing for a clean scene to be prepped 
 to passed to other departments/vendors.
 
-.. figure:: images/tools_remove_solver_nodes_ui.png.png
+.. figure:: images/tools_remove_solver_nodes_ui.png
     :alt: Remove Solver Nodes UI
     :align: center
     :width: 40%

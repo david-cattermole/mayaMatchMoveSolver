@@ -148,9 +148,9 @@ s7_box = [[0.0, 1.0, 0.0],
 s7_box_count = 5
 
 
-class MarkerBundleShape(omui.MPxLocatorNode):
+class MMMarkerBundleShape(omui.MPxLocatorNode):
     id = om.MTypeId(0x70007)
-    drawDbClassification = "drawdb/geometry/MarkerBundleShape"
+    drawDbClassification = "drawdb/geometry/MMMarkerBundleShape"
     drawRegistrantId = "MarkerBundleShapeNodePlugin"
 
     shapes = 0
@@ -160,14 +160,14 @@ class MarkerBundleShape(omui.MPxLocatorNode):
 
     @staticmethod
     def creator():
-        return MarkerBundleShape()
+        return MMMarkerBundleShape()
 
     @staticmethod
     def initialize():
         nAttr = om.MFnNumericAttribute()
 
         # shapes attribute
-        MarkerBundleShape.shapes = nAttr.create(
+        MMMarkerBundleShape.shapes = nAttr.create(
             "Shapes", "shapes", om.MFnNumericData.kInt, 1)
         nAttr.setMin(0)
         nAttr.readable = True
@@ -175,10 +175,10 @@ class MarkerBundleShape(omui.MPxLocatorNode):
         nAttr.keyable = False
         nAttr.storable = True
         nAttr.channelBox = True
-        MarkerBundleShape.addAttribute(MarkerBundleShape.shapes)
+        MMMarkerBundleShape.addAttribute(MMMarkerBundleShape.shapes)
 
         # scale attribute
-        MarkerBundleShape.scale = nAttr.create(
+        MMMarkerBundleShape.scale = nAttr.create(
             "Scale", "scale", om.MFnNumericData.kFloat, 1.0)
         nAttr.setMin(0.0)
         nAttr.readable = True
@@ -186,10 +186,10 @@ class MarkerBundleShape(omui.MPxLocatorNode):
         nAttr.keyable = False
         nAttr.storable = True
         nAttr.channelBox = True
-        MarkerBundleShape.addAttribute(MarkerBundleShape.scale)
+        MMMarkerBundleShape.addAttribute(MMMarkerBundleShape.scale)
 
         # line width attribute
-        MarkerBundleShape.line_width = nAttr.create(
+        MMMarkerBundleShape.line_width = nAttr.create(
             "LineWidth", "lw", om.MFnNumericData.kFloat, 1.0)
         nAttr.setMin(1.0)
         nAttr.setMax(10.0)
@@ -198,10 +198,10 @@ class MarkerBundleShape(omui.MPxLocatorNode):
         nAttr.keyable = False
         nAttr.storable = True
         nAttr.channelBox = True
-        MarkerBundleShape.addAttribute(MarkerBundleShape.line_width)
+        MMMarkerBundleShape.addAttribute(MMMarkerBundleShape.line_width)
 
         # alpha attribute
-        MarkerBundleShape.alpha = nAttr.create(
+        MMMarkerBundleShape.alpha = nAttr.create(
             "Alpha", "alpha", om.MFnNumericData.kFloat, 1.0)
         nAttr.setMin(0.0)
         nAttr.setMax(1.0)
@@ -210,7 +210,7 @@ class MarkerBundleShape(omui.MPxLocatorNode):
         nAttr.keyable = False
         nAttr.storable = True
         nAttr.channelBox = True
-        MarkerBundleShape.addAttribute(MarkerBundleShape.alpha)
+        MMMarkerBundleShape.addAttribute(MMMarkerBundleShape.alpha)
 
     def __init__(self):
         omui.MPxLocatorNode.__init__(self)
@@ -289,10 +289,10 @@ class MarkerBundleShapeDrawOverride(omr.MPxDrawOverride):
         global dag_node
         dag_node = obj_path.node()
 
-        self.shapes = om.MPlug(dag_node, MarkerBundleShape.shapes).asInt()
-        self.scale = om.MPlug(dag_node, MarkerBundleShape.scale).asFloat()
-        self.line_width = om.MPlug(dag_node, MarkerBundleShape.line_width).asFloat()
-        self.alpha = om.MPlug(dag_node, MarkerBundleShape.alpha).asFloat()
+        self.shapes = om.MPlug(dag_node, MMMarkerBundleShape.shapes).asInt()
+        self.scale = om.MPlug(dag_node, MMMarkerBundleShape.scale).asFloat()
+        self.line_width = om.MPlug(dag_node, MMMarkerBundleShape.line_width).asFloat()
+        self.alpha = om.MPlug(dag_node, MMMarkerBundleShape.alpha).asFloat()
 
         # Retrieve data cache (create if does not exist)
         data = old_data
@@ -493,18 +493,18 @@ def initializePlugin(obj):
     try:
         plugin.registerNode(
             "mmMarkerBundleShape",
-            MarkerBundleShape.id,
-            MarkerBundleShape.creator,
-            MarkerBundleShape.initialize,
+            MMMarkerBundleShape.id,
+            MMMarkerBundleShape.creator,
+            MMMarkerBundleShape.initialize,
             om.MPxNode.kLocatorNode,
-            MarkerBundleShape.drawDbClassification)
+            MMMarkerBundleShape.drawDbClassification)
     except:
         sys.stderr.write("Failed to register node\n")
         raise
     try:
         omr.MDrawRegistry.registerDrawOverrideCreator(
-            MarkerBundleShape.drawDbClassification,
-            MarkerBundleShape.drawRegistrantId,
+            MMMarkerBundleShape.drawDbClassification,
+            MMMarkerBundleShape.drawRegistrantId,
             MarkerBundleShapeDrawOverride.creator)
     except:
         sys.stderr.write("Failed to register override\n")
@@ -514,14 +514,14 @@ def initializePlugin(obj):
 def uninitializePlugin(obj):
     plugin = om.MFnPlugin(obj)
     try:
-        plugin.deregisterNode(MarkerBundleShape.id)
+        plugin.deregisterNode(MMMarkerBundleShape.id)
     except:
         sys.stderr.write("Failed to deregister node\n")
         pass
     try:
         omr.MDrawRegistry.deregisterDrawOverrideCreator(
-            MarkerBundleShape.drawDbClassification,
-            MarkerBundleShape.drawRegistrantId)
+            MMMarkerBundleShape.drawDbClassification,
+            MMMarkerBundleShape.drawRegistrantId)
     except:
         sys.stderr.write("Failed to deregister override\n")
         pass

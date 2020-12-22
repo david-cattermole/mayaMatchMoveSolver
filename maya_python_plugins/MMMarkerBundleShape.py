@@ -149,7 +149,7 @@ s7_box_count = 5
 
 
 class MMMarkerBundleShape(omui.MPxLocatorNode):
-    id = om.MTypeId(0x70007)
+    id = om.MTypeId(0x0012F18C)
     drawDbClassification = "drawdb/geometry/MMMarkerBundleShape"
     drawRegistrantId = "MarkerBundleShapeNodePlugin"
 

@@ -311,6 +311,8 @@ endfunction()
 
 
 if (BUILD_PLUGIN)
+    add_subdirectory(maya_python_plugins)
+
     # 'mmSolver' maya plugin library
     add_library(mmSolver SHARED ${SOURCE_FILES})
     target_include_directories(mmSolver

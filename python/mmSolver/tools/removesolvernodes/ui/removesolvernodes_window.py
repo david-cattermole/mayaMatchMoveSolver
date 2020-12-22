@@ -50,7 +50,7 @@ class RemoveSolverNodesWindow(BaseWindow):
 
         self.applyBtn.clicked.connect(self.clean)
         self.resetBtn.clicked.connect(self.reset_options)
-        # self.helpBtn.clicked.connect(self.help)
+        self.helpBtn.clicked.connect(self.help)
 
         # Hide irrelevant stuff
         self.baseHideMenuBar()
@@ -94,7 +94,7 @@ class RemoveSolverNodesWindow(BaseWindow):
 
     def help(self):
         src = helputils.get_help_source()
-        page = 'tools.html#remove-solver-nodes'
+        page = 'tools_generaltools.html#remove-solver-nodes'
         helputils.open_help_in_browser(page=page, help_source=src)
         return
 

@@ -58,6 +58,11 @@ if (BUILD_QT_UI)
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/raycastmarker/ui/ui_raycastmarker_layout.py
             )
 
+    add_ui_compile("removesolvernodes"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/removesolvernodes/ui/removesolvernodes_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/removesolvernodes/ui/ui_removesolvernodes_layout.py
+            )
+
     add_ui_compile("smoothkeyframes"
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/smoothkeyframes/ui/smoothkeys_layout.ui
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/smoothkeyframes/ui/ui_smoothkeys_layout.py

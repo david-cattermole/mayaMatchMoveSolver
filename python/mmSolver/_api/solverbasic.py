@@ -74,6 +74,28 @@ class SolverBasic(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_eval_complex_graphs(self):
+        """
+        Get 'Evaluate Complex Node Graphs' value.
+
+        :rtype: bool
+        """
+        return self._data.get(
+            'eval_complex_node_graphs',
+            const.SOLVER_STD_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE)
+
+    def set_eval_complex_graphs(self, value):
+        """
+        Set 'Evaluate Complex Node Graph' value.
+
+        :param value: Value to be set.
+        :type value: bool or int or long
+        """
+        assert isinstance(value, (bool, int, long))
+        self._data['eval_complex_node_graphs'] = bool(value)
+
+    ############################################################################
+
     def get_use_single_frame(self):
         """
         Get Use Single Frame value.
@@ -260,6 +282,7 @@ class SolverBasic(solverbase.SolverBase):
         anim_iter_num = self.get_anim_iteration_num()
         lineup_iter_num = self.get_lineup_iteration_num()
         use_euler_filter = self._use_euler_filter
+        eval_complex_graphs = self.get_eval_complex_graphs()
         precomputed_data = self.get_precomputed_data()
 
         # Pre-calculate the 'affects' relationship.
@@ -292,6 +315,10 @@ class SolverBasic(solverbase.SolverBase):
             for i, frm in enumerate(frame_list):
                 is_first_frame = i == 0
                 one_frame_list = [frm]
+                time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
+                if eval_complex_graphs is True:
+                    time_eval_mode = const.TIME_EVAL_MODE_SET_TIME
+
                 sol = solverstep.SolverStep()
                 sol.set_max_iterations(anim_iter_num)
                 sol.set_frame_list(one_frame_list)
@@ -300,6 +327,7 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
                 sol.set_use_smoothness(not is_first_frame)
                 sol.set_use_stiffness(not is_first_frame)
+                sol.set_time_eval_mode(time_eval_mode)
                 sol.set_precomputed_data(precomputed_data)
 
                 generator = api_compile.compile_solver_with_cache(

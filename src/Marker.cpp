@@ -30,6 +30,7 @@
 
 #include <memory>
 
+#include <core/bundleAdjust_defines.h>
 #include <mayaUtils.h>
 #include <Camera.h>
 #include <Bundle.h>
@@ -119,18 +120,20 @@ Attr &Marker::getPosYAttr() {
     return m_py;
 }
 
-MStatus Marker::getMatrix(MMatrix &value, const MTime &time) {
-    return m_matrix.getValue(value, time);
+MStatus Marker::getMatrix(MMatrix &value, const MTime &time,
+                          const int timeEvalMode) {
+    return m_matrix.getValue(value, time, timeEvalMode);
 }
 
-MStatus Marker::getMatrix(MMatrix &value) {
-    return m_matrix.getValue(value);
+MStatus Marker::getMatrix(MMatrix &value, const int timeEvalMode) {
+    return m_matrix.getValue(value, timeEvalMode);
 }
 
-MStatus Marker::getPos(double &x, double &y, double &z, const MTime &time) {
+MStatus Marker::getPos(double &x, double &y, double &z, const MTime &time,
+                       const int timeEvalMode) {
     MStatus status;
     MMatrix matrix;
-    status = Marker::getMatrix(matrix, time);
+    status = Marker::getMatrix(matrix, time, timeEvalMode);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     x = matrix(3, 0);
     y = matrix(3, 1);
@@ -138,10 +141,11 @@ MStatus Marker::getPos(double &x, double &y, double &z, const MTime &time) {
     return status;
 }
 
-MStatus Marker::getPos(MPoint &point, const MTime &time) {
+MStatus Marker::getPos(MPoint &point, const MTime &time,
+                       const int timeEvalMode) {
     MStatus status;
     MMatrix matrix;
-    status = Marker::getMatrix(matrix, time);
+    status = Marker::getMatrix(matrix, time, timeEvalMode);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     point.x = matrix(3, 0);
     point.y = matrix(3, 1);
@@ -151,39 +155,42 @@ MStatus Marker::getPos(MPoint &point, const MTime &time) {
     return status;
 }
 
-MStatus Marker::getPos(double &x, double &y, double &z) {
+MStatus Marker::getPos(double &x, double &y, double &z,
+                       const int timeEvalMode) {
     MTime time = MAnimControl::currentTime();
-    MStatus status = Marker::getPos(x, y, z, time);
+    MStatus status = Marker::getPos(x, y, z, time, timeEvalMode);
     return status;
 }
 
-MStatus Marker::getPos(MPoint &point) {
+MStatus Marker::getPos(MPoint &point, const int timeEvalMode) {
     MTime time = MAnimControl::currentTime();
-    MStatus status = Marker::getPos(point, time);
+    MStatus status = Marker::getPos(point, time, timeEvalMode);
     return status;
 }
 
-MStatus Marker::getEnable(bool &value, const MTime &time) {
+MStatus Marker::getEnable(bool &value, const MTime &time,
+                          const int timeEvalMode) {
     MStatus status;
     MPlug plug = m_enable.getPlug();
     if (plug.isNull() == true) {
         value = true;
         status = MS::kSuccess;
     } else {
-        status = m_enable.getValue(value, time);
+        status = m_enable.getValue(value, time, timeEvalMode);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
 
-MStatus Marker::getWeight(double &value, const MTime &time) {
+MStatus Marker::getWeight(double &value, const MTime &time,
+                          const int timeEvalMode) {
     MStatus status;
     MPlug plug = m_weight.getPlug();
     if (plug.isNull() == true) {
         value = 1.0;
         status = MS::kSuccess;
     } else {
-        status = m_weight.getValue(value, time);
+        status = m_weight.getValue(value, time, timeEvalMode);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;

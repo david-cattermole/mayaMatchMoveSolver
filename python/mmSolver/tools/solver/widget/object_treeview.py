@@ -73,7 +73,7 @@ class ObjectTreeView(QtWidgets.QTreeView):
         tools.select_both_markers_and_bundles()
         return
 
-    def rename_marker_bundles():
+    def rename_marker_bundles(self):
         node_list = _get_selected_maya_nodes(self)
         LOG.debug("Rename Markers and Bundles: %r", node_list)
         import mmSolver.tools.markerbundlerename.tool as tool

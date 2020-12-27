@@ -109,6 +109,8 @@ int countUpNumberOfErrors(const MarkerPtrList markerList,
     numberOfAttrStiffnessErrors = 0;
     numberOfAttrSmoothnessErrors = 0;
 
+    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+
     // Get all the marker data
     for (MarkerPtrListCIt mit = markerList.cbegin();
          mit != markerList.cend();
@@ -118,11 +120,11 @@ int countUpNumberOfErrors(const MarkerPtrList markerList,
             MTime frame = frameList[j];
 
             bool enable = false;
-            status = marker->getEnable(enable, frame);
+            status = marker->getEnable(enable, frame, timeEvalMode);
             CHECK_MSTATUS_AND_RETURN(status, numberOfMarkerErrors);
 
             double weight = 0.0;
-            status = marker->getWeight(weight, frame);
+            status = marker->getWeight(weight, frame, timeEvalMode);
             CHECK_MSTATUS_AND_RETURN(status, numberOfMarkerErrors);
 
             if ((enable == true) && (weight > 0.0)) {
@@ -154,13 +156,16 @@ int countUpNumberOfErrors(const MarkerPtrList markerList,
                 // Get Marker Position.
                 MMatrix cameraWorldProjectionMatrix;
                 CameraPtr camera = marker->getCamera();
-                status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame);
-                double filmBackWidth = camera->getFilmbackWidthValue(frame);
-                double filmBackHeight = camera->getFilmbackHeightValue(frame);
+                status = camera->getWorldProjMatrix(
+                    cameraWorldProjectionMatrix, frame, timeEvalMode);
+                double filmBackWidth = camera->getFilmbackWidthValue(
+                    frame, timeEvalMode);
+                double filmBackHeight = camera->getFilmbackHeightValue(
+                    frame, timeEvalMode);
                 double filmBackInvAspect = filmBackHeight / filmBackWidth;
                 CHECK_MSTATUS(status);
                 MPoint marker_pos;
-                status = marker->getPos(marker_pos, frame);
+                status = marker->getPos(marker_pos, frame, timeEvalMode);
                 CHECK_MSTATUS(status);
                 marker_pos = marker_pos * cameraWorldProjectionMatrix;
                 marker_pos.cartesianize();
@@ -204,7 +209,7 @@ int countUpNumberOfErrors(const MarkerPtrList markerList,
         // add stiffness to the solver unless it needs
         // to be calculated.
         AttrPtr weightAttr = stiffAttrs->weightAttr;
-        weightAttr->getValue(stiffValue);
+        weightAttr->getValue(stiffValue, timeEvalMode);
         bool useStiffness = stiffValue > 0.0;
         if (useStiffness) {
             numberOfAttrStiffnessErrors++;
@@ -221,7 +226,7 @@ int countUpNumberOfErrors(const MarkerPtrList markerList,
         // add smoothness to the solver unless it needs
         // to be calculated.
         AttrPtr weightAttr = smoothAttrs->weightAttr;
-        weightAttr->getValue(smoothValue);
+        weightAttr->getValue(smoothValue, timeEvalMode);
         bool useSmoothness = smoothValue > 0.0;
         if (useSmoothness) {
             numberOfAttrSmoothnessErrors++;
@@ -424,10 +429,7 @@ void findMarkerToAttributeRelationship(const MarkerPtrList markerList,
         cmd += "nodeaffects.find_plugs_affecting_transform(";
         cmd += "\"";
         cmd += bundleName;
-        cmd += "\", \"";
-        cmd += camName;
-        cmd += "\"";
-        cmd += ");";
+        cmd += "\", None);";
         // WRN("Running: " + cmd);
         status = MGlobal::executePythonCommand(
             cmd, bundleAffectsResult,

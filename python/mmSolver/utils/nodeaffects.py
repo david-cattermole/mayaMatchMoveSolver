@@ -1,3 +1,20 @@
+# Copyright (C) 2019, 2020 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
 """
 Query DG relationship information.
 
@@ -37,22 +54,26 @@ and attributes.
 
 """
 
+from __future__ import absolute_import
+
+import time
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.node as node_utils
 
 
 LOG = mmSolver.logger.get_logger()
 
-VALID_ATTR_TYPES = [
+VALID_ATTR_TYPES = set([
     'double',
     'doubleLinear',
     'doubleAngle',
     'time',
     'float',
-]
+])
 
-CAMERA_ATTRS = [
+CAMERA_ATTRS = set([
     'nearClipPlane',
     'farClipPlane',
     'focalLength',
@@ -63,10 +84,7 @@ CAMERA_ATTRS = [
     'horizontalFilmOffset',
     'verticalFilmOffset',
     'lensSqueezeRatio',
-]
-
-
-__CACHE = dict()
+])
 
 
 def _get_full_path_plug(plug):
@@ -84,70 +102,183 @@ def _get_full_path_plug(plug):
     attr = maya.cmds.attributeName(plug, long=True)
     node = maya.cmds.ls(node, long=True)[0]
     full_path = node + '.' + attr
-    return full_path
+    return str(full_path)
 
 
-def _clear_query_cache():
-    global __CACHE
-    __CACHE = dict()
-    return
+def _get_upstream_nodes(node_name):
+    node_types = maya.cmds.nodeType(node_name, inherited=True)
+    out_nodes = []
+    if 'dagNode' in node_types:
+        # DAG upstream
+        out_nodes = maya.cmds.listConnections(
+            node_name, source=True, destination=False,
+            plugs=False, shapes=False, connections=False,
+            skipConversionNodes=False) or []
+    else:
+        # DG upstream
+        out_nodes = maya.cmds.listHistory(
+            node_name,
+            allConnections=True,
+            leaf=False,
+            levels=0,
+            pruneDagObjects=False) or []
+    out_nodes = [str(node_utils.get_long_name(n)) for n in out_nodes]
+    return out_nodes
 
 
-def _get_from_query_cache(key):
-    global __CACHE
-    return __CACHE.get(key)
+def _get_connected_nodes(tfm_node):
+    all_nodes = []
+    node_name = tfm_node
+    out_nodes = _get_upstream_nodes(node_name)
+    all_nodes += out_nodes
+    max_iter_count = 9
+    iter_count = 0
+    while len(out_nodes) > 0:
+        iter_count += 1
+        for node_name in list(out_nodes):
+            out_nodes = _get_upstream_nodes(node_name)
+            out_nodes = list(set(out_nodes).difference(all_nodes))
+            all_nodes += out_nodes
+        if iter_count > max_iter_count:
+            msg = ('Gathering connected nodes exceeded %r iterations,'
+                   ' stopping.')
+            LOG.warn(msg, max_iter_count)
+            break
+    return sorted(list(set(all_nodes)))
 
 
-def _add_to_query_cache(key, value):
-    global __CACHE
-    __CACHE[key] = value
-    return
+def __get_and_fill_cache_value(cache, key, func):
+    if cache is None:
+        return func()
+    value = cache.get(key)
+    if value is None:
+        value = func()
+        cache[key] = value
+    return value
+
+
+def _convert_node_to_plugs(node, attr, node_type,
+                           worldspace_cache=None,
+                           type_cache=None):
+    """Logic to decide if this attribute will affect the node."""
+    plugs = set()
+    node_type_plug = '{0}.{1}'.format(node_type, attr)
+
+    if node_type == 'camera':
+        # If the attribute affects the camera projection matrix, then
+        # it's important to us.
+        if attr not in CAMERA_ATTRS:
+            return plugs
+    else:
+        # All other nodes, skip if world space is not affected
+        ws = __get_and_fill_cache_value(
+            worldspace_cache,
+            node_type_plug,
+            lambda: maya.cmds.attributeQuery(attr, node=node, affectsWorldspace=True))
+        if ws is False:
+            return plugs
+
+    node_attr = '{0}.{1}'.format(node, attr)
+    settable = maya.cmds.getAttr(node_attr, settable=True)
+    if settable is True:
+        typ = __get_and_fill_cache_value(
+            type_cache,
+            node_type_plug,
+            lambda: maya.cmds.getAttr(node_attr, type=True))
+        if typ in VALID_ATTR_TYPES:
+            plugs.add(node_attr)
+        return plugs
+
+    # Get plugs connected to this attribute, recursively
+    conn_attrs = maya.cmds.listConnections(
+        node_attr,
+        source=True,
+        destination=False,
+        plugs=True) or []
+    while len(conn_attrs) > 0:
+        node_attr = conn_attrs.pop()
+        node_attr = _get_full_path_plug(node_attr)
+        settable = maya.cmds.getAttr(node_attr, settable=True)
+        if settable is True:
+            attr = node_attr.rpartition('.')[-1]
+            node_type = maya.cmds.nodeType(node)
+            node_type_plug = '{0}.{1}'.format(node_type, attr)
+            typ = __get_and_fill_cache_value(
+                type_cache,
+                node_type_plug,
+                lambda: maya.cmds.getAttr(node_attr, type=True))
+            if typ in VALID_ATTR_TYPES:
+                plugs.add(node_attr)
+            continue
+
+        # Get the plugs that affect this plug.
+        tmp_list = maya.cmds.listConnections(
+            node_attr,
+            source=True,
+            destination=False,
+            plugs=True) or []
+
+        # Filter by valid plug types.
+        for tmp in tmp_list:
+            node_ = tmp.partition('.')[0]
+            attr_ = tmp.partition('.')[-1]
+
+            affects_this_plug = maya.cmds.affects(attr_, node_) or []
+            for attr__ in affects_this_plug:
+                node_attr = node_ + '.' + attr__
+                node_attr = _get_full_path_plug(node_attr)
+                conn_attrs += [node_attr]
+        # Only unique attributes.
+        conn_attrs = list(set(conn_attrs))
+    return plugs
+
+
+def _get_attribute_plugs(nodes):
+    node_type_attrs_cache = dict()
+    worldspace_cache = dict()
+    type_cache = dict()
+    plugs = set()
+    for node in nodes:
+        node_type = maya.cmds.nodeType(node)
+        attrs = __get_and_fill_cache_value(
+            node_type_attrs_cache,
+            node_type,
+            lambda: maya.cmds.listAttr(node, leaf=True, userDefined=False) or [])
+        attrs = set(attrs)
+        for attr in attrs:
+            plugs |= _convert_node_to_plugs(
+                node, attr, node_type,
+                worldspace_cache=worldspace_cache,
+                type_cache=type_cache)
+        user_attrs = maya.cmds.listAttr(node, leaf=True, userDefined=True) or []
+        user_attrs = set(user_attrs).difference(set(attrs))
+        for attr in user_attrs:
+            plugs |= _convert_node_to_plugs(node, attr, node_type)
+    return plugs
 
 
 def find_plugs_affecting_transform(tfm_node, cam_tfm):
     """
     Find plugs that affect the world-matrix transform of the node.
 
+    The 'cam_tfm' argument is for nodes that may be impacted by the
+    screen-space matrix that views the 'tfm_node'.
+
     :param tfm_node: The input node to query.
     :type tfm_node: str
 
-    :param cam_tfm: The camera that should be considered (optional)
+    :param cam_tfm: The camera that should be considered (optional).
     :type cam_tfm: str or None
 
-    :returns: Set of Maya attributes in 'node.attr' string format.
+    :returns:
+        An unordered list of Maya attributes in 'node.attr' string
+        format.
     :rtype: [str, ..]
     """
-    # # Read from cache
-    # #
-    # # TODO: Cache invalidation is very important here. We cannot use the
-    # #  cache if a new object has been added to the Maya scene or for a
-    # #  different run of the solver. Each new solve must trigger a fresh
-    # #  cache. We could do this by adding a new argument 'solve id'
-    # #  and hashing it into the dictionary, which is generated new at
-    # #  the start of each new solver.
-    # plugs = _get_from_query_cache(args)
-    # if plugs is not None:
-    #     return plugs
-    # tfm_node, cam_tfm = args
-
     tfm_node = maya.cmds.ls(tfm_node, long=True)[0]
 
-    # Get all the parents above this bundle
-    parent_nodes = []
-    parents = maya.cmds.listRelatives(
-        tfm_node,
-        parent=True,
-        fullPath=True) or []
-    parent_nodes += parents
-    while len(parents) > 0:
-        parents = maya.cmds.listRelatives(
-            parents,
-            parent=True,
-            fullPath=True) or []
-        parent_nodes += parents
-    nodes = [tfm_node] + parent_nodes
-
     # Get camera related to the given bundle.
+    camera_nodes = []
     if cam_tfm is not None:
         assert maya.cmds.objExists(cam_tfm) is True
         cam_tfm_node = maya.cmds.ls(cam_tfm, long=True)[0]
@@ -155,80 +286,35 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
             cam_tfm,
             shapes=True,
             fullPath=True)[0]
-        if cam_tfm_node not in nodes:
-            nodes.append(cam_tfm_node)
-        if cam_shp_node not in nodes:
-            nodes.append(cam_shp_node)
+        if cam_tfm_node not in camera_nodes:
+            camera_nodes.append(cam_tfm_node)
+        if cam_shp_node not in camera_nodes:
+            camera_nodes.append(cam_shp_node)
 
-    plugs = set()
-    for node in nodes:
-        node_type = maya.cmds.nodeType(node)
-        attrs = maya.cmds.listAttr(node, leaf=True) or []
-        for attr in attrs:
-            # Logic to decide if this attribute will affect the node.
-            ws = maya.cmds.attributeQuery(
-                attr,
-                node=node,
-                affectsWorldspace=True)
-            if node_type == 'camera':
-                # If the attribute affects the camera projection matrix, then
-                # it's important to us.
-                if attr not in CAMERA_ATTRS:
-                    continue
-            else:
-                # All other nodes, skip if world space is not affected
-                if ws is False:
-                    continue
+    # Get all the parents above the nodes.
+    parent_nodes = []
+    get_parent_nodes = camera_nodes + [tfm_node]
+    for node in get_parent_nodes:
+        parents = maya.cmds.listRelatives(
+            node,
+            parent=True,
+            fullPath=True) or []
+        parent_nodes += parents
+        while len(parents) > 0:
+            parents = maya.cmds.listRelatives(
+                parents,
+                parent=True,
+                fullPath=True) or []
+            parent_nodes += parents
+    nodes = [tfm_node] + camera_nodes + parent_nodes
 
-            node_attr = node + '.' + attr
-            settable = maya.cmds.getAttr(node_attr, settable=True)
-            if settable is True:
-                typ = maya.cmds.getAttr(node_attr, type=True)
-                if typ in VALID_ATTR_TYPES:
-                    plugs.add(node_attr)
-                continue
+    conn_nodes = set()
+    for node in list(nodes):
+        conn_nodes |= set(_get_connected_nodes(node))
+    nodes = nodes + list(conn_nodes)
 
-            # Get plugs connected to this attribute, recursively
-            conn_attrs = maya.cmds.listConnections(
-                node_attr,
-                source=True,
-                destination=False,
-                plugs=True) or []
-            while len(conn_attrs) > 0:
-                node_attr = conn_attrs.pop()
-                node_attr = _get_full_path_plug(node_attr)
-                settable = maya.cmds.getAttr(node_attr, settable=True)
-                if settable is True:
-                    typ = maya.cmds.getAttr(node_attr, type=True)
-                    if typ in VALID_ATTR_TYPES:
-                        plugs.add(node_attr)
-                    continue
-
-                # Get the plugs that affect this plug.
-                tmp_list = maya.cmds.listConnections(
-                    node_attr,
-                    source=True,
-                    destination=False,
-                    plugs=True) or []
-
-                # Filter by valid plug types.
-                for tmp in tmp_list:
-                    node_ = tmp.partition('.')[0]
-                    attr_ = tmp.partition('.')[-1]
-
-                    affects_this_plug = maya.cmds.affects(attr_, node_) or []
-                    for attr__ in affects_this_plug:
-                        node_attr = node_ + '.' + attr__
-                        node_attr = _get_full_path_plug(node_attr)
-                        conn_attrs += [node_attr]
-                # Only unique attributes.
-                conn_attrs = list(set(conn_attrs))
-
-    # Only unique plugs.
-    plugs = list(set(plugs))
-
-    # Set into cache.
-    # _add_to_query_cache(args, plugs)
+    plugs = _get_attribute_plugs(nodes)
+    plugs = list(set(plugs))  # Only unique plugs.
     return plugs
 
 
@@ -276,9 +362,6 @@ def sort_into_hierarchy_groups(mkr_list, attr_list):
     This will allow us to solve top-level objects (ie, root level)
     first, before solving children. This will ensure we minimise the
     base before attempting to solve the children.
-
-    TODO: Write this.
-
-    :return:
     """
-    pass
+    # TODO: Write this.
+    raise NotImplementedError

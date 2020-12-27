@@ -25,6 +25,7 @@
 #include <MMReprojectionCmd.h>
 #include <mayaUtils.h>
 #include <Camera.h>
+#include <core/bundleAdjust_defines.h>
 #include <core/bundleAdjust_base.h>
 #include <core/reprojection.h>
 
@@ -378,6 +379,8 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     std::vector<double> horizontalFilmOffsetList;
     std::vector<double> verticalFilmOffsetList;
 
+    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+
     // Query all the input data at once.
     if (m_nodeList.length() == 0 && m_givenWorldPoint == true) {
         // We use the user given world space point argument, rather
@@ -391,16 +394,16 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
             timeList.append(time);
 
             MMatrix camMatrix;
-            status = cameraMatrixAttr.getValue(camMatrix, time);
+            status = cameraMatrixAttr.getValue(camMatrix, time, timeEvalMode);
             camMatrixList.append(camMatrix);
             tfmMatrixList.append(tfmMatrix);
 
             // Possibly Animated
-            focalLength = m_camera.getFocalLengthValue(time);
-            horizontalFilmAperture = m_camera.getFilmbackWidthValue(time);
-            verticalFilmAperture = m_camera.getFilmbackHeightValue(time);
-            horizontalFilmOffset = m_camera.getFilmbackOffsetXValue(time);
-            verticalFilmOffset = m_camera.getFilmbackOffsetYValue(time);
+            focalLength = m_camera.getFocalLengthValue(time, timeEvalMode);
+            horizontalFilmAperture = m_camera.getFilmbackWidthValue(time, timeEvalMode);
+            verticalFilmAperture = m_camera.getFilmbackHeightValue(time, timeEvalMode);
+            horizontalFilmOffset = m_camera.getFilmbackOffsetXValue(time, timeEvalMode);
+            verticalFilmOffset = m_camera.getFilmbackOffsetYValue(time, timeEvalMode);
 
             focalLengthList.push_back(focalLength);
             horizontalFilmApertureList.push_back(horizontalFilmAperture);
@@ -426,17 +429,17 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
 
                 MMatrix camMatrix;
                 MMatrix tfmMatrix;
-                status = cameraMatrixAttr.getValue(camMatrix, time);
-                status = tfmMatrixAttr.getValue(tfmMatrix, time);
+                status = cameraMatrixAttr.getValue(camMatrix, time, timeEvalMode);
+                status = tfmMatrixAttr.getValue(tfmMatrix, time, timeEvalMode);
                 camMatrixList.append(camMatrix);
                 tfmMatrixList.append(tfmMatrix);
 
                 // Possibly Animated
-                focalLength = m_camera.getFocalLengthValue(time);
-                horizontalFilmAperture = m_camera.getFilmbackWidthValue(time);
-                verticalFilmAperture = m_camera.getFilmbackHeightValue(time);
-                horizontalFilmOffset = m_camera.getFilmbackOffsetXValue(time);
-                verticalFilmOffset = m_camera.getFilmbackOffsetYValue(time);
+                focalLength = m_camera.getFocalLengthValue(time, timeEvalMode);
+                horizontalFilmAperture = m_camera.getFilmbackWidthValue(time, timeEvalMode);
+                verticalFilmAperture = m_camera.getFilmbackHeightValue(time, timeEvalMode);
+                horizontalFilmOffset = m_camera.getFilmbackOffsetXValue(time, timeEvalMode);
+                verticalFilmOffset = m_camera.getFilmbackOffsetYValue(time, timeEvalMode);
 
                 focalLengthList.push_back(focalLength);
                 horizontalFilmApertureList.push_back(horizontalFilmAperture);

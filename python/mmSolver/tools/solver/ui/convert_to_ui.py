@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -117,6 +117,9 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
     Convert a list of mmSolver API Attributes into classes to be used
     in the Solver UI.
 
+    :param col: The Collection the Attributes belong to.
+    :param col: Collection
+
     :param attr_list: List of Attributes to convert.
     :type attr_list: [Attribute, ..]
 
@@ -135,7 +138,6 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
     root = attr_nodes.PlugNode('root')
     maya_nodes = dict()
     for attr in attr_list:
-        uuid = attr.get_node_uid()
         attr_state = attr.get_state()
         is_animated = attr_state == mmapi.ATTR_STATE_ANIMATED
         is_static = attr_state == mmapi.ATTR_STATE_STATIC
@@ -146,18 +148,19 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
             continue
         elif is_locked is True and show_lck is False:
             continue
-        maya_node = maya_nodes.get(uuid)
+        full_name = attr.get_node(full_path=True)
+        maya_node = maya_nodes.get(full_name)
         data = {'data': attr, 'collection': col}
         if maya_node is None:
             node_data = dict()
             # Add only the first attribute to the MayaNode
             # object. Other attributes will be added as they come up.
             node_data['data'] = [attr]
-            node_data['uuid'] = uuid
-            name = attr.get_node(full_path=False)
-            maya_node = attr_nodes.MayaNode(name, data=node_data, parent=root)
+            short_name = full_name.rpartition('|')[-1]
+            maya_node = attr_nodes.MayaNode(
+                short_name, data=node_data, parent=root)
             maya_node.setNeverHasChildren(False)
-            maya_nodes[uuid] = maya_node
+            maya_nodes[full_name] = maya_node
         else:
             # Add subsequent attributes to the MayaNode object.
             node_data = maya_node.data()

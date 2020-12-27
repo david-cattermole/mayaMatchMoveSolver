@@ -827,12 +827,12 @@ def compile_solver_with_cache(sol, col, mkr_list, attr_list, withtest, cache):
     >>> cache = mmSolver._api.compile.create_compile_solver_cache()
     >>> compile_solver_with_cache(sol, col, mkr_list, attr_list, withtest, cache)
 
-    Compile unique list of frames to withtest the solver when it changes,
-    for example a marker turns off, then only sample the unique sets of
-    markers. This will reduce the compile/testing time considerably,
-    and because we know there are no changes in the structure or number of
-    errors, we can copy the same mmSolver kwargs multiple times (with the
-    frames argument set differently).
+    Compile unique list of frames to test the solver when it changes,
+    for example when a marker turns off, then only sample the unique
+    sets of markers. This will reduce the compile/testing time
+    considerably, and because we know there are no changes in the
+    structure or number of errors, we can copy the same mmSolver
+    kwargs multiple times (with the frames argument set differently).
 
     :param col: The Collection to compile.
     :type col: Collection
@@ -851,13 +851,19 @@ def compile_solver_with_cache(sol, col, mkr_list, attr_list, withtest, cache):
               second Action is for validation of the solve.
     :rtype: (Action, Action or None)
     """
-    frame_list = sol.get_frame_list()
     if cache is None or withtest is False:
         for action, vaction in sol.compile(col, mkr_list, attr_list,
                                            withtest=withtest):
             yield action, vaction
     else:
+        frame_list = sol.get_frame_list()
+
         # Get frame with lowest number of active markers.
+        #
+        # If we have a list of frames in the current solver, and on
+        # one of the frames there are zero markers, most frames will
+        # solve, except for that one. We must detect this and skip the entire
+        # solve to avoid any invalid solve frames.
         min_num_of_active_mkr_nodes = 999999999
         min_list_of_active_mkr_nodes = []
         for frm in frame_list:

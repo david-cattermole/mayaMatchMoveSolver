@@ -50,12 +50,26 @@
 #include <maya/MCppCompat.h>
 #endif
 
+#include <core/bundleAdjust_defines.h>
 #include <mayaUtils.h>
 #include <Attr.h>
 
 // Turning USE_DG_CONTEXT on seems to slow down running the test suite by
 // approximately 33% (inside 'mayapy', without a GUI).
 #define USE_DG_CONTEXT_IN_GUI 1
+
+
+bool useDgContext(const int timeEvalMode) {
+    MStatus status;
+    MGlobal::MMayaState state = MGlobal::mayaState(&status);
+    CHECK_MSTATUS(status);
+    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
+    bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    if (timeEvalMode == TIME_EVAL_MODE_SET_TIME) {
+        use_dg_ctx = false;
+    }
+    return use_dg_ctx;
+}
 
 
 Attr::Attr() :
@@ -319,15 +333,12 @@ inline double my_trunc(double d){
     return (d > 0) ? std::floor(d) : std::ceil(d);
 }
 
-MStatus Attr::getValue(bool &value, const MTime &time) {
+MStatus Attr::getValue(bool &value, const MTime &time, const int timeEvalMode) {
     MStatus status;
     const bool connected = Attr::isConnected();
     const bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
-
-    MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool use_dg_ctx = useDgContext(timeEvalMode);
 
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
@@ -337,7 +348,7 @@ MStatus Attr::getValue(bool &value, const MTime &time) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         value = my_trunc(curveValue) != 0;
     } else if (connected) {
-        if (use_dg_ctx == true) {
+        if (use_dg_ctx) {
 #if MAYA_API_VERSION >= 20180000
             MDGContext ctx(time);
             MDGContextGuard ctxGuard(ctx);
@@ -364,15 +375,12 @@ MStatus Attr::getValue(bool &value, const MTime &time) {
     return MS::kSuccess;
 }
 
-MStatus Attr::getValue(int &value, const MTime &time) {
+MStatus Attr::getValue(int &value, const MTime &time, const int timeEvalMode) {
     MStatus status;
     const bool connected = Attr::isConnected();
     const bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
-
-    MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool use_dg_ctx = useDgContext(timeEvalMode);
 
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
@@ -382,7 +390,7 @@ MStatus Attr::getValue(int &value, const MTime &time) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         value = (int) curveValue;
     } else if (connected) {
-        if (use_dg_ctx == true) {
+        if (use_dg_ctx) {
 #if MAYA_API_VERSION >= 20180000
             MDGContext ctx(time);
             MDGContextGuard ctxGuard(ctx);
@@ -409,15 +417,12 @@ MStatus Attr::getValue(int &value, const MTime &time) {
     return MS::kSuccess;
 }
 
-MStatus Attr::getValue(short &value, const MTime &time) {
+MStatus Attr::getValue(short &value, const MTime &time, const int timeEvalMode) {
     MStatus status;
     const bool connected = Attr::isConnected();
     const bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
-
-    MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool use_dg_ctx = useDgContext(timeEvalMode);
 
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
@@ -427,7 +432,7 @@ MStatus Attr::getValue(short &value, const MTime &time) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         value = (short) curveValue;
     } else if (connected) {
-        if (use_dg_ctx == true) {
+        if (use_dg_ctx) {
 #if MAYA_API_VERSION >= 20180000
             MDGContext ctx(time);
             MDGContextGuard ctxGuard(ctx);
@@ -454,21 +459,18 @@ MStatus Attr::getValue(short &value, const MTime &time) {
     return MS::kSuccess;
 }
 
-MStatus Attr::getValue(double &value, const MTime &time) {
+MStatus Attr::getValue(double &value, const MTime &time, const int timeEvalMode) {
     MStatus status;
     const bool connected = Attr::isConnected();
     const bool animated = Attr::isAnimated();
     MPlug plug = Attr::getPlug();
-
-    MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool use_dg_ctx = useDgContext(timeEvalMode);
 
     if (animated) {
         MFnAnimCurve curveFn(plug);
         curveFn.evaluate(time, value);
     } else if (connected) {
-        if (use_dg_ctx == true) {
+        if (use_dg_ctx) {
 #if MAYA_API_VERSION >= 20180000
             MDGContext ctx(time);
             MDGContextGuard ctxGuard(ctx);
@@ -498,17 +500,14 @@ MStatus Attr::getValue(double &value, const MTime &time) {
     return MS::kSuccess;
 }
 
-MStatus Attr::getValue(MMatrix &value, const MTime &time) {
+MStatus Attr::getValue(MMatrix &value, const MTime &time, const int timeEvalMode) {
     MStatus status;
     MPlug plug = Attr::getPlug();
-
-    MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
-    const bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
+    const bool use_dg_ctx = useDgContext(timeEvalMode);
 
     // Do we change the behaviour for a dynamic attribute?
     MObject matrixObj;
-    if (use_dg_ctx == true) {
+    if (use_dg_ctx) {
 #if MAYA_API_VERSION >= 20180000
         MDGContext ctx(time);
         MDGContextGuard ctxGuard(ctx);
@@ -537,29 +536,29 @@ MStatus Attr::getValue(MMatrix &value, const MTime &time) {
     return status;
 }
 
-MStatus Attr::getValue(bool &value) {
+MStatus Attr::getValue(bool &value, const int timeEvalMode) {
     MTime time = MAnimControl::currentTime();
-    return Attr::getValue(value, time);
+    return Attr::getValue(value, time, timeEvalMode);
 }
 
-MStatus Attr::getValue(int &value) {
+MStatus Attr::getValue(int &value, const int timeEvalMode) {
     MTime time = MAnimControl::currentTime();
-    return Attr::getValue(value, time);
+    return Attr::getValue(value, time, timeEvalMode);
 }
 
-MStatus Attr::getValue(short &value) {
+MStatus Attr::getValue(short &value, const int timeEvalMode) {
     MTime time = MAnimControl::currentTime();
-    return Attr::getValue(value, time);
+    return Attr::getValue(value, time, timeEvalMode);
 }
 
-MStatus Attr::getValue(double &value) {
+MStatus Attr::getValue(double &value, const int timeEvalMode) {
     MTime time = MAnimControl::currentTime();
-    return Attr::getValue(value, time);
+    return Attr::getValue(value, time, timeEvalMode);
 }
 
-MStatus Attr::getValue(MMatrix &value) {
+MStatus Attr::getValue(MMatrix &value, const int timeEvalMode) {
     MTime time = MAnimControl::currentTime();
-    return Attr::getValue(value, time);
+    return Attr::getValue(value, time, timeEvalMode);
 }
 
 MStatus Attr::setValue(double value, const MTime &time,

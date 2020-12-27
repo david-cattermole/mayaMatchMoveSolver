@@ -75,6 +75,7 @@ struct SolverOptions {
     int robustLossType;
     double robustLossScale;
     int solverType;
+    int timeEvalMode;
     bool acceptOnlyBetter;
 
     // Auto-adjust the input solve objects before solving?

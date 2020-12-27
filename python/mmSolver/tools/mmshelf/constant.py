@@ -29,6 +29,7 @@ CONFIG_FILE_SHELF_MINIMAL_NAME = 'shelf_minimal.json'
 # Suffix for shelf specific config options.
 KEY_SUFFIX_SHELF = '_shelf'
 KEY_SUFFIX_MENU = '_menu'
+KEY_SUFFIX_OPTION_BOX = '_option_box'
 
 # Key names in the config.
 NAME_KEY = 'name'
@@ -41,3 +42,4 @@ POPUP_BUTTON_KEY = 'popup_button'
 CMD_LANG_KEY = 'command_lang'
 CMD_KEY = 'command'
 TEAR_OFF_KEY = 'tearoff'
+OPTBOX_KEY = 'option_box'

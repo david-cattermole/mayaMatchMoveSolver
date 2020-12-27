@@ -34,7 +34,9 @@ from mmSolver._api.collection import (
 )
 from mmSolver._api.execute import (
     createExecuteOptions,
+    create_execute_options,
     ExecuteOptions,
+    ActionState,
     validate,
     execute,
 )
@@ -146,6 +148,11 @@ from mmSolver._api.constant import (
     SOLVER_TYPE_CMINPACK_LMDER,
     SOLVER_TYPE_DEFAULT,
 
+    TIME_EVAL_MODE_DG_CONTEXT,
+    TIME_EVAL_MODE_SET_TIME,
+    TIME_EVAL_MODE_DEFAULT,
+    TIME_EVAL_MODE_LIST,
+
     AUTO_DIFF_TYPE_FORWARD,
     AUTO_DIFF_TYPE_CENTRAL,
     AUTO_DIFF_TYPE_LIST,
@@ -162,6 +169,11 @@ from mmSolver._api.constant import (
     ROBUST_LOSS_TYPE_CAUCHY_VALUE,
     ROBUST_LOSS_TYPE_VALUE_LIST,
     ROBUST_LOSS_TYPE_DEFAULT_VALUE,
+
+    VALIDATE_MODE_PRE_VALIDATE_VALUE,
+    VALIDATE_MODE_AT_RUNTIME_VALUE,
+    VALIDATE_MODE_NONE_VALUE,
+    VALIDATE_MODE_VALUE_LIST,
 
     EVENT_NAME_MARKER_CREATED,
     EVENT_NAME_BUNDLE_CREATED,
@@ -184,6 +196,10 @@ from mmSolver._api.constant import (
     MARKER_USED_HINT_USED_VALUE,
     MARKER_USED_HINT_NOT_USED_VALUE,
     MARKER_USED_HINT_LIST,
+
+    ACTION_STATUS_SUCCESS,
+    ACTION_STATUS_FAILED,
+    ACTION_STATUS_LIST,
 )
 from mmSolver._api.state import (
     is_solver_running,
@@ -229,6 +245,7 @@ __all__ = [
     'Frame',
     'Solver',  # Backwards compatibility
     'Action',
+    'ActionState',
     'SolverBase',
     'SolverStandard',
     'SolverBasic',
@@ -254,6 +271,10 @@ __all__ = [
     'SOLVER_TYPE_CMINPACK_LMDIF',
     'SOLVER_TYPE_CMINPACK_LMDER',
     'SOLVER_TYPE_DEFAULT',
+    'TIME_EVAL_MODE_DG_CONTEXT',
+    'TIME_EVAL_MODE_SET_TIME',
+    'TIME_EVAL_MODE_DEFAULT',
+    'TIME_EVAL_MODE_LIST',
     'AUTO_DIFF_TYPE_FORWARD',
     'AUTO_DIFF_TYPE_CENTRAL',
     'AUTO_DIFF_TYPE_LIST',
@@ -268,6 +289,10 @@ __all__ = [
     'ROBUST_LOSS_TYPE_CAUCHY_VALUE',
     'ROBUST_LOSS_TYPE_VALUE_LIST',
     'ROBUST_LOSS_TYPE_DEFAULT_VALUE',
+    'VALIDATE_MODE_PRE_VALIDATE_VALUE',
+    'VALIDATE_MODE_AT_RUNTIME_VALUE',
+    'VALIDATE_MODE_NONE_VALUE',
+    'VALIDATE_MODE_VALUE_LIST',
     'EVENT_NAME_MARKER_CREATED',
     'EVENT_NAME_BUNDLE_CREATED',
     'EVENT_NAME_COLLECTION_CREATED',
@@ -287,6 +312,9 @@ __all__ = [
     'MARKER_USED_HINT_USED_VALUE',
     'MARKER_USED_HINT_NOT_USED_VALUE',
     'MARKER_USED_HINT_LIST',
+    'ACTION_STATUS_SUCCESS',
+    'ACTION_STATUS_FAILED',
+    'ACTION_STATUS_LIST',
 
     # Exceptions
     'MMException',
@@ -318,7 +346,8 @@ __all__ = [
     'action_to_components',
 
     # Execute
-    'createExecuteOptions',
+    'createExecuteOptions',    # Old function name, to be deprecated in v0.4.0.
+    'create_execute_options',  # New function name
     'execute',
     'validate',
 

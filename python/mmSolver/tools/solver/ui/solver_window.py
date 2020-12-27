@@ -166,7 +166,7 @@ class SolverWindow(BaseWindow):
             edit_menu.addSection('Undo / Redo')
 
         # Undo
-        label = 'Undo (without UI update)'
+        label = 'Undo last command (with disabled viewport)'
         tooltip = ('Undo the Maya scene state, '
                    'without updating the viewport or solver UI')
         action = QtWidgets.QAction(label, edit_menu)
@@ -175,7 +175,7 @@ class SolverWindow(BaseWindow):
         edit_menu.addAction(action)
 
         # Redo
-        label = 'Redo (without UI update)'
+        label = 'Redo last command (with disabled viewport)'
         tooltip = ('Redo the Maya scene state, '
                    'without updating the viewport or solver UI')
         action = QtWidgets.QAction(label, edit_menu)

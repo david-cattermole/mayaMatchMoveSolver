@@ -82,8 +82,7 @@ def compile_function_definition(item, funcs):
     if isinstance(item, basestring):
         func_def = get_function_definition(item, funcs)
         if func_def is None and '---' in item:
-            func_def = {}
-            func_def[const.DIVIDER_KEY] = True
+            func_def = {const.DIVIDER_KEY: True}
             label = item.strip('-')
             label = label.strip()
             if len(label) > 0:
@@ -109,8 +108,7 @@ def lookup_value(data, name, suffix):
     :param suffix: Test the key and suffix.
     :type suffix: str
 
-    :returns:
-    :rtype:
+    :returns: The found value, or None if nothing was found.
     """
     value = data.get(name + suffix, None)
     if value is None:
@@ -123,11 +121,12 @@ def compile_items(items, function_defs):
     Convert a list of items and function definitions in configs, to a
     list of command items.
 
-    :param items:
-    :type items:
+    :param items: The item name paths to look up and create.
+    :type items: [str, ..]
 
-    :param function_defs:
-    :type function_defs:
+    :param function_defs: Function definitions, describing how the item
+         will be created and what it will do.
+    :type function_defs: [{str: any}, ..]
 
     :returns:
     :rtype:
@@ -137,9 +136,6 @@ def compile_items(items, function_defs):
     for item in items:
         item_hierarchy = split_key(item)
 
-        is_first_item = None
-        is_last_item = None
-        item_path = ''
         item_keys = []
         sub_items_to_create = []
         for sub_item_num in range(len(item_hierarchy)):
@@ -266,13 +262,13 @@ def create_item(parents, func_def, is_first_item, is_last_item):
             name = lookup_value(func_def, const.NAME_KEY, key_suffix)
             tooltip = lookup_value(func_def, const.TOOLTIP_KEY, key_suffix)
             divider = lookup_value(func_def, const.DIVIDER_KEY, key_suffix)
-            popup = lookup_value(func_def, const.POPUP_KEY, key_suffix)
             cmdLang = lookup_value(func_def, const.CMD_LANG_KEY, key_suffix)
             command = lookup_value(func_def, const.CMD_KEY, key_suffix)
             if isinstance(command, (list, tuple)):
                 command = str(os.linesep).join(command)
 
-            item = menu_utils.create_menu_item(
+            # Create menu item
+            menu_item = menu_utils.create_menu_item(
                 parent=parent,
                 name=name,
                 tooltip=tooltip,
@@ -281,7 +277,24 @@ def create_item(parents, func_def, is_first_item, is_last_item):
                 divider=divider,
                 subMenu=False,
             )
-            items.append(item)
+            items.append(menu_item)
+
+            # Create option box for menu item
+            option_box = lookup_value(func_def, const.OPTBOX_KEY, key_suffix)
+            if option_box is True:
+                key_suffix = const.KEY_SUFFIX_OPTION_BOX
+                cmdLang = lookup_value(func_def, const.CMD_LANG_KEY, key_suffix)
+                command = lookup_value(func_def, const.CMD_KEY, key_suffix)
+                if isinstance(command, (list, tuple)):
+                    command = str(os.linesep).join(command)
+
+                option_box_item = menu_utils.create_menu_item(
+                    parent=parent,
+                    cmd=command,
+                    cmdLanguage=cmdLang,
+                    optionBox=option_box,
+                )
+                items.append(option_box_item)
         elif popup:
             key_suffix = const.KEY_SUFFIX_MENU
             popupBtn = lookup_value(func_def, const.POPUP_BUTTON_KEY, key_suffix)

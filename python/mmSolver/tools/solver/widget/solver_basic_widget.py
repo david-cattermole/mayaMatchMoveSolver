@@ -79,6 +79,7 @@ class SolverBasicWidget(QtWidgets.QWidget,
 
     viewUpdated = QtCore.Signal()
     dataChanged = QtCore.Signal()
+    evalComplexGraphsChanged = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
         s = time.time()
@@ -88,7 +89,8 @@ class SolverBasicWidget(QtWidgets.QWidget,
         self.frameRange_widget = BasicFrameRangeWidget(self)
         self.frameRange_layout.addWidget(self.frameRange_widget)
 
-        self.advanced_pushButton.setHidden(True)
+        self.evalComplexGraphs_checkBox.toggled.connect(
+            self.evalComplexGraphsValueToggled)
 
         desc = const.SOLVER_BASIC_DESC_DEFAULT
         self.description_label.setText(desc)
@@ -96,8 +98,27 @@ class SolverBasicWidget(QtWidgets.QWidget,
         LOG.debug('SolverBasicWidget init: %r seconds', e - s)
         return
 
+    def getEvalComplexGraphsValue(self, col):
+        value = lib_col_state.get_solver_eval_complex_graphs_from_collection(col)
+        return value
+
+    def setEvalComplexGraphsValue(self, col, value):
+        lib_col_state.set_solver_eval_complex_graphs_on_collection(col, value)
+        return
+
     def updateModel(self):
         self.frameRange_widget.updateModel()
+
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        eval_complex_graphs = self.getEvalComplexGraphsValue(col)
+
+        block = self.blockSignals(True)
+        self.evalComplexGraphs_checkBox.setChecked(eval_complex_graphs)
+        self.blockSignals(block)
+
+        self.setEvalComplexGraphsValue(col, eval_complex_graphs)
         return
 
     def queryInfo(self):
@@ -105,3 +126,13 @@ class SolverBasicWidget(QtWidgets.QWidget,
         col = lib_state.get_active_collection()
         text = lib_col.query_solver_info_text(col)
         return text
+
+    @QtCore.Slot(bool)
+    def evalComplexGraphsValueToggled(self, value):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        self.setEvalComplexGraphsValue(col, value)
+        self.evalComplexGraphsChanged.emit()
+        self.dataChanged.emit()
+        return

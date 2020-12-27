@@ -475,6 +475,8 @@ def compile_collection(col, prog_fn=None):
             frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
             frames = [mmapi.Frame(f) for f in frame_nums]
             sol.set_frame_list(frames)
+            eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+            sol.set_eval_complex_graphs(eval_complex_graphs)
             sol_list.append(sol)
 
     elif solver_tab == const.SOLVER_TAB_STANDARD_VALUE:
@@ -507,8 +509,10 @@ def compile_collection(col, prog_fn=None):
 
             global_solve = col_state.get_solver_global_solve_from_collection(col)
             only_root = col_state.get_solver_only_root_frames_from_collection(col)
+            eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
             sol.set_global_solve(global_solve)
             sol.set_only_root_frames(only_root)
+            sol.set_eval_complex_graphs(eval_complex_graphs)
             sol_list.append(sol)
 
     elif solver_tab.lower() == const.SOLVER_TAB_LEGACY_VALUE:
@@ -672,10 +676,15 @@ def query_solver_info_text(col):
     param_num = 0
     dev_num = 0
     frm_num = 0
+    failed_num = 0
+    success_num = 0
 
     color = const.COLOR_TEXT_DEFAULT
     pre_text = ''
-    text = 'Deviations {dev} | Parameters {param} | Frames {frm}'
+    text = (
+        'Valid Solves {good_solves} | Invalid Solves {bad_solves} | '
+        'Deviations {dev} | Parameters {param} | Frames {frm}'
+    )
     post_text = ''
 
     # NOTE: We can return HTML 'rich text' in this string to allow
@@ -685,21 +694,30 @@ def query_solver_info_text(col):
     if col is not None:
         assert isinstance(col, mmapi.Collection)
         compile_collection(col)
-        valid, message_list, metrics_list = mmapi.validate(col)
-        # TODO: When there are no attributes ready to be solved with,
-        #  an empty messages list is shown.
-        #
-        # assert len(message_list) > 0
-        # assert len(metrics_list) > 0
-        if valid is not True:
-            color = const.COLOR_ERROR
+        state_list = mmapi.validate(col, as_state=True)
+        status_list = [state.status for state in state_list]
+        only_failure_status = [x for x in status_list
+                               if x != mmapi.ACTION_STATUS_SUCCESS]
+        failed_num = len(only_failure_status)
+        success_num = len(status_list) - failed_num
+        some_failure = bool(failed_num)
+        if some_failure is True:
+            color = const.COLOR_WARNING
             pre_text = '<font color="{color}">'
             post_text = '</font>'
-            message = message_list[-1]
-            LOG.warn(message)
-        param_num_list = [d[0] for d in metrics_list]
-        dev_num_list = [d[1] for d in metrics_list]
-        frame_num_list = [d[2] for d in metrics_list]
+            message_hashes = set()
+            for state in state_list:
+                if state.status != mmapi.ACTION_STATUS_SUCCESS:
+                    LOG.warn("skip frames: %r", state.frames)
+                    h = hash(state.message)
+                    if h not in message_hashes:
+                        LOG.warn(state.message)
+                    message_hashes.add(h)
+
+        param_num_list = [state.parameter_number for state in state_list]
+        dev_num_list = [state.error_number for state in state_list]
+        frame_num_list = [state.frames_number for state in state_list]
+
         param_num = sum(param_num_list)
         dev_num = sum(dev_num_list)
         frm_num = sum(frame_num_list)
@@ -709,7 +727,9 @@ def query_solver_info_text(col):
     text = text.format(
         param=param_num,
         dev=dev_num,
-        frm=frm_num
+        frm=frm_num,
+        good_solves=success_num,
+        bad_solves=failed_num,
     )
     text = pre_text + text + post_text
     return text
@@ -756,32 +776,22 @@ def run_solve_ui(col,
             return
 
         compile_collection(col)
-        valid, message_list, metrics_list = mmapi.validate(col)
-        assert len(message_list) > 0
-        assert len(metrics_list) > 0
-        if valid is not True:
-            msg = message_list[-1]
-            if window is not None:
-                status = 'Warning: ' + msg
-                window.setStatusLine(status)
-            LOG.warning(msg)
-        else:
-            prog_fn = LOG.warning
-            status_fn = LOG.warning
-            info_fn = LOG.warning
-            if window is not None:
-                prog_fn = window.setProgressValue
-                status_fn = window.setStatusLine
-                info_fn = window.setSolveInfoLine
+        prog_fn = LOG.warning
+        status_fn = LOG.warning
+        info_fn = LOG.warning
+        if window is not None:
+            prog_fn = window.setProgressValue
+            status_fn = window.setStatusLine
+            info_fn = window.setSolveInfoLine
 
-            execute_collection(
-                col,
-                options=options,
-                log_level=log_level,
-                prog_fn=prog_fn,
-                status_fn=status_fn,
-                info_fn=info_fn,
-            )
+        execute_collection(
+            col,
+            options=options,
+            log_level=log_level,
+            prog_fn=prog_fn,
+            status_fn=status_fn,
+            info_fn=info_fn,
+        )
     finally:
         if window is not None:
             window.progressBar.setValue(100)

@@ -30,7 +30,7 @@
 
 if(APPLE)
     find_path(MAYA_BASE_DIR
-            ../../devkit/include/maya/MFn.h
+            ../../include/maya/MFn.h
         HINTS
             "${MAYA_LOCATION}"
             "$ENV{MAYA_LOCATION}"
@@ -45,6 +45,8 @@ if(APPLE)
             "/Applications/Autodesk/maya2012/Maya.app/Contents"
             "/Applications/Autodesk/maya2011/Maya.app/Contents"
             "/Applications/Autodesk/maya2010/Maya.app/Contents"
+        DOC
+            "Maya's base path"
     )
     find_path(MAYA_LIBRARY_DIR
             libOpenMaya.dylib
@@ -53,7 +55,7 @@ if(APPLE)
             "$ENV{MAYA_LOCATION}"
             "${MAYA_BASE_DIR}"
         PATH_SUFFIXES
-            Maya.app/contents/MacOS/
+            Maya.app/Contents/MacOS/
         DOC
             "Maya's libraries path"
     )
@@ -74,6 +76,8 @@ elseif(UNIX)
             "/usr/autodesk/maya2012-x64"
             "/usr/autodesk/maya2011-x64"
             "/usr/autodesk/maya2010-x64"
+        DOC
+            "Maya's base path"
     )
     find_path(MAYA_LIBRARY_DIR
             libOpenMaya.so
@@ -121,6 +125,8 @@ elseif(WIN32)
             "C:/Program Files/Autodesk/Maya2010"
             "C:/Program Files (x86)/Autodesk/Maya2010"
             "C:/Autodesk/maya-2010x64"
+        DOC
+            "Maya's base path"
     )
     find_path(MAYA_LIBRARY_DIR
             OpenMaya.lib
@@ -143,6 +149,8 @@ find_path(MAYA_INCLUDE_DIR
         "${MAYA_LOCATION}"
         "$ENV{MAYA_LOCATION}"
         "${MAYA_BASE_DIR}"
+        "${DEVKIT_LOCATION}"
+        "$ENV{DEVKIT_LOCATION}"
     PATH_SUFFIXES
         ../../devkit/include/
         include/
@@ -157,11 +165,13 @@ find_path(MAYA_LIBRARY_DIR
         "${MAYA_LOCATION}"
         "$ENV{MAYA_LOCATION}"
         "${MAYA_BASE_DIR}"
+        "${DEVKIT_LOCATION}"
+        "$ENV{DEVKIT_LOCATION}"
     PATH_SUFFIXES
-        ../../devkit/include/
-        include/
+        ../../devkit/lib/
+        lib/
     DOC
-        "Maya's devkit headers path"
+        "Maya's devkit library path"
 )
 
 list(APPEND MAYA_INCLUDE_DIRS ${MAYA_INCLUDE_DIR})
@@ -172,6 +182,8 @@ find_path(MAYA_DEVKIT_INC_DIR
         "${MAYA_LOCATION}"
         "$ENV{MAYA_LOCATION}"
         "${MAYA_BASE_DIR}"
+        "${DEVKIT_LOCATION}"
+        "$ENV{DEVKIT_LOCATION}"
     PATH_SUFFIXES
         ../../devkit/plug-ins/
     DOC
@@ -200,6 +212,8 @@ foreach(MAYA_LIB
             "${MAYA_LOCATION}"
             "$ENV{MAYA_LOCATION}"
             "${MAYA_BASE_DIR}"
+            "${DEVKIT_LOCATION}"
+            "$ENV{DEVKIT_LOCATION}"
         PATH_SUFFIXES
             MacOS/
             lib/

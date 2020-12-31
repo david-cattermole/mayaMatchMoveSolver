@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -21,8 +21,14 @@
 # Builds the Maya MatchMove Solver project.
 
 # Maya
-MAYA_VERSION=2019
-MAYA_LOCATION=/usr/autodesk/maya2019/
+MAYA_VERSION=2018
+MAYA_LOCATION=/Applications/Autodesk/maya2018/Maya.app/Contents
+DEVKIT_LOCATION=${HOME}/maya2018_devkitBase
+DEVKIT_BIN_LOCATION=${DEVKIT_LOCATION}/devkit/bin
+
+# Maya library locations
+DYLD_LIBRARY_PATH=$MAYA_LOCATION/MacOS
+DYLD_FRAMEWORK_PATH=$MAYA_LOCATION/Frameworks
 
 # Clear all build information before re-compiling.
 # Turn this off when wanting to make small changes and recompile.
@@ -42,10 +48,11 @@ WITH_GPL_CODE=0
 
 # Where to install the module?
 #
-# The "$HOME/maya/2019/modules" directory is automatically searched
-# for Maya module (.mod) files. Therefore we can install directly.
+# The "${HOME}/Library/Preferences/Autodesk/maya/2018/modules"
+# directory is automatically searched for Maya module (.mod)
+# files. Therefore we can install directly.
 #
-INSTALL_MODULE_DIR=${HOME}/maya/2019/modules
+INSTALL_MODULE_DIR=${HOME}/Library/Preferences/Autodesk/maya/2018/modules
 
 # Build ZIP Package.
 # For developer use. Make ZIP packages ready to distribute to others.
@@ -73,17 +80,21 @@ BUILD_TESTS=1
 CWD=`pwd`
 
 # Path to this script.
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # The root of this project.
-PROJECT_ROOT=`readlink -f ${DIR}/..`
+PROJECT_ROOT=${THIS_DIR}/..
 
-# Number of CPUs
-CPU_NUM=`nproc --all`
+# Ensure build dependacy tools (such as 'rcc' and 'uic') are available
+# for UI build processes.
+PATH=${PATH}:${DEVKIT_BIN_LOCATION}
+
+# Number of CPUs to build with
+CPU_NUM=`sysctl -n hw.physicalcpu`
 
 # Build mmSolver project
-mkdir -p build_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
-cd build_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
+mkdir -p build_mac_maya${MAYA_VERSION}_${BUILD_TYPE}
+cd build_mac_maya${MAYA_VERSION}_${BUILD_TYPE}
 if [ ${FRESH_BUILD} -eq 1 ]; then
     rm -f -R *
 fi
@@ -103,6 +114,7 @@ cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DLEVMAR_ROOT=${PROJECT_ROOT}/external/install/levmar \
       -DMAYA_VERSION=${MAYA_VERSION} \
       -DMAYA_LOCATION=${MAYA_LOCATION} \
+      -DDEVKIT_LOCATION=${DEVKIT_LOCATION} \
       ..
 make clean
 make -j${CPU_NUM}

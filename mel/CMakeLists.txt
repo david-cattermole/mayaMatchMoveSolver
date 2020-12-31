@@ -16,15 +16,15 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# This CMake script is for building and organising the 'external'
-# dependancies for Maya MatchMove Solver.
+# Install MEL and Python scripts.
 #
-cmake_minimum_required(VERSION 2.8.12)
 
-
-# Install Qt.py, if exists.
-set(QTPY_FILE "${CMAKE_CURRENT_SOURCE_DIR}/install/qtpy/Qt.py")
-if (EXISTS ${QTPY_FILE})
-  install(FILES ${QTPY_FILE}
-    DESTINATION "${MODULE_FULL_NAME}/python_qtpy/")
-endif ()
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+  DESTINATION "${MODULE_FULL_NAME}/scripts"
+  FILES_MATCHING PATTERN "*.mel")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+  DESTINATION "${MODULE_FULL_NAME}/scripts"
+  FILES_MATCHING PATTERN "*.py")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/AETemplates/"
+  DESTINATION "${MODULE_FULL_NAME}/scripts/AETemplates"
+  FILES_MATCHING PATTERN "*.mel")

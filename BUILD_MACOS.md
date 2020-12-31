@@ -1,56 +1,109 @@
-# Building on Linux
+# Building on MacOS
 
-We can build `mmSolver` on Linux quite easily. We have provided a
-Bash build script and CMake script which are configurable and readable.
+We can build `mmSolver` on MacOS. We have provided a Bash build script
+and CMake script which are configurable and readable for developers.
 
 To use the pre-made build scripts, you can use the following commands
-to build the entire project and dependencies:
+to build the entire project (assuming you have already installed the
+build dependancies):
 
-On Linux:
+On MacOS:
 ```commandline
-$ cd <project root>
+$ cd /path/to/project/root/
+$ bash scripts/build_qtpy.bash
 $ bash scripts/build_cminpack.bash
-$ bash scripts/build_mmSolver_linux_mayaXXXX.bash
+$ bash scripts/build_mmSolver_mac_mayaXXXX.bash
 ```
 
 Note: Replace XXXX, with the Maya version use build for.
 
 The sections below explain the process in more detail.
 
-# Installing Dependencies
+# Installing Build Dependencies
 
 mmSolver has a few dependencies, and are listed in
 [BUILD.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md#dependencies).
-Install the dependencies using your Linux distribution's package manager.
+Install the dependencies using the guide listed below.
 
-For example on CentOS 7 we use the `yum` command to install some dependencies:
+- MacOS El Capitan 10.11 - https://www.apple.com/
+- Xcode 7.3.1 - https://developer.apple.com/download/
+- Developer Command line tools 7.3.1 - https://developer.apple.com/download/
+- Maya Development Kit (devkit) 2018+ - https://www.autodesk.com/developer-network/platform-technologies/maya
+- Maya 2018+ - https://www.autodesk.com.au/products/maya/overview
+- CMake 3.x - from cmake website https://cmake.org/download/
+- Python (version 2.x or 3.x) - https://www.python.org/downloads/mac-osx/
+- Sphinx 1.8.5+ (using Python 'pip' command - see below)
+
+NOTE: Some of these dependancies are requirements of the Maya version and
+should be obtained from the Maya developer documentation.
+
+## Installing Maya Development Kit
+
+The Maya development environment must be installed and set up
+correctly. The Autodesk Maya documentation contains details on how
+this can be done.
+
+- [Maya 2018](https://help.autodesk.com/view/MAYAUL/2018/ENU/?guid=__files_Setting_up_your_build_environment_Mac_OS_X_environment_htm)
+- [Maya 2019](https://help.autodesk.com/view/MAYAUL/2019/ENU/?guid=__developer_Maya_SDK_MERGED_Setting_up_your_build_Mac_OS_X_environment_html)
+
+When you download the devkit, make sure to extract it. mmSolver will
+use the devkit files for building. It is assumed the devkit is
+installed to `~/maya####_devkitBase/devkit/bin/` (with `####` replaced
+with the Maya version number), otherwise you should modify the
+`<project root>/scripts/build_mmSolver_mac_maya####.bash` script with
+the correct path.
+
+## Installing Sphinx
+
+To install Sphinx, you can use the Pythin package manager:
 ```commandline
-$ yum install gcc make cmake python python-sphinx 
+$ pip install sphinx
 ```
 
-To be sure you have the above dependencies installed, run the following in a terminal and you should expect similar output:
+## Checking Build Dependencies
+
+Running the below commands should give you a similar output and will
+mean you have all the needed dependancies.
 ```commandline
 $ cmake --version
-cmake version 2.8.12.2
+cmake version 3.0.2
 
-$ gcc --version
-gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36)
-Copyright (C) 2015 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- 
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+
+$ clang --version
+Apple LLVM version 7.3.0 (clang-703.0.31)
+Target: x86_64-apple-darwin15.0.0
+Thread model: posix
+InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+
 $ make --version
-GNU Make 3.82
-Built for x86_64-redhat-linux-gnu
-Copyright (C) 2010  Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
+GNU Make 3.81
+Copyright (C) 2006  Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.
+
+This program built for i386-apple-darwin11.3.0
 
 $ python --version
-Python 2.7.5
+Python 2.7.18
+
+$ pip show sphinx
+Name: Sphinx
+Version: 1.8.5
+Summary: Python documentation generator
+Home-page: http://sphinx-doc.org/
+Author: Georg Brandl
+Author-email: georg@python.org
+License: BSD
+Location: /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages
+Requires: sphinxcontrib-websupport, imagesize, setuptools, babel, typing, Pygments, requests, six, docutils, packaging, snowballstemmer, alabaster, Jinja2
+Required-by:
 
 ```
+
+If everything looks good you can proceed to building, otherwise you
+will need to find and install the required dependancy.
 
 # Building Dependencies
 
@@ -58,36 +111,34 @@ Python 2.7.5
 for mmSolver using build scripts provided in the `<project
 root>/scripts` directory.
 
-On Linux:
+On MacOS:
 ```commandline
-$ cd <project root>
+$ cd /path/to/project/root
 $ bash scripts/build_cminpack.bash
 $ bash scripts/build_qtpy.bash
-$ bash scripts/build_levmar.bash
 ```
 
 If the commands above have worked, you should see the following
 directories under `<project root>/external/install`.
 
 - cminpack
-- levmar
 - qtpy
 
 These dependencies will automatically be found by the mmSolver build
 script and installed.
 
-If you do not want to install `Qt.py` into mmSolver, simply do not use
+If you do not want to install `Qt.py` with mmSolver, simply do not use
 the build script and delete the directory `<project
 root>/external/install/qtpy`.
 
 # Build mmSolver
 
-After installing CMinpack, you can now build mmSolver. 
+After building CMinpack, you can now build mmSolver.
 
-Run these commands, on Linux:
+Run these commands, on MacOS:
 ```commandline
 $ cd <project root>
-$ bash scripts/build_mmSolver_linux_mayaXXXX.bash
+$ bash scripts/build_mmSolver_mac_mayaXXXX.bash
 
 # Run tests (optional but encouraged)
 $ cd build
@@ -118,23 +169,23 @@ path, then you may need to edit the build scripts.
 
 Below lists the variables in the build scripts:
 
-| Variable           | Description                                  |            Example Value |
-| ------------       | -----------                                  |              ----------- |
-| MAYA_VERSION       | Maya version to build for.                   |                   `2017` |
-| MAYA_LOCATION      | Location for Maya header (.h) files.         | `/usr/autodesk/maya2017` |
-| INSTALL_MODULE_DIR | Directory to install the Maya module.        |    `~/maya/2017/modules` |
-| FRESH_BUILD        | Delete all build files before re-compiling.  |                        1 |
-| RUN_TESTS          | After build, run the test suite inside Maya. |                        0 |
-| WITH_CMINPACK      | Use the CMinpack library for solving.        |                        1 |
-| WITH_GPL_CODE      | Use the levmar library for solving.          |                        0 |
-| BUILD_PACKAGE      | Create an archive file ready to distribute.  |                        0 |
+| Variable           | Description                                  |                                 Example Value |
+| ------------       | -----------                                  |                                   ----------- |
+| MAYA_VERSION       | Maya version to build for.                   |                                        `2018` |
+| MAYA_LOCATION      | Location for Maya header (.h) files.         |             `/Applications/Autodesk/maya2018` |
+| INSTALL_MODULE_DIR | Directory to install the Maya module.        | `~/Library/Preferences/Autodesk/2018/modules` |
+| FRESH_BUILD        | Delete all build files before re-compiling.  |                                             1 |
+| RUN_TESTS          | After build, run the test suite inside Maya. |                                             0 |
+| WITH_CMINPACK      | Use the CMinpack library for solving.        |                                             1 |
+| WITH_GPL_CODE      | Use the levmar library for solving.          |                                             0 |
+| BUILD_PACKAGE      | Create an archive file ready to distribute.  |                                             0 |
 
 # CMake Build Script
 
 For those needing or wanting to compile the ``mmSolver`` Maya plug-in
 manually you can do it easily using the following commands.
 
-Example CMake usage on Linux:
+Example CMake usage on MacOS:
 ```commandline
 $ cd <project root>
 $ mkdir build
@@ -142,12 +193,12 @@ $ cd build
 
 # Configure make files
 $ cmake -DCMAKE_BUILD_TYPE=Release \
-	-DCMAKE_INSTALL_PREFIX=~/maya/2017/modules \
-	-DUSE_CMINPACK=1 \
-	-DMAYA_VERSION=2017 \
-	-DMAYA_LOCATION=/usr/autodesk/maya2017 \
-	-DCMINPACK_ROOT=/project_root/external/install/cminpack \
-	..
+        -DCMAKE_INSTALL_PREFIX=~/Library/Preferences/Autodesk/2018/modules \
+        -DUSE_CMINPACK=1 \
+        -DMAYA_VERSION=2018 \
+        -DMAYA_LOCATION=/Applications/Autodesk/maya2018 \
+        -DCMINPACK_ROOT=/project_root/external/install/cminpack \
+        ..
 
 # Compile the project (including documentation, and Qt .ui files)
 $ make -j4
@@ -206,7 +257,7 @@ setting it to `1`, then re-run the build script.
 
 ```commandline
 $ cd <project root>
-$ bash scripts/build_mmSolver_linux_mayaXXXX.bash
+$ bash scripts/build_mmSolver_mac_mayaXXXX.bash
 ```
 
 This will re-compile mmSolver, then copy all scripts and plug-ins into
@@ -214,26 +265,26 @@ a `.tar.gz` file, ready for distribution to users.
 
 # Compile Qt UI files
 
-The CMake build script will automatically compile the Qt .ui files, 
-however these scripts can also be run manually if needed. 
+The CMake build script will automatically compile the Qt .ui files,
+however these scripts can also be run manually if needed.
 
 The Qt Designer `.ui` files must be compiled using the intended version
-of Maya (either PySide or PySide2) in order to use the mmSolver tool 
-GUIs. 
+of Maya (either PySide or PySide2) in order to use the mmSolver tool
+GUIs.
 
-To compile the `*.ui` files, run these commands. 
+To compile the `*.ui` files, run these commands.
 
-On Linux:
+On MacOS:
 ```commandline
 $ cd <project root>
-$ /usr/autodesk/maya<VERSION>/bin/mayapy scripts/compileUI.py
+$ /Applications/Autodesk/maya<VERSION>/Maya.app/Contents/bin/mayapy scripts/compileUI.py
 
 # Or to compile a specific directory:
-$ /usr/autodesk/maya<VERSION>/bin/mayapy scripts/compileUI.py /path/to/directory
+$ /Applications/Autodesk/maya<VERSION>/Maya.app/Contents/bin/mayapy scripts/compileUI.py /path/to/directory
 ```
 
-These commands use `mayapy`, the Maya Python interpreter. Make sure 
-the use the executable with the version of Maya you are installing to. 
+These commands use `mayapy`, the Maya Python interpreter. Make sure
+the use the executable with the version of Maya you are installing to.
 Using incorrect versions may cause unforeseen errors.
 
 NOTE: Replace ``<project root>`` and ``<VERSION>`` as required.
@@ -241,7 +292,7 @@ NOTE: Replace ``<project root>`` and ``<VERSION>`` as required.
 # Build Documentation
 
 The CMake build script will automatically build the documentation, but
-the steps are documented manually below. 
+the steps are documented manually below.
 
 *mmSolver* comes with a set of documentation, and Sphinx building
 scripts to automate HTML page generation. It is recommended to build
@@ -251,16 +302,10 @@ To build the documentation, you will need to install both
 [Python 2.7.x](https://www.python.org/) and
 [Sphinx](http://www.sphinx-doc.org/en/master/usage/installation.html).
 
-On Linux, Python is likely already installed, however you can install
-it on CentOS Linux with this command line:
-```commandline
-$ yum install python python-sphinx
-```
-
 After Sphinx is installed (and Python is on your PATH environment
-variable), you can build the documentation with the following command line:
+variable), you can build the documentation with the following command line.
 
-On Linux:
+On MacOS:
 ```commandline
 $ cd <project root>/docs
 $ make html
@@ -276,18 +321,18 @@ documentation will be present.
 
 # Run Test Suite
 
-If you use the build script, you can automatically run the test suite 
-after compiling and installing. Make sure to turn on the variable 
+If you use the build script, you can automatically run the test suite
+after compiling and installing. Make sure to turn on the variable
 `RUN_TESTS` in the `.bash` or `.bat` scripts.
 
 After all parts of the `mmSolver` are installed and can be found by
 Maya, try running the test suite to confirm everything is working as
 expected.
 
-On Linux:
+On MacOS:
 ```commandline
 $ cd <project root>
-$ /usr/autodesk/mayaVERSION/bin/mayapy tests/runTests.py
+$ /Applications/Autodesk/maya<VERSION>/Maya.app/Contents/bin/mayapy tests/runTests.py
 ```
 
 Make sure you use the same Maya version 'mayapy' for testing as you
@@ -306,28 +351,16 @@ everything from scratch and build, then package.
 The directories below are hard-coded for the author's computer, you
 may need to change the paths for your environment.
 
-Run in the Linux Bash terminal:
+Run in the MacOS Bash terminal:
 ```commandline
-# Maya 2016
-$ load_maya2016.sh  # Example script to set up Maya environment
-$ mkdir -p /media/dev/mayaMatchMoveSolver_maya2016Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2016Deploy_linux
-$ cd /media/dev/mayaMatchMoveSolver_maya2016Deploy_linux ; git fetch --all; git checkout -f master; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_linux_maya2016.bash
-
-# Maya 2017
-$ load_maya2017.sh  # Example script to set up Maya environment
-$ mkdir -p /media/dev/mayaMatchMoveSolver_maya2017Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2017Deploy_linux
-$ cd /media/dev/mayaMatchMoveSolver_maya2017Deploy_linux ; git fetch --all; git checkout -f master; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_linux_maya2017.bash
-
 # Maya 2018
-$ load_maya2018.sh  # Example script to set up Maya environment
-$ mkdir -p /media/dev/mayaMatchMoveSolver_maya2018Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2018Deploy_linux
-$ cd /media/dev/mayaMatchMoveSolver_maya2018Deploy_linux ; git fetch --all; git checkout -f master; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_linux_maya2018.bash
+$ mkdir -p ~/dev ; cd ~/dev ; git clone https://github.com/david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2018Deploy_mac
+$ cd ~/dev/mayaMatchMoveSolver_maya2018Deploy_mac ; git fetch --all; git checkout -f issue146; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_mac_maya2018.bash
 
 # Maya 2019
-$ load_maya2019.sh  # Example script to set up Maya environment
-$ mkdir -p /media/dev/mayaMatchMoveSolver_maya2019Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2019Deploy_linux
-$ cd /media/dev/mayaMatchMoveSolver_maya2019Deploy_linux ; git fetch --all; git checkout -f master; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_linux_maya2019.bash
+$ mkdir -p ~/dev ; cd ~/dev ; git clone https://github.com/david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2019Deploy_mac
+$ cd ~/dev/mayaMatchMoveSolver_maya2019Deploy_mac ; git fetch --all; git checkout -f issue146; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_mac_maya2019.bash
 ```
 
 Package files can then be uploaded from the
-"~/dev/mayaMatchMoveSolver_maya*Deploy_linux/packages" folder.
+"~/dev/mayaMatchMoveSolver_maya*Deploy_mac/packages" folder.

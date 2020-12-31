@@ -20,8 +20,12 @@ Required:
   - Windows
     - [Visual Studio 2012 update 5 (MSVC 11.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2016 and 2017)
     - [Visual Studio 2015 update 3 (MSVC 14.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2018 and 2019)
+  - MacOS
+    - [Xcode 7.3.1 with SDK 10.11, clang with libc++](https://developer.apple.com/download) (Maya 2018)
+    - [Xcode version 7.3.1 and CMake are required](https://developer.apple.com/download) (Maya 2019)
 - [CMake 3.0+](https://cmake.org/)
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
+- [Maya Development Kit](https://www.autodesk.com/developer-network/platform-technologies/maya)
 - [CMinpack 1.3.6](https://github.com/devernay/cminpack/releases/tag/v1.3.6)
 - [Python 2.7.x or 3.x](https://www.python.org/) (for build scripts)
 - [Qt.py 1.1.0](https://github.com/mottosso/Qt.py/releases/tag/1.1.0) (for GUI support)

@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -16,15 +16,11 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# This CMake script is for building and organising the 'external'
-# dependancies for Maya MatchMove Solver.
+# Building the C++ headers for mmSolver.
 #
-cmake_minimum_required(VERSION 2.8.12)
 
-
-# Install Qt.py, if exists.
-set(QTPY_FILE "${CMAKE_CURRENT_SOURCE_DIR}/install/qtpy/Qt.py")
-if (EXISTS ${QTPY_FILE})
-  install(FILES ${QTPY_FILE}
-    DESTINATION "${MODULE_FULL_NAME}/python_qtpy/")
-endif ()
+# Create C Header file with some build options baked in.
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/buildConstant.h.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/buildConstant.h
+  @ONLY)

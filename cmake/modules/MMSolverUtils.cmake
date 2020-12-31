@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -16,15 +16,15 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# This CMake script is for building and organising the 'external'
-# dependancies for Maya MatchMove Solver.
+# CMake utilities for mmSolver.
 #
-cmake_minimum_required(VERSION 2.8.12)
+
+function(add_target_link_library_names target names)
+    string(STRIP ${names} names_strip)
+    string(REPLACE " " ";" names_list ${names_strip})
+    foreach (name IN LISTS names_list)
+        target_link_libraries(${target} ${name})
+    endforeach ()
+endfunction()
 
 
-# Install Qt.py, if exists.
-set(QTPY_FILE "${CMAKE_CURRENT_SOURCE_DIR}/install/qtpy/Qt.py")
-if (EXISTS ${QTPY_FILE})
-  install(FILES ${QTPY_FILE}
-    DESTINATION "${MODULE_FULL_NAME}/python_qtpy/")
-endif ()

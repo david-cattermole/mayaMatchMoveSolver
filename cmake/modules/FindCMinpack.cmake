@@ -27,7 +27,15 @@ find_path(CMINPACK_INCLUDE_DIR cminpack.h
         include/cminpack-1/
 )
 
-find_library(CMINPACK_LIBRARY libcminpack.so.1 libcminpack_s cminpack cminpack_s
+find_library(CMINPACK_LIBRARY
+  NAMES
+        libcminpack.1
+        libcminpack.so.1
+        libcminpack.1.dylib
+        libcminpack_s
+        cminpack_s
+        libcminpack
+        cminpack
     HINTS
         ${CMINPACK_LIB_PATH}
         ${CMINPACK_ROOT}

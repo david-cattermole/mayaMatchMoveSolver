@@ -20,9 +20,20 @@
 
 set(input_file resources.qrc)
 set(output_file resources.rcc)
+
+# This section checks to see if `rcc` is a recognized command 
+# on the user's Windows OS, and if not, use the `rcc.exe` 
+# file found under the given Maya version.
+find_program(RCC_EXISTS "rcc")
+if(RCC_EXISTS)
+    set(RCC_CMD rcc -binary resources.qrc -o resources.rcc)
+else()
+    set(RCC_CMD "${MAYA_LOCATION}/bin/rcc.exe" -o resources.rcc resources.qrc)
+endif()
+
 add_custom_command(
         OUTPUT ${output_file}
-        COMMAND rcc -binary resources.qrc -o resources.rcc
+        COMMAND ${RCC_CMD}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS ${input_file}
 )

@@ -23,13 +23,13 @@ SETLOCAL
 
 :: Maya directories
 ::
-:: If you're not using Maya 2017 or have a non-standard install location,
+:: If you're not using Maya 2016 or have a non-standard install location,
 :: set these variables here.
 ::
 :: Note: Do not enclose the MAYA_VERSION in quotes, it will
 ::       lead to tears.
-SET MAYA_VERSION=2017
-SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2017"
+SET MAYA_VERSION=2016.5
+SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2016.5"
 
 :: Clear all build information before re-compiling.
 :: Turn this off when wanting to make small changes and recompile.
@@ -53,7 +53,7 @@ SET WITH_GPL_CODE=0
 ::       however files copying to "My Documents" automatically go
 ::       to the "Documents" directory.
 ::
-:: The "$HOME/maya/2017/modules" directory is automatically searched
+:: The "$HOME/maya/2016/modules" directory is automatically searched
 :: for Maya module (.mod) files. Therefore we can install directly.
 ::
 :: SET INSTALL_MODULE_DIR="%PROJECT_ROOT%\modules"

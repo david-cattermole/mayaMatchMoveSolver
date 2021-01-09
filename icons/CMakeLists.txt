@@ -20,9 +20,24 @@
 
 set(input_file resources.qrc)
 set(output_file resources.rcc)
+
+# This section sets a hard location to the rcc  
+# executable file to prevent any errors of 
+# likes of 'rcc command not found'
+find_program(MAYA_RCC_EXECUTABLE
+        rcc
+    HINTS
+        "${MAYA_LOCATION}"
+        "$ENV{MAYA_LOCATION}"
+    PATH_SUFFIXES
+        bin/
+    DOC
+        "Maya's Qt resource compiler rcc executable path"
+)
+
 add_custom_command(
         OUTPUT ${output_file}
-        COMMAND rcc -binary resources.qrc -o resources.rcc
+        COMMAND ${MAYA_RCC_EXECUTABLE} -binary resources.qrc -o resources.rcc
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS ${input_file}
 )

@@ -244,12 +244,18 @@ def _convert_node_to_plugs(node, attr, node_type,
 
             affects_this_plug = maya.cmds.affects(attr_, node_) or []
             for attr__ in affects_this_plug:
-                node_attr = node_ + '.' + attr__
-                try:
-                    maya.cmds.listConnections(node_attr)
-                except ValueError as e:
-                    # LOG.warning(e)
+                # if not maya.cmds.attributeQuery(attr__,
+                #                                 node=node_,
+                #                                 exists=True):
+                #     continue
+                if not node_utils.attribute_exists(attr__, node_):
                     continue
+                node_attr = node_ + '.' + attr__
+                # try:
+                #     maya.cmds.listConnections(node_attr)
+                # except ValueError as e:
+                #     # LOG.warning(e)
+                #     continue
                 compound_attrs = maya.cmds.listAttr(node_attr, multi=True)
                 if compound_attrs > 1:
                     for array_item in compound_attrs:
@@ -261,7 +267,7 @@ def _convert_node_to_plugs(node, attr, node_type,
                     node_attr = _get_full_path_plug(node_attr)
                     conn_attrs += [node_attr]
         # Only unique attributes.
-        # conn_attrs = list(set(conn_attrs))
+        conn_attrs = list(set(conn_attrs))
         # if len(conn_attrs) > 1:
         #     LOG.info(('_convert_node_to_plugs:node_attr (original): ', node_attr_original))
         #     LOG.info(('_convert_node_to_plugs:conn_attrs length: ', len(conn_attrs)))

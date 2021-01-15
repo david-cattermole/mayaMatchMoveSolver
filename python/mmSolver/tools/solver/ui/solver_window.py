@@ -74,7 +74,7 @@ class SolverWindow(BaseWindow):
         self.baseHideStandardButtons()
         self.applyBtn.show()
         self.closeBtn.show()
-        self.applyBtn.setText('Solve')
+        self.applyBtn.setText(const.WINDOW_BUTTON_SOLVE_START_LABEL)
 
         self.applyBtn.clicked.connect(self.apply)
 
@@ -652,6 +652,7 @@ class SolverWindow(BaseWindow):
             block = self.blockSignals(True)
             try:
                 mmapi.set_solver_running(True)
+                self.applyBtn.setText(const.WINDOW_BUTTON_SOLVE_STOP_LABEL)
                 options = lib_collection.gather_execute_options()
                 log_level = lib_state.get_log_level()
                 col = lib_state.get_active_collection()
@@ -662,6 +663,7 @@ class SolverWindow(BaseWindow):
                     self)
             finally:
                 mmapi.set_solver_running(False)
+                self.applyBtn.setText(const.WINDOW_BUTTON_SOLVE_START_LABEL)
                 self.blockSignals(block)
         return
 

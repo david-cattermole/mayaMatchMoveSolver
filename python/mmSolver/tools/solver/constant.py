@@ -20,8 +20,13 @@ Holds all constant data needed for the solver tool and UI.
 """
 
 # Window Title Bar format.
-WINDOW_TITLE_BAR = 'mmSolver | {0}'
+WINDOW_TITLE_BAR = 'mmSolver v{version} | {collection}'
 
+# Window button text.
+WINDOW_BUTTON_SOLVE_START_LABEL = 'Solve'
+WINDOW_BUTTON_SOLVE_STOP_LABEL = 'Stop Solve'
+WINDOW_BUTTON_CLOSE_LABEL = 'Close'
+WINDOW_BUTTON_CLOSE_AND_STOP_LABEL = 'Stop Solve and Close'
 
 # HTML Color Names, for Qt Rich Text.
 #

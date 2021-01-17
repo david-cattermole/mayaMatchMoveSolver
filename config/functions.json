@@ -493,7 +493,7 @@
             ]
         },
         "screen_space_rig_bake": {
-            "name": "Screen Space Rig Bake",
+            "name": "Screen Space Rig Bake...",
             "name_shelf": "ScrnRgBk",
             "tooltip": "Convert a transform into a screen-space transform.",
             "command": [

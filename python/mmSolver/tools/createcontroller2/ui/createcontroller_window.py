@@ -34,31 +34,69 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
+# import mmSolver.ui.helputils as helputils
+import mmSolver.utils.tools as tools_utils
+import mmSolver.utils.constant as const_utils
 import mmSolver.tools.createcontroller2.ui.createcontroller_layout as createcontroller_layout
+
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
-
 WINDOW_TITLE = "Create Controller"
-WINDOW_WIDTH = 480
-WINDOW_HEIGHT = 210
+
 
 class CreateControllerWindow(BaseWindow):
     name = 'CreateControllerWindow'
+
     def __init__(self, parent=None, name=None):
         super(CreateControllerWindow, self).__init__(parent, name=name)
         self.setupUi(self)
         self.addSubForm(createcontroller_layout.CreateControllerLayout)
+
         self.setWindowTitle(WINDOW_TITLE)
-        self.setMinimumWidth(WINDOW_WIDTH)
-        self.setMinimumHeight(WINDOW_HEIGHT)
-        self.setMaximumWidth(WINDOW_WIDTH)
-        self.setMaximumHeight(WINDOW_HEIGHT)
         self.setWindowFlags(QtCore.Qt.Tool)
+
         # Standard Buttons
         self.baseHideStandardButtons()
+        self.createBtn.show()
+        self.applyBtn.show()
+        self.resetBtn.show()
+        # self.helpBtn.show()
+        self.closeBtn.show()
+        self.createBtn.setText('Create Locator/Group')
+        self.applyBtn.setText('Create Controller')
+
+        self.createBtn.clicked.connect(self.create_locator_group)
+        self.applyBtn.clicked.connect(self.create_controller)
+        self.resetBtn.clicked.connect(self.reset_options)
+        # self.helpBtn.clicked.connect(self.help)
+
         # Hide irrelevant stuff
         self.baseHideMenuBar()
         self.baseHideProgressBar()
+
+    def create_locator_group(self):
+        form = self.getSubForm()
+        ctx = tools_utils.tool_context(
+            use_undo_chunk=True,
+            restore_current_frame=True,
+            use_dg_evaluation_mode=True,
+            disable_viewport=True,
+            disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
+        with ctx:
+            try:
+                form.create_locator_group()
+            except Exception as e:
+                LOG.error(e)
+        return
+
+    def create_controller(self):
+        form = self.getSubForm()
+        form.create_controller_button_clicked()
+
+    def reset_options(self):
+        form = self.getSubForm()
+        form.reset_options()
+
 
 def main(show=True, auto_raise=True, delete=False):
     win = CreateControllerWindow.open_window(

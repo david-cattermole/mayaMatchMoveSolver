@@ -1,5 +1,5 @@
 # Copyright (C) 2021 Patcha Saheb Binginapalli.
-
+#
 # This file is part of mmSolver.
 #
 # mmSolver is free software: you can redistribute it and/or modify it
@@ -19,40 +19,40 @@
 Fast Bake constants.
 """
 
-import mmSolver.utils.time as time_utils
-frame_start, frame_end = time_utils.get_maya_timeline_range_inner()
-
-
 WINDOW_TITLE = 'Fast Bake'
-WINDOW_WIDTH = 250
-WINDOW_HEIGHT = 140
 
 # Constants for frame range mode.
-
-FRAME_RANGE_MODE_TIMELINE_INNER_VALUE = 'fb_timeline_inner'
-FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE = 'fb_timeline_outer'
-FRAME_RANGE_MODE_CUSTOM_VALUE = 'fb_custom'
+FRAME_RANGE_MODE_TIMELINE_INNER_VALUE = 'fastbake_timeline_inner'
+FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE = 'fastbake_timeline_outer'
+FRAME_RANGE_MODE_CUSTOM_VALUE = 'fastbake_custom'
 FRAME_RANGE_MODE_VALUES = [FRAME_RANGE_MODE_TIMELINE_INNER_VALUE,
-    					   FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE,
-    					   FRAME_RANGE_MODE_CUSTOM_VALUE]
+                           FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE,
+                           FRAME_RANGE_MODE_CUSTOM_VALUE]
 
 FRAME_RANGE_MODE_TIMELINE_INNER_LABEL = 'Timeline (Inner)'
 FRAME_RANGE_MODE_TIMELINE_OUTER_LABEL = 'Timeline (Outer)'
 FRAME_RANGE_MODE_CUSTOM_LABEL = 'Custom'
 FRAME_RANGE_MODE_LABELS = [FRAME_RANGE_MODE_TIMELINE_INNER_LABEL,
-    					   FRAME_RANGE_MODE_TIMELINE_OUTER_LABEL,
-						   FRAME_RANGE_MODE_CUSTOM_LABEL]
+                           FRAME_RANGE_MODE_TIMELINE_OUTER_LABEL,
+                           FRAME_RANGE_MODE_CUSTOM_LABEL]
+
+FRAME_RANGE_MODE_VALUE_LABEL_MAP = {
+    FRAME_RANGE_MODE_TIMELINE_INNER_VALUE: FRAME_RANGE_MODE_TIMELINE_INNER_LABEL,
+    FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE: FRAME_RANGE_MODE_TIMELINE_OUTER_LABEL,
+    FRAME_RANGE_MODE_CUSTOM_VALUE: FRAME_RANGE_MODE_CUSTOM_LABEL,
+}
+
 
 # Default Values
-DEFAULT_FRAME_START = frame_start
-DEFAULT_FRAME_END = frame_end
-DEFAULT_FRAME_RANGE_MODE = 'fb_timeline_inner'
+DEFAULT_FRAME_START = 1
+DEFAULT_FRAME_END = 120
+DEFAULT_FRAME_RANGE_MODE = FRAME_RANGE_MODE_TIMELINE_INNER_VALUE
 DEFAULT_SMART_BAKE_STATE = False
 DEFAULT_FROM_CHANNELBOX_STATE = False
 
 # Config files
-CONFIG_FRAME_RANGE_MODE_KEY = 'mmSolver_fastbake_frameRangeMode'
-CONFIG_FRAME_START_KEY = 'mmSolver_fastbake_frameStart'
-CONFIG_FRAME_END_KEY = 'mmSolver_fastbake_frameEnd'
-CONFIG_SMARTBAKE_KEY = 'mmSolver_fastbake_smartbake'
-CONFIG_FROM_CHANNELBOX_KEY = 'mmSolver_fastbake_fromchannelbox'
+CONFIG_FRAME_RANGE_MODE_KEY = 'mmSolver_fastbake_frame_range_mode'
+CONFIG_FRAME_START_KEY = 'mmSolver_fastbake_frame_start'
+CONFIG_FRAME_END_KEY = 'mmSolver_fastbake_frame_end'
+CONFIG_SMART_BAKE_KEY = 'mmSolver_fastbake_smart_bake'
+CONFIG_FROM_CHANNELBOX_KEY = 'mmSolver_fastbake_from_channel_box'

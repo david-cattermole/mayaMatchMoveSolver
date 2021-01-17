@@ -42,21 +42,21 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 # developer debug. If the developer is working on some Python code
 # only, we don't need to wait for the Maya Plug-In to compute each
 # time.
-set(BUILD_PLUGIN 1 CACHE BOOLEAN
+set(BUILD_PLUGIN 1 CACHE BOOL
         "Do you want to build the plug-in?")
-set(BUILD_PYTHON 1 CACHE BOOLEAN
+set(BUILD_PYTHON 1 CACHE BOOL
         "Do you want to build and install the Python API and tools?")
-set(BUILD_MEL 1 CACHE BOOLEAN
+set(BUILD_MEL 1 CACHE BOOL
         "Do you want to build and install the MEL scripts and tools?")
-set(BUILD_QT_UI 1 CACHE BOOLEAN
+set(BUILD_QT_UI 1 CACHE BOOL
         "Do you want to build the Qt UI files?")
-set(BUILD_DOCS 1 CACHE BOOLEAN
+set(BUILD_DOCS 1 CACHE BOOL
         "Do you want to build and install the documentation?")
-set(BUILD_ICONS 1 CACHE BOOLEAN
+set(BUILD_ICONS 1 CACHE BOOL
         "Do you want to build and install the icons?")
-set(BUILD_CONFIG 1 CACHE BOOLEAN
+set(BUILD_CONFIG 1 CACHE BOOL
         "Do you want to build and install the config files?")
-set(BUILD_TESTS 1 CACHE BOOLEAN
+set(BUILD_TESTS 1 CACHE BOOL
         "Do you want to build the test files?")
 
 
@@ -75,7 +75,7 @@ set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH
 #
 # WARNING: 'Lev-Mar' is GPL licensed and must not be
 # distributed in binary form to anyone.
-set(USE_GPL_LEVMAR 0 CACHE BOOLEAN
+set(USE_GPL_LEVMAR 0 CACHE BOOL
         "Compile with the GPL-licensed Lev-Mar library?")
 set(LEVMAR_ROOT "/usr/local" CACHE PATH "Levmar directory")
 set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH
@@ -84,7 +84,7 @@ set(LEVMAR_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
 
 
 # CMinpack
-set(USE_CMINPACK 1 CACHE BOOLEAN "Compile with the cminpack library?")
+set(USE_CMINPACK 1 CACHE BOOL "Compile with the cminpack library?")
 set(CMINPACK_ROOT "/usr/local" CACHE PATH "CMinpack directory")
 set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH
         "cminpack include directory")
@@ -92,7 +92,7 @@ set(CMINPACK_LIB_PATH "/usr/local/lib" CACHE PATH "cminpack library directory")
 
 
 # Extra (BLAS) Libraries
-set(USE_BLAS OFF CACHE BOOLEAN "Should we use BLAS?")
+set(USE_BLAS OFF CACHE BOOL "Should we use BLAS?")
 set(BLAS_INCLUDE_PATH "/usr/include/blas" CACHE PATH "BLAS library directory")
 set(BLAS_LIB_PATH "/usr/lib64/blas" CACHE PATH "BLAS library directory")
 set(BLAS_LIB_NAMES
@@ -332,7 +332,6 @@ if (BUILD_PLUGIN)
         target_link_libraries(mmSolver ${LEVMAR_LIBRARIES})
         add_definitions(-DUSE_SOLVER_LEVMAR)
     endif ()
-
 
     if (USE_CMINPACK)
         target_include_directories(mmSolver PUBLIC ${CMINPACK_INCLUDE_DIRS})

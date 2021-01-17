@@ -180,12 +180,17 @@ def main():
         const.CONFIG_BUNDLE_UNLOCK_RELOCK_KEY,
         default=const.DEFAULT_BUNDLE_UNLOCK_RELOCK)
 
+    # Do not disable the viewport if we're only baking a single frame.
+    disable_viewport = True
+    if frame_range.start == frame_range.end:
+        disable_viewport = False
+
     mesh_nodes = _get_selected_meshes()
     with tools_utils.tool_context(
             use_undo_chunk=True,
             restore_current_frame=True,
             use_dg_evaluation_mode=True,
-            disable_viewport=True):
+            disable_viewport=disable_viewport):
         bnd_nodes = lib.raycast_markers_onto_meshes(
             mkr_list, mesh_nodes,
             frame_range=frame_range,

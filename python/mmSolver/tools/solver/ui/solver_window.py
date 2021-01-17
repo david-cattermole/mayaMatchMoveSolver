@@ -74,7 +74,8 @@ class SolverWindow(BaseWindow):
         self.baseHideStandardButtons()
         self.applyBtn.show()
         self.closeBtn.show()
-        self.applyBtn.setText('Solve')
+        self.applyBtn.setText(const.WINDOW_BUTTON_SOLVE_START_LABEL)
+        self.closeBtn.setText(const.WINDOW_BUTTON_CLOSE_LABEL)
 
         self.applyBtn.clicked.connect(self.apply)
 
@@ -597,8 +598,9 @@ class SolverWindow(BaseWindow):
 
     @QtCore.Slot(list)
     def setNodeSelection(self, values):
-        self.subForm.object_browser.setNodeSelection(values)
-        self.subForm.attribute_browser.setNodeSelection(values)
+        if uiutils.isValidQtObject(self) is True:
+            self.subForm.object_browser.setNodeSelection(values)
+            self.subForm.attribute_browser.setNodeSelection(values)
         return
 
     def launchHelpCB(self):
@@ -614,17 +616,20 @@ class SolverWindow(BaseWindow):
         return
 
     def setStatusLine(self, text):
-        self.subForm.setStatusLine(text)
+        if uiutils.isValidQtObject(self) is True:
+            self.subForm.setStatusLine(text)
         QtWidgets.QApplication.processEvents()
         return
 
     def setSolveInfoLine(self, text):
-        self.subForm.setSolveInfoLine(text)
+        if uiutils.isValidQtObject(self) is True:
+            self.subForm.setSolveInfoLine(text)
         QtWidgets.QApplication.processEvents()
         return
 
     def setProgressValue(self, value):
-        self.progressBar.setValue(value)
+        if uiutils.isValidQtObject(self) is True:
+            self.progressBar.setValue(value)
         QtWidgets.QApplication.processEvents()
         return
 
@@ -637,6 +642,8 @@ class SolverWindow(BaseWindow):
             # Cancel out of a running solve if the user presses
             # the button again.
             lib_state.set_solver_user_interrupt_state(True)
+            return
+        if uiutils.isValidQtObject(self) is False:
             return
         undo_id = 'mmSolver: '
         undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
@@ -652,6 +659,8 @@ class SolverWindow(BaseWindow):
             block = self.blockSignals(True)
             try:
                 mmapi.set_solver_running(True)
+                self.applyBtn.setText(const.WINDOW_BUTTON_SOLVE_STOP_LABEL)
+                self.closeBtn.setText(const.WINDOW_BUTTON_CLOSE_AND_STOP_LABEL)
                 options = lib_collection.gather_execute_options()
                 log_level = lib_state.get_log_level()
                 col = lib_state.get_active_collection()
@@ -662,7 +671,18 @@ class SolverWindow(BaseWindow):
                     self)
             finally:
                 mmapi.set_solver_running(False)
-                self.blockSignals(block)
+                if uiutils.isValidQtObject(self) is True:
+                    self.applyBtn.setText(const.WINDOW_BUTTON_SOLVE_START_LABEL)
+                    self.closeBtn.setText(const.WINDOW_BUTTON_CLOSE_LABEL)
+                    self.blockSignals(block)
+        return
+
+    def closeEvent(self, event):
+        # Cancel out of a running solve, before closing the UI.
+        running_state = lib_state.get_solver_is_running_state()
+        if running_state is True:
+            lib_state.set_solver_user_interrupt_state(True)
+        super(SolverWindow, self).closeEvent(event)
         return
 
     def help(self):

@@ -28,6 +28,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 
+import mmSolver.ui.uiutils as uiutils
 import mmSolver.utils.time as utils_time
 import mmSolver.utils.converttypes as converttypes
 import mmSolver.tools.solver.lib.state as lib_state
@@ -779,7 +780,7 @@ def run_solve_ui(col,
         prog_fn = LOG.warning
         status_fn = LOG.warning
         info_fn = LOG.warning
-        if window is not None:
+        if window is not None and uiutils.isValidQtObject(window) is True:
             prog_fn = window.setProgressValue
             status_fn = window.setStatusLine
             info_fn = window.setSolveInfoLine
@@ -793,7 +794,7 @@ def run_solve_ui(col,
             info_fn=info_fn,
         )
     finally:
-        if window is not None:
+        if window is not None and uiutils.isValidQtObject(window) is True:
             window.progressBar.setValue(100)
             window.progressBar.hide()
     return

@@ -184,9 +184,9 @@
             ]
         },
         "fast_bake": {
-            "name": "Fast Bake Attributes",
-            "name_shelf": "Fastbake",
-            "tooltip": "Quickly bake attributes.",
+            "name": "Bake Attributes",
+            "name_shelf": "FastBake",
+            "tooltip": "Bake attributes.",
             "command": [
                 "import mmSolver.tools.fastbake.tool;",
                 "mmSolver.tools.fastbake.tool.main();"

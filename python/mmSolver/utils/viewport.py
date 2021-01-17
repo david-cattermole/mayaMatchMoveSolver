@@ -62,6 +62,7 @@ def viewport1_turn_off():
     is_batch = maya.cmds.about(query=True, batch=True)
     if is_batch is True:
         return
+    maya.cmds.refresh(suspend=True)
     maya.mel.eval('paneLayout -e -manage false $gMainPane')
     return
 
@@ -74,6 +75,7 @@ def viewport1_turn_on():
     if is_batch is True:
         return
     maya.mel.eval('paneLayout -e -manage true $gMainPane')
+    maya.cmds.refresh(suspend=False)
     return
 
 

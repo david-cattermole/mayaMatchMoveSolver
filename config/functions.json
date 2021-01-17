@@ -617,6 +617,14 @@
                 "tool.main();"
             ]
         },
+        "remove_all_solver_nodes": {
+            "name": "Remove All Solver Nodes",
+            "tooltip": "Remove all nodes related to matchmoveSolver to clean scene file.",
+            "command": [
+                "import mmSolver.tools.removesolvernodes.tool as tool;",
+                "tool.main();"
+            ]
+        },
         "user_preferences_window": {
             "name": "User Preferences...",
             "name_shelf": "UsrPrf",

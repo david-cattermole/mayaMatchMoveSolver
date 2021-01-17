@@ -25,6 +25,7 @@ import maya.OpenMaya as OpenMaya
 import mmSolver.logger
 import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
@@ -96,45 +97,65 @@ def viewport2_turn_on():
     return
 
 
-def viewport_turn_off():
+def _disable_viewport_mode():
     """
-    Turn off Viewport.
-
-    .. note:: This will automatically switch to the fastest
-        implementation based on the version Maya.
+    Try to guess the best disable/enable viewport mode.
     """
+    mode = const.DISABLE_VIEWPORT_MODE_VP1_VALUE
     if maya.cmds.about(apiVersion=True) >= 201700:
         # Only use viewport2 pause feature if viewport 2 is currently
         # active.
         if get_currently_using_viewport2():
-            set_viewport2_active_state(False)
+            mode = const.DISABLE_VIEWPORT_MODE_VP2_VALUE
         else:
             # Viewport 2.0 is not active, we fall back to viewport 1.0
             # disabling method.
-            viewport1_turn_off()
-    else:
+            mode = const.DISABLE_VIEWPORT_MODE_VP1_VALUE
+    return mode
+
+
+def viewport_turn_off(mode=None):
+    """
+    Turn off Viewport.
+
+    :param mode: Set the value to force a specific disable/enable method.
+    :type mode: mmSolver.utils.constant.DISABLE_VIEWPORT_MODE_*_VALUE
+
+    .. note:: By default mode=None will automatically switch to the fastest
+        implementation based on the version Maya.
+
+    """
+    if mode is None or mode == const.DISABLE_VIEWPORT_MODE_GUESS_VALUE:
+        mode = _disable_viewport_mode()
+    assert mode in const.DISABLE_VIEWPORT_MODE_VALUES
+    if mode is const.DISABLE_VIEWPORT_MODE_VP1_VALUE:
         viewport1_turn_off()
+    elif mode is const.DISABLE_VIEWPORT_MODE_VP2_VALUE:
+        set_viewport2_active_state(False)
+    else:
+        raise NotImplementedError
     return
 
 
-def viewport_turn_on():
+def viewport_turn_on(mode=None):
     """
     Turn on the Viewport.
 
-    .. note:: This will automatically switch to the fastest
+    :param mode: Set the value to force a specific disable/enable method.
+    :type mode: mmSolver.utils.constant.DISABLE_VIEWPORT_MODE_*_VALUE
+
+    .. note:: By default mode=None will automatically switch to the fastest
         implementation based on the version Maya.
     """
-    if maya.cmds.about(apiVersion=True) >= 201700:
-        # Only use viewport2 pause feature if viewport 2 is currently
-        # active.
-        if get_currently_using_viewport2():
-            set_viewport2_active_state(True)
-        else:
-            # Viewport 2.0 is not active, we fall back to viewport 1.0
-            # enabling method.
-            viewport1_turn_on()
-    else:
+    if mode is None or mode == const.DISABLE_VIEWPORT_MODE_GUESS_VALUE:
+        mode = _disable_viewport_mode()
+    assert mode in const.DISABLE_VIEWPORT_MODE_VALUES
+    if mode is const.DISABLE_VIEWPORT_MODE_VP1_VALUE:
         viewport1_turn_on()
+    elif mode is const.DISABLE_VIEWPORT_MODE_VP2_VALUE:
+        set_viewport2_active_state(True)
+    else:
+        raise NotImplementedError
     return
 
 

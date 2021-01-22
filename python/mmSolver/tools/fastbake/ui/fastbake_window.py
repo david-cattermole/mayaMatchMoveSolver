@@ -34,8 +34,11 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
+import mmSolver.ui.helputils as helputils
 import mmSolver.tools.fastbake.constant as const
 import mmSolver.tools.fastbake.ui.fastbake_layout as fastbake_layout
+import mmSolver.tools.fastbake.tool as tool
+
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
 
@@ -49,19 +52,35 @@ class FastBakeWindow(BaseWindow):
         self.addSubForm(fastbake_layout.FastBakeLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
-        self.setMinimumWidth(const.WINDOW_WIDTH)
-        self.setMinimumHeight(const.WINDOW_HEIGHT)
-        self.setMaximumWidth(const.WINDOW_WIDTH)
-        self.setMaximumHeight(const.WINDOW_HEIGHT)
         self.setWindowFlags(QtCore.Qt.Tool)
 
         # Standard Buttons
         self.baseHideStandardButtons()
+        self.applyBtn.show()
+        self.resetBtn.show()
+        self.helpBtn.show()
+        self.closeBtn.show()
+        self.applyBtn.setText('Bake')
+
+        self.applyBtn.clicked.connect(tool.main)
+        self.resetBtn.clicked.connect(self.reset_options)
+        self.helpBtn.clicked.connect(self.help)
 
         # Hide irrelevant stuff
         self.baseHideMenuBar()
         self.baseHideProgressBar()
 
+    def reset_options(self):
+        form = self.getSubForm()
+        form.reset_options()
+        return
+
+    def help(self):
+        src = helputils.get_help_source()
+        page = 'tools_generaltools.html#smooth-keyframes'
+        helputils.open_help_in_browser(page=page, help_source=src)
+        return
+        
 
 def main(show=True, auto_raise=True, delete=False):
     win = FastBakeWindow.open_window(

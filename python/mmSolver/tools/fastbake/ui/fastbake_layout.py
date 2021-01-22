@@ -23,127 +23,153 @@ window.
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
+import Qt.QtCore as QtCore
+import Qt.QtGui as QtGui
 import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
-import mmSolver.tools.fastbake.ui.ui_fastbake_layout as ui_layout
-import mmSolver.tools.fastbake.tool as tool
-import mmSolver.tools.fastbake.constant as const
 import mmSolver.utils.configmaya as configmaya
-import mmSolver.utils.time as time_utils
+import mmSolver.tools.fastbake.ui.ui_fastbake_layout as ui_layout
+import mmSolver.tools.fastbake.constant as const
+import mmSolver.tools.fastbake.lib as lib
 
 LOG = mmSolver.logger.get_logger()
+
 
 class FastBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
     def __init__(self, parent=None, *args, **kwargs):
         super(FastBakeLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
-        #create connections
-        self.frame_range_combo.currentIndexChanged.connect(self.frameRangeModeIndexChanged)  
-        self.start_frame_text.editingFinished.connect(self.startFrameValueChanged)        
-        self.end_frame_text.editingFinished.connect(self.endFrameValueChanged)
+        # Frame Range Mode
+        frame_range_modes = const.FRAME_RANGE_MODE_LABELS
+        self.frame_range_combo.addItems(frame_range_modes)
+        self.frame_range_combo.currentIndexChanged.connect(
+            self.frameRangeModeIndexChanged)
+
+        # Create connections
+        self.start_frame_spinbox.valueChanged.connect(self.startFrameValueChanged)
+        self.end_frame_spinbox.valueChanged.connect(self.endFrameValueChanged)
         self.smart_bake_cbox.stateChanged.connect(self.smartBakeValueChanged)
         self.channel_box_cbox.stateChanged.connect(self.fromChannelBoxValueChanged)
-        self.fast_bake_btn.clicked.connect(tool.main)
-        self.reset_btn.clicked.connect(self.resetWidgets)
 
         self.populateUi()
 
-    def frameRangeModeIndexChangedHelper(self, v):
+    def frameRangeModeIndexChangedHelper(self, frame_range_mode):
+        assert isinstance(frame_range_mode, basestring)
         start_name = const.CONFIG_FRAME_START_KEY
-        end_name = const.CONFIG_FRAME_END_KEY      
-        if v  == "fb_timeline_inner":
-            self.start_frame_text.setEnabled(False)
-            self.end_frame_text.setEnabled(False)
+        end_name = const.CONFIG_FRAME_END_KEY
+
+        # Get frame range
+        custom_start_frame = configmaya.get_scene_option(
+            start_name, const.DEFAULT_FRAME_START)
+        custom_end_frame = configmaya.get_scene_option(
+            end_name, const.DEFAULT_FRAME_END)
+        frame_range = lib.get_bake_frame_range(
+            frame_range_mode, custom_start_frame, custom_end_frame)
+
+        # Set frame range widgets
+        self.start_frame_spinbox.setValue(frame_range.start)
+        self.end_frame_spinbox.setValue(frame_range.end)
+
+        # Disable and enable widgets based on frame range mode.
+        if frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_INNER_VALUE:
+            self.start_frame_spinbox.setEnabled(False)
+            self.end_frame_spinbox.setEnabled(False)
             self.smart_bake_cbox.setEnabled(True)
-            frame_start, frame_end = time_utils.get_maya_timeline_range_inner()
-            self.start_frame_text.setText(str(frame_start))
-            self.end_frame_text.setText(str(frame_end))
-            configmaya.set_scene_option(start_name, frame_start, add_attr=True)
-            configmaya.set_scene_option(end_name, frame_end, add_attr=True)
-        if v == "fb_timeline_outer":
-            self.start_frame_text.setEnabled(False)
-            self.end_frame_text.setEnabled(False) 
-            self.smart_bake_cbox.setEnabled(True)       
-            frame_start, frame_end = time_utils.get_maya_timeline_range_outer()
-            self.start_frame_text.setText(str(frame_start))
-            self.end_frame_text.setText(str(frame_end))
-            configmaya.set_scene_option(start_name, frame_start, add_attr=True)
-            configmaya.set_scene_option(end_name, frame_end, add_attr=True)                         
-        if v == "fb_custom":
-            self.start_frame_text.setEnabled(True)
-            self.end_frame_text.setEnabled(True)
+        elif frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE:
+            self.start_frame_spinbox.setEnabled(False)
+            self.end_frame_spinbox.setEnabled(False)
+            self.smart_bake_cbox.setEnabled(True)
+        elif frame_range_mode == const.FRAME_RANGE_MODE_CUSTOM_VALUE:
+            self.start_frame_spinbox.setEnabled(True)
+            self.end_frame_spinbox.setEnabled(True)
             self.smart_bake_cbox.setEnabled(False)
             self.smart_bake_cbox.setChecked(False)
 
+            # Set the custom frame values
+            configmaya.set_scene_option(start_name, frame_range.start, add_attr=True)
+            configmaya.set_scene_option(end_name, frame_range.end, add_attr=True)
+        return
+
     def frameRangeModeIndexChanged(self):
-    	name = const.CONFIG_FRAME_RANGE_MODE_KEY
-    	index = self.frame_range_combo.currentIndex()
-    	value = const.FRAME_RANGE_MODE_VALUES[index]
-    	configmaya.set_scene_option(name, value, add_attr=True)
+        name = const.CONFIG_FRAME_RANGE_MODE_KEY
+        index = self.frame_range_combo.currentIndex()
+        value = const.FRAME_RANGE_MODE_VALUES[index]
+        configmaya.set_scene_option(name, value, add_attr=True)
         self.frameRangeModeIndexChangedHelper(value)
 
     def startFrameValueChanged(self):
-    	name = const.CONFIG_FRAME_START_KEY
-    	value = self.start_frame_text.text()
-    	configmaya.set_scene_option(name, value, add_attr=True)
+        name = const.CONFIG_FRAME_START_KEY
+        value = self.start_frame_spinbox.value()
+        configmaya.set_scene_option(name, value, add_attr=True)
 
     def endFrameValueChanged(self):
-    	name = const.CONFIG_FRAME_END_KEY
-    	value = self.end_frame_text.text()
-    	configmaya.set_scene_option(name, value, add_attr=True)
+        name = const.CONFIG_FRAME_END_KEY
+        value = self.end_frame_spinbox.value()
+        configmaya.set_scene_option(name, value, add_attr=True)
 
     def smartBakeValueChanged(self):
-        name = const.CONFIG_SMARTBAKE_KEY
-        if self.smart_bake_cbox.isChecked(): value = True    
-        else: value = False
+        name = const.CONFIG_SMART_BAKE_KEY
+        value = self.smart_bake_cbox.isChecked()
         configmaya.set_scene_option(name, value, add_attr=True)
 
     def fromChannelBoxValueChanged(self):
         name = const.CONFIG_FROM_CHANNELBOX_KEY
-        if self.channel_box_cbox.isChecked(): value = True
-        else: value = False
+        value = self.channel_box_cbox.isChecked()
         configmaya.set_scene_option(name, value, add_attr=True)
 
-    def resetWidgets(self):
-        self.frame_range_combo.setCurrentIndex(0)
-        self.smart_bake_cbox.setChecked(False)
-        self.channel_box_cbox.setChecked(False)
+    def reset_options(self):
+        name = const.CONFIG_FRAME_RANGE_MODE_KEY
+        value = const.DEFAULT_FRAME_RANGE_MODE
+        configmaya.set_scene_option(name, value)
 
-    def setConfigDefaults(self):
-        #set configmaya defaults
-        if not configmaya.get_scene_option(const.CONFIG_FRAME_RANGE_MODE_KEY):
-            configmaya.set_scene_option(const.CONFIG_FRAME_RANGE_MODE_KEY, const.DEFAULT_FRAME_RANGE_MODE, add_attr=True)        
-        if not configmaya.get_scene_option(const.CONFIG_FRAME_START_KEY):
-            configmaya.set_scene_option(const.CONFIG_FRAME_START_KEY, const.DEFAULT_FRAME_START, add_attr=True)        
-        if not configmaya.get_scene_option(const.CONFIG_FRAME_END_KEY):
-            configmaya.set_scene_option(const.CONFIG_FRAME_END_KEY, const.DEFAULT_FRAME_END, add_attr=True)        
-        if not configmaya.get_scene_option(const.CONFIG_SMARTBAKE_KEY):
-            configmaya.set_scene_option(const.CONFIG_SMARTBAKE_KEY, const.DEFAULT_SMART_BAKE_STATE, add_attr=True)
-        if not configmaya.get_scene_option(const.CONFIG_FROM_CHANNELBOX_KEY):
-            configmaya.set_scene_option(const.CONFIG_FROM_CHANNELBOX_KEY, const.DEFAULT_FROM_CHANNELBOX_STATE, add_attr=True)
+        name = const.CONFIG_FRAME_START_KEY
+        value = const.DEFAULT_FRAME_START
+        configmaya.set_scene_option(name, value)
+
+        name = const.CONFIG_FRAME_END_KEY
+        value = const.DEFAULT_FRAME_END
+        configmaya.set_scene_option(name, value)
+
+        name = const.CONFIG_SMART_BAKE_KEY
+        value = const.DEFAULT_SMART_BAKE_STATE
+        configmaya.set_scene_option(name, value)
+
+        name = const.CONFIG_FROM_CHANNELBOX_KEY
+        value = const.DEFAULT_FROM_CHANNELBOX_STATE
+        configmaya.set_scene_option(name, value)
+
+        self.populateUi()
+        return
 
     def populateUi(self):
-        self.setConfigDefaults()        
-        #get configmaya values and set them
-    	frame_range_mode = configmaya.get_scene_option(const.CONFIG_FRAME_RANGE_MODE_KEY)
-        start_frame = configmaya.get_scene_option(const.CONFIG_FRAME_START_KEY)
-        end_frame = configmaya.get_scene_option(const.CONFIG_FRAME_END_KEY)
-        smart_bake_state = configmaya.get_scene_option(const.CONFIG_SMARTBAKE_KEY)
-        from_channelbox_state = configmaya.get_scene_option(const.CONFIG_FROM_CHANNELBOX_KEY)
-        #frame range mode and start,end frame values
-        if str(frame_range_mode) == "fb_timeline_inner":
-            self.frame_range_combo.setCurrentIndex(0)          
-        if str(frame_range_mode) == "fb_timeline_outer":
-            self.frame_range_combo.setCurrentIndex(1)
-        if str(frame_range_mode) == "fb_custom":
-            self.frame_range_combo.setCurrentIndex(2)
-            self.start_frame_text.setText(str(start_frame))
-            self.end_frame_text.setText(str(end_frame))          
-        self.frameRangeModeIndexChangedHelper(str(frame_range_mode))
-        #smart bake checkbox state        
+        frame_range_mode = configmaya.get_scene_option(
+            const.CONFIG_FRAME_RANGE_MODE_KEY,
+            default=const.DEFAULT_FRAME_RANGE_MODE)
+        start_frame = configmaya.get_scene_option(
+            const.CONFIG_FRAME_START_KEY,
+            default=const.DEFAULT_FRAME_START)
+        end_frame = configmaya.get_scene_option(
+            const.CONFIG_FRAME_END_KEY,
+            default=const.DEFAULT_FRAME_END)
+        smart_bake_state = configmaya.get_scene_option(
+            const.CONFIG_SMART_BAKE_KEY,
+            default=const.DEFAULT_SMART_BAKE_STATE)
+        from_channelbox_state = configmaya.get_scene_option(
+            const.CONFIG_FROM_CHANNELBOX_KEY,
+            default=const.DEFAULT_FROM_CHANNELBOX_STATE)
+
+        label = const.FRAME_RANGE_MODE_VALUE_LABEL_MAP[frame_range_mode]
+        self.frame_range_combo.setCurrentText(label)
+
+        frame_range = lib.get_bake_frame_range(
+            frame_range_mode, start_frame, end_frame)
+        self.start_frame_spinbox.setValue(frame_range.start)
+        self.end_frame_spinbox.setValue(frame_range.end)
+
+        self.frameRangeModeIndexChangedHelper(frame_range_mode)
+
         self.smart_bake_cbox.setChecked(bool(smart_bake_state))
-        #from channel box checkbox state        
         self.channel_box_cbox.setChecked(bool(from_channelbox_state))
         return

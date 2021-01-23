@@ -79,6 +79,7 @@ class SolverBasicWidget(QtWidgets.QWidget,
 
     viewUpdated = QtCore.Signal()
     dataChanged = QtCore.Signal()
+    evalObjectRelationshipsChanged = QtCore.Signal()
     evalComplexGraphsChanged = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
@@ -89,6 +90,8 @@ class SolverBasicWidget(QtWidgets.QWidget,
         self.frameRange_widget = BasicFrameRangeWidget(self)
         self.frameRange_layout.addWidget(self.frameRange_widget)
 
+        self.evalObjectRelationships_checkBox.toggled.connect(
+            self.evalObjectRelationshipsValueToggled)
         self.evalComplexGraphs_checkBox.toggled.connect(
             self.evalComplexGraphsValueToggled)
 
@@ -96,6 +99,14 @@ class SolverBasicWidget(QtWidgets.QWidget,
         self.description_label.setText(desc)
         e = time.time()
         LOG.debug('SolverBasicWidget init: %r seconds', e - s)
+        return
+
+    def getEvalObjectRelationshipsValue(self, col):
+        value = lib_col_state.get_solver_eval_object_relationships_from_collection(col)
+        return value
+
+    def setEvalObjectRelationshipsValue(self, col, value):
+        lib_col_state.set_solver_eval_object_relationships_on_collection(col, value)
         return
 
     def getEvalComplexGraphsValue(self, col):
@@ -112,12 +123,15 @@ class SolverBasicWidget(QtWidgets.QWidget,
         col = lib_state.get_active_collection()
         if col is None:
             return
+        eval_obj_conns = self.getEvalObjectRelationshipsValue(col)
         eval_complex_graphs = self.getEvalComplexGraphsValue(col)
 
         block = self.blockSignals(True)
+        self.evalObjectRelationships_checkBox.setChecked(eval_obj_conns)
         self.evalComplexGraphs_checkBox.setChecked(eval_complex_graphs)
         self.blockSignals(block)
 
+        self.setEvalObjectRelationshipsValue(col, eval_obj_conns)
         self.setEvalComplexGraphsValue(col, eval_complex_graphs)
         return
 
@@ -126,6 +140,16 @@ class SolverBasicWidget(QtWidgets.QWidget,
         col = lib_state.get_active_collection()
         text = lib_col.query_solver_info_text(col)
         return text
+
+    @QtCore.Slot(bool)
+    def evalObjectRelationshipsValueToggled(self, value):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        self.setEvalObjectRelationshipsValue(col, value)
+        self.evalObjectRelationshipsChanged.emit()
+        self.dataChanged.emit()
+        return
 
     @QtCore.Slot(bool)
     def evalComplexGraphsValueToggled(self, value):

@@ -72,6 +72,13 @@
      <item>
       <layout class="QVBoxLayout" name="options2_layout">
        <item>
+        <widget class="QCheckBox" name="evalObjectRelationships_checkBox">
+         <property name="text">
+          <string>Evaluate Object Relationships</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="evalComplexGraphs_checkBox">
          <property name="text">
           <string>Evaluate Complex Node Graphs (eg. Mesh Rivets)</string>

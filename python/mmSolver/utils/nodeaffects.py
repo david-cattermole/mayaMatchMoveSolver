@@ -62,6 +62,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
 
+import traceback
 
 LOG = mmSolver.logger.get_logger()
 
@@ -99,7 +100,13 @@ def _get_full_path_plug(plug):
     """
     node = plug.partition('.')[0]
     attr = plug.partition('.')[-1]
-    attr = maya.cmds.attributeName(plug, long=True)
+    # LOG.info(( '_get_full_path_plug:plug: ', plug))
+    # attr = maya.cmds.attributeName(plug, long=True)
+    # try:
+    #     attr = maya.cmds.attributeName(plug, long=True)
+    # except:
+    #     traceback.print_exc()
+    #     raise ValueError(('something wrong with this plug:', plug))
     node = maya.cmds.ls(node, long=True)[0]
     full_path = node + '.' + attr
     return str(full_path)
@@ -179,6 +186,7 @@ def _convert_node_to_plugs(node, attr, node_type,
             return plugs
 
     node_attr = '{0}.{1}'.format(node, attr)
+    node_attr_original = '{0}.{1}'.format(node, attr)
     settable = maya.cmds.getAttr(node_attr, settable=True)
     if settable is True:
         typ = __get_and_fill_cache_value(
@@ -190,13 +198,23 @@ def _convert_node_to_plugs(node, attr, node_type,
         return plugs
 
     # Get plugs connected to this attribute, recursively
+    # LOG.info(('_convert_node_to_plugs:node_attr (original): ', node_attr_original))
     conn_attrs = maya.cmds.listConnections(
         node_attr,
         source=True,
         destination=False,
         plugs=True) or []
+    # if len(conn_attrs) > 1:
+    #     LOG.info(('_convert_node_to_plugs:node_attr (original): ', node_attr_original))
+    #     LOG.info(('_convert_node_to_plugs:conn_attrs length: ', len(conn_attrs)))
     while len(conn_attrs) > 0:
         node_attr = conn_attrs.pop()
+        # LOG.info(('_convert_node_to_plugs:node_attr (original): ', node_attr_original))
+        # LOG.info(('_convert_node_to_plugs:node_attr (pop): ', node_attr))
+        # LOG.info(('_convert_node_to_plugs:conn_attrs: ', conn_attrs))
+        # LOG.info(('_convert_node_to_plugs:conn_attrs length: ', len(conn_attrs)))
+        # LOG.info(('_convert_node_to_plugs:conn_attrs: ', conn_attrs))
+        # LOG.info(( '_convert_node_to_plugs:node_attr (from conn_attrs): ', node_attr))
         node_attr = _get_full_path_plug(node_attr)
         settable = maya.cmds.getAttr(node_attr, settable=True)
         if settable is True:
@@ -217,6 +235,7 @@ def _convert_node_to_plugs(node, attr, node_type,
             source=True,
             destination=False,
             plugs=True) or []
+        # LOG.info(('_convert_node_to_plugs:tmp_list for %s: ' % node_attr, tmp_list))
 
         # Filter by valid plug types.
         for tmp in tmp_list:
@@ -225,11 +244,34 @@ def _convert_node_to_plugs(node, attr, node_type,
 
             affects_this_plug = maya.cmds.affects(attr_, node_) or []
             for attr__ in affects_this_plug:
+                # if not maya.cmds.attributeQuery(attr__,
+                #                                 node=node_,
+                #                                 exists=True):
+                #     continue
+                if not node_utils.attribute_exists(attr__, node_):
+                    continue
                 node_attr = node_ + '.' + attr__
-                node_attr = _get_full_path_plug(node_attr)
-                conn_attrs += [node_attr]
+                # try:
+                #     maya.cmds.listConnections(node_attr)
+                # except ValueError as e:
+                #     # LOG.warning(e)
+                #     continue
+                compound_attrs = maya.cmds.listAttr(node_attr, multi=True)
+                if compound_attrs > 1:
+                    for array_item in compound_attrs:
+                        node_attr = node_ + '.' + array_item
+                        # LOG.warning(node_attr)
+                        node_attr = _get_full_path_plug(node_attr)
+                        conn_attrs += [node_attr]
+                else:
+                    node_attr = _get_full_path_plug(node_attr)
+                    conn_attrs += [node_attr]
         # Only unique attributes.
         conn_attrs = list(set(conn_attrs))
+        # if len(conn_attrs) > 1:
+        #     LOG.info(('_convert_node_to_plugs:node_attr (original): ', node_attr_original))
+        #     LOG.info(('_convert_node_to_plugs:conn_attrs length: ', len(conn_attrs)))
+        #     # LOG.info(('_convert_node_to_plugs:conn_attrs: ', conn_attrs))
     return plugs
 
 

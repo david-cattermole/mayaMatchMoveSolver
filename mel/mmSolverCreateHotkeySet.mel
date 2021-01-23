@@ -69,6 +69,9 @@ if (`runTimeCommand -exists mmSolver_toggleViewportImgPlns`) {
 if (`runTimeCommand -exists mmSolver_toggleScreenZManipulator`) {
     runTimeCommand -e -delete mmSolver_toggleScreenZManipulator;
 }
+if (`runTimeCommand -exists mmSolver_projectMarkersOnMeshes`) {
+    runTimeCommand -e -delete mmSolver_projectMarkersOnMeshes;
+}
 
 
 
@@ -171,6 +174,14 @@ runTimeCommand
         -command ("import mmSolver.tools.screenzmanipulator.tool as tool;\ntool.main();")
         mmSolver_toggleScreenZManipulator;
 
+runTimeCommand
+        -annotation "Project Markers on Meshes (Ray-Cast)"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.raycastmarker.tool as tool;\ntool.main();")
+        mmSolver_projectMarkersOnMeshes;
+
 
 //
 // The name commands referenced by the hotkeys
@@ -247,6 +258,12 @@ nameCommand
         -command ("mmSolver_toggleScreenZManipulator")
         mmSolver_toggleScreenZManipulatorNameCommand;
 
+nameCommand
+        -annotation "mmSolver_projectMarkersOnMeshesNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_projectMarkersOnMeshes")
+        mmSolver_projectMarkersOnMeshesNameCommand;
+
 
 
 //
@@ -287,6 +304,9 @@ hotkey -keyShortcut "p" -releaseName ("");
 
 hotkey -keyShortcut "p" -ctl -sht -name ("mmSolver_unparentToWorldNameCommand");
 hotkey -keyShortcut "p" -sht -releaseName ("");
+
+hotkey -keyShortcut "p" -alt -name ("mmSolver_projectMarkersOnMeshesNameCommand");
+hotkey -keyShortcut "p" -releaseName ("");
 
 hotkey -keyShortcut "1" -alt -name ("mmSolver_toggleViewportGeomNameCommand");
 hotkey -keyShortcut "1" -releaseName ("");

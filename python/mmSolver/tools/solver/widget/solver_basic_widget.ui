@@ -28,10 +28,14 @@
     <layout class="QHBoxLayout" name="frameRange_layout"/>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="options_layout" stretch="0">
-     <property name="spacing">
-      <number>0</number>
-     </property>
+    <layout class="QVBoxLayout" name="options_layout">
+     <item>
+      <widget class="QCheckBox" name="evalObjectRelationships_checkBox">
+       <property name="text">
+        <string>Evaluate Object Relationships</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QCheckBox" name="evalComplexGraphs_checkBox">
        <property name="text">

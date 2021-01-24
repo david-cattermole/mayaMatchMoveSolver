@@ -58,7 +58,7 @@
         <item row="1" column="0">
          <widget class="QLabel" name="showValidateButtonLabel">
           <property name="text">
-           <string>Show Validate Button</string>
+           <string>Show Validate Button:</string>
           </property>
          </widget>
         </item>

@@ -600,6 +600,13 @@ general functions behave, by default.
        :ref:`Solver UI <solver-ui-ref>`? Regardless of this option,
        Validation will automatically be run when clicking the *Solve* button.
 
+   * - Minimal UI While Solving
+     - *Yes* or *No*
+     - If *Yes*, the :ref:`Solver UI <solver-ui-ref>` will only display
+       the progress bar while solving, and then switch back to the full
+       UI solving has finished. If *No*, the :ref:`Solver UI <solver-ui-ref>`
+       will not be adjusted.
+
 Usage:
 
 1) Open 'User Preferences' window.

@@ -771,26 +771,31 @@ def set_minimal_ui(value):
         win.subForm.ui.objectAttribute_splitter.setVisible(visible)
         win.subForm.ui.line_1.setVisible(visible)
         win.subForm.ui.line_2.setVisible(visible)
-        QtWidgets.QApplication.processEvents()
 
     if uiutils.isValidQtObject(win) is True:
         QtWidgets.QApplication.processEvents()
-
         if value is False:
             _set_widget_visibilty(win, True)
 
             # Restore non-minimal window size.
+            QtWidgets.QApplication.processEvents()
             win.resize(win._saved_ui_size)
         else:
-            _set_widget_visibilty(win, False)
-            # Resize the bottom window edge upwards.
             win._saved_ui_size = win.size()
+
+            # QtWidgets.QApplication.processEvents()
+            _set_widget_visibilty(win, False)
+            QtWidgets.QApplication.processEvents()
+
+            # Resize the bottom window edge upwards.
             width = win.size().width()
             win.resize(width, 1)
+            QtWidgets.QApplication.processEvents()
 
             # Run again to trigger the UI to resize properly.
             _set_widget_visibilty(win, False)
             win.resize(width, 1)
+            QtWidgets.QApplication.processEvents()
 
     QtWidgets.QApplication.processEvents()
     return

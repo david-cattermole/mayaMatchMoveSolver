@@ -634,6 +634,56 @@ class SolverWindow(BaseWindow):
         QtWidgets.QApplication.processEvents()
         return
 
+    def setMinimalUI(self, value):
+        """
+        Change the currently open Solver window to be "minimal", or not.
+
+        If the Solver window is not open, nothing happens.
+
+        "minimal" UI means hiding most widgets in the Solver UI, and not
+        "minimal" means showing all widgets as a user normally would
+        expect.
+        """
+        assert isinstance(value, bool)
+
+        def _set_widget_visibilty(window, visible):
+            self.menubar.setVisible(visible)
+            self.subForm.collection_widget.setVisible(visible)
+            self.subForm.object_browser.setVisible(visible)
+            self.subForm.attribute_browser.setVisible(visible)
+            self.subForm.solver_settings.setVisible(visible)
+            self.subForm.ui.objectAttribute_splitter.setVisible(visible)
+            self.subForm.ui.line_1.setVisible(visible)
+            self.subForm.ui.line_2.setVisible(visible)
+
+        if uiutils.isValidQtObject(self) is True:
+            QtWidgets.QApplication.processEvents()
+            if value is False:
+                _set_widget_visibilty(self, True)
+
+                # Restore non-minimal window size.
+                QtWidgets.QApplication.processEvents()
+                self.resize(self._saved_ui_size)
+            else:
+                self._saved_ui_size = self.size()
+
+                # QtWidgets.QApplication.processEvents()
+                _set_widget_visibilty(self, False)
+                QtWidgets.QApplication.processEvents()
+
+                # Resize the bottom window edge upwards.
+                width = self.size().width()
+                self.resize(width, 1)
+                QtWidgets.QApplication.processEvents()
+
+                # Run again to trigger the UI to resize properly.
+                _set_widget_visibilty(self, False)
+                self.resize(width, 1)
+                QtWidgets.QApplication.processEvents()
+
+        QtWidgets.QApplication.processEvents()
+        return
+
     def apply(self):
         """
         This button launches a solve, but can also be used to cancel a solve.
@@ -745,57 +795,3 @@ def main(show=True, auto_raise=True, delete=False):
         delete=delete
     )
     return win
-
-
-def set_minimal_ui(value):
-    """
-    Change the currently open Solver window to be "minimal", or not.
-
-    If the Solver window is not open, nothing happens.
-
-    "minimal" UI means hiding most widgets in the Solver UI, and not
-    "minimal" means showing all widgets as a user normally would
-    expect.
-    """
-    assert isinstance(value, bool)
-    win = SolverWindow.get_instance()
-    if not win:
-        return
-
-    def _set_widget_visibilty(window, visible):
-        win.menubar.setVisible(visible)
-        win.subForm.collection_widget.setVisible(visible)
-        win.subForm.object_browser.setVisible(visible)
-        win.subForm.attribute_browser.setVisible(visible)
-        win.subForm.solver_settings.setVisible(visible)
-        win.subForm.ui.objectAttribute_splitter.setVisible(visible)
-        win.subForm.ui.line_1.setVisible(visible)
-        win.subForm.ui.line_2.setVisible(visible)
-
-    if uiutils.isValidQtObject(win) is True:
-        QtWidgets.QApplication.processEvents()
-        if value is False:
-            _set_widget_visibilty(win, True)
-
-            # Restore non-minimal window size.
-            QtWidgets.QApplication.processEvents()
-            win.resize(win._saved_ui_size)
-        else:
-            win._saved_ui_size = win.size()
-
-            # QtWidgets.QApplication.processEvents()
-            _set_widget_visibilty(win, False)
-            QtWidgets.QApplication.processEvents()
-
-            # Resize the bottom window edge upwards.
-            width = win.size().width()
-            win.resize(width, 1)
-            QtWidgets.QApplication.processEvents()
-
-            # Run again to trigger the UI to resize properly.
-            _set_widget_visibilty(win, False)
-            win.resize(width, 1)
-            QtWidgets.QApplication.processEvents()
-
-    QtWidgets.QApplication.processEvents()
-    return

@@ -51,7 +51,7 @@
 <p>The Solver UI is the primary interface to using the internal solver
 command (<cite>mmSolver</cite>).</p>
 <div class="figure align-center" id="id1">
-<a class="reference internal image-reference" href="_images/tools_solver_ui_overview.png"><img alt="Solver User Interface" src="_images/tools_solver_ui_overview.png" style="width: 660.0px; height: 756.0px;" /></a>
+<a class="reference internal image-reference" href="_images/tools_solver_ui_overview.png"><img alt="Solver User Interface" src="_images/tools_solver_ui_overview.png" style="width: 687.2px; height: 646.4px;" /></a>
 <p class="caption"><span class="caption-text">Solver User Interface</span></p>
 </div>
 <p>The shelf tools will open or run the solver.</p>
@@ -61,7 +61,7 @@ command (<cite>mmSolver</cite>).</p>
 <div class="section" id="input-objects">
 <h2>Input Objects<a class="headerlink" href="#input-objects" title="Permalink to this headline">¶</a></h2>
 <div class="figure align-right">
-<a class="reference internal image-reference" href="_images/tools_solver_ui_widget_objects.png"><img alt="Solver Input Objects" src="_images/tools_solver_ui_widget_objects.png" style="width: 332.0px; height: 352.5px;" /></a>
+<a class="reference internal image-reference" href="_images/tools_solver_ui_widget_objects.png"><img alt="Solver Input Objects" src="_images/tools_solver_ui_widget_objects.png" style="width: 349.2px; height: 256.8px;" /></a>
 </div>
 <p>The Objects are the inputs to the current Solve. This will display
 of Markers used for detecting deviation.
@@ -80,19 +80,28 @@ To display the column visibility, use the Edit menu.</p>
 <tr class="row-even"><td>Node</td>
 <td>The input Object’s Node.</td>
 </tr>
-<tr class="row-odd"><td>Weight</td>
+<tr class="row-odd"><td>Status</td>
+<td><p class="first">The status of the input object; tick (✓), cross (❌) or dash
+(—).</p>
+<p class="last">If the Solver detects an object is not used by the solver, it
+will be disabled and marked with a cross mark.  Otherwise, a
+tick mark is displayed. If the object’s status has not been
+detected the status is a dash mark.</p>
+</td>
+</tr>
+<tr class="row-even"><td>Weight</td>
 <td>The weight the Marker will have in the solver. Higher values
 give an importance to this Marker, at the expense of other
 Markers.</td>
 </tr>
-<tr class="row-even"><td>Frame Deviation</td>
+<tr class="row-odd"><td>Frame Deviation</td>
 <td>The deviation, in pixels, of the Marker on the current frame.</td>
 </tr>
-<tr class="row-odd"><td>Average Deviation</td>
+<tr class="row-even"><td>Average Deviation</td>
 <td>The average deviation, in pixels, of the Marker across all
 valid frames.</td>
 </tr>
-<tr class="row-even"><td>Maximum Deviation</td>
+<tr class="row-odd"><td>Maximum Deviation</td>
 <td>The maximum deviation and frame number on the Marker.</td>
 </tr>
 </tbody>
@@ -101,7 +110,7 @@ valid frames.</td>
 <div class="section" id="output-attributes">
 <h2>Output Attributes<a class="headerlink" href="#output-attributes" title="Permalink to this headline">¶</a></h2>
 <div class="figure align-right">
-<a class="reference internal image-reference" href="_images/tools_solver_ui_widget_attributes.png"><img alt="Solver Output Attributes" src="_images/tools_solver_ui_widget_attributes.png" style="width: 337.0px; height: 351.0px;" /></a>
+<a class="reference internal image-reference" href="_images/tools_solver_ui_widget_attributes.png"><img alt="Solver Output Attributes" src="_images/tools_solver_ui_widget_attributes.png" style="width: 344.4px; height: 255.6px;" /></a>
 </div>
 <p>This section of the UI shows the Attributes solved.</p>
 <table border="1" class="colwidths-auto docutils" id="id3">
@@ -116,7 +125,15 @@ valid frames.</td>
 <td>The <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> column displays nodes and attributes added
 into the active Collection.</td>
 </tr>
-<tr class="row-odd"><td>State</td>
+<tr class="row-odd"><td>Status</td>
+<td><p class="first">The status of the attribute; tick (✓), cross (❌) or dash (—).</p>
+<p class="last">If an attribute cannot be modified by any Marker, then the
+attribute status is set to a cross. Otherwise, attributes that
+are valid have a tick mark. If the attributes’s status has not
+been detected the status is a dash mark.</p>
+</td>
+</tr>
+<tr class="row-even"><td>State</td>
 <td>The State column displays if the attribute is Static or
 Animated.</td>
 </tr>
@@ -133,11 +150,13 @@ but each Solver tab is independent.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tools_solver_ui_tab_basic.html">Basic Solver Tab</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_basic.html#frames">Frames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_basic.html#solver-options">Solver Options</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tools_solver_ui_tab_standard.html">Standard Solver Tab</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_standard.html#frames">Frames</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_standard.html#root-frames">Root Frames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_standard.html#solver-options">Solver Options</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tools_solver_ui_tab_legacy.html">Legacy Solver Tab</a><ul>
@@ -155,7 +174,7 @@ but each Solver tab is independent.</p>
 <div class="section" id="file-menu">
 <h3>File Menu<a class="headerlink" href="#file-menu" title="Permalink to this headline">¶</a></h3>
 <div class="figure align-right">
-<a class="reference internal image-reference" href="_images/tools_solver_ui_menu_file.png"><img alt="File Menu" src="_images/tools_solver_ui_menu_file.png" style="width: 139.0px; height: 119.0px;" /></a>
+<a class="reference internal image-reference" href="_images/tools_solver_ui_menu_file.png"><img alt="File Menu" src="_images/tools_solver_ui_menu_file.png" style="width: 202.0px; height: 126.0px;" /></a>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">File</span></code> menu contains features to create and manipulate the
 overall use of the Solver UI, such as Collections.</p>
@@ -185,7 +204,7 @@ overall use of the Solver UI, such as Collections.</p>
 <div class="section" id="edit-menu">
 <h3>Edit Menu<a class="headerlink" href="#edit-menu" title="Permalink to this headline">¶</a></h3>
 <div class="figure align-right">
-<a class="reference internal image-reference" href="_images/tools_solver_ui_menu_edit.png"><img alt="Edit Menu" src="_images/tools_solver_ui_menu_edit.png" style="width: 192.0px; height: 193.5px;" /></a>
+<a class="reference internal image-reference" href="_images/tools_solver_ui_menu_edit.png"><img alt="Edit Menu" src="_images/tools_solver_ui_menu_edit.png" style="width: 317.0px; height: 171.0px;" /></a>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">Edit</span></code> menu displays options and features for how to change the
 solve or the usage of the Solver UI.</p>
@@ -227,7 +246,7 @@ Graph.</td>
 <p>The <code class="docutils literal notranslate"><span class="pre">View</span></code> menu controls the visibility of the Solver UI, and parts of
 the Maya Viewport during solves.</p>
 <div class="figure align-right">
-<a class="reference internal image-reference" href="_images/tools_solver_ui_menu_view.png"><img alt="View Menu" src="_images/tools_solver_ui_menu_view.png" style="width: 177.5px; height: 250.0px;" /></a>
+<a class="reference internal image-reference" href="_images/tools_solver_ui_menu_view.png"><img alt="View Menu" src="_images/tools_solver_ui_menu_view.png" style="width: 238.0px; height: 274.0px;" /></a>
 </div>
 <table border="1" class="colwidths-auto docutils" id="id6">
 <caption><span class="caption-text">View Menu</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
@@ -281,7 +300,7 @@ solve is calculated.</td>
 <p>The <code class="docutils literal notranslate"><span class="pre">Log</span></code> menu allows configuration of the logged messages in the Script
 Editor.</p>
 <div class="figure align-right">
-<a class="reference internal image-reference" href="_images/tools_solver_ui_menu_log.png"><img alt="Log Menu" src="_images/tools_solver_ui_menu_log.png" style="width: 97.0px; height: 126.0px;" /></a>
+<a class="reference internal image-reference" href="_images/tools_solver_ui_menu_log.png"><img alt="Log Menu" src="_images/tools_solver_ui_menu_log.png" style="width: 139.0px; height: 133.0px;" /></a>
 </div>
 <table border="1" class="colwidths-auto docutils" id="id7">
 <caption><span class="caption-text">Log Menu</span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>

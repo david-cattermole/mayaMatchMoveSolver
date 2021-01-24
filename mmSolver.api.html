@@ -1829,6 +1829,34 @@ the solver.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="mmSolver.api.SolverBasic.get_eval_object_relationships">
+<code class="descname">get_eval_object_relationships</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBasic.get_eval_object_relationships" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get ‘Pre-Solve Object Relationships’ value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverBasic.set_eval_object_relationships">
+<code class="descname">set_eval_object_relationships</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBasic.set_eval_object_relationships" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set ‘Pre-Solve Object Relationships’ value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em><em> or </em><em>int</em><em> or </em><em>long</em>) – Value to be set.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="mmSolver.api.SolverBasic.get_eval_complex_graphs">
 <code class="descname">get_eval_complex_graphs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverBasic.get_eval_complex_graphs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get ‘Evaluate Complex Node Graphs’ value.</p>
@@ -2213,6 +2241,34 @@ the solver.</li>
 <dt id="mmSolver.api.SolverStandard.set_global_solve">
 <code class="descname">set_global_solve</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_global_solve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set Global Solve value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>bool</em><em> or </em><em>int</em><em> or </em><em>long</em>) – Value to be set.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.get_eval_object_relationships">
+<code class="descname">get_eval_object_relationships</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.get_eval_object_relationships" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get ‘Pre-Solve Object Relationships’ value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mmSolver.api.SolverStandard.set_eval_object_relationships">
+<code class="descname">set_eval_object_relationships</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.set_eval_object_relationships" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set ‘Pre-Solve Object Relationships’ value.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3617,7 +3673,7 @@ existing animCurves.</p>
 <h3>Execute<a class="headerlink" href="#execute" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="mmSolver.api.ExecuteOptions">
-<em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">ExecuteOptions</code><span class="sig-paren">(</span><em>verbose</em>, <em>refresh</em>, <em>disable_viewport_two</em>, <em>force_update</em>, <em>pre_solve_force_eval</em>, <em>do_isolate</em>, <em>display_grid</em>, <em>display_node_types</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.ExecuteOptions" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">mmSolver.api.</code><code class="descname">ExecuteOptions</code><span class="sig-paren">(</span><em>verbose</em>, <em>refresh</em>, <em>disable_viewport_two</em>, <em>force_update</em>, <em>pre_solve_force_eval</em>, <em>do_isolate</em>, <em>display_grid</em>, <em>display_node_types</em>, <em>use_minimal_ui</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.ExecuteOptions" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="mmSolver.api.ExecuteOptions.disable_viewport_two">
 <code class="descname">disable_viewport_two</code><a class="headerlink" href="#mmSolver.api.ExecuteOptions.disable_viewport_two" title="Permalink to this definition">¶</a></dt>
@@ -3661,6 +3717,12 @@ existing animCurves.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="mmSolver.api.ExecuteOptions.use_minimal_ui">
+<code class="descname">use_minimal_ui</code><a class="headerlink" href="#mmSolver.api.ExecuteOptions.use_minimal_ui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 8</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="mmSolver.api.ExecuteOptions.verbose">
 <code class="descname">verbose</code><a class="headerlink" href="#mmSolver.api.ExecuteOptions.verbose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 0</p>
@@ -3670,7 +3732,7 @@ existing animCurves.</p>
 
 <dl class="function">
 <dt id="mmSolver.api.createExecuteOptions">
-<code class="descclassname">mmSolver.api.</code><code class="descname">createExecuteOptions</code><span class="sig-paren">(</span><em>verbose=False</em>, <em>refresh=False</em>, <em>disable_viewport_two=True</em>, <em>force_update=False</em>, <em>do_isolate=False</em>, <em>pre_solve_force_eval=True</em>, <em>display_grid=True</em>, <em>display_node_types=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.createExecuteOptions" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.api.</code><code class="descname">createExecuteOptions</code><span class="sig-paren">(</span><em>verbose=False</em>, <em>refresh=False</em>, <em>disable_viewport_two=True</em>, <em>force_update=False</em>, <em>do_isolate=False</em>, <em>pre_solve_force_eval=True</em>, <em>display_grid=True</em>, <em>display_node_types=None</em>, <em>use_minimal_ui=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.createExecuteOptions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create <a class="reference internal" href="#mmSolver.api.ExecuteOptions" title="mmSolver.api.ExecuteOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecuteOptions</span></code></a> object.</p>
 <p>If a keyword argument is not given, a reasonable default value is
 used.</p>
@@ -3698,6 +3760,8 @@ allows us to turn on/off any object type
 during solving. If an argument is not
 given or is None, the object type
 visibility will not be changed.</li>
+<li><strong>use_minimal_ui</strong> (<em>bool</em>) – Change the Solver UI to be “minimal”, the
+revert after a solve completes (or fails).</li>
 </ul>
 </td>
 </tr>

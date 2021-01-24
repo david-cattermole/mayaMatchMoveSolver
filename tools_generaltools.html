@@ -491,6 +491,59 @@ keyed, and the Controller is deleted.</li>
 </pre></div>
 </div>
 </div>
+<div class="section" id="user-preferences">
+<span id="user-preferences-tool-ref"></span><h2>User Preferences<a class="headerlink" href="#user-preferences" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/tools_user_preferences_ui.png"><img alt="User Preferences window" src="_images/tools_user_preferences_ui.png" style="width: 60%;" /></a>
+</div>
+<p>The <em>User Preferences</em> window is used to change how mmSolver tools and
+general functions behave, by default.</p>
+<table border="1" class="colwidths-auto docutils" id="id2">
+<caption><span class="caption-text">Options</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Values</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Add New Markers to</td>
+<td><em>None</em> or <em>Active Collection</em></td>
+<td>When a new Marker is created by any tool, what Collection should
+this Marker be automatically added to?</td>
+</tr>
+<tr class="row-odd"><td>Validate on Open</td>
+<td><em>Yes</em> or <em>No</em></td>
+<td>Opening the <a class="reference internal" href="tools_solver_ui.html#solver-ui-ref"><span class="std std-ref">Solver UI</span></a>, should the solver
+values be validated?</td>
+</tr>
+<tr class="row-even"><td>Show Validate Button</td>
+<td><em>Yes</em> or <em>No</em></td>
+<td>Should the <em>Validate</em> button and statistics be shown in the
+<a class="reference internal" href="tools_solver_ui.html#solver-ui-ref"><span class="std std-ref">Solver UI</span></a>? Regardless of this option,
+Validation will automatically be run when clicking the <em>Solve</em> button.</td>
+</tr>
+<tr class="row-odd"><td>Minimal UI While Solving</td>
+<td><em>Yes</em> or <em>No</em></td>
+<td>If <em>Yes</em>, the <a class="reference internal" href="tools_solver_ui.html#solver-ui-ref"><span class="std std-ref">Solver UI</span></a> will only display
+the progress bar while solving, and then switch back to the full
+UI solving has finished. If <em>No</em>, the <a class="reference internal" href="tools_solver_ui.html#solver-ui-ref"><span class="std std-ref">Solver UI</span></a>
+will not be adjusted.</td>
+</tr>
+</tbody>
+</table>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Open ‘User Preferences’ window.</li>
+<li>Change options.</li>
+<li>Press “Save” button.</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.userprefswindow.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -521,6 +574,7 @@ keyed, and the Controller is deleted.</li>
 <li><a class="reference internal" href="#unparent-to-world">Unparent to World</a></li>
 <li><a class="reference internal" href="#remove-solver-nodes">Remove Solver Nodes</a></li>
 <li><a class="reference internal" href="#create-remove-controller">Create / Remove Controller</a></li>
+<li><a class="reference internal" href="#user-preferences">User Preferences</a></li>
 </ul>
 </li>
 </ul>

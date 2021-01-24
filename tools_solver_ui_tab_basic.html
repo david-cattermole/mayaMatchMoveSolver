@@ -50,7 +50,7 @@
   <div class="section" id="basic-solver-tab">
 <h1>Basic Solver Tab<a class="headerlink" href="#basic-solver-tab" title="Permalink to this headline">¶</a></h1>
 <div class="figure align-center" id="id1">
-<a class="reference internal image-reference" href="_images/tools_solver_ui_solver_tab_basic.png"><img alt="Solver Basic Tab" src="_images/tools_solver_ui_solver_tab_basic.png" style="width: 80%;" /></a>
+<a class="reference internal image-reference" href="_images/tools_solver_ui_solver_tab_basic.png"><img alt="Solver Basic Tab" src="_images/tools_solver_ui_solver_tab_basic.png" style="width: 90%;" /></a>
 <p class="caption"><span class="caption-text">Solver Basic Tab</span></p>
 </div>
 <p>The Basic solver will <em>only</em> solve animated attributes.
@@ -94,6 +94,33 @@ limited number of frames to build confidence in the solver attributes
 currently created, and then reducing this number to ‘1’ to solve each
 frame.</p>
 </div>
+<div class="section" id="solver-options">
+<h2>Solver Options<a class="headerlink" href="#solver-options" title="Permalink to this headline">¶</a></h2>
+<p>The solver options below are extra options used to change how the
+solver works internally.</p>
+<div class="section" id="evaluate-object-relationships">
+<h3>Evaluate Object Relationships<a class="headerlink" href="#evaluate-object-relationships" title="Permalink to this headline">¶</a></h3>
+<p>Check this option <strong>on</strong> to evaluate the Marker and Attribute relationships
+- how the objects are connected.</p>
+<p>With this feature turned on, <em>mmSolver</em> is able to use the relationship
+between Markers and Attributes to improve performance. For example,
+if Marker A does not affect node B, <em>mmSolver</em> can skip this calculation.</p>
+<p>It is recommended to turn this check-box if you have many (eg, 10+)
+Markers and Attributes in the solve, and/or when you are solving static
+Attributes.</p>
+</div>
+<div class="section" id="evaluate-complex-node-graphs">
+<h3>Evaluate Complex Node Graphs<a class="headerlink" href="#evaluate-complex-node-graphs" title="Permalink to this headline">¶</a></h3>
+<p>When enabled, <em>Evaluate Complex Node Graphs</em> will change the internal
+evaluation method to help solve “complex” node networks (such as
+Mesh Rivets which have cyclical node connection networks).</p>
+<p>Evaluation of “complex” node graphs can significantly impact performance.
+It is recommended to turn this feature <strong>off</strong> unless the Maya scene
+is not evaluating correctly without this feature.</p>
+<p>Mesh Rivets, using the classic <a class="reference external" href="https://www.highend3d.com/maya/script/rivet-button-for-maya">rivet.mel</a> script can be evaluated using
+this feature enabled.</p>
+</div>
+</div>
 </div>
 
 
@@ -106,6 +133,11 @@ frame.</p>
   <ul>
 <li><a class="reference internal" href="#">Basic Solver Tab</a><ul>
 <li><a class="reference internal" href="#frames">Frames</a></li>
+<li><a class="reference internal" href="#solver-options">Solver Options</a><ul>
+<li><a class="reference internal" href="#evaluate-object-relationships">Evaluate Object Relationships</a></li>
+<li><a class="reference internal" href="#evaluate-complex-node-graphs">Evaluate Complex Node Graphs</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

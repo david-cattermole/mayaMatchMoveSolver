@@ -562,3 +562,62 @@ To run the tool, use this Python command:
 
     # Remove selected Controller
     tool.remove()
+
+.. _user-preferences-tool-ref:
+
+User Preferences
+----------------
+
+.. figure:: images/tools_user_preferences_ui.png
+    :alt: User Preferences window
+    :align: center
+    :width: 60%
+
+The *User Preferences* window is used to change how mmSolver tools and
+general functions behave, by default.
+
+.. list-table:: Options
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Values
+     - Description
+
+   * - Add New Markers to
+     - *None* or *Active Collection*
+     - When a new Marker is created by any tool, what Collection should
+       this Marker be automatically added to?
+
+   * - Validate on Open
+     - *Yes* or *No*
+     - Opening the :ref:`Solver UI <solver-ui-ref>`, should the solver
+       values be validated?
+
+   * - Show Validate Button
+     - *Yes* or *No*
+     - Should the *Validate* button and statistics be shown in the
+       :ref:`Solver UI <solver-ui-ref>`? Regardless of this option,
+       Validation will automatically be run when clicking the *Solve* button.
+
+   * - Minimal UI While Solving
+     - *Yes* or *No*
+     - If *Yes*, the :ref:`Solver UI <solver-ui-ref>` will only display
+       the progress bar while solving, and then switch back to the full
+       UI solving has finished. If *No*, the :ref:`Solver UI <solver-ui-ref>`
+       will not be adjusted.
+
+Usage:
+
+1) Open 'User Preferences' window.
+
+2) Change options.
+
+3) Press "Save" button.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.userprefswindow.tool as tool
+    tool.open_window()

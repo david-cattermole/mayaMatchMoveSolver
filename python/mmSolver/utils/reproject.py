@@ -82,7 +82,6 @@ def create_reprojection_on_camera(cam_tfm, cam_shp):
     maya.cmds.connectAttr(cam_tfm + '.worldMatrix', node + '.cameraWorldMatrix')
     maya.cmds.connectAttr(cam_shp + '.focalLength', node + '.focalLength')
     maya.cmds.connectAttr(cam_shp + '.cameraAperture', node + '.cameraAperture')
-    maya.cmds.connectAttr(cam_shp + '.filmOffset', node + '.filmOffset')
     maya.cmds.connectAttr(cam_shp + '.filmFit', node + '.filmFit')
     maya.cmds.connectAttr(cam_shp + '.nearClipPlane', node + '.nearClipPlane')
     maya.cmds.connectAttr(cam_shp + '.farClipPlane', node + '.farClipPlane')
@@ -95,26 +94,14 @@ def create_reprojection_on_camera(cam_tfm, cam_shp):
     maya.cmds.setAttr(mult_node + '.input2Y', resolution_factor)
     maya.cmds.connectAttr(cam_shp + '.horizontalFilmAperture', mult_node + '.input1X')
     maya.cmds.connectAttr(cam_shp + '.verticalFilmAperture', mult_node + '.input1Y')
+    maya.cmds.connectAttr(mult_node + '.outputX', node + '.imageWidth')
+    maya.cmds.connectAttr(mult_node + '.outputY', node + '.imageHeight')
 
     # create 2d offset setup
-    offset_factor = 1000.0
-    ## this is a node intended for the user to enter a desired offset value
     offset_plus_minus_node = maya.cmds.createNode('plusMinusAverage', name='offset_plusMinusAverage1')
-    ## this node is to just multiply the value from the previous node since
-    ## it seems like the offset only works with highly high values so it
-    ## merely exists to make the first offset_plus_minus_node more sensible
-    offset_mult_node = maya.cmds.createNode('multiplyDivide', name='offset_multiplyDivide1')
-    maya.cmds.connectAttr(offset_plus_minus_node + '.output2Dx', offset_mult_node + '.input1X')
-    maya.cmds.connectAttr(offset_plus_minus_node + '.output2Dy', offset_mult_node + '.input1Y')
-    maya.cmds.setAttr(offset_mult_node + '.input2X', offset_factor)
-    maya.cmds.setAttr(offset_mult_node + '.input2Y', offset_factor)
-    resulting_offset_plus_minus_node = maya.cmds.createNode('plusMinusAverage', name='resulting_plusMinusAverage1')
-    maya.cmds.connectAttr(mult_node + '.outputX', resulting_offset_plus_minus_node + '.input2D[0].input2Dx')
-    maya.cmds.connectAttr(mult_node + '.outputY', resulting_offset_plus_minus_node + '.input2D[0].input2Dy')
-    maya.cmds.connectAttr(offset_mult_node + '.outputX', resulting_offset_plus_minus_node + '.input2D[1].input2Dx')
-    maya.cmds.connectAttr(offset_mult_node + '.outputY', resulting_offset_plus_minus_node + '.input2D[1].input2Dy')
-    maya.cmds.connectAttr(resulting_offset_plus_minus_node + '.output2Dx', node + '.imageWidth')
-    maya.cmds.connectAttr(resulting_offset_plus_minus_node + '.output2Dy', node + '.imageHeight')
+    maya.cmds.connectAttr(cam_shp + '.filmOffset', offset_plus_minus_node + '.input2D[0]')
+    maya.cmds.setAttr(offset_plus_minus_node + '.input2D[1]', 0.0, 0.0, type='float2')
+    maya.cmds.connectAttr(offset_plus_minus_node + '.output2D', node + '.filmOffset')
 
     # create a zoom setup
     zoom_mult_node = maya.cmds.createNode('multiplyDivide', name='zoom_multiplyDivide1')

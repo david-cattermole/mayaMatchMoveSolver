@@ -18,3 +18,7 @@
 """
 Contains constant values for the Center 2D tool.
 """
+
+WINDOW_TITLE = 'Center 2D Offset'
+
+CONFIG_WIDTH_KEY = 'mmSolver_centertwodee_width'

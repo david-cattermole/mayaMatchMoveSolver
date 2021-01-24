@@ -272,7 +272,7 @@ class SolverWindow(BaseWindow):
 
         # Display Object Average Deviation
         label = 'Average Deviation'
-        tooltip = 'Display average  deviation column'
+        tooltip = 'Display average deviation column'
         value = lib_state.get_display_object_average_deviation_state()
         action = QtWidgets.QAction(label, view_menu)
         action.setStatusTip(tooltip)

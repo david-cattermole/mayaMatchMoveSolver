@@ -74,6 +74,8 @@ class PrefWindow(BaseWindow):
              self.subForm.getSolverUIValidateOnOpenConfigValue),
             (pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY,
              self.subForm.getSolverUIShowValidateButtonConfigValue),
+            (pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
+             self.subForm.getSolverUIMinimalUIWhileSolvingConfigValue),
         ]
         for key, func in options:
             value = func()

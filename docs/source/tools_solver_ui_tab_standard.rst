@@ -4,7 +4,7 @@ Standard Solver Tab
 .. figure:: images/tools_solver_ui_solver_tab_standard.png
     :alt: Solver Standard Tab
     :align: center
-    :width: 80%
+    :width: 90%
 
     Solver Standard Tab
 
@@ -75,3 +75,40 @@ changing the current frame to the next/previous root frame.
 
 For more details on tools to change frame, create or remove root frames,
 see the :ref:`Frame Tools <frame-tools-heading>`.
+
+Solver Options
+--------------
+
+The solver options below are extra options used to change how the
+solver works internally.
+
+Evaluate Object Relationships
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Check this option **on** to evaluate the Marker and Attribute relationships
+- how the objects are connected.
+
+With this feature turned on, *mmSolver* is able to use the relationship
+between Markers and Attributes to improve performance. For example,
+if Marker A does not affect node B, *mmSolver* can skip this calculation.
+
+It is recommended to turn this check-box if you have many (eg, 10+)
+Markers and Attributes in the solve, and/or when you are solving static
+Attributes.
+
+Evaluate Complex Node Graphs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When enabled, *Evaluate Complex Node Graphs* will change the internal
+evaluation method to help solve "complex" node networks (such as
+Mesh Rivets which have cyclical node connection networks).
+
+Evaluation of "complex" node graphs can significantly impact performance.
+It is recommended to turn this feature **off** unless the Maya scene
+is not evaluating correctly without this feature.
+
+Mesh Rivets, using the classic `rivet.mel`_ script can be evaluated using
+this feature enabled.
+
+.. _rivet.mel:
+   https://www.highend3d.com/maya/script/rivet-button-for-maya

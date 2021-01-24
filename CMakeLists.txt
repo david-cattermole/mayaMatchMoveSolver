@@ -25,12 +25,13 @@ cmake_minimum_required(VERSION 2.8.12)
 project(mayaMatchMoveSolver)
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 3)
-set(PROJECT_VERSION_PATCH 11)
+set(PROJECT_VERSION_PATCH 12)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
 set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
-set(PROJECT_COPYRIGHT "2018, 2019, 2020, David Cattermole, Anil Reddy.")
+set(PROJECT_COPYRIGHT
+  "2018, 2019, 2020, 2021, David Cattermole, Anil Reddy, Kazuma Tonegawa.")
 
 
 # Add custom modules to the module path
@@ -41,51 +42,74 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/mod
 # developer debug. If the developer is working on some Python code
 # only, we don't need to wait for the Maya Plug-In to compute each
 # time.
-set(BUILD_PLUGIN 1 CACHE BOOLEAN "Do you want to build the plug-in?")
-set(BUILD_PYTHON 1 CACHE BOOLEAN "Do you want to build and install the Python API and tools?")
-set(BUILD_MEL 1 CACHE BOOLEAN "Do you want to build and install the MEL scripts and tools?")
-set(BUILD_3DEQUALIZER 1 CACHE BOOLEAN "Do you want to build and install 3DEqualizer scripts?")
-set(BUILD_SYNTHEYES 1 CACHE BOOLEAN "Do you want to build and install SynthEyes scripts?")
-set(BUILD_QT_UI 1 CACHE BOOLEAN "Do you want to build the Qt UI files?")
-set(BUILD_DOCS 1 CACHE BOOLEAN "Do you want to build and install the documentation?")
-set(BUILD_ICONS 1 CACHE BOOLEAN "Do you want to build and install the icons?")
-set(BUILD_CONFIG 1 CACHE BOOLEAN "Do you want to build and install the config files?")
-set(BUILD_TESTS 1 CACHE BOOLEAN "Do you want to build the test files?")
+set(BUILD_PLUGIN 1 CACHE BOOL
+        "Do you want to build the plug-in?")
+set(BUILD_PYTHON 1 CACHE BOOL
+        "Do you want to build and install the Python API and tools?")
+set(BUILD_MEL 1 CACHE BOOL
+        "Do you want to build and install the MEL scripts and tools?")
+set(BUILD_3DEQUALIZER 1 CACHE BOOL
+        "Do you want to build and install 3DEqualizer scripts?")
+set(BUILD_SYNTHEYES 1 CACHE BOOL
+        "Do you want to build and install SynthEyes scripts?")
+set(BUILD_QT_UI 1 CACHE BOOL
+        "Do you want to build the Qt UI files?")
+set(BUILD_DOCS 1 CACHE BOOL
+        "Do you want to build and install the documentation?")
+set(BUILD_ICONS 1 CACHE BOOL
+        "Do you want to build and install the icons?")
+set(BUILD_CONFIG 1 CACHE BOOL
+        "Do you want to build and install the config files?")
+set(BUILD_TESTS 1 CACHE BOOL
+        "Do you want to build the test files?")
 
 
 # Maya SDK
-set(MAYA_VERSION "2017" CACHE STRING "Maya version number")
-set(MAYA_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH "Maya install directory")
-set(DEVKIT_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH "Maya development kit (devkit) directory")
-set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH "Maya include directory")
-set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH "Maya library directory")
+set(MAYA_VERSION "2017" CACHE STRING
+        "Maya version number")
+set(MAYA_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH
+        "Maya install directory")
+set(DEVKIT_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH 
+        "Maya development kit (devkit) directory")
+set(MAYA_INCLUDE_PATH
+        "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH "Maya include directory")
+set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH 
+        "Maya library directory")
 
 
 # Lev-Mar
 #
 # WARNING: 'Lev-Mar' is GPL licensed and must not be
 # distributed in binary form to anyone.
-set(USE_GPL_LEVMAR 0 CACHE BOOLEAN "Compile with the GPL-licensed Lev-Mar library?")
+set(USE_GPL_LEVMAR 0 CACHE BOOL
+        "Compile with the GPL-licensed Lev-Mar library?")
 set(LEVMAR_ROOT "/usr/local" CACHE PATH "Levmar directory")
-set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH "Levmar include directory")
+set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH
+        "Levmar include directory")
 set(LEVMAR_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
 
 
 # CMinpack
-set(USE_CMINPACK 1 CACHE BOOLEAN "Compile with the cminpack library?")
+set(USE_CMINPACK 1 CACHE BOOL "Compile with the cminpack library?")
 set(CMINPACK_ROOT "/usr/local" CACHE PATH "CMinpack directory")
-set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH "cminpack include directory")
+set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH
+        "cminpack include directory")
 set(CMINPACK_LIB_PATH "/usr/local/lib" CACHE PATH "cminpack library directory")
 
 
 # Extra (BLAS) Libraries
-set(USE_BLAS OFF CACHE BOOLEAN "Should we use BLAS?")
+set(USE_BLAS OFF CACHE BOOL "Should we use BLAS?")
 set(BLAS_INCLUDE_PATH "/usr/include/blas" CACHE PATH "BLAS library directory")
 set(BLAS_LIB_PATH "/usr/lib64/blas" CACHE PATH "BLAS library directory")
-set(BLAS_LIB_NAMES "" CACHE STRING "BLAS libraries to link")
+set(BLAS_LIB_NAMES
+        ""
+        CACHE STRING
+        "BLAS libraries to link")
+
 
 # Default Solver to use.
-set(PREFERRED_SOLVER "cminpack_lmder" CACHE STRING "Choices are cminpack_lm, cminpack_lmder or levmar. Which solver is used by default?")
+set(PREFERRED_SOLVER "cminpack_lmder" CACHE STRING
+        "Choices are cminpack_lm, cminpack_lmder or levmar. Which solver is used by default?")
 
 include(MMSolverUtils)
 

@@ -1039,8 +1039,7 @@ bool solve(SolverOptions &solverOptions,
     }
     if (solverOptions.removeUnusedAttributes == false) {
         usedAttrList = attrList;
-    }
-    else {
+    } else {
         usedObjectsChanged = true;
     }
     if (usedObjectsChanged == true) {

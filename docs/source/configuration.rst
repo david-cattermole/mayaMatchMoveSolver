@@ -1,8 +1,8 @@
 Configuration
 =============
 
-``mmSolver`` can be customised using configuration files.  The default
-configuration of ``mmSolver`` is stored in the installation directory
+*mmSolver* can be customised using configuration files.  The default
+configuration of *mmSolver* is stored in the installation directory
 'config' sub-directory, but each file may be overridden by adding a
 file into the home directory.
 
@@ -12,10 +12,17 @@ do not accumulate values.
 
 For documentation of the config utility module, see `mmSolver.utils.config`.
 
+User Preferences
+----------------
+
+General user preferences affecting tools can be adjusted using the
+*User Preferences...* window. Please see the :ref:`user-preferences-tool-ref`
+page for details.
+
 Overriding the mmSolver Shelf and Menus
 ---------------------------------------
 
-To change the mmSolver shelf or menus, you may add or edit the
+To change the *mmSolver* shelf or menus, you may add or edit the
 configuration files in the home directory. See the `Home Directory
 Configuration` section for the specific directory.
 

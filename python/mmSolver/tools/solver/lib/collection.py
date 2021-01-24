@@ -798,12 +798,9 @@ def run_solve_ui(col,
             status_fn = window.setStatusLine
             info_fn = window.setSolveInfoLine
 
-        # Set a minimal window size while solving.
-        if options.use_minimal_ui is True:
-            maya.cmds.evalDeferred((
-                'import mmSolver.tools.solver.ui.solver_window;'
-                'mmSolver.tools.solver.ui.solver_window.set_minimal_ui(True)'
-            ))
+            # Set a minimal window size while solving.
+            if options.use_minimal_ui is True:
+                window.setMinimalUI(True)
 
         execute_collection(
             col,
@@ -818,10 +815,8 @@ def run_solve_ui(col,
             window.progressBar.setValue(100)
             window.progressBar.hide()
 
-        # Reset Window size.
-        if options.use_minimal_ui is True:
-            maya.cmds.evalDeferred((
-                'import mmSolver.tools.solver.ui.solver_window;'
-                'mmSolver.tools.solver.ui.solver_window.set_minimal_ui(False)'
-            ))
+            # Reset Window size.
+            if options.use_minimal_ui is True:
+                window.setMinimalUI(False)
+
     return

@@ -310,8 +310,9 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
             v = v | QtCore.Qt.ItemIsSelectable
         if self.indexEditable(index):
             v = v | QtCore.Qt.ItemIsEditable
-        if node.neverHasChildren():
-            v = v | QtCore.Qt.ItemNeverHasChildren
+        if Qt.__binding__ in ['PySide2', 'PyQt5']:
+            if node.neverHasChildren():
+                v = v | QtCore.Qt.ItemNeverHasChildren
         return v
 
     def parent(self, index):

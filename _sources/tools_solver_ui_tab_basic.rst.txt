@@ -62,16 +62,17 @@ solver works internally.
 Evaluate Object Relationships
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Check this option **on** to evaluate the Marker and Attribute relationships
-- how the objects are connected.
+Check this option **on** to enable evaluation of the Marker and
+Attribute relationships - how the objects are connected.
 
-With this feature turned on, *mmSolver* is able to use the relationship
-between Markers and Attributes to improve performance. For example,
-if Marker A does not affect node B, *mmSolver* can skip this calculation.
+With this feature enabled, *mmSolver* is able to use the relationship
+between Markers and Attributes to improve performance. For example, if
+Marker *A* does not affect node *B*, *mmSolver* can skip this
+calculation.
 
-It is recommended to turn this check-box if you have many (eg, 10+)
-Markers and Attributes in the solve, and/or when you are solving static
-Attributes.
+It is recommended to enable this check-box if you have many (eg, 10+)
+Markers and Attributes in the solve, and / or when you are solving
+static Attributes with the Standard solver tab.
 
 Evaluate Complex Node Graphs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

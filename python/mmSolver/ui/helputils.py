@@ -111,6 +111,16 @@ def get_help_base_location(help_source=None):
 def open_help_in_browser(page=None, help_source=None):
     """
     Open help to a specific page.
+
+    :param page:
+        The specific page URL to open, or the home page if None is given.
+    :type page: None or str
+
+    :param help_source:
+        A value in HELP_SOURCE_LIST, denoting the help documentation
+        source to use (but not the source itself.)
+
+    :rtype: None
     """
     assert page is None or isinstance(page, basestring)
     url = get_help_base_location(help_source=help_source)

@@ -99,6 +99,10 @@ def get_help_base_location(help_source=None):
             )
             LOG.warning(msg, url)
             return None
+        # Web browsers do not open directories or files directly, but
+        # they can open "file://" URLs. On Windows with Firefox, if
+        # this is not used, the web-browser does not seem to open.
+        url = 'file://' + url
     elif help_source == HELP_SOURCE_INTERNET:
         url = str(WEB_SITE_HELP_LOCATION)
     else:

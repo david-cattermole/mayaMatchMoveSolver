@@ -53,19 +53,8 @@ def _launch_sysinfo_window():
 
 
 def create_edit_menu_items(menu,
-                           save_settings_func=None,
                            reset_settings_func=None):
-    with_save_settings = callable(save_settings_func) is True
     with_reset_settings = callable(reset_settings_func) is True
-
-    label = 'Save Settings'
-    tooltip = "Save the current tools's Settings."
-    action = QtWidgets.QAction(label, menu)
-    action.setStatusTip(tooltip)
-    action.setEnabled(with_save_settings)
-    if with_save_settings is True:
-        action.triggered.connect(save_settings_func)
-    menu.addAction(action)
 
     label = 'Reset Settings'
     tooltip = "Reset the current tools's Settings."

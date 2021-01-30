@@ -82,13 +82,6 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
         configmaya.set_scene_option(name, value, add_attr=True)
         LOG.debug('key=%r value=%r', name, value)
 
-    def save_options(self):
-        mode = self.function_comboBox.currentIndex()
-        width = self.width_spinBox.value()
-        self.modeIndexChanged(mode)
-        self.widthValueChanged(width)
-        return
-
     def reset_options(self):
         name = const.CONFIG_MODE_KEY
         value = const.DEFAULT_MODE
@@ -101,7 +94,6 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
         LOG.debug('key=%r value=%r', name, value)
 
         self.populateUi()
-        return
 
     def populateUi(self):
         """

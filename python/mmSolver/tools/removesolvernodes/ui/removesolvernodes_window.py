@@ -65,7 +65,6 @@ class RemoveSolverNodesWindow(BaseWindow):
         edit_menu = QtWidgets.QMenu('Edit', menubar)
         commonmenus.create_edit_menu_items(
             edit_menu,
-            save_settings_func=None,
             reset_settings_func=self.reset_options)
         menubar.addMenu(edit_menu)
 

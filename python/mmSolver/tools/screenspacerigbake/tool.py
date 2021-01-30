@@ -440,7 +440,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 con = cmds.parentConstraint(self.getViewportCamera(), screenz_master_grp)
 
                 #cmds.bakeResults(screenz_master_grp, t=(start_frame, end_frame), sm=True)
-                fastbake_lib.bakeAttributes([screenz_master_grp], start_frame, end_frame, False, [])
+                fastbake_lib.bake_attributes([screenz_master_grp], [], start_frame, end_frame, False)
                 cmds.delete(con)
                 # Create screenz depth connections
                 cmds.connectAttr(main_grp+"."+SCREEN_Z_DEPTH_ATTR_NAME, screenz_master_grp+".scaleX", f=True)
@@ -456,7 +456,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 cmds.parent(screen_xy_master_grp, screenz_master_grp, r=True)
                 con = cmds.pointConstraint(object, screen_xy_master_grp)
                 #cmds.bakeResults(screen_xy_master_grp, t=(start_frame, end_frame), sm=True)
-                fastbake_lib.bakeAttributes([screen_xy_master_grp], start_frame, end_frame, False, [])
+                fastbake_lib.bake_attributes([screen_xy_master_grp], [], start_frame, end_frame, False)
                 cmds.delete(con)
                 cmds.setAttr(screen_xy_master_grp+".translateZ", l=1)
 
@@ -467,8 +467,8 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 cmds.connectAttr(screen_xy_master_grp+".translateY", screenz_master_grp+".screenycopy", f=True)
                 #cmds.bakeResults(main_grp, at=["screenx","screeny"], t=(start_frame, end_frame), sm=True)
                 #cmds.bakeResults(screenz_master_grp, at=["screenxcopy","screenycopy"], t=(start_frame, end_frame), sm=True)
-                fastbake_lib.bakeAttributes([main_grp], start_frame, end_frame, False, ["screenx","screeny"])
-                fastbake_lib.bakeAttributes([screenz_master_grp], start_frame, end_frame, False, ["screenxcopy","screenycopy"])
+                fastbake_lib.bake_attributes([main_grp], ["screenx","screeny"], start_frame, end_frame, False)
+                fastbake_lib.bake_attributes([screenz_master_grp], ["screenxcopy","screenycopy"], start_frame, end_frame, False)
                 cmds.connectAttr(main_grp+".screenx", screen_xy_master_grp+".translateX", f=True)
                 cmds.connectAttr(main_grp+".screeny", screen_xy_master_grp+".translateY", f=True)
 
@@ -643,7 +643,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                         maintainOffset=False)
                     cmds.delete(con)
                     #cmds.bakeResults(temp_grp, time=(start_frame, end_frame), simulation=True)
-                    fastbake_lib.bakeAttributes([temp_grp], start_frame, end_frame, False, [])
+                    fastbake_lib.bake_attributes([temp_grp], [], start_frame, end_frame, False)
                     self.createRig(cam_tfm, sel_item, dlist, name_item, FREEZE_RIG_SUFFIX_NAME)                    
                     # Calc full freeze list
                     dlist = self.calcDistance(cam_tfm, temp_grp, 0)
@@ -702,7 +702,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
 
                         if bake_options == "full_bake":
                             #cmds.bakeResults(object, time=(start_frame, end_frame), simulation=True)
-                            fastbake_lib.bakeAttributes([object], start_frame, end_frame, False, [])
+                            fastbake_lib.bake_attributes([object], [], start_frame, end_frame, False)
                         if bake_options == "smart_bake":
                             nodes_list = cmds.listConnections(name+SCREEN_Z_MASTER_NAME)
                             for node in nodes_list:

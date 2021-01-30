@@ -79,10 +79,10 @@ def create_edit_menu_items(menu,
 
 
 def create_help_menu_items(menu, tool_help_func=None):
-    label = 'Help...'
+    label = 'Tool Help...'
     if callable(tool_help_func) is False:
-        label = 'Tool Help...'
-        tool_help_func = _launch_default_help_page()
+        label = 'Help...'
+        tool_help_func = _launch_default_help_page
     tooltip = 'Show help for this tool.'
     action = QtWidgets.QAction(label, menu)
     action.setStatusTip(tooltip)

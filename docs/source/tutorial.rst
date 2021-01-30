@@ -141,3 +141,21 @@ to stick to the same feature on the door, only the edge of the door.
 .. raw:: html
 
     <iframe width="720" height="405" src="https://www.youtube.com/embed/u0cU7X1b7zE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+Robot Arm - Rigid Hierarchy Solving
+-----------------------------------
+
+This video explains many practical topics and workflows:
+
+- The hotkeys and marking-menu
+- How to import 2D Markers
+- How to solve a transform hiearachy
+- Solving with attribute "Smoothness"
+- Approaches to solving rig hiearachy
+
+The YouTube video description contains download links to the files, so
+you can try it out for yourself!
+
+.. raw:: html
+
+    <iframe width="720" height="405" src="https://www.youtube.com/embed/y9U2QZT-VxA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

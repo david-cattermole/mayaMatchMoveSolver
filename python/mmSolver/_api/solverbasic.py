@@ -74,6 +74,26 @@ class SolverBasic(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_eval_object_relationships(self):
+        """
+        Get 'Pre-Solve Object Relationships' value.
+
+        :rtype: bool
+        """
+        return self._data.get(
+            'eval_object_relationships',
+            const.SOLVER_STD_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE)
+
+    def set_eval_object_relationships(self, value):
+        """
+        Set 'Pre-Solve Object Relationships' value.
+
+        :param value: Value to be set.
+        :type value: bool or int or long
+        """
+        assert isinstance(value, (bool, int, long))
+        self._data['eval_object_relationships'] = bool(value)
+
     def get_eval_complex_graphs(self):
         """
         Get 'Evaluate Complex Node Graphs' value.
@@ -282,18 +302,27 @@ class SolverBasic(solverbase.SolverBase):
         anim_iter_num = self.get_anim_iteration_num()
         lineup_iter_num = self.get_lineup_iteration_num()
         use_euler_filter = self._use_euler_filter
+        eval_object_relationships = self.get_eval_object_relationships()
         eval_complex_graphs = self.get_eval_complex_graphs()
         precomputed_data = self.get_precomputed_data()
 
         # Pre-calculate the 'affects' relationship.
-        generator = solverutils.compile_solver_affects(
-            col,
-            mkr_list,
-            attr_list,
-            precomputed_data,
-            withtest)
-        for action, vaction in generator:
-            yield action, vaction
+        if eval_object_relationships is True:
+            generator = solverutils.compile_solver_affects(
+                col,
+                mkr_list,
+                attr_list,
+                precomputed_data,
+                withtest)
+            for action, vaction in generator:
+                yield action, vaction
+        else:
+            generator = solverutils.compile_reset_used_hints(
+                col,
+                mkr_list,
+                attr_list)
+            for action, vaction in generator:
+                yield action, vaction
 
         if use_single_frame is True:
             # Single frame solve

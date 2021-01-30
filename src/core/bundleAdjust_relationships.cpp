@@ -559,9 +559,10 @@ void getMarkerToAttributeRelationship(const MarkerPtrList markerList,
             bool attrExists = plug.isNull() == false;
             if (attrExists) {
                 // The Maya attribute is expected to be an integer,
-                // however only 0 and 1 values are currently used.  In
-                // the future we may use values other than 0 and 1.
-                value = plug.asBool();
+                // however only -1, 0 and 1 values are currently used.
+                // In the future we may use values other than -1, 0
+                // and 1.
+                value = plug.asInt() == 1;
             }
             markerToAttrList[i][j] = value;
             ++j;

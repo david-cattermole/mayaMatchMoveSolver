@@ -45,6 +45,29 @@ def compile_solver_affects(col, mkr_list, attr_list,
     return
 
 
+def compile_reset_used_hints(col, mkr_list, attr_list):
+    func = 'mmSolver._api.solveraffects.reset_marker_used_hints'
+    mkr_nodes = [mkr.get_node() for mkr in mkr_list]
+    args = [mkr_nodes]
+    kwargs = {}
+    action = api_action.Action(
+        func=func,
+        args=args,
+        kwargs=kwargs)
+    yield action, None
+
+    func = 'mmSolver._api.solveraffects.reset_attr_used_hints'
+    node_attr_list = [attr.get_name() for attr in attr_list]
+    args = [col.get_node(), node_attr_list]
+    kwargs = {}
+    action = api_action.Action(
+        func=func,
+        args=args,
+        kwargs=kwargs)
+    yield action, None
+    return
+
+
 def compile_euler_filter(attr_list, withtest):
     """
     Compile a Euler filter to run on all rotation attributes, for

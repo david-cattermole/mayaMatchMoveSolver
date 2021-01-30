@@ -80,6 +80,10 @@ viewport.
      - Unparent to World tool.
      - :ref:`Link <unparent-to-world-tool-ref>`
 
+   * - Press **ALT + P** key
+     - Project Markers on Mesh
+     - :ref:`Link <project-marker-on-mesh-tool-ref>`
+
    * - Press **ALT + 1** key
      - Show/Hide geometry in the current viewport.
      - N/A

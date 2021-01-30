@@ -96,13 +96,6 @@ class LoadMarkerWindow(BaseWindow):
         self.menubar.show()
 
     def add_menus(self, menubar):
-        edit_menu = QtWidgets.QMenu('Edit', menubar)
-        commonmenus.create_edit_menu_items(
-            edit_menu,
-            save_settings_func=None,
-            reset_settings_func=None)
-        menubar.addMenu(edit_menu)
-
         help_menu = QtWidgets.QMenu('Help', menubar)
         commonmenus.create_help_menu_items(
             help_menu,

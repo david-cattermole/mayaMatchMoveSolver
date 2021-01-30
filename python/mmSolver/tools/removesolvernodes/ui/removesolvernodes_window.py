@@ -18,14 +18,22 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
-import mmSolver.utils.tools as tools_utils
+import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.ui.helputils as helputils
+import mmSolver.utils.tools as tools_utils
 import mmSolver.tools.removesolvernodes.constants as const
 import mmSolver.tools.removesolvernodes.tool as tool
 import mmSolver.tools.removesolvernodes.ui.removesolvernodes_layout as removesolvernodes_layout
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
+
+
+def _open_help():
+    src = helputils.get_help_source()
+    page = 'tools_generaltools.html#remove-solver-nodes'
+    helputils.open_help_in_browser(page=page, help_source=src)
+    return
 
 
 class RemoveSolverNodesWindow(BaseWindow):
@@ -43,18 +51,29 @@ class RemoveSolverNodesWindow(BaseWindow):
         # Standard Buttons
         self.baseHideStandardButtons()
         self.applyBtn.show()
-        self.resetBtn.show()
-        self.helpBtn.show()
         self.closeBtn.show()
         self.applyBtn.setText('Clean')
-
         self.applyBtn.clicked.connect(self.clean)
-        self.resetBtn.clicked.connect(self.reset_options)
-        self.helpBtn.clicked.connect(self.help)
 
         # Hide irrelevant stuff
-        self.baseHideMenuBar()
         self.baseHideProgressBar()
+
+        self.add_menus(self.menubar)
+        self.menubar.show()
+
+    def add_menus(self, menubar):
+        edit_menu = QtWidgets.QMenu('Edit', menubar)
+        commonmenus.create_edit_menu_items(
+            edit_menu,
+            save_settings_func=None,
+            reset_settings_func=self.reset_options)
+        menubar.addMenu(edit_menu)
+
+        help_menu = QtWidgets.QMenu('Help', menubar)
+        commonmenus.create_help_menu_items(
+            help_menu,
+            tool_help_func=_open_help)
+        menubar.addMenu(help_menu)
 
     def reset_options(self):
         form = self.getSubForm()
@@ -91,12 +110,6 @@ class RemoveSolverNodesWindow(BaseWindow):
                                       undo_chunk_name=undo_id,
                                       restore_current_frame=True):
             tool.delete_nodes(all_list_to_delete)
-
-    def help(self):
-        src = helputils.get_help_source()
-        page = 'tools_generaltools.html#remove-solver-nodes'
-        helputils.open_help_in_browser(page=page, help_source=src)
-        return
 
 
 def main(show=True, auto_raise=True, delete=False):

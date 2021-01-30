@@ -99,7 +99,6 @@ def _get_full_path_plug(plug):
     """
     node = plug.partition('.')[0]
     attr = plug.partition('.')[-1]
-    attr = maya.cmds.attributeName(plug, long=True)
     node = maya.cmds.ls(node, long=True)[0]
     full_path = node + '.' + attr
     return str(full_path)
@@ -225,9 +224,18 @@ def _convert_node_to_plugs(node, attr, node_type,
 
             affects_this_plug = maya.cmds.affects(attr_, node_) or []
             for attr__ in affects_this_plug:
+                if not node_utils.attribute_exists(attr__, node_):
+                    continue
                 node_attr = node_ + '.' + attr__
-                node_attr = _get_full_path_plug(node_attr)
-                conn_attrs += [node_attr]
+                compound_attrs = maya.cmds.listAttr(node_attr, multi=True)
+                if compound_attrs > 1:
+                    for array_item in compound_attrs:
+                        node_attr = node_ + '.' + array_item
+                        node_attr = _get_full_path_plug(node_attr)
+                        conn_attrs += [node_attr]
+                else:
+                    node_attr = _get_full_path_plug(node_attr)
+                    conn_attrs += [node_attr]
         # Only unique attributes.
         conn_attrs = list(set(conn_attrs))
     return plugs

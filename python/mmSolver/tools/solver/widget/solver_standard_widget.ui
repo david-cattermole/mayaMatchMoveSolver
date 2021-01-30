@@ -31,10 +31,7 @@
     <layout class="QHBoxLayout" name="rootFrames_layout"/>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="options_layout" stretch="0,0,0">
-     <property name="spacing">
-      <number>10</number>
-     </property>
+    <layout class="QHBoxLayout" name="options_layout">
      <item>
       <layout class="QVBoxLayout" name="options1_layout">
        <item>
@@ -71,6 +68,13 @@
      </item>
      <item>
       <layout class="QVBoxLayout" name="options2_layout">
+       <item>
+        <widget class="QCheckBox" name="evalObjectRelationships_checkBox">
+         <property name="text">
+          <string>Evaluate Object Relationships</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QCheckBox" name="evalComplexGraphs_checkBox">
          <property name="text">
@@ -125,7 +129,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>5</height>
+       <height>1</height>
       </size>
      </property>
     </spacer>

@@ -50,6 +50,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         self.updateAddNewMarkersToWidget(config)
         self.updateSolverUIValidateOnOpenWidget(config)
         self.updateSolverUIShowValidateButtonWidget(config)
+        self.updateSolverUIMinimalUIWhileSolvingWidget(config)
         return
 
     def updateAddNewMarkersToWidget(self, config):
@@ -100,5 +101,22 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
     def getSolverUIShowValidateButtonConfigValue(self):
         key = pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY
         label = self.showValidateButtonComboBox.currentText()
+        value = userprefs_lib.get_value_from_label(key, label)
+        return value
+
+    def updateSolverUIMinimalUIWhileSolvingWidget(self, config):
+        key = pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY
+        value = userprefs_lib.get_value(config, key)
+        label = userprefs_lib.get_label_from_value(key, value)
+        assert isinstance(label, basestring)
+        labels = userprefs_lib.get_labels(key)
+        self.minimalUIWhileSolvingComboBox.clear()
+        self.minimalUIWhileSolvingComboBox.addItems(labels)
+        self.minimalUIWhileSolvingComboBox.setCurrentText(label)
+        return
+
+    def getSolverUIMinimalUIWhileSolvingConfigValue(self):
+        key = pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY
+        label = self.minimalUIWhileSolvingComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
         return value

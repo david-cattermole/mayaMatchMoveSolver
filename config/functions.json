@@ -571,8 +571,8 @@
             "name_shelf": "RmCtrl",
             "tooltip": "Remove Controller for selected node.",
             "command": [
-                "import mmSolver.tools.removecontroller.tool;",
-                "mmSolver.tools.removecontroller.tool.main();"
+                "import mmSolver.tools.removecontroller2.tool;",
+                "mmSolver.tools.removecontroller2.tool.main();"
             ]
         },
         "deform_marker": {
@@ -636,7 +636,7 @@
             ]
         },
         "remove_all_solver_nodes": {
-            "name": "Remove All Solver Nodes",
+            "name": "Remove All Solver Nodes...",
             "tooltip": "Remove all nodes related to matchmoveSolver to clean scene file.",
             "command": [
                 "import mmSolver.tools.removesolvernodes.tool as tool;",

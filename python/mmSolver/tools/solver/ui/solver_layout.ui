@@ -146,7 +146,7 @@
     <layout class="QHBoxLayout" name="solver_layout"/>
    </item>
    <item>
-    <widget class="Line" name="line">
+    <widget class="Line" name="line_1">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

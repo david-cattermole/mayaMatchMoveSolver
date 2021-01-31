@@ -83,15 +83,20 @@ class CreateControllerWindow(BaseWindow):
             disable_viewport=True,
             disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
         with ctx:
-            try:
-                form.create_locator_group()
-            except Exception as e:
-                LOG.error(e)
+            form.create_locator_group()
         return
 
     def create_controller(self):
         form = self.getSubForm()
-        form.create_controller_button_clicked()
+        ctx = tools_utils.tool_context(
+            use_undo_chunk=True,
+            restore_current_frame=True,
+            use_dg_evaluation_mode=True,
+            disable_viewport=True,
+            disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
+        with ctx:
+            form.create_controller_button_clicked()
+        return
 
     def reset_options(self):
         form = self.getSubForm()

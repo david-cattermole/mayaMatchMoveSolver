@@ -19,6 +19,7 @@
 import maya.cmds as cmds
 import maya.mel as mel
 
+import mmSolver.utils.node as node_utils
 import mmSolver.tools.fastbake.lib as fastbake_lib
 import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.logger
@@ -111,6 +112,27 @@ def _world_bake(pivot, main, loc_grp, start, end, smart_bake=False):
     fastbake_lib.bake_attributes(loc_grp, attrs, start, end, smart_bake)
     cmds.delete(parent_con)
     return loc_grp
+
+
+def _find_constraints_from_node(node):
+    constraints = cmds.listConnections(
+        node + ".parentMatrix[0]",
+        destination=True, source=False, type="constraint")
+    constraints = [n for n in constraints
+                   if node_utils.node_is_referenced(n) is False]
+    constraints = list(set(constraints))
+    return constraints
+
+
+def _remove_constraint_blend_attr_from_nodes(nodes):
+    for node in nodes:
+        attr_list = cmds.listAttr(node)
+        for attr in attr_list:
+            if ("blendPoint" in attr
+                    or "blendOrient" in attr
+                    or "blendParent" in attr):
+                cmds.deleteAttr(str(node) + "." + str(attr))
+    return
 
 
 def _create_controller_world_space(pivot_node,
@@ -332,27 +354,24 @@ def remove_controller(controller_node, frame_start, frame_end):
     """
     attrs = _get_selected_channel_box_attrs()
 
-    constraint = cmds.listConnections(
-        controller_node + ".parentMatrix[0]",
-        destination=True, source=False, type="constraint")
-    if not constraint:
+    constraints = _find_constraints_from_node(controller_node)
+    if not constraints:
         LOG.warn("Selected controller is not driving any object.")
         return
-    constraint = constraint[0]
-    driven_node = cmds.listConnections(
-        constraint + '.constraintParentInverseMatrix',
-        destination=False, source=True)
-    if driven_node:
+
+    # Get Driven nodes
+    driven_nodes = []
+    for constraint in constraints:
+        driven_nodes += cmds.listConnections(
+            constraints + '.constraintParentInverseMatrix',
+            destination=False, source=True) or []
+
+    if driven_nodes and len(driven_nodes) > 0:
         # Bake attributes
         fastbake_lib.bake_attributes(
-            driven_node, attrs, frame_start, frame_end, smart_bake=True)
-        cmds.delete(constraint)
-        attr_list = cmds.listAttr(driven_node)
-        for attr in attr_list:
-            if ("blendPoint" in attr
-                    or "blendOrient" in attr
-                    or "blendParent" in attr):
-                cmds.deleteAttr(str(driven_node[0])+"."+str(attr))
+            driven_nodes, attrs, frame_start, frame_end, smart_bake=True)
+        cmds.delete(constraints)
+        _remove_constraint_blend_attr_from_nodes(driven_nodes)
 
         # Delete controller node and its parents
         attr_list = cmds.listAttr(controller_node)
@@ -366,4 +385,4 @@ def remove_controller(controller_node, frame_start, frame_end):
                 cmds.delete(parent_nodes)
         if cmds.objExists(controller_node):
             cmds.delete(controller_node)
-    return driven_node
+    return driven_nodes

@@ -53,7 +53,7 @@ def _open_help():
 
 
 class CreateControllerWindow(BaseWindow):
-    name = 'CreateControllerWindow'
+    name = 'CreateController2Window'
 
     def __init__(self, parent=None, name=None):
         super(CreateControllerWindow, self).__init__(parent, name=name)

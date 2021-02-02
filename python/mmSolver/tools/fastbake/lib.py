@@ -46,7 +46,7 @@ def get_bake_frame_range(frame_range_mode,
     return frame_range
 
 
-def bake_attributes(nodes, attrs, start_frame, end_frame, smart_bake):
+def bake_attributes(nodes, attrs, start_frame, end_frame, smart_bake=False):
     """
     Bake the attributes on nodes.
 

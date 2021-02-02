@@ -82,7 +82,6 @@ class SmoothKeysWindow(BaseWindow):
         edit_menu = QtWidgets.QMenu('Edit', menubar)
         commonmenus.create_edit_menu_items(
             edit_menu,
-            save_settings_func=self.save_options,
             reset_settings_func=self.reset_options)
         menubar.addMenu(edit_menu)
 
@@ -91,11 +90,6 @@ class SmoothKeysWindow(BaseWindow):
             help_menu,
             tool_help_func=_open_help)
         menubar.addMenu(help_menu)
-
-    def save_options(self):
-        form = self.getSubForm()
-        form.save_options()
-        return
 
     def reset_options(self):
         form = self.getSubForm()

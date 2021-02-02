@@ -34,7 +34,8 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
-# import mmSolver.ui.helputils as helputils
+import mmSolver.ui.helputils as helputils
+import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
 import mmSolver.tools.createcontroller2.ui.createcontroller_layout as createcontroller_layout
@@ -44,8 +45,15 @@ baseModule, BaseWindow = uiutils.getBaseWindow()
 WINDOW_TITLE = "Create Controller"
 
 
+def _open_help():
+    src = helputils.get_help_source()
+    page = 'tools_generaltools.html#create-controller'
+    helputils.open_help_in_browser(page=page, help_source=src)
+    return
+
+
 class CreateControllerWindow(BaseWindow):
-    name = 'CreateControllerWindow'
+    name = 'CreateController2Window'
 
     def __init__(self, parent=None, name=None):
         super(CreateControllerWindow, self).__init__(parent, name=name)
@@ -59,20 +67,31 @@ class CreateControllerWindow(BaseWindow):
         self.baseHideStandardButtons()
         self.createBtn.show()
         self.applyBtn.show()
-        self.resetBtn.show()
-        # self.helpBtn.show()
         self.closeBtn.show()
         self.createBtn.setText('Create Locator/Group')
         self.applyBtn.setText('Create Controller')
 
         self.createBtn.clicked.connect(self.create_locator_group)
         self.applyBtn.clicked.connect(self.create_controller)
-        self.resetBtn.clicked.connect(self.reset_options)
-        # self.helpBtn.clicked.connect(self.help)
 
         # Hide irrelevant stuff
-        self.baseHideMenuBar()
         self.baseHideProgressBar()
+
+        self.add_menus(self.menubar)
+        self.menubar.show()
+
+    def add_menus(self, menubar):
+        edit_menu = QtWidgets.QMenu('Edit', menubar)
+        commonmenus.create_edit_menu_items(
+            edit_menu,
+            reset_settings_func=self.reset_options)
+        menubar.addMenu(edit_menu)
+
+        help_menu = QtWidgets.QMenu('Help', menubar)
+        commonmenus.create_help_menu_items(
+            help_menu,
+            tool_help_func=_open_help)
+        menubar.addMenu(help_menu)
 
     def create_locator_group(self):
         form = self.getSubForm()
@@ -83,15 +102,20 @@ class CreateControllerWindow(BaseWindow):
             disable_viewport=True,
             disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
         with ctx:
-            try:
-                form.create_locator_group()
-            except Exception as e:
-                LOG.error(e)
+            form.create_locator_group()
         return
 
     def create_controller(self):
         form = self.getSubForm()
-        form.create_controller_button_clicked()
+        ctx = tools_utils.tool_context(
+            use_undo_chunk=True,
+            restore_current_frame=True,
+            use_dg_evaluation_mode=True,
+            disable_viewport=True,
+            disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
+        with ctx:
+            form.create_controller_button_clicked()
+        return
 
     def reset_options(self):
         form = self.getSubForm()

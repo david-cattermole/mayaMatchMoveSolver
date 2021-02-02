@@ -19,7 +19,9 @@
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.constant as const_utils
 import mmSolver.utils.time as time_utils
+import mmSolver.utils.tools as tools_utils
 import mmSolver.tools.createcontroller2.lib as lib
 
 LOG = mmSolver.logger.get_logger()
@@ -31,5 +33,13 @@ def main():
         LOG.warn("Please select only one controller.")
         return
     start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
-    lib.remove_controller(selection[0], start_frame, end_frame)
+    ctx = tools_utils.tool_context(
+        use_undo_chunk=True,
+        restore_current_frame=True,
+        use_dg_evaluation_mode=True,
+        disable_viewport=True,
+        disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
+    with ctx:
+        lib.remove_controller(selection[0], start_frame, end_frame)
+    return
 

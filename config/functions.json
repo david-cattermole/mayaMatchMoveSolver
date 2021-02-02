@@ -540,7 +540,7 @@
             ]
         },
         "create_controller": {
-            "name": "Create Controller",
+            "name": "Create Controller v1",
             "name_shelf": "CrCtrl",
             "tooltip": "Create Controller for selected node.",
             "command": [
@@ -549,7 +549,7 @@
             ]
         },
         "create_controller2": {
-            "name": "Create Controller...",
+            "name": "Create Controller v2...",
             "name_shelf": "CrCtrl",
             "tooltip": "Create Controller for selected node.",
             "command": [
@@ -558,7 +558,7 @@
             ]
         },
         "remove_controller": {
-            "name": "Remove Controller",
+            "name": "Remove Controller v1",
             "name_shelf": "RmCtrl",
             "tooltip": "Remove Controller for selected node.",
             "command": [
@@ -567,7 +567,7 @@
             ]
         },
         "remove_controller2": {
-            "name": "Remove Controller",
+            "name": "Remove Controller v2",
             "name_shelf": "RmCtrl",
             "tooltip": "Remove Controller for selected node.",
             "command": [

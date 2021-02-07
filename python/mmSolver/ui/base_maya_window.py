@@ -178,7 +178,6 @@ class BaseMayaWindow(MayaQWidgetDockableMixin,
             cls.instance.raise_()
             cls.instance.show()
             cls.instance.activateWindow()
-        # LOG.info('is the window dockable?: %s' % cls.isDockable())
         e = time.time()
         LOG.debug('BaseWindow init: %r seconds', e - s)
         return cls.instance

@@ -45,7 +45,7 @@ import time
 import os
 import os.path
 
-from maya.app.general.mayaMixin import MayaQWidgetBaseMixin
+from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
@@ -63,7 +63,7 @@ import mmSolver.ui.ui_base as ui_base
 LOG = mmSolver.logger.get_logger()
 
 
-class BaseMayaWindow(MayaQWidgetBaseMixin,
+class BaseMayaWindow(MayaQWidgetDockableMixin,
                      QtWidgets.QMainWindow,
                      ui_base.Ui_Window):
 
@@ -89,6 +89,7 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
         self._settings_path = config_path
         e = time.time()
         LOG.debug('BaseMayaWindow init: %r seconds', e - s)
+        LOG.info('is the window dockable?: %s' % self.isDockable())
         return
 
     def baseHideStandardButtons(self):
@@ -146,7 +147,7 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
         return instance
 
     @classmethod
-    def open_window(cls, show=True, auto_raise=True, delete=False):
+    def open_window(cls, show=True, auto_raise=True, delete=False, dock=False):
         s = time.time()
         if (cls is not None
                 and uiutils.isValidQtObject(cls.instance) is True):
@@ -159,6 +160,7 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
             name = cls.name
             app, parent = uiutils.getParent()
             cls.instance = cls(parent=parent, name=name)
+            cls.instance.setDockableParameters(dockable=dock)
 
         # Make sure the user can see this window.
         if cls.instance.isHidden():
@@ -176,7 +178,7 @@ class BaseMayaWindow(MayaQWidgetBaseMixin,
             cls.instance.raise_()
             cls.instance.show()
             cls.instance.activateWindow()
-
+        # LOG.info('is the window dockable?: %s' % cls.isDockable())
         e = time.time()
         LOG.debug('BaseWindow init: %r seconds', e - s)
         return cls.instance

@@ -733,7 +733,7 @@ def loadAllResources():
     return
 
 
-def main(show=True, auto_raise=True, delete=False):
+def main(show=True, auto_raise=True, delete=False, dock=True):
     """
     Open the Solver UI window.
 
@@ -759,6 +759,7 @@ def main(show=True, auto_raise=True, delete=False):
     win = SolverWindow.open_window(
         show=show,
         auto_raise=auto_raise,
-        delete=delete
+        delete=delete,
+        dock=dock
     )
     return win

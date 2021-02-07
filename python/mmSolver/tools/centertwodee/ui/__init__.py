@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2019 David Cattermole
 #
 # This file is part of mmSolver.
 #
@@ -16,13 +16,5 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Contains constant values for the Center 2D tool.
+Smooth Keyframe user interface.
 """
-
-WINDOW_TITLE = 'Center 2D Offset'
-
-DEFAULT_SLIDER_VALUE = 51
-PAN_MIN = -2.5
-PAN_MAX = 2.5
-ZOOM_MIN = 0.0001
-ZOOM_MAX = 10.0

@@ -101,6 +101,35 @@ def main():
                 cam_tfm, cam_shp)
             reproject_utils.connect_transform_to_reprojection(
                 nodes[0], reproj_node)
+
+            # create 2d offset setup
+            offset_plus_minus_node = maya.cmds.createNode(
+                'plusMinusAverage',
+                name='offset_plusMinusAverage1')
+            maya.cmds.connectAttr(
+                reproj_node + '.outPan',
+                offset_plus_minus_node + '.input2D[0]')
+            maya.cmds.setAttr(
+                offset_plus_minus_node + '.input2D[1]',
+                0.0,
+                0.0,
+                type='float2')
+            maya.cmds.connectAttr(
+                offset_plus_minus_node + '.output2D',
+                cam_shp + '.pan',
+                force=True)
+
+            # create a zoom setup
+            zoom_mult_node = maya.cmds.createNode(
+                'multiplyDivide',
+                name='zoom_multiplyDivide1')
+            maya.cmds.setAttr(zoom_mult_node + '.input1X', 1.0)
+            maya.cmds.setAttr(zoom_mult_node + '.operation', 2)
+            maya.cmds.setAttr(zoom_mult_node + '.input2X', 1.0)
+            maya.cmds.connectAttr(
+                zoom_mult_node + '.outputX',
+                cam_shp + '.zoom')
+
         elif len(nodes) > 1:
             msg = 'Please select only 1 node to center on.'
             LOG.error(msg)
@@ -141,3 +170,7 @@ def remove():
 def center_two_dee():
     warnings.warn("Use 'main' function instead.")
     main()
+
+def center_two_dee_ui():
+    import mmSolver.tools.centertwodee.ui.centertwodee_window as window
+    window.main()

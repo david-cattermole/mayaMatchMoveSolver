@@ -82,6 +82,7 @@ def create_reprojection_on_camera(cam_tfm, cam_shp):
     maya.cmds.connectAttr(cam_tfm + '.worldMatrix', node + '.cameraWorldMatrix')
     maya.cmds.connectAttr(cam_shp + '.focalLength', node + '.focalLength')
     maya.cmds.connectAttr(cam_shp + '.cameraAperture', node + '.cameraAperture')
+    maya.cmds.connectAttr(cam_shp + '.filmOffset', node + '.filmOffset')
     maya.cmds.connectAttr(cam_shp + '.filmFit', node + '.filmFit')
     maya.cmds.connectAttr(cam_shp + '.nearClipPlane', node + '.nearClipPlane')
     maya.cmds.connectAttr(cam_shp + '.farClipPlane', node + '.farClipPlane')
@@ -89,27 +90,13 @@ def create_reprojection_on_camera(cam_tfm, cam_shp):
 
     # Connect render settings attributes
     resolution_factor = 10000.0
-    mult_node = maya.cmds.createNode('multiplyDivide', name='main_multiplyDivide1')
+    mult_node = maya.cmds.createNode('multiplyDivide')
     maya.cmds.setAttr(mult_node + '.input2X', resolution_factor)
     maya.cmds.setAttr(mult_node + '.input2Y', resolution_factor)
     maya.cmds.connectAttr(cam_shp + '.horizontalFilmAperture', mult_node + '.input1X')
     maya.cmds.connectAttr(cam_shp + '.verticalFilmAperture', mult_node + '.input1Y')
     maya.cmds.connectAttr(mult_node + '.outputX', node + '.imageWidth')
     maya.cmds.connectAttr(mult_node + '.outputY', node + '.imageHeight')
-
-    # create 2d offset setup
-    offset_plus_minus_node = maya.cmds.createNode('plusMinusAverage', name='offset_plusMinusAverage1')
-    maya.cmds.connectAttr(cam_shp + '.filmOffset', offset_plus_minus_node + '.input2D[0]')
-    maya.cmds.setAttr(offset_plus_minus_node + '.input2D[1]', 0.0, 0.0, type='float2')
-    maya.cmds.connectAttr(offset_plus_minus_node + '.output2D', node + '.filmOffset')
-
-    # create a zoom setup
-    zoom_mult_node = maya.cmds.createNode('multiplyDivide', name='zoom_multiplyDivide1')
-    maya.cmds.setAttr(zoom_mult_node + '.input1X', 1.0)
-    expression_string = '{zoom_mult_node}.input2X = 1/{zoom_mult_node}.input1X;'.format(zoom_mult_node=zoom_mult_node)
-    maya.cmds.expression(string=expression_string, object=zoom_mult_node)
-    maya.cmds.connectAttr(zoom_mult_node + '.input2X', cam_shp + '.cameraScale')
-
 
     # Connect Pan to camera.pan
     maya.cmds.connectAttr(node + '.outPan', cam_shp + '.pan')
@@ -127,25 +114,47 @@ def find_reprojection_nodes(cam_tfm, cam_shp):
     Find all the reprojection nodes on the camera.
     """
     nodes = maya.cmds.listConnections(
-        cam_shp + '.pan',
-        source=True,
-        destination=False,
+        cam_shp + '.focalLength',
+        source=False,
+        destination=True,
         type='mmReprojection',
         exactType=True,
         skipConversionNodes=True
     ) or []
+    if not nodes:
+        return nodes
+    reprojection_node = nodes[0]
     # Get connected MultiplyDivide nodes connected.
-    for node in list(nodes):
-        mult_nodes = maya.cmds.listConnections(
-            node + '.imageWidth',
-            node + '.imageHeight',
-            source=True,
-            destination=False,
-            type='multiplyDivide',
-            exactType=True,
-            skipConversionNodes=True
-        ) or []
-        nodes += mult_nodes
+    mult_nodes = maya.cmds.listConnections(
+        reprojection_node + '.imageWidth',
+        reprojection_node + '.imageHeight',
+        source=True,
+        destination=False,
+        type='multiplyDivide',
+        exactType=True,
+        skipConversionNodes=True
+    ) or []
+    nodes += mult_nodes
+    # Get connected offset PlusMinusAverage nodes.
+    offset_plusminus_nodes = maya.cmds.listConnections(
+        reprojection_node + '.outPan',
+        source=False,
+        destination=True,
+        type='plusMinusAverage',
+        exactType=True,
+        skipConversionNodes=True
+    ) or []
+    nodes += offset_plusminus_nodes
+    # Get connected zoom MultiplyDivide nodes.
+    zoom_mult_nodes = maya.cmds.listConnections(
+        cam_shp + '.zoom',
+        source=True,
+        destination=False,
+        type='multiplyDivide',
+        exactType=True,
+        skipConversionNodes=True
+    ) or []
+    nodes += zoom_mult_nodes
     return nodes
 
 

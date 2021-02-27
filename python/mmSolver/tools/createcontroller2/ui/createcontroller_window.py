@@ -65,14 +65,16 @@ class CreateControllerWindow(BaseWindow):
 
         # Standard Buttons
         self.baseHideStandardButtons()
-        self.createBtn.show()
         self.applyBtn.show()
         self.closeBtn.show()
-        self.createBtn.setText('Create Locator/Group')
         self.applyBtn.setText('Create Controller')
 
-        self.createBtn.clicked.connect(self.create_locator_group)
+        self.applyBtn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.applyBtn.setMinimumWidth(160)
         self.applyBtn.clicked.connect(self.create_controller)
+
+        self.closeBtn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.closeBtn.setMinimumWidth(120)
 
         # Hide irrelevant stuff
         self.baseHideProgressBar()
@@ -92,18 +94,6 @@ class CreateControllerWindow(BaseWindow):
             help_menu,
             tool_help_func=_open_help)
         menubar.addMenu(help_menu)
-
-    def create_locator_group(self):
-        form = self.getSubForm()
-        ctx = tools_utils.tool_context(
-            use_undo_chunk=True,
-            restore_current_frame=True,
-            use_dg_evaluation_mode=True,
-            disable_viewport=True,
-            disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
-        with ctx:
-            form.create_locator_group()
-        return
 
     def create_controller(self):
         form = self.getSubForm()

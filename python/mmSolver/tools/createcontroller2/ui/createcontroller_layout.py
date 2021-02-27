@@ -152,35 +152,12 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         # Create Connections
         self.main_object_btn.clicked.connect(self.get_main_object)
         self.pivot_object_btn.clicked.connect(self.get_pivot_object)
-        self.node_type_btnGrp.buttonClicked.connect(self.radio_button_group_clicked)
-        self.bake_mode_btnGrp.buttonClicked.connect(self.radio_button_group_clicked)
-        self.space_btnGrp.buttonClicked.connect(self.radio_button_group_clicked)
         self.smart_bake_rdo_btn.clicked.connect(self.smart_bake_radio_button_clicked)
-        self.world_space_rdo_btn.clicked.connect(self.world_space_radio_button_clicked)
+        self.full_bake_rdo_btn.clicked.connect(self.fullbake_space_radio_button_clicked)
+        self.current_frame_rdo_btn.clicked.connect(self.fullbake_space_radio_button_clicked)
 
         self.loc_grp_node = None
         self.reset_options()
-
-    def set_option_widgets_enabled(self, value):
-        """Set the enabled widget status for all options."""
-        widgets = [
-            self.type_label,
-            self.group_rdo_btn,
-            self.locator_rdo_btn,
-            #
-            self.bake_label,
-            self.full_bake_rdo_btn,
-            self.smart_bake_rdo_btn,
-            self.current_frame_rdo_btn,
-            #
-            self.space_label,
-            self.world_space_rdo_btn,
-            self.object_space_rdo_btn,
-            self.screen_space_rdo_btn,
-        ]
-        for widget in widgets:
-            widget.setEnabled(value)
-        return
 
     def get_pivot_object(self):
         """Set the pivot object widget as current selection."""
@@ -199,35 +176,14 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.main_object_text.setText(str(selection[0]))
         self.full_bake_rdo_btn.setChecked(True)
         self.object_space_rdo_btn.setChecked(True)
-        self.set_option_widgets_enabled(True)
-
-    def radio_button_group_clicked(self):
-        # check if main object is selected already
-        text = self.main_object_text.text()
-        if not text:
-            self.full_bake_rdo_btn.setChecked(True)
-            self.object_space_rdo_btn.setChecked(True)
-            self.locator_rdo_btn.setChecked(True)
-            LOG.warn("Please get main object.")
 
     def smart_bake_radio_button_clicked(self):
-        main_object_node = str(self.main_object_text.text())
-        start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
-        is_world = _is_world_space_node(main_object_node, start_frame, end_frame)
-        if is_world is False:
-            if (self.smart_bake_rdo_btn.isChecked()
-                    and self.world_space_rdo_btn.isChecked()):
-                self.object_space_rdo_btn.setChecked(True)
+        self.world_space_rdo_btn.setEnabled(False)
+        if self.world_space_rdo_btn.isChecked():
+            self.object_space_rdo_btn.setChecked(True)
 
-    def world_space_radio_button_clicked(self):
-        main_object_node = str(self.main_object_text.text())
-        start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
-        is_world = _is_world_space_node(main_object_node, start_frame, end_frame)
-        if is_world is False:
-            if (self.world_space_rdo_btn.isChecked()
-                    and self.smart_bake_rdo_btn.isChecked()):
-                self.full_bake_rdo_btn.setChecked(True)
-        return
+    def fullbake_space_radio_button_clicked(self):
+        self.world_space_rdo_btn.setEnabled(True)
 
     def create_locator_group(self):
         pivot_text = self.pivot_object_text.text()
@@ -244,26 +200,23 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
         loc_grp_name = str(self.locator_group_text.text())
         if not loc_grp_name:
-            LOG.warn("Please type locator/group name.")
+            LOG.warn("Please type controller name.")
             return
         if self.group_rdo_btn.isChecked():
             self.loc_grp_node = cmds.group(empty=True, name=loc_grp_name)
         else:
             self.loc_grp_node = cmds.spaceLocator(name=loc_grp_name)
 
-        # Move the loc_grp_node to the pivot object.
-        pivot_matrix = cmds.xform(
-            pivot_text, query=True, worldSpace=True, matrix=True)
-        cmds.xform(self.loc_grp_node, worldSpace=True, matrix=pivot_matrix)
-
         # TODO: Should we de-select?
         cmds.select(clear=True)
 
     def create_controller_button_clicked(self):
+        self.create_locator_group()
+
         # Set time
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
         if self.current_frame_rdo_btn.isChecked():
-            start_frame = cmds.currentTime(query=True)
+            start_frame = int(cmds.currentTime(query=True))
             end_frame = start_frame
 
         # Get widgets data
@@ -283,20 +236,15 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             LOG.error("Invalid space.")
             return
         smart_bake = self.smart_bake_rdo_btn.isChecked()
-        if not pivot_node:
-            LOG.warn("Please get pivot object.")
-            return
-        if not main_node:
-            LOG.warn("Please get main object.")
+        if not controller_name or not pivot_node or not main_node:
             return
         if not cmds.listRelatives(loc_grp_node, shapes=True):
             loc_grp_node = [loc_grp_node]
-        if not cmds.objExists(loc_grp_node[0]):
-            LOG.warn("Please create locator/group.")
-            return
         if self.screen_space_rdo_btn.isChecked():
             if not camera:
                 LOG.warn("Please select camera viewport.")
+                if cmds.objExists(loc_grp_node[0]):
+                    cmds.delete(loc_grp_node[0])
                 return
 
         # Check if main node has constraints already
@@ -324,6 +272,6 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.main_object_text.clear()
         self.locator_rdo_btn.setChecked(True)
         self.full_bake_rdo_btn.setChecked(True)
+        self.world_space_rdo_btn.setEnabled(True)
         self.object_space_rdo_btn.setChecked(True)
         self.locator_group_text.clear()
-        self.set_option_widgets_enabled(False)

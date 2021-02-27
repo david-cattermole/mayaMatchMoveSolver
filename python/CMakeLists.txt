@@ -102,4 +102,15 @@ if (BUILD_QT_UI)
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/userprefswindow/ui/pref_layout.ui
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/userprefswindow/ui/ui_pref_layout.py
             )
+
+    add_ui_compile("fastbake"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/fastbake/ui/fastbake_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/fastbake/ui/ui_fastbake_layout.py
+            )
+
+    add_ui_compile("createcontroller2"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcontroller2/ui/createcontroller_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcontroller2/ui/ui_createcontroller_layout.py
+            )
+
 endif ()

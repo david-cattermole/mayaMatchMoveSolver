@@ -292,7 +292,7 @@ def _create_controller_screen_space(name,
         cmds.cutKey(loc_grp_node, screen_loc, zero_loc,
                     time=(end_frame, end_frame))
 
-    cmds.parentConstraint(main_driver_loc, main_node, maintainOffset=True)
+    cmds.pointConstraint(main_driver_loc, main_node, maintainOffset=True) 
 
     # LOD visibility
     _set_lod_visibility(loc_grp_node, False)

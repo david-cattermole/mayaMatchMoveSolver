@@ -50,7 +50,7 @@ cmake \
     -DBUILD_EXAMPLES=OFF \
     -DUSE_FPIC=ON \
     -DUSE_BLAS=0 \
-    ../working/cminpack-1.3.6
+    ../working/cminpack-1.3.8
 make clean
 make all
 make install

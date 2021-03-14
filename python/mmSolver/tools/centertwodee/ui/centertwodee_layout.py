@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-The main component of the user interface for the smooth keyframes
+The main component of the user interface for the Center 2D Offset
 window.
 """
 

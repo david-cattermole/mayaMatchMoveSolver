@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-The Center 2D tool.
+The Center 2D tool with offset features.
 """
 
 import warnings

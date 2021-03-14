@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Window for the Smooth Keyframes tool.
+Window for the Center 2D Offset tool.
 
 Usage::
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2021 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -22,7 +22,11 @@ Contains constant values for the Center 2D tool.
 WINDOW_TITLE = 'Center 2D Offset'
 
 DEFAULT_SLIDER_VALUE = 51
+SLIDER_MIN = 1
+SLIDER_MAX = 100
+PAN_DEFAULT = 0.0
 PAN_MIN = -2.5
 PAN_MAX = 2.5
-ZOOM_MIN = 0.0001
+ZOOM_DEFAULT = 1.0
+ZOOM_MIN = 0.01
 ZOOM_MAX = 10.0

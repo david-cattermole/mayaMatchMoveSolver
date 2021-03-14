@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2019, 2021 David Cattermole, Kazuma Tonegawa.
 #
 # This file is part of mmSolver.
 #
@@ -46,6 +46,11 @@ if (BUILD_QT_UI)
     add_ui_compile("base"
             ${CMAKE_SOURCE_DIR}/python/mmSolver/ui/base.ui
             ${CMAKE_SOURCE_DIR}/python/mmSolver/ui/ui_base.py
+            )
+
+    add_ui_compile("centertwodee"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/centertwodee/ui/centertwodee_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/centertwodee/ui/ui_centertwodee_layout.py
             )
 
     add_ui_compile("channelsen"

@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole
+# Copyright (C) 2019, 2021 David Cattermole, Kazuma Tonegawa.
 #
 # This file is part of mmSolver.
 #
@@ -24,13 +24,12 @@ Usage::
    smoothkeys_window.main()
 
 """
+from functools import partial
 
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
 import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
-import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
@@ -52,6 +51,25 @@ class CenterTwoDeeWindow(BaseWindow):
                                                name=name)
         self.setupUi(self)
         self.addSubForm(centertwodee_layout.CenterTwoDeeLayout)
+        self.offset_node, self.zoom_node = tool.get_offset_nodes()
+        self.form = self.getSubForm()
+
+        # Set slider defaults in subform
+        self.set_initial_values()
+
+        # Connect events in subform
+        self.form.horizontal_horizontalSlider.valueChanged.connect(
+            partial(self.form.sliderValueChanged, type='horizontal')
+        )
+        self.form.vertical_horizontalSlider.valueChanged.connect(
+            partial(self.form.sliderValueChanged, type='vertical')
+        )
+        self.form.zoom_horizontalSlider.valueChanged.connect(
+            self.form.zoomValueChanged
+        )
+        self.form.horizontal_signal.connect(self.horizontal_offset_node_update)
+        self.form.vertical_signal.connect(self.vertical_offset_node_update)
+        self.form.zoom_signal.connect(self.zoom_node_update)
 
         self.setWindowTitle(const.WINDOW_TITLE)
         self.setWindowFlags(QtCore.Qt.Tool)
@@ -73,9 +91,41 @@ class CenterTwoDeeWindow(BaseWindow):
         self.baseHideMenuBar()
         self.baseHideProgressBar()
 
+    @QtCore.Slot(float)
+    def horizontal_offset_node_update(self, value):
+        output = tool.process_value(
+            input_value=value,
+            source='slider',
+            zoom=False
+        )
+        if self.offset_node:
+            tool.set_horizontal_offset(self.offset_node, output)
+        print 'horizontal_offset_update', value, output
+
+    @QtCore.Slot(float)
+    def vertical_offset_node_update(self, value):
+        output = tool.process_value(
+            input_value=value,
+            source='slider',
+            zoom=False
+        )
+        if self.offset_node:
+            tool.set_vertical_offset(self.offset_node, output)
+        print 'vertical_offset_update', value, output
+
+    @QtCore.Slot(float)
+    def zoom_node_update(self, value):
+        output = tool.process_value(
+            input_value=value,
+            source='slider',
+            zoom=True
+        )
+        if self.zoom_node:
+            tool.set_zoom(self.zoom_node, output)
+        print 'zoom_update', value, output
+
     def reset_options(self):
-        form = self.getSubForm()
-        form.reset_options()
+        self.form.reset_options()
         return
 
     def help(self):
@@ -83,6 +133,38 @@ class CenterTwoDeeWindow(BaseWindow):
         page = 'tools_generaltools.html#smooth-keyframes'
         helputils.open_help_in_browser(page=page, help_source=src)
         return
+
+    def set_initial_values(self):
+        if not self.offset_node:
+            horizontal_slider_value = const.DEFAULT_SLIDER_VALUE
+            vertical_slider_value = const.DEFAULT_SLIDER_VALUE
+            zoom_slider_value = const.DEFAULT_SLIDER_VALUE
+        else:
+            offset_values = tool.get_offset_node_values(
+                self.offset_node,
+                self.zoom_node
+            )
+            LOG.info(('centertwodee_window set_values:', offset_values))
+            offset_x_value, offset_y_value, zoom_value = offset_values
+            horizontal_slider_value = tool.process_value(
+                input_value=offset_x_value,
+                source='node',
+                zoom=False
+            )
+            vertical_slider_value = tool.process_value(
+                input_value=offset_y_value,
+                source='node',
+                zoom=False
+            )
+            zoom_slider_value = tool.process_value(
+                input_value=zoom_value,
+                source='node',
+                zoom=True
+            )
+            LOG.info(('centertwodee_window set_values converted:', horizontal_slider_value, vertical_slider_value, zoom_slider_value))
+        self.form.horizontal_horizontalSlider.setValue(int(horizontal_slider_value))
+        self.form.vertical_horizontalSlider.setValue(int(vertical_slider_value))
+        self.form.zoom_horizontalSlider.setValue(int(zoom_slider_value))
 
 
 def main(show=True, auto_raise=True, delete=False):

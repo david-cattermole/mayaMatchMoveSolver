@@ -16,7 +16,8 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Functions to support smoothing animation curve keyframes.
+Functions to deal with range mappings to work between the UI sliders
+and the offset/zoom nodes
 """
 
 import mmSolver.logger

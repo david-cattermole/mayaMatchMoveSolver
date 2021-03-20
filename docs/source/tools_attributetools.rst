@@ -4,6 +4,61 @@ Attribute Tools
 Attribute tools are used to create and modify attributes, and
 attribute values.
 
+Bake Attributes
+---------------
+
+.. figure:: images/tools_bake_attributes_ui.png
+    :alt: Bake Attributes UI
+    :align: center
+    :scale: 50%
+
+Bake Attributes will bake the values of an attribute on each frame and
+replace the connection with an animation curve.
+
+This tool is almost identical to the default Maya `Edit > Keys > Bake
+Simulation` tool, but has additional features.
+
+ - The viewport is always disabled while baking.
+
+ - The tool is optimised for speed of baking.
+
+ - The tool UI is reduced to only the nessarary features for matchmove
+   tasks.
+
+Usage:
+
+#. Select 1 or more nodes.
+
+#. Select attributes in channel box (if required).
+
+#. Open `Bake Attributes` UI.
+
+   - Enable the `Smart Bake` to set keyframes only on some keyframes.
+
+   - Disable `From Channel Box` to bake all keyable attributes, not
+     just the selected attributes.
+
+#. Press `Bake` button.
+
+.. note:: In Maya scenes that rely on legacy viewport update for
+          correct evaluation, this tool may produce incorrect results
+          (because the viewport is disabled). If this happens, please
+          use Maya's default `Edit > Keys > Bake Simulation` tool. In
+          the experience of the tool authors, this has never happened
+          and this tool is a faster baking tool.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.fastbake.tool as tool    
+    tool.open_window()
+
+    # To run the "fast bake" tool directly (with currently set
+    # options).
+    tool.main()
+
+
 Set Attribute Details
 ---------------------
 

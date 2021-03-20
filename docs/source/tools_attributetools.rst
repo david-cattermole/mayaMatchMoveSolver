@@ -18,12 +18,12 @@ replace the connection with an animation curve.
 This tool is almost identical to the default Maya `Edit > Keys > Bake
 Simulation` tool, but has additional features.
 
- - The viewport is always disabled while baking.
+- The viewport is always disabled while baking.
 
- - The tool is optimised for speed of baking.
+- The tool is optimised for speed of baking.
 
- - The tool UI is reduced to only the nessarary features for matchmove
-   tasks.
+- The tool UI is reduced to only the nessarary features for matchmove
+  tasks.
 
 Usage:
 
@@ -73,25 +73,25 @@ Collection must exist to use the tool.
 
 This tool can be used to:
 
- - Set Attribute Details on individual Attributes.
+- Set Attribute Details on individual Attributes.
 
- - Change Attribute states; to lock an attribute, or set a keyframe on
-   the attribute.
+- Change Attribute states; to lock an attribute, or set a keyframe on
+  the attribute.
 
- - View the current Attribute Details on an Attribute.
+- View the current Attribute Details on an Attribute.
 
- - View the Animation Curve statistics;
+- View the Animation Curve statistics;
 
-   - Minimum value of the animation curve.
+  - Minimum value of the animation curve.
 
-   - Maximum value of the animation curve.
+  - Maximum value of the animation curve.
 
-   - Mean (Average) value of the animation curve.
+  - Mean (Average) value of the animation curve.
 
-   - Variance of the total animation curve.
+  - Variance of the total animation curve.
 
-   - Variance (per-frame) of the animation curve; how much does the
-     animation curve change per-frame.
+  - Variance (per-frame) of the animation curve; how much does the
+    animation curve change per-frame.
 
 
 Attribute Details are used by mmSolver to ensure properties are

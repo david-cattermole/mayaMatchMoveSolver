@@ -20,45 +20,59 @@ Functions to deal with range mappings to work between the UI sliders
 and the offset/zoom nodes
 """
 
+import maya.cmds
+
 import mmSolver.logger
+import mmSolver.utils.viewport as viewport_utils
+import mmSolver.utils.reproject as reproject_utils
 import mmSolver.tools.centertwodee.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
 
-def convert_range(**kwargs):
+def _lerp(min_value, max_value, mix):
     """
-    Converts the input range to maps it to desired range.
+    Return 'min_value' to 'max_value' linearly, for a 'mix' value
+    between 0.0 and 1.0.
+
+    :type min_value: float
+    :type max_value: float
+    :type mix: float
 
     :rtype: float
     """
-    input_value = kwargs.get('input_value')
-    LOG.info(('convertRange input_value:', input_value))
-    input_range_start = kwargs.get('input_range_start')
-    input_range_end = kwargs.get('input_range_end')
-    output_range_start = kwargs.get('output_range_start')
-    output_range_end = kwargs.get('output_range_end')
-    is_zoom = kwargs.get('zoom')
-    is_expected_node_default = (
-        (input_value == const.PAN_DEFAULT and not is_zoom)\
-        or (input_value == const.ZOOM_DEFAULT and is_zoom)
-    )
-    LOG.info(('convertRange is_expected_node_default:', is_expected_node_default))
-    if input_value == float(const.DEFAULT_SLIDER_VALUE):
-        if not is_zoom:
-            output_value = const.PAN_DEFAULT
-        else:
-            output_value = const.ZOOM_DEFAULT
-    elif is_expected_node_default:
-        output_value = const.DEFAULT_SLIDER_VALUE
-    else:
-        input_diff = input_range_end - input_range_start
-        output_diff = output_range_end - output_range_start
-        output_value = (
-           (output_diff / input_diff) *
-           (input_value - input_range_start)
-           ) + output_range_start
-    return output_value
+    return (1.0 - mix) * min_value + mix * max_value
+
+
+def _inverse_lerp(min_value, max_value, mix):
+    """
+    Return 0.0 to 1.0 linearly, for a 'mix' value between 'min_value'
+    and 'max_value'.
+
+    :type min_value: float
+    :type max_value: float
+    :type mix: float
+
+    :rtype: float
+    """
+    return (mix - min_value) / (max_value - min_value)
+
+
+def _remap(old_min, old_max, new_min, new_max, mix):
+    """
+    Remap from the 'old_*' values to 'new_*' values, using a 'mix'
+    value between 0.0 and 1.0;
+
+    :type old_min: float
+    :type old_max: float
+    :type new_min: float
+    :type new_max: float
+    :type mix: float
+
+    :rtype: float
+    """
+    blend = _inverse_lerp(old_min, old_max, mix)
+    return _lerp(new_min, new_max, blend)
 
 
 def set_offset_range(source='slider'):
@@ -86,36 +100,23 @@ def set_offset_range(source='slider'):
     )
 
 
-def set_zoom_range(**kwargs):
+def set_zoom_range(input_value=None, source=None):
     """
     Setting in/out zoom range. This one is a bit more complicated since a
     logarithmic mapping of range is not used.
 
     :rtype: (float, float, float, float)
     """
-    if kwargs.get('source') == 'slider':
+    if source == 'slider':
         input_range_start = const.SLIDER_MIN
         input_range_end = const.SLIDER_MAX
         output_range_start = const.ZOOM_MIN
         output_range_end = const.ZOOM_MAX
-        if kwargs.get('input_value') > const.DEFAULT_SLIDER_VALUE:
-            input_range_start = const.DEFAULT_SLIDER_VALUE
-            output_range_start = const.ZOOM_DEFAULT
-        elif kwargs.get('input_value') < const.DEFAULT_SLIDER_VALUE:
-            input_range_end = const.DEFAULT_SLIDER_VALUE
-            output_range_end = const.ZOOM_DEFAULT
-    elif kwargs.get('source') == 'node':
+    elif source == 'node':
         input_range_start = const.ZOOM_MIN
         input_range_end = const.ZOOM_MAX
         output_range_start = const.SLIDER_MIN
         output_range_end = const.SLIDER_MAX
-        if kwargs.get('input_value') > const.ZOOM_DEFAULT:
-            input_range_start = const.ZOOM_DEFAULT
-            output_range_start = const.DEFAULT_SLIDER_VALUE
-        elif kwargs.get('input_value') < const.ZOOM_DEFAULT:
-            LOG.info(('should be decreasing zoom:', kwargs.get('input_value')))
-            input_range_end = const.ZOOM_DEFAULT
-            output_range_end = const.DEFAULT_SLIDER_VALUE
 
     return (
         input_range_start,
@@ -123,3 +124,73 @@ def set_zoom_range(**kwargs):
         output_range_start,
         output_range_end
     )
+
+
+def get_offset_nodes():
+    """
+    Query for Center 2D nodes.
+
+    :returns: Two offset nodes (plusMinusAverage and multiplyDivide)
+    :rtype: string, string.
+    """
+    model_editor = viewport_utils.get_active_model_editor()
+    cam_tfm, cam_shp = viewport_utils.get_viewport_camera(model_editor)
+    reprojection_nodes = reproject_utils.find_reprojection_nodes(cam_tfm, cam_shp)
+    offset_node = None
+    for node in reprojection_nodes:
+        if 'offset_plusMinusAverage' in node:
+            offset_node = node
+    return offset_node, cam_shp
+
+
+def get_offset_node_values(offset_node):
+    """
+    Get attribute values for offset nodes.
+
+    :rtype: (float, float, flaot)
+    """
+    offset_x_value = maya.cmds.getAttr(offset_node + '.input2D[1].input2Dx')
+    offset_y_value = maya.cmds.getAttr(offset_node + '.input2D[1].input2Dy')
+    return (offset_x_value, offset_y_value)
+
+
+def get_camera_zoom(cam_shp):
+    """
+    Get attribute values for offset nodes.
+
+    :rtype: (float, float, flaot)
+    """
+    zoom_value = maya.cmds.getAttr(cam_shp + '.zoom')
+    return zoom_value
+
+
+def process_value(input_value=None, source=None, zoom=None):
+    if zoom == False:
+        new_range = set_offset_range(source)
+        zoom = False
+    elif zoom == True:
+        new_range = set_zoom_range(input_value=input_value, source=source)
+        zoom = True
+    input_range_start, input_range_end, \
+        output_range_start, output_range_end = new_range
+
+    output = _remap(
+        input_range_start,
+        input_range_end,
+        float(output_range_start),
+        float(output_range_end),
+        input_value)
+    return output
+
+
+def set_horizontal_offset(offset_node, value):
+    maya.cmds.setAttr(offset_node + '.input2D[1].input2Dx', value)
+
+
+def set_vertical_offset(offset_node, value):
+    maya.cmds.setAttr(offset_node + '.input2D[1].input2Dy', value)
+
+
+def set_zoom(cam_shp, value):
+    assert maya.cmds.nodeType(cam_shp) == 'camera'
+    maya.cmds.setAttr(cam_shp + '.zoom', value)

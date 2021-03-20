@@ -116,20 +116,13 @@ def main():
                 0.0,
                 type='float2')
             maya.cmds.connectAttr(
-                offset_plus_minus_node + '.output2D',
-                cam_shp + '.pan',
+                offset_plus_minus_node + '.output2D.output2Dx',
+                cam_shp + '.pan.horizontalPan',
                 force=True)
-
-            # create a zoom setup
-            zoom_mult_node = maya.cmds.createNode(
-                'multiplyDivide',
-                name='zoom_multiplyDivide1')
-            maya.cmds.setAttr(zoom_mult_node + '.input1X', 1.0)
-            maya.cmds.setAttr(zoom_mult_node + '.operation', 2)
-            maya.cmds.setAttr(zoom_mult_node + '.input2X', 1.0)
             maya.cmds.connectAttr(
-                zoom_mult_node + '.outputX',
-                cam_shp + '.zoom')
+                offset_plus_minus_node + '.output2D.output2Dy',
+                cam_shp + '.pan.verticalPan',
+                force=True)
 
         elif len(nodes) > 1:
             msg = 'Please select only 1 node to center on.'
@@ -166,72 +159,6 @@ def remove():
     finally:
         mmapi.set_solver_running(False)
     return
-
-
-def get_offset_nodes():
-    """
-    Query for Center 2D nodes
-    :returns: Two offset nodes (plusMinusAverage and multiplyDivide)
-    :rtype: string, string.
-    """
-    model_editor = viewport_utils.get_active_model_editor()
-    cam_tfm, cam_shp = viewport_utils.get_viewport_camera(model_editor)
-    reprojection_nodes = reproject_utils.find_reprojection_nodes(cam_tfm, cam_shp)
-    offset_node = None
-    zoom_node = None
-    for node in reprojection_nodes:
-        if 'offset_plusMinusAverage' in node:
-            offset_node = node
-        elif 'zoom_multiplyDivide' in node:
-            zoom_node = node
-    return offset_node, zoom_node
-
-
-def get_offset_node_values(offset_node, zoom_node):
-    """
-    Get attribute values for offset nodes
-    :rtype: (float, float, flaot)
-    """
-    offset_x_value = maya.cmds.getAttr(offset_node + '.input2D[1].input2Dx')
-    offset_y_value = maya.cmds.getAttr(offset_node + '.input2D[1].input2Dy')
-    zoom_value = maya.cmds.getAttr(zoom_node + '.input2X')
-    return (offset_x_value, offset_y_value, zoom_value)
-
-
-def process_value(**kwargs):
-    input_value = kwargs.get('input_value')
-    if kwargs.get('zoom') == False:
-        new_range = lib.set_offset_range(kwargs.get('source'))
-        zoom = False
-    elif kwargs.get('zoom') == True:
-        new_range = lib.set_zoom_range(**kwargs)
-        zoom = True
-    input_range_start,\
-    input_range_end,\
-    output_range_start,\
-    output_range_end = new_range
-
-    output = lib.convert_range(
-        input_value=input_value,
-        input_range_start=input_range_start,
-        input_range_end=input_range_end,
-        output_range_start=float(output_range_start),
-        output_range_end=float(output_range_end),
-        zoom=zoom
-    )
-    return output
-
-
-def set_horizontal_offset(offset_node, value):
-    maya.cmds.setAttr(offset_node + '.input2D[1].input2Dx', value)
-
-
-def set_vertical_offset(offset_node, value):
-    maya.cmds.setAttr(offset_node + '.input2D[1].input2Dy', value)
-
-
-def set_zoom(zoom_node, value):
-    maya.cmds.setAttr(zoom_node + '.input2X', value)
 
 
 def center_two_dee():

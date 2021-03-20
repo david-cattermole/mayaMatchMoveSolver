@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>374</width>
-    <height>173</height>
+    <width>510</width>
+    <height>135</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@
        <item>
         <widget class="QSlider" name="horizontal_horizontalSlider">
          <property name="minimum">
-          <number>1</number>
+          <number>0</number>
          </property>
          <property name="maximum">
           <number>100</number>
@@ -43,10 +43,10 @@
           <number>1</number>
          </property>
          <property name="value">
-          <number>51</number>
+          <number>50</number>
          </property>
          <property name="sliderPosition">
-          <number>51</number>
+          <number>50</number>
          </property>
          <property name="tracking">
           <bool>true</bool>
@@ -95,7 +95,7 @@
        <item>
         <widget class="QSlider" name="vertical_horizontalSlider">
          <property name="minimum">
-          <number>1</number>
+          <number>0</number>
          </property>
          <property name="maximum">
           <number>100</number>
@@ -104,10 +104,10 @@
           <number>1</number>
          </property>
          <property name="value">
-          <number>51</number>
+          <number>50</number>
          </property>
          <property name="sliderPosition">
-          <number>51</number>
+          <number>50</number>
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -153,7 +153,7 @@
        <item>
         <widget class="QSlider" name="zoom_horizontalSlider">
          <property name="minimum">
-          <number>1</number>
+          <number>0</number>
          </property>
          <property name="maximum">
           <number>100</number>
@@ -162,10 +162,10 @@
           <number>1</number>
          </property>
          <property name="value">
-          <number>51</number>
+          <number>50</number>
          </property>
          <property name="sliderPosition">
-          <number>51</number>
+          <number>50</number>
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>

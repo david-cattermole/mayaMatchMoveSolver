@@ -145,16 +145,6 @@ def find_reprojection_nodes(cam_tfm, cam_shp):
         skipConversionNodes=True
     ) or []
     nodes += offset_plusminus_nodes
-    # Get connected zoom MultiplyDivide nodes.
-    zoom_mult_nodes = maya.cmds.listConnections(
-        cam_shp + '.zoom',
-        source=True,
-        destination=False,
-        type='multiplyDivide',
-        exactType=True,
-        skipConversionNodes=True
-    ) or []
-    nodes += zoom_mult_nodes
     return nodes
 
 

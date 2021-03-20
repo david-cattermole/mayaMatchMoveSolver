@@ -35,7 +35,7 @@ import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.tools.centertwodee.constant as const
-import mmSolver.tools.centertwodee.tool as tool
+import mmSolver.tools.centertwodee.lib as lib
 import mmSolver.tools.centertwodee.ui.centertwodee_layout as centertwodee_layout
 
 
@@ -48,10 +48,10 @@ class CenterTwoDeeWindow(BaseWindow):
 
     def __init__(self, parent=None, name=None):
         super(CenterTwoDeeWindow, self).__init__(parent,
-                                               name=name)
+                                                 name=name)
         self.setupUi(self)
         self.addSubForm(centertwodee_layout.CenterTwoDeeLayout)
-        self.offset_node, self.zoom_node = tool.get_offset_nodes()
+        self.offset_node, self.camera_shape = lib.get_offset_nodes()
         self.form = self.getSubForm()
 
         # Set slider defaults in subform
@@ -69,7 +69,7 @@ class CenterTwoDeeWindow(BaseWindow):
         )
         self.form.horizontal_signal.connect(self.horizontal_offset_node_update)
         self.form.vertical_signal.connect(self.vertical_offset_node_update)
-        self.form.zoom_signal.connect(self.zoom_node_update)
+        self.form.zoom_signal.connect(self.camera_shape_update)
 
         self.setWindowTitle(const.WINDOW_TITLE)
         self.setWindowFlags(QtCore.Qt.Tool)
@@ -93,35 +93,35 @@ class CenterTwoDeeWindow(BaseWindow):
 
     @QtCore.Slot(float)
     def horizontal_offset_node_update(self, value):
-        output = tool.process_value(
+        output = lib.process_value(
             input_value=value,
             source='slider',
             zoom=False
         )
         if self.offset_node:
-            tool.set_horizontal_offset(self.offset_node, output)
+            lib.set_horizontal_offset(self.offset_node, output)
         print 'horizontal_offset_update', value, output
 
     @QtCore.Slot(float)
     def vertical_offset_node_update(self, value):
-        output = tool.process_value(
+        output = lib.process_value(
             input_value=value,
             source='slider',
             zoom=False
         )
         if self.offset_node:
-            tool.set_vertical_offset(self.offset_node, output)
+            lib.set_vertical_offset(self.offset_node, output)
         print 'vertical_offset_update', value, output
 
     @QtCore.Slot(float)
-    def zoom_node_update(self, value):
-        output = tool.process_value(
+    def camera_shape_update(self, value):
+        output = lib.process_value(
             input_value=value,
             source='slider',
             zoom=True
         )
-        if self.zoom_node:
-            tool.set_zoom(self.zoom_node, output)
+        if self.camera_shape:
+            lib.set_zoom(self.camera_shape, output)
         print 'zoom_update', value, output
 
     def reset_options(self):
@@ -130,7 +130,7 @@ class CenterTwoDeeWindow(BaseWindow):
 
     def help(self):
         src = helputils.get_help_source()
-        page = 'tools_generaltools.html#smooth-keyframes'
+        page = 'tools_generaltools.html#center-2d-on-selection'
         helputils.open_help_in_browser(page=page, help_source=src)
         return
 
@@ -140,23 +140,21 @@ class CenterTwoDeeWindow(BaseWindow):
             vertical_slider_value = const.DEFAULT_SLIDER_VALUE
             zoom_slider_value = const.DEFAULT_SLIDER_VALUE
         else:
-            offset_values = tool.get_offset_node_values(
-                self.offset_node,
-                self.zoom_node
-            )
+            offset_values = lib.get_offset_node_values(self.offset_node)
             LOG.info(('centertwodee_window set_values:', offset_values))
-            offset_x_value, offset_y_value, zoom_value = offset_values
-            horizontal_slider_value = tool.process_value(
+            offset_x_value, offset_y_value = offset_values
+            zoom_value = lib.get_camera_zoom(self.camera_shape)
+            horizontal_slider_value = lib.process_value(
                 input_value=offset_x_value,
                 source='node',
                 zoom=False
             )
-            vertical_slider_value = tool.process_value(
+            vertical_slider_value = lib.process_value(
                 input_value=offset_y_value,
                 source='node',
                 zoom=False
             )
-            zoom_slider_value = tool.process_value(
+            zoom_slider_value = lib.process_value(
                 input_value=zoom_value,
                 source='node',
                 zoom=True

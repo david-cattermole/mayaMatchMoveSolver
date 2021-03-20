@@ -532,26 +532,64 @@ Create / Remove Controller
 Create a new transform node to control another node. The `Controller`
 transform node can have a separate hierarchy than the source node.
 
-This tool will try to maintain the animated keyframes on the original
-control without baking the animation per-frame.
+The UI for this tool can be used control the baking method, and the
+'space' of the created controller. These features create a very
+powerful workflow for editing, and solving characters and objects.
 
 Usage:
 
 1) Select a Maya transform node.
 
-2) Run 'Create Controller' tool.
+2) Open 'Create Controller' tool UI.
 
-   - A new 'Controller' locator node is created at the same position
-     as the source transform.
+3) Type a name for the controller
 
-3) Select and move the created Controller as you wish.
+4) Select your 'pivot object' and press 'Pick Selection'.
 
-4) Select the Controller, run 'Remove Controller' tool.
+5) Select your 'main object' and press 'Pick Selection'.
 
-   - The source node is baked at the same times as the Controller is
-     keyed, and the Controller is deleted.
+6) Select your options for 'Type', 'Bake' mode, and 'Space'.
+
+   - 'Type' changes the node types created for the controller. Choose
+     "Group" if you do not like to see locators in your viewport.
+
+   - 'Bake' changes the method used to bake keyframe times. Choose
+     'Full Bake' to bake every frame, and choose 'Smart Bake' to bake
+     some frames.
+
+   - 'Space' changes the heirachy and orientation of the Controller
+     nodes. Using 'Screen Space' allows you to move an object in
+     screen-space, with X and Y the position on the screen, and Z the
+     depth into the screen. This can be very helpful for smoothing
+     Z-bumps and depth problems.
+
+7) Press 'Create Controller' button.
+
+   - A new 'Controller' node is created at the same position as the
+     'pick object'.
+
+8) Select and move the created Controller as you wish.
+
+9) Select the Controller, run 'Remove Controller' tool.
+
+   - The source node is baked and the Controller node is deleted.
 
 To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.createcontroller2.tool as tool
+    tool.open_window()
+
+To remove a controller, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.removecontroller2.tool as tool
+    tool.main()
+
+The tool described above is "version 2", for the older (less featured)
+version 1, use this python code to run it.
 
 .. code:: python
 

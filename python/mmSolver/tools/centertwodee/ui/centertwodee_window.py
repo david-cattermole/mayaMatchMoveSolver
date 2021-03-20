@@ -99,8 +99,7 @@ class CenterTwoDeeWindow(BaseWindow):
             zoom=False
         )
         if self.offset_node:
-            lib.set_horizontal_offset(self.offset_node, output)
-        print 'horizontal_offset_update', value, output
+            lib.set_horizontal_offset(self.camera_shape, self.offset_node, output)
 
     @QtCore.Slot(float)
     def vertical_offset_node_update(self, value):
@@ -110,8 +109,7 @@ class CenterTwoDeeWindow(BaseWindow):
             zoom=False
         )
         if self.offset_node:
-            lib.set_vertical_offset(self.offset_node, output)
-        print 'vertical_offset_update', value, output
+            lib.set_vertical_offset(self.camera_shape, self.offset_node, output)
 
     @QtCore.Slot(float)
     def camera_shape_update(self, value):
@@ -122,7 +120,6 @@ class CenterTwoDeeWindow(BaseWindow):
         )
         if self.camera_shape:
             lib.set_zoom(self.camera_shape, output)
-        print 'zoom_update', value, output
 
     def reset_options(self):
         self.form.reset_options()

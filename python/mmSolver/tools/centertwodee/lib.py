@@ -183,12 +183,16 @@ def process_value(input_value=None, source=None, zoom=None):
     return output
 
 
-def set_horizontal_offset(offset_node, value):
-    maya.cmds.setAttr(offset_node + '.input2D[1].input2Dx', value)
+def set_horizontal_offset(cam_shp, offset_node, value):
+    horizontal_aperture_value = maya.cmds.getAttr(cam_shp + '.horizontalFilmAperture')
+    normalized_value = horizontal_aperture_value * value
+    maya.cmds.setAttr(offset_node + '.input2D[1].input2Dx', normalized_value)
 
 
-def set_vertical_offset(offset_node, value):
-    maya.cmds.setAttr(offset_node + '.input2D[1].input2Dy', value)
+def set_vertical_offset(cam_shp, offset_node, value):
+    vertical_aperture_value = maya.cmds.getAttr(cam_shp + '.verticalFilmAperture')
+    normalized_value = vertical_aperture_value * value
+    maya.cmds.setAttr(offset_node + '.input2D[1].input2Dy', normalized_value)
 
 
 def set_zoom(cam_shp, value):

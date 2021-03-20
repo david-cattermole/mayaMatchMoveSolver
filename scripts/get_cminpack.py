@@ -28,9 +28,9 @@ import download_unpack
 
 
 def main(archives_dir, working_dir, patches_dir):
-    url = 'https://github.com/devernay/cminpack/archive/v1.3.8.tar.gz'
-    archive_name = 'cminpack-1.3.8.tar.gz'
-    name = 'cminpack-1.3.8'
+    url = 'http://devernay.free.fr/hacks/cminpack/cminpack-1.3.6.tar.gz'
+    archive_name = 'cminpack-1.3.6.tar.gz'
+    name = 'cminpack-1.3.6'
     download_unpack.add_package(
         name,
         archive_name,

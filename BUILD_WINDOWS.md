@@ -307,6 +307,10 @@ $ cd ~/dev/mayaMatchMoveSolver_maya2018Deploy_windows64/; git fetch --all; git c
 # Maya 2019
 $ mkdir -p ~/dev/mayaMatchMoveSolver_maya2019Deploy_windows64 ; cd ~/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2019Deploy_windows64
 $ cd ~/dev/mayaMatchMoveSolver_maya2019Deploy_windows64/; git fetch --all; git checkout -f master; git reset --hard HEAD ; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
+
+# Maya 2020
+$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2020Deploy_windows64 ; cd ~/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2020Deploy_windows64
+$ cd ~/dev/mayaMatchMoveSolver_maya2020Deploy_windows64/; git fetch --all; git checkout -f master; git reset --hard HEAD ; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
 ```
 
 Run in the Windows Command Prompt with the needed MSVC compiler environment paths set up:
@@ -323,6 +327,9 @@ REM Maya 2018
 
 REM Maya 2019
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2019Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_qtpy.bat && scripts\build_mmSolver_windows64_maya2019.bat
+
+REM Maya 2020
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2020Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_qtpy.bat && scripts\build_mmSolver_windows64_maya2020.bat
 ```
 
 Package files can then be uploaded from the

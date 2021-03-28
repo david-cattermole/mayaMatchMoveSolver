@@ -29,12 +29,12 @@ import maya.OpenMayaAnim as oma
 import maya.cmds as cmds
 import maya.mel as mel
 
-import mmSolver.tools.attributebake.lib as fastbake_lib
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.tools as tools_utils
+import mmSolver.tools.attributebake.lib as fastbake_lib
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
@@ -71,11 +71,11 @@ def _display_warning_ui(msg):
 def setZDepthKeyframes(node,
                           start_frame, end_frame,
                           values,
-                          anim_layer_name=None):    
+                          anim_layer_name=None):
     kwargs = {}
     if anim_layer_name is not None:
         kwargs = {'animLayer': anim_layer_name}
-    
+
     frames = range(start_frame, end_frame+1)
     for i, frame in enumerate(frames):
         oma.MAnimControl.setCurrentTime(om.MTime(frame))
@@ -96,7 +96,7 @@ class ScreenSpaceRigWindow(BaseWindow):
         self.setMinimumWidth(310)
         self.setMinimumHeight(400)
         self.setMaximumWidth(310)
-        self.setMaximumHeight(400)        
+        self.setMaximumHeight(400)
         self.setWindowFlags(QtCore.Qt.Tool)
 
         self.addSubForm(ScreenSpaceRigLayout)
@@ -121,17 +121,15 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
     def setupUi(self, parent):
         self.transform_icon = QtGui.QIcon(":transform.svg")
 
-        # main layout
+        # Main layout
         self.gridLayout = QtWidgets.QGridLayout(parent)
 
-        # menu bar
+        # Menu
         self.menu_bar = QtWidgets.QMenuBar()
-
-        # menus
         self.options_menu = self.menu_bar.addMenu("Freeze")
         self.refresh_menu = self.menu_bar.addMenu("Refresh")
 
-        # freeze options actions
+        # Freeze options actions
         self.animlayer_action = QtWidgets.QAction("Add to AnimLayer", self)
         self.animlayer_action.setCheckable(True)
         self.options_menu.addAction(self.animlayer_action)
@@ -151,7 +149,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
         self.options_menu.addAction(self.world_space_action)
         self.world_space_action.setActionGroup(self.freeze_action_group)
 
-        #refresh action
+        # Refresh action
         self.refresh_action = QtWidgets.QAction("Refresh Rigs list", self)
         self.refresh_menu.addAction(self.refresh_action)
 
@@ -173,7 +171,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
             QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 0, 2, 1, 1)
 
-        #smart bake radio button
+        # Smart bake radio button
         self.smart_bake_rdo_btn = QtWidgets.QRadioButton()
         self.smart_bake_rdo_btn.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.smart_bake_rdo_btn.setAutoFillBackground(False)
@@ -188,11 +186,11 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
 
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
 
-        #rigs label
+        # Rigs label
         self.rigs_label = QtWidgets.QLabel()
         self.horizontalLayout_2.addWidget(self.rigs_label)
 
-        #rigs list
+        # Rigs list
         self.rigs_list = QtWidgets.QTreeWidget()
         self.rigs_list.setFocusPolicy(QtCore.Qt.NoFocus)
         self.rigs_list.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
@@ -204,18 +202,18 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
 
         self.horizontalLayout = QtWidgets.QHBoxLayout()
 
-        #name label
+        # Name label
         self.name_label = QtWidgets.QLabel()
         self.horizontalLayout.addWidget(self.name_label)
 
-        #name line edit
+        # Name line edit
         self.name_text = QtWidgets.QLineEdit()
         self.name_text.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.horizontalLayout.addWidget(self.name_text)
 
         self.gridLayout.addLayout(self.horizontalLayout, 3, 0, 1, 5)
 
-        #widget labels
+        # Widget labels
         self.full_bake_rdo_btn.setText("Full bake")
         self.smart_bake_rdo_btn.setText("Smart bake")
         self.rigs_label.setText("Rigs")
@@ -223,7 +221,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
 
         self.context_menu = QtWidgets.QMenu()
 
-        self.create_rig_action = QtWidgets.QAction("Create Screen Space Rig", self)
+        self.create_rig_action = QtWidgets.QAction("Create Screen-Space Rig", self)
         self.context_menu.addAction(self.create_rig_action)
 
         self.create_freeze_rig_action = QtWidgets.QAction("Create Freeze Rig", self)
@@ -231,7 +229,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
 
         self.context_menu.addSeparator()
 
-        self.match_rig_action = QtWidgets.QAction("Match Screen Z Depth", self)
+        self.match_rig_action = QtWidgets.QAction("Match Screen Z-Depth", self)
         self.context_menu.addAction(self.match_rig_action)
 
         self.context_menu.addSeparator()
@@ -245,7 +243,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
         self.context_menu.addSeparator()
 
         self.select_action = QtWidgets.QAction("Select in Outliner", self)
-        self.context_menu.addAction(self.select_action)       
+        self.context_menu.addAction(self.select_action)
         return
 
     def createConnections(self):
@@ -272,7 +270,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
         cmds.select(clear=True)
         for item in selected_items:
             name = item.text(0)
-            cmds.select(name, add=True)    
+            cmds.select(name, add=True)
 
     def refreshRigsList(self):
         self.rigs_list.clear()
@@ -374,7 +372,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 restore_current_frame=True,
                 use_dg_evaluation_mode=True,
                 disable_viewport=False)
-            with ctx:      
+            with ctx:
                 depth_list = []
                 frames_list = self.getPreBakeFramesListFromNode(tfm_node)
                 if len(frames_list) > 0:
@@ -385,10 +383,10 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                         depth_list.append(vector + offset)
                     oma.MAnimControl.setCurrentTime(om.MTime(float(current_time)))
         except(NameError, ValueError, TypeError) as e:
-            print e 
+            print e
         finally:
             mel.eval("paneLayout -e -manage true $gMainPane")
-            cmds.refresh(suspend=False)                                    
+            cmds.refresh(suspend=False)
         return depth_list
 
     def createRig(self, camera, object, dlist, name, rigName):
@@ -402,7 +400,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 disable_viewport=False)
             with ctx:
                 start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
-                
+
                 # Create main group
                 main_grp = cmds.group(empty=True, n=name + rigName)
 
@@ -419,7 +417,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 cmds.setAttr(main_grp+"."+ATTRIBUTE_IDENTIFIER_NAME, str(object), type="string")
 
                 # Set keyframes on screezdepth attribute
-                frames_list = self.getPreBakeFramesListFromNode(object)            
+                frames_list = self.getPreBakeFramesListFromNode(object)
                 for i, frame in enumerate(frames_list):
                     cmds.setKeyframe(main_grp, at=SCREEN_Z_DEPTH_ATTR_NAME, t=frame, v=dlist[i])
 
@@ -430,7 +428,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 # Create screez master group
                 screenz_master_grp = cmds.group(em=True, n=name + SCREEN_Z_MASTER_NAME)
                 cmds.setAttr(screenz_master_grp+".visibility", 0)
-                # Add screen x,y copy attributes
+                # Add screen X/Y copy attributes
                 cmds.addAttr(screenz_master_grp, ln="screenxcopy", nn="Screen X copy", at="float")
                 cmds.addAttr(screenz_master_grp, ln="screenycopy", nn="Screen Y copy", at="float")
                 cmds.setAttr(screenz_master_grp+".screenxcopy", cb=False)
@@ -439,15 +437,14 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 cmds.parent(screenz_master_grp, main_grp)
                 con = cmds.parentConstraint(self.getViewportCamera(), screenz_master_grp)
 
-                #cmds.bakeResults(screenz_master_grp, t=(start_frame, end_frame), sm=True)
                 fastbake_lib.bake_attributes([screenz_master_grp], [], start_frame, end_frame, False)
                 cmds.delete(con)
-                # Create screenz depth connections
+                # Create screen Z-depth connections
                 cmds.connectAttr(main_grp+"."+SCREEN_Z_DEPTH_ATTR_NAME, screenz_master_grp+".scaleX", f=True)
                 cmds.connectAttr(main_grp+"."+SCREEN_Z_DEPTH_ATTR_NAME, screenz_master_grp+".scaleY", f=True)
                 cmds.connectAttr(main_grp+"."+SCREEN_Z_DEPTH_ATTR_NAME, screenz_master_grp+".scaleZ", f=True)
 
-                # Create screen xy master group
+                # Create screen X/Y master group
                 screen_xy_master_grp = cmds.group(em=True, n=name + SCREEN_XY_MASTER_NAME)
                 cmds.setAttr(screen_xy_master_grp+".visibility", 0)
                 attr_list = ["rx", "ry", "rz", "sx","sy","sz","visibility"]
@@ -460,13 +457,11 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 cmds.delete(con)
                 cmds.setAttr(screen_xy_master_grp+".translateZ", l=1)
 
-                # Create screenxy connections
+                # Create screen X/Y connections
                 cmds.connectAttr(screen_xy_master_grp+".translateX", main_grp+".screenx", f=True)
                 cmds.connectAttr(screen_xy_master_grp+".translateY", main_grp+".screeny", f=True)
                 cmds.connectAttr(screen_xy_master_grp+".translateX", screenz_master_grp+".screenxcopy", f=True)
                 cmds.connectAttr(screen_xy_master_grp+".translateY", screenz_master_grp+".screenycopy", f=True)
-                #cmds.bakeResults(main_grp, at=["screenx","screeny"], t=(start_frame, end_frame), sm=True)
-                #cmds.bakeResults(screenz_master_grp, at=["screenxcopy","screenycopy"], t=(start_frame, end_frame), sm=True)
                 fastbake_lib.bake_attributes([main_grp], ["screenx","screeny"], start_frame, end_frame, False)
                 fastbake_lib.bake_attributes([screenz_master_grp], ["screenxcopy","screenycopy"], start_frame, end_frame, False)
                 cmds.connectAttr(main_grp+".screenx", screen_xy_master_grp+".translateX", f=True)
@@ -490,10 +485,10 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 cmds.select(cl=True)
                 self.refreshRigsList()
         except(NameError, ValueError, TypeError) as e:
-            print e            
+            print e
         finally:
             mel.eval("paneLayout -e -manage true $gMainPane")
-            cmds.refresh(suspend=False)          
+            cmds.refresh(suspend=False)
 
     def checkNameExists(self, rigName, name, rigs_list):
         valid_name_list = False
@@ -516,7 +511,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
 
         valid_name_list = True
         for name_item in names:
-            #check if name already exists
+            # Check if name already exists
             iterator = QtWidgets.QTreeWidgetItemIterator(rigs_list)
             while iterator.value():
                 item = iterator.value()
@@ -549,7 +544,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
 
         node_screen_depths = []
         for sel_item, name_item in zip(sel, names):
-            #check if object has existing point constraint already
+            # Check if object has existing point constraint already
             has_constraints = transform_has_constraints(sel_item)
             if has_constraints == False:
                 depth_list = self.calcDistance(cam_tfm, sel_item, 0)
@@ -559,12 +554,6 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                     "selected object(s) already have constraints.")
                 return
 
-        """ctx = tools_utils.tool_context(
-            use_undo_chunk=True,
-            restore_current_frame=True,
-            use_dg_evaluation_mode=True,
-            disable_viewport=True)
-        with ctx:"""
         for sel_item, name_item, depth_list in node_screen_depths:
             self.createRig(
                 cam_tfm, sel_item,
@@ -580,7 +569,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
         if cam_tfm is None:
             _display_warning_ui("Please select a viewport.")
             return
-        
+
         check_name = self.checkNameExists(FREEZE_RIG_SUFFIX_NAME, name_text, rigs_list)
         valid_name_list, same_name_used = check_name
 
@@ -635,16 +624,15 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                         name_item + FREEZE_RIG_SUFFIX_NAME, clear=True,
                         at=SCREEN_Z_DEPTH_ATTR_NAME)
                 else:
-                    # World space bake                
+                    # World space bake
                     # Create a static temp group
                     temp_grp = cmds.group(empty=True)
                     con = cmds.parentConstraint(
                         sel_item, temp_grp,
                         maintainOffset=False)
                     cmds.delete(con)
-                    #cmds.bakeResults(temp_grp, time=(start_frame, end_frame), simulation=True)
                     fastbake_lib.bake_attributes([temp_grp], [], start_frame, end_frame, False)
-                    self.createRig(cam_tfm, sel_item, dlist, name_item, FREEZE_RIG_SUFFIX_NAME)                    
+                    self.createRig(cam_tfm, sel_item, dlist, name_item, FREEZE_RIG_SUFFIX_NAME)
                     # Calc full freeze list
                     dlist = self.calcDistance(cam_tfm, temp_grp, 0)
                     if use_anim_layer == False:
@@ -669,7 +657,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                     # Delete temp group
                     cmds.delete(temp_grp)
         return
-                    
+
     def bakeRigBtn(self):
         bake_options = self.bakeOptions()
         selected_items = self.rigs_list.selectedItems()
@@ -735,10 +723,10 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 self.deleteRigBtn()
                 self.refreshRigsList()
         except(NameError, ValueError, TypeError) as e:
-            print e            
+            print e
         finally:
             mel.eval("paneLayout -e -manage true $gMainPane")
-            cmds.refresh(suspend=False)               
+            cmds.refresh(suspend=False)
         return
 
     def getAllChildren(self, tree_widget_item):
@@ -832,9 +820,9 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
         self.refreshRigsList()
 
 
-def main(show=True, auto_raise=True, delete=False):
+def open_window(show=True, auto_raise=True, delete=False):
     """
-    Open the Channel Sensitivity UI window.
+    Open the 'Screen-Space Rig Bake' UI window.
 
     :param show: Show the UI.
     :type show: bool
@@ -856,4 +844,3 @@ def main(show=True, auto_raise=True, delete=False):
         delete=delete
     )
     return win
-

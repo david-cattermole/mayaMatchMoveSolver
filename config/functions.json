@@ -507,12 +507,12 @@
             ]
         },
         "screen_space_rig_bake": {
-            "name": "Screen Space Rig Bake...",
+            "name": "Screen-Space Rig Bake...",
             "name_shelf": "ScrnRgBk",
-            "tooltip": "Convert a transform into a screen-space transform.",
+            "tooltip": "Bake transforms into screen-space, with helper rig.",
             "command": [
                 "import mmSolver.tools.screenspacerigbake.tool;",
-                "mmSolver.tools.screenspacerigbake.tool.main();"
+                "mmSolver.tools.screenspacerigbake.tool.open_window();"
             ]
         },        
         "undo_scene": {

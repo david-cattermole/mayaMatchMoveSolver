@@ -32,6 +32,7 @@ changes.
 
 | Releases                                                                                | Description                                        |
 | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| [v0.3.13](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.13) | New tools, and Maya 2020 support.                  |
 | [v0.3.12](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.12) | Bug fixes, minor features and updates.             |
 | [v0.3.11](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.11) | Bug fixes, and minor tool and UI updates.          |
 | [v0.3.10](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.10) | Bug fix release, support for Mesh Rivets.          |

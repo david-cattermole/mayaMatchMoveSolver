@@ -109,8 +109,8 @@ if (BUILD_QT_UI)
             )
 
     add_ui_compile("fastbake"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/fastbake/ui/fastbake_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/fastbake/ui/ui_fastbake_layout.py
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/attributebake/ui/attrbake_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/attributebake/ui/ui_attrbake_layout.py
             )
 
     add_ui_compile("createcontroller2"

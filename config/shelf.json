@@ -25,7 +25,7 @@
             "attr_tools/attr_popup/open_graph_editor",
             "attr_tools/attr_popup/set_attr_details_ui",
             "attr_tools/attr_popup/---Bake Attributes",
-            "attr_tools/attr_popup/fast_bake",            
+            "attr_tools/attr_popup/attribute_bake",
             "marker_tools/marker_popup/---Edit Marker",
             "marker_tools/marker_popup/toggle_marker_lock",
             "marker_tools/marker_popup/place_marker_manipulator",

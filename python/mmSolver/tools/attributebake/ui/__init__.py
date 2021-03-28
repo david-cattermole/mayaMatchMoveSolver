@@ -16,5 +16,5 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-fast bake user interface.
+Attribute (fast) bake user interface.
 """

@@ -40,9 +40,9 @@ LOG = mmSolver.logger.get_logger()
 
 def _transform_has_constraints(tfm_node):
     constraints = cmds.listRelatives(
-        tfm_node, children=True, type="pointConstraint") or []
+        tfm_node, children=True, type='pointConstraint') or []
     constraints += cmds.listRelatives(
-        tfm_node, children=True, type="parentConstraint") or []
+        tfm_node, children=True, type='parentConstraint') or []
     has_constraints = len(constraints) > 0
     return has_constraints
 
@@ -69,37 +69,34 @@ def _is_world_space_node(node, start_frame, end_frame):
         return False
 
     # Create node network to check if object is in world space.
-    cmds.loadPlugin("matrixNodes", quiet=True)
+    cmds.loadPlugin('matrixNodes', quiet=True)
     worldspace_check_matrix_node = None
     result_decomp_node = None
-    # try:
     worldspace_check_matrix_node = cmds.createNode(
-        "multMatrix",
-        # name="mmSolver_cc_worldspace_check_node",
+        'multMatrix',
         skipSelect=True)
     result_decomp_node = cmds.createNode(
-        "decomposeMatrix",
-        # name="mmSolver_cc_worldspace_result_node",
+        'decomposeMatrix',
         skipSelect=True)
     cmds.connectAttr(
-        node + ".parentMatrix[0]",
-        worldspace_check_matrix_node + ".matrixIn[1]",
+        node + '.parentMatrix[0]',
+        worldspace_check_matrix_node + '.matrixIn[1]',
         force=True)
     cmds.connectAttr(
-        node + ".xformMatrix",
-        worldspace_check_matrix_node + ".matrixIn[2]",
+        node + '.xformMatrix',
+        worldspace_check_matrix_node + '.matrixIn[2]',
         force=True)
     cmds.connectAttr(
-        worldspace_check_matrix_node + ".matrixSum",
-        result_decomp_node + ".inputMatrix",
+        worldspace_check_matrix_node + '.matrixSum',
+        result_decomp_node + '.inputMatrix',
         force=True)
 
     # Get single frame pos and rotation sum
     pos = cmds.getAttr(
-        result_decomp_node + ".outputTranslate",
+        result_decomp_node + '.outputTranslate',
         time=int(start_frame))[0]
     rot = cmds.getAttr(
-        result_decomp_node + ".outputRotate",
+        result_decomp_node + '.outputRotate',
         time=int(end_frame))[0]
     stored_sum = sum(pos) + sum(rot)
 
@@ -110,16 +107,15 @@ def _is_world_space_node(node, start_frame, end_frame):
     world_space_state = True
     for frame in range(start_frame, end_frame + 1):
         pos = cmds.getAttr(
-            result_decomp_node + ".outputTranslate",
+            result_decomp_node + '.outputTranslate',
             time=frame)[0]
         rot = cmds.getAttr(
-            result_decomp_node + ".outputRotate",
+            result_decomp_node + '.outputRotate',
             time=frame)[0]
         pos_rot_sum = sum(pos) + sum(rot)
         if not pos_rot_sum == stored_sum:
             world_space_state = False
             break
-    # finally:
     if worldspace_check_matrix_node and cmds.objExists(worldspace_check_matrix_node):
         cmds.delete(worldspace_check_matrix_node)
     if result_decomp_node and cmds.objExists(result_decomp_node):
@@ -156,14 +152,13 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.full_bake_rdo_btn.clicked.connect(self.fullbake_space_radio_button_clicked)
         self.current_frame_rdo_btn.clicked.connect(self.fullbake_space_radio_button_clicked)
 
-        self.loc_grp_node = None
         self.reset_options()
 
     def get_pivot_object(self):
         """Set the pivot object widget as current selection."""
         selection = cmds.ls(selection=True, long=True) or []
         if not len(selection) == 1:
-            LOG.warn("Please select exactly one object.")
+            LOG.warn('Please select exactly one object.')
             return
         self.pivot_object_text.setText(str(selection[0]))
 
@@ -171,7 +166,7 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         """Set the main object widget as current selected transform."""
         selection = cmds.ls(selection=True, long=True, transforms=True) or []
         if not len(selection) == 1:
-            LOG.warn("Please select exactly one transform object.")
+            LOG.warn('Please select exactly one transform object.')
             return
         self.main_object_text.setText(str(selection[0]))
         self.full_bake_rdo_btn.setChecked(True)
@@ -188,30 +183,30 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
     def create_locator_group(self):
         pivot_text = self.pivot_object_text.text()
         main_text = self.main_object_text.text()
-        if pivot_text == "" or main_text == "":
-            LOG.warn("Please get both pivot and main objects.")
+        if pivot_text == '' or main_text == '':
+            LOG.warn('Please get both pivot and main objects.')
             return
         if not cmds.objExists(pivot_text):
-            LOG.warn("Could not find pivot object: %r", pivot_text)
+            LOG.warn('Could not find pivot object: %r', pivot_text)
             return
         if not cmds.objExists(main_text):
-            LOG.warn("Could not find main object: %r", main_text)
+            LOG.warn('Could not find main object: %r', main_text)
             return
 
+        loc_grp_node = None
         loc_grp_name = str(self.locator_group_text.text())
         if not loc_grp_name:
-            LOG.warn("Please type controller name.")
+            LOG.warn('Please type controller name.')
             return
         if self.group_rdo_btn.isChecked():
-            self.loc_grp_node = cmds.group(empty=True, name=loc_grp_name)
+            loc_grp_node = cmds.group(empty=True, name=loc_grp_name)
         else:
-            self.loc_grp_node = cmds.spaceLocator(name=loc_grp_name)
+            loc_grp_node = cmds.spaceLocator(name=loc_grp_name)
 
-        # TODO: Should we de-select?
-        cmds.select(clear=True)
+        return loc_grp_node
 
     def create_controller_button_clicked(self):
-        self.create_locator_group()
+        loc_grp_node = self.create_locator_group()
 
         # Set time
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
@@ -223,7 +218,6 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         controller_name = self.locator_group_text.text()
         pivot_node = self.pivot_object_text.text()
         main_node = self.main_object_text.text()
-        loc_grp_node = self.loc_grp_node
         camera = _get_viewport_camera()
         space = None
         if self.world_space_rdo_btn.isChecked():
@@ -233,7 +227,7 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         elif self.screen_space_rdo_btn.isChecked():
             space = const.CONTROLLER_TYPE_SCREEN_SPACE
         else:
-            LOG.error("Invalid space.")
+            LOG.error('Invalid space.')
             return
         smart_bake = self.smart_bake_rdo_btn.isChecked()
         if not controller_name or not pivot_node or not main_node:
@@ -242,7 +236,7 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             loc_grp_node = [loc_grp_node]
         if self.screen_space_rdo_btn.isChecked():
             if not camera:
-                LOG.warn("Please select camera viewport.")
+                LOG.warn('Please select camera viewport.')
                 if cmds.objExists(loc_grp_node[0]):
                     cmds.delete(loc_grp_node[0])
                 return
@@ -250,8 +244,8 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         # Check if main node has constraints already
         has_constraints = _transform_has_constraints(main_node)
         if has_constraints is True:
-            LOG.warn("Main object has constraints already.")
-            cmds.delete(self.loc_grp_node)
+            LOG.warn('Main object has constraints already.')
+            cmds.delete(loc_grp_node)
             return
 
         controller_nodes = lib.create_controller(
@@ -264,7 +258,8 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             space,
             smart_bake,
             camera)
-        LOG.warn("Success: Create Controller.")
+        cmds.select(controller_nodes, replace=True)
+        LOG.warn('Success: Create Controller.')
 
     def reset_options(self):
         # reset widgets to default

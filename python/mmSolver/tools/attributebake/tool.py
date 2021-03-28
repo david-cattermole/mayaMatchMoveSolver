@@ -25,8 +25,8 @@ import mmSolver.logger
 import mmSolver.utils.configmaya as configmaya
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
-import mmSolver.tools.fastbake.constant as const
-import mmSolver.tools.fastbake.lib as lib
+import mmSolver.tools.attributebake.constant as const
+import mmSolver.tools.attributebake.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 
@@ -96,5 +96,5 @@ def main():
 
 
 def open_window():
-    import mmSolver.tools.fastbake.ui.fastbake_window as window
+    import mmSolver.tools.attributebake.ui.attrbake_window as window
     window.main()

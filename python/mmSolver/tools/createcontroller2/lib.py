@@ -22,7 +22,7 @@ import random
 
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.time as time_utils
-import mmSolver.tools.fastbake.lib as fastbake_lib
+import mmSolver.tools.attributebake.lib as fastbake_lib
 import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.logger
 
@@ -113,7 +113,8 @@ def _world_bake(pivot, main, loc_grp, start, end, smart_bake=False):
     else:
         # point constraint, parent is pivot and child is loc_grp
         point_con = cmds.pointConstraint(pivot, loc_grp, maintainOffset=False)
-        fastbake_lib.bake_attributes(loc_grp, attrs, start, end, smart_bake)
+        fastbake_lib.bake_attributes(
+            loc_grp, attrs, start, end, smart_bake=smart_bake)
         cmds.delete(point_con)
 
     # orient constraint, parent is main and child is loc_grp
@@ -131,12 +132,11 @@ def _create_main_driver(parent, main):
     parent_con = cmds.parentConstraint(main, main_driver_loc)
     # bake attributes
     attrs = []
-    fastbake_lib.bake_attributes(main_driver_loc, attrs, start, end, False)
+    fastbake_lib.bake_attributes(
+        main_driver_loc, attrs, start, end, smart_bake=False)
     cmds.delete(parent_con)
-    #hide in outliner
+    # hide in outliner
     cmds.setAttr(main_driver_loc[0]+".hiddenInOutliner", 1)
-    cmds.select(main_driver_loc, deselect=True)
-
     return main_driver_loc
 
 
@@ -320,7 +320,7 @@ def create_controller(name,
     Create Controller of a node.
 
     :param name: rig name
-    :type name: string
+    :type name: str
 
     :param pivot_node:
         The controller uses the pivot node's transform as the parent

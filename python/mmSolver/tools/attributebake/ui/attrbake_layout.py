@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-The main component of the user interface for the fast bake
+The main component of the user interface for the attribute (fast) bake
 window.
 """
 
@@ -29,16 +29,16 @@ import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.configmaya as configmaya
-import mmSolver.tools.fastbake.ui.ui_fastbake_layout as ui_layout
-import mmSolver.tools.fastbake.constant as const
-import mmSolver.tools.fastbake.lib as lib
+import mmSolver.tools.attributebake.ui.ui_attrbake_layout as ui_layout
+import mmSolver.tools.attributebake.constant as const
+import mmSolver.tools.attributebake.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 
 
-class FastBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
+class AttributeBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
     def __init__(self, parent=None, *args, **kwargs):
-        super(FastBakeLayout, self).__init__(*args, **kwargs)
+        super(AttributeBakeLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
         # Frame Range Mode

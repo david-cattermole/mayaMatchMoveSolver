@@ -258,6 +258,7 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             space,
             smart_bake,
             camera)
+        cmds.select(controller_nodes, replace=True)
         LOG.warn('Success: Create Controller.')
 
     def reset_options(self):

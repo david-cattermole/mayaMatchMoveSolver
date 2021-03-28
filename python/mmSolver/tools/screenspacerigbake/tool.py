@@ -29,7 +29,7 @@ import maya.OpenMayaAnim as oma
 import maya.cmds as cmds
 import maya.mel as mel
 
-import mmSolver.tools.fastbake.lib as fastbake_lib
+import mmSolver.tools.attributebake.lib as fastbake_lib
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.utils.viewport as viewport_utils

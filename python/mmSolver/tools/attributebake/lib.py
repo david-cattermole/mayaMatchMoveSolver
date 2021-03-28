@@ -20,7 +20,7 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.time as time_utils
-import mmSolver.tools.fastbake.constant as const
+import mmSolver.tools.attributebake.constant as const
 
 LOG = mmSolver.logger.get_logger()
 

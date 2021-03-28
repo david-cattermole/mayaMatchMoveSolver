@@ -183,27 +183,27 @@
                 "mmSolver.tools.raycastmarker.tool.open_window();"
             ]
         },
-        "fast_bake": {
+        "attribute_bake": {
             "name": "Bake Attributes",
-            "name_shelf": "FastBake",
-            "tooltip": "Bake attributes.",
+            "name_shelf": "AttrBake",
+            "tooltip": "Bake node attributes.",
             "command": [
-                "import mmSolver.tools.fastbake.tool;",
-                "mmSolver.tools.fastbake.tool.main();"
+                "import mmSolver.tools.attributebake.tool;",
+                "mmSolver.tools.attributebake.tool.main();"
             ],
             "option_box": true,
             "command_option_box": [
-                "import mmSolver.tools.fastbake.tool;",
-                "mmSolver.tools.fastbake.tool.open_window();"
+                "import mmSolver.tools.attributebake.tool;",
+                "mmSolver.tools.attributebake.tool.open_window();"
             ]
         },
-        "fast_bake_ui": {
-            "name": "Fast Bake Attributes UI...",
-            "name_shelf": "Fastbake",
-            "tooltip": "Quickly bake attributes.",
+        "attribute_bake_ui": {
+            "name": "Bake Attributes UI...",
+            "name_shelf": "AttrBake",
+            "tooltip": "Bake node attributes.",
             "command": [
-                "import mmSolver.tools.fastbake.tool;",
-                "mmSolver.tools.fastbake.tool.open_window();"
+                "import mmSolver.tools.attributebake.tool;",
+                "mmSolver.tools.attributebake.tool.open_window();"
             ]
         },         
         "aim_at_camera_manipulator": {

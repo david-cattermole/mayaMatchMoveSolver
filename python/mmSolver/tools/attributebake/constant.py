@@ -16,15 +16,15 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Fast Bake constants.
+Attribute (fast) Bake constants.
 """
 
-WINDOW_TITLE = 'Fast Bake'
+WINDOW_TITLE = 'Attribute Bake'
 
 # Constants for frame range mode.
-FRAME_RANGE_MODE_TIMELINE_INNER_VALUE = 'fastbake_timeline_inner'
-FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE = 'fastbake_timeline_outer'
-FRAME_RANGE_MODE_CUSTOM_VALUE = 'fastbake_custom'
+FRAME_RANGE_MODE_TIMELINE_INNER_VALUE = 'attrbake_timeline_inner'
+FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE = 'attrbake_timeline_outer'
+FRAME_RANGE_MODE_CUSTOM_VALUE = 'attrbake_custom'
 FRAME_RANGE_MODE_VALUES = [FRAME_RANGE_MODE_TIMELINE_INNER_VALUE,
                            FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE,
                            FRAME_RANGE_MODE_CUSTOM_VALUE]
@@ -51,8 +51,8 @@ DEFAULT_SMART_BAKE_STATE = False
 DEFAULT_FROM_CHANNELBOX_STATE = True
 
 # Config files
-CONFIG_FRAME_RANGE_MODE_KEY = 'mmSolver_fastbake_frame_range_mode'
-CONFIG_FRAME_START_KEY = 'mmSolver_fastbake_frame_start'
-CONFIG_FRAME_END_KEY = 'mmSolver_fastbake_frame_end'
-CONFIG_SMART_BAKE_KEY = 'mmSolver_fastbake_smart_bake'
-CONFIG_FROM_CHANNELBOX_KEY = 'mmSolver_fastbake_from_channel_box'
+CONFIG_FRAME_RANGE_MODE_KEY = 'mmSolver_attrbake_frame_range_mode'
+CONFIG_FRAME_START_KEY = 'mmSolver_attrbake_frame_start'
+CONFIG_FRAME_END_KEY = 'mmSolver_attrbake_frame_end'
+CONFIG_SMART_BAKE_KEY = 'mmSolver_attrbake_smart_bake'
+CONFIG_FROM_CHANNELBOX_KEY = 'mmSolver_attrbake_from_channel_box'

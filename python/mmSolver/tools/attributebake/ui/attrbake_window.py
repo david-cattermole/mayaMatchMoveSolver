@@ -16,12 +16,12 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Window for the Fast bake tool.
+Window for the Attribute bake tool.
 
 Usage::
 
-   import mmSolver.tools.fastbake.ui.fastbake_window as fastbake_window
-   fastbake_window.main()
+   import mmSolver.tools.attributebake.ui.attrbake_window as window
+   window.main()
 
 """
 
@@ -36,9 +36,9 @@ import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.ui.commonmenus as commonmenus
-import mmSolver.tools.fastbake.constant as const
-import mmSolver.tools.fastbake.ui.fastbake_layout as fastbake_layout
-import mmSolver.tools.fastbake.tool as tool
+import mmSolver.tools.attributebake.constant as const
+import mmSolver.tools.attributebake.ui.attrbake_layout as attrbake_layout
+import mmSolver.tools.attributebake.tool as tool
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
@@ -46,18 +46,18 @@ baseModule, BaseWindow = uiutils.getBaseWindow()
 
 def _open_help():
     src = helputils.get_help_source()
-    page = 'tools_generaltools.html#fast-bake'
+    page = 'tools_attributetools.html#attribute-bake'
     helputils.open_help_in_browser(page=page, help_source=src)
     return
 
 
-class FastBakeWindow(BaseWindow):
-    name = 'FastBakeWindow'
+class AttributeBakeWindow(BaseWindow):
+    name = 'AttributeBakeWindow'
 
     def __init__(self, parent=None, name=None):
-        super(FastBakeWindow, self).__init__(parent, name=name)
+        super(AttributeBakeWindow, self).__init__(parent, name=name)
         self.setupUi(self)
-        self.addSubForm(fastbake_layout.FastBakeLayout)
+        self.addSubForm(attrbake_layout.AttributeBakeLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
         self.setWindowFlags(QtCore.Qt.Tool)
@@ -96,7 +96,7 @@ class FastBakeWindow(BaseWindow):
 
 
 def main(show=True, auto_raise=True, delete=False):
-    win = FastBakeWindow.open_window(
+    win = AttributeBakeWindow.open_window(
         show=show,
         auto_raise=auto_raise,
         delete=delete

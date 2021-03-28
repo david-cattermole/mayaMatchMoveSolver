@@ -183,6 +183,29 @@
                 "mmSolver.tools.raycastmarker.tool.open_window();"
             ]
         },
+        "fast_bake": {
+            "name": "Bake Attributes",
+            "name_shelf": "FastBake",
+            "tooltip": "Bake attributes.",
+            "command": [
+                "import mmSolver.tools.fastbake.tool;",
+                "mmSolver.tools.fastbake.tool.main();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.fastbake.tool;",
+                "mmSolver.tools.fastbake.tool.open_window();"
+            ]
+        },
+        "fast_bake_ui": {
+            "name": "Fast Bake Attributes UI...",
+            "name_shelf": "Fastbake",
+            "tooltip": "Quickly bake attributes.",
+            "command": [
+                "import mmSolver.tools.fastbake.tool;",
+                "mmSolver.tools.fastbake.tool.open_window();"
+            ]
+        },         
         "aim_at_camera_manipulator": {
             "name": "Aim At Camera (Screen-Z Manipulator)",
             "tooltip": "Screen-space Z manipulator.",
@@ -365,6 +388,15 @@
             "tooltip": "General Tools",
             "command": ["pass"]
         },
+        "center_twodee_ui": {
+            "name": "Offset 2D Center UI",
+            "name_shelf": "Center",
+            "tooltip": "Offset 2D Center.",
+            "command": [
+                "import mmSolver.tools.centertwodee.tool;",
+                "mmSolver.tools.centertwodee.tool.center_two_dee_ui();"
+            ]
+        },
         "center_twodee": {
             "name": "Apply 2D Center on Selected",
             "name_shelf": "Center",
@@ -372,6 +404,11 @@
             "command": [
                 "import mmSolver.tools.centertwodee.tool;",
                 "mmSolver.tools.centertwodee.tool.main();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.centertwodee.tool;",
+                "mmSolver.tools.centertwodee.tool.center_two_dee_ui();"
             ]
         },
         "center_twodee_remove": {
@@ -469,6 +506,15 @@
                 "mmSolver.tools.screenspacetransform.tool.main();"
             ]
         },
+        "screen_space_rig_bake": {
+            "name": "Screen Space Rig Bake...",
+            "name_shelf": "ScrnRgBk",
+            "tooltip": "Convert a transform into a screen-space transform.",
+            "command": [
+                "import mmSolver.tools.screenspacerigbake.tool;",
+                "mmSolver.tools.screenspacerigbake.tool.main();"
+            ]
+        },        
         "undo_scene": {
             "name": "Undo (without UI update)",
             "name_shelf": "Undo",
@@ -508,21 +554,39 @@
             ]
         },
         "create_controller": {
-            "name": "Create Controller",
+            "name": "Create Controller v1",
             "name_shelf": "CrCtrl",
-            "tooltip": "Create Controller for selected nodes.",
+            "tooltip": "Create Controller for selected node.",
             "command": [
                 "import mmSolver.tools.createcontroller.tool;",
                 "mmSolver.tools.createcontroller.tool.create();"
             ]
         },
+        "create_controller2": {
+            "name": "Create Controller v2...",
+            "name_shelf": "CrCtrl",
+            "tooltip": "Create Controller for selected node.",
+            "command": [
+                "import mmSolver.tools.createcontroller2.tool;",
+                "mmSolver.tools.createcontroller2.tool.open_window();"
+            ]
+        },
         "remove_controller": {
-            "name": "Remove Controller",
+            "name": "Remove Controller v1",
             "name_shelf": "RmCtrl",
-            "tooltip": "Remove Controller for selected nodes.",
+            "tooltip": "Remove Controller for selected node.",
             "command": [
                 "import mmSolver.tools.createcontroller.tool;",
                 "mmSolver.tools.createcontroller.tool.remove();"
+            ]
+        },
+        "remove_controller2": {
+            "name": "Remove Controller v2",
+            "name_shelf": "RmCtrl",
+            "tooltip": "Remove Controller for selected node.",
+            "command": [
+                "import mmSolver.tools.removecontroller2.tool;",
+                "mmSolver.tools.removecontroller2.tool.main();"
             ]
         },
         "deform_marker": {
@@ -586,7 +650,7 @@
             ]
         },
         "remove_all_solver_nodes": {
-            "name": "Remove All Solver Nodes",
+            "name": "Remove All Solver Nodes...",
             "tooltip": "Remove all nodes related to matchmoveSolver to clean scene file.",
             "command": [
                 "import mmSolver.tools.removesolvernodes.tool as tool;",

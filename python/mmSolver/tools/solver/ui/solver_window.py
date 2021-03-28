@@ -38,6 +38,7 @@ import mmSolver.utils.undo as undo_utils
 import mmSolver.utils.tools as tools_utils
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
+import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_collection
 import mmSolver.tools.solver.lib.state as lib_state
@@ -45,13 +46,18 @@ import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
 import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 import mmSolver.tools.solver.ui.solver_layout as solver_layout
-import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
-import mmSolver.tools.aboutwindow.tool as aboutwin_tool
-import mmSolver.tools.sysinfowindow.tool as sysinfowin_tool
 
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
+
+
+def _open_help():
+    src = helputils.get_help_source()
+    helputils.open_help_in_browser(
+        page='tools_solver_ui.html',
+        help_source=src)
+    return
 
 
 class SolverWindow(BaseWindow):
@@ -466,31 +472,9 @@ class SolverWindow(BaseWindow):
 
         # Help Menu
         help_menu = QtWidgets.QMenu('Help', menubar)
-
-        # Launch Help
-        label = 'Help...'
-        tooltip = 'Show help.'
-        action = QtWidgets.QAction(label, help_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.launchHelpCB))
-        help_menu.addAction(action)
-
-        # Launch System Info window.
-        label = 'System Information...'
-        tooltip = 'Display detailed information about software and hardware.'
-        action = QtWidgets.QAction(label, help_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.launchSysInfoCB))
-        help_menu.addAction(action)
-
-        # Launch About
-        label = 'About mmSolver...'
-        tooltip = 'About this software.'
-        action = QtWidgets.QAction(label, help_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.launchAboutCB))
-        help_menu.addAction(action)
-
+        commonmenus.create_help_menu_items(
+            help_menu,
+            tool_help_func=_open_help)
         menubar.addMenu(help_menu)
         return
 
@@ -541,6 +525,7 @@ class SolverWindow(BaseWindow):
 
     def undoTriggeredCB(self):
         LOG.debug('undoTriggeredCB')
+        import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
         validation = lib_state.get_auto_update_solver_validation_state()
         with undo_utils.no_undo_context():
             lib_state.set_auto_update_solver_validation_state(False)
@@ -555,6 +540,7 @@ class SolverWindow(BaseWindow):
 
     def redoTriggeredCB(self):
         LOG.debug('redoTriggeredCB')
+        import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
         validation = lib_state.get_auto_update_solver_validation_state()
         with undo_utils.no_undo_context():
             lib_state.set_auto_update_solver_validation_state(False)
@@ -602,18 +588,6 @@ class SolverWindow(BaseWindow):
         if uiutils.isValidQtObject(self) is True:
             self.subForm.object_browser.setNodeSelection(values)
             self.subForm.attribute_browser.setNodeSelection(values)
-        return
-
-    def launchHelpCB(self):
-        self.help()
-        return
-
-    def launchAboutCB(self):
-        aboutwin_tool.open_window()
-        return
-
-    def launchSysInfoCB(self):
-        sysinfowin_tool.open_window()
         return
 
     def setStatusLine(self, text):
@@ -736,13 +710,6 @@ class SolverWindow(BaseWindow):
         super(SolverWindow, self).closeEvent(event)
         return
 
-    def help(self):
-        src = helputils.get_help_source()
-        helputils.open_help_in_browser(
-            page='tools.html#solver-ui',
-            help_source=src)
-        return
-
 
 def loadAllResources():
     base_install_location = os.environ.get('MMSOLVER_LOCATION', None)
@@ -766,7 +733,7 @@ def loadAllResources():
     return
 
 
-def main(show=True, auto_raise=True, delete=False):
+def main(show=True, auto_raise=True, delete=False, dock=True):
     """
     Open the Solver UI window.
 
@@ -792,6 +759,7 @@ def main(show=True, auto_raise=True, delete=False):
     win = SolverWindow.open_window(
         show=show,
         auto_raise=auto_raise,
-        delete=delete
+        delete=delete,
+        dock=dock
     )
     return win

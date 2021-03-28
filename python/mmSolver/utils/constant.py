@@ -78,3 +78,13 @@ ROTATE_ORDER_STR_TO_INDEX = {
     'yxz': 4,
     'zyx': 5,
 }
+
+
+# Techniques for enabling/disabling the viewport.
+DISABLE_VIEWPORT_MODE_GUESS_VALUE = 'guess'
+DISABLE_VIEWPORT_MODE_VP1_VALUE = 'viewport_1'
+DISABLE_VIEWPORT_MODE_VP2_VALUE = 'viewport_2'
+DISABLE_VIEWPORT_MODE_VALUES = [
+    DISABLE_VIEWPORT_MODE_VP1_VALUE,
+    DISABLE_VIEWPORT_MODE_VP2_VALUE,
+]

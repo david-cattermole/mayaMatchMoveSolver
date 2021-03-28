@@ -1,4 +1,4 @@
-# Copyright (C) 2019, 2020 David Cattermole.
+# Copyright (C) 2019, 2021 David Cattermole, Kazuma Tonegawa.
 #
 # This file is part of mmSolver.
 #
@@ -62,6 +62,11 @@ if (BUILD_QT_UI)
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/ui/ui_base.py
             )
 
+    add_ui_compile("centertwodee"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/centertwodee/ui/centertwodee_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/centertwodee/ui/ui_centertwodee_layout.py
+            )
+
     add_ui_compile("channelsen"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/channelsen/ui/channelsen_layout.ui
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/channelsen/ui/ui_channelsen_layout.py
@@ -116,6 +121,17 @@ if (BUILD_QT_UI)
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/userprefswindow/ui/pref_layout.ui
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/userprefswindow/ui/ui_pref_layout.py
             )
+
+    add_ui_compile("fastbake"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/fastbake/ui/fastbake_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/fastbake/ui/ui_fastbake_layout.py
+            )
+
+    add_ui_compile("createcontroller2"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcontroller2/ui/createcontroller_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcontroller2/ui/ui_createcontroller_layout.py
+            )
+
 endif ()
 
 

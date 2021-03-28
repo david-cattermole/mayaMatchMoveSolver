@@ -25,11 +25,12 @@ mmSolver has a few dependencies, and are listed in
 [BUILD.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md#dependencies).
 Install the dependencies using the guide listed below.
 
-- MacOS El Capitan 10.11 - https://www.apple.com/
-- Xcode 7.3.1 - https://developer.apple.com/download/
-- Developer Command line tools 7.3.1 - https://developer.apple.com/download/
-- Maya Development Kit (devkit) 2018+ - https://www.autodesk.com/developer-network/platform-technologies/maya
-- Maya 2018+ - https://www.autodesk.com.au/products/maya/overview
+- Maya 2018 and 2019
+  - MacOS El Capitan 10.11 - https://www.apple.com/
+  - Xcode 7.3.1 - https://developer.apple.com/download/
+  - Developer Command line tools 7.3.1 - https://developer.apple.com/download/
+  - Maya Development Kit (devkit) 2018 or 2019 - https://www.autodesk.com/developer-network/platform-technologies/maya
+  - Maya 2018 or 2019 - https://www.autodesk.com.au/products/maya/overview
 - CMake 3.x - from cmake website https://cmake.org/download/
 - Python (version 2.x or 3.x) - https://www.python.org/downloads/mac-osx/
 - Sphinx 1.8.5+ (using Python 'pip' command - see below)

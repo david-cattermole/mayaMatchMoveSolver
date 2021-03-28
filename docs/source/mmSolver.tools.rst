@@ -17,6 +17,7 @@ mmSolver.tools
    mmSolver.tools.copypastecamera
    mmSolver.tools.createbundle
    mmSolver.tools.createcontroller
+   mmSolver.tools.createcontroller2
    mmSolver.tools.createmarker
    mmSolver.tools.deformmarker
    mmSolver.tools.duplicatemarker
@@ -32,6 +33,7 @@ mmSolver.tools
    mmSolver.tools.navigaterootframes
    mmSolver.tools.placemarkermanip
    mmSolver.tools.raycastmarker
+   mmSolver.tools.removecontroller2
    mmSolver.tools.removesolvernodes
    mmSolver.tools.reparent
    mmSolver.tools.reprojectbundle

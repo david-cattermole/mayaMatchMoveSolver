@@ -94,7 +94,6 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
         LOG.debug('key=%r value=%r', name, value)
 
         self.populateUi()
-        return
 
     def populateUi(self):
         """

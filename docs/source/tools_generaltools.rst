@@ -215,6 +215,53 @@ To run the tool, use this Python command:
     import mmSolver.tools.screenspacetransform.tool as tool
     tool.main()
 
+.. _screen-space-rig-bake-tool-ref:
+
+Screen-Space Rig Bake
+---------------------
+
+The `Screen-Space Rig Bake` tool allows users to bake and manipulate
+transforms with a `screen-space` rig, separating the X, Y and Z-Depth
+components.
+
+The tool can be use to:
+
+ - Smooth a bumpy Z-depth curve.
+
+ - Freeze a transform to a static Z-depth.
+
+Usage:
+
+1) Select a transform node.
+
+2) Open the `Screen-Space Rig Bake` UI.
+
+3) Type a name in the `Name` field (at the bottom of the window).
+
+4) Right-click the `Rigs` pane and select `Create Screen-Space Rig`.
+
+   - Make sure to activate the viewport with a camera to bake the
+     object into.
+
+   - A set of nodes named `NAME_screenSpaceRig` will be created.
+
+5) Edit the created `NAME_screenSpaceRig` node.
+
+6) Once finished editing, open the UI again, select the screen-space
+   rig control, right-click the `Rigs` pane and select `Bake Rig`.
+
+   - This will bake the original transform node, and delete the nodes.
+
+   - Set the option `Full bake` or `Smart bake` to choose how many
+     keyframes will be baked.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.screenspacerigbake.tool as tool
+    tool.open_window()
+
 .. _create-screen-space-motion-trail-tool-ref:
 
 Create Screen-Space Motion Trail

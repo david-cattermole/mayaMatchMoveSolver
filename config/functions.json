@@ -554,36 +554,36 @@
             ]
         },
         "create_controller": {
-            "name": "Create Controller v1",
+            "name": "Create Controller (v1)",
             "name_shelf": "CrCtrl",
-            "tooltip": "Create Controller for selected node.",
+            "tooltip": "Create Controller for selected node. (version 1)",
             "command": [
                 "import mmSolver.tools.createcontroller.tool;",
                 "mmSolver.tools.createcontroller.tool.create();"
             ]
         },
         "create_controller2": {
-            "name": "Create Controller v2...",
+            "name": "Create Controller...",
             "name_shelf": "CrCtrl",
-            "tooltip": "Create Controller for selected node.",
+            "tooltip": "Create Controller for selected node. (version 2)",
             "command": [
                 "import mmSolver.tools.createcontroller2.tool;",
                 "mmSolver.tools.createcontroller2.tool.open_window();"
             ]
         },
         "remove_controller": {
-            "name": "Remove Controller v1",
+            "name": "Remove Controller (v1)",
             "name_shelf": "RmCtrl",
-            "tooltip": "Remove Controller for selected node.",
+            "tooltip": "Remove Controller for selected node. (version 1)",
             "command": [
                 "import mmSolver.tools.createcontroller.tool;",
                 "mmSolver.tools.createcontroller.tool.remove();"
             ]
         },
         "remove_controller2": {
-            "name": "Remove Controller v2",
+            "name": "Remove Controller",
             "name_shelf": "RmCtrl",
-            "tooltip": "Remove Controller for selected node.",
+            "tooltip": "Remove Controller for selected node. (version 2)",
             "command": [
                 "import mmSolver.tools.removecontroller2.tool;",
                 "mmSolver.tools.removecontroller2.tool.main();"

@@ -41,7 +41,6 @@ class CenterTwoDeeLayout(QtWidgets.QWidget, ui_centertwodee_layout.Ui_Form):
 
     def __init__(self, parent=None, *args, **kwargs):
         super(CenterTwoDeeLayout, self).__init__(*args, **kwargs)
-        print 'CenterTwoDeeLayout initializing'
         self.setupUi(self)
 
         self.horzontal_reset_pushButton.clicked.connect(

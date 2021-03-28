@@ -20,8 +20,8 @@ Window for the Smooth Keyframes tool.
 
 Usage::
 
-   import mmSolver.tools.smoothkeys.ui.smoothkeys_window as smoothkeys_window
-   smoothkeys_window.main()
+   import mmSolver.tools.smoothkeyframes.ui.smoothkeys_window as window
+   window.main()
 
 """
 

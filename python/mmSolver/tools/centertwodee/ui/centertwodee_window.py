@@ -20,8 +20,8 @@ Window for the Center 2D Offset tool.
 
 Usage::
 
-   import mmSolver.tools.smoothkeys.ui.smoothkeys_window as smoothkeys_window
-   smoothkeys_window.main()
+   import mmSolver.tools.centertwodee.ui.centertwodee_window as window
+   window.main()
 
 """
 from functools import partial
@@ -30,10 +30,12 @@ import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
 import Qt.QtCore as QtCore
+import Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
+import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.tools.centertwodee.constant as const
 import mmSolver.tools.centertwodee.lib as lib
 import mmSolver.tools.centertwodee.ui.centertwodee_layout as centertwodee_layout
@@ -41,6 +43,13 @@ import mmSolver.tools.centertwodee.ui.centertwodee_layout as centertwodee_layout
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
+
+
+def _open_help():
+    src = helputils.get_help_source()
+    page = 'tools_generaltools.html#center-2d-on-selection'
+    helputils.open_help_in_browser(page=page, help_source=src)
+    return
 
 
 class CenterTwoDeeWindow(BaseWindow):
@@ -76,20 +85,30 @@ class CenterTwoDeeWindow(BaseWindow):
 
         # Standard Buttons
         self.baseHideStandardButtons()
-        # self.applyBtn.show()
         self.resetBtn.show()
-        self.helpBtn.show()
         self.closeBtn.show()
-        # self.applyBtn.setText('Smooth')
-
-        # self.applyBtn.clicked.connect(tool.smooth_selected_keyframes)
         self.resetBtn.setText('Reset All')
+
         self.resetBtn.clicked.connect(self.reset_options)
-        self.helpBtn.clicked.connect(self.help)
 
         # Hide irrelevant stuff
-        self.baseHideMenuBar()
         self.baseHideProgressBar()
+
+        self.add_menus(self.menubar)
+        self.menubar.show()
+
+    def add_menus(self, menubar):
+        edit_menu = QtWidgets.QMenu('Edit', menubar)
+        commonmenus.create_edit_menu_items(
+            edit_menu,
+            reset_settings_func=self.reset_options)
+        menubar.addMenu(edit_menu)
+
+        help_menu = QtWidgets.QMenu('Help', menubar)
+        commonmenus.create_help_menu_items(
+            help_menu,
+            tool_help_func=_open_help)
+        menubar.addMenu(help_menu)
 
     @QtCore.Slot(float)
     def horizontal_offset_node_update(self, value):
@@ -100,6 +119,7 @@ class CenterTwoDeeWindow(BaseWindow):
         )
         if self.offset_node:
             lib.set_horizontal_offset(self.camera_shape, self.offset_node, output)
+        return
 
     @QtCore.Slot(float)
     def vertical_offset_node_update(self, value):
@@ -110,6 +130,7 @@ class CenterTwoDeeWindow(BaseWindow):
         )
         if self.offset_node:
             lib.set_vertical_offset(self.camera_shape, self.offset_node, output)
+        return
 
     @QtCore.Slot(float)
     def camera_shape_update(self, value):
@@ -120,16 +141,10 @@ class CenterTwoDeeWindow(BaseWindow):
         )
         if self.camera_shape:
             lib.set_zoom(self.camera_shape, output)
+        return
 
     def reset_options(self):
         self.form.reset_options()
-        return
-
-    def help(self):
-        src = helputils.get_help_source()
-        page = 'tools_generaltools.html#center-2d-on-selection'
-        helputils.open_help_in_browser(page=page, help_source=src)
-        return
 
     def set_initial_values(self):
         if not self.offset_node:
@@ -138,7 +153,6 @@ class CenterTwoDeeWindow(BaseWindow):
             zoom_slider_value = const.DEFAULT_SLIDER_VALUE
         else:
             offset_values = lib.get_offset_node_values(self.offset_node)
-            LOG.info(('centertwodee_window set_values:', offset_values))
             offset_x_value, offset_y_value = offset_values
             zoom_value = lib.get_camera_zoom(self.camera_shape)
             horizontal_slider_value = lib.process_value(
@@ -156,7 +170,6 @@ class CenterTwoDeeWindow(BaseWindow):
                 source='node',
                 zoom=True
             )
-            LOG.info(('centertwodee_window set_values converted:', horizontal_slider_value, vertical_slider_value, zoom_slider_value))
         self.form.horizontal_horizontalSlider.setValue(int(horizontal_slider_value))
         self.form.vertical_horizontalSlider.setValue(int(vertical_slider_value))
         self.form.zoom_horizontalSlider.setValue(int(zoom_slider_value))
@@ -164,7 +177,7 @@ class CenterTwoDeeWindow(BaseWindow):
 
 def main(show=True, auto_raise=True, delete=False):
     """
-    Open the Smooth Keyframes UI window.
+    Open the Center 2D UI window.
 
     :param show: Show the UI.
     :type show: bool

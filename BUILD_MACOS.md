@@ -35,6 +35,12 @@ Install the dependencies using the guide listed below.
 - Python (version 2.x or 3.x) - https://www.python.org/downloads/mac-osx/
 - Sphinx 1.8.5+ (using Python 'pip' command - see below)
 
+- Maya 2020
+  - MacOS El Capitan 10.14 - https://www.apple.com/
+  - Xcode 10.2.1 - https://developer.apple.com/download/
+  - Maya Development Kit (devkit) 2020 - https://www.autodesk.com/developer-network/platform-technologies/maya
+  - Maya 2020 - https://www.autodesk.com.au/products/maya/overview
+
 NOTE: Some of these dependancies are requirements of the Maya version and
 should be obtained from the Maya developer documentation.
 
@@ -361,6 +367,10 @@ $ cd ~/dev/mayaMatchMoveSolver_maya2018Deploy_mac ; git fetch --all; git checkou
 # Maya 2019
 $ mkdir -p ~/dev ; cd ~/dev ; git clone https://github.com/david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2019Deploy_mac
 $ cd ~/dev/mayaMatchMoveSolver_maya2019Deploy_mac ; git fetch --all; git checkout -f issue146; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_mac_maya2019.bash
+
+# Maya 2020
+$ mkdir -p ~/dev ; cd ~/dev ; git clone https://github.com/david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2020Deploy_mac
+$ cd ~/dev/mayaMatchMoveSolver_maya2020Deploy_mac ; git fetch --all; git checkout -f issue146; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_mac_maya2020.bash
 ```
 
 Package files can then be uploaded from the

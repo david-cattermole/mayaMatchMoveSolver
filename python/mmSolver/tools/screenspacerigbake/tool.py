@@ -524,8 +524,8 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                     cmds.setAttr(screenz_master_grp + '.' + attr, lock=True)
 
                 cmds.pointConstraint(screen_xy_master_grp, object)
-                # Clear selection in the end
-                cmds.select(clear=True)
+                # Select the master control.
+                cmds.select(main_grp, replace=True)
                 self.refreshRigsList()
         except(NameError, ValueError, TypeError) as e:
             print e

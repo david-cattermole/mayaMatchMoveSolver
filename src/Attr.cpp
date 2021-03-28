@@ -27,6 +27,12 @@
 #include <cassert>   // assert
 #include <limits>    // numeric_limits<double>::max and min
 
+// Provides C++ compatibility.
+// Between Maya 2018 and 2020.
+#if MAYA_API_VERSION >= 20180000 && MAYA_API_VERSION < 20200000
+#include <maya/MCppCompat.h>
+#endif
+
 // Maya
 #include <maya/MFn.h>
 #include <maya/MGlobal.h>
@@ -47,7 +53,6 @@
 
 #if MAYA_API_VERSION >= 20180000
 #include <maya/MDGContextGuard.h>
-#include <maya/MCppCompat.h>
 #endif
 
 #include <core/bundleAdjust_defines.h>

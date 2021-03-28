@@ -327,6 +327,11 @@ $ cd /media/dev/mayaMatchMoveSolver_maya2018Deploy_linux ; git fetch --all; git 
 $ load_maya2019.sh  # Example script to set up Maya environment
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2019Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2019Deploy_linux
 $ cd /media/dev/mayaMatchMoveSolver_maya2019Deploy_linux ; git fetch --all; git checkout -f master; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_linux_maya2019.bash
+
+# Maya 2020
+$ load_maya2020.sh  # Example script to set up Maya environment
+$ mkdir -p /media/dev/mayaMatchMoveSolver_maya2020Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2020Deploy_linux
+$ cd /media/dev/mayaMatchMoveSolver_maya2020Deploy_linux ; git fetch --all; git checkout -f master; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_linux_maya2020.bash
 ```
 
 Package files can then be uploaded from the

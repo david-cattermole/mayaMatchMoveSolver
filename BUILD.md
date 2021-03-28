@@ -16,10 +16,11 @@ Required:
   - Linux
     - [GCC 4.4.7](https://gcc.gnu.org/) (Maya 2016 and 2017)
     - [GCC 4.8.3](https://gcc.gnu.org/) (Maya 2018)
-    - [GCC 6.3.1](https://gcc.gnu.org/) (Maya 2019)
+    - [GCC 6.3.1](https://gcc.gnu.org/) (Maya 2019 and 2020)
   - Windows
     - [Visual Studio 2012 update 5 (MSVC 11.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2016 and 2017)
     - [Visual Studio 2015 update 3 (MSVC 14.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2018 and 2019)
+    - [Visual Studio 2017 (MSVC 15.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2020)
   - MacOS
     - [Xcode 7.3.1 with SDK 10.11, clang with libc++](https://developer.apple.com/download) (Maya 2018)
     - [Xcode version 7.3.1 and CMake are required](https://developer.apple.com/download) (Maya 2019)

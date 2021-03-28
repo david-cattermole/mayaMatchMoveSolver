@@ -214,6 +214,44 @@ transform nodes second and create a <em>Point Constraint</em>.</li>
 </pre></div>
 </div>
 </div>
+<div class="section" id="screen-space-rig-bake">
+<span id="screen-space-rig-bake-tool-ref"></span><h2>Screen-Space Rig Bake<a class="headerlink" href="#screen-space-rig-bake" title="Permalink to this headline">¶</a></h2>
+<p>The <cite>Screen-Space Rig Bake</cite> tool allows users to bake and manipulate
+transforms with a <cite>screen-space</cite> rig, separating the X, Y and Z-Depth
+components.</p>
+<p>The tool can be use to:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Smooth a bumpy Z-depth curve.</li>
+<li>Freeze a transform to a static Z-depth.</li>
+</ul>
+</div></blockquote>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select a transform node.</li>
+<li>Open the <cite>Screen-Space Rig Bake</cite> UI.</li>
+<li>Type a name in the <cite>Name</cite> field (at the bottom of the window).</li>
+<li>Right-click the <cite>Rigs</cite> pane and select <cite>Create Screen-Space Rig</cite>.<ul>
+<li>Make sure to activate the viewport with a camera to bake the
+object into.</li>
+<li>A set of nodes named <cite>NAME_screenSpaceRig</cite> will be created.</li>
+</ul>
+</li>
+<li>Edit the created <cite>NAME_screenSpaceRig</cite> node.</li>
+<li>Once finished editing, open the UI again, select the screen-space
+rig control, right-click the <cite>Rigs</cite> pane and select <cite>Bake Rig</cite>.<ul>
+<li>This will bake the original transform node, and delete the nodes.</li>
+<li>Set the option <cite>Full bake</cite> or <cite>Smart bake</cite> to choose how many
+keyframes will be baked.</li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenspacerigbake.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="create-screen-space-motion-trail">
 <span id="create-screen-space-motion-trail-tool-ref"></span><h2>Create Screen-Space Motion Trail<a class="headerlink" href="#create-screen-space-motion-trail" title="Permalink to this headline">¶</a></h2>
 <p>The Screen-Space Motion Trail tool creates a non-editable curve that
@@ -463,24 +501,52 @@ removal.</p>
 <span id="create-remove-controller-tool-ref"></span><h2>Create / Remove Controller<a class="headerlink" href="#create-remove-controller" title="Permalink to this headline">¶</a></h2>
 <p>Create a new transform node to control another node. The <cite>Controller</cite>
 transform node can have a separate hierarchy than the source node.</p>
-<p>This tool will try to maintain the animated keyframes on the original
-control without baking the animation per-frame.</p>
+<p>The UI for this tool can be used control the baking method, and the
+‘space’ of the created controller. These features create a very
+powerful workflow for editing, and solving characters and objects.</p>
 <p>Usage:</p>
 <ol class="arabic simple">
 <li>Select a Maya transform node.</li>
-<li>Run ‘Create Controller’ tool.<ul>
-<li>A new ‘Controller’ locator node is created at the same position
-as the source transform.</li>
+<li>Open ‘Create Controller’ tool UI.</li>
+<li>Type a name for the controller</li>
+<li>Select your ‘pivot object’ and press ‘Pick Selection’.</li>
+<li>Select your ‘main object’ and press ‘Pick Selection’.</li>
+<li>Select your options for ‘Type’, ‘Bake’ mode, and ‘Space’.<ul>
+<li>‘Type’ changes the node types created for the controller. Choose
+“Group” if you do not like to see locators in your viewport.</li>
+<li>‘Bake’ changes the method used to bake keyframe times. Choose
+‘Full Bake’ to bake every frame, and choose ‘Smart Bake’ to bake
+some frames.</li>
+<li>‘Space’ changes the heirachy and orientation of the Controller
+nodes. Using ‘Screen Space’ allows you to move an object in
+screen-space, with X and Y the position on the screen, and Z the
+depth into the screen. This can be very helpful for smoothing
+Z-bumps and depth problems.</li>
+</ul>
+</li>
+<li>Press ‘Create Controller’ button.<ul>
+<li>A new ‘Controller’ node is created at the same position as the
+‘pick object’.</li>
 </ul>
 </li>
 <li>Select and move the created Controller as you wish.</li>
 <li>Select the Controller, run ‘Remove Controller’ tool.<ul>
-<li>The source node is baked at the same times as the Controller is
-keyed, and the Controller is deleted.</li>
+<li>The source node is baked and the Controller node is deleted.</li>
 </ul>
 </li>
 </ol>
 <p>To run the tool, use this Python command:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createcontroller2.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To remove a controller, use this Python command:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.removecontroller2.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The tool described above is “version 2”, for the older (less featured)
+version 1, use this python code to run it.</p>
 <div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createcontroller.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 
 <span class="c1"># Create a Controller</span>
@@ -564,6 +630,7 @@ will not be adjusted.</td>
 </ul>
 </li>
 <li><a class="reference internal" href="#screen-space-transform">Screen-Space Transform</a></li>
+<li><a class="reference internal" href="#screen-space-rig-bake">Screen-Space Rig Bake</a></li>
 <li><a class="reference internal" href="#create-screen-space-motion-trail">Create Screen-Space Motion Trail</a></li>
 <li><a class="reference internal" href="#channel-sensitivity">Channel Sensitivity</a></li>
 <li><a class="reference internal" href="#copy-camera-to-clipboard">Copy Camera to Clipboard</a></li>

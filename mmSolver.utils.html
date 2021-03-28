@@ -60,7 +60,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='140191220001104'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='140191220164944'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='140191220165136'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='140279351609040'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='140279351609168'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='140279351609360'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1919,6 +1919,8 @@ mmSolver (as tested on Maya 2017).</li>
 function, and enable it once the context finishes. This can be
 used to dramatically speed up functions that cause the Maya
 viewport to update many times.</li>
+<li><strong>disable_viewport_mode</strong> (<em>mmSolver.utils.constant.DISABLE_VIEWPORT_MODE_*_VALUE</em>) – Use the given technique to disable and
+re-enable the Maya viewport (using the “disable_viewport” flag).</li>
 </ul>
 </td>
 </tr>
@@ -2506,22 +2508,38 @@ None to generate a random UUID.</td>
 
 <dl class="function">
 <dt id="mmSolver.utils.viewport.viewport_turn_off">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_off" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_off</code><span class="sig-paren">(</span><em>mode=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_off" title="Permalink to this definition">¶</a></dt>
 <dd><p>Turn off Viewport.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mode</strong> (<em>mmSolver.utils.constant.DISABLE_VIEWPORT_MODE_*_VALUE</em>) – Set the value to force a specific disable/enable method.</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This will automatically switch to the fastest
+<p class="last">By default mode=None will automatically switch to the fastest
 implementation based on the version Maya.</p>
 </div>
 </dd></dl>
 
 <dl class="function">
 <dt id="mmSolver.utils.viewport.viewport_turn_on">
-<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_on" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.viewport.</code><code class="descname">viewport_turn_on</code><span class="sig-paren">(</span><em>mode=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.viewport_turn_on" title="Permalink to this definition">¶</a></dt>
 <dd><p>Turn on the Viewport.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mode</strong> (<em>mmSolver.utils.constant.DISABLE_VIEWPORT_MODE_*_VALUE</em>) – Set the value to force a specific disable/enable method.</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This will automatically switch to the fastest
+<p class="last">By default mode=None will automatically switch to the fastest
 implementation based on the version Maya.</p>
 </div>
 </dd></dl>

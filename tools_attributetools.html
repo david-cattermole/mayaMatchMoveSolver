@@ -50,6 +50,52 @@
 <h1>Attribute Tools<a class="headerlink" href="#attribute-tools" title="Permalink to this headline">¶</a></h1>
 <p>Attribute tools are used to create and modify attributes, and
 attribute values.</p>
+<div class="section" id="bake-attributes">
+<h2>Bake Attributes<a class="headerlink" href="#bake-attributes" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/tools_bake_attributes_ui.png"><img alt="Bake Attributes UI" src="_images/tools_bake_attributes_ui.png" style="width: 168.5px; height: 137.5px;" /></a>
+</div>
+<p>Bake Attributes will bake the values of an attribute on each frame and
+replace the connection with an animation curve.</p>
+<p>This tool is almost identical to the default Maya <cite>Edit &gt; Keys &gt; Bake
+Simulation</cite> tool, but has additional features.</p>
+<ul class="simple">
+<li>The viewport is always disabled while baking.</li>
+<li>The tool is optimised for speed of baking.</li>
+<li>The tool UI is reduced to only the nessarary features for matchmove
+tasks.</li>
+</ul>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li>Select 1 or more nodes.</li>
+<li>Select attributes in channel box (if required).</li>
+<li>Open <cite>Bake Attributes</cite> UI.<ul>
+<li>Enable the <cite>Smart Bake</cite> to set keyframes only on some keyframes.</li>
+<li>Disable <cite>From Channel Box</cite> to bake all keyable attributes, not
+just the selected attributes.</li>
+</ul>
+</li>
+<li>Press <cite>Bake</cite> button.</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In Maya scenes that rely on legacy viewport update for
+correct evaluation, this tool may produce incorrect results
+(because the viewport is disabled). If this happens, please
+use Maya’s default <cite>Edit &gt; Keys &gt; Bake Simulation</cite> tool. In
+the experience of the tool authors, this has never happened
+and this tool is a faster baking tool.</p>
+</div>
+<p>Run this Python command:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.fastbake.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+
+<span class="c1"># To run the &quot;fast bake&quot; tool directly (with currently set</span>
+<span class="c1"># options).</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="set-attribute-details">
 <h2>Set Attribute Details<a class="headerlink" href="#set-attribute-details" title="Permalink to this headline">¶</a></h2>
 <div class="figure align-center">
@@ -59,8 +105,7 @@ attribute values.</p>
 individual Attribute. Details are stored per-collection, therefore a
 Collection must exist to use the tool.</p>
 <p>This tool can be used to:</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li>Set Attribute Details on individual Attributes.</li>
 <li>Change Attribute states; to lock an attribute, or set a keyframe on
 the attribute.</li>
@@ -75,7 +120,6 @@ animation curve change per-frame.</li>
 </ul>
 </li>
 </ul>
-</div></blockquote>
 <p>Attribute Details are used by mmSolver to ensure properties are
 maintained while solving. See the Solver Design
 <a class="reference internal" href="solver_design.html#solver-design-attribute-details"><span class="std std-ref">Attribute Details</span></a> page for more information.</p>
@@ -108,6 +152,7 @@ Collection</cite>.</li>
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Attribute Tools</a><ul>
+<li><a class="reference internal" href="#bake-attributes">Bake Attributes</a></li>
 <li><a class="reference internal" href="#set-attribute-details">Set Attribute Details</a></li>
 </ul>
 </li>

@@ -39,7 +39,11 @@ MString MMMarkerGroupTransformNode::nodeName() {
 
 MMMarkerGroupTransformNode::MMMarkerGroupTransformNode() : MPxTransform() {}
 
+// Maya 2020+ will manage the creation of MPxTransformationMatrix on
+// demand for us.
+#if MAYA_API_VERSION < 20200000
 MMMarkerGroupTransformNode::MMMarkerGroupTransformNode(MPxTransformationMatrix *tm) : MPxTransform(tm) {}
+#endif
 
 void MMMarkerGroupTransformNode::postConstructor() {
     MPxTransform::postConstructor();

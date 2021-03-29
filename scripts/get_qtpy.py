@@ -28,9 +28,9 @@ import download_unpack
 
 def main(archives_dir, working_dir, patches_dir):
     user_agent = None
-    url = 'https://github.com/mottosso/Qt.py/archive/1.1.0.tar.gz'
-    archive_name = 'Qt.py-1.1.0.tar.gz'
-    name = 'Qt.py-1.1.0'
+    url = 'https://github.com/mottosso/Qt.py/archive/1.2.0.tar.gz'
+    archive_name = 'Qt.py-1.2.0.tar.gz'
+    name = 'Qt.py-1.2.0'
     download_unpack.add_package(
         name,
         archive_name,

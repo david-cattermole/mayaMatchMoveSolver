@@ -22,7 +22,7 @@
 
 # Maya
 MAYA_VERSION=2020
-MAYA_LOCATION=/usr/autodesk/maya2019/
+MAYA_LOCATION=/usr/autodesk/maya2020/
 
 # Clear all build information before re-compiling.
 # Turn this off when wanting to make small changes and recompile.
@@ -42,10 +42,10 @@ WITH_GPL_CODE=0
 
 # Where to install the module?
 #
-# The "$HOME/maya/2019/modules" directory is automatically searched
+# The "$HOME/maya/2020/modules" directory is automatically searched
 # for Maya module (.mod) files. Therefore we can install directly.
 #
-INSTALL_MODULE_DIR=${HOME}/maya/2019/modules
+INSTALL_MODULE_DIR=${HOME}/maya/2020/modules
 
 # Build ZIP Package.
 # For developer use. Make ZIP packages ready to distribute to others.

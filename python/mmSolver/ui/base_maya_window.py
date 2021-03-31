@@ -89,7 +89,6 @@ class BaseMayaWindow(MayaQWidgetDockableMixin,
         self._settings_path = config_path
         e = time.time()
         LOG.debug('BaseMayaWindow init: %r seconds', e - s)
-        LOG.info('is the window dockable?: %s' % self.isDockable())
         return
 
     def baseHideStandardButtons(self):

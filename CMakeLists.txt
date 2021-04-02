@@ -225,6 +225,9 @@ set(SOURCE_FILES
         src/core/bundleAdjust_cminpack_lmdif.cpp
         src/core/bundleAdjust_cminpack_lmder.h
         src/core/bundleAdjust_cminpack_lmder.cpp
+        src/renderer/MMRendererCmd.cpp
+        src/renderer/MMRendererQuadRender.cpp
+        src/renderer/MMRendererMainOverride.cpp
         src/mayaUtils.h
         src/Camera.h
         src/Camera.cpp
@@ -322,6 +325,8 @@ if (BUILD_PLUGIN)
     target_link_libraries(mmSolver
             ${MAYA_OpenMaya_LIBRARY}
             ${MAYA_OpenMayaAnim_LIBRARY}
+            ${MAYA_OpenMayaRender_LIBRARY}
+            ${MAYA_OpenMayaUI_LIBRARY}
             ${MAYA_Foundation_LIBRARY}
             )
 

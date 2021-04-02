@@ -30,6 +30,7 @@
 // Build-Time constant values.
 #include <buildConstant.h>
 
+// Solver and nodes
 #include <MMSolverCmd.h>
 #include <MMSolverTypeCmd.h>
 #include <MMTestCameraMatrixCmd.h>
@@ -38,6 +39,10 @@
 #include <MMMarkerGroupTransformNode.h>
 #include <MMReprojectionCmd.h>
 #include <MMSolverAffectsCmd.h>
+
+// MM Renderer
+#include <renderer/MMRendererMainOverride.h>
+#include <renderer/MMRendererCmd.h>
 
 
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
@@ -150,7 +155,21 @@ MStatus initializePlugin(MObject obj) {
                        MPxTransformationMatrix::baseTransformationMatrixId,
                        MPxTransformationMatrix::creator,
                        markerGroupClassification,
-                       status)
+                       status);
+
+    // Register MM Solver Viewport Renderer.
+    MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
+    if (renderer) {
+        MMRendererMainOverride *ptr =
+            new MMRendererMainOverride("MMRendererMainOverride");
+        renderer->registerOverride(ptr);
+
+        REGISTER_COMMAND(plugin,
+                         MMRendererCmd::cmdName(),
+                         MMRendererCmd::creator,
+                         MMRendererCmd::newSyntax,
+                         status);
+    }
 
     // Run the Python startup function when the plug-in loads.
     bool displayEnabled = false;
@@ -174,6 +193,19 @@ MStatus initializePlugin(MObject obj) {
 MStatus uninitializePlugin(MObject obj) {
     MStatus status;
     MFnPlugin plugin(obj);
+
+    MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
+    if (renderer)
+    {
+        // Find override with the given name and deregister
+        const MHWRender::MRenderOverride* ptr =
+            renderer->findRenderOverride("MMRendererMainOverride");
+        if (ptr) {
+            renderer->deregisterOverride(ptr );
+            delete ptr;
+        }
+        DEREGISTER_COMMAND(plugin, MMRendererCmd::cmdName(), status);
+    }
 
     DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMSolverTypeCmd::cmdName(), status);

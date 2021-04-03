@@ -46,76 +46,80 @@ MString MMRendererCmd::cmdName() {
 MSyntax MMRendererCmd::newSyntax() {
     MSyntax syntax;
     syntax.addFlag(
-            MM_RENDERER_SWIRL_FLAG,
-            MM_RENDERER_SWIRL_FLAG_LONG, MSyntax::kBoolean);
+        MM_RENDERER_SWIRL_FLAG,
+        MM_RENDERER_SWIRL_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(
-            MM_RENDERER_FISH_EYE_FLAG,
-            MM_RENDERER_FISH_EYE_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(MM_RENDERER_EDGE_DETECT_FLAG,
-                   MM_RENDERER_EDGE_DETECT_FLAG_LONG, MSyntax::kBoolean);
-
+        MM_RENDERER_FISH_EYE_FLAG,
+        MM_RENDERER_FISH_EYE_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(
+        MM_RENDERER_EDGE_DETECT_FLAG,
+        MM_RENDERER_EDGE_DETECT_FLAG_LONG, MSyntax::kBoolean);
     syntax.enableQuery(true);
     return syntax;
 }
 
 
-MStatus MMRendererCmd::doIt(const MArgList &args) {
+MStatus MMRendererCmd::doIt(const MArgList &/*args*/) {
     MStatus status = MStatus::kFailure;
 
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-    if (!renderer) {
-        MGlobal::displayError("VP2 renderer not initialized.");
-        return status;
-    }
+    // MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+    // if (!renderer) {
+    //     MGlobal::displayError("VP2 renderer not initialized.");
+    //     return status;
+    // }
 
-    MMRendererMainOverride *override_ptr =
-        (MMRendererMainOverride *) renderer->findRenderOverride(
-            "MMRendererMainOverride");
-    if (override_ptr == nullptr) {
-        MGlobal::displayError("MMRendererMainOverride is not registered.");
-        return status;
-    }
+    // MMRendererMainOverride *override_ptr =
+    //     (MMRendererMainOverride *) renderer->findRenderOverride(
+    //         "MMRendererMainOverride");
+    // if (override_ptr == nullptr) {
+    //     MGlobal::displayError("MMRendererMainOverride is not registered.");
+    //     return status;
+    // }
 
-    MArgDatabase argData(syntax(), args, &status);
-    if (!status)
-        return status;
+    // MArgDatabase argData(syntax(), args, &status);
+    // CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    bool isQuery = argData.isQuery();
+    // bool isQuery = argData.isQuery();
 
-    if (argData.isFlagSet(MM_RENDERER_SWIRL_FLAG)) {
-        int index = override_ptr->mOperations.indexOf(
-                MMRendererMainOverride::kSwirlPassName);
-        if (isQuery) {
-            MPxCommand::setResult(
-                    override_ptr->mOperations[index]->enabled());
-        } else {
-            argData.getFlagArgument(MM_RENDERER_SWIRL_FLAG, 0, m_swirl);
-            override_ptr->mOperations[index]->setEnabled(m_swirl);
-        }
-    }
-    if (argData.isFlagSet(MM_RENDERER_FISH_EYE_FLAG)) {
-        int index = override_ptr->mOperations.indexOf(
-                MMRendererMainOverride::kFishEyePassName);
-        if (isQuery)
-            MPxCommand::setResult(
-                    override_ptr->mOperations[index]->enabled());
-        else {
-            argData.getFlagArgument(MM_RENDERER_FISH_EYE_FLAG, 0, m_fishEye);
-            override_ptr->mOperations[index]->setEnabled(m_fishEye);
-        }
-    }
-    if (argData.isFlagSet(MM_RENDERER_EDGE_DETECT_FLAG)) {
-        int index = override_ptr->mOperations.indexOf(
-                MMRendererMainOverride::kEdgeDetectPassName);
-        if (isQuery)
-            MPxCommand::setResult(
-                    override_ptr->mOperations[index]->enabled());
-        else {
-            argData.getFlagArgument(MM_RENDERER_EDGE_DETECT_FLAG, 0,
-                                    m_edgeDetect);
-            override_ptr->mOperations[index]->setEnabled(m_edgeDetect);
-        }
-    }
+    // // Swirl
+    // if (argData.isFlagSet(MM_RENDERER_SWIRL_FLAG)) {
+    //     int index = override_ptr->mOperations.indexOf(
+    //             MMRendererMainOverride::kSwirlPassName);
+    //     if (isQuery) {
+    //         MPxCommand::setResult(
+    //                 override_ptr->mOperations[index]->enabled());
+    //     } else {
+    //         argData.getFlagArgument(MM_RENDERER_SWIRL_FLAG, 0, m_swirl);
+    //         override_ptr->mOperations[index]->setEnabled(m_swirl);
+    //     }
+    // }
+
+    // // Fish-Eye
+    // if (argData.isFlagSet(MM_RENDERER_FISH_EYE_FLAG)) {
+    //     int index = override_ptr->mOperations.indexOf(
+    //             MMRendererMainOverride::kFishEyePassName);
+    //     if (isQuery)
+    //         MPxCommand::setResult(
+    //                 override_ptr->mOperations[index]->enabled());
+    //     else {
+    //         argData.getFlagArgument(MM_RENDERER_FISH_EYE_FLAG, 0, m_fishEye);
+    //         override_ptr->mOperations[index]->setEnabled(m_fishEye);
+    //     }
+    // }
+
+    // // Edge Detect.
+    // if (argData.isFlagSet(MM_RENDERER_EDGE_DETECT_FLAG)) {
+    //     int index = override_ptr->mOperations.indexOf(
+    //             MMRendererMainOverride::kEdgeDetectPassName);
+    //     if (isQuery)
+    //         MPxCommand::setResult(
+    //                 override_ptr->mOperations[index]->enabled());
+    //     else {
+    //         argData.getFlagArgument(MM_RENDERER_EDGE_DETECT_FLAG, 0,
+    //                                 m_edgeDetect);
+    //         override_ptr->mOperations[index]->setEnabled(m_edgeDetect);
+    //     }
+    // }
 
     M3dView view = M3dView::active3dView(&status);
     if (!status) {

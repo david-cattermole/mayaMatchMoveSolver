@@ -27,11 +27,10 @@
 #include <maya/MRenderTargetManager.h>
 
 // Enumerate the target indexing
-enum ETargetId
+enum TargetId
 {
-    kMyColorTarget,
+    kMyColorTarget = 0,
     kMyDepthTarget,
-    kMyBlurTarget,
 
     // Always last field, used as 'number of items'.
     kTargetCount

@@ -227,6 +227,9 @@ set(SOURCE_FILES
         src/core/bundleAdjust_cminpack_lmder.cpp
         src/renderer/MMRendererCmd.cpp
         src/renderer/MMRendererQuadRender.cpp
+        src/renderer/MMRendererHudRender.cpp
+        src/renderer/MMRendererPresentTarget.cpp
+        src/renderer/MMRendererSceneRender.cpp
         src/renderer/MMRendererMainOverride.cpp
         src/mayaUtils.h
         src/Camera.h

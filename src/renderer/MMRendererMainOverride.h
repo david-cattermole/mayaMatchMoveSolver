@@ -17,12 +17,14 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * mmSolver Viewport Renderer override.
+ * mmSolver viewport 2.0 renderer override.
  *
  */
 
 #ifndef MAYA_MM_SOLVER_MM_RENDERER_MAIN_OVERRIDE_H
 #define MAYA_MM_SOLVER_MM_RENDERER_MAIN_OVERRIDE_H
+
+#include "MMRendererConstants.h"
 
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
@@ -31,16 +33,49 @@
 
 class MMRendererMainOverride : public MHWRender::MRenderOverride {
 public:
-    // operation names
-    static const MString kSwirlPassName;
-    static const MString kFishEyePassName;
-    static const MString kEdgeDetectPassName;
+    // Enumerations to identify an operation within a list of
+    // operations.
+    enum {
+        // --------------------------------------------------------------------
+        // Standard pass. Draw the scene, normally, but exclude some
+        // objects.
+        kSceneStandardPass = 0,
+
+        // --------------------------------------------------------------------
+        // Background pass. Draw the image plane(s) only.
+        kSceneBackgroundPass,
+
+        // --------------------------------------------------------------------
+        // Selection pass.
+        kSceneSelectPass,
+
+        // --------------------------------------------------------------------
+        // Wireframe pass.
+        kSceneWireframePass,
+
+        // --------------------------------------------------------------------
+        // HUD pass. Draw 2D heads-up-display elements.
+        kHudPass,
+
+        // --------------------------------------------------------------------
+        // Present pass. Present the drawn texture to the screen.
+        kPresentOp,
+
+        // Holds the total number of entries (must be last field).
+        kNumberOfOps
+    };
 
     MMRendererMainOverride(const MString &name);
 
     ~MMRendererMainOverride() override;
 
     MHWRender::DrawAPI supportedDrawAPIs() const override;
+
+    bool startOperationIterator() override;
+
+    MHWRender::MRenderOperation *renderOperation() override;
+
+    bool nextRenderOperation() override;
 
     // Basic setup and cleanup
     MStatus setup(const MString &destination) override;
@@ -52,12 +87,33 @@ public:
         return m_ui_name;
     }
 
+    // The Maya panel name this override is locked to.
+    const MString &panelName() const {
+        return m_panel_name;
+    }
+
 protected:
+    MStatus updateRenderTargets();
+
+    // Operation lists
+    MHWRender::MRenderOperation *m_ops[kNumberOfOps];
+    MString m_op_names[kNumberOfOps];
+    int32_t m_current_op;
+
+    // Shared render target list
+    MString m_target_override_names[kTargetCount];
+    MHWRender::MRenderTargetDescription *m_target_descs[kTargetCount];
+    MHWRender::MRenderTarget *m_targets[kTargetCount];
+    bool m_target_supports_sRGB_write[kTargetCount];
 
     // UI name
     MString m_ui_name;
 
     friend class MMRendererCmd;
+
+private:
+    // Override is for this panel
+    MString m_panel_name;
 };
 
 #endif //MAYA_MM_SOLVER_MM_RENDERER_MAIN_OVERRIDE_H

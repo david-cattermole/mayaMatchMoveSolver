@@ -33,24 +33,38 @@
 
 class MMRendererMainOverride : public MHWRender::MRenderOverride {
 public:
-    // Enumerations to identify an operation within a list of
-    // operations.
+    // Enumerations to identify an operation within
+    // a list of operations.
     enum {
         // --------------------------------------------------------------------
-        // Standard pass. Draw the scene, normally, but exclude some
-        // objects.
-        kSceneStandardPass = 0,
+        // Depth pass.
+        //
+        // Draw the scene (except image planes), but only write to the
+        // depth channel.
+        kSceneDepthPass = 0,
 
         // --------------------------------------------------------------------
-        // Background pass. Draw the image plane(s) only.
+        // Background pass.
+        //
+        // Draw the Maya background colour using the Maya preferences,
+        // and draw imagePlanes.
+        //
+        // The render targets used for this pass is only the colour,
+        // so the depth is ignored.
         kSceneBackgroundPass,
 
         // --------------------------------------------------------------------
         // Selection pass.
-        kSceneSelectPass,
+        //
+        // Draw manipulators and excluded objects (but image planes
+        // are draw here).
+        kSceneSelectionPass,
 
         // --------------------------------------------------------------------
         // Wireframe pass.
+        //
+        // Draw the scene as wireframe, but it will be cut out from
+        // the depth pass.
         kSceneWireframePass,
 
         // --------------------------------------------------------------------

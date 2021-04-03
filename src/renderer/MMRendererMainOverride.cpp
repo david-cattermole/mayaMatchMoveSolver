@@ -170,9 +170,9 @@ MMRendererMainOverride::updateRenderTargets() {
     }
 
     // Update the render targets on the individual operations.
-    auto standardPassOp = (MMRendererSceneRender *) m_ops[kSceneStandardPass];
-    if (standardPassOp) {
-        standardPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+    auto depthPassOp = (MMRendererSceneRender *) m_ops[kSceneDepthPass];
+    if (depthPassOp) {
+        depthPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
     }
 
     auto backgroundPassOp = (MMRendererSceneRender *) m_ops[kSceneBackgroundPass];
@@ -181,7 +181,7 @@ MMRendererMainOverride::updateRenderTargets() {
         backgroundPassOp->setRenderTargets(m_targets, kMyColorTarget, 1);
     }
 
-    auto selectSceneOp = (MMRendererSceneRender *) m_ops[kSceneSelectPass];
+    auto selectSceneOp = (MMRendererSceneRender *) m_ops[kSceneSelectionPass];
     if (selectSceneOp) {
         selectSceneOp->setRenderTargets(m_targets, kMyColorTarget, 2);
     }
@@ -236,27 +236,21 @@ MMRendererMainOverride::setup(const MString &destination) {
         auto display_mode_shaded =
             static_cast<MHWRender::MSceneRender::MDisplayMode>(
                 MHWRender::MSceneRender::kShaded);
-        auto display_mode_wireframe_on_shaded =
+        auto display_mode_wireframe =
             static_cast<MHWRender::MSceneRender::MDisplayMode>(
-                MHWRender::MSceneRender::kWireFrame
-                | MHWRender::MSceneRender::kShaded);
-
-        m_op_names[kSceneStandardPass] = "mmRenderer_SceneRender_Standard";
+                MHWRender::MSceneRender::kWireFrame);
+        m_op_names[kSceneDepthPass] = "mmRenderer_SceneRender_Standard";
         m_op_names[kSceneBackgroundPass] = "mmRenderer_SceneRender_Background";
-        m_op_names[kSceneSelectPass] = "mmRenderer_SceneRender_Select";
+        m_op_names[kSceneSelectionPass] = "mmRenderer_SceneRender_Select";
         m_op_names[kSceneWireframePass] = "mmRenderer_SceneRender_Wireframe";
 
         MMRendererSceneRender *sceneOp = nullptr;
 
-        // Standard pass.
+        // Depth pass.
         //
-        // Draw normal, exclude imageplane from depth rendering.
-        //
-        // The principle here is to draw the things we don't want to
-        // shade for depth here and exclude the things we want to
-        // draw. If a render item is in the depth buffer, it won't be
-        // drawn later.
-        sceneOp = new MMRendererSceneRender(m_op_names[kSceneStandardPass]);
+        // Draw the scene (except image planes), but only
+        // write to the depth channel.
+        sceneOp = new MMRendererSceneRender(m_op_names[kSceneDepthPass]);
         sceneOp->setViewRectangle(rect);
         sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
         sceneOp->setExcludeTypes(MHWRender::MFrameContext::kExcludeImagePlane);
@@ -264,15 +258,9 @@ MMRendererMainOverride::setup(const MString &destination) {
         sceneOp->setDoSelectable(false);
         sceneOp->setDoBackground(false);
         sceneOp->setClearMask(clear_mask_depth);
-        m_ops[kSceneStandardPass] = sceneOp;
+        m_ops[kSceneDepthPass] = sceneOp;
 
         // Background pass.
-        //
-        // Draw both background and an imageplane in the viewport
-        // here.
-        //
-        // The render targets used for this pass is only the colour,
-        // so the depth is ignored.
         sceneOp = new MMRendererSceneRender(m_op_names[kSceneBackgroundPass]);
         sceneOp->setViewRectangle(rect);
         sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
@@ -282,25 +270,19 @@ MMRendererMainOverride::setup(const MString &destination) {
         m_ops[kSceneBackgroundPass] = sceneOp;
 
         // Select pass.
-        //
-        // Draw manip and excluded objects
-        //
-        // We want to use depth buffer to prevent drawing items we
-        // wanted "hidden line". Notice that I allow free image plane
-        // to be rendered normally here.
-        sceneOp = new MMRendererSceneRender(m_op_names[kSceneSelectPass]);
+        sceneOp = new MMRendererSceneRender(m_op_names[kSceneSelectionPass]);
         sceneOp->setViewRectangle(rect);
         sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
         sceneOp->setDoSelectable(true);
         sceneOp->setDoBackground(false);
         sceneOp->setClearMask(clear_mask_none);
-        m_ops[kSceneSelectPass] = sceneOp;
+        m_ops[kSceneSelectionPass] = sceneOp;
 
         // Wireframe pass.
         sceneOp = new MMRendererSceneRender(m_op_names[kSceneWireframePass]);
         sceneOp->setViewRectangle(rect);
         sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
-        sceneOp->setDisplayModeOverride(display_mode_wireframe_on_shaded);
+        sceneOp->setDisplayModeOverride(display_mode_wireframe);
         sceneOp->setDoSelectable(false);
         sceneOp->setDoBackground(false);
         sceneOp->setClearMask(clear_mask_none);
@@ -324,21 +306,21 @@ MMRendererMainOverride::setup(const MString &destination) {
 
     // Set the name of the panel on operations which may use the panel
     // name to find out the associated M3dView.
-    if (m_ops[kSceneStandardPass]) {
-        auto render_op = (MMRendererSceneRender *) m_ops[kSceneStandardPass];
-        render_op->setPanelName(m_panel_name);
+    if (m_ops[kSceneDepthPass]) {
+        auto op = (MMRendererSceneRender *) m_ops[kSceneDepthPass];
+        op->setPanelName(m_panel_name);
     }
     if (m_ops[kSceneBackgroundPass]) {
-        auto render_op = (MMRendererSceneRender *) m_ops[kSceneBackgroundPass];
-        render_op->setPanelName(m_panel_name);
+        auto op = (MMRendererSceneRender *) m_ops[kSceneBackgroundPass];
+        op->setPanelName(m_panel_name);
     }
-    if (m_ops[kSceneSelectPass]) {
-        auto render_op = (MMRendererSceneRender *) m_ops[kSceneSelectPass];
-        render_op->setPanelName(m_panel_name);
+    if (m_ops[kSceneSelectionPass]) {
+        auto op = (MMRendererSceneRender *) m_ops[kSceneSelectionPass];
+        op->setPanelName(m_panel_name);
     }
     if (m_ops[kSceneWireframePass]) {
-        auto render_op = (MMRendererSceneRender *) m_ops[kSceneWireframePass];
-        render_op->setPanelName(m_panel_name);
+        auto op = (MMRendererSceneRender *) m_ops[kSceneWireframePass];
+        op->setPanelName(m_panel_name);
     }
     m_current_op = -1;
 
@@ -355,5 +337,6 @@ MMRendererMainOverride::cleanup() {
 
     // Reset current operation
     m_current_op = -1;
+
     return MStatus::kSuccess;
 }

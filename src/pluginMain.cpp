@@ -158,7 +158,12 @@ MStatus initializePlugin(MObject obj) {
                        status);
 
     // Register MM Solver Viewport Renderer.
-    MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
+    //
+    // Note: There is no need to initialize viewport 2.0 just to
+    // register an override, it just adds to Maya start-up time.
+    auto initialize_renderer = false;
+    MHWRender::MRenderer* renderer =
+        MHWRender::MRenderer::theRenderer(initialize_renderer);
     if (renderer) {
         MMRendererMainOverride *ptr =
             new MMRendererMainOverride("MMRendererMainOverride");

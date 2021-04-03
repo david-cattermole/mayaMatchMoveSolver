@@ -24,6 +24,8 @@
 
 #include <maya/MShaderManager.h>
 
+namespace mmsolver {
+namespace renderer {
 
 // Custom present target operation
 //
@@ -54,3 +56,6 @@ MMRendererPresentTarget::targetOverrideList(unsigned int &listSize) {
     listSize = 0;
     return nullptr;
 }
+
+} // namespace renderer
+} // namespace mmsolver

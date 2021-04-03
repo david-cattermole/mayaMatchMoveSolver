@@ -24,6 +24,9 @@
 
 #include <maya/MShaderManager.h>
 
+namespace mmsolver {
+namespace renderer {
+
 // Render a full-screen quad, with a preset shader applied.
 MMRendererQuadRender::MMRendererQuadRender(const MString &name, const MString &id,
                                            const MString &technique)
@@ -92,3 +95,6 @@ MMRendererQuadRender::clearOperation() {
     mClearOperation.setMask(m_clear_mask);
     return mClearOperation;
 }
+
+} // namespace renderer
+} // namespace mmsolver

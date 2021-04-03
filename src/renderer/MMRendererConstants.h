@@ -26,6 +26,9 @@
 #include <maya/MViewport2Renderer.h>
 #include <maya/MRenderTargetManager.h>
 
+namespace mmsolver {
+namespace renderer {
+
 // Enumerate the target indexing
 enum TargetId
 {
@@ -36,5 +39,7 @@ enum TargetId
     kTargetCount
 };
 
+} // namespace renderer
+} // namespace mmsolver
 
 #endif // MAYA_MM_SOLVER_MM_RENDERER_CONSTANTS_H

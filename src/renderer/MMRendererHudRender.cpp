@@ -30,6 +30,9 @@
 #include <maya/MShaderManager.h>
 #include <maya/MTextureManager.h>
 
+namespace mmsolver {
+namespace renderer {
+
 MMRendererHudRender::MMRendererHudRender()
         : m_targets(nullptr),
           m_target_index(0),
@@ -88,3 +91,6 @@ MMRendererHudRender::addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
     // End draw UI
     drawManager2D.endDrawable();
 }
+
+} // namespace renderer
+} // namespace mmsolver

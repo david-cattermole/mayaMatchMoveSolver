@@ -30,6 +30,8 @@
 #include <maya/MViewport2Renderer.h>
 #include <maya/MRenderTargetManager.h>
 
+namespace mmsolver {
+namespace renderer {
 
 class MMRendererMainOverride : public MHWRender::MRenderOverride {
 public:
@@ -129,5 +131,8 @@ private:
     // Override is for this panel
     MString m_panel_name;
 };
+
+} // namespace renderer
+} // namespace mmsolver
 
 #endif //MAYA_MM_SOLVER_MM_RENDERER_MAIN_OVERRIDE_H

@@ -26,6 +26,9 @@
 #include <maya/MViewport2Renderer.h>
 #include <maya/MRenderTargetManager.h>
 
+namespace mmsolver {
+namespace renderer {
+
 // Heads up display
 class MMRendererHudRender : public MHWRender::MHUDRender {
 public:
@@ -59,5 +62,7 @@ protected:
 
 };
 
+} // namespace renderer
+} // namespace mmsolver
 
 #endif //MAYA_MM_SOLVER_MM_RENDERER_HUD_RENDER_H

@@ -165,14 +165,14 @@ MStatus initializePlugin(MObject obj) {
     MHWRender::MRenderer* renderer =
         MHWRender::MRenderer::theRenderer(initialize_renderer);
     if (renderer) {
-        MMRendererMainOverride *ptr =
-            new MMRendererMainOverride("MMRendererMainOverride");
+        mmsolver::renderer::MMRendererMainOverride *ptr =
+            new mmsolver::renderer::MMRendererMainOverride("MMRendererMainOverride");
         renderer->registerOverride(ptr);
 
         REGISTER_COMMAND(plugin,
-                         MMRendererCmd::cmdName(),
-                         MMRendererCmd::creator,
-                         MMRendererCmd::newSyntax,
+                         mmsolver::renderer::MMRendererCmd::cmdName(),
+                         mmsolver::renderer::MMRendererCmd::creator,
+                         mmsolver::renderer::MMRendererCmd::newSyntax,
                          status);
     }
 
@@ -206,10 +206,12 @@ MStatus uninitializePlugin(MObject obj) {
         const MHWRender::MRenderOverride* ptr =
             renderer->findRenderOverride("MMRendererMainOverride");
         if (ptr) {
-            renderer->deregisterOverride(ptr );
+            renderer->deregisterOverride(ptr);
             delete ptr;
         }
-        DEREGISTER_COMMAND(plugin, MMRendererCmd::cmdName(), status);
+        DEREGISTER_COMMAND(plugin,
+                           mmsolver::renderer::MMRendererCmd::cmdName(),
+                           status);
     }
 
     DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);

@@ -31,6 +31,9 @@
 
 #include <maya/MPxCommand.h>
 
+namespace mmsolver {
+namespace renderer {
+
 /*
  * Command arguments and command name
  */
@@ -65,5 +68,8 @@ private:
     bool m_swirl;
     bool m_edgeDetect;
 };
+
+} // namespace renderer
+} // namespace mmsolver
 
 #endif //MAYA_MM_SOLVER_MM_RENDERER_CMD_H

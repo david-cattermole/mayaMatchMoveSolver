@@ -27,6 +27,9 @@
 #include <maya/MViewport2Renderer.h>
 #include <maya/MRenderTargetManager.h>
 
+namespace mmsolver {
+namespace renderer {
+
 class MMRendererQuadRender : public MHWRender::MQuadRender {
 public:
     // TODO: Remove the shader creation and make the caller pass over
@@ -91,5 +94,8 @@ protected:
     // How the clear operation works?
     uint32_t m_clear_mask;
 };
+
+} // namespace renderer
+} // namespace mmsolver
 
 #endif //MAYA_MM_SOLVER_MM_RENDERER_QUAD_RENDER_H

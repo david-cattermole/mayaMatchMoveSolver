@@ -35,6 +35,9 @@
 
 #include <maya/MShaderManager.h>
 
+namespace mmsolver {
+namespace renderer {
+
 // Set up operations
 MMRendererMainOverride::MMRendererMainOverride(const MString &name)
         : MRenderOverride(name), m_ui_name("mmSolver Renderer") {
@@ -340,3 +343,6 @@ MMRendererMainOverride::cleanup() {
 
     return MStatus::kSuccess;
 }
+
+} // namespace renderer
+} // namespace mmsolver

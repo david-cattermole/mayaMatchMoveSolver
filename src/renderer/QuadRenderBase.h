@@ -20,8 +20,8 @@
  * A full-screen quad render, with a shader applied.
  */
 
-#ifndef MAYA_MM_SOLVER_MM_RENDERER_QUAD_RENDER_H
-#define MAYA_MM_SOLVER_MM_RENDERER_QUAD_RENDER_H
+#ifndef MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_BASE_H
+#define MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_BASE_H
 
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
@@ -30,19 +30,12 @@
 namespace mmsolver {
 namespace renderer {
 
-class MMRendererQuadRender : public MHWRender::MQuadRender {
+class QuadRenderBase : public MHWRender::MQuadRender {
 public:
-    // TODO: Remove the shader creation and make the caller pass over
-    // some owned memory to this class to then release on destruction.
-    MMRendererQuadRender(const MString &name,
-                         const MString &id,
-                         const MString &technique);
-    ~MMRendererQuadRender() override;
+    QuadRenderBase(const MString &name);
+    ~QuadRenderBase() override;
 
-    const MHWRender::MShaderInstance *shader() override;
     MHWRender::MClearOperation &clearOperation() override;
-
-    MHWRender::MRenderTarget* const* targetOverrideList(unsigned int &listSize) override;
 
     void
     setRenderTargets(MHWRender::MRenderTarget **targets,
@@ -70,16 +63,6 @@ public:
     }
 
 protected:
-
-    // Shader to use for the quad render
-    MHWRender::MShaderInstance *m_shader_instance;
-
-    // Shader file name
-    MString m_effect_id;
-
-    // Shader 'technique' name.
-    MString m_effect_id_technique;
-
     // Targets used as input parameters to mShaderInstance;
     MHWRender::MRenderTarget** m_targets;
 
@@ -98,4 +81,4 @@ protected:
 } // namespace renderer
 } // namespace mmsolver
 
-#endif //MAYA_MM_SOLVER_MM_RENDERER_QUAD_RENDER_H
+#endif // MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_BASE_H

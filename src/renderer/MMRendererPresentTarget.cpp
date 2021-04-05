@@ -49,7 +49,7 @@ MMRendererPresentTarget::~MMRendererPresentTarget() {
 // Called by Maya.
 MHWRender::MRenderTarget *const *
 MMRendererPresentTarget::targetOverrideList(unsigned int &listSize) {
-    if (m_targets) {
+    if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];
     }

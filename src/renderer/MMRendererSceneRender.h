@@ -43,8 +43,7 @@ public:
 
     ~MMRendererSceneRender() override;
 
-    MHWRender::MRenderTarget *const *
-    targetOverrideList(uint32_t &listSize) override;
+    MHWRender::MRenderTarget *const * targetOverrideList(uint32_t &listSize) override;
 
     MHWRender::MSceneRender::MSceneFilterOption renderFilterOverride() override;
     MHWRender::MSceneRender::MDisplayMode displayModeOverride() override;
@@ -75,20 +74,6 @@ public:
 
     void setViewRectangle(const MFloatPoint &rect) {
         m_view_rectangle = rect;
-    }
-
-    MHWRender::MRenderTarget *colorTarget() const {
-        if (m_targets) {
-            return m_targets[kMyColorTarget];
-        }
-        return nullptr;
-    }
-
-    MHWRender::MRenderTarget *depthTarget() const {
-        if (m_targets) {
-            return m_targets[kMyDepthTarget];
-        }
-        return nullptr;
     }
 
     const MHWRender::MSceneRender::MSceneFilterOption sceneFilter() const {

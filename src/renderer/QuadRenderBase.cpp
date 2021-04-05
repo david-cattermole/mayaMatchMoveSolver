@@ -17,35 +17,38 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Constant values used in the mmSolver renderer.
  */
 
-#ifndef MAYA_MM_SOLVER_MM_RENDERER_CONSTANTS_H
-#define MAYA_MM_SOLVER_MM_RENDERER_CONSTANTS_H
+#include "MMRendererConstants.h"
+#include "QuadRenderBase.h"
 
-#include <maya/MString.h>
-#include <maya/MViewport2Renderer.h>
-#include <maya/MRenderTargetManager.h>
+#include <maya/MShaderManager.h>
 
 namespace mmsolver {
 namespace renderer {
 
-// Enumerate the target indexing
-enum TargetId
-{
-    kMyColorTarget = 0,
-    kMyDepthTarget,
+// Render a full-screen quad, with a preset shader applied.
+//
+// Reads from 'auxiliary' Target, and writes to 'main' Target.
+//
+QuadRenderBase::QuadRenderBase(const MString &name)
+        : MQuadRender(name),
+          m_targets(nullptr),
+          m_target_index(0),
+          m_target_count(0),
+          m_clear_mask(MHWRender::MClearOperation::kClearNone) {
+}
 
-    kMyAuxColorTarget,
-    // Always last field, used as 'number of items'.
-    kTargetCount
-};
+QuadRenderBase::~QuadRenderBase() {
+    m_targets = nullptr;
+}
 
-#define kMyColorTargetName  "__mmRenderer_MyColorTarget__"
-#define kMyDepthTargetName  "__mmRenderer_MyDepthTarget__"
-#define kMyAuxColorTargetName  "__mmRenderer_MyAuxColorTarget__"
+MHWRender::MClearOperation &
+QuadRenderBase::clearOperation() {
+    mClearOperation.setClearGradient(false);
+    mClearOperation.setMask(m_clear_mask);
+    return mClearOperation;
+}
 
 } // namespace renderer
 } // namespace mmsolver
-
-#endif // MAYA_MM_SOLVER_MM_RENDERER_CONSTANTS_H

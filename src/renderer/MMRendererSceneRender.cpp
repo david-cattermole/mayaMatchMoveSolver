@@ -59,6 +59,7 @@ MMRendererSceneRender::MMRendererSceneRender(const MString &name)
     m_view_rectangle[1] = 0.0f;
     m_view_rectangle[2] = 1.0f;
     m_view_rectangle[3] = 1.0f;
+
 }
 
 MMRendererSceneRender::~MMRendererSceneRender() {
@@ -80,7 +81,7 @@ MMRendererSceneRender::~MMRendererSceneRender() {
 
 MHWRender::MRenderTarget *const *
 MMRendererSceneRender::targetOverrideList(unsigned int &listSize) {
-    if (m_targets) {
+    if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];
     }
@@ -125,21 +126,37 @@ MMRendererSceneRender::clearOperation() {
 
 const MSelectionList *
 MMRendererSceneRender::objectSetOverride() {
+    // If m_do_selectable is false and m_do_background is false: do
+    // not override.
     mSelectionList.clear();
-    if (m_do_selectable) {
+    if (m_do_selectable && m_do_background) {
+        // If m_do_selectable is true and m_do_background is true:
+        // override drawn objects to only image planes under cameras.
         MItDag it;
-        it.traverseUnderWorld(m_do_background);
-
+        it.traverseUnderWorld(true);
         for (it.reset(); !it.isDone(); it.next()) {
             auto item = it.currentItem();
             if (item.hasFn(MFn::kImagePlane)) {
                 MDagPath path;
                 it.getPath(path);
-                if (m_do_background && (path.pathCount() < 2)) {
-
-                } else {
-                    mSelectionList.add(path);
+                if (path.pathCount() < 2) {
+                    continue;
                 }
+                mSelectionList.add(path);
+            }
+        }
+        return &mSelectionList;
+    } else if (m_do_selectable && !m_do_background) {
+        // If m_do_selectable is true and m_do_background is false:
+        // override drawn objects to all image planes not under cameras.
+        MItDag it;
+        it.traverseUnderWorld(false);
+        for (it.reset(); !it.isDone(); it.next()) {
+            auto item = it.currentItem();
+            if (item.hasFn(MFn::kImagePlane)) {
+                MDagPath path;
+                it.getPath(path);
+                mSelectionList.add(path);
             }
         }
         return &mSelectionList;

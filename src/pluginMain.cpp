@@ -20,12 +20,13 @@
  * Main Maya plugin entry point.
  */
 
-
 #include <maya/MFnPlugin.h>
 #include <maya/MPxTransform.h>
 #include <maya/MString.h>
 #include <maya/MStatus.h>
 #include <maya/MObject.h>
+#include <maya/MViewport2Renderer.h>
+#include <maya/MShaderManager.h>
 
 // Build-Time constant values.
 #include <buildConstant.h>
@@ -165,6 +166,25 @@ MStatus initializePlugin(MObject obj) {
     MHWRender::MRenderer* renderer =
         MHWRender::MRenderer::theRenderer(initialize_renderer);
     if (renderer) {
+        // Add mmSolver 'shader' directory into the search path.
+        const MHWRender::MShaderManager* shader_manager =
+            renderer->getShaderManager();
+        if (!shader_manager) {
+            // If we cannot add shaders, return plug-in initialisation
+            // failure.
+            return MStatus::kFailure;
+        }
+        MString shader_location;
+        MString cmd = MString("getModulePath -moduleName \"mayaMatchMoveSolver\";");
+        if (!MGlobal::executeCommand(cmd, shader_location, false)) {
+            MString warning_message = MString(
+                "mmSolver: Could not get module path, looking up env var.");
+            MGlobal::displayWarning(warning_message);
+            shader_location = MString(std::getenv("MMSOLVER_LOCATION"));
+        }
+        shader_location += MString("/shader");
+        shader_manager->addShaderPath(shader_location);
+
         mmsolver::renderer::MMRendererMainOverride *ptr =
             new mmsolver::renderer::MMRendererMainOverride("MMRendererMainOverride");
         renderer->registerOverride(ptr);

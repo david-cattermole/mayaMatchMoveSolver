@@ -69,6 +69,18 @@ public:
         // the depth pass.
         kSceneWireframePass,
 
+        // Post ops on target 1
+        kPostOperation1,
+
+        // --------------------------------------------------------------------
+        // Blend pass.
+        //
+        // Blend target 1 and 2 back to target 1
+        kBlendOp,
+
+        // Post ops on target 1
+        kPostOperation2,
+
         // --------------------------------------------------------------------
         // HUD pass. Draw 2D heads-up-display elements.
         kHudPass,
@@ -95,7 +107,6 @@ public:
 
     // Basic setup and cleanup
     MStatus setup(const MString &destination) override;
-
     MStatus cleanup() override;
 
     // Called by Maya to determine the name in the "Renderers" menu.
@@ -109,7 +120,9 @@ public:
     }
 
 protected:
+    MStatus updateRenderOperations();
     MStatus updateRenderTargets();
+    MStatus setPanelNames(const MString &name);
 
     // Operation lists
     MHWRender::MRenderOperation *m_ops[kNumberOfOps];

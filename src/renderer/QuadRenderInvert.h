@@ -17,35 +17,44 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Constant values used in the mmSolver renderer.
+ * A full-screen quad render, with a shader applied.
  */
 
-#ifndef MAYA_MM_SOLVER_MM_RENDERER_CONSTANTS_H
-#define MAYA_MM_SOLVER_MM_RENDERER_CONSTANTS_H
+#ifndef MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_INVERT_H
+#define MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_INVERT_H
+
+#include "QuadRenderBase.h"
 
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 #include <maya/MRenderTargetManager.h>
 
+
 namespace mmsolver {
 namespace renderer {
 
-// Enumerate the target indexing
-enum TargetId
-{
-    kMyColorTarget = 0,
-    kMyDepthTarget,
+class QuadRenderInvert : public QuadRenderBase {
+public:
+    QuadRenderInvert(const MString &name);
+    ~QuadRenderInvert() override;
 
-    kMyAuxColorTarget,
-    // Always last field, used as 'number of items'.
-    kTargetCount
+    MHWRender::MRenderTarget* const* targetOverrideList(unsigned int &listSize) override;
+
+    const MHWRender::MShaderInstance *shader() override;
+
+    void
+    setInputTarget(const uint32_t index) {
+        m_target_index_input = index;
+    }
+
+protected:
+    // Shader to use for the quad render
+    MHWRender::MShaderInstance *m_shader_instance;
+
+    uint32_t m_target_index_input;
 };
-
-#define kMyColorTargetName  "__mmRenderer_MyColorTarget__"
-#define kMyDepthTargetName  "__mmRenderer_MyDepthTarget__"
-#define kMyAuxColorTargetName  "__mmRenderer_MyAuxColorTarget__"
 
 } // namespace renderer
 } // namespace mmsolver
 
-#endif // MAYA_MM_SOLVER_MM_RENDERER_CONSTANTS_H
+#endif // MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_INVERT_H

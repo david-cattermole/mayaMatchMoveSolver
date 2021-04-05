@@ -226,7 +226,10 @@ set(SOURCE_FILES
         src/core/bundleAdjust_cminpack_lmder.h
         src/core/bundleAdjust_cminpack_lmder.cpp
         src/renderer/MMRendererCmd.cpp
-        src/renderer/MMRendererQuadRender.cpp
+        src/renderer/QuadRenderBase.cpp
+        src/renderer/QuadRenderEdgeDetect.cpp
+        src/renderer/QuadRenderBlend.cpp
+        src/renderer/QuadRenderInvert.cpp
         src/renderer/MMRendererHudRender.cpp
         src/renderer/MMRendererPresentTarget.cpp
         src/renderer/MMRendererSceneRender.cpp
@@ -565,6 +568,8 @@ endif ()
 # Use CPack (part of CMake) to generate the packages...
 # If 'CPack' is not included, the 'packages' target will not be generated.
 include(CPack)
+
+add_subdirectory(shader)
 
 if (BUILD_PYTHON)
     add_subdirectory(python)

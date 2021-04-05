@@ -46,7 +46,7 @@ MMRendererHudRender::~MMRendererHudRender() {
 // Called by Maya.
 MHWRender::MRenderTarget *const *
 MMRendererHudRender::targetOverrideList(unsigned int &listSize) {
-    if (m_targets) {
+    if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];
     }
@@ -67,13 +67,13 @@ MMRendererHudRender::addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
     // Set font color
     drawManager2D.setColor(MColor(1.0f, 0.0f, 0.0f));
     // Set font size
-    drawManager2D.setFontSize(MHWRender::MUIDrawManager::kSmallFontSize);
+    drawManager2D.setFontSize(MHWRender::MUIDrawManager::kDefaultFontSize);
 
     // Draw renderer name
     int x = 0, y = 0, w = 0, h = 0;
     frameContext.getViewportDimensions(x, y, w, h);
     drawManager2D.text(MPoint(w * 0.5f, h * 0.91f),
-                       MString("Sample VP2 Renderer Override"),
+                       MString("mmRenderer"),
                        MHWRender::MUIDrawManager::kCenter);
 
     // Draw viewport information

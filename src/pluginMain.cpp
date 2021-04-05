@@ -186,7 +186,7 @@ MStatus initializePlugin(MObject obj) {
         shader_manager->addShaderPath(shader_location);
 
         mmsolver::renderer::MMRendererMainOverride *ptr =
-            new mmsolver::renderer::MMRendererMainOverride("MMRendererMainOverride");
+            new mmsolver::renderer::MMRendererMainOverride("mmRenderer");
         renderer->registerOverride(ptr);
 
         REGISTER_COMMAND(plugin,
@@ -224,7 +224,7 @@ MStatus uninitializePlugin(MObject obj) {
     {
         // Find override with the given name and deregister
         const MHWRender::MRenderOverride* ptr =
-            renderer->findRenderOverride("MMRendererMainOverride");
+            renderer->findRenderOverride("mmRenderer");
         if (ptr) {
             renderer->deregisterOverride(ptr);
             delete ptr;

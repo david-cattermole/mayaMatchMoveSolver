@@ -24,7 +24,7 @@
 #ifndef MAYA_MM_SOLVER_MM_RENDERER_MAIN_OVERRIDE_H
 #define MAYA_MM_SOLVER_MM_RENDERER_MAIN_OVERRIDE_H
 
-#include "MMRendererConstants.h"
+#include "constants.h"
 
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>

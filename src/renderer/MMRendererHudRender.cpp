@@ -19,7 +19,7 @@
  *
  */
 
-#include "MMRendererConstants.h"
+#include "constants.h"
 #include "MMRendererHudRender.h"
 
 #include <maya/MStreamUtils.h>

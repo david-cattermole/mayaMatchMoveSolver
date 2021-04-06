@@ -19,7 +19,7 @@
  *
  */
 
-#include "MMRendererConstants.h"
+#include "constants.h"
 #include "QuadRenderEdgeDetect.h"
 
 #include <maya/MStreamUtils.h>

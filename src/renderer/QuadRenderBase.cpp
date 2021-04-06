@@ -19,7 +19,7 @@
  *
  */
 
-#include "MMRendererConstants.h"
+#include "constants.h"
 #include "QuadRenderBase.h"
 
 #include <maya/MShaderManager.h>

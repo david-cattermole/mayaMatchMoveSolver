@@ -230,7 +230,7 @@ set(SOURCE_FILES
         src/renderer/QuadRenderEdgeDetect.cpp
         src/renderer/QuadRenderBlend.cpp
         src/renderer/QuadRenderInvert.cpp
-        src/renderer/MMRendererHudRender.cpp
+        src/renderer/HudRender.cpp
         src/renderer/MMRendererPresentTarget.cpp
         src/renderer/MMRendererSceneRender.cpp
         src/renderer/MMRendererMainOverride.cpp

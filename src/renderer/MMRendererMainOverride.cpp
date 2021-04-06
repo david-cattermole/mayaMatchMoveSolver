@@ -32,7 +32,7 @@
 #include "QuadRenderBlend.h"
 #include "QuadRenderInvert.h"
 #include "MMRendererSceneRender.h"
-#include "MMRendererHudRender.h"
+#include "HudRender.h"
 #include "MMRendererPresentTarget.h"
 
 #include <maya/MStreamUtils.h>
@@ -278,7 +278,7 @@ MMRendererMainOverride::updateRenderOperations() {
     m_ops[kPostOperation2] = invertOp;
 
     // A preset 2D HUD render operation
-    auto hudOp = new MMRendererHudRender();
+    auto hudOp = new HudRender();
     m_ops[kHudPass] = hudOp;
     m_op_names[kHudPass] = hudOp->name();
 
@@ -390,7 +390,7 @@ MMRendererMainOverride::updateRenderTargets() {
             invertOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
-        auto hudOp = (MMRendererHudRender *) m_ops[kHudPass];
+        auto hudOp = (HudRender *) m_ops[kHudPass];
         if (hudOp) {
             hudOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }

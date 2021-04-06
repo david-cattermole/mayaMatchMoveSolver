@@ -30,10 +30,10 @@ namespace mmsolver {
 namespace renderer {
 
 // Heads up display
-class MMRendererHudRender : public MHWRender::MHUDRender {
+class HudRender : public MHWRender::MHUDRender {
 public:
-    MMRendererHudRender();
-    ~MMRendererHudRender() override;
+    HudRender();
+    ~HudRender() override;
 
     MHWRender::MRenderTarget *const *
     targetOverrideList(unsigned int &listSize) override;

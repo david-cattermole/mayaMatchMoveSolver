@@ -20,7 +20,7 @@
  */
 
 #include "constants.h"
-#include "MMRendererHudRender.h"
+#include "HudRender.h"
 
 #include <maya/MStreamUtils.h>
 #include <maya/MString.h>
@@ -34,19 +34,19 @@
 namespace mmsolver {
 namespace renderer {
 
-MMRendererHudRender::MMRendererHudRender()
+HudRender::HudRender()
         : m_targets(nullptr),
           m_target_index(0),
           m_target_count(0) {
 }
 
-MMRendererHudRender::~MMRendererHudRender() {
+HudRender::~HudRender() {
     m_targets = nullptr;
 }
 
 // Called by Maya.
 MHWRender::MRenderTarget *const *
-MMRendererHudRender::targetOverrideList(unsigned int &listSize) {
+HudRender::targetOverrideList(unsigned int &listSize) {
     if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];
@@ -56,13 +56,13 @@ MMRendererHudRender::targetOverrideList(unsigned int &listSize) {
 }
 
 bool
-MMRendererHudRender::hasUIDrawables() const /*override*/ {
+HudRender::hasUIDrawables() const /*override*/ {
     return true;
 }
 
 void
-MMRendererHudRender::addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
-                                    const MHWRender::MFrameContext &frameContext) {
+HudRender::addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
+                          const MHWRender::MFrameContext &frameContext) {
     // Start draw UI
     drawManager2D.beginDrawable();
     // Set font color

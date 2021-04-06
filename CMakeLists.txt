@@ -228,6 +228,7 @@ set(SOURCE_FILES
         src/renderer/MMRendererCmd.cpp
         src/renderer/QuadRenderBase.cpp
         src/renderer/QuadRenderEdgeDetect.cpp
+        src/renderer/QuadRenderCopy.cpp
         src/renderer/QuadRenderBlend.cpp
         src/renderer/QuadRenderInvert.cpp
         src/renderer/HudRender.cpp

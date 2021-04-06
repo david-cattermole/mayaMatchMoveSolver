@@ -29,6 +29,7 @@
 
 #include "RenderOverride.h"
 #include "QuadRenderEdgeDetect.h"
+#include "QuadRenderCopy.h"
 #include "QuadRenderBlend.h"
 #include "QuadRenderInvert.h"
 #include "SceneRender.h"
@@ -207,6 +208,7 @@ RenderOverride::updateRenderOperations() {
     m_op_names[kSceneDepthPass] = "mmRenderer_SceneRender_Standard";
     m_op_names[kSceneBackgroundPass] = "mmRenderer_SceneRender_Background";
     m_op_names[kSceneSelectionPass] = "mmRenderer_SceneRender_Select";
+    m_op_names[kCopyOp] = "mmRenderer_Copy";
     m_op_names[kSceneWireframePass] = "mmRenderer_SceneRender_Wireframe";
     m_op_names[kEdgeDetectOp] = "mmRenderer_PostOp1";
     m_op_names[kBlendOp] = "mmRenderer_EdgeDetectBlend";
@@ -246,6 +248,12 @@ RenderOverride::updateRenderOperations() {
     sceneOp->setDoBackground(false);
     sceneOp->setClearMask(clear_mask_none);
     m_ops[kSceneSelectionPass] = sceneOp;
+
+    // Copy select pass to another target for blending later.
+    auto copyOp = new QuadRenderCopy(m_op_names[kCopyOp]);
+    copyOp->setViewRectangle(rect);
+    copyOp->setClearMask(clear_mask_none);
+    m_ops[kCopyOp] = copyOp;
 
     // Wireframe pass.
     sceneOp = new SceneRender(m_op_names[kSceneWireframePass]);
@@ -341,37 +349,46 @@ RenderOverride::updateRenderTargets() {
     // color and depth targets, but shaders may interally reference
     // specific render targets.
 
-    // FIXME: If 'use_blend' is true the render targets only update
-    // once and then fail. With 'use_blend' is false, the render
-    // targets update as expected.
-    auto use_blend = true;
-    if (use_blend) {
+    auto mode = 1;
+    if (mode == 0) {
+        // Blend edge detect on/off.
         auto depthPassOp = (SceneRender *) m_ops[kSceneDepthPass];
         if (depthPassOp) {
+            depthPassOp->setEnabled(true);
             depthPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
         auto backgroundPassOp = (SceneRender *) m_ops[kSceneBackgroundPass];
         if (backgroundPassOp) {
+            backgroundPassOp->setEnabled(true);
             // Note: Only render to the color target, depth is ignored.
             backgroundPassOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
         auto selectSceneOp = (SceneRender *) m_ops[kSceneSelectionPass];
         if (selectSceneOp) {
+            selectSceneOp->setEnabled(true);
             selectSceneOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+        }
+
+        auto copyOp = (QuadRenderCopy *) m_ops[kCopyOp];
+        if (copyOp) {
+            copyOp->setEnabled(false);
+            copyOp->setInputTarget(0);
+            copyOp->setRenderTargets(nullptr, 0, 0);
         }
 
         auto wireframePassOp = (SceneRender *) m_ops[kSceneWireframePass];
         if (wireframePassOp) {
+            wireframePassOp->setEnabled(true);
             wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto quadOp = (QuadRenderEdgeDetect *) m_ops[kEdgeDetectOp];
-        if (quadOp) {
-            quadOp->setEnabled(true);
-            quadOp->setInputTarget(kMyColorTarget);
-            quadOp->setRenderTargets(m_targets, kMyAuxColorTarget, 1);
+        auto edgeDetectOp = (QuadRenderEdgeDetect *) m_ops[kEdgeDetectOp];
+        if (edgeDetectOp) {
+            edgeDetectOp->setEnabled(true);
+            edgeDetectOp->setInputTarget(kMyColorTarget);
+            edgeDetectOp->setRenderTargets(m_targets, kMyAuxColorTarget, 1);
         }
 
         auto blendOp = (QuadRenderBlend *) m_ops[kBlendOp];
@@ -400,28 +417,142 @@ RenderOverride::updateRenderTargets() {
             presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-    } else {
+    } else if (mode == 1) {
+        // Blending wireframes.
         auto depthPassOp = (SceneRender *) m_ops[kSceneDepthPass];
         if (depthPassOp) {
+            depthPassOp->setEnabled(true);
             depthPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
         auto backgroundPassOp = (SceneRender *) m_ops[kSceneBackgroundPass];
         if (backgroundPassOp) {
+            depthPassOp->setEnabled(true);
             // Note: Only render to the color target, depth is ignored.
             backgroundPassOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
         auto selectSceneOp = (SceneRender *) m_ops[kSceneSelectionPass];
         if (selectSceneOp) {
+            selectSceneOp->setEnabled(true);
             selectSceneOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+        }
+
+        auto copyOp = (QuadRenderCopy *) m_ops[kCopyOp];
+        if (copyOp) {
+            copyOp->setEnabled(true);
+            copyOp->setInputTarget(kMyColorTarget);
+            copyOp->setRenderTargets(m_targets, kMyAuxColorTarget, 1);
         }
 
         auto wireframePassOp = (SceneRender *) m_ops[kSceneWireframePass];
         if (wireframePassOp) {
+            wireframePassOp->setEnabled(true);
             wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
+        auto edgeDetectOp = (QuadRenderEdgeDetect *) m_ops[kEdgeDetectOp];
+        if (edgeDetectOp) {
+            edgeDetectOp->setEnabled(false);
+            edgeDetectOp->setInputTarget(0);
+            edgeDetectOp->setRenderTargets(nullptr, 0, 0);
+        }
+
+        auto blendOp = (QuadRenderBlend *) m_ops[kBlendOp];
+        if (blendOp) {
+            blendOp->setEnabled(true);
+            blendOp->setInputTarget1(kMyColorTarget);
+            blendOp->setInputTarget2(kMyAuxColorTarget);
+            blendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
+            blendOp->setBlend(static_cast<float>(m_blend));
+        }
+
+        auto invertOp = (QuadRenderInvert *) m_ops[kInvertOp];
+        if (invertOp) {
+            invertOp->setEnabled(false);
+            invertOp->setInputTarget(kMyColorTarget);
+            invertOp->setRenderTargets(m_targets, kMyColorTarget, 1);
+        }
+
+        auto hudOp = (HudRender *) m_ops[kHudPass];
+        if (hudOp) {
+            hudOp->setEnabled(true);
+            hudOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+        }
+
+        auto presentOp = (PresentTarget *) m_ops[kPresentOp];
+        if (presentOp) {
+            presentOp->setEnabled(true);
+            presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+        }
+    } else {
+        // No blending or post operations.
+        auto depthPassOp = (SceneRender *) m_ops[kSceneDepthPass];
+        if (depthPassOp) {
+            depthPassOp->setEnabled(true);
+            depthPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+        }
+
+        auto backgroundPassOp = (SceneRender *) m_ops[kSceneBackgroundPass];
+        if (backgroundPassOp) {
+            backgroundPassOp->setEnabled(true);
+            // Note: Only render to the color target, depth is ignored.
+            backgroundPassOp->setRenderTargets(m_targets, kMyColorTarget, 1);
+        }
+
+        auto selectSceneOp = (SceneRender *) m_ops[kSceneSelectionPass];
+        if (selectSceneOp) {
+            selectSceneOp->setEnabled(true);
+            selectSceneOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+        }
+
+        auto copyOp = (QuadRenderCopy *) m_ops[kCopyOp];
+        if (copyOp) {
+            copyOp->setEnabled(false);
+            copyOp->setInputTarget(0);
+            copyOp->setRenderTargets(nullptr, 0, 0);
+        }
+
+        auto wireframePassOp = (SceneRender *) m_ops[kSceneWireframePass];
+        if (wireframePassOp) {
+            wireframePassOp->setEnabled(true);
+            wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+        }
+
+        auto edgeDetectOp = (QuadRenderEdgeDetect *) m_ops[kEdgeDetectOp];
+        if (edgeDetectOp) {
+            edgeDetectOp->setEnabled(false);
+            edgeDetectOp->setInputTarget(0);
+            edgeDetectOp->setRenderTargets(nullptr, 0, 0);
+        }
+
+        auto blendOp = (QuadRenderBlend *) m_ops[kBlendOp];
+        if (blendOp) {
+            blendOp->setEnabled(false);
+            blendOp->setInputTarget1(0);
+            blendOp->setInputTarget2(0);
+            blendOp->setRenderTargets(nullptr, 0, 0);
+            blendOp->setBlend(static_cast<float>(m_blend));
+        }
+
+        auto invertOp = (QuadRenderInvert *) m_ops[kInvertOp];
+        if (invertOp) {
+            invertOp->setEnabled(false);
+            invertOp->setInputTarget(kMyColorTarget);
+            invertOp->setRenderTargets(m_targets, kMyColorTarget, 1);
+        }
+
+        auto hudOp = (HudRender *) m_ops[kHudPass];
+        if (hudOp) {
+            hudOp->setEnabled(true);
+            hudOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+        }
+
+        auto presentOp = (PresentTarget *) m_ops[kPresentOp];
+        if (presentOp) {
+            presentOp->setEnabled(true);
+            presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+        }
     }
 
     MStatus status = MS::kFailure;

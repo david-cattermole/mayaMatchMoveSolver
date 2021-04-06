@@ -62,6 +62,9 @@ public:
         // are draw here).
         kSceneSelectionPass,
 
+        // Copy target 1 to target 2.
+        kCopyOp,
+
         // --------------------------------------------------------------------
         // Wireframe pass.
         //

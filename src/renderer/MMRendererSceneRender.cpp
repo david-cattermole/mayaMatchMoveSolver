@@ -22,16 +22,12 @@
 #include "MMRendererConstants.h"
 #include "MMRendererSceneRender.h"
 
-#include <maya/MIOStream.h>
-#include <maya/MGlobal.h>
 #include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MSelectionList.h>
-#include <maya/MItSelectionList.h>
 #include <maya/MItDag.h>
 #include <maya/M3dView.h>
 #include <maya/MPoint.h>
-#include <maya/MImage.h>
 #include <maya/MViewport2Renderer.h>
 #include <maya/MRenderTargetManager.h>
 #include <maya/MStateManager.h>

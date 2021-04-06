@@ -22,6 +22,7 @@
 #include "MMRendererConstants.h"
 #include "MMRendererPresentTarget.h"
 
+#include <maya/MStreamUtils.h>
 #include <maya/MShaderManager.h>
 
 namespace mmsolver {

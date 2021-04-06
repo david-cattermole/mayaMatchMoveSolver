@@ -22,6 +22,7 @@
 #include "MMRendererConstants.h"
 #include "MMRendererHudRender.h"
 
+#include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MPoint.h>
 #include <maya/MImage.h>

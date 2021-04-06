@@ -24,6 +24,7 @@
 
 #include <maya/MIOStream.h>
 #include <maya/MGlobal.h>
+#include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MSelectionList.h>
 #include <maya/MItSelectionList.h>

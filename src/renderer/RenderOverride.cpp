@@ -27,7 +27,7 @@
  *
  */
 
-#include "MMRendererMainOverride.h"
+#include "RenderOverride.h"
 #include "QuadRenderEdgeDetect.h"
 #include "QuadRenderBlend.h"
 #include "QuadRenderInvert.h"
@@ -42,7 +42,7 @@ namespace mmsolver {
 namespace renderer {
 
 // Set up operations
-MMRendererMainOverride::MMRendererMainOverride(const MString &name)
+RenderOverride::RenderOverride(const MString &name)
         : MRenderOverride(name)
         , m_ui_name("mmSolver Renderer")
         , m_blend(0.5f) {
@@ -98,7 +98,7 @@ MMRendererMainOverride::MMRendererMainOverride(const MString &name)
 
 }
 
-MMRendererMainOverride::~MMRendererMainOverride() {
+RenderOverride::~RenderOverride() {
     MHWRender::MRenderer *theRenderer = MHWRender::MRenderer::theRenderer();
     if (!theRenderer) {
         return;
@@ -135,18 +135,18 @@ MMRendererMainOverride::~MMRendererMainOverride() {
 //
 // All of them; OpenGL, DirectX, etc.
 MHWRender::DrawAPI
-MMRendererMainOverride::supportedDrawAPIs() const {
+RenderOverride::supportedDrawAPIs() const {
     return MHWRender::kAllDevices;
 }
 
 bool
-MMRendererMainOverride::startOperationIterator() {
+RenderOverride::startOperationIterator() {
     m_current_op = 0;
     return true;
 }
 
 MHWRender::MRenderOperation *
-MMRendererMainOverride::renderOperation() {
+RenderOverride::renderOperation() {
     if (m_current_op >= 0 && m_current_op < kNumberOfOps) {
         while (!m_ops[m_current_op] || !m_ops[m_current_op]->enabled()) {
             m_current_op++;
@@ -162,7 +162,7 @@ MMRendererMainOverride::renderOperation() {
 }
 
 bool
-MMRendererMainOverride::nextRenderOperation() {
+RenderOverride::nextRenderOperation() {
     m_current_op++;
     if (m_current_op < kNumberOfOps) {
         return true;
@@ -171,9 +171,9 @@ MMRendererMainOverride::nextRenderOperation() {
 }
 
 MStatus
-MMRendererMainOverride::updateRenderOperations() {
+RenderOverride::updateRenderOperations() {
     MStreamUtils::stdOutStream()
-        << "MMRendererMainOverride::updateRenderOperations: \n";
+        << "RenderOverride::updateRenderOperations: \n";
 
     if (m_ops[kPresentOp] != nullptr) {
         // render opations are already up-to-date.
@@ -295,9 +295,9 @@ MMRendererMainOverride::updateRenderOperations() {
 // operations as required so that they will send their output to the
 // appropriate location.
 MStatus
-MMRendererMainOverride::updateRenderTargets() {
+RenderOverride::updateRenderTargets() {
     MStreamUtils::stdOutStream()
-        << "MMRendererMainOverride::updateRenderTargets\n";
+        << "RenderOverride::updateRenderTargets\n";
     MHWRender::MRenderer *theRenderer = MHWRender::MRenderer::theRenderer();
     if (!theRenderer) {
         return MS::kFailure;
@@ -434,9 +434,9 @@ MMRendererMainOverride::updateRenderTargets() {
     return status;
 }
 
-MStatus MMRendererMainOverride::setPanelNames(const MString &name) {
+MStatus RenderOverride::setPanelNames(const MString &name) {
     MStreamUtils::stdOutStream()
-        << "MMRendererMainOverride::setPanelNames: "
+        << "RenderOverride::setPanelNames: "
         << name.asChar() << '\n';
     // Set the name of the panel on operations which may use the panel
     // name to find out the associated M3dView.
@@ -463,9 +463,9 @@ MStatus MMRendererMainOverride::setPanelNames(const MString &name) {
 }
 
 MStatus
-MMRendererMainOverride::setup(const MString &destination) {
+RenderOverride::setup(const MString &destination) {
     MStreamUtils::stdOutStream()
-        << "MMRendererMainOverride::setup: "
+        << "RenderOverride::setup: "
         << destination.asChar() << '\n';
     MStatus status = MS::kSuccess;
 
@@ -489,9 +489,9 @@ MMRendererMainOverride::setup(const MString &destination) {
 // End of frame cleanup. Clears out any data on operations which may
 // change from frame to frame (render target, output panel name etc).
 MStatus
-MMRendererMainOverride::cleanup() {
+RenderOverride::cleanup() {
     MStreamUtils::stdOutStream()
-        << "MMRendererMainOverride::cleanup: \n";
+        << "RenderOverride::cleanup: \n";
 
     // Reset the active view
     m_panel_name.clear();

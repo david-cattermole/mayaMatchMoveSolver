@@ -233,7 +233,7 @@ set(SOURCE_FILES
         src/renderer/HudRender.cpp
         src/renderer/PresentTarget.cpp
         src/renderer/SceneRender.cpp
-        src/renderer/MMRendererMainOverride.cpp
+        src/renderer/RenderOverride.cpp
         src/mayaUtils.h
         src/Camera.h
         src/Camera.cpp

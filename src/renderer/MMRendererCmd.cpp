@@ -26,7 +26,7 @@
 #include <maya/M3dView.h>
 
 #include "MMRendererCmd.h"
-#include "MMRendererMainOverride.h"
+#include "RenderOverride.h"
 
 namespace mmsolver {
 namespace renderer {
@@ -74,8 +74,8 @@ MStatus MMRendererCmd::doIt(const MArgList &args) {
         return status;
     }
 
-    MMRendererMainOverride *override_ptr =
-        (MMRendererMainOverride *) renderer->findRenderOverride(
+    RenderOverride *override_ptr =
+        (RenderOverride *) renderer->findRenderOverride(
             "mmRenderer");
     if (override_ptr == nullptr) {
         MGlobal::displayError("mmRenderer is not registered.");
@@ -90,7 +90,7 @@ MStatus MMRendererCmd::doIt(const MArgList &args) {
     // // Swirl
     // if (argData.isFlagSet(MM_RENDERER_SWIRL_FLAG)) {
     //     int index = override_ptr->mOperations.indexOf(
-    //             MMRendererMainOverride::kSwirlPassName);
+    //             RenderOverride::kSwirlPassName);
     //     if (isQuery) {
     //         MPxCommand::setResult(
     //                 override_ptr->mOperations[index]->enabled());
@@ -103,7 +103,7 @@ MStatus MMRendererCmd::doIt(const MArgList &args) {
     // // Fish-Eye
     // if (argData.isFlagSet(MM_RENDERER_FISH_EYE_FLAG)) {
     //     int index = override_ptr->mOperations.indexOf(
-    //             MMRendererMainOverride::kFishEyePassName);
+    //             RenderOverride::kFishEyePassName);
     //     if (isQuery)
     //         MPxCommand::setResult(
     //                 override_ptr->mOperations[index]->enabled());
@@ -116,7 +116,7 @@ MStatus MMRendererCmd::doIt(const MArgList &args) {
     // // Edge Detect.
     // if (argData.isFlagSet(MM_RENDERER_EDGE_DETECT_FLAG)) {
     //     int index = override_ptr->mOperations.indexOf(
-    //             MMRendererMainOverride::kEdgeDetectPassName);
+    //             RenderOverride::kEdgeDetectPassName);
     //     if (isQuery)
     //         MPxCommand::setResult(
     //                 override_ptr->mOperations[index]->enabled());

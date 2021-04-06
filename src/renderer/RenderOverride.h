@@ -33,7 +33,7 @@
 namespace mmsolver {
 namespace renderer {
 
-class MMRendererMainOverride : public MHWRender::MRenderOverride {
+class RenderOverride : public MHWRender::MRenderOverride {
 public:
     // Enumerations to identify an operation within
     // a list of operations.
@@ -93,9 +93,9 @@ public:
         kNumberOfOps
     };
 
-    MMRendererMainOverride(const MString &name);
+    RenderOverride(const MString &name);
 
-    ~MMRendererMainOverride() override;
+    ~RenderOverride() override;
 
     MHWRender::DrawAPI supportedDrawAPIs() const override;
 

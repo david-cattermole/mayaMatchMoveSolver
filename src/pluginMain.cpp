@@ -42,7 +42,7 @@
 #include <MMSolverAffectsCmd.h>
 
 // MM Renderer
-#include <renderer/MMRendererMainOverride.h>
+#include <renderer/RenderOverride.h>
 #include <renderer/MMRendererCmd.h>
 
 
@@ -185,8 +185,8 @@ MStatus initializePlugin(MObject obj) {
         shader_location += MString("/shader");
         shader_manager->addShaderPath(shader_location);
 
-        mmsolver::renderer::MMRendererMainOverride *ptr =
-            new mmsolver::renderer::MMRendererMainOverride("mmRenderer");
+        mmsolver::renderer::RenderOverride *ptr =
+            new mmsolver::renderer::RenderOverride("mmRenderer");
         renderer->registerOverride(ptr);
 
         REGISTER_COMMAND(plugin,

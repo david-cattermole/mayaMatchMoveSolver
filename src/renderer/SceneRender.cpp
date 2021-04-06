@@ -20,7 +20,7 @@
  */
 
 #include "constants.h"
-#include "MMRendererSceneRender.h"
+#include "SceneRender.h"
 
 #include <maya/MStreamUtils.h>
 #include <maya/MString.h>
@@ -39,7 +39,7 @@
 namespace mmsolver {
 namespace renderer {
 
-MMRendererSceneRender::MMRendererSceneRender(const MString &name)
+SceneRender::SceneRender(const MString &name)
         : MSceneRender(name),
           m_do_background(false),
           m_do_selectable(false),
@@ -59,7 +59,7 @@ MMRendererSceneRender::MMRendererSceneRender(const MString &name)
 
 }
 
-MMRendererSceneRender::~MMRendererSceneRender() {
+SceneRender::~SceneRender() {
     m_targets = nullptr;
 
     if (m_shader_override) {
@@ -77,7 +77,7 @@ MMRendererSceneRender::~MMRendererSceneRender() {
 }
 
 MHWRender::MRenderTarget *const *
-MMRendererSceneRender::targetOverrideList(unsigned int &listSize) {
+SceneRender::targetOverrideList(unsigned int &listSize) {
     if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];
@@ -87,22 +87,22 @@ MMRendererSceneRender::targetOverrideList(unsigned int &listSize) {
 }
 
 MHWRender::MSceneRender::MSceneFilterOption
-MMRendererSceneRender::renderFilterOverride() {
+SceneRender::renderFilterOverride() {
     return m_scene_filter;
 }
 
 MHWRender::MSceneRender::MDisplayMode
-MMRendererSceneRender::displayModeOverride() {
+SceneRender::displayModeOverride() {
     return m_display_mode_override;
 }
 
 MUint64
-MMRendererSceneRender::getObjectTypeExclusions() {
+SceneRender::getObjectTypeExclusions() {
     return m_exclude_types;
 }
 
 MHWRender::MClearOperation &
-MMRendererSceneRender::clearOperation() {
+SceneRender::clearOperation() {
     // Background color override. We get the current colors from the
     // renderer and use them.
     MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
@@ -122,7 +122,7 @@ MMRendererSceneRender::clearOperation() {
 }
 
 const MSelectionList *
-MMRendererSceneRender::objectSetOverride() {
+SceneRender::objectSetOverride() {
     // If m_do_selectable is false and m_do_background is false: do
     // not override.
     mSelectionList.clear();

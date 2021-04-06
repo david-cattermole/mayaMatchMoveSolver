@@ -232,7 +232,7 @@ set(SOURCE_FILES
         src/renderer/QuadRenderInvert.cpp
         src/renderer/HudRender.cpp
         src/renderer/PresentTarget.cpp
-        src/renderer/MMRendererSceneRender.cpp
+        src/renderer/SceneRender.cpp
         src/renderer/MMRendererMainOverride.cpp
         src/mayaUtils.h
         src/Camera.h

@@ -37,10 +37,10 @@
 namespace mmsolver {
 namespace renderer {
 
-class MMRendererSceneRender : public MHWRender::MSceneRender {
+class SceneRender : public MHWRender::MSceneRender {
 public:
-    MMRendererSceneRender(const MString &name);
-    ~MMRendererSceneRender() override;
+    SceneRender(const MString &name);
+    ~SceneRender() override;
 
     MHWRender::MRenderTarget *const *
     targetOverrideList(unsigned int &listSize) override;

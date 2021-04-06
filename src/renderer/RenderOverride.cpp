@@ -208,9 +208,9 @@ RenderOverride::updateRenderOperations() {
     m_op_names[kSceneBackgroundPass] = "mmRenderer_SceneRender_Background";
     m_op_names[kSceneSelectionPass] = "mmRenderer_SceneRender_Select";
     m_op_names[kSceneWireframePass] = "mmRenderer_SceneRender_Wireframe";
-    m_op_names[kPostOperation1] = "mmRenderer_PostOp1";
+    m_op_names[kEdgeDetectOp] = "mmRenderer_PostOp1";
     m_op_names[kBlendOp] = "mmRenderer_EdgeDetectBlend";
-    m_op_names[kPostOperation2] = "mmRenderer_PostOp2";
+    m_op_names[kInvertOp] = "mmRenderer_PostOp2";
     m_op_names[kPresentOp] = "mmRenderer_PresentTarget";
 
     SceneRender *sceneOp = nullptr;
@@ -259,10 +259,10 @@ RenderOverride::updateRenderOperations() {
     m_ops[kSceneWireframePass] = sceneOp;
 
     // Apply edge detect.
-    auto quadOp = new QuadRenderEdgeDetect(m_op_names[kPostOperation1]);
+    auto quadOp = new QuadRenderEdgeDetect(m_op_names[kEdgeDetectOp]);
     quadOp->setViewRectangle(rect);
     quadOp->setClearMask(clear_mask_none);
-    m_ops[kPostOperation1] = quadOp;
+    m_ops[kEdgeDetectOp] = quadOp;
 
     // Blend between 'edge detect' and 'non-edge detect'.
     auto blendOp = new QuadRenderBlend(m_op_names[kBlendOp]);
@@ -272,10 +272,10 @@ RenderOverride::updateRenderOperations() {
     m_ops[kBlendOp] = blendOp;
 
     // Apply invert.
-    auto invertOp = new QuadRenderInvert(m_op_names[kPostOperation2]);
+    auto invertOp = new QuadRenderInvert(m_op_names[kInvertOp]);
     invertOp->setViewRectangle(rect);
     invertOp->setClearMask(clear_mask_none);
-    m_ops[kPostOperation2] = invertOp;
+    m_ops[kInvertOp] = invertOp;
 
     // A preset 2D HUD render operation
     auto hudOp = new HudRender();
@@ -367,7 +367,7 @@ RenderOverride::updateRenderTargets() {
             wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto quadOp = (QuadRenderEdgeDetect *) m_ops[kPostOperation1];
+        auto quadOp = (QuadRenderEdgeDetect *) m_ops[kEdgeDetectOp];
         if (quadOp) {
             quadOp->setEnabled(true);
             quadOp->setInputTarget(kMyColorTarget);
@@ -383,7 +383,7 @@ RenderOverride::updateRenderTargets() {
             blendOp->setBlend(static_cast<float>(m_blend));
         }
 
-        auto invertOp = (QuadRenderInvert *) m_ops[kPostOperation2];
+        auto invertOp = (QuadRenderInvert *) m_ops[kInvertOp];
         if (invertOp) {
             invertOp->setEnabled(false);
             invertOp->setInputTarget(kMyColorTarget);

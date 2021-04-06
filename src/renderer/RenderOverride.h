@@ -70,7 +70,7 @@ public:
         kSceneWireframePass,
 
         // Post ops on target 1
-        kPostOperation1,
+        kEdgeDetectOp,
 
         // --------------------------------------------------------------------
         // Blend pass.
@@ -79,7 +79,7 @@ public:
         kBlendOp,
 
         // Post ops on target 1
-        kPostOperation2,
+        kInvertOp,
 
         // --------------------------------------------------------------------
         // HUD pass. Draw 2D heads-up-display elements.

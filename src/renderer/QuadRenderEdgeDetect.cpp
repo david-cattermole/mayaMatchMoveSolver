@@ -36,15 +36,15 @@ QuadRenderEdgeDetect::QuadRenderEdgeDetect(const MString &name)
 
 QuadRenderEdgeDetect::~QuadRenderEdgeDetect() {
     // Release all shaders.
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-    if (!renderer) {
-        return;
-    }
-    const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
-    if (!shaderMgr) {
-        return;
-    }
     if (m_shader_instance) {
+        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+        if (!renderer) {
+            return;
+        }
+        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        if (!shaderMgr) {
+            return;
+        }
         shaderMgr->releaseShader(m_shader_instance);
         m_shader_instance = nullptr;
     }
@@ -68,26 +68,24 @@ QuadRenderEdgeDetect::targetOverrideList(unsigned int &listSize) {
 // quad render operation.
 const MHWRender::MShaderInstance *
 QuadRenderEdgeDetect::shader() {
-    if (m_shader_instance) {
-        return m_shader_instance;
-    }
-
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-    if (!renderer) {
-        return nullptr;
-    }
-    const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
-    if (!shaderMgr) {
-        return nullptr;
-    }
-
     auto simple_shader = false;
     if (simple_shader) {
         // Compile shader
-        MStreamUtils::stdOutStream()
-            << "QuardRenderEdgeDetect: Compile shader...\n";
-        m_shader_instance = shaderMgr->getStockShader(
-            MHWRender::MShaderManager::k3dSolidShader);
+        if (!m_shader_instance) {
+            MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+            if (!renderer) {
+                return nullptr;
+            }
+            const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+            if (!shaderMgr) {
+                return nullptr;
+            }
+
+            MStreamUtils::stdOutStream()
+                << "QuardRenderEdgeDetect: Compile shader...\n";
+            m_shader_instance = shaderMgr->getStockShader(
+                MHWRender::MShaderManager::k3dSolidShader);
+        }
 
         // Set default parameters
         if (m_shader_instance) {
@@ -96,15 +94,27 @@ QuadRenderEdgeDetect::shader() {
             const float color[] = {0.0f, 0.0f, 1.0f, 1.0f};
             CHECK_MSTATUS(m_shader_instance->setParameter("solidColor", color));
         }
+
     } else {
         // Compile shader
-        MStreamUtils::stdOutStream()
-            << "QuardRenderEdgeDetect: Compile shader...\n";
-        MString file_name = "FilterEdgeDetect";
-        MString shader_technique = "";
-        m_shader_instance = shaderMgr->getEffectsFileShader(
-            file_name.asChar(),
-            shader_technique.asChar());
+        if (!m_shader_instance) {
+            MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+            if (!renderer) {
+                return nullptr;
+            }
+            const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+            if (!shaderMgr) {
+                return nullptr;
+            }
+
+            MStreamUtils::stdOutStream()
+                << "QuardRenderEdgeDetect: Compile shader...\n";
+            MString file_name = "FilterEdgeDetect";
+            MString shader_technique = "";
+            m_shader_instance = shaderMgr->getEffectsFileShader(
+                file_name.asChar(),
+                shader_technique.asChar());
+        }
 
         // Set default parameters
         if (m_shader_instance) {

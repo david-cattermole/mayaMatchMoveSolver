@@ -119,6 +119,16 @@ public:
         return m_panel_name;
     }
 
+    // The blend value between edge detect and non-edge detect.
+    double blend() const {
+        return m_blend;
+    }
+
+    // The blend value between edge detect and non-edge detect.
+    void setBlend(const double value) {
+        m_blend = value;
+    }
+
 protected:
     MStatus updateRenderOperations();
     MStatus updateRenderTargets();
@@ -143,6 +153,8 @@ protected:
 private:
     // Override is for this panel
     MString m_panel_name;
+
+    double m_blend;
 };
 
 } // namespace renderer

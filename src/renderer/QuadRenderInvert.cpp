@@ -72,27 +72,24 @@ QuadRenderInvert::targetOverrideList(unsigned int &listSize) {
 // quad render operation.
 const MHWRender::MShaderInstance *
 QuadRenderInvert::shader() {
-    if (m_shader_instance) {
-        return m_shader_instance;
-    }
-
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-    if (!renderer) {
-        return nullptr;
-    }
-    const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
-    if (!shaderMgr) {
-        return nullptr;
-    }
-
     // Compile shader
-    MStreamUtils::stdOutStream() << "QuadRenderInvert: Compile shader...\n";
+    if (!m_shader_instance) {
+        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+        if (!renderer) {
+            return nullptr;
+        }
+        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        if (!shaderMgr) {
+            return nullptr;
+        }
 
-    MString file_name = "Invert";
-    MString shader_technique = "";
-    m_shader_instance = shaderMgr->getEffectsFileShader(
-        file_name.asChar(),
-        shader_technique.asChar());
+        MStreamUtils::stdOutStream() << "QuadRenderInvert: Compile shader...\n";
+        MString file_name = "Invert";
+        MString shader_technique = "";
+        m_shader_instance = shaderMgr->getEffectsFileShader(
+            file_name.asChar(),
+            shader_technique.asChar());
+    }
 
     // Set default parameters
     if (m_shader_instance) {

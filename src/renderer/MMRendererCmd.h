@@ -46,6 +46,9 @@ namespace renderer {
 #define MM_RENDERER_EDGE_DETECT_FLAG        "-ed"
 #define MM_RENDERER_EDGE_DETECT_FLAG_LONG    "-edgeDetect"
 
+#define MM_RENDERER_BLEND_FLAG        "-bl"
+#define MM_RENDERER_BLEND_FLAG_LONG    "-blend"
+
 /*
  * MM Renderer command.
  */
@@ -67,6 +70,7 @@ private:
     bool m_fishEye;
     bool m_swirl;
     bool m_edgeDetect;
+    double m_blend;
 };
 
 } // namespace renderer

@@ -35,6 +35,7 @@
 #include "MMRendererHudRender.h"
 #include "MMRendererPresentTarget.h"
 
+#include <maya/MStreamUtils.h>
 #include <maya/MShaderManager.h>
 
 namespace mmsolver {
@@ -42,7 +43,9 @@ namespace renderer {
 
 // Set up operations
 MMRendererMainOverride::MMRendererMainOverride(const MString &name)
-        : MRenderOverride(name), m_ui_name("mmSolver Renderer") {
+        : MRenderOverride(name)
+        , m_ui_name("mmSolver Renderer")
+        , m_blend(0.5f) {
     // Remove any operations that already exist from Maya.
     mOperations.clear();
 
@@ -92,6 +95,7 @@ MMRendererMainOverride::MMRendererMainOverride(const MString &name)
             256, 256, sampleCount, colorFormat,
             /*arraySliceCount=*/ 0,
             /*isCubeMap=*/ false);
+
 }
 
 MMRendererMainOverride::~MMRendererMainOverride() {
@@ -168,6 +172,9 @@ MMRendererMainOverride::nextRenderOperation() {
 
 MStatus
 MMRendererMainOverride::updateRenderOperations() {
+    MStreamUtils::stdOutStream()
+        << "MMRendererMainOverride::updateRenderOperations: \n";
+
     if (m_ops[kPresentOp] != nullptr) {
         // render opations are already up-to-date.
         return MS::kSuccess;
@@ -192,10 +199,9 @@ MMRendererMainOverride::updateRenderOperations() {
     auto display_mode_shaded =
         static_cast<MHWRender::MSceneRender::MDisplayMode>(
             MHWRender::MSceneRender::kShaded);
-    auto display_mode_wireframe_on_shaded =
+    auto display_mode_wireframe =
         static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kShaded
-            | MHWRender::MSceneRender::kWireFrame);
+            MHWRender::MSceneRender::kWireFrame);
 
     // Operatation names
     m_op_names[kSceneDepthPass] = "mmRenderer_SceneRender_Standard";
@@ -245,7 +251,7 @@ MMRendererMainOverride::updateRenderOperations() {
     sceneOp = new MMRendererSceneRender(m_op_names[kSceneWireframePass]);
     sceneOp->setViewRectangle(rect);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
-    sceneOp->setDisplayModeOverride(display_mode_wireframe_on_shaded);
+    sceneOp->setDisplayModeOverride(display_mode_wireframe);
     // do not override objects to be drawn.
     sceneOp->setDoSelectable(false);
     sceneOp->setDoBackground(false);
@@ -262,6 +268,7 @@ MMRendererMainOverride::updateRenderOperations() {
     auto blendOp = new QuadRenderBlend(m_op_names[kBlendOp]);
     blendOp->setViewRectangle(rect);
     blendOp->setClearMask(clear_mask_none);
+    blendOp->setBlend(static_cast<float>(m_blend));
     m_ops[kBlendOp] = blendOp;
 
     // Apply invert.
@@ -271,13 +278,15 @@ MMRendererMainOverride::updateRenderOperations() {
     m_ops[kPostOperation2] = invertOp;
 
     // A preset 2D HUD render operation
-    m_ops[kHudPass] = new MMRendererHudRender();
-    m_op_names[kHudPass] = (m_ops[kHudPass])->name();
+    auto hudOp = new MMRendererHudRender();
+    m_ops[kHudPass] = hudOp;
+    m_op_names[kHudPass] = hudOp->name();
 
     // "Present" operation which will display the target for
     // viewports.  Operation is a no-op for batch rendering as
     // there is no on-screen buffer to send the result to.
-    m_ops[kPresentOp] = new MMRendererPresentTarget(m_op_names[kPresentOp]);
+    auto presentOp = new MMRendererPresentTarget(m_op_names[kPresentOp]);
+    m_ops[kPresentOp] = presentOp;
     return MS::kSuccess;
 }
 
@@ -287,8 +296,8 @@ MMRendererMainOverride::updateRenderOperations() {
 // appropriate location.
 MStatus
 MMRendererMainOverride::updateRenderTargets() {
-    // MStreamUtils::stdOutStream()
-    //     << "MMRendererMainOverride::updateRenderTargets\n";
+    MStreamUtils::stdOutStream()
+        << "MMRendererMainOverride::updateRenderTargets\n";
     MHWRender::MRenderer *theRenderer = MHWRender::MRenderer::theRenderer();
     if (!theRenderer) {
         return MS::kFailure;
@@ -335,7 +344,7 @@ MMRendererMainOverride::updateRenderTargets() {
     // FIXME: If 'use_blend' is true the render targets only update
     // once and then fail. With 'use_blend' is false, the render
     // targets update as expected.
-    auto use_blend = false;
+    auto use_blend = true;
     if (use_blend) {
         auto depthPassOp = (MMRendererSceneRender *) m_ops[kSceneDepthPass];
         if (depthPassOp) {
@@ -371,6 +380,7 @@ MMRendererMainOverride::updateRenderTargets() {
             blendOp->setInputTarget1(kMyColorTarget);
             blendOp->setInputTarget2(kMyAuxColorTarget);
             blendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
+            blendOp->setBlend(static_cast<float>(m_blend));
         }
 
         auto invertOp = (QuadRenderInvert *) m_ops[kPostOperation2];
@@ -412,49 +422,22 @@ MMRendererMainOverride::updateRenderTargets() {
             wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto quadOp = (QuadRenderEdgeDetect *) m_ops[kPostOperation1];
-        if (quadOp) {
-            quadOp->setEnabled(false);
-            quadOp->setInputTarget(0);
-            quadOp->setRenderTargets(nullptr, 0, 0);
-        }
-
-        auto blendOp = (QuadRenderBlend *) m_ops[kBlendOp];
-        if (blendOp) {
-            blendOp->setEnabled(false);
-            blendOp->setInputTarget1(0);
-            blendOp->setInputTarget2(0);
-            blendOp->setRenderTargets(nullptr, 0, 0);
-        }
-
-        auto invertOp = (QuadRenderInvert *) m_ops[kPostOperation2];
-        if (invertOp) {
-            invertOp->setEnabled(false);
-            invertOp->setInputTarget(kMyColorTarget);
-            invertOp->setRenderTargets(m_targets, kMyColorTarget, 1);
-        }
-
-        auto hudOp = (MMRendererHudRender *) m_ops[kHudPass];
-        if (hudOp) {
-            hudOp->setRenderTargets(m_targets, kMyColorTarget, 2);
-        }
-
-        auto presentOp = (MMRendererPresentTarget *) m_ops[kPresentOp];
-        if (presentOp) {
-            presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
-        }
     }
 
     MStatus status = MS::kFailure;
     if (m_targets[kMyColorTarget]
         && m_targets[kMyDepthTarget]
-        && m_targets[kMyAuxColorTarget]) {
+        && m_targets[kMyAuxColorTarget]
+       ) {
         status = MS::kSuccess;
     }
     return status;
 }
 
 MStatus MMRendererMainOverride::setPanelNames(const MString &name) {
+    MStreamUtils::stdOutStream()
+        << "MMRendererMainOverride::setPanelNames: "
+        << name.asChar() << '\n';
     // Set the name of the panel on operations which may use the panel
     // name to find out the associated M3dView.
     if (m_ops[kSceneDepthPass]) {
@@ -481,6 +464,9 @@ MStatus MMRendererMainOverride::setPanelNames(const MString &name) {
 
 MStatus
 MMRendererMainOverride::setup(const MString &destination) {
+    MStreamUtils::stdOutStream()
+        << "MMRendererMainOverride::setup: "
+        << destination.asChar() << '\n';
     MStatus status = MS::kSuccess;
 
     // Construct the render operations.
@@ -504,10 +490,8 @@ MMRendererMainOverride::setup(const MString &destination) {
 // change from frame to frame (render target, output panel name etc).
 MStatus
 MMRendererMainOverride::cleanup() {
-    if (m_ops[kPostOperation2]) {
-        auto op = (QuadRenderInvert *) m_ops[kPostOperation2];
-        op->setRenderTargets(nullptr, 0, 0);
-    }
+    MStreamUtils::stdOutStream()
+        << "MMRendererMainOverride::cleanup: \n";
 
     // Reset the active view
     m_panel_name.clear();

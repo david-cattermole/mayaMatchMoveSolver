@@ -41,9 +41,9 @@ enum TargetId
     kTargetCount
 };
 
-#define kMyColorTargetName  "__mmRenderer_MyColorTarget__"
-#define kMyDepthTargetName  "__mmRenderer_MyDepthTarget__"
-#define kMyAuxColorTargetName  "__mmRenderer_MyAuxColorTarget__"
+#define kMyColorTargetName  "__mmRenderer_ColorTarget1__"
+#define kMyDepthTargetName  "__mmRenderer_DepthTarget1__"
+#define kMyAuxColorTargetName  "__mmRenderer_ColorTarget2__"
 
 } // namespace renderer
 } // namespace mmsolver

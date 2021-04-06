@@ -36,20 +36,22 @@ QuadRenderBlend::QuadRenderBlend(const MString &name)
         : QuadRenderBase(name)
         , m_shader_instance(nullptr)
         , m_target_index_input1(0)
-        , m_target_index_input2(0) {
+        , m_target_index_input2(0)
+        , m_blend(0.0f) {
 }
 
 QuadRenderBlend::~QuadRenderBlend() {
     // Release all shaders.
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-    if (!renderer) {
-        return;
-    }
-    const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
-    if (!shaderMgr) {
-        return;
-    }
     if (m_shader_instance) {
+        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+        if (!renderer) {
+            return;
+        }
+        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        if (!shaderMgr) {
+            return;
+        }
+
         shaderMgr->releaseShader(m_shader_instance);
         m_shader_instance = nullptr;
     }
@@ -73,28 +75,25 @@ QuadRenderBlend::targetOverrideList(unsigned int &listSize) {
 // quad render operation.
 const MHWRender::MShaderInstance *
 QuadRenderBlend::shader() {
-    if (m_shader_instance) {
-        return m_shader_instance;
-    }
-
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-    if (!renderer) {
-        return nullptr;
-    }
-    const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
-    if (!shaderMgr) {
-        return nullptr;
-    }
-
     // Compile shader
-    MStreamUtils::stdOutStream() << "QuadRenderBlend: Compile shader...\n";
+    if (!m_shader_instance) {
+        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+        if (!renderer) {
+            return nullptr;
+        }
+        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        if (!shaderMgr) {
+            return nullptr;
+        }
 
-    MString file_name = "Blend";
-    // MString shader_technique = "Add";
-    MString shader_technique = "Main";
-    m_shader_instance = shaderMgr->getEffectsFileShader(
-        file_name.asChar(),
-        shader_technique.asChar());
+        MStreamUtils::stdOutStream()
+            << "QuadRenderBlend: Compile shader...\n";
+        MString file_name = "Blend";
+        MString shader_technique = "Main";
+        m_shader_instance = shaderMgr->getEffectsFileShader(
+            file_name.asChar(),
+            shader_technique.asChar());
+    }
 
     // Set default parameters
     if (m_shader_instance) {
@@ -124,7 +123,7 @@ QuadRenderBlend::shader() {
         }
 
         // TODO: Allow user to change value.
-        CHECK_MSTATUS(m_shader_instance->setParameter("gBlendSrc", 0.5f));
+        CHECK_MSTATUS(m_shader_instance->setParameter("gBlendSrc", m_blend));
     }
     return m_shader_instance;
 }

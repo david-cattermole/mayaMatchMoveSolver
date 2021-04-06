@@ -52,6 +52,11 @@ public:
         m_target_index_input2 = index;
     }
 
+    void
+    setBlend(const float value) {
+        m_blend = value;
+    }
+
 protected:
     // Shader to use for the quad render
     MHWRender::MShaderInstance *m_shader_instance;
@@ -59,6 +64,8 @@ protected:
     // The target indexes for render targets used to blend between.
     uint32_t m_target_index_input1;
     uint32_t m_target_index_input2;
+
+    float m_blend;
 };
 
 } // namespace renderer

@@ -57,32 +57,35 @@ MSyntax MMRendererCmd::newSyntax() {
     syntax.addFlag(
         MM_RENDERER_EDGE_DETECT_FLAG,
         MM_RENDERER_EDGE_DETECT_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(
+        MM_RENDERER_BLEND_FLAG,
+        MM_RENDERER_BLEND_FLAG_LONG, MSyntax::kDouble);
     syntax.enableQuery(true);
     return syntax;
 }
 
 
-MStatus MMRendererCmd::doIt(const MArgList &/*args*/) {
+MStatus MMRendererCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kFailure;
 
-    // MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-    // if (!renderer) {
-    //     MGlobal::displayError("VP2 renderer not initialized.");
-    //     return status;
-    // }
+    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+    if (!renderer) {
+        MGlobal::displayError("VP2 renderer not initialized.");
+        return status;
+    }
 
-    // MMRendererMainOverride *override_ptr =
-    //     (MMRendererMainOverride *) renderer->findRenderOverride(
-    //         "MMRendererMainOverride");
-    // if (override_ptr == nullptr) {
-    //     MGlobal::displayError("MMRendererMainOverride is not registered.");
-    //     return status;
-    // }
+    MMRendererMainOverride *override_ptr =
+        (MMRendererMainOverride *) renderer->findRenderOverride(
+            "mmRenderer");
+    if (override_ptr == nullptr) {
+        MGlobal::displayError("mmRenderer is not registered.");
+        return status;
+    }
 
-    // MArgDatabase argData(syntax(), args, &status);
-    // CHECK_MSTATUS_AND_RETURN_IT(status);
+    MArgDatabase argData(syntax(), args, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // bool isQuery = argData.isQuery();
+    bool isQuery = argData.isQuery();
 
     // // Swirl
     // if (argData.isFlagSet(MM_RENDERER_SWIRL_FLAG)) {
@@ -123,6 +126,17 @@ MStatus MMRendererCmd::doIt(const MArgList &/*args*/) {
     //         override_ptr->mOperations[index]->setEnabled(m_edgeDetect);
     //     }
     // }
+
+    // Blend
+    if (argData.isFlagSet(MM_RENDERER_BLEND_FLAG)) {
+        if (isQuery) {
+            m_blend = override_ptr->blend();
+            MPxCommand::setResult(m_blend);
+        } else {
+            argData.getFlagArgument(MM_RENDERER_BLEND_FLAG, 0, m_blend);
+            override_ptr->setBlend(m_blend);
+        }
+    }
 
     M3dView view = M3dView::active3dView(&status);
     if (!status) {

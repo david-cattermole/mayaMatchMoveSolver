@@ -40,10 +40,10 @@ namespace renderer {
 class MMRendererSceneRender : public MHWRender::MSceneRender {
 public:
     MMRendererSceneRender(const MString &name);
-
     ~MMRendererSceneRender() override;
 
-    MHWRender::MRenderTarget *const * targetOverrideList(uint32_t &listSize) override;
+    MHWRender::MRenderTarget *const *
+    targetOverrideList(unsigned int &listSize) override;
 
     MHWRender::MSceneRender::MSceneFilterOption renderFilterOverride() override;
     MHWRender::MSceneRender::MDisplayMode displayModeOverride() override;

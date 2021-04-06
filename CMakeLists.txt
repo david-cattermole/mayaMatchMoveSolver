@@ -231,7 +231,7 @@ set(SOURCE_FILES
         src/renderer/QuadRenderBlend.cpp
         src/renderer/QuadRenderInvert.cpp
         src/renderer/HudRender.cpp
-        src/renderer/MMRendererPresentTarget.cpp
+        src/renderer/PresentTarget.cpp
         src/renderer/MMRendererSceneRender.cpp
         src/renderer/MMRendererMainOverride.cpp
         src/mayaUtils.h

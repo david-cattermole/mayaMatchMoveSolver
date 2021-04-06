@@ -33,7 +33,7 @@
 #include "QuadRenderInvert.h"
 #include "MMRendererSceneRender.h"
 #include "HudRender.h"
-#include "MMRendererPresentTarget.h"
+#include "PresentTarget.h"
 
 #include <maya/MStreamUtils.h>
 #include <maya/MShaderManager.h>
@@ -285,7 +285,7 @@ MMRendererMainOverride::updateRenderOperations() {
     // "Present" operation which will display the target for
     // viewports.  Operation is a no-op for batch rendering as
     // there is no on-screen buffer to send the result to.
-    auto presentOp = new MMRendererPresentTarget(m_op_names[kPresentOp]);
+    auto presentOp = new PresentTarget(m_op_names[kPresentOp]);
     m_ops[kPresentOp] = presentOp;
     return MS::kSuccess;
 }
@@ -395,7 +395,7 @@ MMRendererMainOverride::updateRenderTargets() {
             hudOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto presentOp = (MMRendererPresentTarget *) m_ops[kPresentOp];
+        auto presentOp = (PresentTarget *) m_ops[kPresentOp];
         if (presentOp) {
             presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }

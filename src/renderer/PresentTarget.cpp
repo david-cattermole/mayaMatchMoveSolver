@@ -20,7 +20,7 @@
  */
 
 #include "constants.h"
-#include "MMRendererPresentTarget.h"
+#include "PresentTarget.h"
 
 #include <maya/MStreamUtils.h>
 #include <maya/MShaderManager.h>
@@ -36,20 +36,20 @@ namespace renderer {
 // This differs from scene and quad operations which generally use
 // targets as the place to render into.
 //
-MMRendererPresentTarget::MMRendererPresentTarget(const MString &name)
+PresentTarget::PresentTarget(const MString &name)
         : MPresentTarget(name),
           m_targets(nullptr),
           m_target_index(0),
           m_target_count(0) {
 }
 
-MMRendererPresentTarget::~MMRendererPresentTarget() {
+PresentTarget::~PresentTarget() {
     m_targets = nullptr;
 }
 
 // Called by Maya.
 MHWRender::MRenderTarget *const *
-MMRendererPresentTarget::targetOverrideList(unsigned int &listSize) {
+PresentTarget::targetOverrideList(unsigned int &listSize) {
     if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];

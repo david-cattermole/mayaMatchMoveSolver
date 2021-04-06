@@ -29,11 +29,11 @@
 namespace mmsolver {
 namespace renderer {
 
-class MMRendererPresentTarget : public MHWRender::MPresentTarget {
+class PresentTarget : public MHWRender::MPresentTarget {
 public:
-    MMRendererPresentTarget(const MString &name);
+    PresentTarget(const MString &name);
 
-    ~MMRendererPresentTarget() override;
+    ~PresentTarget() override;
 
     MHWRender::MRenderTarget *const *
     targetOverrideList(unsigned int &listSize) override;

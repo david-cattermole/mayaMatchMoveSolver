@@ -26,6 +26,9 @@
 
 #include "constants.h"
 
+#include <maya/MObjectHandle.h>
+#include <maya/MUiMessage.h>
+#include <maya/MDagMessage.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 #include <maya/MRenderTargetManager.h>
@@ -123,13 +126,13 @@ public:
     }
 
     // The blend value between edge detect and non-edge detect.
-    double blend() const {
-        return m_blend;
+    double wireframeAlpha() const {
+        return m_wireframe_alpha;
     }
 
     // The blend value between edge detect and non-edge detect.
-    void setBlend(const double value) {
-        m_blend = value;
+    void setWireframeAlpha(const double value) {
+        m_wireframe_alpha = value;
     }
 
 protected:
@@ -151,13 +154,31 @@ protected:
     // UI name
     MString m_ui_name;
 
+    // Callback IDs for tracking viewport changes
+    MCallbackId m_renderer_change_callback;
+    MCallbackId m_render_override_change_callback;
+    static void renderer_change_func(
+            const MString& panel_name,
+            const MString& old_renderer,
+            const MString& new_renderer,
+            void* client_data);
+    static void render_override_change_func(
+            const MString& panel_name,
+            const MString& old_renderer,
+            const MString& new_renderer,
+            void* client_data);
+
+    // Allow the command to access this class.
     friend class MMRendererCmd;
 
 private:
     // Override is for this panel
     MString m_panel_name;
 
-    double m_blend;
+    // A handle to the 'mmRenderGlobals' node.
+    MObjectHandle m_globals_node;
+
+    double m_wireframe_alpha;
 };
 
 } // namespace renderer

@@ -226,6 +226,7 @@ set(SOURCE_FILES
         src/core/bundleAdjust_cminpack_lmder.h
         src/core/bundleAdjust_cminpack_lmder.cpp
         src/renderer/MMRendererCmd.cpp
+        src/renderer/RenderGlobalsNode.cpp
         src/renderer/QuadRenderBase.cpp
         src/renderer/QuadRenderEdgeDetect.cpp
         src/renderer/QuadRenderCopy.cpp

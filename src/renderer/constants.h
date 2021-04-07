@@ -36,6 +36,7 @@ enum TargetId
     kMyColorTarget = 0,
     kMyDepthTarget,
     kMyAuxColorTarget,
+
     // Always last field, used as 'number of items'.
     kTargetCount
 };

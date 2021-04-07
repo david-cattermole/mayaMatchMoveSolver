@@ -31,6 +31,9 @@
 // Build-Time constant values.
 #include <buildConstant.h>
 
+// Constant values.
+#include <nodeTypeIds.h>
+
 // Solver and nodes
 #include <MMSolverCmd.h>
 #include <MMSolverTypeCmd.h>
@@ -44,6 +47,7 @@
 // MM Renderer
 #include <renderer/RenderOverride.h>
 #include <renderer/MMRendererCmd.h>
+#include <renderer/RenderGlobalsNode.h>
 
 
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
@@ -146,6 +150,13 @@ MStatus initializePlugin(MObject obj) {
                   MMReprojectionNode::initialize,
                   status);
 
+    REGISTER_NODE(plugin,
+                  mmsolver::renderer::RenderGlobalsNode::nodeName(),
+                  mmsolver::renderer::RenderGlobalsNode::m_id,
+                  mmsolver::renderer::RenderGlobalsNode::creator,
+                  mmsolver::renderer::RenderGlobalsNode::initialize,
+                  status);
+
     // MM Marker Group transform
     const MString markerGroupClassification = "drawdb/geometry/transform";
     REGISTER_TRANSFORM(plugin,
@@ -186,7 +197,7 @@ MStatus initializePlugin(MObject obj) {
         shader_manager->addShaderPath(shader_location);
 
         mmsolver::renderer::RenderOverride *ptr =
-            new mmsolver::renderer::RenderOverride("mmRenderer");
+            new mmsolver::renderer::RenderOverride(MM_RENDERER_NAME);
         renderer->registerOverride(ptr);
 
         REGISTER_COMMAND(plugin,
@@ -224,7 +235,7 @@ MStatus uninitializePlugin(MObject obj) {
     {
         // Find override with the given name and deregister
         const MHWRender::MRenderOverride* ptr =
-            renderer->findRenderOverride("mmRenderer");
+            renderer->findRenderOverride(MM_RENDERER_NAME);
         if (ptr) {
             renderer->deregisterOverride(ptr);
             delete ptr;
@@ -240,13 +251,20 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMSolverAffectsCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
 
-    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(),
+    DEREGISTER_NODE(plugin,
+                    mmsolver::renderer::RenderGlobalsNode::nodeName(),
+                    mmsolver::renderer::RenderGlobalsNode::m_id, status);
+
+    DEREGISTER_NODE(plugin,
+                    MMMarkerScaleNode::nodeName(),
                     MMMarkerScaleNode::m_id, status);
 
-    DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(),
+    DEREGISTER_NODE(plugin,
+                    MMReprojectionNode::nodeName(),
                     MMReprojectionNode::m_id, status);
 
-    DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(),
+    DEREGISTER_NODE(plugin,
+                    MMMarkerGroupTransformNode::nodeName(),
                     MMMarkerGroupTransformNode::m_id, status);
     return status;
 }

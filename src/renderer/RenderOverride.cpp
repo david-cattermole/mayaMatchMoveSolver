@@ -36,8 +36,13 @@
 #include "HudRender.h"
 #include "PresentTarget.h"
 
+#include "../mayaUtils.h"
+
+#include <maya/MUiMessage.h>
 #include <maya/MStreamUtils.h>
 #include <maya/MShaderManager.h>
+#include <maya/MString.h>
+#include <maya/MPlug.h>
 
 namespace mmsolver {
 namespace renderer {
@@ -46,9 +51,15 @@ namespace renderer {
 RenderOverride::RenderOverride(const MString &name)
         : MRenderOverride(name)
         , m_ui_name("mmSolver Renderer")
-        , m_blend(0.5f) {
+        , m_renderer_change_callback(0)
+        , m_render_override_change_callback(0)
+        , m_globals_node()
+        , m_wireframe_alpha(1.0f){
     // Remove any operations that already exist from Maya.
     mOperations.clear();
+
+    // // TODO: Ensure a node named 'mmRenderGlobals' exists in the scene.
+    // nodeExistsAndIsType(MString nodeName, MFn::Type nodeType);
 
     // Initalise the operations for this override.
     for (auto i = 0; i < kNumberOfOps; ++i) {
@@ -62,6 +73,7 @@ RenderOverride::RenderOverride(const MString &name)
     // TODO: control the MSAA sample count (to allow users to change
     // quality)
     unsigned int sampleCount = 1; // 1 == no multi-sampling
+    // TODO: Allow user to control the raster format from a list of choices.
     MHWRender::MRasterFormat colorFormat = MHWRender::kR8G8B8A8_UNORM;;
     MHWRender::MRasterFormat depthFormat = MHWRender::kD24S8;
 
@@ -130,6 +142,14 @@ RenderOverride::~RenderOverride() {
         delete m_ops[i];
         m_ops[i] = nullptr;
     }
+
+    // Clean up callbacks
+    if (m_renderer_change_callback) {
+        MMessage::removeCallback(m_renderer_change_callback);
+    }
+    if (m_render_override_change_callback) {
+        MMessage::removeCallback(m_render_override_change_callback);
+    }
 }
 
 // What type of Draw APIs are supported?
@@ -170,6 +190,7 @@ RenderOverride::nextRenderOperation() {
     }
     return false;
 }
+
 
 MStatus
 RenderOverride::updateRenderOperations() {
@@ -276,7 +297,7 @@ RenderOverride::updateRenderOperations() {
     auto blendOp = new QuadRenderBlend(m_op_names[kBlendOp]);
     blendOp->setViewRectangle(rect);
     blendOp->setClearMask(clear_mask_none);
-    blendOp->setBlend(static_cast<float>(m_blend));
+    blendOp->setBlend(static_cast<float>(m_wireframe_alpha));
     m_ops[kBlendOp] = blendOp;
 
     // Apply invert.
@@ -397,7 +418,7 @@ RenderOverride::updateRenderTargets() {
             blendOp->setInputTarget1(kMyColorTarget);
             blendOp->setInputTarget2(kMyAuxColorTarget);
             blendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
-            blendOp->setBlend(static_cast<float>(m_blend));
+            blendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
 
         auto invertOp = (QuadRenderInvert *) m_ops[kInvertOp];
@@ -464,7 +485,7 @@ RenderOverride::updateRenderTargets() {
             blendOp->setInputTarget1(kMyColorTarget);
             blendOp->setInputTarget2(kMyAuxColorTarget);
             blendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
-            blendOp->setBlend(static_cast<float>(m_blend));
+            blendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
 
         auto invertOp = (QuadRenderInvert *) m_ops[kInvertOp];
@@ -532,7 +553,7 @@ RenderOverride::updateRenderTargets() {
             blendOp->setInputTarget1(0);
             blendOp->setInputTarget2(0);
             blendOp->setRenderTargets(nullptr, 0, 0);
-            blendOp->setBlend(static_cast<float>(m_blend));
+            blendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
 
         auto invertOp = (QuadRenderInvert *) m_ops[kInvertOp];
@@ -600,6 +621,23 @@ RenderOverride::setup(const MString &destination) {
         << destination.asChar() << '\n';
     MStatus status = MS::kSuccess;
 
+    // Track changes to the renderer and override for this viewport (nothing
+    // will be printed unless mDebugOverride is true)
+    if (!m_renderer_change_callback) {
+        void *client_data = nullptr;
+        m_renderer_change_callback = MUiMessage::add3dViewRendererChangedCallback(
+                destination,
+                renderer_change_func,
+                client_data);
+    }
+    if (!m_render_override_change_callback) {
+        void *client_data = nullptr;
+        m_render_override_change_callback = MUiMessage::add3dViewRenderOverrideChangedCallback(
+                destination,
+                render_override_change_func,
+                client_data);
+    }
+
     // Construct the render operations.
     status = updateRenderOperations();
     CHECK_MSTATUS(status);
@@ -632,6 +670,31 @@ RenderOverride::cleanup() {
 
     return MStatus::kSuccess;
 }
+
+// Callback for tracking renderer changes
+void RenderOverride::renderer_change_func(const MString& panel_name,
+                                          const MString& old_renderer,
+                                          const MString& new_renderer,
+                                          void* /*client_data*/) {
+    MStreamUtils::stdOutStream()
+            << "Renderer changed for panel '" << panel_name.asChar() << "'. "
+            << "New renderer is '" << new_renderer.asChar() << "', "
+            << "old was '" << old_renderer.asChar() << "'.\n";
+}
+
+// Callback for tracking render override changes
+void RenderOverride::render_override_change_func(const MString& panel_name,
+                                                 const MString& old_renderer,
+                                                 const MString& new_renderer,
+                                                 void* /*client_data*/) {
+    // TODO: When the 'new_renderer' is MM_RENDERER_NAME, we must forcably
+    //  create a new 'mmRenderGlobals' node.
+    MStreamUtils::stdOutStream()
+            << "Render override changed for panel '" << panel_name.asChar() << "'. "
+            << "New override is '" << new_renderer.asChar() << "', "
+            << "old was '" << old_renderer.asChar() << "'.\n";
+}
+
 
 } // namespace renderer
 } // namespace mmsolver

@@ -58,8 +58,8 @@ MSyntax MMRendererCmd::newSyntax() {
         MM_RENDERER_EDGE_DETECT_FLAG,
         MM_RENDERER_EDGE_DETECT_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(
-        MM_RENDERER_BLEND_FLAG,
-        MM_RENDERER_BLEND_FLAG_LONG, MSyntax::kDouble);
+        MM_RENDERER_WIREFRAME_ALPHA_FLAG,
+        MM_RENDERER_WIREFRAME_ALPHA_FLAG_LONG, MSyntax::kDouble);
     syntax.enableQuery(true);
     return syntax;
 }
@@ -128,13 +128,13 @@ MStatus MMRendererCmd::doIt(const MArgList &args) {
     // }
 
     // Blend
-    if (argData.isFlagSet(MM_RENDERER_BLEND_FLAG)) {
+    if (argData.isFlagSet(MM_RENDERER_WIREFRAME_ALPHA_FLAG)) {
         if (isQuery) {
-            m_blend = override_ptr->blend();
-            MPxCommand::setResult(m_blend);
+            m_wireframe_alpha = override_ptr->wireframeAlpha();
+            MPxCommand::setResult(m_wireframe_alpha);
         } else {
-            argData.getFlagArgument(MM_RENDERER_BLEND_FLAG, 0, m_blend);
-            override_ptr->setBlend(m_blend);
+            argData.getFlagArgument(MM_RENDERER_WIREFRAME_ALPHA_FLAG, 0, m_wireframe_alpha);
+            override_ptr->setWireframeAlpha(m_wireframe_alpha);
         }
     }
 

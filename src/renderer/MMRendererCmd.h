@@ -46,8 +46,8 @@ namespace renderer {
 #define MM_RENDERER_EDGE_DETECT_FLAG        "-ed"
 #define MM_RENDERER_EDGE_DETECT_FLAG_LONG    "-edgeDetect"
 
-#define MM_RENDERER_BLEND_FLAG        "-bl"
-#define MM_RENDERER_BLEND_FLAG_LONG    "-blend"
+#define MM_RENDERER_WIREFRAME_ALPHA_FLAG        "-wa"
+#define MM_RENDERER_WIREFRAME_ALPHA_FLAG_LONG    "-wireframeAlpha"
 
 /*
  * MM Renderer command.
@@ -70,7 +70,7 @@ private:
     bool m_fishEye;
     bool m_swirl;
     bool m_edgeDetect;
-    double m_blend;
+    double m_wireframe_alpha;
 };
 
 } // namespace renderer

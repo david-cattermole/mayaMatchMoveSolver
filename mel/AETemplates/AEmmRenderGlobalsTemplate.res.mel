@@ -1,0 +1,2 @@
+displayString -replace -value "Wireframe Alpha" m_AEmmRenderGlobalsTemplate.kWireframeAlpha;
+displayString -replace -value "Display" m_AEmmRenderGlobalsTemplate.kDisplayOptions;

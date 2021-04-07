@@ -1,0 +1,26 @@
+global proc AEmmRenderGlobalsTemplate(string $name) {
+    string $parent = `setParent -q`;
+
+    editorTemplate -beginScrollLayout;
+
+        editorTemplate -beginNoOptimize;
+
+            editorTemplate
+                -beginLayout (uiRes("m_AEmmRenderGlobalsTemplate.kDisplayOptions"))
+                -collapse false;
+
+                editorTemplate
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kWireframeAlpha"))
+                    -addControl "wireframeAlpha";
+
+            editorTemplate -endLayout;
+
+        editorTemplate -endNoOptimize;
+
+    editorTemplate -addExtraControls;
+
+    // include/call base class/node attributes
+    AEabstractBaseCreateTemplate $name;
+
+    editorTemplate -endScrollLayout;
+}

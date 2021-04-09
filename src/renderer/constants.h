@@ -41,11 +41,13 @@ enum TargetId
     kTargetCount
 };
 
+// Renderer Target names.
 #define kMyColorTargetName  "__mmRenderer_ColorTarget1__"
 #define kMyDepthTargetName  "__mmRenderer_DepthTarget1__"
 #define kMyAuxColorTargetName  "__mmRenderer_ColorTarget2__"
 
 // Constant values
+const char kRendererUiName[] = "mmRenderer (beta)";
 const float kTransparentBlackColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
 
 // Default parameters

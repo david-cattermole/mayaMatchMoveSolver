@@ -45,7 +45,7 @@ namespace renderer {
 // Set up operations
 RenderOverride::RenderOverride(const MString &name)
         : MRenderOverride(name)
-        , m_ui_name("mmSolver Renderer")
+        , m_ui_name(kRendererUiName)
         , m_renderer_change_callback(0)
         , m_render_override_change_callback(0)
         , m_globals_node()

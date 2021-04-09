@@ -424,7 +424,7 @@ RenderOverride::updateRenderTargets() {
     // color and depth targets, but shaders may interally reference
     // specific render targets.
 
-    auto mode = 0;
+    auto mode = 1;
     if (mode == 0) {
         // Blend edge detect on/off.
         auto depthPassOp = (SceneRender *) m_ops[kSceneDepthPass];

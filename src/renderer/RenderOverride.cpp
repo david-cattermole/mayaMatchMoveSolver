@@ -647,8 +647,7 @@ RenderOverride::updateRenderTargets() {
     MStatus status = MS::kFailure;
     if (m_targets[kMyColorTarget]
         && m_targets[kMyDepthTarget]
-        && m_targets[kMyAuxColorTarget]
-       ) {
+        && m_targets[kMyAuxColorTarget]) {
         status = MS::kSuccess;
     }
     return status;

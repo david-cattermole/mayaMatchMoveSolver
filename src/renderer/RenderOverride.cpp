@@ -457,34 +457,32 @@ RenderOverride::updateRenderTargets() {
 
         auto copyOp = (QuadRenderCopy *) m_ops[kCopyOp];
         if (copyOp) {
-            copyOp->setEnabled(false);
-            copyOp->setInputTarget(0);
-            copyOp->setRenderTargets(nullptr, 0, 0);
+            copyOp->setEnabled(true);
+            copyOp->setInputTarget(kMyColorTarget);
+            copyOp->setRenderTargets(m_targets, kMyAuxColorTarget, 1);
         }
 
         auto wireframePassOp = (SceneRender *) m_ops[kSceneWireframePass];
         if (wireframePassOp) {
-            wireframePassOp->setEnabled(false);
-            wireframePassOp->setRenderTargets(nullptr, 0, 0);
+            wireframePassOp->setEnabled(true);
+            wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
         auto wireBlendOp = (QuadRenderBlend *) m_ops[kWireframeBlendOp];
         if (wireBlendOp) {
-            wireBlendOp->setEnabled(false);
-            // wireBlendOp->setInputTarget1(kMyColorTarget);
-            // wireBlendOp->setInputTarget2(kMyAuxColorTarget);
-            // wireBlendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
-            wireBlendOp->setInputTarget1(0);
-            wireBlendOp->setInputTarget2(0);
-            wireBlendOp->setRenderTargets(nullptr, 0, 0);
+            wireBlendOp->setEnabled(true);
+            wireBlendOp->setInputTarget1(kMyColorTarget);
+            wireBlendOp->setInputTarget2(kMyAuxColorTarget);
+            wireBlendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
+            // wireBlendOp->setInputTarget1(0);
+            // wireBlendOp->setInputTarget2(0);
+            // wireBlendOp->setRenderTargets(nullptr, 0, 0);
             wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
 
         auto invertOp = (QuadRenderInvert *) m_ops[kInvertOp];
         if (invertOp) {
             invertOp->setEnabled(false);
-            invertOp->setInputTarget(kMyColorTarget);
-            invertOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
         auto hudOp = (HudRender *) m_ops[kHudPass];
@@ -548,11 +546,10 @@ RenderOverride::updateRenderTargets() {
             wireBlendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
             wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
+
         auto invertOp = (QuadRenderInvert *) m_ops[kInvertOp];
         if (invertOp) {
             invertOp->setEnabled(false);
-            invertOp->setInputTarget(kMyColorTarget);
-            invertOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
         auto hudOp = (HudRender *) m_ops[kHudPass];

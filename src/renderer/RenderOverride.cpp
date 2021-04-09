@@ -73,6 +73,7 @@ RenderOverride::RenderOverride(const MString &name)
     unsigned int sampleCount = 1; // 1 == no multi-sampling
     // TODO: Allow user to control the raster format from a list of choices.
     MHWRender::MRasterFormat colorFormat = MHWRender::kR8G8B8A8_UNORM;;
+    // MHWRender::MRasterFormat depthFormat = MHWRender::kD24S8;
     MHWRender::MRasterFormat depthFormat = MHWRender::kD32_FLOAT;
 
     // Initalise the targets.
@@ -360,6 +361,18 @@ RenderOverride::updateRenderOperations() {
     invertOp->setClearMask(clear_mask_none);
     m_ops[kInvertOp] = invertOp;
 
+    // // Manipulators pass.
+    // // TODO: Draw manipulators only.
+    // sceneOp = new SceneRender(m_op_names[kSceneWireframePass]);
+    // sceneOp->setViewRectangle(rect);
+    // sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
+    // sceneOp->setDisplayModeOverride(display_mode_wireframe);
+    // // do not override objects to be drawn.
+    // sceneOp->setDoSelectable(false);
+    // sceneOp->setDoBackground(false);
+    // sceneOp->setClearMask(clear_mask_none);
+    // m_ops[kSceneWireframePass] = sceneOp;
+
     // A preset 2D HUD render operation
     auto hudOp = new HudRender();
     m_ops[kHudPass] = hudOp;
@@ -396,6 +409,7 @@ RenderOverride::updateRenderTargets() {
         // Update size value for all target descriptions kept
         m_target_descs[target_id]->setWidth(target_width);
         m_target_descs[target_id]->setHeight(target_height);
+        // TODO: Get and set the multi-sample count.
     }
 
     // Either acquire a new target if it didn't exist before, resize

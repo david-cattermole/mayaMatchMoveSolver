@@ -1,79 +1,102 @@
-// World-view-projection transformation.
+// Copyright (C) 2021 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+// World-view-projection matrix.
 uniform mat4 gWVPXf : WorldViewProjection;
 
-// Target size.
+// The size of the viewport.
 uniform vec2 gTargetSize : ViewportPixelSize;
 
-uniform vec4 gSolidColor : DIFFUSE = {1, 1, 1, 1};
-
-// Depth texture. Assumed to be 1 channel normalized between 0 and 1
+// Depth texture.
+// Expected to be a single channel zero to one image.
 uniform texture2D gDepthTex : InputTexture
 <
     string UIName = "Depth Texture";
 >;
-// Depth texture sampler.
-uniform sampler2D gDepthSampler = sampler_state
-{
+uniform sampler2D gDepthSampler = sampler_state {
     Texture = <gDepthTex>;
 };
 
-// The edge thickness.
-uniform float gThickness = 1.5f;
+// Colours
+uniform vec4 gLineColor : DIFFUSE = {1, 0, 0, 1};
+uniform vec4 gBackgroundColor : DIFFUSE = {0, 0, 0, 0};
 
-// The edge detection threshold.
-uniform float gThreshold = 0.2;
+// Distance in pixels to detect an edge.
+uniform float gThickness = 2.0f;
 
-// Vertex shader input structure.
-attribute VS_INPUT
-{
+// The edge detection 'distance' threshold.
+uniform float gThreshold = 0.1;
+
+// Vertex Shader inputs.
+attribute VS_INPUT {
     vec4 Pos : POSITION;
     vec2 UV : TEXCOORD0;
 };
 
-// Vertex shader output structure.
-attribute VS_TO_PS
-{
+// Vertex Shader outputs.
+attribute VS_TO_PS {
     vec2 VSUV : TEXCOORD0;
 };
 
-// Vertex shader.
-GLSLShader VS_Silhouette
-{
-    void main()
-    {
+// Vertex Shader
+GLSLShader VS_Silhouette {
+    void main() {
         gl_Position = gWVPXf*Pos;
-
-        // Pass the texture coordinates unchanged.
         VSUV = UV;
     }
 }
 
-// Pixel shader output structure.
-attribute pixelOut
-{
+// Pixel Shader Outputs
+attribute pixelOut {
     vec4 colorOut: COLOR0;
 }
 
-// Pixel shader.
-GLSLShader PS_Silhouette
-{
-    void main()
-    {
-        vec2 ox = vec2(gThickness/gTargetSize.x,0.0);
-        vec2 oy = vec2(0.0,gThickness/gTargetSize.y);
+// Sobel Edge Detection
+//
+// https://rastergrid.com/blog/2011/01/frei-chen-edge-detector/
+GLSLShader PS_SilhouetteSobel {
+    void main() {
+
+        vec2 ox = vec2(gThickness / gTargetSize.x, 0.0);
+        vec2 oy = vec2(0.0, gThickness / gTargetSize.y);
         vec2 uv = VSUV;
         vec2 PP = uv - oy;
-        vec4 CC = texture2D(gDepthSampler,PP-ox); float g00 = CC.r;
-        CC = texture2D(gDepthSampler,PP);    float g01 = CC.r;
-        CC = texture2D(gDepthSampler,PP+ox); float g02 = CC.r;
+        vec4 CC = texture2D(gDepthSampler, PP-ox);
+        float g00 = CC.r;
+        CC = texture2D(gDepthSampler, PP);
+        float g01 = CC.r;
+        CC = texture2D(gDepthSampler, PP+ox);
+        float g02 = CC.r;
         PP = uv;
-        CC = texture2D(gDepthSampler,PP-ox); float g10 = CC.r;
-        CC = texture2D(gDepthSampler,PP);    float g11 = CC.r;
-        CC = texture2D(gDepthSampler,PP+ox); float g12 = CC.r;
+        CC = texture2D(gDepthSampler, PP-ox);
+        float g10 = CC.r;
+        CC = texture2D(gDepthSampler, PP);
+        float g11 = CC.r;
+        CC = texture2D(gDepthSampler, PP+ox);
+        float g12 = CC.r;
         PP = uv + oy;
-        CC = texture2D(gDepthSampler,PP-ox); float g20 = CC.r;
-        CC = texture2D(gDepthSampler,PP);    float g21 = CC.r;
-        CC = texture2D(gDepthSampler,PP+ox); float g22 = CC.r;
+        CC = texture2D(gDepthSampler, PP-ox);
+        float g20 = CC.r;
+        CC = texture2D(gDepthSampler, PP);
+        float g21 = CC.r;
+        CC = texture2D(gDepthSampler, PP+ox);
+        float g22 = CC.r;
+
         float K00 = -1;
         float K01 = -2;
         float K02 = -1;
@@ -83,6 +106,7 @@ GLSLShader PS_Silhouette
         float K20 = 1;
         float K21 = 2;
         float K22 = 1;
+
         float sx = 0;
         float sy = 0;
         sx += g00 * K00;
@@ -103,24 +127,22 @@ GLSLShader PS_Silhouette
         sy += g20 * K02;
         sy += g21 * K12;
         sy += g22 * K22;
+
         float dist = sqrt(sx*sx+sy*sy);
-        if (dist > gThreshold)
-        {
-            colorOut = vec4(1,0,0,1);
-        }
-        else
-        {
-            colorOut = vec4(0,0,0,0);
+        if (dist > gThreshold) {
+            colorOut = gLineColor;
+        } else {
+            colorOut = gBackgroundColor;
         }
     }
 }
 
-// The main technique.
-technique Main
+// The 'Sobel' technique, using the Sobel algorithm.
+technique Sobel
 {
     pass p0
     {
         VertexShader (in VS_INPUT, out VS_TO_PS) = VS_Silhouette;
-        PixelShader (in VS_TO_PS, out pixelOut) = PS_Silhouette;
+        PixelShader (in VS_TO_PS, out pixelOut) = PS_SilhouetteSobel;
     }
 }

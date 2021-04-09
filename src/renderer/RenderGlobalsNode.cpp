@@ -50,6 +50,8 @@ MTypeId RenderGlobalsNode::m_id(MM_RENDER_GLOBALS_TYPE_ID);
 
 // Input Attributes
 MObject RenderGlobalsNode::a_wireframeAlpha;
+MObject RenderGlobalsNode::a_edgeThickness;
+MObject RenderGlobalsNode::a_edgeThreshold;
 
 RenderGlobalsNode::RenderGlobalsNode()
         : m_attr_change_callback(0) {}
@@ -119,6 +121,22 @@ void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,
             << "Wireframe Alpha value set: " << value << '\n';
     }
 
+    if (plug_name == "edgeThickness") {
+        auto value = plug.asDouble(&status);
+        CHECK_MSTATUS(status);
+        override_ptr->setEdgeThickness(value);
+        MStreamUtils::stdOutStream()
+            << "Edge Thickness value set: " << value << '\n';
+    }
+
+    if (plug_name == "edgeThreshold") {
+        auto value = plug.asDouble(&status);
+        CHECK_MSTATUS(status);
+        override_ptr->setEdgeThreshold(value);
+        MStreamUtils::stdOutStream()
+            << "Edge Threshold value set: " << value << '\n';
+    }
+
     // Update viewport.
     M3dView view = M3dView::active3dView(&status);
     if (!status) {
@@ -149,7 +167,7 @@ MStatus RenderGlobalsNode::initialize() {
     // MHWRender::kR32G32B32A32_FLOAT;
     // MHWRender::kR8G8B8A8_UNORM;;
 
-    // // Film Fit; 0=fill, 1=horizontal, 2=vertical, 3=overscan
+    // // Render Format; 0=8-bit float, 1=16-bit float, 2=32-bit float
     // a_filmFit = enumAttr.create(
     //     "filmFit", "ff", 0, &status);
     // CHECK_MSTATUS(status);
@@ -166,12 +184,36 @@ MStatus RenderGlobalsNode::initialize() {
     auto alpha_max = 1.0;
     a_wireframeAlpha = numericAttr.create(
         "wireframeAlpha", "wralp",
-        MFnNumericData::kDouble, 1.0);
+        MFnNumericData::kDouble, kWireframeAlphaDefault);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(numericAttr.setMin(alpha_min));
     CHECK_MSTATUS(numericAttr.setMax(alpha_max));
     CHECK_MSTATUS(addAttribute(a_wireframeAlpha));
+
+    // Edge Thickness
+    auto thickness_min = 0.0;
+    // auto thickness_max = 1.0;
+    a_edgeThickness = numericAttr.create(
+        "edgeThickness", "edgthk",
+        MFnNumericData::kDouble, kEdgeThicknessDefault);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(numericAttr.setMin(thickness_min));
+    // CHECK_MSTATUS(numericAttr.setMax(thickness_max));
+    CHECK_MSTATUS(addAttribute(a_edgeThickness));
+
+    // Edge Threshold
+    auto threshold_min = 0.0;
+    auto threshold_max = 1.0;
+    a_edgeThreshold = numericAttr.create(
+        "edgeThreshold", "edgthd",
+        MFnNumericData::kDouble, kEdgeThresholdDefault);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(numericAttr.setMin(threshold_min));
+    CHECK_MSTATUS(numericAttr.setMax(threshold_max));
+    CHECK_MSTATUS(addAttribute(a_edgeThreshold));
 
     return MS::kSuccess;
 }

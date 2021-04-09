@@ -31,7 +31,9 @@ namespace renderer {
 QuadRenderEdgeDetect::QuadRenderEdgeDetect(const MString &name)
         : QuadRenderBase(name)
         , m_shader_instance(nullptr)
-        , m_target_index_input(0) {
+        , m_target_index_input(0)
+        , m_thickness(1.5f)
+        , m_threshold(0.2f) {
 }
 
 QuadRenderEdgeDetect::~QuadRenderEdgeDetect() {
@@ -68,82 +70,55 @@ QuadRenderEdgeDetect::targetOverrideList(unsigned int &listSize) {
 // quad render operation.
 const MHWRender::MShaderInstance *
 QuadRenderEdgeDetect::shader() {
-    auto simple_shader = false;
-    if (simple_shader) {
-        // Compile shader
-        if (!m_shader_instance) {
-            MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-            if (!renderer) {
-                return nullptr;
-            }
-            const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
-            if (!shaderMgr) {
-                return nullptr;
-            }
 
-            MStreamUtils::stdOutStream()
-                << "QuardRenderEdgeDetect: Compile shader...\n";
-            m_shader_instance = shaderMgr->getStockShader(
-                MHWRender::MShaderManager::k3dSolidShader);
+    // Compile shader
+    if (!m_shader_instance) {
+        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+        if (!renderer) {
+            return nullptr;
+        }
+        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        if (!shaderMgr) {
+            return nullptr;
         }
 
-        // Set default parameters
-        if (m_shader_instance) {
-            MStreamUtils::stdOutStream()
-                << "QuardRenderEdgeDetect: Assign shader parameters...\n";
-            const float color[] = {0.0f, 0.0f, 1.0f, 1.0f};
-            CHECK_MSTATUS(m_shader_instance->setParameter("solidColor", color));
-        }
-
-    } else {
-        // Compile shader
-        if (!m_shader_instance) {
-            MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-            if (!renderer) {
-                return nullptr;
-            }
-            const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
-            if (!shaderMgr) {
-                return nullptr;
-            }
-
-            MStreamUtils::stdOutStream()
-                << "QuardRenderEdgeDetect: Compile shader...\n";
-            MString file_name = "FilterEdgeDetect";
-            MString shader_technique = "";
-            m_shader_instance = shaderMgr->getEffectsFileShader(
-                file_name.asChar(),
-                shader_technique.asChar());
-        }
-
-        // Set default parameters
-        if (m_shader_instance) {
-            MStreamUtils::stdOutStream()
-                << "QuardRenderEdgeDetect: Assign shader parameters...\n";
-
-            if (m_targets) {
-                MHWRender::MRenderTargetAssignment assignment;
-                MHWRender::MRenderTarget *target = m_targets[m_target_index_input];
-                if (target) {
-                    MStreamUtils::stdOutStream()
-                        << "QuardRenderEdgeDetect: Assign texture to shader...\n";
-                    assignment.target = target;
-                    CHECK_MSTATUS(m_shader_instance->setParameter(
-                                      "gInputTex", assignment));
-                }
-            }
-
-            // The edge thickness. default = 1.5f.
-            //
-            // TODO: Allow the user to change the thickness.
-            CHECK_MSTATUS(m_shader_instance->setParameter("gThickness", 0.5f));
-
-            // The edge detection threshold. default = 0.2f.
-            //
-            // TODO: Allow the user to change the threshold.
-            CHECK_MSTATUS(m_shader_instance->setParameter("gThreshold", 0.1f));
-        }
+        MStreamUtils::stdOutStream()
+            << "QuardRenderEdgeDetect: Compile shader...\n";
+        MString file_name = "mmSilhouette";
+        MString shader_technique = "Sobel";
+        m_shader_instance = shaderMgr->getEffectsFileShader(
+            file_name.asChar(),
+            shader_technique.asChar());
     }
+
+    // Set default parameters
+    if (m_shader_instance) {
+        MStreamUtils::stdOutStream()
+            << "QuardRenderEdgeDetect: Assign shader parameters...\n";
+
+        if (m_targets) {
+            MHWRender::MRenderTargetAssignment assignment;
+            MHWRender::MRenderTarget *target = m_targets[m_target_index_input];
+            if (target) {
+                MStreamUtils::stdOutStream()
+                    << "QuardRenderEdgeDetect: Assign texture to shader...\n";
+                assignment.target = target;
+                CHECK_MSTATUS(m_shader_instance->setParameter(
+                                  "gDepthTex", assignment));
+            }
+        }
+
+        // The edge thickness.
+        CHECK_MSTATUS(m_shader_instance->setParameter("gThickness", m_thickness));
+
+        // The edge detection threshold.
+        CHECK_MSTATUS(m_shader_instance->setParameter("gThreshold", m_threshold));
+
+        // Colors
+        CHECK_MSTATUS(m_shader_instance->setParameter("gLineColor", kEdgeColorDefault));
+        CHECK_MSTATUS(m_shader_instance->setParameter("gBackgroundColor", kTransparentBlackColor));
+    }
+    // }
     return m_shader_instance;
 }
 

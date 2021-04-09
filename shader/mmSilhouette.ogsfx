@@ -1,0 +1,126 @@
+// World-view-projection transformation.
+uniform mat4 gWVPXf : WorldViewProjection;
+
+// Target size.
+uniform vec2 gTargetSize : ViewportPixelSize;
+
+uniform vec4 gSolidColor : DIFFUSE = {1, 1, 1, 1};
+
+// Depth texture. Assumed to be 1 channel normalized between 0 and 1
+uniform texture2D gDepthTex : InputTexture
+<
+    string UIName = "Depth Texture";
+>;
+// Depth texture sampler.
+uniform sampler2D gDepthSampler = sampler_state
+{
+    Texture = <gDepthTex>;
+};
+
+// The edge thickness.
+uniform float gThickness = 1.5f;
+
+// The edge detection threshold.
+uniform float gThreshold = 0.2;
+
+// Vertex shader input structure.
+attribute VS_INPUT
+{
+    vec4 Pos : POSITION;
+    vec2 UV : TEXCOORD0;
+};
+
+// Vertex shader output structure.
+attribute VS_TO_PS
+{
+    vec2 VSUV : TEXCOORD0;
+};
+
+// Vertex shader.
+GLSLShader VS_Silhouette
+{
+    void main()
+    {
+        gl_Position = gWVPXf*Pos;
+
+        // Pass the texture coordinates unchanged.
+        VSUV = UV;
+    }
+}
+
+// Pixel shader output structure.
+attribute pixelOut
+{
+    vec4 colorOut: COLOR0;
+}
+
+// Pixel shader.
+GLSLShader PS_Silhouette
+{
+    void main()
+    {
+        vec2 ox = vec2(gThickness/gTargetSize.x,0.0);
+        vec2 oy = vec2(0.0,gThickness/gTargetSize.y);
+        vec2 uv = VSUV;
+        vec2 PP = uv - oy;
+        vec4 CC = texture2D(gDepthSampler,PP-ox); float g00 = CC.r;
+        CC = texture2D(gDepthSampler,PP);    float g01 = CC.r;
+        CC = texture2D(gDepthSampler,PP+ox); float g02 = CC.r;
+        PP = uv;
+        CC = texture2D(gDepthSampler,PP-ox); float g10 = CC.r;
+        CC = texture2D(gDepthSampler,PP);    float g11 = CC.r;
+        CC = texture2D(gDepthSampler,PP+ox); float g12 = CC.r;
+        PP = uv + oy;
+        CC = texture2D(gDepthSampler,PP-ox); float g20 = CC.r;
+        CC = texture2D(gDepthSampler,PP);    float g21 = CC.r;
+        CC = texture2D(gDepthSampler,PP+ox); float g22 = CC.r;
+        float K00 = -1;
+        float K01 = -2;
+        float K02 = -1;
+        float K10 = 0;
+        float K11 = 0;
+        float K12 = 0;
+        float K20 = 1;
+        float K21 = 2;
+        float K22 = 1;
+        float sx = 0;
+        float sy = 0;
+        sx += g00 * K00;
+        sx += g01 * K01;
+        sx += g02 * K02;
+        sx += g10 * K10;
+        sx += g11 * K11;
+        sx += g12 * K12;
+        sx += g20 * K20;
+        sx += g21 * K21;
+        sx += g22 * K22;
+        sy += g00 * K00;
+        sy += g01 * K10;
+        sy += g02 * K20;
+        sy += g10 * K01;
+        sy += g11 * K11;
+        sy += g12 * K21;
+        sy += g20 * K02;
+        sy += g21 * K12;
+        sy += g22 * K22;
+        float dist = sqrt(sx*sx+sy*sy);
+        if (dist > gThreshold)
+        {
+            colorOut = vec4(1,0,0,1);
+        }
+        else
+        {
+            colorOut = vec4(0,0,0,0);
+        }
+    }
+}
+
+// The main technique.
+technique Main
+{
+    pass p0
+    {
+        VertexShader (in VS_INPUT, out VS_TO_PS) = VS_Silhouette;
+        PixelShader (in VS_TO_PS, out pixelOut) = PS_Silhouette;
+    }
+}

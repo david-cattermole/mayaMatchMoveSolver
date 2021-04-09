@@ -47,11 +47,24 @@ public:
         m_target_index_input = index;
     }
 
+    void
+    setThickness(const float value) {
+        m_thickness = value;
+    }
+
+    void
+    setThreshold(const float value) {
+        m_threshold = value;
+    }
+
 protected:
     // Shader to use for the quad render
     MHWRender::MShaderInstance *m_shader_instance;
 
     uint32_t m_target_index_input;
+
+    float m_thickness;
+    float m_threshold;
 };
 
 } // namespace renderer

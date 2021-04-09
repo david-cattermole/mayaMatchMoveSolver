@@ -19,13 +19,10 @@
  *
  * mmSolver viewport 2.0 renderer override.
  *
- * TODO:
- *
- * - Add blend factor between wireframe on shaded or not.
- *
- * - Add edge silhouette draw mode for specific objects, with blend factor.
- *
  */
+
+
+#include "../mayaUtils.h"
 
 #include "RenderOverride.h"
 #include "QuadRenderEdgeDetect.h"
@@ -35,8 +32,6 @@
 #include "SceneRender.h"
 #include "HudRender.h"
 #include "PresentTarget.h"
-
-#include "../mayaUtils.h"
 
 #include <maya/MUiMessage.h>
 #include <maya/MStreamUtils.h>
@@ -54,7 +49,10 @@ RenderOverride::RenderOverride(const MString &name)
         , m_renderer_change_callback(0)
         , m_render_override_change_callback(0)
         , m_globals_node()
-        , m_wireframe_alpha(1.0f){
+        , m_pull_updates(true)
+        , m_wireframe_alpha(kWireframeAlphaDefault)
+        , m_edge_thickness(kEdgeThicknessDefault)
+        , m_edge_threshold(kEdgeThresholdDefault) {
     // Remove any operations that already exist from Maya.
     mOperations.clear();
 
@@ -75,7 +73,7 @@ RenderOverride::RenderOverride(const MString &name)
     unsigned int sampleCount = 1; // 1 == no multi-sampling
     // TODO: Allow user to control the raster format from a list of choices.
     MHWRender::MRasterFormat colorFormat = MHWRender::kR8G8B8A8_UNORM;;
-    MHWRender::MRasterFormat depthFormat = MHWRender::kD24S8;
+    MHWRender::MRasterFormat depthFormat = MHWRender::kD32_FLOAT;
 
     // Initalise the targets.
     for (auto i = 0; i < kTargetCount; ++i) {
@@ -108,7 +106,6 @@ RenderOverride::RenderOverride(const MString &name)
             256, 256, sampleCount, colorFormat,
             /*arraySliceCount=*/ 0,
             /*isCubeMap=*/ false);
-
 }
 
 RenderOverride::~RenderOverride() {
@@ -191,6 +188,60 @@ RenderOverride::nextRenderOperation() {
     return false;
 }
 
+MStatus RenderOverride::updateParameters() {
+    MStreamUtils::stdOutStream()
+        << "RenderOverride::updateParameters: \n";
+
+    MStatus status = MS::kSuccess;
+    if (m_pull_updates == false) {
+        return status;
+    }
+
+    status = MS::kFailure;
+    if (!m_globals_node.isValid()) {
+        // Get the node and cache the handle in an 'MObjectHandle'
+        // instance.
+        MObject node_obj;
+        MString node_name = "mmRenderGlobals1";
+        CHECK_MSTATUS(getAsObject(node_name, node_obj));
+
+        if (!node_obj.isNull()) {
+            m_globals_node = node_obj;
+        } else {
+            // Could not find a valid render globals node.
+            return status;
+        }
+    }
+
+    MObject node_obj = m_globals_node.object();
+    MFnDependencyNode depends_node(node_obj, &status);
+
+    // MString attr_name = "wireframeAlpha";
+    MPlug wire_alpha_plug = depends_node.findPlug(
+        "wireframeAlpha", /*wantNetworkedPlug=*/ true, &status);
+    CHECK_MSTATUS(status);
+    if (status == MStatus::kSuccess) {
+        m_wireframe_alpha = wire_alpha_plug.asDouble();
+    }
+
+    // MString attr_name = "edgeThickness";
+    MPlug edge_thickness_plug = depends_node.findPlug(
+        "edgeThickness", /*wantNetworkedPlug=*/ true, &status);
+    CHECK_MSTATUS(status);
+    if (status == MStatus::kSuccess) {
+        m_edge_thickness = edge_thickness_plug.asDouble();
+    }
+
+    // MString attr_name = "edgeThreshold";
+    MPlug edge_threshold_plug = depends_node.findPlug(
+        "edgeThreshold", /*wantNetworkedPlug=*/ true, &status);
+    CHECK_MSTATUS(status);
+    if (status == MStatus::kSuccess) {
+        m_edge_threshold = edge_threshold_plug.asDouble();
+    }
+
+    return MS::kSuccess;
+}
 
 MStatus
 RenderOverride::updateRenderOperations() {
@@ -231,9 +282,9 @@ RenderOverride::updateRenderOperations() {
     m_op_names[kSceneSelectionPass] = "mmRenderer_SceneRender_Select";
     m_op_names[kCopyOp] = "mmRenderer_Copy";
     m_op_names[kSceneWireframePass] = "mmRenderer_SceneRender_Wireframe";
-    m_op_names[kEdgeDetectOp] = "mmRenderer_PostOp1";
-    m_op_names[kBlendOp] = "mmRenderer_EdgeDetectBlend";
-    m_op_names[kInvertOp] = "mmRenderer_PostOp2";
+    m_op_names[kEdgeDetectOp] = "mmRenderer_EdgeDetectOp1";
+    m_op_names[kWireframeBlendOp] = "mmRenderer_WireframeBlend";
+    m_op_names[kInvertOp] = "mmRenderer_InvertOp2";
     m_op_names[kPresentOp] = "mmRenderer_PresentTarget";
 
     SceneRender *sceneOp = nullptr;
@@ -277,6 +328,7 @@ RenderOverride::updateRenderOperations() {
     m_ops[kCopyOp] = copyOp;
 
     // Wireframe pass.
+    // TODO: Do not draw manipulators.
     sceneOp = new SceneRender(m_op_names[kSceneWireframePass]);
     sceneOp->setViewRectangle(rect);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
@@ -288,17 +340,19 @@ RenderOverride::updateRenderOperations() {
     m_ops[kSceneWireframePass] = sceneOp;
 
     // Apply edge detect.
-    auto quadOp = new QuadRenderEdgeDetect(m_op_names[kEdgeDetectOp]);
-    quadOp->setViewRectangle(rect);
-    quadOp->setClearMask(clear_mask_none);
-    m_ops[kEdgeDetectOp] = quadOp;
+    auto edgeDetectOp = new QuadRenderEdgeDetect(m_op_names[kEdgeDetectOp]);
+    edgeDetectOp->setViewRectangle(rect);
+    edgeDetectOp->setClearMask(clear_mask_none);
+    edgeDetectOp->setThreshold(static_cast<float>(m_edge_threshold));
+    edgeDetectOp->setThickness(static_cast<float>(m_edge_thickness));
+    m_ops[kEdgeDetectOp] = edgeDetectOp;
 
-    // Blend between 'edge detect' and 'non-edge detect'.
-    auto blendOp = new QuadRenderBlend(m_op_names[kBlendOp]);
-    blendOp->setViewRectangle(rect);
-    blendOp->setClearMask(clear_mask_none);
-    blendOp->setBlend(static_cast<float>(m_wireframe_alpha));
-    m_ops[kBlendOp] = blendOp;
+    // Blend between 'no-wireframe' and 'wireframe'.
+    auto wireBlendOp = new QuadRenderBlend(m_op_names[kWireframeBlendOp]);
+    wireBlendOp->setViewRectangle(rect);
+    wireBlendOp->setClearMask(clear_mask_none);
+    wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
+    m_ops[kWireframeBlendOp] = wireBlendOp;
 
     // Apply invert.
     auto invertOp = new QuadRenderInvert(m_op_names[kInvertOp]);
@@ -370,7 +424,7 @@ RenderOverride::updateRenderTargets() {
     // color and depth targets, but shaders may interally reference
     // specific render targets.
 
-    auto mode = 1;
+    auto mode = 0;
     if (mode == 0) {
         // Blend edge detect on/off.
         auto depthPassOp = (SceneRender *) m_ops[kSceneDepthPass];
@@ -392,6 +446,15 @@ RenderOverride::updateRenderTargets() {
             selectSceneOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
+        auto edgeDetectOp = (QuadRenderEdgeDetect *) m_ops[kEdgeDetectOp];
+        if (edgeDetectOp) {
+            edgeDetectOp->setEnabled(true);
+            edgeDetectOp->setInputTarget(kMyDepthTarget);
+            edgeDetectOp->setRenderTargets(m_targets, kMyColorTarget, 1);
+            edgeDetectOp->setThreshold(static_cast<float>(m_edge_threshold));
+            edgeDetectOp->setThickness(static_cast<float>(m_edge_thickness));
+        }
+
         auto copyOp = (QuadRenderCopy *) m_ops[kCopyOp];
         if (copyOp) {
             copyOp->setEnabled(false);
@@ -401,24 +464,20 @@ RenderOverride::updateRenderTargets() {
 
         auto wireframePassOp = (SceneRender *) m_ops[kSceneWireframePass];
         if (wireframePassOp) {
-            wireframePassOp->setEnabled(true);
-            wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+            wireframePassOp->setEnabled(false);
+            wireframePassOp->setRenderTargets(nullptr, 0, 0);
         }
 
-        auto edgeDetectOp = (QuadRenderEdgeDetect *) m_ops[kEdgeDetectOp];
-        if (edgeDetectOp) {
-            edgeDetectOp->setEnabled(true);
-            edgeDetectOp->setInputTarget(kMyColorTarget);
-            edgeDetectOp->setRenderTargets(m_targets, kMyAuxColorTarget, 1);
-        }
-
-        auto blendOp = (QuadRenderBlend *) m_ops[kBlendOp];
-        if (blendOp) {
-            blendOp->setEnabled(true);
-            blendOp->setInputTarget1(kMyColorTarget);
-            blendOp->setInputTarget2(kMyAuxColorTarget);
-            blendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
-            blendOp->setBlend(static_cast<float>(m_wireframe_alpha));
+        auto wireBlendOp = (QuadRenderBlend *) m_ops[kWireframeBlendOp];
+        if (wireBlendOp) {
+            wireBlendOp->setEnabled(false);
+            // wireBlendOp->setInputTarget1(kMyColorTarget);
+            // wireBlendOp->setInputTarget2(kMyAuxColorTarget);
+            // wireBlendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
+            wireBlendOp->setInputTarget1(0);
+            wireBlendOp->setInputTarget2(0);
+            wireBlendOp->setRenderTargets(nullptr, 0, 0);
+            wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
 
         auto invertOp = (QuadRenderInvert *) m_ops[kInvertOp];
@@ -459,6 +518,15 @@ RenderOverride::updateRenderTargets() {
             selectSceneOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
+        auto edgeDetectOp = (QuadRenderEdgeDetect *) m_ops[kEdgeDetectOp];
+        if (edgeDetectOp) {
+            edgeDetectOp->setEnabled(false);
+            edgeDetectOp->setInputTarget(kMyDepthTarget);
+            edgeDetectOp->setRenderTargets(m_targets, kMyColorTarget, 1);
+            edgeDetectOp->setThreshold(static_cast<float>(m_edge_threshold));
+            edgeDetectOp->setThickness(static_cast<float>(m_edge_thickness));
+        }
+
         auto copyOp = (QuadRenderCopy *) m_ops[kCopyOp];
         if (copyOp) {
             copyOp->setEnabled(true);
@@ -472,22 +540,14 @@ RenderOverride::updateRenderTargets() {
             wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto edgeDetectOp = (QuadRenderEdgeDetect *) m_ops[kEdgeDetectOp];
-        if (edgeDetectOp) {
-            edgeDetectOp->setEnabled(false);
-            edgeDetectOp->setInputTarget(0);
-            edgeDetectOp->setRenderTargets(nullptr, 0, 0);
+        auto wireBlendOp = (QuadRenderBlend *) m_ops[kWireframeBlendOp];
+        if (wireBlendOp) {
+            wireBlendOp->setEnabled(true);
+            wireBlendOp->setInputTarget1(kMyColorTarget);
+            wireBlendOp->setInputTarget2(kMyAuxColorTarget);
+            wireBlendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
+            wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
-
-        auto blendOp = (QuadRenderBlend *) m_ops[kBlendOp];
-        if (blendOp) {
-            blendOp->setEnabled(true);
-            blendOp->setInputTarget1(kMyColorTarget);
-            blendOp->setInputTarget2(kMyAuxColorTarget);
-            blendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
-            blendOp->setBlend(static_cast<float>(m_wireframe_alpha));
-        }
-
         auto invertOp = (QuadRenderInvert *) m_ops[kInvertOp];
         if (invertOp) {
             invertOp->setEnabled(false);
@@ -545,15 +605,26 @@ RenderOverride::updateRenderTargets() {
             edgeDetectOp->setEnabled(false);
             edgeDetectOp->setInputTarget(0);
             edgeDetectOp->setRenderTargets(nullptr, 0, 0);
+            edgeDetectOp->setThreshold(static_cast<float>(m_edge_threshold));
+            edgeDetectOp->setThickness(static_cast<float>(m_edge_thickness));
         }
 
-        auto blendOp = (QuadRenderBlend *) m_ops[kBlendOp];
-        if (blendOp) {
-            blendOp->setEnabled(false);
-            blendOp->setInputTarget1(0);
-            blendOp->setInputTarget2(0);
-            blendOp->setRenderTargets(nullptr, 0, 0);
-            blendOp->setBlend(static_cast<float>(m_wireframe_alpha));
+        auto wireBlendOp = (QuadRenderBlend *) m_ops[kWireframeBlendOp];
+        if (wireBlendOp) {
+            wireBlendOp->setEnabled(false);
+            wireBlendOp->setInputTarget1(0);
+            wireBlendOp->setInputTarget2(0);
+            wireBlendOp->setRenderTargets(nullptr, 0, 0);
+            wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
+        }
+
+        auto edgeBlendOp = (QuadRenderBlend *) m_ops[kWireframeBlendOp];
+        if (edgeBlendOp) {
+            edgeBlendOp->setEnabled(false);
+            edgeBlendOp->setInputTarget1(0);
+            edgeBlendOp->setInputTarget2(0);
+            edgeBlendOp->setRenderTargets(nullptr, 0, 0);
+            edgeBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
 
         auto invertOp = (QuadRenderInvert *) m_ops[kInvertOp];
@@ -637,6 +708,9 @@ RenderOverride::setup(const MString &destination) {
                 render_override_change_func,
                 client_data);
     }
+
+    // Get override values.
+    updateParameters();
 
     // Construct the render operations.
     status = updateRenderOperations();

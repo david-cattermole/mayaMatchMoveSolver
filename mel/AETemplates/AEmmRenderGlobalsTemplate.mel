@@ -12,6 +12,12 @@ global proc AEmmRenderGlobalsTemplate(string $name) {
                 editorTemplate
                     -label (uiRes("m_AEmmRenderGlobalsTemplate.kWireframeAlpha"))
                     -addControl "wireframeAlpha";
+                editorTemplate
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kEdgeThickness"))
+                    -addControl "edgeThickness";
+                editorTemplate
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kEdgeThreshold"))
+                    -addControl "edgeThreshold";
 
             editorTemplate -endLayout;
 

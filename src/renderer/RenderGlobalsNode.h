@@ -53,6 +53,8 @@ public:
 
     // Input Attributes
     static MObject a_wireframeAlpha;
+    static MObject a_edgeThickness;
+    static MObject a_edgeThreshold;
 
 private:
 

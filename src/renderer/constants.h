@@ -45,6 +45,15 @@ enum TargetId
 #define kMyDepthTargetName  "__mmRenderer_DepthTarget1__"
 #define kMyAuxColorTargetName  "__mmRenderer_ColorTarget2__"
 
+// Constant values
+const float kTransparentBlackColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+// Default parameters
+const float kEdgeColorDefault[] = {1.0f, 0.0f, 0.0f, 1.0f};
+const float kWireframeAlphaDefault = 1.0f;
+const float kEdgeThicknessDefault = 1.5f;
+const float kEdgeThresholdDefault = 0.05f;
+
 } // namespace renderer
 } // namespace mmsolver
 

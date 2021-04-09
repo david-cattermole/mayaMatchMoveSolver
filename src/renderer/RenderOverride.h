@@ -65,6 +65,9 @@ public:
         // are draw here).
         kSceneSelectionPass,
 
+        // Post ops on target 1
+        kEdgeDetectOp,
+
         // Copy target 1 to target 2.
         kCopyOp,
 
@@ -75,14 +78,11 @@ public:
         // the depth pass.
         kSceneWireframePass,
 
-        // Post ops on target 1
-        kEdgeDetectOp,
-
         // --------------------------------------------------------------------
         // Blend pass.
         //
         // Blend target 1 and 2 back to target 1
-        kBlendOp,
+        kWireframeBlendOp,
 
         // Post ops on target 1
         kInvertOp,
@@ -125,17 +125,30 @@ public:
         return m_panel_name;
     }
 
-    // The blend value between edge detect and non-edge detect.
+    // The blend value between wireframe and non-wireframe.
     double wireframeAlpha() const {
         return m_wireframe_alpha;
     }
-
-    // The blend value between edge detect and non-edge detect.
     void setWireframeAlpha(const double value) {
         m_wireframe_alpha = value;
     }
 
+    double edgeThickness() const {
+        return m_edge_thickness;
+    }
+    void setEdgeThickness(const double value) {
+        m_edge_thickness = value;
+    }
+
+    double edgeThreshold() const {
+        return m_edge_threshold;
+    }
+    void setEdgeThreshold(const double value) {
+        m_edge_threshold = value;
+    }
+
 protected:
+    MStatus updateParameters();
     MStatus updateRenderOperations();
     MStatus updateRenderTargets();
     MStatus setPanelNames(const MString &name);
@@ -178,7 +191,13 @@ private:
     // A handle to the 'mmRenderGlobals' node.
     MObjectHandle m_globals_node;
 
+    // Query update parameters from the mmRenderGlobals node.
+    bool m_pull_updates;
+
+    // Renderer settings
     double m_wireframe_alpha;
+    double m_edge_thickness;
+    double m_edge_threshold;
 };
 
 } // namespace renderer

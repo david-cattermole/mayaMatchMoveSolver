@@ -191,7 +191,7 @@ MStatus initializePlugin(MObject obj) {
         status);
 
     // MM Marker Group transform
-    const MString markerGroupClassification = "drawdb/geometry/transform";
+    const MString markerGroupClassification = MM_MARKER_GROUP_DRAW_CLASSIFY;
     REGISTER_TRANSFORM(plugin,
                        MMMarkerGroupTransformNode::nodeName(),
                        MMMarkerGroupTransformNode::m_id,

@@ -69,6 +69,9 @@
 #define MM_REPROJECTION_TYPE_NAME "mmReprojection"
 #define MM_MARKER_GROUP_TRANSFORM_TYPE_ID 0x0012F182
 #define MM_MARKER_GROUP_TRANSFORM_TYPE_NAME "mmMarkerGroupTransform"
-
+#define MM_SKY_DOME_SHAPE_TYPE_ID 0x0012F195
+#define MM_SKY_DOME_SHAPE_TYPE_NAME "mmSkyDomeShape"
+#define MM_SKY_DOME_DRAW_CLASSIFY "drawdb/geometry/mmSolver/skyDome"
+#define MM_SKY_DOME_DRAW_REGISTRANT_ID "mmSkyDomeNodePlugin"
 
 #endif // MM_SOLVER_NODE_TYPE_IDS_H

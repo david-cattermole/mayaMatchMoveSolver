@@ -69,6 +69,6 @@
 #define MM_REPROJECTION_TYPE_NAME "mmReprojection"
 #define MM_MARKER_GROUP_TRANSFORM_TYPE_ID 0x0012F182
 #define MM_MARKER_GROUP_TRANSFORM_TYPE_NAME "mmMarkerGroupTransform"
-
+#define MM_MARKER_GROUP_DRAW_CLASSIFY "drawdb/geometry/transform"
 
 #endif // MM_SOLVER_NODE_TYPE_IDS_H

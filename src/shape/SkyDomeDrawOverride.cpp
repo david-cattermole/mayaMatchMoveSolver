@@ -270,7 +270,7 @@ MUserData *SkyDomeDrawOverride::prepareForDraw(
 }
 
 void SkyDomeDrawOverride::addUIDrawables(
-        const MDagPath &/*objPath*/,
+        const MDagPath &objPath,
         MHWRender::MUIDrawManager &drawManager,
         const MHWRender::MFrameContext &frameContext,
         const MUserData *userData) {
@@ -292,9 +292,16 @@ void SkyDomeDrawOverride::addUIDrawables(
         MDoubleArray view_pos = frameContext.getTuple(
             MFrameContext::kViewPosition, &status);
         CHECK_MSTATUS(status);
-        pos_x = static_cast<float>(view_pos[0]);
-        pos_y = static_cast<float>(view_pos[1]);
-        pos_z = static_cast<float>(view_pos[2]);
+        MPoint view_point(view_pos[0], view_pos[1], view_pos[2]);
+
+        // Remove the sky dome's transform.
+        MMatrix matrix_inverse = objPath.inclusiveMatrixInverse(&status);
+        CHECK_MSTATUS(status);
+        view_point *= matrix_inverse;
+
+        pos_x = static_cast<float>(view_point[0]);
+        pos_y = static_cast<float>(view_point[1]);
+        pos_z = static_cast<float>(view_point[2]);
     }
 
     const uint32_t res = data->m_resolution;

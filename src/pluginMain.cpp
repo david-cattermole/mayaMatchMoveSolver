@@ -86,6 +86,7 @@
     if (!stat) {                                                \
             stat.perror(MString(name) + ": registerTransform"); \
             return (stat);                                      \
+    }
 
 #define REGISTER_LOCATOR_NODE(plugin, name, id, creator, initialize, \
                               type, classification, stat)            \

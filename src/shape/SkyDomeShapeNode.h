@@ -42,6 +42,18 @@
 
 namespace mmsolver {
 
+enum class DrawMode : short {
+    kUseCustomDepth = 0,
+    kDrawOnTop = 1,
+    // kDrawBehind = 2,
+};
+
+enum class TransformMode : short {
+    kNoOffset = 0,
+    kCenterOfCamera = 1,
+};
+
+
 class SkyDomeShapeNode : public MPxLocatorNode {
 public:
     SkyDomeShapeNode();
@@ -77,9 +89,10 @@ public:
 
     // Attributes
     static MObject m_global_enable;
+    static MObject m_transform_mode;
     static MObject m_global_line_width;
     static MObject m_resolution;
-    static MObject m_draw_on_top;
+    static MObject m_draw_mode;
     static MObject m_radius;
     static MObject m_latitude_enable;
     static MObject m_longitude_enable;

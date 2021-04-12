@@ -44,8 +44,8 @@ class SkyDomeDrawData : public MUserData {
 public:
     SkyDomeDrawData()
             : MUserData(/*deleteAfterUse=*/ true) // let Maya clean up
-            , m_draw_on_top(true)
-            , m_center_mode(0)
+            , m_draw_mode(static_cast<short>(DrawMode::kDrawOnTop))
+            , m_transform_mode(static_cast<short>(TransformMode::kNoOffset))
             , m_radius(1.0)
             , m_resolution(32)
             , m_latitude_enable(true)
@@ -68,8 +68,8 @@ public:
     bool m_global_enable;
     float m_global_line_width;
 
-    bool m_draw_on_top;
-    uint32_t m_center_mode;
+    short m_draw_mode;
+    short m_transform_mode;
     float m_radius;
     uint32_t m_resolution;
 
@@ -156,7 +156,12 @@ private:
         int32_t &value) const;
     MStatus get_node_attr(
         const MDagPath &objPath,
-        const MObject &attr, uint32_t &value) const;
+        const MObject &attr,
+        uint32_t &value) const;
+    MStatus get_node_attr(
+        const MDagPath &objPath,
+        const MObject &attr,
+        short &value) const;
     MStatus get_node_attr(
         const MDagPath &objPath,
         const MObject &attr,

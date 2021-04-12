@@ -33,6 +33,7 @@
 #include <maya/MDistance.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnUnitAttribute.h>
+#include <maya/MFnEnumAttribute.h>
 #include <maya/MFnNumericData.h>
 
 #if MAYA_API_VERSION >= 20190000
@@ -49,9 +50,10 @@ MString SkyDomeShapeNode::m_draw_registrant_id(MM_SKY_DOME_DRAW_REGISTRANT_ID);
 // Attributes
 // TODO: Add Colours.
 MObject SkyDomeShapeNode::m_global_enable;
+MObject SkyDomeShapeNode::m_transform_mode;
 MObject SkyDomeShapeNode::m_global_line_width;
 MObject SkyDomeShapeNode::m_resolution;
-MObject SkyDomeShapeNode::m_draw_on_top;
+MObject SkyDomeShapeNode::m_draw_mode;
 MObject SkyDomeShapeNode::m_radius;
 MObject SkyDomeShapeNode::m_latitude_enable;
 MObject SkyDomeShapeNode::m_longitude_enable;
@@ -124,8 +126,10 @@ void *SkyDomeShapeNode::creator() {
 }
 
 MStatus SkyDomeShapeNode::initialize() {
+    MStatus status;
     MFnUnitAttribute uAttr;
     MFnNumericAttribute nAttr;
+    MFnEnumAttribute eAttr;
 
     // Resolution
     auto resolution_default = 64;
@@ -141,23 +145,31 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setSoftMin(resolution_soft_min));
     CHECK_MSTATUS(nAttr.setSoftMax(resolution_soft_max));
 
-    // Draw on top?
-    //
-    // TODO: Replace this attribute with a 'draw depth' enum, with the
-    // following values;
-    //
-    // - Draw on top.
-    // - Draw behind.
-    // - Custom Depth
-    //
-    m_draw_on_top = nAttr.create(
-        "drawOnTop", "dot",
-        MFnNumericData::kBoolean, 0);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
+    // The 'mode' of the Sky Dome.
+    m_draw_mode = eAttr.create(
+        "drawMode", "drmd", static_cast<short>(DrawMode::kDrawOnTop), &status);
+    CHECK_MSTATUS(status);
+    CHECK_MSTATUS(eAttr.addField("Use Custom Depth",
+                                 static_cast<short>(DrawMode::kUseCustomDepth)));
+    CHECK_MSTATUS(eAttr.addField("Draw On Top",
+                                 static_cast<short>(DrawMode::kDrawOnTop)));
+    // CHECK_MSTATUS(eAttr.addField("Draw Behind",
+    //                              static_cast<short>(DrawMode::kDrawBehind)));
+    CHECK_MSTATUS(eAttr.setStorable(true));
+    CHECK_MSTATUS(eAttr.setKeyable(true));
 
-    // TODO: Add 'enum' attribute to allow users using the camera
-    // position or not.
+    // The 'transform mode' of the Sky Dome, how are transforms
+    // applied?
+    m_transform_mode = eAttr.create(
+        "transformMode", "tfmd",
+        static_cast<short>(TransformMode::kCenterOfCamera), &status);
+    CHECK_MSTATUS(status);
+    CHECK_MSTATUS(eAttr.addField("No Offset",
+                                 static_cast<short>(TransformMode::kNoOffset)));
+    CHECK_MSTATUS(eAttr.addField("Center of Camera",
+                                 static_cast<short>(TransformMode::kCenterOfCamera)));
+    CHECK_MSTATUS(eAttr.setStorable(true));
+    CHECK_MSTATUS(eAttr.setKeyable(true));
 
     // Radius / Depth
     m_radius = uAttr.create("radius", "rd", MFnUnitAttribute::kDistance);
@@ -204,7 +216,7 @@ MStatus SkyDomeShapeNode::initialize() {
 
     // Axis Line Width
     auto line_width_min = 0.01;
-    auto line_width_soft_min = 1.0f;
+    auto line_width_soft_min = 0.1f;
     auto line_width_soft_max = 10.0f;
     m_global_line_width = nAttr.create(
         "lineWidth", "lnwd",
@@ -215,6 +227,9 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
     CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
 
+    line_width_min = 0.01;
+    line_width_soft_min = 1.0f;
+    line_width_soft_max = 10.0f;
     m_latitude_line_width = nAttr.create(
         "latitudeLineWidth", "ltlw",
         MFnNumericData::kFloat, 1.0f);
@@ -295,9 +310,10 @@ MStatus SkyDomeShapeNode::initialize() {
 
     // Add attributes
     CHECK_MSTATUS(addAttribute(m_global_enable));
+    CHECK_MSTATUS(addAttribute(m_transform_mode));
     CHECK_MSTATUS(addAttribute(m_global_line_width));
     CHECK_MSTATUS(addAttribute(m_resolution));
-    CHECK_MSTATUS(addAttribute(m_draw_on_top));
+    CHECK_MSTATUS(addAttribute(m_draw_mode));
     CHECK_MSTATUS(addAttribute(m_radius));
     CHECK_MSTATUS(addAttribute(m_latitude_enable));
     CHECK_MSTATUS(addAttribute(m_longitude_enable));
@@ -311,7 +327,6 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(addAttribute(m_y_axis_line_width));
     CHECK_MSTATUS(addAttribute(m_z_axis_enable));
     CHECK_MSTATUS(addAttribute(m_z_axis_line_width));
-
 
     return MS::kSuccess;
 }

@@ -140,6 +140,21 @@ MStatus SkyDomeDrawOverride::get_node_attr(const MDagPath &objPath,
 
 MStatus SkyDomeDrawOverride::get_node_attr(const MDagPath &objPath,
                                            const MObject &attr,
+                                           short &value) const {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            value = plug.asShort();
+            return status;
+        }
+    }
+    return status;
+}
+
+MStatus SkyDomeDrawOverride::get_node_attr(const MDagPath &objPath,
+                                           const MObject &attr,
                                            float &value) const {
     MStatus status;
     MObject node = objPath.node(&status);
@@ -185,6 +200,9 @@ MUserData *SkyDomeDrawOverride::prepareForDraw(
         objPath, SkyDomeShapeNode::m_global_enable, data->m_global_enable);
     CHECK_MSTATUS(status);
     status = get_node_attr(
+        objPath, SkyDomeShapeNode::m_transform_mode, data->m_transform_mode);
+    CHECK_MSTATUS(status);
+    status = get_node_attr(
         objPath, SkyDomeShapeNode::m_global_line_width, data->m_global_line_width);
     CHECK_MSTATUS(status);
     status = get_node_attr(
@@ -193,7 +211,7 @@ MUserData *SkyDomeDrawOverride::prepareForDraw(
 
     // Depth and display settings.
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_draw_on_top, data->m_draw_on_top);
+        objPath, SkyDomeShapeNode::m_draw_mode, data->m_draw_mode);
     CHECK_MSTATUS(status);
 
     MDistance radius_distance(1.0);
@@ -269,7 +287,7 @@ void SkyDomeDrawOverride::addUIDrawables(
     float pos_x = 0.0f;
     float pos_y = 0.0f;
     float pos_z = 0.0f;
-    if (data->m_center_mode == 0) {
+    if (data->m_transform_mode == static_cast<short>(TransformMode::kCenterOfCamera)) {
         // Use the camera position.
         MDoubleArray view_pos = frameContext.getTuple(
             MFrameContext::kViewPosition, &status);
@@ -462,7 +480,7 @@ void SkyDomeDrawOverride::addUIDrawables(
 
     // Add drawable
     {
-        if (data->m_draw_on_top) {
+        if (data->m_draw_mode == static_cast<short>(DrawMode::kDrawOnTop)) {
             // No depth testing while drawing.
             drawManager.beginDrawInXray();
         } else {

@@ -90,6 +90,7 @@ public:
     // Attributes
     static MObject m_enable;
     static MObject m_transform_mode;
+    static MObject m_alpha;
     static MObject m_line_width;
     static MObject m_resolution;
     static MObject m_draw_mode;
@@ -102,6 +103,12 @@ public:
     static MObject m_axis_z_enable_top;
     static MObject m_axis_x_enable_bottom;
     static MObject m_axis_z_enable_bottom;
+    static MObject m_axis_x_color;
+    static MObject m_axis_y_color;
+    static MObject m_axis_z_color;
+    static MObject m_axis_x_alpha;
+    static MObject m_axis_y_alpha;
+    static MObject m_axis_z_alpha;
     static MObject m_axis_x_line_width;
     static MObject m_axis_y_line_width;
     static MObject m_axis_z_line_width;
@@ -112,6 +119,10 @@ public:
     static MObject m_grid_long_enable_top;
     static MObject m_grid_lat_enable_bottom;
     static MObject m_grid_long_enable_bottom;
+    static MObject m_grid_lat_color;
+    static MObject m_grid_long_color;
+    static MObject m_grid_lat_alpha;
+    static MObject m_grid_long_alpha;
     static MObject m_grid_lat_line_width;
     static MObject m_grid_long_line_width;
     static MObject m_grid_lat_divisions;

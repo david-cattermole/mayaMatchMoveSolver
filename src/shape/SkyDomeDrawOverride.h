@@ -46,6 +46,8 @@ public:
             : MUserData(/*deleteAfterUse=*/ true) // let Maya clean up
             , m_draw_mode(static_cast<short>(DrawMode::kDrawOnTop))
             , m_transform_mode(static_cast<short>(TransformMode::kNoOffset))
+            , m_line_width(1.0)
+            , m_alpha(1.0)
             , m_radius(1.0)
             , m_resolution(32)
             , m_axis_x_enable(true)
@@ -55,6 +57,9 @@ public:
             , m_axis_z_enable_top(true)
             , m_axis_x_enable_bottom(true)
             , m_axis_z_enable_bottom(true)
+            , m_axis_x_alpha(1.0f)
+            , m_axis_y_alpha(1.0f)
+            , m_axis_z_alpha(1.0f)
             , m_axis_x_line_width(2.0f)
             , m_axis_y_line_width(2.0f)
             , m_axis_z_line_width(2.0f)
@@ -64,16 +69,19 @@ public:
             , m_grid_long_enable_top(true)
             , m_grid_lat_enable_bottom(true)
             , m_grid_long_enable_bottom(true)
-            , m_grid_lat_divisions(6)
-            , m_grid_long_divisions(6)
+            , m_grid_lat_alpha(0.5f)
+            , m_grid_long_alpha(0.5f)
             , m_grid_lat_line_width(1.0f)
             , m_grid_long_line_width(1.0f)
+            , m_grid_lat_divisions(6)
+            , m_grid_long_divisions(6)
     {}
 
     ~SkyDomeDrawData() override {
     }
 
     bool m_enable;
+    float m_alpha;
     float m_line_width;
     short m_draw_mode;
     short m_transform_mode;
@@ -91,6 +99,9 @@ public:
     MColor m_axis_x_color{1.0f, 0.0f, 0.0f, 1.0f};
     MColor m_axis_y_color{0.0f, 1.0f, 0.0f, 1.0f};
     MColor m_axis_z_color{0.0f, 0.0f, 1.0f, 1.0f};
+    float m_axis_x_alpha;
+    float m_axis_y_alpha;
+    float m_axis_z_alpha;
     float m_axis_x_line_width;
     float m_axis_y_line_width;
     float m_axis_z_line_width;
@@ -103,8 +114,10 @@ public:
     bool m_grid_long_enable_bottom;
     uint32_t m_grid_lat_divisions;
     uint32_t m_grid_long_divisions;
-    MColor m_grid_lat_color{1.0f, 0.0f, 1.0f, 0.5f};
-    MColor m_grid_long_color{0.0f, 1.0f, 1.0f, 0.5f};
+    MColor m_grid_lat_color{1.0f, 0.0f, 1.0f, 0.1f};
+    MColor m_grid_long_color{0.0f, 1.0f, 1.0f, 0.1f};
+    float m_grid_lat_alpha;
+    float m_grid_long_alpha;
     float m_grid_lat_line_width;
     float m_grid_long_line_width;
 };
@@ -183,6 +196,10 @@ private:
         const MDagPath &objPath,
         const MObject &attr,
         MDistance &value) const;
+    MStatus get_node_attr(
+        const MDagPath &objPath,
+        const MObject &attr,
+        MColor &value) const;
 
     // Called when the model editor state changes.
     static void on_model_editor_changed_func(void *clientData);

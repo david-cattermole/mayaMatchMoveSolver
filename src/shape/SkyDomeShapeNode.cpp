@@ -48,9 +48,9 @@ MString SkyDomeShapeNode::m_draw_db_classification(MM_SKY_DOME_DRAW_CLASSIFY);
 MString SkyDomeShapeNode::m_draw_registrant_id(MM_SKY_DOME_DRAW_REGISTRANT_ID);
 
 // Attributes
-// TODO: Add Colours.
 MObject SkyDomeShapeNode::m_enable;
 MObject SkyDomeShapeNode::m_transform_mode;
+MObject SkyDomeShapeNode::m_alpha;
 MObject SkyDomeShapeNode::m_line_width;
 MObject SkyDomeShapeNode::m_resolution;
 MObject SkyDomeShapeNode::m_draw_mode;
@@ -63,6 +63,12 @@ MObject SkyDomeShapeNode::m_axis_x_enable_top;
 MObject SkyDomeShapeNode::m_axis_z_enable_top;
 MObject SkyDomeShapeNode::m_axis_x_enable_bottom;
 MObject SkyDomeShapeNode::m_axis_z_enable_bottom;
+MObject SkyDomeShapeNode::m_axis_x_color;
+MObject SkyDomeShapeNode::m_axis_y_color;
+MObject SkyDomeShapeNode::m_axis_z_color;
+MObject SkyDomeShapeNode::m_axis_x_alpha;
+MObject SkyDomeShapeNode::m_axis_y_alpha;
+MObject SkyDomeShapeNode::m_axis_z_alpha;
 MObject SkyDomeShapeNode::m_axis_x_line_width;
 MObject SkyDomeShapeNode::m_axis_y_line_width;
 MObject SkyDomeShapeNode::m_axis_z_line_width;
@@ -73,6 +79,10 @@ MObject SkyDomeShapeNode::m_grid_lat_enable_top;
 MObject SkyDomeShapeNode::m_grid_long_enable_top;
 MObject SkyDomeShapeNode::m_grid_lat_enable_bottom;
 MObject SkyDomeShapeNode::m_grid_long_enable_bottom;
+MObject SkyDomeShapeNode::m_grid_lat_color;
+MObject SkyDomeShapeNode::m_grid_long_color;
+MObject SkyDomeShapeNode::m_grid_lat_alpha;
+MObject SkyDomeShapeNode::m_grid_long_alpha;
 MObject SkyDomeShapeNode::m_grid_lat_line_width;
 MObject SkyDomeShapeNode::m_grid_long_line_width;
 MObject SkyDomeShapeNode::m_grid_lat_divisions;
@@ -276,7 +286,7 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
 
-    // Axis Line Width
+    // Line Width multiplier
     auto line_width_min = 0.01;
     auto line_width_soft_min = 0.1f;
     auto line_width_soft_max = 10.0f;
@@ -340,6 +350,95 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
     CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
 
+
+    // Colors - Add colours for axis lines and lat-long lines.
+    m_axis_x_color = nAttr.createColor(
+        "axisColorX", "aclx");
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 0.0f));
+
+    m_axis_y_color = nAttr.createColor(
+        "axisColorY", "acly");
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setDefault(0.0f, 1.0f, 0.0f));
+
+    m_axis_z_color = nAttr.createColor(
+        "axisColorZ", "aclz");
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setDefault(0.0f, 0.0f, 1.0f));
+
+    m_grid_lat_color = nAttr.createColor(
+        "gridLatitudeColor", "grltcl");
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 1.0f));
+
+    m_grid_long_color = nAttr.createColor(
+        "gridLongitudeColor", "grlgcl");
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setDefault(0.0f, 1.0f, 1.0f));
+
+    // Alpha multiplier
+    auto alpha_min = 0.0f;
+    auto alpha_max = 1.0f;
+    auto alpha_soft_max = 1.0f;
+    auto alpha_default = 1.0f;
+    m_alpha = nAttr.create(
+        "alpha", "alp",
+        MFnNumericData::kFloat, alpha_default);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(alpha_min));
+    CHECK_MSTATUS(nAttr.setSoftMax(alpha_soft_max));
+
+    // Axis Alphas
+    alpha_default = 1.0f;
+    m_axis_x_alpha = nAttr.create(
+        "axisAlphaX", "aaplx",
+        MFnNumericData::kFloat, alpha_default);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(alpha_min));
+    CHECK_MSTATUS(nAttr.setMax(alpha_max));
+
+    m_axis_y_alpha = nAttr.create(
+        "axisAlphaY", "aaply",
+        MFnNumericData::kFloat, alpha_default);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(alpha_min));
+    CHECK_MSTATUS(nAttr.setMax(alpha_max));
+
+    m_axis_z_alpha = nAttr.create(
+        "axisAlphaZ", "aalpz",
+        MFnNumericData::kFloat, alpha_default);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(alpha_min));
+    CHECK_MSTATUS(nAttr.setMax(alpha_max));
+
+    // Grid Lat/Long Alphas
+    alpha_default = 0.5f;
+    m_grid_lat_alpha = nAttr.create(
+        "gridLatitudeAlpha", "grltalp",
+        MFnNumericData::kFloat, alpha_default);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(alpha_min));
+    CHECK_MSTATUS(nAttr.setMax(alpha_max));
+
+    m_grid_long_alpha = nAttr.create(
+        "gridLongitudeAlpha", "grlgalp",
+        MFnNumericData::kFloat, alpha_default);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(alpha_min));
+    CHECK_MSTATUS(nAttr.setMax(alpha_max));
+
     // Lat-Long Divisions
     auto divisions_default = 6;
     auto divisions_min = 2;
@@ -363,19 +462,10 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setSoftMin(divisions_soft_min));
     CHECK_MSTATUS(nAttr.setSoftMax(divisions_soft_max));
 
-    // Colors
-    //
-    // Add colours for axis lines and lat-long lines.
-    //
-    // // aColor = nAttr.createColor( "color", "c" );
-    // // CHECK_MSTATUS(nAttr.setStorable(true));
-    // // CHECK_MSTATUS(nAttr.setKeyable(true));
-    // // MAKE_INPUT(nAttr);
-    // // CHECK_MSTATUS( nAttr.setDefault(0.0f, 0.58824f, 0.644f) );
-
     // Add attributes
     CHECK_MSTATUS(addAttribute(m_enable));
     CHECK_MSTATUS(addAttribute(m_transform_mode));
+    CHECK_MSTATUS(addAttribute(m_alpha));
     CHECK_MSTATUS(addAttribute(m_line_width));
     CHECK_MSTATUS(addAttribute(m_resolution));
     CHECK_MSTATUS(addAttribute(m_draw_mode));
@@ -384,25 +474,35 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(addAttribute(m_axis_x_enable));
     CHECK_MSTATUS(addAttribute(m_axis_x_enable_top));
     CHECK_MSTATUS(addAttribute(m_axis_x_enable_bottom));
+    CHECK_MSTATUS(addAttribute(m_axis_x_color));
+    CHECK_MSTATUS(addAttribute(m_axis_x_alpha));
     CHECK_MSTATUS(addAttribute(m_axis_x_line_width));
     // Axis Y
     CHECK_MSTATUS(addAttribute(m_axis_y_enable));
+    CHECK_MSTATUS(addAttribute(m_axis_y_color));
+    CHECK_MSTATUS(addAttribute(m_axis_y_alpha));
     CHECK_MSTATUS(addAttribute(m_axis_y_line_width));
     // Axis Z
     CHECK_MSTATUS(addAttribute(m_axis_z_enable));
     CHECK_MSTATUS(addAttribute(m_axis_z_enable_top));
     CHECK_MSTATUS(addAttribute(m_axis_z_enable_bottom));
+    CHECK_MSTATUS(addAttribute(m_axis_z_color));
+    CHECK_MSTATUS(addAttribute(m_axis_z_alpha));
     CHECK_MSTATUS(addAttribute(m_axis_z_line_width));
     // Grid Latitude
     CHECK_MSTATUS(addAttribute(m_grid_lat_enable));
     CHECK_MSTATUS(addAttribute(m_grid_lat_enable_top));
     CHECK_MSTATUS(addAttribute(m_grid_lat_enable_bottom));
+    CHECK_MSTATUS(addAttribute(m_grid_lat_color));
+    CHECK_MSTATUS(addAttribute(m_grid_lat_alpha));
     CHECK_MSTATUS(addAttribute(m_grid_lat_line_width));
     CHECK_MSTATUS(addAttribute(m_grid_lat_divisions));
     // Grid Longitude
     CHECK_MSTATUS(addAttribute(m_grid_long_enable));
     CHECK_MSTATUS(addAttribute(m_grid_long_enable_top));
     CHECK_MSTATUS(addAttribute(m_grid_long_enable_bottom));
+    CHECK_MSTATUS(addAttribute(m_grid_long_color));
+    CHECK_MSTATUS(addAttribute(m_grid_long_alpha));
     CHECK_MSTATUS(addAttribute(m_grid_long_line_width));
     CHECK_MSTATUS(addAttribute(m_grid_long_divisions));
 

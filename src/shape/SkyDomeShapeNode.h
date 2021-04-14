@@ -106,6 +106,8 @@ public:
     static MObject m_x_axis_line_width;
     static MObject m_y_axis_line_width;
     static MObject m_z_axis_line_width;
+    static MObject m_top_axis_enable;
+    static MObject m_bottom_axis_enable;
 };
 
 } // namespace mmsolver

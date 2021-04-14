@@ -67,7 +67,8 @@ MObject SkyDomeShapeNode::m_z_axis_enable;
 MObject SkyDomeShapeNode::m_x_axis_line_width;
 MObject SkyDomeShapeNode::m_y_axis_line_width;
 MObject SkyDomeShapeNode::m_z_axis_line_width;
-
+MObject SkyDomeShapeNode::m_top_axis_enable;
+MObject SkyDomeShapeNode::m_bottom_axis_enable;
 
 SkyDomeShapeNode::SkyDomeShapeNode() {}
 
@@ -214,6 +215,18 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
 
+    m_top_axis_enable = nAttr.create(
+        "axisEnableTop", "aet",
+        MFnNumericData::kBoolean, 1);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+
+    m_bottom_axis_enable = nAttr.create(
+        "axisEnableBottom", "aeb",
+        MFnNumericData::kBoolean, 1);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+
     // Axis Line Width
     auto line_width_min = 0.01;
     auto line_width_soft_min = 0.1f;
@@ -321,6 +334,8 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(addAttribute(m_longitude_line_width));
     CHECK_MSTATUS(addAttribute(m_latitude_divisions));
     CHECK_MSTATUS(addAttribute(m_longitude_divisions));
+    CHECK_MSTATUS(addAttribute(m_top_axis_enable));
+    CHECK_MSTATUS(addAttribute(m_bottom_axis_enable));
     CHECK_MSTATUS(addAttribute(m_x_axis_enable));
     CHECK_MSTATUS(addAttribute(m_x_axis_line_width));
     CHECK_MSTATUS(addAttribute(m_y_axis_enable));

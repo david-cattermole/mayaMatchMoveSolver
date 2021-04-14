@@ -41,6 +41,12 @@
 
 namespace mmsolver {
 
+// Return 'min_value' to 'max_value' linearly, for a 'mix' value
+// between 0.0 and 1.0.
+float lerp(const float min_value, const float max_value, const float mix) {
+  return ((1 - mix) * min_value) + (mix * max_value);
+}
+
 SkyDomeDrawOverride::SkyDomeDrawOverride(const MObject &obj)
         : MHWRender::MPxDrawOverride(obj,
                                      /*callback=*/ nullptr,
@@ -223,6 +229,10 @@ MUserData *SkyDomeDrawOverride::prepareForDraw(
 
     // Enabled status
     status = get_node_attr(
+        objPath, SkyDomeShapeNode::m_top_axis_enable, data->m_top_axis_enable);
+    status = get_node_attr(
+        objPath, SkyDomeShapeNode::m_bottom_axis_enable, data->m_bottom_axis_enable);
+    status = get_node_attr(
         objPath, SkyDomeShapeNode::m_latitude_enable, data->m_latitude_enable);
     CHECK_MSTATUS(status);
     status = get_node_attr(
@@ -283,7 +293,6 @@ void SkyDomeDrawOverride::addUIDrawables(
         return;
     }
 
-    // TODO: Allow users to optionally use the 'view position' or not.
     float pos_x = 0.0f;
     float pos_y = 0.0f;
     float pos_z = 0.0f;
@@ -311,6 +320,9 @@ void SkyDomeDrawOverride::addUIDrawables(
     const uint32_t interval_longitude =
         static_cast<uint32_t>(std::powf(2, data->m_longitude_divisions));
 
+    // Allow skipping only top or bottom.
+    auto axis_top = data->m_top_axis_enable;
+    auto axis_bottom = data->m_bottom_axis_enable;
     auto initial_size_x = res * 2 * data->m_x_axis_enable;
     auto initial_size_y = res * 2 * data->m_y_axis_enable;
     auto initial_size_z = res * 2 * data->m_z_axis_enable;
@@ -325,22 +337,33 @@ void SkyDomeDrawOverride::addUIDrawables(
     MFloatPointArray lines_longitude(initial_size_longitude);
 
     auto index = 0;
+
     const float pi = static_cast<float>(M_PI);
+    float angle_start = -pi;
+    float angle_end = pi;
+    if (!axis_top) {
+        angle_start = 0.0;
+    }
+    if (!axis_bottom) {
+        angle_end = 0.0;
+    }
 
     // X Axis
-    //
-    // TODO: Allow skipping only top or bottom.
-    if (data->m_x_axis_enable) {
+    const float angle_offset_x = pi * 0.5f;
+    const float angle_start_x = angle_offset_x + angle_start;
+    const float angle_end_x = angle_offset_x + angle_end;
+    if (data->m_x_axis_enable && (axis_top || axis_bottom)) {
         index = 0;
         for (uint32_t i = 0; i < res; i++) {
             const float ratio1 = static_cast<float>(i) / static_cast<float>(res);
             const float ratio2 = static_cast<float>(i + 1) / static_cast<float>(res);
-            const float angle1 = 2.0f * pi * ratio1;
-            const float angle2 = 2.0f * pi * ratio2;
+            const float angle1 = lerp(angle_start_x, angle_end_x, ratio1);
+            const float angle2 = lerp(angle_start_x, angle_end_x, ratio2);
             const float x1 = radius * std::cosf(angle1);
             const float x2 = radius * std::cosf(angle2);
             const float y1 = radius * std::sinf(angle1);
             const float y2 = radius * std::sinf(angle2);
+
             lines_x.set(
                 index,
                 pos_x,
@@ -356,8 +379,6 @@ void SkyDomeDrawOverride::addUIDrawables(
     }
 
     // Y Axis
-    //
-    // TODO: Allow skipping only top or bottom.
     if (data->m_y_axis_enable) {
         index = 0;
         for (uint32_t i = 0; i < res; i++) {
@@ -384,19 +405,21 @@ void SkyDomeDrawOverride::addUIDrawables(
     }
 
     // Z Axis
-    //
-    // TODO: Allow skipping only top or bottom.
-    if (data->m_z_axis_enable) {
+    const float angle_offset_z = pi;
+    const float angle_start_z = angle_offset_z + angle_start;
+    const float angle_end_z = angle_offset_z + angle_end;
+    if (data->m_z_axis_enable && (axis_top || axis_bottom)) {
         index = 0;
         for (uint32_t i = 0; i < res; i++) {
             const float ratio1 = static_cast<float>(i) / static_cast<float>(res);
             const float ratio2 = static_cast<float>(i + 1) / static_cast<float>(res);
-            const float angle1 = 2.0f * pi * ratio1;
-            const float angle2 = 2.0f * pi * ratio2;
+            const float angle1 = lerp(angle_start_z, angle_end_z, ratio1);
+            const float angle2 = lerp(angle_start_z, angle_end_z, ratio2);
             const float x1 = radius * std::cosf(angle1);
             const float x2 = radius * std::cosf(angle2);
             const float y1 = radius * std::sinf(angle1);
             const float y2 = radius * std::sinf(angle2);
+
             lines_z.set(
                 index,
                 pos_x + x1,
@@ -414,9 +437,10 @@ void SkyDomeDrawOverride::addUIDrawables(
     // Latitude
     //
     // TODO: Add little crosses, and/or dots at selected intervals.
-    //
-    // TODO: Allow skipping only top or bottom.
-    if (data->m_latitude_enable) {
+    const float angle_offset_lat = pi / 2.0;
+    const float angle_start_lat = angle_offset_lat + (angle_start / 2.0f);
+    const float angle_end_lat = angle_offset_lat + (angle_end / 2.0f);
+    if (data->m_latitude_enable && (axis_top || axis_bottom)) {
         index = 0;
         for (uint32_t i = 0; i < interval_latitude; i++) {
             const float outer_ratio =
@@ -430,8 +454,10 @@ void SkyDomeDrawOverride::addUIDrawables(
                     static_cast<float>(j) / static_cast<float>(res);
                 const float inner_ratio2 =
                     static_cast<float>(j + 1) / static_cast<float>(res);
-                const float inner_angle1 = 2.0f * pi * inner_ratio1;
-                const float inner_angle2 = 2.0f * pi * inner_ratio2;
+                const float inner_angle1 =
+                    lerp(angle_start_lat, angle_end_lat, inner_ratio1);
+                const float inner_angle2 =
+                    lerp(angle_start_lat, angle_end_lat, inner_ratio2);
                 const float xy1 = radius * std::cosf(inner_angle1);
                 const float xy2 = radius * std::cosf(inner_angle2);
                 const float z1 = radius * std::sinf(inner_angle1);
@@ -453,7 +479,7 @@ void SkyDomeDrawOverride::addUIDrawables(
     }
 
     // Longitude
-    if (data->m_longitude_enable) {
+    if (data->m_longitude_enable && (axis_top || axis_bottom)) {
         index = 0;
         for (uint32_t j = 0; j < interval_longitude; j++) {
             const float outer_ratio =
@@ -461,6 +487,14 @@ void SkyDomeDrawOverride::addUIDrawables(
             const float outer_angle = 2.0f * pi * outer_ratio;
             const float xy = radius * std::cosf(outer_angle);
             const float z = radius * std::sinf(outer_angle);
+
+            if (!axis_top && (z > 0.0f)) {
+                continue;
+            }
+            if (!axis_bottom && (z < 0.0f)) {
+                continue;
+            }
+
             for (uint32_t i = 0; i < res; i++) {
                 const float ratio1 = static_cast<float>(i) / static_cast<float>(res);
                 const float ratio2 = static_cast<float>(i + 1) / static_cast<float>(res);
@@ -470,6 +504,7 @@ void SkyDomeDrawOverride::addUIDrawables(
                 const float x2 = xy * std::cosf(angle2);
                 const float y1 = xy * std::sinf(angle1);
                 const float y2 = xy * std::sinf(angle2);
+
                 lines_longitude.set(
                     index,
                     pos_x + x1,

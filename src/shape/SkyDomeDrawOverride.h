@@ -82,6 +82,8 @@ public:
     MColor m_color_latitude{1.0f, 0.0f, 1.0f, 0.5f};
     MColor m_color_longitude{0.0f, 1.0f, 1.0f, 0.5f};
 
+    bool m_top_axis_enable;
+    bool m_bottom_axis_enable;
     bool m_x_axis_enable;
     bool m_y_axis_enable;
     bool m_z_axis_enable;

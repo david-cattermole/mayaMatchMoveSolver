@@ -88,26 +88,34 @@ public:
     static MString m_draw_registrant_id;
 
     // Attributes
-    static MObject m_global_enable;
+    static MObject m_enable;
     static MObject m_transform_mode;
-    static MObject m_global_line_width;
+    static MObject m_line_width;
     static MObject m_resolution;
     static MObject m_draw_mode;
     static MObject m_radius;
-    static MObject m_latitude_enable;
-    static MObject m_longitude_enable;
-    static MObject m_latitude_line_width;
-    static MObject m_longitude_line_width;
-    static MObject m_latitude_divisions;
-    static MObject m_longitude_divisions;
-    static MObject m_x_axis_enable;
-    static MObject m_y_axis_enable;
-    static MObject m_z_axis_enable;
-    static MObject m_x_axis_line_width;
-    static MObject m_y_axis_line_width;
-    static MObject m_z_axis_line_width;
-    static MObject m_top_axis_enable;
-    static MObject m_bottom_axis_enable;
+
+    static MObject m_axis_x_enable;
+    static MObject m_axis_y_enable;
+    static MObject m_axis_z_enable;
+    static MObject m_axis_x_enable_top;
+    static MObject m_axis_z_enable_top;
+    static MObject m_axis_x_enable_bottom;
+    static MObject m_axis_z_enable_bottom;
+    static MObject m_axis_x_line_width;
+    static MObject m_axis_y_line_width;
+    static MObject m_axis_z_line_width;
+
+    static MObject m_grid_lat_enable;
+    static MObject m_grid_long_enable;
+    static MObject m_grid_lat_enable_top;
+    static MObject m_grid_long_enable_top;
+    static MObject m_grid_lat_enable_bottom;
+    static MObject m_grid_long_enable_bottom;
+    static MObject m_grid_lat_line_width;
+    static MObject m_grid_long_line_width;
+    static MObject m_grid_lat_divisions;
+    static MObject m_grid_long_divisions;
 };
 
 } // namespace mmsolver

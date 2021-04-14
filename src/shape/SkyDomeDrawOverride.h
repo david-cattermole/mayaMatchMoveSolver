@@ -48,54 +48,65 @@ public:
             , m_transform_mode(static_cast<short>(TransformMode::kNoOffset))
             , m_radius(1.0)
             , m_resolution(32)
-            , m_latitude_enable(true)
-            , m_longitude_enable(true)
-            , m_latitude_line_width(1.0f)
-            , m_longitude_line_width(1.0f)
-            , m_latitude_divisions(6)
-            , m_longitude_divisions(6)
-            , m_x_axis_enable(true)
-            , m_y_axis_enable(true)
-            , m_z_axis_enable(true)
-            , m_x_axis_line_width(2.0f)
-            , m_y_axis_line_width(2.0f)
-            , m_z_axis_line_width(2.0f)
+            , m_axis_x_enable(true)
+            , m_axis_y_enable(true)
+            , m_axis_z_enable(true)
+            , m_axis_x_enable_top(true)
+            , m_axis_z_enable_top(true)
+            , m_axis_x_enable_bottom(true)
+            , m_axis_z_enable_bottom(true)
+            , m_axis_x_line_width(2.0f)
+            , m_axis_y_line_width(2.0f)
+            , m_axis_z_line_width(2.0f)
+            , m_grid_lat_enable(true)
+            , m_grid_long_enable(true)
+            , m_grid_lat_enable_top(true)
+            , m_grid_long_enable_top(true)
+            , m_grid_lat_enable_bottom(true)
+            , m_grid_long_enable_bottom(true)
+            , m_grid_lat_divisions(6)
+            , m_grid_long_divisions(6)
+            , m_grid_lat_line_width(1.0f)
+            , m_grid_long_line_width(1.0f)
     {}
 
     ~SkyDomeDrawData() override {
     }
 
-    bool m_global_enable;
-    float m_global_line_width;
-
+    bool m_enable;
+    float m_line_width;
     short m_draw_mode;
     short m_transform_mode;
     float m_radius;
     uint32_t m_resolution;
-
-    bool m_latitude_enable;
-    bool m_longitude_enable;
-    float m_latitude_line_width;
-    float m_longitude_line_width;
-    uint32_t m_latitude_divisions;
-    uint32_t m_longitude_divisions;
-    MColor m_color_latitude{1.0f, 0.0f, 1.0f, 0.5f};
-    MColor m_color_longitude{0.0f, 1.0f, 1.0f, 0.5f};
-
-    bool m_top_axis_enable;
-    bool m_bottom_axis_enable;
-    bool m_x_axis_enable;
-    bool m_y_axis_enable;
-    bool m_z_axis_enable;
-    float m_x_axis_line_width;
-    float m_y_axis_line_width;
-    float m_z_axis_line_width;
-    MColor m_color_x{1.0f, 0.0f, 0.0f, 1.0f};
-    MColor m_color_y{0.0f, 1.0f, 0.0f, 1.0f};
-    MColor m_color_z{0.0f, 0.0f, 1.0f, 1.0f};
-
     unsigned int m_depth_priority;
 
+    bool m_axis_x_enable;
+    bool m_axis_y_enable;
+    bool m_axis_z_enable;
+    bool m_axis_x_enable_top;
+    bool m_axis_z_enable_top;
+    bool m_axis_x_enable_bottom;
+    bool m_axis_z_enable_bottom;
+    MColor m_axis_x_color{1.0f, 0.0f, 0.0f, 1.0f};
+    MColor m_axis_y_color{0.0f, 1.0f, 0.0f, 1.0f};
+    MColor m_axis_z_color{0.0f, 0.0f, 1.0f, 1.0f};
+    float m_axis_x_line_width;
+    float m_axis_y_line_width;
+    float m_axis_z_line_width;
+
+    bool m_grid_lat_enable;
+    bool m_grid_long_enable;
+    bool m_grid_lat_enable_top;
+    bool m_grid_long_enable_top;
+    bool m_grid_lat_enable_bottom;
+    bool m_grid_long_enable_bottom;
+    uint32_t m_grid_lat_divisions;
+    uint32_t m_grid_long_divisions;
+    MColor m_grid_lat_color{1.0f, 0.0f, 1.0f, 0.5f};
+    MColor m_grid_long_color{0.0f, 1.0f, 1.0f, 0.5f};
+    float m_grid_lat_line_width;
+    float m_grid_long_line_width;
 };
 
 class SkyDomeDrawOverride : public MHWRender::MPxDrawOverride {

@@ -203,13 +203,13 @@ MUserData *SkyDomeDrawOverride::prepareForDraw(
 
     // Global settings
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_global_enable, data->m_global_enable);
+        objPath, SkyDomeShapeNode::m_enable, data->m_enable);
     CHECK_MSTATUS(status);
     status = get_node_attr(
         objPath, SkyDomeShapeNode::m_transform_mode, data->m_transform_mode);
     CHECK_MSTATUS(status);
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_global_line_width, data->m_global_line_width);
+        objPath, SkyDomeShapeNode::m_line_width, data->m_line_width);
     CHECK_MSTATUS(status);
     status = get_node_attr(
         objPath, SkyDomeShapeNode::m_resolution, data->m_resolution);
@@ -229,48 +229,73 @@ MUserData *SkyDomeDrawOverride::prepareForDraw(
 
     // Enabled status
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_top_axis_enable, data->m_top_axis_enable);
-    status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_bottom_axis_enable, data->m_bottom_axis_enable);
-    status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_latitude_enable, data->m_latitude_enable);
+        objPath, SkyDomeShapeNode::m_axis_x_enable, data->m_axis_x_enable);
     CHECK_MSTATUS(status);
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_longitude_enable, data->m_longitude_enable);
+        objPath, SkyDomeShapeNode::m_axis_y_enable, data->m_axis_y_enable);
     CHECK_MSTATUS(status);
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_x_axis_enable, data->m_x_axis_enable);
+        objPath, SkyDomeShapeNode::m_axis_z_enable, data->m_axis_z_enable);
+    CHECK_MSTATUS(status);
+
+    status = get_node_attr(
+        objPath, SkyDomeShapeNode::m_axis_x_enable_top, data->m_axis_x_enable_top);
     CHECK_MSTATUS(status);
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_y_axis_enable, data->m_y_axis_enable);
+        objPath, SkyDomeShapeNode::m_axis_z_enable_top, data->m_axis_z_enable_top);
     CHECK_MSTATUS(status);
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_z_axis_enable, data->m_z_axis_enable);
+        objPath, SkyDomeShapeNode::m_axis_x_enable_bottom, data->m_axis_x_enable_bottom);
+    CHECK_MSTATUS(status);
+    status = get_node_attr(
+        objPath, SkyDomeShapeNode::m_axis_z_enable_bottom, data->m_axis_z_enable_bottom);
+    CHECK_MSTATUS(status);
+
+    status = get_node_attr(
+        objPath, SkyDomeShapeNode::m_grid_lat_enable, data->m_grid_lat_enable);
+    CHECK_MSTATUS(status);
+    status = get_node_attr(
+        objPath, SkyDomeShapeNode::m_grid_long_enable, data->m_grid_long_enable);
+    CHECK_MSTATUS(status);
+
+    status = get_node_attr(
+        objPath, SkyDomeShapeNode::m_grid_lat_enable_top, data->m_grid_lat_enable_top);
+    CHECK_MSTATUS(status);
+    status = get_node_attr(
+        objPath, SkyDomeShapeNode::m_grid_long_enable_top, data->m_grid_long_enable_top);
+    CHECK_MSTATUS(status);
+
+    status = get_node_attr(
+        objPath, SkyDomeShapeNode::m_grid_lat_enable_bottom, data->m_grid_lat_enable_bottom);
+    CHECK_MSTATUS(status);
+    status = get_node_attr(
+        objPath, SkyDomeShapeNode::m_grid_long_enable_bottom, data->m_grid_long_enable_bottom);
     CHECK_MSTATUS(status);
 
     // Line width
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_latitude_line_width, data->m_latitude_line_width);
+        objPath, SkyDomeShapeNode::m_axis_x_line_width, data->m_axis_x_line_width);
     CHECK_MSTATUS(status);
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_longitude_line_width, data->m_longitude_line_width);
+        objPath, SkyDomeShapeNode::m_axis_y_line_width, data->m_axis_y_line_width);
     CHECK_MSTATUS(status);
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_x_axis_line_width, data->m_x_axis_line_width);
+        objPath, SkyDomeShapeNode::m_axis_z_line_width, data->m_axis_z_line_width);
+    CHECK_MSTATUS(status);
+
+    status = get_node_attr(
+        objPath, SkyDomeShapeNode::m_grid_lat_line_width, data->m_grid_lat_line_width);
     CHECK_MSTATUS(status);
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_y_axis_line_width, data->m_y_axis_line_width);
-    CHECK_MSTATUS(status);
-    status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_z_axis_line_width, data->m_z_axis_line_width);
+        objPath, SkyDomeShapeNode::m_grid_long_line_width, data->m_grid_long_line_width);
     CHECK_MSTATUS(status);
 
     // Lat-long divisions
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_latitude_divisions, data->m_latitude_divisions);
+        objPath, SkyDomeShapeNode::m_grid_lat_divisions, data->m_grid_lat_divisions);
     CHECK_MSTATUS(status);
     status = get_node_attr(
-        objPath, SkyDomeShapeNode::m_longitude_divisions, data->m_longitude_divisions);
+        objPath, SkyDomeShapeNode::m_grid_long_divisions, data->m_grid_long_divisions);
     CHECK_MSTATUS(status);
 
     // Default depth priority.
@@ -289,7 +314,7 @@ void SkyDomeDrawOverride::addUIDrawables(
     if (!data) {
         return;
     }
-    if (!data->m_global_enable) {
+    if (!data->m_enable) {
         return;
     }
 
@@ -316,20 +341,28 @@ void SkyDomeDrawOverride::addUIDrawables(
     const uint32_t res = data->m_resolution;
     const float radius = data->m_radius;
     const uint32_t interval_latitude =
-        static_cast<uint32_t>(std::powf(2, data->m_latitude_divisions));
+        static_cast<uint32_t>(std::powf(2, data->m_grid_lat_divisions));
     const uint32_t interval_longitude =
-        static_cast<uint32_t>(std::powf(2, data->m_longitude_divisions));
+        static_cast<uint32_t>(std::powf(2, data->m_grid_long_divisions));
 
     // Allow skipping only top or bottom.
-    auto axis_top = data->m_top_axis_enable;
-    auto axis_bottom = data->m_bottom_axis_enable;
-    auto initial_size_x = res * 2 * data->m_x_axis_enable;
-    auto initial_size_y = res * 2 * data->m_y_axis_enable;
-    auto initial_size_z = res * 2 * data->m_z_axis_enable;
+    auto axis_x_top = data->m_axis_x_enable_top;
+    auto axis_z_top = data->m_axis_z_enable_top;
+    auto axis_x_bot = data->m_axis_x_enable_bottom;
+    auto axis_z_bot = data->m_axis_z_enable_bottom;
+
+    auto grid_lat_top = data->m_grid_lat_enable_top;
+    auto grid_long_top = data->m_grid_long_enable_top;
+    auto grid_lat_bot = data->m_grid_lat_enable_bottom;
+    auto grid_long_bot = data->m_grid_long_enable_bottom;
+
+    auto initial_size_x = res * 2 * data->m_axis_x_enable;
+    auto initial_size_y = res * 2 * data->m_axis_y_enable;
+    auto initial_size_z = res * 2 * data->m_axis_z_enable;
     const uint32_t initial_size_latitude =
-            res * 2 * interval_latitude * data->m_latitude_enable;
+            res * 2 * interval_latitude * data->m_grid_lat_enable;
     const uint32_t initial_size_longitude =
-            res * 2 * interval_longitude * data->m_longitude_enable;
+            res * 2 * interval_longitude * data->m_grid_long_enable;
     MFloatPointArray lines_x(initial_size_x);
     MFloatPointArray lines_y(initial_size_y);
     MFloatPointArray lines_z(initial_size_z);
@@ -338,21 +371,21 @@ void SkyDomeDrawOverride::addUIDrawables(
 
     auto index = 0;
 
+    // Calculate the start/end angle that each component will rotate.
     const float pi = static_cast<float>(M_PI);
-    float angle_start = -pi;
-    float angle_end = pi;
-    if (!axis_top) {
-        angle_start = 0.0;
-    }
-    if (!axis_bottom) {
-        angle_end = 0.0;
-    }
+    const float half_pi = static_cast<float>(M_PI / 2);
+    const float angle_offset_x = pi * 0.5f;
+    const float angle_offset_z = pi;
+    const float angle_offset_lat = pi / 2.0;
+    float angle_start_x = angle_offset_x + (-pi * axis_x_top);
+    float angle_start_z = angle_offset_z + (-pi * axis_z_top);
+    float angle_start_lat = angle_offset_lat + (-half_pi * grid_lat_top);
+    float angle_end_x = angle_offset_x + (pi * axis_x_bot);
+    float angle_end_z = angle_offset_z + (pi * axis_z_bot);
+    float angle_end_lat = angle_offset_lat + (half_pi * grid_lat_bot);
 
     // X Axis
-    const float angle_offset_x = pi * 0.5f;
-    const float angle_start_x = angle_offset_x + angle_start;
-    const float angle_end_x = angle_offset_x + angle_end;
-    if (data->m_x_axis_enable && (axis_top || axis_bottom)) {
+    if (data->m_axis_x_enable && (axis_x_top || axis_x_bot)) {
         index = 0;
         for (uint32_t i = 0; i < res; i++) {
             const float ratio1 = static_cast<float>(i) / static_cast<float>(res);
@@ -379,7 +412,7 @@ void SkyDomeDrawOverride::addUIDrawables(
     }
 
     // Y Axis
-    if (data->m_y_axis_enable) {
+    if (data->m_axis_y_enable) {
         index = 0;
         for (uint32_t i = 0; i < res; i++) {
             const float ratio1 = static_cast<float>(i) / static_cast<float>(res);
@@ -405,10 +438,7 @@ void SkyDomeDrawOverride::addUIDrawables(
     }
 
     // Z Axis
-    const float angle_offset_z = pi;
-    const float angle_start_z = angle_offset_z + angle_start;
-    const float angle_end_z = angle_offset_z + angle_end;
-    if (data->m_z_axis_enable && (axis_top || axis_bottom)) {
+    if (data->m_axis_z_enable && (axis_z_top || axis_z_bot)) {
         index = 0;
         for (uint32_t i = 0; i < res; i++) {
             const float ratio1 = static_cast<float>(i) / static_cast<float>(res);
@@ -437,10 +467,7 @@ void SkyDomeDrawOverride::addUIDrawables(
     // Latitude
     //
     // TODO: Add little crosses, and/or dots at selected intervals.
-    const float angle_offset_lat = pi / 2.0;
-    const float angle_start_lat = angle_offset_lat + (angle_start / 2.0f);
-    const float angle_end_lat = angle_offset_lat + (angle_end / 2.0f);
-    if (data->m_latitude_enable && (axis_top || axis_bottom)) {
+    if (data->m_grid_lat_enable && (grid_lat_top || grid_lat_bot)) {
         index = 0;
         for (uint32_t i = 0; i < interval_latitude; i++) {
             const float outer_ratio =
@@ -479,7 +506,7 @@ void SkyDomeDrawOverride::addUIDrawables(
     }
 
     // Longitude
-    if (data->m_longitude_enable && (axis_top || axis_bottom)) {
+    if (data->m_grid_long_enable && (grid_long_top || grid_long_bot)) {
         index = 0;
         for (uint32_t j = 0; j < interval_longitude; j++) {
             const float outer_ratio =
@@ -488,10 +515,10 @@ void SkyDomeDrawOverride::addUIDrawables(
             const float xy = radius * std::cosf(outer_angle);
             const float z = radius * std::sinf(outer_angle);
 
-            if (!axis_top && (z > 0.0f)) {
+            if (!grid_long_top && (z > 0.0f)) {
                 continue;
             }
-            if (!axis_bottom && (z < 0.0f)) {
+            if (!grid_long_bot && (z < 0.0f)) {
                 continue;
             }
 
@@ -531,50 +558,50 @@ void SkyDomeDrawOverride::addUIDrawables(
         }
 
         // Latitude
-        if (data->m_latitude_enable) {
+        if (data->m_grid_lat_enable) {
             drawManager.setLineWidth(
-                data->m_global_line_width * data->m_latitude_line_width);
-            drawManager.setColor(data->m_color_latitude);
+                    data->m_line_width * data->m_grid_lat_line_width);
+            drawManager.setColor(data->m_grid_lat_color);
             drawManager.mesh(
                 MHWRender::MUIDrawManager::kLines,
                 lines_latitude);
         }
 
         // Longitude
-        if (data->m_longitude_enable) {
+        if (data->m_grid_long_enable) {
             drawManager.setLineWidth(
-                data->m_global_line_width * data->m_longitude_line_width);
-            drawManager.setColor(data->m_color_longitude);
+                    data->m_line_width * data->m_grid_long_line_width);
+            drawManager.setColor(data->m_grid_long_color);
             drawManager.mesh(
                 MHWRender::MUIDrawManager::kLines,
                 lines_longitude);
         }
 
         // X Axis
-        if (data->m_x_axis_enable) {
+        if (data->m_axis_x_enable) {
             drawManager.setLineWidth(
-                data->m_global_line_width * data->m_x_axis_line_width);
-            drawManager.setColor(data->m_color_x);
+                    data->m_line_width * data->m_axis_x_line_width);
+            drawManager.setColor(data->m_axis_x_color);
             drawManager.mesh(
                 MHWRender::MUIDrawManager::kLines,
                 lines_x);
         }
 
         // Y Axis
-        if (data->m_y_axis_enable) {
+        if (data->m_axis_y_enable) {
             drawManager.setLineWidth(
-                data->m_global_line_width * data->m_y_axis_line_width);
-            drawManager.setColor(data->m_color_y);
+                    data->m_line_width * data->m_axis_y_line_width);
+            drawManager.setColor(data->m_axis_y_color);
             drawManager.mesh(
                 MHWRender::MUIDrawManager::kLines,
                 lines_y);
         }
 
         // Z Axis
-        if (data->m_z_axis_enable) {
+        if (data->m_axis_z_enable) {
             drawManager.setLineWidth(
-                data->m_global_line_width * data->m_z_axis_line_width);
-            drawManager.setColor(data->m_color_z);
+                    data->m_line_width * data->m_axis_z_line_width);
+            drawManager.setColor(data->m_axis_z_color);
             drawManager.mesh(
                 MHWRender::MUIDrawManager::kLines,
                 lines_z);

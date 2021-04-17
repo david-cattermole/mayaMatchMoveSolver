@@ -66,6 +66,8 @@ public:
 
     MBoundingBox boundingBox() const override;
 
+    bool excludeAsLocator() const;
+
 #if MAYA_API_VERSION >= 20190000
     MStatus preEvaluation(const MDGContext &context,
                           const MEvaluationNode &evaluationNode) override;

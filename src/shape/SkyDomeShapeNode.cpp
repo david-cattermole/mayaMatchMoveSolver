@@ -111,6 +111,13 @@ MBoundingBox SkyDomeShapeNode::boundingBox() const {
     return MBoundingBox(corner1, corner2);
 }
 
+bool SkyDomeShapeNode::excludeAsLocator() const {
+    // Returning 'false' here means that when the user toggles
+    // locators on/off with the (per-viewport) "Show" menu, this shape
+    // node will not be affected.
+    return false;
+}
+
 // Called before this node is evaluated by Evaluation Manager.
 #if MAYA_API_VERSION >= 20190000
 MStatus SkyDome::preEvaluation(

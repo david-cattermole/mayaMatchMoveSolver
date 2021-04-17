@@ -236,6 +236,8 @@ set(SOURCE_FILES
         src/renderer/PresentTarget.cpp
         src/renderer/SceneRender.cpp
         src/renderer/RenderOverride.cpp
+        src/shape/SkyDomeShapeNode.cpp
+        src/shape/SkyDomeDrawOverride.cpp
         src/mayaUtils.h
         src/Camera.h
         src/Camera.cpp

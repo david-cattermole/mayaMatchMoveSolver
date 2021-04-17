@@ -43,6 +43,8 @@
 #include <MMMarkerGroupTransformNode.h>
 #include <MMReprojectionCmd.h>
 #include <MMSolverAffectsCmd.h>
+#include <shape/SkyDomeShapeNode.h>
+#include <shape/SkyDomeDrawOverride.h>
 
 // MM Renderer
 #include <renderer/RenderOverride.h>
@@ -93,6 +95,39 @@
     if (!stat) {                                                \
             stat.perror(MString(name) + ": registerTransform"); \
             return (stat);                                      \
+    }
+
+#define REGISTER_LOCATOR_NODE(plugin, name, id, creator, initialize, \
+                              type, classification, stat)            \
+    stat = plugin.registerNode(                                      \
+        name, id, creator, initialize, type, classification);        \
+    if (!stat) {                                                     \
+        stat.perror(MString(name) + ": registerNode");               \
+        return (stat);                                               \
+    }
+
+// Same definition as 'DEREGISTER_NODE'.
+#define DEREGISTER_LOCATOR_NODE(plugin, name, id, stat) \
+    DEREGISTER_NODE(plugin, name, id, stat)
+
+#define REGISTER_DRAW_OVERRIDE(classification, register_name, creator, stat) \
+    stat = MHWRender::MDrawRegistry::registerDrawOverrideCreator(       \
+        classification,                                                 \
+        register_name,                                                  \
+        creator);                                                       \
+    if (!stat) {                                                        \
+        stat.perror(                                                    \
+            MString(register_name) + ": registerDrawOverrideCreator");  \
+        return (stat);                                                  \
+    }
+
+#define DEREGISTER_DRAW_OVERRIDE(classification, register_name, stat)   \
+    stat = MHWRender::MDrawRegistry::deregisterDrawOverrideCreator(     \
+        classification,                                                 \
+        register_name);                                                 \
+    if (!stat) {                                                        \
+        stat.perror("deregisterDrawOverrideCreator");                   \
+        return stat;                                                    \
     }
 
 
@@ -157,6 +192,22 @@ MStatus initializePlugin(MObject obj) {
                   mmsolver::renderer::RenderGlobalsNode::initialize,
                   status);
 
+    const MString skyDomeClassification = MM_SKY_DOME_DRAW_CLASSIFY;
+    REGISTER_LOCATOR_NODE(
+        plugin,
+        mmsolver::SkyDomeShapeNode::nodeName(),
+        mmsolver::SkyDomeShapeNode::m_id,
+        mmsolver::SkyDomeShapeNode::creator,
+        mmsolver::SkyDomeShapeNode::initialize,
+        MPxNode::kLocatorNode,
+        &skyDomeClassification,
+        status);
+    REGISTER_DRAW_OVERRIDE(
+        mmsolver::SkyDomeShapeNode::m_draw_db_classification,
+        mmsolver::SkyDomeShapeNode::m_draw_registrant_id,
+        mmsolver::SkyDomeDrawOverride::Creator,
+        status);
+
     // MM Marker Group transform
     const MString markerGroupClassification = MM_MARKER_GROUP_DRAW_CLASSIFY;
     REGISTER_TRANSFORM(
@@ -208,6 +259,22 @@ MStatus initializePlugin(MObject obj) {
                          status);
     }
 
+    // Register a custom selection mask with priority 2 (same as
+    // locators by default).
+    MSelectionMask::registerSelectionType(
+        mmsolver::SkyDomeShapeNode::m_selection_type_name, 2);
+    MString mel_cmd = "selectType -byName \"";
+    mel_cmd += mmsolver::SkyDomeShapeNode::m_selection_type_name;
+    mel_cmd += "\" 1";
+    status = MGlobal::executeCommand(mel_cmd);
+
+    // Register plugin display filter.
+    // The filter is registered in both interactive and batch mode (Hardware 2.0)
+    plugin.registerDisplayFilter(
+        mmsolver::SkyDomeShapeNode::m_display_filter_name,
+        mmsolver::SkyDomeShapeNode::m_display_filter_label,
+        mmsolver::SkyDomeShapeNode::m_draw_db_classification);
+
     // Run the Python startup function when the plug-in loads.
     bool displayEnabled = false;
     bool undoEnabled = false;
@@ -251,6 +318,17 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMSolverAffectsCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
+
+    DEREGISTER_DRAW_OVERRIDE(
+        mmsolver::SkyDomeShapeNode::m_draw_db_classification,
+        mmsolver::SkyDomeShapeNode::m_draw_registrant_id,
+        status);
+
+    DEREGISTER_LOCATOR_NODE(
+        plugin,
+        mmsolver::SkyDomeShapeNode::nodeName(),
+        mmsolver::SkyDomeShapeNode::m_id,
+        status);
 
     DEREGISTER_NODE(plugin,
                     mmsolver::renderer::RenderGlobalsNode::nodeName(),

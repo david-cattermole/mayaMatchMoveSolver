@@ -72,6 +72,13 @@
 #define MM_MARKER_GROUP_TRANSFORM_TYPE_ID 0x0012F182
 #define MM_MARKER_GROUP_TRANSFORM_TYPE_NAME "mmMarkerGroupTransform"
 #define MM_MARKER_GROUP_DRAW_CLASSIFY "drawdb/geometry/transform"
+#define MM_SKY_DOME_SHAPE_TYPE_ID 0x0012F195
+#define MM_SKY_DOME_SHAPE_TYPE_NAME "mmSkyDomeShape"
+#define MM_SKY_DOME_DRAW_CLASSIFY "drawdb/geometry/mmSolver/skyDome"
+#define MM_SKY_DOME_DRAW_REGISTRANT_ID "mmSkyDomeNodePlugin"
+#define MM_SKY_DOME_SHAPE_SELECTION_TYPE_NAME "mmSkyDomeShapeSelection"
+#define MM_SKY_DOME_SHAPE_DISPLAY_FILTER_NAME "mmSkyDomeDisplayFilter"
+#define MM_SKY_DOME_SHAPE_DISPLAY_FILTER_LABEL "MM SkyDome"
 
 #define MM_RENDERER_NAME "mmRenderer"
 #define MM_RENDER_GLOBALS_TYPE_ID 0x0012F194

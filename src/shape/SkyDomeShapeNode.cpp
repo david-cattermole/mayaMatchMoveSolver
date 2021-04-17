@@ -37,6 +37,7 @@
 #include <maya/MFnNumericData.h>
 
 #if MAYA_API_VERSION >= 20190000
+#include <maya/MViewport2Renderer.h>
 #include <maya/MEvaluationNode.h>
 #include <assert.h>
 #endif
@@ -46,6 +47,9 @@ namespace mmsolver {
 MTypeId SkyDomeShapeNode::m_id(MM_SKY_DOME_SHAPE_TYPE_ID);
 MString SkyDomeShapeNode::m_draw_db_classification(MM_SKY_DOME_DRAW_CLASSIFY);
 MString SkyDomeShapeNode::m_draw_registrant_id(MM_SKY_DOME_DRAW_REGISTRANT_ID);
+MString SkyDomeShapeNode::m_selection_type_name(MM_SKY_DOME_SHAPE_SELECTION_TYPE_NAME);
+MString SkyDomeShapeNode::m_display_filter_name(MM_SKY_DOME_SHAPE_DISPLAY_FILTER_NAME);
+MString SkyDomeShapeNode::m_display_filter_label(MM_SKY_DOME_SHAPE_DISPLAY_FILTER_LABEL);
 
 // Attributes
 MObject SkyDomeShapeNode::m_enable;
@@ -111,14 +115,21 @@ MBoundingBox SkyDomeShapeNode::boundingBox() const {
     return MBoundingBox(corner1, corner2);
 }
 
+bool SkyDomeShapeNode::excludeAsLocator() const {
+    // Returning 'false' here means that when the user toggles
+    // locators on/off with the (per-viewport) "Show" menu, this shape
+    // node will not be affected.
+    return false;
+}
+
 // Called before this node is evaluated by Evaluation Manager.
 #if MAYA_API_VERSION >= 20190000
-MStatus SkyDome::preEvaluation(
+MStatus SkyDomeShapeNode::preEvaluation(
         const MDGContext &context,
         const MEvaluationNode &evaluationNode) {
     if (context.isNormal()) {
         MStatus status;
-        if (evaluationNode.dirtyPlugExists(m_size, &status) && status) {
+        if (evaluationNode.dirtyPlugExists(m_radius, &status) && status) {
             MHWRender::MRenderer::setGeometryDrawDirty(thisMObject());
         }
     }
@@ -128,10 +139,10 @@ MStatus SkyDome::preEvaluation(
 #endif
 
 #if MAYA_API_VERSION >= 20190000
-void SkyDome::getCacheSetup(const MEvaluationNode &evalNode,
-                            MNodeCacheDisablingInfo &disablingInfo,
-                            MNodeCacheSetupInfo &cacheSetupInfo,
-                            MObjectArray &monitoredAttributes) const {
+void SkyDomeShapeNode::getCacheSetup(const MEvaluationNode &evalNode,
+                                     MNodeCacheDisablingInfo &disablingInfo,
+                                     MNodeCacheSetupInfo &cacheSetupInfo,
+                                     MObjectArray &monitoredAttributes) const {
     MPxLocatorNode::getCacheSetup(evalNode, disablingInfo, cacheSetupInfo,
                                   monitoredAttributes);
     assert(!disablingInfo.getCacheDisabled());
@@ -349,7 +360,6 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
     CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
     CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
-
 
     // Colors - Add colours for axis lines and lat-long lines.
     m_axis_x_color = nAttr.createColor(

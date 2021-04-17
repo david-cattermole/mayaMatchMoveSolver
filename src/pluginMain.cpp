@@ -143,15 +143,16 @@ MStatus initializePlugin(MObject obj) {
 
     // MM Marker Group transform
     const MString markerGroupClassification = MM_MARKER_GROUP_DRAW_CLASSIFY;
-    REGISTER_TRANSFORM(plugin,
-                       MMMarkerGroupTransformNode::nodeName(),
-                       MMMarkerGroupTransformNode::m_id,
-                       MMMarkerGroupTransformNode::creator,
-                       MMMarkerGroupTransformNode::initialize,
-                       MPxTransformationMatrix::baseTransformationMatrixId,
-                       MPxTransformationMatrix::creator,
-                       markerGroupClassification,
-                       status)
+    REGISTER_TRANSFORM(
+        plugin,
+        MMMarkerGroupTransformNode::nodeName(),
+        MMMarkerGroupTransformNode::m_id,
+        MMMarkerGroupTransformNode::creator,
+        MMMarkerGroupTransformNode::initialize,
+        MPxTransformationMatrix::baseTransformationMatrixId,
+        MPxTransformationMatrix::creator,
+        markerGroupClassification,
+        status);
 
     // Run the Python startup function when the plug-in loads.
     bool displayEnabled = false;

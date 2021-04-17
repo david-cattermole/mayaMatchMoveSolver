@@ -225,6 +225,8 @@ set(SOURCE_FILES
         src/core/bundleAdjust_cminpack_lmdif.cpp
         src/core/bundleAdjust_cminpack_lmder.h
         src/core/bundleAdjust_cminpack_lmder.cpp
+        src/shape/MarkerShapeNode.cpp
+        src/shape/MarkerDrawOverride.cpp
         src/shape/SkyDomeShapeNode.cpp
         src/shape/SkyDomeDrawOverride.cpp
         src/mayaUtils.h

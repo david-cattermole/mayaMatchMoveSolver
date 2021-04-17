@@ -39,6 +39,8 @@
 #include <MMMarkerGroupTransformNode.h>
 #include <MMReprojectionCmd.h>
 #include <MMSolverAffectsCmd.h>
+#include <shape/MarkerShapeNode.h>
+#include <shape/MarkerDrawOverride.h>
 #include <shape/SkyDomeShapeNode.h>
 #include <shape/SkyDomeDrawOverride.h>
 
@@ -175,7 +177,17 @@ MStatus initializePlugin(MObject obj) {
                   MMReprojectionNode::initialize,
                   status);
 
+    const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
     const MString skyDomeClassification = MM_SKY_DOME_DRAW_CLASSIFY;
+    REGISTER_LOCATOR_NODE(
+        plugin,
+        mmsolver::MarkerShapeNode::nodeName(),
+        mmsolver::MarkerShapeNode::m_id,
+        mmsolver::MarkerShapeNode::creator,
+        mmsolver::MarkerShapeNode::initialize,
+        MPxNode::kLocatorNode,
+        &markerClassification,
+        status);
     REGISTER_LOCATOR_NODE(
         plugin,
         mmsolver::SkyDomeShapeNode::nodeName(),
@@ -184,6 +196,12 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::SkyDomeShapeNode::initialize,
         MPxNode::kLocatorNode,
         &skyDomeClassification,
+        status);
+
+    REGISTER_DRAW_OVERRIDE(
+        mmsolver::MarkerShapeNode::m_draw_db_classification,
+        mmsolver::MarkerShapeNode::m_draw_registrant_id,
+        mmsolver::MarkerDrawOverride::Creator,
         status);
     REGISTER_DRAW_OVERRIDE(
         mmsolver::SkyDomeShapeNode::m_draw_db_classification,
@@ -203,6 +221,22 @@ MStatus initializePlugin(MObject obj) {
                        markerGroupClassification,
                        status)
 
+    // Register a custom selection mask with priority 2 (same as
+    // locators by default).
+    MSelectionMask::registerSelectionType(
+        mmsolver::MarkerShapeNode::m_selection_type_name, 2);
+    MString mel_cmd = "selectType -byName \"";
+    mel_cmd += mmsolver::MarkerShapeNode::m_selection_type_name;
+    mel_cmd += "\" 1";
+    status = MGlobal::executeCommand(mel_cmd);
+
+    // Register plugin display filter.
+    // The filter is registered in both interactive and batch mode (Hardware 2.0)
+    plugin.registerDisplayFilter(
+        mmsolver::MarkerShapeNode::m_display_filter_name,
+        mmsolver::MarkerShapeNode::m_display_filter_label,
+        mmsolver::MarkerShapeNode::m_draw_db_classification);
+
     // Run the Python startup function when the plug-in loads.
     bool displayEnabled = false;
     bool undoEnabled = false;
@@ -212,9 +246,9 @@ MStatus initializePlugin(MObject obj) {
     command += "if 'mmsolver_startup' in dir() and MMSOLVER_STARTED is False:\n";
     command += "    maya.utils.executeDeferred(mmsolver_startup);\n";
     status = MGlobal::executePythonCommand(
-            command,
-            displayEnabled,
-            undoEnabled
+        command,
+        displayEnabled,
+        undoEnabled
     );
 
     return status;
@@ -233,10 +267,19 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
 
     DEREGISTER_DRAW_OVERRIDE(
+        mmsolver::MarkerShapeNode::m_draw_db_classification,
+        mmsolver::MarkerShapeNode::m_draw_registrant_id,
+        status);
+    DEREGISTER_DRAW_OVERRIDE(
         mmsolver::SkyDomeShapeNode::m_draw_db_classification,
         mmsolver::SkyDomeShapeNode::m_draw_registrant_id,
         status);
 
+    DEREGISTER_LOCATOR_NODE(
+        plugin,
+        mmsolver::MarkerShapeNode::nodeName(),
+        mmsolver::MarkerShapeNode::m_id,
+        status);
     DEREGISTER_LOCATOR_NODE(
         plugin,
         mmsolver::SkyDomeShapeNode::nodeName(),
@@ -245,10 +288,8 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(),
                     MMMarkerScaleNode::m_id, status);
-
     DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(),
                     MMReprojectionNode::m_id, status);
-
     DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(),
                     MMMarkerGroupTransformNode::m_id, status);
     return status;

@@ -26,10 +26,11 @@
 
 #include "constants.h"
 
+#include <maya/MString.h>
+#include <maya/MBoundingBox.h>
 #include <maya/MObjectHandle.h>
 #include <maya/MUiMessage.h>
 #include <maya/MDagMessage.h>
-#include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 #include <maya/MRenderTargetManager.h>
 

@@ -21,6 +21,11 @@
  *
  */
 
+// Maya 2020 and Visual Studio 2017 causes a conflict with the 'min()'
+// method on MBoundingBox.
+//
+// https://stackoverflow.com/questions/1394132/macro-and-member-function-conflict
+#define NOMINMAX
 
 #include "../mayaUtils.h"
 
@@ -33,11 +38,15 @@
 #include "HudRender.h"
 #include "PresentTarget.h"
 
-#include <maya/MUiMessage.h>
 #include <maya/MStreamUtils.h>
-#include <maya/MShaderManager.h>
+#include <maya/MObject.h>
+#include <maya/MObjectHandle.h>
 #include <maya/MString.h>
 #include <maya/MPlug.h>
+#include <maya/MBoundingBox.h>
+#include <maya/MUiMessage.h>
+#include <maya/MShaderManager.h>
+#include <maya/MViewport2Renderer.h>
 
 namespace mmsolver {
 namespace renderer {

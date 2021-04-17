@@ -85,10 +85,16 @@ class CenterTwoDeeWindow(BaseWindow):
 
         # Standard Buttons
         self.baseHideStandardButtons()
+        self.createBtn.show()
+        self.applyBtn.show()
         self.resetBtn.show()
         self.closeBtn.show()
+        self.createBtn.setText('Apply')
+        self.applyBtn.setText('Remove')
         self.resetBtn.setText('Reset All')
 
+        self.createBtn.clicked.connect(self.apply_center)
+        self.applyBtn.clicked.connect(self.remove_center)
         self.resetBtn.clicked.connect(self.reset_options)
 
         # Hide irrelevant stuff
@@ -142,6 +148,14 @@ class CenterTwoDeeWindow(BaseWindow):
         if self.camera_shape:
             lib.set_zoom(self.camera_shape, output)
         return
+
+    def apply_center(self):
+        import mmSolver.tools.centertwodee.tool as tool
+        tool.main()
+
+    def remove_center(self):
+        import mmSolver.tools.centertwodee.tool as tool
+        tool.remove()
 
     def reset_options(self):
         self.form.reset_options()

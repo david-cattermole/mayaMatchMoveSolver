@@ -37,6 +37,7 @@
 #include <maya/MFnNumericData.h>
 
 #if MAYA_API_VERSION >= 20190000
+#include <maya/MViewport2Renderer.h>
 #include <maya/MEvaluationNode.h>
 #include <assert.h>
 #endif
@@ -120,12 +121,12 @@ bool SkyDomeShapeNode::excludeAsLocator() const {
 
 // Called before this node is evaluated by Evaluation Manager.
 #if MAYA_API_VERSION >= 20190000
-MStatus SkyDome::preEvaluation(
+MStatus SkyDomeShapeNode::preEvaluation(
         const MDGContext &context,
         const MEvaluationNode &evaluationNode) {
     if (context.isNormal()) {
         MStatus status;
-        if (evaluationNode.dirtyPlugExists(m_size, &status) && status) {
+        if (evaluationNode.dirtyPlugExists(m_radius, &status) && status) {
             MHWRender::MRenderer::setGeometryDrawDirty(thisMObject());
         }
     }
@@ -135,10 +136,10 @@ MStatus SkyDome::preEvaluation(
 #endif
 
 #if MAYA_API_VERSION >= 20190000
-void SkyDome::getCacheSetup(const MEvaluationNode &evalNode,
-                            MNodeCacheDisablingInfo &disablingInfo,
-                            MNodeCacheSetupInfo &cacheSetupInfo,
-                            MObjectArray &monitoredAttributes) const {
+void SkyDomeShapeNode::getCacheSetup(const MEvaluationNode &evalNode,
+                                     MNodeCacheDisablingInfo &disablingInfo,
+                                     MNodeCacheSetupInfo &cacheSetupInfo,
+                                     MObjectArray &monitoredAttributes) const {
     MPxLocatorNode::getCacheSetup(evalNode, disablingInfo, cacheSetupInfo,
                                   monitoredAttributes);
     assert(!disablingInfo.getCacheDisabled());
@@ -356,7 +357,6 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
     CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
     CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
-
 
     // Colors - Add colours for axis lines and lat-long lines.
     m_axis_x_color = nAttr.createColor(

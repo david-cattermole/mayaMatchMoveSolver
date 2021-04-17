@@ -211,15 +211,16 @@ MStatus initializePlugin(MObject obj) {
 
     // MM Marker Group transform
     const MString markerGroupClassification = MM_MARKER_GROUP_DRAW_CLASSIFY;
-    REGISTER_TRANSFORM(plugin,
-                       MMMarkerGroupTransformNode::nodeName(),
-                       MMMarkerGroupTransformNode::m_id,
-                       MMMarkerGroupTransformNode::creator,
-                       MMMarkerGroupTransformNode::initialize,
-                       MPxTransformationMatrix::baseTransformationMatrixId,
-                       MPxTransformationMatrix::creator,
-                       markerGroupClassification,
-                       status)
+    REGISTER_TRANSFORM(
+        plugin,
+        MMMarkerGroupTransformNode::nodeName(),
+        MMMarkerGroupTransformNode::m_id,
+        MMMarkerGroupTransformNode::creator,
+        MMMarkerGroupTransformNode::initialize,
+        MPxTransformationMatrix::baseTransformationMatrixId,
+        MPxTransformationMatrix::creator,
+        markerGroupClassification,
+        status);
 
     // Register a custom selection mask with priority 2 (same as
     // locators by default).

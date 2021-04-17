@@ -47,6 +47,9 @@ namespace mmsolver {
 MTypeId SkyDomeShapeNode::m_id(MM_SKY_DOME_SHAPE_TYPE_ID);
 MString SkyDomeShapeNode::m_draw_db_classification(MM_SKY_DOME_DRAW_CLASSIFY);
 MString SkyDomeShapeNode::m_draw_registrant_id(MM_SKY_DOME_DRAW_REGISTRANT_ID);
+MString SkyDomeShapeNode::m_selection_type_name(MM_SKY_DOME_SHAPE_SELECTION_TYPE_NAME);
+MString SkyDomeShapeNode::m_display_filter_name(MM_SKY_DOME_SHAPE_DISPLAY_FILTER_NAME);
+MString SkyDomeShapeNode::m_display_filter_label(MM_SKY_DOME_SHAPE_DISPLAY_FILTER_LABEL);
 
 // Attributes
 MObject SkyDomeShapeNode::m_enable;

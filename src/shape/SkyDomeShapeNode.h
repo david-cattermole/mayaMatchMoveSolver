@@ -88,6 +88,9 @@ public:
     static MTypeId m_id;
     static MString m_draw_db_classification;
     static MString m_draw_registrant_id;
+    static MString m_selection_type_name;
+    static MString m_display_filter_name;
+    static MString m_display_filter_label;
 
     // Attributes
     static MObject m_enable;

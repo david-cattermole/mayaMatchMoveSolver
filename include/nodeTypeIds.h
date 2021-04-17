@@ -74,5 +74,8 @@
 #define MM_SKY_DOME_SHAPE_TYPE_NAME "mmSkyDomeShape"
 #define MM_SKY_DOME_DRAW_CLASSIFY "drawdb/geometry/mmSolver/skyDome"
 #define MM_SKY_DOME_DRAW_REGISTRANT_ID "mmSkyDomeNodePlugin"
+#define MM_SKY_DOME_SHAPE_SELECTION_TYPE_NAME "mmSkyDomeShapeSelection"
+#define MM_SKY_DOME_SHAPE_DISPLAY_FILTER_NAME "mmSkyDomeDisplayFilter"
+#define MM_SKY_DOME_SHAPE_DISPLAY_FILTER_LABEL "MM SkyDome"
 
 #endif // MM_SOLVER_NODE_TYPE_IDS_H

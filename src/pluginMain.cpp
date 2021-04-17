@@ -203,6 +203,22 @@ MStatus initializePlugin(MObject obj) {
                        markerGroupClassification,
                        status)
 
+    // Register a custom selection mask with priority 2 (same as
+    // locators by default).
+    MSelectionMask::registerSelectionType(
+        mmsolver::SkyDomeShapeNode::m_selection_type_name, 2);
+    MString mel_cmd = "selectType -byName \"";
+    mel_cmd += mmsolver::SkyDomeShapeNode::m_selection_type_name;
+    mel_cmd += "\" 1";
+    status = MGlobal::executeCommand(mel_cmd);
+
+    // Register plugin display filter.
+    // The filter is registered in both interactive and batch mode (Hardware 2.0)
+    plugin.registerDisplayFilter(
+        mmsolver::SkyDomeShapeNode::m_display_filter_name,
+        mmsolver::SkyDomeShapeNode::m_display_filter_label,
+        mmsolver::SkyDomeShapeNode::m_draw_db_classification);
+
     // Run the Python startup function when the plug-in loads.
     bool displayEnabled = false;
     bool undoEnabled = false;

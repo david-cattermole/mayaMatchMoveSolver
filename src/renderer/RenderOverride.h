@@ -25,6 +25,7 @@
 #define MAYA_MM_SOLVER_MM_RENDERER_MAIN_OVERRIDE_H
 
 #include "constants.h"
+#include "RenderGlobalsNode.h"
 
 #include <maya/MString.h>
 #include <maya/MBoundingBox.h>
@@ -196,6 +197,9 @@ private:
     bool m_pull_updates;
 
     // Renderer settings
+    short m_mode;
+    RenderFormat m_render_format;
+    int32_t m_multi_sample_count;
     double m_wireframe_alpha;
     double m_edge_thickness;
     double m_edge_threshold;

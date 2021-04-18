@@ -225,6 +225,30 @@ MStatus RenderOverride::updateParameters() {
 
     MObject node_obj = m_globals_node.object();
     MFnDependencyNode depends_node(node_obj, &status);
+    CHECK_MSTATUS(status);
+
+    MPlug mode_plug = depends_node.findPlug(
+        "mode", /*wantNetworkedPlug=*/ true, &status);
+    CHECK_MSTATUS(status);
+    if (status == MStatus::kSuccess) {
+        m_mode = mode_plug.asShort();
+    }
+    MStreamUtils::stdOutStream()
+        << "RenderOverride mode: " << m_mode << '\n';
+
+    MPlug render_format_plug = depends_node.findPlug(
+        "renderFormat", /*wantNetworkedPlug=*/ true, &status);
+    CHECK_MSTATUS(status);
+    if (status == MStatus::kSuccess) {
+        short value = render_format_plug.asShort();
+        m_render_format = static_cast<RenderFormat>(value);
+        // MHWRender::kR16G16B16A16_FLOAT;
+        // MHWRender::kR32G32B32A32_FLOAT;
+        // MHWRender::kR8G8B8A8_UNORM;;
+    }
+    MStreamUtils::stdOutStream()
+        << "RenderOverride render_format: "
+        << static_cast<short>(m_render_format) << '\n';
 
     // MString attr_name = "wireframeAlpha";
     MPlug wire_alpha_plug = depends_node.findPlug(
@@ -447,8 +471,9 @@ RenderOverride::updateRenderTargets() {
     // color and depth targets, but shaders may interally reference
     // specific render targets.
 
-    auto mode = 1;
-    if (mode == 0) {
+    if (m_mode == 0) {
+        MStreamUtils::stdOutStream()
+            << "RenderOverride::mode = Zero\n";
         // Blend edge detect on/off.
         auto depthPassOp = (SceneRender *) m_ops[kSceneDepthPass];
         if (depthPassOp) {
@@ -518,7 +543,9 @@ RenderOverride::updateRenderTargets() {
             presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-    } else if (mode == 1) {
+    } else if (m_mode == 1) {
+        MStreamUtils::stdOutStream()
+            << "RenderOverride::mode = ONE\n";
         // Blending wireframes.
         auto depthPassOp = (SceneRender *) m_ops[kSceneDepthPass];
         if (depthPassOp) {
@@ -587,6 +614,9 @@ RenderOverride::updateRenderTargets() {
             presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
     } else {
+        MStreamUtils::stdOutStream()
+            << "RenderOverride::mode = ELSE\n";
+
         // No blending or post operations.
         auto depthPassOp = (SceneRender *) m_ops[kSceneDepthPass];
         if (depthPassOp) {

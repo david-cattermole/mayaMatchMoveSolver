@@ -27,7 +27,7 @@
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
 #include <maya/MFnNumericAttribute.h>
-// #include <maya/MFnEnumAttribute.h>
+#include <maya/MFnEnumAttribute.h>
 #include <maya/MFnNumericData.h>
 #include <maya/MMessage.h>
 #include <maya/MNodeMessage.h>
@@ -49,6 +49,9 @@ namespace renderer {
 MTypeId RenderGlobalsNode::m_id(MM_RENDER_GLOBALS_TYPE_ID);
 
 // Input Attributes
+MObject RenderGlobalsNode::a_mode;
+MObject RenderGlobalsNode::a_renderFormat;
+MObject RenderGlobalsNode::a_multiSampleCount;
 MObject RenderGlobalsNode::a_wireframeAlpha;
 MObject RenderGlobalsNode::a_edgeThickness;
 MObject RenderGlobalsNode::a_edgeThreshold;
@@ -164,59 +167,87 @@ void *RenderGlobalsNode::creator() {
 
 MStatus RenderGlobalsNode::initialize() {
     MStatus status;
-    MFnNumericAttribute numericAttr;
-    // MFnEnumAttribute enumAttr;
+    MFnNumericAttribute nAttr;
+    MFnEnumAttribute eAttr;
 
-    // MHWRender::kR16G16B16A16_FLOAT;
-    // MHWRender::kR32G32B32A32_FLOAT;
-    // MHWRender::kR8G8B8A8_UNORM;;
+    // Render Format; 0=8-bit float, 1=16-bit float, 2=32-bit float
+    a_renderFormat = eAttr.create(
+        "renderFormat", "rndfmt",
+        static_cast<short>(RenderFormat::kRGBA8BitInt),
+        &status);
+    CHECK_MSTATUS(status);
+    CHECK_MSTATUS(eAttr.addField(
+                      "RGBA 8-Bit (integer)",
+                      static_cast<short>(RenderFormat::kRGBA8BitInt)));
+    CHECK_MSTATUS(eAttr.addField(
+                      "RGBA 16-Bit (float)",
+                      static_cast<short>(RenderFormat::kRGBA16BitFloat)));
+    CHECK_MSTATUS(eAttr.addField(
+                      "RGBA 32-Bit (float)",
+                      static_cast<short>(RenderFormat::kRGBA32BitFloat)));
+    CHECK_MSTATUS(eAttr.setStorable(true));
+    CHECK_MSTATUS(eAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(a_renderFormat));
 
-    // // Render Format; 0=8-bit float, 1=16-bit float, 2=32-bit float
-    // a_filmFit = enumAttr.create(
-    //     "filmFit", "ff", 0, &status);
-    // CHECK_MSTATUS(status);
-    // CHECK_MSTATUS(enumAttr.addField("Fit", 0));
-    // CHECK_MSTATUS(enumAttr.addField("Horizontal", 1));
-    // CHECK_MSTATUS(enumAttr.addField("Vertical", 2));
-    // CHECK_MSTATUS(enumAttr.addField("Overscan", 3));
-    // CHECK_MSTATUS(enumAttr.setStorable(true));
-    // CHECK_MSTATUS(enumAttr.setKeyable(true));
-    // CHECK_MSTATUS(addAttribute(a_filmFit));
+    // Render Format; 0=8-bit float, 1=16-bit float, 2=32-bit float
+    a_mode = eAttr.create(
+        "mode", "md", 0, &status);
+    CHECK_MSTATUS(status);
+    CHECK_MSTATUS(eAttr.addField("Zero", 0));
+    CHECK_MSTATUS(eAttr.addField("One", 1));
+    CHECK_MSTATUS(eAttr.addField("Two", 2));
+    CHECK_MSTATUS(eAttr.addField("Three", 3));
+    CHECK_MSTATUS(eAttr.addField("Four", 4));
+    CHECK_MSTATUS(eAttr.setStorable(true));
+    CHECK_MSTATUS(eAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(a_mode));
+
+    // Multi-Sample Count
+    auto sample_min = 1;
+    auto sample_max = 128;
+    a_multiSampleCount = nAttr.create(
+        "multiSampleCount", "mssmpct",
+        MFnNumericData::kInt, 1);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(sample_min));
+    CHECK_MSTATUS(nAttr.setMax(sample_max));
+    CHECK_MSTATUS(addAttribute(a_multiSampleCount));
 
     // Wireframe Alpha
     auto alpha_min = 0.0;
     auto alpha_max = 1.0;
-    a_wireframeAlpha = numericAttr.create(
+    a_wireframeAlpha = nAttr.create(
         "wireframeAlpha", "wralp",
         MFnNumericData::kDouble, kWireframeAlphaDefault);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(numericAttr.setMin(alpha_min));
-    CHECK_MSTATUS(numericAttr.setMax(alpha_max));
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(alpha_min));
+    CHECK_MSTATUS(nAttr.setMax(alpha_max));
     CHECK_MSTATUS(addAttribute(a_wireframeAlpha));
 
     // Edge Thickness
     auto thickness_min = 0.0;
     // auto thickness_max = 1.0;
-    a_edgeThickness = numericAttr.create(
+    a_edgeThickness = nAttr.create(
         "edgeThickness", "edgthk",
         MFnNumericData::kDouble, kEdgeThicknessDefault);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(numericAttr.setMin(thickness_min));
-    // CHECK_MSTATUS(numericAttr.setMax(thickness_max));
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(thickness_min));
+    // CHECK_MSTATUS(nAttr.setMax(thickness_max));
     CHECK_MSTATUS(addAttribute(a_edgeThickness));
 
     // Edge Threshold
     auto threshold_min = 0.0;
     auto threshold_max = 1.0;
-    a_edgeThreshold = numericAttr.create(
+    a_edgeThreshold = nAttr.create(
         "edgeThreshold", "edgthd",
         MFnNumericData::kDouble, kEdgeThresholdDefault);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(numericAttr.setMin(threshold_min));
-    CHECK_MSTATUS(numericAttr.setMax(threshold_max));
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(threshold_min));
+    CHECK_MSTATUS(nAttr.setMax(threshold_max));
     CHECK_MSTATUS(addAttribute(a_edgeThreshold));
 
     return MS::kSuccess;

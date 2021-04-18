@@ -33,6 +33,13 @@
 namespace mmsolver {
 namespace renderer {
 
+enum class RenderFormat : short {
+    kRGBA8BitInt = 0,
+    kRGBA16BitFloat = 1,
+    kRGBA32BitFloat = 2,
+    kDrawModeCount,
+};
+
 class RenderGlobalsNode : public MPxNode {
 public:
     RenderGlobalsNode();
@@ -52,6 +59,9 @@ public:
     static MTypeId m_id;
 
     // Input Attributes
+    static MObject a_mode;
+    static MObject a_renderFormat;
+    static MObject a_multiSampleCount;
     static MObject a_wireframeAlpha;
     static MObject a_edgeThickness;
     static MObject a_edgeThreshold;

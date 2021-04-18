@@ -35,7 +35,7 @@
 #include <maya/MFnUnitAttribute.h>
 #include <maya/MArrayDataBuilder.h>
 
-#if MAYA_API_VERSION > 20190000
+#if MAYA_API_VERSION >= 20190000
 #include <maya/MEvaluationNode.h>
 #include <assert.h>
 #endif
@@ -56,7 +56,7 @@ public:
 
     bool excludeAsLocator() const;
 
-#if MAYA_API_VERSION > 20190000
+#if MAYA_API_VERSION >= 20190000
     MStatus preEvaluation(const MDGContext &context,
                           const MEvaluationNode &evaluationNode) override;
 

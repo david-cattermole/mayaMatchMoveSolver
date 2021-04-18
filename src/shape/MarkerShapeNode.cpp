@@ -66,6 +66,7 @@ MObject MarkerShapeNode::m_alpha;
 MObject MarkerShapeNode::m_line_width;
 MObject MarkerShapeNode::m_point_size;
 MObject MarkerShapeNode::m_icon_size;
+MObject MarkerShapeNode::m_draw_name;
 
 MarkerShapeNode::MarkerShapeNode() {}
 
@@ -202,8 +203,16 @@ MStatus MarkerShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(icon_size_min));
 
+    // Draw Name
+    m_draw_name = nAttr.create(
+        "drawName", "drwnm",
+        MFnNumericData::kBoolean, 1);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+
     // Add attributes
     CHECK_MSTATUS(addAttribute(m_icon_size));
+    CHECK_MSTATUS(addAttribute(m_draw_name));
     CHECK_MSTATUS(addAttribute(m_color));
     CHECK_MSTATUS(addAttribute(m_alpha));
     CHECK_MSTATUS(addAttribute(m_line_width));

@@ -85,6 +85,7 @@ public:
     static MObject m_alpha;
     static MObject m_line_width;
     static MObject m_point_size;
+    static MObject m_draw_name;
     static MObject m_icon_size;
 };
 

@@ -172,7 +172,7 @@ MStatus MarkerShapeNode::initialize() {
     auto line_width_soft_max = 10.0f;
     m_line_width = nAttr.create(
         "lineWidth", "lnwd",
-        MFnNumericData::kFloat, 2.0f);
+        MFnNumericData::kFloat, 1.0f);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(line_width_min));

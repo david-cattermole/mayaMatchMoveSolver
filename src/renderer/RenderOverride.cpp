@@ -555,7 +555,7 @@ RenderOverride::updateRenderTargets() {
 
         auto backgroundPassOp = (SceneRender *) m_ops[kSceneBackgroundPass];
         if (backgroundPassOp) {
-            depthPassOp->setEnabled(true);
+            backgroundPassOp->setEnabled(true);
             // Note: Only render to the color target, depth is ignored.
             backgroundPassOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }

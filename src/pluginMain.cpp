@@ -46,6 +46,8 @@
 #include <MMSolverAffectsCmd.h>
 #include <shape/MarkerShapeNode.h>
 #include <shape/MarkerDrawOverride.h>
+#include <shape/BundleShapeNode.h>
+#include <shape/BundleDrawOverride.h>
 #include <shape/SkyDomeShapeNode.h>
 #include <shape/SkyDomeDrawOverride.h>
 
@@ -196,6 +198,7 @@ MStatus initializePlugin(MObject obj) {
                   status);
 
     const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
+    const MString bundleClassification = MM_BUNDLE_DRAW_CLASSIFY;
     const MString skyDomeClassification = MM_SKY_DOME_DRAW_CLASSIFY;
     REGISTER_LOCATOR_NODE(
         plugin,
@@ -205,6 +208,15 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::MarkerShapeNode::initialize,
         MPxNode::kLocatorNode,
         &markerClassification,
+        status);
+    REGISTER_LOCATOR_NODE(
+        plugin,
+        mmsolver::BundleShapeNode::nodeName(),
+        mmsolver::BundleShapeNode::m_id,
+        mmsolver::BundleShapeNode::creator,
+        mmsolver::BundleShapeNode::initialize,
+        MPxNode::kLocatorNode,
+        &bundleClassification,
         status);
     REGISTER_LOCATOR_NODE(
         plugin,
@@ -220,6 +232,11 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::MarkerShapeNode::m_draw_db_classification,
         mmsolver::MarkerShapeNode::m_draw_registrant_id,
         mmsolver::MarkerDrawOverride::Creator,
+        status);
+    REGISTER_DRAW_OVERRIDE(
+        mmsolver::BundleShapeNode::m_draw_db_classification,
+        mmsolver::BundleShapeNode::m_draw_registrant_id,
+        mmsolver::BundleDrawOverride::Creator,
         status);
     REGISTER_DRAW_OVERRIDE(
         mmsolver::SkyDomeShapeNode::m_draw_db_classification,
@@ -289,24 +306,30 @@ MStatus initializePlugin(MObject obj) {
     mel_cmd += "\" 1";
     CHECK_MSTATUS(MGlobal::executeCommand(mel_cmd));
 
+    MSelectionMask::registerSelectionType(
+        mmsolver::BundleShapeNode::m_selection_type_name, 2);
+    mel_cmd = "selectType -byName \"";
+    mel_cmd += mmsolver::BundleShapeNode::m_selection_type_name;
+    mel_cmd += "\" 1";
+    CHECK_MSTATUS(MGlobal::executeCommand(mel_cmd));
+
+    MSelectionMask::registerSelectionType(
+        mmsolver::SkyDomeShapeNode::m_selection_type_name, 2);
+    mel_cmd = "selectType -byName \"";
+    mel_cmd += mmsolver::SkyDomeShapeNode::m_selection_type_name;
+    mel_cmd += "\" 1";
+    CHECK_MSTATUS(MGlobal::executeCommand(mel_cmd));
+
     // Register plugin display filter.
     // The filter is registered in both interactive and batch mode (Hardware 2.0)
     plugin.registerDisplayFilter(
         mmsolver::MarkerShapeNode::m_display_filter_name,
         mmsolver::MarkerShapeNode::m_display_filter_label,
         mmsolver::MarkerShapeNode::m_draw_db_classification);
-
-    // Register a custom selection mask with priority 2 (same as
-    // locators by default).
-    MSelectionMask::registerSelectionType(
-        mmsolver::SkyDomeShapeNode::m_selection_type_name, 2);
-    mel_cmd = "selectType -byName \"";
-    mel_cmd += mmsolver::SkyDomeShapeNode::m_selection_type_name;
-    mel_cmd += "\" 1";
-    status = MGlobal::executeCommand(mel_cmd);
-
-    // Register plugin display filter.
-    // The filter is registered in both interactive and batch mode (Hardware 2.0)
+    plugin.registerDisplayFilter(
+        mmsolver::BundleShapeNode::m_display_filter_name,
+        mmsolver::BundleShapeNode::m_display_filter_label,
+        mmsolver::BundleShapeNode::m_draw_db_classification);
     plugin.registerDisplayFilter(
         mmsolver::SkyDomeShapeNode::m_display_filter_name,
         mmsolver::SkyDomeShapeNode::m_display_filter_label,
@@ -361,6 +384,10 @@ MStatus uninitializePlugin(MObject obj) {
         mmsolver::MarkerShapeNode::m_draw_registrant_id,
         status);
     DEREGISTER_DRAW_OVERRIDE(
+        mmsolver::BundleShapeNode::m_draw_db_classification,
+        mmsolver::BundleShapeNode::m_draw_registrant_id,
+        status);
+    DEREGISTER_DRAW_OVERRIDE(
         mmsolver::SkyDomeShapeNode::m_draw_db_classification,
         mmsolver::SkyDomeShapeNode::m_draw_registrant_id,
         status);
@@ -369,6 +396,11 @@ MStatus uninitializePlugin(MObject obj) {
         plugin,
         mmsolver::MarkerShapeNode::nodeName(),
         mmsolver::MarkerShapeNode::m_id,
+        status);
+    DEREGISTER_LOCATOR_NODE(
+        plugin,
+        mmsolver::BundleShapeNode::nodeName(),
+        mmsolver::BundleShapeNode::m_id,
         status);
     DEREGISTER_LOCATOR_NODE(
         plugin,

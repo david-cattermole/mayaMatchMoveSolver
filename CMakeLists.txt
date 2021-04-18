@@ -238,6 +238,8 @@ set(SOURCE_FILES
         src/renderer/RenderOverride.cpp
         src/shape/MarkerShapeNode.cpp
         src/shape/MarkerDrawOverride.cpp
+        src/shape/BundleShapeNode.cpp
+        src/shape/BundleDrawOverride.cpp
         src/shape/SkyDomeShapeNode.cpp
         src/shape/SkyDomeDrawOverride.cpp
         src/mayaUtils.h

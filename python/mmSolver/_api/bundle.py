@@ -32,6 +32,19 @@ import mmSolver._api.marker
 LOG = mmSolver.logger.get_logger()
 
 
+def _create_bundle_shape(tfm_node):
+    shp_name = tfm_node.rpartition('|')[-1] + 'Shape'
+    shp = maya.cmds.createNode(const.BUNDLE_SHAPE_NODE_TYPE,
+                               name=shp_name, parent=tfm_node)
+    maya.cmds.setAttr(shp + '.localPositionX', channelBox=False)
+    maya.cmds.setAttr(shp + '.localPositionY', channelBox=False)
+    maya.cmds.setAttr(shp + '.localPositionZ', channelBox=False)
+    maya.cmds.setAttr(shp + '.localScaleX', channelBox=False)
+    maya.cmds.setAttr(shp + '.localScaleY', channelBox=False)
+    maya.cmds.setAttr(shp + '.localScaleZ', channelBox=False)
+    return shp
+
+
 def _set_bundle_icon(dag_path):
     icon_name = const.BUNDLE_SHAPE_ICON_NAME
     dag_shps = node_utils.get_dag_path_shapes_below_apione(dag_path)
@@ -43,6 +56,23 @@ def _set_bundle_icon(dag_path):
         # Set icon on transform, because there are no shapes.
         mfn_tfm = OpenMaya.MFnDagNode(dag_path)
         mfn_tfm.setIcon(icon_name)
+    return
+
+
+def _replace_bundle_shape(dag_path):
+    dag_shps = node_utils.get_dag_path_shapes_below_apione(dag_path)
+    if len(dag_shps) > 0:
+        shape_nodes = []
+        for dag_shp in dag_shps:
+            mfn_shp = OpenMaya.MFnDagNode(dag_shp)
+            type_name = mfn_shp.typeName()
+            if type_name != const.BUNDLE_SHAPE_NODE_TYPE:
+                shape_nodes.append(dag_shp.fullPathName())
+        if len(shape_nodes) > 0:
+            maya.cmds.delete(shape_nodes)
+            _create_bundle_shape(dag_path.fullPathName())
+    else:
+        _create_bundle_shape(dag_path.fullPathName())
     return
 
 
@@ -78,8 +108,8 @@ class Bundle(object):
             if dag is not None:
                 self._mfn = OpenMaya.MFnDagNode(dag)
 
-            # Set icon
-            _set_bundle_icon(dag)
+            # Replace locator shape with mmBundleShape node.
+            _replace_bundle_shape(dag)
         else:
             self._mfn = OpenMaya.MFnDagNode()
         return
@@ -129,8 +159,8 @@ class Bundle(object):
         if dag is not None:
             self._mfn = OpenMaya.MFnDagNode(dag)
 
-            # Set icon
-            _set_bundle_icon(dag)
+            # Replace locator shape with mmBundleShape node.
+            _replace_bundle_shape(dag)
         else:
             self._mfn = OpenMaya.MFnDagNode()
         return
@@ -195,12 +225,7 @@ class Bundle(object):
         maya.cmds.setAttr(tfm + '.shyz', keyable=False)
 
         # Shape Node
-        shp_name = tfm.rpartition('|')[-1] + 'Shape'
-        shp = maya.cmds.createNode(const.BUNDLE_SHAPE_NODE_TYPE,
-                                   name=shp_name, parent=tfm)
-        maya.cmds.setAttr(shp + '.localScaleX', 0.1)
-        maya.cmds.setAttr(shp + '.localScaleY', 0.1)
-        maya.cmds.setAttr(shp + '.localScaleZ', 0.1)
+        _create_bundle_shape(tfm)
 
         self.set_node(tfm)
 

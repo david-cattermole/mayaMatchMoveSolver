@@ -170,6 +170,10 @@ MUserData *MarkerDrawOverride::prepareForDraw(
         objPath, MarkerShapeNode::m_point_size, data->m_point_size);
     CHECK_MSTATUS(status);
 
+    status = getNodeAttr(
+        objPath, MarkerShapeNode::m_draw_name, data->m_draw_name);
+    CHECK_MSTATUS(status);
+
     // The cross icon
     data->m_cross_line_list.clear();
     for (int i = 0; i < shape_a_points_count; i++) {
@@ -332,7 +336,7 @@ void MarkerDrawOverride::addUIDrawables(
     // - Draw 'max deviation'.
     MPoint pos(1.1 * scale, 1.1 * scale, 0.0);
     pos *= obj_matrix;
-    if (data->m_active) {
+    if (data->m_draw_name && data->m_active) {
         // TODO: Add attribute to multiply the font size.
         drawManager.setFontSize(MHWRender::MUIDrawManager::kDefaultFontSize);
         drawManager.text(pos, data->m_name, MHWRender::MUIDrawManager::kLeft);

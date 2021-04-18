@@ -66,6 +66,7 @@ MObject MarkerShapeNode::m_alpha;
 MObject MarkerShapeNode::m_line_width;
 MObject MarkerShapeNode::m_point_size;
 MObject MarkerShapeNode::m_icon_size;
+MObject MarkerShapeNode::m_draw_name;
 
 MarkerShapeNode::MarkerShapeNode() {}
 
@@ -86,18 +87,16 @@ bool MarkerShapeNode::isBounded() const {
 }
 
 MBoundingBox MarkerShapeNode::boundingBox() const {
-    // Get the size
+    MPoint corner1(-1.0, -1.0, -1.0);
+    MPoint corner2(1.0, 1.0, 1.0);
+
+    float icon_size = 0.0f;
     MObject thisNode = thisMObject();
     MPlug plug(thisNode, m_icon_size);
-    MDistance sizeVal;
-    plug.getValue(sizeVal);
-    double multiplier = sizeVal.asCentimeters();
+    plug.getValue(icon_size);
 
-    MPoint corner1(-0.17, 0.0, -0.7);
-    MPoint corner2(0.17, 0.0, 0.3);
-
-    corner1 = corner1 * multiplier;
-    corner2 = corner2 * multiplier;
+    corner1 = corner1 * icon_size;
+    corner2 = corner2 * icon_size;
     return MBoundingBox(corner1, corner2);
 }
 
@@ -173,7 +172,7 @@ MStatus MarkerShapeNode::initialize() {
     auto line_width_soft_max = 10.0f;
     m_line_width = nAttr.create(
         "lineWidth", "lnwd",
-        MFnNumericData::kFloat, 2.0f);
+        MFnNumericData::kFloat, 1.0f);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
@@ -202,8 +201,16 @@ MStatus MarkerShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(icon_size_min));
 
+    // Draw Name
+    m_draw_name = nAttr.create(
+        "drawName", "drwnm",
+        MFnNumericData::kBoolean, 1);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+
     // Add attributes
     CHECK_MSTATUS(addAttribute(m_icon_size));
+    CHECK_MSTATUS(addAttribute(m_draw_name));
     CHECK_MSTATUS(addAttribute(m_color));
     CHECK_MSTATUS(addAttribute(m_alpha));
     CHECK_MSTATUS(addAttribute(m_line_width));

@@ -50,6 +50,7 @@ public:
             , m_icon_size(1.0)
             , m_locked(false)
             , m_active(false)
+            , m_draw_name(false)
     {}
 
     ~MarkerDrawData() override {
@@ -62,6 +63,7 @@ public:
     float m_line_width;
     float m_icon_size;
     MColor m_color{1.0f, 0.0f, 0.0f, 1.0f};
+    bool m_draw_name;
     unsigned int m_depth_priority;
 
     MPointArray m_cross_line_list;

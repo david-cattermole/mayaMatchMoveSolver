@@ -87,18 +87,16 @@ bool MarkerShapeNode::isBounded() const {
 }
 
 MBoundingBox MarkerShapeNode::boundingBox() const {
-    // Get the size
+    MPoint corner1(-1.0, -1.0, -1.0);
+    MPoint corner2(1.0, 1.0, 1.0);
+
+    float icon_size = 0.0f;
     MObject thisNode = thisMObject();
     MPlug plug(thisNode, m_icon_size);
-    MDistance sizeVal;
-    plug.getValue(sizeVal);
-    double multiplier = sizeVal.asCentimeters();
+    plug.getValue(icon_size);
 
-    MPoint corner1(-0.17, 0.0, -0.7);
-    MPoint corner2(0.17, 0.0, 0.3);
-
-    corner1 = corner1 * multiplier;
-    corner2 = corner2 * multiplier;
+    corner1 = corner1 * icon_size;
+    corner2 = corner2 * icon_size;
     return MBoundingBox(corner1, corner2);
 }
 

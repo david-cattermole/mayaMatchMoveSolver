@@ -405,6 +405,8 @@ def remove_controller(controller_node, frame_start, frame_end):
     # Store the selection in advance
     copy_keys_node = controller_node
 
+    has_extra_parents = False
+
     is_node_controller_rig = False            
     attr_list = cmds.listAttr(controller_node)
     if ATTRIBUTE_IDENTIFIER_NAME in attr_list:
@@ -431,25 +433,36 @@ def remove_controller(controller_node, frame_start, frame_end):
             destination=False, source=True) or []
 
     if driven_nodes and len(driven_nodes) > 0:
-        # Bake attributes
-        if is_node_controller_rig is True:
-            for driven_node in driven_nodes:
-                _copy_parent_keys_to_child(copy_keys_node, driven_node, frame_start, frame_end)
-        else:        
-            fastbake_lib.bake_attributes(
-            driven_nodes, attrs, frame_start, frame_end, smart_bake=True)
-        cmds.delete(constraints)
-        _remove_constraint_blend_attr_from_nodes(driven_nodes)
-
-        # Delete controller node and its parents
+        # Make delete items list
         if is_node_controller_rig is True:
             delete_list = []
             parent_nodes = cmds.pickWalk(controller_node, direction="Up", recurse=True)
             cmds.select(clear=True)
             for parent_node in parent_nodes:
-                parent_node_attr_value = cmds.getAttr(parent_node+"."+ATTRIBUTE_IDENTIFIER_NAME)
-                if parent_node_attr_value == custom_attr_value:
-                    delete_list.append(parent_node)
+                parent_node_attr_list = cmds.listAttr(parent_node)
+                if ATTRIBUTE_IDENTIFIER_NAME in parent_node_attr_list:
+                    parent_node_attr_value = cmds.getAttr(parent_node+"."+ATTRIBUTE_IDENTIFIER_NAME)
+                    if parent_node_attr_value == custom_attr_value:
+                        delete_list.append(parent_node)
+                else:
+                    has_extra_parents = True
+
+        # Bake attributes
+        if is_node_controller_rig is True:
+            for driven_node in driven_nodes:
+                if has_extra_parents is False:
+                    _copy_parent_keys_to_child(copy_keys_node, driven_node, frame_start, frame_end)
+                else:
+                    fastbake_lib.bake_attributes(
+                    [driven_node], attrs, frame_start, frame_end, smart_bake=True)
+        else:        
+            fastbake_lib.bake_attributes(
+            driven_nodes, attrs, frame_start, frame_end, smart_bake=True)
+        cmds.delete(constraints)
+        _remove_constraint_blend_attr_from_nodes(driven_nodes) 
+
+        # Delete controller node and its parents
+        if is_node_controller_rig is True:
             cmds.delete(delete_list)
 
         if cmds.objExists(controller_node):

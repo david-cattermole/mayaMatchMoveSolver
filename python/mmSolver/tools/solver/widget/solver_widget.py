@@ -112,7 +112,7 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         self.createConnections()
 
         e = time.time()
-        LOG.warn('SolverWidget init: %r seconds', e - s)
+        LOG.debug('SolverWidget init: %r seconds', e - s)
         return
 
     def createConnections(self):
@@ -139,7 +139,7 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
 
     def event(self, ev):
         if ev.type() == QtCore.QEvent.WindowActivate:
-            LOG.warn('window was activated')
+            LOG.debug('window was activated')
             self.updateValidationWidgets()
         return super(SolverWidget, self).event(ev)
 
@@ -195,7 +195,7 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         return
 
     def updateValidationWidgets(self):
-        LOG.warn('updateValidationWidgets')
+        LOG.debug('updateValidationWidgets')
 
         # Show the validate button?
         visible = _getShowValidateButton()

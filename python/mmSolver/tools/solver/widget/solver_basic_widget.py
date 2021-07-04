@@ -133,12 +133,12 @@ class SolverBasicWidget(QtWidgets.QWidget,
 
     def event(self, ev):
         if ev.type() == QtCore.QEvent.WindowActivate:
-            LOG.warn('window activated')
+            LOG.debug('window activated')
             self.updateObjectRelationshipsWidgets()
         return super(SolverBasicWidget, self).event(ev)
 
     def updateObjectRelationshipsWidgets(self):
-        LOG.warn('updateObjectRelationshipsWidgets')
+        LOG.debug('updateObjectRelationshipsWidgets')
         allow_obj_relations = _getAllowObjectRelations()
         self.evalObjectRelationships_checkBox.setEnabled(allow_obj_relations)
 

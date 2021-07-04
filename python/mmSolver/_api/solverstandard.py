@@ -1336,8 +1336,6 @@ class SolverStandard(solverbase.SolverBase):
         verbose = True
         precomputed_data = self.get_precomputed_data()
 
-        LOG.warn('eval_object_relationships=%r', eval_object_relationships)
-
         # Pre-calculate the 'affects' relationship.
         if eval_object_relationships is True:
             generator = solverutils.compile_solver_affects(

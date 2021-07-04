@@ -981,24 +981,41 @@ bool solve(SolverOptions &solverOptions,
                                    "solve");
 #endif
 
-    // Query the relationship by pre-computed attributes on the
-    // Markers. If the attributes do not exist, we assume all markers
-    // affect all attributes (and therefore suffer a performance
-    // problem).
-    BoolList2D markerToAttrList;
-    getMarkerToAttributeRelationship(
-            markerList,
-            attrList,
-            markerToAttrList,
-            status);
-    CHECK_MSTATUS(status);
-
     // Split the used and unused markers and attributes.
     MarkerPtrList usedMarkerList;
     MarkerPtrList unusedMarkerList;
     AttrPtrList usedAttrList;
     AttrPtrList unusedAttrList;
-    splitUsedMarkersAndAttributes(
+
+    BoolList2D markerToAttrList;
+    if (!solverOptions.removeUnusedMarkers
+        && !solverOptions.removeUnusedAttributes) {
+        // All 'object relationships' will be ignored.
+
+        // All Markers and Attributes are assumed to be used.
+        usedMarkerList = markerList;
+        usedAttrList = attrList;
+
+        // Initialise 'markerToAttrList' to assume all markers affect
+        // all attributes. This is the default assumption.
+        markerToAttrList.resize(markerList.size());
+        auto defaultValue = true;
+        for (size_t i = 0; i < markerList.size(); ++i) {
+            markerToAttrList[i].resize(attrList.size(), defaultValue);
+        }
+    } else {
+        // Query the relationship by pre-computed attributes on the
+        // Markers. If the attributes do not exist, we assume all markers
+        // affect all attributes (and therefore suffer a performance
+        // problem).
+        getMarkerToAttributeRelationship(
+            markerList,
+            attrList,
+            markerToAttrList,
+            status);
+        CHECK_MSTATUS(status);
+
+        splitUsedMarkersAndAttributes(
             markerList,
             attrList,
             markerToAttrList,
@@ -1007,48 +1024,56 @@ bool solve(SolverOptions &solverOptions,
             usedAttrList,
             unusedAttrList);
 
-    // Print warnings about unused solve objects.
-    if (unusedMarkerList.size() > 0) {
-        WRN("Unused Markers detected and ignored:");
-        for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
-             mit != unusedMarkerList.cend();
-             ++mit) {
-            MarkerPtr marker = *mit;
-            const char *markerName = marker->getLongNodeName().asChar();
-            WRN("-> " << markerName);
+        // Print warnings about unused solve objects.
+        if ((unusedMarkerList.size() > 0) && (solverOptions.removeUnusedMarkers)) {
+            MStreamUtils::stdErrorStream()
+                << "Unused Markers detected and ignored:" << std::endl;
+            for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
+                 mit != unusedMarkerList.cend();
+                 ++mit) {
+                MarkerPtr marker = *mit;
+                const char *markerName = marker->getLongNodeName().asChar();
+                MStreamUtils::stdErrorStream()
+                    << "-> " << markerName << std::endl;
+            }
         }
-    }
-    if (unusedAttrList.size() > 0) {
-        WRN("Unused Attributes detected and ignored:");
-        for (AttrPtrListCIt ait = unusedAttrList.cbegin();
-             ait != unusedAttrList.cend();
-             ++ait) {
-            AttrPtr attr = *ait;
-            const char *attrName = attr->getLongName().asChar();
-            WRN("-> " << attrName);
-        }
-    }
 
-    // Change the list of Markers and Attributes to filter out unused
-    // objects.
-    bool usedObjectsChanged = false;
-    if (solverOptions.removeUnusedMarkers == false) {
-        usedMarkerList = markerList;
-    } else {
-        usedObjectsChanged = true;
-    }
-    if (solverOptions.removeUnusedAttributes == false) {
-        usedAttrList = attrList;
-    } else {
-        usedObjectsChanged = true;
-    }
-    if (usedObjectsChanged == true) {
-        getMarkerToAttributeRelationship(
+        if ((unusedAttrList.size() > 0) && (solverOptions.removeUnusedAttributes)) {
+            MStreamUtils::stdErrorStream()
+                << "Unused Attributes detected and ignored:" << std::endl;
+            for (AttrPtrListCIt ait = unusedAttrList.cbegin();
+                 ait != unusedAttrList.cend();
+                 ++ait) {
+                AttrPtr attr = *ait;
+                const char *attrName = attr->getLongName().asChar();
+                MStreamUtils::stdErrorStream()
+                    << "-> " << attrName << std::endl;
+            }
+        }
+
+        // Change the list of Markers and Attributes to filter out unused
+        // objects.
+        bool usedObjectsChanged = false;
+        if (solverOptions.removeUnusedMarkers) {
+            usedObjectsChanged = true;
+        } else {
+            usedMarkerList = markerList;
+        }
+
+        if (solverOptions.removeUnusedAttributes) {
+            usedObjectsChanged = true;
+        } else {
+            usedAttrList = attrList;
+        }
+
+        if (usedObjectsChanged == true) {
+            getMarkerToAttributeRelationship(
                 usedMarkerList,
                 usedAttrList,
                 markerToAttrList,
                 status);
-        CHECK_MSTATUS(status);
+            CHECK_MSTATUS(status);
+        }
     }
 
     IndexPairList paramToAttrList;

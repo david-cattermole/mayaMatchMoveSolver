@@ -61,6 +61,7 @@ import mmSolver.ui.ui_base as ui_base
 
 
 LOG = mmSolver.logger.get_logger()
+ALL_CLASS_INSTANCES = set()
 
 
 class BaseMayaWindow(MayaQWidgetDockableMixin,
@@ -74,6 +75,9 @@ class BaseMayaWindow(MayaQWidgetDockableMixin,
         s = time.time()
         super(BaseMayaWindow, self).__init__()
         self.windowGeometry = None
+
+        global ALL_CLASS_INSTANCES
+        ALL_CLASS_INSTANCES.add(self)
 
         # Destroy this widget when closed. Otherwise it will stay around.
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)

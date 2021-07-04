@@ -303,6 +303,7 @@ class SolverBasic(solverbase.SolverBase):
         lineup_iter_num = self.get_lineup_iteration_num()
         use_euler_filter = self._use_euler_filter
         eval_object_relationships = self.get_eval_object_relationships()
+        remove_unused_objects = eval_object_relationships
         eval_complex_graphs = self.get_eval_complex_graphs()
         precomputed_data = self.get_precomputed_data()
 
@@ -334,6 +335,8 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_remove_unused_markers(remove_unused_objects)
+            sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
             for action, vaction in sol.compile(col, mkr_list, attr_list,
                                                withtest=withtest):
@@ -357,6 +360,8 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_use_smoothness(not is_first_frame)
                 sol.set_use_stiffness(not is_first_frame)
                 sol.set_time_eval_mode(time_eval_mode)
+                sol.set_remove_unused_markers(remove_unused_objects)
+                sol.set_remove_unused_attributes(remove_unused_objects)
                 sol.set_precomputed_data(precomputed_data)
 
                 generator = api_compile.compile_solver_with_cache(

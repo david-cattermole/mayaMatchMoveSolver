@@ -562,6 +562,10 @@ void getMarkerToAttributeRelationship(const MarkerPtrList markerList,
                 // however only -1, 0 and 1 values are currently used.
                 // In the future we may use values other than -1, 0
                 // and 1.
+                //
+                // 1 == 'used'
+                // -1 == 'not used'
+                // 0 == 'unknown'
                 value = plug.asInt() == 1;
             }
             markerToAttrList[i][j] = value;

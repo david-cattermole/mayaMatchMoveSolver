@@ -46,6 +46,7 @@ ATTR_CATEGORIES = [
     'lens_distortion',
 ]
 
+
 def _gen_two_frame_fwd(int_list):
     """
     Given a list of integers, create list of Frame pairs, moving
@@ -170,6 +171,7 @@ def _compile_multi_root_frames(col,
                                attr_list,
                                batch_frame_list,
                                root_iter_num,
+                               remove_unused_objects,
                                precomputed_data,
                                withtest,
                                verbose):
@@ -191,6 +193,11 @@ def _compile_multi_root_frames(col,
     :param root_iter_num:
         Number of iterations to use, when solving root frames.
     :type root_iter_num: int
+
+    :param remove_unused_objects:
+        Should objects that are detected as 'unused' be removed from
+        the solver?
+    :type remove_unused_objects: bool
 
     :param withtest:
         Compile the test/validation Action, as well as the solve Action?
@@ -233,6 +240,8 @@ def _compile_multi_root_frames(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_remove_unused_markers(remove_unused_objects)
+        sol.set_remove_unused_attributes(remove_unused_objects)
         sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
@@ -317,6 +326,7 @@ def _compile_multi_inbetween_frames(col,
                                     global_solve,
                                     eval_complex_graphs,
                                     anim_iter_num,
+                                    remove_unused_objects,
                                     precomputed_data,
                                     withtest,
                                     verbose):
@@ -350,6 +360,11 @@ def _compile_multi_inbetween_frames(col,
         Number of iterations for solving animated attributes.
     :type anim_iter_num: int
 
+    :param remove_unused_objects:
+        Should objects that are detected as 'unused' be removed from
+        the solver?
+    :type remove_unused_objects: bool
+
     :param withtest:
         Should validation tests be generated?
     :type withtest: bool
@@ -373,6 +388,8 @@ def _compile_multi_inbetween_frames(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_remove_unused_markers(remove_unused_objects)
+        sol.set_remove_unused_attributes(remove_unused_objects)
         sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
@@ -397,6 +414,8 @@ def _compile_multi_inbetween_frames(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(not is_first_frame)
             sol.set_use_stiffness(not is_first_frame)
+            sol.set_remove_unused_markers(remove_unused_objects)
+            sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_time_eval_mode(time_eval_mode)
             sol.set_precomputed_data(precomputed_data)
 
@@ -422,6 +441,7 @@ def _compile_multi_frame(col,
                          root_frame_strategy,
                          triangulate_bundles,
                          use_euler_filter,
+                         remove_unused_objects,
                          precomputed_data,
                          withtest,
                          verbose):
@@ -492,6 +512,11 @@ def _compile_multi_frame(col,
         will remove "Euler Flipping".
     :type use_euler_filter: bool
 
+    :param remove_unused_objects:
+        Should objects that are detected as 'unused' be removed from
+        the solver?
+    :type remove_unused_objects: bool
+
     :param withtest:
         Should validation tests be generated?
     :type withtest: bool
@@ -559,6 +584,8 @@ def _compile_multi_frame(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_remove_unused_markers(remove_unused_objects)
+            sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
 
             cache = api_compile.create_compile_solver_cache()
@@ -596,6 +623,8 @@ def _compile_multi_frame(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_remove_unused_markers(remove_unused_objects)
+        sol.set_remove_unused_attributes(remove_unused_objects)
         sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
@@ -641,6 +670,7 @@ def _compile_multi_frame(col,
             batch_frame_list,
             root_iter_num,
             precomputed_data,
+            remove_unused_objects,
             withtest,
             verbose
         )
@@ -680,6 +710,7 @@ def _compile_multi_frame(col,
         global_solve,
         eval_complex_graphs,
         anim_iter_num,
+        remove_unused_objects,
         precomputed_data,
         withtest,
         verbose,
@@ -697,6 +728,7 @@ def _compile_single_frame(col,
                           lineup_iter_num,
                           auto_attr_blocks,
                           precomputed_data,
+                          remove_unused_objects,
                           withtest,
                           verbose):
     """
@@ -727,6 +759,11 @@ def _compile_single_frame(col,
         pass
     :type lineup_iter_num: int
 
+    :param remove_unused_objects:
+        Should objects that are detected as 'unused' be removed from
+        the solver?
+    :type remove_unused_objects: bool
+
     :param withtest:
         Should validation tests be generated?
     :type withtest: bool
@@ -754,6 +791,8 @@ def _compile_single_frame(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_remove_unused_markers(remove_unused_objects)
+            sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
 
             cache = api_compile.create_compile_solver_cache()
@@ -771,6 +810,8 @@ def _compile_single_frame(col,
     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
     sol.set_use_smoothness(False)
     sol.set_use_stiffness(False)
+    sol.set_remove_unused_markers(remove_unused_objects)
+    sol.set_remove_unused_attributes(remove_unused_objects)
     sol.set_precomputed_data(precomputed_data)
 
     cache = api_compile.create_compile_solver_cache()
@@ -1278,6 +1319,7 @@ class SolverStandard(solverbase.SolverBase):
         only_root_frames = self.get_only_root_frames()
         global_solve = self.get_global_solve()
         eval_object_relationships = self.get_eval_object_relationships()
+        remove_unused_objects = eval_object_relationships
         eval_complex_graphs = self.get_eval_complex_graphs()
         block_iter_num = self.get_block_iteration_num()
         root_iter_num = self.get_root_iteration_num()
@@ -1294,8 +1336,9 @@ class SolverStandard(solverbase.SolverBase):
         verbose = True
         precomputed_data = self.get_precomputed_data()
 
+        LOG.warn('eval_object_relationships=%r', eval_object_relationships)
+
         # Pre-calculate the 'affects' relationship.
-        # LOG.warn('eval_object_relationships: %r', eval_object_relationships)
         if eval_object_relationships is True:
             generator = solverutils.compile_solver_affects(
                 col,
@@ -1322,6 +1365,7 @@ class SolverStandard(solverbase.SolverBase):
                 block_iter_num,
                 lineup_iter_num,
                 auto_attr_blocks,
+                remove_unused_objects,
                 precomputed_data,
                 withtest,
                 verbose,
@@ -1345,6 +1389,7 @@ class SolverStandard(solverbase.SolverBase):
                 root_frame_strategy,
                 triangulate_bundles,
                 use_euler_filter,
+                remove_unused_objects,
                 precomputed_data,
                 withtest,
                 verbose,

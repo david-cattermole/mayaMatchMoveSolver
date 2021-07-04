@@ -79,6 +79,19 @@ def _register_changed_attribute_update_solver_ui():
     return
 
 
+def _register_closing_maya_scene():
+    """When the current Maya scene is closing, close all windows, because
+    the windows might have pointers/references to objects in the scene
+    file and we cannot allow the pointers to dangle.
+    """
+    import mmSolver.api as mmapi
+    event_utils.add_function_to_event(
+        mmapi.EVENT_NAME_MAYA_SCENE_CLOSING,
+        lib.run_close_all_windows,
+        deferred=False)
+    return
+
+
 def register_events():
     """
     Initialises the registry of events for mmSolver.
@@ -90,4 +103,16 @@ def register_events():
     _register_created_marker_connect_to_collection()
     _register_changed_collection_update_solver_ui()
     _register_changed_attribute_update_solver_ui()
+    _register_closing_maya_scene()
+
+    # Maya callback when Maya scene is "flushing" from memory ( AKA
+    # the scene is closing).
+    def flushing_scene_func():
+        LOG.debug('MM Solver Flushing Scene...')
+        event_name = mmapi.EVENT_NAME_MAYA_SCENE_CLOSING
+        event_utils.trigger_event(event_name)
+
+    import maya.cmds
+    maya.cmds.scriptJob(
+        conditionTrue=('flushingScene', flushing_scene_func))
     return

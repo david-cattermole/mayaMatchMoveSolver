@@ -63,19 +63,3 @@ add_custom_target(
         DEPENDS ${LEVMAR_EXTRACTED_FILE}
         COMMENT "Unpacking LevMar package..."
 )
-
-
-# Extract Qt.py
-set(PY_SCRIPT "${CMAKE_SOURCE_DIR}/../scripts/get_qtpy.py")
-add_custom_command(
-        OUTPUT ${QTPY_EXTRACTED_FILE}
-        COMMAND ${CMAKE_COMMAND} -E remove_directory ${QTPY_EXTRACTED_FILE}
-        COMMAND python ${PY_SCRIPT} ${ARCHIVES_DIR} ${WORKING_DIR} ${PATCHES_DIR}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        DEPENDS ${QTPY_DOWNLOAD_FILE}
-)
-add_custom_target(
-        qtpy_package ALL
-        DEPENDS ${QTPY_EXTRACTED_FILE}
-        COMMENT "Unpacking Qt.py package..."
-)

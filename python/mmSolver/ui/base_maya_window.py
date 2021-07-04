@@ -50,9 +50,9 @@ from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt
-import Qt.QtCore as QtCore
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt as Qt
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.config as config_utils

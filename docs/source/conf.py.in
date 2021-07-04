@@ -25,11 +25,11 @@ except ImportError:
 
 # Mocking...
 autodoc_mock_imports = [
-    'Qt',
-    'Qt.QtCore',
-    'Qt.QtGui',
-    'Qt.QtWidgets',
-    'Qt.QtCompat',
+    'mmSolver.ui.Qt',
+    'mmSolver.ui.Qt.QtCore',
+    'mmSolver.ui.Qt.QtGui',
+    'mmSolver.ui.Qt.QtWidgets',
+    'mmSolver.ui.Qt.QtCompat',
     'PySide',
     'PySide2',
     'shiboken',

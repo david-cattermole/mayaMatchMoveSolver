@@ -23,7 +23,7 @@ window.
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import maya.cmds as cmds
 

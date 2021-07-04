@@ -65,15 +65,25 @@
         <item row="1" column="1">
          <widget class="QComboBox" name="showValidateButtonComboBox"/>
         </item>
-        <item row="2" column="0">
+        <item row="2" column="1">
+         <widget class="QComboBox" name="allowObjectRelationsComboBox"/>
+        </item>
+        <item row="3" column="0">
          <widget class="QLabel" name="minimalUIWhileSolvingLabel">
           <property name="text">
            <string>Minimal UI While Solving:</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="3" column="1">
          <widget class="QComboBox" name="minimalUIWhileSolvingComboBox"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="allowObjectRelationsLabel">
+          <property name="text">
+           <string>Allow Object Relationships</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

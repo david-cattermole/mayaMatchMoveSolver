@@ -471,18 +471,18 @@ def compile_collection(col, prog_fn=None):
             frame = mmapi.Frame(frame_num)
             sol.set_use_single_frame(True)
             sol.set_single_frame(frame)
-            sol_list.append(sol)
         else:
             by_frame = col_state.get_solver_increment_by_frame_from_collection(col)
             frame_string = col_state.get_solver_frames_from_collection(col)
             frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
             frames = [mmapi.Frame(f) for f in frame_nums]
             sol.set_frame_list(frames)
-            eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(col)
-            eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
-            sol.set_eval_object_relationships(eval_obj_relations)
-            sol.set_eval_complex_graphs(eval_complex_graphs)
-            sol_list.append(sol)
+
+        eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(col)
+        eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+        sol.set_eval_object_relationships(eval_obj_relations)
+        sol.set_eval_complex_graphs(eval_complex_graphs)
+        sol_list.append(sol)
 
     elif solver_tab == const.SOLVER_TAB_STANDARD_VALUE:
         sol = mmapi.SolverStandard()
@@ -492,7 +492,6 @@ def compile_collection(col, prog_fn=None):
             frame = mmapi.Frame(frame_num)
             sol.set_use_single_frame(True)
             sol.set_single_frame(frame)
-            sol_list.append(sol)
         else:
             # Frame numbers
             by_frame = col_state.get_solver_increment_by_frame_from_collection(col)
@@ -512,15 +511,15 @@ def compile_collection(col, prog_fn=None):
             sol.set_root_frame_list(root_frames)
             sol.set_frame_list(frames)
 
-            global_solve = col_state.get_solver_global_solve_from_collection(col)
-            only_root = col_state.get_solver_only_root_frames_from_collection(col)
-            eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(col)
-            eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
-            sol.set_global_solve(global_solve)
-            sol.set_only_root_frames(only_root)
-            sol.set_eval_object_relationships(eval_obj_relations)
-            sol.set_eval_complex_graphs(eval_complex_graphs)
-            sol_list.append(sol)
+        global_solve = col_state.get_solver_global_solve_from_collection(col)
+        only_root = col_state.get_solver_only_root_frames_from_collection(col)
+        eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(col)
+        eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+        sol.set_global_solve(global_solve)
+        sol.set_only_root_frames(only_root)
+        sol.set_eval_object_relationships(eval_obj_relations)
+        sol.set_eval_complex_graphs(eval_complex_graphs)
+        sol_list.append(sol)
 
     elif solver_tab.lower() == const.SOLVER_TAB_LEGACY_VALUE:
         step_list = get_solver_steps_from_collection(col)

@@ -67,7 +67,7 @@ settings.</p>
 transform node.</li>
 </ul>
 </li>
-<li>Use the Pan/Zoom tool (default hotkey is backslash (‘ \ ‘) key),
+<li>Use the Pan/Zoom tool (default hotkey is backslash (’ \ ‘) key),
 to zoom in and out. Play the Maya timeline and use the centered view as
 needed.</li>
 </ol>
@@ -78,7 +78,7 @@ needed.</li>
 not reset the view.</li>
 <li>The pan/zoom will still be active. To reset the viewport camera,
 turn off Pan/Zoom on the viewport camera (default hotkey is
-backslash (‘ \ ‘) key).</li>
+backslash (’ \ ‘) key).</li>
 </ul>
 </li>
 </ol>
@@ -425,6 +425,7 @@ and encourages an organised workflow when working with many nodes.</p>
 <p>This is equivalent to Maya’s <em>Parent</em> tool (<cite>p</cite> hotkey), except the
 tool will maintain the world-space position of the transform node for
 each keyframe applied to the node.</p>
+<p>See the <a class="reference internal" href="#reparent-window-tool-ref"><span class="std std-ref">Reparent UI</span></a> for options.</p>
 <p>Usage:</p>
 <ol class="arabic simple">
 <li>Select nodes to change parent, then select the new parent node.<ul>
@@ -440,7 +441,7 @@ keyframes.</li>
 </li>
 </ol>
 <p>To run the tool, use this Python command:</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent2.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">reparent_under_node</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -450,6 +451,7 @@ keyframes.</li>
 <p>This is equalivent to Maya’s <em>Unparent</em> tool (<cite>Shift + p</cite> hotkey), except the tool will
 maintain the world-space position of the transform node for each
 keyframe applied to the node.</p>
+<p>See the <a class="reference internal" href="#reparent-window-tool-ref"><span class="std std-ref">Reparent UI</span></a> for options.</p>
 <p>Usage:</p>
 <ol class="arabic simple">
 <li>Select Maya transform node(s).<ul>
@@ -464,8 +466,60 @@ parented under any node).</li>
 </li>
 </ol>
 <p>To run the tool, use this Python command:</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent2.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">unparent_to_world</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="reparent-ui">
+<span id="reparent-window-tool-ref"></span><h2>Reparent UI<a class="headerlink" href="#reparent-ui" title="Permalink to this headline">¶</a></h2>
+<p>This window displays options for how to re-parent nodes.</p>
+<p><em>Reparent</em> is the underlying tool window used by both
+<a class="reference internal" href="#reparent-under-node-tool-ref"><span class="std std-ref">Reparent Under Node</span></a>
+and <a class="reference internal" href="#unparent-to-world-tool-ref"><span class="std std-ref">Unparent to World</span></a>.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="images/tools_reparent_ui.png"><img alt="Reparent UI" src="images/tools_reparent_ui.png" style="width: 40%;" /></a>
+</div>
+<table border="1" class="colwidths-auto docutils" id="id2">
+<caption><span class="caption-text">Reparent UI Options</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Values</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Children</td>
+<td><em>Node Names</em></td>
+<td>Description</td>
+</tr>
+<tr class="row-odd"><td>Parent</td>
+<td><em>Node Name</em> or empty</td>
+<td>The node to place children underneath.</td>
+</tr>
+<tr class="row-even"><td>Frame Range</td>
+<td><em>Timeline (Inner)</em>, <em>Timeline (Outer)</em> or <em>Custom</em></td>
+<td>The frame range to bake.</td>
+</tr>
+<tr class="row-odd"><td>Bake Mode</td>
+<td><em>Full Bake</em> or <em>Smart Bake</em></td>
+<td>Method for how keyframes are baked.</td>
+</tr>
+<tr class="row-even"><td>Rotate Order</td>
+<td><em>Use Existing</em> or <em>XYZ</em>, <em>ZXY</em>, etc</td>
+<td>Change the rotation order of children nodes when re-parenting.</td>
+</tr>
+<tr class="row-odd"><td>Delete Static AnimCurves</td>
+<td><em>Yes</em> or <em>No</em></td>
+<td>Baked attributes that do not animate have all keys replaced
+with a static value.</td>
+</tr>
+</tbody>
+</table>
+<p>This video tutorial explains how the re-parenting tool works.</p>
+<iframe width="720" height="405" src="https://www.youtube.com/embed/UmVu3oag_-k" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>To run the tool, use this Python command:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent2.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -564,8 +618,8 @@ version 1, use this python code to run it.</p>
 </div>
 <p>The <em>User Preferences</em> window is used to change how mmSolver tools and
 general functions behave, by default.</p>
-<table border="1" class="colwidths-auto docutils" id="id2">
-<caption><span class="caption-text">Options</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-auto docutils" id="id3">
+<caption><span class="caption-text">Options</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
 <th class="head">Values</th>
@@ -639,6 +693,7 @@ will not be adjusted.</td>
 <li><a class="reference internal" href="#sort-selected-nodes-in-outliner">Sort Selected Nodes In Outliner</a></li>
 <li><a class="reference internal" href="#reparent-under-node">Reparent Under Node</a></li>
 <li><a class="reference internal" href="#unparent-to-world">Unparent to World</a></li>
+<li><a class="reference internal" href="#reparent-ui">Reparent UI</a></li>
 <li><a class="reference internal" href="#remove-solver-nodes">Remove Solver Nodes</a></li>
 <li><a class="reference internal" href="#create-remove-controller">Create / Remove Controller</a></li>
 <li><a class="reference internal" href="#user-preferences">User Preferences</a></li>

@@ -60,7 +60,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='140363009564432'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='140363009564560'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='140363009126544'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='140125139389264'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='140125139389456'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='140125139389648'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -892,7 +892,8 @@ value = ‘1001,1002,1003-1005,1010-1012’</p>
 rely on Maya’s in-built ‘maya.utils.executeDeferred()’ function.</p>
 <p>This event system automatically combines multiple functions with
 single objects into a function that is run once with multiple
-arguments.</p>
+arguments. The reason for this, is to reduce function calls and
+improve performance when operating on many arguments at once.</p>
 <p>Example usage:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mmSolver.utils.event</span> <span class="k">as</span> <span class="nn">event_utils</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1176,6 +1177,24 @@ will always have unique node names.</dd>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The parent nodes of node, in order from node upwards.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[basestring, .]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.node.sort_nodes_by_depth">
+<code class="descclassname">mmSolver.utils.node.</code><code class="descname">sort_nodes_by_depth</code><span class="sig-paren">(</span><em>nodes</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.node.sort_nodes_by_depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort nodes by depth, shallow nodes first.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – List of Maya DAG node paths.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of sorted nodes.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">[str, .]</td>
 </tr>
 </tbody>
 </table>

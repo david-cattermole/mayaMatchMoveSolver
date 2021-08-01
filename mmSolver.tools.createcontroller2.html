@@ -67,7 +67,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<em>str</em>) – rig name</li>
+<li><strong>name</strong> (<em>str</em>) – The name of the rig.</li>
 <li><strong>pivot_node</strong> (<em>str</em>) – The controller uses the pivot node’s transform as the parent
 of the controller.</li>
 <li><strong>main_node</strong> (<em>str</em>) – The node to be controlled</li>
@@ -100,15 +100,27 @@ mmSolver.tools.createcontroller2.constant.CONTROLLER_TYPE_LIST.</li>
 
 <dl class="function">
 <dt id="mmSolver.tools.createcontroller2.lib.remove_controller">
-<code class="descclassname">mmSolver.tools.createcontroller2.lib.</code><code class="descname">remove_controller</code><span class="sig-paren">(</span><em>controller_node</em>, <em>frame_start</em>, <em>frame_end</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller2.lib.remove_controller" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.tools.createcontroller2.lib.</code><code class="descname">remove_controller</code><span class="sig-paren">(</span><em>controller_node</em>, <em>frame_start</em>, <em>frame_end</em>, <em>attrs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller2.lib.remove_controller" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bake the affects of the controller node, and delete the controller.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The transform node that was controlled by the given controller.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>controller_node</strong> (<em>str</em>) – The controller node.</li>
+<li><strong>frame_start</strong> (<em>int</em>) – First frame to bake.</li>
+<li><strong>frame_end</strong> (<em>int</em>) – Last frame to bake.</li>
+<li><strong>attrs</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>] or </em><em>None</em>) – List of attributes to bake. If None, all transform,
+rotate and scale attributes are baked.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The list of transform nodes that were controlled by the
+given controller.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[str, .]</p>
+</td>
 </tr>
 </tbody>
 </table>

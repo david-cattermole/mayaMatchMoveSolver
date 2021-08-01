@@ -14,8 +14,7 @@
 3. [and so on...]
 
 ### Software Versions
-<!-- What software and hardware versions are you running?
--->
+<!-- What software and hardware versions are you running? -->
 
 - mmSolver version: [mmSolver version number here]
 
@@ -35,4 +34,4 @@ print 'GPU:', ''.join(maya.cmds.ogs(deviceInformation=True))
 
 [Maya version number or print out here]
 
-- Operating System (OS): <!-- Windows, Linux and MacOS -->
+- Operating System (OS): [Possible options: Windows, Linux and MacOS]

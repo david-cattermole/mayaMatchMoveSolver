@@ -19,6 +19,10 @@
 Remove Solver Nodes - user facing.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver.api as mmapi
 import maya.cmds as cmds
@@ -31,20 +35,21 @@ def filter_nodes(what_to_delete_dict):
     cmds.select([])
     node_categories = mmapi.filter_nodes_into_categories(nodes)
     unknown_node_found = False
-    LOG.info('removesolvernodes: filter_nodes run')
-    all_list_to_delete = list()
+    found_nodes_map = dict()
     if what_to_delete_dict.get('markers') is True:
-        all_list_to_delete += collect_nodes(node_categories, mode='marker')
+        found_nodes_map['markers'] = collect_nodes(node_categories, mode='marker')
     if what_to_delete_dict.get('other_nodes') is True:
-        all_list_to_delete += collect_misc_nodes()
+        found_nodes_map['other_nodes'] = collect_misc_nodes()
     if what_to_delete_dict.get('bundles') is True:
         delete_list, unknown_node_found = collect_bundles(node_categories)
-        all_list_to_delete += delete_list
+        found_nodes_map['bundles'] = delete_list
     if what_to_delete_dict.get('marker_groups') is True:
-        all_list_to_delete += collect_nodes(node_categories, mode='markergroup')
+        found_nodes = collect_nodes(node_categories, mode='markergroup')
+        found_nodes_map['marker_groups'] = found_nodes
     if what_to_delete_dict.get('collections') is True:
-        all_list_to_delete += collect_nodes(node_categories, mode='collection')
-    return all_list_to_delete, unknown_node_found
+        found_nodes = collect_nodes(node_categories, mode='collection')
+        found_nodes_map['collections'] = found_nodes
+    return found_nodes_map, unknown_node_found
 
 
 def collect_nodes(node_categories, mode=None):
@@ -55,7 +60,7 @@ def collect_nodes(node_categories, mode=None):
             continue
         for node in node_categories[mode]:
             list_to_delete.append(node)
-    return list_to_delete
+    return list(sorted(set(list_to_delete)))
 
 
 def collect_misc_nodes():
@@ -65,7 +70,7 @@ def collect_misc_nodes():
                              'mmMarkerGroupTransform'])
     other_nodes = cmds.ls('mmSolver*', long=True)
     combined_set = set(misc_nodes+other_nodes)
-    return list(combined_set)
+    return list(sorted(combined_set))
 
 
 def collect_bundles(node_categories):
@@ -81,7 +86,7 @@ def collect_bundles(node_categories):
             for child in children:
                 if mmapi.get_object_type(child) != 'bundle':
                     unknown_node_found = True
-    return list_to_delete, unknown_node_found
+    return list(sorted(set(list_to_delete))), unknown_node_found
 
 
 def delete_nodes(nodes_to_delete):
@@ -92,7 +97,7 @@ def delete_nodes(nodes_to_delete):
 
 def main():
     """
-    Open the Channel Sensitivity window.
+    Open the 'Remove Solver Nodes' window.
     """
     import mmSolver.tools.removesolvernodes.ui.removesolvernodes_window as window
     window.main()

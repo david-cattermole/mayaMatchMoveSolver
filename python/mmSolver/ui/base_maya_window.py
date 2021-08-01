@@ -50,9 +50,9 @@ from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt
-import Qt.QtCore as QtCore
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt as Qt
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.config as config_utils
@@ -61,6 +61,7 @@ import mmSolver.ui.ui_base as ui_base
 
 
 LOG = mmSolver.logger.get_logger()
+ALL_CLASS_INSTANCES = set()
 
 
 class BaseMayaWindow(MayaQWidgetDockableMixin,
@@ -74,6 +75,9 @@ class BaseMayaWindow(MayaQWidgetDockableMixin,
         s = time.time()
         super(BaseMayaWindow, self).__init__()
         self.windowGeometry = None
+
+        global ALL_CLASS_INSTANCES
+        ALL_CLASS_INSTANCES.add(self)
 
         # Destroy this widget when closed. Otherwise it will stay around.
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
@@ -89,7 +93,6 @@ class BaseMayaWindow(MayaQWidgetDockableMixin,
         self._settings_path = config_path
         e = time.time()
         LOG.debug('BaseMayaWindow init: %r seconds', e - s)
-        LOG.info('is the window dockable?: %s' % self.isDockable())
         return
 
     def baseHideStandardButtons(self):
@@ -147,6 +150,21 @@ class BaseMayaWindow(MayaQWidgetDockableMixin,
         return instance
 
     @classmethod
+    def close_all_instances(cls):
+        global ALL_CLASS_INSTANCES
+        for instance in ALL_CLASS_INSTANCES:
+            if not instance:
+                continue
+            if uiutils.isValidQtObject(instance) is False:
+                continue
+            LOG.debug("Closing: %r", instance.objectName())
+            instance.deleteLater()
+            instance.close()
+        del ALL_CLASS_INSTANCES
+        ALL_CLASS_INSTANCES = set()
+        return
+
+    @classmethod
     def open_window(cls, show=True, auto_raise=True, delete=False, dock=False):
         s = time.time()
         if (cls is not None
@@ -160,7 +178,11 @@ class BaseMayaWindow(MayaQWidgetDockableMixin,
             name = cls.name
             app, parent = uiutils.getParent()
             cls.instance = cls(parent=parent, name=name)
-            cls.instance.setDockableParameters(dockable=dock)
+            # Do not retain the workspaceController after the window
+            # has closed, if retain=True this causes errors when
+            # windows are closed.
+            retain = False
+            cls.instance.setDockableParameters(dockable=dock, retain=retain)
 
         # Make sure the user can see this window.
         if cls.instance.isHidden():

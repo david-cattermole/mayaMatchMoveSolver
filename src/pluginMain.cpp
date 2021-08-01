@@ -30,6 +30,7 @@
 // Build-Time constant values.
 #include <buildConstant.h>
 
+#include <nodeTypeIds.h>
 #include <MMSolverCmd.h>
 #include <MMSolverTypeCmd.h>
 #include <MMTestCameraMatrixCmd.h>
@@ -141,16 +142,17 @@ MStatus initializePlugin(MObject obj) {
                   status);
 
     // MM Marker Group transform
-    const MString markerGroupClassification = "drawdb/geometry/transform";
-    REGISTER_TRANSFORM(plugin,
-                       MMMarkerGroupTransformNode::nodeName(),
-                       MMMarkerGroupTransformNode::m_id,
-                       MMMarkerGroupTransformNode::creator,
-                       MMMarkerGroupTransformNode::initialize,
-                       MPxTransformationMatrix::baseTransformationMatrixId,
-                       MPxTransformationMatrix::creator,
-                       markerGroupClassification,
-                       status)
+    const MString markerGroupClassification = MM_MARKER_GROUP_DRAW_CLASSIFY;
+    REGISTER_TRANSFORM(
+        plugin,
+        MMMarkerGroupTransformNode::nodeName(),
+        MMMarkerGroupTransformNode::m_id,
+        MMMarkerGroupTransformNode::creator,
+        MMMarkerGroupTransformNode::initialize,
+        MPxTransformationMatrix::baseTransformationMatrixId,
+        MPxTransformationMatrix::creator,
+        markerGroupClassification,
+        status);
 
     // Run the Python startup function when the plug-in loads.
     bool displayEnabled = false;

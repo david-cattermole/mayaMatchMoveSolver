@@ -21,6 +21,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.constant as const_utils
 import mmSolver.utils.time as time_utils
+import mmSolver.utils.node as node_utils
 import mmSolver.utils.tools as tools_utils
 import mmSolver.tools.createcontroller2.lib as lib
 
@@ -28,11 +29,25 @@ LOG = mmSolver.logger.get_logger()
 
 
 def main():
-    selection = maya.cmds.ls(selection=True)
-    if not len(selection) == 1:
-        LOG.warn("Please select only one controller.")
+    nodes = maya.cmds.ls(
+        selection=True,
+        long=True,
+        type='transform') or []
+    if len(nodes) == 0:
+        LOG.warn("Please select at least 1 transform.")
         return
     start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
+
+    # Sort nodes by depth, deeper nodes first, so we do do not remove
+    # parents before children.
+    nodes = node_utils.sort_nodes_by_depth(nodes, reverse=True)
+
+    # Channels to bake.
+    attrs = lib._get_selected_channel_box_attrs()
+    if len(attrs) == 0:
+        attrs = lib.TRANSFORM_ATTRS
+
+    baked_nodes = []
     ctx = tools_utils.tool_context(
         use_undo_chunk=True,
         restore_current_frame=True,
@@ -40,6 +55,10 @@ def main():
         disable_viewport=True,
         disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
     with ctx:
-        lib.remove_controller(selection[0], start_frame, end_frame)
+        for node in nodes:
+            if maya.cmds.objExists(node) is False:
+                continue
+            baked_nodes += lib.remove_controller(
+                node, start_frame, end_frame, attrs=attrs)
+        maya.cmds.select(baked_nodes, replace=True)
     return
-

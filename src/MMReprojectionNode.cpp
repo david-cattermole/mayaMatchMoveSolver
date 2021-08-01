@@ -110,7 +110,7 @@ MMReprojectionNode::MMReprojectionNode() {}
 MMReprojectionNode::~MMReprojectionNode() {}
 
 MString MMReprojectionNode::nodeName() {
-    return MString("mmReprojection");
+    return MString(MM_REPROJECTION_TYPE_NAME);
 }
 
 MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {

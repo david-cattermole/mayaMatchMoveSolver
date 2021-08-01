@@ -29,7 +29,6 @@ Required:
 - [Maya Development Kit](https://www.autodesk.com/developer-network/platform-technologies/maya)
 - [CMinpack 1.3.6](https://github.com/devernay/cminpack/releases/tag/v1.3.6)
 - [Python 2.7.x or 3.x](https://www.python.org/) (for build scripts)
-- [Qt.py 1.1.0](https://github.com/mottosso/Qt.py/releases/tag/1.1.0) (for GUI support)
 - [Sphinx 1.8.3+](http://www.sphinx-doc.org/en/master/index.html) (for building documentation)
 
 Optional Solver:
@@ -40,6 +39,10 @@ Optional Solver:
     mmSolver so it may not be distributed in binary form.  
   - Note: The automatic build script for _levmar_ requires 
     [CMake 3.4.3+](https://cmake.org/) with levmar on Windows.
+
+Note: Until mmSolver v0.3.13 [Qt.py 1.1.0](https://github.com/mottosso/Qt.py/releases/tag/1.1.0)
+was required for GUI support, but this is now embedded inside mmSolver
+directly, so there is no need install it manually.
 
 # Building Overview
 
@@ -59,9 +62,6 @@ $ cd <project root>
 
 # Download and Build CMinpack automatically.
 $ bash scripts/build_cminpack.bash
-
-# Download Qt.py automatically.
-$ bash scripts/build_qtpy.bash
 
 # Build mmSolver, compile UI files, compile Maya plug-in, build
 # documentation, create module and install to home directory.
@@ -83,9 +83,6 @@ On Windows:
 
 # Download and Build CMinpack automatically.
 > scripts/build_cminpack.bat
-
-# Download Qt.py automatically.
-> scripts/build_qtpy.bat
 
 :: Build mmSolver, compile UI files, compile Maya plug-in, build
 :: documentation, create module and install to home directory.

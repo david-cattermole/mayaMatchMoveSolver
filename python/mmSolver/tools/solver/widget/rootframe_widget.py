@@ -22,9 +22,9 @@ A widget for visualising a specific set of (integer) frame numbers.
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.time as utils_time

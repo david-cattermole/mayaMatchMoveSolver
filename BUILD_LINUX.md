@@ -54,7 +54,7 @@ Python 2.7.5
 
 # Building Dependencies
 
-`cminpack`, `levmar` and `Qt.py` can be easily downloaded and built
+`cminpack`, and `levmar` can be easily downloaded and built
 for mmSolver using build scripts provided in the `<project
 root>/scripts` directory.
 
@@ -62,7 +62,6 @@ On Linux:
 ```commandline
 $ cd <project root>
 $ bash scripts/build_cminpack.bash
-$ bash scripts/build_qtpy.bash
 $ bash scripts/build_levmar.bash
 ```
 
@@ -71,14 +70,9 @@ directories under `<project root>/external/install`.
 
 - cminpack
 - levmar
-- qtpy
 
 These dependencies will automatically be found by the mmSolver build
 script and installed.
-
-If you do not want to install `Qt.py` into mmSolver, simply do not use
-the build script and delete the directory `<project
-root>/external/install/qtpy`.
 
 # Build mmSolver
 
@@ -311,27 +305,27 @@ Run in the Linux Bash terminal:
 # Maya 2016
 $ load_maya2016.sh  # Example script to set up Maya environment
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2016Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2016Deploy_linux
-$ cd /media/dev/mayaMatchMoveSolver_maya2016Deploy_linux ; git fetch --all; git checkout -f master; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_linux_maya2016.bash
+$ cd /media/dev/mayaMatchMoveSolver_maya2016Deploy_linux ; git fetch --all; git checkout -f master; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_linux_maya2016.bash
 
 # Maya 2017
 $ load_maya2017.sh  # Example script to set up Maya environment
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2017Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2017Deploy_linux
-$ cd /media/dev/mayaMatchMoveSolver_maya2017Deploy_linux ; git fetch --all; git checkout -f master; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_linux_maya2017.bash
+$ cd /media/dev/mayaMatchMoveSolver_maya2017Deploy_linux ; git fetch --all; git checkout -f master; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_linux_maya2017.bash
 
 # Maya 2018
 $ load_maya2018.sh  # Example script to set up Maya environment
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2018Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2018Deploy_linux
-$ cd /media/dev/mayaMatchMoveSolver_maya2018Deploy_linux ; git fetch --all; git checkout -f master; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_linux_maya2018.bash
+$ cd /media/dev/mayaMatchMoveSolver_maya2018Deploy_linux ; git fetch --all; git checkout -f master; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_linux_maya2018.bash
 
 # Maya 2019
 $ load_maya2019.sh  # Example script to set up Maya environment
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2019Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2019Deploy_linux
-$ cd /media/dev/mayaMatchMoveSolver_maya2019Deploy_linux ; git fetch --all; git checkout -f master; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_linux_maya2019.bash
+$ cd /media/dev/mayaMatchMoveSolver_maya2019Deploy_linux ; git fetch --all; git checkout -f master; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_linux_maya2019.bash
 
 # Maya 2020
 $ load_maya2020.sh  # Example script to set up Maya environment
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2020Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2020Deploy_linux
-$ cd /media/dev/mayaMatchMoveSolver_maya2020Deploy_linux ; git fetch --all; git checkout -f master; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_linux_maya2020.bash
+$ cd /media/dev/mayaMatchMoveSolver_maya2020Deploy_linux ; git fetch --all; git checkout -f master; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_linux_maya2020.bash
 ```
 
 Package files can then be uploaded from the

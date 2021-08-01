@@ -60,6 +60,8 @@ def main():
         return
 
     try:
+        # Set the solver 'running' flag so that the Solver UI does not
+        # update.
         mmapi.set_solver_running(True)
 
         save_sel = maya.cmds.ls(selection=True, long=True) or []

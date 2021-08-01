@@ -22,8 +22,8 @@ Object nodes for the mmSolver Window UI.
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtGui as QtGui
 
 import mmSolver.logger
 import mmSolver.api as mmapi

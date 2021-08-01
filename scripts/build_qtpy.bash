@@ -41,7 +41,7 @@ python "${THIS_DIR}/get_qtpy.py" "${ROOT}/archives" "${ROOT}/working" "${ROOT}/p
 
 # Copy file to install
 mkdir -p ${INSTALL_DIR}
-cp ${ROOT}/working/Qt.py-1.1.0/Qt.py ${INSTALL_DIR}
+cp ${ROOT}/working/Qt.py-1.2.0/Qt.py ${INSTALL_DIR}
 
 # Return back project root directory.
 cd ${CWD}

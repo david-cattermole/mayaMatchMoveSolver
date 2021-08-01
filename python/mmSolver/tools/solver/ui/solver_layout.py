@@ -24,9 +24,9 @@ import time
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
@@ -49,7 +49,6 @@ class SolverLayout(QtWidgets.QWidget):
     def __init__(self, parent=None, *args, **kwargs):
         s = time.time()
         super(SolverLayout, self).__init__(*args, **kwargs)
-        s = time.time()
         self.ui = ui_solver_layout.Ui_Form()
         self.ui.setupUi(self)
 

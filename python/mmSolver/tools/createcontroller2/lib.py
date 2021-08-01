@@ -16,26 +16,46 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import maya.cmds as cmds
-import maya.mel as mel
 import random
 
-import mmSolver.utils.node as node_utils
-import mmSolver.utils.time as time_utils
+import maya.cmds as cmds
+import maya.mel as mel
+
+import mmSolver.logger
 import mmSolver.tools.attributebake.lib as fastbake_lib
 import mmSolver.tools.createcontroller2.constant as const
-import mmSolver.logger
+import mmSolver.utils.node as node_utils
+import mmSolver.utils.time as time_utils
 
 LOG = mmSolver.logger.get_logger()
 
-
-ATTRIBUTE_IDENTIFIER_NAME = "mmsolver_cc_identifier"
-ATTRIBUTE_IDENTIFIER_VALUE = "mmSolver_create_controller_identifier"
+IDENTIFIER_ATTR_NAME = "mmsolver_cc_identifier"
 WORLD_SPACE_RIG_ZERO_SUFFIX = "_worldSpaceZero"
 OBJECT_SPACE_RIG_ZERO_SUFFIX = "_objectSpaceZero"
 SCREEN_SPACE_RIG_SUFFIX = "_screenSpace"
 SCREEN_SPACE_RIG_ZERO_SUFFIX = "_screenSpaceZero"
 MAIN_DRIVER_SUFFIX_NAME = "_mainDriver"
+TRANSFORM_ATTRS = [
+    'translateX', 'translateY', 'translateZ',
+    'rotateX', 'rotateY', 'rotateZ',
+    'scaleX', 'scaleY', 'scaleZ'
+]
+
+
+def _is_rig_node(node):
+    """Check if the node is a rig node."""
+    if node_utils.attribute_exists(IDENTIFIER_ATTR_NAME, node):
+        return True
+    return False
+
+
+def _get_rig_node_identifier(node):
+    """Get custom attribute value to identify rig node."""
+    if _is_rig_node(node):
+        plug = node + '.' + IDENTIFIER_ATTR_NAME
+        attr_value = cmds.getAttr(plug)
+        return attr_value
+    return None
 
 
 def _get_selected_channel_box_attrs():
@@ -80,20 +100,25 @@ def _skip_rotate_attributes(node):
     return attr_list
 
 
-def _copy_parent_keys_to_child(parent, child, start_frame, end_frame):
-    """Copy parent keys to child. start frame and end frame are mandatory."""    
-    all_keys = cmds.keyframe(parent, query=True, time=(start_frame, end_frame)) or []
-    keys = [start_frame, end_frame]
-    for key in all_keys:
-        if key not in keys:
-            keys.append(key)
-    for frame in keys:
+def _set_keyframes_at_source_node_key_times(src_node, dst_node,
+                                            start_frame, end_frame):
+    """
+    Set keyframes on dst_node at times based on src_node.
+
+    Start frame and end frame are always copied.
+    """
+    all_keys = cmds.keyframe(
+        src_node, query=True,
+        time=(start_frame, end_frame)) or []
+    keys = {start_frame, end_frame} | set(all_keys)
+    for frame in sorted(keys):
         cmds.currentTime(frame, edit=True)
-        cmds.setKeyframe(child)
+        cmds.setKeyframe(dst_node)
+    return
 
 
 def _set_lod_visibility(node, visibility=False):
-    """Sets shape node LOD visibility on/off"""
+    """Sets shape node LOD visibility on/off."""
     shape = cmds.listRelatives(node, shapes=True)
     if shape:
         cmds.setAttr(shape[0] + ".lodVisibility", visibility)
@@ -104,7 +129,7 @@ def _world_bake(pivot, main, loc_grp, start, end, smart_bake=False):
     attrs = []
     if "vtx" in pivot:
         current_time = cmds.currentTime(query=True)
-        for frame in range(start, end+1):
+        for frame in range(start, end + 1):
             cmds.currentTime(frame, edit=True)
             point_pos = cmds.pointPosition(pivot, world=True)
             cmds.xform(loc_grp, worldSpace=True, translation=point_pos)
@@ -119,15 +144,16 @@ def _world_bake(pivot, main, loc_grp, start, end, smart_bake=False):
 
     # orient constraint, parent is main and child is loc_grp
     orient_con = cmds.orientConstraint(main, loc_grp, maintainOffset=False)
-    
+
     fastbake_lib.bake_attributes(loc_grp, attrs, start, end, smart_bake)
     cmds.delete(orient_con)
     return loc_grp
 
+
 def _create_main_driver(parent, main):
     start, end = time_utils.get_maya_timeline_range_inner()
     main_driver_loc = cmds.duplicate(parent)
-    cmds.setAttr(main_driver_loc[0]+".visibility", 0)
+    cmds.setAttr(main_driver_loc[0] + ".visibility", 0)
     cmds.parent(main_driver_loc, parent)
     parent_con = cmds.parentConstraint(main, main_driver_loc)
     # bake attributes
@@ -136,7 +162,7 @@ def _create_main_driver(parent, main):
         main_driver_loc, attrs, start, end, smart_bake=False)
     cmds.delete(parent_con)
     # hide in outliner
-    cmds.setAttr(main_driver_loc[0]+".hiddenInOutliner", 1)
+    cmds.setAttr(main_driver_loc[0] + ".hiddenInOutliner", 1)
     return main_driver_loc
 
 
@@ -191,9 +217,7 @@ def _create_controller_world_space(name,
     _set_lod_visibility(loc_grp_node, True)
     _set_lod_visibility(main_driver_loc, False)
 
-    # Rename
-    cmds.rename(main_driver_loc, str(name)+MAIN_DRIVER_SUFFIX_NAME)
-
+    cmds.rename(main_driver_loc, str(name) + MAIN_DRIVER_SUFFIX_NAME)
     return loc_grp_node
 
 
@@ -214,13 +238,19 @@ def _create_controller_object_space(name,
         start_frame, end_frame, smart_bake=False)
     zero_loc = cmds.duplicate(loc_grp_node)
     cmds.parent(zero_loc, loc_grp_node)
-    cmds.xform(zero_loc, translation=(0.0,0.0,0.0), rotation=(0.0,0.0,0.0), objectSpace=True)
+    cmds.xform(
+        zero_loc,
+        translation=(0.0, 0.0, 0.0),
+        rotation=(0.0, 0.0, 0.0),
+        objectSpace=True)
 
     main_driver_loc = _create_main_driver(zero_loc, main_node)
 
     # Smart bake
     if smart_bake is True:
-        _copy_parent_keys_to_child(main_node, zero_loc, start_frame, end_frame)
+        _set_keyframes_at_source_node_key_times(
+            main_node, zero_loc,
+            start_frame, end_frame)
 
     # Current frame
     if current_frame is True:
@@ -238,8 +268,8 @@ def _create_controller_object_space(name,
     _set_lod_visibility(main_driver_loc, False)
 
     # Rename
-    cmds.rename(zero_loc, str(name)+OBJECT_SPACE_RIG_ZERO_SUFFIX)
-    cmds.rename(main_driver_loc, str(name)+MAIN_DRIVER_SUFFIX_NAME)
+    cmds.rename(zero_loc, str(name) + OBJECT_SPACE_RIG_ZERO_SUFFIX)
+    cmds.rename(main_driver_loc, str(name) + MAIN_DRIVER_SUFFIX_NAME)
     return loc_grp_node
 
 
@@ -263,7 +293,11 @@ def _create_controller_screen_space(name,
         start_frame, end_frame, smart_bake=False)
     screen_loc = cmds.duplicate(loc_grp_node)
     cmds.parent(screen_loc, loc_grp_node)
-    cmds.xform(screen_loc, translation=(0.0,0.0,0.0), rotation=(0.0,0.0,0.0), objectSpace=True)
+    cmds.xform(
+        screen_loc,
+        translation=(0.0, 0.0, 0.0),
+        rotation=(0.0, 0.0, 0.0),
+        objectSpace=True)
 
     # Bake attributes
     attrs = []
@@ -277,13 +311,18 @@ def _create_controller_screen_space(name,
     cmds.delete(aim_con)
     zero_loc = cmds.duplicate(screen_loc)
     cmds.parent(zero_loc, screen_loc)
-    cmds.xform(zero_loc, translation=(0.0,0.0,0.0), rotation=(0.0,0.0,0.0), objectSpace=True)
+    cmds.xform(
+        zero_loc,
+        translation=(0.0, 0.0, 0.0),
+        rotation=(0.0, 0.0, 0.0),
+        objectSpace=True)
 
     main_driver_loc = _create_main_driver(zero_loc, main_node)
 
     # Smart bake
     if smart_bake is True:
-        _copy_parent_keys_to_child(main_node, zero_loc, start_frame, end_frame)
+        _set_keyframes_at_source_node_key_times(main_node, zero_loc,
+                                                start_frame, end_frame)
 
     # Current frame
     if current_frame is True:
@@ -292,7 +331,7 @@ def _create_controller_screen_space(name,
         cmds.cutKey(loc_grp_node, screen_loc, zero_loc,
                     time=(end_frame, end_frame))
 
-    cmds.pointConstraint(main_driver_loc, main_node, maintainOffset=True) 
+    cmds.pointConstraint(main_driver_loc, main_node, maintainOffset=True)
 
     # LOD visibility
     _set_lod_visibility(loc_grp_node, False)
@@ -303,7 +342,7 @@ def _create_controller_screen_space(name,
     # Rename
     cmds.rename(screen_loc, name + SCREEN_SPACE_RIG_SUFFIX)
     cmds.rename(zero_loc, name + SCREEN_SPACE_RIG_ZERO_SUFFIX)
-    cmds.rename(main_driver_loc, str(name)+MAIN_DRIVER_SUFFIX_NAME)
+    cmds.rename(main_driver_loc, str(name) + MAIN_DRIVER_SUFFIX_NAME)
     return loc_grp_node
 
 
@@ -319,7 +358,7 @@ def create_controller(name,
     """
     Create Controller of a node.
 
-    :param name: rig name
+    :param name: The name of the rig.
     :type name: str
 
     :param pivot_node:
@@ -364,11 +403,11 @@ def create_controller(name,
     # Add custom identify attribute
     cmds.addAttr(
         loc_grp_node[0],
-        longName=ATTRIBUTE_IDENTIFIER_NAME,
+        longName=IDENTIFIER_ATTR_NAME,
         dataType="string", keyable=False)
     cmds.setAttr(
-        str(loc_grp_node[0]) + "." + ATTRIBUTE_IDENTIFIER_NAME,
-        str(loc_grp_node[0]+str(random.randint(1,100000000))),
+        str(loc_grp_node[0]) + '.' + IDENTIFIER_ATTR_NAME,
+        str(loc_grp_node[0] + str(random.randint(1, 100000000))),
         type="string", lock=True)
 
     if controller_type == const.CONTROLLER_TYPE_WORLD_SPACE:
@@ -395,63 +434,108 @@ def create_controller(name,
     return loc_grp_node
 
 
-def remove_controller(controller_node, frame_start, frame_end):
+def remove_controller(controller_node, frame_start, frame_end,
+                      attrs=None):
     """
     Bake the affects of the controller node, and delete the controller.
 
-    :returns: The transform node that was controlled by the given controller.
-    :rtype: str
+    :param controller_node: The controller node.
+    :type controller_node: str
+
+    :param frame_start: First frame to bake.
+    :type frame_start: int
+
+    :param frame_end: Last frame to bake.
+    :type frame_end: int
+
+    :param attrs: List of attributes to bake. If None, all transform,
+        rotate and scale attributes are baked.
+    :type attrs: [str, ..] or None
+
+    :returns: The list of transform nodes that were controlled by the
+        given controller.
+    :rtype: [str, ..]
     """
-    # Store the selection in advance
-    copy_keys_node = controller_node
+    assert isinstance(controller_node, basestring)
+    assert cmds.objExists(controller_node)
+    assert isinstance(frame_start, int)
+    assert isinstance(frame_end, int)
+    if attrs is None:
+        attrs = TRANSFORM_ATTRS
+    assert isinstance(attrs, list)
+    if len(attrs) == 0:
+        attrs = TRANSFORM_ATTRS
 
-    is_node_controller_rig = False            
-    attr_list = cmds.listAttr(controller_node)
-    if ATTRIBUTE_IDENTIFIER_NAME in attr_list:
-        children = cmds.listRelatives(controller_node, fullPath=True, children=True, type="transform")
-        if children:
-            controller_node = str(children[0])
-            is_node_controller_rig = True 
-            # Get custom attribute value to indentify rig
-            custom_attr_value = cmds.getAttr(controller_node+"."+ATTRIBUTE_IDENTIFIER_NAME)         
-      
+    # Find controller nodes.
+    controller_nodes = []
+    is_controller_rig = _is_rig_node(controller_node)
+    if is_controller_rig is False:
+        controller_nodes = [controller_node]
+    else:
+        children = cmds.ls(
+            controller_node,
+            dag=True,
+            long=True,
+            type='transform') or []
+        controller_nodes = [n for n in children
+                            if _is_rig_node(n)]
 
-    attrs = _get_selected_channel_box_attrs()
+        # Sort nodes by depth, deeper nodes first, so we do do not
+        # remove parents before children.
+        controller_nodes = node_utils.sort_nodes_by_depth(
+            controller_nodes, reverse=True)
 
-    constraints = _find_constraints_from_node(controller_node)
-    if not constraints:
-        LOG.warn("Selected controller is not driving any object.")
-        return
+    # Find constraints.
+    constraints = []
+    for node in controller_nodes:
+        constraints += _find_constraints_from_node(node)
+    if len(constraints) == 0:
+        LOG.warn('Selected controller is not driving any object(s).')
+        return []
 
-    # Get Driven nodes
+    # Get Driven nodes.
     driven_nodes = []
     for constraint in constraints:
+        attr = constraint + '.constraintParentInverseMatrix'
         driven_nodes += cmds.listConnections(
-            constraint + '.constraintParentInverseMatrix',
-            destination=False, source=True) or []
+            attr, destination=False, source=True) or []
+    if len(driven_nodes) == 0:
+        LOG.warn('Selected controller is not driving any object(s).')
+        return []
 
-    if driven_nodes and len(driven_nodes) > 0:
-        # Bake attributes
-        if is_node_controller_rig is True:
-            for driven_node in driven_nodes:
-                _copy_parent_keys_to_child(copy_keys_node, driven_node, frame_start, frame_end)
-        else:        
-            fastbake_lib.bake_attributes(
-            driven_nodes, attrs, frame_start, frame_end, smart_bake=True)
+    # Find nodes to be deleted.
+    nodes_to_delete = []
+    for node in controller_nodes:
+        controller_id = _get_rig_node_identifier(node)
+        parent_nodes = node_utils.get_node_parents(node)
+        parent_node_ids = [_get_rig_node_identifier(n)
+                           for n in parent_nodes]
+        nodes_to_delete += [n for n, id_ in zip(parent_nodes, parent_node_ids)
+                            if id_ == controller_id]
+    has_extra_parents = len(nodes_to_delete) == 0
+
+    # Bake driven attributes.
+    if is_controller_rig is True and has_extra_parents is False:
+        for driven_node in driven_nodes:
+            # If the original top-level controller node was "smart
+            # baked", then set keys on all the same frames, therefore
+            # re-creating the original keyframe times.
+            _set_keyframes_at_source_node_key_times(
+                controller_node, driven_node,
+                frame_start, frame_end)
+    else:
+        fastbake_lib.bake_attributes(
+            driven_nodes, attrs,
+            frame_start, frame_end,
+            smart_bake=True)
+
+    # Delete nodes and clean up.
+    if len(constraints) > 0:
         cmds.delete(constraints)
-        _remove_constraint_blend_attr_from_nodes(driven_nodes)
+    _remove_constraint_blend_attr_from_nodes(driven_nodes)
+    nodes_to_delete = [n for n in nodes_to_delete
+                       if cmds.objExists(n)]
+    if len(nodes_to_delete) > 0:
+        cmds.delete(nodes_to_delete)
 
-        # Delete controller node and its parents
-        if is_node_controller_rig is True:
-            delete_list = []
-            parent_nodes = cmds.pickWalk(controller_node, direction="Up", recurse=True)
-            cmds.select(clear=True)
-            for parent_node in parent_nodes:
-                parent_node_attr_value = cmds.getAttr(parent_node+"."+ATTRIBUTE_IDENTIFIER_NAME)
-                if parent_node_attr_value == custom_attr_value:
-                    delete_list.append(parent_node)
-            cmds.delete(delete_list)
-
-        if cmds.objExists(controller_node):
-            cmds.delete(controller_node)
     return driven_nodes

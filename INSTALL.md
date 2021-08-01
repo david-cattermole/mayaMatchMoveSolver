@@ -18,30 +18,11 @@ For a simple installation, **do not** install from the
 `Source code (zip)` or `Source code (tar.gz)` archives. These archives
 are for developers only.
 
-# Install Qt.py (in a Home Environment)
+# Install Qt.py
 
-*Maya MatchMove Solver* uses the very popular
-[Qt.py](https://github.com/mottosso/Qt.py) project for it's
-[Qt Framework](https://www.qt.io/) user interfaces.
-Starting with mmSolver v0.2.0, `Qt.py` is installed with mmSolver, and
-users do not need to install `Qt.py`.
-
-# Install Qt.py (in a Professional Environment)
-
-Starting with mmSolver v0.2.0, `Qt.py` is installed with mmSolver
-pre-build packages on GitHub.
-If `Qt.py` is already installed in your professional environment
-(studio pipeline), you will not need to install it again.
-
-To remove `Qt.py` from the installation delete the folder named
-`python_qt` in the module directory.
-
-***Warning:*** If you are installing *Maya MatchMove Solver* in a studio
-production environment, *Qt.py* may already be installed. Installing a
-custom version of *Qt.py* in to your home directory may override your
-pipeline provided file and may cause unexpected problems. It is
-recommended to check with your studio's Pipeline team **before**
-installing any custom software.
+In *Maya MatchMove Solver* v0.3.14 and above the
+[Qt.py](https://github.com/mottosso/Qt.py) project is now included
+inside mmSolver, there is no need to install it at all.
 
 # Install Maya Module
 
@@ -82,10 +63,6 @@ You can open Maya as normal and the tool will be recognised
 automatically at start-up.  You will see a message in the Script
 Editor `# root : MM Solver Startup... #`, and a new shelf will
 automatically be created for you named *mmSolver*.
-
-***Note:*** Please remove the `<module root>/python_qt` directory, if
-`Qt.py` is already installed, see the above note
-*Install Qt.py (in a Professional Environment)*.
 
 # Project Configuration
 

@@ -5,11 +5,11 @@ platforms and can be downloaded from the
 [Releases](https://github.com/david-cattermole/mayaMatchMoveSolver/releases)
 page on the GitHub [project page](https://github.com/david-cattermole/mayaMatchMoveSolver).
 
-| Operating System  | Maya Version(s)             |
-| ----------------- | --------------------------- |
-| Linux             | Maya 2016, 2017, 2018, 2019 |
-| Windows           | Maya 2016, 2017, 2018, 2019 |
-| Mac OS X          | Maya 2018, 2019             |
+| Operating System  | Maya Version(s)                   |
+| ----------------- | --------------------------------- |
+| Linux             | Maya 2016, 2017, 2018, 2019, 2020 |
+| Windows           | Maya 2016, 2017, 2018, 2019, 2020 |
+| Mac OS X          | Maya 2018, 2019                   |
 
 Download the archive format (`.zip` or `.tar.gz`) for your Maya
 version and operating system.

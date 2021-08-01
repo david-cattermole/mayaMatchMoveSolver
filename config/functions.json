@@ -618,9 +618,9 @@
             ]
         },
         "remove_controller2": {
-            "name": "Remove Controller",
+            "name": "Remove Controllers",
             "name_shelf": "RmCtrl",
-            "tooltip": "Remove Controller for selected node. (version 2)",
+            "tooltip": "Remove Controller for selected nodes. (version 2)",
             "command": [
                 "import mmSolver.tools.removecontroller2.tool;",
                 "mmSolver.tools.removecontroller2.tool.main();"

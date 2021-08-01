@@ -63,6 +63,11 @@ if (BUILD_QT_UI)
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/raycastmarker/ui/ui_raycastmarker_layout.py
             )
 
+    add_ui_compile("reparent2"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/reparent2/ui/reparent2_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/reparent2/ui/ui_reparent2_layout.py
+            )
+
     add_ui_compile("removesolvernodes"
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/removesolvernodes/ui/removesolvernodes_layout.ui
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/removesolvernodes/ui/ui_removesolvernodes_layout.py

@@ -536,21 +536,58 @@
             ]
         },
         "reparent_under_node": {
-            "name": "Reparent under Node",
+            "name": "Reparent under Node (v1)",
             "name_shelf": "RePar",
-            "tooltip": "Reparent the selection under the last selected node.",
+            "tooltip": "Reparent the selection under the last selected node. (version 1)",
             "command": [
                 "import mmSolver.tools.reparent.tool;",
                 "mmSolver.tools.reparent.tool.reparent_under_node();"
             ]
         },
         "unparent_to_world": {
+            "name": "Unparent to World (v1)",
+            "name_shelf": "UnPar",
+            "tooltip": "Unparent the selected nodes into world space. (version 1)",
+            "command": [
+                "import mmSolver.tools.reparent.tool;",
+                "mmSolver.tools.reparent.tool.unparent_to_world();"
+            ]
+        },
+        "reparent2_ui": {
+            "name": "Reparent...",
+            "name_shelf": "RePar",
+            "tooltip": "Open Reparent node.",
+            "command": [
+                "import mmSolver.tools.reparent2.tool;",
+                "mmSolver.tools.reparent2.tool.open_window();"
+            ]
+        },
+        "reparent_under_node2": {
+            "name": "Reparent under Node",
+            "name_shelf": "RePar",
+            "tooltip": "Reparent the selection under the last selected node.",
+            "command": [
+                "import mmSolver.tools.reparent2.tool;",
+                "mmSolver.tools.reparent2.tool.reparent_under_node();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.reparent2.tool;",
+                "mmSolver.tools.reparent2.tool.reparent_under_node_open_window();"
+            ]
+        },
+        "unparent_to_world2": {
             "name": "Unparent to World",
             "name_shelf": "UnPar",
             "tooltip": "Unparent the selected nodes into world space.",
             "command": [
-                "import mmSolver.tools.reparent.tool;",
-                "mmSolver.tools.reparent.tool.unparent_to_world();"
+                "import mmSolver.tools.reparent2.tool;",
+                "mmSolver.tools.reparent2.tool.unparent_to_world();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.reparent2.tool;",
+                "mmSolver.tools.reparent2.tool.unparent_to_world_open_window();"
             ]
         },
         "create_controller": {

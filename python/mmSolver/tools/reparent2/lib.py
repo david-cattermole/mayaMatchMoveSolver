@@ -160,10 +160,11 @@ def reparent(children_nodes, parent_node,
 
     # Sort nodes by depth, deeper nodes first, so we do do not remove
     # parents before children.
-    nodes = node_utils.sort_nodes_by_depth(nodes, reverse=True)
+    children = [tn.get_node() for tn in children_nodes]
+    children = node_utils.sort_nodes_by_depth(children, reverse=True)
+    children_nodes = [tfm_utils.TransformNode(node=n) for n in children]
 
     loc_tfms = []
-    children = [tn.get_node() for tn in children_nodes]
     for i, child in enumerate(children):
         tfm_name = 'dummy' + str(i + 1)
         shp_name = 'dummy' + str(i + 1) + 'Shape'

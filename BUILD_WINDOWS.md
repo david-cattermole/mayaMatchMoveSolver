@@ -309,19 +309,27 @@ $ cd ~/dev/mayaMatchMoveSolver_maya2020Deploy_windows64/; git fetch --all; git c
 
 Run in the Windows Command Prompt with the needed MSVC compiler environment paths set up:
 (For example run "VS2012 x64 Cross Tools Command Prompt" or "VS2015 x86 x64 Cross Tools Command Prompt")
+
+Visual Studio 2012:
 ```cmd
 REM Maya 2016
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2016Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2016.bat
 
 REM Maya 2017
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2017Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2017.bat
+```
 
+Visual Studio 2015:
+```cmd
 REM Maya 2018
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2018Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2018.bat
 
 REM Maya 2019
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2019Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2019.bat
+```
 
+Visual Studio 2017:
+```cmd
 REM Maya 2020
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2020Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2020.bat
 ```

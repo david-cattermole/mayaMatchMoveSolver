@@ -169,8 +169,6 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             LOG.warn('Please select exactly one transform object.')
             return
         self.main_object_text.setText(str(selection[0]))
-        self.full_bake_rdo_btn.setChecked(True)
-        self.object_space_rdo_btn.setChecked(True)
 
     def smart_bake_radio_button_clicked(self):
         self.world_space_rdo_btn.setEnabled(False)

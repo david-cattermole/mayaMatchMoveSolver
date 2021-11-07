@@ -17,11 +17,15 @@ Required:
     - [GCC 4.4.7](https://gcc.gnu.org/) (Maya 2016 and 2017)
     - [GCC 4.8.3](https://gcc.gnu.org/) (Maya 2018)
     - [GCC 6.3.1](https://gcc.gnu.org/) (Maya 2019 and 2020)
+    - [GCC 9.3.1](https://gcc.gnu.org/) (Maya 2022)
+      - Red Hat `devtoolset-9` on RHEL
   - Windows
     - [Visual Studio 2012 update 5 (MSVC 11.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2016 and 2017)
     - [Visual Studio 2015 update 3 (MSVC 14.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2018 and 2019)
     - [Visual Studio 2017 (MSVC 15.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2020)
+    - [Visual Studio 2019 (MSVC 16.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2022)
 - [CMake 2.8+](https://cmake.org/)
+  - CMake 3.x is recommended.
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
 - [CMinpack 1.3.6](https://github.com/devernay/cminpack/releases/tag/v1.3.6)
 - [Python 2.7.x or 3.x](https://www.python.org/) (for build scripts)

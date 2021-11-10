@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -33,6 +33,12 @@
     <widget class="QTabWidget" name="tabWidget">
      <property name="enabled">
       <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="tabPosition">
       <enum>QTabWidget::North</enum>

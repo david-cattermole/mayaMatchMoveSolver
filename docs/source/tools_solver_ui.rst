@@ -9,7 +9,7 @@ command (`mmSolver`).
 .. figure:: images/tools_solver_ui_overview.png
     :alt: Solver User Interface
     :align: center
-    :scale: 50%
+    :scale: 80%
 
     Solver User Interface
 
@@ -26,7 +26,7 @@ Input Objects
 .. figure:: images/tools_solver_ui_widget_objects.png
     :alt: Solver Input Objects
     :align: right
-    :scale: 50%
+    :scale: 60%
 
 The Objects are the inputs to the current Solve. This will display
 of Markers used for detecting deviation.
@@ -45,6 +45,15 @@ To display the column visibility, use the Edit menu.
 
    * - Node
      - The input Object's Node.
+
+   * - Status
+     - The status of the input object; tick (✓), cross (❌) or dash
+       (—).
+
+       If the Solver detects an object is not used by the solver, it
+       will be disabled and marked with a cross mark.  Otherwise, a
+       tick mark is displayed. If the object's status has not been
+       detected the status is a dash mark.
 
    * - Weight
      - The weight the Marker will have in the solver. Higher values
@@ -67,7 +76,7 @@ Output Attributes
 .. figure:: images/tools_solver_ui_widget_attributes.png
     :alt: Solver Output Attributes
     :align: right
-    :scale: 50%
+    :scale: 60%
 
 This section of the UI shows the Attributes solved.
 
@@ -77,9 +86,19 @@ This section of the UI shows the Attributes solved.
 
    * - Field
      - Description
+
    * - Attr
      - The ``Attribute`` column displays nodes and attributes added
        into the active Collection.
+
+   * - Status
+     - The status of the attribute; tick (✓), cross (❌) or dash (—).
+
+       If an attribute cannot be modified by any Marker, then the
+       attribute status is set to a cross. Otherwise, attributes that
+       are valid have a tick mark. If the attributes's status has not
+       been detected the status is a dash mark.
+
    * - State
      - The State column displays if the attribute is Static or
        Animated.
@@ -109,7 +128,7 @@ File Menu
 .. figure:: images/tools_solver_ui_menu_file.png
     :alt: File Menu
     :align: right
-    :scale: 50%
+    :scale: 100%
 
 The ``File`` menu contains features to create and manipulate the
 overall use of the Solver UI, such as Collections.
@@ -135,7 +154,7 @@ Edit Menu
 .. figure:: images/tools_solver_ui_menu_edit.png
     :alt: Edit Menu
     :align: right
-    :scale: 50%
+    :scale: 100%
 
 The ``Edit`` menu displays options and features for how to change the
 solve or the usage of the Solver UI.
@@ -172,7 +191,7 @@ the Maya Viewport during solves.
 .. figure:: images/tools_solver_ui_menu_view.png
     :alt: View Menu
     :align: right
-    :scale: 50%
+    :scale: 100%
 
 .. list-table:: View Menu
    :widths: auto
@@ -226,7 +245,7 @@ Editor.
 .. figure:: images/tools_solver_ui_menu_log.png
     :alt: Log Menu
     :align: right
-    :scale: 50%
+    :scale: 100%
 
 .. list-table:: Log Menu
    :widths: auto

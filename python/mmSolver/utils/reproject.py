@@ -114,25 +114,37 @@ def find_reprojection_nodes(cam_tfm, cam_shp):
     Find all the reprojection nodes on the camera.
     """
     nodes = maya.cmds.listConnections(
-        cam_shp + '.pan',
-        source=True,
-        destination=False,
+        cam_shp + '.focalLength',
+        source=False,
+        destination=True,
         type='mmReprojection',
         exactType=True,
         skipConversionNodes=True
     ) or []
+    if not nodes:
+        return nodes
+    reprojection_node = nodes[0]
     # Get connected MultiplyDivide nodes connected.
-    for node in list(nodes):
-        mult_nodes = maya.cmds.listConnections(
-            node + '.imageWidth',
-            node + '.imageHeight',
-            source=True,
-            destination=False,
-            type='multiplyDivide',
-            exactType=True,
-            skipConversionNodes=True
-        ) or []
-        nodes += mult_nodes
+    mult_nodes = maya.cmds.listConnections(
+        reprojection_node + '.imageWidth',
+        reprojection_node + '.imageHeight',
+        source=True,
+        destination=False,
+        type='multiplyDivide',
+        exactType=True,
+        skipConversionNodes=True
+    ) or []
+    nodes += mult_nodes
+    # Get connected offset PlusMinusAverage nodes.
+    offset_plusminus_nodes = maya.cmds.listConnections(
+        reprojection_node + '.outPan',
+        source=False,
+        destination=True,
+        type='plusMinusAverage',
+        exactType=True,
+        skipConversionNodes=True
+    ) or []
+    nodes += offset_plusminus_nodes
     return nodes
 
 

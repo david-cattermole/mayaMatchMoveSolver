@@ -23,7 +23,7 @@ window.
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.tools.smoothkeyframes.ui.ui_smoothkeys_layout as ui_smoothkeys_layout
@@ -94,7 +94,6 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
         LOG.debug('key=%r value=%r', name, value)
 
         self.populateUi()
-        return
 
     def populateUi(self):
         """

@@ -28,12 +28,13 @@ Usage::
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
+import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.ui.helputils as helputils
 import mmSolver.tools.raycastmarker.constant as const
 import mmSolver.tools.raycastmarker.tool as tool
@@ -42,6 +43,13 @@ import mmSolver.tools.raycastmarker.ui.raycastmarker_layout as layout
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
+
+
+def _open_help():
+    src = helputils.get_help_source()
+    page = 'tools_markertools.html#project-marker-on-mesh-ray-cast'
+    helputils.open_help_in_browser(page=page, help_source=src)
+    return
 
 
 class RayCastMarkerWindow(BaseWindow):
@@ -58,27 +66,31 @@ class RayCastMarkerWindow(BaseWindow):
         # Standard Buttons
         self.baseHideStandardButtons()
         self.applyBtn.show()
-        self.resetBtn.show()
-        self.helpBtn.show()
         self.closeBtn.show()
-
         self.applyBtn.clicked.connect(tool.main)
-        self.resetBtn.clicked.connect(self.reset_options)
-        self.helpBtn.clicked.connect(self.help)
 
         # Hide irrelevant stuff
-        self.baseHideMenuBar()
         self.baseHideProgressBar()
+
+        self.add_menus(self.menubar)
+        self.menubar.show()
+
+    def add_menus(self, menubar):
+        edit_menu = QtWidgets.QMenu('Edit', menubar)
+        commonmenus.create_edit_menu_items(
+            edit_menu,
+            reset_settings_func=self.reset_options)
+        menubar.addMenu(edit_menu)
+
+        help_menu = QtWidgets.QMenu('Help', menubar)
+        commonmenus.create_help_menu_items(
+            help_menu,
+            tool_help_func=_open_help)
+        menubar.addMenu(help_menu)
 
     def reset_options(self):
         form = self.getSubForm()
         form.reset_options()
-        return
-
-    def help(self):
-        src = helputils.get_help_source()
-        page = 'tools_markertools.html#project-marker-on-mesh-ray-cast'
-        helputils.open_help_in_browser(page=page, help_source=src)
         return
 
 

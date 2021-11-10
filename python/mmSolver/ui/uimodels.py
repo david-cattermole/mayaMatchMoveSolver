@@ -22,10 +22,10 @@ Qt models used in Model-View-Controller designs.
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt as Qt
-import Qt.QtGui as QtGui
-import Qt.QtCore as QtCore
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt as Qt
+import mmSolver.ui.Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.ui.converttypes as converttypes
 import mmSolver.ui.nodes as uinodes
@@ -310,8 +310,9 @@ class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
             v = v | QtCore.Qt.ItemIsSelectable
         if self.indexEditable(index):
             v = v | QtCore.Qt.ItemIsEditable
-        if node.neverHasChildren():
-            v = v | QtCore.Qt.ItemNeverHasChildren
+        if Qt.__binding__ in ['PySide2', 'PyQt5']:
+            if node.neverHasChildren():
+                v = v | QtCore.Qt.ItemNeverHasChildren
         return v
 
     def parent(self, index):

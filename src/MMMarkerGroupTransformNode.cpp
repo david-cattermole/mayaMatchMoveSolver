@@ -34,12 +34,16 @@
 MTypeId MMMarkerGroupTransformNode::m_id(MM_MARKER_GROUP_TRANSFORM_TYPE_ID);
 
 MString MMMarkerGroupTransformNode::nodeName() {
-    return MString("mmMarkerGroupTransform");
+    return MString(MM_MARKER_GROUP_TRANSFORM_TYPE_NAME);
 }
 
 MMMarkerGroupTransformNode::MMMarkerGroupTransformNode() : MPxTransform() {}
 
+// Maya 2020+ will manage the creation of MPxTransformationMatrix on
+// demand for us.
+#if MAYA_API_VERSION < 20200000
 MMMarkerGroupTransformNode::MMMarkerGroupTransformNode(MPxTransformationMatrix *tm) : MPxTransform(tm) {}
+#endif
 
 void MMMarkerGroupTransformNode::postConstructor() {
     MPxTransform::postConstructor();

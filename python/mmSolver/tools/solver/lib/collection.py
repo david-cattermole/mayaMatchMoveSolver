@@ -31,6 +31,8 @@ import mmSolver.api as mmapi
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.utils.time as utils_time
 import mmSolver.utils.converttypes as converttypes
+import mmSolver.tools.userpreferences.constant as userprefs_const
+import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as col_state
 import mmSolver.tools.solver.lib.solver as solver_utils
@@ -469,16 +471,18 @@ def compile_collection(col, prog_fn=None):
             frame = mmapi.Frame(frame_num)
             sol.set_use_single_frame(True)
             sol.set_single_frame(frame)
-            sol_list.append(sol)
         else:
             by_frame = col_state.get_solver_increment_by_frame_from_collection(col)
             frame_string = col_state.get_solver_frames_from_collection(col)
             frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
             frames = [mmapi.Frame(f) for f in frame_nums]
             sol.set_frame_list(frames)
-            eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
-            sol.set_eval_complex_graphs(eval_complex_graphs)
-            sol_list.append(sol)
+
+        eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(col)
+        eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+        sol.set_eval_object_relationships(eval_obj_relations)
+        sol.set_eval_complex_graphs(eval_complex_graphs)
+        sol_list.append(sol)
 
     elif solver_tab == const.SOLVER_TAB_STANDARD_VALUE:
         sol = mmapi.SolverStandard()
@@ -488,7 +492,6 @@ def compile_collection(col, prog_fn=None):
             frame = mmapi.Frame(frame_num)
             sol.set_use_single_frame(True)
             sol.set_single_frame(frame)
-            sol_list.append(sol)
         else:
             # Frame numbers
             by_frame = col_state.get_solver_increment_by_frame_from_collection(col)
@@ -508,13 +511,15 @@ def compile_collection(col, prog_fn=None):
             sol.set_root_frame_list(root_frames)
             sol.set_frame_list(frames)
 
-            global_solve = col_state.get_solver_global_solve_from_collection(col)
-            only_root = col_state.get_solver_only_root_frames_from_collection(col)
-            eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
-            sol.set_global_solve(global_solve)
-            sol.set_only_root_frames(only_root)
-            sol.set_eval_complex_graphs(eval_complex_graphs)
-            sol_list.append(sol)
+        global_solve = col_state.get_solver_global_solve_from_collection(col)
+        only_root = col_state.get_solver_only_root_frames_from_collection(col)
+        eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(col)
+        eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+        sol.set_global_solve(global_solve)
+        sol.set_only_root_frames(only_root)
+        sol.set_eval_object_relationships(eval_obj_relations)
+        sol.set_eval_complex_graphs(eval_complex_graphs)
+        sol_list.append(sol)
 
     elif solver_tab.lower() == const.SOLVER_TAB_LEGACY_VALUE:
         step_list = get_solver_steps_from_collection(col)
@@ -549,6 +554,12 @@ def gather_execute_options():
     disp_node_types['imagePlane'] = image_plane_state
     disp_node_types['mesh'] = meshes_state
 
+    # Minimal UI from config file.
+    config = userprefs_lib.get_config()
+    key = userprefs_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY
+    minimal_ui = userprefs_lib.get_value(config, key)
+    minimal_ui = minimal_ui == userprefs_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_TRUE_VALUE
+
     options = mmapi.createExecuteOptions(
         refresh=refresh_state,
         disable_viewport_two=disable_viewport_two_state,
@@ -556,6 +567,7 @@ def gather_execute_options():
         do_isolate=do_isolate_state,
         pre_solve_force_eval=pre_solve_force_eval,
         display_node_types=disp_node_types,
+        use_minimal_ui=minimal_ui
     )
     return options
 
@@ -785,6 +797,10 @@ def run_solve_ui(col,
             status_fn = window.setStatusLine
             info_fn = window.setSolveInfoLine
 
+            # Set a minimal window size while solving.
+            if options.use_minimal_ui is True:
+                window.setMinimalUI(True)
+
         execute_collection(
             col,
             options=options,
@@ -797,4 +813,9 @@ def run_solve_ui(col,
         if window is not None and uiutils.isValidQtObject(window) is True:
             window.progressBar.setValue(100)
             window.progressBar.hide()
+
+            # Reset Window size.
+            if options.use_minimal_ui is True:
+                window.setMinimalUI(False)
+
     return

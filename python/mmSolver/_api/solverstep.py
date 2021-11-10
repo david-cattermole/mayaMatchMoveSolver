@@ -287,6 +287,22 @@ class SolverStep(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_remove_unused_markers(self):
+        return self._data.get('remove_unused_markers')
+
+    def set_remove_unused_markers(self, value):
+        assert isinstance(value, (bool, int))
+        self._data['remove_unused_markers'] = bool(value)
+
+    def get_remove_unused_attributes(self):
+        return self._data.get('remove_unused_attributes')
+
+    def set_remove_unused_attributes(self, value):
+        assert isinstance(value, (bool, int))
+        self._data['remove_unused_attributes'] = bool(value)
+
+    ############################################################################
+
     def get_attributes_use_animated(self):
         return self._attributes_use.get('animated')
 
@@ -545,6 +561,9 @@ class SolverStep(solverbase.SolverBase):
         kwargs['robustLossType'] = const.ROBUST_LOSS_TYPE_TRIVIAL_VALUE
         kwargs['robustLossScale'] = 1.0
         kwargs['timeEvalMode'] = self.get_time_eval_mode()
+
+        kwargs['removeUnusedMarkers'] = self.get_remove_unused_markers()
+        kwargs['removeUnusedAttributes'] = self.get_remove_unused_attributes()
 
         # TODO: Add 'robustLossType' flag.
         # TODO: Add 'robustLossScale' flag.

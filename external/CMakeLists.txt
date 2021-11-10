@@ -22,9 +22,3 @@
 cmake_minimum_required(VERSION 2.8.12)
 
 
-# Install Qt.py, if exists.
-set(QTPY_FILE "${CMAKE_CURRENT_SOURCE_DIR}/install/qtpy/Qt.py")
-if (EXISTS ${QTPY_FILE})
-  install(FILES ${QTPY_FILE}
-    DESTINATION "${MODULE_FULL_NAME}/python_qtpy/")
-endif ()

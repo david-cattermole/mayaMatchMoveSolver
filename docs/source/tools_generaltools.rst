@@ -215,6 +215,53 @@ To run the tool, use this Python command:
     import mmSolver.tools.screenspacetransform.tool as tool
     tool.main()
 
+.. _screen-space-rig-bake-tool-ref:
+
+Screen-Space Rig Bake
+---------------------
+
+The `Screen-Space Rig Bake` tool allows users to bake and manipulate
+transforms with a `screen-space` rig, separating the X, Y and Z-Depth
+components.
+
+The tool can be use to:
+
+ - Smooth a bumpy Z-depth curve.
+
+ - Freeze a transform to a static Z-depth.
+
+Usage:
+
+1) Select a transform node.
+
+2) Open the `Screen-Space Rig Bake` UI.
+
+3) Type a name in the `Name` field (at the bottom of the window).
+
+4) Right-click the `Rigs` pane and select `Create Screen-Space Rig`.
+
+   - Make sure to activate the viewport with a camera to bake the
+     object into.
+
+   - A set of nodes named `NAME_screenSpaceRig` will be created.
+
+5) Edit the created `NAME_screenSpaceRig` node.
+
+6) Once finished editing, open the UI again, select the screen-space
+   rig control, right-click the `Rigs` pane and select `Bake Rig`.
+
+   - This will bake the original transform node, and delete the nodes.
+
+   - Set the option `Full bake` or `Smart bake` to choose how many
+     keyframes will be baked.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.screenspacerigbake.tool as tool
+    tool.open_window()
+
 .. _create-screen-space-motion-trail-tool-ref:
 
 Create Screen-Space Motion Trail
@@ -438,6 +485,8 @@ This is equivalent to Maya's *Parent* tool (`p` hotkey), except the
 tool will maintain the world-space position of the transform node for
 each keyframe applied to the node.
 
+See the :ref:`Reparent UI <reparent-window-tool-ref>` for options.
+
 Usage:
 
 1) Select nodes to change parent, then select the new parent node.
@@ -456,7 +505,7 @@ To run the tool, use this Python command:
 
 .. code:: python
 
-    import mmSolver.tools.reparent.tool as tool
+    import mmSolver.tools.reparent2.tool as tool
     tool.reparent_under_node()
 
 .. _unparent-to-world-tool-ref:
@@ -467,6 +516,8 @@ Unparent to World
 This is equalivent to Maya's *Unparent* tool (`Shift + p` hotkey), except the tool will
 maintain the world-space position of the transform node for each
 keyframe applied to the node.
+
+See the :ref:`Reparent UI <reparent-window-tool-ref>` for options.
 
 Usage:
 
@@ -484,8 +535,70 @@ To run the tool, use this Python command:
 
 .. code:: python
 
-    import mmSolver.tools.reparent.tool as tool
+    import mmSolver.tools.reparent2.tool as tool
     tool.unparent_to_world()
+
+.. _reparent-window-tool-ref:
+
+Reparent UI
+-----------
+
+This window displays options for how to re-parent nodes.
+
+*Reparent* is the underlying tool window used by both
+:ref:`Reparent Under Node <reparent-under-node-tool-ref>`
+and :ref:`Unparent to World <unparent-to-world-tool-ref>`.
+
+.. figure:: images/tools_reparent_ui.png
+    :alt: Reparent UI
+    :align: center
+    :width: 40%
+
+.. list-table:: Reparent UI Options
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Values
+     - Description
+
+   * - Children
+     - *Node Names*
+     - Description
+
+   * - Parent
+     - *Node Name* or empty
+     - The node to place children underneath.
+
+   * - Frame Range
+     - *Timeline (Inner)*, *Timeline (Outer)* or *Custom*
+     - The frame range to bake.
+
+   * - Bake Mode
+     - *Full Bake* or *Smart Bake*
+     - Method for how keyframes are baked.
+
+   * - Rotate Order
+     - *Use Existing* or *XYZ*, *ZXY*, etc
+     - Change the rotation order of children nodes when re-parenting.
+
+   * - Delete Static AnimCurves
+     - *Yes* or *No*
+     - Baked attributes that do not animate have all keys replaced
+       with a static value.
+
+This video tutorial explains how the re-parenting tool works.
+
+.. raw:: html
+
+    <iframe width="720" height="405" src="https://www.youtube.com/embed/UmVu3oag_-k" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.reparent2.tool as tool
+    tool.open_window()
 
 .. _remove-solver-nodes-tool-ref:
 
@@ -532,26 +645,64 @@ Create / Remove Controller
 Create a new transform node to control another node. The `Controller`
 transform node can have a separate hierarchy than the source node.
 
-This tool will try to maintain the animated keyframes on the original
-control without baking the animation per-frame.
+The UI for this tool can be used control the baking method, and the
+'space' of the created controller. These features create a very
+powerful workflow for editing, and solving characters and objects.
 
 Usage:
 
 1) Select a Maya transform node.
 
-2) Run 'Create Controller' tool.
+2) Open 'Create Controller' tool UI.
 
-   - A new 'Controller' locator node is created at the same position
-     as the source transform.
+3) Type a name for the controller
 
-3) Select and move the created Controller as you wish.
+4) Select your 'pivot object' and press 'Pick Selection'.
 
-4) Select the Controller, run 'Remove Controller' tool.
+5) Select your 'main object' and press 'Pick Selection'.
 
-   - The source node is baked at the same times as the Controller is
-     keyed, and the Controller is deleted.
+6) Select your options for 'Type', 'Bake' mode, and 'Space'.
+
+   - 'Type' changes the node types created for the controller. Choose
+     "Group" if you do not like to see locators in your viewport.
+
+   - 'Bake' changes the method used to bake keyframe times. Choose
+     'Full Bake' to bake every frame, and choose 'Smart Bake' to bake
+     some frames.
+
+   - 'Space' changes the heirachy and orientation of the Controller
+     nodes. Using 'Screen Space' allows you to move an object in
+     screen-space, with X and Y the position on the screen, and Z the
+     depth into the screen. This can be very helpful for smoothing
+     Z-bumps and depth problems.
+
+7) Press 'Create Controller' button.
+
+   - A new 'Controller' node is created at the same position as the
+     'pick object'.
+
+8) Select and move the created Controller as you wish.
+
+9) Select the Controller, run 'Remove Controller' tool.
+
+   - The source node is baked and the Controller node is deleted.
 
 To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.createcontroller2.tool as tool
+    tool.open_window()
+
+To remove a controller, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.removecontroller2.tool as tool
+    tool.main()
+
+The tool described above is "version 2", for the older (less featured)
+version 1, use this python code to run it.
 
 .. code:: python
 
@@ -562,3 +713,62 @@ To run the tool, use this Python command:
 
     # Remove selected Controller
     tool.remove()
+
+.. _user-preferences-tool-ref:
+
+User Preferences
+----------------
+
+.. figure:: images/tools_user_preferences_ui.png
+    :alt: User Preferences window
+    :align: center
+    :width: 60%
+
+The *User Preferences* window is used to change how mmSolver tools and
+general functions behave, by default.
+
+.. list-table:: Options
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Values
+     - Description
+
+   * - Add New Markers to
+     - *None* or *Active Collection*
+     - When a new Marker is created by any tool, what Collection should
+       this Marker be automatically added to?
+
+   * - Validate on Open
+     - *Yes* or *No*
+     - Opening the :ref:`Solver UI <solver-ui-ref>`, should the solver
+       values be validated?
+
+   * - Show Validate Button
+     - *Yes* or *No*
+     - Should the *Validate* button and statistics be shown in the
+       :ref:`Solver UI <solver-ui-ref>`? Regardless of this option,
+       Validation will automatically be run when clicking the *Solve* button.
+
+   * - Minimal UI While Solving
+     - *Yes* or *No*
+     - If *Yes*, the :ref:`Solver UI <solver-ui-ref>` will only display
+       the progress bar while solving, and then switch back to the full
+       UI solving has finished. If *No*, the :ref:`Solver UI <solver-ui-ref>`
+       will not be adjusted.
+
+Usage:
+
+1) Open 'User Preferences' window.
+
+2) Change options.
+
+3) Press "Save" button.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.userprefswindow.tool as tool
+    tool.open_window()

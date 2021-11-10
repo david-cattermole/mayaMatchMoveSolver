@@ -99,6 +99,10 @@ def get_help_base_location(help_source=None):
             )
             LOG.warning(msg, url)
             return None
+        # Web browsers do not open directories or files directly, but
+        # they can open "file://" URLs. On Windows with Firefox, if
+        # this is not used, the web-browser does not seem to open.
+        url = 'file://' + url
     elif help_source == HELP_SOURCE_INTERNET:
         url = str(WEB_SITE_HELP_LOCATION)
     else:
@@ -111,6 +115,16 @@ def get_help_base_location(help_source=None):
 def open_help_in_browser(page=None, help_source=None):
     """
     Open help to a specific page.
+
+    :param page:
+        The specific page URL to open, or the home page if None is given.
+    :type page: None or str
+
+    :param help_source:
+        A value in HELP_SOURCE_LIST, denoting the help documentation
+        source to use (but not the source itself.)
+
+    :rtype: None
     """
     assert page is None or isinstance(page, basestring)
     url = get_help_base_location(help_source=help_source)

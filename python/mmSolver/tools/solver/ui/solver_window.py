@@ -28,16 +28,17 @@ from functools import partial
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt
-import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt as Qt
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.undo as undo_utils
 import mmSolver.utils.tools as tools_utils
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
+import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_collection
 import mmSolver.tools.solver.lib.state as lib_state
@@ -45,13 +46,18 @@ import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
 import mmSolver.tools.solver.maya_callbacks as maya_callbacks
 import mmSolver.tools.solver.ui.solver_layout as solver_layout
-import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
-import mmSolver.tools.aboutwindow.tool as aboutwin_tool
-import mmSolver.tools.sysinfowindow.tool as sysinfowin_tool
 
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
+
+
+def _open_help():
+    src = helputils.get_help_source()
+    helputils.open_help_in_browser(
+        page='tools_solver_ui.html',
+        help_source=src)
+    return
 
 
 class SolverWindow(BaseWindow):
@@ -65,6 +71,7 @@ class SolverWindow(BaseWindow):
         self.setupUi(self)
         self.addSubForm(solver_layout.SolverLayout)
         self.setStatusLine(const.STATUS_READY)
+        self._saved_ui_size = QtCore.QSize()
 
         # Menu Bar
         self.addMenuBarContents(self.menubar)
@@ -271,7 +278,7 @@ class SolverWindow(BaseWindow):
 
         # Display Object Average Deviation
         label = 'Average Deviation'
-        tooltip = 'Display average  deviation column'
+        tooltip = 'Display average deviation column'
         value = lib_state.get_display_object_average_deviation_state()
         action = QtWidgets.QAction(label, view_menu)
         action.setStatusTip(tooltip)
@@ -465,31 +472,9 @@ class SolverWindow(BaseWindow):
 
         # Help Menu
         help_menu = QtWidgets.QMenu('Help', menubar)
-
-        # Launch Help
-        label = 'Help...'
-        tooltip = 'Show help.'
-        action = QtWidgets.QAction(label, help_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.launchHelpCB))
-        help_menu.addAction(action)
-
-        # Launch System Info window.
-        label = 'System Information...'
-        tooltip = 'Display detailed information about software and hardware.'
-        action = QtWidgets.QAction(label, help_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.launchSysInfoCB))
-        help_menu.addAction(action)
-
-        # Launch About
-        label = 'About mmSolver...'
-        tooltip = 'About this software.'
-        action = QtWidgets.QAction(label, help_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(partial(self.launchAboutCB))
-        help_menu.addAction(action)
-
+        commonmenus.create_help_menu_items(
+            help_menu,
+            tool_help_func=_open_help)
         menubar.addMenu(help_menu)
         return
 
@@ -540,6 +525,7 @@ class SolverWindow(BaseWindow):
 
     def undoTriggeredCB(self):
         LOG.debug('undoTriggeredCB')
+        import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
         validation = lib_state.get_auto_update_solver_validation_state()
         with undo_utils.no_undo_context():
             lib_state.set_auto_update_solver_validation_state(False)
@@ -554,6 +540,7 @@ class SolverWindow(BaseWindow):
 
     def redoTriggeredCB(self):
         LOG.debug('redoTriggeredCB')
+        import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
         validation = lib_state.get_auto_update_solver_validation_state()
         with undo_utils.no_undo_context():
             lib_state.set_auto_update_solver_validation_state(False)
@@ -603,18 +590,6 @@ class SolverWindow(BaseWindow):
             self.subForm.attribute_browser.setNodeSelection(values)
         return
 
-    def launchHelpCB(self):
-        self.help()
-        return
-
-    def launchAboutCB(self):
-        aboutwin_tool.open_window()
-        return
-
-    def launchSysInfoCB(self):
-        sysinfowin_tool.open_window()
-        return
-
     def setStatusLine(self, text):
         if uiutils.isValidQtObject(self) is True:
             self.subForm.setStatusLine(text)
@@ -630,6 +605,56 @@ class SolverWindow(BaseWindow):
     def setProgressValue(self, value):
         if uiutils.isValidQtObject(self) is True:
             self.progressBar.setValue(value)
+        QtWidgets.QApplication.processEvents()
+        return
+
+    def setMinimalUI(self, value):
+        """
+        Change the currently open Solver window to be "minimal", or not.
+
+        If the Solver window is not open, nothing happens.
+
+        "minimal" UI means hiding most widgets in the Solver UI, and not
+        "minimal" means showing all widgets as a user normally would
+        expect.
+        """
+        assert isinstance(value, bool)
+
+        def _set_widget_visibilty(window, visible):
+            self.menubar.setVisible(visible)
+            self.subForm.collection_widget.setVisible(visible)
+            self.subForm.object_browser.setVisible(visible)
+            self.subForm.attribute_browser.setVisible(visible)
+            self.subForm.solver_settings.setVisible(visible)
+            self.subForm.ui.objectAttribute_splitter.setVisible(visible)
+            self.subForm.ui.line_1.setVisible(visible)
+            self.subForm.ui.line_2.setVisible(visible)
+
+        if uiutils.isValidQtObject(self) is True:
+            QtWidgets.QApplication.processEvents()
+            if value is False:
+                _set_widget_visibilty(self, True)
+
+                # Restore non-minimal window size.
+                QtWidgets.QApplication.processEvents()
+                self.resize(self._saved_ui_size)
+            else:
+                self._saved_ui_size = self.size()
+
+                # QtWidgets.QApplication.processEvents()
+                _set_widget_visibilty(self, False)
+                QtWidgets.QApplication.processEvents()
+
+                # Resize the bottom window edge upwards.
+                width = self.size().width()
+                self.resize(width, 1)
+                QtWidgets.QApplication.processEvents()
+
+                # Run again to trigger the UI to resize properly.
+                _set_widget_visibilty(self, False)
+                self.resize(width, 1)
+                QtWidgets.QApplication.processEvents()
+
         QtWidgets.QApplication.processEvents()
         return
 
@@ -685,13 +710,6 @@ class SolverWindow(BaseWindow):
         super(SolverWindow, self).closeEvent(event)
         return
 
-    def help(self):
-        src = helputils.get_help_source()
-        helputils.open_help_in_browser(
-            page='tools.html#solver-ui',
-            help_source=src)
-        return
-
 
 def loadAllResources():
     base_install_location = os.environ.get('MMSOLVER_LOCATION', None)
@@ -715,7 +733,7 @@ def loadAllResources():
     return
 
 
-def main(show=True, auto_raise=True, delete=False):
+def main(show=True, auto_raise=True, delete=False, dock=True):
     """
     Open the Solver UI window.
 
@@ -741,6 +759,7 @@ def main(show=True, auto_raise=True, delete=False):
     win = SolverWindow.open_window(
         show=show,
         auto_raise=auto_raise,
-        delete=delete
+        delete=delete,
+        dock=dock
     )
     return win

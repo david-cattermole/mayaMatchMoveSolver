@@ -10,7 +10,6 @@ build dependancies):
 On MacOS:
 ```commandline
 $ cd /path/to/project/root/
-$ bash scripts/build_qtpy.bash
 $ bash scripts/build_cminpack.bash
 $ bash scripts/build_mmSolver_mac_mayaXXXX.bash
 ```
@@ -25,14 +24,21 @@ mmSolver has a few dependencies, and are listed in
 [BUILD.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md#dependencies).
 Install the dependencies using the guide listed below.
 
-- MacOS El Capitan 10.11 - https://www.apple.com/
-- Xcode 7.3.1 - https://developer.apple.com/download/
-- Developer Command line tools 7.3.1 - https://developer.apple.com/download/
-- Maya Development Kit (devkit) 2018+ - https://www.autodesk.com/developer-network/platform-technologies/maya
-- Maya 2018+ - https://www.autodesk.com.au/products/maya/overview
+- Maya 2018 and 2019
+  - MacOS El Capitan 10.11 - https://www.apple.com/
+  - Xcode 7.3.1 - https://developer.apple.com/download/
+  - Developer Command line tools 7.3.1 - https://developer.apple.com/download/
+  - Maya Development Kit (devkit) 2018 or 2019 - https://www.autodesk.com/developer-network/platform-technologies/maya
+  - Maya 2018 or 2019 - https://www.autodesk.com.au/products/maya/overview
 - CMake 3.x - from cmake website https://cmake.org/download/
 - Python (version 2.x or 3.x) - https://www.python.org/downloads/mac-osx/
 - Sphinx 1.8.5+ (using Python 'pip' command - see below)
+
+- Maya 2020
+  - MacOS El Capitan 10.14 - https://www.apple.com/
+  - Xcode 10.2.1 - https://developer.apple.com/download/
+  - Maya Development Kit (devkit) 2020 - https://www.autodesk.com/developer-network/platform-technologies/maya
+  - Maya 2020 - https://www.autodesk.com.au/products/maya/overview
 
 NOTE: Some of these dependancies are requirements of the Maya version and
 should be obtained from the Maya developer documentation.
@@ -107,29 +113,23 @@ will need to find and install the required dependancy.
 
 # Building Dependencies
 
-`cminpack`, `levmar` and `Qt.py` can be easily downloaded and built
-for mmSolver using build scripts provided in the `<project
-root>/scripts` directory.
+`cminpack` and `levmar` can be easily downloaded and built for
+mmSolver using build scripts provided in the `<project root>/scripts`
+directory.
 
 On MacOS:
 ```commandline
 $ cd /path/to/project/root
 $ bash scripts/build_cminpack.bash
-$ bash scripts/build_qtpy.bash
 ```
 
 If the commands above have worked, you should see the following
 directories under `<project root>/external/install`.
 
 - cminpack
-- qtpy
 
 These dependencies will automatically be found by the mmSolver build
 script and installed.
-
-If you do not want to install `Qt.py` with mmSolver, simply do not use
-the build script and delete the directory `<project
-root>/external/install/qtpy`.
 
 # Build mmSolver
 
@@ -355,11 +355,15 @@ Run in the MacOS Bash terminal:
 ```commandline
 # Maya 2018
 $ mkdir -p ~/dev ; cd ~/dev ; git clone https://github.com/david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2018Deploy_mac
-$ cd ~/dev/mayaMatchMoveSolver_maya2018Deploy_mac ; git fetch --all; git checkout -f issue146; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_mac_maya2018.bash
+$ cd ~/dev/mayaMatchMoveSolver_maya2018Deploy_mac ; git fetch --all; git checkout -f issue146; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_mac_maya2018.bash
 
 # Maya 2019
 $ mkdir -p ~/dev ; cd ~/dev ; git clone https://github.com/david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2019Deploy_mac
-$ cd ~/dev/mayaMatchMoveSolver_maya2019Deploy_mac ; git fetch --all; git checkout -f issue146; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_qtpy.bash ; bash scripts/build_mmSolver_mac_maya2019.bash
+$ cd ~/dev/mayaMatchMoveSolver_maya2019Deploy_mac ; git fetch --all; git checkout -f issue146; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_mac_maya2019.bash
+
+# Maya 2020
+$ mkdir -p ~/dev ; cd ~/dev ; git clone https://github.com/david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2020Deploy_mac
+$ cd ~/dev/mayaMatchMoveSolver_maya2020Deploy_mac ; git fetch --all; git checkout -f issue146; git pull; rm -R -f build_* ; rm -R -f external/install/* ; rm -R -f external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_mac_maya2020.bash
 ```
 
 Package files can then be uploaded from the

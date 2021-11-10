@@ -100,7 +100,7 @@ def create_anim_curve_node_apione(times, values,
     value_array = OpenMaya1.MDoubleArray()
     for time, value in zip(times, values):
         time_array.append(OpenMaya1.MTime(time, OpenMaya1.MTime.uiUnit()))
-        value_array.append(value)
+        value_array.append(float(value or 0))
 
     # force a default undo cache
     if not undo_cache:

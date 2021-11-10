@@ -1,4 +1,4 @@
-### Problem / Feature
+### Problem or Feature
 <!-- Describe the problem or suggestion here. Be specific about your problem. -->
 
 **Expected behavior:**
@@ -14,11 +14,9 @@
 3. [and so on...]
 
 ### Software Versions
-<!-- What software and hardware versions are you running?
--->
+<!-- What software and hardware versions are you running? -->
 
-- mmSolver version:
-[mmSolver version number here]
+- mmSolver version: [mmSolver version number here]
 
 - Maya version:
 <!-- What Maya version are you using?
@@ -36,6 +34,4 @@ print 'GPU:', ''.join(maya.cmds.ogs(deviceInformation=True))
 
 [Maya version number or print out here]
 
-- Operating System (OS):
-<!-- Windows or Linux?
--->
+- Operating System (OS): [Possible options: Windows, Linux and MacOS]

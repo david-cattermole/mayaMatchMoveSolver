@@ -34,6 +34,12 @@ LOG = mmSolver.logger.get_logger()
 def compile_solver_affects(col, mkr_list, attr_list,
                            precomputed_data,
                            withtest):
+    # Reset the used hints to 'unknown' before setting 'used' or
+    # 'unused' flags.
+    generator = compile_reset_used_hints(col, mkr_list, attr_list)
+    for action, vaction in generator:
+        yield action, vaction
+
     sol = solveraffects.SolverAffects()
     sol.set_precomputed_data(precomputed_data)
 
@@ -42,6 +48,29 @@ def compile_solver_affects(col, mkr_list, attr_list,
         sol, col, mkr_list, attr_list, withtest, cache)
     for action, vaction in generator:
         yield action, vaction
+    return
+
+
+def compile_reset_used_hints(col, mkr_list, attr_list):
+    func = 'mmSolver._api.solveraffects.reset_marker_used_hints'
+    mkr_nodes = [mkr.get_node() for mkr in mkr_list]
+    args = [mkr_nodes]
+    kwargs = {}
+    action = api_action.Action(
+        func=func,
+        args=args,
+        kwargs=kwargs)
+    yield action, None
+
+    func = 'mmSolver._api.solveraffects.reset_attr_used_hints'
+    node_attr_list = [attr.get_name() for attr in attr_list]
+    args = [col.get_node(), node_attr_list]
+    kwargs = {}
+    action = api_action.Action(
+        func=func,
+        args=args,
+        kwargs=kwargs)
+    yield action, None
     return
 
 

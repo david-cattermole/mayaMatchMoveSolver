@@ -18,9 +18,6 @@
 #
 # Build Icons (using Qt Resource Compiler)
 
-set(input_file resources.qrc)
-set(output_file resources.rcc)
-
 # This section sets a hard location to the rcc  
 # executable file to prevent any errors of 
 # likes of 'rcc command not found'
@@ -29,12 +26,16 @@ find_program(MAYA_RCC_EXECUTABLE
     HINTS
         "${MAYA_LOCATION}"
         "$ENV{MAYA_LOCATION}"
+        "${MAYA_BASE_DIR}"
     PATH_SUFFIXES
+        MacOS
         bin/
     DOC
-        "Maya's Qt resource compiler rcc executable path"
+        "Maya's Qt resource compiler (rcc) executable path"
 )
 
+set(input_file resources.qrc)
+set(output_file resources.rcc)
 add_custom_command(
         OUTPUT ${output_file}
         COMMAND ${MAYA_RCC_EXECUTABLE} -binary resources.qrc -o resources.rcc

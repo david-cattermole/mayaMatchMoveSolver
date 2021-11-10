@@ -30,7 +30,8 @@ set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
 set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
-set(PROJECT_COPYRIGHT "2018, 2019, 2020, David Cattermole, Anil Reddy, Kazuma Tonegawa.")
+set(PROJECT_COPYRIGHT
+  "2018, 2019, 2020, 2021, David Cattermole, Anil Reddy, Kazuma Tonegawa, Patcha Saheb Binginapalli.")
 
 
 # Add custom modules to the module path
@@ -48,7 +49,7 @@ set(BUILD_PYTHON 1 CACHE BOOL
         "Do you want to build and install the Python API and tools?")
 set(BUILD_MEL 1 CACHE BOOL
         "Do you want to build and install the MEL scripts and tools?")
-set(BUILD_3DEQUALIZER 1 CACHE BOOL 
+set(BUILD_3DEQUALIZER 1 CACHE BOOL
         "Do you want to build and install 3DEqualizer scripts?")
 set(BUILD_SYNTHEYES 1 CACHE BOOL
         "Do you want to build and install SynthEyes scripts?")

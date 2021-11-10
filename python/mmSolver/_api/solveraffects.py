@@ -81,7 +81,26 @@ def _runAndSetUsedSolveObjects(col_name, *args, **kwargs):
         col.set_attribute_used_hint(attr, const.ATTRIBUTE_USED_HINT_USED_VALUE)
     for node_attr in attributes_unused:
         attr = mmapi.Attribute(name=node_attr)
-        col.set_attribute_used_hint(attr, const.ATTRIBUTE_USED_HINT_NOT_USED_VALUE)
+        col.set_attribute_used_hint(
+            attr, const.ATTRIBUTE_USED_HINT_NOT_USED_VALUE)
+    return
+
+
+def reset_marker_used_hints(mkr_nodes):
+    import mmSolver.api as mmapi
+    for mkr_node in mkr_nodes:
+        mkr = mmapi.Marker(node=mkr_node)
+        mkr.set_used_hint(const.MARKER_USED_HINT_UNKNOWN_VALUE)
+    return
+
+
+def reset_attr_used_hints(col_name, node_attr_list):
+    import mmSolver.api as mmapi
+    col = mmapi.Collection(col_name)
+    for node_attr in node_attr_list:
+        attr = mmapi.Attribute(name=node_attr)
+        col.set_attribute_used_hint(
+            attr, const.ATTRIBUTE_USED_HINT_UNKNOWN_VALUE)
     return
 
 
@@ -105,6 +124,9 @@ class SolverAffects(solverbase.SolverBase):
 
     # Method exists to be compatible with
     # 'mmSolver._api.compile.compile_solver_with_cache'.
+    #
+    # SolverAffects does not need any frame numbers as input, but a
+    # value is needed by SolverBase class.
     def get_frame_list(self):
         return [frame.Frame(1)]
 

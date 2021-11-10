@@ -18,11 +18,24 @@
 #
 # Build Icons (using Qt Resource Compiler)
 
+find_program(QT_RESOURCE_COMPILER_EXECUTABLE
+        rcc
+    HINTS
+        "${MAYA_LOCATION}"
+        "$ENV{MAYA_LOCATION}"
+        "${MAYA_BASE_DIR}"
+    PATH_SUFFIXES
+        MacOS/
+        bin/
+    DOC
+        "Qt RCC's executable path"
+)
+
 set(input_file resources.qrc)
 set(output_file resources.rcc)
 add_custom_command(
         OUTPUT ${output_file}
-        COMMAND rcc -binary resources.qrc -o resources.rcc
+        COMMAND ${QT_RESOURCE_COMPILER_EXECUTABLE} -binary resources.qrc -o resources.rcc
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS ${input_file}
 )

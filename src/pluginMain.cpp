@@ -39,6 +39,7 @@
 #include <MMMarkerGroupTransformNode.h>
 #include <MMReprojectionCmd.h>
 #include <MMSolverAffectsCmd.h>
+#include <MMCameraSolveCmd.h>
 
 
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
@@ -122,9 +123,21 @@ MStatus initializePlugin(MObject obj) {
                      status);
 
     REGISTER_COMMAND(plugin,
+                     MMCameraSolveCmd::cmdName(),
+                     MMCameraSolveCmd::creator,
+                     MMCameraSolveCmd::newSyntax,
+                     status);
+    
+    REGISTER_COMMAND(plugin,
                      MMTestCameraMatrixCmd::cmdName(),
                      MMTestCameraMatrixCmd::creator,
                      MMTestCameraMatrixCmd::newSyntax,
+                     status);
+
+    REGISTER_COMMAND(plugin,
+                     MMCameraSolveCmd::cmdName(),
+                     MMCameraSolveCmd::creator,
+                     MMCameraSolveCmd::newSyntax,
                      status);
 
     REGISTER_NODE(plugin,
@@ -181,7 +194,9 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMSolverTypeCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMSolverAffectsCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, MMCameraSolveCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, MMCameraSolveCmd::cmdName(), status);
 
     DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(),
                     MMMarkerScaleNode::m_id, status);

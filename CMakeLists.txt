@@ -70,7 +70,7 @@ set(MAYA_VERSION "2017" CACHE STRING
         "Maya version number")
 set(MAYA_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH
         "Maya install directory")
-set(DEVKIT_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH 
+set(DEVKIT_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH
         "Maya development kit (devkit) directory")
 set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH
         "Maya include directory")
@@ -78,39 +78,43 @@ set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH
         "Maya library directory")
 
 
-# Lev-Mar
-#
-# WARNING: 'Lev-Mar' is GPL licensed and must not be
-# distributed in binary form to anyone.
-set(USE_GPL_LEVMAR 0 CACHE BOOL
-        "Compile with the GPL-licensed Lev-Mar library?")
-set(LEVMAR_ROOT "/usr/local" CACHE PATH "Levmar directory")
-set(LEVMAR_INCLUDE_PATH "/usr/local/include" CACHE PATH
-        "Levmar include directory")
-set(LEVMAR_LIB_PATH "/usr/local/lib" CACHE PATH "Levmar library directory")
-
-
 # CMinpack
-set(USE_CMINPACK 1 CACHE BOOL "Compile with the cminpack library?")
-set(CMINPACK_ROOT "/usr/local" CACHE PATH "CMinpack directory")
-set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH
-        "cminpack include directory")
-set(CMINPACK_LIB_PATH "/usr/local/lib" CACHE PATH "cminpack library directory")
+set(USE_CMINPACK 1
+  CACHE BOOL "Compile with the cminpack library?")
+set(CMINPACK_ROOT "/usr/local"
+  CACHE PATH "CMinpack directory")
+set(CMINPACK_INCLUDE_PATH "/usr/local/include"
+  CACHE PATH "CMinpack include directory")
+set(CMINPACK_LIB_PATH "/usr/local/lib"
+  CACHE PATH "CMinpack library directory")
 
 
-# Extra (BLAS) Libraries
-set(USE_BLAS OFF CACHE BOOL "Should we use BLAS?")
-set(BLAS_INCLUDE_PATH "/usr/include/blas" CACHE PATH "BLAS library directory")
-set(BLAS_LIB_PATH "/usr/lib64/blas" CACHE PATH "BLAS library directory")
-set(BLAS_LIB_NAMES
-        ""
-        CACHE STRING
-        "BLAS libraries to link")
+# Ceres
+set(USE_CERES 1
+  CACHE BOOL "Compile with the ceres library?")
+set(CERES_ROOT "/usr/local"
+  CACHE PATH "Ceres directory")
+set(CERES_INCLUDE_PATH "/usr/local/include"
+  CACHE PATH "Ceres include directory")
+set(CERES_LIB_PATH "/usr/local/lib"
+  CACHE PATH "Ceres library directory")
+
+
+# LibMV
+set(USE_LIBMV 1
+  CACHE BOOL "Compile with the libmv library?")
+set(LIBMV_ROOT "/usr/local"
+  CACHE PATH "Libmv directory")
+set(LIBMV_INCLUDE_PATH "/usr/local/include"
+  CACHE PATH "Libmv include directory")
+set(LIBMV_LIB_PATH "/usr/local/lib"
+  CACHE PATH "Libmv library directory")
 
 
 # Default Solver to use.
-set(PREFERRED_SOLVER "cminpack_lmder" CACHE STRING
-        "Choices are cminpack_lm, cminpack_lmder or levmar. Which solver is used by default?")
+set(PREFERRED_SOLVER "cminpack_lmder"
+  CACHE STRING
+  "Choices are cminpack_lm, cminpack_lmder or ceres. Which solver is used by default?")
 
 include(MMSolverUtils)
 

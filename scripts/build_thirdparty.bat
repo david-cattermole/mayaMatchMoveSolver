@@ -28,8 +28,17 @@ ECHO Package Root: %ROOT%
 CHDIR %ROOT%
 
 SET INSTALL_DIR="%ROOT%\install"
+SET SOURCE_DIR="%ROOT%"
+
+:: NOTE: The working directory is placed in the root 'C' drive, to
+:: minimise the file path length, as we may get up to 250 characters
+:: long, which is a limitation of Windows.
+::
+:: SET WORKING_DIR="%ROOT%\working"
+SET WORKING_DIR="C:\mmSolver_temp"
 
 :: Build plugin
+CHDIR %WORKING_DIR%
 MKDIR build
 CHDIR build
 DEL /S /Q *
@@ -38,7 +47,8 @@ FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
 cmake -G "NMake Makefiles" ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DTHIRDPARTY_BASE_INSTALL_DIR=%INSTALL_DIR% ^
-    ../
+    -DTHIRDPARTY_BASE_WORKING_DIR=%WORKING_DIR% ^
+    %SOURCE_DIR%
 
 nmake /F Makefile clean
 nmake /F Makefile all

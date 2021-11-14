@@ -24,34 +24,36 @@ set(CMAKE_MACOSX_RPATH 1)
 
 
 # Default Solver to use.
-set(PREFERRED_SOLVER "cminpack_lmder" CACHE STRING "Choices are cminpack_lm, cminpack_lmder or levmar. Which solver is used by default?")
+set(PREFERRED_SOLVER "cminpack_lmder"
+  CACHE STRING
+  "Choices are cminpack_lm, cminpack_lmder or ceres. Which solver is used by default?")
 
 
 # Set a default solver
 set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
-if ((USE_GPL_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 1))
-  # Support both levmar and cminpack.
-elseif ((USE_CMINPACK EQUAL 1) AND (USE_GPL_LEVMAR EQUAL 0))
+if ((USE_CERES EQUAL 1) AND (USE_CMINPACK EQUAL 1))
+  # Support both ceres and cminpack.
+elseif ((USE_CMINPACK EQUAL 1) AND (USE_CERES EQUAL 0))
   if (NOT (DEFAULT_SOLVER MATCHES "cminpack_lm[a-zA-Z]+"))
     message(WARNING
       "Preferred solver cannot be used because it's not enabled. "
       "preferred=${PREFERRED_SOLVER} "
       "default=${DEFAULT_SOLVER} "
       "use_cminpack=${USE_CMINPACK} "
-      "use_gpl_levmar=${USE_GPL_LEVMAR}"
+      "use_ceres=${USE_CERES}"
       )
     set(DEFAULT_SOLVER "cminpack_lm")
   endif ()
-elseif ((USE_GPL_LEVMAR EQUAL 1) AND (USE_CMINPACK EQUAL 0))
-  if (NOT (DEFAULT_SOLVER STREQUAL "levmar"))
+elseif ((USE_CERES EQUAL 1) AND (USE_CMINPACK EQUAL 0))
+  if (NOT (DEFAULT_SOLVER STREQUAL "ceres"))
     message(WARNING
       "Preferred solver cannot be used because it's not enabled. "
       "preferred=${PREFERRED_SOLVER} "
       "default=${DEFAULT_SOLVER} "
       "use_cminpack=${USE_CMINPACK} "
-      "use_gpl_levmar=${USE_GPL_LEVMAR}"
+      "use_ceres=${USE_CERES}"
       )
-    set(DEFAULT_SOLVER "levmar")
+    set(DEFAULT_SOLVER "ceres")
   endif ()
 else ()
   message(FATAL_ERROR
@@ -59,7 +61,7 @@ else ()
     "preferred=${PREFERRED_SOLVER} "
     "default=${DEFAULT_SOLVER} "
     "use_cminpack=${USE_CMINPACK} "
-    "use_gpl_levmar=${USE_GPL_LEVMAR}"
+    "use_ceres=${USE_CERES}"
     )
 endif ()
 
@@ -76,8 +78,8 @@ set(SOURCE_FILES
   core/bundleAdjust_relationships.cpp
   core/bundleAdjust_solveFunc.h
   core/bundleAdjust_solveFunc.cpp
-  core/bundleAdjust_levmar_bc_dif.h
-  core/bundleAdjust_levmar_bc_dif.cpp
+  # core/bundleAdjust_levmar_bc_dif.h
+  # core/bundleAdjust_levmar_bc_dif.cpp
   core/bundleAdjust_cminpack_base.h
   core/bundleAdjust_cminpack_base.cpp
   core/bundleAdjust_cminpack_lmdif.h
@@ -111,14 +113,36 @@ set(SOURCE_FILES
   MMSolverTypeCmd.cpp
   MMReprojectionCmd.h
   MMReprojectionCmd.cpp
+  MMCameraSolveCmd.h
+  MMCameraSolveCmd.cpp
   pluginMain.cpp
-  )
+)
 
 
 # Find external packages
 find_package(Maya REQUIRED)
-# find_package(LevMar)
-find_package(CMinpack)
+find_package(CMinpack REQUIRED)
+find_package(Ceres REQUIRED)
+find_package(Libmv REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(Gflags REQUIRED)
+find_package(Glog REQUIRED)
+
+message(STATUS "CMINPACK: ${USE_CMINPACK}"
+  " Root=${CMINPACK_ROOT}"
+  " Include=${CMINPACK_INCLUDE_PATH}"
+  " Library=${CMINPACK_LIB_PATH}")
+
+message(STATUS "CERES: ${USE_CERES}"
+  " Root=${CERES_ROOT}"
+  " Include=${CERES_INCLUDE_PATH}"
+  " Library=${CERES_LIB_PATH}")
+
+message(STATUS "LIBMV: ${USE_LIBMV}"
+  " Root=${LIBMV_ROOT}"
+  " Include=${LIBMV_INCLUDE_PATH}"
+  " Library=${LIBMV_LIB_PATH}")
+
 
 # Treat warnings as errors.
 if(MSVC)
@@ -207,41 +231,24 @@ endif ()
 target_include_directories(mmSolver
   PRIVATE ../include
   PRIVATE .
-  PUBLIC ${MAYA_INCLUDE_DIRS}
-  )
+  PRIVATE ${MAYA_INCLUDE_DIRS}
+  PRIVATE ${CERES_INCLUDE_DIRS}
+  PRIVATE ${LIBMV_INCLUDE_DIRS}
+  PRIVATE ${EIGEN3_INCLUDE_DIRS}
+  PRIVATE ${GLOG_INCLUDE_DIRS}
+  PRIVATE ${GFLAGS_INCLUDE_DIRS}
+)
 target_link_libraries(mmSolver
   PUBLIC
   ${MAYA_OpenMaya_LIBRARY}
   ${MAYA_OpenMayaAnim_LIBRARY}
   ${MAYA_Foundation_LIBRARY}
-  )
+  ${GLOG_LIBRARIES}
+  ${GFLAGS_LIBRARIES}
+  ${LIBMV_LIBRARIES}
+  ${CERES_LIBRARIES}
+)
 
-# if (USE_GPL_LEVMAR)
-#   message(WARNING
-#     "'levmar' library is licensed under GNU GPL and therefore this library "
-#     "must not be distributed in binary form.")
-#   target_include_directories(mmSolver PUBLIC ${LEVMAR_INCLUDE_DIRS})
-#   target_link_libraries(mmSolver PUBLIC ${LEVMAR_LIBRARIES})
-#   target_compile_definitions(mmSolver PRIVATE USE_SOLVER_LEVMAR)
-
-#   if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-#     # To locate Levmar from the mmSolver dynamic library we
-#     # must change the "install name" to a path relative to the
-#     # loaded bundle.
-#     #
-#     # Run:
-#     # $ install_name_tool -change liblevmar.dylib @loader_path/../lib/liblevmar.dylib mmSolver.bundle
-#     #
-#     # NOTE: If ${LEVMAR_LIBRARIES} has more than one library,
-#     #  this command will fail.
-#     #
-#     add_custom_command(TARGET mmSolver
-#       POST_BUILD COMMAND
-#       ${CMAKE_INSTALL_NAME_TOOL} -change ${LEVMAR_LIBRARIES} @loader_path/../lib/${LEVMAR_LIBRARIES}
-#       $<TARGET_FILE:mmSolver>
-#       )
-#   endif()
-# endif ()
 
 if (USE_CMINPACK)
   target_include_directories(mmSolver PUBLIC ${CMINPACK_INCLUDE_DIRS})
@@ -267,6 +274,59 @@ if (USE_CMINPACK)
       )
   endif()
 endif ()
+
+
+if (USE_CERES)
+  target_include_directories(mmSolver PUBLIC ${CERES_INCLUDE_DIRS})
+  target_link_libraries(mmSolver PUBLIC ${CERES_LIBRARIES})
+  target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CERES)
+
+  if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+    # To locate Ceres from the mmSolver dynamic library we
+    # must change the "install name" to a path relative to the
+    # loaded bundle.
+    #
+    # Run:
+    # $ install_name_tool -change libceres.1.dylib @loader_path/../lib/libceres.1.dylib mmSolver.bundle
+    #
+    # NOTE: If ${CERES_LIBRARIES} has more than one library,
+    #  this command will fail.
+    #
+    get_filename_component(CERES_LIBRARY_NAME ${CERES_LIBRARIES} NAME)
+    add_custom_command(TARGET mmSolver
+      POST_BUILD COMMAND
+      ${CMAKE_INSTALL_NAME_TOOL} -change ${CERES_LIBRARY_NAME} @loader_path/../lib/${CERES_LIBRARY_NAME}
+      $<TARGET_FILE:mmSolver>
+      )
+  endif()
+endif ()
+
+
+if (USE_LIBMV)
+  target_include_directories(mmSolver PUBLIC ${LIBMV_INCLUDE_DIRS})
+  target_link_libraries(mmSolver PUBLIC ${LIBMV_LIBRARIES})
+  target_compile_definitions(mmSolver PRIVATE USE_SOLVER_LIBMV)
+
+  if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+    # To locate Libmv from the mmSolver dynamic library we
+    # must change the "install name" to a path relative to the
+    # loaded bundle.
+    #
+    # Run:
+    # $ install_name_tool -change liblibmv.dylib @loader_path/../lib/liblibmv.dylib mmSolver.bundle
+    #
+    # NOTE: If ${LIBMV_LIBRARIES} has more than one library,
+    #  this command will fail.
+    #
+    get_filename_component(LIBMV_LIBRARY_NAME ${LIBMV_LIBRARIES} NAME)
+    add_custom_command(TARGET mmSolver
+      POST_BUILD COMMAND
+      ${CMAKE_INSTALL_NAME_TOOL} -change ${LIBMV_LIBRARY_NAME} @loader_path/../lib/${LIBMV_LIBRARY_NAME}
+      $<TARGET_FILE:mmSolver>
+      )
+  endif()
+endif ()
+
 
 # On Linux the 'm' library is required.
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
@@ -341,23 +401,3 @@ if (USE_CMINPACK AND CMINPACK_FOUND)
       DESTINATION "${MODULE_FULL_NAME}/lib/")
   endif ()
 endif ()
-
-# # Install dynamic libraries; levmar
-# if (USE_GPL_LEVMAR AND LEVMAR_FOUND)
-#   if (WIN32)
-#     if (EXISTS ${LEVMAR_LIBRARY_DLL})
-#       install(FILES ${LEVMAR_LIBRARY_DLL}
-#         DESTINATION "${MODULE_FULL_NAME}/lib/")
-#     else ()
-#       install(FILES ${LEVMAR_LIBRARY}
-#         DESTINATION "${MODULE_FULL_NAME}/lib/")
-#     endif ()
-#   elseif (UNIX)
-#     # Install both symlink and real library
-#     get_filename_component(ABS_LEVMAR_LIBRARY ${LEVMAR_LIBRARY} REALPATH)
-#     install(FILES ${LEVMAR_LIBRARY}
-#       DESTINATION "${MODULE_FULL_NAME}/lib/")
-#     install(FILES ${ABS_LEVMAR_LIBRARY}
-#       DESTINATION "${MODULE_FULL_NAME}/lib/")
-#   endif ()
-# endif ()

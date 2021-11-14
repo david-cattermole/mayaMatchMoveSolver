@@ -39,13 +39,11 @@ SET FRESH_BUILD=1
 :: successfully build an install process.
 SET RUN_TESTS=0
 
-:: Use CMinpack?
+:: Use libraries
 :: CMinpack is the recommended solving library.
 SET WITH_CMINPACK=1
-
-:: WARNING: Would you like to use GPL-licensed code? If so you will
-:: not be able to distribute
-SET WITH_GPL_CODE=0
+SET WITH_CERES=1
+SET WITH_LIBMV=1
 
 :: Where to install the module?
 ::
@@ -110,10 +108,15 @@ REM cmake -G "Visual Studio 14 2015 Win64" -T "v140"
 REM To Generate a Visual Studio 'Solution' file
     cmake -G "Visual Studio 11 2012 Win64" -T "v110" ^
         -DMAYA_VERSION=%MAYA_VERSION% ^
-        -DUSE_GPL_LEVMAR=%WITH_GPL_CODE% ^
         -DUSE_CMINPACK=%WITH_CMINPACK% ^
+        -DUSE_CERES=%WITH_CERES% ^
+        -DUSE_LIBMV=%WITH_CERES% ^
         -DCMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack" ^
-        -DLEVMAR_ROOT="%PROJECT_ROOT%\external\install\levmar" ^
+        -DCERES_ROOT="%PROJECT_ROOT%\external\install\ceres" ^
+        -DLIBMV_ROOT="%PROJECT_ROOT%\external\install\libmv" ^
+        -DEigen3_DIR="%PROJECT_ROOT%\external\install\eigen\share\eigen3\cmake" ^
+        -DGLOG_ROOT="%PROJECT_ROOT%\external\install\glog" ^
+        -DGFLAGS_ROOT="%PROJECT_ROOT%\external\install\gflags" ^
         -DMAYA_LOCATION=%MAYA_LOCATION% ^
         -DMAYA_VERSION=%MAYA_VERSION% ^
         ..
@@ -123,6 +126,7 @@ REM To Generate a Visual Studio 'Solution' file
     cmake -G "NMake Makefiles" ^
         -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
         -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
+        -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
         -DBUILD_PLUGIN=%BUILD_PLUGIN% ^
         -DBUILD_PYTHON=%BUILD_PYTHON% ^
         -DBUILD_MEL=%BUILD_MEL% ^
@@ -131,11 +135,15 @@ REM To Generate a Visual Studio 'Solution' file
         -DBUILD_ICONS=%BUILD_ICONS% ^
         -DBUILD_CONFIG=%BUILD_CONFIG% ^
         -DBUILD_TESTS=%BUILD_TESTS% ^
-        -DUSE_GPL_LEVMAR=%WITH_GPL_CODE% ^
         -DUSE_CMINPACK=%WITH_CMINPACK% ^
+        -DUSE_CERES=%WITH_CERES% ^
+        -DUSE_LIBMV=%WITH_LIBMV% ^
+        -DLIBMV_ROOT="%PROJECT_ROOT%\external\install\libmv" ^
         -DCMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack" ^
-        -DLEVMAR_ROOT="%PROJECT_ROOT%\external\install\levmar" ^
-        -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
+        -DCERES_ROOT="%PROJECT_ROOT%\external\install\ceres" ^
+        -DEigen3_DIR="%PROJECT_ROOT%\external\install\eigen\share\eigen3\cmake" ^
+        -DGLOG_ROOT="%PROJECT_ROOT%\external\install\glog" ^
+        -DGFLAGS_ROOT="%PROJECT_ROOT%\external\install\gflags" ^
         -DMAYA_LOCATION=%MAYA_LOCATION% ^
         -DMAYA_VERSION=%MAYA_VERSION% ^
         ..

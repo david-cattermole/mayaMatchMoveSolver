@@ -38,7 +38,6 @@
 
 // Utils
 #include <utilities/debugUtils.h>
-#include <utilities/stringUtils.h>
 
 // Google libraries
 #include <gtest/gtest.h>

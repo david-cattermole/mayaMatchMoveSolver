@@ -27,7 +27,7 @@
 #include <sstream>  // stringstream
 #include <cmath>    // fabs
 
-namespace string {
+namespace mmstring {
 
     /*! Convert a number to a string
      *

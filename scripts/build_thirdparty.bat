@@ -37,12 +37,7 @@ SET SOURCE_DIR="%ROOT%"
 :: SET WORKING_DIR="%ROOT%\working"
 SET WORKING_DIR="C:\mmSolver_temp"
 
-:: Use Intel MKL for BLAS and LAPACK implementations.
-SET MKL_DIR="C:\Program Files (x86)\Intel\oneAPI"
-SET BLA_VENDOR="Intel10_64lp"
 
-call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-call "C:\Program Files (x86)\Intel\oneAPI\setvars-vcvarsall.bat" x86_amd64
 
 :: Build plugin
 CHDIR %WORKING_DIR%
@@ -55,8 +50,6 @@ cmake -G "NMake Makefiles" ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DTHIRDPARTY_BASE_INSTALL_DIR=%INSTALL_DIR% ^
     -DTHIRDPARTY_BASE_WORKING_DIR=%WORKING_DIR% ^
-    -DBLA_VENDOR=%BLA_VENDOR% ^
-    -DBLA_STATIC=1 ^
     %SOURCE_DIR%
 
 nmake /F Makefile clean

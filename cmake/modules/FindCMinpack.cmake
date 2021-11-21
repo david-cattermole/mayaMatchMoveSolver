@@ -32,10 +32,10 @@ find_library(CMINPACK_LIBRARY
         libcminpack.1
         libcminpack.so.1
         libcminpack.1.dylib
-        libcminpack_s
-        cminpack_s
         libcminpack
         cminpack
+        libcminpack_s
+        cminpack_s
     HINTS
         ${CMINPACK_LIB_PATH}
         ${CMINPACK_ROOT}

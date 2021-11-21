@@ -1,0 +1,43 @@
+cmake_minimum_required(VERSION 2.4)
+
+project(V3D)
+
+set (V3D_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set (V3D_INCLUDE_DIRS ${V3D_DIR}/.)
+
+# Ensure all symbols are exported on Windows.
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+# TODO(keir): This may not work on Windows.
+add_definitions(-DV3DLIB_ENABLE_SUITESPARSE)
+
+include_directories(${V3D_INCLUDE_DIRS} ${EXTRA_INC_DIRS})
+
+IF(CMAKE_COMPILER_IS_GNUCXX)
+  SET(CMAKE_CXX_FLAGS "")
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+
+add_library(V3D
+    Math/v3d_linear.h
+    Math/v3d_mathutilities.h
+    Math/v3d_optimization.h
+    Math/v3d_optimization.cpp
+    Geometry/v3d_cameramatrix.h
+    Geometry/v3d_metricbundle.h
+    Geometry/v3d_metricbundle.cpp)
+target_link_libraries(V3D
+  PRIVATE
+  ${COLAMD_LIBRARIES}
+  ${LDL_LIBRARIES}
+  ${SUITE_SPARSE_CONFIG_LIBRARIES}
+  )
+target_include_directories(V3D
+  PRIVATE
+  ${COLAMD_INCLUDE_DIRS}
+  ${LDL_INCLUDE_DIRS}
+  ${SUITE_SPARSE_CONFIG_INCLUDE_DIRS}
+)
+
+#add_subdirectory(Apps)
+
+LIBMV_INSTALL_THIRD_PARTY_LIB(V3D)

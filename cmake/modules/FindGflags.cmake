@@ -28,7 +28,7 @@ find_path(GFLAGS_INCLUDE_DIR gflags/gflags.h
 )
 
 find_library(GFLAGS_LIBRARY
-  NAMES
+    NAMES
         libgflags
         libgflags_static
         gflags_static

@@ -121,12 +121,6 @@ MStatus initializePlugin(MObject obj) {
                      MMSolverAffectsCmd::creator,
                      MMSolverAffectsCmd::newSyntax,
                      status);
-
-    REGISTER_COMMAND(plugin,
-                     MMCameraSolveCmd::cmdName(),
-                     MMCameraSolveCmd::creator,
-                     MMCameraSolveCmd::newSyntax,
-                     status);
     
     REGISTER_COMMAND(plugin,
                      MMTestCameraMatrixCmd::cmdName(),
@@ -194,7 +188,6 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMSolverTypeCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMSolverAffectsCmd::cmdName(), status);
-    DEREGISTER_COMMAND(plugin, MMCameraSolveCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMCameraSolveCmd::cmdName(), status);
 

@@ -39,12 +39,6 @@ SET FRESH_BUILD=1
 :: successfully build an install process.
 SET RUN_TESTS=0
 
-:: Use libraries
-:: CMinpack is the recommended solving library.
-SET WITH_CMINPACK=1
-SET WITH_CERES=1
-SET WITH_LIBMV=1
-
 :: Where to install the module?
 ::
 :: Note: In Windows 8 and 10, "My Documents" is no longer visible,
@@ -86,6 +80,20 @@ SET GENERATE_SOLUTION=0
 SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%
 
+:: Paths for dependancies.
+::
+:: By default these paths will work if the "build_thirdparty.bat"
+:: scripts have been run before this script.
+SET SUITESPARSE_ROOT="%PROJECT_ROOT%\external\install\suitesparse"
+SET CMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack"
+SET CERES_ROOT="%PROJECT_ROOT%\external\install\ceres"
+SET LIBMV_ROOT="%PROJECT_ROOT%\external\install\libmv"
+SET Eigen3_DIR="%PROJECT_ROOT%\external\install\eigen\share\eigen3\cmake"
+SET GLOG_ROOT="%PROJECT_ROOT%\external\install\glog"
+SET GFLAGS_ROOT="%PROJECT_ROOT%\external\install\gflags"
+SET GTEST_ROOT="%PROJECT_ROOT%\external\install\gtest"
+SET BLASLAPACK_ROOT="%PROJECT_ROOT%\external\install\suitesparse\lib"
+
 :: Include directories to ignore
 SET IGNORE_INCLUDE_DIRECTORIES=""
 IF EXIST "C:\MinGW" (
@@ -107,16 +115,15 @@ REM cmake -G "Visual Studio 14 2015 Win64" -T "v140"
 
 REM To Generate a Visual Studio 'Solution' file
     cmake -G "Visual Studio 11 2012 Win64" -T "v110" ^
-        -DMAYA_VERSION=%MAYA_VERSION% ^
-        -DUSE_CMINPACK=%WITH_CMINPACK% ^
-        -DUSE_CERES=%WITH_CERES% ^
-        -DUSE_LIBMV=%WITH_CERES% ^
-        -DCMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack" ^
-        -DCERES_ROOT="%PROJECT_ROOT%\external\install\ceres" ^
-        -DLIBMV_ROOT="%PROJECT_ROOT%\external\install\libmv" ^
-        -DEigen3_DIR="%PROJECT_ROOT%\external\install\eigen\share\eigen3\cmake" ^
-        -DGLOG_ROOT="%PROJECT_ROOT%\external\install\glog" ^
-        -DGFLAGS_ROOT="%PROJECT_ROOT%\external\install\gflags" ^
+        -DSUITESPARSE_ROOT=%SUITESPARSE_ROOT% ^
+        -DLIBMV_ROOT=%LIBMV_ROOT% ^
+        -DCMINPACK_ROOT=%CMINPACK_ROOT% ^
+        -DCERES_ROOT=%CERES_ROOT% ^
+        -DEigen3_DIR=%Eigen3_DIR% ^
+        -DGLOG_ROOT=%GLOG_ROOT% ^
+        -DGFLAGS_ROOT=%GFLAGS_ROOT% ^
+        -DGTEST_ROOT=%GTEST_ROOT% ^
+        -DBLASLAPACK_ROOT=%BLASLAPACK_ROOT% ^
         -DMAYA_LOCATION=%MAYA_LOCATION% ^
         -DMAYA_VERSION=%MAYA_VERSION% ^
         ..
@@ -135,15 +142,15 @@ REM To Generate a Visual Studio 'Solution' file
         -DBUILD_ICONS=%BUILD_ICONS% ^
         -DBUILD_CONFIG=%BUILD_CONFIG% ^
         -DBUILD_TESTS=%BUILD_TESTS% ^
-        -DUSE_CMINPACK=%WITH_CMINPACK% ^
-        -DUSE_CERES=%WITH_CERES% ^
-        -DUSE_LIBMV=%WITH_LIBMV% ^
-        -DLIBMV_ROOT="%PROJECT_ROOT%\external\install\libmv" ^
-        -DCMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack" ^
-        -DCERES_ROOT="%PROJECT_ROOT%\external\install\ceres" ^
-        -DEigen3_DIR="%PROJECT_ROOT%\external\install\eigen\share\eigen3\cmake" ^
-        -DGLOG_ROOT="%PROJECT_ROOT%\external\install\glog" ^
-        -DGFLAGS_ROOT="%PROJECT_ROOT%\external\install\gflags" ^
+        -DSUITESPARSE_ROOT=%SUITESPARSE_ROOT% ^
+        -DLIBMV_ROOT=%LIBMV_ROOT% ^
+        -DCMINPACK_ROOT=%CMINPACK_ROOT% ^
+        -DCERES_ROOT=%CERES_ROOT% ^
+        -DEigen3_DIR=%Eigen3_DIR% ^
+        -DGLOG_ROOT=%GLOG_ROOT% ^
+        -DGFLAGS_ROOT=%GFLAGS_ROOT% ^
+        -DGTEST_ROOT=%GTEST_ROOT% ^
+        -DBLASLAPACK_ROOT=%BLASLAPACK_ROOT% ^
         -DMAYA_LOCATION=%MAYA_LOCATION% ^
         -DMAYA_VERSION=%MAYA_VERSION% ^
         ..

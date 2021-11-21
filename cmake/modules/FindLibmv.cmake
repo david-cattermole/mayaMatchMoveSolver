@@ -27,7 +27,7 @@ find_path(LIBMV_INCLUDE_DIR libmv/camera/pinhole_camera.h
         libmv/
         include/libmv/
 )
-# message(STATUS "LIBMV_INCLUDE_DIR = ${LIBMV_INCLUDE_DIR}")
+
 
 foreach(LIBMV_LIB
     # LibMV primary libraries
@@ -53,7 +53,7 @@ foreach(LIBMV_LIB
     flann
     jpeg
     png
-    # pthread
+    pthread
     zlib
     )
 
@@ -76,15 +76,17 @@ foreach(LIBMV_LIB
         list(APPEND LIBMV_LIBRARIES ${LIBMV_${LIBMV_LIB}_LIBRARY})
     endif()
 endforeach(LIBMV_LIB)
-# message(STATUS "LIBMV_LIBRARIES = ${LIBMV_LIBRARIES}")
+
 
 if(LIBMV_INCLUDE_DIR)
     set(LIBMV_INCLUDE_DIRS ${LIBMV_INCLUDE_DIR})
 endif()
 
+
 mark_as_advanced(
     LIBMV_INCLUDE_DIR
 )
+
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Libmv

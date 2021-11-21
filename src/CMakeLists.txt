@@ -31,89 +31,29 @@ set(PREFERRED_SOLVER "cminpack_lmder"
 
 # Set a default solver
 set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
-if ((USE_CERES EQUAL 1) AND (USE_CMINPACK EQUAL 1))
-  # Support both ceres and cminpack.
-elseif ((USE_CMINPACK EQUAL 1) AND (USE_CERES EQUAL 0))
-  if (NOT (DEFAULT_SOLVER MATCHES "cminpack_lm[a-zA-Z]+"))
-    message(WARNING
-      "Preferred solver cannot be used because it's not enabled. "
-      "preferred=${PREFERRED_SOLVER} "
-      "default=${DEFAULT_SOLVER} "
-      "use_cminpack=${USE_CMINPACK} "
-      "use_ceres=${USE_CERES}"
-      )
-    set(DEFAULT_SOLVER "cminpack_lm")
-  endif ()
-elseif ((USE_CERES EQUAL 1) AND (USE_CMINPACK EQUAL 0))
-  if (NOT (DEFAULT_SOLVER STREQUAL "ceres"))
-    message(WARNING
-      "Preferred solver cannot be used because it's not enabled. "
-      "preferred=${PREFERRED_SOLVER} "
-      "default=${DEFAULT_SOLVER} "
-      "use_cminpack=${USE_CMINPACK} "
-      "use_ceres=${USE_CERES}"
-      )
-    set(DEFAULT_SOLVER "ceres")
-  endif ()
-else ()
-  message(FATAL_ERROR
-    " Solver is not available! "
-    "preferred=${PREFERRED_SOLVER} "
-    "default=${DEFAULT_SOLVER} "
-    "use_cminpack=${USE_CMINPACK} "
-    "use_ceres=${USE_CERES}"
-    )
-endif ()
 
 # Source
 set(SOURCE_FILES
-  ../include/utilities/debugUtils.h
-  ../include/nodeTypeIds.h
-  core/reprojection.h
   core/reprojection.cpp
-  core/bundleAdjust_defines.h
-  core/bundleAdjust_base.h
   core/bundleAdjust_base.cpp
-  core/bundleAdjust_relationships.h
   core/bundleAdjust_relationships.cpp
-  core/bundleAdjust_solveFunc.h
   core/bundleAdjust_solveFunc.cpp
-  # core/bundleAdjust_levmar_bc_dif.h
-  # core/bundleAdjust_levmar_bc_dif.cpp
-  core/bundleAdjust_cminpack_base.h
   core/bundleAdjust_cminpack_base.cpp
-  core/bundleAdjust_cminpack_lmdif.h
   core/bundleAdjust_cminpack_lmdif.cpp
-  core/bundleAdjust_cminpack_lmder.h
   core/bundleAdjust_cminpack_lmder.cpp
-  mayaUtils.h
-  Camera.h
   Camera.cpp
-  Marker.h
   Marker.cpp
-  Bundle.h
   Bundle.cpp
-  Attr.h
   Attr.cpp
-  commonArgFlags.h
   commonArgFlags.cpp
-  MMSolverAffectsCmd.h
   MMSolverAffectsCmd.cpp
-  MMMarkerScaleNode.h
   MMMarkerScaleNode.cpp
-  MMReprojectionNode.h
   MMReprojectionNode.cpp
-  MMMarkerGroupTransformNode.h
   MMMarkerGroupTransformNode.cpp
-  MMTestCameraMatrixCmd.h
   MMTestCameraMatrixCmd.cpp
-  MMSolverCmd.h
   MMSolverCmd.cpp
-  MMSolverTypeCmd.h
   MMSolverTypeCmd.cpp
-  MMReprojectionCmd.h
   MMReprojectionCmd.cpp
-  MMCameraSolveCmd.h
   MMCameraSolveCmd.cpp
   pluginMain.cpp
 )
@@ -122,26 +62,44 @@ set(SOURCE_FILES
 # Find external packages
 find_package(Maya REQUIRED)
 find_package(CMinpack REQUIRED)
-find_package(Ceres REQUIRED)
-find_package(Libmv REQUIRED)
-find_package(Eigen3 REQUIRED)
 find_package(Gflags REQUIRED)
+find_package(GTest REQUIRED)
 find_package(Glog REQUIRED)
+find_package(BlasLapack REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(Ceres REQUIRED)
 
-message(STATUS "CMINPACK: ${USE_CMINPACK}"
+message(STATUS "CMINPACK: ${CMINPACK_FOUND}"
   " Root=${CMINPACK_ROOT}"
-  " Include=${CMINPACK_INCLUDE_PATH}"
-  " Library=${CMINPACK_LIB_PATH}")
+  " Include=${CMINPACK_INCLUDE_DIRS}"
+  " Library=${CMINPACK_LIBRARIES}")
 
-message(STATUS "CERES: ${USE_CERES}"
+message(STATUS "GFLAGS: ${GFLAGS_FOUND}"
+  " Include=${GFLAGS_INCLUDE_DIRS}"
+  " Library=${GFLAGS_LIBRARIES}")
+
+message(STATUS "GLOG: ${GLOG_FOUND}"
+  " Include=${GLOG_INCLUDE_DIRS}"
+  " Library=${GLOG_LIBRARIES}")
+
+message(STATUS "GTEST: ${GTEST_FOUND}"
+  " Include=${GTEST_INCLUDE_DIRS}"
+  " Library=${GTEST_LIBRARIES}")
+
+message(STATUS "BLASLAPACK: ${BLASLAPACK_FOUND}"
+  " Root=${BLASLAPACK_ROOT}"
+  " Library=${BLASLAPACK_LIBRARIES}"
+  " Library DLL=${BLASLAPACK_LIBRARIES_DLL}")
+
+message(STATUS "EIGEN3: ${EIGEN3_FOUND}"
+  " Root=${Eigen3_DIR}"
+  " Include=${EIGEN3_INCLUDE_DIRS}")
+
+
+message(STATUS "CERES: ${CERES_FOUND}"
   " Root=${CERES_ROOT}"
-  " Include=${CERES_INCLUDE_PATH}"
-  " Library=${CERES_LIB_PATH}")
-
-message(STATUS "LIBMV: ${USE_LIBMV}"
-  " Root=${LIBMV_ROOT}"
-  " Include=${LIBMV_INCLUDE_PATH}"
-  " Library=${LIBMV_LIB_PATH}")
+  " Include=${CERES_INCLUDE_DIRS}"
+  " Library=${CERES_LIBRARIES}")
 
 
 # Treat warnings as errors.
@@ -166,11 +124,19 @@ if (MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D \"NT_PLUGIN\" /D \"REQUIRE_IOSTREAM\"")
 
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /D \"_DEBUG\"")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd /Gm /Od /RTC1")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Gm /Od /RTC1")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Ob0 /GR /GL /Oi /Gy /Zi /EHsc")
 
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /D \"NDEBUG\"")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Gy /Gm- /O2 /Ob1 /GF")
+
+  # Ensure Google Logging does not use "ERROR" macro, because Windows
+  # doesn't support it.
+  add_compile_definitions(GLOG_NO_ABBREVIATED_SEVERITIES)
+
+  add_definitions(/DGOOGLE_GLOG_DLL_DECL=)
 
   # Must add the plug-in entry/exit points otherwise
   # the plug-in won't load.
@@ -232,101 +198,30 @@ target_include_directories(mmSolver
   PRIVATE ../include
   PRIVATE .
   PRIVATE ${MAYA_INCLUDE_DIRS}
-  PRIVATE ${CERES_INCLUDE_DIRS}
-  PRIVATE ${LIBMV_INCLUDE_DIRS}
-  PRIVATE ${EIGEN3_INCLUDE_DIRS}
-  PRIVATE ${GLOG_INCLUDE_DIRS}
   PRIVATE ${GFLAGS_INCLUDE_DIRS}
-)
+  PRIVATE ${GTEST_INCLUDE_DIRS}
+  PRIVATE ${GLOG_INCLUDE_DIRS}
+  PRIVATE ${CMINPACK_INCLUDE_DIRS}
+  PRIVATE ${EIGEN3_INCLUDE_DIRS}
+  PRIVATE ${CERES_INCLUDE_DIRS}
+  )
 target_link_libraries(mmSolver
   PUBLIC
   ${MAYA_OpenMaya_LIBRARY}
   ${MAYA_OpenMayaAnim_LIBRARY}
   ${MAYA_Foundation_LIBRARY}
-  ${GLOG_LIBRARIES}
+  )
+target_link_libraries(mmSolver
+  PRIVATE
   ${GFLAGS_LIBRARIES}
-  ${LIBMV_LIBRARIES}
+  ${GTEST_LIBRARIES}
+  ${GLOG_LIBRARIES}
+  ${CMINPACK_LIBRARIES}
   ${CERES_LIBRARIES}
 )
-
-
-if (USE_CMINPACK)
-  target_include_directories(mmSolver PUBLIC ${CMINPACK_INCLUDE_DIRS})
-  target_link_libraries(mmSolver PUBLIC ${CMINPACK_LIBRARIES})
-  target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CMINPACK)
-
-  if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    # To locate CMinpack from the mmSolver dynamic library we
-    # must change the "install name" to a path relative to the
-    # loaded bundle.
-    #
-    # Run:
-    # $ install_name_tool -change libcminpack.1.dylib @loader_path/../lib/libcminpack.1.dylib mmSolver.bundle
-    #
-    # NOTE: If ${CMINPACK_LIBRARIES} has more than one library,
-    #  this command will fail.
-    #
-    get_filename_component(CMINPACK_LIBRARY_NAME ${CMINPACK_LIBRARIES} NAME)
-    add_custom_command(TARGET mmSolver
-      POST_BUILD COMMAND
-      ${CMAKE_INSTALL_NAME_TOOL} -change ${CMINPACK_LIBRARY_NAME} @loader_path/../lib/${CMINPACK_LIBRARY_NAME}
-      $<TARGET_FILE:mmSolver>
-      )
-  endif()
-endif ()
-
-
-if (USE_CERES)
-  target_include_directories(mmSolver PUBLIC ${CERES_INCLUDE_DIRS})
-  target_link_libraries(mmSolver PUBLIC ${CERES_LIBRARIES})
-  target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CERES)
-
-  if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    # To locate Ceres from the mmSolver dynamic library we
-    # must change the "install name" to a path relative to the
-    # loaded bundle.
-    #
-    # Run:
-    # $ install_name_tool -change libceres.1.dylib @loader_path/../lib/libceres.1.dylib mmSolver.bundle
-    #
-    # NOTE: If ${CERES_LIBRARIES} has more than one library,
-    #  this command will fail.
-    #
-    get_filename_component(CERES_LIBRARY_NAME ${CERES_LIBRARIES} NAME)
-    add_custom_command(TARGET mmSolver
-      POST_BUILD COMMAND
-      ${CMAKE_INSTALL_NAME_TOOL} -change ${CERES_LIBRARY_NAME} @loader_path/../lib/${CERES_LIBRARY_NAME}
-      $<TARGET_FILE:mmSolver>
-      )
-  endif()
-endif ()
-
-
-if (USE_LIBMV)
-  target_include_directories(mmSolver PUBLIC ${LIBMV_INCLUDE_DIRS})
-  target_link_libraries(mmSolver PUBLIC ${LIBMV_LIBRARIES})
-  target_compile_definitions(mmSolver PRIVATE USE_SOLVER_LIBMV)
-
-  if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    # To locate Libmv from the mmSolver dynamic library we
-    # must change the "install name" to a path relative to the
-    # loaded bundle.
-    #
-    # Run:
-    # $ install_name_tool -change liblibmv.dylib @loader_path/../lib/liblibmv.dylib mmSolver.bundle
-    #
-    # NOTE: If ${LIBMV_LIBRARIES} has more than one library,
-    #  this command will fail.
-    #
-    get_filename_component(LIBMV_LIBRARY_NAME ${LIBMV_LIBRARIES} NAME)
-    add_custom_command(TARGET mmSolver
-      POST_BUILD COMMAND
-      ${CMAKE_INSTALL_NAME_TOOL} -change ${LIBMV_LIBRARY_NAME} @loader_path/../lib/${LIBMV_LIBRARY_NAME}
-      $<TARGET_FILE:mmSolver>
-      )
-  endif()
-endif ()
-
+target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CMINPACK)
+target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CERES)
+target_compile_definitions(mmSolver PRIVATE USE_SOLVER_LIBMV)
 
 # On Linux the 'm' library is required.
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
@@ -383,21 +278,50 @@ install(TARGETS mmSolver
 
 
 # Install dynamic libraries; cminpack
-if (USE_CMINPACK AND CMINPACK_FOUND)
-  if (WIN32)
-    if (EXISTS ${CMINPACK_LIBRARY_DLL})
-      install(FILES ${CMINPACK_LIBRARY_DLL}
-        DESTINATION "${MODULE_FULL_NAME}/lib/")
-    else ()
-      install(FILES ${CMINPACK_LIBRARY}
-        DESTINATION "${MODULE_FULL_NAME}/lib/")
-    endif ()
-  elseif (UNIX)
-    # Install both symlink and real library
-    get_filename_component(ABS_CMINPACK_LIBRARY ${CMINPACK_LIBRARY} REALPATH)
-    install(FILES ${CMINPACK_LIBRARY}
-      DESTINATION "${MODULE_FULL_NAME}/lib/")
-    install(FILES ${ABS_CMINPACK_LIBRARY}
-      DESTINATION "${MODULE_FULL_NAME}/lib/")
-  endif ()
+if (CMINPACK_FOUND)
+  install_library(
+    ${CMINPACK_LIBRARY}
+    ${CMINPACK_LIBRARY_DLL}
+    "${MODULE_FULL_NAME}/lib/")
+endif ()
+
+# Install dynamic libraries; glog
+if (GLOG_FOUND)
+  install_library(
+    ${GLOG_LIBRARY}
+    ${GLOG_LIBRARY_DLL}
+    "${MODULE_FULL_NAME}/lib/")
+endif ()
+
+# Install dynamic libraries; gflags
+if (GFLAGS_FOUND)
+  install_library(
+    ${GFLAGS_LIBRARY}
+    ${GFLAGS_LIBRARY_DLL}
+    "${MODULE_FULL_NAME}/lib/")
+endif ()
+
+# Install dynamic libraries; gtest
+if (GTEST_FOUND)
+  install_library(
+    ${GTEST_LIBRARY}
+    ${GTEST_LIBRARY_DLL}
+    "${MODULE_FULL_NAME}/lib/")
+endif ()
+
+# Install dynamic libraries; Blas and Lapack.
+if (BLASLAPACK_FOUND)
+  message(STATUS "BLASLAPACK_LIBRARIES: ${BLASLAPACK_LIBRARIES}")
+  message(STATUS "BLASLAPACK_LIBRARIES_DLL: ${BLASLAPACK_LIBRARIES_DLL}")
+  install_libraries(
+    "${BLASLAPACK_LIBRARIES}"
+    "${BLASLAPACK_LIBRARIES_DLL}"
+    "${MODULE_FULL_NAME}/lib/")
+endif ()
+
+if (CERES_FOUND)
+  install_library(
+    ${CERES_LIBRARY}
+    ${CERES_LIBRARY_DLL}
+    "${MODULE_FULL_NAME}/lib/")
 endif ()

@@ -69,7 +69,7 @@
 // Local
 #include <core/bundleAdjust_base.h>
 #include <core/bundleAdjust_relationships.h>
-#include <core/bundleAdjust_levmar_bc_dif.h>
+// #include <core/bundleAdjust_levmar_bc_dif.h>
 #include <core/bundleAdjust_cminpack_base.h>
 #include <core/bundleAdjust_cminpack_lmdif.h>
 #include <core/bundleAdjust_cminpack_lmder.h>
@@ -84,13 +84,7 @@
 std::vector<SolverTypePair> getSolverTypes() {
     std::vector<std::pair<int, std::string> > solverTypes;
     std::pair<int, std::string> solverType;
-#ifdef USE_SOLVER_LEVMAR
-    solverType.first = SOLVER_TYPE_LEVMAR;
-    solverType.second = SOLVER_TYPE_LEVMAR_NAME;
-    solverTypes.push_back(solverType);
-#endif
 
-#ifdef USE_SOLVER_CMINPACK
     solverType.first = SOLVER_TYPE_CMINPACK_LMDIF;
     solverType.second = SOLVER_TYPE_CMINPACK_LM_DIF_NAME;
     solverTypes.push_back(solverType);
@@ -98,7 +92,7 @@ std::vector<SolverTypePair> getSolverTypes() {
     solverType.first = SOLVER_TYPE_CMINPACK_LMDER;
     solverType.second = SOLVER_TYPE_CMINPACK_LM_DER_NAME;
     solverTypes.push_back(solverType);
-#endif
+
     return solverTypes;
 }
 
@@ -454,8 +448,8 @@ void logResultsSolveDetails(
     resultStr = "success=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    resultStr = "reason_string=" + levmarReasons[reasonNum];
-    outResult.append(MString(resultStr.c_str()));
+    // resultStr = "reason_string=" + levmarReasons[reasonNum];
+    // outResult.append(MString(resultStr.c_str()));
 
     value = string::numberToString<int>(reasonNum);
     resultStr = "reason_num=" + value;
@@ -1444,42 +1438,13 @@ bool solve(SolverOptions &solverOptions,
     SolverResult solveResult;
     if (solverOptions.solverType == SOLVER_TYPE_LEVMAR) {
 
-#ifndef USE_SOLVER_LEVMAR
-
         ERR("Solver Type is not supported by this compiled plug-in. "
             << "solverType=" << solverOptions.solverType);
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
         return false;
-
-#else // USE_SOLVER_LEVMAR is defined.
-
-        solve_3d_levmar_bc_dif(
-                solverOptions,
-                numberOfParameters,
-                numberOfErrors,
-                paramList,
-                errorList,
-                paramLowerBoundList,
-                paramUpperBoundList,
-                paramWeightList,
-                userData,
-                solveResult,
-                outResult);
-
-#endif // USE_SOLVER_LEVMAR
 
     } else if (solverOptions.solverType == SOLVER_TYPE_CMINPACK_LMDIF) {
-
-#ifndef USE_SOLVER_CMINPACK
-
-        ERR("Solver Type is not supported by this compiled plug-in. "
-            << "solverType=" << solverOptions.solverType);
-        resultStr = "success=0";
-        outResult.append(MString(resultStr.c_str()));
-        return false;
-
-#else // USE_SOLVER_CMINPACK is defined.
 
         solve_3d_cminpack_lmdif(
                 solverOptions,
@@ -1491,19 +1456,7 @@ bool solve(SolverOptions &solverOptions,
                 userData,
                 solveResult);
 
-#endif // USE_SOLVER_CMINPACK
-
     } else if (solverOptions.solverType == SOLVER_TYPE_CMINPACK_LMDER) {
-
-#ifndef USE_SOLVER_CMINPACK
-
-        ERR("Solver Type is not supported by this compiled plug-in. "
-            << "solverType=" << solverOptions.solverType);
-        resultStr = "success=0";
-        outResult.append(MString(resultStr.c_str()));
-        return false;
-
-#else // USE_SOLVER_CMINPACK is defined.
 
         solve_3d_cminpack_lmder(
                 solverOptions,
@@ -1514,8 +1467,6 @@ bool solve(SolverOptions &solverOptions,
                 paramWeightList,
                 userData,
                 solveResult);
-
-#endif // USE_SOLVER_CMINPACK
 
     } else {
         ERR("Solver Type is invalid. solverType="

@@ -78,9 +78,25 @@ set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH
         "Maya library directory")
 
 
+# Google Log
+set(GLOG_ROOT "/usr/local"
+  CACHE PATH "Glog directory")
+set(GLOG_INCLUDE_PATH "/usr/local/include"
+  CACHE PATH "Glog include directory")
+set(GLOG_LIB_PATH "/usr/local/lib"
+  CACHE PATH "Glog library directory")
+
+
+# Google Log
+set(GFLAGS_ROOT "/usr/local"
+  CACHE PATH "Gflags directory")
+set(GFLAGS_INCLUDE_PATH "/usr/local/include"
+  CACHE PATH "Gflags include directory")
+set(GFLAGS_LIB_PATH "/usr/local/lib"
+  CACHE PATH "Gflags library directory")
+
+
 # CMinpack
-set(USE_CMINPACK 1
-  CACHE BOOL "Compile with the cminpack library?")
 set(CMINPACK_ROOT "/usr/local"
   CACHE PATH "CMinpack directory")
 set(CMINPACK_INCLUDE_PATH "/usr/local/include"
@@ -89,9 +105,16 @@ set(CMINPACK_LIB_PATH "/usr/local/lib"
   CACHE PATH "CMinpack library directory")
 
 
+# # SuiteSparse
+# set(SUITESPARSE_ROOT /usr/local/suite_sparse_config
+#   CACHE PATH "Root path for SuiteSparse installation.")
+# set(SUITESPARSE_INCLUDE_PATH /usr/include/suite_sparse_config
+#   CACHE PATH "SuiteSparse headers directory.")
+# set(SUITESPARSE_LIB_PATH /usr/lib
+#   CACHE PATH "SuiteSparse library directory.")
+
+
 # Ceres
-set(USE_CERES 1
-  CACHE BOOL "Compile with the ceres library?")
 set(CERES_ROOT "/usr/local"
   CACHE PATH "Ceres directory")
 set(CERES_INCLUDE_PATH "/usr/local/include"
@@ -100,15 +123,13 @@ set(CERES_LIB_PATH "/usr/local/lib"
   CACHE PATH "Ceres library directory")
 
 
-# LibMV
-set(USE_LIBMV 1
-  CACHE BOOL "Compile with the libmv library?")
-set(LIBMV_ROOT "/usr/local"
-  CACHE PATH "Libmv directory")
-set(LIBMV_INCLUDE_PATH "/usr/local/include"
-  CACHE PATH "Libmv include directory")
-set(LIBMV_LIB_PATH "/usr/local/lib"
-  CACHE PATH "Libmv library directory")
+# # LibMV
+# set(LIBMV_ROOT "/usr/local"
+#   CACHE PATH "Libmv directory")
+# set(LIBMV_INCLUDE_PATH "/usr/local/include"
+#   CACHE PATH "Libmv include directory")
+# set(LIBMV_LIB_PATH "/usr/local/lib"
+#   CACHE PATH "Libmv library directory")
 
 
 # Default Solver to use.

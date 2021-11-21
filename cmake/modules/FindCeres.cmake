@@ -15,7 +15,7 @@
 # - CERES_INCLUDE_DIRS
 #
 
-find_path(CERES_INCLUDE_DIR ceres.h
+find_path(CERES_INCLUDE_DIR ceres/ceres.h
     HINTS
         ${CERES_INCLUDE_PATH}
         ${CERES_ROOT}
@@ -26,7 +26,6 @@ find_path(CERES_INCLUDE_DIR ceres.h
         ceres/
         include/ceres/
 )
-# message(STATUS "CERES_INCLUDE_DIR = ${CERES_INCLUDE_DIR}")
 
 find_library(CERES_LIBRARY
   NAMES
@@ -47,7 +46,6 @@ find_library(CERES_LIBRARY
         lib/
         lib64/
 )
-# message(STATUS "CERES_LIBRARY = ${CERES_LIBRARY}")
 
 find_path(CERES_LIBRARY_DLL ceres.dll
     HINTS
@@ -58,7 +56,6 @@ find_path(CERES_LIBRARY_DLL ceres.dll
     PATH_SUFFIXES
         bin/
         )
-# message(STATUS "CERES_LIBRARY_DLL = ${CERES_LIBRARY_DLL}")
 if(EXISTS ${CERES_LIBRARY_DLL})
     set(CERES_LIBRARY_DLL ${CERES_LIBRARY_DLL}/ceres.dll)
 endif()

@@ -20,9 +20,6 @@
  * Command for running mmCameraSolve.
  */
 
-// TODO: Test if this is needed!
-#define GOOGLE_GLOG_DLL_DECL
-
 // Internal
 #include <MMCameraSolveCmd.h>
 #include <mayaUtils.h>

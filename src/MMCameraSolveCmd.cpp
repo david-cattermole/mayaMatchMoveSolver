@@ -20,10 +20,6 @@
  * Command for running mmCameraSolve.
  */
 
-// // Ensure Google Logging does not use "ERROR" macro, because Windows
-// // doesn't support it.
-// #define GLOG_NO_ABBREVIATED_SEVERITIES
-
 // TODO: Test if this is needed!
 #define GOOGLE_GLOG_DLL_DECL
 

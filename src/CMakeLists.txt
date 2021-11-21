@@ -68,6 +68,7 @@ find_package(Glog REQUIRED)
 find_package(BlasLapack REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Ceres REQUIRED)
+find_package(Libmv REQUIRED)
 
 message(STATUS "CMINPACK: ${CMINPACK_FOUND}"
   " Root=${CMINPACK_ROOT}"
@@ -101,6 +102,10 @@ message(STATUS "CERES: ${CERES_FOUND}"
   " Include=${CERES_INCLUDE_DIRS}"
   " Library=${CERES_LIBRARIES}")
 
+message(STATUS "LIBMV: ${LIBMV_FOUND}"
+  " Root=${LIBMV_ROOT}"
+  " Include=${LIBMV_INCLUDE_DIRS}"
+  " Library=${LIBMV_LIBRARIES}")
 
 # Treat warnings as errors.
 if(MSVC)
@@ -204,6 +209,7 @@ target_include_directories(mmSolver
   PRIVATE ${CMINPACK_INCLUDE_DIRS}
   PRIVATE ${EIGEN3_INCLUDE_DIRS}
   PRIVATE ${CERES_INCLUDE_DIRS}
+  PRIVATE ${LIBMV_INCLUDE_DIRS}
   )
 target_link_libraries(mmSolver
   PUBLIC
@@ -218,6 +224,7 @@ target_link_libraries(mmSolver
   ${GLOG_LIBRARIES}
   ${CMINPACK_LIBRARIES}
   ${CERES_LIBRARIES}
+  ${LIBMV_LIBRARIES}
 )
 target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CMINPACK)
 target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CERES)
@@ -319,6 +326,7 @@ if (BLASLAPACK_FOUND)
     "${MODULE_FULL_NAME}/lib/")
 endif ()
 
+# Install dynamic libraries; Ceres Solver
 if (CERES_FOUND)
   install_library(
     ${CERES_LIBRARY}

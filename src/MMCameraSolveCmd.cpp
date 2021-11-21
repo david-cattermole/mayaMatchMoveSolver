@@ -55,6 +55,9 @@
 #include <ceres/ceres.h>
 #pragma warning( pop )
 
+// LibMV
+#include <libmv/numeric/numeric.h>
+#include <libmv/camera/pinhole_camera.h>
 
 // Maya
 #include <maya/MSyntax.h>
@@ -166,6 +169,28 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         std::cout << summary.BriefReport() << "\n";
         std::cout << "x : " << initial_x
                   << " -> " << x << "\n";
+    }
+
+     // Test LibMV
+    {
+        auto focal = 500.0;
+        libmv::Vec2 principal_point(0.0, 0.0);
+        libmv::Vec2f pixel(0.0, 0.0);
+        libmv::Vec2u img_size(1920.0, 1080.0);
+
+        auto cam = libmv::PinholeCamera(focal, principal_point);
+        auto img_width = cam.image_width();
+        cam.set_image_size(img_size);
+        auto img_width2 = cam.image_width();
+        auto ray = cam.Ray(pixel);
+
+        auto focal_x = cam.focal_x();
+        auto focal_y = cam.focal_y();
+        ERR("img_width = " << img_width << '\n');
+        ERR("img_width2 = " << img_width2 << '\n');
+        ERR("ray = " << ray << '\n');
+        ERR("focal_x = " << focal_x << '\n');
+        ERR("focal_y = " << focal_y << '\n');
     }
 
     // Read all the flag arguments.

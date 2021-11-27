@@ -342,11 +342,11 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
 
         auto focal_x = cam.focal_x();
         auto focal_y = cam.focal_y();
-        ERR("img_width = " << img_width << '\n');
-        ERR("img_width2 = " << img_width2 << '\n');
-        ERR("ray = " << ray << '\n');
-        ERR("focal_x = " << focal_x << '\n');
-        ERR("focal_y = " << focal_y << '\n');
+        INFO("img_width = " << img_width);
+        INFO("img_width2 = " << img_width2);
+        INFO("ray = " << ray);
+        INFO("focal_x = " << focal_x);
+        INFO("focal_y = " << focal_y);
     }
 
     // LibMV - Example #2 - Reconstruct Video

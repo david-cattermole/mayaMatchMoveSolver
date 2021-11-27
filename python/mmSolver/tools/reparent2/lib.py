@@ -171,9 +171,9 @@ def reparent(children_nodes, parent_node,
     if frame_range_mode is None:
         frame_range_mode = const.FRAME_RANGE_MODE_TIMELINE_INNER_VALUE
     if bake_mode is None:
-        bake_mode = BAKE_MODE_FULL_BAKE_VALUE
+        bake_mode = const.BAKE_MODE_FULL_BAKE_VALUE
     if rotate_order_mode is None:
-        rotate_order_mode = ROTATE_ORDER_MODE_USE_EXISTING_VALUE
+        rotate_order_mode = const.ROTATE_ORDER_MODE_USE_EXISTING_VALUE
     assert frame_range_mode in const.FRAME_RANGE_MODE_VALUES
     assert bake_mode in const.BAKE_MODE_VALUES
     assert rotate_order_mode in const.ROTATE_ORDER_MODE_VALUES

@@ -41,6 +41,15 @@ import mmSolver.tools.reparent2.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
+# Used as placeholders for Constraint command arguments for 'skip'.
+#
+# If SKIP_ALL, then all attributes will be skipped from the
+# constraint, and therefore the constraint should not be created. If
+# SKIP_NONE, then no skipping occurs and all components of the
+# constraint are created.
+SKIP_ALL = 'all'
+SKIP_NONE = 'none'
+
 
 def _bake_nodes(nodes, frame_range, smart_bake=False):
     if smart_bake:
@@ -66,6 +75,51 @@ def _bake_nodes(nodes, frame_range, smart_bake=False):
             controlPoints=False,
             shape=False)
     return
+
+
+def _get_node_attr_skip(node, attr_base):
+    axis_list = ['x', 'y', 'z']
+    attr_list = []
+    for axis in axis_list:
+        attr = '{}{}'.format(attr_base, axis.upper())
+        attr_list.append(attr)
+
+    skip_list = []
+    for axis, attr in zip(axis_list, attr_list):
+        node_attr = node + '.' + attr
+        settable = maya.cmds.getAttr(node_attr, settable=True)
+        if settable is False:
+            skip_list.append(axis)
+
+    skip = None
+    if len(skip_list) == 0:
+        skip = SKIP_NONE
+    elif len(skip_list) == 3:
+        skip = SKIP_ALL
+    else:
+        skip = skip_list
+    return skip
+
+
+def nodes_attrs_settable(node_list, attr_list):
+    """
+    Returns a dict of the settable status for each attribute on each node.
+
+    :rtype: ({str: str, ..}, int, int)
+    """
+    settable_map = {}
+    settable_count = 0
+    non_settable_count = 0
+    for node in node_list:
+        for attr in attr_list:
+            node_attr = node + '.' + attr
+            settable = maya.cmds.getAttr(node_attr, settable=True)
+            settable_map[node_attr] = settable
+            if settable:
+                settable_count += 1
+            else:
+                non_settable_count += 1
+    return settable_map, settable_count, non_settable_count
 
 
 def reparent(children_nodes, parent_node,
@@ -183,8 +237,34 @@ def reparent(children_nodes, parent_node,
     _bake_nodes(loc_tfms, frame_range, smart_bake=True)
     maya.cmds.delete(loc_tfms, constraints=True)
 
-    for child, child_node in zip(children, children_nodes):
-        # Remove keyframes from child transform
+    for child, child_node, loc_tfm in zip(children, children_nodes, loc_tfms):
+        # Find which attributes are partially locked, so we can avoid
+        # modifying the attributes.
+        translate_skip = _get_node_attr_skip(child, 'translate')
+        rotate_skip = _get_node_attr_skip(child, 'rotate')
+        scale_skip = _get_node_attr_skip(child, 'scale')
+
+        # Warn if the child transform is completely locked.
+        if (translate_skip == SKIP_ALL
+                and rotate_skip == SKIP_ALL
+                and scale_skip == SKIP_ALL):
+            msg = 'Skipping Re-Parent! Cannot modify any attributes: node=%r'
+            LOG.warn(msg, child)
+            continue
+
+        # Warn the user if some values cannot be modified.
+        msg_base = 'Cannot modify attributes: node=%r attrs={} skip=%r'
+        if translate_skip != 'none':
+            msg = msg_base.format('translate')
+            LOG.warn(msg, child, translate_skip)
+        if rotate_skip != 'none':
+            msg = msg_base.format('rotate')
+            LOG.warn(msg, child, rotate_skip)
+        if scale_skip != 'none':
+            msg = msg_base.format('scale')
+            LOG.warn(msg, child, scale_skip)
+
+        # Remove keyframes from child transform.
         maya.cmds.cutKey(child, time=frame_range, attribute='translateX')
         maya.cmds.cutKey(child, time=frame_range, attribute='translateY')
         maya.cmds.cutKey(child, time=frame_range, attribute='translateZ')
@@ -204,9 +284,12 @@ def reparent(children_nodes, parent_node,
             # delete the history, and parent the child under
             # the parent.
             parent = parent_node.get_node()
-            maya.cmds.pointConstraint(parent, child)
-            maya.cmds.orientConstraint(parent, child)
-            maya.cmds.scaleConstraint(parent, child)
+            if translate_skip != SKIP_ALL:
+                maya.cmds.pointConstraint(parent, child, skip=translate_skip)
+            if rotate_skip != SKIP_ALL:
+                maya.cmds.orientConstraint(parent, child, skip=rotate_skip)
+            if scale_skip != SKIP_ALL:
+                maya.cmds.scaleConstraint(parent, child, skip=scale_skip)
             maya.cmds.delete(child, constraints=True)
 
             maya.cmds.parent(child, parent)
@@ -221,10 +304,13 @@ def reparent(children_nodes, parent_node,
             else:
                 LOG.warn('Cannot change rotate order: %r', child)
 
-        # Constrain the child to the locator,
-        maya.cmds.pointConstraint(loc_tfm, child)
-        maya.cmds.orientConstraint(loc_tfm, child)
-        maya.cmds.scaleConstraint(loc_tfm, child)
+        # Constrain the child to match the locator.
+        if translate_skip != SKIP_ALL:
+            maya.cmds.pointConstraint(loc_tfm, child, skip=translate_skip)
+        if rotate_skip != SKIP_ALL:
+            maya.cmds.orientConstraint(loc_tfm, child, skip=rotate_skip)
+        if scale_skip != SKIP_ALL:
+            maya.cmds.scaleConstraint(loc_tfm, child, skip=scale_skip)
 
     # Bake the children's results.
     children = [tn.get_node() for tn in children_nodes]

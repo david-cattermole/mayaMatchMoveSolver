@@ -291,6 +291,21 @@
             "command": [
                 "import mmSolver.tools.convertmarker.tool;",
                 "mmSolver.tools.convertmarker.tool.main();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.convertmarker.tool;",
+                "mmSolver.tools.convertmarker.tool.open_window();"
+            ]
+        },
+        "convert_to_marker_ui": {
+            "name": "Convert to Marker...",
+            "name_shelf": "",
+            "tooltip": "Convert 3D Transform to Marker.",
+            "icon_shelf": "convertToMarker_32x32.png",
+            "command": [
+                "import mmSolver.tools.convertmarker.tool;",
+                "mmSolver.tools.convertmarker.tool.open_window();"
             ]
         },
         "load_marker_ui": {

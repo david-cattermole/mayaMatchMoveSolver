@@ -26,55 +26,37 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.utils.configmaya as configmaya
 import mmSolver.utils.camera as utils_camera
 import mmSolver.utils.viewport as utils_viewport
 import mmSolver.utils.tools as tools_utils
-import mmSolver.utils.time as utils_time
-import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
+import mmSolver.utils.time as time_utils
 import mmSolver.tools.convertmarker.lib as lib
+import mmSolver.tools.convertmarker.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
 
-BUNDLE_POSITION_MODE_ORIGIN = 'origin'  # Bundle stays at the origin.
-BUNDLE_POSITION_MODE_SOURCE = 'source'  # Bundle moves to the source transform.
 
-
-def _match_node_position(nodes, target_nodes, start_frame, end_frame, delete_static_anim_curves):
-    """Move the 'nodes' to the position of the 'target_nodes'.
-
-    'nodes' and 'target_nodes' are expected to be lists of equal
-    length, each list index corresponds to the other list.
+def main(frame_range_mode=None,
+         start_frame=None, end_frame=None,
+         bundle_position_mode=None,
+         delete_static_anim_curves=None):
     """
-    constraint_nodes = []
-    for target_node, node in zip(target_nodes, nodes):
-        constraint_nodes += maya.cmds.pointConstraint(
-            target_node, node,
-            maintainOffset=False)
+    Convert all selected transforms into 2D markers under a camera.
 
-    # Bake and delete the constraints.
-    if len(constraint_nodes) > 0:
-        frame_range = (float(start_frame), float(end_frame),)
-        maya.cmds.bakeResults(
-            nodes,
-            time=frame_range,
-            sampleBy=1,
-            sparseAnimCurveBake=False,
-            minimizeRotation=True,
-            disableImplicitControl=True,
-            preserveOutsideKeys=True,
-            controlPoints=False,
-            shape=False)
-        maya.cmds.delete(nodes, constraints=True)
-        maya.cmds.filterCurve(nodes)
+    :param frame_range_mode: The type of frame range to use, see
+       'mmSolver.utils.constant.FRAME_RANGE_MODE_*_VALUE' for more
+       details.
+    :type frame_range_mode: FRAME_RANGE_MODE_*_VALUE
 
-        if delete_static_anim_curves is True:
-            maya.cmds.delete(nodes, staticChannels=True)
-    return
+    :param start_frame: The first frame to start converting the
+       transform to a Marker.
+    :type start_frame: int or None
 
-
-def main(bundle_position_mode=None, delete_static_anim_curves=None):
-    """Convert all selected transforms into 2D markers under a camera.
+    :param end_frame: The last frame to end converting the
+       transform to a Marker.
+    :type end_frame: int or None
 
     :param bundle_position_mode: The position for the newly created
        Bundle (connected to the Marker).
@@ -85,10 +67,38 @@ def main(bundle_position_mode=None, delete_static_anim_curves=None):
     :type delete_static_anim_curves: bool
 
     """
+    if frame_range_mode is None:
+        value = configmaya.get_scene_option(
+            const.CONFIG_FRAME_RANGE_MODE_KEY,
+            default=const.DEFAULT_FRAME_RANGE_MODE)
+        assert value in const.FRAME_RANGE_MODE_VALUES
+        frame_range_mode = value
+
+    if start_frame is None or end_frame is None:
+        start_frame = configmaya.get_scene_option(
+            const.CONFIG_FRAME_START_KEY,
+            default=const.DEFAULT_FRAME_START)
+        end_frame = configmaya.get_scene_option(
+            const.CONFIG_FRAME_END_KEY,
+            default=const.DEFAULT_FRAME_END)
+
     if bundle_position_mode is None:
-        bundle_position_mode = BUNDLE_POSITION_MODE_ORIGIN
+        value = configmaya.get_scene_option(
+            const.CONFIG_BUNDLE_POSITION_MODE_KEY,
+            default=const.DEFAULT_BUNDLE_POSITION_MODE)
+        bundle_position_mode = value
+
     if delete_static_anim_curves is None:
-        delete_static_anim_curves = True
+        value = configmaya.get_scene_option(
+            const.CONFIG_DELETE_STATIC_ANIM_CURVES_KEY,
+            default=const.DEFAULT_DELETE_STATIC_ANIM_CURVES)
+        delete_static_anim_curves = value
+
+    # Frame range
+    time_utils.get_frame_range(
+        frame_range_mode,
+        start_frame=start_frame,
+        end_frame=end_frame)
 
     # Get camera
     model_editor = utils_viewport.get_active_model_editor()
@@ -106,63 +116,26 @@ def main(bundle_position_mode=None, delete_static_anim_curves=None):
         return
 
     # Get transforms
-    nodes = maya.cmds.ls(
+    tfm_nodes = maya.cmds.ls(
         selection=True,
         long=True,
         type='transform',
     ) or []
-    if len(nodes) == 0:
+    if len(tfm_nodes) == 0:
         LOG.warning('Please select one or more transform nodes.')
         return
 
+    # Must ensure the plug-in is loaded, otherwise we won't have all
+    # the functionality required.
     mmapi.load_plugin()
 
-    start_frame, end_frame = utils_time.get_maya_timeline_range_outer()
     with tools_utils.tool_context(pre_update_frame=True):
-        # Compute the Marker Data.
-        mkr_data_list = lib.convert_nodes_to_marker_data_list(
-            cam_tfm,
-            cam_shp,
-            nodes,
-            start_frame,
-            end_frame,
+        mkr_nodes, bnd_nodes = lib.create_markers_from_transforms(
+            cam_tfm, cam_shp, tfm_nodes,
+            start_frame, end_frame,
+            bundle_position_mode,
+            delete_static_anim_curves
         )
-
-        # Get Camera
-        cam = mmapi.Camera(shape=cam_shp)
-
-        # Get or create Marker Group.
-        mkr_grp = None
-        mkr_grp_nodes = maya.cmds.ls(cam_tfm, dag=True, long=True,
-                                     type='mmMarkerGroupTransform') or []
-        mkr_grp_nodes = sorted(mkr_grp_nodes)
-        if len(mkr_grp_nodes) == 0:
-            mkr_grp = mmapi.MarkerGroup().create_node(cam=cam)
-        else:
-            mkr_grp = mmapi.MarkerGroup(node=mkr_grp_nodes[0])
-
-        # Create Marker nodes
-        mkr_list = mayareadfile.create_nodes(
-            mkr_data_list,
-            cam=cam,
-            mkr_grp=mkr_grp,
-            with_bundles=True,
-        )
-        mkr_nodes = [mkr.get_node() for mkr in mkr_list]
-
-        if bundle_position_mode == BUNDLE_POSITION_MODE_ORIGIN:
-            # Bundle stays at the origin.
-            pass
-        elif bundle_position_mode == BUNDLE_POSITION_MODE_SOURCE:
-            # Move the newly created bundle to the original transform's
-            # location.
-            bnd_list = [mkr.get_bundle() for mkr in mkr_list]
-            bnd_list = [bnd for bnd in bnd_list if bnd is not None]
-            bnd_nodes = [bnd.get_node() for bnd in bnd_list]
-            _match_node_position(
-                bnd_nodes, nodes,
-                start_frame, end_frame,
-                delete_static_anim_curves)
 
     if len(mkr_nodes) > 0:
         maya.cmds.select(mkr_nodes, replace=True)
@@ -172,3 +145,8 @@ def main(bundle_position_mode=None, delete_static_anim_curves=None):
 def convert_to_marker():
     warnings.warn("Use 'main' function instead.")
     main()
+
+
+def open_window():
+    import mmSolver.tools.convertmarker.ui.convertmarker_window as window
+    window.main()

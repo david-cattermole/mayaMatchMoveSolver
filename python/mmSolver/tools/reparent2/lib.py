@@ -200,6 +200,24 @@ def reparent(children_nodes, parent_node,
         order_str = str(rotate_order_mode)
         rotate_order = const_utils.ROTATE_ORDER_STR_TO_INDEX[order_str]
 
+    # Filter out invalid nodes.
+    #
+    # There is no need to un-parent to the world, if the node is
+    # already parented to the world.
+    msg = 'Skipping Re-Parent! Node is already parented to world: node=%r'
+    if parent_node is None:
+        tmp_children_nodes = children_nodes
+        children_nodes = []
+        for child_node in tmp_children_nodes:
+            node = child_node.get_node()
+            current_parent = maya.cmds.listRelatives(node, parent=True)
+            if not current_parent:
+                LOG.warn(msg, node)
+            else:
+                children_nodes.append(child_node)
+    if len(children_nodes) == 0:
+        return
+
     # Sort nodes by depth, deeper nodes first, so we do do not remove
     # parents before children.
     children = [tn.get_node() for tn in children_nodes]

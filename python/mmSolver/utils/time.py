@@ -139,3 +139,17 @@ def get_frame_range(frame_range_mode, start_frame=None, end_frame=None):
     assert isinstance(end_frame, int)
     frame_range = FrameRange(start_frame, end_frame)
     return frame_range
+
+
+def convert_frame_range_to_frame_list(frame_range):
+    """
+    Convert a FrameRange to a list of integer frame numbers.
+
+    :param frame_range: The frame range to convert to a list.
+    :type frame_range: FrameRange
+
+    :rtype: [int, ...] or []
+    """
+    start_frame, end_frame = frame_range
+    frames = range(int(start_frame), int(end_frame) + 1)
+    return frames

@@ -294,9 +294,8 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         ceres::Solver::Summary summary;
         ceres::Solve(options, &problem, &summary);
 
-        std::cout << summary.BriefReport() << "\n";
-        std::cout << "x : " << initial_x
-                  << " -> " << x << "\n";
+        INFO(summary.BriefReport());
+        INFO("x : " << initial_x << " -> " << x)
     }
 
     // Ceres Solver - Example #2 - Curve Fitting
@@ -323,9 +322,9 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
 
         ceres::Solver::Summary summary;
         Solve(options, &problem, &summary);
-        std::cout << summary.BriefReport() << "\n";
-        std::cout << "Initial m: " << 0.0 << " c: " << 0.0 << "\n";
-        std::cout << "Final   m: " << m << " c: " << c << "\n";
+        INFO(summary.BriefReport());
+        INFO("Initial m: " << 0.0 << " c: " << 0.0);
+        INFO("Final   m: " << m << " c: " << c);
     }
 
     // LibMV - Example #1

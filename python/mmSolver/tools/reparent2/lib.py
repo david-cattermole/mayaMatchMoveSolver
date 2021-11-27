@@ -180,19 +180,7 @@ def reparent(children_nodes, parent_node,
     assert isinstance(delete_static_anim_curves, bool)
 
     # Get frame range
-    if frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_INNER_VALUE:
-        start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
-    elif frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE:
-        start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
-    elif frame_range_mode == const.FRAME_RANGE_MODE_CUSTOM_VALUE:
-        assert start_frame is not None
-        assert end_frame is not None
-    else:
-        assert False
-    assert isinstance(start_frame, int)
-    assert isinstance(end_frame, int)
-    frame_range = (start_frame, end_frame)
-    frames = range(int(start_frame), int(end_frame)+1)
+    frame_range = time_utils.get_frame_range(frame_range_mode)
 
     # Get bake mode.
     sparse = None

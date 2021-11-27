@@ -20,6 +20,17 @@
 #
 cmake_minimum_required(VERSION 3.0)
 
+# find_package() will use <PackageName>_ROOT variables.
+#
+# https://cmake.org/cmake/help/latest/policy/CMP0074.html
+cmake_policy(SET CMP0074 NEW)
+
+# The "project" command will overwrite the "VERSION" variables. We set
+# the VERSION variables after the "project" command, so it should not
+# affect us.
+#
+# https://cmake.org/cmake/help/latest/policy/CMP0048.html
+cmake_policy(SET CMP0048 NEW)
 
 # Project configuration.
 project(mayaMatchMoveSolver)

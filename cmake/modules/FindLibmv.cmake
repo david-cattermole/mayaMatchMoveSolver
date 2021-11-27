@@ -55,6 +55,12 @@ foreach(LIBMV_LIB
     png
     pthread
     zlib
+
+    # Other libraries
+    #
+    # TODO: Make seperate Find*.cmake files for each of these libraries.
+    ldl
+    colamd
     )
 
     find_library(LIBMV_${LIBMV_LIB}_LIBRARY

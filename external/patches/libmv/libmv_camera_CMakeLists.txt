@@ -8,10 +8,7 @@ FILE(GLOB CAMERA_HDRS *.h)
 
 ADD_LIBRARY(camera ${CAMERA_SRC} ${CAMERA_HDRS})
 
-TARGET_LINK_LIBRARIES(camera multiview numeric
-  ${V3D_LIBRARIES}
-  ${COLAMD_LIBRARIES}
-  ${LDL_LIBRARIES})
+TARGET_LINK_LIBRARIES(camera multiview numeric  V3D colamd ldl)
 
 # make the name of debug libraries end in _d.
 SET_TARGET_PROPERTIES(camera PROPERTIES DEBUG_POSTFIX "_d")

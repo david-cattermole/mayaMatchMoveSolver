@@ -22,7 +22,7 @@ FILE(GLOB SIMPLE_PIPELINE_HDRS *.h)
 
 ADD_LIBRARY(simple_pipeline ${SIMPLE_PIPELINE_SRC} ${SIMPLE_PIPELINE_HDRS})
 
-TARGET_LINK_LIBRARIES(simple_pipeline multiview image ${V3D_LIBRARIES})
+TARGET_LINK_LIBRARIES(simple_pipeline V3D multiview image)
 
 IF (WITH_FAST_DETECTOR)
   TARGET_LINK_LIBRARIES(simple_pipeline fast)

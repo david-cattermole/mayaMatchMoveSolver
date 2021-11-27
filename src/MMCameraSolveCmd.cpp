@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 David Cattermole.
+ * Copyright (C) 2021 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -39,20 +39,43 @@
 // Utils
 #include <utilities/debugUtils.h>
 
-// Google libraries
-#include <gtest/gtest.h>
-#include <gflags/gflags.h>
-#include <glog/logging.h>
 
 // Ceres Solver
 #pragma warning( push )
-#pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
+// Compiler Warning (level 1) C4251: needs to have dll-interface to be used by clients of class.
+#pragma warning( disable : 4251 )
 #include <ceres/ceres.h>
 #pragma warning( pop )
 
 // LibMV
-#include <libmv/numeric/numeric.h>
+#pragma warning( push )
+// Compiler Warning (level 3) C4267: conversion from 'size_t' to 'object', possible loss of data.
+#pragma warning( disable : 4267 )
+// Compiler Warning (level 4) C4127: conditional expression is constant
+#pragma warning( disable : 4127 )
+#include <libmv/base/vector.h>
+#include <libmv/base/vector_utils.h>
+#include <libmv/base/scoped_ptr.h>
 #include <libmv/camera/pinhole_camera.h>
+#include <libmv/correspondence/export_matches_txt.h>
+#include <libmv/correspondence/feature.h>
+#include <libmv/correspondence/feature_matching.h>
+#include <libmv/correspondence/nRobustViewMatching.h>
+#include <libmv/correspondence/import_matches_txt.h>
+#include <libmv/correspondence/tracker.h>
+#include <libmv/detector/detector_factory.h>
+#include <libmv/descriptor/descriptor_factory.h>
+#include <libmv/image/image.h>
+#include <libmv/image/image_converter.h>
+#include <libmv/image/image_drawing.h>
+#include <libmv/image/image_io.h>
+#include <libmv/logging/logging.h>
+#include <libmv/numeric/numeric.h>
+#include <libmv/reconstruction/euclidean_reconstruction.h>
+#include <libmv/reconstruction/export_blender.h>
+#include <libmv/reconstruction/export_ply.h>
+#include <libmv/tools/tool.h>
+#pragma warning( pop )
 
 // Maya
 #include <maya/MSyntax.h>
@@ -120,6 +143,19 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
+}
+
+void get_file_path_extension(const std::string &file,
+                             std::string *path_name,
+                             std::string *ext) {
+    size_t dot_pos =  file.rfind (".");
+    if (dot_pos != std::string::npos) {
+        *path_name = file.substr(0, dot_pos);
+        *ext = file.substr(dot_pos + 1, file.length() - dot_pos - 1);
+    } else {
+        *path_name = file;
+        *ext = "";
+    }
 }
 
 struct CostFunctor {
@@ -312,6 +348,89 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         ERR("ray = " << ray << '\n');
         ERR("focal_x = " << focal_x << '\n');
         ERR("focal_y = " << focal_y << '\n');
+    }
+
+    // LibMV - Example #2 - Reconstruct Video
+    //
+    // Estimate the camera trajectory using matches.
+    {
+        // Input values
+        std::string input_file_path = "matches.txt";
+        std::string output_file_path = "reconstruction.py";
+        int image_width = 1920;
+        int image_height = 1080;
+        double focal_length = 50.0;
+        double principal_point_u0 = 0.0;
+        double principal_point_v0 = 0.0;
+
+        // Imports matches
+        libmv::tracker::FeaturesGraph fg;
+        FeatureSet *fs = fg.CreateNewFeatureSet();
+
+        INFO("Loading Matches file...");
+        libmv::ImportMatchesFromTxt(input_file_path, &fg.matches_, fs);
+        INFO("Loading Matches file...[DONE].");
+
+        // Estimates the camera trajectory and 3D structure of the scene
+        int w = image_width;
+        int h = image_height;
+        if (principal_point_u0 > 0) {
+            w = static_cast<int>(2.0 * (principal_point_u0 + 0.5));
+        }
+        if (principal_point_v0 > 0) {
+            h = static_cast<int>(2.0 * (principal_point_v0 + 0.5));
+        }
+
+        INFO("Euclidean Reconstruction From Video...");
+        std::list<libmv::Reconstruction *> reconstructions;
+        EuclideanReconstructionFromVideo(
+            fg.matches_,
+            w, h,
+            focal_length,
+            &reconstructions);
+        INFO("Euclidean Reconstruction From Video...[DONE]");
+
+        // Exports the reconstructions
+        INFO("Exporting Reconstructions...");
+        std::string file_path_name;
+        std::string file_ext;
+        get_file_path_extension(output_file_path, &file_path_name, &file_ext);
+        std::transform(file_ext.begin(), file_ext.end(), file_ext.begin(), ::tolower);
+
+         int i = 0;
+         std::list<libmv::Reconstruction *>::iterator iter = reconstructions.begin();
+         if (file_ext == "ply") {
+             for (; iter != reconstructions.end(); ++iter) {
+                 std::stringstream s;
+                 if (reconstructions.size() > 1)
+                     s << file_path_name << "-" << i << ".ply";
+                 else
+                     s << output_file_path;
+                 libmv::ExportToPLY(**iter, s.str());
+             }
+         } else  if (file_ext == "py") {
+             for (; iter != reconstructions.end(); ++iter) {
+                 std::stringstream s;
+                 if (reconstructions.size() > 1)
+                     s << file_path_name << "-" << i << ".py";
+                 else
+                     s << output_file_path;
+                 libmv::ExportToBlenderScript(**iter, s.str());
+             }
+         }
+        INFO("Exporting Reconstructions...[DONE]");
+
+        // Cleaning
+        INFO("Cleaning.");
+        iter = reconstructions.begin();
+        for (; iter != reconstructions.end(); ++iter) {
+            (*iter)->ClearCamerasMap();
+            (*iter)->ClearStructuresMap();
+            delete *iter;
+        }
+        reconstructions.clear();
+        // Delete the features graph
+        fg.DeleteAndClear();
     }
 
     // Read all the flag arguments.

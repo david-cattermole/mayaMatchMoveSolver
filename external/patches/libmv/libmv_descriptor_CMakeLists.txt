@@ -10,11 +10,7 @@ FILE(GLOB DESCRIPTOR_HDRS *.h)
 
 ADD_LIBRARY(descriptor ${DESCRIPTOR_SRC} ${DESCRIPTOR_HDRS})
 
-TARGET_LINK_LIBRARIES(descriptor
-  detector
-  image
-  daisy
-  ${GLOG_LIBRARIES})
+TARGET_LINK_LIBRARIES(descriptor detector image glog daisy)
 
 # make the name of debug libraries end in _d.
 SET_TARGET_PROPERTIES(descriptor PROPERTIES DEBUG_POSTFIX "_d")

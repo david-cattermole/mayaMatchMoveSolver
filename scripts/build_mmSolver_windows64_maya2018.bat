@@ -84,15 +84,18 @@ ECHO Project Root: %PROJECT_ROOT%
 ::
 :: By default these paths will work if the "build_thirdparty.bat"
 :: scripts have been run before this script.
-SET SUITESPARSE_ROOT="%PROJECT_ROOT%\external\install\suitesparse"
 SET CMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack"
-SET CERES_ROOT="%PROJECT_ROOT%\external\install\ceres"
+SET CERES_ROOT="%PROJECT_ROOT%\external\install\libmv"
+SET CERES_INCLUDE_DIR="%PROJECT_ROOT%\external\install\libmv\include\third_party\ceres\include"
+SET CERES_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
 SET LIBMV_ROOT="%PROJECT_ROOT%\external\install\libmv"
-SET Eigen3_DIR="%PROJECT_ROOT%\external\install\eigen\share\eigen3\cmake"
-SET GLOG_ROOT="%PROJECT_ROOT%\external\install\glog"
-SET GFLAGS_ROOT="%PROJECT_ROOT%\external\install\gflags"
-SET GTEST_ROOT="%PROJECT_ROOT%\external\install\gtest"
-SET BLASLAPACK_ROOT="%PROJECT_ROOT%\external\install\suitesparse\lib"
+SET EIGEN3_INCLUDE_DIR="%PROJECT_ROOT%\external\install\eigen\include\eigen3"
+SET GLOG_ROOT="%PROJECT_ROOT%\external\install\libmv"
+SET GLOG_INCLUDE_DIR="%PROJECT_ROOT%\external\install\libmv\include\third_party\glog\src"
+SET GLOG_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
+SET GFLAGS_ROOT="%PROJECT_ROOT%\external\install\libmv"
+SET GFLAGS_INCLUDE_DIR="%PROJECT_ROOT%\external\install\libmv\include\third_party\gflags"
+SET GFLAGS_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
 
 :: Include directories to ignore
 SET IGNORE_INCLUDE_DIRECTORIES=""
@@ -115,15 +118,16 @@ REM cmake -G "Visual Studio 14 2015 Win64" -T "v140"
 
 REM To Generate a Visual Studio 'Solution' file
     cmake -G "Visual Studio 11 2012 Win64" -T "v110" ^
-        -DSUITESPARSE_ROOT=%SUITESPARSE_ROOT% ^
         -DLIBMV_ROOT=%LIBMV_ROOT% ^
         -DCMINPACK_ROOT=%CMINPACK_ROOT% ^
         -DCERES_ROOT=%CERES_ROOT% ^
-        -DEigen3_DIR=%Eigen3_DIR% ^
+        -DCERES_LIB_PATH=%CERES_LIB_PATH% ^
+        -DCERES_INCLUDE_DIR=%CERES_INCLUDE_DIR% ^
+        -DEIGEN3_INCLUDE_DIR=%EIGEN3_INCLUDE_DIR% ^
         -DGLOG_ROOT=%GLOG_ROOT% ^
+        -DGLOG_INCLUDE_DIR=%GLOG_INCLUDE_DIR% ^
         -DGFLAGS_ROOT=%GFLAGS_ROOT% ^
-        -DGTEST_ROOT=%GTEST_ROOT% ^
-        -DBLASLAPACK_ROOT=%BLASLAPACK_ROOT% ^
+        -DGFLAGS_INCLUDE_DIR=%GFLAGS_INCLUDE_DIR% ^
         -DMAYA_LOCATION=%MAYA_LOCATION% ^
         -DMAYA_VERSION=%MAYA_VERSION% ^
         ..
@@ -142,15 +146,16 @@ REM To Generate a Visual Studio 'Solution' file
         -DBUILD_ICONS=%BUILD_ICONS% ^
         -DBUILD_CONFIG=%BUILD_CONFIG% ^
         -DBUILD_TESTS=%BUILD_TESTS% ^
-        -DSUITESPARSE_ROOT=%SUITESPARSE_ROOT% ^
         -DLIBMV_ROOT=%LIBMV_ROOT% ^
         -DCMINPACK_ROOT=%CMINPACK_ROOT% ^
         -DCERES_ROOT=%CERES_ROOT% ^
-        -DEigen3_DIR=%Eigen3_DIR% ^
+        -DCERES_LIB_PATH=%CERES_LIB_PATH% ^
+        -DCERES_INCLUDE_DIR=%CERES_INCLUDE_DIR% ^
+        -DEIGEN3_INCLUDE_DIR=%EIGEN3_INCLUDE_DIR% ^
         -DGLOG_ROOT=%GLOG_ROOT% ^
+        -DGLOG_INCLUDE_DIR=%GLOG_INCLUDE_DIR% ^
         -DGFLAGS_ROOT=%GFLAGS_ROOT% ^
-        -DGTEST_ROOT=%GTEST_ROOT% ^
-        -DBLASLAPACK_ROOT=%BLASLAPACK_ROOT% ^
+        -DGFLAGS_INCLUDE_DIR=%GFLAGS_INCLUDE_DIR% ^
         -DMAYA_LOCATION=%MAYA_LOCATION% ^
         -DMAYA_VERSION=%MAYA_VERSION% ^
         ..

@@ -9,7 +9,7 @@ FILE(GLOB AUTOTRACK_HDRS *.h)
 
 ADD_LIBRARY(autotrack ${AUTOTRACK_SRC} ${AUTOTRACK_HDRS})
 
-TARGET_LINK_LIBRARIES(autotrack multiview image tracking ${V3D_LIBRARIES})
+TARGET_LINK_LIBRARIES(autotrack V3D multiview image tracking)
 
 # Make the name of debug libraries end in _d.
 SET_TARGET_PROPERTIES(autotrack PROPERTIES DEBUG_POSTFIX "_d")

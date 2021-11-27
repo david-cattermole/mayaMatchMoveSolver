@@ -28,6 +28,18 @@ project(Project)
 # work.
 include(ExternalProject)
 
+# find_package() will use <PackageName>_ROOT variables.
+#
+# https://cmake.org/cmake/help/latest/policy/CMP0074.html
+cmake_policy(SET CMP0074 NEW)
+
+# The "project" command will overwrite the "VERSION" variables. We set
+# the VERSION variables after the "project" command, so it should not
+# affect us.
+#
+# https://cmake.org/cmake/help/latest/policy/CMP0048.html
+cmake_policy(SET CMP0048 NEW)
+
 # Options
 set(THIRDPARTY_BASE_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/install"
   CACHE PATH "Base directory to install the thirdparty projects into.")
@@ -158,146 +170,13 @@ set(THIRDPARTY_BASE_WORKING_DIR "${CMAKE_CURRENT_SOURCE_DIR}/working"
 # )
 
 
-#########################################################
-# Google Test (gtest)
-#########################################################
-set(GTEST_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/gtest)
-set(GTEST_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/gtest)
-ExternalProject_Add(gtest
-    PREFIX ${GTEST_PREFIX}
-    GIT_REPOSITORY "https://github.com/google/googletest.git"
-    GIT_TAG "release-1.11.0"
-    INSTALL_DIR ${GTEST_INSTALL_PATH}
-    CMAKE_ARGS
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_INSTALL_PREFIX=${GTEST_INSTALL_PATH}
-        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
-        -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
-        -DBUILD_SHARED_LIBS=1
-        -Dgtest_force_shared_crt=1
-)
 
 
-#########################################################
-# Google Flags (gflags)
-#########################################################
-set(GFLAGS_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/gflags)
-set(GFLAGS_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/gflags)
-ExternalProject_Add(gflags
-    PREFIX ${GFLAGS_PREFIX}
-    GIT_REPOSITORY "https://github.com/gflags/gflags.git"
-    GIT_TAG "v2.2.2"
-    INSTALL_DIR ${GFLAGS_INSTALL_PATH}
-    CMAKE_ARGS
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_INSTALL_PREFIX=${GFLAGS_INSTALL_PATH}
-        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
-        -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
-        -DBUILD_SHARED_LIBS=1
-)
 
 
-#########################################################
-# Google Log (glog)
-#########################################################
-set(GLOG_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/glog)
-set(GLOG_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/glog)
-ExternalProject_Add(glog
-    DEPENDS gtest gflags
-    PREFIX ${GLOG_PREFIX}
-    GIT_REPOSITORY "https://github.com/google/glog.git"
-    GIT_TAG "v0.5.0"
-    INSTALL_DIR ${GLOG_INSTALL_PATH}
-    CMAKE_ARGS
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_INSTALL_PREFIX=${GLOG_INSTALL_PATH}
-        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
-        -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
-        -DBUILD_SHARED_LIBS=1
-        -DBUILD_TESTING=0
-        -DWITH_GTEST=0
-        -DWITH_GFLAGS=0
-        -DWITH_PKGCONFIG=0
-        -DWITH_THREADS=0
-        -DWITH_SYMBOLIZE=0
-        -DWITH_TLS=0
-        -DWITH_UNWIND=0
-        -DGTest_DIR=${GTEST_INSTALL_PATH}
-        -Dgflags_DIR=${GFLAGS_INSTALL_PATH}
-)
-
-#########################################################
-# SuiteSparse - Sparse Matrix Algorithms
-#########################################################
-#
-# Note: SuiteSparse here contains pre-compiled files for LAPACK and
-# BLAS, so we don't need to compile them ourselves.
-#
-set(SUITESPARSE_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/suitesparse)
-set(SUITESPARSE_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/suitesparse)
-set(SUITESPARSE_LIBRARY_DIR ${SUITESPARSE_INSTALL_PATH}/lib)
-set(SUITESPARSE_INCLUDE_DIR ${SUITESPARSE_INSTALL_PATH}/include)
-set(SUITESPARSE_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/suitesparse/src/suitesparse)
-set(LAPACK_DIR ${THIRDPARTY_BASE_WORKING_DIR}/suitesparse/src/suitesparse/lapack_windows/x64)
-set(GKLIB_PATH ${SUITESPARSE_SOURCE_DIR}/SuiteSparse/metis-5.1.0/GKlib)
-
-set(SUITESPARSE_PATCH_SRC_1 ${CMAKE_CURRENT_SOURCE_DIR}/patches/suitesparse/SuiteSparse_metis-5.1.0_CMakeLists.txt)
-set(SUITESPARSE_PATCH_DST_1 ${SUITESPARSE_SOURCE_DIR}/SuiteSparse/metis-5.1.0/)
-ExternalProject_Add(suitesparse
-    PREFIX ${SUITESPARSE_PREFIX}
-    GIT_REPOSITORY "https://github.com/jlblancoc/suitesparse-metis-for-windows.git"
-    GIT_TAG "v1.5.0"
-    PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${SUITESPARSE_PATCH_SRC_1} ${SUITESPARSE_PATCH_DST_1}
-    INSTALL_DIR ${SUITESPARSE_INSTALL_PATH}
-    CMAKE_ARGS
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_INSTALL_PREFIX=${SUITESPARSE_INSTALL_PATH}
-        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
-        -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
-        -DLAPACK_DIR=${LAPACK_DIR}
-        -DBUILD_METIS=1
-        -DGKLIB_PATH=${GKLIB_PATH}
-        -DSHARED=0
-        -DSUITESPARSE_DL_LAST=0
-        -DWITH_CUDA=0
-        -DOPENMP=0
-        -DPCRE=0
-        # HAVE_COMPLEX is OFF by default to avoid errors related to
-        # complex numbers in some compilers.
-        -DHAVE_COMPLEX=0
-)
 
 
-#########################################################
-# BLAS + LAPACK
-#########################################################
-#
-if(WIN32)
-  set(input_file ${LAPACK_DIR}/liblapack.dll)
-  set(output_file ${SUITESPARSE_LIBRARY_DIR}/liblapack.dll)
-  add_custom_command(
-    OUTPUT ${output_file}
-    COMMAND ${CMAKE_COMMAND} -E copy ${LAPACK_DIR}/libblas.dll ${SUITESPARSE_LIBRARY_DIR}/libblas.dll
-    COMMAND ${CMAKE_COMMAND} -E copy ${LAPACK_DIR}/liblapack.dll ${SUITESPARSE_LIBRARY_DIR}/liblapack.dll
-    COMMAND ${CMAKE_COMMAND} -E copy ${LAPACK_DIR}/libquadmath-0.dll ${SUITESPARSE_LIBRARY_DIR}/libquadmath-0.dll
-    COMMAND ${CMAKE_COMMAND} -E copy ${LAPACK_DIR}/libgcc_s_sjlj-1.dll ${SUITESPARSE_LIBRARY_DIR}/libgcc_s_sjlj-1.dll
-    COMMAND ${CMAKE_COMMAND} -E copy ${LAPACK_DIR}/libgfortran-3.dll ${SUITESPARSE_LIBRARY_DIR}/libgfortran-3.dll
-    DEPENDS ${input_file}
-  )
-  add_custom_target(
-    lapack ALL
-    DEPENDS suitesparse ${output_file}
-    COMMENT "Installing LAPACK (${input_file})..."
-  )
-endif()
+
 
 
 #########################################################
@@ -309,7 +188,6 @@ set(CMINPACK_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/cminpack/src/cminpack)
 set(CMINPACK_PATCH_SRC_1 ${CMAKE_CURRENT_SOURCE_DIR}/patches/cminpack/CMakeLists.txt)
 set(CMINPACK_PATCH_DST_1 ${CMINPACK_SOURCE_DIR})
 ExternalProject_Add(cminpack
-    DEPENDS suitesparse # lapack
     PREFIX ${CMINPACK_PREFIX}
     URL "https://github.com/devernay/cminpack/archive/v1.3.8.tar.gz"
     INSTALL_DIR ${CMINPACK_INSTALL_PATH}
@@ -337,14 +215,12 @@ ExternalProject_Add(cminpack
 #
 set(EIGEN_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/eigen)
 set(EIGEN_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/eigen)
-set(EIGEN_INCLUDE_DIR ${EIGEN_INSTALL_PATH}/include)
+set(EIGEN_INCLUDE_DIR ${EIGEN_INSTALL_PATH}/include/eigen3)
+
 ExternalProject_Add(eigen
-    DEPENDS
-        suitesparse # lapack
-        # fftw
     PREFIX ${EIGEN_PREFIX}
     GIT_REPOSITORY "https://gitlab.com/libeigen/eigen.git"
-    GIT_TAG "3.3.9"
+    GIT_TAG "3.2.7"  # was "3.3.9"
     INSTALL_DIR ${EIGEN_INSTALL_PATH}
     CMAKE_ARGS
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -365,59 +241,6 @@ ExternalProject_Add(eigen
 )
 
 
-#########################################################
-# Ceres Solver - Non-Linear Least-Squares Fits solver
-#########################################################
-set(CERES_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/ceres)
-set(CERES_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/ceres)
-set(CERES_DOWNLOAD_DIR ${THIRDPARTY_BASE_WORKING_DIR}/ceres/src)
-set(CERES_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/ceres/src/ceres)
-ExternalProject_Add(ceres
-    DEPENDS gflags glog eigen suitesparse # lapack
-    PREFIX ${CERES_PREFIX}
-    GIT_REPOSITORY "https://github.com/ceres-solver/ceres-solver.git"
-    GIT_TAG "1.14.0"
-    INSTALL_DIR ${CERES_INSTALL_PATH}
-    CMAKE_ARGS
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_INSTALL_PREFIX=${CERES_INSTALL_PATH}
-        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
-        -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
-        -DEigen3_DIR=${EIGEN_INSTALL_PATH}/share/eigen3/cmake
-        -DGLOG_INCLUDE_DIR_HINTS=${GLOG_INSTALL_PATH}/include
-        -DGLOG_LIBRARY_DIR_HINTS=${GLOG_INSTALL_PATH}/lib
-        -Dglog_DIR=${GLOG_INSTALL_PATH}
-        -Dgflags_DIR=${GFLAGS_INSTALL_PATH}/lib/cmake/gflags
-        -DSUITESPARSE_INCLUDE_DIR_HINTS=${SUITESPARSE_INCLUDE_DIR}
-        -DSUITESPARSE_LIBRARY_DIR_HINTS=${SUITESPARSE_LIBRARY_DIR}
-        -DCXSPARSE_INCLUDE_DIR_HINTS=${SUITESPARSE_INCLUDE_DIR}
-        -DCXSPARSE_LIBRARY_DIR_HINTS=${SUITESPARSE_LIBRARY_DIR}
-        -DBUILD_TESTING=0
-        -DBUILD_DOCUMENTATION=0
-        -DBUILD_EXAMPLES=0
-        -DBUILD_BENCHMARKS=0
-        -DBUILD_SHARED_LIBS=1
-        -DMINIGLOG=0  # Use glog instead of the (slow) 'miniglog'.
-        #
-        # WARNING: Enabling "EIGENSPARSE" results in an LGPL licensed
-        # Ceres.
-        -DEIGENSPARSE=0
-        -DCXSPARSE=0  # Disabled because it's slower than SuiteSparse.
-        -DLAPACK=1
-        -DSUITESPARSE=1
-        -DGFLAGS=1
-        -DCUSTOM_BLAS=1
-        -DSCHUR_SPECIALIZATIONS=1  # Enable this for more optimizations.
-        -DCXX11=1
-        -DOPENMP=1
-        -DTBB=0
-        -DCXX11_THREADS=0
-        -DMSVC_USE_STATIC_CRT=0
-)
-set(CERES_LIBRARY ${CERES_INSTALL_PATH}/lib/ceres.lib)
-set(CERES_INCLUDE_DIR ${CERES_INSTALL_PATH}/include)
 
 
 #########################################################
@@ -427,6 +250,8 @@ set(LIBMV_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/libmv)
 set(LIBMV_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/libmv)
 set(LIBMV_DOWNLOAD_DIR ${THIRDPARTY_BASE_WORKING_DIR}/libmv/src)
 set(LIBMV_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/libmv/src/libmv)
+
+# Main patches
 set(LIBMV_PATCH_SRC_1 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/CMakeLists.txt)
 set(LIBMV_PATCH_DST_1 ${LIBMV_SOURCE_DIR})
 set(LIBMV_PATCH_SRC_2 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/Installation.cmake)
@@ -441,10 +266,12 @@ set(LIBMV_PATCH_SRC_5 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/third_party_ssba
 set(LIBMV_PATCH_DST_5 ${LIBMV_SOURCE_DIR}/src/third_party/ssba/CMakeLists.txt)
 set(LIBMV_PATCH_SRC_6 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_CMakeLists.txt)
 set(LIBMV_PATCH_DST_6 ${LIBMV_SOURCE_DIR}/src/libmv/CMakeLists.txt)
+set(LIBMV_PATCH_SRC_21 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/third_party_pthreads-w32_CMakeLists.txt)
+set(LIBMV_PATCH_DST_21 ${LIBMV_SOURCE_DIR}/src/third_party/pthreads-w32/CMakeLists.txt)
+set(LIBMV_PATCH_SRC_22 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/third_party_ceres_CMakeLists.txt)
+set(LIBMV_PATCH_DST_22 ${LIBMV_SOURCE_DIR}/src/third_party/ceres/CMakeLists.txt)
 
 # LibMV patches
-set(LIBMV_PATCH_SRC_7 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_src_CMakeLists.txt)
-set(LIBMV_PATCH_DST_7 ${LIBMV_SOURCE_DIR}/src/libmv/src/CMakeLists.txt)
 set(LIBMV_PATCH_SRC_8 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_autotrack_CMakeLists.txt)
 set(LIBMV_PATCH_DST_8 ${LIBMV_SOURCE_DIR}/src/libmv/autotrack/CMakeLists.txt)
 set(LIBMV_PATCH_SRC_9 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_base_CMakeLists.txt)
@@ -471,7 +298,7 @@ set(LIBMV_PATCH_SRC_19 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_tracking_
 set(LIBMV_PATCH_DST_19 ${LIBMV_SOURCE_DIR}/src/libmv/tracking/CMakeLists.txt)
 
 ExternalProject_Add(libmv
-    DEPENDS eigen ceres suitesparse gflags glog # lapack
+    DEPENDS eigen
     PREFIX ${LIBMV_PREFIX}
     GIT_REPOSITORY "git://git.blender.org/libmv.git"
     GIT_TAG "f701b2b9fbc641b3252b3513239eeb14477ed5e1"
@@ -484,7 +311,6 @@ ExternalProject_Add(libmv
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_4} ${LIBMV_PATCH_DST_4}
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_5} ${LIBMV_PATCH_DST_5}
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_6} ${LIBMV_PATCH_DST_6}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_7} ${LIBMV_PATCH_DST_7}
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_8} ${LIBMV_PATCH_DST_8}
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_9} ${LIBMV_PATCH_DST_9}
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_10} ${LIBMV_PATCH_DST_10}
@@ -497,6 +323,8 @@ ExternalProject_Add(libmv
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_17} ${LIBMV_PATCH_DST_17}
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_18} ${LIBMV_PATCH_DST_18}
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_19} ${LIBMV_PATCH_DST_19}
+    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_21} ${LIBMV_PATCH_DST_21}
+    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_22} ${LIBMV_PATCH_DST_22}
     CMAKE_ARGS
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
@@ -504,25 +332,15 @@ ExternalProject_Add(libmv
         -DCMAKE_INSTALL_PREFIX=${LIBMV_INSTALL_PATH}
         -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
         -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
-        -DWITH_SYSTEM_CERES=1
-        -DLDL_ROOT=${SUITESPARSE_INSTALL_PATH}
-        -DLDL_INCLUDE_DIR=${SUITESPARSE_INSTALL_PATH}/include/suitesparse
-        -DLDL_LIBRARY_DIR=${SUITESPARSE_INSTALL_PATH}/lib
-        -DCOLAMD_ROOT=${SUITESPARSE_INSTALL_PATH}
-        -DCOLAMD_INCLUDE_DIR=${SUITESPARSE_INSTALL_PATH}/include/suitesparse
-        -DCOLAMD_LIBRARY_DIR=${SUITESPARSE_INSTALL_PATH}/lib
-        -DSUITE_SPARSE_CONFIG_ROOT=${SUITESPARSE_INSTALL_PATH}
-        -DSUITE_SPARSE_CONFIG_INCLUDE_DIR=${SUITESPARSE_INSTALL_PATH}/include/suitesparse
-        -DSUITE_SPARSE_CONFIG_LIBRARY_DIR=${SUITESPARSE_INSTALL_PATH}/lib
-        -DGLOG_ROOT=${GLOG_INSTALL_PATH}
-        -DGLOG_INCLUDE_DIR=${GLOG_INSTALL_PATH}/include
-        -DGLOG_LIBRARY_DIR=${GLOG_INSTALL_PATH}/lib
-        -DGFLAGS_ROOT=${GFLAGS_INSTALL_PATH}
-        -DGFLAGS_INCLUDE_DIR=${GFLAGS_INSTALL_PATH}/include
-        -DGFLAGS_LIBRARY_DIR=${GFLAGS_INSTALL_PATH}/lib
-        -DCERES_LIBRARY=${CERES_LIBRARY}
-        -DCERES_INCLUDE_DIR=${CERES_INCLUDE_DIR}
         -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
+        #
+        # WARNING: Enabling "EIGENSPARSE" results in an LGPL licensed
+        # Ceres.
+        -DEIGENSPARSE=1
+        -DCXSPARSE=0  # Disabled because it's slower than SuiteSparse.
+        -DLAPACK=0
+        -DSUITESPARSE=0
+        -DSCHUR_SPECIALIZATIONS=1  # Enable this for more optimizations.
         -DWITH_FAST_DETECTOR=1
         -DBUILD_SHARED_LIBS=0
         -DBUILD_TESTS=0

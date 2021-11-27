@@ -5,13 +5,14 @@ project(V3D)
 set (V3D_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set (V3D_INCLUDE_DIRS ${V3D_DIR}/.)
 
-# Ensure all symbols are exported on Windows.
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # TODO(keir): This may not work on Windows.
 add_definitions(-DV3DLIB_ENABLE_SUITESPARSE)
 
 include_directories(${V3D_INCLUDE_DIRS} ${EXTRA_INC_DIRS})
+include_directories(../ldl/Include)
+include_directories(../colamd/Include)
+include_directories(../ufconfig)
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "")
@@ -25,18 +26,7 @@ add_library(V3D
     Geometry/v3d_cameramatrix.h
     Geometry/v3d_metricbundle.h
     Geometry/v3d_metricbundle.cpp)
-target_link_libraries(V3D
-  PRIVATE
-  ${COLAMD_LIBRARIES}
-  ${LDL_LIBRARIES}
-  ${SUITE_SPARSE_CONFIG_LIBRARIES}
-  )
-target_include_directories(V3D
-  PRIVATE
-  ${COLAMD_INCLUDE_DIRS}
-  ${LDL_INCLUDE_DIRS}
-  ${SUITE_SPARSE_CONFIG_INCLUDE_DIRS}
-)
+target_link_libraries(V3D ldl colamd)
 
 #add_subdirectory(Apps)
 

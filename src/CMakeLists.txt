@@ -63,9 +63,7 @@ set(SOURCE_FILES
 find_package(Maya REQUIRED)
 find_package(CMinpack REQUIRED)
 find_package(Gflags REQUIRED)
-find_package(GTest REQUIRED)
 find_package(Glog REQUIRED)
-find_package(BlasLapack REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Ceres REQUIRED)
 find_package(Libmv REQUIRED)
@@ -83,14 +81,7 @@ message(STATUS "GLOG: ${GLOG_FOUND}"
   " Include=${GLOG_INCLUDE_DIRS}"
   " Library=${GLOG_LIBRARIES}")
 
-message(STATUS "GTEST: ${GTEST_FOUND}"
-  " Include=${GTEST_INCLUDE_DIRS}"
-  " Library=${GTEST_LIBRARIES}")
 
-message(STATUS "BLASLAPACK: ${BLASLAPACK_FOUND}"
-  " Root=${BLASLAPACK_ROOT}"
-  " Library=${BLASLAPACK_LIBRARIES}"
-  " Library DLL=${BLASLAPACK_LIBRARIES_DLL}")
 
 message(STATUS "EIGEN3: ${EIGEN3_FOUND}"
   " Root=${Eigen3_DIR}"
@@ -142,6 +133,17 @@ if (MSVC)
   add_compile_definitions(GLOG_NO_ABBREVIATED_SEVERITIES)
 
   add_definitions(/DGOOGLE_GLOG_DLL_DECL=)
+  add_definitions(-DGFLAGS_DLL_DECL=)
+
+  # Ceres running on Windows can trigger a MSVC warning:
+  #
+  # "Compiler Warning (level 3) C4996: Your code uses a function,
+  # class member, variable, or typedef that's marked deprecated."
+  #
+  # To override this, we define "_CRT_NONSTDC_NO_DEPRECATE"
+  #
+  # https://docs.microsoft.com/en-us/previous-versions/ms235384(v=vs.100)
+  add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
 
   # Must add the plug-in entry/exit points otherwise
   # the plug-in won't load.
@@ -204,7 +206,6 @@ target_include_directories(mmSolver
   PRIVATE .
   PRIVATE ${MAYA_INCLUDE_DIRS}
   PRIVATE ${GFLAGS_INCLUDE_DIRS}
-  PRIVATE ${GTEST_INCLUDE_DIRS}
   PRIVATE ${GLOG_INCLUDE_DIRS}
   PRIVATE ${CMINPACK_INCLUDE_DIRS}
   PRIVATE ${EIGEN3_INCLUDE_DIRS}
@@ -220,7 +221,6 @@ target_link_libraries(mmSolver
 target_link_libraries(mmSolver
   PRIVATE
   ${GFLAGS_LIBRARIES}
-  ${GTEST_LIBRARIES}
   ${GLOG_LIBRARIES}
   ${CMINPACK_LIBRARIES}
   ${CERES_LIBRARIES}
@@ -283,7 +283,6 @@ install(TARGETS mmSolver
   RUNTIME DESTINATION "${MODULE_FULL_NAME}/plug-ins"
   LIBRARY DESTINATION "${MODULE_FULL_NAME}/plug-ins")
 
-
 # Install dynamic libraries; cminpack
 if (CMINPACK_FOUND)
   install_library(
@@ -292,44 +291,3 @@ if (CMINPACK_FOUND)
     "${MODULE_FULL_NAME}/lib/")
 endif ()
 
-# Install dynamic libraries; glog
-if (GLOG_FOUND)
-  install_library(
-    ${GLOG_LIBRARY}
-    ${GLOG_LIBRARY_DLL}
-    "${MODULE_FULL_NAME}/lib/")
-endif ()
-
-# Install dynamic libraries; gflags
-if (GFLAGS_FOUND)
-  install_library(
-    ${GFLAGS_LIBRARY}
-    ${GFLAGS_LIBRARY_DLL}
-    "${MODULE_FULL_NAME}/lib/")
-endif ()
-
-# Install dynamic libraries; gtest
-if (GTEST_FOUND)
-  install_library(
-    ${GTEST_LIBRARY}
-    ${GTEST_LIBRARY_DLL}
-    "${MODULE_FULL_NAME}/lib/")
-endif ()
-
-# Install dynamic libraries; Blas and Lapack.
-if (BLASLAPACK_FOUND)
-  message(STATUS "BLASLAPACK_LIBRARIES: ${BLASLAPACK_LIBRARIES}")
-  message(STATUS "BLASLAPACK_LIBRARIES_DLL: ${BLASLAPACK_LIBRARIES_DLL}")
-  install_libraries(
-    "${BLASLAPACK_LIBRARIES}"
-    "${BLASLAPACK_LIBRARIES_DLL}"
-    "${MODULE_FULL_NAME}/lib/")
-endif ()
-
-# Install dynamic libraries; Ceres Solver
-if (CERES_FOUND)
-  install_library(
-    ${CERES_LIBRARY}
-    ${CERES_LIBRARY_DLL}
-    "${MODULE_FULL_NAME}/lib/")
-endif ()

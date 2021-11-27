@@ -115,7 +115,7 @@ def reparent(children_nodes, parent_node,
     if isinstance(parent_node, tfm_utils.TransformNode):
         assert maya.cmds.objExists(parent_node.get_node())
     if frame_range_mode is None:
-        frame_range_mode = FRAME_RANGE_MODE_TIMELINE_INNER_VALUE
+        frame_range_mode = const.FRAME_RANGE_MODE_TIMELINE_INNER_VALUE
     if bake_mode is None:
         bake_mode = BAKE_MODE_FULL_BAKE_VALUE
     if rotate_order_mode is None:

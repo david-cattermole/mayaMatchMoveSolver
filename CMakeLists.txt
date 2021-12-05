@@ -225,7 +225,7 @@ set(SOURCE_FILES
         src/core/bundleAdjust_cminpack_lmdif.cpp
         src/core/bundleAdjust_cminpack_lmder.h
         src/core/bundleAdjust_cminpack_lmder.cpp
-        src/mayaUtils.h
+        src/mayaUtils.cpp
         src/Camera.h
         src/Camera.cpp
         src/Marker.h

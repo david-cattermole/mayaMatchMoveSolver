@@ -225,7 +225,13 @@ set(SOURCE_FILES
         src/core/bundleAdjust_cminpack_lmdif.cpp
         src/core/bundleAdjust_cminpack_lmder.h
         src/core/bundleAdjust_cminpack_lmder.cpp
-        src/mayaUtils.h
+        src/core/calibrate/common.cpp
+        src/core/mmcamera.cpp
+        src/core/mmmath.cpp
+        src/core/mmdata.cpp
+        src/core/mmcoord.cpp
+        src/core/calibrate/vanishingPoint.cpp
+        src/mayaUtils.cpp
         src/Camera.h
         src/Camera.cpp
         src/Marker.h
@@ -242,6 +248,8 @@ set(SOURCE_FILES
         src/MMMarkerScaleNode.cpp
         src/MMReprojectionNode.h
         src/MMReprojectionNode.cpp
+        src/MMCameraCalibrateNode.cpp
+        src/MMLineIntersectNode.cpp
         src/MMMarkerGroupTransformNode.h
         src/MMMarkerGroupTransformNode.cpp
         src/MMTestCameraMatrixCmd.h

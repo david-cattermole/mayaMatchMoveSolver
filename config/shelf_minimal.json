@@ -12,6 +12,9 @@
             "solver_tools/solver_popup/edit_root_frame_add",
             "solver_tools/solver_popup/edit_root_frame_remove",
             "create_marker",
+            "camera_tools/camera_popup/---Calibrate",
+            "camera_tools/camera_popup/camera_calibration_create_setup",
+            "camera_tools/camera_popup/camera_calibration_update_values",
             "mb_tools/mb_popup/---Selection",
             "mb_tools/mb_popup/swap_marker_bundles",
             "mb_tools/mb_popup/select_marker_bundles",
@@ -97,6 +100,10 @@
                 "popup_button": ["left", "right"]
             },
             "file_io_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "camera_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
             },

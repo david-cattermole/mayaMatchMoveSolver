@@ -17,6 +17,9 @@
             "edit_root_frame_add",
             "edit_root_frame_remove",
             "---Tools",
+            "camera_tools/camera_popup/---Calibrate",
+            "camera_tools/camera_popup/camera_calibration_create_setup",
+            "camera_tools/camera_popup/camera_calibration_update_values",
             "mb_tools/mb_popup/---Marker-Bundle Link",
             "mb_tools/mb_popup/link_marker_bundle",
             "mb_tools/mb_popup/unlink_marker_bundle",
@@ -104,6 +107,10 @@
                 "popup_button": ["left", "right"]
             },
             "file_io_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "camera_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
             },

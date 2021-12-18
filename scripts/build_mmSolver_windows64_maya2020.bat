@@ -88,14 +88,21 @@ SET GENERATE_SOLUTION=0
 SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%
 
-:: Build plugin
-MKDIR build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
-CHDIR build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
+:: Note: There is no need to deactivate the virtual environment because
+:: this batch script is 'SETLOCAL' (see top of file) and therefore no
+:: environment variables are leaked into the calling environment.
+CALL %PROJECT_ROOT%\scripts\python_venv_activate_maya2020.bat
+
+:: Clean up, if directed to do so.
+SET BUILD_DIR_NAME=build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
+MKDIR %BUILD_DIR_NAME%
+CHDIR %BUILD_DIR_NAME%
 IF "%FRESH_BUILD%"=="1" (
     DEL /S /Q *
     FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
 )
 
+:: Build plugin
 IF "%GENERATE_SOLUTION%"=="1" (
 
 

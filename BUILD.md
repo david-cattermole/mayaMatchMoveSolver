@@ -28,8 +28,11 @@ Required:
   - CMake 3.x is recommended.
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
 - [CMinpack 1.3.6](https://github.com/devernay/cminpack/releases/tag/v1.3.6)
-- [Python 2.7.x or 3.x](https://www.python.org/) (for build scripts)
-- [Sphinx 1.8.3+](http://www.sphinx-doc.org/en/master/index.html) (for building documentation)
+- [Python 2.7.x or 3.x](https://www.python.org/) - for development building, testing and formatting Python code
+  - [Sphinx](http://www.sphinx-doc.org/en/master/index.html) - for building documentation.
+  - [Black](https://github.com/psf/black) - for Python code formatting.
+  - [PyLint](https://pylint.org/) - for Python code 'linting'.
+  - See 'requirements-dev.txt' for more details.
 
 Optional Solver:
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)

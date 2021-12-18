@@ -156,7 +156,7 @@ into Project Notes and remembered.
 Copy 2D Tracks from Blender
 +++++++++++++++++++++++++++
 
-It is possible to use Blender (2.8+) to track 2D Markers for use in mmSolver.
+It is possible to use Blender (v2.80+) to track 2D Markers for use in mmSolver.
 
 1) Install the ``mmSolver_blender_addon.zip`` add-on file from the
    ``blender`` directory of the MM Solver download.
@@ -180,7 +180,7 @@ It is possible to use Blender (2.8+) to track 2D Markers for use in mmSolver.
 5) Open Maya, and open the ``Load Marker`` tool
    (menu ``mmSolver > Load Marker...``), and press ``Load``.
 
-   For more details, see the "Loading Markers in Maya" section below.
+   For more details, see :ref:`Load Markers in Maya <load-markers-in-maya-ref>`.
 
 .. note::
 
@@ -193,6 +193,12 @@ It is possible to use Blender (2.8+) to track 2D Markers for use in mmSolver.
    -  There is no Python function to undistort 2D data.
       Therefore it is not recommended to track "distorted" footage
       because there is no way to undistort the 2D Markers in Maya (currently).
+
+.. note::
+
+    Blender versions 2.83.18 LTS, 2.93.6 LTS, and v3.0.0 are known to work,
+    other Blender versions with-in the same minor release will likely work,
+    but has not been tested.
 
 .. _load-markers-in-maya-ref:
 

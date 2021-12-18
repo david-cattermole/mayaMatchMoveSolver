@@ -58,6 +58,9 @@ file path on the clipboard automatically. Once the file path is on the
 clipboard, open the Maya Load Marker tool and the path will be
 read automatically.
 
+In Blender the ``Motion Clip Editor`` sidebar contains a ``MM Solver``
+panel, with a Copy and Export 2D Tracks tool.
+
 The ``Camera`` list contains all the cameras currently in the Maya
 scene. If no cameras are available (persp, front, top, left do not
 count), the default option is to create a new camera. The ``Update``
@@ -147,6 +150,49 @@ into Project Notes and remembered.
    or 2, it is recommend to use ``Export 2D Tracks (MM Solver)``,
    because the ``Copy 2D Tracks (MM Solver)`` tool can only export
    with the default ``Content Distance`` of ``100`` units.
+
+.. _copy-blender-2d-tracks-ref:
+
+Copy 2D Tracks from Blender
++++++++++++++++++++++++++++
+
+It is possible to use Blender (2.8+) to track 2D Markers for use in mmSolver.
+
+1) Install the ``mmSolver_blender_addon.zip`` add-on file from the
+   ``blender`` directory of the MM Solver download.
+
+   Simply open the Addons preferences; "Edit > Preferences > Add-ons",
+   click "Install..." and browse to the ``mmSolver_blender_addon.zip``.
+
+   See the `Blender Addons documentation <https://docs.blender.org/manual/en/latest/editors/preferences/addons.html>`_.
+
+2) Open the ``Motion Clip Editor`` and track 2D points.
+
+3) Select the 2D Track points you wish to copy/export.
+
+4) Go to the ``Motion Clip Editor > (right-side) Sidebar > Track > MM Solver``
+   panel, then click ``Copy 2D Tracks``.
+
+   This will export the selected 2D tracks to a temporary .uv file
+   and then save the file path on your copy-paste buffer
+   (ready for "CTRL + V").
+
+5) Open Maya, and open the ``Load Marker`` tool
+   (menu ``mmSolver > Load Marker...``), and press ``Load``.
+
+   For more details, see the "Loading Markers in Maya" section below.
+
+.. note::
+
+   There are some important limitations in the add-on provided.
+
+   - Cameras cannot have animated focal lengths inside the Motion Clip Editor.
+     Therefore it is recommended not to use the "overscan" feature of the
+     ``Load Marker`` tool in Maya.
+
+   -  There is no Python function to undistort 2D data.
+      Therefore it is not recommended to track "distorted" footage
+      because there is no way to undistort the 2D Markers in Maya (currently).
 
 .. _load-markers-in-maya-ref:
 

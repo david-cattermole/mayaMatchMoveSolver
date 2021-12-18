@@ -2,6 +2,7 @@
 .vs
 #*
 *~
+*.bak
 *.pyc
 cmake-build-*
 *build/*

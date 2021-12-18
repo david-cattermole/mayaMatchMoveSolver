@@ -1,0 +1,3 @@
+black==21.12b0
+pylint==2.12.2
+Sphinx==4.3.1

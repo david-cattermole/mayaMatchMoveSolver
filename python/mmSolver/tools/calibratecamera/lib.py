@@ -39,12 +39,50 @@ def _create_line(cam, mkr_grp, base_name):
 
     mkr1 = mmapi.Marker().create_node(mkr_grp=mkr_grp, name=mkr_name1)
     mkr2 = mmapi.Marker().create_node(mkr_grp=mkr_grp, name=mkr_name2)
-    return mkr1, mkr2
+    mkr1_node = mkr1.get_node()
+    mkr2_node = mkr2.get_node()
+
+    # mkr_grp_node = mkr_grp.get_node()
+
+    # Create the line visualisation.
+    line_name = '{base}_LINE'.format(base=base_name)
+    line_shape_name = '{base}_LINEShape'.format(base=base_name)
+    line_tfm = maya.cmds.createNode(
+        'transform',
+        name=line_name,
+        # parent=mkr_grp_node
+    )
+    line_shp = maya.cmds.createNode(
+        'mmLineShape',
+        parent=line_tfm,
+        name=line_shape_name)
+    maya.cmds.connectAttr(
+        mkr1_node + '.worldMatrix[0]',
+        line_shp + '.matrixA')
+    maya.cmds.connectAttr(
+        mkr2_node + '.worldMatrix[0]',
+        line_shp + '.matrixB')
+
+    # Lock the transform.
+    maya.cmds.setAttr(line_tfm + '.tx', lock=True)
+    maya.cmds.setAttr(line_tfm + '.ty', lock=True)
+    maya.cmds.setAttr(line_tfm + '.tz', lock=True)
+    maya.cmds.setAttr(line_tfm + '.rx', lock=True)
+    maya.cmds.setAttr(line_tfm + '.ry', lock=True)
+    maya.cmds.setAttr(line_tfm + '.rz', lock=True)
+    maya.cmds.setAttr(line_tfm + '.sx', lock=True)
+    maya.cmds.setAttr(line_tfm + '.sy', lock=True)
+    maya.cmds.setAttr(line_tfm + '.sz', lock=True)
+    maya.cmds.setAttr(line_tfm + '.shxy', lock=True)
+    maya.cmds.setAttr(line_tfm + '.shxz', lock=True)
+    maya.cmds.setAttr(line_tfm + '.shyz', lock=True)
+
+    return mkr1, mkr2, line_tfm, line_shp
 
 
 def _create_vanishing_point(line1, line2, mkr_grp):
-    assert len(line1) == 2
-    assert len(line2) == 2
+    assert len(line1) == 4
+    assert len(line2) == 4
     vp_intersect_name = 'vanishingLineIntersect1'
     intersect_node = maya.cmds.createNode(
         'mmLineIntersect',
@@ -212,7 +250,6 @@ def create_new_setup():
         line_a, line_b,
         mkr_grp)
     _set_default_axis_values(line_a, line_b, invert_x=False)
-    # TODO: Create visualiser node for the line.
 
     # Axis 2
     line_c = _create_line(cam, mkr_grp, 'LineC')
@@ -221,15 +258,13 @@ def create_new_setup():
         line_c, line_d,
         mkr_grp)
     _set_default_axis_values(line_c, line_d, invert_x=True)
-    # TODO: Create visualiser node for the line.
 
     # Horizon Line
-    horizon_line_mkr1, horizon_line_mkr2 = _create_line(
-        cam, mkr_grp, 'HorizonLine')
+    horizon_line_mkr1, horizon_line_mkr2, horizon_line_tfm, horizon_line_shp = \
+        _create_line(cam, mkr_grp, 'HorizonLine')
     _set_default_horizon_values(horizon_line_mkr1, horizon_line_mkr2)
     horizon_line_mkr1_node = horizon_line_mkr1.get_node()
     horizon_line_mkr2_node = horizon_line_mkr2.get_node()
-    # TODO: Create visualiser node for the line.
 
     # Create a mmCameraCalibrate node.
     calib_node = maya.cmds.createNode('mmCameraCalibrate')

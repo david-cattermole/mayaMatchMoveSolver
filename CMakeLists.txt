@@ -570,6 +570,8 @@ if (BUILD_PYTHON)
     add_subdirectory(python)
 endif ()
 
+add_subdirectory(blender)
+
 if (BUILD_DOCS)
     add_subdirectory(docs)
 endif ()

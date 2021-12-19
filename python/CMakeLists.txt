@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2019, 2021 David Cattermole, Kazuma Tonegawa.
 #
 # This file is part of mmSolver.
 #
@@ -48,14 +48,34 @@ if (BUILD_QT_UI)
             ${CMAKE_SOURCE_DIR}/python/mmSolver/ui/ui_base.py
             )
 
+    add_ui_compile("centertwodee"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/centertwodee/ui/centertwodee_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/centertwodee/ui/ui_centertwodee_layout.py
+            )
+
     add_ui_compile("channelsen"
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/channelsen/ui/channelsen_layout.ui
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/channelsen/ui/ui_channelsen_layout.py
             )
 
+    add_ui_compile("convertmarker"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/convertmarker/ui/convertmarker_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/convertmarker/ui/ui_convertmarker_layout.py
+            )
+
     add_ui_compile("raycastmarker"
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/raycastmarker/ui/raycastmarker_layout.ui
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/raycastmarker/ui/ui_raycastmarker_layout.py
+            )
+
+    add_ui_compile("reparent2"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/reparent2/ui/reparent2_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/reparent2/ui/ui_reparent2_layout.py
+            )
+
+    add_ui_compile("removesolvernodes"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/removesolvernodes/ui/removesolvernodes_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/removesolvernodes/ui/ui_removesolvernodes_layout.py
             )
 
     add_ui_compile("smoothkeyframes"
@@ -97,4 +117,15 @@ if (BUILD_QT_UI)
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/userprefswindow/ui/pref_layout.ui
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/userprefswindow/ui/ui_pref_layout.py
             )
+
+    add_ui_compile("fastbake"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/attributebake/ui/attrbake_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/attributebake/ui/ui_attrbake_layout.py
+            )
+
+    add_ui_compile("createcontroller2"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcontroller2/ui/createcontroller_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcontroller2/ui/ui_createcontroller_layout.py
+            )
+
 endif ()

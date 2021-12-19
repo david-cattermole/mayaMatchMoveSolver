@@ -56,7 +56,8 @@ ExecuteOptions = collections.namedtuple(
      'pre_solve_force_eval',
      'do_isolate',
      'display_grid',
-     'display_node_types')
+     'display_node_types',
+     'use_minimal_ui')
 )
 
 
@@ -67,7 +68,8 @@ def createExecuteOptions(verbose=False,
                          do_isolate=False,
                          pre_solve_force_eval=True,
                          display_grid=True,
-                         display_node_types=None):
+                         display_node_types=None,
+                         use_minimal_ui=None):
     """
     Create :py:class:`ExecuteOptions` object.
 
@@ -107,9 +109,15 @@ def createExecuteOptions(verbose=False,
                                during solving. If an argument is not
                                given or is None, the object type
                                visibility will not be changed.
+
+    :param use_minimal_ui: Change the Solver UI to be "minimal", the
+                           revert after a solve completes (or fails).
+    :type use_minimal_ui: bool
     """
     if display_node_types is None:
         display_node_types = dict()
+    if use_minimal_ui is None:
+        use_minimal_ui = False
     options = ExecuteOptions(
         verbose=verbose,
         refresh=refresh,
@@ -118,7 +126,8 @@ def createExecuteOptions(verbose=False,
         do_isolate=do_isolate,
         pre_solve_force_eval=pre_solve_force_eval,
         display_grid=display_grid,
-        display_node_types=display_node_types
+        display_node_types=display_node_types,
+        use_minimal_ui=use_minimal_ui
     )
     return options
 

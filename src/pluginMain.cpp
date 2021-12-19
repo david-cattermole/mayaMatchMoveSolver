@@ -30,6 +30,7 @@
 // Build-Time constant values.
 #include <buildConstant.h>
 
+#include <nodeTypeIds.h>
 #include <MMSolverCmd.h>
 #include <MMSolverTypeCmd.h>
 #include <MMTestCameraMatrixCmd.h>
@@ -44,6 +45,8 @@
 #include <MMLensData.h>
 #include <MMReprojectionCmd.h>
 #include <MMSolverAffectsCmd.h>
+#include <MMCameraCalibrateNode.h>
+#include <MMLineIntersectNode.h>
 
 
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
@@ -185,6 +188,20 @@ MStatus initializePlugin(MObject obj) {
                   MMReprojectionNode::initialize,
                   status);
 
+    REGISTER_NODE(plugin,
+                  MMCameraCalibrateNode::nodeName(),
+                  MMCameraCalibrateNode::m_id,
+                  MMCameraCalibrateNode::creator,
+                  MMCameraCalibrateNode::initialize,
+                  status);
+
+    REGISTER_NODE(plugin,
+                  MMLineIntersectNode::nodeName(),
+                  MMLineIntersectNode::m_id,
+                  MMLineIntersectNode::creator,
+                  MMLineIntersectNode::initialize,
+                  status);
+
     REGISTER_DEFORMER_NODE(plugin,
                            MMLensDeformerNode::nodeName(),
                            MMLensDeformerNode::m_id,
@@ -214,17 +231,19 @@ MStatus initializePlugin(MObject obj) {
                   MMLensModelToggleNode::initialize,
                   status);
 
+
     // MM Marker Group transform
-    const MString markerGroupClassification = "drawdb/geometry/transform";
-    REGISTER_TRANSFORM(plugin,
-                       MMMarkerGroupTransformNode::nodeName(),
-                       MMMarkerGroupTransformNode::m_id,
-                       MMMarkerGroupTransformNode::creator,
-                       MMMarkerGroupTransformNode::initialize,
-                       MPxTransformationMatrix::baseTransformationMatrixId,
-                       MPxTransformationMatrix::creator,
-                       markerGroupClassification,
-                       status)
+    const MString markerGroupClassification = MM_MARKER_GROUP_DRAW_CLASSIFY;
+    REGISTER_TRANSFORM(
+        plugin,
+        MMMarkerGroupTransformNode::nodeName(),
+        MMMarkerGroupTransformNode::m_id,
+        MMMarkerGroupTransformNode::creator,
+        MMMarkerGroupTransformNode::initialize,
+        MPxTransformationMatrix::baseTransformationMatrixId,
+        MPxTransformationMatrix::creator,
+        markerGroupClassification,
+        status);
 
     // Marker transform node and matrix
     const MString markerTfmClassification = "drawdb/geometry/transform";
@@ -272,6 +291,12 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(),
                     MMReprojectionNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMCameraCalibrateNode::nodeName(),
+                    MMCameraCalibrateNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMLineIntersectNode::nodeName(),
+                    MMLineIntersectNode::m_id, status);
 
     DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(),
                     MMMarkerGroupTransformNode::m_id, status);

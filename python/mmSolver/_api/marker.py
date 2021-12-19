@@ -160,7 +160,7 @@ def _create_marker_attributes(node):
             node,
             longName=attr,
             attributeType='long',
-            defaultValue=0,
+            defaultValue=const.MARKER_USED_HINT_UNKNOWN_VALUE,
             keyable=True
         )
         plug = '{0}.{1}'.format(node, attr)

@@ -87,43 +87,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="help_groupBox">
-     <property name="title">
-      <string>Help</string>
-     </property>
-     <layout class="QVBoxLayout" name="help_layout">
-      <item>
-       <widget class="QLabel" name="help1_label">
-        <property name="text">
-         <string>1) Select Marker(s) or Bundle(s).</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="help2_label">
-        <property name="text">
-         <string>2) Select Mesh(es) for override (optional).</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="help3_label">
-        <property name="text">
-         <string>3) Set options in GUI (optional).</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="help4_label">
-        <property name="text">
-         <string>4) Press &quot;Apply&quot;.</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

@@ -122,6 +122,25 @@ def get_node_parents(node):
     return parent_nodes
 
 
+def sort_nodes_by_depth(nodes, reverse=False):
+    """
+    Sort nodes by depth, shallow nodes first.
+
+    :param nodes: List of Maya DAG node paths.
+    :type nodes: [str, ..]
+
+    :returns: List of sorted nodes.
+    :rtype: [str, ..]
+    """
+    assert isinstance(nodes, (list, set))
+
+    def func(a):
+        return a.count('|')
+
+    nodes = sorted(nodes, key=func, reverse=reverse)
+    return nodes
+
+
 def get_as_selection_list_apione(paths):
     """
     Get a Maya API selection list with the given valid Maya node paths.

@@ -20,8 +20,13 @@ Holds all constant data needed for the solver tool and UI.
 """
 
 # Window Title Bar format.
-WINDOW_TITLE_BAR = 'mmSolver | {0}'
+WINDOW_TITLE_BAR = 'mmSolver v{version} | {collection}'
 
+# Window button text.
+WINDOW_BUTTON_SOLVE_START_LABEL = 'Solve'
+WINDOW_BUTTON_SOLVE_STOP_LABEL = 'Stop Solve'
+WINDOW_BUTTON_CLOSE_LABEL = 'Close'
+WINDOW_BUTTON_CLOSE_AND_STOP_LABEL = 'Stop Solve and Close'
 
 # HTML Color Names, for Qt Rich Text.
 #
@@ -318,6 +323,11 @@ SOLVER_ONLY_ROOT_FRAMES_DEFAULT_VALUE = False
 SOLVER_GLOBAL_SOLVE_ATTR = 'solver_global_solve'
 SOLVER_GLOBAL_SOLVE_ATTR_TYPE = 'bool'
 SOLVER_GLOBAL_SOLVE_DEFAULT_VALUE = False
+
+# Solver Evaluate Complex Node Graphs (stored on Collection node)
+SOLVER_EVAL_OBJECT_RELATIONSHIPS_ATTR = 'solver_eval_object_relationships'
+SOLVER_EVAL_OBJECT_RELATIONSHIPS_ATTR_TYPE = 'bool'
+SOLVER_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE = False
 
 # Solver Evaluate Complex Node Graphs (stored on Collection node)
 SOLVER_EVAL_COMPLEX_GRAPHS_ATTR = 'solver_eval_complex_node_graphs'

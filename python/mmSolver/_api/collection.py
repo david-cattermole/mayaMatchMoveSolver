@@ -143,6 +143,13 @@ def _get_auxiliary_attr(col, attr, key, default_value):
                 keyable=False,
                 hidden=True,
                 attributeType='bool')
+        elif isinstance(default_value, (int, long)):
+            maya.cmds.addAttr(
+                attr_node,
+                longName=aux_name,
+                keyable=False,
+                hidden=True,
+                attributeType='long')
         else:
             maya.cmds.addAttr(
                 attr_node,
@@ -189,6 +196,13 @@ def _set_auxiliary_attr(col, attr, key, value):
                 keyable=False,
                 hidden=True,
                 attributeType='bool')
+        elif isinstance(value, (int, long)):
+            maya.cmds.addAttr(
+                attr_node,
+                longName=aux_name,
+                keyable=False,
+                hidden=True,
+                attributeType='long')
         else:
             maya.cmds.addAttr(
                 attr_node,

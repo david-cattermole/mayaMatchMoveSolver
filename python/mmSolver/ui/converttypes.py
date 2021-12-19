@@ -25,7 +25,7 @@ GUI avalable (for example on the farm)
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtCore as QtCore
 
 import mmSolver.logger
 import mmSolver.utils.converttypes as utils_convert

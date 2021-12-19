@@ -135,7 +135,7 @@
             ]
         },
         "reproject_bundle": {
-            "name": "Move Bundle to Marker (current frame)",
+            "name": "Move Bundle to Marker in Screen-Space (current frame)",
             "tooltip": "Re-Project Bundle on top of Marker in screen space.",
             "command": [
                 "import mmSolver.tools.reprojectbundle.tool;",
@@ -183,6 +183,29 @@
                 "mmSolver.tools.raycastmarker.tool.open_window();"
             ]
         },
+        "attribute_bake": {
+            "name": "Bake Attributes",
+            "name_shelf": "AttrBake",
+            "tooltip": "Bake node attributes.",
+            "command": [
+                "import mmSolver.tools.attributebake.tool;",
+                "mmSolver.tools.attributebake.tool.main();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.attributebake.tool;",
+                "mmSolver.tools.attributebake.tool.open_window();"
+            ]
+        },
+        "attribute_bake_ui": {
+            "name": "Bake Attributes UI...",
+            "name_shelf": "AttrBake",
+            "tooltip": "Bake node attributes.",
+            "command": [
+                "import mmSolver.tools.attributebake.tool;",
+                "mmSolver.tools.attributebake.tool.open_window();"
+            ]
+        },         
         "aim_at_camera_manipulator": {
             "name": "Aim At Camera (Screen-Z Manipulator)",
             "tooltip": "Screen-space Z manipulator.",
@@ -268,6 +291,21 @@
             "command": [
                 "import mmSolver.tools.convertmarker.tool;",
                 "mmSolver.tools.convertmarker.tool.main();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.convertmarker.tool;",
+                "mmSolver.tools.convertmarker.tool.open_window();"
+            ]
+        },
+        "convert_to_marker_ui": {
+            "name": "Convert to Marker...",
+            "name_shelf": "",
+            "tooltip": "Convert 3D Transform to Marker.",
+            "icon_shelf": "convertToMarker_32x32.png",
+            "command": [
+                "import mmSolver.tools.convertmarker.tool;",
+                "mmSolver.tools.convertmarker.tool.open_window();"
             ]
         },
         "load_marker_ui": {
@@ -365,6 +403,15 @@
             "tooltip": "General Tools",
             "command": ["pass"]
         },
+        "center_twodee_ui": {
+            "name": "Offset 2D Center UI",
+            "name_shelf": "Center",
+            "tooltip": "Offset 2D Center.",
+            "command": [
+                "import mmSolver.tools.centertwodee.tool;",
+                "mmSolver.tools.centertwodee.tool.center_two_dee_ui();"
+            ]
+        },
         "center_twodee": {
             "name": "Apply 2D Center on Selected",
             "name_shelf": "Center",
@@ -372,6 +419,11 @@
             "command": [
                 "import mmSolver.tools.centertwodee.tool;",
                 "mmSolver.tools.centertwodee.tool.main();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.centertwodee.tool;",
+                "mmSolver.tools.centertwodee.tool.center_two_dee_ui();"
             ]
         },
         "center_twodee_remove": {
@@ -469,6 +521,15 @@
                 "mmSolver.tools.screenspacetransform.tool.main();"
             ]
         },
+        "screen_space_rig_bake": {
+            "name": "Screen-Space Rig Bake...",
+            "name_shelf": "ScrnRgBk",
+            "tooltip": "Bake transforms into screen-space, with helper rig.",
+            "command": [
+                "import mmSolver.tools.screenspacerigbake.tool;",
+                "mmSolver.tools.screenspacerigbake.tool.open_window();"
+            ]
+        },        
         "undo_scene": {
             "name": "Undo (without UI update)",
             "name_shelf": "Undo",
@@ -490,39 +551,94 @@
             ]
         },
         "reparent_under_node": {
-            "name": "Reparent under Node",
+            "name": "Reparent under Node (v1)",
             "name_shelf": "RePar",
-            "tooltip": "Reparent the selection under the last selected node.",
+            "tooltip": "Reparent the selection under the last selected node. (version 1)",
             "command": [
                 "import mmSolver.tools.reparent.tool;",
                 "mmSolver.tools.reparent.tool.reparent_under_node();"
             ]
         },
         "unparent_to_world": {
-            "name": "Unparent to World",
+            "name": "Unparent to World (v1)",
             "name_shelf": "UnPar",
-            "tooltip": "Unparent the selected nodes into world space.",
+            "tooltip": "Unparent the selected nodes into world space. (version 1)",
             "command": [
                 "import mmSolver.tools.reparent.tool;",
                 "mmSolver.tools.reparent.tool.unparent_to_world();"
             ]
         },
+        "reparent2_ui": {
+            "name": "Reparent...",
+            "name_shelf": "RePar",
+            "tooltip": "Open Reparent node.",
+            "command": [
+                "import mmSolver.tools.reparent2.tool;",
+                "mmSolver.tools.reparent2.tool.open_window();"
+            ]
+        },
+        "reparent_under_node2": {
+            "name": "Reparent under Node",
+            "name_shelf": "RePar",
+            "tooltip": "Reparent the selection under the last selected node.",
+            "command": [
+                "import mmSolver.tools.reparent2.tool;",
+                "mmSolver.tools.reparent2.tool.reparent_under_node();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.reparent2.tool;",
+                "mmSolver.tools.reparent2.tool.reparent_under_node_open_window();"
+            ]
+        },
+        "unparent_to_world2": {
+            "name": "Unparent to World",
+            "name_shelf": "UnPar",
+            "tooltip": "Unparent the selected nodes into world space.",
+            "command": [
+                "import mmSolver.tools.reparent2.tool;",
+                "mmSolver.tools.reparent2.tool.unparent_to_world();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.reparent2.tool;",
+                "mmSolver.tools.reparent2.tool.unparent_to_world_open_window();"
+            ]
+        },
         "create_controller": {
-            "name": "Create Controller",
+            "name": "Create Controller (v1)",
             "name_shelf": "CrCtrl",
-            "tooltip": "Create Controller for selected nodes.",
+            "tooltip": "Create Controller for selected node. (version 1)",
             "command": [
                 "import mmSolver.tools.createcontroller.tool;",
                 "mmSolver.tools.createcontroller.tool.create();"
             ]
         },
+        "create_controller2": {
+            "name": "Create Controller...",
+            "name_shelf": "CrCtrl",
+            "tooltip": "Create Controller for selected node. (version 2)",
+            "command": [
+                "import mmSolver.tools.createcontroller2.tool;",
+                "mmSolver.tools.createcontroller2.tool.open_window();"
+            ]
+        },
         "remove_controller": {
-            "name": "Remove Controller",
+            "name": "Remove Controller (v1)",
             "name_shelf": "RmCtrl",
-            "tooltip": "Remove Controller for selected nodes.",
+            "tooltip": "Remove Controller for selected nodes. (version 1)",
             "command": [
                 "import mmSolver.tools.createcontroller.tool;",
                 "mmSolver.tools.createcontroller.tool.remove();"
+            ]
+        },
+        "remove_controller2": {
+            "name": "Remove Controllers",
+            "name_shelf": "RmCtrl",
+            "tooltip": "Remove Controller for selected nodes. (version 2)",
+            "command": [
+                "import mmSolver.tools.removecontroller2.tool;",
+                "mmSolver.tools.removecontroller2.tool.main();"
             ]
         },
         "parent_transforms": {
@@ -650,7 +766,7 @@
             ]
         },
         "remove_all_solver_nodes": {
-            "name": "Remove All Solver Nodes",
+            "name": "Remove All Solver Nodes...",
             "tooltip": "Remove all nodes related to matchmoveSolver to clean scene file.",
             "command": [
                 "import mmSolver.tools.removesolvernodes.tool as tool;",
@@ -664,6 +780,30 @@
             "command": [
                 "import mmSolver.tools.userprefswindow.tool;",
                 "mmSolver.tools.userprefswindow.tool.open_window();"
+            ]
+        },
+        "camera_tools": {
+            "name": "Camera Tools",
+            "name_shelf": "",
+            "tooltip": "Camera Tools",
+            "command": ["pass"]
+        },
+        "camera_calibration_create_setup": {
+            "name": "Create Camera Calibration Setup (beta)",
+            "name_shelf": "",
+            "tooltip": "Create a default setup to calibrate a camera.",
+            "command": [
+                "import mmSolver.tools.calibratecamera.tool as tool;",
+                "tool.main();"
+            ]
+        },
+        "camera_calibration_update_values": {
+            "name": "Update Camera Calibration (beta)",
+            "name_shelf": "",
+            "tooltip": "Updates the camera calibration values.",
+            "command": [
+                "import mmSolver.tools.calibratecamera.tool as tool;",
+                "tool.update();"
             ]
         }
     }

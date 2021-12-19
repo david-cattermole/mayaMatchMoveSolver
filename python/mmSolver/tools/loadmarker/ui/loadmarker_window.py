@@ -28,13 +28,14 @@ Usage::
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
+import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.utils.undo as undoutils
 import mmSolver.utils.config as config_utils
 import mmSolver.tools.loadmarker.constant as const
@@ -60,6 +61,15 @@ def get_config():
     return config
 
 
+def _open_help():
+    src = helputils.get_help_source()
+    helputils.open_help_in_browser(
+        page='tools_createnode.html#load-markers',
+        help_source=src
+    )
+    return
+
+
 class LoadMarkerWindow(BaseWindow):
 
     name = 'LoadMarkerWindow'
@@ -75,16 +85,22 @@ class LoadMarkerWindow(BaseWindow):
         # Standard Buttons
         self.baseHideStandardButtons()
         self.applyBtn.show()
-        self.helpBtn.show()
         self.closeBtn.show()
         self.applyBtn.setText('Load')
-
         self.applyBtn.clicked.connect(self.apply)
-        self.helpBtn.clicked.connect(self.help)
 
         # Hide irrelevant stuff
-        self.baseHideMenuBar()
         self.baseHideProgressBar()
+
+        self.add_menus(self.menubar)
+        self.menubar.show()
+
+    def add_menus(self, menubar):
+        help_menu = QtWidgets.QMenu('Help', menubar)
+        commonmenus.create_help_menu_items(
+            help_menu,
+            tool_help_func=_open_help)
+        menubar.addMenu(help_menu)
 
     def apply(self):
         cam = None
@@ -228,14 +244,6 @@ class LoadMarkerWindow(BaseWindow):
                 config.set_value("data/load_mode", load_mode)
                 config.write()
 
-        return
-
-    def help(self):
-        src = helputils.get_help_source()
-        helputils.open_help_in_browser(
-            page='tools.html#load-markers',
-            help_source=src
-        )
         return
 
 

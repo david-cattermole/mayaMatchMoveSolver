@@ -72,14 +72,6 @@ bool MMSolverCmd::isUndoable() const {
     return true;
 }
 
-/*
- * Add flags to the command syntax
- */
-MSyntax MMSolverCmd::newSyntax() {
-    MSyntax syntax;
-    syntax.enableQuery(false);
-    syntax.enableEdit(false);
-
 void createSolveLogSyntax(MSyntax &syntax) {
     // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
     syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG,

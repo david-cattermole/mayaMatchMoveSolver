@@ -24,9 +24,9 @@ import time
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.api as mmapi
@@ -109,10 +109,13 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
 
         self.validate_pushButton.setEnabled(False)
 
-        # Show the validate button?
-        visible = _getShowValidateButton()
-        self.info_groupBox.setVisible(visible)
+        self.createConnections()
 
+        e = time.time()
+        LOG.debug('SolverWidget init: %r seconds', e - s)
+        return
+
+    def createConnections(self):
         self.tabWidget.currentChanged.connect(self._tabChanged)
         self.basic_widget.dataChanged.connect(self._dataChanged)
         self.standard_widget.dataChanged.connect(self._dataChanged)
@@ -126,17 +129,6 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         self.standard_widget.frameRange_widget.rangeTypeChanged.connect(self.updateInfo)
         self.validate_pushButton.clicked.connect(self.runUpdateInfo)
 
-        # Only run a solver validation if the user wants updates.
-        validate_on_open = _getValidateOnOpen()
-        if validate_on_open:
-            value = lib_state.get_auto_update_solver_validation_state()
-            if value is False:
-                self.validate_pushButton.clicked.emit()
-
-        e = time.time()
-        LOG.debug('SolverWidget init: %r seconds', e - s)
-        return
-
     def getSolverTabValue(self, col):
         value = lib_col_state.get_solver_tab_from_collection(col)
         return value
@@ -144,6 +136,12 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
     def setSolverTabValue(self, col, value):
         lib_col_state.set_solver_tab_on_collection(col, value)
         return
+
+    def event(self, ev):
+        if ev.type() == QtCore.QEvent.WindowActivate:
+            LOG.debug('window was activated')
+            self.updateValidationWidgets()
+        return super(SolverWidget, self).event(ev)
 
     @QtCore.Slot(int)
     def _tabChanged(self, idx):
@@ -194,6 +192,21 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         ]
         _populateWidgetsEnabled(widgets)
         self.updateInfo()
+        return
+
+    def updateValidationWidgets(self):
+        LOG.debug('updateValidationWidgets')
+
+        # Show the validate button?
+        visible = _getShowValidateButton()
+        self.info_groupBox.setVisible(visible)
+
+        # Only run a solver validation if the user wants updates.
+        validate_on_open = _getValidateOnOpen()
+        if validate_on_open:
+            value = lib_state.get_auto_update_solver_validation_state()
+            if value is False:
+                self.validate_pushButton.clicked.emit()
         return
 
     def updateInfo(self):

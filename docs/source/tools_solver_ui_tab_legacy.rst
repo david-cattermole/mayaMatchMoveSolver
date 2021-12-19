@@ -27,6 +27,16 @@ Each Solver “step” contains:
 -  Attributes
 -  Strategy
 
+.. note::
+
+   It is recommended to use the *Basic* or *Standard* tabs rather than
+   the *Legacy* tab.
+
+   The *Legacy* tab is named "legacy" because is not directly
+   maintained it will be removed in future versions of *mmSolver*. The
+   *Basic* and *Standard* Tabs provide the same functionality as the
+   *Legacy* tab, but provide more options and are actively developed.
+
 Enabled
 -------
 

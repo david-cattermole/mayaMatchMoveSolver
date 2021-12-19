@@ -4,7 +4,7 @@ Basic Solver Tab
 .. figure:: images/tools_solver_ui_solver_tab_basic.png
     :alt: Solver Basic Tab
     :align: center
-    :width: 80%
+    :width: 90%
 
     Solver Basic Tab
 
@@ -52,3 +52,41 @@ chosen; 1, 3, 5, 7, 9, etc. Using this tool can speed up solving a
 limited number of frames to build confidence in the solver attributes
 currently created, and then reducing this number to '1' to solve each
 frame.
+
+Solver Options
+--------------
+
+The solver options below are extra options used to change how the
+solver works internally.
+
+Evaluate Object Relationships
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Check this option **on** to enable evaluation of the Marker and
+Attribute relationships - how the objects are connected.
+
+With this feature enabled, *mmSolver* is able to use the relationship
+between Markers and Attributes to improve performance. For example, if
+Marker *A* does not affect node *B*, *mmSolver* can skip this
+calculation.
+
+It is recommended to enable this check-box if you have many (eg, 10+)
+Markers and Attributes in the solve, and / or when you are solving
+static Attributes with the Standard solver tab.
+
+Evaluate Complex Node Graphs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When enabled, *Evaluate Complex Node Graphs* will change the internal
+evaluation method to help solve "complex" node networks (such as
+Mesh Rivets which have cyclical node connection networks).
+
+Evaluation of "complex" node graphs can significantly impact performance.
+It is recommended to turn this feature **off** unless the Maya scene
+is not evaluating correctly without this feature.
+
+Mesh Rivets, using the classic `rivet.mel`_ script can be evaluated using
+this feature enabled.
+
+.. _rivet.mel:
+   https://www.highend3d.com/maya/script/rivet-button-for-maya

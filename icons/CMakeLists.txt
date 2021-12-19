@@ -20,9 +20,23 @@
 
 set(input_file ${CMAKE_SOURCE_DIR}/icons/resources.qrc)
 set(output_file ${CMAKE_SOURCE_DIR}/icons/resources.rcc)
+
+find_program(QT_RESOURCE_COMPILER_EXECUTABLE
+        rcc
+    HINTS
+        "${MAYA_LOCATION}"
+        "$ENV{MAYA_LOCATION}"
+        "${MAYA_BASE_DIR}"
+    PATH_SUFFIXES
+        MacOS/
+        bin/
+    DOC
+        "Qt RCC's executable path"
+)
+
 add_custom_command(
         OUTPUT ${output_file}
-        COMMAND rcc -binary resources.qrc -o resources.rcc
+        COMMAND ${QT_RESOURCE_COMPILER_EXECUTABLE} -binary resources.qrc -o resources.rcc
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/icons
         DEPENDS ${input_file}
 )

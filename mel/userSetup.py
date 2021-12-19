@@ -21,7 +21,21 @@ A start-up script for mmSolver.
 
 We use the Python 'userSetup.py' file rather than 'userSetup.mel'
 because of the message here:
+
 https://around-the-corner.typepad.com/adn/2012/07/distributing-files-on-maya-maya-modules.html
+
+.. note:
+
+    Another issue is that it is very common to use a userSetup.mel
+    (.py) script to do some initialization, but Maya will load only
+    one userSetup.mel, and the first one found in its script search
+    path. That means any setup scripts in modules might be ignored by
+    Maya if the user defines its own setup script, or if another
+    module is first in the search order and have a userSetup.mel file
+    present. Something to remember... a workaround is to use the
+    module '/scripts/startup' folder and have your initialization code
+    posted there, or use a userSetup.py file instead. There is other
+    workarounds, but too complicated compare to this one.
 
 """
 

@@ -175,12 +175,8 @@ MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
 double calculateParameterDelta(double value,
                                double delta,
                                double sign,
-                               AttrPtr attr,
-                               CameraPtr cam,
-                               MTime frame,
-                               double imageWidth) {
+                               AttrPtr attr) {
     MStatus status = MS::kSuccess;
-
     double xmin = attr->getMinimumValue();
     double xmax = attr->getMaximumValue();
 
@@ -415,7 +411,7 @@ void measureErrors(
         // Use pre-computed marker position and weight
         mkr_mpos = ud->markerPosList[i];
 #else
-        status = marker->getPos(mkr_mpos, frame);
+        status = marker->getPos(mkr_mpos, frame, timeEvalMode);
         CHECK_MSTATUS(status);
         mkr_mpos = mkr_mpos * cameraWorldProjectionMatrix;
         mkr_mpos.cartesianize();

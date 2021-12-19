@@ -11,6 +11,7 @@ mmSolver.ui
 
     mmSolver.ui.base_maya_window
     mmSolver.ui.converttypes
+    mmSolver.ui.commonmenus
     mmSolver.ui.nodes
     mmSolver.ui.shelfutils
     mmSolver.ui.uimodels

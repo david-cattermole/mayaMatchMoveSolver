@@ -13,5 +13,4 @@ MMSOLVER_DEFAULT_SOLVER = @DEFAULT_SOLVER@
 MMSOLVER_DEBUG = 0
 MAYA_CUSTOM_TEMPLATE_PATH +:= scripts/AETemplates
 PYTHONPATH +:= python
-PYTHONPATH +:= python_qtpy
 [r] scripts: scripts

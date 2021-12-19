@@ -73,7 +73,7 @@ MMMarkerScaleNode::MMMarkerScaleNode() {}
 MMMarkerScaleNode::~MMMarkerScaleNode() {}
 
 MString MMMarkerScaleNode::nodeName() {
-    return MString("mmMarkerScale");
+    return MString(MM_MARKER_SCALE_TYPE_NAME);
 }
 
 MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {

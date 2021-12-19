@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2021 David Cattermole, Kazuma Tonegawa.
 #
 # This file is part of mmSolver.
 #
@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-The Center 2D tool.
+The Center 2D tool with offset features.
 """
 
 import warnings
@@ -25,6 +25,7 @@ import maya.cmds
 
 import mmSolver.api as mmapi
 import mmSolver.logger
+import mmSolver.tools.centertwodee.lib as lib
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.reproject as reproject_utils
 
@@ -59,6 +60,8 @@ def main():
         return
 
     try:
+        # Set the solver 'running' flag so that the Solver UI does not
+        # update.
         mmapi.set_solver_running(True)
 
         save_sel = maya.cmds.ls(selection=True, long=True) or []
@@ -101,6 +104,28 @@ def main():
                 cam_tfm, cam_shp)
             reproject_utils.connect_transform_to_reprojection(
                 nodes[0], reproj_node)
+
+            # create 2d offset setup
+            offset_plus_minus_node = maya.cmds.createNode(
+                'plusMinusAverage',
+                name='offset_plusMinusAverage1')
+            maya.cmds.connectAttr(
+                reproj_node + '.outPan',
+                offset_plus_minus_node + '.input2D[0]')
+            maya.cmds.setAttr(
+                offset_plus_minus_node + '.input2D[1]',
+                0.0,
+                0.0,
+                type='float2')
+            maya.cmds.connectAttr(
+                offset_plus_minus_node + '.output2D.output2Dx',
+                cam_shp + '.pan.horizontalPan',
+                force=True)
+            maya.cmds.connectAttr(
+                offset_plus_minus_node + '.output2D.output2Dy',
+                cam_shp + '.pan.verticalPan',
+                force=True)
+
         elif len(nodes) > 1:
             msg = 'Please select only 1 node to center on.'
             LOG.error(msg)
@@ -141,3 +166,13 @@ def remove():
 def center_two_dee():
     warnings.warn("Use 'main' function instead.")
     main()
+
+
+def center_two_dee_ui():
+    model_editor = viewport_utils.get_active_model_editor()
+    if model_editor is None:
+        msg = 'Please select an active 3D viewport.'
+        LOG.warning(msg)
+        return
+    import mmSolver.tools.centertwodee.ui.centertwodee_window as window
+    window.main()

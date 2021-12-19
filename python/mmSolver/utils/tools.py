@@ -37,7 +37,8 @@ def tool_context(use_undo_chunk=None,
                  pre_update_frame=None,
                  post_update_frame=None,
                  use_dg_evaluation_mode=None,
-                 disable_viewport=None):
+                 disable_viewport=None,
+                 disable_viewport_mode=None):
     """
     Create a temporary tool context.
 
@@ -95,6 +96,10 @@ def tool_context(use_undo_chunk=None,
         viewport to update many times.
     :type disable_viewport: bool or None
 
+    :param disable_viewport_mode: Use the given technique to disable and
+        re-enable the Maya viewport (using the "disable_viewport" flag).
+    :type disable_viewport_mode: mmSolver.utils.constant.DISABLE_VIEWPORT_MODE_*_VALUE
+
     :return: Yields (returns) a unique context hash id.
     """
     # Defaults
@@ -118,32 +123,33 @@ def tool_context(use_undo_chunk=None,
         # TODO: Test that DG mode is actually faster in Maya versions
         # other than 2017.
         use_dg_evaluation_mode = True
-
     # Save current state.
     current_frame = maya.cmds.currentTime(query=True)
     undo_state = maya.cmds.undoInfo(query=True, state=True)
     current_eval_mode = maya.cmds.evaluationManager(query=True, mode=True)
 
     # TRY...
-    if disable_viewport is True:
-        viewport_utils.viewport_turn_off()
-    if use_dg_evaluation_mode is True:
-        # 'off' == turn off the Parallel mode.
-        maya.cmds.evaluationManager(mode='off')
-    if pre_update_frame is True:
-        maya.cmds.currentTime(current_frame, edit=True, update=True)
-    if use_undo_chunk is True and undo_state is True:
-        maya.cmds.undoInfo(openChunk=True, chunkName=undo_chunk_name)
+    try:
+        if disable_viewport is True:
+            viewport_utils.viewport_turn_off(mode=disable_viewport_mode)
+        if use_dg_evaluation_mode is True:
+            # 'off' == turn off the Parallel mode.
+            maya.cmds.evaluationManager(mode='off')
+        if pre_update_frame is True:
+            maya.cmds.currentTime(current_frame, edit=True, update=True)
+        if use_undo_chunk is True and undo_state is True:
+            maya.cmds.undoInfo(openChunk=True, chunkName=undo_chunk_name)
 
-    yield undo_chunk_name
+        yield undo_chunk_name
 
-    # FINALLY, restore original state.
-    if use_undo_chunk is True and undo_state is True:
-        maya.cmds.undoInfo(closeChunk=True, chunkName=undo_chunk_name)
-    if restore_current_frame is True:
-        maya.cmds.currentTime(current_frame, edit=True,
-                              update=post_update_frame)
-    if use_dg_evaluation_mode is True:
-        maya.cmds.evaluationManager(mode=current_eval_mode[0])
-    if disable_viewport is True:
-        viewport_utils.viewport_turn_on()
+    finally:
+        # FINALLY, restore original state.
+        if use_undo_chunk is True and undo_state is True:
+            maya.cmds.undoInfo(closeChunk=True, chunkName=undo_chunk_name)
+        if restore_current_frame is True:
+            maya.cmds.currentTime(current_frame, edit=True,
+                                  update=post_update_frame)
+        if use_dg_evaluation_mode is True:
+            maya.cmds.evaluationManager(mode=current_eval_mode[0])
+        if disable_viewport is True:
+            viewport_utils.viewport_turn_on(mode=disable_viewport_mode)

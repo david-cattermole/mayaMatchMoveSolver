@@ -24,12 +24,13 @@ import time
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
+import mmSolver.constant as mmSolver_const
 import mmSolver.tools.solver.lib.state as lib_state
 
 import mmSolver.tools.solver.ui.ui_solver_layout as ui_solver_layout
@@ -48,7 +49,6 @@ class SolverLayout(QtWidgets.QWidget):
     def __init__(self, parent=None, *args, **kwargs):
         s = time.time()
         super(SolverLayout, self).__init__(*args, **kwargs)
-        s = time.time()
         self.ui = ui_solver_layout.Ui_Form()
         self.ui.setupUi(self)
 
@@ -136,7 +136,8 @@ class SolverLayout(QtWidgets.QWidget):
         if col is not None:
             node = col.get_node()
         title = str(const.WINDOW_TITLE_BAR)
-        title = title.format(node)
+        project_version = mmSolver_const.PROJECT_VERSION
+        title = title.format(version=project_version, collection=node)
         self._parentObject.window().setWindowTitle(title)
         return
 

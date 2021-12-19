@@ -248,6 +248,8 @@ set(SOURCE_FILES
         src/shape/BundleDrawOverride.cpp
         src/shape/SkyDomeShapeNode.cpp
         src/shape/SkyDomeDrawOverride.cpp
+        src/shape/LineShapeNode.cpp
+        src/shape/LineDrawOverride.cpp
         src/mayaUtils.cpp
         src/Camera.h
         src/Camera.cpp

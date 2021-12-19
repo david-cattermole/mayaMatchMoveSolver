@@ -107,4 +107,12 @@
 #define MM_BUNDLE_SHAPE_DISPLAY_FILTER_NAME "mmBundleDisplayFilter"
 #define MM_BUNDLE_SHAPE_DISPLAY_FILTER_LABEL "MM Bundle"
 
+#define MM_LINE_SHAPE_TYPE_ID 0x0012F19A
+#define MM_LINE_SHAPE_TYPE_NAME "mmLineShape"
+#define MM_LINE_DRAW_CLASSIFY "drawdb/geometry/mmSolver/line"
+#define MM_LINE_DRAW_REGISTRANT_ID "mmLineNodePlugin"
+#define MM_LINE_SHAPE_SELECTION_TYPE_NAME "mmLineShapeSelection"
+#define MM_LINE_SHAPE_DISPLAY_FILTER_NAME "mmLineDisplayFilter"
+#define MM_LINE_SHAPE_DISPLAY_FILTER_LABEL "MM Line"
+
 #endif // MM_SOLVER_NODE_TYPE_IDS_H

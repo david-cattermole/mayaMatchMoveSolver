@@ -53,6 +53,8 @@
 #include <shape/BundleDrawOverride.h>
 #include <shape/SkyDomeShapeNode.h>
 #include <shape/SkyDomeDrawOverride.h>
+#include <shape/LineShapeNode.h>
+#include <shape/LineDrawOverride.h>
 
 // MM Renderer
 #include <render/RenderOverride.h>
@@ -217,6 +219,7 @@ MStatus initializePlugin(MObject obj) {
     const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
     const MString bundleClassification = MM_BUNDLE_DRAW_CLASSIFY;
     const MString skyDomeClassification = MM_SKY_DOME_DRAW_CLASSIFY;
+    const MString lineClassification = MM_LINE_DRAW_CLASSIFY;
     REGISTER_LOCATOR_NODE(
         plugin,
         mmsolver::MarkerShapeNode::nodeName(),
@@ -244,6 +247,15 @@ MStatus initializePlugin(MObject obj) {
         MPxNode::kLocatorNode,
         &skyDomeClassification,
         status);
+    REGISTER_LOCATOR_NODE(
+        plugin,
+        mmsolver::LineShapeNode::nodeName(),
+        mmsolver::LineShapeNode::m_id,
+        mmsolver::LineShapeNode::creator,
+        mmsolver::LineShapeNode::initialize,
+        MPxNode::kLocatorNode,
+        &lineClassification,
+        status);
 
     REGISTER_DRAW_OVERRIDE(
         mmsolver::MarkerShapeNode::m_draw_db_classification,
@@ -259,6 +271,11 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::SkyDomeShapeNode::m_draw_db_classification,
         mmsolver::SkyDomeShapeNode::m_draw_registrant_id,
         mmsolver::SkyDomeDrawOverride::Creator,
+        status);
+    REGISTER_DRAW_OVERRIDE(
+        mmsolver::LineShapeNode::m_draw_db_classification,
+        mmsolver::LineShapeNode::m_draw_registrant_id,
+        mmsolver::LineDrawOverride::Creator,
         status);
 
     // MM Marker Group transform
@@ -337,6 +354,13 @@ MStatus initializePlugin(MObject obj) {
     mel_cmd += "\" 1";
     CHECK_MSTATUS(MGlobal::executeCommand(mel_cmd));
 
+    MSelectionMask::registerSelectionType(
+        mmsolver::LineShapeNode::m_selection_type_name, 2);
+    mel_cmd = "selectType -byName \"";
+    mel_cmd += mmsolver::LineShapeNode::m_selection_type_name;
+    mel_cmd += "\" 1";
+    CHECK_MSTATUS(MGlobal::executeCommand(mel_cmd));
+
     // Register plugin display filter.
     // The filter is registered in both interactive and batch mode (Hardware 2.0)
     plugin.registerDisplayFilter(
@@ -351,6 +375,10 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::SkyDomeShapeNode::m_display_filter_name,
         mmsolver::SkyDomeShapeNode::m_display_filter_label,
         mmsolver::SkyDomeShapeNode::m_draw_db_classification);
+    plugin.registerDisplayFilter(
+        mmsolver::LineShapeNode::m_display_filter_name,
+        mmsolver::LineShapeNode::m_display_filter_label,
+        mmsolver::LineShapeNode::m_draw_db_classification);
 
     // Run the Python startup function when the plug-in loads.
     bool displayEnabled = false;

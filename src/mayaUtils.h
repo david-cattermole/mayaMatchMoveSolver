@@ -35,6 +35,7 @@
 #include <maya/MStatus.h>
 #include <maya/MPoint.h>
 #include <maya/MVector.h>
+#include <maya/MMatrix.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MObject.h>
@@ -348,6 +349,24 @@ MStatus getNodeAttr(const MDagPath &objPath,
             value.r = data[0];
             value.g = data[1];
             value.b = data[2];
+            return status;
+        }
+    }
+    return status;
+}
+
+static inline
+MStatus getNodeAttr(const MDagPath &objPath,
+                    const MObject &attr,
+                    MMatrix &value) {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            MDataHandle data_handle = plug.asMDataHandle(&status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            value = data_handle.asMatrix();
             return status;
         }
     }

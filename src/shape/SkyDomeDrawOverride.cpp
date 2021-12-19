@@ -43,7 +43,7 @@ namespace mmsolver {
 
 // Return 'min_value' to 'max_value' linearly, for a 'mix' value
 // between 0.0 and 1.0.
-float lerp(const float min_value, const float max_value, const float mix) {
+double lerp(const double min_value, const double max_value, const double mix) {
   return ((1 - mix) * min_value) + (mix * max_value);
 }
 
@@ -176,6 +176,21 @@ MStatus SkyDomeDrawOverride::get_node_attr(const MDagPath &objPath,
 
 MStatus SkyDomeDrawOverride::get_node_attr(const MDagPath &objPath,
                                            const MObject &attr,
+                                           double &value) const {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            value = plug.asDouble();
+            return status;
+        }
+    }
+    return status;
+}
+
+MStatus SkyDomeDrawOverride::get_node_attr(const MDagPath &objPath,
+                                           const MObject &attr,
                                            MColor &value) const {
     MStatus status;
     MObject node = objPath.node(&status);
@@ -243,7 +258,7 @@ MUserData *SkyDomeDrawOverride::prepareForDraw(
     status = get_node_attr(objPath, SkyDomeShapeNode::m_radius, radius_distance);
     CHECK_MSTATUS(status);
     if (status) {
-        data->m_radius = static_cast<float>(radius_distance.asCentimeters());
+        data->m_radius = radius_distance.asCentimeters();
     }
 
     // Enabled status
@@ -330,11 +345,11 @@ MUserData *SkyDomeDrawOverride::prepareForDraw(
     CHECK_MSTATUS(status);
 
     // Apply global alpha as a multiplier.
-    data->m_axis_x_color[3] *= data->m_alpha;
-    data->m_axis_y_color[3] *= data->m_alpha;
-    data->m_axis_z_color[3] *= data->m_alpha;
-    data->m_grid_lat_color[3] *= data->m_alpha;
-    data->m_grid_long_color[3] *= data->m_alpha;
+    data->m_axis_x_color[3] *= static_cast<float>(data->m_alpha);
+    data->m_axis_y_color[3] *= static_cast<float>(data->m_alpha);
+    data->m_axis_z_color[3] *= static_cast<float>(data->m_alpha);
+    data->m_grid_lat_color[3] *= static_cast<float>(data->m_alpha);
+    data->m_grid_long_color[3] *= static_cast<float>(data->m_alpha);
 
     // Line width
     status = get_node_attr(
@@ -382,9 +397,9 @@ void SkyDomeDrawOverride::addUIDrawables(
         return;
     }
 
-    float pos_x = 0.0f;
-    float pos_y = 0.0f;
-    float pos_z = 0.0f;
+    double pos_x = 0.0;
+    double pos_y = 0.0;
+    double pos_z = 0.0;
     if (data->m_transform_mode == static_cast<short>(TransformMode::kCenterOfCamera)) {
         // Use the camera position.
         MDoubleArray view_pos = frameContext.getTuple(
@@ -397,17 +412,17 @@ void SkyDomeDrawOverride::addUIDrawables(
         CHECK_MSTATUS(status);
         view_point *= matrix_inverse;
 
-        pos_x = static_cast<float>(view_point[0]);
-        pos_y = static_cast<float>(view_point[1]);
-        pos_z = static_cast<float>(view_point[2]);
+        pos_x = static_cast<double>(view_point[0]);
+        pos_y = static_cast<double>(view_point[1]);
+        pos_z = static_cast<double>(view_point[2]);
     }
 
     const uint32_t res = data->m_resolution;
-    const float radius = data->m_radius;
+    const double radius = data->m_radius;
     const uint32_t interval_latitude =
-        static_cast<uint32_t>(std::powf(2, data->m_grid_lat_divisions));
+        static_cast<uint32_t>(std::pow(2, data->m_grid_lat_divisions));
     const uint32_t interval_longitude =
-        static_cast<uint32_t>(std::powf(2, data->m_grid_long_divisions));
+        static_cast<uint32_t>(std::pow(2, data->m_grid_long_divisions));
 
     // Allow skipping only top or bottom.
     auto axis_x_top = data->m_axis_x_enable_top;
@@ -427,39 +442,39 @@ void SkyDomeDrawOverride::addUIDrawables(
             res * 2 * interval_latitude * data->m_grid_lat_enable;
     const uint32_t initial_size_longitude =
             res * 2 * interval_longitude * data->m_grid_long_enable;
-    MFloatPointArray lines_x(initial_size_x);
-    MFloatPointArray lines_y(initial_size_y);
-    MFloatPointArray lines_z(initial_size_z);
-    MFloatPointArray lines_latitude(initial_size_latitude);
-    MFloatPointArray lines_longitude(initial_size_longitude);
+    MPointArray lines_x(initial_size_x);
+    MPointArray lines_y(initial_size_y);
+    MPointArray lines_z(initial_size_z);
+    MPointArray lines_latitude(initial_size_latitude);
+    MPointArray lines_longitude(initial_size_longitude);
 
     auto index = 0;
 
     // Calculate the start/end angle that each component will rotate.
-    const float pi = static_cast<float>(M_PI);
-    const float half_pi = static_cast<float>(M_PI / 2);
-    const float angle_offset_x = pi * 0.5f;
-    const float angle_offset_z = pi;
-    const float angle_offset_lat = pi / 2.0;
-    float angle_start_x = angle_offset_x + (-pi * axis_x_top);
-    float angle_start_z = angle_offset_z + (-pi * axis_z_top);
-    float angle_start_lat = angle_offset_lat + (-half_pi * grid_lat_top);
-    float angle_end_x = angle_offset_x + (pi * axis_x_bot);
-    float angle_end_z = angle_offset_z + (pi * axis_z_bot);
-    float angle_end_lat = angle_offset_lat + (half_pi * grid_lat_bot);
+    const double pi = static_cast<double>(M_PI);
+    const double half_pi = static_cast<double>(M_PI / 2);
+    const double angle_offset_x = pi * 0.5;
+    const double angle_offset_z = pi;
+    const double angle_offset_lat = pi / 2.0;
+    double angle_start_x = angle_offset_x + (-pi * axis_x_top);
+    double angle_start_z = angle_offset_z + (-pi * axis_z_top);
+    double angle_start_lat = angle_offset_lat + (-half_pi * grid_lat_top);
+    double angle_end_x = angle_offset_x + (pi * axis_x_bot);
+    double angle_end_z = angle_offset_z + (pi * axis_z_bot);
+    double angle_end_lat = angle_offset_lat + (half_pi * grid_lat_bot);
 
     // X Axis
     if (data->m_axis_x_enable && (axis_x_top || axis_x_bot)) {
         index = 0;
         for (uint32_t i = 0; i < res; i++) {
-            const float ratio1 = static_cast<float>(i) / static_cast<float>(res);
-            const float ratio2 = static_cast<float>(i + 1) / static_cast<float>(res);
-            const float angle1 = lerp(angle_start_x, angle_end_x, ratio1);
-            const float angle2 = lerp(angle_start_x, angle_end_x, ratio2);
-            const float x1 = radius * std::cosf(angle1);
-            const float x2 = radius * std::cosf(angle2);
-            const float y1 = radius * std::sinf(angle1);
-            const float y2 = radius * std::sinf(angle2);
+            const double ratio1 = static_cast<double>(i) / static_cast<double>(res);
+            const double ratio2 = static_cast<double>(i + 1) / static_cast<double>(res);
+            const double angle1 = lerp(angle_start_x, angle_end_x, ratio1);
+            const double angle2 = lerp(angle_start_x, angle_end_x, ratio2);
+            const double x1 = radius * std::cos(angle1);
+            const double x2 = radius * std::cos(angle2);
+            const double y1 = radius * std::sin(angle1);
+            const double y2 = radius * std::sin(angle2);
 
             lines_x.set(
                 index,
@@ -479,14 +494,14 @@ void SkyDomeDrawOverride::addUIDrawables(
     if (data->m_axis_y_enable) {
         index = 0;
         for (uint32_t i = 0; i < res; i++) {
-            const float ratio1 = static_cast<float>(i) / static_cast<float>(res);
-            const float ratio2 = static_cast<float>(i + 1) / static_cast<float>(res);
-            const float angle1 = 2.0f * pi * ratio1;
-            const float angle2 = 2.0f * pi * ratio2;
-            const float x1 = radius * std::cosf(angle1);
-            const float x2 = radius * std::cosf(angle2);
-            const float y1 = radius * std::sinf(angle1);
-            const float y2 = radius * std::sinf(angle2);
+            const double ratio1 = static_cast<double>(i) / static_cast<double>(res);
+            const double ratio2 = static_cast<double>(i + 1) / static_cast<double>(res);
+            const double angle1 = 2.0f * pi * ratio1;
+            const double angle2 = 2.0f * pi * ratio2;
+            const double x1 = radius * std::cos(angle1);
+            const double x2 = radius * std::cos(angle2);
+            const double y1 = radius * std::sin(angle1);
+            const double y2 = radius * std::sin(angle2);
             lines_y.set(
                 index,
                 pos_x + x1,
@@ -505,14 +520,14 @@ void SkyDomeDrawOverride::addUIDrawables(
     if (data->m_axis_z_enable && (axis_z_top || axis_z_bot)) {
         index = 0;
         for (uint32_t i = 0; i < res; i++) {
-            const float ratio1 = static_cast<float>(i) / static_cast<float>(res);
-            const float ratio2 = static_cast<float>(i + 1) / static_cast<float>(res);
-            const float angle1 = lerp(angle_start_z, angle_end_z, ratio1);
-            const float angle2 = lerp(angle_start_z, angle_end_z, ratio2);
-            const float x1 = radius * std::cosf(angle1);
-            const float x2 = radius * std::cosf(angle2);
-            const float y1 = radius * std::sinf(angle1);
-            const float y2 = radius * std::sinf(angle2);
+            const double ratio1 = static_cast<double>(i) / static_cast<double>(res);
+            const double ratio2 = static_cast<double>(i + 1) / static_cast<double>(res);
+            const double angle1 = lerp(angle_start_z, angle_end_z, ratio1);
+            const double angle2 = lerp(angle_start_z, angle_end_z, ratio2);
+            const double x1 = radius * std::cos(angle1);
+            const double x2 = radius * std::cos(angle2);
+            const double y1 = radius * std::sin(angle1);
+            const double y2 = radius * std::sin(angle2);
 
             lines_z.set(
                 index,
@@ -534,25 +549,25 @@ void SkyDomeDrawOverride::addUIDrawables(
     if (data->m_grid_lat_enable && (grid_lat_top || grid_lat_bot)) {
         index = 0;
         for (uint32_t i = 0; i < interval_latitude; i++) {
-            const float outer_ratio =
-                    static_cast<float>(i) / static_cast<float>(interval_latitude);
-            const float outer_angle = 2.0f * pi * outer_ratio;
-            const float x = std::cosf(outer_angle);
-            const float y = std::sinf(outer_angle);
+            const double outer_ratio =
+                    static_cast<double>(i) / static_cast<double>(interval_latitude);
+            const double outer_angle = 2.0f * pi * outer_ratio;
+            const double x = std::cos(outer_angle);
+            const double y = std::sin(outer_angle);
 
             for (uint32_t j = 0; j < res; j++) {
-                const float inner_ratio1 =
-                    static_cast<float>(j) / static_cast<float>(res);
-                const float inner_ratio2 =
-                    static_cast<float>(j + 1) / static_cast<float>(res);
-                const float inner_angle1 =
+                const double inner_ratio1 =
+                    static_cast<double>(j) / static_cast<double>(res);
+                const double inner_ratio2 =
+                    static_cast<double>(j + 1) / static_cast<double>(res);
+                const double inner_angle1 =
                     lerp(angle_start_lat, angle_end_lat, inner_ratio1);
-                const float inner_angle2 =
+                const double inner_angle2 =
                     lerp(angle_start_lat, angle_end_lat, inner_ratio2);
-                const float xy1 = radius * std::cosf(inner_angle1);
-                const float xy2 = radius * std::cosf(inner_angle2);
-                const float z1 = radius * std::sinf(inner_angle1);
-                const float z2 = radius * std::sinf(inner_angle2);
+                const double xy1 = radius * std::cos(inner_angle1);
+                const double xy2 = radius * std::cos(inner_angle2);
+                const double z1 = radius * std::sin(inner_angle1);
+                const double z2 = radius * std::sin(inner_angle2);
 
                 lines_latitude.set(
                     index,
@@ -573,11 +588,11 @@ void SkyDomeDrawOverride::addUIDrawables(
     if (data->m_grid_long_enable && (grid_long_top || grid_long_bot)) {
         index = 0;
         for (uint32_t j = 0; j < interval_longitude; j++) {
-            const float outer_ratio =
-                static_cast<float>(j) / static_cast<float>(interval_longitude);
-            const float outer_angle = 2.0f * pi * outer_ratio;
-            const float xy = radius * std::cosf(outer_angle);
-            const float z = radius * std::sinf(outer_angle);
+            const double outer_ratio =
+                static_cast<double>(j) / static_cast<double>(interval_longitude);
+            const double outer_angle = 2.0f * pi * outer_ratio;
+            const double xy = radius * std::cos(outer_angle);
+            const double z = radius * std::sin(outer_angle);
 
             if (!grid_long_top && (z > 0.0f)) {
                 continue;
@@ -587,14 +602,14 @@ void SkyDomeDrawOverride::addUIDrawables(
             }
 
             for (uint32_t i = 0; i < res; i++) {
-                const float ratio1 = static_cast<float>(i) / static_cast<float>(res);
-                const float ratio2 = static_cast<float>(i + 1) / static_cast<float>(res);
-                const float angle1 = 2.0f * pi * ratio1;
-                const float angle2 = 2.0f * pi * ratio2;
-                const float x1 = xy * std::cosf(angle1);
-                const float x2 = xy * std::cosf(angle2);
-                const float y1 = xy * std::sinf(angle1);
-                const float y2 = xy * std::sinf(angle2);
+                const double ratio1 = static_cast<double>(i) / static_cast<double>(res);
+                const double ratio2 = static_cast<double>(i + 1) / static_cast<double>(res);
+                const double angle1 = 2.0f * pi * ratio1;
+                const double angle2 = 2.0f * pi * ratio2;
+                const double x1 = xy * std::cos(angle1);
+                const double x2 = xy * std::cos(angle2);
+                const double y1 = xy * std::sin(angle1);
+                const double y2 = xy * std::sin(angle2);
 
                 lines_longitude.set(
                     index,
@@ -624,7 +639,7 @@ void SkyDomeDrawOverride::addUIDrawables(
         // Latitude
         if (data->m_grid_lat_enable) {
             drawManager.setLineWidth(
-                    data->m_line_width * data->m_grid_lat_line_width);
+                static_cast<float>(data->m_line_width * data->m_grid_lat_line_width));
             drawManager.setColor(data->m_grid_lat_color);
             drawManager.mesh(
                 MHWRender::MUIDrawManager::kLines,
@@ -634,7 +649,7 @@ void SkyDomeDrawOverride::addUIDrawables(
         // Longitude
         if (data->m_grid_long_enable) {
             drawManager.setLineWidth(
-                    data->m_line_width * data->m_grid_long_line_width);
+                static_cast<float>(data->m_line_width * data->m_grid_long_line_width));
             drawManager.setColor(data->m_grid_long_color);
             drawManager.mesh(
                 MHWRender::MUIDrawManager::kLines,
@@ -644,7 +659,7 @@ void SkyDomeDrawOverride::addUIDrawables(
         // X Axis
         if (data->m_axis_x_enable) {
             drawManager.setLineWidth(
-                    data->m_line_width * data->m_axis_x_line_width);
+                static_cast<float>(data->m_line_width * data->m_axis_x_line_width));
             drawManager.setColor(data->m_axis_x_color);
             drawManager.mesh(
                 MHWRender::MUIDrawManager::kLines,
@@ -654,7 +669,7 @@ void SkyDomeDrawOverride::addUIDrawables(
         // Y Axis
         if (data->m_axis_y_enable) {
             drawManager.setLineWidth(
-                    data->m_line_width * data->m_axis_y_line_width);
+                static_cast<float>(data->m_line_width * data->m_axis_y_line_width));
             drawManager.setColor(data->m_axis_y_color);
             drawManager.mesh(
                 MHWRender::MUIDrawManager::kLines,
@@ -664,7 +679,7 @@ void SkyDomeDrawOverride::addUIDrawables(
         // Z Axis
         if (data->m_axis_z_enable) {
             drawManager.setLineWidth(
-                    data->m_line_width * data->m_axis_z_line_width);
+                static_cast<float>(data->m_line_width * data->m_axis_z_line_width));
             drawManager.setColor(data->m_axis_z_color);
             drawManager.mesh(
                 MHWRender::MUIDrawManager::kLines,

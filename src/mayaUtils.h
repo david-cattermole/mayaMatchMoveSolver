@@ -320,6 +320,22 @@ MStatus getNodeAttr(const MDagPath &objPath,
 static inline
 MStatus getNodeAttr(const MDagPath &objPath,
                     const MObject &attr,
+                    double &value) {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            value = plug.asDouble();
+            return status;
+        }
+    }
+    return status;
+}
+
+static inline
+MStatus getNodeAttr(const MDagPath &objPath,
+                    const MObject &attr,
                     MColor &value) {
     MStatus status;
     MObject node = objPath.node(&status);

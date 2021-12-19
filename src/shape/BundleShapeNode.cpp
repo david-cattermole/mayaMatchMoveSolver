@@ -91,7 +91,7 @@ MBoundingBox BundleShapeNode::boundingBox() const {
     MPoint corner1(-1.0, -1.0, -1.0);
     MPoint corner2(1.0, 1.0, 1.0);
 
-    float icon_size = 0.0f;
+    double icon_size = 0.0;
     MObject thisNode = thisMObject();
     MPlug plug(thisNode, m_icon_size);
     plug.getValue(icon_size);
@@ -156,12 +156,12 @@ MStatus BundleShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setDefault(0.0f, 1.0f, 0.0f));
 
     // Alpha
-    auto alpha_min = 0.0f;
-    auto alpha_max = 1.0f;
-    auto alpha_default = 1.0f;
+    auto alpha_min = 0.0;
+    auto alpha_max = 1.0;
+    auto alpha_default = 1.0;
     m_alpha = nAttr.create(
         "alpha", "alp",
-        MFnNumericData::kFloat, alpha_default);
+        MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
@@ -169,11 +169,11 @@ MStatus BundleShapeNode::initialize() {
 
     // Line Width
     auto line_width_min = 0.01;
-    auto line_width_soft_min = 0.1f;
-    auto line_width_soft_max = 10.0f;
+    auto line_width_soft_min = 0.1;
+    auto line_width_soft_max = 10.0;
     m_line_width = nAttr.create(
         "lineWidth", "lnwd",
-        MFnNumericData::kFloat, 1.0f);
+        MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
@@ -182,11 +182,11 @@ MStatus BundleShapeNode::initialize() {
 
     // Point size
     auto point_size_min = 0.0;
-    auto point_size_soft_min = 0.5f;
-    auto point_size_soft_max = 10.0f;
+    auto point_size_soft_min = 0.5;
+    auto point_size_soft_max = 10.0;
     m_point_size = nAttr.create(
         "pointSize", "ptsz",
-        MFnNumericData::kFloat, 4.0f);
+        MFnNumericData::kDouble, 4.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(point_size_min));
@@ -197,7 +197,7 @@ MStatus BundleShapeNode::initialize() {
     auto icon_size_min = 0.0;
     m_icon_size = nAttr.create(
         "iconSize", "icnsz",
-        MFnNumericData::kFloat, 10.0f);
+        MFnNumericData::kDouble, 10.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(icon_size_min));

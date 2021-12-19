@@ -96,7 +96,7 @@ MBoundingBox BundleDrawOverride::boundingBox(
     MPoint corner1(-1.0, -1.0, -1.0);
     MPoint corner2(1.0, 1.0, 1.0);
 
-    float icon_size = 0.0f;
+    double icon_size = 0.0;
     MStatus status = getNodeAttr(objPath, BundleShapeNode::m_icon_size, icon_size);
 
     corner1 = corner1 * icon_size;
@@ -125,9 +125,9 @@ MUserData *BundleDrawOverride::prepareForDraw(
     MDoubleArray pixel_size_array =
         frameContext.getTuple(MFrameContext::kViewportPixelSize, &status);
     CHECK_MSTATUS(status);
-    float pixel_size_x = static_cast<float>(1.0 / pixel_size_array[0]);
+    double pixel_size_x = 1.0 / pixel_size_array[0];
 
-    float icon_size = 0.0f;
+    double icon_size = 0.0;
     status = getNodeAttr(objPath, BundleShapeNode::m_icon_size, icon_size);
     data->m_icon_size = icon_size * pixel_size_x;
 
@@ -227,8 +227,7 @@ void BundleDrawOverride::addUIDrawables(
     // Get distance from camera to transform center.
     MPoint origin(0.0, 0.0, 0.0);
     origin *= matrix;
-    float scale =
-        static_cast<float>(camera_pos.distanceTo(origin)) * data->m_icon_size;
+    double scale = camera_pos.distanceTo(origin) * data->m_icon_size;
     MPointArray cross_line_list(data->m_cross_line_list.length());
     for (uint32_t i = 0; i < data->m_cross_line_list.length(); i++) {
         MPoint orig = data->m_cross_line_list[i];
@@ -243,17 +242,17 @@ void BundleDrawOverride::addUIDrawables(
     // on-top.
     drawManager.beginDrawable(MHWRender::MUIDrawManager::kSelectable);
     drawManager.setColor(data->m_color);
-    drawManager.setLineWidth(data->m_line_width);
+    drawManager.setLineWidth(static_cast<float>(data->m_line_width));
     drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
-    drawManager.setPointSize(data->m_point_size);
+    drawManager.setPointSize(static_cast<float>(data->m_point_size));
     drawManager.setDepthPriority(data->m_depth_priority);
 
     if (data->m_active || data->m_draw_on_top) {
         drawManager.beginDrawInXray();
         drawManager.setColor(data->m_color);
-        drawManager.setLineWidth(data->m_line_width);
+        drawManager.setLineWidth(static_cast<float>(data->m_line_width));
         drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
-        drawManager.setPointSize(data->m_point_size);
+        drawManager.setPointSize(static_cast<float>(data->m_point_size));
         drawManager.setDepthPriority(data->m_depth_priority);
     }
 

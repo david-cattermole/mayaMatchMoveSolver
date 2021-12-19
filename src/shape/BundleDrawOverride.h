@@ -57,9 +57,9 @@ public:
 
     MString m_name;
     bool m_active;
-    float m_point_size;
-    float m_line_width;
-    float m_icon_size;
+    double m_point_size;
+    double m_line_width;
+    double m_icon_size;
     MColor m_color{1.0f, 0.0f, 0.0f, 1.0f};
     bool m_draw_on_top;
     bool m_draw_name;

@@ -299,11 +299,11 @@ MStatus SkyDomeShapeNode::initialize() {
 
     // Line Width multiplier
     auto line_width_min = 0.01;
-    auto line_width_soft_min = 0.1f;
-    auto line_width_soft_max = 10.0f;
+    auto line_width_soft_min = 0.1;
+    auto line_width_soft_max = 10.0;
     m_line_width = nAttr.create(
         "lineWidth", "lnwd",
-        MFnNumericData::kFloat, 1.0f);
+        MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
@@ -311,13 +311,13 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
 
     line_width_min = 0.01;
-    line_width_soft_min = 1.0f;
-    line_width_soft_max = 10.0f;
+    line_width_soft_min = 1.0;
+    line_width_soft_max = 10.0;
 
     // Axis Line Widths
     m_axis_x_line_width = nAttr.create(
         "axisLineWidthX", "alwx",
-        MFnNumericData::kFloat, 2.0f);
+        MFnNumericData::kDouble, 2.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
@@ -326,7 +326,7 @@ MStatus SkyDomeShapeNode::initialize() {
 
     m_axis_y_line_width = nAttr.create(
         "axisLineWidthY", "alwy",
-        MFnNumericData::kFloat, 2.0f);
+        MFnNumericData::kDouble, 2.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
@@ -335,7 +335,7 @@ MStatus SkyDomeShapeNode::initialize() {
 
     m_axis_z_line_width = nAttr.create(
         "axisLineWidthZ", "alwz",
-        MFnNumericData::kFloat, 2.0f);
+        MFnNumericData::kDouble, 2.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
@@ -345,7 +345,7 @@ MStatus SkyDomeShapeNode::initialize() {
     // Grid Lat/Long Line Widths
     m_grid_lat_line_width = nAttr.create(
         "gridLatitudeLineWidth", "grltlw",
-        MFnNumericData::kFloat, 1.0f);
+        MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
@@ -354,7 +354,7 @@ MStatus SkyDomeShapeNode::initialize() {
 
     m_grid_long_line_width = nAttr.create(
         "gridLongitudeLineWidth", "grlglw",
-        MFnNumericData::kFloat, 1.0f);
+        MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
@@ -393,23 +393,23 @@ MStatus SkyDomeShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setDefault(0.0f, 1.0f, 1.0f));
 
     // Alpha multiplier
-    auto alpha_min = 0.0f;
-    auto alpha_max = 1.0f;
-    auto alpha_soft_max = 1.0f;
-    auto alpha_default = 1.0f;
+    auto alpha_min = 0.0;
+    auto alpha_max = 1.0;
+    auto alpha_soft_max = 1.0;
+    auto alpha_default = 1.0;
     m_alpha = nAttr.create(
         "alpha", "alp",
-        MFnNumericData::kFloat, alpha_default);
+        MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
     CHECK_MSTATUS(nAttr.setSoftMax(alpha_soft_max));
 
     // Axis Alphas
-    alpha_default = 1.0f;
+    alpha_default = 1.0;
     m_axis_x_alpha = nAttr.create(
         "axisAlphaX", "aaplx",
-        MFnNumericData::kFloat, alpha_default);
+        MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
@@ -417,7 +417,7 @@ MStatus SkyDomeShapeNode::initialize() {
 
     m_axis_y_alpha = nAttr.create(
         "axisAlphaY", "aaply",
-        MFnNumericData::kFloat, alpha_default);
+        MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
@@ -425,17 +425,17 @@ MStatus SkyDomeShapeNode::initialize() {
 
     m_axis_z_alpha = nAttr.create(
         "axisAlphaZ", "aalpz",
-        MFnNumericData::kFloat, alpha_default);
+        MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
     CHECK_MSTATUS(nAttr.setMax(alpha_max));
 
     // Grid Lat/Long Alphas
-    alpha_default = 0.5f;
+    alpha_default = 0.5;
     m_grid_lat_alpha = nAttr.create(
         "gridLatitudeAlpha", "grltalp",
-        MFnNumericData::kFloat, alpha_default);
+        MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
@@ -443,7 +443,7 @@ MStatus SkyDomeShapeNode::initialize() {
 
     m_grid_long_alpha = nAttr.create(
         "gridLongitudeAlpha", "grlgalp",
-        MFnNumericData::kFloat, alpha_default);
+        MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));

@@ -81,11 +81,11 @@ public:
     }
 
     bool m_enable;
-    float m_alpha;
-    float m_line_width;
+    double m_alpha;
+    double m_line_width;
     short m_draw_mode;
     short m_transform_mode;
-    float m_radius;
+    double m_radius;
     uint32_t m_resolution;
     unsigned int m_depth_priority;
 
@@ -99,12 +99,12 @@ public:
     MColor m_axis_x_color{1.0f, 0.0f, 0.0f, 1.0f};
     MColor m_axis_y_color{0.0f, 1.0f, 0.0f, 1.0f};
     MColor m_axis_z_color{0.0f, 0.0f, 1.0f, 1.0f};
-    float m_axis_x_alpha;
-    float m_axis_y_alpha;
-    float m_axis_z_alpha;
-    float m_axis_x_line_width;
-    float m_axis_y_line_width;
-    float m_axis_z_line_width;
+    double m_axis_x_alpha;
+    double m_axis_y_alpha;
+    double m_axis_z_alpha;
+    double m_axis_x_line_width;
+    double m_axis_y_line_width;
+    double m_axis_z_line_width;
 
     bool m_grid_lat_enable;
     bool m_grid_long_enable;
@@ -116,10 +116,10 @@ public:
     uint32_t m_grid_long_divisions;
     MColor m_grid_lat_color{1.0f, 0.0f, 1.0f, 0.1f};
     MColor m_grid_long_color{0.0f, 1.0f, 1.0f, 0.1f};
-    float m_grid_lat_alpha;
-    float m_grid_long_alpha;
-    float m_grid_lat_line_width;
-    float m_grid_long_line_width;
+    double m_grid_lat_alpha;
+    double m_grid_long_alpha;
+    double m_grid_lat_line_width;
+    double m_grid_long_line_width;
 };
 
 class SkyDomeDrawOverride : public MHWRender::MPxDrawOverride {
@@ -192,6 +192,10 @@ private:
         const MDagPath &objPath,
         const MObject &attr,
         float &value) const;
+    MStatus get_node_attr(
+        const MDagPath &objPath,
+        const MObject &attr,
+        double &value) const;
     MStatus get_node_attr(
         const MDagPath &objPath,
         const MObject &attr,

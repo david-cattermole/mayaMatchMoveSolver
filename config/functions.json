@@ -722,6 +722,7 @@
             "name": "Camera Tools",
             "name_shelf": "",
             "tooltip": "Camera Tools",
+            "icon_shelf": "cameraTools_32x32.png",
             "command": ["pass"]
         },
         "camera_calibration_create_setup": {

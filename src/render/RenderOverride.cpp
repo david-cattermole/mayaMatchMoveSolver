@@ -49,7 +49,7 @@
 #include <maya/MViewport2Renderer.h>
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
 // Set up operations
 RenderOverride::RenderOverride(const MString &name)
@@ -819,5 +819,5 @@ void RenderOverride::render_override_change_func(const MString& panel_name,
 }
 
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver

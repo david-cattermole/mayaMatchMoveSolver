@@ -17,44 +17,38 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * A full-screen quad render, with a shader applied.
  */
 
-#ifndef MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_COPY_H
-#define MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_COPY_H
-
+#include "constants.h"
 #include "QuadRenderBase.h"
 
-#include <maya/MString.h>
-#include <maya/MViewport2Renderer.h>
-#include <maya/MRenderTargetManager.h>
-
+#include <maya/MShaderManager.h>
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
-class QuadRenderCopy : public QuadRenderBase {
-public:
-    QuadRenderCopy(const MString &name);
-    ~QuadRenderCopy() override;
+// Render a full-screen quad, with a preset shader applied.
+//
+// Reads from 'auxiliary' Target, and writes to 'main' Target.
+//
+QuadRenderBase::QuadRenderBase(const MString &name)
+        : MQuadRender(name),
+          m_targets(nullptr),
+          m_target_index(0),
+          m_target_count(0),
+          m_clear_mask(MHWRender::MClearOperation::kClearNone) {
+}
 
-    const MHWRender::MShaderInstance *shader() override;
+QuadRenderBase::~QuadRenderBase() {
+    m_targets = nullptr;
+}
 
-    MHWRender::MRenderTarget* const* targetOverrideList(unsigned int &listSize) override;
+MHWRender::MClearOperation &
+QuadRenderBase::clearOperation() {
+    mClearOperation.setClearGradient(false);
+    mClearOperation.setMask(m_clear_mask);
+    return mClearOperation;
+}
 
-    void
-    setInputTarget(const uint32_t index) {
-        m_target_index_input = index;
-    }
-
-protected:
-    // Shader to use for the quad render
-    MHWRender::MShaderInstance *m_shader_instance;
-
-    uint32_t m_target_index_input;
-};
-
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver
-
-#endif // MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_COPY_H

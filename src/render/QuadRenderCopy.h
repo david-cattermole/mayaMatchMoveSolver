@@ -17,48 +17,44 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
+ * A full-screen quad render, with a shader applied.
  */
 
-#ifndef MAYA_MM_SOLVER_MM_RENDERER_PRESENT_TARGET_H
-#define MAYA_MM_SOLVER_MM_RENDERER_PRESENT_TARGET_H
+#ifndef MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_COPY_H
+#define MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_COPY_H
+
+#include "QuadRenderBase.h"
 
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 #include <maya/MRenderTargetManager.h>
 
+
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
-class PresentTarget : public MHWRender::MPresentTarget {
+class QuadRenderCopy : public QuadRenderBase {
 public:
-    PresentTarget(const MString &name);
+    QuadRenderCopy(const MString &name);
+    ~QuadRenderCopy() override;
 
-    ~PresentTarget() override;
+    const MHWRender::MShaderInstance *shader() override;
 
-    MHWRender::MRenderTarget *const *
-    targetOverrideList(unsigned int &listSize) override;
+    MHWRender::MRenderTarget* const* targetOverrideList(unsigned int &listSize) override;
 
     void
-    setRenderTargets(MHWRender::MRenderTarget **targets,
-                     const uint32_t index,
-                     const uint32_t count) {
-        m_targets = targets;
-        m_target_index = index;
-        m_target_count = count;
+    setInputTarget(const uint32_t index) {
+        m_target_index_input = index;
     }
 
 protected:
-    // Targets to be used for operation
-    MHWRender::MRenderTarget **m_targets;
+    // Shader to use for the quad render
+    MHWRender::MShaderInstance *m_shader_instance;
 
-    // The index (and count) into the m_targets list of pointers. We
-    // are able to give the exact targets.
-    uint32_t m_target_index;
-    uint32_t m_target_count;
-
+    uint32_t m_target_index_input;
 };
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver
 
-#endif //MAYA_MM_SOLVER_MM_RENDERER_PRESENT_TARGET_H
+#endif // MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_COPY_H

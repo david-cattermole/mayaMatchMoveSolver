@@ -20,8 +20,8 @@
  * A full-screen quad render, with a shader applied.
  */
 
-#ifndef MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_INVERT_H
-#define MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_INVERT_H
+#ifndef MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_BLEND_H
+#define MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_BLEND_H
 
 #include "QuadRenderBase.h"
 
@@ -31,30 +31,44 @@
 
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
-class QuadRenderInvert : public QuadRenderBase {
+class QuadRenderBlend : public QuadRenderBase {
 public:
-    QuadRenderInvert(const MString &name);
-    ~QuadRenderInvert() override;
+    QuadRenderBlend(const MString &name);
+    ~QuadRenderBlend() override;
 
     MHWRender::MRenderTarget* const* targetOverrideList(unsigned int &listSize) override;
 
     const MHWRender::MShaderInstance *shader() override;
 
     void
-    setInputTarget(const uint32_t index) {
-        m_target_index_input = index;
+    setInputTarget1(const uint32_t index) {
+        m_target_index_input1 = index;
+    }
+
+    void
+    setInputTarget2(const uint32_t index) {
+        m_target_index_input2 = index;
+    }
+
+    void
+    setBlend(const float value) {
+        m_blend = value;
     }
 
 protected:
     // Shader to use for the quad render
     MHWRender::MShaderInstance *m_shader_instance;
 
-    uint32_t m_target_index_input;
+    // The target indexes for render targets used to blend between.
+    uint32_t m_target_index_input1;
+    uint32_t m_target_index_input2;
+
+    float m_blend;
 };
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver
 
-#endif // MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_INVERT_H
+#endif // MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_BLEND_H

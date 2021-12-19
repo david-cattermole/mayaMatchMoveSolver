@@ -17,25 +17,30 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * A full-screen quad render, with a shader applied.
  */
 
-#ifndef MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_BASE_H
-#define MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_BASE_H
+#ifndef MAYA_MM_SOLVER_MM_RENDERER_HUD_RENDER_H
+#define MAYA_MM_SOLVER_MM_RENDERER_HUD_RENDER_H
 
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 #include <maya/MRenderTargetManager.h>
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
-class QuadRenderBase : public MHWRender::MQuadRender {
+// Heads up display
+class HudRender : public MHWRender::MHUDRender {
 public:
-    QuadRenderBase(const MString &name);
-    ~QuadRenderBase() override;
+    HudRender();
+    ~HudRender() override;
 
-    MHWRender::MClearOperation &clearOperation() override;
+    MHWRender::MRenderTarget *const *
+    targetOverrideList(unsigned int &listSize) override;
+
+    bool hasUIDrawables() const override;
+    void addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
+                        const MHWRender::MFrameContext &frameContext) override;
 
     void
     setRenderTargets(MHWRender::MRenderTarget **targets,
@@ -46,39 +51,18 @@ public:
         m_target_count = count;
     }
 
-    const MFloatPoint & viewRectangle() const {
-        return m_view_rectangle;
-    }
-
-    void setViewRectangle(const MFloatPoint & rect) {
-        m_view_rectangle = rect;
-    }
-
-    uint32_t clearMask() {
-        return m_clear_mask;
-    }
-
-    void setClearMask(const uint32_t clear_mask) {
-        m_clear_mask = clear_mask;
-    }
-
 protected:
-    // Targets used as input parameters to mShaderInstance;
-    MHWRender::MRenderTarget** m_targets;
+    // Targets to be used for operation
+    MHWRender::MRenderTarget **m_targets;
 
     // The index (and count) into the m_targets list of pointers. We
     // are able to give the exact targets.
     uint32_t m_target_index;
     uint32_t m_target_count;
 
-    // View rectangle
-    MFloatPoint m_view_rectangle;
-
-    // How the clear operation works?
-    uint32_t m_clear_mask;
 };
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver
 
-#endif // MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_BASE_H
+#endif //MAYA_MM_SOLVER_MM_RENDERER_HUD_RENDER_H

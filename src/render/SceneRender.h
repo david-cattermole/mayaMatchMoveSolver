@@ -35,7 +35,7 @@
 #include <maya/MRenderTargetManager.h>
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
 class SceneRender : public MHWRender::MSceneRender {
 public:
@@ -167,7 +167,7 @@ protected:
     M3dView::DisplayStyle m_prev_display_style;
 };
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver
 
 #endif //MAYA_MM_SOLVER_MM_RENDERER_SCENE_RENDER_H

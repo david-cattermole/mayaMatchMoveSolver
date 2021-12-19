@@ -20,35 +20,43 @@
  */
 
 #include "constants.h"
-#include "QuadRenderBase.h"
+#include "PresentTarget.h"
 
+#include <maya/MStreamUtils.h>
 #include <maya/MShaderManager.h>
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
-// Render a full-screen quad, with a preset shader applied.
+// Custom present target operation
 //
-// Reads from 'auxiliary' Target, and writes to 'main' Target.
+// There is not much in this operation except to override which
+// targets will be presented.
 //
-QuadRenderBase::QuadRenderBase(const MString &name)
-        : MQuadRender(name),
+// This differs from scene and quad operations which generally use
+// targets as the place to render into.
+//
+PresentTarget::PresentTarget(const MString &name)
+        : MPresentTarget(name),
           m_targets(nullptr),
           m_target_index(0),
-          m_target_count(0),
-          m_clear_mask(MHWRender::MClearOperation::kClearNone) {
+          m_target_count(0) {
 }
 
-QuadRenderBase::~QuadRenderBase() {
+PresentTarget::~PresentTarget() {
     m_targets = nullptr;
 }
 
-MHWRender::MClearOperation &
-QuadRenderBase::clearOperation() {
-    mClearOperation.setClearGradient(false);
-    mClearOperation.setMask(m_clear_mask);
-    return mClearOperation;
+// Called by Maya.
+MHWRender::MRenderTarget *const *
+PresentTarget::targetOverrideList(unsigned int &listSize) {
+    if (m_targets && (m_target_count > 0)) {
+        listSize = m_target_count;
+        return &m_targets[m_target_index];
+    }
+    listSize = 0;
+    return nullptr;
 }
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver

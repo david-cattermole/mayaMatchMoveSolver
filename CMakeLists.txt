@@ -225,17 +225,17 @@ set(SOURCE_FILES
         src/core/bundleAdjust_cminpack_lmdif.cpp
         src/core/bundleAdjust_cminpack_lmder.h
         src/core/bundleAdjust_cminpack_lmder.cpp
-        src/renderer/MMRendererCmd.cpp
-        src/renderer/RenderGlobalsNode.cpp
-        src/renderer/QuadRenderBase.cpp
-        src/renderer/QuadRenderEdgeDetect.cpp
-        src/renderer/QuadRenderCopy.cpp
-        src/renderer/QuadRenderBlend.cpp
-        src/renderer/QuadRenderInvert.cpp
-        src/renderer/HudRender.cpp
-        src/renderer/PresentTarget.cpp
-        src/renderer/SceneRender.cpp
-        src/renderer/RenderOverride.cpp
+        src/render/MMRendererCmd.cpp
+        src/render/RenderGlobalsNode.cpp
+        src/render/QuadRenderBase.cpp
+        src/render/QuadRenderEdgeDetect.cpp
+        src/render/QuadRenderCopy.cpp
+        src/render/QuadRenderBlend.cpp
+        src/render/QuadRenderInvert.cpp
+        src/render/HudRender.cpp
+        src/render/PresentTarget.cpp
+        src/render/SceneRender.cpp
+        src/render/RenderOverride.cpp
         src/shape/MarkerShapeNode.cpp
         src/shape/MarkerDrawOverride.cpp
         src/shape/BundleShapeNode.cpp

@@ -32,7 +32,7 @@
 #include <maya/MTextureManager.h>
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
 HudRender::HudRender()
         : m_targets(nullptr),
@@ -93,5 +93,5 @@ HudRender::addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
     drawManager2D.endDrawable();
 }
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver

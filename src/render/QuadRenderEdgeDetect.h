@@ -31,7 +31,7 @@
 
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
 class QuadRenderEdgeDetect : public QuadRenderBase {
 public:
@@ -67,7 +67,7 @@ protected:
     float m_threshold;
 };
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver
 
 #endif // MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_EDGE_DETECT_H

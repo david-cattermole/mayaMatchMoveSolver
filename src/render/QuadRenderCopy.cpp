@@ -20,35 +20,31 @@
  */
 
 #include "constants.h"
-#include "QuadRenderInvert.h"
+#include "QuadRenderCopy.h"
 
 #include <maya/MStreamUtils.h>
 #include <maya/MShaderManager.h>
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
-// Render a full-screen quad, with a preset shader applied.
-//
-// Reads from 'auxiliary' Target, and writes to 'main' Target.
-//
-QuadRenderInvert::QuadRenderInvert(const MString &name)
+QuadRenderCopy::QuadRenderCopy(const MString &name)
         : QuadRenderBase(name)
         , m_shader_instance(nullptr)
         , m_target_index_input(0) {
 }
 
-QuadRenderInvert::~QuadRenderInvert() {
+QuadRenderCopy::~QuadRenderCopy() {
     // Release all shaders.
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-    if (!renderer) {
-        return;
-    }
-    const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
-    if (!shaderMgr) {
-        return;
-    }
     if (m_shader_instance) {
+        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+        if (!renderer) {
+            return;
+        }
+        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        if (!shaderMgr) {
+            return;
+        }
         shaderMgr->releaseShader(m_shader_instance);
         m_shader_instance = nullptr;
     }
@@ -59,7 +55,7 @@ QuadRenderInvert::~QuadRenderInvert() {
 //
 // Called by Maya.
 MHWRender::MRenderTarget *const *
-QuadRenderInvert::targetOverrideList(unsigned int &listSize) {
+QuadRenderCopy::targetOverrideList(unsigned int &listSize) {
     if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];
@@ -71,7 +67,7 @@ QuadRenderInvert::targetOverrideList(unsigned int &listSize) {
 // Maya calls this method to know what shader should be used for this
 // quad render operation.
 const MHWRender::MShaderInstance *
-QuadRenderInvert::shader() {
+QuadRenderCopy::shader() {
     // Compile shader
     if (!m_shader_instance) {
         MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
@@ -83,9 +79,10 @@ QuadRenderInvert::shader() {
             return nullptr;
         }
 
-        MStreamUtils::stdOutStream() << "QuadRenderInvert: Compile shader...\n";
-        MString file_name = "Invert";
-        MString shader_technique = "";
+        MStreamUtils::stdOutStream()
+            << "QuardRenderCopy: Compile shader...\n";
+        MString file_name = "Copy";
+        MString shader_technique = "Main";
         m_shader_instance = shaderMgr->getEffectsFileShader(
             file_name.asChar(),
             shader_technique.asChar());
@@ -94,22 +91,25 @@ QuadRenderInvert::shader() {
     // Set default parameters
     if (m_shader_instance) {
         MStreamUtils::stdOutStream()
-            << "QuadRenderInvert: Assign shader parameters...\n";
+            << "QuardRenderCopy: Assign shader parameters...\n";
 
         if (m_targets) {
-            MHWRender::MRenderTargetAssignment assignment1;
-            MHWRender::MRenderTarget *target1 = m_targets[m_target_index_input];
-            if (target1) {
+            MHWRender::MRenderTargetAssignment assignment;
+            MHWRender::MRenderTarget *target = m_targets[m_target_index_input];
+            if (target) {
                 MStreamUtils::stdOutStream()
-                    << "QuadRenderInvert: Assign texture1 to shader...\n";
-                assignment1.target = target1;
+                    << "QuardRenderCopy: Assign texture to shader...\n";
+                assignment.target = target;
                 CHECK_MSTATUS(m_shader_instance->setParameter(
-                                  "gInputTex", assignment1));
+                                  "gInputTex", assignment));
             }
         }
+
+        CHECK_MSTATUS(m_shader_instance->setParameter("gVerticalFlip", false));
+        CHECK_MSTATUS(m_shader_instance->setParameter("gDisableAlpha", false));
     }
     return m_shader_instance;
 }
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver

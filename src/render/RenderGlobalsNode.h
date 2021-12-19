@@ -31,7 +31,7 @@
 #include <maya/MTypeId.h>
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
 enum class RenderFormat : short {
     kRGBA8BitInt = 0,
@@ -78,7 +78,7 @@ private:
 
 };
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver
 
 #endif // MM_SOLVER_MM_RENDER_GLOBALS_NODE_H

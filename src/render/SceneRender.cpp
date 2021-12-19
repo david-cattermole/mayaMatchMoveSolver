@@ -37,7 +37,7 @@
 #include <maya/MShaderManager.h>
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
 SceneRender::SceneRender(const MString &name)
         : MSceneRender(name),
@@ -161,5 +161,5 @@ SceneRender::objectSetOverride() {
     return nullptr;
 }
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver

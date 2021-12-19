@@ -28,7 +28,7 @@
 #include <maya/MRenderTargetManager.h>
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
 // Enumerate the target indexing
 enum TargetId
@@ -56,7 +56,7 @@ const float kWireframeAlphaDefault = 1.0f;
 const float kEdgeThicknessDefault = 1.5f;
 const float kEdgeThresholdDefault = 0.05f;
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver
 
 #endif // MAYA_MM_SOLVER_MM_RENDERER_CONSTANTS_H

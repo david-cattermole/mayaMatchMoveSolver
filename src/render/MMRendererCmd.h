@@ -32,7 +32,7 @@
 #include <maya/MPxCommand.h>
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
 /*
  * Command arguments and command name
@@ -73,7 +73,7 @@ private:
     double m_wireframe_alpha;
 };
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver
 
 #endif //MAYA_MM_SOLVER_MM_RENDERER_CMD_H

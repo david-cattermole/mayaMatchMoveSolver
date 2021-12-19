@@ -43,7 +43,7 @@
 #include "RenderGlobalsNode.h"
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
 
 MTypeId RenderGlobalsNode::m_id(MM_RENDER_GLOBALS_TYPE_ID);
@@ -253,5 +253,5 @@ MStatus RenderGlobalsNode::initialize() {
     return MS::kSuccess;
 }
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver

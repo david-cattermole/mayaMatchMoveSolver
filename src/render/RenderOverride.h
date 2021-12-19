@@ -36,7 +36,7 @@
 #include <maya/MRenderTargetManager.h>
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
 class RenderOverride : public MHWRender::MRenderOverride {
 public:
@@ -205,7 +205,7 @@ private:
     double m_edge_threshold;
 };
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver
 
 #endif //MAYA_MM_SOLVER_MM_RENDERER_MAIN_OVERRIDE_H

@@ -29,7 +29,7 @@
 #include "RenderOverride.h"
 
 namespace mmsolver {
-namespace renderer {
+namespace render {
 
 MMRendererCmd::MMRendererCmd() :
         m_fishEye(true), m_swirl(false), m_edgeDetect(true) {
@@ -149,5 +149,5 @@ MStatus MMRendererCmd::doIt(const MArgList &args) {
     return MStatus::kSuccess;
 }
 
-} // namespace renderer
+} // namespace render
 } // namespace mmsolver

@@ -201,9 +201,9 @@ def _do_raycast(node_list, mesh_nodes, frame_range,
                 mat = None
                 if bundle_rotate_mode == const.BUNDLE_ROTATE_MODE_AIM_AT_CAMERA_VALUE:
                     mat = _create_look_at_matrix(
-                        direction[0],
-                        direction[1],
-                        direction[2])
+                        -direction[0],
+                        -direction[1],
+                        -direction[2])
                 elif bundle_rotate_mode == const.BUNDLE_ROTATE_MODE_MESH_NORMAL_VALUE:
                     mat = _create_look_at_matrix(
                         hit_normal[0],

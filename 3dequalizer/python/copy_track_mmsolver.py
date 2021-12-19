@@ -51,6 +51,8 @@
 # 3DE4.script.comment:  MM Solver v0.3.1+.
 #
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 
 import tempfile
@@ -120,8 +122,7 @@ def main():
     now_str = time.strftime('%Y-%m-%d_%H_%M')
     prefix = 'tmp_{0}_'.format(now_str)
     f = tempfile.NamedTemporaryFile(
-        mode='w+b',
-        bufsize=-1,
+        mode='w',
         prefix=prefix,
         suffix=file_ext,
         delete=False

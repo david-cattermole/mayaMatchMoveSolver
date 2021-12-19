@@ -22,6 +22,9 @@ mmSolver Camera Format, to store cameras and plates.
 """
 # 3DE4.script.hide:     true
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import os
 import sys
@@ -29,6 +32,15 @@ import json
 
 import tde4
 import vl_sdv
+
+
+IS_PYTHON_2 = sys.version_info[0] == 2
+if IS_PYTHON_2 is True:
+    text_type = basestring
+    int_type = (int, long)
+else:
+    text_type = str
+    int_type = int
 
 
 # MM Camera format
@@ -104,10 +116,10 @@ def _get_frame_list_to_set_values(cam_id, samples_list,
     :returns: List of integer frame numbers.
     :rtype: [int, ..]
     """
-    assert isinstance(file_start_frame, (int, long))
-    assert isinstance(file_end_frame, (int, long))
-    assert isinstance(chosen_start_frame, (int, long))
-    assert isinstance(chosen_end_frame, (int, long))
+    assert isinstance(file_start_frame, int_type)
+    assert isinstance(file_end_frame, int_type)
+    assert isinstance(chosen_start_frame, int_type)
+    assert isinstance(chosen_end_frame, int_type)
     user_requested_frames = set(range(chosen_start_frame, chosen_end_frame + 1))
 
     cam_start, cam_end, _ = tde4.getCameraSequenceAttr(cam_id)
@@ -188,10 +200,10 @@ def _set_camera_translation(pgroup_id, cam_id,
     :rtype: bool
     """
     values_were_set = False
-    assert isinstance(file_start_frame, (int, long))
-    assert isinstance(file_end_frame, (int, long))
-    assert isinstance(chosen_start_frame, (int, long))
-    assert isinstance(chosen_end_frame, (int, long))
+    assert isinstance(file_start_frame, int_type)
+    assert isinstance(file_end_frame, int_type)
+    assert isinstance(chosen_start_frame, int_type)
+    assert isinstance(chosen_end_frame, int_type)
     assert tx_samples
     assert ty_samples
     assert tz_samples
@@ -265,10 +277,10 @@ def _set_camera_rotation(pgroup_id, cam_id,
     :rtype: bool
     """
     values_were_set = False
-    assert isinstance(file_start_frame, (int, long))
-    assert isinstance(file_end_frame, (int, long))
-    assert isinstance(chosen_start_frame, (int, long))
-    assert isinstance(chosen_end_frame, (int, long))
+    assert isinstance(file_start_frame, int_type)
+    assert isinstance(file_end_frame, int_type)
+    assert isinstance(chosen_start_frame, int_type)
+    assert isinstance(chosen_end_frame, int_type)
     assert rx_samples
     assert ry_samples
     assert rz_samples
@@ -342,10 +354,10 @@ def _set_camera_focal_length(cam_id, lens_id,
     :rtype: bool
     """
     values_were_set = False
-    assert isinstance(file_start_frame, (int, long))
-    assert isinstance(file_end_frame, (int, long))
-    assert isinstance(chosen_start_frame, (int, long))
-    assert isinstance(chosen_end_frame, (int, long))
+    assert isinstance(file_start_frame, int_type)
+    assert isinstance(file_end_frame, int_type)
+    assert isinstance(chosen_start_frame, int_type)
+    assert isinstance(chosen_end_frame, int_type)
     assert samples
 
     samples_list = (samples, )

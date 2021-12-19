@@ -46,9 +46,22 @@
 #
 #
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import tde4
 import mmcamera_format
+
+
+IS_PYTHON_2 = sys.version_info[0] == 2
+if IS_PYTHON_2 is True:
+    text_type = basestring
+    int_type = (int, long)
+else:
+    text_type = str
+    int_type = int
 
 # GUI Constants
 TITLE = 'Paste Camera (MM Solver)...'
@@ -138,7 +151,7 @@ def _parse_data(file_path):
     :rtype: dict or None
     """
     assert file_path is not None
-    assert isinstance(file_path, basestring)
+    assert isinstance(file_path, text_type)
     assert len(file_path) > 0
     try:
         file_data = mmcamera_format.parse(file_path)
@@ -158,7 +171,7 @@ def _file_path_is_valid(file_path):
     """
     if file_path is None:
         return False
-    if not isinstance(file_path, basestring):
+    if not isinstance(file_path, text_type):
         return False
     if len(file_path) == 0:
         return False
@@ -432,7 +445,7 @@ def _build_gui(file_path):
     Build the widgets at the top of the window.
 
     :param file_path: The initial file path to parse.
-    :type file_path: basestring or None
+    :type file_path: text_type or None
 
     :returns: 3DEqualizer UI request id.
     """

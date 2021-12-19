@@ -27,12 +27,23 @@ of the '.uv' file format.
 """
 # 3DE4.script.hide:     true
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 
 import json
 
 import vl_sdv
 import tde4
+
+
+IS_PYTHON_2 = sys.version_info[0] == 2
+if IS_PYTHON_2 is True:
+    text_type = basestring
+    int_type = (int, long)
+else:
+    text_type = str
+    int_type = int
 
 # UV Track format
 # This is copied from 'mmSolver.tools.loadmarker.constant module',
@@ -528,8 +539,8 @@ def _generate_v1(point_group, camera, points,
     :returns: A ASCII format string, with the UV Track data in it.
     :rtype: str
     """
-    assert isinstance(point_group, basestring)
-    assert isinstance(camera, basestring)
+    assert isinstance(point_group, text_type)
+    assert isinstance(camera, text_type)
     assert isinstance(points, (list, tuple))
     assert start_frame is None or isinstance(start_frame, int)
     assert isinstance(undistort, bool)
@@ -685,10 +696,10 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
     :returns: A JSON format string, with the UV Track data in it.
     :rtype: str
     """
-    assert isinstance(point_group, basestring)
-    assert isinstance(camera, basestring)
+    assert isinstance(point_group, text_type)
+    assert isinstance(camera, text_type)
     assert isinstance(points, (list, tuple))
-    assert isinstance(version, (int, long))
+    assert isinstance(version, int_type)
     assert version in [UV_TRACK_FORMAT_VERSION_2,
                        UV_TRACK_FORMAT_VERSION_3,
                        UV_TRACK_FORMAT_VERSION_4]

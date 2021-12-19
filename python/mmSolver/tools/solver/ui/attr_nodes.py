@@ -24,7 +24,7 @@ import maya.cmds
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtCore as QtCore
 
 import mmSolver.logger
 import mmSolver.api as mmapi

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, 2019 David Cattermole.
+ * Copyright (C) 2018, 2019, 2021 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -32,16 +32,19 @@
 // Maya
 #include <maya/MColor.h>
 #include <maya/MDistance.h>
+#include <maya/MStatus.h>
 #include <maya/MPoint.h>
 #include <maya/MVector.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MObject.h>
+#include <maya/MObjectArray.h>
 #include <maya/MDagPath.h>
 #include <maya/MPlug.h>
 #include <maya/MDataHandle.h>
 #include <maya/MSelectionList.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MPxNode.h>
 
 
 #define OBJECT_TYPE_UNKNOWN      (0)
@@ -337,5 +340,16 @@ MStatus getNodeAttr(const MDagPath &objPath,
 
 } // namespace mmsolver
 
+// Static attributes to help with Maya Node initialization.
+class MMNodeInitUtils {
+  public:
+
+    // Create 'MPxNode::attributeAffects' relationships for nodes, using
+    // lists of attributes, rather than each relationship taking up one
+    // line.
+    static MStatus attributeAffectsMulti(
+            const MObjectArray &inputAttrs,
+            const MObjectArray &outputAttrs);
+};
 
 #endif // MAYA_UTILS_H

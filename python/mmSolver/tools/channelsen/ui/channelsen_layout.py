@@ -23,7 +23,7 @@ window.
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.tools.channelsen.ui.ui_channelsen_layout as ui_channelsen_layout

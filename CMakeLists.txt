@@ -25,13 +25,13 @@ cmake_minimum_required(VERSION 2.8)
 project(mayaMatchMoveSolver)
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 3)
-set(PROJECT_VERSION_PATCH 13)
+set(PROJECT_VERSION_PATCH 15)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
 set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
 set(PROJECT_COPYRIGHT
-  "2018, 2019, 2020, 2021, David Cattermole, Anil Reddy, Kazuma Tonegawa.")
+  "2018, 2019, 2020, 2021, David Cattermole, Anil Reddy, Kazuma Tonegawa, Patcha Saheb Binginapalli.")
 
 
 # Add custom modules to the module path
@@ -225,6 +225,12 @@ set(SOURCE_FILES
         src/core/bundleAdjust_cminpack_lmdif.cpp
         src/core/bundleAdjust_cminpack_lmder.h
         src/core/bundleAdjust_cminpack_lmder.cpp
+        src/core/calibrate/common.cpp
+        src/core/mmcamera.cpp
+        src/core/mmmath.cpp
+        src/core/mmdata.cpp
+        src/core/mmcoord.cpp
+        src/core/calibrate/vanishingPoint.cpp
         src/render/MMRendererCmd.cpp
         src/render/RenderGlobalsNode.cpp
         src/render/QuadRenderBase.cpp
@@ -242,7 +248,7 @@ set(SOURCE_FILES
         src/shape/BundleDrawOverride.cpp
         src/shape/SkyDomeShapeNode.cpp
         src/shape/SkyDomeDrawOverride.cpp
-        src/mayaUtils.h
+        src/mayaUtils.cpp
         src/Camera.h
         src/Camera.cpp
         src/Marker.h
@@ -259,6 +265,8 @@ set(SOURCE_FILES
         src/MMMarkerScaleNode.cpp
         src/MMReprojectionNode.h
         src/MMReprojectionNode.cpp
+        src/MMCameraCalibrateNode.cpp
+        src/MMLineIntersectNode.cpp
         src/MMMarkerGroupTransformNode.h
         src/MMMarkerGroupTransformNode.cpp
         src/MMTestCameraMatrixCmd.h
@@ -582,6 +590,8 @@ add_subdirectory(shader)
 if (BUILD_PYTHON)
     add_subdirectory(python)
 endif ()
+
+add_subdirectory(blender)
 
 if (BUILD_DOCS)
     add_subdirectory(docs)

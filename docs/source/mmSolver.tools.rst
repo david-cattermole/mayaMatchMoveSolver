@@ -36,6 +36,7 @@ mmSolver.tools
    mmSolver.tools.removecontroller2
    mmSolver.tools.removesolvernodes
    mmSolver.tools.reparent
+   mmSolver.tools.reparent2
    mmSolver.tools.reprojectbundle
    mmSolver.tools.screenspacemotiontrail
    mmSolver.tools.screenspacetransform

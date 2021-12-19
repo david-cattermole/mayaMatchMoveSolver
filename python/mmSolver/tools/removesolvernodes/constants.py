@@ -20,3 +20,14 @@ Remove Solver Nodes constants.
 """
 
 WINDOW_TITLE = 'Remove Solver Nodes'
+CONFIG_FILE_NAME = "tools_removesolvernodes.json"
+
+# The default values for deleting different types of nodes
+DELETE_MARKERS_DEFAULT_VALUE = False
+DELETE_BUNDLES_DEFAULT_VALUE = False
+DELETE_MARKER_GROUPS_DEFAULT_VALUE = False
+DELETE_COLLECTIONS_DEFAULT_VALUE = False
+DELETE_OTHERS_DEFAULT_VALUE = False
+
+# Save scene files by default?
+SAVE_SCENE_DEFAULT_VALUE = True

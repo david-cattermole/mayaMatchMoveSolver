@@ -24,9 +24,9 @@ import time
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.tools.solver.lib.state as lib_state
@@ -36,6 +36,8 @@ import mmSolver.tools.solver.widget.ui_solver_standard_widget as ui_solver_stand
 import mmSolver.tools.solver.widget.framerange_widget as framerange_widget
 import mmSolver.tools.solver.widget.rootframe_widget as rootframe_widget
 import mmSolver.tools.solver.constant as const
+import mmSolver.tools.userpreferences.constant as userprefs_const
+import mmSolver.tools.userpreferences.lib as userprefs_lib
 
 
 LOG = mmSolver.logger.get_logger()
@@ -47,6 +49,15 @@ def _populateWidgetsEnabled(widgets):
     for widget in widgets:
         widget.setEnabled(enabled)
     return
+
+
+def _getAllowObjectRelations():
+    config = userprefs_lib.get_config()
+    key = userprefs_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY
+    allow_obj_relations = userprefs_lib.get_value(config, key)
+    true_value = userprefs_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_TRUE_VALUE
+    visible = allow_obj_relations == true_value
+    return visible
 
 
 class StandardRootFrameWidget(rootframe_widget.RootFrameWidget):
@@ -143,6 +154,9 @@ class SolverStandardWidget(QtWidgets.QWidget,
         return
 
     def getEvalObjectRelationshipsValue(self, col):
+        allow_obj_relations = _getAllowObjectRelations()
+        if allow_obj_relations is False:
+            return False
         value = lib_col_state.get_solver_eval_object_relationships_from_collection(col)
         return value
 
@@ -158,6 +172,24 @@ class SolverStandardWidget(QtWidgets.QWidget,
         lib_col_state.set_solver_eval_complex_graphs_on_collection(col, value)
         return
 
+    def event(self, ev):
+        if ev.type() == QtCore.QEvent.WindowActivate:
+            LOG.debug('window activated')
+            self.updateObjectRelationshipsWidgets()
+        return super(SolverStandardWidget, self).event(ev)
+
+    def updateObjectRelationshipsWidgets(self):
+        LOG.debug('updateObjectRelationshipsWidgets')
+        allow_obj_relations = _getAllowObjectRelations()
+        self.evalObjectRelationships_checkBox.setEnabled(allow_obj_relations)
+
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        value = self.getEvalObjectRelationshipsValue(col)
+        self.evalObjectRelationships_checkBox.setChecked(value)
+        return
+
     def updateModel(self):
         self.frameRange_widget.updateModel()
         self.rootFrames_widget.updateModel()
@@ -166,6 +198,7 @@ class SolverStandardWidget(QtWidgets.QWidget,
         if col is None:
             return
 
+        allow_obj_relations = _getAllowObjectRelations()
         range_type = self.frameRange_widget.getRangeTypeValue(col)
         global_solve = self.getGlobalSolveValue(col)
         only_root_frames = self.getOnlyRootFramesValue(col)
@@ -173,14 +206,13 @@ class SolverStandardWidget(QtWidgets.QWidget,
         eval_complex_graphs = self.getEvalComplexGraphsValue(col)
         global_solve_enabled = True
         only_root_frames_enabled = True
-        eval_obj_conns_enabled = True
+        eval_obj_conns_enabled = allow_obj_relations
         eval_complex_graphs_enabled = True
         frameRange_enabled = True
         rootFrames_enabled = True
         if range_type == const.RANGE_TYPE_CURRENT_FRAME_VALUE:
             global_solve_enabled = False
             only_root_frames_enabled = False
-            eval_obj_conns_enabled = True
             eval_complex_graphs_enabled = False
             frameRange_enabled = True
             rootFrames_enabled = False
@@ -188,7 +220,6 @@ class SolverStandardWidget(QtWidgets.QWidget,
             if global_solve is True:
                 only_root_frames_enabled = False
                 only_root_frames = False
-                eval_obj_conns_enabled = True
                 eval_complex_graphs_enabled = False
                 rootFrames_enabled = True
                 frameRange_enabled = True
@@ -197,7 +228,6 @@ class SolverStandardWidget(QtWidgets.QWidget,
                 global_solve = False
                 frameRange_enabled = False
                 rootFrames_enabled = True
-                eval_obj_conns_enabled = True
                 eval_complex_graphs_enabled = True
 
         block = self.blockSignals(True)

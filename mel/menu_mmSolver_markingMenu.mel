@@ -370,7 +370,7 @@
         -divider 0
         -subMenu 0
         -tearOff 0
-        -command "python(\"import mmSolver.tools.reparent.tool as tool;tool.reparent_under_node();\")"
+        -command "python(\"import mmSolver.tools.reparent2.tool as tool;tool.reparent_under_node();\")"
         -altModifier 0
         -optionModifier 0
         -commandModifier 0
@@ -390,11 +390,35 @@
         menuEditorMenuItem19;
 
     menuItem
+        -label "Reparent under Node (option box)"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.reparent2.tool as tool;tool.reparent_under_node_open_window();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 1
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 0
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem191;
+
+    menuItem
         -label "Unparent to World"
         -divider 0
         -subMenu 0
         -tearOff 0
-        -command "python(\"import mmSolver.tools.reparent.tool as tool;tool.unparent_to_world();\")"
+        -command "python(\"import mmSolver.tools.reparent2.tool as tool;tool.unparent_to_world();\")"
         -altModifier 0
         -optionModifier 0
         -commandModifier 0
@@ -412,6 +436,30 @@
         -sourceType "mel"
         -longDivider 1
         menuEditorMenuItem20;
+
+    menuItem
+        -label "Unparent to World (option box)"
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "python(\"import mmSolver.tools.reparent2.tool as tool;tool.unparent_to_world_open_window();\")"
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 1
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 0
+        -echoCommand 0
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel"
+        -longDivider 1
+        menuEditorMenuItem201;
 
     menuItem
         -label "separator"
@@ -437,11 +485,11 @@
         menuEditorMenuItem22;
 
     menuItem
-        -label "Create Controller"
+        -label "Create Controller..."
         -divider 0
         -subMenu 0
         -tearOff 0
-        -command "python(\"import mmSolver.tools.createcontroller.tool as tool;tool.create();\")"
+        -command "python(\"import mmSolver.tools.createcontroller2.tool as tool;tool.open_window();\")"
         -altModifier 0
         -optionModifier 0
         -commandModifier 0
@@ -461,11 +509,11 @@
         menuEditorMenuItem23;
 
     menuItem
-        -label "Remove Controller"
+        -label "Remove Controllers"
         -divider 0
         -subMenu 0
         -tearOff 0
-        -command "python(\"import mmSolver.tools.createcontroller.tool as tool;tool.remove();\")"
+        -command "python(\"import mmSolver.tools.removecontroller2.tool as tool;tool.main();\")"
         -altModifier 0
         -optionModifier 0
         -commandModifier 0

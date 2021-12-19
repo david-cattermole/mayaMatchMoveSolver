@@ -12,6 +12,9 @@
             "solver_tools/solver_popup/edit_root_frame_add",
             "solver_tools/solver_popup/edit_root_frame_remove",
             "create_marker",
+            "camera_tools/camera_popup/---Calibrate",
+            "camera_tools/camera_popup/camera_calibration_create_setup",
+            "camera_tools/camera_popup/camera_calibration_update_values",
             "mb_tools/mb_popup/---Selection",
             "mb_tools/mb_popup/swap_marker_bundles",
             "mb_tools/mb_popup/select_marker_bundles",
@@ -29,7 +32,7 @@
             "marker_tools/marker_popup/raycast_marker",
             "marker_tools/marker_popup/---Create Marker",
             "marker_tools/marker_popup/create_marker",
-            "marker_tools/marker_popup/convert_to_marker",
+            "marker_tools/marker_popup/convert_to_marker_ui",
             "marker_tools/marker_popup/duplicate_marker",
             "marker_tools/marker_popup/average_markers",
             "marker_tools/marker_popup/---Deform Marker",
@@ -65,8 +68,8 @@
             "general_tools/gen_tools_popup/sort_nodes_in_outliner",
             "general_tools/gen_tools_popup/remove_all_solver_nodes",
             "general_tools/gen_tools_popup/---Parenting",
-            "general_tools/gen_tools_popup/reparent_under_node",
-            "general_tools/gen_tools_popup/unparent_to_world",
+            "general_tools/gen_tools_popup/reparent_under_node2",
+            "general_tools/gen_tools_popup/unparent_to_world2",
             "general_tools/gen_tools_popup/---Controllers",
             "general_tools/gen_tools_popup/create_controller2",
             "general_tools/gen_tools_popup/remove_controller2",
@@ -103,6 +106,10 @@
                 "popup_button": ["left", "right"]
             },
             "display_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "camera_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
             },

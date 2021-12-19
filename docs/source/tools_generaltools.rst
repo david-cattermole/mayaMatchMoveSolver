@@ -485,6 +485,8 @@ This is equivalent to Maya's *Parent* tool (`p` hotkey), except the
 tool will maintain the world-space position of the transform node for
 each keyframe applied to the node.
 
+See the :ref:`Reparent UI <reparent-window-tool-ref>` for options.
+
 Usage:
 
 1) Select nodes to change parent, then select the new parent node.
@@ -503,7 +505,7 @@ To run the tool, use this Python command:
 
 .. code:: python
 
-    import mmSolver.tools.reparent.tool as tool
+    import mmSolver.tools.reparent2.tool as tool
     tool.reparent_under_node()
 
 .. _unparent-to-world-tool-ref:
@@ -514,6 +516,8 @@ Unparent to World
 This is equalivent to Maya's *Unparent* tool (`Shift + p` hotkey), except the tool will
 maintain the world-space position of the transform node for each
 keyframe applied to the node.
+
+See the :ref:`Reparent UI <reparent-window-tool-ref>` for options.
 
 Usage:
 
@@ -531,8 +535,70 @@ To run the tool, use this Python command:
 
 .. code:: python
 
-    import mmSolver.tools.reparent.tool as tool
+    import mmSolver.tools.reparent2.tool as tool
     tool.unparent_to_world()
+
+.. _reparent-window-tool-ref:
+
+Reparent UI
+-----------
+
+This window displays options for how to re-parent nodes.
+
+*Reparent* is the underlying tool window used by both
+:ref:`Reparent Under Node <reparent-under-node-tool-ref>`
+and :ref:`Unparent to World <unparent-to-world-tool-ref>`.
+
+.. figure:: images/tools_reparent_ui.png
+    :alt: Reparent UI
+    :align: center
+    :width: 40%
+
+.. list-table:: Reparent UI Options
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Values
+     - Description
+
+   * - Children
+     - *Node Names*
+     - Description
+
+   * - Parent
+     - *Node Name* or empty
+     - The node to place children underneath.
+
+   * - Frame Range
+     - *Timeline (Inner)*, *Timeline (Outer)* or *Custom*
+     - The frame range to bake.
+
+   * - Bake Mode
+     - *Full Bake* or *Smart Bake*
+     - Method for how keyframes are baked.
+
+   * - Rotate Order
+     - *Use Existing* or *XYZ*, *ZXY*, etc
+     - Change the rotation order of children nodes when re-parenting.
+
+   * - Delete Static AnimCurves
+     - *Yes* or *No*
+     - Baked attributes that do not animate have all keys replaced
+       with a static value.
+
+This video tutorial explains how the re-parenting tool works.
+
+.. raw:: html
+
+    <iframe width="720" height="405" src="https://www.youtube.com/embed/UmVu3oag_-k" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.reparent2.tool as tool
+    tool.open_window()
 
 .. _remove-solver-nodes-tool-ref:
 

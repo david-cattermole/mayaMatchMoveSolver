@@ -23,7 +23,7 @@ window.
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import maya.cmds as cmds
 
@@ -169,8 +169,6 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             LOG.warn('Please select exactly one transform object.')
             return
         self.main_object_text.setText(str(selection[0]))
-        self.full_bake_rdo_btn.setChecked(True)
-        self.object_space_rdo_btn.setChecked(True)
 
     def smart_bake_radio_button_clicked(self):
         self.world_space_rdo_btn.setEnabled(False)
@@ -259,7 +257,7 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             smart_bake,
             camera)
         cmds.select(controller_nodes, replace=True)
-        LOG.warn('Success: Create Controller.')
+        LOG.warn('Success: Create Controllers.')
 
     def reset_options(self):
         # reset widgets to default

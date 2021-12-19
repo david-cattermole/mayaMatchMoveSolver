@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, 2019 David Cattermole.
+ * Copyright (C) 2018, 2019, 2021 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -44,6 +44,9 @@
 #include <MMMarkerGroupTransformNode.h>
 #include <MMReprojectionCmd.h>
 #include <MMSolverAffectsCmd.h>
+#include <MMCameraCalibrateNode.h>
+#include <MMLineIntersectNode.h>
+
 #include <shape/MarkerShapeNode.h>
 #include <shape/MarkerDrawOverride.h>
 #include <shape/BundleShapeNode.h>
@@ -52,9 +55,9 @@
 #include <shape/SkyDomeDrawOverride.h>
 
 // MM Renderer
-#include <renderer/RenderOverride.h>
-#include <renderer/MMRendererCmd.h>
-#include <renderer/RenderGlobalsNode.h>
+#include <render/RenderOverride.h>
+#include <render/MMRendererCmd.h>
+#include <render/RenderGlobalsNode.h>
 
 
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
@@ -191,10 +194,24 @@ MStatus initializePlugin(MObject obj) {
                   status);
 
     REGISTER_NODE(plugin,
-                  mmsolver::renderer::RenderGlobalsNode::nodeName(),
-                  mmsolver::renderer::RenderGlobalsNode::m_id,
-                  mmsolver::renderer::RenderGlobalsNode::creator,
-                  mmsolver::renderer::RenderGlobalsNode::initialize,
+                  MMCameraCalibrateNode::nodeName(),
+                  MMCameraCalibrateNode::m_id,
+                  MMCameraCalibrateNode::creator,
+                  MMCameraCalibrateNode::initialize,
+                  status);
+
+    REGISTER_NODE(plugin,
+                  MMLineIntersectNode::nodeName(),
+                  MMLineIntersectNode::m_id,
+                  MMLineIntersectNode::creator,
+                  MMLineIntersectNode::initialize,
+                  status);
+
+    REGISTER_NODE(plugin,
+                  mmsolver::render::RenderGlobalsNode::nodeName(),
+                  mmsolver::render::RenderGlobalsNode::m_id,
+                  mmsolver::render::RenderGlobalsNode::creator,
+                  mmsolver::render::RenderGlobalsNode::initialize,
                   status);
 
     const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
@@ -284,14 +301,14 @@ MStatus initializePlugin(MObject obj) {
         shader_location += MString("/shader");
         shader_manager->addShaderPath(shader_location);
 
-        mmsolver::renderer::RenderOverride *ptr =
-            new mmsolver::renderer::RenderOverride(MM_RENDERER_NAME);
+        mmsolver::render::RenderOverride *ptr =
+            new mmsolver::render::RenderOverride(MM_RENDERER_NAME);
         renderer->registerOverride(ptr);
 
         REGISTER_COMMAND(plugin,
-                         mmsolver::renderer::MMRendererCmd::cmdName(),
-                         mmsolver::renderer::MMRendererCmd::creator,
-                         mmsolver::renderer::MMRendererCmd::newSyntax,
+                         mmsolver::render::MMRendererCmd::cmdName(),
+                         mmsolver::render::MMRendererCmd::creator,
+                         mmsolver::render::MMRendererCmd::newSyntax,
                          status);
     }
 
@@ -369,7 +386,7 @@ MStatus uninitializePlugin(MObject obj) {
             delete ptr;
         }
         DEREGISTER_COMMAND(plugin,
-                           mmsolver::renderer::MMRendererCmd::cmdName(),
+                           mmsolver::render::MMRendererCmd::cmdName(),
                            status);
     }
 
@@ -409,8 +426,8 @@ MStatus uninitializePlugin(MObject obj) {
         status);
 
     DEREGISTER_NODE(plugin,
-                    mmsolver::renderer::RenderGlobalsNode::nodeName(),
-                    mmsolver::renderer::RenderGlobalsNode::m_id, status);
+                    mmsolver::render::RenderGlobalsNode::nodeName(),
+                    mmsolver::render::RenderGlobalsNode::m_id, status);
 
     DEREGISTER_NODE(plugin,
                     MMMarkerScaleNode::nodeName(),
@@ -420,8 +437,13 @@ MStatus uninitializePlugin(MObject obj) {
                     MMReprojectionNode::nodeName(),
                     MMReprojectionNode::m_id, status);
 
-    DEREGISTER_NODE(plugin,
-                    MMMarkerGroupTransformNode::nodeName(),
+    DEREGISTER_NODE(plugin, MMCameraCalibrateNode::nodeName(),
+                    MMCameraCalibrateNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMLineIntersectNode::nodeName(),
+                    MMLineIntersectNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(),
                     MMMarkerGroupTransformNode::m_id, status);
     return status;
 }

@@ -22,9 +22,9 @@ The 'Pref' layout, the contents of the userpreferences window.
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.tools.userpreferences.lib as userprefs_lib
@@ -50,6 +50,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         self.updateAddNewMarkersToWidget(config)
         self.updateSolverUIValidateOnOpenWidget(config)
         self.updateSolverUIShowValidateButtonWidget(config)
+        self.updateSolverUIAllowObjectRelationsWidget(config)
         self.updateSolverUIMinimalUIWhileSolvingWidget(config)
         return
 
@@ -101,6 +102,23 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
     def getSolverUIShowValidateButtonConfigValue(self):
         key = pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY
         label = self.showValidateButtonComboBox.currentText()
+        value = userprefs_lib.get_value_from_label(key, label)
+        return value
+
+    def updateSolverUIAllowObjectRelationsWidget(self, config):
+        key = pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY
+        value = userprefs_lib.get_value(config, key)
+        label = userprefs_lib.get_label_from_value(key, value)
+        assert isinstance(label, basestring)
+        labels = userprefs_lib.get_labels(key)
+        self.allowObjectRelationsComboBox.clear()
+        self.allowObjectRelationsComboBox.addItems(labels)
+        self.allowObjectRelationsComboBox.setCurrentText(label)
+        return
+
+    def getSolverUIAllowObjectRelationsConfigValue(self):
+        key = pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY
+        label = self.allowObjectRelationsComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
         return value
 

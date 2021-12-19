@@ -32,7 +32,7 @@ import mmSolver.logger
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtGui as QtGui
 
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.camera as camera_utils

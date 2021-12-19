@@ -22,9 +22,9 @@ The window for the 'About' window tool.
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtCore as QtCore
-import Qt.QtGui as QtGui
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
@@ -89,6 +89,7 @@ class PrefWindow(BaseWindow):
             pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY,
             pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY,
             pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY,
+            pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY,
             pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
         ]
         for key in option_keys:
@@ -108,6 +109,8 @@ class PrefWindow(BaseWindow):
              self.subForm.getSolverUIValidateOnOpenConfigValue),
             (pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY,
              self.subForm.getSolverUIShowValidateButtonConfigValue),
+            (pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY,
+             self.subForm.getSolverUIAllowObjectRelationsConfigValue),
             (pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
              self.subForm.getSolverUIMinimalUIWhileSolvingConfigValue),
         ]

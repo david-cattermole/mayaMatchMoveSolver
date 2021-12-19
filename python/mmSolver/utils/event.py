@@ -26,7 +26,8 @@ rely on Maya's in-built 'maya.utils.executeDeferred()' function.
 
 This event system automatically combines multiple functions with
 single objects into a function that is run once with multiple
-arguments.
+arguments. The reason for this, is to reduce function calls and
+improve performance when operating on many arguments at once.
 
 
 Example usage::

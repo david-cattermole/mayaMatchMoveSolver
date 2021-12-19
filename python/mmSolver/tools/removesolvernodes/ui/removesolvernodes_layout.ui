@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>150</width>
-    <height>129</height>
+    <width>326</width>
+    <height>323</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,43 +15,80 @@
   </property>
   <layout class="QVBoxLayout" name="main_verticalLayout">
    <item>
-    <layout class="QVBoxLayout" name="checkboxes_verticalLayout">
-     <item>
-      <widget class="QCheckBox" name="markers_checkBox">
-       <property name="text">
-        <string>Markers</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="bundles_checkBox">
-       <property name="text">
-        <string>Bundles</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="markerGroup_checkBox">
-       <property name="text">
-        <string>Marker Groups</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="collections_checkBox">
-       <property name="text">
-        <string>Collections</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="otherNodes_checkBox">
-       <property name="text">
-        <string>Other Nodes</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QGroupBox" name="options_groupBox">
+     <property name="title">
+      <string>Options</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QCheckBox" name="saveSceneBefore_checkBox">
+        <property name="text">
+         <string>Save Maya Scene Before Deleting</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="nodeTypes_groupBox">
+     <property name="title">
+      <string>Nodes Types to Delete</string>
+     </property>
+     <layout class="QVBoxLayout" name="checkboxes_verticalLayout">
+      <item>
+       <widget class="QCheckBox" name="markers_checkBox">
+        <property name="text">
+         <string>Markers</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="bundles_checkBox">
+        <property name="text">
+         <string>Bundles</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="markerGroup_checkBox">
+        <property name="text">
+         <string>Marker Groups</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="collections_checkBox">
+        <property name="text">
+         <string>Collections</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="otherNodes_checkBox">
+        <property name="text">
+         <string>Other Nodes</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

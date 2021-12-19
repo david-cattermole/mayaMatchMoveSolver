@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef MAYA_MM_SOLVER_MM_RENDERER_HUD_RENDER_H
-#define MAYA_MM_SOLVER_MM_RENDERER_HUD_RENDER_H
+#ifndef MAYA_MM_SOLVER_RENDER_HUD_RENDER_H
+#define MAYA_MM_SOLVER_RENDER_HUD_RENDER_H
 
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
@@ -65,4 +65,4 @@ protected:
 } // namespace render
 } // namespace mmsolver
 
-#endif //MAYA_MM_SOLVER_MM_RENDERER_HUD_RENDER_H
+#endif //MAYA_MM_SOLVER_RENDER_HUD_RENDER_H

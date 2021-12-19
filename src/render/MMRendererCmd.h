@@ -26,8 +26,8 @@
  * renderer in the scene.
  */
 
-#ifndef MAYA_MM_SOLVER_MM_RENDERER_CMD_H
-#define MAYA_MM_SOLVER_MM_RENDERER_CMD_H
+#ifndef MAYA_MM_SOLVER_RENDER_MM_RENDERER_CMD_H
+#define MAYA_MM_SOLVER_RENDER_MM_RENDERER_CMD_H
 
 #include <maya/MPxCommand.h>
 
@@ -76,4 +76,4 @@ private:
 } // namespace render
 } // namespace mmsolver
 
-#endif //MAYA_MM_SOLVER_MM_RENDERER_CMD_H
+#endif //MAYA_MM_SOLVER_RENDER_MM_RENDERER_CMD_H

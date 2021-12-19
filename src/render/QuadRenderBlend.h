@@ -20,8 +20,8 @@
  * A full-screen quad render, with a shader applied.
  */
 
-#ifndef MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_BLEND_H
-#define MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_BLEND_H
+#ifndef MAYA_MM_SOLVER_RENDER_QUAD_RENDER_BLEND_H
+#define MAYA_MM_SOLVER_RENDER_QUAD_RENDER_BLEND_H
 
 #include "QuadRenderBase.h"
 
@@ -71,4 +71,4 @@ protected:
 } // namespace render
 } // namespace mmsolver
 
-#endif // MAYA_MM_SOLVER_RENDERER_QUAD_RENDER_BLEND_H
+#endif // MAYA_MM_SOLVER_RENDER_QUAD_RENDER_BLEND_H

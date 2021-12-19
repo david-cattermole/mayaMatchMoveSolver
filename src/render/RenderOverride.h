@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef MAYA_MM_SOLVER_MM_RENDERER_MAIN_OVERRIDE_H
-#define MAYA_MM_SOLVER_MM_RENDERER_MAIN_OVERRIDE_H
+#ifndef MAYA_MM_SOLVER_RENDER_MAIN_OVERRIDE_H
+#define MAYA_MM_SOLVER_RENDER_MAIN_OVERRIDE_H
 
 #include "constants.h"
 #include "RenderGlobalsNode.h"
@@ -208,4 +208,4 @@ private:
 } // namespace render
 } // namespace mmsolver
 
-#endif //MAYA_MM_SOLVER_MM_RENDERER_MAIN_OVERRIDE_H
+#endif //MAYA_MM_SOLVER_RENDER_MAIN_OVERRIDE_H

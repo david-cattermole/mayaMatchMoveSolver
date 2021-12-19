@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef MAYA_MM_SOLVER_MM_RENDERER_PRESENT_TARGET_H
-#define MAYA_MM_SOLVER_MM_RENDERER_PRESENT_TARGET_H
+#ifndef MAYA_MM_SOLVER_RENDER_PRESENT_TARGET_H
+#define MAYA_MM_SOLVER_RENDER_PRESENT_TARGET_H
 
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
@@ -61,4 +61,4 @@ protected:
 } // namespace render
 } // namespace mmsolver
 
-#endif //MAYA_MM_SOLVER_MM_RENDERER_PRESENT_TARGET_H
+#endif //MAYA_MM_SOLVER_RENDER_PRESENT_TARGET_H

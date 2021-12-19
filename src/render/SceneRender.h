@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef MAYA_MM_SOLVER_MM_RENDERER_SCENE_RENDER_H
-#define MAYA_MM_SOLVER_MM_RENDERER_SCENE_RENDER_H
+#ifndef MAYA_MM_SOLVER_RENDER_SCENE_RENDER_H
+#define MAYA_MM_SOLVER_RENDER_SCENE_RENDER_H
 
 #include "constants.h"
 
@@ -170,4 +170,4 @@ protected:
 } // namespace render
 } // namespace mmsolver
 
-#endif //MAYA_MM_SOLVER_MM_RENDERER_SCENE_RENDER_H
+#endif //MAYA_MM_SOLVER_RENDER_SCENE_RENDER_H

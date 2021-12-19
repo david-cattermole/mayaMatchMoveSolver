@@ -20,8 +20,8 @@
  * Stores global values for the mmSolver viewport renderer.
  */
 
-#ifndef MM_SOLVER_MM_RENDER_GLOBALS_NODE_H
-#define MM_SOLVER_MM_RENDER_GLOBALS_NODE_H
+#ifndef MM_SOLVER_RENDER_RENDER_GLOBALS_NODE_H
+#define MM_SOLVER_RENDER_RENDER_GLOBALS_NODE_H
 
 #include <maya/MPxNode.h>
 #include <maya/MString.h>
@@ -81,4 +81,4 @@ private:
 } // namespace render
 } // namespace mmsolver
 
-#endif // MM_SOLVER_MM_RENDER_GLOBALS_NODE_H
+#endif // MM_SOLVER_RENDER_RENDER_GLOBALS_NODE_H

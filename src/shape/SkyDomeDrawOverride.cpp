@@ -38,14 +38,11 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+// Internal
+#include <core/mmmath.h>
+
 
 namespace mmsolver {
-
-// Return 'min_value' to 'max_value' linearly, for a 'mix' value
-// between 0.0 and 1.0.
-double lerp(const double min_value, const double max_value, const double mix) {
-  return ((1 - mix) * min_value) + (mix * max_value);
-}
 
 SkyDomeDrawOverride::SkyDomeDrawOverride(const MObject &obj)
         : MHWRender::MPxDrawOverride(obj,
@@ -469,8 +466,8 @@ void SkyDomeDrawOverride::addUIDrawables(
         for (uint32_t i = 0; i < res; i++) {
             const double ratio1 = static_cast<double>(i) / static_cast<double>(res);
             const double ratio2 = static_cast<double>(i + 1) / static_cast<double>(res);
-            const double angle1 = lerp(angle_start_x, angle_end_x, ratio1);
-            const double angle2 = lerp(angle_start_x, angle_end_x, ratio2);
+            const double angle1 = mmmath::lerp(angle_start_x, angle_end_x, ratio1);
+            const double angle2 = mmmath::lerp(angle_start_x, angle_end_x, ratio2);
             const double x1 = radius * std::cos(angle1);
             const double x2 = radius * std::cos(angle2);
             const double y1 = radius * std::sin(angle1);
@@ -522,8 +519,8 @@ void SkyDomeDrawOverride::addUIDrawables(
         for (uint32_t i = 0; i < res; i++) {
             const double ratio1 = static_cast<double>(i) / static_cast<double>(res);
             const double ratio2 = static_cast<double>(i + 1) / static_cast<double>(res);
-            const double angle1 = lerp(angle_start_z, angle_end_z, ratio1);
-            const double angle2 = lerp(angle_start_z, angle_end_z, ratio2);
+            const double angle1 = mmmath::lerp(angle_start_z, angle_end_z, ratio1);
+            const double angle2 = mmmath::lerp(angle_start_z, angle_end_z, ratio2);
             const double x1 = radius * std::cos(angle1);
             const double x2 = radius * std::cos(angle2);
             const double y1 = radius * std::sin(angle1);
@@ -561,9 +558,9 @@ void SkyDomeDrawOverride::addUIDrawables(
                 const double inner_ratio2 =
                     static_cast<double>(j + 1) / static_cast<double>(res);
                 const double inner_angle1 =
-                    lerp(angle_start_lat, angle_end_lat, inner_ratio1);
+                    mmmath::lerp(angle_start_lat, angle_end_lat, inner_ratio1);
                 const double inner_angle2 =
-                    lerp(angle_start_lat, angle_end_lat, inner_ratio2);
+                    mmmath::lerp(angle_start_lat, angle_end_lat, inner_ratio2);
                 const double xy1 = radius * std::cos(inner_angle1);
                 const double xy2 = radius * std::cos(inner_angle2);
                 const double z1 = radius * std::sin(inner_angle1);

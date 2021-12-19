@@ -1,6 +1,6 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2019, 2021 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -484,8 +484,8 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
     if (fl and focalLengthSamples
             and isinstance(file_start_frame, (int, long))
             and isinstance(file_end_frame, (int, long))
-            and isinstance(chosen_start_frame, basestring)
-            and isinstance(chosen_end_frame, basestring)):
+            and isinstance(chosen_start_frame, text_type)
+            and isinstance(chosen_end_frame, text_type)):
         file_start = int(file_start_frame)
         file_end = int(file_end_frame)
         chosen_start = int(chosen_start_frame)
@@ -504,8 +504,8 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
     chosen_end_frame = options.get('end_frame')
     if (isinstance(file_start_frame, (int, long))
             and isinstance(file_end_frame, (int, long))
-            and isinstance(chosen_start_frame, basestring)
-            and isinstance(chosen_end_frame, basestring)):
+            and isinstance(chosen_start_frame, text_type)
+            and isinstance(chosen_end_frame, text_type)):
         file_start = int(file_start_frame)
         file_end = int(file_end_frame)
         chosen_start = int(chosen_start_frame)

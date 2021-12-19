@@ -1,6 +1,6 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2019, 2021 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Paste Camera (MM Solver)...
 #
-# 3DE4.script.version:  v1.4
+# 3DE4.script.version:  v1.5
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Camera
 # 3DE4.script.gui:      Object Browser::Context Menu Cameras
@@ -46,6 +46,10 @@
 #
 #
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import sys
 import json
@@ -53,6 +57,14 @@ import json
 import tde4
 import vl_sdv
 
+
+IS_PYTHON_2 = sys.version_info[0] == 2
+if IS_PYTHON_2 is True:
+    text_type = basestring
+    int_type = (int, long)
+else:
+    text_type = str
+    int_type = int
 
 # MM Camera format
 # This is copied from 'mmSolver.tools.copypastecamera.constant module',
@@ -203,10 +215,10 @@ def _get_frame_list_to_set_values(cam_id, samples_list,
     :returns: List of integer frame numbers.
     :rtype: [int, ..]
     """
-    assert isinstance(file_start_frame, (int, long))
-    assert isinstance(file_end_frame, (int, long))
-    assert isinstance(chosen_start_frame, (int, long))
-    assert isinstance(chosen_end_frame, (int, long))
+    assert isinstance(file_start_frame, int_type)
+    assert isinstance(file_end_frame, int_type)
+    assert isinstance(chosen_start_frame, int_type)
+    assert isinstance(chosen_end_frame, int_type)
     user_requested_frames = set(range(chosen_start_frame, chosen_end_frame + 1))
 
     cam_start, cam_end, _ = tde4.getCameraSequenceAttr(cam_id)
@@ -287,10 +299,10 @@ def _set_camera_translation(pgroup_id, cam_id,
     :rtype: bool
     """
     values_were_set = False
-    assert isinstance(file_start_frame, (int, long))
-    assert isinstance(file_end_frame, (int, long))
-    assert isinstance(chosen_start_frame, (int, long))
-    assert isinstance(chosen_end_frame, (int, long))
+    assert isinstance(file_start_frame, int_type)
+    assert isinstance(file_end_frame, int_type)
+    assert isinstance(chosen_start_frame, int_type)
+    assert isinstance(chosen_end_frame, int_type)
     assert tx_samples
     assert ty_samples
     assert tz_samples
@@ -364,10 +376,10 @@ def _set_camera_rotation(pgroup_id, cam_id,
     :rtype: bool
     """
     values_were_set = False
-    assert isinstance(file_start_frame, (int, long))
-    assert isinstance(file_end_frame, (int, long))
-    assert isinstance(chosen_start_frame, (int, long))
-    assert isinstance(chosen_end_frame, (int, long))
+    assert isinstance(file_start_frame, int_type)
+    assert isinstance(file_end_frame, int_type)
+    assert isinstance(chosen_start_frame, int_type)
+    assert isinstance(chosen_end_frame, int_type)
     assert rx_samples
     assert ry_samples
     assert rz_samples
@@ -441,10 +453,10 @@ def _set_camera_focal_length(cam_id, lens_id,
     :rtype: bool
     """
     values_were_set = False
-    assert isinstance(file_start_frame, (int, long))
-    assert isinstance(file_end_frame, (int, long))
-    assert isinstance(chosen_start_frame, (int, long))
-    assert isinstance(chosen_end_frame, (int, long))
+    assert isinstance(file_start_frame, int_type)
+    assert isinstance(file_end_frame, int_type)
+    assert isinstance(chosen_start_frame, int_type)
+    assert isinstance(chosen_end_frame, int_type)
     assert samples
 
     samples_list = (samples, )
@@ -569,10 +581,10 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
     fl = options.get('fl')
     focalLengthSamples = attr_data.get('focalLength')
     if (fl and focalLengthSamples
-            and isinstance(file_start_frame, (int, long))
-            and isinstance(file_end_frame, (int, long))
-            and isinstance(chosen_start_frame, basestring)
-            and isinstance(chosen_end_frame, basestring)):
+            and isinstance(file_start_frame, int_type)
+            and isinstance(file_end_frame, int_type)
+            and isinstance(chosen_start_frame, text_type)
+            and isinstance(chosen_end_frame, text_type)):
         file_start = int(file_start_frame)
         file_end = int(file_end_frame)
         chosen_start = int(chosen_start_frame)
@@ -589,10 +601,10 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
     file_end_frame = camera_data.get('end_frame')
     chosen_start_frame = options.get('start_frame')
     chosen_end_frame = options.get('end_frame')
-    if (isinstance(file_start_frame, (int, long))
-            and isinstance(file_end_frame, (int, long))
-            and isinstance(chosen_start_frame, basestring)
-            and isinstance(chosen_end_frame, basestring)):
+    if (isinstance(file_start_frame, int_type)
+            and isinstance(file_end_frame, int_type)
+            and isinstance(chosen_start_frame, text_type)
+            and isinstance(chosen_end_frame, text_type)):
         file_start = int(file_start_frame)
         file_end = int(file_end_frame)
         chosen_start = int(chosen_start_frame)
@@ -643,7 +655,7 @@ def _parse_data(file_path):
     :rtype: dict or None
     """
     assert file_path is not None
-    assert isinstance(file_path, basestring)
+    assert isinstance(file_path, text_type)
     assert len(file_path) > 0
     try:
         file_data = parse(file_path)
@@ -663,7 +675,7 @@ def _file_path_is_valid(file_path):
     """
     if file_path is None:
         return False
-    if not isinstance(file_path, basestring):
+    if not isinstance(file_path, text_type):
         return False
     if len(file_path) == 0:
         return False
@@ -937,7 +949,7 @@ def _build_gui(file_path):
     Build the widgets at the top of the window.
 
     :param file_path: The initial file path to parse.
-    :type file_path: basestring or None
+    :type file_path: text_type or None
 
     :returns: 3DEqualizer UI request id.
     """

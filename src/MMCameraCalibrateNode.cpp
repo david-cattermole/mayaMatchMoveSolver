@@ -34,6 +34,8 @@
 #include <maya/MFnNumericData.h>
 #include <maya/MFnMatrixData.h>
 #include <maya/MStreamUtils.h>
+#include <maya/MTransformationMatrix.h>
+#include <maya/MEulerRotation.h>
 
 // Utilities
 #include <utilities/debugUtils.h>
@@ -96,6 +98,36 @@ getPoint2DAttrValue(
 }
 
 
+MStatus
+getVector3DAttrValue(
+        MDataBlock &data,
+        MObject &attr_x,
+        MObject &attr_y,
+        MObject &attr_z,
+        mmdata::Vector3D &output)
+{
+    MStatus status = MS::kUnknownParameter;
+
+    MDataHandle xHandle = data.inputValue(
+            attr_x, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    double x = xHandle.asDouble();
+
+    MDataHandle yHandle = data.inputValue(
+            attr_y, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    double y = yHandle.asDouble();
+
+    MDataHandle zHandle = data.inputValue(
+            attr_z, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    double z = zHandle.asDouble();
+
+    output = mmdata::Vector3D(x, y, z);
+    return MS::kSuccess;
+}
+
+
 MTypeId MMCameraCalibrateNode::m_id(MM_CAMERA_CALIBRATE_TYPE_ID);
 
 // Input Attributes
@@ -116,10 +148,11 @@ MObject MMCameraCalibrateNode::a_originPoint;
 MObject MMCameraCalibrateNode::a_originPointX;
 MObject MMCameraCalibrateNode::a_originPointY;
 
-MObject MMCameraCalibrateNode::a_orientationPlane;
-MObject MMCameraCalibrateNode::a_axisFlipX;
-MObject MMCameraCalibrateNode::a_axisFlipY;
-MObject MMCameraCalibrateNode::a_axisFlipZ;
+MObject MMCameraCalibrateNode::a_rotatePlane;
+MObject MMCameraCalibrateNode::a_rotatePlaneX;
+MObject MMCameraCalibrateNode::a_rotatePlaneY;
+MObject MMCameraCalibrateNode::a_rotatePlaneZ;
+MObject MMCameraCalibrateNode::a_rotateOrder;
 
 #ifdef WITH_PRINCIPAL_POINT
 MObject MMCameraCalibrateNode::a_principalPoint;
@@ -276,31 +309,25 @@ MStatus MMCameraCalibrateNode::compute(const MPlug &plug, MDataBlock &data) {
                 originPoint));
 
         ///////////////////////////////
-        MDataHandle orientPlaneHandle = data.inputValue(
-            a_orientationPlane,
-            &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-        auto orientPlane =
-            static_cast<calibrate::OrientationPlane>(
-                orientPlaneHandle.asShort());
+        auto rotatePlane = mmdata::Vector3D();
+        CHECK_MSTATUS_AND_RETURN_IT(
+            getVector3DAttrValue(
+                data,
+                a_rotatePlaneX,
+                a_rotatePlaneY,
+                a_rotatePlaneZ,
+                rotatePlane));
+        rotatePlane.x_ *= DEGREES_TO_RADIANS;
+        rotatePlane.y_ *= DEGREES_TO_RADIANS;
+        rotatePlane.z_ *= DEGREES_TO_RADIANS;
 
-        MDataHandle axisFlipXHandle = data.inputValue(
-            a_axisFlipX,
+        ///////////////////////////////
+        MDataHandle rotateOrderHandle = data.inputValue(
+            a_rotateOrder,
             &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        bool axisFlipX = axisFlipXHandle.asBool();
-
-        MDataHandle axisFlipYHandle = data.inputValue(
-            a_axisFlipY,
-            &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-        bool axisFlipY = axisFlipYHandle.asBool();
-
-        MDataHandle axisFlipZHandle = data.inputValue(
-            a_axisFlipZ,
-            &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-        bool axisFlipZ = axisFlipZHandle.asBool();
+        auto rotateOrderValue = rotateOrderHandle.asShort();
+        auto rotateOrder = static_cast<MEulerRotation::RotationOrder>(rotateOrderValue);
 
         ///////////////////////////////
         auto principalPoint = mmdata::Point2D();
@@ -367,10 +394,6 @@ MStatus MMCameraCalibrateNode::compute(const MPlug &plug, MDataBlock &data) {
                 filmBackWidth_mm,
                 filmBackHeight_mm,
                 originPoint,
-                orientPlane,
-                axisFlipX,
-                axisFlipY,
-                axisFlipZ,
                 principalPoint,
                 vanishingPointA,
                 horizonPointA,
@@ -404,10 +427,6 @@ MStatus MMCameraCalibrateNode::compute(const MPlug &plug, MDataBlock &data) {
                 filmBackWidth_mm,
                 filmBackHeight_mm,
                 originPoint,
-                orientPlane,
-                axisFlipX,
-                axisFlipY,
-                axisFlipZ,
                 principalPoint,
                 vanishingPointA,
                 horizonPointA,
@@ -425,10 +444,6 @@ MStatus MMCameraCalibrateNode::compute(const MPlug &plug, MDataBlock &data) {
                 filmBackWidth_mm,
                 filmBackHeight_mm,
                 originPoint,
-                orientPlane,
-                axisFlipX,
-                axisFlipY,
-                axisFlipZ,
                 principalPoint,
                 vanishingPointA,
                 vanishingPointB,
@@ -445,8 +460,21 @@ MStatus MMCameraCalibrateNode::compute(const MPlug &plug, MDataBlock &data) {
                 << static_cast<int>(calibrationMode)
                 << '\n';
         }
+        auto cameraMatrix = convertToMMatrix(outCameraParameters.transformMatrix_);
 
-        auto outMatrix = convertToMMatrix(outCameraParameters.transformMatrix_);
+        // Rotate the matrix.
+        auto rotation = MEulerRotation(
+            rotatePlane.x_,
+            rotatePlane.y_,
+            rotatePlane.z_,
+            rotateOrder);
+        auto orientTfmMatrix = MTransformationMatrix();
+        auto space = MSpace::Space::kWorld;
+        orientTfmMatrix.rotateBy(rotation, space, &status);
+        CHECK_MSTATUS(status);
+        auto orientMatrix = orientTfmMatrix.asMatrix();
+
+        auto outMatrix = cameraMatrix * orientMatrix;
         auto outMatrixInverse = outMatrix.inverse();
 #ifdef MM_DEBUG
         MStreamUtils::stdErrorStream()
@@ -711,54 +739,55 @@ MStatus MMCameraCalibrateNode::initialize() {
         CHECK_MSTATUS(addAttribute(a_originPoint));
     }
 
-    //////////////////////////////////////////////////////////////////////////
-
     {
-        // Orientation Plane
-        auto zxMode = static_cast<short>(calibrate::OrientationPlane::ZX);
-        auto zyMode = static_cast<short>(calibrate::OrientationPlane::ZY);
-        auto xzMode = static_cast<short>(calibrate::OrientationPlane::XZ);
-        auto xyMode = static_cast<short>(calibrate::OrientationPlane::XY);
-        auto yxMode = static_cast<short>(calibrate::OrientationPlane::YX);
-        auto yzMode = static_cast<short>(calibrate::OrientationPlane::YZ);
-        a_orientationPlane = enumAttr.create(
-            "orientationPlane", "ornttpln",
-            zxMode,
+        a_rotatePlaneX = numericAttr.create(
+            "rotatePlaneX", "rotplnx",
+            MFnNumericData::kDouble, 0.0);
+        CHECK_MSTATUS(numericAttr.setStorable(true));
+        CHECK_MSTATUS(numericAttr.setKeyable(true));
+
+        a_rotatePlaneY = numericAttr.create(
+            "rotatePlaneY", "rotplny",
+            MFnNumericData::kDouble, 0.0);
+        CHECK_MSTATUS(numericAttr.setStorable(true));
+        CHECK_MSTATUS(numericAttr.setKeyable(true));
+
+        a_rotatePlaneZ = numericAttr.create(
+            "rotatePlaneZ", "rotplnz",
+            MFnNumericData::kDouble, 0.0);
+        CHECK_MSTATUS(numericAttr.setStorable(true));
+        CHECK_MSTATUS(numericAttr.setKeyable(true));
+
+        a_rotatePlane = compoundAttr.create(
+            "rotatePlane", "rotpln",
             &status);
         CHECK_MSTATUS(status);
-        CHECK_MSTATUS(enumAttr.addField("Z forward | X side | Y up", zxMode));
-        CHECK_MSTATUS(enumAttr.addField("X forward | Z side | Y up", xzMode));
-        CHECK_MSTATUS(enumAttr.addField("X forward | Y side | Z up", xyMode));
-        CHECK_MSTATUS(enumAttr.addField("Y forward | X side | Z up", yxMode));
-        CHECK_MSTATUS(enumAttr.addField("Z forward | Y side | X up", zyMode));
-        CHECK_MSTATUS(enumAttr.addField("Y forward | Z side | X up", yzMode));
-        CHECK_MSTATUS(enumAttr.setStorable(true));
-        CHECK_MSTATUS(enumAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_orientationPlane));
+        compoundAttr.addChild(a_rotatePlaneX);
+        compoundAttr.addChild(a_rotatePlaneY);
+        compoundAttr.addChild(a_rotatePlaneZ);
+        CHECK_MSTATUS(addAttribute(a_rotatePlane));
 
-        // Flip X Axis
-        a_axisFlipX = numericAttr.create(
-            "axisFlipX", "axsflpx",
-            MFnNumericData::kBoolean, false);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_axisFlipX));
-
-        // Flip Y Axis
-        a_axisFlipY = numericAttr.create(
-            "axisFlipY", "axsflpy",
-            MFnNumericData::kBoolean, false);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_axisFlipY));
-
-        // Flip Z Axis
-        a_axisFlipZ = numericAttr.create(
-            "axisFlipZ", "axsflpz",
-            MFnNumericData::kBoolean, false);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_axisFlipZ));
+        // Rotate Order
+        auto xyzMode = static_cast<short>(MEulerRotation::kXYZ);
+        auto yzxMode = static_cast<short>(MEulerRotation::kYZX);
+        auto zxyMode = static_cast<short>(MEulerRotation::kZXY);
+        auto xzyMode = static_cast<short>(MEulerRotation::kXZY);
+        auto yxzMode = static_cast<short>(MEulerRotation::kYXZ);
+        auto zyxMode = static_cast<short>(MEulerRotation::kZYX);
+        a_rotateOrder = enumAttr.create(
+                "rotateOrder", "rotordr",
+                xyzMode,
+                &status);
+         CHECK_MSTATUS(status);
+         CHECK_MSTATUS(enumAttr.addField("XYZ", xyzMode));
+         CHECK_MSTATUS(enumAttr.addField("YZX", yzxMode));
+         CHECK_MSTATUS(enumAttr.addField("ZXY", zxyMode));
+         CHECK_MSTATUS(enumAttr.addField("XZY", xzyMode));
+         CHECK_MSTATUS(enumAttr.addField("YXZ", yxzMode));
+         CHECK_MSTATUS(enumAttr.addField("ZYX", zyxMode));
+         CHECK_MSTATUS(enumAttr.setStorable(true));
+         CHECK_MSTATUS(enumAttr.setKeyable(true));
+         CHECK_MSTATUS(addAttribute(a_rotateOrder));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -1065,10 +1094,11 @@ MStatus MMCameraCalibrateNode::initialize() {
     inputAttrs.append(a_originPointX);
     inputAttrs.append(a_originPointY);
 
-    inputAttrs.append(a_orientationPlane);
-    inputAttrs.append(a_axisFlipX);
-    inputAttrs.append(a_axisFlipY);
-    inputAttrs.append(a_axisFlipZ);
+    inputAttrs.append(a_rotatePlane);
+    inputAttrs.append(a_rotatePlaneX);
+    inputAttrs.append(a_rotatePlaneY);
+    inputAttrs.append(a_rotatePlaneZ);
+    inputAttrs.append(a_rotateOrder);
 
 #ifdef WITH_PRINCIPAL_POINT
     inputAttrs.append(a_principalPoint);

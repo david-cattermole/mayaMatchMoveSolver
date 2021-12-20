@@ -136,10 +136,6 @@ applySceneScale(
 bool
 calcCameraParameters(
     mmdata::Point2D originPoint,
-    OrientationPlane orientPlane,
-    bool axisFlipX,
-    bool axisFlipY,
-    bool axisFlipZ,
     mmdata::Point2D principalPoint,
     mmdata::Point2D vanishingPointA,
     mmdata::Point2D vanishingPointB,

@@ -19,8 +19,15 @@
 Re-parent transform node to a new parent, across time.
 """
 
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+
+import collections
+
 import maya.cmds
 import maya.OpenMaya
+
 import mmSolver.logger
 import mmSolver.utils.constant as const_utils
 import mmSolver.utils.tools as tools_utils
@@ -32,6 +39,124 @@ import mmSolver.tools.reparent2.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def __get_node_settable_data(settable_map):
+    non_settable_nodes = set()
+    non_settable_node_axis_t = collections.defaultdict(set)
+    non_settable_node_axis_r = collections.defaultdict(set)
+    non_settable_node_axis_s = collections.defaultdict(set)
+    for key, settable in settable_map.items():
+        if settable is False:
+            key_split = key.split('.')
+            node_name = key_split[0]
+            attr_name = key_split[1]
+            axis_name = attr_name
+            axis_name = axis_name.replace('translate', '')
+            axis_name = axis_name.replace('rotate', '')
+            axis_name = axis_name.replace('scale', '')
+            if 'translate' in attr_name:
+                non_settable_node_axis_t[node_name].add(axis_name)
+            elif 'rotate' in attr_name:
+                non_settable_node_axis_r[node_name].add(axis_name)
+            elif 'scale' in attr_name:
+                non_settable_node_axis_s[node_name].add(axis_name)
+            else:
+                pass
+            non_settable_nodes.add(node_name)
+    settable_data = (
+        non_settable_nodes,
+        non_settable_node_axis_t,
+        non_settable_node_axis_r,
+        non_settable_node_axis_s
+    )
+    return settable_data
+
+
+def __format_node_status(node,
+                         non_settable_node_axis_t,
+                         non_settable_node_axis_r,
+                         non_settable_node_axis_s):
+    axis_t = list(sorted(non_settable_node_axis_t[node]))
+    axis_r = list(sorted(non_settable_node_axis_r[node]))
+    axis_s = list(sorted(non_settable_node_axis_s[node]))
+    if len(axis_t) > 0:
+        axis_t = 'T' + ''.join(axis_t)
+    else:
+        axis_t = ''
+    if len(axis_r) > 0:
+        axis_r = 'R' + ''.join(axis_r)
+    else:
+        axis_r = ''
+    if len(axis_s) > 0:
+        axis_s = 'S' + ''.join(axis_s)
+    else:
+        axis_s = ''
+    attrs = "{} {} {}".format(axis_t, axis_r, axis_s)
+    attrs = attrs.replace('  ', ' ').strip()
+
+    node_status = "{} {}".format(node, attrs)
+    return node_status
+
+
+def __check_modify_nodes(node_list):
+    """
+    Detect if the re-parent children nodes have locked attributes.
+
+    If so, prompt the user what to do...
+    1) Cancel operation?
+    2) Continue operation with limited features?
+    """
+    prompt_user = False
+
+    attr_list = [
+        'translateX', 'translateY', 'translateZ',
+        'rotateX', 'rotateY', 'rotateZ',
+        'scaleX', 'scaleY', 'scaleZ'
+    ]
+    settable_map, \
+        settable_count, \
+        non_settable_count = lib.nodes_attrs_settable(
+            node_list,
+            attr_list)
+
+    full_msg = ''
+    confirm_msg = ''
+    if non_settable_count > 0:
+        prompt_user = True
+        non_settable_nodes, \
+            non_settable_node_axis_t, \
+            non_settable_node_axis_r, \
+            non_settable_node_axis_s = __get_node_settable_data(settable_map)
+
+        non_settable_nodes = list(sorted(non_settable_nodes))
+        non_settable_node_count = len(non_settable_nodes)
+        max_display_count = 9
+
+        msg = ("The following nodes have locked or "
+               "connected attributes and cannot be modified "
+               "during re-parenting.\n\n")
+        msg += "Cannot modify {} nodes:\n".format(non_settable_node_count)
+        full_msg = msg
+        confirm_msg = msg
+
+        for i, node in enumerate(non_settable_nodes):
+            node_status = __format_node_status(
+                node,
+                non_settable_node_axis_t,
+                non_settable_node_axis_r,
+                non_settable_node_axis_s)
+
+            node_msg = "  {}\n".format(node_status)
+            full_msg += node_msg
+            if i < max_display_count:
+                confirm_msg += node_msg
+
+        if non_settable_node_count > len(non_settable_nodes):
+            confirm_msg += "  ... see Script Editor for full list.\n"
+
+        confirm_msg += "\nWould you like to continue?"
+    return prompt_user, settable_map, full_msg, confirm_msg
 
 
 def _reparent_under_node_selection():
@@ -129,6 +254,24 @@ def reparent(children, parent):
         const.CONFIG_DELETE_STATIC_ANIM_CURVES_KEY,
         default=const.DEFAULT_DELETE_STATIC_ANIM_CURVES)
     viewport_mode = const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE
+
+    # Check the children nodes and prompt the user what to do
+    prompt_user, settable_map, full_msg, confirm_msg = \
+        __check_modify_nodes(children)
+    if prompt_user is True:
+        LOG.warn(full_msg)
+        cancel_button = 'Cancel'
+        continue_button = 'Continue'
+        button = maya.cmds.confirmDialog(
+            title='Warning: Cannot Modify Nodes.',
+            message=confirm_msg,
+            button=[continue_button, cancel_button],
+            defaultButton=continue_button,
+            cancelButton=cancel_button,
+            dismissString=cancel_button)
+        if button == cancel_button:
+            LOG.warn('User canceled Re-parent.')
+            return
 
     with tools_utils.tool_context(disable_viewport=True,
                                   use_undo_chunk=True,

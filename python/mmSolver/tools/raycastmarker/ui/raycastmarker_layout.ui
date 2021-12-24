@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>427</width>
-    <height>347</height>
+    <width>645</width>
+    <height>482</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -73,15 +73,25 @@
       <string>Options</string>
      </property>
      <layout class="QFormLayout" name="options2_layout">
-      <item row="0" column="0">
+      <item row="1" column="0">
        <widget class="QLabel" name="bundleUnlockRelockLabel">
         <property name="text">
          <string>Automatic Bundle Unlock/Relock</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="1" column="1">
        <widget class="QCheckBox" name="bundleUnlockRelockCheckBox"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="bundleRotateModeLabel">
+        <property name="text">
+         <string>Bundle Rotation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="bundleRotateModeComboBox"/>
       </item>
      </layout>
     </widget>

@@ -48,7 +48,7 @@ baseModule, BaseWindow = uiutils.getBaseWindow()
 
 def _open_help():
     src = helputils.get_help_source()
-    page = 'tools_markertools.html#project-marker-on-mesh-ray-cast'
+    page = 'tools_generaltools.html#reparent-ui'
     helputils.open_help_in_browser(page=page, help_source=src)
     return
 

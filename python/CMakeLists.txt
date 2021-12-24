@@ -72,6 +72,11 @@ if (BUILD_QT_UI)
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/channelsen/ui/ui_channelsen_layout.py
             )
 
+    add_ui_compile("convertmarker"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/convertmarker/ui/convertmarker_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/convertmarker/ui/ui_convertmarker_layout.py
+            )
+
     add_ui_compile("raycastmarker"
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/raycastmarker/ui/raycastmarker_layout.ui
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/raycastmarker/ui/ui_raycastmarker_layout.py

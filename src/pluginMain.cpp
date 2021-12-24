@@ -39,6 +39,8 @@
 #include <MMMarkerGroupTransformNode.h>
 #include <MMReprojectionCmd.h>
 #include <MMSolverAffectsCmd.h>
+#include <MMCameraCalibrateNode.h>
+#include <MMLineIntersectNode.h>
 #include <MMCameraSolveCmd.h>
 
 
@@ -121,7 +123,7 @@ MStatus initializePlugin(MObject obj) {
                      MMSolverAffectsCmd::creator,
                      MMSolverAffectsCmd::newSyntax,
                      status);
-    
+
     REGISTER_COMMAND(plugin,
                      MMTestCameraMatrixCmd::cmdName(),
                      MMTestCameraMatrixCmd::creator,
@@ -146,6 +148,20 @@ MStatus initializePlugin(MObject obj) {
                   MMReprojectionNode::m_id,
                   MMReprojectionNode::creator,
                   MMReprojectionNode::initialize,
+                  status);
+
+    REGISTER_NODE(plugin,
+                  MMCameraCalibrateNode::nodeName(),
+                  MMCameraCalibrateNode::m_id,
+                  MMCameraCalibrateNode::creator,
+                  MMCameraCalibrateNode::initialize,
+                  status);
+
+    REGISTER_NODE(plugin,
+                  MMLineIntersectNode::nodeName(),
+                  MMLineIntersectNode::m_id,
+                  MMLineIntersectNode::creator,
+                  MMLineIntersectNode::initialize,
                   status);
 
     // MM Marker Group transform
@@ -196,6 +212,12 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(),
                     MMReprojectionNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMCameraCalibrateNode::nodeName(),
+                    MMCameraCalibrateNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMLineIntersectNode::nodeName(),
+                    MMLineIntersectNode::m_id, status);
 
     DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(),
                     MMMarkerGroupTransformNode::m_id, status);

@@ -32,6 +32,58 @@ import mmSolver._api.marker
 LOG = mmSolver.logger.get_logger()
 
 
+def _lock_and_display_bundle_attributes(tfm,
+                            lock_translate=None,
+                            lock_rotate=None,
+                            lock_scale=None,
+                            lock_shear=None,
+                            display_translate=None,
+                            display_rotate=None,
+                            display_scale=None,
+                            display_shear=None):
+    """
+    Create the attributes expected to be on a Marker.
+
+    :param node: Transform node for the Marker.
+    :type node: str
+    """
+    assert lock_translate is not None
+    assert lock_rotate is not None
+    assert lock_scale is not None
+    assert lock_shear is not None
+    assert display_translate is not None
+    assert display_rotate is not None
+    assert display_scale is not None
+    assert display_shear is not None
+
+    maya.cmds.setAttr(tfm + '.tx', lock=lock_translate)
+    maya.cmds.setAttr(tfm + '.ty', lock=lock_translate)
+    maya.cmds.setAttr(tfm + '.tz', lock=lock_translate)
+    maya.cmds.setAttr(tfm + '.rx', lock=lock_rotate)
+    maya.cmds.setAttr(tfm + '.ry', lock=lock_rotate)
+    maya.cmds.setAttr(tfm + '.rz', lock=lock_rotate)
+    maya.cmds.setAttr(tfm + '.sx', lock=lock_scale)
+    maya.cmds.setAttr(tfm + '.sy', lock=lock_scale)
+    maya.cmds.setAttr(tfm + '.sz', lock=lock_scale)
+    maya.cmds.setAttr(tfm + '.shxy', lock=lock_shear)
+    maya.cmds.setAttr(tfm + '.shxz', lock=lock_shear)
+    maya.cmds.setAttr(tfm + '.shyz', lock=lock_shear)
+
+    maya.cmds.setAttr(tfm + '.tx', keyable=display_translate)
+    maya.cmds.setAttr(tfm + '.ty', keyable=display_translate)
+    maya.cmds.setAttr(tfm + '.tz', keyable=display_translate)
+    maya.cmds.setAttr(tfm + '.rx', keyable=display_rotate)
+    maya.cmds.setAttr(tfm + '.ry', keyable=display_rotate)
+    maya.cmds.setAttr(tfm + '.rz', keyable=display_rotate)
+    maya.cmds.setAttr(tfm + '.sx', keyable=display_scale)
+    maya.cmds.setAttr(tfm + '.sy', keyable=display_scale)
+    maya.cmds.setAttr(tfm + '.sz', keyable=display_scale)
+    maya.cmds.setAttr(tfm + '.shxy', keyable=display_shear)
+    maya.cmds.setAttr(tfm + '.shxz', keyable=display_shear)
+    maya.cmds.setAttr(tfm + '.shyz', keyable=display_shear)
+    return
+
+
 def _set_bundle_icon(dag_path):
     icon_name = const.BUNDLE_SHAPE_ICON_NAME
     dag_shps = node_utils.get_dag_path_shapes_below_apione(dag_path)
@@ -175,24 +227,25 @@ class Bundle(object):
         tfm = maya.cmds.createNode(const.BUNDLE_TRANSFORM_NODE_TYPE,
                                    name=name)
         tfm = node_utils.get_long_name(tfm)
-        maya.cmds.setAttr(tfm + '.rx', lock=True)
-        maya.cmds.setAttr(tfm + '.ry', lock=True)
-        maya.cmds.setAttr(tfm + '.rz', lock=True)
-        maya.cmds.setAttr(tfm + '.sx', lock=True)
-        maya.cmds.setAttr(tfm + '.sy', lock=True)
-        maya.cmds.setAttr(tfm + '.sz', lock=True)
-        maya.cmds.setAttr(tfm + '.shxy', lock=True)
-        maya.cmds.setAttr(tfm + '.shxz', lock=True)
-        maya.cmds.setAttr(tfm + '.shyz', lock=True)
-        maya.cmds.setAttr(tfm + '.rx', keyable=False)
-        maya.cmds.setAttr(tfm + '.ry', keyable=False)
-        maya.cmds.setAttr(tfm + '.rz', keyable=False)
-        maya.cmds.setAttr(tfm + '.sx', keyable=False)
-        maya.cmds.setAttr(tfm + '.sy', keyable=False)
-        maya.cmds.setAttr(tfm + '.sz', keyable=False)
-        maya.cmds.setAttr(tfm + '.shxy', keyable=False)
-        maya.cmds.setAttr(tfm + '.shxz', keyable=False)
-        maya.cmds.setAttr(tfm + '.shyz', keyable=False)
+
+        # Show the bundle transform attributes in the channel box, but
+        # the attributes are locked, so this is compatible with
+        # versions before v0.3.15.
+        lock_rot_scale = True
+        display_rot_scale = True
+        lock_shear = True
+        display_shear = False
+        _lock_and_display_bundle_attributes(
+            tfm,
+            lock_translate=False,
+            lock_rotate=lock_rot_scale,
+            lock_scale=lock_rot_scale,
+            lock_shear=lock_shear,
+            display_translate=True,
+            display_rotate=display_rot_scale,
+            display_scale=display_rot_scale,
+            display_shear=display_shear,
+        )
 
         # Shape Node
         shp_name = tfm.rpartition('|')[-1] + 'Shape'

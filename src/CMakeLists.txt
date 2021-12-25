@@ -34,22 +34,31 @@ set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
 
 # Source
 set(SOURCE_FILES
-  core/reprojection.cpp
   core/bundleAdjust_base.cpp
   core/bundleAdjust_relationships.cpp
   core/bundleAdjust_solveFunc.cpp
   core/bundleAdjust_cminpack_base.cpp
   core/bundleAdjust_cminpack_lmdif.cpp
   core/bundleAdjust_cminpack_lmder.cpp
+  core/calibrate/common.cpp
+  core/calibrate/vanishingPoint.cpp
+  core/mmcamera.cpp
+  core/mmcoord.cpp
+  core/mmdata.cpp
+  core/mmmath.cpp
+  core/reprojection.cpp
   Camera.cpp
   Marker.cpp
   Bundle.cpp
   Attr.cpp
+  mayaUtils.cpp
   commonArgFlags.cpp
   MMSolverAffectsCmd.cpp
   MMMarkerScaleNode.cpp
   MMReprojectionNode.cpp
   MMMarkerGroupTransformNode.cpp
+  MMCameraCalibrateNode.cpp
+  MMLineIntersectNode.cpp
   MMTestCameraMatrixCmd.cpp
   MMSolverCmd.cpp
   MMSolverTypeCmd.cpp

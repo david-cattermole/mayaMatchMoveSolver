@@ -31,10 +31,6 @@ SETLOCAL
 SET MAYA_VERSION=2018
 SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2018"
 
-:: Clear all build information before re-compiling.
-:: Turn this off when wanting to make small changes and recompile.
-SET FRESH_BUILD=1
-
 :: Run the Python API and Solver tests inside Maya, after a
 :: successfully build an install process.
 SET RUN_TESTS=0
@@ -103,12 +99,14 @@ IF EXIST "C:\MinGW" (
     SET IGNORE_INCLUDE_DIRECTORIES="C:\MinGW\bin;C:\MinGW\include"
 )
 
-:: Build plugin
-MKDIR build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
-CHDIR build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
-IF "%FRESH_BUILD%"=="1" (
-    DEL /S /Q *
-    FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
+:: Build project
+SET BUILD_DIR_NAME=build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
+SET BUILD_DIR=%PROJECT_ROOT%\%BUILD_DIR_NAME%
+ECHO BUILD_DIR_NAME: %BUILD_DIR_NAME%
+ECHO BUILD_DIR: %BUILD_DIR%
+MKDIR "%BUILD_DIR_NAME%"
+CHDIR "%BUILD_DIR%"
+
 )
 
 IF "%GENERATE_SOLUTION%"=="1" (

@@ -61,6 +61,7 @@ SET BUILD_TYPE=Release
 :: Build options, to allow faster compilation times. (not to be used by
 :: users wanting to build this project.)
 SET BUILD_PLUGIN=1
+SET BUILD_MMSCENEGRAPH=1
 SET BUILD_PYTHON=1
 SET BUILD_MEL=1
 SET BUILD_3DEQUALIZER=1
@@ -93,12 +94,35 @@ SET GFLAGS_ROOT="%PROJECT_ROOT%\external\install\libmv"
 SET GFLAGS_INCLUDE_DIR="%PROJECT_ROOT%\external\install\libmv\include\third_party\gflags"
 SET GFLAGS_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
 
+:: Where to find the mmSceneGraph Rust libraries and headers.
+SET MMSCENEGRAPH_RUST_DIR=%PROJECT_ROOT%\src\mmscenegraph\rust
+SET MMSCENEGRAPH_CPP_DIR=%PROJECT_ROOT%\src\mmscenegraph\cppbind
+SET MMSCENEGRAPH_RUST_BUILD_DIR="%MMSCENEGRAPH_CPP_DIR%\target\release"
+SET MMSCENEGRAPH_INCLUDE_DIR="%MMSCENEGRAPH_CPP_DIR%\include"
+
 :: MinGW is a common install for developers on Windows and
 :: if installed and used it will cause build conflicts and
 :: errors, so we disable it.
 SET IGNORE_INCLUDE_DIRECTORIES=""
 IF EXIST "C:\MinGW" (
     SET IGNORE_INCLUDE_DIRECTORIES="C:\MinGW\bin;C:\MinGW\include"
+)
+
+IF "%BUILD_MMSCENEGRAPH%"=="1" (
+   ECHO Building mmSceneGraph...
+
+   :: Install the needed cxxbridge.exe command to be installed with
+   :: the exact version we need.
+   cargo install cxxbridge-cmd --version 1.0.60
+
+   ECHO Building C++ Bindings... (%MMSCENEGRAPH_CPP_DIR%)
+   CHDIR "%MMSCENEGRAPH_CPP_DIR%"
+   :: Assumes 'cxxbridge' (cxxbridge-cmd) is installed.
+   ECHO Generating C++ Headers...
+   cxxbridge --header --output "%MMSCENEGRAPH_CPP_DIR%\include\mmscenegraph\_cxx.h"
+   cargo build --release
+
+   CHDIR "%PROJECT_ROOT%"
 )
 
 :: Build project
@@ -119,6 +143,7 @@ cmake -G "NMake Makefiles" ^
     -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
     -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
     -DBUILD_PLUGIN=%BUILD_PLUGIN% ^
+    -DBUILD_MMSCENEGRAPH=%BUILD_MMSCENEGRAPH% ^
     -DBUILD_PYTHON=%BUILD_PYTHON% ^
     -DBUILD_MEL=%BUILD_MEL% ^
     -DBUILD_3DEQUALIZER=%BUILD_3DEQUALIZER% ^
@@ -139,6 +164,8 @@ cmake -G "NMake Makefiles" ^
     -DGLOG_INCLUDE_DIR=%GLOG_INCLUDE_DIR% ^
     -DGFLAGS_ROOT=%GFLAGS_ROOT% ^
     -DGFLAGS_INCLUDE_DIR=%GFLAGS_INCLUDE_DIR% ^
+    -DMMSCENEGRAPH_RUST_BUILD_DIR=%MMSCENEGRAPH_RUST_BUILD_DIR% ^
+    -DMMSCENEGRAPH_INCLUDE_DIR=%MMSCENEGRAPH_INCLUDE_DIR% ^
     -DMAYA_LOCATION=%MAYA_LOCATION% ^
     -DMAYA_VERSION=%MAYA_VERSION% ^
     ..

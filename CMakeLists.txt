@@ -56,6 +56,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 # time.
 set(BUILD_PLUGIN 1 CACHE BOOL
         "Do you want to build the plug-in?")
+set(BUILD_MMSCENEGRAPH 1 CACHE BOOL
+        "Do you want to build with the mmSceneGraph feature?")
 set(BUILD_PYTHON 1 CACHE BOOL
         "Do you want to build and install the Python API and tools?")
 set(BUILD_MEL 1 CACHE BOOL

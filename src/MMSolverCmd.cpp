@@ -25,6 +25,7 @@
 #include <core/bundleAdjust_defines.h>
 #include <core/bundleAdjust_data.h>
 #include <mayaUtils.h>
+#include <mmscenegraph/mmscenegraph.h>
 
 // STL
 #include <cmath>
@@ -435,6 +436,31 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
 //                     error is caught using a "catch" statement.
 //
     MStatus status = MStatus::kSuccess;
+
+    mmscenegraph::foo(1);
+    mmscenegraph::foo(2);
+    mmscenegraph::foo(3);
+    mmscenegraph::foo(42);
+    auto cpp_string_1 = mmscenegraph::foobar(1);
+    auto cpp_string_2 = mmscenegraph::foobar(2);
+    auto cpp_string_3 = mmscenegraph::foobar(3);
+    auto cpp_string_42 = mmscenegraph::foobar(42);
+    MStreamUtils::stdErrorStream()
+        << "mmSolver: Rust result: "
+        << cpp_string_1
+        << '\n';
+    MStreamUtils::stdErrorStream()
+        << "mmSolver: Rust result: "
+        << cpp_string_2
+        << '\n';
+    MStreamUtils::stdErrorStream()
+        << "mmSolver: Rust result: "
+        << cpp_string_3
+        << '\n';
+    MStreamUtils::stdErrorStream()
+        << "mmSolver: Rust result: "
+        << cpp_string_42
+        << '\n';
 
     // Mouse cursor spinning...
     // MGlobal::executeCommand("waitCursor -state on;");

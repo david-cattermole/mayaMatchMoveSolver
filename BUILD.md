@@ -30,6 +30,10 @@ Required:
 - [CMinpack 1.3.8](https://github.com/devernay/cminpack/releases/tag/v1.3.8)
 - [Python 2.7.x or 3.x](https://www.python.org/) (for build scripts)
 - [Sphinx 1.8.3+](http://www.sphinx-doc.org/en/master/index.html) (for building documentation)
+- [Rust 1.43+](https://www.rust-lang.org/) for MM Scene Graph features.
+  - [cxx-bridge](https://cxx.rs/) for Rust/C++ bindings.
+  - See the 'Cargo.toml' files for a full list of (automatically)
+    installed dependencies.
 
 Optional Solver:
 - [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)

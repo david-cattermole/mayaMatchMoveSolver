@@ -428,9 +428,11 @@ void logResultsSolveDetails(
             MStreamUtils::stdErrorStream() << "Solver returned FAILURE    | ";
         }
 
-        char formatBuffer[128];
-        sprintf(
+        const std::size_t buffer_size = 128;
+        char formatBuffer[buffer_size];
+        std::snprintf(
             formatBuffer,
+            buffer_size,
             "error avg %8.4f   min %8.4f   max %8.4f  iterations %03u",
             solverResult.errorAvg,
             solverResult.errorMin,

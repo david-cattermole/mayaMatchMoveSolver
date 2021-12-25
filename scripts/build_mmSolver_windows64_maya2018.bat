@@ -93,7 +93,9 @@ SET GFLAGS_ROOT="%PROJECT_ROOT%\external\install\libmv"
 SET GFLAGS_INCLUDE_DIR="%PROJECT_ROOT%\external\install\libmv\include\third_party\gflags"
 SET GFLAGS_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
 
-:: Include directories to ignore
+:: MinGW is a common install for developers on Windows and
+:: if installed and used it will cause build conflicts and
+:: errors, so we disable it.
 SET IGNORE_INCLUDE_DIRECTORIES=""
 IF EXIST "C:\MinGW" (
     SET IGNORE_INCLUDE_DIRECTORIES="C:\MinGW\bin;C:\MinGW\include"

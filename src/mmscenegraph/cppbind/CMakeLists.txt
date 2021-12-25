@@ -18,5 +18,6 @@
 #
 
 set(target_release_lib_name "mmscenegraph")
+set(rust_lib_name "mmscenegraph_rust")
 
 add_subdirectory(src)

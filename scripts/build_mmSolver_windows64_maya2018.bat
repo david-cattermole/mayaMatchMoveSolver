@@ -115,6 +115,10 @@ IF "%BUILD_MMSCENEGRAPH%"=="1" (
    :: the exact version we need.
    cargo install cxxbridge-cmd --version 1.0.60
 
+   ECHO Building Rust crate... (%MMSCENEGRAPH_RUST_DIR%)
+   CHDIR "%MMSCENEGRAPH_RUST_DIR%"
+   cargo build --release
+
    ECHO Building C++ Bindings... (%MMSCENEGRAPH_CPP_DIR%)
    CHDIR "%MMSCENEGRAPH_CPP_DIR%"
    :: Assumes 'cxxbridge' (cxxbridge-cmd) is installed.

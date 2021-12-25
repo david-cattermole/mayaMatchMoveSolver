@@ -462,6 +462,13 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
         << cpp_string_42
         << '\n';
 
+    auto cam = mmscenegraph::make_camera(24.0, 35.0);
+    MStreamUtils::stdErrorStream()
+        << "MM camera:"
+        << " width=" << cam.sensor_width_mm
+        << " focal=" << cam.focal_length_mm
+        << '\n';
+
     // Mouse cursor spinning...
     // MGlobal::executeCommand("waitCursor -state on;");
 

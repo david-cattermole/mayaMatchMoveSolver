@@ -1,25 +1,21 @@
 [package]
-name = "mmscenegraph_cppbind"
+name = "mmscenegraph_rust"
 version = "0.1.0"
 authors = ["david-cattermole <cattermole91@gmail.com>"]
 edition = "2018"
 publish = false
 
 [lib]
-name = "mmscenegraph"
+name = "mmscenegraph_rust"
 path = "./src/lib.rs"
 # NOTE: 'lib' is used to link with Rust crates, staticlib' is used to
 # link with C++.
-crate_type = ["staticlib"]
-
-[dependencies]
-cxx = "=1.0.60"
-
-[dependencies.mmscenegraph_rust]
-path = "../rust"
+#crate_type = ["staticlib", "lib"]
+# crate_type = ["cdylib", "lib"]
+crate_type = ["lib"]
 
 [profile.release]
-opt-level = 2
+opt-level = 3
 debug = false
 rpath = false
 lto = false

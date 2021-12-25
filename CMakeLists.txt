@@ -64,6 +64,8 @@ set(BUILD_3DEQUALIZER 1 CACHE BOOL
         "Do you want to build and install 3DEqualizer scripts?")
 set(BUILD_SYNTHEYES 1 CACHE BOOL
         "Do you want to build and install SynthEyes scripts?")
+set(BUILD_BLENDER 1 CACHE BOOL
+        "Do you want to build and install Blender add-on?")
 set(BUILD_QT_UI 1 CACHE BOOL
         "Do you want to build the Qt UI files?")
 set(BUILD_DOCS 1 CACHE BOOL
@@ -176,6 +178,10 @@ endif ()
 
 if (BUILD_SYNTHEYES)
   add_subdirectory(syntheyes)
+endif ()
+
+if (BUILD_BLENDER)
+  add_subdirectory(blender)
 endif ()
 
 if (BUILD_ICONS)

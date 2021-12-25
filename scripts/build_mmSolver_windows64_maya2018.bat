@@ -69,9 +69,6 @@ SET BUILD_ICONS=1
 SET BUILD_CONFIG=1
 SET BUILD_TESTS=1
 
-:: To Generate a Visual Studio 'Solution' file, change the '0' to a '1'.
-SET GENERATE_SOLUTION=0
-
 :: The root of this project.
 SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%
@@ -109,73 +106,50 @@ ECHO BUILD_DIR: %BUILD_DIR%
 MKDIR "%BUILD_DIR_NAME%"
 CHDIR "%BUILD_DIR%"
 
+:: To Generate a Visual Studio 'Solution' file, for Maya 2018 (which
+:: uses Visual Studio 2015), replace the cmake -G line with the following line:
+::
+:: cmake -G "Visual Studio 14 2015 Win64" -T "v140"
+
+cmake -G "NMake Makefiles" ^
+    -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
+    -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
+    -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
+    -DBUILD_PLUGIN=%BUILD_PLUGIN% ^
+    -DBUILD_PYTHON=%BUILD_PYTHON% ^
+    -DBUILD_MEL=%BUILD_MEL% ^
+    -DBUILD_QT_UI=%BUILD_QT_UI% ^
+    -DBUILD_DOCS=%BUILD_DOCS% ^
+    -DBUILD_ICONS=%BUILD_ICONS% ^
+    -DBUILD_CONFIG=%BUILD_CONFIG% ^
+    -DBUILD_TESTS=%BUILD_TESTS% ^
+    -DLIBMV_ROOT=%LIBMV_ROOT% ^
+    -DCMINPACK_ROOT=%CMINPACK_ROOT% ^
+    -DCERES_ROOT=%CERES_ROOT% ^
+    -DCERES_LIB_PATH=%CERES_LIB_PATH% ^
+    -DCERES_INCLUDE_DIR=%CERES_INCLUDE_DIR% ^
+    -DEIGEN3_INCLUDE_DIR=%EIGEN3_INCLUDE_DIR% ^
+    -DGLOG_ROOT=%GLOG_ROOT% ^
+    -DGLOG_INCLUDE_DIR=%GLOG_INCLUDE_DIR% ^
+    -DGFLAGS_ROOT=%GFLAGS_ROOT% ^
+    -DGFLAGS_INCLUDE_DIR=%GFLAGS_INCLUDE_DIR% ^
+    -DMAYA_LOCATION=%MAYA_LOCATION% ^
+    -DMAYA_VERSION=%MAYA_VERSION% ^
+    ..
+
+cmake --build . --parallel 8
+
+:: Comment this line out to stop the automatic install into the home directory.
+cmake --install .
+
+:: Run tests
+IF "%RUN_TESTS%"=="1" (
+    cmake --build . --target test
 )
 
-IF "%GENERATE_SOLUTION%"=="1" (
-
-REM For Maya 2018 (which uses Visual Studio 2015)
-REM cmake -G "Visual Studio 14 2015 Win64" -T "v140"
-
-REM To Generate a Visual Studio 'Solution' file
-    cmake -G "Visual Studio 11 2012 Win64" -T "v110" ^
-        -DLIBMV_ROOT=%LIBMV_ROOT% ^
-        -DCMINPACK_ROOT=%CMINPACK_ROOT% ^
-        -DCERES_ROOT=%CERES_ROOT% ^
-        -DCERES_LIB_PATH=%CERES_LIB_PATH% ^
-        -DCERES_INCLUDE_DIR=%CERES_INCLUDE_DIR% ^
-        -DEIGEN3_INCLUDE_DIR=%EIGEN3_INCLUDE_DIR% ^
-        -DGLOG_ROOT=%GLOG_ROOT% ^
-        -DGLOG_INCLUDE_DIR=%GLOG_INCLUDE_DIR% ^
-        -DGFLAGS_ROOT=%GFLAGS_ROOT% ^
-        -DGFLAGS_INCLUDE_DIR=%GFLAGS_INCLUDE_DIR% ^
-        -DMAYA_LOCATION=%MAYA_LOCATION% ^
-        -DMAYA_VERSION=%MAYA_VERSION% ^
-        ..
-
-) ELSE (
-
-    cmake -G "NMake Makefiles" ^
-        -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
-        -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
-        -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
-        -DBUILD_PLUGIN=%BUILD_PLUGIN% ^
-        -DBUILD_PYTHON=%BUILD_PYTHON% ^
-        -DBUILD_MEL=%BUILD_MEL% ^
-        -DBUILD_QT_UI=%BUILD_QT_UI% ^
-        -DBUILD_DOCS=%BUILD_DOCS% ^
-        -DBUILD_ICONS=%BUILD_ICONS% ^
-        -DBUILD_CONFIG=%BUILD_CONFIG% ^
-        -DBUILD_TESTS=%BUILD_TESTS% ^
-        -DLIBMV_ROOT=%LIBMV_ROOT% ^
-        -DCMINPACK_ROOT=%CMINPACK_ROOT% ^
-        -DCERES_ROOT=%CERES_ROOT% ^
-        -DCERES_LIB_PATH=%CERES_LIB_PATH% ^
-        -DCERES_INCLUDE_DIR=%CERES_INCLUDE_DIR% ^
-        -DEIGEN3_INCLUDE_DIR=%EIGEN3_INCLUDE_DIR% ^
-        -DGLOG_ROOT=%GLOG_ROOT% ^
-        -DGLOG_INCLUDE_DIR=%GLOG_INCLUDE_DIR% ^
-        -DGFLAGS_ROOT=%GFLAGS_ROOT% ^
-        -DGFLAGS_INCLUDE_DIR=%GFLAGS_INCLUDE_DIR% ^
-        -DMAYA_LOCATION=%MAYA_LOCATION% ^
-        -DMAYA_VERSION=%MAYA_VERSION% ^
-        ..
-
-    nmake /F Makefile clean
-    nmake /F Makefile all
-
-REM Comment this line out to stop the automatic install into the home directory.
-    nmake /F Makefile install
-
-REM Run tests
-    IF "%RUN_TESTS%"=="1" (
-        nmake /F Makefile test
-    )
-
-REM Create a .zip package.
+:: Create a .zip package.
 IF "%BUILD_PACKAGE%"=="1" (
-       nmake /F Makefile package
-   )
-
+    cmake --build . --target package
 )
 
 :: Return back project root directory.

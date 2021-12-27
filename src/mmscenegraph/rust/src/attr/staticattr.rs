@@ -18,32 +18,33 @@
 // ====================================================================
 //
 
-#[macro_use]
-extern crate approx;
+use std::hash::{Hash, Hasher};
 
-pub mod attr;
-pub mod constant;
-pub mod core;
-pub mod math;
-pub mod node;
-pub mod scene;
+use crate::constant::FrameValue;
+use crate::constant::Real;
+use crate::core::hashutils::HashableF64;
 
-pub struct Camera {
-    pub sensor_width_mm: f64,
-    pub focal_length_mm: f64,
+#[derive(Debug, Copy, Clone, Default)]
+pub struct StaticAttr {
+    value: Real,
 }
 
-pub fn make_camera(width: f64, focal: f64) -> Camera {
-    println!("Make camera. width={} focal={}", width, focal);
-    Camera {
-        sensor_width_mm: width,
-        focal_length_mm: focal,
+impl Hash for StaticAttr {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        HashableF64::new(self.value).hash(state);
     }
 }
 
-pub fn make_camera_default() -> Camera {
-    println!("Make default camera.");
-    let width = 36.0;
-    let focal = 50.0;
-    make_camera(width, focal)
+impl StaticAttr {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn get_value(&self) -> Real {
+        self.value
+    }
+
+    pub fn set_value(&mut self, value: Real) {
+        self.value = value;
+    }
 }

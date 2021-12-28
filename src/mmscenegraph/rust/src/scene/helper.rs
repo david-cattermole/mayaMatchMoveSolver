@@ -152,8 +152,7 @@ mod tests {
         let mut sg = SceneGraph::new();
         let mut attrdb = AttrDataBlock::new();
         assert_eq!(sg.num_transform_nodes(), 0);
-
-        let tfm = create_static_transform(
+        let _tfm = create_static_transform(
             &mut sg,
             &mut attrdb,
             (0.0, 42.0, 0.0),
@@ -161,7 +160,6 @@ mod tests {
             (1.0, 1.0, 1.0),
             RotateOrder::XYZ,
         );
-
         assert_eq!(sg.num_transform_nodes(), 1);
     }
 
@@ -170,7 +168,7 @@ mod tests {
         let mut sg = SceneGraph::new();
         let mut attrdb = AttrDataBlock::new();
         assert_eq!(sg.num_bundle_nodes(), 0);
-        let bnd = create_static_bundle(
+        let _bnd = create_static_bundle(
             &mut sg,
             &mut attrdb,
             (0.0, 42.0, 0.0),
@@ -178,7 +176,6 @@ mod tests {
             (1.0, 1.0, 1.0),
             RotateOrder::XYZ,
         );
-
         assert_eq!(sg.num_bundle_nodes(), 1);
     }
 
@@ -187,8 +184,7 @@ mod tests {
         let mut sg = SceneGraph::new();
         let mut attrdb = AttrDataBlock::new();
         assert_eq!(sg.num_camera_nodes(), 0);
-
-        let cam = create_static_camera(
+        let _cam = create_static_camera(
             &mut sg,
             &mut attrdb,
             (1.0, 10.0, -1.0),
@@ -198,7 +194,6 @@ mod tests {
             50.0,
             RotateOrder::ZXY,
         );
-
         assert_eq!(sg.num_camera_nodes(), 1);
     }
 
@@ -207,8 +202,7 @@ mod tests {
         let mut sg = SceneGraph::new();
         let mut attrdb = AttrDataBlock::new();
         assert_eq!(sg.num_marker_nodes(), 0);
-        let mkr = create_static_marker(&mut sg, &mut attrdb, (0.5, 0.5), 1.0);
-
+        let _mkr = create_static_marker(&mut sg, &mut attrdb, (0.5, 0.5), 1.0);
         assert_eq!(sg.num_marker_nodes(), 1);
     }
 }

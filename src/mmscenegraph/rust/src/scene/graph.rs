@@ -423,69 +423,21 @@ mod tests {
     use crate::scene::helper::create_static_marker;
     use crate::scene::helper::create_static_transform;
 
-    #[test]
-    fn test_create_transform_node() {
-        let mut sg = SceneGraph::new();
-        let mut attrdb = AttrDataBlock::new();
-        assert_eq!(sg.num_transform_nodes(), 0);
+    // #[test]
+    // fn test_create_transform_node() {
+    // }
 
-        let tfm = create_static_transform(
-            &mut sg,
-            &mut attrdb,
-            (0.0, 42.0, 0.0),
-            (0.0, 0.0, 0.0),
-            (1.0, 1.0, 1.0),
-            RotateOrder::XYZ,
-        );
+    // #[test]
+    // fn test_create_bundle_node() {
+    // }
 
-        assert_eq!(sg.num_transform_nodes(), 1);
-    }
+    // #[test]
+    // fn test_create_camera_node() {
+    // }
 
-    #[test]
-    fn test_create_bundle_node() {
-        let mut sg = SceneGraph::new();
-        let mut attrdb = AttrDataBlock::new();
-        assert_eq!(sg.num_bundle_nodes(), 0);
-        let bnd = create_static_bundle(
-            &mut sg,
-            &mut attrdb,
-            (0.0, 42.0, 0.0),
-            (0.0, 0.0, 0.0),
-            (1.0, 1.0, 1.0),
-            RotateOrder::XYZ,
-        );
-
-        assert_eq!(sg.num_bundle_nodes(), 1);
-    }
-
-    #[test]
-    fn test_create_camera_node() {
-        let mut sg = SceneGraph::new();
-        let mut attrdb = AttrDataBlock::new();
-        assert_eq!(sg.num_camera_nodes(), 0);
-
-        let cam = create_static_camera(
-            &mut sg,
-            &mut attrdb,
-            (1.0, 10.0, -1.0),
-            (-10.0, 5.0, 1.0),
-            (1.0, 1.0, 1.0),
-            (36.0, 24.0),
-            50.0,
-            RotateOrder::ZXY,
-        );
-
-        assert_eq!(sg.num_camera_nodes(), 1);
-    }
-
-    #[test]
-    fn test_create_marker_node() {
-        let mut sg = SceneGraph::new();
-        let mut attrdb = AttrDataBlock::new();
-        assert_eq!(sg.num_marker_nodes(), 0);
-        let mkr = create_static_marker(&mut sg, &mut attrdb, (0.5, 0.5), 1.0);
-        assert_eq!(sg.num_marker_nodes(), 1);
-    }
+    // #[test]
+    // fn test_create_marker_node() {
+    // }
 
     #[test]
     fn test_link_marker_to_camera() {

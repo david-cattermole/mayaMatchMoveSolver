@@ -237,7 +237,7 @@ impl SceneGraph {
             _ => return false,
         };
         match cam_node_id {
-            NodeId::Camera(cam_index) => self.mkr_to_cam_node_ids[mkr_index] = cam_node_id,
+            NodeId::Camera(_) => self.mkr_to_cam_node_ids[mkr_index] = cam_node_id,
             _ => return false,
         };
         return true;
@@ -249,7 +249,7 @@ impl SceneGraph {
             _ => return false,
         };
         match bnd_node_id {
-            NodeId::Bundle(bnd_index) => self.mkr_to_bnd_node_ids[mkr_index] = bnd_node_id,
+            NodeId::Bundle(_) => self.mkr_to_bnd_node_ids[mkr_index] = bnd_node_id,
             _ => return false,
         };
         return true;

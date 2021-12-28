@@ -228,7 +228,7 @@ pub fn compute_projection_matrix(
     screen: Screen,
     near_clip_plane: Real,
     far_clip_plane: Real,
-    camera_scale: Real,
+    _camera_scale: Real,
 ) -> Matrix44 {
     // println!("Compute Projection Matrix");
     na::Matrix4::<Real>::new(

@@ -101,6 +101,9 @@ impl SceneGraph {
         self.mkr_indices.clear();
         self.bnd_indices.clear();
         self.cam_indices.clear();
+
+        self.mkr_to_cam_node_ids.clear();
+        self.mkr_to_bnd_node_ids.clear();
     }
 
     pub fn create_transform_node(

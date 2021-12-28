@@ -79,7 +79,7 @@ pub trait NodeCanViewScene {
     fn set_attr_focal_length(&mut self, attr: AttrId);
 }
 
-pub trait NodeCanTransform2D: NodeHasId + NodeCanTranslate2D {}
+pub trait NodeCanTransform2D: NodeHasId + NodeCanTranslate2D + NodeHasWeight {}
 
 pub trait NodeCanTransform3D:
     NodeHasId + NodeCanTranslate3D + NodeCanRotate3D + NodeCanScale3D

@@ -18,6 +18,8 @@
 // ====================================================================
 //
 
+pub mod bake;
+pub mod flat;
 pub mod graph;
 pub mod graphiter;
 pub mod helper;

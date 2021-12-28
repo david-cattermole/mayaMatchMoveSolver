@@ -18,55 +18,21 @@
 // ====================================================================
 //
 
-#[macro_use]
-extern crate approx;
 
-use nalgebra as na;
 
 use mmscenegraph_rust::attr::AttrDataBlock;
-use mmscenegraph_rust::constant::Matrix14;
-use mmscenegraph_rust::constant::Matrix44;
-use mmscenegraph_rust::constant::Real;
-use mmscenegraph_rust::math::camera::get_projection_matrix;
-use mmscenegraph_rust::math::dag::compute_matrices;
-use mmscenegraph_rust::math::dag::compute_matrix;
-use mmscenegraph_rust::math::dag::compute_projection_matrix;
-use mmscenegraph_rust::math::dag::compute_world_matrices;
-use mmscenegraph_rust::math::reprojection::reproject;
-use mmscenegraph_rust::math::reprojection::reproject_as_normalised_coord;
 use mmscenegraph_rust::math::rotate::euler::RotateOrder;
-use mmscenegraph_rust::math::transform::calculate_matrix;
-use mmscenegraph_rust::math::transform::multiply;
-use mmscenegraph_rust::math::transform::Transform;
-use mmscenegraph_rust::node::bundle::BundleNode;
-use mmscenegraph_rust::node::camera::CameraNode;
-use mmscenegraph_rust::node::marker::MarkerNode;
 use mmscenegraph_rust::node::traits::NodeCanTransform2D;
 use mmscenegraph_rust::node::traits::NodeCanTransform3D;
 use mmscenegraph_rust::node::traits::NodeCanTransformAndView3D;
-use mmscenegraph_rust::node::traits::NodeCanViewScene;
 use mmscenegraph_rust::node::traits::NodeHasId;
-use mmscenegraph_rust::node::transform::TransformNode;
 use mmscenegraph_rust::node::NodeId;
+use mmscenegraph_rust::scene::bake::bake_scene_graph;
 use mmscenegraph_rust::scene::graph::SceneGraph;
 use mmscenegraph_rust::scene::helper::create_static_bundle;
 use mmscenegraph_rust::scene::helper::create_static_camera;
 use mmscenegraph_rust::scene::helper::create_static_marker;
 use mmscenegraph_rust::scene::helper::create_static_transform;
-
-fn reproject_nodes(
-    cam_tfm_matrix: Matrix44,
-    cam_proj_matrix: Matrix44,
-    tfm_matrix_list: Vec<Matrix44>,
-) -> Vec<(Real, Real)> {
-    let mut point_list = Vec::new();
-    for tfm_matrix in tfm_matrix_list {
-        let reproj_mat = reproject_as_normalised_coord(cam_tfm_matrix, cam_proj_matrix, tfm_matrix);
-        let point = (reproj_mat[0], reproj_mat[1]);
-        point_list.push(point);
-    }
-    point_list
-}
 
 #[test]
 fn evaluate_scene() {
@@ -213,20 +179,26 @@ fn evaluate_scene() {
     sg.set_node_parent(cam.get_id(), cam_tfm.get_id());
     sg.set_node_parent(cam_tfm.get_id(), NodeId::Root);
 
-    // let cam2 = create_static_camera(
-    //     &mut sg,
-    //     &mut attrdb,
-    //     (-99.0, 85.0, 150.0),
-    //     (-10.0, -38.0, 0.0),
-    //     (1.0, 1.0, 1.0),
-    //     (36.0, 24.0),
-    //     35.0,
-    //     RotateOrder::ZXY,
-    // );
+    let cam2 = create_static_camera(
+        &mut sg,
+        &mut attrdb,
+        (-99.0, 85.0, 150.0),
+        (-10.0, -38.0, 0.0),
+        (1.0, 1.0, 1.0),
+        (36.0, 24.0),
+        35.0,
+        RotateOrder::ZXY,
+    );
 
     let cam_box = Box::new(cam) as Box<dyn NodeCanTransformAndView3D>;
-    println!("Camera: {:?}", cam);
+    let cam2_box = Box::new(cam2) as Box<dyn NodeCanTransformAndView3D>;
+    println!("Camera 1: {:?}", cam);
+    println!("Camera 2: {:?}", cam2);
     println!("Scene Camera count: {}", sg.num_camera_nodes());
+
+    let mut cam_nodes = Vec::<Box<dyn NodeCanTransformAndView3D>>::new();
+    cam_nodes.push(cam_box);
+    cam_nodes.push(cam2_box);
 
     // Add 'Markers' to be used and linked to Bundles
     let mkr_0 = create_static_marker(&mut sg, &mut attrdb, (-0.5, -0.5), 1.0);
@@ -270,43 +242,21 @@ fn evaluate_scene() {
     active_nodes.push(Box::new(bnd_4));
     active_nodes.push(Box::new(cam));
 
-    // Calculate the bundle positions.
+    let flat_scene = bake_scene_graph(&sg, &active_nodes, &cam_nodes);
+
+    let cam_index = 0;
     let frame = 1001;
-
-    let active_node_ids = active_nodes.iter().map(|x| x.get_id()).collect();
-    let (sorted_node_indices, sorted_node_ids) = sg.sort_hierarchy(active_node_ids).unwrap();
-    let sorted_nodes = sg.get_transformable_nodes(&sorted_node_ids).unwrap();
-    let sorted_node_parent_indices = sg.get_parent_list(&sorted_node_indices);
-
-    let mut world_matrix_list = Vec::new();
-    compute_world_matrices(
+    let mut out_tfm_world_matrix_list = Vec::new();
+    let mut out_bnd_world_matrix_list = Vec::new();
+    let mut out_reproj_point_list = Vec::new();
+    flat_scene.evaluate(
         &attrdb,
-        &sorted_nodes,
-        &sorted_node_parent_indices,
+        cam_index,
         frame,
-        &mut world_matrix_list,
+        &mut out_tfm_world_matrix_list,
+        &mut out_bnd_world_matrix_list,
+        &mut out_reproj_point_list,
     );
-    println!("World Matrix count: {}", world_matrix_list.len());
-
-    let mut cam_tfm_matrix = Matrix44::identity();
-    let mut bnd_world_matrix_list = Vec::new();
-    let node_ids_and_matrix_iter = sorted_node_ids.iter().zip(world_matrix_list.iter());
-    for (i, (node_id, world_matrix)) in (0..).zip(node_ids_and_matrix_iter) {
-        match node_id {
-            NodeId::Camera(index) => cam_tfm_matrix = *world_matrix,
-            NodeId::Bundle(index) => bnd_world_matrix_list.push(*world_matrix),
-            _ => (),
-        }
-    }
-    println!("Bundle Matrix count: {}", bnd_world_matrix_list.len());
-    println!("Camera Transform Matrix1: {}", cam_tfm_matrix);
-
-    let cam_proj_matrix = compute_projection_matrix(&attrdb, &cam_box, frame);
-    println!("Camera Projection Matrix: {}", cam_proj_matrix);
-
-    let point_list = reproject_nodes(cam_tfm_matrix, cam_proj_matrix, bnd_world_matrix_list);
-    println!("Reprojected Points count: {}", point_list.len());
-    println!("Reprojected Points: {:#?}", point_list);
 
     // TODO: Calculate deviation between Markers and Bundles.
     assert!(false);

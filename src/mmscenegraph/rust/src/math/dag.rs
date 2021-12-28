@@ -18,34 +18,16 @@
 // ====================================================================
 //
 
-use nalgebra as na;
-use petgraph as pg;
-use petgraph::prelude::*;
-
 use crate::attr::AttrDataBlock;
 use crate::attr::AttrId;
 use crate::constant::FrameValue;
 use crate::constant::Matrix44;
-use crate::constant::Real;
 use crate::constant::MM_TO_INCH;
 use crate::math::camera::get_projection_matrix;
-use crate::math::rotate::euler;
-use crate::math::rotate::euler::RotateOrder;
 use crate::math::transform::calculate_matrix_with_values;
 use crate::math::transform::decompose_matrix;
-use crate::node::bundle::BundleNode;
-use crate::node::camera::CameraNode;
-use crate::node::marker::MarkerNode;
-use crate::node::traits::NodeCanRotate3D;
-use crate::node::traits::NodeCanScale3D;
 use crate::node::traits::NodeCanTransform3D;
-use crate::node::traits::NodeCanTranslate2D;
-use crate::node::traits::NodeCanTranslate3D;
 use crate::node::traits::NodeCanViewScene;
-use crate::node::traits::NodeHasId;
-use crate::node::transform::TransformNode;
-use crate::node::NodeId;
-use crate::scene::graph::SceneGraph;
 
 pub fn compute_matrix<'a, T>(
     attr_data_block: &'a AttrDataBlock,
@@ -87,6 +69,48 @@ where
     println!("  sx: {} sy: {} sz: {}", sx, sy, sz);
 
     calculate_matrix_with_values(tx, ty, tz, rx, ry, rz, sx, sy, sz, roo)
+}
+
+pub fn compute_projection_matrix_with_attrs(
+    attr_data_block: &AttrDataBlock,
+    attr_sensor_x: AttrId,
+    attr_sensor_y: AttrId,
+    attr_focal: AttrId,
+    frame: FrameValue, // TODO: Assume more frames.
+) -> Matrix44 {
+    println!("Compute Projection Matrix!");
+    let sensor_x = attr_data_block.get_attr_value(attr_sensor_x, frame);
+    let sensor_y = attr_data_block.get_attr_value(attr_sensor_y, frame);
+    let focal = attr_data_block.get_attr_value(attr_focal, frame);
+
+    let focal_length = focal;
+    let film_back_width = sensor_x * MM_TO_INCH;
+    let film_back_height = sensor_y * MM_TO_INCH;
+    let film_offset_x = 0.0;
+    let film_offset_y = 0.0;
+    // TODO: Pass the correct image width and height.
+    // let image_width = 2048.0; // 3600.0; // 960.0;
+    // let image_height = 1556.0; // 2400.0; // 540.0;
+    let image_width = sensor_x * 1000.0;
+    let image_height = sensor_y * 1000.0;
+    let film_fit = 1; // 1 = horizontal
+    let near_clip_plane = 0.1;
+    let far_clip_plane = 10000.0;
+    let camera_scale = 1.0;
+
+    get_projection_matrix(
+        focal_length,
+        film_back_width,
+        film_back_height,
+        film_offset_x,
+        film_offset_y,
+        image_width,
+        image_height,
+        film_fit,
+        near_clip_plane,
+        far_clip_plane,
+        camera_scale,
+    )
 }
 
 pub fn compute_projection_matrix<'a, T>(

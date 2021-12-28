@@ -18,24 +18,14 @@
 // ====================================================================
 //
 
-use petgraph::algo::toposort as PGtoposort;
 use petgraph::dot::Config as PGConfig;
 use petgraph::dot::Dot as PGDot;
 use petgraph::graph::NodeIndex as PGNodeIndex;
-use petgraph::visit::Dfs as PGDfs;
-use petgraph::visit::EdgeRef as PGEdgeRef;
-use petgraph::Direction as PGDirection;
 use petgraph::Graph as PGGraph;
 
-use std::collections::hash_set::HashSet;
-use std::fmt;
-
-use crate::attr::AttrDataBlock;
 use crate::attr::AttrId;
 use crate::constant::NodeIndex;
-use crate::constant::Real;
 use crate::math::rotate::euler::RotateOrder;
-use crate::math::transform;
 use crate::node::bundle::BundleNode;
 use crate::node::camera::CameraNode;
 use crate::node::marker::MarkerNode;
@@ -49,11 +39,6 @@ use crate::node::traits::NodeHasId;
 use crate::node::traits::NodeHasWeight;
 use crate::node::transform::TransformNode;
 use crate::node::NodeId;
-use crate::scene::graphiter::UpstreamDepthFirstSearch;
-use crate::scene::helper::create_static_bundle;
-use crate::scene::helper::create_static_camera;
-use crate::scene::helper::create_static_marker;
-use crate::scene::helper::create_static_transform;
 
 type Graph = PGGraph<NodeId, ()>;
 
@@ -298,6 +283,22 @@ impl SceneGraph {
         }
     }
 
+    pub fn get_node_index_from_node_id(&self, node_id: NodeId) -> Option<PGNodeIndex> {
+        match node_id {
+            NodeId::Transform(index) => Some(self.tfm_indices[index as usize]),
+            NodeId::Camera(index) => Some(self.cam_indices[index as usize]),
+            NodeId::Marker(index) => Some(self.mkr_indices[index as usize]),
+            NodeId::Bundle(index) => Some(self.bnd_indices[index as usize]),
+            _ => None,
+        }
+    }
+
+    /// Users can inspect the internal graph structure, but they are
+    /// not allowed to edit it.
+    pub fn get_graph(&self) -> &Graph {
+        &self.hierarchy
+    }
+
     pub fn get_transformable_nodes(
         &self,
         node_ids: &Vec<NodeId>,
@@ -403,86 +404,24 @@ impl SceneGraph {
         self.bnd_nodes.len()
     }
 
-    pub fn sort_hierarchy(
-        &mut self,
-        node_ids: Vec<NodeId>,
-    ) -> Option<(Vec<PGNodeIndex>, Vec<NodeId>)> {
-        // println!(
-        //     "Graph: {:?}",
-        //     PGDot::with_config(&self.hierarchy, &[PGConfig::EdgeNoLabel])
-        // );
-
-        let mut node_indices_set = HashSet::new();
-        for node_id in node_ids {
-            let node_index = match node_id {
-                NodeId::Transform(index) => self.tfm_indices[index as usize],
-                NodeId::Camera(index) => self.cam_indices[index as usize],
-                NodeId::Marker(index) => self.mkr_indices[index as usize],
-                NodeId::Bundle(index) => self.bnd_indices[index as usize],
-                _ => panic!("Invalid node id."),
-            };
-
-            let mut walker = UpstreamDepthFirstSearch::new(&self.hierarchy, node_index);
-            while let Some((node, _depth)) = walker.next(&self.hierarchy) {
-                node_indices_set.insert(node);
-            }
-        }
-        // println!("Node Indices to keep: {:#?}", node_indices_set);
-
-        match PGtoposort(&self.hierarchy, None) {
-            Ok(nodes) => {
-                // println!("Toposort nodes: {:#?}", nodes);
-
-                let filtered_nodes: Vec<_> = nodes
-                    .iter()
-                    .filter(|node_index| node_indices_set.contains(&node_index))
-                    .map(|node_index| *node_index)
-                    .collect();
-                // println!("Toposort filtered nodes: {:#?}", filtered_nodes);
-
-                let filtered_node_ids: Vec<_> = filtered_nodes
-                    .iter()
-                    .map(|node_index| *self.hierarchy.node_weight(*node_index).unwrap())
-                    .collect();
-
-                Some((filtered_nodes, filtered_node_ids))
-            }
-            Err(cycle) => {
-                // println!("Cycle: {:#?}", cycle);
-                None
-            }
-        }
-    }
-
-    pub fn get_parent_list(&self, node_indices: &Vec<PGNodeIndex>) -> Vec<Option<usize>> {
-        let mut list = Vec::<Option<usize>>::new();
-        let dir = PGDirection::Incoming;
-        for (i, node_index) in (0..).zip(node_indices) {
-            let edges: Vec<_> = self.hierarchy.edges_directed(*node_index, dir).collect();
-            assert!(edges.len() < 2);
-            if edges.len() == 0 {
-                list.push(None);
-                continue;
-            }
-            let parent_node_index = edges[0].source();
-
-            let mut parent_index = None;
-            let previous_node_indices_iter = node_indices[0..i].iter(); //.rev();
-            for (j, previous_node_index) in (0..).zip(previous_node_indices_iter) {
-                if *previous_node_index == parent_node_index {
-                    parent_index = Some(j);
-                    break;
-                }
-            }
-            list.push(parent_index);
-        }
-        list
+    // Return a nice string for the user to use to debug the graph.
+    pub fn graph_debug_string(&self) -> String {
+        String::from(format!(
+            "Graph: {:?}",
+            PGDot::with_config(&self.hierarchy, &[PGConfig::EdgeNoLabel])
+        ))
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    use crate::attr::AttrDataBlock;
+    use crate::scene::helper::create_static_bundle;
+    use crate::scene::helper::create_static_camera;
+    use crate::scene::helper::create_static_marker;
+    use crate::scene::helper::create_static_transform;
 
     #[test]
     fn test_create_transform_node() {

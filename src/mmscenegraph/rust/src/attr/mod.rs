@@ -61,6 +61,7 @@ impl AttrDataBlock {
     pub fn create_attr_anim_dense(&mut self, values: Vec<Real>, frame_start: FrameValue) -> AttrId {
         let mut attr = AnimDenseAttr::new();
         attr.set_values(values);
+        attr.frame_start = frame_start;
         let index = self.anim_dense_attrs.len() as AttrIndex;
         self.anim_dense_attrs.push(attr);
         AttrId::AnimDense(index)

@@ -23,6 +23,7 @@ extern crate approx;
 
 use nalgebra as na;
 
+use mmscenegraph_rust::attr::AttrDataBlock;
 use mmscenegraph_rust::constant::Matrix14;
 use mmscenegraph_rust::constant::Matrix44;
 use mmscenegraph_rust::constant::Real;
@@ -48,6 +49,10 @@ use mmscenegraph_rust::node::traits::NodeHasId;
 use mmscenegraph_rust::node::transform::TransformNode;
 use mmscenegraph_rust::node::NodeId;
 use mmscenegraph_rust::scene::graph::SceneGraph;
+use mmscenegraph_rust::scene::helper::create_static_bundle;
+use mmscenegraph_rust::scene::helper::create_static_camera;
+use mmscenegraph_rust::scene::helper::create_static_marker;
+use mmscenegraph_rust::scene::helper::create_static_transform;
 
 fn reproject_nodes(
     cam_tfm_matrix: Matrix44,
@@ -68,35 +73,46 @@ fn evaluate_scene() {
     println!("Set up Scene Graph");
 
     let mut sg = SceneGraph::new();
+    let mut attrdb = AttrDataBlock::new();
     assert_eq!(sg.num_transform_nodes(), 0);
 
     let rotate_order = RotateOrder::ZXY;
 
-    let tfm_0 = sg.create_static_transform(
+    let tfm_0 = create_static_transform(
+        &mut sg,
+        &mut attrdb,
         (0.0, 42.0, 0.0),
         (15.0, 90.0, 0.0),
         (2.0, 3.0, 4.0),
         rotate_order,
     );
-    let tfm_1 = sg.create_static_transform(
+    let tfm_1 = create_static_transform(
+        &mut sg,
+        &mut attrdb,
         (0.0, -10.0, 0.0),
         (0.0, 45.0, 0.0),
         (1.0, 1.0, 1.0),
         rotate_order,
     );
-    let tfm_2 = sg.create_static_transform(
+    let tfm_2 = create_static_transform(
+        &mut sg,
+        &mut attrdb,
         (0.0, 100.0, 0.0),
         (0.0, 180.0, 0.0),
         (10.0, 10.0, 10.0),
         rotate_order,
     );
-    let tfm_3 = sg.create_static_transform(
+    let tfm_3 = create_static_transform(
+        &mut sg,
+        &mut attrdb,
         (1.0, 0.0, -1.0),
         (0.0, -45.0, 0.0),
         (10.0, 10.0, 10.0),
         rotate_order,
     );
-    let tfm_4 = sg.create_static_transform(
+    let tfm_4 = create_static_transform(
+        &mut sg,
+        &mut attrdb,
         (1.0, 0.0, -1.0),
         (0.0, 0.0, 22.0),
         (10.0, 10.0, 10.0),
@@ -120,31 +136,41 @@ fn evaluate_scene() {
 
     // Mark transform nodes as bundles.
     let rotate_order = RotateOrder::XYZ;
-    let bnd_0 = sg.create_static_bundle(
+    let bnd_0 = create_static_bundle(
+        &mut sg,
+        &mut attrdb,
         (1.0, 0.0, 0.0),
         (0.0, 0.0, 0.0),
         (1.0, 1.0, 1.0),
         rotate_order,
     );
-    let bnd_1 = sg.create_static_bundle(
+    let bnd_1 = create_static_bundle(
+        &mut sg,
+        &mut attrdb,
         (0.0, 1.0, 0.0),
         (0.0, 0.0, 0.0),
         (1.0, 1.0, 1.0),
         rotate_order,
     );
-    let bnd_2 = sg.create_static_bundle(
+    let bnd_2 = create_static_bundle(
+        &mut sg,
+        &mut attrdb,
         (0.0, 0.0, 1.0),
         (0.0, 0.0, 0.0),
         (1.0, 1.0, 1.0),
         rotate_order,
     );
-    let bnd_3 = sg.create_static_bundle(
+    let bnd_3 = create_static_bundle(
+        &mut sg,
+        &mut attrdb,
         (1.0, 1.0, 0.0),
         (0.0, 0.0, 0.0),
         (1.0, 1.0, 1.0),
         rotate_order,
     );
-    let bnd_4 = sg.create_static_bundle(
+    let bnd_4 = create_static_bundle(
+        &mut sg,
+        &mut attrdb,
         (1.0, 0.0, 1.0),
         (0.0, 0.0, 0.0),
         (1.0, 1.0, 1.0),
@@ -165,14 +191,18 @@ fn evaluate_scene() {
     println!("Scene Bundle count: {}", sg.num_bundle_nodes());
 
     // Create camera
-    let cam_tfm = sg.create_static_transform(
+    let cam_tfm = create_static_transform(
+        &mut sg,
+        &mut attrdb,
         (0.0, 1000.0, 0.0),
         (45.0, 180.0, 45.0),
         (1.0, 1.0, 1.0),
         RotateOrder::XYZ,
     );
 
-    let cam = sg.create_static_camera(
+    let cam = create_static_camera(
+        &mut sg,
+        &mut attrdb,
         (717.0, -514.0, 301.0),
         (9.0, 162.0, -56.0),
         (1.0, 1.0, 1.0),
@@ -183,7 +213,9 @@ fn evaluate_scene() {
     sg.set_node_parent(cam.get_id(), cam_tfm.get_id());
     sg.set_node_parent(cam_tfm.get_id(), NodeId::Root);
 
-    // let cam2 = sg.create_static_camera(
+    // let cam2 = create_static_camera(
+    //     &mut sg,
+    //     &mut attrdb,
     //     (-99.0, 85.0, 150.0),
     //     (-10.0, -38.0, 0.0),
     //     (1.0, 1.0, 1.0),
@@ -197,11 +229,11 @@ fn evaluate_scene() {
     println!("Scene Camera count: {}", sg.num_camera_nodes());
 
     // Add 'Markers' to be used and linked to Bundles
-    let mkr_0 = sg.create_static_marker((-0.5, -0.5), 1.0);
-    let mkr_1 = sg.create_static_marker((0.5, -0.5), 1.0);
-    let mkr_2 = sg.create_static_marker((0.5, 0.5), 1.0);
-    let mkr_3 = sg.create_static_marker((-0.5, 0.5), 1.0);
-    let mkr_4 = sg.create_static_marker((0.0, 0.0), 1.0);
+    let mkr_0 = create_static_marker(&mut sg, &mut attrdb, (-0.5, -0.5), 1.0);
+    let mkr_1 = create_static_marker(&mut sg, &mut attrdb, (0.5, -0.5), 1.0);
+    let mkr_2 = create_static_marker(&mut sg, &mut attrdb, (0.5, 0.5), 1.0);
+    let mkr_3 = create_static_marker(&mut sg, &mut attrdb, (-0.5, 0.5), 1.0);
+    let mkr_4 = create_static_marker(&mut sg, &mut attrdb, (0.0, 0.0), 1.0);
 
     let cam_node_id = cam.get_id();
     sg.link_marker_to_camera(mkr_0.get_id(), cam_node_id);
@@ -240,7 +272,6 @@ fn evaluate_scene() {
 
     // Calculate the bundle positions.
     let frame = 1001;
-    let attr_data_block = sg.attr_data_block();
 
     let active_node_ids = active_nodes.iter().map(|x| x.get_id()).collect();
     let (sorted_node_indices, sorted_node_ids) = sg.sort_hierarchy(active_node_ids).unwrap();
@@ -248,9 +279,8 @@ fn evaluate_scene() {
     let sorted_node_parent_indices = sg.get_parent_list(&sorted_node_indices);
 
     let mut world_matrix_list = Vec::new();
-    let attr_data_block = sg.attr_data_block();
     compute_world_matrices(
-        attr_data_block,
+        &attrdb,
         &sorted_nodes,
         &sorted_node_parent_indices,
         frame,
@@ -271,7 +301,7 @@ fn evaluate_scene() {
     println!("Bundle Matrix count: {}", bnd_world_matrix_list.len());
     println!("Camera Transform Matrix1: {}", cam_tfm_matrix);
 
-    let cam_proj_matrix = compute_projection_matrix(attr_data_block, &cam_box, frame);
+    let cam_proj_matrix = compute_projection_matrix(&attrdb, &cam_box, frame);
     println!("Camera Projection Matrix: {}", cam_proj_matrix);
 
     let point_list = reproject_nodes(cam_tfm_matrix, cam_proj_matrix, bnd_world_matrix_list);

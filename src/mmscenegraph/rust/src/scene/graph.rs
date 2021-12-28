@@ -50,12 +50,15 @@ use crate::node::traits::NodeHasWeight;
 use crate::node::transform::TransformNode;
 use crate::node::NodeId;
 use crate::scene::graphiter::UpstreamDepthFirstSearch;
+use crate::scene::helper::create_static_bundle;
+use crate::scene::helper::create_static_camera;
+use crate::scene::helper::create_static_marker;
+use crate::scene::helper::create_static_transform;
 
 type Graph = PGGraph<NodeId, ()>;
 
 #[derive(Debug, Clone)]
 pub struct SceneGraph {
-    attr_data_block: AttrDataBlock,
     hierarchy: Graph,
     tfm_nodes: Vec<TransformNode>,
     mkr_nodes: Vec<MarkerNode>,
@@ -72,7 +75,6 @@ pub struct SceneGraph {
 impl SceneGraph {
     pub fn new() -> SceneGraph {
         SceneGraph {
-            attr_data_block: AttrDataBlock::new(),
             hierarchy: Graph::new(),
             tfm_nodes: Vec::<TransformNode>::new(),
             mkr_nodes: Vec::<MarkerNode>::new(),
@@ -85,14 +87,6 @@ impl SceneGraph {
             mkr_to_cam_node_ids: Vec::<NodeId>::new(),
             mkr_to_bnd_node_ids: Vec::<NodeId>::new(),
         }
-    }
-
-    pub fn attr_data_block_mut(&mut self) -> &mut AttrDataBlock {
-        &mut self.attr_data_block
-    }
-
-    pub fn attr_data_block(&self) -> &AttrDataBlock {
-        &self.attr_data_block
     }
 
     pub fn clear(&mut self) {
@@ -247,121 +241,6 @@ impl SceneGraph {
         self.mkr_to_bnd_node_ids.push(NodeId::None);
 
         node
-    }
-
-    pub fn create_static_transform(
-        &mut self,
-        translate: (Real, Real, Real),
-        rotate: (Real, Real, Real),
-        scale: (Real, Real, Real),
-        rotate_order: RotateOrder,
-    ) -> TransformNode {
-        let attrdb = self.attr_data_block_mut();
-
-        let (tx, ty, tz) = translate;
-        let attr_tx = attrdb.create_attr_static(tx);
-        let attr_ty = attrdb.create_attr_static(ty);
-        let attr_tz = attrdb.create_attr_static(tz);
-        let translate_attrs = (attr_tx, attr_ty, attr_tz);
-
-        let (rx, ry, rz) = rotate;
-        let attr_rx = attrdb.create_attr_static(rx);
-        let attr_ry = attrdb.create_attr_static(ry);
-        let attr_rz = attrdb.create_attr_static(rz);
-        let rotate_attrs = (attr_rx, attr_ry, attr_rz);
-
-        let (sx, sy, sz) = scale;
-        let attr_sx = attrdb.create_attr_static(sx);
-        let attr_sy = attrdb.create_attr_static(sy);
-        let attr_sz = attrdb.create_attr_static(sz);
-        let scale_attrs = (attr_sx, attr_sy, attr_sz);
-
-        self.create_transform_node(translate_attrs, rotate_attrs, scale_attrs, rotate_order)
-    }
-
-    pub fn create_static_marker(&mut self, translate: (Real, Real), weight: Real) -> MarkerNode {
-        let attrdb = self.attr_data_block_mut();
-        let (tx, ty) = translate;
-        let attr_tx = attrdb.create_attr_static(tx);
-        let attr_ty = attrdb.create_attr_static(ty);
-        let attr_weight = attrdb.create_attr_static(weight);
-        let mkr = self.create_marker_node((attr_tx, attr_ty), attr_weight);
-        mkr
-    }
-
-    pub fn create_static_bundle(
-        &mut self,
-        translate: (Real, Real, Real),
-        rotate: (Real, Real, Real),
-        scale: (Real, Real, Real),
-        rotate_order: RotateOrder,
-    ) -> BundleNode {
-        let attrdb = self.attr_data_block_mut();
-
-        let (tx, ty, tz) = translate;
-        let attr_tx = attrdb.create_attr_static(tx);
-        let attr_ty = attrdb.create_attr_static(ty);
-        let attr_tz = attrdb.create_attr_static(tz);
-        let translate_attrs = (attr_tx, attr_ty, attr_tz);
-
-        let (rx, ry, rz) = rotate;
-        let attr_rx = attrdb.create_attr_static(rx);
-        let attr_ry = attrdb.create_attr_static(ry);
-        let attr_rz = attrdb.create_attr_static(rz);
-        let rotate_attrs = (attr_rx, attr_ry, attr_rz);
-
-        let (sx, sy, sz) = scale;
-        let attr_sx = attrdb.create_attr_static(sx);
-        let attr_sy = attrdb.create_attr_static(sy);
-        let attr_sz = attrdb.create_attr_static(sz);
-        let scale_attrs = (attr_sx, attr_sy, attr_sz);
-
-        self.create_bundle_node(translate_attrs, rotate_attrs, scale_attrs, rotate_order)
-    }
-
-    pub fn create_static_camera(
-        &mut self,
-        translate: (Real, Real, Real),
-        rotate: (Real, Real, Real),
-        scale: (Real, Real, Real),
-        sensor: (Real, Real),
-        focal_length: Real,
-        rotate_order: RotateOrder,
-    ) -> CameraNode {
-        let attrdb = self.attr_data_block_mut();
-
-        let (tx, ty, tz) = translate;
-        let attr_tx = attrdb.create_attr_static(tx);
-        let attr_ty = attrdb.create_attr_static(ty);
-        let attr_tz = attrdb.create_attr_static(tz);
-        let translate_attrs = (attr_tx, attr_ty, attr_tz);
-
-        let (rx, ry, rz) = rotate;
-        let attr_rx = attrdb.create_attr_static(rx);
-        let attr_ry = attrdb.create_attr_static(ry);
-        let attr_rz = attrdb.create_attr_static(rz);
-        let rotate_attrs = (attr_rx, attr_ry, attr_rz);
-
-        let (sx, sy, sz) = scale;
-        let attr_sx = attrdb.create_attr_static(sx);
-        let attr_sy = attrdb.create_attr_static(sy);
-        let attr_sz = attrdb.create_attr_static(sz);
-        let scale_attrs = (attr_sx, attr_sy, attr_sz);
-
-        let (sensor_width, sensor_height) = sensor;
-        let attr_sensor_width = attrdb.create_attr_static(sensor_width);
-        let attr_sensor_height = attrdb.create_attr_static(sensor_height);
-        let attr_focal_length = attrdb.create_attr_static(focal_length);
-
-        self.create_camera_node(
-            translate_attrs,
-            rotate_attrs,
-            scale_attrs,
-            attr_sensor_width,
-            attr_sensor_height,
-            attr_focal_length,
-            rotate_order,
-        )
     }
 
     pub fn link_marker_to_camera(&mut self, mkr_node_id: NodeId, cam_node_id: NodeId) -> bool {
@@ -605,9 +484,12 @@ mod tests {
     #[test]
     fn test_create_transform_node() {
         let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
         assert_eq!(sg.num_transform_nodes(), 0);
 
-        let tfm = sg.create_static_transform(
+        let tfm = create_static_transform(
+            &mut sg,
+            &mut attrdb,
             (0.0, 42.0, 0.0),
             (0.0, 0.0, 0.0),
             (1.0, 1.0, 1.0),
@@ -620,8 +502,11 @@ mod tests {
     #[test]
     fn test_create_bundle_node() {
         let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
         assert_eq!(sg.num_bundle_nodes(), 0);
-        let bnd = sg.create_static_bundle(
+        let bnd = create_static_bundle(
+            &mut sg,
+            &mut attrdb,
             (0.0, 42.0, 0.0),
             (0.0, 0.0, 0.0),
             (1.0, 1.0, 1.0),
@@ -634,9 +519,12 @@ mod tests {
     #[test]
     fn test_create_camera_node() {
         let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
         assert_eq!(sg.num_camera_nodes(), 0);
 
-        let cam = sg.create_static_camera(
+        let cam = create_static_camera(
+            &mut sg,
+            &mut attrdb,
             (1.0, 10.0, -1.0),
             (-10.0, 5.0, 1.0),
             (1.0, 1.0, 1.0),
@@ -651,19 +539,23 @@ mod tests {
     #[test]
     fn test_create_marker_node() {
         let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
         assert_eq!(sg.num_marker_nodes(), 0);
-        let mkr = sg.create_static_marker((0.5, 0.5), 1.0);
+        let mkr = create_static_marker(&mut sg, &mut attrdb, (0.5, 0.5), 1.0);
         assert_eq!(sg.num_marker_nodes(), 1);
     }
 
     #[test]
     fn test_link_marker_to_camera() {
         let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
         assert_eq!(sg.num_marker_nodes(), 0);
         assert_eq!(sg.num_camera_nodes(), 0);
 
-        let mkr = sg.create_static_marker((0.5, 0.5), 1.0);
-        let cam = sg.create_static_camera(
+        let mkr = create_static_marker(&mut sg, &mut attrdb, (0.5, 0.5), 1.0);
+        let cam = create_static_camera(
+            &mut sg,
+            &mut attrdb,
             (1.0, 10.0, -1.0),
             (-10.0, 5.0, 1.0),
             (1.0, 1.0, 1.0),
@@ -682,11 +574,14 @@ mod tests {
     #[test]
     fn test_link_marker_to_bundle() {
         let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
         assert_eq!(sg.num_marker_nodes(), 0);
         assert_eq!(sg.num_bundle_nodes(), 0);
 
-        let mkr = sg.create_static_marker((0.5, 0.5), 1.0);
-        let bnd = sg.create_static_bundle(
+        let mkr = create_static_marker(&mut sg, &mut attrdb, (0.5, 0.5), 1.0);
+        let bnd = create_static_bundle(
+            &mut sg,
+            &mut attrdb,
             (1.0, 1.0, 1.0),
             (00.0, 0.0, 0.0),
             (1.0, 1.0, 1.0),
@@ -704,26 +599,33 @@ mod tests {
     #[test]
     fn test_create_node_hierachy() {
         let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
         assert_eq!(sg.num_transform_nodes(), 0);
 
         let rotate_order = RotateOrder::XYZ;
 
         // nodes
-        let tfm_a = sg.create_static_transform(
+        let tfm_a = create_static_transform(
+            &mut sg,
+            &mut attrdb,
             (0.0, 42.0, 0.0),
             (0.0, 0.0, 0.0),
             (1.0, 1.0, 1.0),
             rotate_order,
         );
 
-        let tfm_b = sg.create_static_transform(
+        let tfm_b = create_static_transform(
+            &mut sg,
+            &mut attrdb,
             (42.0, 0.0, 0.0),
             (0.0, 0.0, 0.0),
             (1.0, 1.0, 1.0),
             rotate_order,
         );
 
-        let tfm_c = sg.create_static_transform(
+        let tfm_c = create_static_transform(
+            &mut sg,
+            &mut attrdb,
             (0.0, 0.0, 42.0),
             (0.0, 0.0, 0.0),
             (1.0, 1.0, 1.0),
@@ -741,26 +643,33 @@ mod tests {
     #[test]
     fn test_create_bad_hierachy() {
         let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
         assert_eq!(sg.num_transform_nodes(), 0);
 
         let rotate_order = RotateOrder::XYZ;
 
         // nodes
-        let tfm_a = sg.create_static_transform(
+        let tfm_a = create_static_transform(
+            &mut sg,
+            &mut attrdb,
             (0.0, 42.0, 0.0),
             (0.0, 0.0, 0.0),
             (1.0, 1.0, 1.0),
             rotate_order,
         );
 
-        let tfm_b = sg.create_static_transform(
+        let tfm_b = create_static_transform(
+            &mut sg,
+            &mut attrdb,
             (42.0, 0.0, 0.0),
             (0.0, 0.0, 0.0),
             (1.0, 1.0, 1.0),
             rotate_order,
         );
 
-        let tfm_c = sg.create_static_transform(
+        let tfm_c = create_static_transform(
+            &mut sg,
+            &mut attrdb,
             (0.0, 0.0, 42.0),
             (0.0, 0.0, 0.0),
             (1.0, 1.0, 1.0),

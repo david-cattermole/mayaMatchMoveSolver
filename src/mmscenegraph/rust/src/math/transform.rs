@@ -138,7 +138,7 @@ impl Transform {
             shxy: 0.0,
             shxz: 0.0,
             shyz: 0.0,
-            roo: RotateOrder::XYZ,
+            roo: roo,
             rx: rx,
             ry: ry,
             rz: rz,

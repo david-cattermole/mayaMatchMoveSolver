@@ -18,9 +18,6 @@
 // ====================================================================
 //
 
-use approx;
-use petgraph;
-
 use nalgebra;
 
 pub type AttrIndex = u64;

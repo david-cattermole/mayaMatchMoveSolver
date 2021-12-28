@@ -18,9 +18,7 @@
 // ====================================================================
 //
 /// 3D Euler Rotation mathematics.
-use nalgebra as na;
 
-use crate::constant;
 use crate::constant::Matrix33;
 use crate::constant::Matrix44;
 use crate::constant::Real;
@@ -80,7 +78,7 @@ fn euler_order(i: usize, p: usize, r: usize, f: usize) -> usize {
 
 /// Construct matrix from Euler angles (in radians).
 pub fn euler_to_matrix4(mut ea: EulerAngles) -> Matrix44 {
-    let mut matrix = na::Matrix4::<Real>::identity();
+    let mut matrix = Matrix44::identity();
 
     let mut i: usize = 0;
     let mut j: usize = 0;

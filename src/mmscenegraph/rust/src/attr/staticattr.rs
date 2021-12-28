@@ -20,7 +20,6 @@
 
 use std::hash::{Hash, Hasher};
 
-use crate::constant::FrameValue;
 use crate::constant::Real;
 use crate::core::hashutils::HashableF64;
 

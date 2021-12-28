@@ -25,7 +25,6 @@ use crate::node::bundle::BundleNode;
 use crate::node::camera::CameraNode;
 use crate::node::marker::MarkerNode;
 use crate::node::transform::TransformNode;
-use crate::node::NodeId;
 use crate::scene::graph::SceneGraph;
 
 pub fn create_static_transform(

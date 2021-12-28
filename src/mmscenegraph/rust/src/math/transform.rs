@@ -18,13 +18,12 @@
 // ====================================================================
 //
 /// 3D Transformation mathematics.
-use nalgebra as na;
 
 use crate::constant::Matrix44;
+use crate::constant::Matrix33;
 use crate::constant::Real;
 use crate::constant::DEGREES_TO_RADIANS;
 use crate::constant::RADIANS_TO_DEGREES;
-use crate::math::rotate::euler::EulerAngles;
 use crate::math::rotate::euler::RotateOrder;
 use crate::math::rotate::quaternion::matrix3_to_quaternion;
 use crate::math::rotate::quaternion::quaternion_to_euler;
@@ -345,7 +344,7 @@ pub fn calculate_matrix_with_values(
     roo: RotateOrder,
 ) -> Matrix44 {
     // Scale
-    let s = na::Matrix4::<Real>::new(
+    let s = Matrix44::new(
         sx, 0.0, 0.0, 0.0, //
         0.0, sy, 0.0, 0.0, //
         0.0, 0.0, sz, 0.0, //
@@ -357,19 +356,19 @@ pub fn calculate_matrix_with_values(
     let (srx, crx) = (rx * DEGREES_TO_RADIANS).sin_cos();
     let (sry, cry) = (ry * DEGREES_TO_RADIANS).sin_cos();
     let (srz, crz) = (rz * DEGREES_TO_RADIANS).sin_cos();
-    let rotx = na::Matrix4::<Real>::new(
+    let rotx = Matrix44::new(
         1.0, 0.0, 0.0, 0.0, //
         0.0, crx, -srx, 0.0, //
         0.0, srx, crx, 0.0, //
         0.0, 0.0, 0.0, 1.0, //
     );
-    let roty = na::Matrix4::<Real>::new(
+    let roty = Matrix44::new(
         cry, 0.0, sry, 0.0, //
         0.0, 1.0, 0.0, 0.0, //
         -sry, 0.0, cry, 0.0, //
         0.0, 0.0, 0.0, 1.0, //
     );
-    let rotz = na::Matrix4::<Real>::new(
+    let rotz = Matrix44::new(
         crz, -srz, 0.0, 0.0, //
         srz, crz, 0.0, 0.0, //
         0.0, 0.0, 1.0, 0.0, //
@@ -391,7 +390,7 @@ pub fn calculate_matrix_with_values(
     // println!("r {}", r);
 
     // Translate
-    let t = na::Matrix4::<Real>::new(
+    let t = Matrix44::new(
         1.0, 0.0, 0.0, tx, //
         0.0, 1.0, 0.0, ty, //
         0.0, 0.0, 1.0, tz, //
@@ -407,7 +406,8 @@ pub fn calculate_matrix(transform: &Transform) -> Matrix44 {
     let sx = transform.sx;
     let sy = transform.sy;
     let sz = transform.sz;
-    let s = na::Matrix4::<Real>::new(
+    let s = Matrix44::new(
+        //
         sx, 0.0, 0.0, 0.0, //
         0.0, sy, 0.0, 0.0, //
         0.0, 0.0, sz, 0.0, //
@@ -428,19 +428,19 @@ pub fn calculate_matrix(transform: &Transform) -> Matrix44 {
     let cos_rx = rx.cos();
     let cos_ry = ry.cos();
     let cos_rz = rz.cos();
-    let rotx = na::Matrix4::<Real>::new(
+    let rotx = Matrix44::new(
         1.0, 0.0, 0.0, 0.0, //
         0.0, cos_rx, -sin_rx, 0.0, //
         0.0, sin_rx, cos_rx, 0.0, //
         0.0, 0.0, 0.0, 1.0, //
     );
-    let roty = na::Matrix4::<Real>::new(
+    let roty = Matrix44::new(
         cos_ry, 0.0, sin_ry, 0.0, //
         0.0, 1.0, 0.0, 0.0, //
         -sin_ry, 0.0, cos_ry, 0.0, //
         0.0, 0.0, 0.0, 1.0, //
     );
-    let rotz = na::Matrix4::<Real>::new(
+    let rotz = Matrix44::new(
         cos_rz, -sin_rz, 0.0, 0.0, //
         sin_rz, cos_rz, 0.0, 0.0, //
         0.0, 0.0, 1.0, 0.0, //
@@ -468,7 +468,7 @@ pub fn calculate_matrix(transform: &Transform) -> Matrix44 {
     let tx = transform.tx;
     let ty = transform.ty;
     let tz = transform.tz;
-    let t = na::Matrix4::<Real>::new(
+    let t = Matrix44::new(
         1.0, 0.0, 0.0, tx, //
         0.0, 1.0, 0.0, ty, //
         0.0, 0.0, 1.0, tz, //
@@ -513,7 +513,7 @@ pub fn decompose_matrix(
     let sz = ((sz_x1 * sz_x1) + (sz_y1 * sz_y1) + (sz_z1 * sz_z1)).sqrt();
 
     // Rotate
-    let matrix3 = na::Matrix3::<Real>::new(
+    let matrix3 = Matrix33::new(
         matrix[(0, 0)] / sx,
         matrix[(0, 1)] / sy,
         matrix[(0, 2)] / sz,
@@ -536,6 +536,7 @@ pub fn decompose_matrix(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use approx::assert_relative_eq;
 
     const EPSILON: Real = 1.0e-5;
 

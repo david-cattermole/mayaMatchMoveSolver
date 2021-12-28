@@ -21,9 +21,7 @@
 pub mod animdense;
 pub mod staticattr;
 
-use nalgebra as na;
-
-use std::hash::{Hash, Hasher};
+use std::hash::Hash;
 
 use crate::attr::animdense::AnimDenseAttr;
 use crate::attr::staticattr::StaticAttr;

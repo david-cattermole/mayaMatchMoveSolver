@@ -18,11 +18,8 @@
 // ====================================================================
 //
 
-use nalgebra as na;
-
 use crate::constant::Matrix14;
 use crate::constant::Matrix44;
-use crate::constant::Real;
 
 // TODO: Re-write this function to take just a 4x4 matrix, and 3 float
 // values. This will reduce the amount of required data, and allow us

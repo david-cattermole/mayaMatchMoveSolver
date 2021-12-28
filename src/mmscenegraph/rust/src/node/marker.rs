@@ -19,7 +19,6 @@
 //
 
 use crate::attr::AttrId;
-use crate::constant::Real;
 use crate::node::traits::NodeCanTransform2D;
 use crate::node::traits::NodeCanTranslate2D;
 use crate::node::traits::NodeHasId;

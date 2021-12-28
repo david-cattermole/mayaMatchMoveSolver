@@ -20,7 +20,6 @@
 /// Pin-hole camera mathematics.
 use nalgebra as na;
 
-use crate::constant;
 use crate::constant::Matrix44;
 use crate::constant::Real;
 use crate::constant::DEGREES_TO_RADIANS;
@@ -55,6 +54,7 @@ pub struct Screen {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use approx::assert_relative_eq;
 
     const EPSILON: Real = 1.0e-5;
 

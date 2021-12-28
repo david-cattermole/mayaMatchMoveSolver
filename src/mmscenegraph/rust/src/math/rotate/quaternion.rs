@@ -18,9 +18,7 @@
 // ====================================================================
 //
 /// 3D Quaternion Rotation mathematics.
-use nalgebra as na;
 
-use crate::constant;
 use crate::constant::Matrix33;
 use crate::constant::Matrix44;
 use crate::constant::Quaternion;

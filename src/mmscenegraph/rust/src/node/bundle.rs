@@ -19,7 +19,6 @@
 //
 
 use crate::attr::AttrId;
-use crate::constant::Real;
 use crate::math::rotate::euler::RotateOrder;
 use crate::node::traits::NodeCanRotate3D;
 use crate::node::traits::NodeCanScale3D;

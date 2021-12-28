@@ -18,8 +18,6 @@
 // ====================================================================
 //
 
-#[macro_use]
-extern crate approx;
 
 pub mod attr;
 pub mod constant;

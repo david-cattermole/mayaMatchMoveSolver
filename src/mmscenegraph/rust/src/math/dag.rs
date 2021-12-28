@@ -115,16 +115,16 @@ pub fn compute_projection_matrix_with_attrs(
 
 pub fn compute_projection_matrix<'a, T>(
     attr_data_block: &'a AttrDataBlock,
-    transform: &'a Box<T>,
+    camera: &'a Box<T>,
     frame: FrameValue, // TODO: Assume more frames.
 ) -> Matrix44
 where
     T: NodeCanViewScene + ?Sized,
 {
     println!("Compute Projection Matrix!");
-    let attr_sensor_x = transform.get_attr_sensor_width();
-    let attr_sensor_y = transform.get_attr_sensor_height();
-    let attr_focal = transform.get_attr_focal_length();
+    let attr_sensor_x = camera.get_attr_sensor_width();
+    let attr_sensor_y = camera.get_attr_sensor_height();
+    let attr_focal = camera.get_attr_focal_length();
 
     let sensor_x = attr_data_block.get_attr_value(attr_sensor_x, frame);
     let sensor_y = attr_data_block.get_attr_value(attr_sensor_y, frame);

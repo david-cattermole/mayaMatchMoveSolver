@@ -69,12 +69,6 @@ pub trait NodeHasWeight {
     fn set_attr_weight(&mut self, attr: AttrId);
 }
 
-// // Can the object be parented?
-// pub trait NodeHasParent {
-//     fn get_parent_node_id(&self) -> NodeId;
-//     fn set_parent_node_id(&mut self, id: NodeId);
-// }
-
 pub trait NodeCanViewScene {
     fn get_attr_sensor_width(&self) -> AttrId;
     fn get_attr_sensor_height(&self) -> AttrId;

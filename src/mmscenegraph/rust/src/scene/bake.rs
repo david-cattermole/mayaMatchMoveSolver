@@ -25,6 +25,8 @@ use petgraph::Direction as PGDirection;
 
 use std::collections::hash_set::HashSet;
 
+use crate::attr::AttrCameraIds;
+use crate::attr::AttrTransformIds;
 use crate::node::traits::NodeCanTransform3D;
 use crate::node::traits::NodeCanViewScene;
 use crate::node::traits::NodeHasId;
@@ -33,9 +35,11 @@ use crate::scene::flat::FlatScene;
 use crate::scene::graph::SceneGraph;
 use crate::scene::graphiter::UpstreamDepthFirstSearch;
 
-// Get upstream node_indices from node_index.
-//
-// Get the node indices, including all parents required.
+/// Get all upstream node_indices from node_index.
+///
+/// All returned node_indices are required in the hierarchy for the
+/// given node_ids. For example all parents will be present in the
+/// returned indices.
 fn upstream_node_indices_set(sg: &SceneGraph, node_ids: &Vec<NodeId>) -> HashSet<PGNodeIndex> {
     let graph = &sg.get_graph();
     let mut node_indices_set = HashSet::new();
@@ -55,29 +59,32 @@ fn upstream_node_indices_set(sg: &SceneGraph, node_ids: &Vec<NodeId>) -> HashSet
     node_indices_set
 }
 
-fn sort_hierarchy(
+/// Flatten the scene graph into a list of nodes, filtered to only the
+/// nodes needed for the input node_ids, and sort the nodes so that
+/// parents must appear first in the list, followed by children.
+fn flatten_filter_and_sort_graph_nodes(
     sg: &SceneGraph,
     node_ids: Vec<NodeId>,
 ) -> Option<(Vec<PGNodeIndex>, Vec<NodeId>)> {
-    let debug_string = sg.graph_debug_string();
-    println!("{}", debug_string);
+    // let debug_string = sg.graph_debug_string();
+    // println!("{}", debug_string);
 
     // Get the node indices, including all parents required.
     let node_indices_set = upstream_node_indices_set(&sg, &node_ids);
-    println!("Node Indices to keep: {:#?}", node_indices_set);
+    // println!("Node Indices to keep: {:#?}", node_indices_set);
 
     // Filter-topo-sort.
     let graph = &sg.get_graph();
     match PGtoposort(graph, None) {
         Ok(nodes) => {
-            println!("Toposort nodes: {:#?}", nodes);
+            // println!("Toposort nodes: {:#?}", nodes);
 
             let filtered_nodes: Vec<_> = nodes
                 .iter()
                 .filter(|node_index| node_indices_set.contains(&node_index))
                 .map(|node_index| *node_index)
                 .collect();
-            println!("Toposort filtered nodes: {:#?}", filtered_nodes);
+            // println!("Toposort filtered nodes: {:#?}", filtered_nodes);
 
             let filtered_node_ids: Vec<_> = filtered_nodes
                 .iter()
@@ -86,15 +93,15 @@ fn sort_hierarchy(
 
             Some((filtered_nodes, filtered_node_ids))
         }
-        Err(cycle) => {
-            println!("Cycle: {:#?}", cycle);
+        Err(_cycle) => {
+            // println!("Cycle: {:#?}", _cycle);
             None
         }
     }
 }
 
-// Get the parent index for each node index given.
-fn get_parent_list(sg: &SceneGraph, node_indices: &Vec<PGNodeIndex>) -> Vec<Option<usize>> {
+/// Get the parent index for each node index given.
+fn get_parent_index_list(sg: &SceneGraph, node_indices: &Vec<PGNodeIndex>) -> Vec<Option<usize>> {
     let mut list = Vec::<Option<usize>>::new();
     let dir = PGDirection::Incoming;
     let graph = &sg.get_graph();
@@ -120,52 +127,111 @@ fn get_parent_list(sg: &SceneGraph, node_indices: &Vec<PGNodeIndex>) -> Vec<Opti
     list
 }
 
-// TODO: bake down graph into a more efficient representation that has
-// a un-editable hierarchy.
+/// Bake down graph into a more efficient representation that has a
+/// un-editable hierarchy.
 pub fn bake_scene_graph<T, U>(
     sg: &SceneGraph,
-    active_tfm_nodes: &Vec<Box<T>>,
-    // bnd_nodes: &Vec<Box<T>>,
+    bnd_nodes: &Vec<Box<T>>,
     cam_nodes: &Vec<Box<U>>,
     // mkr_nodes: &Vec<Box<V>>,
 ) -> FlatScene
 where
-    T: NodeCanTransform3D + ?Sized,
-    U: NodeHasId + NodeCanViewScene + ?Sized,
+    T: ?Sized + NodeHasId + NodeCanTransform3D,
+    U: ?Sized + NodeHasId + NodeCanTransform3D + NodeCanViewScene,
     // V: NodeCanTransform2D + ?Sized,
 {
-    let active_tfm_node_ids = active_tfm_nodes.iter().map(|x| x.get_id()).collect();
+    let bnd_node_ids: Vec<NodeId> = bnd_nodes
+        .iter()
+        .map(|x| x.get_id())
+        .filter(|x| match x {
+            NodeId::Bundle(_) => true,
+            _ => false,
+        })
+        .collect();
+    let cam_node_ids: Vec<NodeId> = cam_nodes
+        .iter()
+        .map(|x| x.get_id())
+        .filter(|x| match x {
+            NodeId::Camera(_) => true,
+            _ => false,
+        })
+        .collect();
+    let bnd_ids = bnd_node_ids.clone();
+    let cam_ids = cam_node_ids.clone();
+    let tfm_node_ids = bnd_node_ids
+        .into_iter()
+        .chain(cam_node_ids.into_iter())
+        .collect();
 
-    let (sorted_node_indices, sorted_node_ids) = sort_hierarchy(&sg, active_tfm_node_ids).unwrap();
-    println!("sorted_node_indices: {:#?}", sorted_node_indices.len());
-    println!("sorted_node_ids: {:#?}", sorted_node_ids.len());
+    let (sorted_node_indices, sorted_node_ids) =
+        flatten_filter_and_sort_graph_nodes(&sg, tfm_node_ids).unwrap();
+    // println!("sorted_node_indices: {:#?}", sorted_node_indices.len());
+    // println!("sorted_node_ids: {:#?}", sorted_node_ids.len());
 
     let sorted_nodes = sg.get_transformable_nodes(&sorted_node_ids).unwrap();
-    println!("sorted_nodes: {:#?}", sorted_nodes.len());
+    // println!("sorted_nodes: {:#?}", sorted_nodes.len());
 
-    let sorted_node_parent_indices = get_parent_list(&sg, &sorted_node_indices);
-    println!(
-        "sorted_node_parent_indices: {}",
-        sorted_node_parent_indices.len()
-    );
+    let sorted_node_parent_indices = get_parent_index_list(&sg, &sorted_node_indices);
+    // println!(
+    //     "sorted_node_parent_indices: {}",
+    //     sorted_node_parent_indices.len()
+    // );
 
-    let mut cam_ids = Vec::new();
-    let mut cam_sensor_widths = Vec::new();
-    let mut cam_sensor_heights = Vec::new();
-    let mut cam_focal_lengths = Vec::new();
-    for cam_node in cam_nodes {
-        cam_ids.push(cam_node.get_id());
-        cam_sensor_widths.push(cam_node.get_attr_sensor_width());
-        cam_sensor_heights.push(cam_node.get_attr_sensor_height());
-        cam_focal_lengths.push(cam_node.get_attr_focal_length());
+    let mut tfm_attr_list = Vec::new();
+    let mut rotate_order_list = Vec::new();
+    for node in sorted_nodes.iter() {
+        let attr_tx = node.get_attr_tx();
+        let attr_ty = node.get_attr_ty();
+        let attr_tz = node.get_attr_tz();
+
+        let attr_rx = node.get_attr_rx();
+        let attr_ry = node.get_attr_ry();
+        let attr_rz = node.get_attr_rz();
+
+        let attr_sx = node.get_attr_sx();
+        let attr_sy = node.get_attr_sy();
+        let attr_sz = node.get_attr_sz();
+
+        let attr_tfm = AttrTransformIds {
+            tx: attr_tx,
+            ty: attr_ty,
+            tz: attr_tz,
+            //
+            rx: attr_rx,
+            ry: attr_ry,
+            rz: attr_rz,
+            //
+            sx: attr_sx,
+            sy: attr_sy,
+            sz: attr_sz,
+        };
+        tfm_attr_list.push(attr_tfm);
+
+        let rotate_order = node.get_rotate_order();
+        rotate_order_list.push(rotate_order);
+    }
+
+    let mut cam_attr_list = Vec::new();
+    for cam_node in cam_nodes.iter() {
+        let attr_sensor_width = cam_node.get_attr_sensor_width();
+        let attr_sensor_height = cam_node.get_attr_sensor_height();
+        let attr_focal_length = cam_node.get_attr_focal_length();
+
+        let cam_attrs = AttrCameraIds {
+            sensor_width: attr_sensor_width,
+            sensor_height: attr_sensor_height,
+            focal_length: attr_focal_length,
+        };
+
+        cam_attr_list.push(cam_attrs);
     }
 
     FlatScene {
-        // cam_nodes: cam_nodes.to_vec(),
+        bnd_ids,
+        tfm_attr_list,
+        rotate_order_list,
         cam_ids,
-        cam_sensor_widths,
-        cam_sensor_heights,
-        cam_focal_lengths,
+        cam_attr_list,
         sorted_nodes,
         sorted_node_parent_indices,
         sorted_node_ids,

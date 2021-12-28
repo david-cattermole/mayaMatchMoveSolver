@@ -36,6 +36,28 @@ pub enum AttrId {
     None,
 }
 
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
+pub struct AttrTransformIds {
+    pub tx: AttrId,
+    pub ty: AttrId,
+    pub tz: AttrId,
+    //
+    pub rx: AttrId,
+    pub ry: AttrId,
+    pub rz: AttrId,
+    //
+    pub sx: AttrId,
+    pub sy: AttrId,
+    pub sz: AttrId,
+}
+
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
+pub struct AttrCameraIds {
+    pub sensor_width: AttrId,
+    pub sensor_height: AttrId,
+    pub focal_length: AttrId,
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct AttrDataBlock {
     pub static_attrs: Vec<StaticAttr>,

@@ -19,7 +19,6 @@
 //
 
 
-
 use mmscenegraph_rust::attr::AttrDataBlock;
 use mmscenegraph_rust::math::rotate::euler::RotateOrder;
 use mmscenegraph_rust::node::traits::NodeCanTransform2D;
@@ -186,7 +185,7 @@ fn evaluate_scene() {
         (-10.0, -38.0, 0.0),
         (1.0, 1.0, 1.0),
         (36.0, 24.0),
-        35.0,
+        40.0,
         RotateOrder::ZXY,
     );
 
@@ -234,29 +233,44 @@ fn evaluate_scene() {
     mkr_nodes.push(Box::new(mkr_3));
     mkr_nodes.push(Box::new(mkr_4));
 
-    let mut active_nodes = Vec::<Box<dyn NodeCanTransform3D>>::new();
-    active_nodes.push(Box::new(bnd_0));
-    active_nodes.push(Box::new(bnd_1));
-    active_nodes.push(Box::new(bnd_2));
-    active_nodes.push(Box::new(bnd_3));
-    active_nodes.push(Box::new(bnd_4));
-    active_nodes.push(Box::new(cam));
+    let mut bnd_nodes = Vec::<Box<dyn NodeCanTransform3D>>::new();
+    bnd_nodes.push(Box::new(bnd_0));
+    bnd_nodes.push(Box::new(bnd_1));
+    bnd_nodes.push(Box::new(bnd_2));
+    bnd_nodes.push(Box::new(bnd_3));
+    bnd_nodes.push(Box::new(bnd_4));
+    // Note: It doesn't matter if we add non-bundle nodes to this
+    // list, they will be filtered out correctly in the
+    // FlatScene.evalutate() call.
+    bnd_nodes.push(Box::new(cam));
+    bnd_nodes.push(Box::new(cam2));
 
-    let flat_scene = bake_scene_graph(&sg, &active_nodes, &cam_nodes);
+    let flat_scene = bake_scene_graph(&sg, &bnd_nodes, &cam_nodes);
 
-    let cam_index = 0;
-    let frame = 1001;
+    let mut frame_list = Vec::new();
+    frame_list.push(1001);
+    frame_list.push(1002);
+    frame_list.push(1003);
+    frame_list.push(1004);
+    frame_list.push(1005);
+
     let mut out_tfm_world_matrix_list = Vec::new();
     let mut out_bnd_world_matrix_list = Vec::new();
-    let mut out_reproj_point_list = Vec::new();
+    let mut out_cam_world_matrix_list = Vec::new();
+    let mut out_point_list = Vec::new();
     flat_scene.evaluate(
         &attrdb,
-        cam_index,
-        frame,
+        &frame_list,
         &mut out_tfm_world_matrix_list,
         &mut out_bnd_world_matrix_list,
-        &mut out_reproj_point_list,
+        &mut out_cam_world_matrix_list,
+        &mut out_point_list,
     );
+
+    println!("Reprojected Points count: {}", out_point_list.len());
+    for (i, point) in (0..).zip(out_point_list) {
+        println!("Reprojected Point {}: {:#?}", i, point);
+    }
 
     // TODO: Calculate deviation between Markers and Bundles.
     assert!(false);

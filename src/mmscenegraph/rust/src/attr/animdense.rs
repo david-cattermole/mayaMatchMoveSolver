@@ -23,6 +23,9 @@ use crate::constant::Real;
 
 #[derive(Debug, Clone)]
 pub struct AnimDenseAttr {
+    // TODO: Add run-length-encoding (RLE) for the values since there
+    // may be cases where most values in the vector will be the same
+    // value - this is a memory usage optimization.
     pub values: Vec<Real>,
     pub frame_start: FrameValue,
 }

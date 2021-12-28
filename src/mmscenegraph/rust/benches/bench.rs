@@ -20,29 +20,15 @@
 
 use criterion::measurement::WallTime;
 use criterion::{
-    black_box, criterion_group, criterion_main, BatchSize, BenchmarkId, Criterion, Throughput,
+    black_box, criterion_group, criterion_main, Criterion,
 };
 
-use rand::distributions::Uniform;
-use rand::{thread_rng, Rng};
-use std::time::Duration;
-
-extern crate nalgebra as na;
-
-use mmscenegraph_rust as mmsg;
-use mmscenegraph_rust::constant::Real;
-use mmscenegraph_rust::constant::DEGREES_TO_RADIANS;
-use mmscenegraph_rust::constant::RADIANS_TO_DEGREES;
+use mmscenegraph_rust::constant::Matrix44;
 use mmscenegraph_rust::math::camera::get_projection_matrix;
 use mmscenegraph_rust::math::reprojection::reproject_as_normalised_coord;
-use mmscenegraph_rust::math::rotate::euler::euler_to_matrix4;
-use mmscenegraph_rust::math::rotate::euler::EulerAngles;
 use mmscenegraph_rust::math::rotate::euler::RotateOrder;
-use mmscenegraph_rust::math::rotate::quaternion::matrix4_to_quaternion;
-use mmscenegraph_rust::math::rotate::quaternion::quaternion_to_euler;
 use mmscenegraph_rust::math::transform::calculate_matrix;
 use mmscenegraph_rust::math::transform::calculate_matrix_with_values;
-use mmscenegraph_rust::math::transform::multiply;
 use mmscenegraph_rust::math::transform::Transform;
 
 fn bench_transform_calculate_matrix(c: &mut Criterion) {
@@ -200,7 +186,7 @@ fn bench_reprojection_reproject_as_normalised_coord(c: &mut Criterion) {
         camera_scale,
     );
 
-    let point = na::Matrix4::<Real>::new(
+    let point = Matrix44::new(
         1.0, 0.0, 0.0, px, //
         0.0, 1.0, 0.0, py, //
         0.0, 0.0, 1.0, pz, //
@@ -294,7 +280,7 @@ fn bench_reprojection(c: &mut Criterion) {
                 black_box(far_clip_plane),
                 black_box(camera_scale),
             );
-            let point = na::Matrix4::<Real>::new(
+            let point = Matrix44::new(
                 1.0,
                 0.0,
                 0.0,
@@ -575,9 +561,9 @@ fn bench_reprojection(c: &mut Criterion) {
 //         let depth = 100;
 //         let scene = create_scene_depth(*size, depth);
 //         let expect_count = scene.transforms.len() + 1;
-//         let world_matrix_list = vec![na::Matrix4::<Real>::identity(); expect_count];
-//         let local_matrix_list = vec![na::Matrix4::<Real>::identity(); expect_count];
-//         let parent_world_matrix_list = vec![na::Matrix4::<Real>::identity(); expect_count];
+//         let world_matrix_list = vec![Matrix44::identity(); expect_count];
+//         let local_matrix_list = vec![Matrix44::identity(); expect_count];
+//         let parent_world_matrix_list = vec![Matrix44::identity(); expect_count];
 
 //         group.throughput(Throughput::Elements(expect_count as u64));
 //         group.bench_with_input(BenchmarkId::from_parameter(size), size, move |b, &_size| {
@@ -664,9 +650,9 @@ fn bench_reprojection(c: &mut Criterion) {
 //         let wide = 100;
 //         let scene = create_scene_wide(*size, wide);
 //         let expect_count = scene.transforms.len() + 1;
-//         let world_matrix_list = vec![na::Matrix4::<Real>::identity(); expect_count];
-//         let local_matrix_list = vec![na::Matrix4::<Real>::identity(); expect_count];
-//         let parent_world_matrix_list = vec![na::Matrix4::<Real>::identity(); expect_count];
+//         let world_matrix_list = vec![Matrix44::identity(); expect_count];
+//         let local_matrix_list = vec![Matrix44::identity(); expect_count];
+//         let parent_world_matrix_list = vec![Matrix44::identity(); expect_count];
 
 //         group.throughput(Throughput::Elements(expect_count as u64));
 //         group.bench_with_input(BenchmarkId::from_parameter(size), size, move |b, &_size| {
@@ -708,9 +694,9 @@ fn bench_reprojection(c: &mut Criterion) {
 // //         let wide = 100;
 // //         let scene = create_scene_wide(*size, wide);
 // //         let expect_count = scene.transforms.len() + 1;
-// //         let world_matrix_list = vec![na::Matrix4::<Real>::identity(); expect_count];
-// //         let local_matrix_list = vec![na::Matrix4::<Real>::identity(); expect_count];
-// //         let parent_world_matrix_list = vec![na::Matrix4::<Real>::identity(); expect_count];
+// //         let world_matrix_list = vec![Matrix44::identity(); expect_count];
+// //         let local_matrix_list = vec![Matrix44::identity(); expect_count];
+// //         let parent_world_matrix_list = vec![Matrix44::identity(); expect_count];
 
 // //         group.throughput(Throughput::Elements(expect_count as u64));
 // //         group.bench_with_input(BenchmarkId::from_parameter(size), size, move |b, &_size| {
@@ -752,9 +738,9 @@ fn bench_reprojection(c: &mut Criterion) {
 //         let scene = create_scene_normal(*size);
 
 //         let expect_count = scene.transforms.len() + 1;
-//         let world_matrix_list = vec![na::Matrix4::<Real>::identity(); expect_count];
-//         let local_matrix_list = vec![na::Matrix4::<Real>::identity(); expect_count];
-//         let parent_world_matrix_list = vec![na::Matrix4::<Real>::identity(); expect_count];
+//         let world_matrix_list = vec![Matrix44::identity(); expect_count];
+//         let local_matrix_list = vec![Matrix44::identity(); expect_count];
+//         let parent_world_matrix_list = vec![Matrix44::identity(); expect_count];
 
 //         group.throughput(Throughput::Elements(expect_count as u64));
 //         group.bench_with_input(BenchmarkId::from_parameter(size), size, move |b, &_size| {

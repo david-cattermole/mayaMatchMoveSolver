@@ -233,7 +233,7 @@ impl SceneGraph {
 
     pub fn link_marker_to_camera(&mut self, mkr_node_id: NodeId, cam_node_id: NodeId) -> bool {
         let mkr_index = match mkr_node_id {
-            NodeId::Marker(index) => index as usize,
+            NodeId::Marker(index) => index,
             _ => return false,
         };
         match cam_node_id {
@@ -245,7 +245,7 @@ impl SceneGraph {
 
     pub fn link_marker_to_bundle(&mut self, mkr_node_id: NodeId, bnd_node_id: NodeId) -> bool {
         let mkr_index = match mkr_node_id {
-            NodeId::Marker(index) => index as usize,
+            NodeId::Marker(index) => index,
             _ => return false,
         };
         match bnd_node_id {
@@ -257,38 +257,38 @@ impl SceneGraph {
 
     pub fn get_transform_node(&self, node_id: NodeId) -> Option<TransformNode> {
         match node_id {
-            NodeId::Transform(index) => Some(self.tfm_nodes[index as usize]),
+            NodeId::Transform(index) => Some(self.tfm_nodes[index]),
             _ => None,
         }
     }
 
     pub fn get_bundle_node(&self, node_id: NodeId) -> Option<BundleNode> {
         match node_id {
-            NodeId::Bundle(index) => Some(self.bnd_nodes[index as usize]),
+            NodeId::Bundle(index) => Some(self.bnd_nodes[index]),
             _ => None,
         }
     }
 
     pub fn get_camera_node(&self, node_id: NodeId) -> Option<CameraNode> {
         match node_id {
-            NodeId::Camera(index) => Some(self.cam_nodes[index as usize]),
+            NodeId::Camera(index) => Some(self.cam_nodes[index]),
             _ => None,
         }
     }
 
     pub fn get_marker_node(&self, node_id: NodeId) -> Option<MarkerNode> {
         match node_id {
-            NodeId::Marker(index) => Some(self.mkr_nodes[index as usize]),
+            NodeId::Marker(index) => Some(self.mkr_nodes[index]),
             _ => None,
         }
     }
 
     pub fn get_node_index_from_node_id(&self, node_id: NodeId) -> Option<PGNodeIndex> {
         match node_id {
-            NodeId::Transform(index) => Some(self.tfm_indices[index as usize]),
-            NodeId::Camera(index) => Some(self.cam_indices[index as usize]),
-            NodeId::Marker(index) => Some(self.mkr_indices[index as usize]),
-            NodeId::Bundle(index) => Some(self.bnd_indices[index as usize]),
+            NodeId::Transform(index) => Some(self.tfm_indices[index]),
+            NodeId::Camera(index) => Some(self.cam_indices[index]),
+            NodeId::Marker(index) => Some(self.mkr_indices[index]),
+            NodeId::Bundle(index) => Some(self.bnd_indices[index]),
             _ => None,
         }
     }
@@ -332,10 +332,10 @@ impl SceneGraph {
 
     pub fn get_graph_node_index(&self, node_id: NodeId) -> Option<PGNodeIndex> {
         match node_id {
-            NodeId::Transform(index) => Some(self.tfm_indices[index as usize]),
-            NodeId::Bundle(index) => Some(self.bnd_indices[index as usize]),
-            NodeId::Camera(index) => Some(self.cam_indices[index as usize]),
-            NodeId::Marker(index) => Some(self.mkr_indices[index as usize]),
+            NodeId::Transform(index) => Some(self.tfm_indices[index]),
+            NodeId::Bundle(index) => Some(self.bnd_indices[index]),
+            NodeId::Camera(index) => Some(self.cam_indices[index]),
+            NodeId::Marker(index) => Some(self.mkr_indices[index]),
             _ => None,
         }
     }

@@ -90,7 +90,7 @@ impl FlatScene {
             .sorted_node_ids
             .iter()
             .zip(out_tfm_world_matrix_list.iter());
-        for (i, (node_id, world_matrix)) in (0..).zip(node_ids_and_matrix_iter) {
+        for (node_id, world_matrix) in node_ids_and_matrix_iter {
             match node_id {
                 NodeId::Camera(_) => cam_tfm_matrix = *world_matrix,
                 NodeId::Bundle(_) => out_bnd_world_matrix_list.push(*world_matrix),

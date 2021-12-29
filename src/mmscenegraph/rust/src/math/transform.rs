@@ -18,9 +18,8 @@
 // ====================================================================
 //
 /// 3D Transformation mathematics.
-
-use crate::constant::Matrix44;
 use crate::constant::Matrix33;
+use crate::constant::Matrix44;
 use crate::constant::Real;
 use crate::constant::DEGREES_TO_RADIANS;
 use crate::constant::RADIANS_TO_DEGREES;
@@ -458,10 +457,6 @@ pub fn calculate_matrix(transform: &Transform) -> Matrix44 {
         RotateOrder::XZY => roty * rotz * rotx, // XZY
         RotateOrder::YXZ => rotz * rotx * roty, // YXZ
         RotateOrder::ZYX => rotx * roty * rotz, // ZYX
-        _ => panic!(
-            "Error; Invalid rotate order value: roo={0:?}",
-            transform.roo
-        ),
     };
 
     // Translate

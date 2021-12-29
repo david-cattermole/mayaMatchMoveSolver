@@ -18,7 +18,6 @@
 // ====================================================================
 //
 /// 3D Quaternion Rotation mathematics.
-
 use crate::constant::Matrix33;
 use crate::constant::Matrix44;
 use crate::constant::Quaternion;
@@ -143,10 +142,10 @@ pub fn quaternion_to_euler(q: Quaternion, order: RotateOrder) -> EulerAngles {
 /// Convert 4x4 rotation matrix to a quaternion.
 #[inline]
 pub fn matrix4_to_quaternion(a: Matrix44) -> Quaternion {
-    let mut x = 0.0;
-    let mut y = 0.0;
-    let mut z = 0.0;
-    let mut w = 0.0;
+    let x;
+    let y;
+    let z;
+    let w;
     let trace = a[(0, 0)] + a[(1, 1)] + a[(2, 2)];
     if trace > 0.0 {
         let s = 0.5 / (trace + 1.0).sqrt();
@@ -179,10 +178,10 @@ pub fn matrix4_to_quaternion(a: Matrix44) -> Quaternion {
 }
 
 pub fn matrix3_to_quaternion(a: Matrix33) -> Quaternion {
-    let mut x = 0.0;
-    let mut y = 0.0;
-    let mut z = 0.0;
-    let mut w = 0.0;
+    let x;
+    let y;
+    let z;
+    let w;
     let trace = a[(0, 0)] + a[(1, 1)] + a[(2, 2)];
     if trace > 0.0 {
         let s = 0.5 / (trace + 1.0).sqrt();

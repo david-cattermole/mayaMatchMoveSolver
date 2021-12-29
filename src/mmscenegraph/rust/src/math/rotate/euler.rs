@@ -31,12 +31,12 @@ pub struct EulerAngles {
     pub w: Real,
 }
 
+// const EULER_REP_NO: usize = 0; // Repetition No
+// const EULER_PAR_EVEN: usize = 0; // Parity Even
+// const EULER_FRM_S: usize = 0; // Rotating Axis Frame
 const EULER_REP_YES: usize = 1; // Repetition Yes
-const EULER_REP_NO: usize = 0; // Repetition No
 const EULER_PAR_ODD: usize = 1; // Parity Odd
-const EULER_PAR_EVEN: usize = 0; // Parity Even
 const EULER_FRM_R: usize = 1; // Static Axis Frame
-const EULER_FRM_S: usize = 0; // Rotating Axis Frame
 
 /// unpacks all useful information about order simultaneously.
 fn euler_get_order<'a>(
@@ -68,13 +68,14 @@ fn euler_get_order<'a>(
     };
 }
 
-/// creates an order value between 0 and 23 from 4-tuple choices. */
-fn euler_order(i: usize, p: usize, r: usize, f: usize) -> usize {
-    let i = (i << 1) + p;
-    let i = (i << 1) + r;
-    let i = (i << 1) + f;
-    i
-}
+// /// creates an order value between 0 and 23 from 4-tuple choices. */
+// fn euler_order(i: usize, p: usize, r: usize, f: usize) -> usize {
+//     // ((((((i) << 1) + (p)) << 1) + (r)) << 1) + (f)
+//     let i = (i << 1) + p;
+//     let i = (i << 1) + r;
+//     let i = (i << 1) + f;
+//     i
+// }
 
 /// Construct matrix from Euler angles (in radians).
 pub fn euler_to_matrix4(mut ea: EulerAngles) -> Matrix44 {
@@ -157,7 +158,7 @@ pub fn euler_to_matrix4(mut ea: EulerAngles) -> Matrix44 {
 }
 
 /// Convert matrix to Euler angles (as radians).
-fn euler_from_matrix3(matrix: Matrix33, order: u8) -> EulerAngles {
+pub fn euler_from_matrix3(matrix: Matrix33, order: u8) -> EulerAngles {
     let mut ea = EulerAngles {
         x: 0.0,
         y: 0.0,
@@ -243,7 +244,7 @@ impl From<u8> for RotateOrder {
 }
 
 #[inline]
-fn rotate_order_from_index(index: u8) -> RotateOrder {
+pub fn rotate_order_from_index(index: u8) -> RotateOrder {
     match index {
         0 => RotateOrder::XYZ,
         1 => RotateOrder::YZX,

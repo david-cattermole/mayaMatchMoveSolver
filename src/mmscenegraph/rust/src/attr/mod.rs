@@ -52,3 +52,10 @@ pub struct AttrCameraIds {
     pub sensor_height: AttrId,
     pub focal_length: AttrId,
 }
+
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
+pub struct AttrMarkerIds {
+    pub tx: AttrId,
+    pub ty: AttrId,
+    pub weight: AttrId,
+}

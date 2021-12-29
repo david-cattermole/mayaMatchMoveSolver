@@ -22,6 +22,7 @@ use petgraph::graph::NodeIndex as PGNodeIndex;
 
 use crate::attr::datablock::AttrDataBlock;
 use crate::attr::AttrCameraIds;
+use crate::attr::AttrMarkerIds;
 use crate::attr::AttrTransformIds;
 use crate::constant::FrameValue;
 use crate::constant::Matrix44;
@@ -38,11 +39,17 @@ pub struct FlatScene {
     // up and filter data.
     pub bnd_ids: Vec<NodeId>,
     pub cam_ids: Vec<NodeId>,
+    pub mkr_ids: Vec<NodeId>,
+
+    // Marker links to cameras and bundles.
+    pub mkr_cam_indices: Vec<usize>,
+    pub mkr_bnd_indices: Vec<usize>,
 
     // Attributes and data to use during reprojection.
     pub tfm_attr_list: Vec<AttrTransformIds>,
     pub rotate_order_list: Vec<RotateOrder>,
     pub cam_attr_list: Vec<AttrCameraIds>,
+    pub mkr_attr_list: Vec<AttrMarkerIds>,
 
     // The transform metadata for the nodes.
     pub tfm_node_parent_indices: Vec<Option<usize>>,
@@ -59,11 +66,13 @@ impl FlatScene {
         out_bnd_world_matrix_list: &mut Vec<Matrix44>,
         out_cam_world_matrix_list: &mut Vec<Matrix44>,
         out_point_list: &mut Vec<(Real, Real)>,
+        out_deviation_list: &mut Vec<(Real, Real)>,
     ) {
         // println!("EVALUATE! =================================================");
         let num_frames = frame_list.len();
         let num_bundles = self.bnd_ids.len();
         let num_cameras = self.cam_ids.len();
+        let num_markers = self.mkr_ids.len();
         let num_transforms = self.tfm_node_ids.len();
         // println!("camera count: {}", num_cameras);
         // println!("bundle count: {}", num_bundles);
@@ -72,6 +81,7 @@ impl FlatScene {
         assert!(num_frames > 0);
         assert!(num_cameras > 0);
         assert!(num_bundles > 0);
+        assert!(num_markers > 0);
         assert!(num_transforms > 0);
 
         out_tfm_world_matrix_list.clear();
@@ -114,17 +124,30 @@ impl FlatScene {
             }
         }
         // println!("Bundle Matrix count: {}", out_bnd_world_matrix_list.len());
+        // println!("Camera Matrix count: {}", out_cam_world_matrix_list.len());
 
         assert!(out_cam_world_matrix_list.len() == (num_cameras * num_frames));
         out_point_list.clear();
-        out_point_list.reserve(num_bundles * num_frames);
+        out_deviation_list.clear();
+        out_point_list.reserve(num_markers * num_frames);
+        out_deviation_list.reserve(num_markers * num_frames);
+
         let cam_attrs_iter = (0..).zip(self.cam_attr_list.iter());
         for (i, cam_attrs) in cam_attrs_iter {
             let cam_sensor_width = cam_attrs.sensor_width;
             let cam_sensor_height = cam_attrs.sensor_height;
             let cam_focal_length = cam_attrs.focal_length;
-            for bnd_index in 0..num_bundles {
+
+            let mkr_attrs_iter = (0..).zip(self.mkr_attr_list.iter());
+            for (mkr_index, mkr_attrs) in mkr_attrs_iter {
+                let cam_index = self.mkr_cam_indices[mkr_index];
+                if cam_index != i {
+                    continue;
+                }
+                let bnd_index = self.mkr_bnd_indices[mkr_index];
+
                 for (f, frame) in (0..).zip(frame_list) {
+                    let frame = *frame;
                     let cam_index_at_frame = (i * num_frames) + f;
                     let bnd_index_at_frame = (bnd_index * num_frames) + f;
                     let bnd_matrix = out_bnd_world_matrix_list[bnd_index_at_frame];
@@ -134,7 +157,7 @@ impl FlatScene {
                         cam_sensor_width,
                         cam_sensor_height,
                         cam_focal_length,
-                        *frame,
+                        frame,
                     );
                     // println!("Camera Transform Matrix: {}", cam_tfm_matrix);
                     // println!("Camera Projection Matrix: {}", cam_proj_matrix);
@@ -143,6 +166,16 @@ impl FlatScene {
                         reproject_as_normalised_coord(cam_tfm_matrix, cam_proj_matrix, bnd_matrix);
                     let point = (reproj_mat[0], reproj_mat[1]);
                     out_point_list.push(point);
+
+                    let mkr_tx = attrdb.get_attr_value(mkr_attrs.tx, frame);
+                    let mkr_ty = attrdb.get_attr_value(mkr_attrs.ty, frame);
+
+                    // // TODO: Use marker weight?
+                    // let mkr_weight = attr_data_block.get_attr_value(mkr_attr.weight, frame);
+
+                    let dev_x = mkr_tx - reproj_mat[0];
+                    let dev_y = mkr_ty - reproj_mat[1];
+                    out_deviation_list.push((dev_x, dev_y));
                 }
             }
         }

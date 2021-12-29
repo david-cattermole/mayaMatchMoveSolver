@@ -26,7 +26,9 @@ use petgraph::Direction as PGDirection;
 use std::collections::hash_set::HashSet;
 
 use crate::attr::AttrCameraIds;
+use crate::attr::AttrMarkerIds;
 use crate::attr::AttrTransformIds;
+use crate::node::traits::NodeCanTransform2D;
 use crate::node::traits::NodeCanTransform3D;
 use crate::node::traits::NodeCanViewScene;
 use crate::node::traits::NodeHasId;
@@ -129,16 +131,16 @@ fn get_parent_index_list(sg: &SceneGraph, node_indices: &Vec<PGNodeIndex>) -> Ve
 
 /// Bake down graph into a more efficient representation that has a
 /// un-editable hierarchy.
-pub fn bake_scene_graph<T, U>(
+pub fn bake_scene_graph<T, U, V>(
     sg: &SceneGraph,
     bnd_nodes: &Vec<Box<T>>,
     cam_nodes: &Vec<Box<U>>,
-    // mkr_nodes: &Vec<Box<V>>,
+    mkr_nodes: &Vec<Box<V>>,
 ) -> FlatScene
 where
     T: ?Sized + NodeHasId + NodeCanTransform3D,
     U: ?Sized + NodeHasId + NodeCanTransform3D + NodeCanViewScene,
-    // V: NodeCanTransform2D + ?Sized,
+    V: ?Sized + NodeHasId + NodeCanTransform2D,
 {
     let bnd_node_ids: Vec<NodeId> = bnd_nodes
         .iter()
@@ -156,6 +158,15 @@ where
             _ => false,
         })
         .collect();
+    let mkr_ids: Vec<NodeId> = mkr_nodes
+        .iter()
+        .map(|x| x.get_id())
+        .filter(|x| match x {
+            NodeId::Marker(_) => true,
+            _ => false,
+        })
+        .collect();
+    assert!(mkr_nodes.len() == mkr_ids.len());
     let bnd_ids = bnd_node_ids.clone();
     let cam_ids = cam_node_ids.clone();
     let tfm_node_ids = bnd_node_ids
@@ -163,6 +174,7 @@ where
         .chain(cam_node_ids.into_iter())
         .collect();
 
+    // Organize the transform hierachy data.
     let (tfm_node_indices, tfm_node_ids) =
         flatten_filter_and_sort_graph_nodes(&sg, tfm_node_ids).unwrap();
     // println!("tfm_node_indices: {:#?}", tfm_node_indices.len());
@@ -177,8 +189,12 @@ where
     //     tfm_node_parent_indices.len()
     // );
 
+    // Get transform attributes.
+    let num_transforms = tfm_nodes.len();
     let mut tfm_attr_list = Vec::new();
     let mut rotate_order_list = Vec::new();
+    tfm_attr_list.reserve(num_transforms);
+    rotate_order_list.reserve(num_transforms);
     for node in tfm_nodes.iter() {
         let attr_tx = node.get_attr_tx();
         let attr_ty = node.get_attr_ty();
@@ -211,7 +227,9 @@ where
         rotate_order_list.push(rotate_order);
     }
 
+    // Camera attributes.
     let mut cam_attr_list = Vec::new();
+    cam_attr_list.reserve(cam_nodes.len());
     for cam_node in cam_nodes.iter() {
         let attr_sensor_width = cam_node.get_attr_sensor_width();
         let attr_sensor_height = cam_node.get_attr_sensor_height();
@@ -222,19 +240,72 @@ where
             sensor_height: attr_sensor_height,
             focal_length: attr_focal_length,
         };
-
         cam_attr_list.push(cam_attrs);
     }
 
+    // Marker attributes
+    let mut mkr_attr_list = Vec::new();
+    mkr_attr_list.reserve(mkr_nodes.len());
+    for mkr_node in mkr_nodes.iter() {
+        let attr_tx = mkr_node.get_attr_tx();
+        let attr_ty = mkr_node.get_attr_tx();
+        let attr_weight = mkr_node.get_attr_weight();
+
+        let mkr_attrs = AttrMarkerIds {
+            tx: attr_tx,
+            ty: attr_ty,
+            weight: attr_weight,
+        };
+
+        mkr_attr_list.push(mkr_attrs);
+    }
+
+    // Marker to bundle indices.
+    let mut mkr_bnd_indices = Vec::new();
+    mkr_bnd_indices.reserve(mkr_ids.len());
+    for mkr_id in &mkr_ids {
+        let bnd_id = sg.get_bundle_node_id_from_marker_node_id(*mkr_id).unwrap();
+        for (bnd_index, bnd_node_id) in (0..).zip(bnd_ids.iter()) {
+            if *bnd_node_id == bnd_id {
+                mkr_bnd_indices.push(bnd_index);
+                break;
+            }
+        }
+    }
+
+    // Marker to camera indices.
+    let mut mkr_cam_indices = Vec::new();
+    mkr_cam_indices.reserve(mkr_ids.len());
+    for mkr_id in &mkr_ids {
+        let cam_id = sg.get_camera_node_id_from_marker_node_id(*mkr_id).unwrap();
+        for (cam_index, cam_node_id) in (0..).zip(cam_ids.iter()) {
+            if *cam_node_id == cam_id {
+                mkr_cam_indices.push(cam_index);
+                break;
+            }
+        }
+    }
+
     FlatScene {
+        // Node ids.
         bnd_ids,
+        cam_ids,
+        mkr_ids,
+
+        // Marker to camera and marker to bundle relationships.
+        mkr_cam_indices,
+        mkr_bnd_indices,
+
+        // Attributes.
         tfm_attr_list,
         rotate_order_list,
-        cam_ids,
         cam_attr_list,
-        tfm_node_parent_indices,
+        mkr_attr_list,
+
+        // Transform hierarchy struture and metadata.
         tfm_node_ids,
         tfm_node_indices,
+        tfm_node_parent_indices,
     }
 }
 

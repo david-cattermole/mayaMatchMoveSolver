@@ -156,7 +156,7 @@ fn evaluate_scene() {
     println!("Scene Bundle count: {}", sg.num_bundle_nodes());
 
     // Create camera
-    let cam_tfm = create_static_transform(
+    let cam_0_tfm = create_static_transform(
         &mut sg,
         &mut attrdb,
         (0.0, 1000.0, 0.0),
@@ -164,8 +164,7 @@ fn evaluate_scene() {
         (1.0, 1.0, 1.0),
         RotateOrder::XYZ,
     );
-
-    let cam = create_static_camera(
+    let cam_0 = create_static_camera(
         &mut sg,
         &mut attrdb,
         (717.0, -514.0, 301.0),
@@ -175,10 +174,10 @@ fn evaluate_scene() {
         35.0,
         RotateOrder::ZXY,
     );
-    sg.set_node_parent(cam.get_id(), cam_tfm.get_id());
-    sg.set_node_parent(cam_tfm.get_id(), NodeId::Root);
+    sg.set_node_parent(cam_0.get_id(), cam_0_tfm.get_id());
+    sg.set_node_parent(cam_0_tfm.get_id(), NodeId::Root);
 
-    let cam2 = create_static_camera(
+    let cam_1 = create_static_camera(
         &mut sg,
         &mut attrdb,
         (-99.0, 85.0, 150.0),
@@ -188,16 +187,15 @@ fn evaluate_scene() {
         40.0,
         RotateOrder::ZXY,
     );
-
-    let cam_box = Box::new(cam) as Box<dyn NodeCanTransformAndView3D>;
-    let cam2_box = Box::new(cam2) as Box<dyn NodeCanTransformAndView3D>;
-    println!("Camera 1: {:?}", cam);
-    println!("Camera 2: {:?}", cam2);
+    println!("Camera 1: {:?}", cam_0);
+    println!("Camera 2: {:?}", cam_1);
     println!("Scene Camera count: {}", sg.num_camera_nodes());
 
     let mut cam_nodes = Vec::<Box<dyn NodeCanTransformAndView3D>>::new();
-    cam_nodes.push(cam_box);
-    cam_nodes.push(cam2_box);
+    let cam_0_box = Box::new(cam_0) as Box<dyn NodeCanTransformAndView3D>;
+    let cam_1_box = Box::new(cam_1) as Box<dyn NodeCanTransformAndView3D>;
+    cam_nodes.push(cam_0_box);
+    cam_nodes.push(cam_1_box);
 
     // Add 'Markers' to be used and linked to Bundles
     let mkr_0 = create_static_marker(&mut sg, &mut attrdb, (-0.5, -0.5), 1.0);
@@ -206,12 +204,13 @@ fn evaluate_scene() {
     let mkr_3 = create_static_marker(&mut sg, &mut attrdb, (-0.5, 0.5), 1.0);
     let mkr_4 = create_static_marker(&mut sg, &mut attrdb, (0.0, 0.0), 1.0);
 
-    let cam_node_id = cam.get_id();
-    sg.link_marker_to_camera(mkr_0.get_id(), cam_node_id);
-    sg.link_marker_to_camera(mkr_1.get_id(), cam_node_id);
-    sg.link_marker_to_camera(mkr_2.get_id(), cam_node_id);
-    sg.link_marker_to_camera(mkr_3.get_id(), cam_node_id);
-    sg.link_marker_to_camera(mkr_4.get_id(), cam_node_id);
+    let cam_0_node_id = cam_0.get_id();
+    let cam_1_node_id = cam_1.get_id();
+    sg.link_marker_to_camera(mkr_0.get_id(), cam_0_node_id);
+    sg.link_marker_to_camera(mkr_1.get_id(), cam_0_node_id);
+    sg.link_marker_to_camera(mkr_2.get_id(), cam_0_node_id);
+    sg.link_marker_to_camera(mkr_3.get_id(), cam_1_node_id);
+    sg.link_marker_to_camera(mkr_4.get_id(), cam_1_node_id);
 
     sg.link_marker_to_bundle(mkr_0.get_id(), bnd_0.get_id());
     sg.link_marker_to_bundle(mkr_1.get_id(), bnd_1.get_id());
@@ -239,13 +238,14 @@ fn evaluate_scene() {
     bnd_nodes.push(Box::new(bnd_2));
     bnd_nodes.push(Box::new(bnd_3));
     bnd_nodes.push(Box::new(bnd_4));
+
     // Note: It doesn't matter if we add non-bundle nodes to this
     // list, they will be filtered out correctly in the
     // FlatScene.evalutate() call.
-    bnd_nodes.push(Box::new(cam));
-    bnd_nodes.push(Box::new(cam2));
+    bnd_nodes.push(Box::new(cam_0));
+    bnd_nodes.push(Box::new(cam_1));
 
-    let flat_scene = bake_scene_graph(&sg, &bnd_nodes, &cam_nodes);
+    let flat_scene = bake_scene_graph(&sg, &bnd_nodes, &cam_nodes, &mkr_nodes);
 
     let mut frame_list = Vec::new();
     frame_list.push(1001);
@@ -254,10 +254,15 @@ fn evaluate_scene() {
     frame_list.push(1004);
     frame_list.push(1005);
 
+    // Evaluate the FlatScene:
+    // - Calculate all the local and world-space matrices for the objects.
+    // - Calculate the camera projection matrices.
+    // - Calculate deviation between Markers and Bundles.
     let mut out_tfm_world_matrix_list = Vec::new();
     let mut out_bnd_world_matrix_list = Vec::new();
     let mut out_cam_world_matrix_list = Vec::new();
     let mut out_point_list = Vec::new();
+    let mut out_deviation_list = Vec::new();
     flat_scene.evaluate(
         &attrdb,
         &frame_list,
@@ -265,13 +270,14 @@ fn evaluate_scene() {
         &mut out_bnd_world_matrix_list,
         &mut out_cam_world_matrix_list,
         &mut out_point_list,
+        &mut out_deviation_list,
     );
 
-    println!("Reprojected Points count: {}", out_point_list.len());
-    for (i, point) in (0..).zip(out_point_list) {
-        println!("Reprojected Point {}: {:#?}", i, point);
+    println!("2D Points (reprojected) count: {}", out_point_list.len());
+    println!("Deviation count: {}", out_deviation_list.len());
+    for (i, (point, dev)) in (0..).zip(out_point_list.iter().zip(out_deviation_list)) {
+        println!("2D Point {}: pos: {:?} dev: {:?}", i, point, dev);
     }
 
-    // TODO: Calculate deviation between Markers and Bundles.
     assert!(false);
 }

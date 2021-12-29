@@ -283,6 +283,20 @@ impl SceneGraph {
         }
     }
 
+    pub fn get_camera_node_id_from_marker_node_id(&self, node_id: NodeId) -> Option<NodeId> {
+        match node_id {
+            NodeId::Marker(index) => Some(self.mkr_to_cam_node_ids[index]),
+            _ => None,
+        }
+    }
+
+    pub fn get_bundle_node_id_from_marker_node_id(&self, node_id: NodeId) -> Option<NodeId> {
+        match node_id {
+            NodeId::Marker(index) => Some(self.mkr_to_bnd_node_ids[index]),
+            _ => None,
+        }
+    }
+
     pub fn get_node_index_from_node_id(&self, node_id: NodeId) -> Option<PGNodeIndex> {
         match node_id {
             NodeId::Transform(index) => Some(self.tfm_indices[index]),

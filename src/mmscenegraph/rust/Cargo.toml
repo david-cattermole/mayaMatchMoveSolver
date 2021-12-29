@@ -45,14 +45,12 @@ criterion = "0.3.3"
 
 [profile.release]
 opt-level = 3
-debug = false
 rpath = false
-lto = false
+# 'lto = true' Performs "fat" LTO which attempts to perform
+# optimizations across all crates within the dependency graph.
+lto = true
 # NOTE: If we use 'panic = "abort"' then we are unable to produce tests.
 # # https://github.com/rust-lang/cargo/issues/6313
 #
 # panic = "abort"
-debug-assertions = false
-
-[profile.bench]
-lto = true
+codegen-units = 1

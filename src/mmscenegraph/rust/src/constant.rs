@@ -20,7 +20,7 @@
 
 use nalgebra;
 
-pub type AttrIndex = u64;
+pub type AttrIndex = usize;
 pub type HashValue = u64;
 pub type NodeIndex = usize;
 pub type FrameValue = u32;

@@ -26,6 +26,10 @@ pub struct AnimDenseAttr {
     // TODO: Add run-length-encoding (RLE) for the values since there
     // may be cases where most values in the vector will be the same
     // value - this is a memory usage optimization.
+    //
+    // However such an optimization may cause re-allocations when
+    // setting values on the attribute, which could degrade
+    // performance.
     pub values: Vec<Real>,
     pub frame_start: FrameValue,
 }
@@ -41,6 +45,11 @@ impl AnimDenseAttr {
     pub fn get_value(&self, frame: FrameValue) -> Real {
         let f = (self.frame_start - frame) as usize;
         self.values[f]
+    }
+
+    pub fn set_value(&mut self, frame: FrameValue, value: Real) {
+        let f = (self.frame_start - frame) as usize;
+        self.values[f] = value;
     }
 
     pub fn get_values(&self) -> &Vec<Real> {

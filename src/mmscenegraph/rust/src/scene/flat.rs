@@ -30,20 +30,24 @@ use crate::math::dag::compute_projection_matrix_with_attrs;
 use crate::math::dag::compute_world_matrices_with_attrs;
 use crate::math::reprojection::reproject_as_normalised_coord;
 use crate::math::rotate::euler::RotateOrder;
-use crate::node::traits::NodeCanTransform3D;
 use crate::node::NodeId;
 
-// flattened scene data with an un-editable hierarchy.
+/// flattened scene data with an un-editable hierarchy.
 pub struct FlatScene {
+    // The node ids for bundles and cameras. These can be used to look
+    // up and filter data.
     pub bnd_ids: Vec<NodeId>,
+    pub cam_ids: Vec<NodeId>,
+
+    // Attributes and data to use during reprojection.
     pub tfm_attr_list: Vec<AttrTransformIds>,
     pub rotate_order_list: Vec<RotateOrder>,
-    pub cam_ids: Vec<NodeId>,
     pub cam_attr_list: Vec<AttrCameraIds>,
-    pub sorted_nodes: Vec<Box<dyn NodeCanTransform3D>>,
-    pub sorted_node_parent_indices: Vec<Option<usize>>,
-    pub sorted_node_ids: Vec<NodeId>,
-    pub sorted_node_indices: Vec<PGNodeIndex>,
+
+    // The transform metadata for the nodes.
+    pub tfm_node_parent_indices: Vec<Option<usize>>,
+    pub tfm_node_ids: Vec<NodeId>,
+    pub tfm_node_indices: Vec<PGNodeIndex>,
 }
 
 impl FlatScene {
@@ -60,16 +64,20 @@ impl FlatScene {
         let num_frames = frame_list.len();
         let num_bundles = self.bnd_ids.len();
         let num_cameras = self.cam_ids.len();
+        let num_transforms = self.tfm_node_ids.len();
         // println!("camera count: {}", num_cameras);
         // println!("bundle count: {}", num_bundles);
         // println!("frame count: {}", num_frames);
         // println!("frames: {:?}", frame_list);
         assert!(num_frames > 0);
+        assert!(num_cameras > 0);
+        assert!(num_bundles > 0);
+        assert!(num_transforms > 0);
 
         out_tfm_world_matrix_list.clear();
         out_bnd_world_matrix_list.clear();
         out_cam_world_matrix_list.clear();
-        out_tfm_world_matrix_list.reserve(self.sorted_node_ids.len() * num_frames);
+        out_tfm_world_matrix_list.reserve(num_transforms * num_frames);
         out_bnd_world_matrix_list.reserve(num_bundles * num_frames);
         out_cam_world_matrix_list.reserve(num_cameras * num_frames);
 
@@ -77,14 +85,14 @@ impl FlatScene {
             &attrdb,
             &self.tfm_attr_list,
             &self.rotate_order_list,
-            &self.sorted_node_parent_indices,
+            &self.tfm_node_parent_indices,
             frame_list,
             out_tfm_world_matrix_list,
         );
         // println!("World Matrix count: {}", out_tfm_world_matrix_list.len());
         // println!("World Matrix: {:#?}", out_tfm_world_matrix_list);
 
-        for (i, node_id) in (0..).zip(self.sorted_node_ids.iter()) {
+        for (i, node_id) in (0..).zip(self.tfm_node_ids.iter()) {
             match node_id {
                 NodeId::Camera(_) => {
                     // println!("Camera node: {:?}", node_id);
@@ -109,7 +117,7 @@ impl FlatScene {
 
         assert!(out_cam_world_matrix_list.len() == (num_cameras * num_frames));
         out_point_list.clear();
-        out_point_list.reserve(self.bnd_ids.len() * num_frames);
+        out_point_list.reserve(num_bundles * num_frames);
         let cam_attrs_iter = (0..).zip(self.cam_attr_list.iter());
         for (i, cam_attrs) in cam_attrs_iter {
             let cam_sensor_width = cam_attrs.sensor_width;

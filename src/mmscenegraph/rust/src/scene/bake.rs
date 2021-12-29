@@ -163,23 +163,23 @@ where
         .chain(cam_node_ids.into_iter())
         .collect();
 
-    let (sorted_node_indices, sorted_node_ids) =
+    let (tfm_node_indices, tfm_node_ids) =
         flatten_filter_and_sort_graph_nodes(&sg, tfm_node_ids).unwrap();
-    // println!("sorted_node_indices: {:#?}", sorted_node_indices.len());
-    // println!("sorted_node_ids: {:#?}", sorted_node_ids.len());
+    // println!("tfm_node_indices: {:#?}", tfm_node_indices.len());
+    // println!("tfm_node_ids: {:#?}", tfm_node_ids.len());
 
-    let sorted_nodes = sg.get_transformable_nodes(&sorted_node_ids).unwrap();
-    // println!("sorted_nodes: {:#?}", sorted_nodes.len());
+    let tfm_nodes = sg.get_transformable_nodes(&tfm_node_ids).unwrap();
+    // println!("tfm_nodes: {:#?}", tfm_nodes.len());
 
-    let sorted_node_parent_indices = get_parent_index_list(&sg, &sorted_node_indices);
+    let tfm_node_parent_indices = get_parent_index_list(&sg, &tfm_node_indices);
     // println!(
-    //     "sorted_node_parent_indices: {}",
-    //     sorted_node_parent_indices.len()
+    //     "tfm_node_parent_indices: {}",
+    //     tfm_node_parent_indices.len()
     // );
 
     let mut tfm_attr_list = Vec::new();
     let mut rotate_order_list = Vec::new();
-    for node in sorted_nodes.iter() {
+    for node in tfm_nodes.iter() {
         let attr_tx = node.get_attr_tx();
         let attr_ty = node.get_attr_ty();
         let attr_tz = node.get_attr_tz();
@@ -232,10 +232,9 @@ where
         rotate_order_list,
         cam_ids,
         cam_attr_list,
-        sorted_nodes,
-        sorted_node_parent_indices,
-        sorted_node_ids,
-        sorted_node_indices,
+        tfm_node_parent_indices,
+        tfm_node_ids,
+        tfm_node_indices,
     }
 }
 

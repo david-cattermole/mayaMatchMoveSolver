@@ -417,7 +417,7 @@ impl SceneGraph {
 mod tests {
     use super::*;
 
-    use crate::attr::AttrDataBlock;
+    use crate::attr::datablock::AttrDataBlock;
     use crate::scene::helper::create_static_bundle;
     use crate::scene::helper::create_static_camera;
     use crate::scene::helper::create_static_marker;

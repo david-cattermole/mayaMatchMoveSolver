@@ -18,7 +18,7 @@
 // ====================================================================
 //
 
-use crate::attr::AttrDataBlock;
+use crate::attr::datablock::AttrDataBlock;
 use crate::attr::AttrId;
 use crate::attr::AttrTransformIds;
 use crate::constant::FrameValue;

@@ -18,7 +18,7 @@
 // ====================================================================
 //
 
-use crate::attr::AttrDataBlock;
+use crate::attr::datablock::AttrDataBlock;
 use crate::constant::Real;
 use crate::math::rotate::euler::RotateOrder;
 use crate::node::bundle::BundleNode;

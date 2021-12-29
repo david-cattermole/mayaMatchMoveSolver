@@ -54,6 +54,19 @@
 #define OBJECT_TYPE_COLLECTION   (7)
 
 
+enum class ObjectType
+{
+    kUnknown = OBJECT_TYPE_UNKNOWN,
+    kAttribute = OBJECT_TYPE_ATTRIBUTE,
+    kMarker = OBJECT_TYPE_MARKER,
+    kBundle = OBJECT_TYPE_BUNDLE,
+    kCamera = OBJECT_TYPE_CAMERA,
+    kImagePlane = OBJECT_TYPE_IMAGE_PLANE,
+    kMarkerGroup = OBJECT_TYPE_MARKER_GROUP,
+    kCollection = OBJECT_TYPE_COLLECTION,
+};
+
+
 static inline
 MStatus getAsSelectionList(MStringArray nodeNames, MSelectionList &selList) {
     MStatus status;
@@ -140,7 +153,10 @@ bool hasAttrName(MFnDependencyNode &dependFn, MString attrName) {
 
 // Analogous to the Python function "mmSolver.api.get_object_type()"
 inline
-unsigned int computeObjectType(MObject node_obj, MDagPath nodeDagPath) {
+ObjectType computeObjectType(
+    MObject node_obj,
+    MDagPath nodeDagPath
+) {
     bool hasLocatorShape = false;
     bool hasCameraShape = false;
     bool hasImagePlaneShape = false;
@@ -192,7 +208,8 @@ unsigned int computeObjectType(MObject node_obj, MDagPath nodeDagPath) {
     } else if (node_tid == MFn::kSet && hasAttrSolverList) {
         objectType = OBJECT_TYPE_COLLECTION;
     }
-    return objectType;
+
+    return static_cast<ObjectType>(objectType);
 }
 
 

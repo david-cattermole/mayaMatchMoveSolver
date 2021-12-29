@@ -90,7 +90,7 @@ Attr::Attr() :
         m_maxValue(std::numeric_limits<float>::max()),
         m_offsetValue(0.0),
         m_scaleValue(1.0),
-        m_objectType(OBJECT_TYPE_UNKNOWN),
+        m_objectType(ObjectType::kUnknown),
         m_solverAttrType(ATTR_SOLVER_TYPE_UNKNOWN) {
      MDistance distanceOne(1.0, MDistance::internalUnit());
      m_linearFactor = distanceOne.as(MDistance::uiUnit());
@@ -121,7 +121,7 @@ MStatus Attr::setName(MString value) {
         status = getAsDagPath(values[0], nodeDagPath);
         CHECK_MSTATUS(status);
         MObject obj = Attr::getObject();
-        const unsigned int objectType = computeObjectType(obj, nodeDagPath);
+        const auto objectType = computeObjectType(obj, nodeDagPath);
         Attr::setObjectType(objectType);
 
         const unsigned int solverAttrType = computeSolverAttrType(
@@ -647,11 +647,11 @@ void Attr::setScaleValue(const double value) {
     m_scaleValue = value;
 }
 
-unsigned int Attr::getObjectType() const {
+ObjectType Attr::getObjectType() const {
     return m_objectType;
 }
 
-void Attr::setObjectType(const unsigned int value) {
+void Attr::setObjectType(const ObjectType value) {
     m_objectType = value;
 }
 

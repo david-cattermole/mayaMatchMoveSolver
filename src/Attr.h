@@ -71,10 +71,10 @@
 
 
 inline
-unsigned int computeSolverAttrType(unsigned int objectType,
+unsigned int computeSolverAttrType(ObjectType objectType,
                                    MString attrName) {
     unsigned int attr_type = ATTR_SOLVER_TYPE_UNKNOWN;
-    if (objectType == OBJECT_TYPE_BUNDLE) {
+    if (objectType == ObjectType::kBundle) {
         // A bundle node.
         if (attrName == "translateX" || attrName == "tx") {
             attr_type = ATTR_SOLVER_TYPE_BUNDLE_TX;
@@ -83,7 +83,7 @@ unsigned int computeSolverAttrType(unsigned int objectType,
         } else if (attrName == "translateZ" || attrName == "tz") {
             attr_type = ATTR_SOLVER_TYPE_BUNDLE_TZ;
         }
-    } else if (objectType == OBJECT_TYPE_CAMERA) {
+    } else if (objectType == ObjectType::kCamera) {
         // A camera node.
         if (attrName == "translateX" || attrName == "tx") {
             attr_type = ATTR_SOLVER_TYPE_CAMERA_TX;
@@ -206,9 +206,9 @@ public:
 
     void setScaleValue(const double value);
 
-    unsigned int getObjectType() const;
+    ObjectType getObjectType() const;
 
-    void setObjectType(const unsigned int value);
+    void setObjectType(const ObjectType value);
 
     unsigned int getSolverAttrType() const;
 
@@ -233,7 +233,7 @@ private:
     double m_maxValue;
     double m_offsetValue;
     double m_scaleValue;
-    unsigned int m_objectType;
+    ObjectType m_objectType;
     unsigned int m_solverAttrType;
 
     double m_linearFactor;

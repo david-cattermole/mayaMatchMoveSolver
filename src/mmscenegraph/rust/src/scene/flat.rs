@@ -173,8 +173,8 @@ impl FlatScene {
                     // // TODO: Use marker weight?
                     // let mkr_weight = attr_data_block.get_attr_value(mkr_attr.weight, frame);
 
-                    let dev_x = mkr_tx - reproj_mat[0];
-                    let dev_y = mkr_ty - reproj_mat[1];
+                    let dev_x = (mkr_tx - reproj_mat[0]).abs();
+                    let dev_y = (mkr_ty - reproj_mat[1]).abs();
                     out_deviation_list.push((dev_x, dev_y));
                 }
             }

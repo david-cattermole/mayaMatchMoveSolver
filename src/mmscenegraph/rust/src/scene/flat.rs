@@ -107,11 +107,11 @@ impl FlatScene {
         }
     }
 
-    pub fn point_list(&self) -> &Vec<(Real, Real)> {
+    pub fn point_list(&self) -> &[(Real, Real)] {
         &self.out_point_list
     }
 
-    pub fn deviation_list(&self) -> &Vec<(Real, Real)> {
+    pub fn deviation_list(&self) -> &[(Real, Real)] {
         &self.out_deviation_list
     }
 

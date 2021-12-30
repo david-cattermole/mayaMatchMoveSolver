@@ -133,9 +133,9 @@ fn get_parent_index_list(sg: &SceneGraph, node_indices: &Vec<PGNodeIndex>) -> Ve
 /// un-editable hierarchy.
 pub fn bake_scene_graph<T, U, V>(
     sg: &SceneGraph,
-    bnd_nodes: &Vec<Box<T>>,
-    cam_nodes: &Vec<Box<U>>,
-    mkr_nodes: &Vec<Box<V>>,
+    bnd_nodes: &[Box<T>],
+    cam_nodes: &[Box<U>],
+    mkr_nodes: &[Box<V>],
 ) -> FlatScene
 where
     T: ?Sized + NodeHasId + NodeCanTransform3D,

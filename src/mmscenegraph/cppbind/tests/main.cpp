@@ -16,12 +16,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
+ *
  */
 
-#pragma once
+#include <iostream>
 
-#include "_cxx.h"
-#include "_cxxbridge.h"
-#include "_types.h"
-#include "scenegraph.h"
-#include "attrdatablock.h"
+
+#include "test_a.h"
+// #include "test_b.h"
+// #include "test_c.h"
+
+int main() {
+    int x = 2 + 2;
+    std::cout << "2 + 2 = " << x << std::endl;
+
+    // Run tests.
+    test_a();
+    // test_b();
+    // test_c();
+    return 0;
+}

@@ -39,6 +39,11 @@ impl AttrDataBlock {
         }
     }
 
+    pub fn clear(&mut self) {
+        self.static_attrs.clear();
+        self.anim_dense_attrs.clear();
+    }
+
     pub fn create_attr_static(&mut self, value: Real) -> AttrId {
         let mut attr = StaticAttr::new();
         attr.set_value(value);

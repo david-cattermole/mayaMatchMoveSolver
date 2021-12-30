@@ -144,6 +144,9 @@ target_link_libraries(mmSolver
   PRIVATE
   mmscenegraph
 )
+target_include_directories(mmSolver
+  PRIVATE ${MMSCENEGRAPH_INCLUDE_DIR}
+  )
 target_link_libraries(mmSolver
   PUBLIC
   ${MAYA_OpenMaya_LIBRARY}

@@ -16,12 +16,44 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
+ *
  */
 
 #pragma once
 
+#include <memory>
+#include <string>
+
 #include "_cxx.h"
 #include "_cxxbridge.h"
+#include "_symbol_export.h"
 #include "_types.h"
-#include "scenegraph.h"
-#include "attrdatablock.h"
+
+namespace mmscenegraph {
+
+class AttrDataBlock {
+public:
+
+    MMSCENEGRAPH_API_EXPORT
+    AttrDataBlock() noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    void clear() noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    AttrId create_attr_static(Real value) noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    AttrId create_attr_anim_dense(rust::Vec<Real> values, FrameValue frame_start) noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    Real get_attr_value(AttrId attr_id, FrameValue frame) const noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    void set_attr_value(AttrId attr_id, FrameValue frame, Real value) noexcept;
+
+private:
+    rust::Box<ShimAttrDataBlock> inner_;
+};
+
+} // namespace mmscenegraph

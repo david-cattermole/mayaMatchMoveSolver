@@ -16,12 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
+ *
  */
 
-#pragma once
-
-#include "_cxx.h"
-#include "_cxxbridge.h"
-#include "_types.h"
-#include "scenegraph.h"
-#include "attrdatablock.h"
+int test_a();

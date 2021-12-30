@@ -4,19 +4,18 @@ set(MMSCENEGRAPH_RUST_BUILD_DIR "/path/to/rust/build/directory/" CACHE PATH
 set(MMSCENEGRAPH_RUST_INCLUDE_DIR "/path/to/rust/include/directory/" CACHE PATH
   "The path to the generated include.")
 
-
 # C++ Source Code
 set(lib_source_files
   ${CMAKE_CURRENT_SOURCE_DIR}/_cxxbridge.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/scenegraph.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/attrdatablock.cpp
   )
-
 
 # Find the Rust Library
 include(MMSceneGraphUtils)
 set(rust_linktime_file "NOT-FOUND")
 find_rust_library("mmscenegraph" ${MMSCENEGRAPH_RUST_BUILD_DIR} rust_linktime_file)
 message(STATUS "Rust Linktime Library: ${rust_linktime_file}")
-
 
 # Generate CXX Bridge files.
 find_program(cxxbridge_exec cxxbridge REQUIRED PATHS $ENV{HOME}/.cargo/bin)

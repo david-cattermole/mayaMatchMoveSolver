@@ -16,12 +16,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
+ *
  */
 
 #pragma once
 
-#include "_cxx.h"
-#include "_cxxbridge.h"
-#include "_types.h"
-#include "scenegraph.h"
-#include "attrdatablock.h"
+namespace mmscenegraph {
+
+// Aliases used for common types in the mmscenegraph bindings. We
+// define these types to give more meaning to our code.
+using FrameValue = uint32_t;
+using Real = double;
+using NodeIndex = size_t;
+using AttrIndex = size_t;
+
+} // namespace mmscenegraph

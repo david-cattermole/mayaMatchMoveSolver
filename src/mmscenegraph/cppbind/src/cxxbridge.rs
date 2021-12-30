@@ -272,6 +272,9 @@ pub mod ffi {
         ) -> CameraNode;
         fn create_marker_node(&mut self, marker_attrs: MarkerAttrIds) -> MarkerNode;
 
+        fn link_marker_to_camera(&mut self, mkr_node_id: NodeId, cam_node_id: NodeId) -> bool;
+        fn link_marker_to_bundle(&mut self, mkr_node_id: NodeId, bnd_node_id: NodeId) -> bool;
+
         fn shim_create_scene_graph_box() -> Box<ShimSceneGraph>;
     }
 

@@ -102,4 +102,14 @@ SceneGraph::create_marker_node(
     return inner_->create_marker_node(marker_attrs);
 }
 
+bool
+SceneGraph::link_marker_to_camera(NodeId mkr_node_id, NodeId cam_node_id) noexcept {
+    return inner_->link_marker_to_camera(mkr_node_id, cam_node_id);
+}
+
+bool
+SceneGraph::link_marker_to_bundle(NodeId mkr_node_id, NodeId bnd_node_id) noexcept {
+    return inner_->link_marker_to_bundle(mkr_node_id, bnd_node_id);
+}
+
 } // namespace mmscenegraph

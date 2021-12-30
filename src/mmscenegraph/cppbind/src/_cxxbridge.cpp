@@ -1087,6 +1087,8 @@ struct ShimSceneGraph final : public ::rust::Opaque {
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::BundleNode create_bundle_node(::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::RotateOrder rotate_order) noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::CameraNode create_camera_node(::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::CameraAttrIds camera_attrs, ::mmscenegraph::RotateOrder rotate_order) noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::MarkerNode create_marker_node(::mmscenegraph::MarkerAttrIds marker_attrs) noexcept;
+  MMSCENEGRAPH_API_EXPORT bool link_marker_to_camera(::mmscenegraph::NodeId mkr_node_id, ::mmscenegraph::NodeId cam_node_id) noexcept;
+  MMSCENEGRAPH_API_EXPORT bool link_marker_to_bundle(::mmscenegraph::NodeId mkr_node_id, ::mmscenegraph::NodeId bnd_node_id) noexcept;
   ~ShimSceneGraph() = delete;
 
 private:
@@ -1179,6 +1181,10 @@ void mmscenegraph$cxxbridge1$ShimSceneGraph$clear(::mmscenegraph::ShimSceneGraph
 ::mmscenegraph::CameraNode mmscenegraph$cxxbridge1$ShimSceneGraph$create_camera_node(::mmscenegraph::ShimSceneGraph &self, ::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::CameraAttrIds camera_attrs, ::mmscenegraph::RotateOrder rotate_order) noexcept;
 
 ::mmscenegraph::MarkerNode mmscenegraph$cxxbridge1$ShimSceneGraph$create_marker_node(::mmscenegraph::ShimSceneGraph &self, ::mmscenegraph::MarkerAttrIds marker_attrs) noexcept;
+
+bool mmscenegraph$cxxbridge1$ShimSceneGraph$link_marker_to_camera(::mmscenegraph::ShimSceneGraph &self, ::mmscenegraph::NodeId mkr_node_id, ::mmscenegraph::NodeId cam_node_id) noexcept;
+
+bool mmscenegraph$cxxbridge1$ShimSceneGraph$link_marker_to_bundle(::mmscenegraph::ShimSceneGraph &self, ::mmscenegraph::NodeId mkr_node_id, ::mmscenegraph::NodeId bnd_node_id) noexcept;
 
 ::mmscenegraph::ShimSceneGraph *mmscenegraph$cxxbridge1$shim_create_scene_graph_box() noexcept;
 bool mmscenegraph$cxxbridge1$Camera$operator$eq(const Camera &, const Camera &) noexcept;
@@ -1490,6 +1496,14 @@ MMSCENEGRAPH_API_EXPORT ::mmscenegraph::CameraNode ShimSceneGraph::create_camera
 
 MMSCENEGRAPH_API_EXPORT ::mmscenegraph::MarkerNode ShimSceneGraph::create_marker_node(::mmscenegraph::MarkerAttrIds marker_attrs) noexcept {
   return mmscenegraph$cxxbridge1$ShimSceneGraph$create_marker_node(*this, marker_attrs);
+}
+
+MMSCENEGRAPH_API_EXPORT bool ShimSceneGraph::link_marker_to_camera(::mmscenegraph::NodeId mkr_node_id, ::mmscenegraph::NodeId cam_node_id) noexcept {
+  return mmscenegraph$cxxbridge1$ShimSceneGraph$link_marker_to_camera(*this, mkr_node_id, cam_node_id);
+}
+
+MMSCENEGRAPH_API_EXPORT bool ShimSceneGraph::link_marker_to_bundle(::mmscenegraph::NodeId mkr_node_id, ::mmscenegraph::NodeId bnd_node_id) noexcept {
+  return mmscenegraph$cxxbridge1$ShimSceneGraph$link_marker_to_bundle(*this, mkr_node_id, bnd_node_id);
 }
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimSceneGraph> shim_create_scene_graph_box() noexcept {

@@ -1080,6 +1080,8 @@ struct ShimSceneGraph final : public ::rust::Opaque {
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::BundleNode create_bundle_node(::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::RotateOrder rotate_order) noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::CameraNode create_camera_node(::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::CameraAttrIds camera_attrs, ::mmscenegraph::RotateOrder rotate_order) noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::MarkerNode create_marker_node(::mmscenegraph::MarkerAttrIds marker_attrs) noexcept;
+  MMSCENEGRAPH_API_EXPORT bool link_marker_to_camera(::mmscenegraph::NodeId mkr_node_id, ::mmscenegraph::NodeId cam_node_id) noexcept;
+  MMSCENEGRAPH_API_EXPORT bool link_marker_to_bundle(::mmscenegraph::NodeId mkr_node_id, ::mmscenegraph::NodeId bnd_node_id) noexcept;
   ~ShimSceneGraph() = delete;
 
 private:

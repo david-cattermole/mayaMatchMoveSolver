@@ -28,12 +28,14 @@ use crate::cxxbridge::ffi::CameraAttrIds as BindCameraAttrIds;
 use crate::cxxbridge::ffi::CameraNode as BindCameraNode;
 use crate::cxxbridge::ffi::MarkerAttrIds as BindMarkerAttrIds;
 use crate::cxxbridge::ffi::MarkerNode as BindMarkerNode;
+use crate::cxxbridge::ffi::NodeId as BindNodeId;
 use crate::cxxbridge::ffi::Rotate3DAttrIds as BindRotate3DAttrIds;
 use crate::cxxbridge::ffi::RotateOrder as BindRotateOrder;
 use crate::cxxbridge::ffi::Scale3DAttrIds as BindScale3DAttrIds;
 use crate::cxxbridge::ffi::TransformNode as BindTransformNode;
 use crate::cxxbridge::ffi::Translate3DAttrIds as BindTranslate3DAttrIds;
 use crate::math::bind_to_core_rotate_order;
+use crate::node::bind_to_core_node_id;
 use crate::node::core_to_bind_bundle_node;
 use crate::node::core_to_bind_camera_node;
 use crate::node::core_to_bind_marker_node;
@@ -135,11 +137,25 @@ impl ShimSceneGraph {
         core_to_bind_marker_node(core_node)
     }
 
-    // pub fn link_marker_to_camera(&mut self, mkr_node_id: NodeId, cam_node_id: NodeId) -> bool {
-    // }
+    pub fn link_marker_to_camera(
+        &mut self,
+        mkr_node_id: BindNodeId,
+        cam_node_id: BindNodeId,
+    ) -> bool {
+        let mkr_node_id = bind_to_core_node_id(mkr_node_id);
+        let cam_node_id = bind_to_core_node_id(cam_node_id);
+        self.inner.link_marker_to_camera(mkr_node_id, cam_node_id)
+    }
 
-    // pub fn link_marker_to_bundle(&mut self, mkr_node_id: NodeId, bnd_node_id: NodeId) -> bool {
-    // }
+    pub fn link_marker_to_bundle(
+        &mut self,
+        mkr_node_id: BindNodeId,
+        bnd_node_id: BindNodeId,
+    ) -> bool {
+        let mkr_node_id = bind_to_core_node_id(mkr_node_id);
+        let bnd_node_id = bind_to_core_node_id(bnd_node_id);
+        self.inner.link_marker_to_bundle(mkr_node_id, bnd_node_id)
+    }
 
     // set_node_parent
     // link_marker_to_camera

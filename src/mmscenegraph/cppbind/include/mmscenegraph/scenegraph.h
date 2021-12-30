@@ -83,6 +83,14 @@ public:
     MMSCENEGRAPH_API_EXPORT
     MarkerNode
     create_marker_node(MarkerAttrIds marker_attrs) noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    bool
+    link_marker_to_camera(NodeId mkr_node_id, NodeId cam_node_id) noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    bool
+    link_marker_to_bundle(NodeId mkr_node_id, NodeId bnd_node_id) noexcept;
     
 private:
     rust::Box<ShimSceneGraph> inner_;

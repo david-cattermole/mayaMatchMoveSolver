@@ -174,6 +174,9 @@ int test_a() {
     // auto out_cam_world_matrix_list = rust::Vec<Matrix44>();
     // auto out_point_list = rust::Vec<mmsg::Point2>();
     // auto out_deviation_list = rust::Vec<mmsg::Point2>();
+    // Create Marker, Bundle and Camera relationships.
+    sg.link_marker_to_camera(mkr_node.id, cam_node.id);
+    sg.link_marker_to_bundle(mkr_node.id, bnd_node.id);
 
     // auto flat_scene = mmsg::bake_scene_graph(
     //         sg,

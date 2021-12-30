@@ -20,6 +20,7 @@
 
 use nalgebra as na;
 
+use mmscenegraph_rust::constant::Matrix44;
 use mmscenegraph_rust::constant::Real;
 use mmscenegraph_rust::constant::DEGREES_TO_RADIANS;
 use mmscenegraph_rust::constant::RADIANS_TO_DEGREES;
@@ -37,7 +38,7 @@ fn main() {
      * RZ = 5.0
      * Rotation Order = XYZ = 0
      */
-    let example_matrix = na::Matrix4::<Real>::new(
+    let example = Matrix44::new(
         0.96225, 0.084186, -0.258819, 0.0, //
         0.120688, 0.720367, 0.683013, 0.0, //
         0.243945, -0.688465, 0.683013, 0.0, //
@@ -93,19 +94,31 @@ fn main() {
         }
         println!("");
 
-        // println!("Compare final_matrix - example_matrix:");
+        // println!("example matrix:");
+        // for j in 0..4 {
+        //     println!(
+        //         "{} {} {} {}",
+        //         example[(j, 0)],
+        //         example[(j, 1)],
+        //         example[(j, 2)],
+        //         example[(j, 3)]
+        //     );
+        // }
+        // println!("");
+
+        // println!("Compare final_matrix - example matrix:");
         let mut sum: Real = 0.0;
         for j in 0..4 {
-            sum += (final_matrix[(j, 0)].abs() - example_matrix[(j, 0)].abs()).abs();
-            sum += (final_matrix[(j, 1)].abs() - example_matrix[(j, 1)].abs()).abs();
-            sum += (final_matrix[(j, 2)].abs() - example_matrix[(j, 2)].abs()).abs();
-            sum += (final_matrix[(j, 3)].abs() - example_matrix[(j, 3)].abs()).abs();
+            sum += (final_matrix[(j, 0)].abs() - example[(j, 0)].abs()).abs();
+            sum += (final_matrix[(j, 1)].abs() - example[(j, 1)].abs()).abs();
+            sum += (final_matrix[(j, 2)].abs() - example[(j, 2)].abs()).abs();
+            sum += (final_matrix[(j, 3)].abs() - example[(j, 3)].abs()).abs();
             println!(
                 "{} {} {} {}",
-                (final_matrix[(j, 0)].abs() - example_matrix[(j, 0)].abs()).abs(),
-                (final_matrix[(j, 1)].abs() - example_matrix[(j, 1)].abs()).abs(),
-                (final_matrix[(j, 2)].abs() - example_matrix[(j, 2)].abs()).abs(),
-                (final_matrix[(j, 3)].abs() - example_matrix[(j, 3)].abs()).abs(),
+                (final_matrix[(j, 0)].abs() - example[(j, 0)].abs()).abs(),
+                (final_matrix[(j, 1)].abs() - example[(j, 1)].abs()).abs(),
+                (final_matrix[(j, 2)].abs() - example[(j, 2)].abs()).abs(),
+                (final_matrix[(j, 3)].abs() - example[(j, 3)].abs()).abs(),
             );
         }
         sum = sum.abs();

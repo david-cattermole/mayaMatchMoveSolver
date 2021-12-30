@@ -53,7 +53,12 @@ pub fn create_static_transform(
     let attr_sz = attrdb.create_attr_static(sz);
     let scale_attrs = (attr_sx, attr_sy, attr_sz);
 
-    sg.create_transform_node(translate_attrs, rotate_attrs, scale_attrs, rotate_order)
+    sg.create_transform_node(
+        translate_attrs,
+        rotate_attrs,
+        scale_attrs,
+        rotate_order,
+    )
 }
 
 pub fn create_static_marker(
@@ -96,7 +101,12 @@ pub fn create_static_bundle(
     let attr_sz = attrdb.create_attr_static(sz);
     let scale_attrs = (attr_sx, attr_sy, attr_sz);
 
-    sg.create_bundle_node(translate_attrs, rotate_attrs, scale_attrs, rotate_order)
+    sg.create_bundle_node(
+        translate_attrs,
+        rotate_attrs,
+        scale_attrs,
+        rotate_order,
+    )
 }
 
 pub fn create_static_camera(

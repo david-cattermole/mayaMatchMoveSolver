@@ -115,7 +115,11 @@ impl FlatScene {
         &self.out_deviation_list
     }
 
-    pub fn evaluate(&mut self, attrdb: &AttrDataBlock, frame_list: &Vec<FrameValue>) {
+    pub fn evaluate(
+        &mut self,
+        attrdb: &AttrDataBlock,
+        frame_list: &Vec<FrameValue>,
+    ) {
         // println!("EVALUATE! =================================================");
         let num_frames = frame_list.len();
         let num_bundles = self.bnd_ids.len();
@@ -159,7 +163,8 @@ impl FlatScene {
                     // println!("Camera node: {:?}", node_id);
                     for f in 0..num_frames {
                         let index_at_frame = (i * num_frames) + f;
-                        let world_matrix = self.out_tfm_world_matrix_list[index_at_frame];
+                        let world_matrix =
+                            self.out_tfm_world_matrix_list[index_at_frame];
                         self.out_cam_world_matrix_list.push(world_matrix);
                     }
                 }
@@ -167,7 +172,8 @@ impl FlatScene {
                     // println!("Bundle node: {:?}", node_id);
                     for f in 0..num_frames {
                         let index_at_frame = (i * num_frames) + f;
-                        let world_matrix = self.out_tfm_world_matrix_list[index_at_frame];
+                        let world_matrix =
+                            self.out_tfm_world_matrix_list[index_at_frame];
                         self.out_bnd_world_matrix_list.push(world_matrix)
                     }
                 }
@@ -177,7 +183,9 @@ impl FlatScene {
         // println!("Bundle Matrix count: {}", self.out_bnd_world_matrix_list.len());
         // println!("Camera Matrix count: {}", self.out_cam_world_matrix_list.len());
 
-        assert!(self.out_cam_world_matrix_list.len() == (num_cameras * num_frames));
+        assert!(
+            self.out_cam_world_matrix_list.len() == (num_cameras * num_frames)
+        );
         self.out_point_list.clear();
         self.out_deviation_list.clear();
         self.out_point_list.reserve(num_markers * num_frames);
@@ -201,8 +209,10 @@ impl FlatScene {
                     let frame = *frame;
                     let cam_index_at_frame = (i * num_frames) + f;
                     let bnd_index_at_frame = (bnd_index * num_frames) + f;
-                    let bnd_matrix = self.out_bnd_world_matrix_list[bnd_index_at_frame];
-                    let cam_tfm_matrix = self.out_cam_world_matrix_list[cam_index_at_frame];
+                    let bnd_matrix =
+                        self.out_bnd_world_matrix_list[bnd_index_at_frame];
+                    let cam_tfm_matrix =
+                        self.out_cam_world_matrix_list[cam_index_at_frame];
                     let cam_proj_matrix = compute_projection_matrix_with_attrs(
                         &attrdb,
                         cam_sensor_width,
@@ -213,8 +223,11 @@ impl FlatScene {
                     // println!("Camera Transform Matrix: {}", cam_tfm_matrix);
                     // println!("Camera Projection Matrix: {}", cam_proj_matrix);
 
-                    let reproj_mat =
-                        reproject_as_normalised_coord(cam_tfm_matrix, cam_proj_matrix, bnd_matrix);
+                    let reproj_mat = reproject_as_normalised_coord(
+                        cam_tfm_matrix,
+                        cam_proj_matrix,
+                        bnd_matrix,
+                    );
                     let point = (reproj_mat[0], reproj_mat[1]);
                     self.out_point_list.push(point);
 

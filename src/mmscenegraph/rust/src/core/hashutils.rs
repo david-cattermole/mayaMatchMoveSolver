@@ -43,20 +43,20 @@ pub fn generate_random_id() -> HashValue {
     rng.gen()
 }
 
- // https://stackoverflow.com/questions/39638363/how-can-i-use-a-hashmap-with-f64-as-key-in-rust
- fn integer_decode_f64(val: f64) -> (u64, i16, i8) {
-     let bits: u64 = unsafe { mem::transmute(val) };
-     let sign: i8 = if bits >> 63 == 0 { 1 } else { -1 };
-     let mut exponent: i16 = ((bits >> 52) & 0x7ff) as i16;
-     let mantissa = if exponent == 0 {
-         (bits & 0xfffffffffffff) << 1
-     } else {
-         (bits & 0xfffffffffffff) | 0x10000000000000
-     };
+// https://stackoverflow.com/questions/39638363/how-can-i-use-a-hashmap-with-f64-as-key-in-rust
+fn integer_decode_f64(val: f64) -> (u64, i16, i8) {
+    let bits: u64 = unsafe { mem::transmute(val) };
+    let sign: i8 = if bits >> 63 == 0 { 1 } else { -1 };
+    let mut exponent: i16 = ((bits >> 52) & 0x7ff) as i16;
+    let mantissa = if exponent == 0 {
+        (bits & 0xfffffffffffff) << 1
+    } else {
+        (bits & 0xfffffffffffff) | 0x10000000000000
+    };
 
-     exponent -= 1023 + 52;
-     (mantissa, exponent, sign)
- }
+    exponent -= 1023 + 52;
+    (mantissa, exponent, sign)
+}
 
 /// Returns the mantissa, exponent and sign as integers.
 fn integer_decode_f32(val: f32) -> (u64, i16, i8) {
@@ -73,14 +73,14 @@ fn integer_decode_f32(val: f32) -> (u64, i16, i8) {
     (mantissa as u64, exponent, sign)
 }
 
- #[derive(Hash, Eq, PartialEq)]
- pub struct HashableF64((u64, i16, i8));
+#[derive(Hash, Eq, PartialEq)]
+pub struct HashableF64((u64, i16, i8));
 
- impl HashableF64 {
-     pub fn new(val: f64) -> HashableF64 {
-         HashableF64(integer_decode_f64(val))
-     }
- }
+impl HashableF64 {
+    pub fn new(val: f64) -> HashableF64 {
+        HashableF64(integer_decode_f64(val))
+    }
+}
 
 #[derive(Hash, Eq, PartialEq)]
 pub struct HashableF32((u64, i16, i8));

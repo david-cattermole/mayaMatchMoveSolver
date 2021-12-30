@@ -62,7 +62,18 @@ pub fn compute_matrix_with_attrs(
     // println!("  rx: {} ry: {} rz: {} roo: {:?}", rx, ry, rz, rotate_order);
     // println!("  sx: {} sy: {} sz: {}", sx, sy, sz);
 
-    calculate_matrix_with_values(tx, ty, tz, rx, ry, rz, sx, sy, sz, rotate_order)
+    calculate_matrix_with_values(
+        tx,
+        ty,
+        tz,
+        rx,
+        ry,
+        rz,
+        sx,
+        sy,
+        sz,
+        rotate_order,
+    )
 }
 
 pub fn compute_matrix<T>(
@@ -250,7 +261,8 @@ pub fn compute_world_matrices_with_attrs(
                 Some(parent_index) => {
                     assert!(parent_index < i);
                     let parent_index_at_frame = (parent_index * num_frames) + f;
-                    let parent_world_matrix = out_matrix_list[parent_index_at_frame];
+                    let parent_world_matrix =
+                        out_matrix_list[parent_index_at_frame];
                     // println!(
                     //     "  parent_world_matrix {} at {}: {}",
                     //     parent_index, f, parent_world_matrix

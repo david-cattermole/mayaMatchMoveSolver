@@ -26,7 +26,13 @@ use crate::math::rotate::euler::EulerAngles;
 use crate::math::rotate::euler::RotateOrder;
 
 #[inline]
-fn three_axis_rotation(r11: Real, r12: Real, r21: Real, r31: Real, r32: Real) -> EulerAngles {
+fn three_axis_rotation(
+    r11: Real,
+    r12: Real,
+    r21: Real,
+    r31: Real,
+    r32: Real,
+) -> EulerAngles {
     EulerAngles {
         x: r11.atan2(r12),
         y: r31.atan2(r32),

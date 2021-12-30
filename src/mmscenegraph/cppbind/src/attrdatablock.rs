@@ -55,12 +55,21 @@ impl ShimAttrDataBlock {
         core_to_bind_attr_id(attr_id)
     }
 
-    pub fn get_attr_value(&self, attr_id: BindAttrId, frame: CoreFrameValue) -> CoreReal {
+    pub fn get_attr_value(
+        &self,
+        attr_id: BindAttrId,
+        frame: CoreFrameValue,
+    ) -> CoreReal {
         let attr_id = bind_to_core_attr_id(attr_id);
         self.inner.get_attr_value(attr_id, frame)
     }
 
-    pub fn set_attr_value(&mut self, attr_id: BindAttrId, frame: CoreFrameValue, value: CoreReal) {
+    pub fn set_attr_value(
+        &mut self,
+        attr_id: BindAttrId,
+        frame: CoreFrameValue,
+        value: CoreReal,
+    ) {
         let attr_id = bind_to_core_attr_id(attr_id);
         self.inner.set_attr_value(attr_id, frame, value)
     }

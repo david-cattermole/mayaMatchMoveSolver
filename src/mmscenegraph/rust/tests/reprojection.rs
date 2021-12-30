@@ -65,7 +65,8 @@ fn single_point() {
 
     // Compute
     let roo_xyz = RotateOrder::XYZ;
-    let camera_transform = Transform::from_txyz_rxyz(tx, ty, tz, rx, ry, rz, roo_xyz);
+    let camera_transform =
+        Transform::from_txyz_rxyz(tx, ty, tz, rx, ry, rz, roo_xyz);
     let camera_transform_matrix = calculate_matrix(&camera_transform);
     let camera_projection_matrix = get_projection_matrix(
         focal_length,
@@ -86,8 +87,11 @@ fn single_point() {
         0.0, 0.0, 1.0, pz, //
         0.0, 0.0, 0.0, 1.0, //
     );
-    let screen_point =
-        reproject_as_normalised_coord(camera_transform_matrix, camera_projection_matrix, point);
+    let screen_point = reproject_as_normalised_coord(
+        camera_transform_matrix,
+        camera_projection_matrix,
+        point,
+    );
 
     assert_relative_eq!(screen_point.x, 0.0865145148481126, epsilon = EPSILON);
     assert_relative_eq!(screen_point.y, 0.0096299819122515, epsilon = EPSILON);
@@ -96,13 +100,15 @@ fn single_point() {
 #[test]
 fn two_bundles_under_group() {
     let roo_xyz = RotateOrder::XYZ;
-    let group_tfm = Transform::from_txyz_rxyz(0.0, 0.0, -10.0, 0.0, 15.0, 0.0, roo_xyz);
+    let group_tfm =
+        Transform::from_txyz_rxyz(0.0, 0.0, -10.0, 0.0, 15.0, 0.0, roo_xyz);
 
     let bundle_a_tfm = Transform::from_txyz(-5.0, 0.0, 0.0);
     let bundle_b_tfm = Transform::from_txyz(5.0, 0.0, 0.0);
 
     let roo_zxy = RotateOrder::ZXY;
-    let camera_transform = Transform::from_txyz_rxyz(0.0, 5.0, 10.0, -10.0, 0.0, 0.0, roo_zxy);
+    let camera_transform =
+        Transform::from_txyz_rxyz(0.0, 5.0, 10.0, -10.0, 0.0, 0.0, roo_zxy);
 
     let focal_length = 35.0;
     let film_back_width = 36.0 / 25.4;
@@ -139,7 +145,8 @@ fn two_bundles_under_group() {
         0.0, 5.0, 10.0, 1.0, //
     )
     .transpose();
-    let eq = camera_transform_matrix.relative_eq(&expected_result, EPSILON, EPSILON);
+    let eq =
+        camera_transform_matrix.relative_eq(&expected_result, EPSILON, EPSILON);
     assert_eq!(eq, true,);
 
     let bundle_a_matrix = multiply(&group_tfm, &bundle_a_tfm);

@@ -42,7 +42,10 @@ use crate::scene::graphiter::UpstreamDepthFirstSearch;
 /// All returned node_indices are required in the hierarchy for the
 /// given node_ids. For example all parents will be present in the
 /// returned indices.
-fn upstream_node_indices_set(sg: &SceneGraph, node_ids: &Vec<NodeId>) -> HashSet<PGNodeIndex> {
+fn upstream_node_indices_set(
+    sg: &SceneGraph,
+    node_ids: &Vec<NodeId>,
+) -> HashSet<PGNodeIndex> {
     let graph = &sg.get_graph();
     let mut node_indices_set = HashSet::new();
     for node_id in node_ids {
@@ -103,7 +106,10 @@ fn flatten_filter_and_sort_graph_nodes(
 }
 
 /// Get the parent index for each node index given.
-fn get_parent_index_list(sg: &SceneGraph, node_indices: &Vec<PGNodeIndex>) -> Vec<Option<usize>> {
+fn get_parent_index_list(
+    sg: &SceneGraph,
+    node_indices: &Vec<PGNodeIndex>,
+) -> Vec<Option<usize>> {
     let mut list = Vec::<Option<usize>>::new();
     let dir = PGDirection::Incoming;
     let graph = &sg.get_graph();
@@ -264,7 +270,8 @@ where
     let mut mkr_bnd_indices = Vec::new();
     mkr_bnd_indices.reserve(mkr_ids.len());
     for mkr_id in &mkr_ids {
-        let bnd_id = sg.get_bundle_node_id_from_marker_node_id(*mkr_id).unwrap();
+        let bnd_id =
+            sg.get_bundle_node_id_from_marker_node_id(*mkr_id).unwrap();
         for (bnd_index, bnd_node_id) in (0..).zip(bnd_ids.iter()) {
             if *bnd_node_id == bnd_id {
                 mkr_bnd_indices.push(bnd_index);
@@ -277,7 +284,8 @@ where
     let mut mkr_cam_indices = Vec::new();
     mkr_cam_indices.reserve(mkr_ids.len());
     for mkr_id in &mkr_ids {
-        let cam_id = sg.get_camera_node_id_from_marker_node_id(*mkr_id).unwrap();
+        let cam_id =
+            sg.get_camera_node_id_from_marker_node_id(*mkr_id).unwrap();
         for (cam_index, cam_node_id) in (0..).zip(cam_ids.iter()) {
             if *cam_node_id == cam_id {
                 mkr_cam_indices.push(cam_index);

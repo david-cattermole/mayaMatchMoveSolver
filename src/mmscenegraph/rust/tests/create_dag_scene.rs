@@ -244,7 +244,8 @@ fn evaluate_scene() {
     bnd_nodes.push(Box::new(cam_0));
     bnd_nodes.push(Box::new(cam_1));
 
-    let mut flat_scene = bake_scene_graph(&sg, &bnd_nodes, &cam_nodes, &mkr_nodes);
+    let mut flat_scene =
+        bake_scene_graph(&sg, &bnd_nodes, &cam_nodes, &mkr_nodes);
 
     let mut frame_list = Vec::new();
     frame_list.push(1001);
@@ -263,7 +264,9 @@ fn evaluate_scene() {
     let out_deviation_list = flat_scene.deviation_list();
     println!("2D Points (reprojected) count: {}", out_point_list.len());
     println!("Deviation count: {}", out_deviation_list.len());
-    for (i, (point, dev)) in (0..).zip(out_point_list.iter().zip(out_deviation_list)) {
+    for (i, (point, dev)) in
+        (0..).zip(out_point_list.iter().zip(out_deviation_list))
+    {
         println!("2D Point {}: pos: {:?} dev: {:?}", i, point, dev);
     }
 }

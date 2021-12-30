@@ -222,14 +222,17 @@ pub mod ffi {
     //     y: f64,
     // }
 
-    // AttrDataBlock (Rust)
     extern "Rust" {
         type ShimAttrDataBlock;
 
         fn clear(&mut self);
 
         fn create_attr_static(&mut self, value: f64) -> AttrId;
-        fn create_attr_anim_dense(&mut self, values: Vec<f64>, frame_start: u32) -> AttrId;
+        fn create_attr_anim_dense(
+            &mut self,
+            values: Vec<f64>,
+            frame_start: u32,
+        ) -> AttrId;
 
         fn get_attr_value(&self, attr_id: AttrId, frame: u32) -> f64;
         fn set_attr_value(&mut self, attr_id: AttrId, frame: u32, value: f64);
@@ -237,7 +240,6 @@ pub mod ffi {
         fn shim_create_attr_data_block_box() -> Box<ShimAttrDataBlock>;
     }
 
-    // SceneGraph (Rust)
     extern "Rust" {
         type ShimSceneGraph;
 
@@ -270,10 +272,21 @@ pub mod ffi {
             camera_attrs: CameraAttrIds,
             rotate_order: RotateOrder,
         ) -> CameraNode;
-        fn create_marker_node(&mut self, marker_attrs: MarkerAttrIds) -> MarkerNode;
+        fn create_marker_node(
+            &mut self,
+            marker_attrs: MarkerAttrIds,
+        ) -> MarkerNode;
 
-        fn link_marker_to_camera(&mut self, mkr_node_id: NodeId, cam_node_id: NodeId) -> bool;
-        fn link_marker_to_bundle(&mut self, mkr_node_id: NodeId, bnd_node_id: NodeId) -> bool;
+        fn link_marker_to_camera(
+            &mut self,
+            mkr_node_id: NodeId,
+            cam_node_id: NodeId,
+        ) -> bool;
+        fn link_marker_to_bundle(
+            &mut self,
+            mkr_node_id: NodeId,
+            bnd_node_id: NodeId,
+        ) -> bool;
 
         fn shim_create_scene_graph_box() -> Box<ShimSceneGraph>;
     }

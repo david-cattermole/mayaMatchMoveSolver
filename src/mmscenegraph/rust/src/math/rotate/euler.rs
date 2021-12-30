@@ -178,7 +178,9 @@ pub fn euler_from_matrix3(matrix: Matrix33, order: u8) -> EulerAngles {
     );
 
     if s == EULER_REP_YES {
-        let sy: Real = (matrix[(i, j)] * matrix[(i, j)] + matrix[(i, k)] * matrix[(i, k)]).sqrt();
+        let sy: Real = (matrix[(i, j)] * matrix[(i, j)]
+            + matrix[(i, k)] * matrix[(i, k)])
+            .sqrt();
         if sy > (16.0 * Real::EPSILON) {
             ea.x = matrix[(i, j)].atan2(matrix[(i, k)]);
             ea.y = sy.atan2(matrix[(i, i)]);
@@ -189,7 +191,9 @@ pub fn euler_from_matrix3(matrix: Matrix33, order: u8) -> EulerAngles {
             ea.z = 0.0;
         }
     } else {
-        let cy: Real = (matrix[(i, i)] * matrix[(i, i)] + matrix[(j, i)] * matrix[(j, i)]).sqrt();
+        let cy: Real = (matrix[(i, i)] * matrix[(i, i)]
+            + matrix[(j, i)] * matrix[(j, i)])
+            .sqrt();
         if cy > (16.0 * Real::EPSILON) {
             ea.x = matrix[(k, j)].atan2(matrix[(k, k)]);
             ea.y = (-matrix[(k, i)]).atan2(cy);

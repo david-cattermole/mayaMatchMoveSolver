@@ -231,25 +231,37 @@ impl SceneGraph {
         node
     }
 
-    pub fn link_marker_to_camera(&mut self, mkr_node_id: NodeId, cam_node_id: NodeId) -> bool {
+    pub fn link_marker_to_camera(
+        &mut self,
+        mkr_node_id: NodeId,
+        cam_node_id: NodeId,
+    ) -> bool {
         let mkr_index = match mkr_node_id {
             NodeId::Marker(index) => index,
             _ => return false,
         };
         match cam_node_id {
-            NodeId::Camera(_) => self.mkr_to_cam_node_ids[mkr_index] = cam_node_id,
+            NodeId::Camera(_) => {
+                self.mkr_to_cam_node_ids[mkr_index] = cam_node_id
+            }
             _ => return false,
         };
         return true;
     }
 
-    pub fn link_marker_to_bundle(&mut self, mkr_node_id: NodeId, bnd_node_id: NodeId) -> bool {
+    pub fn link_marker_to_bundle(
+        &mut self,
+        mkr_node_id: NodeId,
+        bnd_node_id: NodeId,
+    ) -> bool {
         let mkr_index = match mkr_node_id {
             NodeId::Marker(index) => index,
             _ => return false,
         };
         match bnd_node_id {
-            NodeId::Bundle(_) => self.mkr_to_bnd_node_ids[mkr_index] = bnd_node_id,
+            NodeId::Bundle(_) => {
+                self.mkr_to_bnd_node_ids[mkr_index] = bnd_node_id
+            }
             _ => return false,
         };
         return true;
@@ -283,21 +295,30 @@ impl SceneGraph {
         }
     }
 
-    pub fn get_camera_node_id_from_marker_node_id(&self, node_id: NodeId) -> Option<NodeId> {
+    pub fn get_camera_node_id_from_marker_node_id(
+        &self,
+        node_id: NodeId,
+    ) -> Option<NodeId> {
         match node_id {
             NodeId::Marker(index) => Some(self.mkr_to_cam_node_ids[index]),
             _ => None,
         }
     }
 
-    pub fn get_bundle_node_id_from_marker_node_id(&self, node_id: NodeId) -> Option<NodeId> {
+    pub fn get_bundle_node_id_from_marker_node_id(
+        &self,
+        node_id: NodeId,
+    ) -> Option<NodeId> {
         match node_id {
             NodeId::Marker(index) => Some(self.mkr_to_bnd_node_ids[index]),
             _ => None,
         }
     }
 
-    pub fn get_node_index_from_node_id(&self, node_id: NodeId) -> Option<PGNodeIndex> {
+    pub fn get_node_index_from_node_id(
+        &self,
+        node_id: NodeId,
+    ) -> Option<PGNodeIndex> {
         match node_id {
             NodeId::Transform(index) => Some(self.tfm_indices[index]),
             NodeId::Camera(index) => Some(self.cam_indices[index]),
@@ -355,7 +376,11 @@ impl SceneGraph {
     }
 
     /// Set the parent of child_node_id to parent_node_id.
-    pub fn set_node_parent(&mut self, child_node_id: NodeId, parent_node_id: NodeId) -> bool {
+    pub fn set_node_parent(
+        &mut self,
+        child_node_id: NodeId,
+        parent_node_id: NodeId,
+    ) -> bool {
         let node_index = self.get_graph_node_index(child_node_id);
         if node_index == None {
             return false;

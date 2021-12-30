@@ -52,7 +52,11 @@ impl AttrDataBlock {
         AttrId::Static(index)
     }
 
-    pub fn create_attr_anim_dense(&mut self, values: Vec<Real>, frame_start: FrameValue) -> AttrId {
+    pub fn create_attr_anim_dense(
+        &mut self,
+        values: Vec<Real>,
+        frame_start: FrameValue,
+    ) -> AttrId {
         let mut attr = AnimDenseAttr::new();
         attr.set_values(values);
         attr.frame_start = frame_start;
@@ -64,15 +68,24 @@ impl AttrDataBlock {
     pub fn get_attr_value(&self, attr_id: AttrId, frame: FrameValue) -> Real {
         match attr_id {
             AttrId::Static(index) => self.static_attrs[index].get_value(),
-            AttrId::AnimDense(index) => self.anim_dense_attrs[index].get_value(frame),
+            AttrId::AnimDense(index) => {
+                self.anim_dense_attrs[index].get_value(frame)
+            }
             AttrId::None => 0.0,
         }
     }
 
-    pub fn set_attr_value(&mut self, attr_id: AttrId, frame: FrameValue, value: Real) {
+    pub fn set_attr_value(
+        &mut self,
+        attr_id: AttrId,
+        frame: FrameValue,
+        value: Real,
+    ) {
         match attr_id {
             AttrId::Static(index) => self.static_attrs[index].set_value(value),
-            AttrId::AnimDense(index) => self.anim_dense_attrs[index].set_value(frame, value),
+            AttrId::AnimDense(index) => {
+                self.anim_dense_attrs[index].set_value(frame, value)
+            }
             AttrId::None => (),
         }
     }

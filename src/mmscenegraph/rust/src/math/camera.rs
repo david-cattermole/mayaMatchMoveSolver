@@ -101,25 +101,39 @@ mod tests {
             0.0, 0.0, 0.200002, 0.0, //
         )
         .transpose();
-        let eq = camera_projection_matrix.relative_eq(&expected_result, EPSILON, EPSILON);
+        let eq = camera_projection_matrix.relative_eq(
+            &expected_result,
+            EPSILON,
+            EPSILON,
+        );
         assert_eq!(eq, true);
     }
 }
 
 #[inline]
-pub fn get_angle_of_view_as_radian(film_back_size: Real, focal_length: Real) -> Real {
+pub fn get_angle_of_view_as_radian(
+    film_back_size: Real,
+    focal_length: Real,
+) -> Real {
     println!("Get Angle of View as radian");
     let angle_of_view = film_back_size * (0.5 / focal_length);
     2.0 * angle_of_view.atan()
 }
 
 #[inline]
-pub fn get_angle_of_view_as_degree(film_back_size: Real, focal_length: Real) -> Real {
-    get_angle_of_view_as_radian(film_back_size, focal_length) * RADIANS_TO_DEGREES
+pub fn get_angle_of_view_as_degree(
+    film_back_size: Real,
+    focal_length: Real,
+) -> Real {
+    get_angle_of_view_as_radian(film_back_size, focal_length)
+        * RADIANS_TO_DEGREES
 }
 
 #[inline]
-pub fn get_camera_plane_scale(film_back_size: Real, focal_length: Real) -> Real {
+pub fn get_camera_plane_scale(
+    film_back_size: Real,
+    focal_length: Real,
+) -> Real {
     let aov = get_angle_of_view_as_degree(film_back_size, focal_length);
     let scale = aov * 0.5 * DEGREES_TO_RADIANS;
     scale.tan()
@@ -196,8 +210,9 @@ pub fn apply_film_fit_logic(
             } else {
                 film_fit_scale.y = image_aspect_ratio / film_aspect_ratio;
                 screen.size_x = frustum.right - frustum.left;
-                screen.size_y =
-                    (screen.size_x * (film_aspect_ratio / image_aspect_ratio)) / film_aspect_ratio;
+                screen.size_y = (screen.size_x
+                    * (film_aspect_ratio / image_aspect_ratio))
+                    / film_aspect_ratio;
             }
         }
         3 => {
@@ -205,11 +220,12 @@ pub fn apply_film_fit_logic(
             if film_aspect_ratio > image_aspect_ratio {
                 film_fit_scale.y = image_aspect_ratio / film_aspect_ratio;
                 screen.size_x = frustum.right - frustum.left;
-                screen.size_y = (frustum.right - frustum.left) / image_aspect_ratio;
+                screen.size_y =
+                    (frustum.right - frustum.left) / image_aspect_ratio;
             } else {
                 film_fit_scale.x = film_aspect_ratio / image_aspect_ratio;
-                screen.size_x =
-                    (frustum.right - frustum.left) * (image_aspect_ratio / film_aspect_ratio);
+                screen.size_x = (frustum.right - frustum.left)
+                    * (image_aspect_ratio / film_aspect_ratio);
                 screen.size_y = frustum.top - frustum.bottom;
             }
         }
@@ -243,10 +259,13 @@ pub fn compute_projection_matrix(
         0.0,
         0.0,
         // Third Row
-        (screen.right + screen.left) / (screen.right - screen.left) * film_fit_scale.x,
-        (screen.top + screen.bottom) / (screen.top - screen.bottom) * film_fit_scale.y,
+        (screen.right + screen.left) / (screen.right - screen.left)
+            * film_fit_scale.x,
+        (screen.top + screen.bottom) / (screen.top - screen.bottom)
+            * film_fit_scale.y,
         (far_clip_plane + near_clip_plane) / (far_clip_plane - near_clip_plane),
-        2.0 * far_clip_plane * near_clip_plane / (far_clip_plane - near_clip_plane),
+        2.0 * far_clip_plane * near_clip_plane
+            / (far_clip_plane - near_clip_plane),
         // Forth Row
         0.0,
         0.0,
@@ -282,8 +301,12 @@ pub fn get_projection_matrix(
     );
 
     // Apply 'Film Fit'
-    let (film_fit_scale, screen) =
-        apply_film_fit_logic(frustum, image_aspect_ratio, film_aspect_ratio, film_fit);
+    let (film_fit_scale, screen) = apply_film_fit_logic(
+        frustum,
+        image_aspect_ratio,
+        film_aspect_ratio,
+        film_fit,
+    );
 
     // Projection Matrix
     compute_projection_matrix(

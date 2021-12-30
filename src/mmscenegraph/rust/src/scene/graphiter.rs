@@ -62,7 +62,9 @@ where
         if let Some((node, depth)) = self.stack.pop_front() {
             let mut edges: Vec<_> = graph
                 .edges_directed(node, dir)
-                .map(|e_ref| (e_ref.id(), graph.edge_weight(e_ref.id()), e_ref.source()))
+                .map(|e_ref| {
+                    (e_ref.id(), graph.edge_weight(e_ref.id()), e_ref.source())
+                })
                 .collect();
             edges.sort_unstable_by_key(|ewn| ewn.1);
 

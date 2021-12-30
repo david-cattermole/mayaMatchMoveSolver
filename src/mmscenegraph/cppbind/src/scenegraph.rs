@@ -65,7 +65,8 @@ impl ShimSceneGraph {
         scale_attrs: BindScale3DAttrIds,
         rotate_order: BindRotateOrder,
     ) -> BindTransformNode {
-        let translate_attrs = bind_to_core_translate_3d_attr_ids(translate_attrs);
+        let translate_attrs =
+            bind_to_core_translate_3d_attr_ids(translate_attrs);
         let rotate_attrs = bind_to_core_rotate_3d_attr_ids(rotate_attrs);
         let scale_attrs = bind_to_core_scale_3d_attr_ids(scale_attrs);
 
@@ -86,7 +87,8 @@ impl ShimSceneGraph {
         scale_attrs: BindScale3DAttrIds,
         rotate_order: BindRotateOrder,
     ) -> BindBundleNode {
-        let translate_attrs = bind_to_core_translate_3d_attr_ids(translate_attrs);
+        let translate_attrs =
+            bind_to_core_translate_3d_attr_ids(translate_attrs);
         let rotate_attrs = bind_to_core_rotate_3d_attr_ids(rotate_attrs);
         let scale_attrs = bind_to_core_scale_3d_attr_ids(scale_attrs);
 
@@ -108,7 +110,8 @@ impl ShimSceneGraph {
         camera_attrs: BindCameraAttrIds,
         rotate_order: BindRotateOrder,
     ) -> BindCameraNode {
-        let translate_attrs = bind_to_core_translate_3d_attr_ids(translate_attrs);
+        let translate_attrs =
+            bind_to_core_translate_3d_attr_ids(translate_attrs);
         let rotate_attrs = bind_to_core_rotate_3d_attr_ids(rotate_attrs);
         let scale_attrs = bind_to_core_scale_3d_attr_ids(scale_attrs);
         let (sensor_width_attr, sensor_height_attr, focal_length_attr) =
@@ -127,8 +130,12 @@ impl ShimSceneGraph {
         core_to_bind_camera_node(core_node)
     }
 
-    pub fn create_marker_node(&mut self, marker_attrs: BindMarkerAttrIds) -> BindMarkerNode {
-        let (tx_attr, ty_attr, weight_attr) = bind_to_core_marker_attr_ids(marker_attrs);
+    pub fn create_marker_node(
+        &mut self,
+        marker_attrs: BindMarkerAttrIds,
+    ) -> BindMarkerNode {
+        let (tx_attr, ty_attr, weight_attr) =
+            bind_to_core_marker_attr_ids(marker_attrs);
 
         let core_node = self
             .inner
@@ -158,8 +165,6 @@ impl ShimSceneGraph {
     }
 
     // set_node_parent
-    // link_marker_to_camera
-    // link_marker_to_bundle
 
     pub fn num_transform_nodes(&self) -> usize {
         self.inner.num_transform_nodes()

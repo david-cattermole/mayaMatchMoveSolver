@@ -31,12 +31,14 @@ pub fn reproject(
     point: Matrix44,
 ) -> Matrix14 {
     // Camera World Projection Matrix
-    let camera_projection_matrix_inv = match camera_projection_matrix.try_inverse() {
-        Some(x) => x,
-        None => Matrix44::new_scaling(1.0),
-    };
+    let camera_projection_matrix_inv =
+        match camera_projection_matrix.try_inverse() {
+            Some(x) => x,
+            None => Matrix44::new_scaling(1.0),
+        };
 
-    let camera_world_proj_matrix = camera_transform_matrix * camera_projection_matrix_inv;
+    let camera_world_proj_matrix =
+        camera_transform_matrix * camera_projection_matrix_inv;
 
     // Convert to screen-space Homogeneous coordinates
     let screen_point = camera_world_proj_matrix * point;
@@ -55,6 +57,7 @@ pub fn reproject_as_normalised_coord(
     camera_transform_matrix: Matrix44,
     point: Matrix44,
 ) -> Matrix14 {
-    let screen_point = reproject(camera_projection_matrix, camera_transform_matrix, point);
+    let screen_point =
+        reproject(camera_projection_matrix, camera_transform_matrix, point);
     Matrix14::new(screen_point.x * 0.5, screen_point.y * 0.5, 0.0, 1.0)
 }

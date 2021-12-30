@@ -230,7 +230,12 @@ impl Transform {
         }
     }
 
-    pub fn from_rxyz(rx: Real, ry: Real, rz: Real, roo: RotateOrder) -> Transform {
+    pub fn from_rxyz(
+        rx: Real,
+        ry: Real,
+        rz: Real,
+        roo: RotateOrder,
+    ) -> Transform {
         Transform {
             sx: 1.0,
             sy: 1.0,
@@ -553,15 +558,20 @@ mod tests {
             println!("rx: {} ry: {} rz: {}", rx, ry, rz);
             println!("sx: {} sy: {} sz: {}", sx, sy, sz);
             println!("rotate order: {:?}", roo);
-            let matrix = calculate_matrix_with_values(tx, ty, tz, rx, ry, rz, sx, sy, sz, roo);
+            let matrix = calculate_matrix_with_values(
+                tx, ty, tz, rx, ry, rz, sx, sy, sz, roo,
+            );
             println!("matrix: {}", matrix);
 
-            let (wtx, wty, wtz, wrx, wry, wrz, wsx, wsy, wsz) = decompose_matrix(matrix, roo);
+
+            let (wtx, wty, wtz, wrx, wry, wrz, wsx, wsy, wsz) =
+                decompose_matrix(matrix, roo);
             println!("wtx: {} wty: {} wtz: {}", wtx, wty, wtz);
             println!("wrx: {} wry: {} wrz: {}", wrx, wry, wrz);
             println!("wsx: {} wsy: {} wsz: {}", wsx, wsy, wsz);
-            let new_matrix =
-                calculate_matrix_with_values(wtx, wty, wtz, wrx, wry, wrz, wsx, wsy, wsz, roo);
+            let new_matrix = calculate_matrix_with_values(
+                wtx, wty, wtz, wrx, wry, wrz, wsx, wsy, wsz, roo,
+            );
             println!("new_matrix: {}", new_matrix);
 
             // Translate

@@ -89,8 +89,8 @@ fn single_point() {
     let screen_point =
         reproject_as_normalised_coord(camera_transform_matrix, camera_projection_matrix, point);
 
-    assert_relative_eq!(screen_point.x, 0.5865145148481126, epsilon = EPSILON);
-    assert_relative_eq!(screen_point.y, 0.5096299819122515, epsilon = EPSILON);
+    assert_relative_eq!(screen_point.x, 0.0865145148481126, epsilon = EPSILON);
+    assert_relative_eq!(screen_point.y, 0.0096299819122515, epsilon = EPSILON);
 }
 
 #[test]
@@ -180,9 +180,9 @@ fn two_bundles_under_group() {
     );
     println!("Screen-Point B: {}", screen_point_b);
 
-    assert_relative_eq!(screen_point_a.x, 0.256584, epsilon = EPSILON);
-    assert_relative_eq!(screen_point_a.y, 0.388833, epsilon = EPSILON);
+    assert_relative_eq!(screen_point_a.x, -0.243416, epsilon = EPSILON);
+    assert_relative_eq!(screen_point_a.y, -0.111167, epsilon = EPSILON);
 
-    assert_relative_eq!(screen_point_b.x, 0.715006, epsilon = EPSILON);
-    assert_relative_eq!(screen_point_b.y, 0.428142, epsilon = EPSILON);
+    assert_relative_eq!(screen_point_b.x, 0.2150060, epsilon = EPSILON);
+    assert_relative_eq!(screen_point_b.y, -0.071858, epsilon = EPSILON);
 }

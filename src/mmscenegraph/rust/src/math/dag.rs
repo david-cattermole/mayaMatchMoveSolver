@@ -204,7 +204,7 @@ pub fn compute_world_matrices_with_attrs(
     tfm_attr_list: &Vec<AttrTransformIds>,
     rotate_order_list: &Vec<RotateOrder>,
     transform_parents: &Vec<Option<usize>>,
-    frame_list: &Vec<FrameValue>,
+    frame_list: &[FrameValue],
     out_matrix_list: &mut Vec<Matrix44>,
 ) {
     // println!("Compute World Matrices!");

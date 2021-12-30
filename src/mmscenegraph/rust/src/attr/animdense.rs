@@ -52,7 +52,7 @@ impl AnimDenseAttr {
         self.values[f] = value;
     }
 
-    pub fn get_values(&self) -> &Vec<Real> {
+    pub fn get_values(&self) -> &[Real] {
         &self.values
     }
 

@@ -44,7 +44,7 @@ use crate::scene::graphiter::UpstreamDepthFirstSearch;
 /// returned indices.
 fn upstream_node_indices_set(
     sg: &SceneGraph,
-    node_ids: &Vec<NodeId>,
+    node_ids: &[NodeId],
 ) -> HashSet<PGNodeIndex> {
     let graph = &sg.get_graph();
     let mut node_indices_set = HashSet::new();
@@ -108,7 +108,7 @@ fn flatten_filter_and_sort_graph_nodes(
 /// Get the parent index for each node index given.
 fn get_parent_index_list(
     sg: &SceneGraph,
-    node_indices: &Vec<PGNodeIndex>,
+    node_indices: &[PGNodeIndex],
 ) -> Vec<Option<usize>> {
     let mut list = Vec::<Option<usize>>::new();
     let dir = PGDirection::Incoming;

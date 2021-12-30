@@ -118,7 +118,7 @@ impl FlatScene {
     pub fn evaluate(
         &mut self,
         attrdb: &AttrDataBlock,
-        frame_list: &Vec<FrameValue>,
+        frame_list: &[FrameValue],
     ) {
         // println!("EVALUATE! =================================================");
         let num_frames = frame_list.len();

@@ -336,7 +336,7 @@ impl SceneGraph {
 
     pub fn get_transformable_nodes(
         &self,
-        node_ids: &Vec<NodeId>,
+        node_ids: &[NodeId],
     ) -> Option<Vec<Box<dyn NodeCanTransform3D>>> {
         let mut nodes = Vec::<Box<dyn NodeCanTransform3D>>::new();
         for node_id in node_ids {
@@ -400,7 +400,7 @@ impl SceneGraph {
     /// Set all the child_node_ids to have the same parent_node_id
     pub fn set_nodes_parent(
         &mut self,
-        child_node_ids: Vec<NodeId>,
+        child_node_ids: &[NodeId],
         parent_node_id: NodeId,
     ) -> bool {
         let node_indices: Vec<PGNodeIndex> = child_node_ids

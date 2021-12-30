@@ -286,27 +286,24 @@ where
         }
     }
 
-    FlatScene {
+    FlatScene::new(
         // Node ids.
         bnd_ids,
         cam_ids,
         mkr_ids,
-
         // Marker to camera and marker to bundle relationships.
         mkr_cam_indices,
         mkr_bnd_indices,
-
         // Attributes.
         tfm_attr_list,
         rotate_order_list,
         cam_attr_list,
         mkr_attr_list,
-
         // Transform hierarchy struture and metadata.
         tfm_node_ids,
         tfm_node_indices,
         tfm_node_parent_indices,
-    }
+    )
 }
 
 // #[cfg(test)]

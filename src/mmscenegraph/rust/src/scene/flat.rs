@@ -52,22 +52,70 @@ pub struct FlatScene {
     pub mkr_attr_list: Vec<AttrMarkerIds>,
 
     // The transform metadata for the nodes.
-    pub tfm_node_parent_indices: Vec<Option<usize>>,
     pub tfm_node_ids: Vec<NodeId>,
     pub tfm_node_indices: Vec<PGNodeIndex>,
+    pub tfm_node_parent_indices: Vec<Option<usize>>,
+
+    // The computed data is stored here for access by the user.
+    out_tfm_world_matrix_list: Vec<Matrix44>,
+    out_bnd_world_matrix_list: Vec<Matrix44>,
+    out_cam_world_matrix_list: Vec<Matrix44>,
+    out_point_list: Vec<(Real, Real)>,
+    out_deviation_list: Vec<(Real, Real)>,
 }
 
 impl FlatScene {
-    pub fn evaluate(
-        &self,
-        attrdb: &AttrDataBlock,
-        frame_list: &Vec<FrameValue>,
-        out_tfm_world_matrix_list: &mut Vec<Matrix44>,
-        out_bnd_world_matrix_list: &mut Vec<Matrix44>,
-        out_cam_world_matrix_list: &mut Vec<Matrix44>,
-        out_point_list: &mut Vec<(Real, Real)>,
-        out_deviation_list: &mut Vec<(Real, Real)>,
-    ) {
+    pub fn new(
+        bnd_ids: Vec<NodeId>,
+        cam_ids: Vec<NodeId>,
+        mkr_ids: Vec<NodeId>,
+
+        mkr_cam_indices: Vec<usize>,
+        mkr_bnd_indices: Vec<usize>,
+
+        tfm_attr_list: Vec<AttrTransformIds>,
+        rotate_order_list: Vec<RotateOrder>,
+        cam_attr_list: Vec<AttrCameraIds>,
+        mkr_attr_list: Vec<AttrMarkerIds>,
+
+        tfm_node_ids: Vec<NodeId>,
+        tfm_node_indices: Vec<PGNodeIndex>,
+        tfm_node_parent_indices: Vec<Option<usize>>,
+    ) -> Self {
+        Self {
+            bnd_ids,
+            cam_ids,
+            mkr_ids,
+
+            mkr_cam_indices,
+            mkr_bnd_indices,
+
+            tfm_attr_list,
+            rotate_order_list,
+            cam_attr_list,
+            mkr_attr_list,
+
+            tfm_node_ids,
+            tfm_node_indices,
+            tfm_node_parent_indices,
+
+            out_tfm_world_matrix_list: Vec::new(),
+            out_bnd_world_matrix_list: Vec::new(),
+            out_cam_world_matrix_list: Vec::new(),
+            out_point_list: Vec::new(),
+            out_deviation_list: Vec::new(),
+        }
+    }
+
+    pub fn point_list(&self) -> &Vec<(Real, Real)> {
+        &self.out_point_list
+    }
+
+    pub fn deviation_list(&self) -> &Vec<(Real, Real)> {
+        &self.out_deviation_list
+    }
+
+    pub fn evaluate(&mut self, attrdb: &AttrDataBlock, frame_list: &Vec<FrameValue>) {
         // println!("EVALUATE! =================================================");
         let num_frames = frame_list.len();
         let num_bundles = self.bnd_ids.len();
@@ -84,12 +132,15 @@ impl FlatScene {
         assert!(num_markers > 0);
         assert!(num_transforms > 0);
 
-        out_tfm_world_matrix_list.clear();
-        out_bnd_world_matrix_list.clear();
-        out_cam_world_matrix_list.clear();
-        out_tfm_world_matrix_list.reserve(num_transforms * num_frames);
-        out_bnd_world_matrix_list.reserve(num_bundles * num_frames);
-        out_cam_world_matrix_list.reserve(num_cameras * num_frames);
+        self.out_tfm_world_matrix_list.clear();
+        self.out_bnd_world_matrix_list.clear();
+        self.out_cam_world_matrix_list.clear();
+        self.out_tfm_world_matrix_list
+            .reserve(num_transforms * num_frames);
+        self.out_bnd_world_matrix_list
+            .reserve(num_bundles * num_frames);
+        self.out_cam_world_matrix_list
+            .reserve(num_cameras * num_frames);
 
         compute_world_matrices_with_attrs(
             &attrdb,
@@ -97,10 +148,10 @@ impl FlatScene {
             &self.rotate_order_list,
             &self.tfm_node_parent_indices,
             frame_list,
-            out_tfm_world_matrix_list,
+            &mut self.out_tfm_world_matrix_list,
         );
-        // println!("World Matrix count: {}", out_tfm_world_matrix_list.len());
-        // println!("World Matrix: {:#?}", out_tfm_world_matrix_list);
+        // println!("World Matrix count: {}", self.out_tfm_world_matrix_list.len());
+        // println!("World Matrix: {:#?}", self.out_tfm_world_matrix_list);
 
         for (i, node_id) in (0..).zip(self.tfm_node_ids.iter()) {
             match node_id {
@@ -108,29 +159,29 @@ impl FlatScene {
                     // println!("Camera node: {:?}", node_id);
                     for f in 0..num_frames {
                         let index_at_frame = (i * num_frames) + f;
-                        let world_matrix = out_tfm_world_matrix_list[index_at_frame];
-                        out_cam_world_matrix_list.push(world_matrix);
+                        let world_matrix = self.out_tfm_world_matrix_list[index_at_frame];
+                        self.out_cam_world_matrix_list.push(world_matrix);
                     }
                 }
                 NodeId::Bundle(_) => {
                     // println!("Bundle node: {:?}", node_id);
                     for f in 0..num_frames {
                         let index_at_frame = (i * num_frames) + f;
-                        let world_matrix = out_tfm_world_matrix_list[index_at_frame];
-                        out_bnd_world_matrix_list.push(world_matrix)
+                        let world_matrix = self.out_tfm_world_matrix_list[index_at_frame];
+                        self.out_bnd_world_matrix_list.push(world_matrix)
                     }
                 }
                 _ => (),
             }
         }
-        // println!("Bundle Matrix count: {}", out_bnd_world_matrix_list.len());
-        // println!("Camera Matrix count: {}", out_cam_world_matrix_list.len());
+        // println!("Bundle Matrix count: {}", self.out_bnd_world_matrix_list.len());
+        // println!("Camera Matrix count: {}", self.out_cam_world_matrix_list.len());
 
-        assert!(out_cam_world_matrix_list.len() == (num_cameras * num_frames));
-        out_point_list.clear();
-        out_deviation_list.clear();
-        out_point_list.reserve(num_markers * num_frames);
-        out_deviation_list.reserve(num_markers * num_frames);
+        assert!(self.out_cam_world_matrix_list.len() == (num_cameras * num_frames));
+        self.out_point_list.clear();
+        self.out_deviation_list.clear();
+        self.out_point_list.reserve(num_markers * num_frames);
+        self.out_deviation_list.reserve(num_markers * num_frames);
 
         let cam_attrs_iter = (0..).zip(self.cam_attr_list.iter());
         for (i, cam_attrs) in cam_attrs_iter {
@@ -150,8 +201,8 @@ impl FlatScene {
                     let frame = *frame;
                     let cam_index_at_frame = (i * num_frames) + f;
                     let bnd_index_at_frame = (bnd_index * num_frames) + f;
-                    let bnd_matrix = out_bnd_world_matrix_list[bnd_index_at_frame];
-                    let cam_tfm_matrix = out_cam_world_matrix_list[cam_index_at_frame];
+                    let bnd_matrix = self.out_bnd_world_matrix_list[bnd_index_at_frame];
+                    let cam_tfm_matrix = self.out_cam_world_matrix_list[cam_index_at_frame];
                     let cam_proj_matrix = compute_projection_matrix_with_attrs(
                         &attrdb,
                         cam_sensor_width,
@@ -165,7 +216,7 @@ impl FlatScene {
                     let reproj_mat =
                         reproject_as_normalised_coord(cam_tfm_matrix, cam_proj_matrix, bnd_matrix);
                     let point = (reproj_mat[0], reproj_mat[1]);
-                    out_point_list.push(point);
+                    self.out_point_list.push(point);
 
                     let mkr_tx = attrdb.get_attr_value(mkr_attrs.tx, frame);
                     let mkr_ty = attrdb.get_attr_value(mkr_attrs.ty, frame);
@@ -175,7 +226,7 @@ impl FlatScene {
 
                     let dev_x = (mkr_tx - reproj_mat[0]).abs();
                     let dev_y = (mkr_ty - reproj_mat[1]).abs();
-                    out_deviation_list.push((dev_x, dev_y));
+                    self.out_deviation_list.push((dev_x, dev_y));
                 }
             }
         }

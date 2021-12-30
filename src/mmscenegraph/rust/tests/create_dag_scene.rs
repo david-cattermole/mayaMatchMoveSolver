@@ -18,7 +18,6 @@
 // ====================================================================
 //
 
-
 use mmscenegraph_rust::attr::datablock::AttrDataBlock;
 use mmscenegraph_rust::math::rotate::euler::RotateOrder;
 use mmscenegraph_rust::node::traits::NodeCanTransform2D;
@@ -245,7 +244,7 @@ fn evaluate_scene() {
     bnd_nodes.push(Box::new(cam_0));
     bnd_nodes.push(Box::new(cam_1));
 
-    let flat_scene = bake_scene_graph(&sg, &bnd_nodes, &cam_nodes, &mkr_nodes);
+    let mut flat_scene = bake_scene_graph(&sg, &bnd_nodes, &cam_nodes, &mkr_nodes);
 
     let mut frame_list = Vec::new();
     frame_list.push(1001);
@@ -258,26 +257,13 @@ fn evaluate_scene() {
     // - Calculate all the local and world-space matrices for the objects.
     // - Calculate the camera projection matrices.
     // - Calculate deviation between Markers and Bundles.
-    let mut out_tfm_world_matrix_list = Vec::new();
-    let mut out_bnd_world_matrix_list = Vec::new();
-    let mut out_cam_world_matrix_list = Vec::new();
-    let mut out_point_list = Vec::new();
-    let mut out_deviation_list = Vec::new();
-    flat_scene.evaluate(
-        &attrdb,
-        &frame_list,
-        &mut out_tfm_world_matrix_list,
-        &mut out_bnd_world_matrix_list,
-        &mut out_cam_world_matrix_list,
-        &mut out_point_list,
-        &mut out_deviation_list,
-    );
+    flat_scene.evaluate(&attrdb, &frame_list);
 
+    let out_point_list = flat_scene.point_list();
+    let out_deviation_list = flat_scene.deviation_list();
     println!("2D Points (reprojected) count: {}", out_point_list.len());
     println!("Deviation count: {}", out_deviation_list.len());
     for (i, (point, dev)) in (0..).zip(out_point_list.iter().zip(out_deviation_list)) {
         println!("2D Point {}: pos: {:?} dev: {:?}", i, point, dev);
     }
-
-    assert!(false);
 }

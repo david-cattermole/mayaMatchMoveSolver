@@ -260,9 +260,8 @@ fn evaluate_scene() {
     let out_deviation_list = flat_scene.deviation_list();
     println!("2D Points (reprojected) count: {}", out_point_list.len());
     println!("Deviation count: {}", out_deviation_list.len());
-    for (i, (point, dev)) in
-        (0..).zip(out_point_list.iter().zip(out_deviation_list))
-    {
+    let point_dev_iter = out_point_list.iter().zip(out_deviation_list);
+    for (i, (point, dev)) in (0..).zip(point_dev_iter) {
         println!("2D Point {}: pos: {:?} dev: {:?}", i, point, dev);
     }
 }

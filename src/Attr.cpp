@@ -140,7 +140,7 @@ MString Attr::getNodeName() const {
     return m_nodeName;
 }
 
-MStatus Attr::setNodeName(MString value) {
+MStatus Attr::setNodeName(const MString &value) {
     if (value != m_nodeName) {
         m_object = MObject();
         m_plug = MPlug();
@@ -157,7 +157,7 @@ MString Attr::getAttrName() const {
     return m_attrName;
 }
 
-MStatus Attr::setAttrName(MString value) {
+MStatus Attr::setAttrName(const MString &value) {
     if (value != m_attrName) {
         m_object = MObject();
         m_plug = MPlug();
@@ -170,9 +170,13 @@ MStatus Attr::setAttrName(MString value) {
 }
 
 MObject Attr::getObject() {
-    // Get the MObject for the underlying node.
-    MString name = Attr::getNodeName();
-    getAsObject(name, m_object);
+    if (m_object.isNull()) {
+        MStatus status;
+        // Get the MObject for the underlying node.
+        MString name = Attr::getNodeName();
+        status = getAsObject(name, m_object);
+        CHECK_MSTATUS(status);
+    }
     return m_object;
 }
 

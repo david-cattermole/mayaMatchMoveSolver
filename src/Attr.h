@@ -142,11 +142,11 @@ public:
 
     MString getNodeName() const;
 
-    MStatus setNodeName(MString value);
+    MStatus setNodeName(const MString &value);
 
     MString getAttrName() const;
 
-    MStatus setAttrName(MString value);
+    MStatus setAttrName(const MString &value);
 
     MObject getObject();
 

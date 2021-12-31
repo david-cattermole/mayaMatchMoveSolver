@@ -65,45 +65,45 @@ enum class ObjectType
 
 
 MStatus getAsSelectionList(
-    MStringArray nodeNames,
+    const MStringArray &nodeNames,
     MSelectionList &selList);
 
 
 MStatus getAsSelectionList(
-    MString nodeName,
+    const MString nodeName,
     MSelectionList &selList);
 
 
 MStatus nodeExistsAndIsType(
-    MString nodeName,
-    MFn::Type nodeType);
+    const MString nodeName,
+    const MFn::Type nodeType);
 
 
 MStatus getAsObject(
-    MString nodeName,
+    const MString nodeName,
     MObject &object);
 
 
 MStatus getAsDagPath(
-    MString nodeName,
+    const MString nodeName,
     MDagPath &nodeDagPath);
 
 bool hasAttrName(
     MFnDependencyNode &dependFn,
-    MString attrName);
+    const MString attrName);
 
 
 // Analogous to the Python function "mmSolver.api.get_object_type()"
 ObjectType computeObjectType(
-    MObject node_obj,
-    MDagPath nodeDagPath);
+    const MObject node_obj,
+    MDagPath &nodeDagPath);
 
 
 // Generate attribute name used to set and look up 'attribute affects'
 // on nodes.
 MStatus constructAttrAffectsName(
-    MString attrName,
-    MString attrUuidStr,
+    const MString attrName,
+    const MString attrUuidStr,
     MString &outAttrName);
 
 // Static attributes to help with Maya Node initialization.

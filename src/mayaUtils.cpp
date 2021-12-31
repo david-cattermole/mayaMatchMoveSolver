@@ -62,7 +62,7 @@ MMNodeInitUtils::attributeAffectsMulti(
 
 
 MStatus getAsSelectionList(
-    MStringArray nodeNames,
+    const MStringArray &nodeNames,
     MSelectionList &selList
 ) {
     MStatus status;
@@ -79,7 +79,7 @@ MStatus getAsSelectionList(
 
 
 MStatus getAsSelectionList(
-    MString nodeName,
+    const MString nodeName,
     MSelectionList &selList
 ) {
     MStringArray nodeNames;
@@ -89,8 +89,8 @@ MStatus getAsSelectionList(
 
 
 MStatus nodeExistsAndIsType(
-    MString nodeName,
-    MFn::Type nodeType
+    const MString nodeName,
+    const MFn::Type nodeType
 ) {
     MStatus status;
     MSelectionList selList;
@@ -107,7 +107,9 @@ MStatus nodeExistsAndIsType(
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (nodeObj.apiType() != nodeType) {
-        ERR("Node type is not correct; node=" << nodeName << " type=" << nodeType);
+        ERR("Node type is not correct;"
+            << " node=" << nodeName
+            << " type=" << nodeType);
         status = MS::kFailure;
         status.perror("Node Type is not correct");
         return status;
@@ -117,25 +119,27 @@ MStatus nodeExistsAndIsType(
 
 
 MStatus getAsObject(
-    MString nodeName,
+    const MString nodeName,
     MObject &object
 ) {
+    DBG("getAsObject: node=" << nodeName);
     MStatus status;
     MSelectionList selList;
     status = getAsSelectionList(nodeName, selList);
-    CHECK_MSTATUS(status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
     if (selList.length() == 1) {
         status = selList.getDependNode(0, object);
-        CHECK_MSTATUS(status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
 
 
 MStatus getAsDagPath(
-    MString nodeName,
+    const MString nodeName,
     MDagPath &nodeDagPath
 ) {
+    DBG("getAsDagPath: node=" << nodeName);
     MStatus status;
     MSelectionList selList;
     status = getAsSelectionList(nodeName, selList);
@@ -150,7 +154,7 @@ MStatus getAsDagPath(
 
 bool hasAttrName(
     MFnDependencyNode &dependFn,
-    MString attrName
+    const MString attrName
 ) {
     MPlug plug = dependFn.findPlug(attrName, true);
     return plug.isNull();
@@ -158,8 +162,8 @@ bool hasAttrName(
 
 
 ObjectType computeObjectType(
-    MObject node_obj,
-    MDagPath nodeDagPath
+    const MObject node_obj,
+     MDagPath &nodeDagPath
 ) {
     bool hasLocatorShape = false;
     bool hasCameraShape = false;
@@ -218,8 +222,8 @@ ObjectType computeObjectType(
 
 
 MStatus constructAttrAffectsName(
-    MString attrName,
-    MString attrUuidStr,
+    const MString attrName,
+    const MString attrUuidStr,
     MString &outAttrName
 ) {
     MStatus status = MStatus::kSuccess;
@@ -227,10 +231,11 @@ MStatus constructAttrAffectsName(
     const MString attrNamePrefix = "node_";
     const MString attrNameSuffix = "_attr_";
 
-    status = attrName.substitute(".", "_");
+    MString attrSubstitue(attrName);
+    status = attrSubstitue.substitute(".", "_");
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    outAttrName = attrNamePrefix + attrUuidStr + attrNameSuffix + attrName;
+    outAttrName = attrNamePrefix + attrUuidStr + attrNameSuffix + attrSubstitue;
     status = outAttrName.substitute("-", "_");
     CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;

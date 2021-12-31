@@ -18,9 +18,31 @@
 // ====================================================================
 //
 
-pub mod bake;
-pub mod flat;
-pub mod graph;
-pub mod graphiter;
-pub mod helper;
-pub mod evaluationobjects;
+use crate::attrdatablock::ShimAttrDataBlock;
+use mmscenegraph_rust::constant::FrameValue as CoreFrameValue;
+use mmscenegraph_rust::scene::flat::FlatScene as CoreFlatScene;
+
+pub struct ShimFlatScene {
+    inner: CoreFlatScene,
+}
+
+impl ShimFlatScene {
+    pub fn new(core_flat_scene: CoreFlatScene) -> Self {
+        Self {
+            inner: core_flat_scene,
+        }
+    }
+
+    pub fn get_inner(&self) -> &CoreFlatScene {
+        &self.inner
+    }
+
+    pub fn evaluate(
+        &mut self,
+        attrdb: &ShimAttrDataBlock,
+        frame_list: &[CoreFrameValue],
+    ) {
+        let attrdb = attrdb.get_inner();
+        self.inner.evaluate(attrdb, frame_list)
+    }
+}

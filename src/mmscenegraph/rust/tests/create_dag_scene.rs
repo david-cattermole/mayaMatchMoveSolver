@@ -20,12 +20,11 @@
 
 use mmscenegraph_rust::attr::datablock::AttrDataBlock;
 use mmscenegraph_rust::math::rotate::euler::RotateOrder;
-use mmscenegraph_rust::node::traits::NodeCanTransform2D;
-use mmscenegraph_rust::node::traits::NodeCanTransform3D;
 use mmscenegraph_rust::node::traits::NodeCanTransformAndView3D;
 use mmscenegraph_rust::node::traits::NodeHasId;
 use mmscenegraph_rust::node::NodeId;
 use mmscenegraph_rust::scene::bake::bake_scene_graph;
+use mmscenegraph_rust::scene::evaluationobjects::EvaluationObjects;
 use mmscenegraph_rust::scene::graph::SceneGraph;
 use mmscenegraph_rust::scene::helper::create_static_bundle;
 use mmscenegraph_rust::scene::helper::create_static_camera;
@@ -224,28 +223,25 @@ fn evaluate_scene() {
     println!("Marker E: {:?}", mkr_4);
     println!("Scene Marker count: {}", sg.num_marker_nodes());
 
-    let mut mkr_nodes = Vec::<Box<dyn NodeCanTransform2D>>::new();
-    mkr_nodes.push(Box::new(mkr_0));
-    mkr_nodes.push(Box::new(mkr_1));
-    mkr_nodes.push(Box::new(mkr_2));
-    mkr_nodes.push(Box::new(mkr_3));
-    mkr_nodes.push(Box::new(mkr_4));
+    let mut eval_objects = EvaluationObjects::new();
 
-    let mut bnd_nodes = Vec::<Box<dyn NodeCanTransform3D>>::new();
-    bnd_nodes.push(Box::new(bnd_0));
-    bnd_nodes.push(Box::new(bnd_1));
-    bnd_nodes.push(Box::new(bnd_2));
-    bnd_nodes.push(Box::new(bnd_3));
-    bnd_nodes.push(Box::new(bnd_4));
+    eval_objects.add_marker(mkr_0);
+    eval_objects.add_marker(mkr_1);
+    eval_objects.add_marker(mkr_2);
+    eval_objects.add_marker(mkr_3);
+    eval_objects.add_marker(mkr_4);
 
-    // Note: It doesn't matter if we add non-bundle nodes to this
-    // list, they will be filtered out correctly in the
-    // FlatScene.evalutate() call.
-    bnd_nodes.push(Box::new(cam_0));
-    bnd_nodes.push(Box::new(cam_1));
+    eval_objects.add_bundle(bnd_0);
+    eval_objects.add_bundle(bnd_1);
+    eval_objects.add_bundle(bnd_2);
+    eval_objects.add_bundle(bnd_3);
+    eval_objects.add_bundle(bnd_4);
+
+    eval_objects.add_camera(cam_0);
+    eval_objects.add_camera(cam_1);
 
     let mut flat_scene =
-        bake_scene_graph(&sg, &bnd_nodes, &cam_nodes, &mkr_nodes);
+        bake_scene_graph(&sg, &eval_objects);
 
     let mut frame_list = Vec::new();
     frame_list.push(1001);

@@ -816,6 +816,8 @@ namespace mmscenegraph {
   struct MarkerNode;
   struct ShimAttrDataBlock;
   struct ShimSceneGraph;
+  struct ShimFlatScene;
+  struct ShimEvaluationObjects;
   struct Camera;
 }
 
@@ -1082,6 +1084,7 @@ struct ShimSceneGraph final : public ::rust::Opaque {
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::MarkerNode create_marker_node(::mmscenegraph::MarkerAttrIds marker_attrs) noexcept;
   MMSCENEGRAPH_API_EXPORT bool link_marker_to_camera(::mmscenegraph::NodeId mkr_node_id, ::mmscenegraph::NodeId cam_node_id) noexcept;
   MMSCENEGRAPH_API_EXPORT bool link_marker_to_bundle(::mmscenegraph::NodeId mkr_node_id, ::mmscenegraph::NodeId bnd_node_id) noexcept;
+  MMSCENEGRAPH_API_EXPORT bool set_node_parent(::mmscenegraph::NodeId child_node_id, ::mmscenegraph::NodeId parent_node_id) noexcept;
   ~ShimSceneGraph() = delete;
 
 private:
@@ -1092,6 +1095,45 @@ private:
   };
 };
 #endif // CXXBRIDGE1_STRUCT_mmscenegraph$ShimSceneGraph
+
+#ifndef CXXBRIDGE1_STRUCT_mmscenegraph$ShimFlatScene
+#define CXXBRIDGE1_STRUCT_mmscenegraph$ShimFlatScene
+struct ShimFlatScene final : public ::rust::Opaque {
+  MMSCENEGRAPH_API_EXPORT void evaluate(const ::mmscenegraph::ShimAttrDataBlock &attrdb, ::rust::Slice<const ::std::uint32_t> frame_list) noexcept;
+  ~ShimFlatScene() = delete;
+
+private:
+  friend ::rust::layout;
+  struct layout {
+    static ::std::size_t size() noexcept;
+    static ::std::size_t align() noexcept;
+  };
+};
+#endif // CXXBRIDGE1_STRUCT_mmscenegraph$ShimFlatScene
+
+#ifndef CXXBRIDGE1_STRUCT_mmscenegraph$ShimEvaluationObjects
+#define CXXBRIDGE1_STRUCT_mmscenegraph$ShimEvaluationObjects
+struct ShimEvaluationObjects final : public ::rust::Opaque {
+  MMSCENEGRAPH_API_EXPORT void clear_all() noexcept;
+  MMSCENEGRAPH_API_EXPORT void clear_bundles() noexcept;
+  MMSCENEGRAPH_API_EXPORT void clear_markers() noexcept;
+  MMSCENEGRAPH_API_EXPORT void clear_cameras() noexcept;
+  MMSCENEGRAPH_API_EXPORT ::std::size_t num_bundles() const noexcept;
+  MMSCENEGRAPH_API_EXPORT ::std::size_t num_markers() const noexcept;
+  MMSCENEGRAPH_API_EXPORT ::std::size_t num_cameras() const noexcept;
+  MMSCENEGRAPH_API_EXPORT void add_bundle(const ::mmscenegraph::BundleNode &bnd_node) noexcept;
+  MMSCENEGRAPH_API_EXPORT void add_camera(const ::mmscenegraph::CameraNode &cam_node) noexcept;
+  MMSCENEGRAPH_API_EXPORT void add_marker(const ::mmscenegraph::MarkerNode &mkr_node) noexcept;
+  ~ShimEvaluationObjects() = delete;
+
+private:
+  friend ::rust::layout;
+  struct layout {
+    static ::std::size_t size() noexcept;
+    static ::std::size_t align() noexcept;
+  };
+};
+#endif // CXXBRIDGE1_STRUCT_mmscenegraph$ShimEvaluationObjects
 
 #ifndef CXXBRIDGE1_STRUCT_mmscenegraph$Camera
 #define CXXBRIDGE1_STRUCT_mmscenegraph$Camera
@@ -1112,6 +1154,10 @@ struct Camera final {
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimAttrDataBlock> shim_create_attr_data_block_box() noexcept;
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimSceneGraph> shim_create_scene_graph_box() noexcept;
+
+MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimFlatScene> shim_bake_scene_graph(const ::rust::Box<::mmscenegraph::ShimSceneGraph> &sg, const ::rust::Box<::mmscenegraph::ShimEvaluationObjects> &eval_objects) noexcept;
+
+MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimEvaluationObjects> shim_create_evaluation_objects_box() noexcept;
 
 MMSCENEGRAPH_API_EXPORT void foo(::std::uint32_t number) noexcept;
 

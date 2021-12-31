@@ -30,6 +30,16 @@ SceneGraph::SceneGraph() noexcept
     std::cout << "SceneGraph()" << '\n';
 }
 
+rust::Box<ShimSceneGraph>
+SceneGraph::get_inner() noexcept {
+    return std::move(inner_);
+}
+
+void
+SceneGraph::set_inner(rust::Box<ShimSceneGraph> value) noexcept {
+    inner_ = std::move(value);
+}
+
 void
 SceneGraph::clear() noexcept {
     return inner_->clear();
@@ -60,7 +70,8 @@ SceneGraph::create_transform_node(
         Translate3DAttrIds translate_attrs,
         Rotate3DAttrIds rotate_attrs,
         Scale3DAttrIds scale_attrs,
-        RotateOrder rotate_order) noexcept {
+        RotateOrder rotate_order
+) noexcept {
     return inner_->create_transform_node(
         translate_attrs,
         rotate_attrs,
@@ -73,7 +84,8 @@ SceneGraph::create_bundle_node(
         Translate3DAttrIds translate_attrs,
         Rotate3DAttrIds rotate_attrs,
         Scale3DAttrIds scale_attrs,
-        RotateOrder rotate_order) noexcept {
+        RotateOrder rotate_order
+) noexcept {
     return inner_->create_bundle_node(
         translate_attrs,
         rotate_attrs,
@@ -87,7 +99,8 @@ SceneGraph::create_camera_node(
         Rotate3DAttrIds rotate_attrs,
         Scale3DAttrIds scale_attrs,
         CameraAttrIds camera_attrs,
-        RotateOrder rotate_order) noexcept {
+        RotateOrder rotate_order
+) noexcept {
     return inner_->create_camera_node(
         translate_attrs,
         rotate_attrs,
@@ -98,18 +111,42 @@ SceneGraph::create_camera_node(
 
 MarkerNode
 SceneGraph::create_marker_node(
-        MarkerAttrIds marker_attrs) noexcept {
+        MarkerAttrIds marker_attrs
+) noexcept {
     return inner_->create_marker_node(marker_attrs);
 }
 
 bool
-SceneGraph::link_marker_to_camera(NodeId mkr_node_id, NodeId cam_node_id) noexcept {
-    return inner_->link_marker_to_camera(mkr_node_id, cam_node_id);
+SceneGraph::link_marker_to_camera(
+        NodeId mkr_node_id,
+        NodeId cam_node_id
+) noexcept {
+    return inner_->link_marker_to_camera(
+        mkr_node_id,
+        cam_node_id
+    );
 }
 
 bool
-SceneGraph::link_marker_to_bundle(NodeId mkr_node_id, NodeId bnd_node_id) noexcept {
-    return inner_->link_marker_to_bundle(mkr_node_id, bnd_node_id);
+SceneGraph::link_marker_to_bundle(
+        NodeId mkr_node_id,
+        NodeId bnd_node_id
+) noexcept {
+    return inner_->link_marker_to_bundle(
+        mkr_node_id,
+        bnd_node_id
+    );
+}
+
+bool
+SceneGraph::set_node_parent(
+        NodeId child_node_id,
+        NodeId parent_node_id
+) noexcept {
+    return inner_->set_node_parent(
+        child_node_id,
+        parent_node_id
+    );
 }
 
 } // namespace mmscenegraph

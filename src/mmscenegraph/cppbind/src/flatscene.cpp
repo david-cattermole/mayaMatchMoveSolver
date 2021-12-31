@@ -19,12 +19,15 @@
  *
  */
 
-#pragma once
+#include <iostream>
+#include <string>
+#include <mmscenegraph/flatscene.h>
 
-#include "_cxx.h"
-#include "_cxxbridge.h"
-#include "_types.h"
-#include "attrdatablock.h"
-#include "flatscene.h"
-#include "scenebake.h"
-#include "scenegraph.h"
+namespace mmscenegraph {
+
+FlatScene::FlatScene(rust::Box<ShimFlatScene> flat_scene) noexcept
+        : inner_(std::move(flat_scene)) {
+    std::cout << "FlatScene()" << '\n';
+}
+
+} // namespace mmscenegraph

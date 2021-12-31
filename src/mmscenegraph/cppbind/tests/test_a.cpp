@@ -151,38 +151,61 @@ int test_a() {
 
     // Print number of nodes in the scene graph.
     std::cout
-        << "num_transform_nodes: "
+        << "SceneGraph num_transform_nodes: "
         << sg.num_transform_nodes()
         << std::endl;
     std::cout
-        << "num_bundle_nodes: "
+        << "SceneGraph num_bundle_nodes: "
         << sg.num_bundle_nodes()
         << std::endl;
     std::cout
-        << "num_camera_nodes: "
+        << "SceneGraph num_camera_nodes: "
         << sg.num_camera_nodes()
         << std::endl;
     std::cout
-        << "num_marker_nodes: "
+        << "SceneGraph num_marker_nodes: "
         << sg.num_marker_nodes()
         << std::endl;
 
-    auto frame_list = rust::Vec<mmsg::FrameValue>();
-    frame_list.push_back(1);
-    // auto out_tfm_world_matrix_list = rust::Vec<Matrix44>();
-    // auto out_bnd_world_matrix_list = rust::Vec<Matrix44>();
-    // auto out_cam_world_matrix_list = rust::Vec<Matrix44>();
-    // auto out_point_list = rust::Vec<mmsg::Point2>();
-    // auto out_deviation_list = rust::Vec<mmsg::Point2>();
     // Create Marker, Bundle and Camera relationships.
     sg.link_marker_to_camera(mkr_node.id, cam_node.id);
     sg.link_marker_to_bundle(mkr_node.id, bnd_node.id);
 
-    // auto flat_scene = mmsg::bake_scene_graph(
-    //         sg,
-    //         bnd_nodes,
-    //         cam_nodes,
-    //         mkr_nodes);
+    // Set node hierarchy.
+    sg.set_node_parent(cam_node.id, root_node.id);
+    sg.set_node_parent(bnd_node.id, root_node.id);
+
+    // Bake down SceneGraph into FlatScene for fast evaluation.
+    auto eval_objects = mmsg::EvaluationObjects();
+    eval_objects.add_bundle(bnd_node);
+    eval_objects.add_camera(cam_node);
+    eval_objects.add_marker(mkr_node);
+
+    // Print number of nodes in the scene graph.
+    std::cout
+        << "EvaluationObjects num_bundles: "
+        << eval_objects.num_bundles()
+        << std::endl;
+    std::cout
+        << "EvaluationObjects num_cameras: "
+        << eval_objects.num_cameras()
+        << std::endl;
+    std::cout
+        << "EvaluationObjects num_markers: "
+        << eval_objects.num_markers()
+        << std::endl;
+    
+    auto flat_scene = mmsg::bake_scene_graph(
+        sg,
+        eval_objects
+    );
+
+    auto frame_list = rust::Vec<mmsg::FrameValue>();
+    frame_list.push_back(1);
+    
+    // // Evaluate
+    // auto out_point_list = rust::Vec<mmsg::Vec2>();
+    // auto out_deviation_list = rust::Vec<mmsg::Vec2>();
     // flat_scene.evaluate(attrdb, frame_list,
     //         out_tfm_world_matrix_list,
     //         out_bnd_world_matrix_list,
@@ -190,12 +213,7 @@ int test_a() {
     //         out_point_list,
     //         out_deviation_list);
 
-    // std::cout
-    //     << "Reprojected Point:"
-    //     << " x=" << point_2d.x
-    //     << " y=" << point_2d.y
-    //     << std::endl;
-
+    // assert(out_point_list.size() == out_deviation_list.size());
     // for (auto i = 0; i < out_deviation_list.size(); ++i) {
     //     auto point = out_point_list[i];
     //     auto dev = out_deviation_list[i];

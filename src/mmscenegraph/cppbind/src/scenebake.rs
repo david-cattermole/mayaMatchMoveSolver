@@ -18,9 +18,17 @@
 // ====================================================================
 //
 
-pub mod bake;
-pub mod flat;
-pub mod graph;
-pub mod graphiter;
-pub mod helper;
-pub mod evaluationobjects;
+use crate::evaluationobjects::ShimEvaluationObjects;
+use crate::flatscene::ShimFlatScene;
+use crate::scenegraph::ShimSceneGraph;
+use mmscenegraph_rust::scene::bake::bake_scene_graph as core_bake_scene_graph;
+
+pub fn shim_bake_scene_graph(
+    sg: &Box<ShimSceneGraph>,
+    eval_objects: &Box<ShimEvaluationObjects>,
+) -> Box<ShimFlatScene> {
+    let core_flat_scene =
+        core_bake_scene_graph(sg.get_inner(), eval_objects.get_inner());
+    let shim_flat_scene = ShimFlatScene::new(core_flat_scene);
+    Box::new(shim_flat_scene)
+}

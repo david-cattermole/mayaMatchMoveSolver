@@ -37,6 +37,10 @@ impl ShimAttrDataBlock {
         }
     }
 
+    pub fn get_inner(&self) -> &CoreAttrDataBlock {
+        &self.inner
+    }
+
     pub fn clear(&mut self) {
         self.inner.clear()
     }

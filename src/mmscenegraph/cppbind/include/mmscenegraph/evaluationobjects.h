@@ -27,46 +27,50 @@
 #include "_cxx.h"
 #include "_cxxbridge.h"
 #include "_symbol_export.h"
-#include "_types.h"
 
 namespace mmscenegraph {
 
-class AttrDataBlock {
+class EvaluationObjects {
 public:
 
     MMSCENEGRAPH_API_EXPORT
-    AttrDataBlock() noexcept;
+    EvaluationObjects() noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    void clear() noexcept;
+    rust::Box<ShimEvaluationObjects> get_inner() noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    AttrId create_attr_static(Real value) noexcept;
+    size_t num_bundles() const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    AttrId
-    create_attr_anim_dense(
-        rust::Vec<Real> values,
-        FrameValue frame_start
-    ) noexcept;
+    size_t num_cameras() const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    Real
-    get_attr_value(
-        AttrId attr_id,
-        FrameValue frame
-    ) const noexcept;
+    size_t num_markers() const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    void
-    set_attr_value(
-        AttrId attr_id,
-        FrameValue frame,
-        Real value
-    ) noexcept;
+    void clear_all() noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    void clear_bundles() noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    void clear_cameras() noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    void clear_markers() noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    void add_bundle(BundleNode &bnd_node) noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    void add_camera(CameraNode &cam_node) noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    void add_marker(MarkerNode &mkr_node) noexcept;
 
 private:
-    rust::Box<ShimAttrDataBlock> inner_;
+    rust::Box<ShimEvaluationObjects> inner_;
 };
 
 } // namespace mmscenegraph

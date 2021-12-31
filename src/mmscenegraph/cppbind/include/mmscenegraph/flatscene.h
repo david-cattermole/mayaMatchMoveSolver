@@ -21,10 +21,23 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+
 #include "_cxx.h"
 #include "_cxxbridge.h"
-#include "_types.h"
-#include "attrdatablock.h"
-#include "flatscene.h"
-#include "scenebake.h"
-#include "scenegraph.h"
+#include "_symbol_export.h"
+
+namespace mmscenegraph {
+
+class FlatScene {
+public:
+
+    MMSCENEGRAPH_API_EXPORT
+    FlatScene(rust::Box<ShimFlatScene> flat_scene) noexcept;
+
+private:
+    rust::Box<ShimFlatScene> inner_;
+};
+
+} // namespace mmscenegraph

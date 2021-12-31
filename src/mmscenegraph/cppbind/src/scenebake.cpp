@@ -19,12 +19,28 @@
  *
  */
 
-#pragma once
+#include <mmscenegraph/_cxxbridge.h>
+#include <mmscenegraph/scenebake.h>
+#include <mmscenegraph/flatscene.h>
+#include <mmscenegraph/scenegraph.h>
+#include <mmscenegraph/evaluationobjects.h>
 
-#include "_cxx.h"
-#include "_cxxbridge.h"
-#include "_types.h"
-#include "attrdatablock.h"
-#include "flatscene.h"
-#include "scenebake.h"
-#include "scenegraph.h"
+namespace mmscenegraph {
+
+MMSCENEGRAPH_API_EXPORT
+FlatScene
+bake_scene_graph(
+    SceneGraph &sg,
+    EvaluationObjects &eval_objects
+) noexcept {
+    auto sg_inner = sg.get_inner();
+    auto eval_objects_inner = eval_objects.get_inner();
+    auto box_shim_flat_scene = shim_bake_scene_graph(
+        sg_inner,
+        eval_objects_inner
+    );
+    auto flat_scene = FlatScene(std::move(box_shim_flat_scene));
+    return flat_scene;
+}
+
+} // namespace mmscenegraph

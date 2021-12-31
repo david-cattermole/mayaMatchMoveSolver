@@ -28,14 +28,15 @@ use std::collections::hash_set::HashSet;
 use crate::attr::AttrCameraIds;
 use crate::attr::AttrMarkerIds;
 use crate::attr::AttrTransformIds;
-use crate::node::traits::NodeCanTransform2D;
-use crate::node::traits::NodeCanTransform3D;
+use crate::node::traits::NodeCanTranslate2D;
 use crate::node::traits::NodeCanViewScene;
 use crate::node::traits::NodeHasId;
+use crate::node::traits::NodeHasWeight;
 use crate::node::NodeId;
 use crate::scene::flat::FlatScene;
 use crate::scene::graph::SceneGraph;
 use crate::scene::graphiter::UpstreamDepthFirstSearch;
+use crate::scene::evaluationobjects::EvaluationObjects;
 
 /// Get all upstream node_indices from node_index.
 ///
@@ -137,17 +138,13 @@ fn get_parent_index_list(
 
 /// Bake down graph into a more efficient representation that has a
 /// un-editable hierarchy.
-pub fn bake_scene_graph<T, U, V>(
+pub fn bake_scene_graph(
     sg: &SceneGraph,
-    bnd_nodes: &[Box<T>],
-    cam_nodes: &[Box<U>],
-    mkr_nodes: &[Box<V>],
-) -> FlatScene
-where
-    T: ?Sized + NodeHasId + NodeCanTransform3D,
-    U: ?Sized + NodeHasId + NodeCanTransform3D + NodeCanViewScene,
-    V: ?Sized + NodeHasId + NodeCanTransform2D,
-{
+    eval_objects: &EvaluationObjects,
+) -> FlatScene {
+    let bnd_nodes = eval_objects.get_bundles();
+    let cam_nodes = eval_objects.get_cameras();
+    let mkr_nodes = eval_objects.get_markers();
     let bnd_node_ids: Vec<NodeId> = bnd_nodes
         .iter()
         .map(|x| x.get_id())
@@ -180,7 +177,7 @@ where
         .chain(cam_node_ids.into_iter())
         .collect();
 
-    // Organize the transform hierachy data.
+    // Organize the transform hierarchy data.
     let (tfm_node_indices, tfm_node_ids) =
         flatten_filter_and_sort_graph_nodes(&sg, tfm_node_ids).unwrap();
     // println!("tfm_node_indices: {:#?}", tfm_node_indices.len());

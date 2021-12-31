@@ -9,13 +9,10 @@ set(test_source_files
   )
 
 # Add test executable using the C++ bindings.
-add_executable(${target_test_exe_name} ${test_source_files}
-   ${lib_source_files})
-target_link_libraries(${target_test_exe_name}
-   ${target_release_lib_name})
+add_executable(${target_test_exe_name} ${test_source_files})
+target_link_libraries(${target_test_exe_name} ${target_release_lib_name})
 target_include_directories(${target_test_exe_name}
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../src
   )
 target_include_directories(${target_test_exe_name}
   PUBLIC ${RUST_INCLUDE_DIR}

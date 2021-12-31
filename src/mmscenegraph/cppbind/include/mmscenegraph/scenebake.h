@@ -21,10 +21,23 @@
 
 #pragma once
 
+#include <memory>
+
 #include "_cxx.h"
 #include "_cxxbridge.h"
-#include "_types.h"
-#include "attrdatablock.h"
-#include "flatscene.h"
+#include "_symbol_export.h"
 #include "scenebake.h"
+#include "flatscene.h"
 #include "scenegraph.h"
+#include "evaluationobjects.h"
+
+namespace mmscenegraph {
+
+MMSCENEGRAPH_API_EXPORT
+FlatScene
+bake_scene_graph(
+    SceneGraph &sg,
+    EvaluationObjects &solve_objects
+) noexcept;
+
+} // namespace mmscenegraph

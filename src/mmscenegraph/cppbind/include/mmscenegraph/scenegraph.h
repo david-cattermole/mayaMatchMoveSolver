@@ -37,6 +37,14 @@ public:
     SceneGraph() noexcept;
 
     MMSCENEGRAPH_API_EXPORT
+    rust::Box<ShimSceneGraph>
+    get_inner() noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    void
+    SceneGraph::set_inner(rust::Box<ShimSceneGraph> value) noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
     void clear() noexcept;
 
     MMSCENEGRAPH_API_EXPORT
@@ -61,7 +69,8 @@ public:
         Translate3DAttrIds translate_attrs,
         Rotate3DAttrIds rotate_attrs,
         Scale3DAttrIds scale_attrs,
-        RotateOrder rotate_order) noexcept;
+        RotateOrder rotate_order
+    ) noexcept;
 
     MMSCENEGRAPH_API_EXPORT
     BundleNode
@@ -69,7 +78,8 @@ public:
         Translate3DAttrIds translate_attrs,
         Rotate3DAttrIds rotate_attrs,
         Scale3DAttrIds scale_attrs,
-        RotateOrder rotate_order) noexcept;
+        RotateOrder rotate_order
+    ) noexcept;
 
     MMSCENEGRAPH_API_EXPORT
     CameraNode
@@ -78,20 +88,36 @@ public:
         Rotate3DAttrIds rotate_attrs,
         Scale3DAttrIds scale_attrs,
         CameraAttrIds camera_attrs,
-        RotateOrder rotate_order) noexcept;
+        RotateOrder rotate_order
+    ) noexcept;
 
     MMSCENEGRAPH_API_EXPORT
     MarkerNode
-    create_marker_node(MarkerAttrIds marker_attrs) noexcept;
+    create_marker_node(
+        MarkerAttrIds marker_attrs
+    ) noexcept;
 
     MMSCENEGRAPH_API_EXPORT
     bool
-    link_marker_to_camera(NodeId mkr_node_id, NodeId cam_node_id) noexcept;
+    link_marker_to_camera(
+        NodeId mkr_node_id,
+        NodeId cam_node_id
+    ) noexcept;
 
     MMSCENEGRAPH_API_EXPORT
     bool
-    link_marker_to_bundle(NodeId mkr_node_id, NodeId bnd_node_id) noexcept;
-    
+    link_marker_to_bundle(
+        NodeId mkr_node_id,
+        NodeId bnd_node_id
+    ) noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    bool
+    set_node_parent(
+        NodeId child_node_id,
+        NodeId parent_node_id
+    ) noexcept;
+
 private:
     rust::Box<ShimSceneGraph> inner_;
 };

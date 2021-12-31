@@ -20,7 +20,10 @@
 
 use crate::attrdatablock::shim_create_attr_data_block_box;
 use crate::attrdatablock::ShimAttrDataBlock;
-
+use crate::evaluationobjects::shim_create_evaluation_objects_box;
+use crate::evaluationobjects::ShimEvaluationObjects;
+use crate::flatscene::ShimFlatScene;
+use crate::scenebake::shim_bake_scene_graph;
 use crate::scenegraph::shim_create_scene_graph_box;
 use crate::scenegraph::ShimSceneGraph;
 
@@ -288,7 +291,43 @@ pub mod ffi {
             bnd_node_id: NodeId,
         ) -> bool;
 
+        fn set_node_parent(
+            &mut self,
+            child_node_id: NodeId,
+            parent_node_id: NodeId,
+        ) -> bool;
+
         fn shim_create_scene_graph_box() -> Box<ShimSceneGraph>;
+    }
+
+    extern "Rust" {
+        type ShimFlatScene;
+
+        fn evaluate(&mut self, attrdb: &ShimAttrDataBlock, frame_list: &[u32]);
+
+        fn shim_bake_scene_graph(
+            sg: &Box<ShimSceneGraph>,
+            eval_objects: &Box<ShimEvaluationObjects>,
+        ) -> Box<ShimFlatScene>;
+    }
+
+    extern "Rust" {
+        type ShimEvaluationObjects;
+
+        fn clear_all(&mut self);
+        fn clear_bundles(&mut self);
+        fn clear_markers(&mut self);
+        fn clear_cameras(&mut self);
+
+        fn num_bundles(&self) -> usize;
+        fn num_markers(&self) -> usize;
+        fn num_cameras(&self) -> usize;
+
+        fn add_bundle(&mut self, bnd_node: &BundleNode);
+        fn add_camera(&mut self, cam_node: &CameraNode);
+        fn add_marker(&mut self, mkr_node: &MarkerNode);
+
+        fn shim_create_evaluation_objects_box() -> Box<ShimEvaluationObjects>;
     }
 
     ////////////////////////////////////////////////////////////////////

@@ -54,6 +54,10 @@ impl ShimSceneGraph {
         }
     }
 
+    pub fn get_inner(&self) -> &CoreSceneGraph {
+        &self.inner
+    }
+
     pub fn clear(&mut self) {
         self.inner.clear()
     }
@@ -164,7 +168,16 @@ impl ShimSceneGraph {
         self.inner.link_marker_to_bundle(mkr_node_id, bnd_node_id)
     }
 
-    // set_node_parent
+    pub fn set_node_parent(
+        &mut self,
+        child_node_id: BindNodeId,
+        parent_node_id: BindNodeId,
+    ) -> bool {
+        let child_node_id = bind_to_core_node_id(child_node_id);
+        let parent_node_id = bind_to_core_node_id(parent_node_id);
+        self.inner
+            .link_marker_to_bundle(child_node_id, parent_node_id)
+    }
 
     pub fn num_transform_nodes(&self) -> usize {
         self.inner.num_transform_nodes()

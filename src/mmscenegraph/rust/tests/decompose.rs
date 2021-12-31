@@ -18,8 +18,6 @@
 // ====================================================================
 //
 
-use nalgebra as na;
-
 use mmscenegraph_rust::constant::Matrix44;
 use mmscenegraph_rust::constant::Real;
 use mmscenegraph_rust::constant::DEGREES_TO_RADIANS;

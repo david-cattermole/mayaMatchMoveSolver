@@ -38,6 +38,10 @@ public:
     AttrDataBlock() noexcept;
 
     MMSCENEGRAPH_API_EXPORT
+    rust::Box<ShimAttrDataBlock>
+    get_inner() noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
     void clear() noexcept;
 
     MMSCENEGRAPH_API_EXPORT

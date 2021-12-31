@@ -20,6 +20,7 @@
 
 use crate::attrdatablock::ShimAttrDataBlock;
 use mmscenegraph_rust::constant::FrameValue as CoreFrameValue;
+use mmscenegraph_rust::constant::Real as CoreReal;
 use mmscenegraph_rust::scene::flat::FlatScene as CoreFlatScene;
 
 pub struct ShimFlatScene {
@@ -35,6 +36,22 @@ impl ShimFlatScene {
 
     pub fn get_inner(&self) -> &CoreFlatScene {
         &self.inner
+    }
+
+    pub fn points(&self) -> &[CoreReal] {
+        &self.inner.points()
+    }
+
+    pub fn deviations(&self) -> &[CoreReal] {
+        &self.inner.deviations()
+    }
+
+    pub fn num_points(&self) -> usize {
+        self.inner.num_points()
+    }
+
+    pub fn num_deviations(&self) -> usize {
+        self.inner.num_deviations()
     }
 
     pub fn evaluate(

@@ -797,11 +797,32 @@ std::size_t align_of() {
 #endif // CXXBRIDGE1_LAYOUT
 
 template <typename T>
+class Slice<T>::uninit {};
+template <typename T>
+inline Slice<T>::Slice(uninit) noexcept {}
+
+template <typename T>
 union ManuallyDrop {
   T value;
   ManuallyDrop(T &&value) : value(::std::move(value)) {}
   ~ManuallyDrop() {}
 };
+
+namespace {
+namespace repr {
+using Fat = ::std::array<::std::uintptr_t, 2>;
+} // namespace repr
+
+template <typename T>
+class impl<Slice<T>> final {
+public:
+  static Slice<T> slice(repr::Fat repr) noexcept {
+    Slice<T> slice = typename Slice<T>::uninit{};
+    slice.repr = repr;
+    return slice;
+  }
+};
+} // namespace
 } // namespace cxxbridge1
 } // namespace rust
 
@@ -1106,7 +1127,11 @@ private:
 #ifndef CXXBRIDGE1_STRUCT_mmscenegraph$ShimFlatScene
 #define CXXBRIDGE1_STRUCT_mmscenegraph$ShimFlatScene
 struct ShimFlatScene final : public ::rust::Opaque {
-  MMSCENEGRAPH_API_EXPORT void evaluate(const ::mmscenegraph::ShimAttrDataBlock &attrdb, ::rust::Slice<const ::std::uint32_t> frame_list) noexcept;
+  MMSCENEGRAPH_API_EXPORT ::rust::Slice<const double> points() const noexcept;
+  MMSCENEGRAPH_API_EXPORT ::rust::Slice<const double> deviations() const noexcept;
+  MMSCENEGRAPH_API_EXPORT ::std::size_t num_points() const noexcept;
+  MMSCENEGRAPH_API_EXPORT ::std::size_t num_deviations() const noexcept;
+  MMSCENEGRAPH_API_EXPORT void evaluate(const ::rust::Box<::mmscenegraph::ShimAttrDataBlock> &attrdb, ::rust::Slice<const ::std::uint32_t> frame_list) noexcept;
   ~ShimFlatScene() = delete;
 
 private:
@@ -1234,7 +1259,15 @@ bool mmscenegraph$cxxbridge1$ShimSceneGraph$set_node_parent(::mmscenegraph::Shim
 ::std::size_t mmscenegraph$cxxbridge1$ShimFlatScene$operator$sizeof() noexcept;
 ::std::size_t mmscenegraph$cxxbridge1$ShimFlatScene$operator$alignof() noexcept;
 
-void mmscenegraph$cxxbridge1$ShimFlatScene$evaluate(::mmscenegraph::ShimFlatScene &self, const ::mmscenegraph::ShimAttrDataBlock &attrdb, ::rust::Slice<const ::std::uint32_t> frame_list) noexcept;
+::rust::repr::Fat mmscenegraph$cxxbridge1$ShimFlatScene$points(const ::mmscenegraph::ShimFlatScene &self) noexcept;
+
+::rust::repr::Fat mmscenegraph$cxxbridge1$ShimFlatScene$deviations(const ::mmscenegraph::ShimFlatScene &self) noexcept;
+
+::std::size_t mmscenegraph$cxxbridge1$ShimFlatScene$num_points(const ::mmscenegraph::ShimFlatScene &self) noexcept;
+
+::std::size_t mmscenegraph$cxxbridge1$ShimFlatScene$num_deviations(const ::mmscenegraph::ShimFlatScene &self) noexcept;
+
+void mmscenegraph$cxxbridge1$ShimFlatScene$evaluate(::mmscenegraph::ShimFlatScene &self, const ::rust::Box<::mmscenegraph::ShimAttrDataBlock> &attrdb, ::rust::Slice<const ::std::uint32_t> frame_list) noexcept;
 
 ::mmscenegraph::ShimFlatScene *mmscenegraph$cxxbridge1$shim_bake_scene_graph(const ::rust::Box<::mmscenegraph::ShimSceneGraph> &sg, const ::rust::Box<::mmscenegraph::ShimEvaluationObjects> &eval_objects) noexcept;
 ::std::size_t mmscenegraph$cxxbridge1$ShimEvaluationObjects$operator$sizeof() noexcept;
@@ -1596,7 +1629,23 @@ MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimSceneGraph> shim_create_
   return mmscenegraph$cxxbridge1$ShimFlatScene$operator$alignof();
 }
 
-MMSCENEGRAPH_API_EXPORT void ShimFlatScene::evaluate(const ::mmscenegraph::ShimAttrDataBlock &attrdb, ::rust::Slice<const ::std::uint32_t> frame_list) noexcept {
+MMSCENEGRAPH_API_EXPORT ::rust::Slice<const double> ShimFlatScene::points() const noexcept {
+  return ::rust::impl<::rust::Slice<const double>>::slice(mmscenegraph$cxxbridge1$ShimFlatScene$points(*this));
+}
+
+MMSCENEGRAPH_API_EXPORT ::rust::Slice<const double> ShimFlatScene::deviations() const noexcept {
+  return ::rust::impl<::rust::Slice<const double>>::slice(mmscenegraph$cxxbridge1$ShimFlatScene$deviations(*this));
+}
+
+MMSCENEGRAPH_API_EXPORT ::std::size_t ShimFlatScene::num_points() const noexcept {
+  return mmscenegraph$cxxbridge1$ShimFlatScene$num_points(*this);
+}
+
+MMSCENEGRAPH_API_EXPORT ::std::size_t ShimFlatScene::num_deviations() const noexcept {
+  return mmscenegraph$cxxbridge1$ShimFlatScene$num_deviations(*this);
+}
+
+MMSCENEGRAPH_API_EXPORT void ShimFlatScene::evaluate(const ::rust::Box<::mmscenegraph::ShimAttrDataBlock> &attrdb, ::rust::Slice<const ::std::uint32_t> frame_list) noexcept {
   mmscenegraph$cxxbridge1$ShimFlatScene$evaluate(*this, attrdb, frame_list);
 }
 

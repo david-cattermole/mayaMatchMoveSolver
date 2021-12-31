@@ -21,12 +21,13 @@
 
 #pragma once
 
-#include <memory>
-#include <string>
+#include <vector>
 
 #include "_cxx.h"
 #include "_cxxbridge.h"
 #include "_symbol_export.h"
+#include "_types.h"
+#include <mmscenegraph/attrdatablock.h>
 
 namespace mmscenegraph {
 
@@ -35,6 +36,30 @@ public:
 
     MMSCENEGRAPH_API_EXPORT
     FlatScene(rust::Box<ShimFlatScene> flat_scene) noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    rust::Slice<const Real>
+    points() const noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    rust::Slice<const Real>
+    deviations() const noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    size_t
+    num_points() const noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    size_t
+    num_deviations() const noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    void
+    evaluate(
+        AttrDataBlock &attrdb,
+        std::vector<FrameValue> &frames
+    ) noexcept;
+
 
 private:
     rust::Box<ShimFlatScene> inner_;

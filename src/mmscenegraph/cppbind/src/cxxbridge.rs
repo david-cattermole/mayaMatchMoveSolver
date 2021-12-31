@@ -210,21 +210,6 @@ pub mod ffi {
         attr_weight: AttrId,
     }
 
-    // // 3D Vector.
-    // #[derive(Debug, Copy, Clone)]
-    // pub struct Vec3D {
-    //     x: f64,
-    //     y: f64,
-    //     z: f64,
-    // }
-
-    // // 2D Vector.
-    // #[derive(Debug, Copy, Clone)]
-    // pub struct Vec2D {
-    //     x: f64,
-    //     y: f64,
-    // }
-
     extern "Rust" {
         type ShimAttrDataBlock;
 
@@ -303,7 +288,16 @@ pub mod ffi {
     extern "Rust" {
         type ShimFlatScene;
 
-        fn evaluate(&mut self, attrdb: &ShimAttrDataBlock, frame_list: &[u32]);
+        fn points(&self) -> &[f64];
+        fn deviations(&self) -> &[f64];
+        fn num_points(&self) -> usize;
+        fn num_deviations(&self) -> usize;
+
+        fn evaluate(
+            &mut self,
+            attrdb: &Box<ShimAttrDataBlock>,
+            frame_list: &[u32],
+        );
 
         fn shim_bake_scene_graph(
             sg: &Box<ShimSceneGraph>,

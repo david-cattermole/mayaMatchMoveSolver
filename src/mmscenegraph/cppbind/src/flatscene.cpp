@@ -30,4 +30,34 @@ FlatScene::FlatScene(rust::Box<ShimFlatScene> flat_scene) noexcept
     std::cout << "FlatScene()" << '\n';
 }
 
+rust::Slice<const Real>
+FlatScene::points() const noexcept {
+    return inner_->points();
+}
+
+rust::Slice<const Real>
+FlatScene::deviations() const noexcept {
+    return inner_->deviations();
+}
+
+size_t
+FlatScene::num_points() const noexcept {
+    return inner_->num_points();
+}
+
+size_t
+FlatScene::num_deviations() const noexcept {
+    return inner_->num_deviations();
+}
+
+void
+FlatScene::evaluate(
+        AttrDataBlock &attrdb,
+        std::vector<FrameValue> &frames
+) noexcept {
+    auto attrdb_inner = attrdb.get_inner();
+    rust::Slice<const FrameValue> frames_slice{frames.data(), frames.size()};
+    return inner_->evaluate(attrdb_inner, frames_slice);
+}
+
 } // namespace mmscenegraph

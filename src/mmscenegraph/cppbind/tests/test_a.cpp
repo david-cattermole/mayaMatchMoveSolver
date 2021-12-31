@@ -153,19 +153,19 @@ int test_a() {
     std::cout
         << "SceneGraph num_transform_nodes: "
         << sg.num_transform_nodes()
-        << std::endl;
+        << '\n';
     std::cout
         << "SceneGraph num_bundle_nodes: "
         << sg.num_bundle_nodes()
-        << std::endl;
+        << '\n';
     std::cout
         << "SceneGraph num_camera_nodes: "
         << sg.num_camera_nodes()
-        << std::endl;
+        << '\n';
     std::cout
         << "SceneGraph num_marker_nodes: "
         << sg.num_marker_nodes()
-        << std::endl;
+        << '\n';
 
     // Create Marker, Bundle and Camera relationships.
     sg.link_marker_to_camera(mkr_node.id, cam_node.id);
@@ -185,43 +185,59 @@ int test_a() {
     std::cout
         << "EvaluationObjects num_bundles: "
         << eval_objects.num_bundles()
-        << std::endl;
+        << '\n';
     std::cout
         << "EvaluationObjects num_cameras: "
         << eval_objects.num_cameras()
-        << std::endl;
+        << '\n';
     std::cout
         << "EvaluationObjects num_markers: "
         << eval_objects.num_markers()
-        << std::endl;
-    
+        << '\n';
+
     auto flat_scene = mmsg::bake_scene_graph(
         sg,
         eval_objects
     );
+    std::cout
+        << "FlatScene BEFORE num_points: "
+        << flat_scene.num_points()
+        << '\n';
+    std::cout
+        << "FlatScene BEFORE num_deviations: "
+        << flat_scene.num_deviations()
+        << '\n';
 
-    auto frame_list = rust::Vec<mmsg::FrameValue>();
-    frame_list.push_back(1);
-    
-    // // Evaluate
-    // auto out_point_list = rust::Vec<mmsg::Vec2>();
-    // auto out_deviation_list = rust::Vec<mmsg::Vec2>();
-    // flat_scene.evaluate(attrdb, frame_list,
-    //         out_tfm_world_matrix_list,
-    //         out_bnd_world_matrix_list,
-    //         out_cam_world_matrix_list,
-    //         out_point_list,
-    //         out_deviation_list);
+    auto frames = std::vector<mmsg::FrameValue>();
+    frames.push_back(1);
 
-    // assert(out_point_list.size() == out_deviation_list.size());
-    // for (auto i = 0; i < out_deviation_list.size(); ++i) {
-    //     auto point = out_point_list[i];
-    //     auto dev = out_deviation_list[i];
-    //     std::cout
-    //         << "point: " << point.x ", " << point.y
-    //         << "dev: " << dev.x ", " << dev.y
-    //         << '\n';
-    // }
+    // Evaluate
+    flat_scene.evaluate(attrdb, frames);
+    std::cout
+        << "FlatScene AFTER num_points: "
+        << flat_scene.num_points()
+        << '\n';
+    std::cout
+        << "FlatScene AFTER num_deviations: "
+        << flat_scene.num_deviations()
+        << '\n';
+    auto num_points = flat_scene.num_points();
+    assert(num_points == flat_scene.num_deviations());
+
+    auto out_deviation_list = flat_scene.deviations();
+    auto out_point_list = flat_scene.points();
+    assert(out_points_list.size() == out_deviation_list.size());
+    for (auto i = 0; i < num_points; ++i) {
+        auto index = i * 2;
+        auto point_x = out_point_list[index + 0];
+        auto point_y = out_point_list[index + 1];
+        auto dev_x = out_deviation_list[index + 0];
+        auto dev_y = out_deviation_list[index + 1];
+        std::cout
+            << "point: " << point_x << ", " << point_y
+            << "dev: " << dev_x << ", " << dev_y
+            << '\n';
+    }
 
     return 0;
 }

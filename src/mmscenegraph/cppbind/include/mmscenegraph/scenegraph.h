@@ -41,10 +41,6 @@ public:
     get_inner() noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    void
-    SceneGraph::set_inner(rust::Box<ShimSceneGraph> value) noexcept;
-
-    MMSCENEGRAPH_API_EXPORT
     void clear() noexcept;
 
     MMSCENEGRAPH_API_EXPORT

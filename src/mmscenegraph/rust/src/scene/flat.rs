@@ -33,6 +33,9 @@ use crate::math::reprojection::reproject_as_normalised_coord;
 use crate::math::rotate::euler::RotateOrder;
 use crate::node::NodeId;
 
+const NUM_VALUES_PER_POINT: usize = 2;
+const NUM_VALUES_PER_DEVIATION: usize = 2;
+
 /// flattened scene data with an un-editable hierarchy.
 pub struct FlatScene {
     // The node ids for bundles and cameras. These can be used to look
@@ -60,8 +63,8 @@ pub struct FlatScene {
     out_tfm_world_matrix_list: Vec<Matrix44>,
     out_bnd_world_matrix_list: Vec<Matrix44>,
     out_cam_world_matrix_list: Vec<Matrix44>,
-    out_point_list: Vec<(Real, Real)>,
-    out_deviation_list: Vec<(Real, Real)>,
+    out_point_list: Vec<Real>,
+    out_deviation_list: Vec<Real>,
 }
 
 impl FlatScene {
@@ -107,12 +110,30 @@ impl FlatScene {
         }
     }
 
-    pub fn point_list(&self) -> &[(Real, Real)] {
-        &self.out_point_list
+    pub fn points(&self) -> &[Real] {
+        &self.out_point_list[..]
     }
 
-    pub fn deviation_list(&self) -> &[(Real, Real)] {
-        &self.out_deviation_list
+    pub fn deviations(&self) -> &[Real] {
+        &self.out_deviation_list[..]
+    }
+
+    pub fn num_points(&self) -> usize {
+        let len = self.out_point_list.len();
+        if len > 0 {
+            len / NUM_VALUES_PER_POINT
+        } else {
+            0
+        }
+    }
+
+    pub fn num_deviations(&self) -> usize {
+        let len = self.out_deviation_list.len();
+        if len > 0 {
+            len / NUM_VALUES_PER_DEVIATION
+        } else {
+            0
+        }
     }
 
     pub fn evaluate(
@@ -197,8 +218,10 @@ impl FlatScene {
         );
         self.out_point_list.clear();
         self.out_deviation_list.clear();
-        self.out_point_list.reserve(num_markers * num_frames);
-        self.out_deviation_list.reserve(num_markers * num_frames);
+        self.out_point_list
+            .reserve(num_markers * NUM_VALUES_PER_POINT * num_frames);
+        self.out_deviation_list
+            .reserve(num_markers * NUM_VALUES_PER_DEVIATION * num_frames);
 
         let cam_attrs_iter = (0..).zip(self.cam_attr_list.iter());
         for (i, cam_attrs) in cam_attrs_iter {
@@ -237,8 +260,8 @@ impl FlatScene {
                         cam_proj_matrix,
                         bnd_matrix,
                     );
-                    let point = (reproj_mat[0], reproj_mat[1]);
-                    self.out_point_list.push(point);
+                    self.out_point_list.push(reproj_mat[0]);
+                    self.out_point_list.push(reproj_mat[1]);
 
                     let mkr_tx = attrdb.get_attr_value(mkr_attrs.tx, frame);
                     let mkr_ty = attrdb.get_attr_value(mkr_attrs.ty, frame);
@@ -248,7 +271,8 @@ impl FlatScene {
 
                     let dev_x = (mkr_tx - reproj_mat[0]).abs();
                     let dev_y = (mkr_ty - reproj_mat[1]).abs();
-                    self.out_deviation_list.push((dev_x, dev_y));
+                    self.out_deviation_list.push(dev_x);
+                    self.out_deviation_list.push(dev_y);
                 }
             }
         }

@@ -31,6 +31,11 @@ AttrDataBlock::AttrDataBlock() noexcept
     std::cout << "AttrDataBlock()" << '\n';
 }
 
+rust::Box<ShimAttrDataBlock>
+AttrDataBlock::get_inner() noexcept {
+    return std::move(inner_);
+}
+
 void
 AttrDataBlock::clear() noexcept {
     return inner_->clear();

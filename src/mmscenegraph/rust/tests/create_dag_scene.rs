@@ -240,8 +240,7 @@ fn evaluate_scene() {
     eval_objects.add_camera(cam_0);
     eval_objects.add_camera(cam_1);
 
-    let mut flat_scene =
-        bake_scene_graph(&sg, &eval_objects);
+    let mut flat_scene = bake_scene_graph(&sg, &eval_objects);
 
     let mut frame_list = Vec::new();
     frame_list.push(1001);
@@ -256,11 +255,13 @@ fn evaluate_scene() {
     // - Calculate deviation between Markers and Bundles.
     flat_scene.evaluate(&attrdb, &frame_list);
 
-    let out_point_list = flat_scene.point_list();
-    let out_deviation_list = flat_scene.deviation_list();
+    let out_point_list = flat_scene.points();
+    let out_deviation_list = flat_scene.deviations();
     println!("2D Points (reprojected) count: {}", out_point_list.len());
     println!("Deviation count: {}", out_deviation_list.len());
-    let point_dev_iter = out_point_list.iter().zip(out_deviation_list);
+    let points_iter = out_point_list.chunks_exact(2);
+    let dev_iter = out_deviation_list.chunks_exact(2);
+    let point_dev_iter = points_iter.zip(dev_iter);
     for (i, (point, dev)) in (0..).zip(point_dev_iter) {
         println!("2D Point {}: pos: {:?} dev: {:?}", i, point, dev);
     }

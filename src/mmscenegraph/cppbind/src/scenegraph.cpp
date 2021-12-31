@@ -36,11 +36,6 @@ SceneGraph::get_inner() noexcept {
 }
 
 void
-SceneGraph::set_inner(rust::Box<ShimSceneGraph> value) noexcept {
-    inner_ = std::move(value);
-}
-
-void
 SceneGraph::clear() noexcept {
     return inner_->clear();
 }

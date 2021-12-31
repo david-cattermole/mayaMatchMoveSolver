@@ -120,7 +120,7 @@ impl FlatScene {
         attrdb: &AttrDataBlock,
         frame_list: &[FrameValue],
     ) {
-        // println!("EVALUATE! =================================================");
+        // println!("EVALUATE! ==============================================");
         let num_frames = frame_list.len();
         let num_bundles = self.bnd_ids.len();
         let num_cameras = self.cam_ids.len();
@@ -154,7 +154,10 @@ impl FlatScene {
             frame_list,
             &mut self.out_tfm_world_matrix_list,
         );
-        // println!("World Matrix count: {}", self.out_tfm_world_matrix_list.len());
+        // println!(
+        //     "World Matrix count: {}",
+        //     self.out_tfm_world_matrix_list.len()
+        // );
         // println!("World Matrix: {:#?}", self.out_tfm_world_matrix_list);
 
         for (i, node_id) in (0..).zip(self.tfm_node_ids.iter()) {
@@ -180,8 +183,14 @@ impl FlatScene {
                 _ => (),
             }
         }
-        // println!("Bundle Matrix count: {}", self.out_bnd_world_matrix_list.len());
-        // println!("Camera Matrix count: {}", self.out_cam_world_matrix_list.len());
+        // println!(
+        //     "Bundle Matrix count: {}",
+        //     self.out_bnd_world_matrix_list.len()
+        // );
+        // println!(
+        //     "Camera Matrix count: {}",
+        //     self.out_cam_world_matrix_list.len()
+        // );
 
         assert!(
             self.out_cam_world_matrix_list.len() == (num_cameras * num_frames)

@@ -43,7 +43,7 @@ set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodes
 set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
 set(PROJECT_COPYRIGHT
   "2018, 2019, 2020, 2021, David Cattermole, Anil Reddy, Kazuma Tonegawa, Patcha Saheb Binginapalli.")
-
+enable_testing()
 
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
@@ -195,7 +195,6 @@ if (BUILD_CONFIG)
 endif ()
 
 if (BUILD_TESTS)
-  enable_testing()
   add_subdirectory(tests)
 endif ()
 

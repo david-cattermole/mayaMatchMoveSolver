@@ -28,6 +28,9 @@
 #include <iomanip>  // setfill, setw
 #include <string>   // string
 
+// Maya
+#include <maya/MStreamUtils.h>
+
 #ifdef _WIN32
     #include <intrin.h>
     #include <Windows.h>  // GetSystemTime
@@ -51,10 +54,10 @@
 #define DBG(x)                                                          \
     __pragma(warning(push))                                             \
     __pragma(warning(disable:4127))                                     \
-    do { std::cerr << __FILE__  << ':' << __LINE__ << ' ' << x << '\n'; } while (0); \
+    do { MStreamUtils::stdErrorStream() << __FILE__  << ':' << __LINE__ << ' ' << x << '\n'; } while (0); \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define DBG(x) do { std::cerr << __FILE__  << ':' << __LINE__ << ' ' << x << '\n'; } while (0)
+#define DBG(x) do { MStreamUtils::stdErrorStream() << __FILE__  << ':' << __LINE__ << ' ' << x << '\n'; } while (0)
 #endif
 //#endif // NDEBUG
 
@@ -62,40 +65,40 @@
 #define VRB(x)                                                       \
     __pragma(warning(push))                                          \
     __pragma(warning(disable:4127))                                  \
-    do { if (verbose) { std::cerr << x << '\n'; } } while (0);       \
+    do { if (verbose) { MStreamUtils::stdErrorStream() << x << '\n'; } } while (0);       \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define VRB(x) do { if (verbose) { std::cerr << x << '\n'; } } while (0)
+#define VRB(x) do { if (verbose) { MStreamUtils::stdErrorStream() << x << '\n'; } } while (0)
 #endif
 
 #ifdef _WIN32  // Windows MSVC
 #define ERR(x)                                              \
     __pragma(warning(push))                                 \
     __pragma(warning(disable:4127))                         \
-    do { std::cerr << "ERROR: " << x << '\n'; } while (0);  \
+    do { MStreamUtils::stdErrorStream() << "ERROR: " << x << '\n'; } while (0);  \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define ERR(x) do { std::cerr << "ERROR: " << x << '\n'; } while (0)
+#define ERR(x) do { MStreamUtils::stdErrorStream()  << "ERROR: " << x << '\n'; } while (0)
 #endif
 
 #ifdef _WIN32  // Windows MSVC
 #define WRN(x)                                                  \
     __pragma(warning(push))                                     \
     __pragma(warning(disable:4127))                             \
-    do { std::cerr << "WARNING: " << x << '\n'; } while (0);    \
+    do { MStreamUtils::stdErrorStream()  << "WARNING: " << x << '\n'; } while (0);    \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define WRN(x) do { std::cerr << "WARNING: " << x << '\n'; } while (0)
+#define WRN(x) do { MStreamUtils::stdErrorStream() << "WARNING: " << x << '\n'; } while (0)
 #endif
 
 #ifdef _WIN32  // Windows MSVC
 #define INFO(x)                                                     \
     __pragma(warning(push))                                         \
     __pragma(warning(disable:4127))                                 \
-    do { std::cerr << x << '\n'; } while (0);                       \
+    do { MStreamUtils::stdErrorStream() << x << '\n'; } while (0);                       \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define INFO(x) do { std::cerr << x << '\n'; } while (0)
+#define INFO(x) do { MStreamUtils::stdErrorStream() << x << '\n'; } while (0)
 #endif
 
 // Used to indicate to the user that a variable is not used, and
@@ -226,12 +229,12 @@ namespace debug {
         void print(std::string heading, unsigned int loopNums = 0) {
             Ticks ticks = get_ticks(loopNums);
             if (loopNums <= 1) {
-                std::cout << heading << " Ticks: ";
+                MStreamUtils::stdErrorStream() << heading << " Ticks: ";
             } else if (loopNums > 0) {
-                std::cout << heading << " Ticks (per-loop): ";
+                MStreamUtils::stdErrorStream() << heading << " Ticks (per-loop): ";
             }
-            std::cout << ticks << " ticks";
-            std::cout << std::endl;
+            MStreamUtils::stdErrorStream() << ticks << " ticks";
+            MStreamUtils::stdErrorStream() << std::endl;
         }
     };
 
@@ -271,12 +274,12 @@ namespace debug {
         void printInSec(std::string heading, unsigned int loopNums = 0) {
             double secs = get_seconds(loopNums);
             if (loopNums <= 1) {
-                std::cout << heading << " Time: ";
+                MStreamUtils::stdErrorStream() << heading << " Time: ";
             } else if (loopNums > 0) {
-                std::cout << heading << " Time (per-loop): ";
+                MStreamUtils::stdErrorStream() << heading << " Time (per-loop): ";
             }
-            std::cout << secs << " seconds";
-            std::cout << std::endl;
+            MStreamUtils::stdErrorStream() << secs << " seconds";
+            MStreamUtils::stdErrorStream() << std::endl;
         }
 
     };

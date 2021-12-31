@@ -122,7 +122,6 @@ MStatus getAsObject(
     const MString nodeName,
     MObject &object
 ) {
-    DBG("getAsObject: node=" << nodeName);
     MStatus status;
     MSelectionList selList;
     status = getAsSelectionList(nodeName, selList);
@@ -139,7 +138,6 @@ MStatus getAsDagPath(
     const MString nodeName,
     MDagPath &nodeDagPath
 ) {
-    DBG("getAsDagPath: node=" << nodeName);
     MStatus status;
     MSelectionList selList;
     status = getAsSelectionList(nodeName, selList);

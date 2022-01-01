@@ -45,6 +45,14 @@ impl ShimAttrDataBlock {
         self.inner.clear()
     }
 
+    pub fn num_attr_static(&self) -> usize {
+        self.inner.num_attr_static()
+    }
+
+    pub fn num_attr_anim_dense(&self) -> usize {
+        self.inner.num_attr_anim_dense()
+    }
+
     pub fn create_attr_static(&mut self, value: CoreReal) -> BindAttrId {
         let attr_id = self.inner.create_attr_static(value);
         core_to_bind_attr_id(attr_id)

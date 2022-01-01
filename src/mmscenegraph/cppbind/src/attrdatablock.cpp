@@ -28,7 +28,6 @@ namespace mmscenegraph {
 
 AttrDataBlock::AttrDataBlock() noexcept
         : inner_(shim_create_attr_data_block_box()) {
-    std::cout << "AttrDataBlock()" << '\n';
 }
 
 rust::Box<ShimAttrDataBlock>
@@ -37,8 +36,24 @@ AttrDataBlock::get_inner() noexcept {
 }
 
 void
+AttrDataBlock::set_inner(rust::Box<ShimAttrDataBlock> &value) noexcept {
+    inner_ = std::move(value);
+    return;
+}
+
+void
 AttrDataBlock::clear() noexcept {
     return inner_->clear();
+}
+
+size_t
+AttrDataBlock::num_attr_static() noexcept {
+    return inner_->num_attr_static();
+}
+
+size_t
+AttrDataBlock::num_attr_anim_dense() noexcept {
+    return inner_->num_attr_anim_dense();
 }
 
 AttrId

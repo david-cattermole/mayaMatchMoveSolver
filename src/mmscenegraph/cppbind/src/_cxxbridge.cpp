@@ -1083,6 +1083,8 @@ struct MarkerNode final {
 #define CXXBRIDGE1_STRUCT_mmscenegraph$ShimAttrDataBlock
 struct ShimAttrDataBlock final : public ::rust::Opaque {
   MMSCENEGRAPH_API_EXPORT void clear() noexcept;
+  MMSCENEGRAPH_API_EXPORT ::std::size_t num_attr_static() const noexcept;
+  MMSCENEGRAPH_API_EXPORT ::std::size_t num_attr_anim_dense() const noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::AttrId create_attr_static(double value) noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::AttrId create_attr_anim_dense(::rust::Vec<double> values, ::std::uint32_t frame_start) noexcept;
   MMSCENEGRAPH_API_EXPORT double get_attr_value(::mmscenegraph::AttrId attr_id, ::std::uint32_t frame) const noexcept;
@@ -1218,6 +1220,10 @@ bool mmscenegraph$cxxbridge1$MarkerNode$operator$le(const MarkerNode &, const Ma
 ::std::size_t mmscenegraph$cxxbridge1$ShimAttrDataBlock$operator$alignof() noexcept;
 
 void mmscenegraph$cxxbridge1$ShimAttrDataBlock$clear(::mmscenegraph::ShimAttrDataBlock &self) noexcept;
+
+::std::size_t mmscenegraph$cxxbridge1$ShimAttrDataBlock$num_attr_static(const ::mmscenegraph::ShimAttrDataBlock &self) noexcept;
+
+::std::size_t mmscenegraph$cxxbridge1$ShimAttrDataBlock$num_attr_anim_dense(const ::mmscenegraph::ShimAttrDataBlock &self) noexcept;
 
 ::mmscenegraph::AttrId mmscenegraph$cxxbridge1$ShimAttrDataBlock$create_attr_static(::mmscenegraph::ShimAttrDataBlock &self, double value) noexcept;
 
@@ -1540,6 +1546,14 @@ MMSCENEGRAPH_API_EXPORT void ShimAttrDataBlock::clear() noexcept {
   mmscenegraph$cxxbridge1$ShimAttrDataBlock$clear(*this);
 }
 
+MMSCENEGRAPH_API_EXPORT ::std::size_t ShimAttrDataBlock::num_attr_static() const noexcept {
+  return mmscenegraph$cxxbridge1$ShimAttrDataBlock$num_attr_static(*this);
+}
+
+MMSCENEGRAPH_API_EXPORT ::std::size_t ShimAttrDataBlock::num_attr_anim_dense() const noexcept {
+  return mmscenegraph$cxxbridge1$ShimAttrDataBlock$num_attr_anim_dense(*this);
+}
+
 MMSCENEGRAPH_API_EXPORT ::mmscenegraph::AttrId ShimAttrDataBlock::create_attr_static(double value) noexcept {
   return mmscenegraph$cxxbridge1$ShimAttrDataBlock$create_attr_static(*this, value);
 }
@@ -1636,6 +1650,7 @@ MMSCENEGRAPH_API_EXPORT ::rust::Slice<const double> ShimFlatScene::points() cons
 MMSCENEGRAPH_API_EXPORT ::rust::Slice<const double> ShimFlatScene::deviations() const noexcept {
   return ::rust::impl<::rust::Slice<const double>>::slice(mmscenegraph$cxxbridge1$ShimFlatScene$deviations(*this));
 }
+
 
 MMSCENEGRAPH_API_EXPORT ::std::size_t ShimFlatScene::num_points() const noexcept {
   return mmscenegraph$cxxbridge1$ShimFlatScene$num_points(*this);

@@ -42,7 +42,17 @@ public:
     get_inner() noexcept;
 
     MMSCENEGRAPH_API_EXPORT
+    void
+    set_inner(rust::Box<ShimAttrDataBlock> &value) noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
     void clear() noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    size_t num_attr_static() noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    size_t num_attr_anim_dense() noexcept;
 
     MMSCENEGRAPH_API_EXPORT
     AttrId create_attr_static(Real value) noexcept;

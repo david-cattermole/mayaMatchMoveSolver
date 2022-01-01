@@ -1055,6 +1055,8 @@ struct MarkerNode final {
 #define CXXBRIDGE1_STRUCT_mmscenegraph$ShimAttrDataBlock
 struct ShimAttrDataBlock final : public ::rust::Opaque {
   MMSCENEGRAPH_API_EXPORT void clear() noexcept;
+  MMSCENEGRAPH_API_EXPORT ::std::size_t num_attr_static() const noexcept;
+  MMSCENEGRAPH_API_EXPORT ::std::size_t num_attr_anim_dense() const noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::AttrId create_attr_static(double value) noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::AttrId create_attr_anim_dense(::rust::Vec<double> values, ::std::uint32_t frame_start) noexcept;
   MMSCENEGRAPH_API_EXPORT double get_attr_value(::mmscenegraph::AttrId attr_id, ::std::uint32_t frame) const noexcept;

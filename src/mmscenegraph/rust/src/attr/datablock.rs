@@ -44,6 +44,14 @@ impl AttrDataBlock {
         self.anim_dense_attrs.clear();
     }
 
+    pub fn num_attr_static(&self) -> usize {
+        self.static_attrs.len()
+    }
+
+    pub fn num_attr_anim_dense(&self) -> usize {
+        self.anim_dense_attrs.len()
+    }
+
     pub fn create_attr_static(&mut self, value: Real) -> AttrId {
         let mut attr = StaticAttr::new();
         attr.set_value(value);

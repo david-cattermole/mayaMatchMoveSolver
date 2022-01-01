@@ -215,6 +215,9 @@ pub mod ffi {
 
         fn clear(&mut self);
 
+        fn num_attr_static(&self) -> usize;
+        fn num_attr_anim_dense(&self) -> usize;
+
         fn create_attr_static(&mut self, value: f64) -> AttrId;
         fn create_attr_anim_dense(
             &mut self,

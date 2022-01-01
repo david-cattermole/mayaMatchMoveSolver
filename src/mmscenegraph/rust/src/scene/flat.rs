@@ -34,6 +34,7 @@ use crate::math::rotate::euler::RotateOrder;
 use crate::node::NodeId;
 
 const NUM_VALUES_PER_POINT: usize = 2;
+const NUM_VALUES_PER_MARKER: usize = 2;
 const NUM_VALUES_PER_DEVIATION: usize = 2;
 
 /// flattened scene data with an un-editable hierarchy.
@@ -63,6 +64,7 @@ pub struct FlatScene {
     out_tfm_world_matrix_list: Vec<Matrix44>,
     out_bnd_world_matrix_list: Vec<Matrix44>,
     out_cam_world_matrix_list: Vec<Matrix44>,
+    out_marker_list: Vec<Real>,
     out_point_list: Vec<Real>,
     out_deviation_list: Vec<Real>,
 }
@@ -105,9 +107,14 @@ impl FlatScene {
             out_tfm_world_matrix_list: Vec::new(),
             out_bnd_world_matrix_list: Vec::new(),
             out_cam_world_matrix_list: Vec::new(),
+            out_marker_list: Vec::new(),
             out_point_list: Vec::new(),
             out_deviation_list: Vec::new(),
         }
+    }
+
+    pub fn markers(&self) -> &[Real] {
+        &self.out_marker_list[..]
     }
 
     pub fn points(&self) -> &[Real] {
@@ -116,6 +123,15 @@ impl FlatScene {
 
     pub fn deviations(&self) -> &[Real] {
         &self.out_deviation_list[..]
+    }
+
+    pub fn num_markers(&self) -> usize {
+        let len = self.out_marker_list.len();
+        if len > 0 {
+            len / NUM_VALUES_PER_MARKER
+        } else {
+            0
+        }
     }
 
     pub fn num_points(&self) -> usize {
@@ -216,8 +232,11 @@ impl FlatScene {
         assert!(
             self.out_cam_world_matrix_list.len() == (num_cameras * num_frames)
         );
+        self.out_marker_list.clear();
         self.out_point_list.clear();
         self.out_deviation_list.clear();
+        self.out_marker_list
+            .reserve(num_markers * NUM_VALUES_PER_MARKER * num_frames);
         self.out_point_list
             .reserve(num_markers * NUM_VALUES_PER_POINT * num_frames);
         self.out_deviation_list
@@ -265,6 +284,8 @@ impl FlatScene {
 
                     let mkr_tx = attrdb.get_attr_value(mkr_attrs.tx, frame);
                     let mkr_ty = attrdb.get_attr_value(mkr_attrs.ty, frame);
+                    self.out_marker_list.push(mkr_tx);
+                    self.out_marker_list.push(mkr_ty);
 
                     // // TODO: Use marker weight?
                     // let mkr_weight = attr_data_block.get_attr_value(mkr_attr.weight, frame);

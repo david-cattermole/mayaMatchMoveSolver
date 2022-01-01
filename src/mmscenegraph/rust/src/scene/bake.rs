@@ -251,7 +251,7 @@ pub fn bake_scene_graph(
     mkr_attr_list.reserve(mkr_nodes.len());
     for mkr_node in mkr_nodes.iter() {
         let attr_tx = mkr_node.get_attr_tx();
-        let attr_ty = mkr_node.get_attr_tx();
+        let attr_ty = mkr_node.get_attr_ty();
         let attr_weight = mkr_node.get_attr_weight();
 
         let mkr_attrs = AttrMarkerIds {

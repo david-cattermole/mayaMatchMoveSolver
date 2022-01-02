@@ -727,8 +727,8 @@ def _compile_single_frame(col,
                           block_iter_num,
                           lineup_iter_num,
                           auto_attr_blocks,
-                          precomputed_data,
                           remove_unused_objects,
+                          precomputed_data,
                           withtest,
                           verbose):
     """

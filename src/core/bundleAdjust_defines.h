@@ -52,8 +52,8 @@
 // The default solver to use, if all solvers are available.
 #define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LMDER
 
-// Enable the Maya profiling data collection.
-#define MAYA_PROFILE 1
+// // Enable the Maya profiling data collection.
+// #define MAYA_PROFILE 1
 
 // Enable the use of "debug file" output, so the solver writes out a
 // debug file with all the internal details.

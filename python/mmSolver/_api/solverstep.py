@@ -243,27 +243,15 @@ class SolverStep(solverbase.SolverBase):
 
     def get_scene_graph_mode(self):
         """
-        The type of internal scene graph to use, as an index.
-
-        See the question
-        :ref:`solver-faq-how-to-get-supported-solver-types`,
-        for more details of the values returned.
-
         :rtype: int or None
         """
         return self._data.get('scene_graph_mode')
 
     def set_scene_graph_mode(self, value):
         """
-        Set the internal scene graph to use for solving.
-
-        See the question
-        :ref:`solver-faq-how-to-get-supported-solver-types`,
-        for more details of the values that can be set.
-
-        :param value: Solver type index number.
         :type value: int
         """
+        assert value in const.SCENE_GRAPH_MODE_LIST
         self._data['scene_graph_mode'] = value
 
     def get_verbose(self):

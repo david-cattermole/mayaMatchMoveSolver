@@ -1043,7 +1043,7 @@ class SolverStandard(solverbase.SolverBase):
 
         If True, the solve will try to trigger evalation of complex
         node graphs (such as Mesh Rivets), by changing the
-        timeEvalModeq of the mmSolver command.
+        timeEvalMode of the mmSolver command.
 
         :param value: Value to be set.
         :type value: bool or int or long

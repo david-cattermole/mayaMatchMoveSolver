@@ -21,6 +21,8 @@
  *
  */
 
+#include "bundleAdjust_relationships.h"
+
 // STL
 #include <ctime>
 #include <cmath>

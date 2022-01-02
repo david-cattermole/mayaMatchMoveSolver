@@ -25,8 +25,17 @@
 
 namespace mmscenegraph {
 
+FlatScene::FlatScene() noexcept
+        : inner_(shim_create_flat_scene_box()) {
+}
+
 FlatScene::FlatScene(rust::Box<ShimFlatScene> flat_scene) noexcept
         : inner_(std::move(flat_scene)) {
+}
+
+rust::Slice<const Real>
+FlatScene::markers() const noexcept {
+    return inner_->markers();
 }
 
 rust::Slice<const Real>
@@ -37,6 +46,11 @@ FlatScene::points() const noexcept {
 rust::Slice<const Real>
 FlatScene::deviations() const noexcept {
     return inner_->deviations();
+}
+
+size_t
+FlatScene::num_markers() const noexcept {
+    return inner_->num_markers();
 }
 
 size_t

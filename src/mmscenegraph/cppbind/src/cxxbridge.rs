@@ -291,8 +291,11 @@ pub mod ffi {
     extern "Rust" {
         type ShimFlatScene;
 
+        fn markers(&self) -> &[f64];
         fn points(&self) -> &[f64];
         fn deviations(&self) -> &[f64];
+
+        fn num_markers(&self) -> usize;
         fn num_points(&self) -> usize;
         fn num_deviations(&self) -> usize;
 

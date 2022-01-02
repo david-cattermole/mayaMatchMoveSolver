@@ -39,11 +39,19 @@ public:
 
     MMSCENEGRAPH_API_EXPORT
     rust::Slice<const Real>
+    markers() const noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    rust::Slice<const Real>
     points() const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
     rust::Slice<const Real>
     deviations() const noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
+    size_t
+    num_markers() const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
     size_t
@@ -59,7 +67,6 @@ public:
         AttrDataBlock &attrdb,
         std::vector<FrameValue> &frames
     ) noexcept;
-
 
 private:
     rust::Box<ShimFlatScene> inner_;

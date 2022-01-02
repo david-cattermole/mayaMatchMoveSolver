@@ -38,12 +38,20 @@ impl ShimFlatScene {
         &self.inner
     }
 
+    pub fn markers(&self) -> &[CoreReal] {
+        &self.inner.markers()
+    }
+
     pub fn points(&self) -> &[CoreReal] {
         &self.inner.points()
     }
 
     pub fn deviations(&self) -> &[CoreReal] {
         &self.inner.deviations()
+    }
+
+    pub fn num_markers(&self) -> usize {
+        self.inner.num_markers()
     }
 
     pub fn num_points(&self) -> usize {

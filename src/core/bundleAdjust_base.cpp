@@ -442,8 +442,7 @@ void logResultsSolveDetails(
             solverResult.iterations);
         // Note: We use std::endl to flush the stream, and ensure an
         //  update for the user.
-        MStreamUtils::stdErrorStream() << std::string(formatBuffer)
-                                       << std::endl;
+        INFO(std::string(formatBuffer));
     }
 
     // Add all the data into the output string from the Maya command.
@@ -1589,28 +1588,24 @@ bool solve(SolverOptions &solverOptions,
 
         // Print warnings about unused solve objects.
         if ((unusedMarkerList.size() > 0) && (solverOptions.removeUnusedMarkers)) {
-            MStreamUtils::stdErrorStream()
-                << "Unused Markers detected and ignored:" << std::endl;
+            INFO("Unused Markers detected and ignored:");
             for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
                  mit != unusedMarkerList.cend();
                  ++mit) {
                 MarkerPtr marker = *mit;
                 const char *markerName = marker->getLongNodeName().asChar();
-                MStreamUtils::stdErrorStream()
-                    << "-> " << markerName << std::endl;
+                INFO("-> " << markerName);
             }
         }
 
         if ((unusedAttrList.size() > 0) && (solverOptions.removeUnusedAttributes)) {
-            MStreamUtils::stdErrorStream()
-                << "Unused Attributes detected and ignored:" << std::endl;
+            INFO("Unused Attributes detected and ignored:");
             for (AttrPtrListCIt ait = unusedAttrList.cbegin();
                  ait != unusedAttrList.cend();
                  ++ait) {
                 AttrPtr attr = *ait;
                 const char *attrName = attr->getLongName().asChar();
-                MStreamUtils::stdErrorStream()
-                    << "-> " << attrName << std::endl;
+                INFO("-> " << attrName);
             }
         }
 

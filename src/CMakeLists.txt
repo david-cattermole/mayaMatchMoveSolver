@@ -47,6 +47,7 @@ set(SOURCE_FILES
   core/mmdata.cpp
   core/mmmath.cpp
   core/reprojection.cpp
+  mayaSceneGraph.cpp
   Camera.cpp
   Marker.cpp
   Bundle.cpp

@@ -26,7 +26,7 @@
 
 // STL
 #include <string>
-#include <vector> 
+#include <vector>
 #include <iostream>
 #include <fstream>
 
@@ -41,11 +41,15 @@
 #include <maya/MDGModifier.h>
 #include <maya/MComputation.h>
 
+// MM Scene Graph
+#include "mmscenegraph/mmscenegraph.h"
+
 // Internal Objects
 #include <Camera.h>
 #include <Marker.h>
 #include <Bundle.h>
 #include <Attr.h>
+#include <core/bundleAdjust_defines.h>
 
 // Group all the benchmark timers together.
 struct SolverTimer {
@@ -62,6 +66,12 @@ struct SolverTimer {
     debug::CPUBenchmark paramBenchTicks;
 };
 
+enum class SceneGraphMode
+{
+    kMaya = 0,
+    kMMSceneGraph = 1,
+    kNumSceneGraphModes,
+};
 
 struct SolverOptions {
     int iterMax;
@@ -74,6 +84,7 @@ struct SolverOptions {
     int autoParamScale;
     int robustLossType;
     double robustLossScale;
+    SceneGraphMode sceneGraphMode;
     int solverType;
     int timeEvalMode;
     bool acceptOnlyBetter;
@@ -101,6 +112,16 @@ struct SolverData {
     MTimeArray frameList;  // Times to solve
     SmoothAttrsPtrList smoothAttrsList;
     StiffAttrsPtrList stiffAttrsList;
+
+    // MM Scene Graph
+    mmscenegraph::SceneGraph mmsgSceneGraph;
+    mmscenegraph::AttrDataBlock mmsgAttrDataBlock;
+    std::vector<mmscenegraph::FrameValue> mmsgFrameList;
+    mmscenegraph::FlatScene mmsgFlatScene;
+    std::vector<mmscenegraph::CameraNode> mmsgCameraNodes;
+    std::vector<mmscenegraph::BundleNode> mmsgBundleNodes;
+    std::vector<mmscenegraph::MarkerNode> mmsgMarkerNodes;
+    std::vector<mmscenegraph::AttrId> mmsgAttrIdList;
 
     // Relational mapping indexes.
     std::vector<std::pair<int, int> > paramToAttrList;

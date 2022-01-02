@@ -248,6 +248,7 @@ private:
                         //                     1=cminpack_lmdif,
                         //                     2=cmpinpack_lmder.
     int m_timeEvalMode;  // How to evaluate values at different times?
+    SceneGraphMode m_sceneGraphMode;
     bool m_acceptOnlyBetter;  // Do not accept solved parameter values if
                               // the average devation is higher than at start.
     bool m_removeUnusedMarkers;     // Remove unused Markers from solve?

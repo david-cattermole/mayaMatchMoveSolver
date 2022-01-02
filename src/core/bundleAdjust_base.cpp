@@ -67,6 +67,7 @@
 #include <Marker.h>
 
 // Local
+#include "mayaSceneGraph.h"
 #include <core/bundleAdjust_base.h>
 #include <core/bundleAdjust_relationships.h>
 // #include <core/bundleAdjust_levmar_bc_dif.h>
@@ -74,8 +75,9 @@
 #include <core/bundleAdjust_cminpack_lmdif.h>
 #include <core/bundleAdjust_cminpack_lmder.h>
 #include <core/bundleAdjust_solveFunc.h>
+#include <mmscenegraph/mmscenegraph.h>
 
-
+namespace mmsg = mmscenegraph;
 
 // Get a list of all available solver types (index and name).
 //
@@ -1290,7 +1292,41 @@ bool solve(SolverOptions &solverOptions,
         timer.solveBenchTicks.start();
     }
 
+    auto mmsgFrameList = std::vector<mmsg::FrameValue>();
+    auto mmsgSceneGraph = mmsg::SceneGraph();
+    auto mmsgAttrDataBlock = mmsg::AttrDataBlock();
+    auto mmsgFlatScene = mmsg::FlatScene();
+    auto mmsgCameraNodes = std::vector<mmsg::CameraNode>();
+    auto mmsgBundleNodes = std::vector<mmsg::BundleNode>();
+    auto mmsgMarkerNodes = std::vector<mmsg::MarkerNode>();
+    auto mmsgAttrIdList = std::vector<mmsg::AttrId>();
+    if (solverOptions.sceneGraphMode == SceneGraphMode::kMaya) {
+    } else if (solverOptions.sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
+        status = construct_scene_graph(
+            cameraList,
+            usedMarkerList,
+            bundleList,
+            usedAttrList,
+            frameList,
+            solverOptions.timeEvalMode,
+            mmsgSceneGraph,
+            mmsgAttrDataBlock,
+            mmsgFlatScene,
+            mmsgFrameList,
+            mmsgCameraNodes,
+            mmsgBundleNodes,
+            mmsgMarkerNodes,
+            mmsgAttrIdList);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    } else {
+        ERR("Invalid Scene Graph mode!");
+        return false;
+    }
+
     // Solving Objects.
+    //
+    // This data structure is passed to the solve function, so we can
+    // access all this data inside the CMinpack solver function.
     SolverData userData;
     userData.cameraList = cameraList;
     userData.markerList = usedMarkerList;
@@ -1299,6 +1335,15 @@ bool solve(SolverOptions &solverOptions,
     userData.frameList = frameList;
     userData.smoothAttrsList = smoothAttrsList;
     userData.stiffAttrsList = stiffAttrsList;
+
+    userData.mmsgSceneGraph = std::move(mmsgSceneGraph);
+    userData.mmsgAttrDataBlock = std::move(mmsgAttrDataBlock);
+    userData.mmsgFrameList = std::move(mmsgFrameList);
+    userData.mmsgFlatScene = std::move(mmsgFlatScene);
+    userData.mmsgCameraNodes = std::move(mmsgCameraNodes);
+    userData.mmsgBundleNodes = std::move(mmsgBundleNodes);
+    userData.mmsgMarkerNodes = std::move(mmsgMarkerNodes);
+    userData.mmsgAttrIdList = std::move(mmsgAttrIdList);
 
     userData.paramToAttrList = paramToAttrList;
     userData.errorToMarkerList = errorToMarkerList;

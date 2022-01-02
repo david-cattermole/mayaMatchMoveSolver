@@ -25,7 +25,6 @@
 #include <core/bundleAdjust_defines.h>
 #include <core/bundleAdjust_data.h>
 #include <mayaUtils.h>
-#include <mmscenegraph/mmscenegraph.h>
 
 // STL
 #include <cmath>
@@ -45,12 +44,11 @@
 #include <maya/MStreamUtils.h>
 
 // Internal Objects
-#include <commonArgFlags.h>
-#include <Attr.h>
-#include <Marker.h>
-#include <Bundle.h>
-#include <Camera.h>
-
+#include "commonArgFlags.h"
+#include "Attr.h"
+#include "Marker.h"
+#include "Bundle.h"
+#include "Camera.h"
 
 MMSolverCmd::~MMSolverCmd() {}
 
@@ -73,7 +71,6 @@ bool MMSolverCmd::isUndoable() const {
     return true;
 }
 
-
 void createSolveLogSyntax(MSyntax &syntax) {
     // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
     syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG,
@@ -84,7 +81,6 @@ void createSolveLogSyntax(MSyntax &syntax) {
                    MSyntax::kString);
     syntax.makeFlagMultiUse(PRINT_STATS_FLAG);
 }
-
 
 void createSolveInfoSyntax(MSyntax &syntax) {
     syntax.addFlag(TAU_FLAG, TAU_FLAG_LONG,
@@ -437,38 +433,6 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
 //
     MStatus status = MStatus::kSuccess;
 
-    mmscenegraph::foo(1);
-    mmscenegraph::foo(2);
-    mmscenegraph::foo(3);
-    mmscenegraph::foo(42);
-    auto cpp_string_1 = mmscenegraph::foobar(1);
-    auto cpp_string_2 = mmscenegraph::foobar(2);
-    auto cpp_string_3 = mmscenegraph::foobar(3);
-    auto cpp_string_42 = mmscenegraph::foobar(42);
-    MStreamUtils::stdErrorStream()
-        << "mmSolver: Rust result: "
-        << cpp_string_1
-        << '\n';
-    MStreamUtils::stdErrorStream()
-        << "mmSolver: Rust result: "
-        << cpp_string_2
-        << '\n';
-    MStreamUtils::stdErrorStream()
-        << "mmSolver: Rust result: "
-        << cpp_string_3
-        << '\n';
-    MStreamUtils::stdErrorStream()
-        << "mmSolver: Rust result: "
-        << cpp_string_42
-        << '\n';
-
-    auto cam = mmscenegraph::make_camera(24.0, 35.0);
-    MStreamUtils::stdErrorStream()
-        << "MM camera:"
-        << " width=" << cam.sensor_width_mm
-        << " focal=" << cam.focal_length_mm
-        << '\n';
-
     // Mouse cursor spinning...
     // MGlobal::executeCommand("waitCursor -state on;");
 
@@ -481,6 +445,9 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     // of edits.
     m_curveChange.setInteractive(true);
 
+    // m_sceneGraphMode = SceneGraphMode::kMaya;
+    m_sceneGraphMode = SceneGraphMode::kMMSceneGraph;
+
     SolverOptions solverOptions;
     solverOptions.iterMax = m_iterations;
     solverOptions.tau = m_tau;
@@ -492,6 +459,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     solverOptions.autoParamScale = m_autoParamScale;
     solverOptions.robustLossType = m_robustLossType;
     solverOptions.robustLossScale = m_robustLossScale;
+    solverOptions.sceneGraphMode = m_sceneGraphMode;
     solverOptions.solverType = m_solverType;
     solverOptions.timeEvalMode = m_timeEvalMode;
     solverOptions.acceptOnlyBetter = m_acceptOnlyBetter;

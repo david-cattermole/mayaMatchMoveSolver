@@ -1165,6 +1165,8 @@ MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimSceneGraph> shim_create_
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimFlatScene> shim_bake_scene_graph(const ::rust::Box<::mmscenegraph::ShimSceneGraph> &sg, const ::rust::Box<::mmscenegraph::ShimEvaluationObjects> &eval_objects) noexcept;
 
+MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimFlatScene> shim_create_flat_scene_box() noexcept;
+
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimEvaluationObjects> shim_create_evaluation_objects_box() noexcept;
 
 MMSCENEGRAPH_API_EXPORT void foo(::std::uint32_t number) noexcept;

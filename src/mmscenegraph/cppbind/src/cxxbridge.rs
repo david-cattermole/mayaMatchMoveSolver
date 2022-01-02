@@ -22,6 +22,7 @@ use crate::attrdatablock::shim_create_attr_data_block_box;
 use crate::attrdatablock::ShimAttrDataBlock;
 use crate::evaluationobjects::shim_create_evaluation_objects_box;
 use crate::evaluationobjects::ShimEvaluationObjects;
+use crate::flatscene::shim_create_flat_scene_box;
 use crate::flatscene::ShimFlatScene;
 use crate::scenebake::shim_bake_scene_graph;
 use crate::scenegraph::shim_create_scene_graph_box;
@@ -309,6 +310,8 @@ pub mod ffi {
             sg: &Box<ShimSceneGraph>,
             eval_objects: &Box<ShimEvaluationObjects>,
         ) -> Box<ShimFlatScene>;
+
+        fn shim_create_flat_scene_box() -> Box<ShimFlatScene>;
     }
 
     extern "Rust" {

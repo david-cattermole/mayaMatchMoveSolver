@@ -1282,6 +1282,8 @@ bool mmscenegraph$cxxbridge1$ShimSceneGraph$set_node_parent(::mmscenegraph::Shim
 void mmscenegraph$cxxbridge1$ShimFlatScene$evaluate(::mmscenegraph::ShimFlatScene &self, const ::rust::Box<::mmscenegraph::ShimAttrDataBlock> &attrdb, ::rust::Slice<const ::std::uint32_t> frame_list) noexcept;
 
 ::mmscenegraph::ShimFlatScene *mmscenegraph$cxxbridge1$shim_bake_scene_graph(const ::rust::Box<::mmscenegraph::ShimSceneGraph> &sg, const ::rust::Box<::mmscenegraph::ShimEvaluationObjects> &eval_objects) noexcept;
+
+::mmscenegraph::ShimFlatScene *mmscenegraph$cxxbridge1$shim_create_flat_scene_box() noexcept;
 ::std::size_t mmscenegraph$cxxbridge1$ShimEvaluationObjects$operator$sizeof() noexcept;
 ::std::size_t mmscenegraph$cxxbridge1$ShimEvaluationObjects$operator$alignof() noexcept;
 
@@ -1679,6 +1681,10 @@ MMSCENEGRAPH_API_EXPORT void ShimFlatScene::evaluate(const ::rust::Box<::mmscene
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimFlatScene> shim_bake_scene_graph(const ::rust::Box<::mmscenegraph::ShimSceneGraph> &sg, const ::rust::Box<::mmscenegraph::ShimEvaluationObjects> &eval_objects) noexcept {
   return ::rust::Box<::mmscenegraph::ShimFlatScene>::from_raw(mmscenegraph$cxxbridge1$shim_bake_scene_graph(sg, eval_objects));
+}
+
+MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimFlatScene> shim_create_flat_scene_box() noexcept {
+  return ::rust::Box<::mmscenegraph::ShimFlatScene>::from_raw(mmscenegraph$cxxbridge1$shim_create_flat_scene_box());
 }
 
 ::std::size_t ShimEvaluationObjects::layout::size() noexcept {

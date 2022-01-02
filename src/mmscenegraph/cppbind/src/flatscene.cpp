@@ -65,12 +65,14 @@ FlatScene::num_deviations() const noexcept {
 
 void
 FlatScene::evaluate(
-        AttrDataBlock &attrdb,
+        AttrDataBlock &attrDataBlock,
         std::vector<FrameValue> &frames
 ) noexcept {
-    auto attrdb_inner = attrdb.get_inner();
+    auto attrDataBlock_inner = attrDataBlock.get_inner();
     rust::Slice<const FrameValue> frames_slice{frames.data(), frames.size()};
-    return inner_->evaluate(attrdb_inner, frames_slice);
+    inner_->evaluate(attrDataBlock_inner, frames_slice);
+
+    attrDataBlock.set_inner(attrDataBlock_inner);
 }
 
 } // namespace mmscenegraph

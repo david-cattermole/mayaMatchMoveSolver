@@ -35,6 +35,9 @@ class FlatScene {
 public:
 
     MMSCENEGRAPH_API_EXPORT
+    FlatScene() noexcept;
+
+    MMSCENEGRAPH_API_EXPORT
     FlatScene(rust::Box<ShimFlatScene> flat_scene) noexcept;
 
     MMSCENEGRAPH_API_EXPORT
@@ -64,7 +67,7 @@ public:
     MMSCENEGRAPH_API_EXPORT
     void
     evaluate(
-        AttrDataBlock &attrdb,
+        AttrDataBlock &attrDataBlock,
         std::vector<FrameValue> &frames
     ) noexcept;
 

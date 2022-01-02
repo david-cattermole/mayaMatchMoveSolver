@@ -66,11 +66,26 @@ struct SolverTimer {
     debug::CPUBenchmark paramBenchTicks;
 };
 
+enum class FrameSolveMode
+{
+    kPerFrame = FRAME_SOLVE_MODE_PER_FRAME,
+    kAllFrameAtOnce = FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE,
+    kNumFrameSolveMode,
+};
+
 enum class SceneGraphMode
 {
     kMayaDag = SCENE_GRAPH_MODE_MAYA_DAG,
     kMMSceneGraph = SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
     kNumSceneGraphModes,
+};
+
+struct PrintStatOptions {
+    bool enable;
+    bool input;
+    bool affects;
+    bool usedSolveObjects;
+    bool deviation;
 };
 
 struct SolverOptions {

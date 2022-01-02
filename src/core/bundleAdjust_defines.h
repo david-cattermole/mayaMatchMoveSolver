@@ -76,6 +76,16 @@
 // The default value
 #define SCENE_GRAPH_MODE_DEFAULT_VALUE SCENE_GRAPH_MODE_MAYA_DAG
 
+
+// How the list of frames is solved.
+//
+// These are the possible values:
+#define FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE  (0)
+#define FRAME_SOLVE_MODE_PER_FRAME  (1)
+// The default value
+#define FRAME_SOLVE_MODE_DEFAULT_VALUE FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE
+
+
 // Print Statistics for mmSolver command.
 //
 // These are the possible values:

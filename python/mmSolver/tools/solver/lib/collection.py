@@ -461,6 +461,9 @@ def compile_collection(col, prog_fn=None):
     """
     s = time.time()
     sol_list = []
+
+    scene_graph_mode = col_state.get_solver_scene_graph_mode_from_collection(col)
+
     solver_tab = col_state.get_solver_tab_from_collection(col)
     assert isinstance(solver_tab, (str, unicode))
     if solver_tab == const.SOLVER_TAB_BASIC_VALUE:
@@ -480,6 +483,7 @@ def compile_collection(col, prog_fn=None):
 
         eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(col)
         eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+        sol.set_scene_graph_mode(scene_graph_mode)
         sol.set_eval_object_relationships(eval_obj_relations)
         sol.set_eval_complex_graphs(eval_complex_graphs)
         sol_list.append(sol)
@@ -517,6 +521,7 @@ def compile_collection(col, prog_fn=None):
         eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
         sol.set_global_solve(global_solve)
         sol.set_only_root_frames(only_root)
+        sol.set_scene_graph_mode(scene_graph_mode)
         sol.set_eval_object_relationships(eval_obj_relations)
         sol.set_eval_complex_graphs(eval_complex_graphs)
         sol_list.append(sol)

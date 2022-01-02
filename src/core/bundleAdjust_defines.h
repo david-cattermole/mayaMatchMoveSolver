@@ -68,6 +68,14 @@
 #define TIME_EVAL_MODE_DG_CONTEXT  (0)
 #define TIME_EVAL_MODE_SET_TIME  (1)
 
+// What Scene Graph should we use for evaluation?
+//
+// These are the possible values:
+#define SCENE_GRAPH_MODE_MAYA_DAG  (0)
+#define SCENE_GRAPH_MODE_MM_SCENE_GRAPH  (1)
+// The default value
+#define SCENE_GRAPH_MODE_DEFAULT_VALUE SCENE_GRAPH_MODE_MAYA_DAG
+
 // Print Statistics for mmSolver command.
 //
 // These are the possible values:

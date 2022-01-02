@@ -68,8 +68,8 @@ struct SolverTimer {
 
 enum class SceneGraphMode
 {
-    kMaya = 0,
-    kMMSceneGraph = 1,
+    kMayaDag = SCENE_GRAPH_MODE_MAYA_DAG,
+    kMMSceneGraph = SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
     kNumSceneGraphModes,
 };
 

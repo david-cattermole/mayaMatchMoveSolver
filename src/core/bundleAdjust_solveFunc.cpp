@@ -295,7 +295,7 @@ void setParameters(
 #endif
 
     const SceneGraphMode sceneGraphMode = ud->solverOptions->sceneGraphMode;
-    if (sceneGraphMode == SceneGraphMode::kMaya) {
+    if (sceneGraphMode == SceneGraphMode::kMayaDag) {
         setParameters_mayaDag(
             numberOfParameters,
             parameters,
@@ -731,7 +731,7 @@ void measureErrors(
     assert(ud->frameList.length() > 0);
 
     const SceneGraphMode sceneGraphMode = ud->solverOptions->sceneGraphMode;
-    if (sceneGraphMode == SceneGraphMode::kMaya) {
+    if (sceneGraphMode == SceneGraphMode::kMayaDag) {
         measureErrors_mayaDag(
             numberOfErrors,
             numberOfMarkerErrors,

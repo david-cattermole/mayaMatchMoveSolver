@@ -113,6 +113,8 @@ void createSolveInfoSyntax(MSyntax &syntax) {
     syntax.addFlag(REMOVE_UNUSED_ATTRIBUTES_FLAG, REMOVE_UNUSED_ATTRIBUTES_FLAG_LONG,
                    MSyntax::kBoolean);
 
+    syntax.addFlag(SCENE_GRAPH_MODE_FLAG, SCENE_GRAPH_MODE_FLAG_LONG,
+                   MSyntax::kUnsigned);
     syntax.addFlag(TIME_EVAL_MODE_FLAG, TIME_EVAL_MODE_FLAG_LONG,
                    MSyntax::kUnsigned);
 }
@@ -187,6 +189,7 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
                                 int &out_robustLossType,
                                 double &out_robustLossScale,
                                 int &out_solverType,
+                                SceneGraphMode &out_sceneGraphMode,
                                 int &out_timeEvalMode,
                                 bool &out_acceptOnlyBetter,
                                 bool &out_supportAutoDiffForward,
@@ -211,6 +214,14 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
         status = argData.getFlagArgument(SOLVER_TYPE_FLAG, 0, out_solverType);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
+
+    // Get 'Scene Graph Mode'
+    uint32_t sceneGraphMode = SCENE_GRAPH_MODE_DEFAULT_VALUE;
+    if (argData.isFlagSet(SCENE_GRAPH_MODE_FLAG)) {
+        status = argData.getFlagArgument(SCENE_GRAPH_MODE_FLAG, 0, sceneGraphMode);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    out_sceneGraphMode = static_cast<SceneGraphMode>(sceneGraphMode);
 
     // Get 'Time Evaluation Mode'
     out_timeEvalMode = TIME_EVAL_MODE_DEFAULT_VALUE;
@@ -396,6 +407,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_robustLossType,
         m_robustLossScale,
         m_solverType,
+        m_sceneGraphMode,
         m_timeEvalMode,
         m_acceptOnlyBetter,
         m_supportAutoDiffForward,
@@ -444,9 +456,6 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     // Don't store each individual edits, just store the combination
     // of edits.
     m_curveChange.setInteractive(true);
-
-    // m_sceneGraphMode = SceneGraphMode::kMaya;
-    m_sceneGraphMode = SceneGraphMode::kMMSceneGraph;
 
     SolverOptions solverOptions;
     solverOptions.iterMax = m_iterations;

@@ -1300,7 +1300,7 @@ bool solve(SolverOptions &solverOptions,
     auto mmsgBundleNodes = std::vector<mmsg::BundleNode>();
     auto mmsgMarkerNodes = std::vector<mmsg::MarkerNode>();
     auto mmsgAttrIdList = std::vector<mmsg::AttrId>();
-    if (solverOptions.sceneGraphMode == SceneGraphMode::kMaya) {
+    if (solverOptions.sceneGraphMode == SceneGraphMode::kMayaDag) {
     } else if (solverOptions.sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
         status = construct_scene_graph(
             cameraList,

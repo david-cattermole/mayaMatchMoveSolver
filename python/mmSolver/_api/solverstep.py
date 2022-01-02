@@ -241,6 +241,31 @@ class SolverStep(solverbase.SolverBase):
         """
         self._data['solver_type'] = value
 
+    def get_scene_graph_mode(self):
+        """
+        The type of internal scene graph to use, as an index.
+
+        See the question
+        :ref:`solver-faq-how-to-get-supported-solver-types`,
+        for more details of the values returned.
+
+        :rtype: int or None
+        """
+        return self._data.get('scene_graph_mode')
+
+    def set_scene_graph_mode(self, value):
+        """
+        Set the internal scene graph to use for solving.
+
+        See the question
+        :ref:`solver-faq-how-to-get-supported-solver-types`,
+        for more details of the values that can be set.
+
+        :param value: Solver type index number.
+        :type value: int
+        """
+        self._data['scene_graph_mode'] = value
+
     def get_verbose(self):
         """
         Should we print lots of information to the terminal?
@@ -525,6 +550,10 @@ class SolverStep(solverbase.SolverBase):
         solver_type = self.get_solver_type()
         if solver_type is not None:
             kwargs['solverType'] = solver_type
+
+        scene_graph_mode = self.get_scene_graph_mode()
+        if scene_graph_mode is not None:
+            kwargs['sceneGraphMode'] = scene_graph_mode
 
         iterations = self.get_max_iterations()
         if iterations is not None:

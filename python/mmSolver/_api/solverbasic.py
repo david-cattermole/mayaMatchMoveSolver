@@ -114,6 +114,26 @@ class SolverBasic(solverbase.SolverBase):
         assert isinstance(value, (bool, int, long))
         self._data['eval_complex_node_graphs'] = bool(value)
 
+    def get_scene_graph_mode(self):
+        """
+        Get 'Scene Graph Mode' value.
+
+        :rtype: int
+        """
+        return self._data.get(
+            'scene_graph_mode',
+            const.SOLVER_STD_SCENE_GRAPH_MODE_DEFAULT_VALUE)
+
+    def set_scene_graph_mode(self, value):
+        """
+        Set 'Scene Graph Mode' value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
+        assert isinstance(value, int)
+        self._data['scene_graph_mode'] = bool(value)
+
     ############################################################################
 
     def get_use_single_frame(self):
@@ -305,6 +325,7 @@ class SolverBasic(solverbase.SolverBase):
         eval_object_relationships = self.get_eval_object_relationships()
         remove_unused_objects = eval_object_relationships
         eval_complex_graphs = self.get_eval_complex_graphs()
+        scene_graph_mode = self.get_scene_graph_mode()
         precomputed_data = self.get_precomputed_data()
 
         # Pre-calculate the 'affects' relationship.
@@ -335,6 +356,7 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_scene_graph_mode(scene_graph_mode)
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
@@ -359,6 +381,7 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
                 sol.set_use_smoothness(not is_first_frame)
                 sol.set_use_stiffness(not is_first_frame)
+                sol.set_scene_graph_mode(scene_graph_mode)
                 sol.set_time_eval_mode(time_eval_mode)
                 sol.set_remove_unused_markers(remove_unused_objects)
                 sol.set_remove_unused_attributes(remove_unused_objects)

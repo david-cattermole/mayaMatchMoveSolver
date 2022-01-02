@@ -172,6 +172,7 @@ def _compile_multi_root_frames(col,
                                batch_frame_list,
                                root_iter_num,
                                remove_unused_objects,
+                               scene_graph_mode,
                                precomputed_data,
                                withtest,
                                verbose):
@@ -198,6 +199,10 @@ def _compile_multi_root_frames(col,
         Should objects that are detected as 'unused' be removed from
         the solver?
     :type remove_unused_objects: bool
+
+    :param scene_graph_mode:
+        Which Scene Graph should be used? 0=Maya DAG or 1=MM Scene Graph.
+    :type scene_graph_mode: int
 
     :param withtest:
         Compile the test/validation Action, as well as the solve Action?
@@ -240,6 +245,7 @@ def _compile_multi_root_frames(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_scene_graph_mode(scene_graph_mode)
         sol.set_remove_unused_markers(remove_unused_objects)
         sol.set_remove_unused_attributes(remove_unused_objects)
         sol.set_precomputed_data(precomputed_data)
@@ -327,6 +333,7 @@ def _compile_multi_inbetween_frames(col,
                                     eval_complex_graphs,
                                     anim_iter_num,
                                     remove_unused_objects,
+                                    scene_graph_mode,
                                     precomputed_data,
                                     withtest,
                                     verbose):
@@ -365,6 +372,10 @@ def _compile_multi_inbetween_frames(col,
         the solver?
     :type remove_unused_objects: bool
 
+    :param scene_graph_mode:
+        Which Scene Graph should be used? 0=Maya DAG or 1=MM Scene Graph.
+    :type scene_graph_mode: int
+
     :param withtest:
         Should validation tests be generated?
     :type withtest: bool
@@ -388,6 +399,7 @@ def _compile_multi_inbetween_frames(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_scene_graph_mode(scene_graph_mode)
         sol.set_remove_unused_markers(remove_unused_objects)
         sol.set_remove_unused_attributes(remove_unused_objects)
         sol.set_precomputed_data(precomputed_data)
@@ -414,6 +426,7 @@ def _compile_multi_inbetween_frames(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(not is_first_frame)
             sol.set_use_stiffness(not is_first_frame)
+            sol.set_scene_graph_mode(scene_graph_mode)
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_time_eval_mode(time_eval_mode)
@@ -442,6 +455,7 @@ def _compile_multi_frame(col,
                          triangulate_bundles,
                          use_euler_filter,
                          remove_unused_objects,
+                         scene_graph_mode,
                          precomputed_data,
                          withtest,
                          verbose):
@@ -517,6 +531,10 @@ def _compile_multi_frame(col,
         the solver?
     :type remove_unused_objects: bool
 
+    :param scene_graph_mode:
+        Which Scene Graph should be used? 0=Maya DAG or 1=MM Scene Graph.
+    :type scene_graph_mode: int
+
     :param withtest:
         Should validation tests be generated?
     :type withtest: bool
@@ -584,6 +602,7 @@ def _compile_multi_frame(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_scene_graph_mode(scene_graph_mode)
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
@@ -623,6 +642,7 @@ def _compile_multi_frame(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_scene_graph_mode(scene_graph_mode)
         sol.set_remove_unused_markers(remove_unused_objects)
         sol.set_remove_unused_attributes(remove_unused_objects)
         sol.set_precomputed_data(precomputed_data)
@@ -671,6 +691,7 @@ def _compile_multi_frame(col,
             root_iter_num,
             precomputed_data,
             remove_unused_objects,
+            scene_graph_mode,
             withtest,
             verbose
         )
@@ -711,6 +732,7 @@ def _compile_multi_frame(col,
         eval_complex_graphs,
         anim_iter_num,
         remove_unused_objects,
+        scene_graph_mode,
         precomputed_data,
         withtest,
         verbose,
@@ -728,6 +750,7 @@ def _compile_single_frame(col,
                           lineup_iter_num,
                           auto_attr_blocks,
                           remove_unused_objects,
+                          scene_graph_mode,
                           precomputed_data,
                           withtest,
                           verbose):
@@ -764,6 +787,10 @@ def _compile_single_frame(col,
         the solver?
     :type remove_unused_objects: bool
 
+    :param scene_graph_mode:
+        Which Scene Graph should be used? 0=Maya DAG or 1=MM Scene Graph.
+    :type scene_graph_mode: int
+
     :param withtest:
         Should validation tests be generated?
     :type withtest: bool
@@ -791,6 +818,7 @@ def _compile_single_frame(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_scene_graph_mode(scene_graph_mode)
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
@@ -810,6 +838,7 @@ def _compile_single_frame(col,
     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
     sol.set_use_smoothness(False)
     sol.set_use_stiffness(False)
+    sol.set_scene_graph_mode(scene_graph_mode)
     sol.set_remove_unused_markers(remove_unused_objects)
     sol.set_remove_unused_attributes(remove_unused_objects)
     sol.set_precomputed_data(precomputed_data)
@@ -1021,6 +1050,26 @@ class SolverStandard(solverbase.SolverBase):
         """
         assert isinstance(value, (bool, int, long))
         self._data['eval_complex_node_graphs'] = bool(value)
+
+    def get_scene_graph_mode(self):
+        """
+        Get 'Scene Graph Mode' value.
+
+        :rtype: int
+        """
+        return self._data.get(
+            'scene_graph_mode',
+            const.SOLVER_STD_SCENE_GRAPH_MODE_DEFAULT_VALUE)
+
+    def set_scene_graph_mode(self, value):
+        """
+        Set 'Scene Graph Mode' value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
+        assert isinstance(value, int)
+        self._data['scene_graph_mode'] = bool(value)
 
     ############################################################################
 
@@ -1321,6 +1370,7 @@ class SolverStandard(solverbase.SolverBase):
         eval_object_relationships = self.get_eval_object_relationships()
         remove_unused_objects = eval_object_relationships
         eval_complex_graphs = self.get_eval_complex_graphs()
+        scene_graph_mode = self.get_scene_graph_mode()
         block_iter_num = self.get_block_iteration_num()
         root_iter_num = self.get_root_iteration_num()
         anim_iter_num = self.get_anim_iteration_num()
@@ -1364,6 +1414,7 @@ class SolverStandard(solverbase.SolverBase):
                 lineup_iter_num,
                 auto_attr_blocks,
                 remove_unused_objects,
+                scene_graph_mode,
                 precomputed_data,
                 withtest,
                 verbose,
@@ -1388,6 +1439,7 @@ class SolverStandard(solverbase.SolverBase):
                 triangulate_bundles,
                 use_euler_filter,
                 remove_unused_objects,
+                scene_graph_mode,
                 precomputed_data,
                 withtest,
                 verbose,

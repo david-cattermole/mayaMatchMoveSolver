@@ -916,6 +916,38 @@ MStatus splitUsedMarkersAndAttributes(MarkerPtrList markerList,
     return status;
 }
 
+
+PrintStatOptions
+constructPrintStats(const MStringArray &printStatsList) {
+    auto printStats = PrintStatOptions{
+        false, // enable
+        false, // input;
+        false, // affects;
+        false, // usedSolveObjects;
+        false  // deviation;
+    };
+    if (printStatsList.length() == 0) {
+        return printStats;
+    }
+    for (uint32_t i = 0; i < printStatsList.length(); ++i) {
+        if (printStatsList[i] == PRINT_STATS_MODE_INPUTS) {
+            printStats.enable = true;
+            printStats.input = true;
+        } else if (printStatsList[i] == PRINT_STATS_MODE_AFFECTS) {
+            printStats.enable = true;
+            printStats.affects = true;
+        } else if (printStatsList[i] == PRINT_STATS_MODE_USED_SOLVE_OBJECTS) {
+            printStats.enable = true;
+            printStats.usedSolveObjects = true;
+        } else if (printStatsList[i] == PRINT_STATS_MODE_DEVIATION) {
+            printStats.enable = true;
+            printStats.deviation = true;
+        }
+    }
+    return printStats;
+}
+
+
 MStatus solveFrames(
         CameraPtrList &cameraList,
         BundlePtrList &bundleList,
@@ -937,7 +969,6 @@ MStatus solveFrames(
         //
         MComputation &out_computation,
         MString &out_debugFile,
-        MStringArray &out_printStatsList,
         const bool verbose,
         //
         IndexPairList &out_paramToAttrList,
@@ -1315,8 +1346,6 @@ MStatus solveFrames(
     }
 
     if (printStats.deviation == true) {
-        // SolverResult out_solveResult;
-
         out_solveResult.success = true;
         out_solveResult.reason_number = 0;
         out_solveResult.reason = "";
@@ -1488,7 +1517,7 @@ bool solve(SolverOptions &solverOptions,
            MarkerPtrList &markerList,
            BundlePtrList &bundleList,
            AttrPtrList &attrList,
-           MTimeArray &frameList,
+           const MTimeArray &frameList,
            StiffAttrsPtrList &stiffAttrsList,
            SmoothAttrsPtrList &smoothAttrsList,
            MDGModifier &dgmod,
@@ -1502,30 +1531,7 @@ bool solve(SolverOptions &solverOptions,
     MStatus status = MS::kSuccess;
 
     bool verbose = with_verbosity;
-    auto printStats = PrintStatOptions{
-        false, // enable
-        false, // input;
-        false, // affects;
-        false, // usedSolveObjects;
-        false  // deviation;
-    };
-    if (printStatsList.length() > 0) {
-        for (uint32_t i = 0; i < printStatsList.length(); ++i) {
-            if (printStatsList[i] == PRINT_STATS_MODE_INPUTS) {
-                printStats.enable = true;
-                printStats.input = true;
-            } else if (printStatsList[i] == PRINT_STATS_MODE_AFFECTS) {
-                printStats.enable = true;
-                printStats.affects = true;
-            } else if (printStatsList[i] == PRINT_STATS_MODE_USED_SOLVE_OBJECTS) {
-                printStats.enable = true;
-                printStats.usedSolveObjects = true;
-            } else if (printStatsList[i] == PRINT_STATS_MODE_DEVIATION) {
-                printStats.enable = true;
-                printStats.deviation = true;
-            }
-        }
-    }
+    auto printStats = constructPrintStats(printStatsList);
     if (printStats.enable == true) {
         // When printing statistics, turn off verbosity.
         verbose = false;
@@ -1647,10 +1653,9 @@ bool solve(SolverOptions &solverOptions,
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     SolverResult solveResult;
-    auto frameSolveMode = FrameSolveMode::kPerFrame;
-    // auto frameSolveMode = FrameSolveMode::kAllFrameAtOnce;
+    auto frameSolveMode = solverOptions.frameSolveMode;
+    INFO("frameSolveMode: " << static_cast<uint32_t>(frameSolveMode));
     if (frameSolveMode == FrameSolveMode::kAllFrameAtOnce) {
-        SolverResult solveResult;
         status = solveFrames(
             cameraList,
             bundleList,
@@ -1672,7 +1677,6 @@ bool solve(SolverOptions &solverOptions,
             //
             computation,
             debugFile,
-            printStatsList,
             verbose,
             //
             paramToAttrList,
@@ -1690,7 +1694,6 @@ bool solve(SolverOptions &solverOptions,
     } else if (frameSolveMode == FrameSolveMode::kPerFrame) {
         for (uint32_t f = 0; f < frameList.length(); ++f) {
             auto frames = MTimeArray(1, frameList[f]);
-            SolverResult solveResult;
             status = solveFrames(
                 cameraList,
                 bundleList,
@@ -1712,7 +1715,6 @@ bool solve(SolverOptions &solverOptions,
                 //
                 computation,
                 debugFile,
-                printStatsList,
                 verbose,
                 //
                 paramToAttrList,
@@ -1727,7 +1729,7 @@ bool solve(SolverOptions &solverOptions,
                 outResult,
                 solveResult
             );
-            // TODO: Combine solveResult.
+            // TODO: Combine solveResult from each iteration.
             if (status != MS::kSuccess) {
                 break;
             }

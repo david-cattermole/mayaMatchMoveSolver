@@ -103,6 +103,7 @@ struct SolverOptions {
     int solverType;
     int timeEvalMode;
     bool acceptOnlyBetter;
+    FrameSolveMode frameSolveMode;
 
     // Auto-adjust the input solve objects before solving?
     bool removeUnusedMarkers;

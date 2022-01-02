@@ -296,6 +296,17 @@ class SolverStep(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_frame_solve_mode(self):
+        return self._data.get(
+            'frame_solve_mode',
+            const.FRAME_SOLVE_MODE_DEFAULT)
+
+    def set_frame_solve_mode(self, value):
+        assert value in const.FRAME_SOLVE_MODE_LIST
+        self._data['frame_solve_mode'] = value
+
+    ############################################################################
+
     def get_use_smoothness(self):
         return self._data.get('smoothness')
 
@@ -554,6 +565,10 @@ class SolverStep(solverbase.SolverBase):
         scene_graph_mode = self.get_scene_graph_mode()
         if scene_graph_mode is not None:
             kwargs['sceneGraphMode'] = scene_graph_mode
+
+        frame_solve_mode = self.get_frame_solve_mode()
+        if frame_solve_mode is not None:
+            kwargs['frameSolveMode'] = frame_solve_mode
 
         iterations = self.get_max_iterations()
         if iterations is not None:

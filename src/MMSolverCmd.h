@@ -90,6 +90,10 @@
 #define TIME_EVAL_MODE_FLAG_LONG      "-timeEvalMode"
 #define TIME_EVAL_MODE_DEFAULT_VALUE  TIME_EVAL_MODE_DG_CONTEXT
 
+// Frame solve mode.
+#define FRAME_SOLVE_MODE_FLAG           "-fsm"
+#define FRAME_SOLVE_MODE_FLAG_LONG      "-frameSolveMode"
+
 // Maximum number of iterations
 //
 // This option does not directly control the number of evaluations the
@@ -257,6 +261,7 @@ private:
                               // the average devation is higher than at start.
     bool m_removeUnusedMarkers;     // Remove unused Markers from solve?
     bool m_removeUnusedAttributes;  // Remove unused Attributes from solve?
+    FrameSolveMode m_frameSolveMode;
 
     // What type of features does the given solver type support?
     bool m_supportAutoDiffForward;

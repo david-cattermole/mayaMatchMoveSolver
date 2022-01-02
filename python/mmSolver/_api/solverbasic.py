@@ -94,6 +94,8 @@ class SolverBasic(solverbase.SolverBase):
         assert isinstance(value, (bool, int, long))
         self._data['eval_object_relationships'] = bool(value)
 
+    ############################################################################
+
     def get_eval_complex_graphs(self):
         """
         Get 'Evaluate Complex Node Graphs' value.
@@ -113,6 +115,8 @@ class SolverBasic(solverbase.SolverBase):
         """
         assert isinstance(value, (bool, int, long))
         self._data['eval_complex_node_graphs'] = bool(value)
+
+    ############################################################################
 
     def get_scene_graph_mode(self):
         """
@@ -357,6 +361,7 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
             sol.set_scene_graph_mode(scene_graph_mode)
+            sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
@@ -364,32 +369,58 @@ class SolverBasic(solverbase.SolverBase):
                                                withtest=withtest):
                 yield action, vaction
         else:
-            # Multiple frame solve, per-frame
-            vaction_cache = api_compile.create_compile_solver_cache()
-            for i, frm in enumerate(frame_list):
-                is_first_frame = i == 0
-                one_frame_list = [frm]
-                time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
-                if eval_complex_graphs is True:
-                    time_eval_mode = const.TIME_EVAL_MODE_SET_TIME
+            time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
+            if eval_complex_graphs is True:
+                time_eval_mode = const.TIME_EVAL_MODE_SET_TIME
+
+            if scene_graph_mode == const.SCENE_GRAPH_MODE_MAYA_DAG:
+                # Multiple frame solve, per-frame
+                vaction_cache = api_compile.create_compile_solver_cache()
+                for i, frm in enumerate(frame_list):
+                    is_first_frame = i == 0
+                    one_frame_list = [frm]
+
+                    sol = solverstep.SolverStep()
+                    sol.set_max_iterations(anim_iter_num)
+                    sol.set_frame_list(one_frame_list)
+                    sol.set_attributes_use_animated(True)
+                    sol.set_attributes_use_static(False)
+                    sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+                    sol.set_use_smoothness(not is_first_frame)
+                    sol.set_use_stiffness(not is_first_frame)
+                    sol.set_scene_graph_mode(scene_graph_mode)
+                    sol.set_time_eval_mode(time_eval_mode)
+                    sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
+                    sol.set_remove_unused_markers(remove_unused_objects)
+                    sol.set_remove_unused_attributes(remove_unused_objects)
+                    sol.set_precomputed_data(precomputed_data)
+
+                    generator = api_compile.compile_solver_with_cache(
+                        sol, col, mkr_list, attr_list, withtest, vaction_cache)
+                    for action, vaction in generator:
+                        yield action, vaction
+
+            elif scene_graph_mode == const.SCENE_GRAPH_MODE_MM_SCENE_GRAPH:
+                # MM Scene Graph does not support smooth and stiff
+                # attributes yet.
+                use_smooth_stiff = False
 
                 sol = solverstep.SolverStep()
                 sol.set_max_iterations(anim_iter_num)
-                sol.set_frame_list(one_frame_list)
+                sol.set_frame_list(frame_list)
                 sol.set_attributes_use_animated(True)
                 sol.set_attributes_use_static(False)
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-                sol.set_use_smoothness(not is_first_frame)
-                sol.set_use_stiffness(not is_first_frame)
+                sol.set_use_smoothness(use_smooth_stiff)
+                sol.set_use_stiffness(use_smooth_stiff)
                 sol.set_scene_graph_mode(scene_graph_mode)
                 sol.set_time_eval_mode(time_eval_mode)
+                sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_PER_FRAME)
                 sol.set_remove_unused_markers(remove_unused_objects)
                 sol.set_remove_unused_attributes(remove_unused_objects)
                 sol.set_precomputed_data(precomputed_data)
-
-                generator = api_compile.compile_solver_with_cache(
-                    sol, col, mkr_list, attr_list, withtest, vaction_cache)
-                for action, vaction in generator:
+                for action, vaction in sol.compile(col, mkr_list, attr_list,
+                                                   withtest=withtest):
                     yield action, vaction
 
             # Perform an euler filter on all unlocked rotation attributes.

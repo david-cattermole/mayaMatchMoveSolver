@@ -107,6 +107,8 @@ void createSolveInfoSyntax(MSyntax &syntax) {
                    MSyntax::kUnsigned);
     syntax.addFlag(ACCEPT_ONLY_BETTER_FLAG, ACCEPT_ONLY_BETTER_FLAG_LONG,
                    MSyntax::kBoolean);
+    syntax.addFlag(FRAME_SOLVE_MODE_FLAG, FRAME_SOLVE_MODE_FLAG_LONG,
+                   MSyntax::kUnsigned);
 
     syntax.addFlag(REMOVE_UNUSED_MARKERS_FLAG, REMOVE_UNUSED_MARKERS_FLAG_LONG,
                    MSyntax::kBoolean);
@@ -192,6 +194,7 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
                                 SceneGraphMode &out_sceneGraphMode,
                                 int &out_timeEvalMode,
                                 bool &out_acceptOnlyBetter,
+                                FrameSolveMode &out_frameSolveMode,
                                 bool &out_supportAutoDiffForward,
                                 bool &out_supportAutoDiffCentral,
                                 bool &out_supportParameterBounds,
@@ -222,6 +225,14 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     out_sceneGraphMode = static_cast<SceneGraphMode>(sceneGraphMode);
+
+    // Get 'Frame Solve Mode'
+    auto frameSolveMode = FRAME_SOLVE_MODE_DEFAULT_VALUE;
+    if (argData.isFlagSet(FRAME_SOLVE_MODE_FLAG)) {
+        status = argData.getFlagArgument(FRAME_SOLVE_MODE_FLAG, 0, frameSolveMode);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    out_frameSolveMode = static_cast<FrameSolveMode>(frameSolveMode);
 
     // Get 'Time Evaluation Mode'
     out_timeEvalMode = TIME_EVAL_MODE_DEFAULT_VALUE;
@@ -410,6 +421,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_sceneGraphMode,
         m_timeEvalMode,
         m_acceptOnlyBetter,
+        m_frameSolveMode,
         m_supportAutoDiffForward,
         m_supportAutoDiffCentral,
         m_supportParameterBounds,
@@ -472,6 +484,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     solverOptions.solverType = m_solverType;
     solverOptions.timeEvalMode = m_timeEvalMode;
     solverOptions.acceptOnlyBetter = m_acceptOnlyBetter;
+    solverOptions.frameSolveMode = m_frameSolveMode;
     solverOptions.solverSupportsAutoDiffForward = m_supportAutoDiffForward;
     solverOptions.solverSupportsAutoDiffCentral = m_supportAutoDiffCentral;
     solverOptions.solverSupportsParameterBounds = m_supportParameterBounds;

@@ -27,7 +27,6 @@ namespace mmscenegraph {
 
 SceneGraph::SceneGraph() noexcept
         : inner_(shim_create_scene_graph_box()) {
-    std::cout << "SceneGraph()" << '\n';
 }
 
 rust::Box<ShimSceneGraph>

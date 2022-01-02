@@ -27,7 +27,6 @@ namespace mmscenegraph {
 
 FlatScene::FlatScene(rust::Box<ShimFlatScene> flat_scene) noexcept
         : inner_(std::move(flat_scene)) {
-    std::cout << "FlatScene()" << '\n';
 }
 
 rust::Slice<const Real>

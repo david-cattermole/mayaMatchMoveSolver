@@ -27,7 +27,6 @@ namespace mmscenegraph {
 
 EvaluationObjects::EvaluationObjects() noexcept
         : inner_(shim_create_evaluation_objects_box()) {
-    std::cout << "EvaluationObjects()" << '\n';
 }
 
 rust::Box<ShimEvaluationObjects>

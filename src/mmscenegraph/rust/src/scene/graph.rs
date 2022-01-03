@@ -376,6 +376,9 @@ impl SceneGraph {
     }
 
     /// Set the parent of child_node_id to parent_node_id.
+    ///
+    /// Note: `set_node_parent` cannot be used to "unparent" a node to
+    /// the root.
     pub fn set_node_parent(
         &mut self,
         child_node_id: NodeId,
@@ -393,7 +396,8 @@ impl SceneGraph {
         }
         let parent_node_index = parent_node_index.unwrap();
 
-        self.hierarchy.add_edge(parent_node_index, node_index, ());
+        self.hierarchy
+            .update_edge(parent_node_index, node_index, ());
         return true;
     }
 
@@ -418,7 +422,8 @@ impl SceneGraph {
         let parent_node_index = parent_node_index.unwrap();
 
         for node_index in node_indices {
-            self.hierarchy.add_edge(parent_node_index, node_index, ());
+            self.hierarchy
+                .update_edge(parent_node_index, node_index, ());
         }
         return true;
     }

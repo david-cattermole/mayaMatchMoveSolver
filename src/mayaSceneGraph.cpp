@@ -19,6 +19,7 @@
  *
  */
 
+#include <limits>
 #include <unordered_map>
 
 // Maya
@@ -43,13 +44,16 @@
 
 namespace mmsg = mmscenegraph;
 
-using StringToAttrIdMap = std::unordered_map<std::string, mmscenegraph::AttrId>;
+using StringToAttrIdMap = std::unordered_map<std::string, mmsg::AttrId>;
+using StringToNodeIdMap = std::unordered_map<std::string, mmsg::NodeId>;
 
 MStatus
 add_attribute(
     Attr &mayaAttr,
     const MString &attr_name,
     const MTimeArray &frameList,
+    const mmsg::FrameValue start_frame,
+    const mmsg::FrameValue end_frame,
     const int timeEvalMode,
     const double scaleFactor,
     mmsg::AttrDataBlock &attrDataBlock,
@@ -70,23 +74,27 @@ add_attribute(
 
     auto animated = mayaAttr.isAnimated();
     // auto locked = !mayaAttr.isFreeToChange();
-    // auto connected = mayaAttr.isConnected();
+    auto connected = mayaAttr.isConnected();
 
     assert(frameList.length() > 0);
-    auto start_time = frameList[0];
-    auto start_frame_num = static_cast<mmsg::FrameValue>(
-        frameList[0].as(MTime::uiUnit()));
 
     double value = 0.0;
-    if (animated) {
-        auto values = rust::Vec <mmsg::Real>();
-        for (uint32_t i = 0; i < frameList.length(); ++i) {
-            MTime frame = frameList[i];
-            status = mayaAttr.getValue(value, frame, timeEvalMode);
+    if (animated || connected) {
+        // Dense attributes expect the frame and values to be
+        // contiguous. Therefore if frames [1, 4, 6] (with size of 3)
+        // are wanted, we must allocate memory for frames 1 to 6 (size
+        // of 6), not 3.
+        auto total_frame_count = (end_frame - start_frame) + 1;
+        auto uiUnit = MTime::uiUnit();
+        auto values = rust::Vec<mmsg::Real>();
+        values.reserve(total_frame_count);
+        for (mmsg::FrameValue f = start_frame; f < (end_frame + 1); ++f) {
+            auto frame_time = MTime(static_cast<double>(f), uiUnit);
+            status = mayaAttr.getValue(value, frame_time, timeEvalMode);
             CHECK_MSTATUS_AND_RETURN_IT(status);
             values.push_back(value * scaleFactor);
         }
-        out_attrId = attrDataBlock.create_attr_anim_dense(values, start_frame_num);
+        out_attrId = attrDataBlock.create_attr_anim_dense(values, start_frame);
     } else {
         status = mayaAttr.getValue(value, timeEvalMode);
         out_attrId = attrDataBlock.create_attr_static(value * scaleFactor);
@@ -104,6 +112,8 @@ MStatus
 get_translate_attrs(
     Attr &mayaAttr,
     const MTimeArray &frameList,
+    const mmsg::FrameValue start_frame,
+    const mmsg::FrameValue end_frame,
     const int timeEvalMode,
     mmsg::AttrDataBlock &out_attrDataBlock,
     mmsg::Translate3DAttrIds &out_attrIds,
@@ -116,6 +126,8 @@ get_translate_attrs(
         mayaAttr,
         MString("translateX"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -127,6 +139,8 @@ get_translate_attrs(
         mayaAttr,
         MString("translateY"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -138,6 +152,8 @@ get_translate_attrs(
         mayaAttr,
         MString("translateZ"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -152,6 +168,8 @@ MStatus
 get_rotate_attrs(
     Attr &mayaAttr,
     const MTimeArray &frameList,
+    const mmsg::FrameValue start_frame,
+    const mmsg::FrameValue end_frame,
     const int timeEvalMode,
     mmsg::AttrDataBlock &out_attrDataBlock,
     mmsg::Rotate3DAttrIds &out_attrIds,
@@ -164,6 +182,8 @@ get_rotate_attrs(
         mayaAttr,
         MString("rotateX"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -175,6 +195,8 @@ get_rotate_attrs(
         mayaAttr,
         MString("rotateY"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -186,6 +208,8 @@ get_rotate_attrs(
         mayaAttr,
         MString("rotateZ"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -200,6 +224,8 @@ MStatus
 get_scale_attrs(
     Attr &mayaAttr,
     const MTimeArray &frameList,
+    const mmsg::FrameValue start_frame,
+    const mmsg::FrameValue end_frame,
     const int timeEvalMode,
     mmsg::AttrDataBlock &out_attrDataBlock,
     mmsg::Scale3DAttrIds &out_attrIds,
@@ -212,6 +238,8 @@ get_scale_attrs(
         mayaAttr,
         MString("scaleX"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -223,6 +251,8 @@ get_scale_attrs(
         mayaAttr,
         MString("scaleY"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -234,6 +264,8 @@ get_scale_attrs(
         mayaAttr,
         MString("scaleZ"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -248,6 +280,8 @@ MStatus
 get_camera_attrs(
     Attr &mayaAttr,
     const MTimeArray &frameList,
+    const mmsg::FrameValue start_frame,
+    const mmsg::FrameValue end_frame,
     const int timeEvalMode,
     mmsg::AttrDataBlock &out_attrDataBlock,
     mmsg::CameraAttrIds &out_attrIds,
@@ -261,6 +295,8 @@ get_camera_attrs(
         mayaAttr,
         MString("horizontalFilmAperture"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         inch_to_mm,
         out_attrDataBlock,
@@ -272,6 +308,8 @@ get_camera_attrs(
         mayaAttr,
         MString("verticalFilmAperture"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         inch_to_mm,
         out_attrDataBlock,
@@ -283,6 +321,8 @@ get_camera_attrs(
         mayaAttr,
         MString("focalLength"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -323,6 +363,8 @@ MStatus
 get_transform_attrs(
     Attr &mayaAttr,
     const MTimeArray &frameList,
+    const mmsg::FrameValue start_frame,
+    const mmsg::FrameValue end_frame,
     const int timeEvalMode,
     mmsg::AttrDataBlock &out_attrDataBlock,
     mmsg::Translate3DAttrIds &out_translateAttrIds,
@@ -335,17 +377,26 @@ get_transform_attrs(
 
     get_translate_attrs(
         mayaAttr,
-        frameList, timeEvalMode,
+        frameList,
+        start_frame,
+        end_frame,
+        timeEvalMode,
         out_attrDataBlock, out_translateAttrIds,
         out_attrNameToAttrIdMap);
     get_rotate_attrs(
         mayaAttr,
-        frameList, timeEvalMode,
+        frameList,
+        start_frame,
+        end_frame,
+        timeEvalMode,
         out_attrDataBlock, out_rotateAttrIds,
         out_attrNameToAttrIdMap);
     get_scale_attrs(
         mayaAttr,
-        frameList, timeEvalMode,
+        frameList,
+        start_frame,
+        end_frame,
+        timeEvalMode,
         out_attrDataBlock, out_scaleAttrIds,
         out_attrNameToAttrIdMap);
     get_rotate_order_attr(
@@ -358,6 +409,8 @@ MStatus
 get_marker_attrs(
     Attr &mayaAttr,
     const MTimeArray &frameList,
+    const mmsg::FrameValue start_frame,
+    const mmsg::FrameValue end_frame,
     const int timeEvalMode,
     mmsg::AttrDataBlock &out_attrDataBlock,
     mmsg::MarkerAttrIds &out_attrIds,
@@ -370,6 +423,8 @@ get_marker_attrs(
         mayaAttr,
         MString("translateX"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -381,6 +436,8 @@ get_marker_attrs(
         mayaAttr,
         MString("translateY"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -397,6 +454,8 @@ get_marker_attrs(
         mayaAttr,
         MString("weight"),
         frameList,
+        start_frame,
+        end_frame,
         timeEvalMode,
         scaleFactor,
         out_attrDataBlock,
@@ -408,14 +467,96 @@ get_marker_attrs(
 }
 
 MStatus
+add_transforms(
+    const mmsg::NodeId parent_node_id,
+    MDagPath &dag_path,
+    const MTimeArray &frameList,
+    const mmsg::FrameValue start_frame,
+    const mmsg::FrameValue end_frame,
+    const int timeEvalMode,
+    mmsg::SceneGraph &out_sceneGraph,
+    mmsg::AttrDataBlock &out_attrDataBlock,
+    StringToNodeIdMap &out_nodeNameToNodeIdMap,
+    StringToAttrIdMap &out_attrNameToAttrIdMap
+) {
+    MStatus status = MS::kSuccess;
+
+    // Create a single attribute that will be re-used.
+    auto mayaAttr = Attr();
+
+    auto translate_attr_ids = mmsg::Translate3DAttrIds();
+    auto rotate_attr_ids = mmsg::Rotate3DAttrIds();
+    auto scale_attr_ids = mmsg::Scale3DAttrIds();
+    auto rotate_order = mmsg::RotateOrder::kUnknown;
+
+    auto previous_node_id = parent_node_id;
+    while (dag_path.length() > 0) {
+        MString transform_name = dag_path.fullPathName(&status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        auto nodeNameStr = std::string(transform_name.asChar());
+
+        auto tfm_node_id = mmsg::NodeId();
+        if (!dag_path.hasFn(MFn::kTransform, &status)) {
+            break;
+        }
+
+        auto search = out_nodeNameToNodeIdMap.find(nodeNameStr);
+        if (search != out_nodeNameToNodeIdMap.end()) {
+            // Already exists.
+            tfm_node_id = search->second;
+        } else {
+            // Create a new transform.
+            status = mayaAttr.setNodeName(transform_name);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+
+            get_transform_attrs(
+                mayaAttr,
+                frameList,
+                start_frame,
+                end_frame,
+                timeEvalMode,
+                out_attrDataBlock,
+                translate_attr_ids,
+                rotate_attr_ids,
+                scale_attr_ids,
+                rotate_order,
+                out_attrNameToAttrIdMap
+            );
+
+            auto tfm_node = out_sceneGraph.create_transform_node(
+                translate_attr_ids,
+                rotate_attr_ids,
+                scale_attr_ids,
+                rotate_order);
+            tfm_node_id = tfm_node.id;
+        }
+
+        out_nodeNameToNodeIdMap.insert({nodeNameStr, tfm_node_id});
+        auto parent_ok = out_sceneGraph.set_node_parent(
+            previous_node_id,
+            tfm_node_id);
+        previous_node_id = tfm_node_id;
+
+        status = dag_path.pop();
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    return status;
+}
+
+
+MStatus
 add_cameras(
     const CameraPtrList &cameraList,
     const MTimeArray &frameList,
+    const mmsg::FrameValue start_frame,
+    const mmsg::FrameValue end_frame,
     const int timeEvalMode,
     std::vector<mmsg::CameraNode> &out_cameraNodes,
     mmsg::EvaluationObjects &out_evalObjects,
     mmsg::SceneGraph &out_sceneGraph,
     mmsg::AttrDataBlock &out_attrDataBlock,
+    StringToNodeIdMap &out_nodeNameToNodeIdMap,
     StringToAttrIdMap &out_attrNameToAttrIdMap
 ) {
     MStatus status = MS::kSuccess;
@@ -439,11 +580,12 @@ add_cameras(
         auto cam_shp_name = cam_ptr->getShapeNodeName();
         auto cam_tfm_obj = cam_ptr->getTransformObject();
         auto cam_shp_obj = cam_ptr->getShapeObject();
-        auto dag_path = MDagPath();
-        status = MDagPath::getAPathTo(cam_tfm_obj, dag_path);
+        auto tfm_dag_path = MDagPath();
+        auto shp_dag_path = MDagPath();
+        status = MDagPath::getAPathTo(cam_tfm_obj, tfm_dag_path);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        MString transform_name = dag_path.fullPathName(&status);
+        MString transform_name = tfm_dag_path.fullPathName(&status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         status = mayaAttr.setNodeName(transform_name);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -451,6 +593,8 @@ add_cameras(
         get_transform_attrs(
             mayaAttr,
             frameList,
+            start_frame,
+            end_frame,
             timeEvalMode,
             out_attrDataBlock,
             translate_attr_ids,
@@ -460,9 +604,9 @@ add_cameras(
             out_attrNameToAttrIdMap
         );
 
-        status = MDagPath::getAPathTo(cam_shp_obj, dag_path);
+        status = MDagPath::getAPathTo(cam_shp_obj, shp_dag_path);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        MString shape_name = dag_path.fullPathName(&status);
+        MString shape_name = shp_dag_path.fullPathName(&status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         status = mayaAttr.setNodeName(shape_name);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -470,6 +614,8 @@ add_cameras(
         get_camera_attrs(
             mayaAttr,
             frameList,
+            start_frame,
+            end_frame,
             timeEvalMode,
             out_attrDataBlock,
             camera_attr_ids,
@@ -484,6 +630,24 @@ add_cameras(
             rotate_order);
         out_cameraNodes.push_back(cam_node);
         out_evalObjects.add_camera(cam_node);
+
+        auto nodeNameStr = std::string(transform_name.asChar());
+        out_nodeNameToNodeIdMap.insert({nodeNameStr, cam_node.id});
+
+        status = tfm_dag_path.pop();
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        add_transforms(
+            cam_node.id,
+            tfm_dag_path,
+            frameList,
+            start_frame,
+            end_frame,
+            timeEvalMode,
+            out_sceneGraph,
+            out_attrDataBlock,
+            out_nodeNameToNodeIdMap,
+            out_attrNameToAttrIdMap);
     }
     return status;
 }
@@ -492,11 +656,14 @@ MStatus
 add_bundles(
     const BundlePtrList &bundleList,
     const MTimeArray &frameList,
+    const mmsg::FrameValue start_frame,
+    const mmsg::FrameValue end_frame,
     const int timeEvalMode,
     std::vector<mmsg::BundleNode> &out_bundleNodes,
     mmsg::EvaluationObjects &out_evalObjects,
     mmsg::SceneGraph &out_sceneGraph,
     mmsg::AttrDataBlock &out_attrDataBlock,
+    StringToNodeIdMap &out_nodeNameToNodeIdMap,
     StringToAttrIdMap &out_attrNameToAttrIdMap
 ) {
     MStatus status = MS::kSuccess;
@@ -530,6 +697,8 @@ add_bundles(
         get_transform_attrs(
             mayaAttr,
             frameList,
+            start_frame,
+            end_frame,
             timeEvalMode,
             out_attrDataBlock,
             translate_attr_ids,
@@ -546,6 +715,25 @@ add_bundles(
             rotate_order);
         out_bundleNodes.push_back(bnd_node);
         out_evalObjects.add_bundle(bnd_node);
+
+        auto nodeNameStr = std::string(transform_name.asChar());
+        out_nodeNameToNodeIdMap.insert({nodeNameStr, bnd_node.id});
+
+        status = dag_path.pop();
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        add_transforms(
+            bnd_node.id,
+            dag_path,
+            frameList,
+            start_frame,
+            end_frame,
+            timeEvalMode,
+            out_sceneGraph,
+            out_attrDataBlock,
+            out_nodeNameToNodeIdMap,
+            out_attrNameToAttrIdMap);
+
     }
     return status;
 }
@@ -556,6 +744,8 @@ add_markers(
     const CameraPtrList &cameraList,
     const BundlePtrList &bundleList,
     const MTimeArray &frameList,
+    const mmsg::FrameValue start_frame,
+    const mmsg::FrameValue end_frame,
     const int timeEvalMode,
     const std::vector<mmsg::CameraNode> &cameraNodes,
     const std::vector<mmsg::BundleNode> &bundleNodes,
@@ -618,6 +808,8 @@ add_markers(
         get_marker_attrs(
             mayaAttr,
             frameList,
+            start_frame,
+            end_frame,
             timeEvalMode,
             out_attrDataBlock,
             mkr_attr_ids,
@@ -688,23 +880,58 @@ MStatus construct_scene_graph(
 
     auto evalObjects = mmsg::EvaluationObjects();
     auto attrNameToAttrIdMap = StringToAttrIdMap();
+    auto nodeNameToNodeIdMap = StringToNodeIdMap();
+
+    // Frames
+    // INFO("FrameList length: " << frameList.length());
+    assert(frameList.length() > 0);
+    auto uiUnit = MTime::uiUnit();
+    auto start_frame = std::numeric_limits<mmsg::FrameValue>::max();
+    auto end_frame = std::numeric_limits<mmsg::FrameValue>::min();
+    for (uint32_t i = 0; i < frameList.length(); ++i) {
+        MTime frame = frameList[i];
+        auto frame_num =
+            static_cast<mmsg::FrameValue>(frame.as(uiUnit));
+        // INFO("frameList i=" << i << " frame_num=" << frame_num);
+        start_frame = std::min(start_frame, frame_num);
+        end_frame = std::max(end_frame, frame_num);
+        out_frameList.push_back(frame_num);
+    }
+    auto total_frame_count = (end_frame - start_frame) + 1;
+    // INFO("Frames start_frame: " << start_frame);
+    // INFO("Frames end_frame: " << end_frame);
+    // INFO("Frames frame_count: " << total_frame_count);
+    // INFO("Frames count: " << out_frameList.size());
+    assert(out_frameList.size() == frameList.length());
 
     add_cameras(
-        cameraList, frameList, timeEvalMode,
+        cameraList,
+        frameList,
+        start_frame,
+        end_frame,
+        timeEvalMode,
         out_cameraNodes, evalObjects,
         out_sceneGraph, out_attrDataBlock,
+        nodeNameToNodeIdMap,
         attrNameToAttrIdMap);
 
     add_bundles(
-        bundleList, frameList, timeEvalMode,
+        bundleList, frameList,
+        start_frame,
+        end_frame,
+        timeEvalMode,
         out_bundleNodes, evalObjects,
         out_sceneGraph, out_attrDataBlock,
+        nodeNameToNodeIdMap,
         attrNameToAttrIdMap);
 
     add_markers(
         markerList,
         cameraList, bundleList,
-        frameList, timeEvalMode,
+        frameList,
+        start_frame,
+        end_frame,
+        timeEvalMode,
         out_cameraNodes, out_bundleNodes,
         out_markerNodes, evalObjects,
         out_sceneGraph, out_attrDataBlock,
@@ -717,15 +944,6 @@ MStatus construct_scene_graph(
         out_attrDataBlock,
         out_attrIdList
     );
-
-    // Frames
-    auto uiUnit = MTime::uiUnit();
-    for (uint32_t i = 0; i < frameList.length(); ++i) {
-        MTime frame = frameList[i];
-        auto frame_num =
-            static_cast<mmsg::FrameValue>(frame.as(uiUnit));
-        out_frameList.push_back(frame_num);
-    }
 
     // // Print number of nodes in the evaluation objects.
     // INFO("EvaluationObjects num_bundles: "

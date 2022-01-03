@@ -189,6 +189,20 @@ MStatus initializePlugin(MObject obj) {
                   MMReprojectionNode::initialize,
                   status);
 
+    REGISTER_NODE(plugin,
+                  MMCameraCalibrateNode::nodeName(),
+                  MMCameraCalibrateNode::m_id,
+                  MMCameraCalibrateNode::creator,
+                  MMCameraCalibrateNode::initialize,
+                  status);
+
+    REGISTER_NODE(plugin,
+                  MMLineIntersectNode::nodeName(),
+                  MMLineIntersectNode::m_id,
+                  MMLineIntersectNode::creator,
+                  MMLineIntersectNode::initialize,
+                  status);
+
     const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
     const MString bundleClassification = MM_BUNDLE_DRAW_CLASSIFY;
     const MString skyDomeClassification = MM_SKY_DOME_DRAW_CLASSIFY;
@@ -235,21 +249,6 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::SkyDomeShapeNode::m_draw_registrant_id,
         mmsolver::SkyDomeDrawOverride::Creator,
         status);
-
-    REGISTER_NODE(plugin,
-                  MMCameraCalibrateNode::nodeName(),
-                  MMCameraCalibrateNode::m_id,
-                  MMCameraCalibrateNode::creator,
-                  MMCameraCalibrateNode::initialize,
-                  status);
-
-    REGISTER_NODE(plugin,
-                  MMLineIntersectNode::nodeName(),
-                  MMLineIntersectNode::m_id,
-                  MMLineIntersectNode::creator,
-                  MMLineIntersectNode::initialize,
-                  status);
-
 
     // MM Marker Group transform
     const MString markerGroupClassification = MM_MARKER_GROUP_DRAW_CLASSIFY;

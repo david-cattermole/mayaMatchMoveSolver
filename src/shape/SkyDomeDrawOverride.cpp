@@ -404,10 +404,14 @@ void SkyDomeDrawOverride::addUIDrawables(
 
     const uint32_t res = data->m_resolution;
     const float radius = data->m_radius;
+    const float grid_lat_divisions =
+        static_cast<float>(data->m_grid_lat_divisions);
+    const float grid_long_divisions =
+        static_cast<float>(data->m_grid_long_divisions);
     const uint32_t interval_latitude =
-        static_cast<uint32_t>(std::powf(2, data->m_grid_lat_divisions));
+        static_cast<uint32_t>(std::powf(2.0, grid_lat_divisions));
     const uint32_t interval_longitude =
-        static_cast<uint32_t>(std::powf(2, data->m_grid_long_divisions));
+        static_cast<uint32_t>(std::powf(2.0, grid_long_divisions));
 
     // Allow skipping only top or bottom.
     auto axis_x_top = data->m_axis_x_enable_top;

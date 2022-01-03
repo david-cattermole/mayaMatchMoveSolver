@@ -47,6 +47,12 @@ set(SOURCE_FILES
   core/mmdata.cpp
   core/mmmath.cpp
   core/reprojection.cpp
+  shape/MarkerShapeNode.cpp
+  shape/MarkerDrawOverride.cpp
+  shape/BundleShapeNode.cpp
+  shape/BundleDrawOverride.cpp
+  shape/SkyDomeShapeNode.cpp
+  shape/SkyDomeDrawOverride.cpp
   Camera.cpp
   Marker.cpp
   Bundle.cpp
@@ -140,6 +146,8 @@ target_link_libraries(mmSolver
   PUBLIC
   ${MAYA_OpenMaya_LIBRARY}
   ${MAYA_OpenMayaAnim_LIBRARY}
+  ${MAYA_OpenMayaRender_LIBRARY}
+  ${MAYA_OpenMayaUI_LIBRARY}
   ${MAYA_Foundation_LIBRARY}
   )
 target_link_libraries(mmSolver

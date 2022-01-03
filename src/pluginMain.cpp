@@ -222,11 +222,13 @@ MStatus initializePlugin(MObject obj) {
         markerGroupClassification,
         status);
 
+    MString mel_cmd = "";
+
     // Register a custom selection mask with priority 2 (same as
     // locators by default).
     MSelectionMask::registerSelectionType(
         mmsolver::MarkerShapeNode::m_selection_type_name, 2);
-    MString mel_cmd = "selectType -byName \"";
+    mel_cmd = "selectType -byName \"";
     mel_cmd += mmsolver::MarkerShapeNode::m_selection_type_name;
     mel_cmd += "\" 1";
     status = MGlobal::executeCommand(mel_cmd);
@@ -242,7 +244,7 @@ MStatus initializePlugin(MObject obj) {
     // locators by default).
     MSelectionMask::registerSelectionType(
         mmsolver::SkyDomeShapeNode::m_selection_type_name, 2);
-    MString mel_cmd = "selectType -byName \"";
+    mel_cmd = "selectType -byName \"";
     mel_cmd += mmsolver::SkyDomeShapeNode::m_selection_type_name;
     mel_cmd += "\" 1";
     status = MGlobal::executeCommand(mel_cmd);

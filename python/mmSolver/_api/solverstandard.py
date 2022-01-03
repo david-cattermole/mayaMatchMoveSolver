@@ -212,6 +212,11 @@ def _compile_multi_root_frames(col,
         solving, second Action is to validate the inputs given.
     :rtype: (Action, Action or None)
     """
+    assert isinstance(root_iter_num, int)
+    assert isinstance(remove_unused_objects, bool)
+    assert isinstance(withtest, bool)
+    assert isinstance(verbose, bool)
+
     # Solve root frames.
     for frm_list in batch_frame_list:
         # Get root markers
@@ -290,6 +295,9 @@ def _compile_remove_inbetween_frames(attr_list,
         Yields an Action and None, at each iteration.
     :rtype: (Action, None)
     """
+    assert isinstance(withtest, bool)
+    assert isinstance(verbose, bool)
+
     # Solve in-between frames
     attr_names = [x.get_name() for x in attr_list]
 
@@ -378,6 +386,14 @@ def _compile_multi_inbetween_frames(col,
         the second Action is for validation of inputs.
     :rtype: (Action, Action)
     """
+    assert isinstance(global_solve, bool)
+    assert isinstance(eval_complex_graphs, bool)
+    assert isinstance(anim_iter_num, int)
+    assert isinstance(remove_unused_objects, bool)
+    assert isinstance(precomputed_data, dict)
+    assert isinstance(withtest, bool)
+    assert isinstance(verbose, bool)
+
     if global_solve is True:
         # Do Global Solve with all frames.
         sol = solverstep.SolverStep()
@@ -499,7 +515,7 @@ def _compile_multi_frame(col,
     :param root_frame_strategy:
         The strategy ordering of root frames and how to solve them.
         Value must be one in ROOT_FRAME_STRATEGY_VALUE_LIST.
-    :type root_frame_strategy:
+    :type root_frame_strategy: ROOT_FRAME_STRATEGY_*
 
     :param triangulate_bundles:
         If True, unlocked bundles will be triangulated before being
@@ -530,6 +546,20 @@ def _compile_multi_frame(col,
         the second Action is for validation of inputs.
     :rtype: (Action, Action)
     """
+    assert isinstance(auto_attr_blocks, bool)
+    assert isinstance(block_iter_num, int)
+    assert isinstance(only_root_frames, bool)
+    assert isinstance(root_iter_num, int)
+    assert isinstance(anim_iter_num, int)
+    assert isinstance(global_solve, bool)
+    assert root_frame_strategy in const.ROOT_FRAME_STRATEGY_VALUE_LIST
+    assert isinstance(triangulate_bundles, bool)
+    assert isinstance(use_euler_filter, bool)
+    assert isinstance(remove_unused_objects, bool)
+    assert isinstance(precomputed_data, dict)
+    assert isinstance(withtest, bool)
+    assert isinstance(verbose, bool)
+
     # Get Frame numbers.
     root_frame_list_num = [x.get_number() for x in root_frame_list]
     frame_list_num = [x.get_number() for x in frame_list]
@@ -727,8 +757,8 @@ def _compile_single_frame(col,
                           block_iter_num,
                           lineup_iter_num,
                           auto_attr_blocks,
-                          precomputed_data,
                           remove_unused_objects,
+                          precomputed_data,
                           withtest,
                           verbose):
     """
@@ -777,6 +807,14 @@ def _compile_single_frame(col,
         the second Action is for validation of inputs.
     :rtype: (Action, Action)
     """
+    assert isinstance(auto_attr_blocks, bool)
+    assert isinstance(block_iter_num, int)
+    assert isinstance(lineup_iter_num, int)
+    assert isinstance(remove_unused_objects, bool)
+    assert isinstance(precomputed_data, dict)
+    assert isinstance(withtest, bool)
+    assert isinstance(verbose, bool)
+
     if auto_attr_blocks is True:
         meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
             mkr_list,

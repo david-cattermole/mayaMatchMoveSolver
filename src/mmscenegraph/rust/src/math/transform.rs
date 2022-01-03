@@ -379,6 +379,53 @@ pub fn calculate_matrix_with_values(
         0.0, 0.0, 0.0, 1.0, //
     );
 
+    // let sin_rx = (rx * DEGREES_TO_RADIANS).sin();
+    // let sin_ry = (ry * DEGREES_TO_RADIANS).sin();
+    // let sin_rz = (rz * DEGREES_TO_RADIANS).sin();
+    // let cos_rx = (rx * DEGREES_TO_RADIANS).cos();
+    // let cos_ry = (ry * DEGREES_TO_RADIANS).cos();
+    // let cos_rz = (rz * DEGREES_TO_RADIANS).cos();
+    // let rotx = Matrix44::new(
+    //     1.0, 0.0, 0.0, 0.0, //
+    //     0.0, cos_rx, -sin_rx, 0.0, //
+    //     0.0, sin_rx, cos_rx, 0.0, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+    // let roty = Matrix44::new(
+    //     cos_ry, 0.0, sin_ry, 0.0, //
+    //     0.0, 1.0, 0.0, 0.0, //
+    //     -sin_ry, 0.0, cos_ry, 0.0, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+    // let rotz = Matrix44::new(
+    //     cos_rz, -sin_rz, 0.0, 0.0, //
+    //     sin_rz, cos_rz, 0.0, 0.0, //
+    //     0.0, 0.0, 1.0, 0.0, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+
+    // let sc_rx = (rx * DEGREES_TO_RADIANS).sin_cos();
+    // let sc_ry = (ry * DEGREES_TO_RADIANS).sin_cos();
+    // let sc_rz = (rz * DEGREES_TO_RADIANS).sin_cos();
+    // let rotx = Matrix44::new(
+    //     1.0, 0.0, 0.0, 0.0, //
+    //     0.0, sc_rx.1, -sc_rx.0, 0.0, //
+    //     0.0, sc_rx.0, sc_rx.1, 0.0, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+    // let roty = Matrix44::new(
+    //     sc_ry.1, 0.0, sc_ry.0, 0.0, //
+    //     0.0, 1.0, 0.0, 0.0, //
+    //     -sc_ry.0, 0.0, sc_ry.1, 0.0, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+    // let rotz = Matrix44::new(
+    //     sc_rz.1, -sc_rz.0, 0.0, 0.0, //
+    //     sc_rz.0, sc_rz.1, 0.0, 0.0, //
+    //     0.0, 0.0, 1.0, 0.0, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+
     // Rotate Order
     //
     // Note: rotation order is reversed because nalgebra stores
@@ -406,6 +453,28 @@ pub fn calculate_matrix_with_values(
 }
 
 pub fn calculate_matrix(transform: &Transform) -> Matrix44 {
+    // // Scale Pivot
+    // let spx = transform.spx;
+    // let spy = transform.spy;
+    // let spz = transform.spz;
+    // let sp = Matrix44::new(
+    //     1.0, 0.0, 0.0, spx, //
+    //     0.0, 1.0, 0.0, spy, //
+    //     0.0, 0.0, 1.0, spz, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+
+    // // Scale Pivot Translate
+    // let sptx = transform.sptx;
+    // let spty = transform.spty;
+    // let sptz = transform.sptz;
+    // let spt = Matrix44::new(
+    //     1.0, 0.0, 0.0, sptx, //
+    //     0.0, 1.0, 0.0, spty, //
+    //     0.0, 0.0, 1.0, sptz, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+
     // Scale
     let sx = transform.sx;
     let sy = transform.sy;
@@ -417,6 +486,71 @@ pub fn calculate_matrix(transform: &Transform) -> Matrix44 {
         0.0, 0.0, sz, 0.0, //
         0.0, 0.0, 0.0, 1.0,
     );
+
+    // // Shear
+    // let shxy = transform.shxy;
+    // let shxz = transform.shxz;
+    // let shyz = transform.shyz;
+    // let sh = Matrix44::new(
+    //     1.0, shxy, shxz, 0.0, //
+    //     0.0, 1.0, shyz, 0.0, //
+    //     0.0, 0.0, 1.0, 0.0, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+
+    // // Rotate Pivot
+    // let rpx = transform.rpx;
+    // let rpy = transform.rpy;
+    // let rpz = transform.rpz;
+    // let rp = Matrix44::new(
+    //     1.0, 0.0, 0.0, rpx, //
+    //     0.0, 1.0, 0.0, rpy, //
+    //     0.0, 0.0, 1.0, rpz, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+
+    // // Rotate Pivot Translate
+    // let rptx = transform.rptx;
+    // let rpty = transform.rpty;
+    // let rptz = transform.rptz;
+    // let rpt = Matrix44::new(
+    //     1.0, 0.0, 0.0, rptx, //
+    //     0.0, 1.0, 0.0, rpty, //
+    //     0.0, 0.0, 1.0, rptz, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+
+    // // Rotation Axis
+    // let rax = transform.rax;
+    // let ray = transform.ray;
+    // let raz = transform.raz;
+    // let sin_ax = rax.sin();
+    // let sin_ay = ray.sin();
+    // let sin_az = raz.sin();
+    // let cos_ax = rax.cos();
+    // let cos_ay = ray.cos();
+    // let cos_az = raz.cos();
+    // let ax = Matrix44::new(
+    //     1.0, 0.0, 0.0, 0.0, //
+    //     0.0, cos_ax, -sin_ax, 0.0, //
+    //     0.0, sin_ax, cos_ax, 0.0, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+    // let ay = Matrix44::new(
+    //     cos_ay, 0.0, sin_ay, 0.0, //
+    //     0.0, 1.0, 0.0, 0.0, //
+    //     -sin_ay, 0.0, cos_ay, 0.0, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+    // let az = Matrix44::new(
+    //     cos_az, -sin_az, 0.0, 0.0, //
+    //     sin_az, cos_az, 0.0, 0.0, //
+    //     0.0, 0.0, 1.0, 0.0, //
+    //     0.0, 0.0, 0.0, 1.0, //
+    // );
+
+    // // Ro = AX * AY * AZ
+    // let ro = az * ay * ax;
 
     // Rotate
     //
@@ -464,6 +598,16 @@ pub fn calculate_matrix(transform: &Transform) -> Matrix44 {
         RotateOrder::ZYX => rotx * roty * rotz, // ZYX
     };
 
+    // match transform.roo {
+    //     0 => println!("XYZ"), // XYZ
+    //     1 => println!("YZX"), // YZX
+    //     2 => println!("ZXY"), // ZXY
+    //     3 => println!("XZY"), // XZY
+    //     4 => println!("YXZ"), // YXZ
+    //     5 => println!("ZYX"), // ZYX
+    //     _ => panic!("Error; Invalid rotate order value: roo={0}", transform.roo),
+    // };
+
     // Translate
     let tx = transform.tx;
     let ty = transform.ty;
@@ -474,6 +618,16 @@ pub fn calculate_matrix(transform: &Transform) -> Matrix44 {
         0.0, 0.0, 1.0, tz, //
         0.0, 0.0, 0.0, 1.0, //
     );
+
+    // Combine Matrices
+    // match sp.try_inverse() {
+    //     None => Matrix44::new_scaling(1.0),
+    //     Some(sp_inv) => match rp.try_inverse() {
+    //         None => Matrix44::new_scaling(1.0),
+    //         Some(rp_inv) => t * rpt * rp * r * ro * rp_inv * spt * sh * s * sp_inv,
+    //         // Some(rp_inv) => sp_inv * s * sh * spt * rp_inv * ro * r * rp * rpt * t,
+    //     },
+    // }
 
     // NOTE: Only Translate, Rotate and Scale is supported
     t * r * s
@@ -540,6 +694,48 @@ mod tests {
 
     const EPSILON: Real = 1.0e-5;
 
+    // /// Test multiplying two transforms together.
+    // #[test]
+    // fn test_transform_multiply() {
+    //     debug_assert!(false);
+    // }
+
+    // /// Two transforms parented under each-other and the parent spins.
+    // #[test]
+    // fn test_transform_spin_around() {
+    //     debug_assert!(false);
+    // }
+
+    // /// Convert a Matrix to Quaternion
+    // #[test]
+    // fn test_matrix_to_quaternion() {
+    //     debug_assert!(false);
+    // }
+
+    // /// Rotation Orders. Convert between rotation orders.
+    // #[test]
+    // fn test_rotate_orders() {
+    //     debug_assert!(false);
+    // }
+
+    // /// Create a matrix, given attribute values.
+    // #[test]
+    // fn test_calculate_matrix_with_values() {
+    //     debug_assert!(false);
+    // }
+
+    // /// Transform construction.
+    // #[test]
+    // fn test_transform_new() {
+    //     debug_assert!(false);
+    // }
+
+    // /// Transform construction.
+    // #[test]
+    // fn test_transform_with_index_new() {
+    //     debug_assert!(false);
+    // }
+
     #[test]
     fn test_decompose_matrix() {
         // Test all the rotation orders.
@@ -563,6 +759,14 @@ mod tests {
             );
             println!("matrix: {}", matrix);
 
+            // let in_angles = euler::EulerAngles {
+            //     x: rx * DEGREES_TO_RADIANS, // X
+            //     y: ry * DEGREES_TO_RADIANS, // Y
+            //     z: rz * DEGREES_TO_RADIANS, // Z
+            //     w: 0.0,
+            // }; // XYZ == 0
+            // let euler_matrix = euler_to_matrix4(in_angles);
+            // println!("euler_matrix: {}", euler_matrix);
 
             let (wtx, wty, wtz, wrx, wry, wrz, wsx, wsy, wsz) =
                 decompose_matrix(matrix, roo);
@@ -573,6 +777,15 @@ mod tests {
                 wtx, wty, wtz, wrx, wry, wrz, wsx, wsy, wsz, roo,
             );
             println!("new_matrix: {}", new_matrix);
+
+            // let in_angles2 = euler::EulerAngles {
+            //     x: wrx * DEGREES_TO_RADIANS, // X
+            //     y: wry * DEGREES_TO_RADIANS, // Y
+            //     z: wrz * DEGREES_TO_RADIANS, // Z
+            //     w: 0.0,
+            // }; // XYZ == 0
+            // let euler_matrix2 = euler_to_matrix4(in_angles2);
+            // println!("euler_matrix2: {}", euler_matrix2);
 
             // Translate
             assert_relative_eq!(tx, wtx, epsilon = EPSILON);

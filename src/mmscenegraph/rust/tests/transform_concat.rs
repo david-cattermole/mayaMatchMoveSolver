@@ -155,6 +155,88 @@ fn rotate_xyz_with_xyz_rotate_order() {
     assert_relative_eq!(matrix[(3, 3)], 1.0);
 }
 
+// #[test]
+// fn rotate_xyz_with_yzx_rotate_order() {
+//     let tfm_a = Transform::from_rxyz(
+//         45.0,
+//         90.0,
+//         45.0,
+//         RotateOrder::YZX,
+//     );
+//     let tfm_b = Transform::from_rxyz(
+//         -45.0,
+//         90.0,
+//         90.0,
+//         RotateOrder::YZX,
+//     );
+
+//     // Compute
+//     let matrix = multiply(&tfm_a, &tfm_b);
+
+//     println!("Matrix: {0}", matrix);
+//     // 0 -0.707107 -0.707107 0
+//     assert_relative_eq!(matrix[(0, 0)], 0.0);
+//     assert_relative_eq!(matrix[(0, 1)], -0.707107, epsilon = EPSILON);
+//     assert_relative_eq!(matrix[(0, 2)], -0.707107, epsilon = EPSILON);
+//     assert_relative_eq!(matrix[(0, 3)], 0.0);
+//     // 0 -0.707107 0.707107 0
+//     assert_relative_eq!(matrix[(1, 0)], 0.0);
+//     assert_relative_eq!(matrix[(1, 1)], -0.707107, epsilon = EPSILON);
+//     assert_relative_eq!(matrix[(1, 2)], 0.707107, epsilon = EPSILON);
+//     assert_relative_eq!(matrix[(1, 3)], 0.0);
+//     // -1 0 0 0
+//     assert_relative_eq!(matrix[(2, 0)], 0.0);
+//     assert_relative_eq!(matrix[(2, 1)], -1.0);
+//     assert_relative_eq!(matrix[(2, 2)], 0.0);
+//     assert_relative_eq!(matrix[(2, 3)], 0.0);
+//     // 0 0 0 1
+//     assert_relative_eq!(matrix[(3, 0)], 0.0);
+//     assert_relative_eq!(matrix[(3, 1)], 0.0);
+//     assert_relative_eq!(matrix[(3, 2)], 0.0);
+//     assert_relative_eq!(matrix[(3, 3)], 1.0);
+// }
+
+// #[test]
+// fn rotate_xyz_with_zxy_rotate_order() {
+//     let tfm_a = Transform::from_rxyz(
+//         45.0,
+//         90.0,
+//         45.0,
+//         RotateOrder::ZXY,
+//     );
+//     let tfm_b = Transform::from_rxyz(
+//         -45.0,
+//         90.0,
+//         90.0,
+//         RotateOrder::ZXY,
+//     );
+
+//     // Compute
+//     let matrix = multiply(&tfm_a, &tfm_b);
+
+//     println!("Matrix: {0}", matrix);
+//     // 0 0 1 0
+//     assert_relative_eq!(matrix[(0, 0)], 0.0);
+//     assert_relative_eq!(matrix[(0, 1)], 0.0);
+//     assert_relative_eq!(matrix[(0, 2)], 1.0);
+//     assert_relative_eq!(matrix[(0, 3)], 0.0);
+//     // 0.707107 -0.707107 0 0
+//     assert_relative_eq!(matrix[(1, 0)], 0.707107, epsilon = EPSILON);
+//     assert_relative_eq!(matrix[(1, 1)], -0.707107, epsilon = EPSILON);
+//     assert_relative_eq!(matrix[(1, 2)], 0.0);
+//     assert_relative_eq!(matrix[(1, 3)], 0.0);
+//     // 0.707107 0.707107 0 0
+//     assert_relative_eq!(matrix[(2, 0)], 0.707107, epsilon = EPSILON);
+//     assert_relative_eq!(matrix[(2, 1)], 0.707107, epsilon = EPSILON);
+//     assert_relative_eq!(matrix[(2, 2)], 0.0);
+//     assert_relative_eq!(matrix[(2, 3)], 0.0);
+//     // 0 0 0 1
+//     assert_relative_eq!(matrix[(3, 0)], 0.0);
+//     assert_relative_eq!(matrix[(3, 1)], 0.0);
+//     assert_relative_eq!(matrix[(3, 2)], 0.0);
+//     assert_relative_eq!(matrix[(3, 3)], 1.0);
+// }
+
 #[test]
 fn rotate_xyz_with_mixed_rotate_order() {
     let tfm_a = Transform::from_rxyz(45.0, 90.0, 45.0, RotateOrder::ZXY);

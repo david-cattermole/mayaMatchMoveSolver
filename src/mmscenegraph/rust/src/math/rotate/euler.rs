@@ -176,6 +176,10 @@ pub fn euler_from_matrix3(matrix: Matrix33, order: u8) -> EulerAngles {
     euler_get_order(
         order, &mut i, &mut j, &mut k, &mut h, &mut n, &mut s, &mut f,
     );
+    // println!(
+    //     "order={}, i={} j={} k={} h={} n={} s={} f={}",
+    //     order, i, j, k, h, n, s, f
+    // );
 
     if s == EULER_REP_YES {
         let sy: Real = (matrix[(i, j)] * matrix[(i, j)]
@@ -259,3 +263,32 @@ pub fn rotate_order_from_index(index: u8) -> RotateOrder {
         _ => panic!("This rotate order index is invalid."),
     }
 }
+
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+
+//     // /// Converting Euler rotation values to a matrix.
+//     // #[test]
+//     // fn test_euler_to_matrix() {
+//     //     debug_assert!(false);
+//     // }
+
+//     // /// Convert a Matrix to EulerAngles
+//     // #[test]
+//     // fn test_matrix_to_euler() {
+//     //     debug_assert!(false);
+//     // }
+
+//     // /// Rotation Orders. Convert between rotation orders.
+//     // #[test]
+//     // fn test_rotate_orders() {
+//     //     debug_assert!(false);
+//     // }
+
+//     // /// Test Euler Orders (euler_get_order and euler_order)
+//     // #[test]
+//     // fn test_calculate_matrix() {
+//     //     debug_assert!(false);
+//     // }
+// }

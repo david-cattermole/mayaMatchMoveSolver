@@ -47,6 +47,37 @@ fn main() {
     let mut min_index = 0;
     let mut min_sum = 99999.0;
     for i in 0..24 {
+        // let in_angles = EulerAngles {
+        //     x: 45.0 * DEGREES_TO_RADIANS, // X
+        //     y: 15.0 * DEGREES_TO_RADIANS, // Y
+        //     z: 5.0 * DEGREES_TO_RADIANS,  // Z
+        //     w: i as Real,
+        // }; // XYZ == 0
+
+        // let in_angles = EulerAngles{
+        //     x: 43.4753107 * DEGREES_TO_RADIANS,  // X
+        //     y: 14.22562533 * DEGREES_TO_RADIANS,  // Y
+        //     z: -6.93180296 * DEGREES_TO_RADIANS,   // Z
+        //     w: i as Real}; // YZX == 21???
+
+        // let in_angles = EulerAngles{
+        //     x: 43.50875587 * DEGREES_TO_RADIANS,  // X
+        //     y: 19.65468648 * DEGREES_TO_RADIANS,  // Y
+        //     z: 6.66566223 * DEGREES_TO_RADIANS,   // Z
+        //     w: i as Real}; // ZXY == 0???
+
+        // let in_angles = EulerAngles{
+        //     x: 43.70283138 * DEGREES_TO_RADIANS,  // X
+        //     y: 15.05470113 * DEGREES_TO_RADIANS,  // Y
+        //     z: 4.82921734 * DEGREES_TO_RADIANS,   // Z
+        //     w: i as Real}; // XZY == 0???
+
+        // let in_angles = EulerAngles{
+        //     x: 43.07951714 * DEGREES_TO_RADIANS,  // X
+        //     y: 20.75357098 * DEGREES_TO_RADIANS,  // Y
+        //     z: -9.5108187 * DEGREES_TO_RADIANS,   // Z
+        //     w: i as Real}; // YXZ == 21???
+
         let in_angles = EulerAngles {
             x: 45.2277951 * DEGREES_TO_RADIANS,  // X
             y: 14.11947737 * DEGREES_TO_RADIANS, // Y
@@ -130,4 +161,13 @@ fn main() {
     }
 
     println!("min sum: value={} index={}", min_sum, min_index);
+
+    // for (i=0; i<24; ++i) {
+    //     outAngs = euler_from_matrix3(R, i); // EulOrdZXYr
+    //     println!("order: {} X: {} Y: {} Z: {}",
+    //            outAngs.w,
+    //            outAngs.x * RADIANS_TO_DEGREES,
+    //            outAngs.y * RADIANS_TO_DEGREES,
+    //            outAngs.z * RADIANS_TO_DEGREES);
+    // }
 }

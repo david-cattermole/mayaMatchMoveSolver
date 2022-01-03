@@ -136,7 +136,7 @@ class SolverBasic(solverbase.SolverBase):
         :type value: int
         """
         assert isinstance(value, int)
-        self._data['scene_graph_mode'] = bool(value)
+        self._data['scene_graph_mode'] = value
 
     ############################################################################
 

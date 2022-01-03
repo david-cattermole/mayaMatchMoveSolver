@@ -34,6 +34,12 @@ LOG = mmSolver.logger.get_logger()
 def compile_solver_affects(col, mkr_list, attr_list,
                            precomputed_data,
                            withtest):
+    # Reset the used hints to 'unknown' before setting 'used' or
+    # 'unused' flags.
+    generator = compile_reset_used_hints(col, mkr_list, attr_list)
+    for action, vaction in generator:
+        yield action, vaction
+
     sol = solveraffects.SolverAffects()
     sol.set_precomputed_data(precomputed_data)
 

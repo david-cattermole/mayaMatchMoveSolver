@@ -18,12 +18,28 @@
 #
 # Build Icons (using Qt Resource Compiler)
 
-set(input_file ${CMAKE_SOURCE_DIR}/icons/resources.qrc)
-set(output_file ${CMAKE_SOURCE_DIR}/icons/resources.rcc)
+# This section sets a hard location to the rcc  
+# executable file to prevent any errors of 
+# likes of 'rcc command not found'
+find_program(MAYA_RCC_EXECUTABLE
+        rcc
+    HINTS
+        "${MAYA_LOCATION}"
+        "$ENV{MAYA_LOCATION}"
+        "${MAYA_BASE_DIR}"
+    PATH_SUFFIXES
+        MacOS
+        bin/
+    DOC
+        "Maya's Qt resource compiler (rcc) executable path"
+)
+
+set(input_file resources.qrc)
+set(output_file resources.rcc)
 add_custom_command(
         OUTPUT ${output_file}
-        COMMAND rcc -binary resources.qrc -o resources.rcc
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/icons
+        COMMAND ${MAYA_RCC_EXECUTABLE} -binary resources.qrc -o resources.rcc
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS ${input_file}
 )
 add_custom_target(
@@ -31,3 +47,24 @@ add_custom_target(
         DEPENDS ${output_file}
         COMMENT "Building Icons (with Qt Resource Compiler) (${input_file})..."
 )
+
+
+# Install Icons.
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+  DESTINATION "${MODULE_FULL_NAME}/resources"
+  FILES_MATCHING PATTERN "*.rcc"
+  PATTERN "edit" EXCLUDE
+  PATTERN "library" EXCLUDE
+  PATTERN "ui" EXCLUDE)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+  DESTINATION "${MODULE_FULL_NAME}/icons"
+  FILES_MATCHING PATTERN "*.png"
+  PATTERN "edit" EXCLUDE
+  PATTERN "library" EXCLUDE
+  PATTERN "ui" EXCLUDE)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+  DESTINATION "${MODULE_FULL_NAME}/icons"
+  FILES_MATCHING PATTERN "*.svg"
+  PATTERN "edit" EXCLUDE
+  PATTERN "library" EXCLUDE
+  PATTERN "ui" EXCLUDE)

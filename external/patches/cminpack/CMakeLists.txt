@@ -93,8 +93,8 @@ endif ()
 
 set_target_properties(cminpack PROPERTIES VERSION ${CMINPACK_VERSION} SOVERSION ${CMINPACK_SOVERSION})
 
-add_subdirectory (cmake)
 
+# add_subdirectory (cmake)
 option (BUILD_EXAMPLES "Build example files." OFF)
 if(BUILD_EXAMPLES)
   add_subdirectory (examples)

@@ -26,9 +26,14 @@ import maya.cmds
 import mmSolver.logger
 
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
+# The canonical object to store integer frame ranges.
+#
+# Ideally, all frame ranges should be stored with this object. We can
+# pass this one variable around, the number of arguments.
 FrameRange = collections.namedtuple(
     'FrameRange',
     ['start', 'end']
@@ -94,3 +99,57 @@ def get_keyframe_times_for_node_attrs(nodes, attrs):
             key_times_map[node] |= set(times)
     key_times_map = {k: list(v) for k, v in key_times_map.items()}
     return key_times_map
+
+
+def get_frame_range(frame_range_mode, start_frame=None, end_frame=None):
+    """
+    Get the FrameRange from the mode and start/end frame numbers.
+
+    :param frame_range_mode: The mode or type of frame range to
+        get. For example we can get the current inner or outer
+        timeline defined in the Maya scene.
+    :type frame_range_mode: mmSolver.utils.constant.FRAME_RANGE_MODE_*_VALUE
+
+    :param start_frame: If the frame_range_mode is set to
+        FRAME_RANGE_MODE_CUSTOM_VALUE, this argument defines the exact
+        start_frame to use. This argument is not used for any other
+        frame_range_mode and can be left as None.
+    :type start_frame: int or None
+
+    :param end_frame: If the frame_range_mode is set to
+        FRAME_RANGE_MODE_CUSTOM_VALUE, this argument defines the exact
+        end_frame to use. This argument is not used for any other
+        frame_range_mode and can be left as None.
+    :type end_frame: int or None
+
+    :rtype: FrameRange
+    """
+    assert frame_range_mode in const.FRAME_RANGE_MODE_VALUES
+
+    if frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_INNER_VALUE:
+        start_frame, end_frame = get_maya_timeline_range_outer()
+    elif frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE:
+        start_frame, end_frame = get_maya_timeline_range_inner()
+    elif frame_range_mode == const.FRAME_RANGE_MODE_CUSTOM_VALUE:
+        assert start_frame is not None
+        assert end_frame is not None
+    else:
+        assert False
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
+    frame_range = FrameRange(start_frame, end_frame)
+    return frame_range
+
+
+def convert_frame_range_to_frame_list(frame_range):
+    """
+    Convert a FrameRange to a list of integer frame numbers.
+
+    :param frame_range: The frame range to convert to a list.
+    :type frame_range: FrameRange
+
+    :rtype: [int, ...] or []
+    """
+    start_frame, end_frame = frame_range
+    frames = range(int(start_frame), int(end_frame) + 1)
+    return frames

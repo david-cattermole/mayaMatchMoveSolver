@@ -31,21 +31,9 @@ SETLOCAL
 SET MAYA_VERSION=2018
 SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2018"
 
-:: Clear all build information before re-compiling.
-:: Turn this off when wanting to make small changes and recompile.
-SET FRESH_BUILD=1
-
 :: Run the Python API and Solver tests inside Maya, after a
 :: successfully build an install process.
 SET RUN_TESTS=0
-
-:: Use CMinpack?
-:: CMinpack is the recommended solving library.
-SET WITH_CMINPACK=1
-
-:: WARNING: Would you like to use GPL-licensed code? If so you will
-:: not be able to distribute
-SET WITH_GPL_CODE=0
 
 :: Where to install the module?
 ::
@@ -75,80 +63,99 @@ SET BUILD_TYPE=Release
 SET BUILD_PLUGIN=1
 SET BUILD_PYTHON=1
 SET BUILD_MEL=1
+SET BUILD_3DEQUALIZER=1
+SET BUILD_SYNTHEYES=1
+SET BUILD_BLENDER=1
 SET BUILD_QT_UI=1
 SET BUILD_DOCS=1
 SET BUILD_ICONS=1
 SET BUILD_CONFIG=1
 SET BUILD_TESTS=1
 
-:: To Generate a Visual Studio 'Solution' file, change the '0' to a '1'.
-SET GENERATE_SOLUTION=0
-
 :: The root of this project.
 SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%
 
-:: Build plugin
-MKDIR build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
-CHDIR build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
-IF "%FRESH_BUILD%"=="1" (
-    DEL /S /Q *
-    FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
+:: Paths for dependancies.
+::
+:: By default these paths will work if the "build_thirdparty.bat"
+:: scripts have been run before this script.
+SET CMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack"
+SET CERES_ROOT="%PROJECT_ROOT%\external\install\libmv"
+SET CERES_INCLUDE_DIR="%PROJECT_ROOT%\external\install\libmv\include\third_party\ceres\include"
+SET CERES_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
+SET LIBMV_ROOT="%PROJECT_ROOT%\external\install\libmv"
+SET EIGEN3_INCLUDE_DIR="%PROJECT_ROOT%\external\install\eigen\include\eigen3"
+SET GLOG_ROOT="%PROJECT_ROOT%\external\install\libmv"
+SET GLOG_INCLUDE_DIR="%PROJECT_ROOT%\external\install\libmv\include\third_party\glog\src"
+SET GLOG_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
+SET GFLAGS_ROOT="%PROJECT_ROOT%\external\install\libmv"
+SET GFLAGS_INCLUDE_DIR="%PROJECT_ROOT%\external\install\libmv\include\third_party\gflags"
+SET GFLAGS_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
+
+:: MinGW is a common install for developers on Windows and
+:: if installed and used it will cause build conflicts and
+:: errors, so we disable it.
+SET IGNORE_INCLUDE_DIRECTORIES=""
+IF EXIST "C:\MinGW" (
+    SET IGNORE_INCLUDE_DIRECTORIES="C:\MinGW\bin;C:\MinGW\include"
 )
 
-IF "%GENERATE_SOLUTION%"=="1" (
+:: Build project
+SET BUILD_DIR_NAME=build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
+SET BUILD_DIR=%PROJECT_ROOT%\%BUILD_DIR_NAME%
+ECHO BUILD_DIR_NAME: %BUILD_DIR_NAME%
+ECHO BUILD_DIR: %BUILD_DIR%
+MKDIR "%BUILD_DIR_NAME%"
+CHDIR "%BUILD_DIR%"
 
-REM For Maya 2018 (which uses Visual Studio 2015)
-REM cmake -G "Visual Studio 14 2015 Win64" -T "v140"
+:: To Generate a Visual Studio 'Solution' file, for Maya 2018 (which
+:: uses Visual Studio 2015), replace the cmake -G line with the following line:
+::
+:: cmake -G "Visual Studio 14 2015 Win64" -T "v140"
 
-REM To Generate a Visual Studio 'Solution' file
-    cmake -G "Visual Studio 11 2012 Win64" -T "v110" ^
-        -DMAYA_VERSION=%MAYA_VERSION% ^
-        -DUSE_GPL_LEVMAR=%WITH_GPL_CODE% ^
-        -DUSE_CMINPACK=%WITH_CMINPACK% ^
-        -DCMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack" ^
-        -DLEVMAR_ROOT="%PROJECT_ROOT%\external\install\levmar" ^
-        -DMAYA_LOCATION=%MAYA_LOCATION% ^
-        -DMAYA_VERSION=%MAYA_VERSION% ^
-        ..
+cmake -G "NMake Makefiles" ^
+    -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
+    -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
+    -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
+    -DBUILD_PLUGIN=%BUILD_PLUGIN% ^
+    -DBUILD_PYTHON=%BUILD_PYTHON% ^
+    -DBUILD_MEL=%BUILD_MEL% ^
+    -DBUILD_3DEQUALIZER=%BUILD_3DEQUALIZER% ^
+    -DBUILD_SYNTHEYES=%BUILD_SYNTHEYES% ^
+    -DBUILD_BLENDER=%BUILD_BLENDER% ^
+    -DBUILD_QT_UI=%BUILD_QT_UI% ^
+    -DBUILD_DOCS=%BUILD_DOCS% ^
+    -DBUILD_ICONS=%BUILD_ICONS% ^
+    -DBUILD_CONFIG=%BUILD_CONFIG% ^
+    -DBUILD_TESTS=%BUILD_TESTS% ^
+    -DLIBMV_ROOT=%LIBMV_ROOT% ^
+    -DCMINPACK_ROOT=%CMINPACK_ROOT% ^
+    -DCERES_ROOT=%CERES_ROOT% ^
+    -DCERES_LIB_PATH=%CERES_LIB_PATH% ^
+    -DCERES_INCLUDE_DIR=%CERES_INCLUDE_DIR% ^
+    -DEIGEN3_INCLUDE_DIR=%EIGEN3_INCLUDE_DIR% ^
+    -DGLOG_ROOT=%GLOG_ROOT% ^
+    -DGLOG_INCLUDE_DIR=%GLOG_INCLUDE_DIR% ^
+    -DGFLAGS_ROOT=%GFLAGS_ROOT% ^
+    -DGFLAGS_INCLUDE_DIR=%GFLAGS_INCLUDE_DIR% ^
+    -DMAYA_LOCATION=%MAYA_LOCATION% ^
+    -DMAYA_VERSION=%MAYA_VERSION% ^
+    ..
 
-) ELSE (
+cmake --build . --parallel 8
 
-    cmake -G "NMake Makefiles" ^
-        -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
-        -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
-        -DBUILD_PLUGIN=%BUILD_PLUGIN% ^
-        -DBUILD_PYTHON=%BUILD_PYTHON% ^
-        -DBUILD_MEL=%BUILD_MEL% ^
-        -DBUILD_QT_UI=%BUILD_QT_UI% ^
-        -DBUILD_DOCS=%BUILD_DOCS% ^
-        -DBUILD_ICONS=%BUILD_ICONS% ^
-        -DBUILD_CONFIG=%BUILD_CONFIG% ^
-        -DBUILD_TESTS=%BUILD_TESTS% ^
-        -DUSE_GPL_LEVMAR=%WITH_GPL_CODE% ^
-        -DUSE_CMINPACK=%WITH_CMINPACK% ^
-        -DCMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack" ^
-        -DLEVMAR_ROOT="%PROJECT_ROOT%\external\install\levmar" ^
-        -DMAYA_LOCATION=%MAYA_LOCATION% ^
-        -DMAYA_VERSION=%MAYA_VERSION% ^
-        ..
+:: Comment this line out to stop the automatic install into the home directory.
+cmake --install .
 
-    nmake /F Makefile clean
-    nmake /F Makefile all
+:: Run tests
+IF "%RUN_TESTS%"=="1" (
+    cmake --build . --target test
+)
 
-REM Comment this line out to stop the automatic install into the home directory.
-    nmake /F Makefile install
-
-REM Run tests
-    IF "%RUN_TESTS%"=="1" (
-        nmake /F Makefile test
-    )
-
-REM Create a .zip package.
+:: Create a .zip package.
 IF "%BUILD_PACKAGE%"=="1" (
-       nmake /F Makefile package
-   )
-
+    cmake --build . --target package
 )
 
 :: Return back project root directory.

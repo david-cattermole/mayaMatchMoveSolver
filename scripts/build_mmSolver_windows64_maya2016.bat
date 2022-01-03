@@ -88,6 +88,12 @@ SET GENERATE_SOLUTION=0
 SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%
 
+:: Include directories to ignore
+SET IGNORE_INCLUDE_DIRECTORIES=""
+IF EXIST "C:\MinGW" (
+    SET IGNORE_INCLUDE_DIRECTORIES="C:\MinGW\bin;C:\MinGW\include"
+)
+
 :: Build plugin
 MKDIR build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
 CHDIR build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
@@ -129,6 +135,7 @@ REM To Generate a Visual Studio 'Solution' file
         -DUSE_CMINPACK=%WITH_CMINPACK% ^
         -DCMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack" ^
         -DLEVMAR_ROOT="%PROJECT_ROOT%\external\install\levmar" ^
+        -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
         -DMAYA_LOCATION=%MAYA_LOCATION% ^
         -DMAYA_VERSION=%MAYA_VERSION% ^
         ..

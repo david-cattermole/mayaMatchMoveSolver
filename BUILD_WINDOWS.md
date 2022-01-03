@@ -35,7 +35,7 @@ It is *important* you use the `x64` Command Prompt, *not*
 mmSolver has a few dependencies, and are listed in
 [BUILD.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md#dependencies).
 
-`cminpack`, `levmar` and `Qt.py` can be easily downloaded and built
+`cminpack`, and `levmar` can be easily downloaded and built
 for mmSolver using build scripts provided in the `<project
 root>\scripts` directory.
 
@@ -43,7 +43,6 @@ On Windows:
 ```cmd
 > CD <project root>
 > scripts\build_cminpack.bat
-> scripts\build_qtpy.bat
 > scripts\build_levmar.bat
 ```
 
@@ -52,14 +51,9 @@ directories under `<project root>\external\install`.
 
 - cminpack
 - levmar
-- qtpy
 
 These dependencies will automatically be found by the mmSolver build
 script and installed.
-
-If you do not want to install `Qt.py` into mmSolver, simply do not use
-the build script and delete the directory `<project
-root>\external\install\qtpy`.
 
 # Build mmSolver
  
@@ -173,7 +167,8 @@ Advanced options:
 | PREFERRED_SOLVER      | Preferred solver; levmar or cminpack_lm.    |
 
 *WARNING: 'levmar' is GPL licensed. If used with mmSolver, mmSolver
-must not be distributed in binary form to anyone.*
+must not be distributed in binary form to anyone outside your
+organisation.*
 
 You can read any of the build scripts to find out how they work. The
 build scripts can be found in `<project root>\scripts\build_*.bat`.
@@ -181,8 +176,8 @@ build scripts can be found in `<project root>\scripts\build_*.bat`.
 If you are new to building Maya plug-ins using CMake, we recommend 
 watching these videos by Chad Vernon:
 
-* [Compiling Maya Plug-ins with CMake (Part 1)](https://www.youtube.com/watch?v=2mUOt_F2ywo)
-* [Compiling Maya Plug-ins with CMake (Part 2)](https://www.youtube.com/watch?v=C56N5KgDaTg)
+- [Compiling Maya Plug-ins with CMake (Part 1)](https://www.youtube.com/watch?v=2mUOt_F2ywo)
+- [Compiling Maya Plug-ins with CMake (Part 2)](https://www.youtube.com/watch?v=C56N5KgDaTg)
 
 # Building Packages
 
@@ -251,8 +246,8 @@ automatically into the Maya Module (when the build script is run).
 
 *Note:* Sphinx will likely list a number of 'errors' while building
 the documentation, this means the automatic tools failed to find
-documentation. This is normal. A majority of the documentation will be
-present.
+documentation. This is (unfortunately) normal. A majority of the
+documentation will be present.
 
 # Run Test Suite
 
@@ -315,21 +310,29 @@ $ cd ~/dev/mayaMatchMoveSolver_maya2020Deploy_windows64/; git fetch --all; git c
 
 Run in the Windows Command Prompt with the needed MSVC compiler environment paths set up:
 (For example run "VS2012 x64 Cross Tools Command Prompt" or "VS2015 x86 x64 Cross Tools Command Prompt")
+
+Visual Studio 2012:
 ```cmd
 REM Maya 2016
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2016Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_qtpy.bat && scripts\build_mmSolver_windows64_maya2016.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2016Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2016.bat
 
 REM Maya 2017
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2017Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_qtpy.bat && scripts\build_mmSolver_windows64_maya2017.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2017Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2017.bat
+```
 
+Visual Studio 2015:
+```cmd
 REM Maya 2018
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2018Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_qtpy.bat && scripts\build_mmSolver_windows64_maya2018.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2018Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2018.bat
 
 REM Maya 2019
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2019Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_qtpy.bat && scripts\build_mmSolver_windows64_maya2019.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2019Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2019.bat
+```
 
+Visual Studio 2017:
+```cmd
 REM Maya 2020
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2020Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_qtpy.bat && scripts\build_mmSolver_windows64_maya2020.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2020Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2020.bat
 ```
 
 Package files can then be uploaded from the

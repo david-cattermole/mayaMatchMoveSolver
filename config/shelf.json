@@ -7,7 +7,6 @@
             "solver_run_current_frame",
             "---Create",
             "create_marker",
-            "convert_to_marker",
             "load_marker_ui",
             "---Selection",
             "swap_marker_bundles",
@@ -18,6 +17,9 @@
             "edit_root_frame_add",
             "edit_root_frame_remove",
             "---Tools",
+            "camera_tools/camera_popup/---Calibrate",
+            "camera_tools/camera_popup/camera_calibration_create_setup",
+            "camera_tools/camera_popup/camera_calibration_update_values",
             "mb_tools/mb_popup/---Marker-Bundle Link",
             "mb_tools/mb_popup/link_marker_bundle",
             "mb_tools/mb_popup/unlink_marker_bundle",
@@ -32,7 +34,7 @@
             "marker_tools/marker_popup/raycast_marker",
             "marker_tools/marker_popup/---Create Marker",
             "marker_tools/marker_popup/create_marker",
-            "marker_tools/marker_popup/convert_to_marker",
+            "marker_tools/marker_popup/convert_to_marker_ui",
             "marker_tools/marker_popup/duplicate_marker",
             "marker_tools/marker_popup/average_markers",
             "marker_tools/marker_popup/---Deform Marker",
@@ -69,8 +71,8 @@
             "general_tools/gen_tools_popup/sort_nodes_in_outliner",
             "general_tools/gen_tools_popup/remove_all_solver_nodes",
             "general_tools/gen_tools_popup/---Parenting",
-            "general_tools/gen_tools_popup/reparent_under_node",
-            "general_tools/gen_tools_popup/unparent_to_world",
+            "general_tools/gen_tools_popup/reparent_under_node2",
+            "general_tools/gen_tools_popup/unparent_to_world2",
             "general_tools/gen_tools_popup/---Controllers",
             "general_tools/gen_tools_popup/create_controller2",
             "general_tools/gen_tools_popup/remove_controller2",
@@ -107,6 +109,10 @@
                 "popup_button": ["left", "right"]
             },
             "file_io_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "camera_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
             },

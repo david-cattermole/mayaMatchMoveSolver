@@ -39,6 +39,9 @@
 #include <MMMarkerGroupTransformNode.h>
 #include <MMReprojectionCmd.h>
 #include <MMSolverAffectsCmd.h>
+#include <MMCameraCalibrateNode.h>
+#include <MMLineIntersectNode.h>
+#include <MMCameraSolveCmd.h>
 #include <shape/MarkerShapeNode.h>
 #include <shape/MarkerDrawOverride.h>
 #include <shape/SkyDomeShapeNode.h>
@@ -128,6 +131,7 @@
 #define PLUGIN_COMPANY PROJECT_NAME
 #define PLUGIN_VERSION PROJECT_VERSION
 
+
 // Register with Maya
 MStatus initializePlugin(MObject obj) {
     MStatus status;
@@ -163,6 +167,12 @@ MStatus initializePlugin(MObject obj) {
                      MMTestCameraMatrixCmd::newSyntax,
                      status);
 
+    REGISTER_COMMAND(plugin,
+                     MMCameraSolveCmd::cmdName(),
+                     MMCameraSolveCmd::creator,
+                     MMCameraSolveCmd::newSyntax,
+                     status);
+
     REGISTER_NODE(plugin,
                   MMMarkerScaleNode::nodeName(),
                   MMMarkerScaleNode::m_id,
@@ -175,6 +185,20 @@ MStatus initializePlugin(MObject obj) {
                   MMReprojectionNode::m_id,
                   MMReprojectionNode::creator,
                   MMReprojectionNode::initialize,
+                  status);
+
+    REGISTER_NODE(plugin,
+                  MMCameraCalibrateNode::nodeName(),
+                  MMCameraCalibrateNode::m_id,
+                  MMCameraCalibrateNode::creator,
+                  MMCameraCalibrateNode::initialize,
+                  status);
+
+    REGISTER_NODE(plugin,
+                  MMLineIntersectNode::nodeName(),
+                  MMLineIntersectNode::m_id,
+                  MMLineIntersectNode::creator,
+                  MMLineIntersectNode::initialize,
                   status);
 
     const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
@@ -284,6 +308,7 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMSolverAffectsCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, MMCameraSolveCmd::cmdName(), status);
 
     DEREGISTER_DRAW_OVERRIDE(
         mmsolver::MarkerShapeNode::m_draw_db_classification,
@@ -307,8 +332,16 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(),
                     MMMarkerScaleNode::m_id, status);
+
     DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(),
                     MMReprojectionNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMCameraCalibrateNode::nodeName(),
+                    MMCameraCalibrateNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMLineIntersectNode::nodeName(),
+                    MMLineIntersectNode::m_id, status);
+
     DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(),
                     MMMarkerGroupTransformNode::m_id, status);
     return status;

@@ -20,6 +20,7 @@ Pages dedicated to specific tools:
     tools_selection
     tools_attributetools
     tools_frametools
+    tools_cameratools
     tools_markerbundletools
     tools_bundletools
     tools_markertools

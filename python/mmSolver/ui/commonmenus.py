@@ -22,10 +22,10 @@ Creation and editing of common menus such as "Edit" and "Help"
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt as Qt
-import Qt.QtGui as QtGui
-import Qt.QtCore as QtCore
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt as Qt
+import mmSolver.ui.Qt.QtGui as QtGui
+import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 

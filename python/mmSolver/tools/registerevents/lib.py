@@ -84,3 +84,17 @@ def run_update_output_attributes_in_solver_ui(**kwargs):
     e = time.time()
     LOG.debug("run_update_output_attributes_in_solver_ui: time=%s", e - s)
     return
+
+
+def run_close_all_windows(**kwargs):
+    """
+    Find and close all tool UIs sub-classed from BaseMayaWindow.
+    """
+    LOG.debug("run_close_all_windows: %r", kwargs)
+    s = time.time()
+    import mmSolver.ui.base_maya_window
+    cls = mmSolver.ui.base_maya_window.BaseMayaWindow
+    cls.close_all_instances()
+    e = time.time()
+    LOG.debug("run_close_all_windows: time=%s", e - s)
+    return

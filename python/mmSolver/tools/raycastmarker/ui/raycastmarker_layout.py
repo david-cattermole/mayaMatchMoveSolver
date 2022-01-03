@@ -1,4 +1,4 @@
-# Copyright (C) 2020 David Cattermole
+# Copyright (C) 2020, 2021 David Cattermole
 #
 # This file is part of mmSolver.
 #
@@ -23,7 +23,7 @@ window.
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
-import Qt.QtWidgets as QtWidgets
+import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import maya.cmds
 
@@ -55,6 +55,13 @@ class RayCastMarkerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         )
         self.frameRangeEndSpinBox.valueChanged.connect(
             self.endFrameValueChanged
+        )
+
+        # Bundle Rotate Mode
+        bundle_rotate_modes = const.BUNDLE_ROTATE_MODE_LABELS
+        self.bundleRotateModeComboBox.addItems(bundle_rotate_modes)
+        self.bundleRotateModeComboBox.currentIndexChanged.connect(
+            self.bundleRotateModeIndexChanged
         )
 
         self.bundleUnlockRelockCheckBox.stateChanged.connect(
@@ -100,6 +107,12 @@ class RayCastMarkerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         configmaya.set_scene_option(name, value, add_attr=True)
         LOG.debug('key=%r value=%r', name, value)
 
+    def bundleRotateModeIndexChanged(self, index):
+        name = const.CONFIG_BUNDLE_ROTATE_MODE_KEY
+        value = const.BUNDLE_ROTATE_MODE_VALUES[index]
+        configmaya.set_scene_option(name, value, add_attr=True)
+        LOG.debug('key=%r value=%r', name, value)
+
     def bundleUnlockRelockStateChanged(self, value):
         name = const.CONFIG_BUNDLE_UNLOCK_RELOCK_KEY
         value = bool(value)
@@ -119,6 +132,11 @@ class RayCastMarkerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
         name = const.CONFIG_FRAME_END_KEY
         value = const.DEFAULT_FRAME_END
+        configmaya.set_scene_option(name, value)
+        LOG.debug('key=%r value=%r', name, value)
+
+        name = const.CONFIG_BUNDLE_ROTATE_MODE_KEY
+        value = const.DEFAULT_BUNDLE_ROTATE_MODE
         configmaya.set_scene_option(name, value)
         LOG.debug('key=%r value=%r', name, value)
 
@@ -164,6 +182,15 @@ class RayCastMarkerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         LOG.debug('key=%r value=%r', const.CONFIG_FRAME_END_KEY, frame_end)
         self.frameRangeStartSpinBox.setValue(frame_start)
         self.frameRangeEndSpinBox.setValue(frame_end)
+
+        name = const.CONFIG_BUNDLE_ROTATE_MODE_KEY
+        value = configmaya.get_scene_option(
+            name,
+            default=const.DEFAULT_BUNDLE_ROTATE_MODE)
+        index = const.BUNDLE_ROTATE_MODE_VALUES.index(value)
+        label = const.BUNDLE_ROTATE_MODE_LABELS[index]
+        LOG.debug('key=%r value=%r', name, value)
+        self.bundleRotateModeComboBox.setCurrentText(label)
 
         name = const.CONFIG_BUNDLE_UNLOCK_RELOCK_KEY
         value = configmaya.get_scene_option(

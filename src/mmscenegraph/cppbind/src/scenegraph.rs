@@ -175,8 +175,7 @@ impl ShimSceneGraph {
     ) -> bool {
         let child_node_id = bind_to_core_node_id(child_node_id);
         let parent_node_id = bind_to_core_node_id(parent_node_id);
-        self.inner
-            .link_marker_to_bundle(child_node_id, parent_node_id)
+        self.inner.set_node_parent(child_node_id, parent_node_id)
     }
 
     pub fn num_transform_nodes(&self) -> usize {

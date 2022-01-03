@@ -50,6 +50,8 @@
             "bundle_tools/bundle_popup/attach_bundle_to_curve",
             "bundle_tools/bundle_popup/---Create Bundle",
             "bundle_tools/bundle_popup/create_bundle",
+            "display_tools/display_popup/---Create",
+            "display_tools/display_popup/create_sky_dome",
             "general_tools/gen_tools_popup/---Viewport",
             "general_tools/gen_tools_popup/center_twodee",
             "general_tools/gen_tools_popup/center_twodee_remove",
@@ -104,6 +106,10 @@
                 "popup_button": ["left", "right"]
             },
             "camera_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "display_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
             },

@@ -52,6 +52,8 @@
             "bundle_tools/aim_at_camera_manipulator",
             "bundle_tools/attach_bundle_to_curve",
             "bundle_tools/raycast_marker",
+            "display_tools/---Create",
+            "display_tools/create_sky_dome",
             "general_tools/---Viewport",
             "general_tools/center_twodee",
             "general_tools/center_twodee_remove",
@@ -98,6 +100,10 @@
             },
             "camera_tools": {
                 "name": "Camera Tools",
+                "tearoff": true
+            },
+            "display_tools": {
+                "name": "General Tools",
                 "tearoff": true
             },
             "general_tools": {

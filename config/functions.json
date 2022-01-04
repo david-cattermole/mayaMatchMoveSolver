@@ -750,6 +750,14 @@
                 "import mmSolver.tools.mltools.ml_convertRotationOrder as ml_convertRotationOrder;",
                 "ml_convertRotationOrder.ui();"
             ]
+        },
+        "ml_check_rotation_orders": {
+            "name": "Check Rotation Order for Selection",
+            "tooltip": "Checks Rotation order for all selected objects and prints result in Script Editor.",
+            "command": [
+                "import mmSolver.tools.mltools.tools;",
+                "mmSolver.tools.mltools.tools.loadTipsForAll();"
+            ]
         }
     }
 }

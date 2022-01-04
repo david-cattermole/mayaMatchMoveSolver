@@ -73,6 +73,8 @@
             "general_tools/---Controllers",
             "general_tools/create_controller2",
             "general_tools/remove_controller2",
+            "general_tools/---ML Tools",
+            "general_tools/ml_convert_rotation_order",
             "general_tools/---Settings & Preferences",
             "general_tools/user_preferences_window",
             "file_io_tools/---Input Output",

@@ -50,6 +50,7 @@ OBJECT_TYPE_UNKNOWN = 'unknown'
 OBJECT_TYPE_ATTRIBUTE = 'attribute'
 OBJECT_TYPE_MARKER = 'marker'
 OBJECT_TYPE_CAMERA = 'camera'
+OBJECT_TYPE_LENS = 'lens'
 OBJECT_TYPE_MARKER_GROUP = 'markergroup'
 OBJECT_TYPE_BUNDLE = 'bundle'
 OBJECT_TYPE_COLLECTION = 'collection'
@@ -59,6 +60,7 @@ OBJECT_TYPE_LIST = [
     OBJECT_TYPE_ATTRIBUTE,
     OBJECT_TYPE_MARKER,
     OBJECT_TYPE_CAMERA,
+    OBJECT_TYPE_LENS,
     OBJECT_TYPE_MARKER_GROUP,
     OBJECT_TYPE_BUNDLE,
     OBJECT_TYPE_COLLECTION,
@@ -132,10 +134,10 @@ BUNDLE_COLOUR_RGB = (0.0, 1.0, 0.0)
 
 
 # Node Types.
-MARKER_TRANSFORM_NODE_TYPE = 'transform'
-MARKER_SHAPE_NODE_TYPE = 'locator'
+MARKER_TRANSFORM_NODE_TYPE = 'mmMarkerTransform'
+MARKER_SHAPE_NODE_TYPE = 'mmMarkerShape'
 BUNDLE_TRANSFORM_NODE_TYPE = 'transform'
-BUNDLE_SHAPE_NODE_TYPE = 'locator'
+BUNDLE_SHAPE_NODE_TYPE = 'mmBundleShape'
 CAMERA_TRANSFORM_NODE_API_TYPES = (
     OpenMaya.MFn.kTransform,
     OpenMaya.MFn.kPluginTransformNode,
@@ -144,11 +146,15 @@ CAMERA_TRANSFORM_NODE_API_TYPES = (
 CAMERA_SHAPE_NODE_API_TYPES = (
     OpenMaya.MFn.kCamera,
 )
+LENS_NODE_TYPE_DEFAULT = 'mmLensModelBasic'
+LENS_DATA_TYPE_ID = 0x0012F184
+LENS_TOGGLE_NODE_NAME = 'lensDistortionToggle1'
 
 
 # Icon names
 MARKER_SHAPE_ICON_NAME = 'out_mmMarkerShape.png'
 BUNDLE_SHAPE_ICON_NAME = 'out_mmBundleShape.png'
+LENS_SHAPE_ICON_NAME = 'out_mmLensShape.png'
 
 
 # Collection Attribute Names

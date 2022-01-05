@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -32,6 +32,7 @@ from mmSolver._api.collection import (
     Collection,
     update_deviation_on_collection
 )
+from mmSolver._api.lens import Lens
 from mmSolver._api.execute import (
     createExecuteOptions,
     create_execute_options,
@@ -247,6 +248,7 @@ __all__ = [
     'Attribute',
     'ExecuteOptions',
     'Collection',
+    'Lens',
     'Frame',
     'Solver',  # Backwards compatibility
     'Action',

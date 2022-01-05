@@ -24,6 +24,7 @@
 #include <MMSolverCmd.h>
 #include <core/bundleAdjust_defines.h>
 #include <core/bundleAdjust_data.h>
+#include <core/bundleAdjust_base.h>
 #include <mayaUtils.h>
 
 // STL
@@ -109,6 +110,10 @@ void createSolveInfoSyntax(MSyntax &syntax) {
                    MSyntax::kBoolean);
     syntax.addFlag(FRAME_SOLVE_MODE_FLAG, FRAME_SOLVE_MODE_FLAG_LONG,
                    MSyntax::kUnsigned);
+    syntax.addFlag(DEBUG_FILE_FLAG, DEBUG_FILE_FLAG_LONG,
+                   MSyntax::kString);
+    syntax.addFlag(PRINT_STATS_FLAG, PRINT_STATS_FLAG_LONG,
+                   MSyntax::kString);
 
     syntax.addFlag(REMOVE_UNUSED_MARKERS_FLAG, REMOVE_UNUSED_MARKERS_FLAG_LONG,
                    MSyntax::kBoolean);
@@ -176,6 +181,19 @@ MStatus parseSolveLogArguments(const MArgDatabase &argData,
     }
 
     return status;
+
+    // markerName = markerArgs.asString(0, &status);
+    // CHECK_MSTATUS_AND_RETURN_IT(status);
+    // // TODO: Test for the type of node given for the marker.
+    // //  We need to support both 'transform' or 'mmMarkerTransform' node.
+    // //
+    // // status = nodeExistsAndIsType(markerName, MFn::Type::kTransform);  // Or MFn::Type::kPluginTransformNode
+    // // CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    // cameraName = markerArgs.asString(1, &status);
+    // CHECK_MSTATUS_AND_RETURN_IT(status);
+    // status = nodeExistsAndIsType(cameraName, MFn::Type::kCamera);
+    // CHECK_MSTATUS_AND_RETURN_IT(status);
 }
 
 

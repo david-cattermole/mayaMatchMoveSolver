@@ -60,6 +60,7 @@ add_attribute(
     mmsg::AttrId &out_attrId,
     StringToAttrIdMap &out_attrNameToAttrIdMap
 ) {
+    UNUSED(frameList);
     MStatus status = MS::kSuccess;
     mayaAttr.setAttrName(attr_name);
 
@@ -535,6 +536,7 @@ add_transforms(
         auto parent_ok = out_sceneGraph.set_node_parent(
             previous_node_id,
             tfm_node_id);
+        UNUSED(parent_ok);
         previous_node_id = tfm_node_id;
 
         status = dag_path.pop();
@@ -573,7 +575,6 @@ add_cameras(
     out_cameraNodes.clear();
     out_cameraNodes.reserve(cameraList.size());
 
-    CameraPtrList::const_iterator cit;
     for (auto cit = cameraList.cbegin(); cit != cameraList.cend(); ++cit) {
         auto cam_ptr = *cit;
         auto cam_tfm_name = cam_ptr->getTransformNodeName();
@@ -679,7 +680,6 @@ add_bundles(
     out_bundleNodes.clear();
     out_bundleNodes.reserve(bundleList.size());
 
-    BundlePtrList::const_iterator cit;
     for (auto cit = bundleList.cbegin(); cit != bundleList.cend(); ++cit) {
         auto bnd_ptr = *cit;
         auto bnd_tfm_name = bnd_ptr->getNodeName();
@@ -833,6 +833,7 @@ convert_attributes_to_attr_ids(
     mmsg::AttrDataBlock &out_attrDataBlock,
     std::vector<mmscenegraph::AttrId> &out_attrIdList
 ) {
+    UNUSED(out_attrDataBlock);
     MStatus status = MS::kSuccess;
 
     out_attrIdList.clear();
@@ -898,6 +899,7 @@ MStatus construct_scene_graph(
         out_frameList.push_back(frame_num);
     }
     auto total_frame_count = (end_frame - start_frame) + 1;
+    UNUSED(total_frame_count);
     // INFO("Frames start_frame: " << start_frame);
     // INFO("Frames end_frame: " << end_frame);
     // INFO("Frames frame_count: " << total_frame_count);

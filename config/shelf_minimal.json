@@ -6,6 +6,16 @@
             "solver_tools/solver_popup/open_solver_ui",
             "solver_tools/solver_popup/solver_run",
             "solver_tools/solver_popup/solver_run_current_frame",
+            "create_tools/create_popup/---Camera & Lens",
+            "create_tools/create_popup/create_camera",
+            "create_tools/create_popup/create_image_plane",
+            "create_tools/create_popup/create_lens",
+            "create_tools/create_popup/---Create Marker",
+            "create_tools/create_popup/create_marker",
+            "create_tools/create_popup/convert_to_marker",
+            "create_tools/create_popup/load_marker_ui",
+            "create_tools/create_popup/---Create Bundle",
+            "create_tools/create_popup/create_bundle",
             "solver_tools/solver_popup/---Time",
             "solver_tools/solver_popup/navigate_root_frame_prev",
             "solver_tools/solver_popup/navigate_root_frame_next",
@@ -50,6 +60,8 @@
             "bundle_tools/bundle_popup/attach_bundle_to_curve",
             "bundle_tools/bundle_popup/---Create Bundle",
             "bundle_tools/bundle_popup/create_bundle",
+            "display_tools/display_popup/---Create",
+            "display_tools/display_popup/create_sky_dome",
             "general_tools/gen_tools_popup/---Viewport",
             "general_tools/gen_tools_popup/center_twodee",
             "general_tools/gen_tools_popup/center_twodee_remove",
@@ -71,6 +83,8 @@
             "general_tools/gen_tools_popup/---Controllers",
             "general_tools/gen_tools_popup/create_controller2",
             "general_tools/gen_tools_popup/remove_controller2",
+            "general_tools/gen_tools_popup/---ML Tools",
+            "general_tools/gen_tools_popup/ml_convert_rotation_order",
             "general_tools/gen_tools_popup/---Settings & Preferences",
             "general_tools/gen_tools_popup/user_preferences_window",
             "file_io_tools/file_io_popup/---Input Output",
@@ -103,6 +117,10 @@
                 "popup": true,
                 "popup_button": ["left", "right"]
             },
+            "display_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
             "camera_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
@@ -112,6 +130,10 @@
                 "popup_button": ["left", "right"]
             },
             "bundle_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "camera_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
             }

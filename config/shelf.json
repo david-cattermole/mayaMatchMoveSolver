@@ -6,7 +6,11 @@
             "solver_run",
             "solver_run_current_frame",
             "---Create",
+            "create_camera",
+            "create_image_plane",
+            "create_lens",
             "create_marker",
+            "convert_to_marker",
             "load_marker_ui",
             "---Selection",
             "swap_marker_bundles",
@@ -17,6 +21,14 @@
             "edit_root_frame_add",
             "edit_root_frame_remove",
             "---Tools",
+            "camera_tools/camera_popup/---Camera & Lens",
+            "camera_tools/camera_popup/create_camera",
+            "camera_tools/camera_popup/create_image_plane",
+            "camera_tools/camera_popup/create_lens",
+            "camera_tools/camera_popup/---Distortion",
+            "camera_tools/camera_popup/camera_toggle_distortion",
+            "camera_tools/camera_popup/---Input Output",
+            "camera_tools/camera_popup/copy_camera_to_clipboard",
             "camera_tools/camera_popup/---Calibrate",
             "camera_tools/camera_popup/camera_calibration_create_setup",
             "camera_tools/camera_popup/camera_calibration_update_values",
@@ -53,6 +65,8 @@
             "bundle_tools/bundle_popup/raycast_marker",
             "bundle_tools/bundle_popup/---Create Bundle",
             "bundle_tools/bundle_popup/create_bundle",
+            "display_tools/display_popup/---Create",
+            "display_tools/display_popup/create_sky_dome",
             "general_tools/gen_tools_popup/---Viewport",
             "general_tools/gen_tools_popup/center_twodee",
             "general_tools/gen_tools_popup/center_twodee_remove",
@@ -74,6 +88,8 @@
             "general_tools/gen_tools_popup/---Controllers",
             "general_tools/gen_tools_popup/create_controller2",
             "general_tools/gen_tools_popup/remove_controller2",
+            "general_tools/gen_tools_popup/---ML Tools",
+            "general_tools/gen_tools_popup/ml_convert_rotation_order",
             "general_tools/gen_tools_popup/---Settings & Preferences",
             "general_tools/gen_tools_popup/user_preferences_window",
             "file_io_tools/file_io_popup/---Input Output",
@@ -106,11 +122,15 @@
                 "popup": true,
                 "popup_button": ["left", "right"]
             },
+            "camera_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
             "file_io_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
             },
-            "camera_popup": {
+            "display_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
             },

@@ -1,0 +1,4 @@
+displayString -replace -value "Display" m_AEmmRenderGlobalsTemplate.kDisplayOptions;
+displayString -replace -value "Wireframe Alpha" m_AEmmRenderGlobalsTemplate.kWireframeAlpha;
+displayString -replace -value "Edge Thickness" m_AEmmRenderGlobalsTemplate.kEdgeThickness;
+displayString -replace -value "Edge Threshold" m_AEmmRenderGlobalsTemplate.kEdgeThreshold;

@@ -93,6 +93,12 @@ namespace mmsg = mmscenegraph;
 #define FORCE_TRIGGER_EVAL 1
 
 
+// Pre-processor-level on/off switch for re-use of the Marker
+// positions. For solving lens distortion (where the marker positions
+// are dynamic) it doesn't make sense to use a marker cache.
+#define USE_MARKER_POSITION_CACHE 0
+
+
 #if MAYA_API_VERSION < 201700
 int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
     int index = -1;
@@ -174,6 +180,7 @@ double calculateParameterDelta(double value,
                                double delta,
                                double sign,
                                AttrPtr attr) {
+    MStatus status = MS::kSuccess;
     double xmin = attr->getMinimumValue();
     double xmax = attr->getMaximumValue();
 
@@ -222,6 +229,8 @@ void setParameters_mayaDag(
         if (debugFileIsOpen && debugFile != NULL) {
             (*debugFile) << "i=" << i << " v=" << value << "\n";
         }
+#else
+        UNUSED(debugFile);
 #endif
         attr->setValue(value, frame, *ud->dgmod, *ud->curveChange);
     }
@@ -249,6 +258,7 @@ void setParameters_mmSceneGraph(
         SolverData *ud,
         std::ofstream *debugFile,
         MStatus &status) {
+    UNUSED(debugFile);
 
     for (int i = 0; i < numberOfParameters; ++i) {
         IndexPair attrPair = ud->paramToAttrList[i];
@@ -393,6 +403,8 @@ void measureErrors_mayaDag(
         double &error_min,
         std::ofstream *debugFile,
         MStatus &status) {
+    UNUSED(numberOfErrors);
+    UNUSED(debugFile);
 
     // Trigger an DG Evaluation at a different time, to help Maya
     // evaluate at the correct frame.
@@ -452,8 +464,22 @@ void measureErrors_mayaDag(
 
         BundlePtr bnd = marker->getBundle();
 
+        // When using lens distortion, we need to re-compute the
+        // marker positions, since they are affected by lens
+        // distortion.
+#if USE_MARKER_POSITION_CACHE == 1
         // Use pre-computed marker position and weight
         mkr_mpos = ud->markerPosList[i];
+#else
+        status = marker->getPos(mkr_mpos, frame, timeEvalMode);
+        CHECK_MSTATUS(status);
+        mkr_mpos = mkr_mpos * cameraWorldProjectionMatrix;
+        mkr_mpos.cartesianize();
+        // convert to -0.5 to 0.5, maintaining the aspect
+        // ratio of the film back.
+        mkr_mpos[0] *= 0.5;
+        mkr_mpos[1] *= 0.5 * filmBackInvAspect;
+#endif
         double mkr_weight = ud->markerWeightList[i];
         assert(mkr_weight > 0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
         mkr_weight = std::sqrt(mkr_weight);
@@ -617,6 +643,12 @@ void measureErrors_mmSceneGraph(
         double &error_min,
         std::ofstream *debugFile,
         MStatus &status) {
+    UNUSED(numberOfErrors);
+    UNUSED(numberOfAttrStiffnessErrors);
+    UNUSED(numberOfAttrSmoothnessErrors);
+    UNUSED(debugFile);
+    UNUSED(status);
+        
     // Evaluate Scene.
     //
     // TODO: Only re-evaluate the markers required.
@@ -627,6 +659,9 @@ void measureErrors_mmSceneGraph(
     auto num_points = ud->mmsgFlatScene.num_points();
     auto num_markers = ud->mmsgFlatScene.num_markers();
     auto num_deviations = ud->mmsgFlatScene.num_deviations();
+    UNUSED(num_points);
+    UNUSED(num_markers);
+    UNUSED(num_deviations);
     assert(num_points == num_markers == num_deviations);
 
     auto out_deviation_list = ud->mmsgFlatScene.deviations();
@@ -639,7 +674,7 @@ void measureErrors_mmSceneGraph(
     int numberOfErrorsMeasured = 0;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = ud->errorToMarkerList[i];
-        int markerIndex = markerPair.first;
+        // int markerIndex = markerPair.first;
         int frameIndex = markerPair.second;
         bool skipFrame = frameIndexEnable[frameIndex] == false;
         bool skipMarker = errorMeasurements[i] == false;
@@ -662,10 +697,10 @@ void measureErrors_mmSceneGraph(
         mkr_weight = std::sqrt(mkr_weight);
 
         auto errorIndex = i * ERRORS_PER_MARKER;
-        auto mkr_x = out_marker_list[errorIndex + 0];
-        auto mkr_y = out_marker_list[errorIndex + 1];
-        auto point_x = out_point_list[errorIndex + 0];
-        auto point_y = out_point_list[errorIndex + 1];
+        // auto mkr_x = out_marker_list[errorIndex + 0];
+        // auto mkr_y = out_marker_list[errorIndex + 1];
+        // auto point_x = out_point_list[errorIndex + 0];
+        // auto point_y = out_point_list[errorIndex + 1];
         auto dx = out_deviation_list[errorIndex + 0] * ud->imageWidth;
         auto dy = out_deviation_list[errorIndex + 1] * ud->imageWidth;
         // INFO("point: " << point_x << ", " << point_y

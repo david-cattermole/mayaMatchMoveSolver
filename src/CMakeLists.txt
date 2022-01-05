@@ -42,12 +42,32 @@ set(SOURCE_FILES
   core/bundleAdjust_cminpack_lmder.cpp
   core/calibrate/common.cpp
   core/calibrate/vanishingPoint.cpp
+  core/lensModelBasic.cpp
   core/mmcamera.cpp
   core/mmcoord.cpp
   core/mmdata.cpp
   core/mmmath.cpp
   core/reprojection.cpp
   mayaSceneGraph.cpp
+  shape/MarkerShapeNode.cpp
+  shape/MarkerDrawOverride.cpp
+  shape/BundleShapeNode.cpp
+  shape/BundleDrawOverride.cpp
+  shape/SkyDomeShapeNode.cpp
+  shape/SkyDomeDrawOverride.cpp
+  shape/LineShapeNode.cpp
+  shape/LineDrawOverride.cpp
+  render/HudRender.cpp
+  render/MMRendererCmd.cpp
+  render/PresentTarget.cpp
+  render/QuadRenderBase.cpp
+  render/QuadRenderBlend.cpp
+  render/QuadRenderCopy.cpp
+  render/QuadRenderEdgeDetect.cpp
+  render/QuadRenderInvert.cpp
+  render/RenderGlobalsNode.cpp
+  render/RenderOverride.cpp
+  render/SceneRender.cpp
   Camera.cpp
   Marker.cpp
   Bundle.cpp
@@ -60,11 +80,18 @@ set(SOURCE_FILES
   MMMarkerGroupTransformNode.cpp
   MMCameraCalibrateNode.cpp
   MMLineIntersectNode.cpp
+  MMMarkerTransformMatrix.cpp
+  MMMarkerTransformNode.cpp
   MMTestCameraMatrixCmd.cpp
   MMSolverCmd.cpp
   MMSolverTypeCmd.cpp
   MMReprojectionCmd.cpp
   MMCameraSolveCmd.cpp
+  MMLensDeformerNode.cpp
+  MMLensModelBasicNode.cpp
+  MMLensModelToggleNode.cpp
+  MMLensData.cpp
+  MMLensEvaluateNode.cpp
   pluginMain.cpp
 )
 
@@ -152,6 +179,8 @@ target_link_libraries(mmSolver
   PUBLIC
   ${MAYA_OpenMaya_LIBRARY}
   ${MAYA_OpenMayaAnim_LIBRARY}
+  ${MAYA_OpenMayaRender_LIBRARY}
+  ${MAYA_OpenMayaUI_LIBRARY}
   ${MAYA_Foundation_LIBRARY}
   )
 target_link_libraries(mmSolver

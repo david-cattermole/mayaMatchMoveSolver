@@ -259,6 +259,10 @@ def _get_attribute_solver_type(attr):
             attr_solve_type = ATTR_SOLVER_TYPE_CAMERA_INTRINSIC
         if name in CAMERA_TRANSFORM_ATTR_NAME_LIST:
             attr_solve_type = ATTR_SOLVER_TYPE_CAMERA_TRANSFORM
+
+    elif obj_type == const.OBJECT_TYPE_LENS:
+        attr_solve_type = ATTR_SOLVER_TYPE_LENS_DISTORTION
+
     return attr_solve_type
 
 

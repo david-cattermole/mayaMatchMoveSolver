@@ -38,6 +38,19 @@
 
 namespace mmmath {
 
+
+// Return 'min_value' to 'max_value' linearly, for a 'mix' value
+// between 0.0 and 1.0.
+float
+lerp(const float min_value, const float max_value, const float mix) {
+  return ((1 - mix) * min_value) + (mix * max_value);
+}
+
+double
+lerp(const double min_value, const double max_value, const double mix) {
+  return ((1 - mix) * min_value) + (mix * max_value);
+}
+
 double
 length(mmdata::Point2D a)
 {

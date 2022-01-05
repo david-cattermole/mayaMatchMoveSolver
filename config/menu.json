@@ -7,6 +7,9 @@
             "solver_run",
             "solver_run_current_frame",
             "---Create",
+            "create_camera",
+            "create_image_plane",
+            "create_lens",
             "create_marker",
             "convert_to_marker",
             "load_marker_ui",
@@ -19,6 +22,10 @@
             "edit_root_frame_add",
             "edit_root_frame_remove",
             "---Tools",
+            "camera_tools/---Distortion",
+            "camera_tools/camera_toggle_distortion",
+            "camera_tools/---Input Output",
+            "camera_tools/copy_camera_to_clipboard",
             "camera_tools/---Calibrate",
             "camera_tools/camera_calibration_create_setup",
             "camera_tools/camera_calibration_update_values",
@@ -52,6 +59,8 @@
             "bundle_tools/aim_at_camera_manipulator",
             "bundle_tools/attach_bundle_to_curve",
             "bundle_tools/raycast_marker",
+            "display_tools/---Create",
+            "display_tools/create_sky_dome",
             "general_tools/---Viewport",
             "general_tools/center_twodee",
             "general_tools/center_twodee_remove",
@@ -73,6 +82,8 @@
             "general_tools/---Controllers",
             "general_tools/create_controller2",
             "general_tools/remove_controller2",
+            "general_tools/---ML Tools",
+            "general_tools/ml_convert_rotation_order",
             "general_tools/---Settings & Preferences",
             "general_tools/user_preferences_window",
             "file_io_tools/---Input Output",
@@ -98,6 +109,10 @@
             },
             "camera_tools": {
                 "name": "Camera Tools",
+                "tearoff": true
+            },
+            "display_tools": {
+                "name": "General Tools",
                 "tearoff": true
             },
             "general_tools": {

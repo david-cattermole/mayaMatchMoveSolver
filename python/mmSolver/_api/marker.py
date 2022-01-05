@@ -43,6 +43,19 @@ import mmSolver._api.solveresult as solveresult
 LOG = mmSolver.logger.get_logger()
 
 
+def _create_marker_shape(tfm_node):
+    shp_name = tfm_node.rpartition('|')[-1] + 'Shape'
+    shp = maya.cmds.createNode(const.MARKER_SHAPE_NODE_TYPE,
+                               name=shp_name, parent=tfm_node)
+    maya.cmds.setAttr(shp + '.localPositionX', channelBox=False)
+    maya.cmds.setAttr(shp + '.localPositionY', channelBox=False)
+    maya.cmds.setAttr(shp + '.localPositionZ', channelBox=False)
+    maya.cmds.setAttr(shp + '.localScaleX', channelBox=False)
+    maya.cmds.setAttr(shp + '.localScaleY', channelBox=False)
+    maya.cmds.setAttr(shp + '.localScaleZ', channelBox=False)
+    return shp
+
+
 def _create_marker_attributes(node):
     """
     Create the attributes expected to be on a Marker.
@@ -168,7 +181,29 @@ def _create_marker_attributes(node):
     return
 
 
+def _replace_marker_shape(dag_path):
+    dag_shps = node_utils.get_dag_path_shapes_below_apione(dag_path)
+    if len(dag_shps) > 0:
+        shape_nodes = []
+        for dag_shp in dag_shps:
+            mfn_shp = OpenMaya.MFnDagNode(dag_shp)
+            type_name = mfn_shp.typeName()
+            if type_name != const.MARKER_SHAPE_NODE_TYPE:
+                shape_nodes.append(dag_shp.fullPathName())
+        if len(shape_nodes) > 0:
+            maya.cmds.delete(shape_nodes)
+            _create_marker_shape(dag_path.fullPathName())
+    else:
+        _create_marker_shape(dag_path.fullPathName())
+    return
+
+
 def _set_marker_icon(dag_path):
+    """Set the icon for all shape nodes under dag_path to use the
+    mmMarkerShape icon.
+
+    This is not needed when using the mmMarkerShape directly.
+    """
     icon_name = const.MARKER_SHAPE_ICON_NAME
     dag_shps = node_utils.get_dag_path_shapes_below_apione(dag_path)
     if len(dag_shps) > 0:
@@ -227,8 +262,8 @@ class Marker(object):
                 LOG.error(msg, node)
                 raise e
 
-            # Set icon
-            _set_marker_icon(dag)
+            # Replace locator shape with mmMarkerShape node.
+            _replace_marker_shape(dag)
 
             # Ensure the deviation attribute exists.
             self.add_attributes()
@@ -282,8 +317,8 @@ class Marker(object):
         except RuntimeError:
             raise
 
-        # Set icon
-        _set_marker_icon(dag)
+        # Replace locator shape with mmMarkerShape node.
+        _replace_marker_shape(dag)
 
         # Ensure the deviation attribute exists.
         self.add_attributes()
@@ -416,13 +451,7 @@ class Marker(object):
         maya.cmds.setAttr(tfm + '.shyz', keyable=False, channelBox=False)
 
         # Shape Node
-        shp_name = tfm.rpartition('|')[-1] + 'Shape'
-        shp = maya.cmds.createNode(const.MARKER_SHAPE_NODE_TYPE,
-                                   name=shp_name, parent=tfm)
-        maya.cmds.setAttr(shp + '.localScaleX', 0.01)
-        maya.cmds.setAttr(shp + '.localScaleY', 0.01)
-        maya.cmds.setAttr(shp + '.localScaleZ', 0.0)
-        maya.cmds.setAttr(shp + '.localScaleZ', lock=True)
+        _create_marker_shape(tfm)
 
         # Add attrs
         _create_marker_attributes(tfm)
@@ -451,6 +480,15 @@ class Marker(object):
         # Link to Bundle
         if bnd is not None:
             self.set_bundle(bnd)
+
+        # Connect the marker to the camera.
+        cam = self.get_camera()
+        cam_shp = cam.get_shape_node()
+        tfm = self.get_node()
+        src = cam_shp + '.outLens'
+        dst = tfm + '.inLens'
+        if not maya.cmds.isConnected(src, dst):
+            maya.cmds.connectAttr(src, dst)
 
         event_utils.trigger_event(
             const.EVENT_NAME_MARKER_CREATED,
@@ -1096,6 +1134,14 @@ class Marker(object):
                 msg += ' marker={0} camera={1}'
                 msg = msg.format(repr(mkr_node), repr(cam_shp))
                 raise excep.AlreadyLinked(msg)
+
+        # Connect the marker to the camera.
+        if cam.get_lens() is not None:
+            cam_shp = cam.get_shape_node()
+            src = cam_shp + '.outLens'
+            dst = mkr_node + '.inLens'
+            if not maya.cmds.isConnected(src, dst):
+                maya.cmds.connectAttr(src, dst)
 
         # Create Marker Group
         mkr_grp = None

@@ -69,6 +69,7 @@ def get_object_type(node):
     - OBJECT_TYPE_BUNDLE
     - OBJECT_TYPE_ATTRIBUTE
     - OBJECT_TYPE_CAMERA
+    - OBJECT_TYPE_LENS
     - OBJECT_TYPE_MARKER_GROUP
     - OBJECT_TYPE_COLLECTION
     - OBJECT_TYPE_UNKNOWN
@@ -117,15 +118,17 @@ def get_object_type(node):
                      if maya.cmds.getAttr(plug, keyable=True)]
 
     object_type = const.OBJECT_TYPE_UNKNOWN
-    if ((node_type == 'transform')
-          and ('locator' in shape_node_types)
+    if ((node_type in ['transform', 'mmMarkerTransform'])
+          and (('mmMarkerShape' in shape_node_types)
+               or ('locator' in shape_node_types))
           and ('enable' in attrs)
           and ('weight' in attrs)
           and ('bundle' in attrs)):
         object_type = const.OBJECT_TYPE_MARKER
 
     elif ((node_type == 'transform')
-          and ('locator' in shape_node_types)
+          and (('mmBundleShape' in shape_node_types)
+               or ('locator' in shape_node_types))
           and ('rotateX' in locked_attrs)
           and ('rotateY' in locked_attrs)
           and ('rotateZ' in locked_attrs)
@@ -146,6 +149,7 @@ def get_object_type(node):
           and ('shearYZ' not in keyable_attrs)):
         object_type = const.OBJECT_TYPE_BUNDLE
 
+    # TODO: Ensure other types of camera transform nodes are supported.
     elif ((node_type == 'transform') and
           ('camera' in shape_node_types)):
         object_type = const.OBJECT_TYPE_CAMERA
@@ -159,6 +163,9 @@ def get_object_type(node):
 
     elif node_type == 'imagePlane':
         object_type = const.OBJECT_TYPE_IMAGE_PLANE
+
+    elif node_type.startswith('mmLensModel'):
+        object_type = const.OBJECT_TYPE_LENS
 
     elif node_type == 'mmMarkerGroupTransform':
         object_type = const.OBJECT_TYPE_MARKER_GROUP

@@ -745,6 +745,8 @@
         },
         "ml_convert_rotation_order": {
             "name": "Convert Rotation Order UI",
+            "name_menu": "Convert Rotation Order...",
+            "name_shelf": "RotOrd",
             "tooltip": "Change the rotation order of an object while preserving animation.",
             "command": [
                 "import mmSolver.tools.mltools.ml_convertRotationOrder as ml_convertRotationOrder;",

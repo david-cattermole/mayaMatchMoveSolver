@@ -63,6 +63,11 @@ def _create_line(cam, mkr_grp, base_name):
         mkr2_node + '.worldMatrix[0]',
         line_shp + '.matrixB')
 
+    # Make line non-selectable.
+    display_type = 2  # 2 = 'Reference'
+    maya.cmds.setAttr(line_tfm + '.overrideEnabled', 1)
+    maya.cmds.setAttr(line_tfm + '.overrideDisplayType', display_type)
+
     # Lock the transform.
     maya.cmds.setAttr(line_tfm + '.tx', lock=True)
     maya.cmds.setAttr(line_tfm + '.ty', lock=True)

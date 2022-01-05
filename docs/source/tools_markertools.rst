@@ -117,12 +117,30 @@ from the associated camera.
 Select markers and mesh objects to ray-cast on to, if no mesh objects
 are selected the tool will ray-cast on to all visible mesh objects.
 
-If a bundle translate attribute is locked, it will be unlocked, then
-projected, and then the lock state will be reverted to the original
-value.
+If a bundle translate or rotation attribute is locked, it will be
+unlocked, then projected, and then the lock state will be reverted to
+the original value.
 
 The viewport camera does not need to be active for this tool to
 project. The tool will work on the current frame only.
+
+You may choose to change the bundle's rotation attributes with these options:
+
+.. list-table:: Bundle Rotation Options
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Description
+
+   * - No Change
+     - Do not change the bundle rotation attributes at all.
+
+   * - Aim At Camera
+     - Aim the bundle rotations towards the camera position.
+
+   * - Mesh Normal
+     - Set the bundle rotations to the hit mesh face normal.
 
 Usage:
 

@@ -69,7 +69,7 @@
 // Local
 #include <core/bundleAdjust_base.h>
 #include <core/bundleAdjust_relationships.h>
-#include <core/bundleAdjust_levmar_bc_dif.h>
+// #include <core/bundleAdjust_levmar_bc_dif.h>
 #include <core/bundleAdjust_cminpack_base.h>
 #include <core/bundleAdjust_cminpack_lmdif.h>
 #include <core/bundleAdjust_cminpack_lmder.h>
@@ -84,13 +84,7 @@
 std::vector<SolverTypePair> getSolverTypes() {
     std::vector<std::pair<int, std::string> > solverTypes;
     std::pair<int, std::string> solverType;
-#ifdef USE_SOLVER_LEVMAR
-    solverType.first = SOLVER_TYPE_LEVMAR;
-    solverType.second = SOLVER_TYPE_LEVMAR_NAME;
-    solverTypes.push_back(solverType);
-#endif
 
-#ifdef USE_SOLVER_CMINPACK
     solverType.first = SOLVER_TYPE_CMINPACK_LMDIF;
     solverType.second = SOLVER_TYPE_CMINPACK_LM_DIF_NAME;
     solverTypes.push_back(solverType);
@@ -98,7 +92,7 @@ std::vector<SolverTypePair> getSolverTypes() {
     solverType.first = SOLVER_TYPE_CMINPACK_LMDER;
     solverType.second = SOLVER_TYPE_CMINPACK_LM_DER_NAME;
     solverTypes.push_back(solverType);
-#endif
+
     return solverTypes;
 }
 
@@ -434,9 +428,11 @@ void logResultsSolveDetails(
             MStreamUtils::stdErrorStream() << "Solver returned FAILURE    | ";
         }
 
-        char formatBuffer[128];
-        sprintf(
+        const std::size_t buffer_size = 128;
+        char formatBuffer[buffer_size];
+        std::snprintf(
             formatBuffer,
+            buffer_size,
             "error avg %8.4f   min %8.4f   max %8.4f  iterations %03u",
             solverResult.errorAvg,
             solverResult.errorMin,
@@ -450,66 +446,66 @@ void logResultsSolveDetails(
 
     // Add all the data into the output string from the Maya command.
     std::string resultStr;
-    std::string value = string::numberToString<int>(solverResult.success);
+    std::string value = mmstring::numberToString<int>(solverResult.success);
     resultStr = "success=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    resultStr = "reason_string=" + levmarReasons[reasonNum];
-    outResult.append(MString(resultStr.c_str()));
+    // resultStr = "reason_string=" + levmarReasons[reasonNum];
+    // outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<int>(reasonNum);
+    value = mmstring::numberToString<int>(reasonNum);
     resultStr = "reason_num=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-//    value = string::numberToString<double>(solverResult.errorInitial);
+//    value = mmstring::numberToString<double>(solverResult.errorInitial);
 //    resultStr = "error_initial=" + value;
 //    outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<double>(solverResult.errorFinal);
+    value = mmstring::numberToString<double>(solverResult.errorFinal);
     resultStr = "error_final=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<double>(solverResult.errorAvg);
+    value = mmstring::numberToString<double>(solverResult.errorAvg);
     resultStr = "error_final_average=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<double>(solverResult.errorMax);
+    value = mmstring::numberToString<double>(solverResult.errorMax);
     resultStr = "error_final_maximum=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<double>(solverResult.errorMin);
+    value = mmstring::numberToString<double>(solverResult.errorMin);
     resultStr = "error_final_minimum=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-//    value = string::numberToString<double>(solverResult.errorJt);
+//    value = mmstring::numberToString<double>(solverResult.errorJt);
 //    resultStr = "error_jt=" + value;
 //    outResult.append(MString(resultStr.c_str()));
 
-//    value = string::numberToString<double>(solverResult.errorDp);
+//    value = mmstring::numberToString<double>(solverResult.errorDp);
 //    resultStr = "error_dp=" + value;
 //    outResult.append(MString(resultStr.c_str()));
 
-//    value = string::numberToString<double>(solverResult.errorMaximum);
+//    value = mmstring::numberToString<double>(solverResult.errorMaximum);
 //    resultStr = "error_maximum=" + value;
 //    outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<int>(solverResult.iterations);
+    value = mmstring::numberToString<int>(solverResult.iterations);
     resultStr = "iteration_num=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<int>(solverResult.functionEvals);
+    value = mmstring::numberToString<int>(solverResult.functionEvals);
     resultStr = "iteration_function_num=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<int>(solverResult.jacobianEvals);
+    value = mmstring::numberToString<int>(solverResult.jacobianEvals);
     resultStr = "iteration_jacobian_num=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-//    value = string::numberToString<int>(solverResult.iterationAttempts);
+//    value = mmstring::numberToString<int>(solverResult.iterationAttempts);
 //    resultStr = "iteration_attempt_num=" + value;
 //    outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<int>((bool) userData.userInterrupted);
+    value = mmstring::numberToString<int>((bool) userData.userInterrupted);
     resultStr = "user_interrupted=" + value;
     outResult.append(MString(resultStr.c_str()));
 
@@ -531,49 +527,49 @@ void logResultsSolveDetails(
         timer.funcBenchTicks.print("Func Ticks", total_num);
     }
 
-    value = string::numberToString<double>(timer.solveBenchTimer.get_seconds());
+    value = mmstring::numberToString<double>(timer.solveBenchTimer.get_seconds());
     resultStr = "timer_solve=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<double>(timer.funcBenchTimer.get_seconds());
+    value = mmstring::numberToString<double>(timer.funcBenchTimer.get_seconds());
     resultStr = "timer_function=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<double>(timer.jacBenchTimer.get_seconds());
+    value = mmstring::numberToString<double>(timer.jacBenchTimer.get_seconds());
     resultStr = "timer_jacobian=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<double>(timer.paramBenchTimer.get_seconds());
+    value = mmstring::numberToString<double>(timer.paramBenchTimer.get_seconds());
     resultStr = "timer_parameter=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<double>(timer.paramBenchTimer.get_seconds());
+    value = mmstring::numberToString<double>(timer.paramBenchTimer.get_seconds());
     resultStr = "timer_error=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<debug::Ticks>(timer.solveBenchTicks.get_ticks());
+    value = mmstring::numberToString<debug::Ticks>(timer.solveBenchTicks.get_ticks());
     resultStr = "ticks_solve=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<debug::Ticks>(timer.funcBenchTicks.get_ticks());
+    value = mmstring::numberToString<debug::Ticks>(timer.funcBenchTicks.get_ticks());
     resultStr = "ticks_function=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<debug::Ticks>(timer.jacBenchTicks.get_ticks());
+    value = mmstring::numberToString<debug::Ticks>(timer.jacBenchTicks.get_ticks());
     resultStr = "ticks_jacobian=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<debug::Ticks>(timer.paramBenchTicks.get_ticks());
+    value = mmstring::numberToString<debug::Ticks>(timer.paramBenchTicks.get_ticks());
     resultStr = "ticks_parameter=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    value = string::numberToString<debug::Ticks>(timer.paramBenchTicks.get_ticks());
+    value = mmstring::numberToString<debug::Ticks>(timer.paramBenchTicks.get_ticks());
     resultStr = "ticks_error=" + value;
     outResult.append(MString(resultStr.c_str()));
 
     resultStr = "solve_parameter_list=";
     for (int i = 0; i < numberOfParameters; ++i) {
-        resultStr += string::numberToString<double>(paramList[i]);
+        resultStr += mmstring::numberToString<double>(paramList[i]);
         resultStr += CMD_RESULT_SPLIT_CHAR;
     }
     outResult.append(MString(resultStr.c_str()));
@@ -581,7 +577,7 @@ void logResultsSolveDetails(
     resultStr = "solve_error_list=";
     for (int i = 0; i < numberOfErrors; ++i) {
         double err = userData.errorList[i];
-        resultStr += string::numberToString<double>(err);
+        resultStr += mmstring::numberToString<double>(err);
         resultStr += CMD_RESULT_SPLIT_CHAR;
     }
     outResult.append(MString(resultStr.c_str()));
@@ -615,9 +611,9 @@ void logResultsSolveDetails(
         resultStr = "error_per_marker_per_frame=";
         resultStr += markerName;
         resultStr += CMD_RESULT_SPLIT_CHAR;
-        resultStr += string::numberToString<double>(frame.asUnits(MTime::uiUnit()));
+        resultStr += mmstring::numberToString<double>(frame.asUnits(MTime::uiUnit()));
         resultStr += CMD_RESULT_SPLIT_CHAR;
-        resultStr += string::numberToString<double>(d);
+        resultStr += mmstring::numberToString<double>(d);
         outResult.append(MString(resultStr.c_str()));
     }
 
@@ -637,9 +633,9 @@ void logResultsSolveDetails(
         }
 
         resultStr = "error_per_frame=";
-        resultStr += string::numberToString<double>(frame.asUnits(MTime::uiUnit()));
+        resultStr += mmstring::numberToString<double>(frame.asUnits(MTime::uiUnit()));
         resultStr += CMD_RESULT_SPLIT_CHAR;
-        resultStr += string::numberToString<double>(d / num);
+        resultStr += mmstring::numberToString<double>(d / num);
         outResult.append(MString(resultStr.c_str()));
     }
 };
@@ -655,23 +651,23 @@ MStatus logResultsObjectCounts(int numberOfParameters,
 
     std::string resultStr;
     resultStr = "numberOfParameters=";
-    resultStr += string::numberToString<int>(numberOfParameters);
+    resultStr += mmstring::numberToString<int>(numberOfParameters);
     outResult.append(MString(resultStr.c_str()));
 
     resultStr = "numberOfErrors=";
-    resultStr += string::numberToString<int>(numberOfErrors);
+    resultStr += mmstring::numberToString<int>(numberOfErrors);
     outResult.append(MString(resultStr.c_str()));
 
     resultStr = "numberOfMarkerErrors=";
-    resultStr += string::numberToString<int>(numberOfMarkerErrors);
+    resultStr += mmstring::numberToString<int>(numberOfMarkerErrors);
     outResult.append(MString(resultStr.c_str()));
 
     resultStr = "numberOfAttrStiffnessErrors=";
-    resultStr += string::numberToString<int>(numberOfAttrStiffnessErrors);
+    resultStr += mmstring::numberToString<int>(numberOfAttrStiffnessErrors);
     outResult.append(MString(resultStr.c_str()));
 
     resultStr = "numberOfAttrSmoothnessErrors=";
-    resultStr += string::numberToString<int>(numberOfAttrSmoothnessErrors);
+    resultStr += mmstring::numberToString<int>(numberOfAttrSmoothnessErrors);
     outResult.append(MString(resultStr.c_str()));
 
     // TODO: List all the frame numbers that are valid for solving,
@@ -727,7 +723,7 @@ MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
             resultStr += CMD_RESULT_SPLIT_CHAR;
             resultStr += attrName;
             resultStr += CMD_RESULT_SPLIT_CHAR;
-            resultStr += string::numberToString<int>(value);
+            resultStr += mmstring::numberToString<int>(value);
             outResult.append(MString(resultStr.c_str()));
 
             ++attrIndex;
@@ -1444,42 +1440,13 @@ bool solve(SolverOptions &solverOptions,
     SolverResult solveResult;
     if (solverOptions.solverType == SOLVER_TYPE_LEVMAR) {
 
-#ifndef USE_SOLVER_LEVMAR
-
         ERR("Solver Type is not supported by this compiled plug-in. "
             << "solverType=" << solverOptions.solverType);
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
         return false;
-
-#else // USE_SOLVER_LEVMAR is defined.
-
-        solve_3d_levmar_bc_dif(
-                solverOptions,
-                numberOfParameters,
-                numberOfErrors,
-                paramList,
-                errorList,
-                paramLowerBoundList,
-                paramUpperBoundList,
-                paramWeightList,
-                userData,
-                solveResult,
-                outResult);
-
-#endif // USE_SOLVER_LEVMAR
 
     } else if (solverOptions.solverType == SOLVER_TYPE_CMINPACK_LMDIF) {
-
-#ifndef USE_SOLVER_CMINPACK
-
-        ERR("Solver Type is not supported by this compiled plug-in. "
-            << "solverType=" << solverOptions.solverType);
-        resultStr = "success=0";
-        outResult.append(MString(resultStr.c_str()));
-        return false;
-
-#else // USE_SOLVER_CMINPACK is defined.
 
         solve_3d_cminpack_lmdif(
                 solverOptions,
@@ -1491,19 +1458,7 @@ bool solve(SolverOptions &solverOptions,
                 userData,
                 solveResult);
 
-#endif // USE_SOLVER_CMINPACK
-
     } else if (solverOptions.solverType == SOLVER_TYPE_CMINPACK_LMDER) {
-
-#ifndef USE_SOLVER_CMINPACK
-
-        ERR("Solver Type is not supported by this compiled plug-in. "
-            << "solverType=" << solverOptions.solverType);
-        resultStr = "success=0";
-        outResult.append(MString(resultStr.c_str()));
-        return false;
-
-#else // USE_SOLVER_CMINPACK is defined.
 
         solve_3d_cminpack_lmder(
                 solverOptions,
@@ -1514,8 +1469,6 @@ bool solve(SolverOptions &solverOptions,
                 paramWeightList,
                 userData,
                 solveResult);
-
-#endif // USE_SOLVER_CMINPACK
 
     } else {
         ERR("Solver Type is invalid. solverType="

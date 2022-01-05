@@ -115,9 +115,9 @@ BUNDLE_COLOUR_RGB = (0.0, 1.0, 0.0)
 
 # Node Types.
 MARKER_TRANSFORM_NODE_TYPE = 'mmMarkerTransform'
-MARKER_SHAPE_NODE_TYPE = 'locator'
+MARKER_SHAPE_NODE_TYPE = 'mmMarkerShape'
 BUNDLE_TRANSFORM_NODE_TYPE = 'transform'
-BUNDLE_SHAPE_NODE_TYPE = 'locator'
+BUNDLE_SHAPE_NODE_TYPE = 'mmBundleShape'
 CAMERA_TRANSFORM_NODE_API_TYPES = (
     OpenMaya.MFn.kTransform,
     OpenMaya.MFn.kPluginTransformNode,

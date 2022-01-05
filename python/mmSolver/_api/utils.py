@@ -119,14 +119,16 @@ def get_object_type(node):
 
     object_type = const.OBJECT_TYPE_UNKNOWN
     if ((node_type in ['transform', 'mmMarkerTransform'])
-          and ('locator' in shape_node_types)
+          and (('mmMarkerShape' in shape_node_types)
+               or ('locator' in shape_node_types))
           and ('enable' in attrs)
           and ('weight' in attrs)
           and ('bundle' in attrs)):
         object_type = const.OBJECT_TYPE_MARKER
 
     elif ((node_type == 'transform')
-          and ('locator' in shape_node_types)
+          and (('mmBundleShape' in shape_node_types)
+               or ('locator' in shape_node_types))
           and ('rotateX' in locked_attrs)
           and ('rotateY' in locked_attrs)
           and ('rotateZ' in locked_attrs)

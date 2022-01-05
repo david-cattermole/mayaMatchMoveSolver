@@ -396,6 +396,23 @@
                 "pass"
             ]
         },
+        "display_tools": {
+            "name": "Display Tools",
+            "name_shelf": "",
+            "icon_shelf": "displayTools_32x32.png",
+            "tooltip": "Display Tools",
+            "command": ["pass"]
+        },
+        "create_sky_dome": {
+            "name": "Create Sky Dome",
+            "name_shelf": "",
+            "tooltip": "Create a new Sky Dome.",
+            "icon_shelf": "createSkyDome_32x32.png",
+            "command": [
+                "import mmSolver.tools.createskydome.tool;",
+                "mmSolver.tools.createskydome.tool.main();"
+            ]
+        },
         "general_tools": {
             "name": "General Tools",
             "name_shelf": "",
@@ -786,6 +803,7 @@
             "name": "Camera Tools",
             "name_shelf": "",
             "tooltip": "Camera Tools",
+            "icon_shelf": "cameraTools_32x32.png",
             "command": ["pass"]
         },
         "camera_calibration_create_setup": {
@@ -804,6 +822,16 @@
             "command": [
                 "import mmSolver.tools.calibratecamera.tool as tool;",
                 "tool.update();"
+            ]
+        },
+        "ml_convert_rotation_order": {
+            "name": "Convert Rotation Order UI",
+            "name_menu": "Convert Rotation Order...",
+            "name_shelf": "RotOrd",
+            "tooltip": "Change the rotation order of an object while preserving animation.",
+            "command": [
+                "import mmSolver.tools.mltools.ml_convertRotationOrder as ml_convertRotationOrder;",
+                "ml_convertRotationOrder.ui();"
             ]
         }
     }

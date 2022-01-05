@@ -1,0 +1,36 @@
+global proc AEmmRenderGlobalsTemplate(string $name) {
+    string $parent = `setParent -q`;
+
+    editorTemplate -beginScrollLayout;
+
+        editorTemplate -beginNoOptimize;
+
+            editorTemplate
+                -beginLayout (uiRes("m_AEmmRenderGlobalsTemplate.kDisplayOptions"))
+                -collapse false;
+
+                editorTemplate -addControl "mode";
+                editorTemplate -addControl "renderFormat";
+                editorTemplate -addControl "multiSampleCount";
+
+                editorTemplate
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kWireframeAlpha"))
+                    -addControl "wireframeAlpha";
+                editorTemplate
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kEdgeThickness"))
+                    -addControl "edgeThickness";
+                editorTemplate
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kEdgeThreshold"))
+                    -addControl "edgeThreshold";
+
+            editorTemplate -endLayout;
+
+        editorTemplate -endNoOptimize;
+
+    editorTemplate -addExtraControls;
+
+    // include/call base class/node attributes
+    AEabstractBaseCreateTemplate $name;
+
+    editorTemplate -endScrollLayout;
+}

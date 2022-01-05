@@ -92,11 +92,11 @@ public:
     static MObject a_originPointX;
     static MObject a_originPointY;
 
-    // Orientation
-    static MObject a_orientationPlane;
-    static MObject a_axisFlipX;
-    static MObject a_axisFlipY;
-    static MObject a_axisFlipZ;
+    static MObject a_rotatePlaneX;
+    static MObject a_rotatePlaneY;
+    static MObject a_rotatePlaneZ;
+    static MObject a_rotatePlane;
+    static MObject a_rotateOrder;
 
 #if false
     // Principal Point

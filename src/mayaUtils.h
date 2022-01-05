@@ -31,14 +31,18 @@
 
 // Maya
 #include <maya/MStatus.h>
+#include <maya/MColor.h>
+#include <maya/MDistance.h>
 #include <maya/MPoint.h>
 #include <maya/MVector.h>
+#include <maya/MMatrix.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MObject.h>
 #include <maya/MObjectArray.h>
 #include <maya/MDagPath.h>
 #include <maya/MPlug.h>
+#include <maya/MDataHandle.h>
 #include <maya/MSelectionList.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MPxNode.h>
@@ -216,6 +220,160 @@ MStatus constructAttrAffectsName(MString attrName,
     return status;
 }
 
+namespace mmsolver {
+
+static inline
+MStatus getNodeAttr(const MDagPath &objPath,
+                    const MObject &attr,
+                    MDistance &value) {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            status = plug.getValue(value);
+            return status;
+        }
+    }
+    return status;
+}
+
+static inline
+MStatus getNodeAttr(const MDagPath &objPath,
+                    const MObject &attr,
+                    bool &value) {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            value = plug.asBool();
+            return status;
+        }
+    }
+    return status;
+}
+
+static inline
+MStatus getNodeAttr(const MDagPath &objPath,
+                    const MObject &attr,
+                    int32_t &value) {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            value = plug.asInt();
+            return status;
+        }
+    }
+    return status;
+}
+
+static inline
+MStatus getNodeAttr(const MDagPath &objPath,
+                    const MObject &attr,
+                    uint32_t &value) {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            value = static_cast<uint32_t>(plug.asInt());
+            return status;
+        }
+    }
+    return status;
+}
+
+static inline
+MStatus getNodeAttr(const MDagPath &objPath,
+                    const MObject &attr,
+                    short &value) {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            value = plug.asShort();
+            return status;
+        }
+    }
+    return status;
+}
+
+static inline
+MStatus getNodeAttr(const MDagPath &objPath,
+                    const MObject &attr,
+                    float &value) {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            value = plug.asFloat();
+            return status;
+        }
+    }
+    return status;
+}
+
+static inline
+MStatus getNodeAttr(const MDagPath &objPath,
+                    const MObject &attr,
+                    double &value) {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            value = plug.asDouble();
+            return status;
+        }
+    }
+    return status;
+}
+
+static inline
+MStatus getNodeAttr(const MDagPath &objPath,
+                    const MObject &attr,
+                    MColor &value) {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            MDataHandle data_handle = plug.asMDataHandle(&status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            auto data = data_handle.asFloat3();
+            value.r = data[0];
+            value.g = data[1];
+            value.b = data[2];
+            return status;
+        }
+    }
+    return status;
+}
+
+static inline
+MStatus getNodeAttr(const MDagPath &objPath,
+                    const MObject &attr,
+                    MMatrix &value) {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            MDataHandle data_handle = plug.asMDataHandle(&status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            value = data_handle.asMatrix();
+            return status;
+        }
+    }
+    return status;
+}
+
+} // namespace mmsolver
 
 // Static attributes to help with Maya Node initialization.
 class MMNodeInitUtils {

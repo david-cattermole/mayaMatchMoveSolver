@@ -242,8 +242,8 @@ createOrientationMatrix(
     }
     else if (orientPlane == OrientationPlane::XZ)
     {
-        forward = mmdata::Vector3D(-1, 0, 0);
-        side = mmdata::Vector3D(0, 0, -1);
+        forward = mmdata::Vector3D(1, 0, 0);
+        side = mmdata::Vector3D(0, 0, 1);
     }
     else if (orientPlane == OrientationPlane::XY)
     {
@@ -376,10 +376,6 @@ applySceneScale(
 bool
 calcCameraParameters(
     mmdata::Point2D originPoint,
-    OrientationPlane orientPlane,
-    bool axisFlipX,
-    bool axisFlipY,
-    bool axisFlipZ,
     mmdata::Point2D principalPoint,
     mmdata::Point2D vanishingPointA,
     mmdata::Point2D vanishingPointB,
@@ -419,6 +415,11 @@ calcCameraParameters(
         return false;
     }
 
+    // Orient the "ground" plane.
+    bool axisFlipX = false;
+    bool axisFlipY = false;
+    bool axisFlipZ = false;
+    auto orientPlane = OrientationPlane::XZ;
     auto orientMatrix = createOrientationMatrix(
         orientPlane,
         axisFlipX,

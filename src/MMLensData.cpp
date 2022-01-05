@@ -67,19 +67,19 @@ MString MMLensData::typeName() {
     return MString(MM_LENS_DATA_TYPE_NAME);
 }
 
-MStatus MMLensData::readASCII(const MArgList& args,
-                              unsigned& lastParsedElement) {
+MStatus MMLensData::readASCII(const MArgList& /*args*/,
+                              unsigned& /*lastParsedElement*/) {
     return MS::kSuccess;
 }
 
-MStatus MMLensData::writeASCII(ostream& out) {
+MStatus MMLensData::writeASCII(ostream& /*out*/) {
     return MS::kSuccess;
 }
 
-MStatus MMLensData::readBinary(istream& in, unsigned) {
+MStatus MMLensData::readBinary(istream& /*in*/, unsigned) {
     return MS::kSuccess;
 }
 
-MStatus MMLensData::writeBinary(ostream& out) {
+MStatus MMLensData::writeBinary(ostream& /*out*/) {
     return MS::kSuccess;
 }

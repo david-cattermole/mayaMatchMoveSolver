@@ -222,10 +222,10 @@ def create_new_setup():
     # Create image plane.
     img_pl_tfm, img_pl_shp = maya.cmds.imagePlane(camera=cam_shp)
 
-    # Using a horizontal fit mode ensures the camera calibration's
-    # film back is consistent, even if the image plane aspect ratio
-    # changes.
-    maya.cmds.setAttr('{}.fit'.format(img_pl_shp), 2)  # 2 = Horizontal
+    # Using a "To Size" fit mode will forcibly change the image to
+    # stretch it to match the size given. Therefore it is important
+    # the image plane size (including the aspect ratio) is correct.
+    maya.cmds.setAttr('{}.fit'.format(img_pl_shp), 4)  # 4 = To Size
 
     # Image plane is almost at far-clipping plane distance.
     maya.cmds.setAttr('{}.depth'.format(img_pl_shp), 9990)
@@ -275,7 +275,38 @@ def create_new_setup():
     decompose_node = maya.cmds.createNode('decomposeMatrix')
     maya.cmds.setAttr(
         '{}.inputRotateOrder'.format(decompose_node),
-        2)  # 2 = ZXY
+        2)  # 2 = ZXY (good default for cameras aimed at the horizon.)
+
+    maya.cmds.addAttr(
+        calib_node,
+        attributeType='float',
+        minValue=0.0,
+        defaultValue=1920.0,
+        longName='imageWidth')
+    maya.cmds.addAttr(
+        calib_node,
+        attributeType='float',
+        minValue=0.0,
+        defaultValue=1080.0,
+        longName='imageHeight')
+    maya.cmds.addAttr(
+        calib_node,
+        attributeType='float',
+        minValue=0.0,
+        defaultValue=1.0,
+        longName='imagePixelAspectRatio')
+    maya.cmds.addAttr(
+        calib_node,
+        attributeType='float',
+        minValue=0.0,
+        defaultValue=1.0,
+        longName='imageAspectRatio')
+
+    exp = (
+        'imageAspectRatio = (imageWidth * imagePixelAspectRatio) / imageHeight;'
+        'verticalFilmAperture = horizontalFilmAperture / imageAspectRatio;'
+    )
+    maya.cmds.expression(object=calib_node, string=exp)
 
     maya.cmds.addAttr(
         calib_node,
@@ -333,21 +364,19 @@ def create_new_setup():
         ['{}.message'.format(horizon_line_mkr2_node),
          '{}.horizonPointNodeB'.format(calib_node)],
 
+        ['{}.coverageX'.format(img_pl_shp),
+         '{}.imageWidth'.format(calib_node)],
+        ['{}.coverageY'.format(img_pl_shp),
+         '{}.imageHeight'.format(calib_node)],
+
+        ['{}.horizontalFilmAperture'.format(cam_shp),
+         '{}.sizeX'.format(img_pl_shp)],
+        ['{}.verticalFilmAperture'.format(cam_shp),
+         '{}.sizeY'.format(img_pl_shp)],
     ]
     for src, dst in src_dst_attr_list:
         if maya.cmds.isConnected(src, dst) is False:
             maya.cmds.connectAttr(src, dst)
-
-    # TODO: Automatically scale the calibration film back height using
-    # the input image plane width. Maybe we can do this with an
-    # expression at first?
-
-    # We could use OpenMaya.MImage.readFromFile(), and then
-    # OpenMaya.MImage.getSize() to get the image size, then save the
-    # attributes on the mmCameraCalibrate node. Ensure a 'pixel
-    # aspect' attribute is also added, and used in the expression. It
-    # is not possible to detect a pixel aspect ratio for an image
-    # using the Maya API.
     return
 
 

@@ -52,10 +52,6 @@ bool oneVanishingPoint(
     double filmBackWidth_mm,
     double filmBackHeight_mm,
     mmdata::Point2D originPoint,
-    OrientationPlane orientPlane,
-    bool axisFlipX,
-    bool axisFlipY,
-    bool axisFlipZ,
     mmdata::Point2D principalPoint,
     mmdata::Point2D vanishingPointA,
     mmdata::Point2D horizonPointA,
@@ -117,10 +113,6 @@ bool oneVanishingPoint(
 
     auto ok = calcCameraParameters(
         originPoint,
-        orientPlane,
-        axisFlipX,
-        axisFlipY,
-        axisFlipZ,
         principalPoint,
         vanishingPointA,
         vanishingPointB,
@@ -145,10 +137,6 @@ bool twoVanishingPoints(
     double filmBackWidth_mm,
     double filmBackHeight_mm,
     mmdata::Point2D originPoint,
-    OrientationPlane orientPlane,
-    bool axisFlipX,
-    bool axisFlipY,
-    bool axisFlipZ,
     mmdata::Point2D principalPoint,
     mmdata::Point2D vanishingPointA,
     mmdata::Point2D vanishingPointB,
@@ -200,10 +188,6 @@ bool twoVanishingPoints(
 
     ok = calcCameraParameters(
         originPoint,
-        orientPlane,
-        axisFlipX,
-        axisFlipY,
-        axisFlipZ,
         principalPoint,
         vanishingPointA,
         vanishingPointB,

@@ -46,7 +46,9 @@
 #include <MMSolverAffectsCmd.h>
 #include <MMCameraCalibrateNode.h>
 #include <MMLineIntersectNode.h>
+#include <MMCameraSolveCmd.h>
 
+// Shape nodes.
 #include <shape/MarkerShapeNode.h>
 #include <shape/MarkerDrawOverride.h>
 #include <shape/BundleShapeNode.h>
@@ -179,6 +181,12 @@ MStatus initializePlugin(MObject obj) {
                      MMTestCameraMatrixCmd::cmdName(),
                      MMTestCameraMatrixCmd::creator,
                      MMTestCameraMatrixCmd::newSyntax,
+                     status);
+
+    REGISTER_COMMAND(plugin,
+                     MMCameraSolveCmd::cmdName(),
+                     MMCameraSolveCmd::creator,
+                     MMCameraSolveCmd::newSyntax,
                      status);
 
     REGISTER_NODE(plugin,
@@ -423,6 +431,7 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMSolverAffectsCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, MMCameraSolveCmd::cmdName(), status);
 
     DEREGISTER_DRAW_OVERRIDE(
         mmsolver::MarkerShapeNode::m_draw_db_classification,
@@ -457,12 +466,10 @@ MStatus uninitializePlugin(MObject obj) {
                     mmsolver::render::RenderGlobalsNode::nodeName(),
                     mmsolver::render::RenderGlobalsNode::m_id, status);
 
-    DEREGISTER_NODE(plugin,
-                    MMMarkerScaleNode::nodeName(),
+    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(),
                     MMMarkerScaleNode::m_id, status);
 
-    DEREGISTER_NODE(plugin,
-                    MMReprojectionNode::nodeName(),
+    DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(),
                     MMReprojectionNode::m_id, status);
 
     DEREGISTER_NODE(plugin, MMCameraCalibrateNode::nodeName(),

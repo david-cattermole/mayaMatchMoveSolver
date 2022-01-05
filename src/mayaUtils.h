@@ -30,9 +30,9 @@
 #include <utilities/debugUtils.h>
 
 // Maya
+#include <maya/MStatus.h>
 #include <maya/MColor.h>
 #include <maya/MDistance.h>
-#include <maya/MStatus.h>
 #include <maya/MPoint.h>
 #include <maya/MVector.h>
 #include <maya/MMatrix.h>

@@ -41,6 +41,7 @@
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MStreamUtils.h>
 
 // Internal Objects
 #include <commonArgFlags.h>
@@ -489,7 +490,9 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
 
     MMSolverCmd::setResult(outResult);
     if (ret == false) {
-        WRN("mmSolver: Solver returned false!");
+        MStreamUtils::stdErrorStream()
+            << "WARNING: mmSolver: Solver returned false!"
+            << '\n';
     }
 
     // Mouse cursor back to normal.

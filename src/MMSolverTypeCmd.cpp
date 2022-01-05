@@ -208,7 +208,7 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
 
                 MString item = "";
                 if (m_index) {
-                    std::string index_string = string::numberToString<int>(index);
+                    std::string index_string = mmstring::numberToString<int>(index);
                     item += MString(index_string.c_str());
                     item += "=";
                 }
@@ -237,7 +237,7 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
             std::string name = solverType.second;
 
             if (m_index) {
-                std::string index_string = string::numberToString<int>(index);
+                std::string index_string = mmstring::numberToString<int>(index);
                 outResult += MString(index_string.c_str());
                 outResult += "=";
             }

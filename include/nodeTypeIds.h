@@ -91,6 +91,9 @@
 #define MM_SKY_DOME_SHAPE_DISPLAY_FILTER_NAME "mmSkyDomeDisplayFilter"
 #define MM_SKY_DOME_SHAPE_DISPLAY_FILTER_LABEL "MM SkyDome"
 
+// Maya Python API "Marker/Bundle" proto-type node.
+#define MM_MARKER_BUNDLE_SHAPE_TYPE_ID 0x0012F18C
+
 #define MM_MARKER_SHAPE_TYPE_ID 0x0012F196
 #define MM_MARKER_SHAPE_TYPE_NAME "mmMarkerShape"
 #define MM_MARKER_DRAW_CLASSIFY "drawdb/geometry/mmSolver/marker"

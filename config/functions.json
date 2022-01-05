@@ -742,6 +742,14 @@
                 "import mmSolver.tools.calibratecamera.tool as tool;",
                 "tool.update();"
             ]
+        },
+        "ml_convert_rotation_order": {
+            "name": "Convert Rotation Order UI",
+            "tooltip": "Change the rotation order of an object while preserving animation.",
+            "command": [
+                "import mmSolver.tools.mltools.ml_convertRotationOrder as ml_convertRotationOrder;",
+                "ml_convertRotationOrder.ui();"
+            ]
         }
     }
 }

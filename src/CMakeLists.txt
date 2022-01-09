@@ -105,40 +105,45 @@ find_package(Ceres REQUIRED)
 find_package(Libmv REQUIRED)
 find_package(OpenMVG REQUIRED)
 
-message(STATUS "CMINPACK: ${CMINPACK_FOUND}"
-  " Root=${CMINPACK_ROOT}"
-  " Include=${CMINPACK_INCLUDE_DIRS}"
-  " Library=${CMINPACK_LIBRARIES}")
+message(STATUS "MAYA: ${MAYA_FOUND}")
+message(STATUS "MAYA: Root=${MAYA_LOCATION}")
+message(STATUS "MAYA: API=${MAYA_API_VERSION}")
+message(STATUS "MAYA: Maya Executable=${MAYA_EXECUTABLE}")
+message(STATUS "MAYA: Python Executable=${MAYA_PYTHON_EXECUTABLE}")
+message(STATUS "MAYA: Includes=${MAYA_INCLUDE_DIRS}")
+message(STATUS "MAYA: Libraries=${MAYA_LIBRARIES}")
 
-message(STATUS "GFLAGS: ${GFLAGS_FOUND}"
-  " Include=${GFLAGS_INCLUDE_DIRS}"
-  " Library=${GFLAGS_LIBRARIES}")
+message(STATUS "CMINPACK: ${CMINPACK_FOUND}")
+message(STATUS "CMINPACK: Root=${CMINPACK_ROOT}")
+message(STATUS "CMINPACK: Include=${CMINPACK_INCLUDE_DIRS}")
+message(STATUS "CMINPACK: Library=${CMINPACK_LIBRARIES}")
 
-message(STATUS "GLOG: ${GLOG_FOUND}"
-  " Include=${GLOG_INCLUDE_DIRS}"
-  " Library=${GLOG_LIBRARIES}")
+message(STATUS "GFLAGS: ${GFLAGS_FOUND}")
+message(STATUS "GFLAGS: Include=${GFLAGS_INCLUDE_DIRS}")
+message(STATUS "GFLAGS: Library=${GFLAGS_LIBRARIES}")
 
+message(STATUS "GLOG: ${GLOG_FOUND}")
+message(STATUS "GLOG: Include=${GLOG_INCLUDE_DIRS}")
+message(STATUS "GLOG: Library=${GLOG_LIBRARIES}")
 
+message(STATUS "EIGEN3: ${EIGEN3_FOUND}")
+message(STATUS "EIGEN3: Root=${Eigen3_DIR}")
+message(STATUS "EIGEN3: Include=${EIGEN3_INCLUDE_DIRS}")
 
-message(STATUS "EIGEN3: ${EIGEN3_FOUND}"
-  " Root=${Eigen3_DIR}"
-  " Include=${EIGEN3_INCLUDE_DIRS}")
+message(STATUS "CERES: ${CERES_FOUND}")
+message(STATUS "CERES: Root=${CERES_ROOT}")
+message(STATUS "CERES: Include=${CERES_INCLUDE_DIRS}")
+message(STATUS "CERES: Library=${CERES_LIBRARIES}")
 
+message(STATUS "LIBMV: ${LIBMV_FOUND}")
+message(STATUS "LIBMV: Root=${LIBMV_ROOT}")
+message(STATUS "LIBMV: Include=${LIBMV_INCLUDE_DIRS}")
+message(STATUS "LIBMV: Library=${LIBMV_LIBRARIES}")
 
-message(STATUS "CERES: ${CERES_FOUND}"
-  " Root=${CERES_ROOT}"
-  " Include=${CERES_INCLUDE_DIRS}"
-  " Library=${CERES_LIBRARIES}")
-
-message(STATUS "LIBMV: ${LIBMV_FOUND}"
-  " Root=${LIBMV_ROOT}"
-  " Include=${LIBMV_INCLUDE_DIRS}"
-  " Library=${LIBMV_LIBRARIES}")
-
-message(STATUS "OPENMVG: ${OPENMVG_FOUND}"
-  " Root=${OPENMVG_ROOT}"
-  " Include=${OPENMVG_INCLUDE_DIRS}"
-  " Library=${OPENMVG_LIBRARIES}")
+message(STATUS "OPENMVG: ${OPENMVG_FOUND}")
+message(STATUS "OPENMVG: Root=${OPENMVG_ROOT}")
+message(STATUS "OPENMVG: Include=${OPENMVG_INCLUDE_DIRS}")
+message(STATUS "OPENMVG: Library=${OPENMVG_LIBRARIES}")
 
 # Treat warnings as errors.
 if(MSVC)

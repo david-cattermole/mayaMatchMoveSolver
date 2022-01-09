@@ -103,6 +103,7 @@ find_package(Glog REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Ceres REQUIRED)
 find_package(Libmv REQUIRED)
+find_package(OpenMVG REQUIRED)
 
 message(STATUS "CMINPACK: ${CMINPACK_FOUND}"
   " Root=${CMINPACK_ROOT}"
@@ -134,6 +135,11 @@ message(STATUS "LIBMV: ${LIBMV_FOUND}"
   " Include=${LIBMV_INCLUDE_DIRS}"
   " Library=${LIBMV_LIBRARIES}")
 
+message(STATUS "OPENMVG: ${OPENMVG_FOUND}"
+  " Root=${OPENMVG_ROOT}"
+  " Include=${OPENMVG_INCLUDE_DIRS}"
+  " Library=${OPENMVG_LIBRARIES}")
+
 # Treat warnings as errors.
 if(MSVC)
   add_compile_options(/W4 /WX)
@@ -162,6 +168,7 @@ target_include_directories(mmSolver
   PRIVATE ${EIGEN3_INCLUDE_DIRS}
   PRIVATE ${CERES_INCLUDE_DIRS}
   PRIVATE ${LIBMV_INCLUDE_DIRS}
+  PRIVATE ${OPENMVG_INCLUDE_DIRS}
   )
 target_link_libraries(mmSolver
   PUBLIC
@@ -178,6 +185,7 @@ target_link_libraries(mmSolver
   ${CMINPACK_LIBRARIES}
   ${CERES_LIBRARIES}
   ${LIBMV_LIBRARIES}
+  ${OPENMVG_LIBRARIES}
 )
 target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CMINPACK)
 target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CERES)

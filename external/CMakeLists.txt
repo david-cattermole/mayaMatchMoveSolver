@@ -350,3 +350,39 @@ ExternalProject_Add(libmv
         # TODO: Install Doxygen and fill this out.
         # -DDOXYGEN_EXECUTABLE
 )
+
+#########################################################
+# openMVG - Multiple View library
+#########################################################
+set(OPENMVG_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/openMVG)
+set(OPENMVG_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/openMVG)
+set(OPENMVG_DOWNLOAD_DIR ${THIRDPARTY_BASE_WORKING_DIR}/openMVG/src)
+set(OPENMVG_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/openMVG/src/openMVG)
+
+ExternalProject_Add(openMVG
+    PREFIX ${OPENMVG_PREFIX}
+    GIT_REPOSITORY "https://github.com/openMVG/openMVG.git"
+    GIT_TAG "v2.0"
+    DOWNLOAD_DIR ${OPENMVG_DOWNLOAD_DIR}
+    SOURCE_DIR ${OPENMVG_SOURCE_DIR}
+    SOURCE_SUBDIR src/
+    INSTALL_DIR ${OPENMVG_INSTALL_PATH}
+    CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_INSTALL_PREFIX=${OPENMVG_INSTALL_PATH}
+        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+        -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
+        -DOpenMVG_BUILD_SHARED=1
+        -DOpenMVG_BUILD_TESTS=0
+        -DOpenMVG_BUILD_DOC=1
+        -DOpenMVG_BUILD_EXAMPLES=1
+        -DOpenMVG_BUILD_OPENGL_EXAMPLES=0
+        -DOpenMVG_BUILD_SOFTWARES=1
+        -DOpenMVG_BUILD_GUI_SOFTWARES=0
+        -DOpenMVG_BUILD_COVERAGE=0
+        -DOpenMVG_USE_OPENMP=1
+        -DOpenMVG_USE_OPENCV=0
+        -DOpenMVG_USE_OCVSIFT=0
+)

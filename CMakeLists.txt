@@ -145,6 +145,11 @@ set(CERES_LIB_PATH "/usr/local/lib"
 #   CACHE PATH "Libmv library directory")
 
 
+# OpenMVG
+set(OPENMVG_ROOT "/usr/local"
+  CACHE PATH "OpenMVG directory")
+
+
 # Default Solver to use.
 set(PREFERRED_SOLVER "cminpack_lmder"
   CACHE STRING

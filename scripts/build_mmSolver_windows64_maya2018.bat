@@ -92,6 +92,9 @@ SET GLOG_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
 SET GFLAGS_ROOT="%PROJECT_ROOT%\external\install\libmv"
 SET GFLAGS_INCLUDE_DIR="%PROJECT_ROOT%\external\install\libmv\include\third_party\gflags"
 SET GFLAGS_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
+SET OPENMVG_ROOT="%PROJECT_ROOT%\external\install\openMVG"
+SET OPENMVG_INCLUDE_DIR="%OPENMVG_ROOT%\include"
+SET OPENMVG_LIB_PATH="%OPENMVG_ROOT%\lib"
 
 :: MinGW is a common install for developers on Windows and
 :: if installed and used it will cause build conflicts and
@@ -139,6 +142,9 @@ cmake -G "NMake Makefiles" ^
     -DGLOG_INCLUDE_DIR=%GLOG_INCLUDE_DIR% ^
     -DGFLAGS_ROOT=%GFLAGS_ROOT% ^
     -DGFLAGS_INCLUDE_DIR=%GFLAGS_INCLUDE_DIR% ^
+    -DOPENMVG_ROOT=%OPENMVG_ROOT% ^
+    -DOPENMVG_INCLUDE_DIR=%OPENMVG_INCLUDE_DIR% ^
+    -DOPENMVG_LIB_PATH=%OPENMVG_LIB_PATH% ^
     -DMAYA_LOCATION=%MAYA_LOCATION% ^
     -DMAYA_VERSION=%MAYA_VERSION% ^
     ..

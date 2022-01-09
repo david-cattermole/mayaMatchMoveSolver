@@ -48,6 +48,7 @@ set(SOURCE_FILES
   core/mmdata.cpp
   core/mmmath.cpp
   core/reprojection.cpp
+  shape/ShapeDrawUtils.cpp
   shape/MarkerShapeNode.cpp
   shape/MarkerDrawOverride.cpp
   shape/BundleShapeNode.cpp

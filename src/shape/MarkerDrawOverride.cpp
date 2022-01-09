@@ -21,6 +21,7 @@
 
 #include "MarkerConstants.h"
 #include "MarkerDrawOverride.h"
+#include "ShapeDrawUtils.h"
 #include <mayaUtils.h>
 
 #include <maya/MString.h>
@@ -280,47 +281,10 @@ void MarkerDrawOverride::addUIDrawables(
     MMatrix matrix_inverse = objPath.inclusiveMatrixInverse(&status);
     CHECK_MSTATUS(status);
 
-    // Use the camera position.
-    MDoubleArray view_pos = frameContext.getTuple(
-        MFrameContext::kViewPosition, &status);
+    double scale = 1.0;
+    status = getViewportScaleRatio(frameContext, scale);
     CHECK_MSTATUS(status);
-    MPoint camera_pos(view_pos[0], view_pos[1], view_pos[2]);
-
-    // Get Viewport size
-    int originX = 0;
-    int originY = 0;
-    int width = 0;
-    int height = 0;
-    frameContext.getViewportDimensions(originX, originY, width, height);
-
-    // Convert viewport window into world-space near/far clipping
-    // points.
-    MPoint nearPoint1;
-    MPoint nearPoint2;
-    MPoint farPoint1;
-    MPoint farPoint2;
-    double originXd = static_cast<double>(originX);
-    double originYd = static_cast<double>(originY);
-    double widthd = static_cast<double>(width);
-    double heightd = static_cast<double>(height);
-    double y = originYd + (heightd * 0.5);
-    frameContext.viewportToWorld(originXd, y, nearPoint1, farPoint1);
-    frameContext.viewportToWorld(widthd, y, nearPoint2, farPoint2);
-
-    // Normalize the scale values.
-    auto oneUnitVector1 = MVector(
-        camera_pos.x - nearPoint1.x,
-        camera_pos.y - nearPoint1.y,
-        camera_pos.z - nearPoint1.z);
-    auto oneUnitVector2 = MVector(
-        camera_pos.x - nearPoint2.x,
-        camera_pos.y - nearPoint2.y,
-        camera_pos.z - nearPoint2.z);
-    oneUnitVector1.normalize();
-    oneUnitVector2.normalize();
-    auto oneUnitPoint1 = MPoint(oneUnitVector1);
-    auto oneUnitPoint2 = MPoint(oneUnitVector2);
-    double scale = oneUnitPoint1.distanceTo(oneUnitPoint2) * data->m_icon_size * 20.0;
+    scale *= data->m_icon_size * 20.0;
 
     // Remove scale and shear from marker transform.
     MTransformationMatrix tfm_matrix(matrix);

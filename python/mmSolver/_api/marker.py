@@ -43,6 +43,33 @@ import mmSolver._api.solveresult as solveresult
 LOG = mmSolver.logger.get_logger()
 
 
+def _create_marker_transform(name):
+    tfm = maya.cmds.createNode(const.MARKER_TRANSFORM_NODE_TYPE, name=name)
+    tfm = node_utils.get_long_name(tfm)
+    maya.cmds.setAttr(tfm + '.tz', -1.0)
+    maya.cmds.setAttr(tfm + '.tz', lock=True)
+    maya.cmds.setAttr(tfm + '.rx', lock=True)
+    maya.cmds.setAttr(tfm + '.ry', lock=True)
+    maya.cmds.setAttr(tfm + '.rz', lock=True)
+    maya.cmds.setAttr(tfm + '.sx', lock=True)
+    maya.cmds.setAttr(tfm + '.sy', lock=True)
+    maya.cmds.setAttr(tfm + '.sz', lock=True)
+    maya.cmds.setAttr(tfm + '.shxy', lock=True)
+    maya.cmds.setAttr(tfm + '.shxz', lock=True)
+    maya.cmds.setAttr(tfm + '.shyz', lock=True)
+    maya.cmds.setAttr(tfm + '.tz', keyable=False, channelBox=False)
+    maya.cmds.setAttr(tfm + '.rx', keyable=False, channelBox=False)
+    maya.cmds.setAttr(tfm + '.ry', keyable=False, channelBox=False)
+    maya.cmds.setAttr(tfm + '.rz', keyable=False, channelBox=False)
+    maya.cmds.setAttr(tfm + '.sx', keyable=False, channelBox=False)
+    maya.cmds.setAttr(tfm + '.sy', keyable=False, channelBox=False)
+    maya.cmds.setAttr(tfm + '.sz', keyable=False, channelBox=False)
+    maya.cmds.setAttr(tfm + '.shxy', keyable=False, channelBox=False)
+    maya.cmds.setAttr(tfm + '.shxz', keyable=False, channelBox=False)
+    maya.cmds.setAttr(tfm + '.shyz', keyable=False, channelBox=False)
+    return tfm
+
+
 def _create_marker_shape(tfm_node):
     shp_name = tfm_node.rpartition('|')[-1] + 'Shape'
     shp = maya.cmds.createNode(const.MARKER_SHAPE_NODE_TYPE,
@@ -181,6 +208,21 @@ def _create_marker_attributes(node):
     return
 
 
+def _replace_marker_transform(dag_path):
+    # 0) Check the marker transform needs to be replaced - if not return.
+    # 1) Get the shape nodes.
+    # 2) Get the current values from the transform node.
+    # 3) Get the locked state of the attributes.
+    # 4) disconnect any nodes (such as animcurves) from the dag_path.
+    # 5) Create a new node with a temp name.
+    # 6) Reconnect nodes to new node.
+    # 7) re-parent the shape nodes under the new node.
+    # 8) Set the locked state of the attributes.
+    # 9) Delete the original transform node.
+    # 10) Rename the new node to have the exact same name as the input.
+    raise NotImplementedError
+
+
 def _replace_marker_shape(dag_path):
     dag_shps = node_utils.get_dag_path_shapes_below_apione(dag_path)
     if len(dag_shps) > 0:
@@ -262,7 +304,12 @@ class Marker(object):
                 LOG.error(msg, node)
                 raise e
 
-            # Replace locator shape with mmMarkerShape node.
+            # Replace locator transform and shape with custom nodes.
+            # dag = _replace_marker_transform(dag)
+            # try:
+            #     self._mfn = OpenMaya.MFnDagNode(dag)
+            # except RuntimeError:
+            #     raise
             _replace_marker_shape(dag)
 
             # Ensure the deviation attribute exists.
@@ -317,7 +364,12 @@ class Marker(object):
         except RuntimeError:
             raise
 
-        # Replace locator shape with mmMarkerShape node.
+        # Replace locator transform and shape with custom nodes.
+        # dag = _replace_marker_transform(dag)
+        # try:
+        #     self._mfn = OpenMaya.MFnDagNode(dag)
+        # except RuntimeError:
+        #     raise
         _replace_marker_shape(dag)
 
         # Ensure the deviation attribute exists.
@@ -426,29 +478,7 @@ class Marker(object):
             assert len(colour) == 3
 
         # Transform
-        tfm = maya.cmds.createNode(const.MARKER_TRANSFORM_NODE_TYPE, name=name)
-        tfm = node_utils.get_long_name(tfm)
-        maya.cmds.setAttr(tfm + '.tz', -1.0)
-        maya.cmds.setAttr(tfm + '.tz', lock=True)
-        maya.cmds.setAttr(tfm + '.rx', lock=True)
-        maya.cmds.setAttr(tfm + '.ry', lock=True)
-        maya.cmds.setAttr(tfm + '.rz', lock=True)
-        maya.cmds.setAttr(tfm + '.sx', lock=True)
-        maya.cmds.setAttr(tfm + '.sy', lock=True)
-        maya.cmds.setAttr(tfm + '.sz', lock=True)
-        maya.cmds.setAttr(tfm + '.shxy', lock=True)
-        maya.cmds.setAttr(tfm + '.shxz', lock=True)
-        maya.cmds.setAttr(tfm + '.shyz', lock=True)
-        maya.cmds.setAttr(tfm + '.tz', keyable=False, channelBox=False)
-        maya.cmds.setAttr(tfm + '.rx', keyable=False, channelBox=False)
-        maya.cmds.setAttr(tfm + '.ry', keyable=False, channelBox=False)
-        maya.cmds.setAttr(tfm + '.rz', keyable=False, channelBox=False)
-        maya.cmds.setAttr(tfm + '.sx', keyable=False, channelBox=False)
-        maya.cmds.setAttr(tfm + '.sy', keyable=False, channelBox=False)
-        maya.cmds.setAttr(tfm + '.sz', keyable=False, channelBox=False)
-        maya.cmds.setAttr(tfm + '.shxy', keyable=False, channelBox=False)
-        maya.cmds.setAttr(tfm + '.shxz', keyable=False, channelBox=False)
-        maya.cmds.setAttr(tfm + '.shyz', keyable=False, channelBox=False)
+        tfm = _create_marker_transform(name)
 
         # Shape Node
         _create_marker_shape(tfm)

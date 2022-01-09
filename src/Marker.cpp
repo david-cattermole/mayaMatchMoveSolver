@@ -168,6 +168,27 @@ MStatus Marker::getPos(MPoint &point, const int timeEvalMode) {
     return status;
 }
 
+
+MStatus Marker::getPosXY(double &x, double &y, const MTime &time,
+                         const int timeEvalMode) {
+    MStatus status;
+    auto attr_pos_x = Marker::getPosXAttr();
+    auto attr_pos_y = Marker::getPosYAttr();
+    status = attr_pos_x.getValue(x, time, timeEvalMode);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    status = attr_pos_y.getValue(y, time, timeEvalMode);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    return status;
+}
+
+MStatus Marker::getPosXY(double &x, double &y,
+                         const int timeEvalMode) {
+    MTime time = MAnimControl::currentTime();
+    MStatus status = Marker::getPosXY(x, y, time, timeEvalMode);
+    return status;
+}
+
+
 MStatus Marker::getEnable(bool &value, const MTime &time,
                           const int timeEvalMode) {
     MStatus status;

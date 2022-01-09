@@ -81,6 +81,13 @@ public:
 
     MStatus getPos(MPoint &point, const int timeEvalMode);
 
+
+    MStatus getPosXY(double &x, double &y, const MTime &time,
+                     const int timeEvalMode);
+
+    MStatus getPosXY(double &x, double &y,
+                     const int timeEvalMode);
+
     MStatus getEnable(bool &value, const MTime &time,
                       const int timeEvalMode);
 

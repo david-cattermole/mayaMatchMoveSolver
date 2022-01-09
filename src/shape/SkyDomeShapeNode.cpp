@@ -451,8 +451,8 @@ MStatus SkyDomeShapeNode::initialize() {
 
     // Lat-Long Divisions
     auto divisions_default = 6;
-    auto divisions_min = 2;
-    auto divisions_soft_min = 2;
+    auto divisions_min = 3;
+    auto divisions_soft_min = 3;
     auto divisions_soft_max = 10;
     m_grid_lat_divisions = nAttr.create(
         "gridLatitudeDivisions", "grltdv",

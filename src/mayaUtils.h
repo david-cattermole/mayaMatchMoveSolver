@@ -136,27 +136,34 @@ MStatus getAsDagPath(MString nodeName, MDagPath &nodeDagPath) {
 
 
 inline
-bool hasAttrName(MFnDependencyNode &dependFn, MString attrName) {
-    MPlug plug = dependFn.findPlug(attrName, true);
-    return plug.isNull();
+bool hasAttrName(MFnDependencyNode &dependFn, MString &attrName) {
+    MStatus status = MStatus::kSuccess;
+    auto network_plug = true;
+    MPlug plug = dependFn.findPlug(attrName, network_plug, &status);
+    return !plug.isNull();
 }
 
 
 // Analogous to the Python function "mmSolver.api.get_object_type()"
 inline
-unsigned int computeObjectType(MObject node_obj, MDagPath nodeDagPath) {
+unsigned int computeObjectType(MObject &node_obj, MDagPath &nodeDagPath) {
+    MStatus status = MStatus::kSuccess;
+
+    MFn::Type node_tid = nodeDagPath.apiType();
+    bool hasTransformNode = (node_tid == MFn::kTransform)
+        || (node_tid == MFn::kPluginTransformNode);
+
     bool hasLocatorShape = false;
     bool hasCameraShape = false;
     bool hasImagePlaneShape = false;
-    MFn::Type node_tid = nodeDagPath.apiType();
-    std::vector<MFn::Type> shape_tids;
+    auto childNodeDagPath = MDagPath();
     unsigned int num_children = nodeDagPath.childCount();
     for (unsigned int i = 0; i < num_children; ++i) {
         MObject child_obj = nodeDagPath.child(i);
-        nodeDagPath.push(child_obj);
-        MFn::Type shape_tid = nodeDagPath.apiType();
-        shape_tids.push_back(shape_tid);
-        if (shape_tid == MFn::kLocator) {
+        status = MDagPath::getAPathTo(child_obj, childNodeDagPath);
+        CHECK_MSTATUS(status);
+        MFn::Type shape_tid = childNodeDagPath.apiType();
+        if (shape_tid == MFn::kLocator || shape_tid == MFn::kPluginLocatorNode) {
             hasLocatorShape = true;
         } else if (shape_tid == MFn::kCamera) {
             hasCameraShape = true;
@@ -165,28 +172,31 @@ unsigned int computeObjectType(MObject node_obj, MDagPath nodeDagPath) {
         }
     }
 
-    MFnDependencyNode dependFn(node_obj);
+    MFnDependencyNode dependFn(node_obj, &status);
+    CHECK_MSTATUS(status);
+
     unsigned int objectType = OBJECT_TYPE_UNKNOWN;
-    bool hasAttrEnable = hasAttrName(dependFn, MString("enable"));
-    bool hasAttrWeight = hasAttrName(dependFn, MString("weight"));
-    bool hasAttrBundle = hasAttrName(dependFn, MString("bundle"));
-    bool hasAttrSolverList = hasAttrName(dependFn, "solver_list");
-    if (node_tid == MFn::kTransform
+    auto attrNameEnable = MString("enable");
+    auto attrNameWeight = MString("weight");
+    auto attrNameBundle = MString("bundle");
+    auto attrNameSolverList = MString("solverList");
+    bool hasAttrEnable = hasAttrName(dependFn, attrNameEnable);
+    bool hasAttrWeight = hasAttrName(dependFn, attrNameWeight);
+    bool hasAttrBundle = hasAttrName(dependFn, attrNameBundle);
+    bool hasAttrSolverList = hasAttrName(dependFn, attrNameSolverList);
+    if (hasTransformNode
         && hasLocatorShape
         && hasAttrEnable
         && hasAttrWeight
         && hasAttrBundle) {
         objectType = OBJECT_TYPE_MARKER;
-    } else if (node_tid == MFn::kTransform
-               && hasLocatorShape) {
+    } else if (hasTransformNode && hasLocatorShape) {
         objectType = OBJECT_TYPE_BUNDLE;
-    } else if (node_tid == MFn::kTransform
-               && hasCameraShape) {
+    } else if (hasTransformNode && hasCameraShape) {
         objectType = OBJECT_TYPE_CAMERA;
     } else if (node_tid == MFn::kCamera) {
         objectType = OBJECT_TYPE_CAMERA;
-    } else if (node_tid == MFn::kTransform
-               && hasImagePlaneShape) {
+    } else if (hasTransformNode && hasImagePlaneShape) {
         objectType = OBJECT_TYPE_IMAGE_PLANE;
     } else if (hasImagePlaneShape) {
         objectType = OBJECT_TYPE_IMAGE_PLANE;

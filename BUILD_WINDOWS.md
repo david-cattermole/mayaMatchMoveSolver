@@ -35,55 +35,55 @@ It is *important* you use the `x64` Command Prompt, *not*
 mmSolver has a few dependencies, and are listed in
 [BUILD.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md#dependencies).
 
-`cminpack`, and `levmar` can be easily downloaded and built
-for mmSolver using build scripts provided in the `<project
-root>\scripts` directory.
+The dependencies can be easily downloaded and built for mmSolver using
+build scripts provided in the `<project root>/scripts` directory.
 
 On Windows:
 ```cmd
 > CD <project root>
 > scripts\build_thirdparty.bat
-> scripts\build_levmar.bat
 ```
 
 If the commands above have worked, you should see the following
 directories under `<project root>\external\install`.
 
 - cminpack
-- levmar
+- eigen
+- libmv
+- openMVG
 
 These dependencies will automatically be found by the mmSolver build
 script and installed.
 
 # Build mmSolver
 
- After installing Thirdparty, you can now build mmSolver.
+After installing Third-party dependencies, you can now build mmSolver.
 
- Run these commands, on Windows:
- ```cmd
- > CD <project root>
- > scripts\build_mmSolver_windows64_mayaXXXX.bat
+Run these commands, on Windows:
+```cmd
+> CD <project root>
+> scripts\build_mmSolver_windows64_mayaXXXX.bat
+
+# Run tests (optional but encouraged)
+> CD build
+> NMAKE test
+< CD ..
+```
  
- # Run tests (optional but encouraged)
- > CD build
- > NMAKE test
- < CD ..
- ```
+Note: Replace XXXX, with the Maya version use build for.
  
- Note: Replace XXXX, with the Maya version use build for.
- 
- The build script (using CMake) will perform the following tasks:
+The build script (using CMake) will perform the following tasks:
  - Build documentation using Sphinx.
  - Compile Qt Designer .ui files into a format for Maya's version of
    Qt (PySide or PySide2).
  - Create a module (.mod) with configuration options.
  - Copy all needed files (including dependencies) into a module.
  
- Following the steps above you will have the Maya plug-in compiled, and
- installed into your `%USERPROFILE%\maya\MAYA_VERSION\modules` directory.
+Following the steps above you will have the Maya plug-in compiled, and
+installed into your `%USERPROFILE%\maya\MAYA_VERSION\modules` directory.
  
- The below sections in this file list more details and how to run
- different stages of the build manually.
+The below sections in this file list more details and how to run
+different stages of the build manually.
 
 # Customize Build Scripts
 
@@ -93,16 +93,15 @@ path, then you may need to edit the build scripts.
 
 Below lists the variables in the build scripts:
 
-| Variable           | Description                                  |            Example Value |
-| ------------       | -----------                                  |              ----------- |
-| MAYA_VERSION       | Maya version to build for.                   |                   `2017` |
-| MAYA_LOCATION      | Location for Maya header (.h) files.         | `C:\Program Files\Autodesk\Maya2017` |
-| INSTALL_MODULE_DIR | Directory to install the Maya module.        |    `C:\Users\MyUser\Documents\maya\2017\modules` |
-| FRESH_BUILD        | Delete all build files before re-compiling.  |                        1 |
-| RUN_TESTS          | After build, run the test suite inside Maya. |                        0 |
-| WITH_CMINPACK      | Use the CMinpack library for solving.        |                        1 |
-| WITH_GPL_CODE      | Use the levmar library for solving.          |                        0 |
-| BUILD_PACKAGE      | Create an archive file ready to distribute.  |                        0 |
+| Variable           | Description                                  | Example Value                                 |
+| ------------       | -----------                                  | -----------                                   |
+| MAYA_VERSION       | Maya version to build for.                   | `2017`                                        |
+| MAYA_LOCATION      | Location for Maya header (.h) files.         | `C:\Program Files\Autodesk\Maya2017`          |
+| INSTALL_MODULE_DIR | Directory to install the Maya module.        | `C:\Users\MyUser\Documents\maya\2017\modules` |
+| FRESH_BUILD        | Delete all build files before re-compiling.  | 1                                             |
+| RUN_TESTS          | After build, run the test suite inside Maya. | 0                                             |
+| WITH_CMINPACK      | Use the CMinpack library for solving.        | 1                                             |
+| BUILD_PACKAGE      | Create an archive file ready to distribute.  | 0                                             |
 
 For developers on Windows, you may change the variable 
 `GENERATE_SOLUTION` to "1". This will build a Visual Studio solution 
@@ -142,33 +141,25 @@ Example CMake usage on Windows:
 
 Common options:
 
-| CMake Option          | Description                                  |
-| --------------------  | -------------------------------------------  |
-| CMAKE_INSTALL_PREFIX  | Location to install the Maya module.         |
-| MAYA_VERSION          | Maya version to build for.                   |
-| MAYA_LOCATION         | Path to Maya install directory               |
-| USE_CMINPACK          | Build with CMinpack? (default = 1)           |
-| CMINPACK_ROOT         | Directory to CMinpack install base directory ||
-| PREFERRED_SOLVER      | Preferred solver; levmar or cminpack_lm.     |
+| CMake Option         | Description                                  |
+| -------------------- | -------------------------------------------- |
+| CMAKE_INSTALL_PREFIX | Location to install the Maya module.         |
+| MAYA_VERSION         | Maya version to build for.                   |
+| MAYA_LOCATION        | Path to Maya install directory               |
+| USE_CMINPACK         | Build with CMinpack? (default = 1)           |
+| CMINPACK_ROOT        | Directory to CMinpack install base directory |
 
 Advanced options:
 
-| CMake Option          | Description                                 |
-| --------------------  | ------------------------------------------- |
-| CMAKE_BUILD_TYPE      | The type of build (`Release`, `Debug`, etc) |
-| MAYA_INCLUDE_PATH     | Directory to the Maya header include files  |
-| MAYA_LIB_PATH         | Directory to the Maya library files         |
-| USE_CMINPACK          | Build with CMinpack? (default = 1)          |
-| CMINPACK_INCLUDE_PATH | Directory to CMinpack header includes       |
-| CMINPACK_LIB_PATH     | Directory to CMinpack library               |
-| USE_GPL_CODE          | Build with levmar? (default = 0)            |
-| LEVMAR_INCLUDE_PATH   | Directory to levmar header includes         |
-| LEVMAR_LIB_PATH       | Directory to levmar library                 |
-| PREFERRED_SOLVER      | Preferred solver; levmar or cminpack_lm.    |
-
-*WARNING: 'levmar' is GPL licensed. If used with mmSolver, mmSolver
-must not be distributed in binary form to anyone outside your
-organisation.*
+| CMake Option          | Description                                             |
+| --------------------  | ------------------------------------------------------- |
+| CMAKE_BUILD_TYPE      | The type of build (`Release`, `Debug`, etc)             |
+| MAYA_INCLUDE_PATH     | Directory to the Maya header include files              |
+| MAYA_LIB_PATH         | Directory to the Maya library files                     |
+| USE_CMINPACK          | Build with CMinpack? (default = 1)                      |
+| CMINPACK_INCLUDE_PATH | Directory to CMinpack header includes                   |
+| CMINPACK_LIB_PATH     | Directory to CMinpack library                           |
+| PREFERRED_SOLVER      | Preferred solver; 'cminpack_lmdif' or 'cminpack_lmder'. |
 
 You can read any of the build scripts to find out how they work. The
 build scripts can be found in `<project root>\scripts\build_*.bat`.

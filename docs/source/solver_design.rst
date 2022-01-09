@@ -555,7 +555,7 @@ that depending on compilation, some solver types will not be available.
 
    * - 0
      - ``levmar``
-     - Use levmar_ library with the ``levmar_bc_dif`` function.
+     - This mode is legacy and removed from mmSolver.
 
    * - 1
      - ``cminpack_lmdif``
@@ -587,9 +587,6 @@ How can I make my solves faster?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **To be written**
-
-.. _levmar:
-   http://users.ics.forth.gr/~lourakis/levmar/
 
 .. _CMinpack:
    http://devernay.free.fr/hacks/cminpack/index.html

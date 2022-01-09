@@ -37,19 +37,6 @@ Required:
 - [Python 2.7.x or 3.x](https://www.python.org/) (for build scripts)
 - [Sphinx 1.8.3+](http://www.sphinx-doc.org/en/master/index.html) (for building documentation)
 
-Optional Solver:
-- [levmar 2.6](http://users.ics.forth.gr/~lourakis/levmar/)
-  - levmar has tested to be slower than the default recommended
-    CMinpack by up to 50%.
-  - Warning: levmar is GPL licensed, and places restrictions on 
-    mmSolver so it may not be distributed in binary form.  
-  - Note: The automatic build script for _levmar_ requires 
-    [CMake 3.4.3+](https://cmake.org/) with levmar on Windows.
-
-Note: Until mmSolver v0.3.13 [Qt.py 1.1.0](https://github.com/mottosso/Qt.py/releases/tag/1.1.0)
-was required for GUI support, but this is now embedded inside mmSolver
-directly, so there is no need install it manually.
-
 # Building Overview
 
 An overview of compiling is:

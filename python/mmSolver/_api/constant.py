@@ -114,6 +114,7 @@ BUNDLE_COLOUR_RGB = (0.0, 1.0, 0.0)
 
 
 # Node Types.
+MARKER_TRANSFORM_OLD_NODE_TYPE = 'transform'
 MARKER_TRANSFORM_NODE_TYPE = 'mmMarkerTransform'
 MARKER_SHAPE_NODE_TYPE = 'mmMarkerShape'
 BUNDLE_TRANSFORM_NODE_TYPE = 'transform'

@@ -369,6 +369,10 @@ class Bundle(object):
             node_attr,
             type=const.MARKER_TRANSFORM_NODE_TYPE,
             skipConversionNodes=True) or []
+        conns += maya.cmds.listConnections(
+            node_attr,
+            type=const.MARKER_TRANSFORM_OLD_NODE_TYPE,
+            skipConversionNodes=True) or []
         mkr_list = []
         for conn in conns:
             mkr = mmSolver._api.marker.Marker(node=conn)

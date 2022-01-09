@@ -130,30 +130,11 @@ MUserData *LineDrawOverride::prepareForDraw(
     MFnDependencyNode dependNodeFn(transformObj);
     data->m_name = dependNodeFn.name();
 
-    // Get locked-status.
-    //
-    // Detect if the translateX/Y attributes are locked and if so, add
-    // a 'lock' icon, and change the line shape.
-    data->m_locked = false;
-    MPlug plug_tx = dependNodeFn.findPlug(
-        "translateX", /*wantNetworkedPlug=*/ true, &status);
+    // The object's transform matrix
+    MMatrix matrix_inverse = objPath.exclusiveMatrixInverse(&status);
     CHECK_MSTATUS(status);
-    MPlug plug_ty = dependNodeFn.findPlug(
-        "translateY", /*wantNetworkedPlug=*/ true, &status);
-    CHECK_MSTATUS(status);
-    if (!plug_tx.isNull() && !plug_ty.isNull()) {
-        bool checkParents = false;
-        bool checkChildren = false;
-        bool tx_can_change = plug_tx.isFreeToChange(
-            checkParents, checkChildren, &status) == MPlug::kFreeToChange;
-        CHECK_MSTATUS(status);
-        bool ty_can_change = plug_ty.isFreeToChange(
-            checkParents, checkChildren, &status) == MPlug::kFreeToChange;
-        CHECK_MSTATUS(status);
-        if (!tx_can_change || !ty_can_change) {
-            data->m_locked = true;
-        }
-    }
+    MMatrix obj_matrix = matrix_inverse;
+
 
     // CHECK_MSTATUS(status);
     status = getNodeAttr(objPath, LineShapeNode::m_outer_scale, data->m_outer_scale);
@@ -224,8 +205,8 @@ MUserData *LineDrawOverride::prepareForDraw(
     MPoint end_point = MPoint(
         matrix_b(3, 0), matrix_b(3, 1), matrix_b(3, 2));
     data->m_point_list.clear();
-    data->m_point_list.append(start_point);
-    data->m_point_list.append(end_point);
+    data->m_point_list.append(start_point * obj_matrix);
+    data->m_point_list.append(end_point * obj_matrix);
 
     float hue = 0.0;
     float sat = 0.0;
@@ -278,7 +259,7 @@ MUserData *LineDrawOverride::prepareForDraw(
 }
 
 void LineDrawOverride::addUIDrawables(
-        const MDagPath &objPath,
+        const MDagPath &/*objPath*/,
         MHWRender::MUIDrawManager &drawManager,
         const MHWRender::MFrameContext &/*frameContext*/,
         const MUserData *userData) {
@@ -288,24 +269,10 @@ void LineDrawOverride::addUIDrawables(
         return;
     }
 
-    // The object's transform matrix
-    MMatrix matrix = objPath.inclusiveMatrix(&status);
-    CHECK_MSTATUS(status);
-    MMatrix matrix_inverse = objPath.inclusiveMatrixInverse(&status);
-    CHECK_MSTATUS(status);
-
-    // Remove scale and shear from line transform.
-    MTransformationMatrix tfm_matrix(matrix);
-    const double tfm_shear[] = {0.0, 0.0, 0.0};
-    const double tfm_scale[] = {1.0, 1.0, 1.0};
-    tfm_matrix.setShear(tfm_shear, MSpace::kObject);
-    tfm_matrix.setScale(tfm_scale, MSpace::kObject);
-    MMatrix obj_matrix = tfm_matrix.asMatrix() * matrix_inverse;
-
     auto inverse_num_of_points = 1.0 / data->m_point_list.length();
     auto middle_point = MPoint();
     for (uint32_t i = 0; i < data->m_point_list.length(); i++) {
-        MPoint pnt = data->m_point_list[i] * obj_matrix;
+        MPoint pnt = data->m_point_list[i];
         middle_point += pnt * inverse_num_of_points;
     }
 
@@ -315,14 +282,13 @@ void LineDrawOverride::addUIDrawables(
     MPointArray inner_line_list(num_inner_points);
     for (uint32_t i = 0; i < data->m_point_list.length(); i++) {
         MPoint orig = data->m_point_list[i];
-        inner_line_list.set(orig * obj_matrix, i);
+        inner_line_list.set(orig, i);
     }
 
     MPointArray outer_line_list(num_outer_points);
     auto first_point_index = 0;
     auto last_point_index = 1;
-    auto dir = MVector(
-        data->m_point_list[first_point_index] - data->m_point_list[last_point_index]);
+    auto dir = MVector(data->m_point_list[first_point_index] - data->m_point_list[last_point_index]);
     dir.normalize();
     dir *= data->m_outer_scale;
 
@@ -339,10 +305,10 @@ void LineDrawOverride::addUIDrawables(
         temp1.y + (dir.y * -1.0),
         temp1.z + (dir.z * -1.0));
 
-    outer_line_list.set(vertex0 * obj_matrix, 0);
-    outer_line_list.set(vertex1 * obj_matrix, 1);
-    outer_line_list.set(vertex2 * obj_matrix, 2);
-    outer_line_list.set(vertex3 * obj_matrix, 3);
+    outer_line_list.set(vertex0, 0);
+    outer_line_list.set(vertex1, 1);
+    outer_line_list.set(vertex2, 2);
+    outer_line_list.set(vertex3, 3);
 
     // Draw inner line
     {
@@ -435,12 +401,10 @@ void LineDrawOverride::addUIDrawables(
         // - Draw 'frame deviation'.
         // - Draw 'average deviation'.
         // - Draw 'max deviation'.
-        MPoint pos(middle_point);
-        pos *= obj_matrix;
         if (data->m_draw_name && data->m_active) {
             // TODO: Add attribute to multiply the font size.
             drawManager.setFontSize(MHWRender::MUIDrawManager::kDefaultFontSize);
-            drawManager.text(pos, data->m_name, MHWRender::MUIDrawManager::kLeft);
+            drawManager.text(middle_point, data->m_name, MHWRender::MUIDrawManager::kLeft);
         }
 
         drawManager.endDrawInXray();

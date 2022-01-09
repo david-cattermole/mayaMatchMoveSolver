@@ -50,7 +50,6 @@ public:
             , m_outer_scale(1.0)
             , m_point_size(1.0)
             , m_point_list()
-            , m_locked(false)
             , m_active(false)
             , m_draw_name(false)
     {}
@@ -60,7 +59,6 @@ public:
 
     MString m_name;
     bool m_active;
-    bool m_locked;
     bool m_draw_name;
     unsigned int m_depth_priority;
 

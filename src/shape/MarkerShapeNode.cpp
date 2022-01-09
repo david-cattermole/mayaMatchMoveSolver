@@ -67,6 +67,7 @@ MObject MarkerShapeNode::m_line_width;
 MObject MarkerShapeNode::m_point_size;
 MObject MarkerShapeNode::m_icon_size;
 MObject MarkerShapeNode::m_draw_name;
+MObject MarkerShapeNode::m_show_in_camera_only;
 
 MarkerShapeNode::MarkerShapeNode() {}
 
@@ -208,6 +209,13 @@ MStatus MarkerShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
 
+    // Show In Camera Only
+    m_show_in_camera_only = nAttr.create(
+        "showInCameraOnly", "shwcamony",
+        MFnNumericData::kBoolean, 1);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+
     // Add attributes
     CHECK_MSTATUS(addAttribute(m_icon_size));
     CHECK_MSTATUS(addAttribute(m_draw_name));
@@ -215,6 +223,7 @@ MStatus MarkerShapeNode::initialize() {
     CHECK_MSTATUS(addAttribute(m_alpha));
     CHECK_MSTATUS(addAttribute(m_line_width));
     CHECK_MSTATUS(addAttribute(m_point_size));
+    CHECK_MSTATUS(addAttribute(m_show_in_camera_only));
 
     return MS::kSuccess;
 }

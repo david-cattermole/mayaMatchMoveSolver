@@ -107,7 +107,7 @@ MBoundingBox MarkerDrawOverride::boundingBox(
 // Called by Maya each time the object needs to be drawn.
 MUserData *MarkerDrawOverride::prepareForDraw(
         const MDagPath &objPath,
-        const MDagPath &/*cameraPath*/,
+        const MDagPath &cameraPath,
         const MHWRender::MFrameContext &frameContext,
         MUserData *oldData) {
     MarkerDrawData *data = dynamic_cast<MarkerDrawData *>(oldData);
@@ -121,6 +121,33 @@ MUserData *MarkerDrawOverride::prepareForDraw(
     MObject transformObj = transformPath.node();
     MFnDependencyNode dependNodeFn(transformObj);
     data->m_name = dependNodeFn.name();
+
+    status = getNodeAttr(
+        objPath,
+        MarkerShapeNode::m_show_in_camera_only,
+        showInCameraOnly);
+    CHECK_MSTATUS(status);
+
+    data->m_visible = true;
+    if (showInCameraOnly) {
+        MDagPath cameraTransformPath(cameraPath);
+        CHECK_MSTATUS(cameraTransformPath.pop(1));
+        MString cameraTransformName = cameraTransformPath.fullPathName();
+
+        MString tfmName = "";
+        data->m_visible = false;
+        while (true) {
+            if (transformPath.length() == 0) {
+                break;
+            }
+            CHECK_MSTATUS(transformPath.pop(1));
+            tfmName = transformPath.fullPathName();
+            if (cameraTransformName == tfmName) {
+                data->m_visible = true;
+                break;
+            }
+        }
+    }
 
     // Get locked-status.
     //
@@ -240,6 +267,9 @@ void MarkerDrawOverride::addUIDrawables(
     MStatus status;
     MarkerDrawData *data = (MarkerDrawData *) userData;
     if (!data) {
+        return;
+    }
+    if (!data->m_visible) {
         return;
     }
 

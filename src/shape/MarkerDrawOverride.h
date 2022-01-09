@@ -51,12 +51,14 @@ public:
             , m_locked(false)
             , m_active(false)
             , m_draw_name(false)
+            , m_visible(true)
     {}
 
     ~MarkerDrawData() override {
     }
 
     MString m_name;
+    bool m_visible;
     bool m_active;
     bool m_locked;
     double m_point_size;

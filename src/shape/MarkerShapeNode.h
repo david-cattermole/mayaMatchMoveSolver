@@ -89,6 +89,7 @@ public:
     static MObject m_point_size;
     static MObject m_draw_name;
     static MObject m_icon_size;
+    static MObject m_show_in_camera_only;
 };
 
 } // namespace mmsolver

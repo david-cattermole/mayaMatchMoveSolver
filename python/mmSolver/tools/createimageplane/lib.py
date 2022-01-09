@@ -39,7 +39,12 @@ def create_image_poly_plane(name=None):
         subdivisionsHeight=32,
         name=name,
     )
-    # TODO: Make the polygon image plane non-selectable.
+
+    # Make the polygon image plane non-selectable.
+    display_type = 2  # 2 = 'Reference'
+    maya.cmds.setAttr(tfm + '.overrideEnabled', 1)
+    maya.cmds.setAttr(tfm + '.overrideDisplayType', display_type)
+
     shp = maya.cmds.listRelatives(tfm, shapes=True)[0]
     deform_node = maya.cmds.deformer(tfm, type='mmLensDeformer')[0]
     mkr_scl = maya.cmds.createNode('mmMarkerScale')

@@ -26,6 +26,7 @@
 
 // STL
 #include <cmath>
+#include <vector>
 
 // Maya
 #include <maya/MGlobal.h>
@@ -62,6 +63,18 @@ public:
 
 private:
     MStatus parseArgs( const MArgList& args );
+
+    // OpenMVG
+    int32_t m_image_width_a;
+    int32_t m_image_height_a;
+    int32_t m_image_width_b;
+    int32_t m_image_height_b;
+    std::vector<std::pair<double, double>> m_marker_coords_a;
+    std::vector<std::pair<double, double>> m_marker_coords_b;
+
+    // Frame range
+    uint32_t m_startFrame;
+    uint32_t m_endFrame;
 };
 
 #endif // MAYA_MM_CAMERA_SOLVE_CMD_H

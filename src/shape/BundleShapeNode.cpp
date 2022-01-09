@@ -125,7 +125,7 @@ MStatus BundleShapeNode::preEvaluation(
 }
 #endif
 
-#if MAYA_API_VERSION >= 20190000
+#if MAYA_API_VERSION >= 20200000
 void BundleShapeNode::getCacheSetup(const MEvaluationNode &evalNode,
                                     MNodeCacheDisablingInfo &disablingInfo,
                                     MNodeCacheSetupInfo &cacheSetupInfo,

@@ -47,13 +47,14 @@ MString MMMarkerTransformNode::nodeName() {
 
 MMMarkerTransformNode::MMMarkerTransformNode() : MPxTransform() {}
 
+#if MAYA_API_VERSION < 20200000
 MMMarkerTransformNode::MMMarkerTransformNode(MPxTransformationMatrix *tm) : MPxTransform(tm) {}
+#endif
 
 void MMMarkerTransformNode::postConstructor() {
     MPxTransform::postConstructor();
 #if MAYA_API_VERSION < 20190000
     if (baseTransformationMatrix == NULL) {
-        // baseTransformationMatrix = new MPxTransformationMatrix();
         baseTransformationMatrix = new MMMarkerTransformMatrix();
     }
 #endif
@@ -171,6 +172,10 @@ MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
 }
 
 MMMarkerTransformMatrix *MMMarkerTransformNode::getMarkerTransformMatrix() {
+#if MAYA_API_VERSION < 20190000
     MMMarkerTransformMatrix *ltm = (MMMarkerTransformMatrix *) baseTransformationMatrix;
+#elif MAYA_API_VERSION >= 20190000
+    MMMarkerTransformMatrix *ltm = (MMMarkerTransformMatrix *) transformationMatrixPtr();
+#endif
     return ltm;
 }

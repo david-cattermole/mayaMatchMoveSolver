@@ -37,7 +37,7 @@ MTypeId MMMarkerTransformMatrix::m_id(MM_MARKER_TRANSFORM_MATRIX_TYPE_ID);
 
 MMMarkerTransformMatrix::MMMarkerTransformMatrix() : m_value(NULL) {}
 
-void *MMMarkerTransformMatrix::creator() {
+MPxTransformationMatrix *MMMarkerTransformMatrix::creator() {
     return new MMMarkerTransformMatrix();
 }
 

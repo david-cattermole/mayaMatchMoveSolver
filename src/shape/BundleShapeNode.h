@@ -59,7 +59,9 @@ public:
 #if MAYA_API_VERSION >= 20190000
     MStatus preEvaluation(const MDGContext &context,
                           const MEvaluationNode &evaluationNode) override;
+#endif
 
+#if MAYA_API_VERSION >= 20200000
     void getCacheSetup(const MEvaluationNode &evalNode,
                        MNodeCacheDisablingInfo &disablingInfo,
                        MNodeCacheSetupInfo &cacheSetupInfo,

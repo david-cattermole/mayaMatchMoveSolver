@@ -31,7 +31,7 @@
 class MMMarkerTransformMatrix : public MPxTransformationMatrix {
 public:
     MMMarkerTransformMatrix();
-    static void *creator();
+    static MPxTransformationMatrix *creator();
 
     virtual MMatrix asMatrix() const;
     virtual MMatrix asMatrix(double percent) const;

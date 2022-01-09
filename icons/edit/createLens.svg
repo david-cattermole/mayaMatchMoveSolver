@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -15,10 +13,10 @@
    height="64px"
    id="svg2816"
    version="1.1"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
    sodipodi:docname="createLens.svg"
    enable-background="new"
-   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\createLens_32x32.png"
+   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver\icons\createLens_32x32.png"
    inkscape:export-xdpi="48"
    inkscape:export-ydpi="48">
   <defs
@@ -103,21 +101,23 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="5.5"
-     inkscape:cx="18.804292"
-     inkscape:cy="39.556549"
+     inkscape:cx="38.531565"
+     inkscape:cy="22.647458"
      inkscape:current-layer="g8738"
      showgrid="false"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
-     inkscape:window-width="1536"
-     inkscape:window-height="801"
+     inkscape:window-width="1920"
+     inkscape:window-height="1137"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-grids="false"
-     inkscape:snap-to-guides="false">
+     inkscape:snap-to-guides="false"
+     inkscape:document-rotation="0"
+     inkscape:pagecheckerboard="true">
     <inkscape:grid
        type="xygrid"
        id="grid4770"
@@ -164,7 +164,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -275,16 +275,38 @@
      inkscape:label="Layer 2 copy copy"
      style="display:inline">
     <path
-       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.25712973;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.25713;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d=""
        id="path8786"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.17647672;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.17648;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 31.618964,0.6054688 C 18.614837,0.6057201 8.0732282,11.148075 8.0738993,24.152202 8.0741504,37.155677 18.615489,47.697015 31.618964,47.697266 44.62244,47.697015 55.163777,37.155678 55.164028,24.152202 55.164699,11.148075 44.623091,0.6057199 31.618964,0.6054688 Z m -5.588387,13.6201492 11.262973,0.08999 5.553493,9.801107 -5.711479,9.709115 -11.262973,-0.08999 -5.553495,-9.801106 z"
        id="path12503"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccccccc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:41.796px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.0449"
+       x="0.11188768"
+       y="61.789471"
+       id="text1137-8"><tspan
+         sodipodi:role="line"
+         id="tspan1135-3"
+         x="0.11188768"
+         y="61.789471"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.415px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:1.0449">Create</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:41.796px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-width:1.0449"
+       x="-0.32746196"
+       y="60.9156"
+       id="text1137"><tspan
+         sodipodi:role="line"
+         id="tspan1135"
+         x="-0.32746196"
+         y="60.9156"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.415px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#dadada;fill-opacity:1;stroke-width:1.0449">Create</tspan></text>
   </g>
   <g
      style="display:inline"

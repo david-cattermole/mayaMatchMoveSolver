@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -13,10 +11,10 @@
    height="64px"
    id="svg2816"
    version="1.1"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
    sodipodi:docname="createImagePlane.svg"
    enable-background="new"
-   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\createImagePlane_32x32.png"
+   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver\icons\createImagePlane_32x32.png"
    inkscape:export-xdpi="48"
    inkscape:export-ydpi="48">
   <defs
@@ -85,19 +83,21 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="5.5"
-     inkscape:cx="11.334373"
-     inkscape:cy="34.659039"
+     inkscape:cx="-10.574718"
+     inkscape:cy="26.659039"
      inkscape:current-layer="layer4"
      showgrid="false"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
-     inkscape:window-width="1536"
-     inkscape:window-height="801"
+     inkscape:window-width="1920"
+     inkscape:window-height="1137"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      showguides="true"
-     inkscape:guide-bbox="true">
+     inkscape:guide-bbox="true"
+     inkscape:document-rotation="0"
+     inkscape:pagecheckerboard="true">
     <inkscape:grid
        type="xygrid"
        id="grid4770"
@@ -144,7 +144,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -228,5 +228,27 @@
        d="m 11.268134,24.140961 c 0.04722,-17.4181636 0.05447,-17.7383691 0.415853,-18.3636365 0.218866,-0.378683 0.697323,-0.8033526 1.18159,-1.0487566 l 0.813793,-0.4123929 18.650803,0.048757 18.650802,0.048756 0.6869,0.5239676 c 1.225787,0.9350305 1.193771,0.6115975 1.193771,12.0597644 v 10.322684 l -4.6365,-4.633825 -4.636498,-4.633825 -5.7736,5.771485 -5.7736,5.771485 -2.135464,-2.135465 -2.135465,-2.135464 -8.275221,8.271869 -8.275222,8.27187 z m 13.33696,-3.826012 c 4.215464,-2.040672 4.20412,-8.104511 -0.01905,-10.182611 -1.281878,-0.6307754 -3.619546,-0.6382383 -4.815306,-0.01537 -1.119476,0.583129 -2.120938,1.574413 -2.687674,2.660359 -0.654905,1.254889 -0.688538,3.387294 -0.07456,4.727273 0.67943,1.482829 2.034944,2.665953 3.671326,3.204418 0.850125,0.27974 2.973775,0.06654 3.925266,-0.394066 z"
        id="path6511"
        inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:41.796px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.0449"
+       x="0.11188768"
+       y="61.789471"
+       id="text1137-8"><tspan
+         sodipodi:role="line"
+         id="tspan1135-3"
+         x="0.11188768"
+         y="61.789471"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.415px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:1.0449">Create</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:41.796px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-width:1.0449"
+       x="-0.32746196"
+       y="60.9156"
+       id="text1137"><tspan
+         sodipodi:role="line"
+         id="tspan1135"
+         x="-0.32746196"
+         y="60.9156"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.415px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#dadada;fill-opacity:1;stroke-width:1.0449">Create</tspan></text>
   </g>
 </svg>

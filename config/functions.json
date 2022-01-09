@@ -685,7 +685,7 @@
         },
         "create_camera": {
             "name": "Create Camera",
-            "name_shelf": "Cam",
+            "name_shelf": "",
             "tooltip": "Create a new Camera.",
             "icon_shelf": "createCamera_32x32.png",
             "command": [
@@ -695,7 +695,7 @@
         },
         "create_lens": {
             "name": "Create Lens",
-            "name_shelf": "Lens",
+            "name_shelf": "",
             "tooltip": "Create a new Lens.",
             "icon_shelf": "createLens_32x32.png",
             "command": [
@@ -705,7 +705,7 @@
         },
         "create_image_plane": {
             "name": "Create Image Plane",
-            "name_shelf": "ImgPln",
+            "name_shelf": "",
             "tooltip": "Create a new Image Plane.",
             "icon_shelf": "createImagePlane_32x32.png",
             "command": [

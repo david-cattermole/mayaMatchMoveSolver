@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -13,10 +11,10 @@
    height="64px"
    id="svg2816"
    version="1.1"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
    sodipodi:docname="createCamera.svg"
    enable-background="new"
-   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\createCamera_32x32.png"
+   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver\icons\createCamera_32x32.png"
    inkscape:export-xdpi="48"
    inkscape:export-ydpi="48">
   <defs
@@ -85,19 +83,21 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.8890873"
-     inkscape:cx="25.107892"
-     inkscape:cy="57.551524"
+     inkscape:cx="-13.075874"
+     inkscape:cy="20.781971"
      inkscape:current-layer="g4482"
      showgrid="false"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
-     inkscape:window-width="1536"
-     inkscape:window-height="801"
+     inkscape:window-width="1920"
+     inkscape:window-height="1137"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      showguides="true"
-     inkscape:guide-bbox="true">
+     inkscape:guide-bbox="true"
+     inkscape:document-rotation="0"
+     inkscape:pagecheckerboard="true">
     <inkscape:grid
        type="xygrid"
        id="grid4770"
@@ -162,19 +162,17 @@
            transform="matrix(0.27333333,0,0,0.27333333,-0.37616288,-6.3854242)">
           <g
              id="g1873">
-	<path
-   id="path1869"
-   d="m 219.2,182.7 c -0.9,0 -1.9,-0.3 -2.6,-1 l -51.4,-44 c -0.5,-0.4 -0.9,-1 -1.1,-1.6 V 164 c 0,6.3 -5.1,11.3 -11.3,11.3 H 28.1 c -6.3,0 -11.3,-5.1 -11.3,-11.3 V 76 c 0,-6.2 5.1,-11.3 11.3,-11.3 h 124.7 c 6.2,0 11.3,5.1 11.3,11.3 v 27.9 c 0.2,-0.6 0.6,-1.2 1.1,-1.6 l 51.4,-44 c 0.7,-0.6 1.7,-1 2.6,-1 0.6,0 1.1,0.1 1.7,0.4 1.4,0.7 2.3,2.1 2.3,3.6 v 117.3 c 0,1.6 -0.9,3 -2.3,3.6 -0.5,0.4 -1.1,0.5 -1.7,0.5 z"
-   inkscape:connector-curvature="0"
-   style="clip-rule:evenodd;fill:#bdbdbd;fill-rule:evenodd" />
-
-	<path
-   id="path1871"
-   d="m 219.2,61.3 v 117.3 l -51.4,-44 v -29.3 l 51.4,-44 m -66.4,7.4 c 4.1,0 7.3,3.3 7.3,7.3 v 88 c 0,4.1 -3.3,7.3 -7.3,7.3 H 28.1 C 24,171.3 20.8,168 20.8,164 V 76 c 0,-4.1 3.3,-7.3 7.3,-7.3 h 124.7 m 66.4,-15.4 c -1.9,0 -3.7,0.7 -5.2,1.9 L 168.1,94.5 V 76 c 0,-8.5 -6.9,-15.3 -15.3,-15.3 H 28.1 c -8.5,0 -15.3,6.9 -15.3,15.3 v 88 c 0,8.5 6.9,15.3 15.3,15.3 h 124.7 c 8.5,0 15.3,-6.9 15.3,-15.3 v -18.6 l 45.9,39.3 c 1.5,1.3 3.3,1.9 5.2,1.9 1.1,0 2.3,-0.2 3.3,-0.7 2.8,-1.3 4.7,-4.1 4.7,-7.3 V 61.3 c 0,-3.1 -1.8,-6 -4.7,-7.3 -1,-0.4 -2.1,-0.7 -3.3,-0.7 z"
-   inkscape:connector-curvature="0"
-   style="fill:#1d1d1d" />
-
-</g>
+            <path
+               id="path1869"
+               d="m 219.2,182.7 c -0.9,0 -1.9,-0.3 -2.6,-1 l -51.4,-44 c -0.5,-0.4 -0.9,-1 -1.1,-1.6 V 164 c 0,6.3 -5.1,11.3 -11.3,11.3 H 28.1 c -6.3,0 -11.3,-5.1 -11.3,-11.3 V 76 c 0,-6.2 5.1,-11.3 11.3,-11.3 h 124.7 c 6.2,0 11.3,5.1 11.3,11.3 v 27.9 c 0.2,-0.6 0.6,-1.2 1.1,-1.6 l 51.4,-44 c 0.7,-0.6 1.7,-1 2.6,-1 0.6,0 1.1,0.1 1.7,0.4 1.4,0.7 2.3,2.1 2.3,3.6 v 117.3 c 0,1.6 -0.9,3 -2.3,3.6 -0.5,0.4 -1.1,0.5 -1.7,0.5 z"
+               inkscape:connector-curvature="0"
+               style="clip-rule:evenodd;fill:#bdbdbd;fill-rule:evenodd" />
+            <path
+               id="path1871"
+               d="m 219.2,61.3 v 117.3 l -51.4,-44 v -29.3 l 51.4,-44 m -66.4,7.4 c 4.1,0 7.3,3.3 7.3,7.3 v 88 c 0,4.1 -3.3,7.3 -7.3,7.3 H 28.1 C 24,171.3 20.8,168 20.8,164 V 76 c 0,-4.1 3.3,-7.3 7.3,-7.3 h 124.7 m 66.4,-15.4 c -1.9,0 -3.7,0.7 -5.2,1.9 L 168.1,94.5 V 76 c 0,-8.5 -6.9,-15.3 -15.3,-15.3 H 28.1 c -8.5,0 -15.3,6.9 -15.3,15.3 v 88 c 0,8.5 6.9,15.3 15.3,15.3 h 124.7 c 8.5,0 15.3,-6.9 15.3,-15.3 v -18.6 l 45.9,39.3 c 1.5,1.3 3.3,1.9 5.2,1.9 1.1,0 2.3,-0.2 3.3,-0.7 2.8,-1.3 4.7,-4.1 4.7,-7.3 V 61.3 c 0,-3.1 -1.8,-6 -4.7,-7.3 -1,-0.4 -2.1,-0.7 -3.3,-0.7 z"
+               inkscape:connector-curvature="0"
+               style="fill:#1d1d1d" />
+          </g>
           <rect
              id="rect1875"
              height="240"
@@ -190,6 +188,28 @@
              y="0"
              style="clip-rule:evenodd;fill:none;fill-rule:evenodd" />
         </g>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-weight:normal;font-size:41.796px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.0449"
+           x="0.11188768"
+           y="61.789471"
+           id="text1137-8"><tspan
+             sodipodi:role="line"
+             id="tspan1135-3"
+             x="0.11188768"
+             y="61.789471"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.415px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:1.0449">Create</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-weight:normal;font-size:41.796px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-width:1.0449"
+           x="-0.32746196"
+           y="60.9156"
+           id="text1137"><tspan
+             sodipodi:role="line"
+             id="tspan1135"
+             x="-0.32746196"
+             y="60.9156"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.415px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#dadada;fill-opacity:1;stroke-width:1.0449">Create</tspan></text>
       </g>
     </g>
   </g>

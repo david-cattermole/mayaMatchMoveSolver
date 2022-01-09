@@ -24,10 +24,16 @@ Required:
   - MacOS
     - [Xcode 7.3.1 with SDK 10.11, clang with libc++](https://developer.apple.com/download) (Maya 2018)
     - [Xcode version 7.3.1 and CMake are required](https://developer.apple.com/download) (Maya 2019)
-- [CMake 3.0+](https://cmake.org/)
+- [CMake 3.12+](https://cmake.org/)
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
 - [Maya Development Kit](https://www.autodesk.com/developer-network/platform-technologies/maya)
 - [CMinpack 1.3.8](https://github.com/devernay/cminpack/releases/tag/v1.3.8)
+- [LibMV 2.0](https://developer.blender.org/diffusion/LMV/)
+  - [Ceres Solver](http://ceres-solver.org/)
+  - [Eigen](https://eigen.tuxfamily.org/)
+  - ... many internal dependencies.
+- [OpenMVG 2.0](https://github.com/openMVG/openMVG/releases/tag/v2.0)
+  - ... many internal dependencies.
 - [Python 2.7.x or 3.x](https://www.python.org/) (for build scripts)
 - [Sphinx 1.8.3+](http://www.sphinx-doc.org/en/master/index.html) (for building documentation)
 
@@ -48,7 +54,7 @@ directly, so there is no need install it manually.
 
 An overview of compiling is:
 
-1. Compile CMinpack.
+1. Download and compile Third-party projects.
 2. Compile mmSolver.
 3. Copy 3DEqualizer python scripts into `.3dequalizer` user directory.
 
@@ -60,8 +66,8 @@ On Linux:
 # Go to root of project directory.
 $ cd <project root>
 
-# Download and Build CMinpack automatically.
-$ bash scripts/build_cminpack.bash
+# Download and Build Third-Party projects automatically.
+$ bash scripts/build_thirdparty.bash
 
 # Build mmSolver, compile UI files, compile Maya plug-in, build
 # documentation, create module and install to home directory.
@@ -81,8 +87,8 @@ On Windows:
 :: Go to root of project directory.
 > CD <project root>
 
-# Download and Build CMinpack automatically.
-> scripts/build_cminpack.bat
+:: Download and Build Third-Party projects automatically.
+> scripts/build_thirdparty.bat
 
 :: Build mmSolver, compile UI files, compile Maya plug-in, build
 :: documentation, create module and install to home directory.
@@ -104,12 +110,8 @@ and Windows.
   
 | Build Script Name   | Operating System |
 | ------------        | -----------      |
-| build_cminpack.bash | Linux            |
-| build_cminpack.bat  | Windows          |
-| build_qtpy.bash     | Linux            |
-| build_qtpy.bat      | Windows          |
-| build_levmar.bash   | Linux            |
-| build_levmar.bat    | Windows          |
+| build_thirdparty.bash | Linux            |
+| build_thirdparty.bat  | Windows          |
 
 The build scripts are located in `<project root>/scripts/`.
 These scripts will automatically install into `<project root>/external/install`.

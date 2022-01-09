@@ -9,7 +9,7 @@ to build the entire project and dependencies:
 On Windows:
 ```cmd
 > CD <project root>
-> scripts\build_cminpack.bat
+> scripts\build_thirdparty.bat
 > scripts\build_mmSolver_windows64_mayaXXXX.bat
 ```
 
@@ -42,7 +42,7 @@ root>\scripts` directory.
 On Windows:
 ```cmd
 > CD <project root>
-> scripts\build_cminpack.bat
+> scripts\build_thirdparty.bat
 > scripts\build_levmar.bat
 ```
 
@@ -56,9 +56,9 @@ These dependencies will automatically be found by the mmSolver build
 script and installed.
 
 # Build mmSolver
- 
- After installing CMinpack, you can now build mmSolver. 
- 
+
+ After installing Thirdparty, you can now build mmSolver.
+
  Run these commands, on Windows:
  ```cmd
  > CD <project root>
@@ -314,25 +314,25 @@ Run in the Windows Command Prompt with the needed MSVC compiler environment path
 Visual Studio 2012:
 ```cmd
 REM Maya 2016
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2016Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2016.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2016Deploy_windows64 && scripts\build_thirdparty.bat && scripts\build_mmSolver_windows64_maya2016.bat
 
 REM Maya 2017
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2017Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2017.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2017Deploy_windows64 && scripts\build_thirdparty.bat && scripts\build_mmSolver_windows64_maya2017.bat
 ```
 
 Visual Studio 2015:
 ```cmd
 REM Maya 2018
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2018Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2018.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2018Deploy_windows64 && scripts\build_thirdparty.bat && scripts\build_mmSolver_windows64_maya2018.bat
 
 REM Maya 2019
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2019Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2019.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2019Deploy_windows64 && scripts\build_thirdparty.bat && scripts\build_mmSolver_windows64_maya2019.bat
 ```
 
 Visual Studio 2017:
 ```cmd
 REM Maya 2020
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2020Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2020.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2020Deploy_windows64 && scripts\build_thirdparty.bat && scripts\build_mmSolver_windows64_maya2020.bat
 ```
 
 Package files can then be uploaded from the

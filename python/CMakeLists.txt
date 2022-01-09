@@ -34,7 +34,7 @@ function(add_ui_compile
          input_file
          output_file)
 
-    set(EXEC_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/compileUI.py)
+    set(EXEC_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/internal/compileUI.py)
 
     add_custom_command(
             OUTPUT ${output_file}

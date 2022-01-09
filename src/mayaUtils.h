@@ -383,6 +383,24 @@ MStatus getNodeAttr(const MDagPath &objPath,
     return status;
 }
 
+static inline
+MStatus getNodeAttr(const MDagPath &objPath,
+                    const MObject &attr,
+                    MString &value) {
+    MStatus status;
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, attr);
+        if (!plug.isNull()) {
+            auto data = plug.asString(&status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            value = data;
+            return status;
+        }
+    }
+    return status;
+}
+
 } // namespace mmsolver
 
 // Static attributes to help with Maya Node initialization.

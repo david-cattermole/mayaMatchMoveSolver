@@ -277,7 +277,6 @@ MStatus LineShapeNode::initialize() {
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(matrixAttr.setStorable(true));
     CHECK_MSTATUS(matrixAttr.setConnectable(true));
-    CHECK_MSTATUS(addAttribute(m_matrix_a));
 
     m_matrix_b = matrixAttr.create(
         "matrixB", "mtxb",
@@ -285,7 +284,6 @@ MStatus LineShapeNode::initialize() {
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(matrixAttr.setStorable(true));
     CHECK_MSTATUS(matrixAttr.setConnectable(true));
-    CHECK_MSTATUS(addAttribute(m_matrix_b));
 
     // Add attributes
     CHECK_MSTATUS(addAttribute(m_draw_name));

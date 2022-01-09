@@ -143,7 +143,7 @@ def create_image_poly_plane(name=None):
     return tfm, deform_node
 
 
-def set_image_plane_values(cam, img_poly_plane_tfm, deform_node):
+def set_image_plane_values(cam, image_plane_shp, img_poly_plane_tfm, deform_node):
     """Set the values of a polygon image plane with a regular Maya image
     plane.
 
@@ -155,8 +155,6 @@ def set_image_plane_values(cam, img_poly_plane_tfm, deform_node):
     """
     cam_tfm = cam.get_transform_node()
     cam_shp = cam.get_shape_node()
-
-    maya.cmds.parent(img_poly_plane_tfm, cam_tfm, relative=True)
 
     # Drive the Deformer node with the camera lens.
     src = cam_shp + '.outLens'
@@ -178,12 +176,22 @@ def set_image_plane_values(cam, img_poly_plane_tfm, deform_node):
         if not maya.cmds.isConnected(src, dst):
             maya.cmds.connectAttr(src, dst)
 
-    # TODO: Copy the image plane 'depth' attribute value to the
-    #  poly image plane.
-    return
+    # Copy the image plane 'depth' attribute value to the poly image
+    # plane.
+    if image_plane_shp is not None:
+        src = image_plane_shp + '.depth'
+        dst = img_poly_plane_tfm + '.depth'
+        value = maya.cmds.getAttr(src)
+        maya.cmds.setAttr(dst, value)
+
+    # Parent the transform under the camera.
+    img_poly_plane_tfm_uuid = maya.cmds.ls(img_poly_plane_tfm, uuid=True)[0]
+    maya.cmds.parent(img_poly_plane_tfm, cam_tfm, relative=True)
+    img_poly_plane_tfm = maya.cmds.ls(img_poly_plane_tfm_uuid, long=True)[0]
+    return img_poly_plane_tfm
 
 
-def create_image_plane_shader(tfm):
+def create_image_plane_shader(tfm, image_plane_shp):
     """Create an image plane shader, to display an image sequence in Maya
     on a Polygon image plane.
     """
@@ -199,14 +207,21 @@ def create_poly_image_plane_on_camera(cam):
     (realtime).
     """
     assert isinstance(cam, mmapi.Camera)
+    cam_tfm = cam.get_transform_node()
+    cam_shp = cam.get_shape_node()
+    image_plane_shps = utils_camera.get_image_plane_shapes_from_camera(cam_tfm, cam_shp)
+    image_plane_shp = None
+    if len(image_plane_shps) > 0:
+        image_plane_shp = image_plane_shps[0]
+
     # Convert Maya image plane into a polygon image plane.
     img_poly_plane, deform_node = create_image_poly_plane(name='imagePlane1')
-    set_image_plane_values(cam, img_poly_plane, deform_node)
+    img_poly_plane = set_image_plane_values(cam, image_plane_shp, img_poly_plane, deform_node)
 
     # Get file path and create new shader assignment for poly image
     # plane.
     # TODO: Get the file path.
-    sg_node, shd_node, file_node = create_image_plane_shader(img_poly_plane)
+    sg_node, shd_node, file_node = create_image_plane_shader(img_poly_plane, image_plane_shp)
     return img_poly_plane
 
 
@@ -216,14 +231,14 @@ def convert_image_planes_on_camera(cam):
     """
     assert isinstance(cam, mmapi.Camera)
 
-    # Find first image plane currently on the camera.
+    # Find image plane currently on the camera.
     cam_tfm = cam.get_transform_node()
     cam_shp = cam.get_shape_node()
     image_planes = utils_camera.get_image_plane_shapes_from_camera(cam_tfm, cam_shp)
     for image_plane_shp in image_planes:
         # Convert Maya image plane into a polygon image plane.
         img_poly_plane, deform_node = create_image_poly_plane()
-        set_image_plane_values(cam, img_poly_plane, deform_node)
+        set_image_plane_values(cam, image_plane_shp, img_poly_plane, deform_node)
 
         # Get file path and create new shader assignment for poly image
         # plane.

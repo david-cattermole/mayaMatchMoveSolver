@@ -122,6 +122,7 @@ MUserData *MarkerDrawOverride::prepareForDraw(
     MFnDependencyNode dependNodeFn(transformObj);
     data->m_name = dependNodeFn.name();
 
+    bool showInCameraOnly = false;
     status = getNodeAttr(
         objPath,
         MarkerShapeNode::m_show_in_camera_only,
@@ -279,6 +280,48 @@ void MarkerDrawOverride::addUIDrawables(
     MMatrix matrix_inverse = objPath.inclusiveMatrixInverse(&status);
     CHECK_MSTATUS(status);
 
+    // Use the camera position.
+    MDoubleArray view_pos = frameContext.getTuple(
+        MFrameContext::kViewPosition, &status);
+    CHECK_MSTATUS(status);
+    MPoint camera_pos(view_pos[0], view_pos[1], view_pos[2]);
+
+    // Get Viewport size
+    int originX = 0;
+    int originY = 0;
+    int width = 0;
+    int height = 0;
+    frameContext.getViewportDimensions(originX, originY, width, height);
+
+    // Convert viewport window into world-space near/far clipping
+    // points.
+    MPoint nearPoint1;
+    MPoint nearPoint2;
+    MPoint farPoint1;
+    MPoint farPoint2;
+    double originXd = static_cast<double>(originX);
+    double originYd = static_cast<double>(originY);
+    double widthd = static_cast<double>(width);
+    double heightd = static_cast<double>(height);
+    double y = originYd + (heightd * 0.5);
+    frameContext.viewportToWorld(originXd, y, nearPoint1, farPoint1);
+    frameContext.viewportToWorld(widthd, y, nearPoint2, farPoint2);
+
+    // Normalize the scale values.
+    auto oneUnitVector1 = MVector(
+        camera_pos.x - nearPoint1.x,
+        camera_pos.y - nearPoint1.y,
+        camera_pos.z - nearPoint1.z);
+    auto oneUnitVector2 = MVector(
+        camera_pos.x - nearPoint2.x,
+        camera_pos.y - nearPoint2.y,
+        camera_pos.z - nearPoint2.z);
+    oneUnitVector1.normalize();
+    oneUnitVector2.normalize();
+    auto oneUnitPoint1 = MPoint(oneUnitVector1);
+    auto oneUnitPoint2 = MPoint(oneUnitVector2);
+    double scale = oneUnitPoint1.distanceTo(oneUnitPoint2) * data->m_icon_size * 20.0;
+
     // Remove scale and shear from marker transform.
     MTransformationMatrix tfm_matrix(matrix);
     const double tfm_shear[] = {0.0, 0.0, 0.0};
@@ -286,17 +329,6 @@ void MarkerDrawOverride::addUIDrawables(
     tfm_matrix.setShear(tfm_shear, MSpace::kObject);
     tfm_matrix.setScale(tfm_scale, MSpace::kObject);
     MMatrix obj_matrix = tfm_matrix.asMatrix() * matrix_inverse;
-
-    // Use the camera position.
-    MDoubleArray view_pos = frameContext.getTuple(
-        MFrameContext::kViewPosition, &status);
-    CHECK_MSTATUS(status);
-    MPoint camera_pos(view_pos[0], view_pos[1], view_pos[2]);
-
-    // Get distance from camera to transform center.
-    MPoint origin(0.0, 0.0, 0.0);
-    origin *= matrix;
-    double scale = camera_pos.distanceTo(origin) * data->m_icon_size;
 
     MPointArray cross_line_list(data->m_cross_line_list.length());
     for (uint32_t i = 0; i < data->m_cross_line_list.length(); i++) {

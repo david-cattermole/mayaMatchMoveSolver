@@ -132,23 +132,8 @@ MUserData *MarkerDrawOverride::prepareForDraw(
 
     data->m_visible = true;
     if (showInCameraOnly) {
-        MDagPath cameraTransformPath(cameraPath);
-        CHECK_MSTATUS(cameraTransformPath.pop(1));
-        MString cameraTransformName = cameraTransformPath.fullPathName();
-
-        MString tfmName = "";
-        data->m_visible = false;
-        while (true) {
-            if (transformPath.length() == 0) {
-                break;
-            }
-            CHECK_MSTATUS(transformPath.pop(1));
-            tfmName = transformPath.fullPathName();
-            if (cameraTransformName == tfmName) {
-                data->m_visible = true;
-                break;
-            }
-        }
+        status = objectIsBelowCamera(transformPath, cameraPath, data->m_visible);
+        CHECK_MSTATUS(status);
     }
 
     // Get locked-status.

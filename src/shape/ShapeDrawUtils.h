@@ -33,6 +33,11 @@
 
 namespace mmsolver {
 
+MStatus objectIsBelowCamera(
+    const MDagPath &objPath,
+    const MDagPath &cameraPath,
+    bool &belowCamera);
+
 MStatus getViewportScaleRatio(
     const MHWRender::MFrameContext &frameContext,
     double &out_scale);

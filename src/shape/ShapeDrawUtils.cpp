@@ -30,6 +30,34 @@
 
 namespace mmsolver {
 
+MStatus objectIsBelowCamera(
+    const MDagPath &objPath,
+    const MDagPath &cameraPath,
+    bool &belowCamera
+) {
+    MStatus status = MS::kSuccess;
+    belowCamera = false;
+
+    MDagPath cameraTransformPath(cameraPath);
+    CHECK_MSTATUS(cameraTransformPath.pop(1));
+    MString cameraTransformName = cameraTransformPath.fullPathName();
+
+    MString tfmName = "";
+    MDagPath transformPath(objPath);
+    while (true) {
+        if (transformPath.length() == 0) {
+            break;
+        }
+        CHECK_MSTATUS(transformPath.pop(1));
+        tfmName = transformPath.fullPathName();
+        if (cameraTransformName == tfmName) {
+            belowCamera = true;
+            break;
+        }
+    }
+    return status;
+}
+
 MStatus getViewportScaleRatio(
     const MHWRender::MFrameContext &frameContext,
     double &out_scale)

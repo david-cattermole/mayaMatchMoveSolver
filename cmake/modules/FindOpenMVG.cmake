@@ -53,7 +53,7 @@ foreach(OPENMVG_LIB
     openMVG_jpeg
     openMVG_kvld
     openMVG_features
-    openMVG_geoemtry
+    openMVG_geometry
     openMVG_image
     openMVG_linearProgramming
     openMVG_lInftyComputerVision

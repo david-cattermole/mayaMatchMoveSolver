@@ -107,9 +107,50 @@ if (BUILD_QT_UI)
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/ui/ui_solver_layout.py
             )
 
-    add_ui_compile("solver_widgets"
+    add_ui_compile("solver_nodebrowser_widget"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/nodebrowser_widget.ui
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/ui_nodebrowser_widget.py
+            )
+
+    add_ui_compile("solver_framerange_widget"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/framerange_widget.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/ui_framerange_widget.py
+            )
+
+    add_ui_compile("solver_collection_widget"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/collection_widget.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/ui_collection_widget.py
+            )
+
+    add_ui_compile("solver_rootframe_widget"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/rootframe_widget.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/ui_rootframe_widget.py
+            )
+
+    add_ui_compile("solver_solver_basic_widget"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/solver_basic_widget.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/ui_solver_basic_widget.py
+            )
+
+    add_ui_compile("solver_solver_legacy_widget"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/solver_legacy_widget.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/ui_solver_legacy_widget.py
+            )
+
+    add_ui_compile("solver_solver_standard_widget"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/solver_standard_widget.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/ui_solver_standard_widget.py
+            )
+
+
+    add_ui_compile("solver_solverstate_widget"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/solverstate_widget.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/ui_solverstate_widget.py
+            )
+
+    add_ui_compile("solver_solver_widget"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/solver_widget.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/ui_solver_widget.py
             )
 
     add_ui_compile("solver_about"

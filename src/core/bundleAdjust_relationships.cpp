@@ -21,6 +21,8 @@
  *
  */
 
+#include "bundleAdjust_relationships.h"
+
 // STL
 #include <ctime>
 #include <cmath>
@@ -69,14 +71,13 @@
 #include <core/bundleAdjust_solveFunc.h>
 #include <mayaUtils.h>
 
-
 /*
  * Count up number of errors to be measured in the solve.
  */
-int countUpNumberOfErrors(const MarkerPtrList markerList,
-                          const StiffAttrsPtrList stiffAttrsList,
-                          const SmoothAttrsPtrList smoothAttrsList,
-                          const MTimeArray frameList,
+int countUpNumberOfErrors(const MarkerPtrList &markerList,
+                          const StiffAttrsPtrList &stiffAttrsList,
+                          const SmoothAttrsPtrList &smoothAttrsList,
+                          const MTimeArray &frameList,
                           MarkerPtrList &validMarkerList,
                           std::vector<MPoint> &markerPosList,
                           std::vector<double> &markerWeightList,
@@ -240,8 +241,8 @@ int countUpNumberOfErrors(const MarkerPtrList markerList,
 }
 
 
-int countUpNumberOfUnknownParameters(const AttrPtrList attrList,
-                                     const MTimeArray frameList,
+int countUpNumberOfUnknownParameters(const AttrPtrList &attrList,
+                                     const MTimeArray &frameList,
                                      AttrPtrList &camStaticAttrList,
                                      AttrPtrList &camAnimAttrList,
                                      AttrPtrList &staticAttrList,
@@ -392,8 +393,8 @@ int countUpNumberOfUnknownParameters(const AttrPtrList attrList,
  *   markers
  *
  */
-void findMarkerToAttributeRelationship(const MarkerPtrList markerList,
-                                       const AttrPtrList attrList,
+void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
+                                       const AttrPtrList &attrList,
                                        BoolList2D &markerToAttrList,
                                        MStatus &status) {
     status = MStatus::kSuccess;
@@ -501,8 +502,8 @@ void findMarkerToAttributeRelationship(const MarkerPtrList markerList,
  * This function assumes the use of 'mmSolverAffects' with the
  * 'addAttrsToMarkers' mode flag has already been run.
  */
-void getMarkerToAttributeRelationship(const MarkerPtrList markerList,
-                                      const AttrPtrList attrList,
+void getMarkerToAttributeRelationship(const MarkerPtrList &markerList,
+                                      const AttrPtrList &attrList,
                                       BoolList2D &markerToAttrList,
                                       MStatus &status) {
     status = MStatus::kSuccess;
@@ -595,14 +596,14 @@ void getMarkerToAttributeRelationship(const MarkerPtrList markerList,
  * markerToAttrList is already true, otherwise we can assume
  * such error/parameter combinations will not be required.
  */
-void findErrorToParameterRelationship(const MarkerPtrList markerList,
-                                      const AttrPtrList attrList,
-                                      const MTimeArray frameList,
+void findErrorToParameterRelationship(const MarkerPtrList &markerList,
+                                      const AttrPtrList &attrList,
+                                      const MTimeArray &frameList,
                                       const int numParameters,
                                       const int numMarkerErrors,
-                                      const IndexPairList paramToAttrList,
-                                      const IndexPairList errorToMarkerList,
-                                      const BoolList2D markerToAttrList,
+                                      const IndexPairList &paramToAttrList,
+                                      const IndexPairList &errorToMarkerList,
+                                      const BoolList2D &markerToAttrList,
                                       BoolList2D &errorToParamList,
                                       MStatus &status){
     status = MStatus::kSuccess;

@@ -29,6 +29,8 @@ import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
+import mmSolver.ui.uimodels as uimodels
+import mmSolver.ui.uiutils as uiutils
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.lib.collection as lib_col
@@ -90,6 +92,7 @@ class SolverBasicWidget(QtWidgets.QWidget,
 
     viewUpdated = QtCore.Signal()
     dataChanged = QtCore.Signal()
+    sceneGraphModeChanged = QtCore.Signal()
     evalObjectRelationshipsChanged = QtCore.Signal()
     evalComplexGraphsChanged = QtCore.Signal()
 
@@ -101,6 +104,13 @@ class SolverBasicWidget(QtWidgets.QWidget,
         self.frameRange_widget = BasicFrameRangeWidget(self)
         self.frameRange_layout.addWidget(self.frameRange_widget)
 
+        # Scene Graph Mode Combo Box.
+        self.sceneGraphMode_model = uimodels.StringDataListModel()
+        self.sceneGraphMode_model.setStringDataList(const.SCENE_GRAPH_MODE_LABEL_VALUE_LIST)
+        self.sceneGraphMode_comboBox.setModel(self.sceneGraphMode_model)
+        self.sceneGraphMode_comboBox.currentIndexChanged.connect(
+            self.sceneGraphModeIndexChanged)
+
         self.evalObjectRelationships_checkBox.toggled.connect(
             self.evalObjectRelationshipsValueToggled)
         self.evalComplexGraphs_checkBox.toggled.connect(
@@ -110,6 +120,14 @@ class SolverBasicWidget(QtWidgets.QWidget,
         self.description_label.setText(desc)
         e = time.time()
         LOG.debug('SolverBasicWidget init: %r seconds', e - s)
+        return
+
+    def getSceneGraphModeValue(self, col):
+        value = lib_col_state.get_solver_scene_graph_mode_from_collection(col)
+        return value
+
+    def setSceneGraphModeValue(self, col, value):
+        lib_col_state.set_solver_scene_graph_mode_on_collection(col, value)
         return
 
     def getEvalObjectRelationshipsValue(self, col):
@@ -149,6 +167,23 @@ class SolverBasicWidget(QtWidgets.QWidget,
         self.evalObjectRelationships_checkBox.setChecked(value)
         return
 
+    def getSceneGraphActiveIndex(self, model, col):
+        valid = uiutils.isValidQtObject(model)
+        if valid is False:
+            return
+        if col is None:
+            return None
+        active_node = col.get_node()
+        if active_node is None:
+            return None
+        value = self.getSceneGraphModeValue(col)
+        string_data_list = model.stringDataList()
+        data_list = [data for string, data in string_data_list]
+        index = None
+        if value in data_list:
+            index = data_list.index(value)
+        return index
+
     def updateModel(self):
         LOG.debug('UpdateModel Basic')
         self.frameRange_widget.updateModel()
@@ -156,6 +191,13 @@ class SolverBasicWidget(QtWidgets.QWidget,
         col = lib_state.get_active_collection()
         if col is None:
             return
+
+        scene_graph_mode = self.getSceneGraphActiveIndex(
+            self.sceneGraphMode_model, col)
+        if scene_graph_mode is None:
+            LOG.error('Could not get the active scene graph mode index.')
+            return
+
         allow_obj_relations = _getAllowObjectRelations()
         eval_obj_conns = self.getEvalObjectRelationshipsValue(col)
         eval_complex_graphs = self.getEvalComplexGraphsValue(col)
@@ -163,11 +205,13 @@ class SolverBasicWidget(QtWidgets.QWidget,
             eval_obj_conns = False
 
         block = self.blockSignals(True)
+        self.sceneGraphMode_comboBox.setCurrentIndex(scene_graph_mode)
         self.evalObjectRelationships_checkBox.setEnabled(allow_obj_relations)
         self.evalObjectRelationships_checkBox.setChecked(eval_obj_conns)
         self.evalComplexGraphs_checkBox.setChecked(eval_complex_graphs)
         self.blockSignals(block)
 
+        self.setSceneGraphModeValue(col, scene_graph_mode)
         self.setEvalObjectRelationshipsValue(col, eval_obj_conns)
         self.setEvalComplexGraphsValue(col, eval_complex_graphs)
         return
@@ -177,6 +221,25 @@ class SolverBasicWidget(QtWidgets.QWidget,
         col = lib_state.get_active_collection()
         text = lib_col.query_solver_info_text(col)
         return text
+
+    @QtCore.Slot(int)
+    def sceneGraphModeIndexChanged(self, index):
+        if index < 0:
+            return
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        model_index = self.sceneGraphMode_model.index(index, 0)
+        data = self.sceneGraphMode_model.data(
+            model_index,
+            role=QtCore.Qt.UserRole
+        )
+        if data is None:
+            return
+        assert isinstance(data, (int, long))
+        self.setSceneGraphModeValue(col, data)
+        self.sceneGraphModeChanged.emit()
+        return
 
     @QtCore.Slot(bool)
     def evalObjectRelationshipsValueToggled(self, value):

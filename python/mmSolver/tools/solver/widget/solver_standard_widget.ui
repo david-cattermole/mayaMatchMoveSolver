@@ -69,6 +69,43 @@
      <item>
       <layout class="QVBoxLayout" name="options2_layout">
        <item>
+        <layout class="QHBoxLayout" name="sceneGraphMode_layout">
+         <item>
+          <widget class="QLabel" name="sceneGraphMode_label">
+           <property name="text">
+            <string>Scene Graph</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="sceneGraphMode_comboBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>1</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QCheckBox" name="evalObjectRelationships_checkBox">
          <property name="text">
           <string>Evaluate Object Relationships</string>

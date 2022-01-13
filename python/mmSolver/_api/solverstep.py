@@ -241,6 +241,19 @@ class SolverStep(solverbase.SolverBase):
         """
         self._data['solver_type'] = value
 
+    def get_scene_graph_mode(self):
+        """
+        :rtype: int or None
+        """
+        return self._data.get('scene_graph_mode')
+
+    def set_scene_graph_mode(self, value):
+        """
+        :type value: int
+        """
+        assert value in const.SCENE_GRAPH_MODE_LIST
+        self._data['scene_graph_mode'] = value
+
     def get_verbose(self):
         """
         Should we print lots of information to the terminal?
@@ -268,6 +281,17 @@ class SolverStep(solverbase.SolverBase):
     def set_time_eval_mode(self, value):
         assert value in const.TIME_EVAL_MODE_LIST
         self._data['time_eval_mode'] = value
+
+    ############################################################################
+
+    def get_frame_solve_mode(self):
+        return self._data.get(
+            'frame_solve_mode',
+            const.FRAME_SOLVE_MODE_DEFAULT)
+
+    def set_frame_solve_mode(self, value):
+        assert value in const.FRAME_SOLVE_MODE_LIST
+        self._data['frame_solve_mode'] = value
 
     ############################################################################
 
@@ -525,6 +549,14 @@ class SolverStep(solverbase.SolverBase):
         solver_type = self.get_solver_type()
         if solver_type is not None:
             kwargs['solverType'] = solver_type
+
+        scene_graph_mode = self.get_scene_graph_mode()
+        if scene_graph_mode is not None:
+            kwargs['sceneGraphMode'] = scene_graph_mode
+
+        frame_solve_mode = self.get_frame_solve_mode()
+        if frame_solve_mode is not None:
+            kwargs['frameSolveMode'] = frame_solve_mode
 
         iterations = self.get_max_iterations()
         if iterations is not None:

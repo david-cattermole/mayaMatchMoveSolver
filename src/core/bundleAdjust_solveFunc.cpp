@@ -66,6 +66,9 @@
 #include <maya/MGlobal.h>
 #include <maya/MStreamUtils.h>
 
+// MM Scene Graph
+#include <mmscenegraph/mmscenegraph.h>
+
 // Solver Utilities
 #include <mayaUtils.h>
 #include <Camera.h>
@@ -78,6 +81,7 @@
 #include <core/bundleAdjust_cminpack_base.h>
 #include <core/bundleAdjust_levmar_bc_dif.h>
 
+namespace mmsg = mmscenegraph;
 
 // NOTE: There is a very strange bug in Maya. After setting a number
 // of plug values using a DG Context, when quering plug values at the
@@ -194,21 +198,12 @@ double calculateParameterDelta(double value,
 
 
 // Set Parameter values
-void setParameters(
+void setParameters_mayaDag(
         const int numberOfParameters,
         const double *parameters,
         SolverData *ud,
         std::ofstream *debugFile,
         MStatus &status) {
-#ifdef WITH_DEBUG_FILE
-    bool debugFileIsOpen = false;
-    if (debugFile != NULL) {
-        debugFileIsOpen = debugFile->is_open();
-    }
-#else
-    UNUSED(debugFile);
-#endif
-
     MTime currentFrame = MAnimControl::currentTime();
     for (int i = 0; i < numberOfParameters; ++i) {
         IndexPair attrPair = ud->paramToAttrList[i];
@@ -234,19 +229,14 @@ void setParameters(
         if (debugFileIsOpen && debugFile != NULL) {
             (*debugFile) << "i=" << i << " v=" << value << "\n";
         }
+#else
+        UNUSED(debugFile);
 #endif
         attr->setValue(value, frame, *ud->dgmod, *ud->curveChange);
     }
 
     // Commit changed data into Maya
     ud->dgmod->doIt();
-
-    // Save a copy of the parameters - to be used for determining the
-    // the difference between the previous and next parameters to be
-    // set inside Maya.
-    for (int j = 0; j < numberOfParameters; ++j) {
-        ud->previousParamList[j] = parameters[j];
-    }
 
     // Invalidate the Camera Matrix cache.
     //
@@ -256,6 +246,86 @@ void setParameters(
     // incorrect solve; we clear the cache.
     for (int i = 0; i < (int) ud->cameraList.size(); ++i) {
         ud->cameraList[i]->clearAttrValueCache();
+    }
+
+    status = MStatus::kSuccess;
+}
+
+
+void setParameters_mmSceneGraph(
+        const int numberOfParameters,
+        const double *parameters,
+        SolverData *ud,
+        std::ofstream *debugFile,
+        MStatus &status) {
+    UNUSED(debugFile);
+
+    for (int i = 0; i < numberOfParameters; ++i) {
+        IndexPair attrPair = ud->paramToAttrList[i];
+        AttrPtr attr = ud->attrList[attrPair.first];
+        mmsg::AttrId attrId = ud->mmsgAttrIdList[attrPair.first];
+
+        double offset = attr->getOffsetValue();
+        double scale = attr->getScaleValue();
+        double xmin = attr->getMinimumValue();
+        double xmax = attr->getMaximumValue();
+        double value = parameters[i];
+        value = parameterBoundFromInternalToExternal(
+            value,
+            xmin, xmax,
+            offset, scale);
+
+        // Get frame time
+        mmsg::FrameValue frame = 0;
+        if (attrPair.second != -1) {
+            frame = ud->mmsgFrameList[attrPair.second];
+        }
+
+        ud->mmsgAttrDataBlock.set_attr_value(attrId, frame, value);
+    }
+
+    status = MStatus::kSuccess;
+}
+
+
+// Set Parameter values
+void setParameters(
+        const int numberOfParameters,
+        const double *parameters,
+        SolverData *ud,
+        std::ofstream *debugFile,
+        MStatus &status) {
+#ifdef WITH_DEBUG_FILE
+    bool debugFileIsOpen = false;
+    if (debugFile != NULL) {
+        debugFileIsOpen = debugFile->is_open();
+    }
+#else
+    UNUSED(debugFile);
+#endif
+
+    const SceneGraphMode sceneGraphMode = ud->solverOptions->sceneGraphMode;
+    if (sceneGraphMode == SceneGraphMode::kMayaDag) {
+        setParameters_mayaDag(
+            numberOfParameters,
+            parameters,
+            ud,
+            debugFile,
+            status);
+    } else if (sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
+        setParameters_mmSceneGraph(
+            numberOfParameters,
+            parameters,
+            ud,
+            debugFile,
+            status);
+    }
+
+    // Save a copy of the parameters - to be used for determining the
+    // the difference between the previous and next parameters to be
+    // set inside Maya.
+    for (int j = 0; j < numberOfParameters; ++j) {
+        ud->previousParamList[j] = parameters[j];
     }
 
     status = MStatus::kSuccess;
@@ -319,13 +389,13 @@ void determineMarkersToBeEvaluated(int numberOfParameters,
 }
 
 
-void measureErrors(
+void measureErrors_mayaDag(
         const int numberOfErrors,
         const int numberOfMarkerErrors,
         const int numberOfAttrStiffnessErrors,
         const int numberOfAttrSmoothnessErrors,
-        const std::vector<bool> frameIndexEnable,
-        const std::vector<bool> errorMeasurements,
+        const std::vector<bool> &frameIndexEnable,
+        const std::vector<bool> &errorMeasurements,
         double *errors,
         SolverData *ud,
         double &error_avg,
@@ -333,23 +403,13 @@ void measureErrors(
         double &error_min,
         std::ofstream *debugFile,
         MStatus &status) {
-#ifdef WITH_DEBUG_FILE
-    bool debugIsOpen = false;
-    if (debugFile != NULL) {
-        debugIsOpen = debugFile->is_open();
-    }
-#else
+    UNUSED(numberOfErrors);
     UNUSED(debugFile);
-#endif
-    error_avg = 0.0;
-    error_max = -0.0;
-    error_min = std::numeric_limits<double>::max();
 
     // Trigger an DG Evaluation at a different time, to help Maya
     // evaluate at the correct frame.
     const int timeEvalMode = ud->solverOptions->timeEvalMode;
-    assert(ud->errorToMarkerList.size() > 0);
-    assert(ud->frameList.length() > 0);
+
 #if FORCE_TRIGGER_EVAL == 1
     {
         MPoint pos;
@@ -564,6 +624,178 @@ void measureErrors(
         double error = ((1.0 / gaussian(attrValue, smoothValue, smoothVariance)) - 1.0);
         ud->errorList[indexIntoErrorArray] = error * smoothWeight;
         errors[indexIntoErrorArray] = error * smoothWeight;
+    }
+
+    return;
+}
+
+void measureErrors_mmSceneGraph(
+        const int numberOfErrors,
+        const int numberOfMarkerErrors,
+        const int numberOfAttrStiffnessErrors,
+        const int numberOfAttrSmoothnessErrors,
+        const std::vector<bool> &frameIndexEnable,
+        const std::vector<bool> &errorMeasurements,
+        double *errors,
+        SolverData *ud,
+        double &error_avg,
+        double &error_max,
+        double &error_min,
+        std::ofstream *debugFile,
+        MStatus &status) {
+    UNUSED(numberOfErrors);
+    UNUSED(numberOfAttrStiffnessErrors);
+    UNUSED(numberOfAttrSmoothnessErrors);
+    UNUSED(debugFile);
+    UNUSED(status);
+
+    // Evaluate Scene.
+    //
+    // TODO: Only re-evaluate the markers required.
+    ud->mmsgFlatScene.evaluate(
+        ud->mmsgAttrDataBlock,
+        ud->mmsgFrameList);
+
+    auto num_points = ud->mmsgFlatScene.num_points();
+    auto num_markers = ud->mmsgFlatScene.num_markers();
+    auto num_deviations = ud->mmsgFlatScene.num_deviations();
+    UNUSED(num_points);
+    UNUSED(num_markers);
+    UNUSED(num_deviations);
+    assert(num_points == num_markers == num_deviations);
+
+    auto out_deviation_list = ud->mmsgFlatScene.deviations();
+    auto out_point_list = ud->mmsgFlatScene.points();
+    auto out_marker_list = ud->mmsgFlatScene.markers();
+    assert(out_point_list.size() == out_deviation_list.size());
+    assert(out_marker_list.size() == out_deviation_list.size());
+
+    // Count Marker Errors
+    int numberOfErrorsMeasured = 0;
+    for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
+        IndexPair markerPair = ud->errorToMarkerList[i];
+        // int markerIndex = markerPair.first;
+        int frameIndex = markerPair.second;
+        bool skipFrame = frameIndexEnable[frameIndex] == false;
+        bool skipMarker = errorMeasurements[i] == false;
+        if (skipFrame) {
+            // Skip evaluation of this marker error. The 'errors' data
+            // is expected to be unchanged from the last evaluation.
+            continue;
+        }
+        if (skipMarker) {
+            // Skip calculation of the error if errorMeasurements says
+            // not to calculate it. The errorMeasurements is expected
+            // to be pre-computed and 'know' something this function does
+            // not about the greater structure of the solving problem.
+            continue;
+        }
+
+        // Use pre-computed marker weight
+        double mkr_weight = ud->markerWeightList[i];
+        assert(mkr_weight > 0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
+        mkr_weight = std::sqrt(mkr_weight);
+
+        auto errorIndex = i * ERRORS_PER_MARKER;
+        // auto mkr_x = out_marker_list[errorIndex + 0];
+        // auto mkr_y = out_marker_list[errorIndex + 1];
+        // auto point_x = out_point_list[errorIndex + 0];
+        // auto point_y = out_point_list[errorIndex + 1];
+        auto dx = out_deviation_list[errorIndex + 0] * ud->imageWidth;
+        auto dy = out_deviation_list[errorIndex + 1] * ud->imageWidth;
+        // INFO("point: " << point_x << ", " << point_y
+        //      << " mkr: " << mkr_x << ", " << mkr_y
+        //      << " dev: " << dx << ", " << dy);
+
+        double d = std::sqrt((dx * dx) + (dy * dy)) * ud->imageWidth;
+
+        errors[errorIndex + 0] = dx * mkr_weight;
+        errors[errorIndex + 1] = dy * mkr_weight;
+
+        // 'ud->errorList' is the deviation shown to the user, it
+        // should not have any loss functions or scaling applied to it.
+        ud->errorList[errorIndex + 0] = dx;
+        ud->errorList[errorIndex + 1] = dy;
+        ud->errorDistanceList[i] = d;
+        error_avg += d;
+        if (d > error_max) { error_max = d; }
+        if (d < error_min) { error_min = d; }
+        ++numberOfErrorsMeasured;
+    }
+    if (numberOfErrorsMeasured == 0) {
+        error_max = 0.0;
+        error_min = 0.0;
+        error_avg = 0.0;
+        ERR("No Marker measurements were taken.");
+    } else {
+        error_avg *= 1.0 / numberOfErrorsMeasured;
+    }
+
+    // TODO: Support stiffness and smoothness.
+
+    return;
+}
+
+void measureErrors(
+        const int numberOfErrors,
+        const int numberOfMarkerErrors,
+        const int numberOfAttrStiffnessErrors,
+        const int numberOfAttrSmoothnessErrors,
+        const std::vector<bool> &frameIndexEnable,
+        const std::vector<bool> &errorMeasurements,
+        double *errors,
+        SolverData *ud,
+        double &error_avg,
+        double &error_max,
+        double &error_min,
+        std::ofstream *debugFile,
+        MStatus &status) {
+#ifdef WITH_DEBUG_FILE
+    bool debugIsOpen = false;
+    if (debugFile != NULL) {
+        debugIsOpen = debugFile->is_open();
+    }
+#else
+    UNUSED(debugFile);
+#endif
+    error_avg = 0.0;
+    error_max = -0.0;
+    error_min = std::numeric_limits<double>::max();
+
+    assert(ud->errorToMarkerList.size() > 0);
+    assert(ud->frameList.length() > 0);
+
+    const SceneGraphMode sceneGraphMode = ud->solverOptions->sceneGraphMode;
+    if (sceneGraphMode == SceneGraphMode::kMayaDag) {
+        measureErrors_mayaDag(
+            numberOfErrors,
+            numberOfMarkerErrors,
+            numberOfAttrStiffnessErrors,
+            numberOfAttrSmoothnessErrors,
+            frameIndexEnable,
+            errorMeasurements,
+            errors,
+            ud,
+            error_avg,
+            error_max,
+            error_min,
+            debugFile,
+            status);
+    } else if (sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
+        measureErrors_mmSceneGraph(
+            numberOfErrors,
+            numberOfMarkerErrors,
+            numberOfAttrStiffnessErrors,
+            numberOfAttrSmoothnessErrors,
+            frameIndexEnable,
+            errorMeasurements,
+            errors,
+            ud,
+            error_avg,
+            error_max,
+            error_min,
+            debugFile,
+            status);
     }
 
     // Changes the errors to be scaled by the loss function.

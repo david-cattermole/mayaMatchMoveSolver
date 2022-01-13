@@ -72,6 +72,7 @@ set(SOURCE_FILES
   Marker.cpp
   Bundle.cpp
   Attr.cpp
+  mayaSceneGraph.cpp
   mayaUtils.cpp
   commonArgFlags.cpp
   MMSolverAffectsCmd.cpp
@@ -157,6 +158,10 @@ include(MMSolverUtils)
 
 set_global_maya_plugin_compile_options()
 
+if (BUILD_MMSCENEGRAPH)
+  add_subdirectory(mmscenegraph)
+endif ()
+
 # 'mmSolver' maya plugin library
 if (APPLE)
   add_library(mmSolver MODULE ${SOURCE_FILES})
@@ -175,6 +180,13 @@ target_include_directories(mmSolver
   PRIVATE ${CERES_INCLUDE_DIRS}
   PRIVATE ${LIBMV_INCLUDE_DIRS}
   PRIVATE ${OPENMVG_INCLUDE_DIRS}
+  )
+target_link_libraries(mmSolver
+  PRIVATE
+  mmscenegraph
+)
+target_include_directories(mmSolver
+  PRIVATE ${MMSCENEGRAPH_INCLUDE_DIR}
   )
 target_link_libraries(mmSolver
   PUBLIC

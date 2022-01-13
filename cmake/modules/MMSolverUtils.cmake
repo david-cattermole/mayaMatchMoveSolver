@@ -158,22 +158,17 @@ function(set_target_as_maya_plugin_library target)
   set_target_properties(${target} PROPERTIES SUFFIX ${maya_plugin_suffix})
 endfunction()
 
-
-
 # Output the target to the Module plug-ins directory.
 function(install_target_to_module target module_dir)
-  # On Windows, the Plug-In is treated as a 'RUNTIME' type,
-  # on Linux, it's a 'LIBRARY' type.
-  set_target_properties(${target} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${module_dir}"
-    LIBRARY_OUTPUT_DIRECTORY "${module_dir}"
-    ARCHIVE_OUTPUT_DIRECTORY "${module_dir}")
+  install(TARGETS ${target}
+    RUNTIME DESTINATION "${module_dir}/lib"
+    LIBRARY DESTINATION "${module_dir}/lib")
 endfunction()
 
 
 # Install the Plug-In.
 function(install_target_plugin_to_module target module_dir)
-  set_target_as_maya_plugin_library(mmSolver)
+  set_target_as_maya_plugin_library(${target})
 
   if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     # HACK: On Linux, LD_LIBRARY_PATH cannot be modified at runtime (on
@@ -193,7 +188,13 @@ function(install_target_plugin_to_module target module_dir)
       )
   endif ()
 
-  install_target_to_module(${target} ${module_dir})
+  # On Windows, the Plug-In is treated as a 'RUNTIME' type,
+  # on Linux, it's a 'LIBRARY' type.
+  set_target_properties(${target} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${module_dir}"
+    LIBRARY_OUTPUT_DIRECTORY "${module_dir}"
+    ARCHIVE_OUTPUT_DIRECTORY "${module_dir}")
+
   install(TARGETS ${target}
     RUNTIME DESTINATION "${MODULE_FULL_NAME}/plug-ins"
     LIBRARY DESTINATION "${MODULE_FULL_NAME}/plug-ins")

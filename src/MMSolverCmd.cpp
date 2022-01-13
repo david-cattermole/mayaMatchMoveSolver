@@ -45,12 +45,11 @@
 #include <maya/MStreamUtils.h>
 
 // Internal Objects
-#include <commonArgFlags.h>
-#include <Attr.h>
-#include <Marker.h>
-#include <Bundle.h>
-#include <Camera.h>
-
+#include "commonArgFlags.h"
+#include "Attr.h"
+#include "Marker.h"
+#include "Bundle.h"
+#include "Camera.h"
 
 MMSolverCmd::~MMSolverCmd() {}
 
@@ -84,7 +83,6 @@ void createSolveLogSyntax(MSyntax &syntax) {
     syntax.makeFlagMultiUse(PRINT_STATS_FLAG);
 }
 
-
 void createSolveInfoSyntax(MSyntax &syntax) {
     syntax.addFlag(TAU_FLAG, TAU_FLAG_LONG,
                    MSyntax::kDouble);
@@ -110,6 +108,8 @@ void createSolveInfoSyntax(MSyntax &syntax) {
                    MSyntax::kUnsigned);
     syntax.addFlag(ACCEPT_ONLY_BETTER_FLAG, ACCEPT_ONLY_BETTER_FLAG_LONG,
                    MSyntax::kBoolean);
+    syntax.addFlag(FRAME_SOLVE_MODE_FLAG, FRAME_SOLVE_MODE_FLAG_LONG,
+                   MSyntax::kUnsigned);
     syntax.addFlag(DEBUG_FILE_FLAG, DEBUG_FILE_FLAG_LONG,
                    MSyntax::kString);
     syntax.addFlag(PRINT_STATS_FLAG, PRINT_STATS_FLAG_LONG,
@@ -120,6 +120,8 @@ void createSolveInfoSyntax(MSyntax &syntax) {
     syntax.addFlag(REMOVE_UNUSED_ATTRIBUTES_FLAG, REMOVE_UNUSED_ATTRIBUTES_FLAG_LONG,
                    MSyntax::kBoolean);
 
+    syntax.addFlag(SCENE_GRAPH_MODE_FLAG, SCENE_GRAPH_MODE_FLAG_LONG,
+                   MSyntax::kUnsigned);
     syntax.addFlag(TIME_EVAL_MODE_FLAG, TIME_EVAL_MODE_FLAG_LONG,
                    MSyntax::kUnsigned);
 }
@@ -207,8 +209,10 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
                                 int &out_robustLossType,
                                 double &out_robustLossScale,
                                 int &out_solverType,
+                                SceneGraphMode &out_sceneGraphMode,
                                 int &out_timeEvalMode,
                                 bool &out_acceptOnlyBetter,
+                                FrameSolveMode &out_frameSolveMode,
                                 bool &out_supportAutoDiffForward,
                                 bool &out_supportAutoDiffCentral,
                                 bool &out_supportParameterBounds,
@@ -231,6 +235,22 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
         status = argData.getFlagArgument(SOLVER_TYPE_FLAG, 0, out_solverType);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
+
+    // Get 'Scene Graph Mode'
+    uint32_t sceneGraphMode = SCENE_GRAPH_MODE_DEFAULT_VALUE;
+    if (argData.isFlagSet(SCENE_GRAPH_MODE_FLAG)) {
+        status = argData.getFlagArgument(SCENE_GRAPH_MODE_FLAG, 0, sceneGraphMode);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    out_sceneGraphMode = static_cast<SceneGraphMode>(sceneGraphMode);
+
+    // Get 'Frame Solve Mode'
+    auto frameSolveMode = FRAME_SOLVE_MODE_DEFAULT_VALUE;
+    if (argData.isFlagSet(FRAME_SOLVE_MODE_FLAG)) {
+        status = argData.getFlagArgument(FRAME_SOLVE_MODE_FLAG, 0, frameSolveMode);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    out_frameSolveMode = static_cast<FrameSolveMode>(frameSolveMode);
 
     // Get 'Time Evaluation Mode'
     out_timeEvalMode = TIME_EVAL_MODE_DEFAULT_VALUE;
@@ -416,8 +436,10 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_robustLossType,
         m_robustLossScale,
         m_solverType,
+        m_sceneGraphMode,
         m_timeEvalMode,
         m_acceptOnlyBetter,
+        m_frameSolveMode,
         m_supportAutoDiffForward,
         m_supportAutoDiffCentral,
         m_supportParameterBounds,
@@ -476,9 +498,11 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     solverOptions.autoParamScale = m_autoParamScale;
     solverOptions.robustLossType = m_robustLossType;
     solverOptions.robustLossScale = m_robustLossScale;
+    solverOptions.sceneGraphMode = m_sceneGraphMode;
     solverOptions.solverType = m_solverType;
     solverOptions.timeEvalMode = m_timeEvalMode;
     solverOptions.acceptOnlyBetter = m_acceptOnlyBetter;
+    solverOptions.frameSolveMode = m_frameSolveMode;
     solverOptions.solverSupportsAutoDiffForward = m_supportAutoDiffForward;
     solverOptions.solverSupportsAutoDiffCentral = m_supportAutoDiffCentral;
     solverOptions.solverSupportsParameterBounds = m_supportParameterBounds;

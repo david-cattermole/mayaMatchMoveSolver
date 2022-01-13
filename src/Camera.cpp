@@ -357,15 +357,20 @@ MString Camera::getTransformNodeName() {
 
 void Camera::setTransformNodeName(MString value) {
     if (value != m_transformNodeName) {
+        m_transformObject = MObject();
+        m_shapeObject = MObject();
         m_matrix.setNodeName(value);
+        m_transformNodeName = value;
     }
-    m_transformNodeName = value;
 }
 
 MObject Camera::getTransformObject() {
-    MStatus status;
-    MString name = Camera::getTransformNodeName();
-    status = getAsObject(name, m_transformObject);
+    if (m_transformObject.isNull()) {
+        MStatus status;
+        MString name = Camera::getTransformNodeName();
+        status = getAsObject(name, m_transformObject);
+        CHECK_MSTATUS(status);
+    }
     return m_transformObject;
 }
 
@@ -375,6 +380,8 @@ MString Camera::getShapeNodeName() {
 
 void Camera::setShapeNodeName(MString value) {
     if (value != m_shapeNodeName) {
+        m_transformObject = MObject();
+        m_shapeObject = MObject();
         m_filmbackWidth.setNodeName(value);
         m_filmbackHeight.setNodeName(value);
         m_filmbackOffsetX.setNodeName(value);
@@ -384,16 +391,18 @@ void Camera::setShapeNodeName(MString value) {
         m_nearClipPlane.setNodeName(value);
         m_farClipPlane.setNodeName(value);
         m_filmFit.setNodeName(value);
+        m_shapeNodeName = value;
     }
-    m_shapeNodeName = value;
 }
 
 MObject Camera::getShapeObject() {
-    MStatus status;
-    MString name = Camera::getShapeNodeName();
-    MObject object;
-    status = getAsObject(name, object);
-    return object;
+    if (m_shapeObject.isNull()) {
+        MStatus status;
+        MString name = Camera::getShapeNodeName();
+        status = getAsObject(name, m_shapeObject);
+        CHECK_MSTATUS(status);
+    }
+    return m_shapeObject;
 }
 
 bool Camera::getProjectionDynamic() const {
@@ -517,9 +526,9 @@ double Camera::getCameraScaleValue() {
         MStatus status;
         Attr attr = getCameraScaleAttr();
         status = attr.getValue(m_cameraScaleValue, timeEvalMode);
+        CHECK_MSTATUS(status);
         value = m_cameraScaleValue;
         m_cameraScaleCached = true;
-        CHECK_MSTATUS(status);
     }
     return value;
 }
@@ -533,9 +542,9 @@ double Camera::getNearClipPlaneValue() {
         MStatus status;
         Attr attr = getNearClipPlaneAttr();
         status = attr.getValue(m_nearClipPlaneValue, timeEvalMode);
+        CHECK_MSTATUS(status);
         value = m_nearClipPlaneValue;
         m_nearClipPlaneCached = true;
-        CHECK_MSTATUS(status);
     }
     return value;
 }
@@ -549,9 +558,9 @@ double Camera::getFarClipPlaneValue() {
         MStatus status;
         Attr attr = getFarClipPlaneAttr();
         status = attr.getValue(m_farClipPlaneValue, timeEvalMode);
+        CHECK_MSTATUS(status);
         value = m_farClipPlaneValue;
         m_farClipPlaneCached = true;
-        CHECK_MSTATUS(status);
     }
     return value;
 }
@@ -565,9 +574,9 @@ short Camera::getFilmFitValue() {
         MStatus status;
         Attr attr = getFilmFitAttr();
         status = attr.getValue(m_filmFitValue, timeEvalMode);
+        CHECK_MSTATUS(status);
         value = m_filmFitValue;
         m_filmFitCached = true;
-        CHECK_MSTATUS(status);
     }
     return value;
 }
@@ -581,9 +590,9 @@ int Camera::getRenderWidthValue() {
         MStatus status;
         Attr attr = getRenderWidthAttr();
         status = attr.getValue(m_renderWidthValue, timeEvalMode);
+        CHECK_MSTATUS(status);
         value = m_renderWidthValue;
         m_renderWidthCached = true;
-        CHECK_MSTATUS(status);
     }
     return value;
 }
@@ -613,9 +622,9 @@ double Camera::getRenderAspectValue() {
         MStatus status;
         Attr attr = getRenderAspectAttr();
         status = attr.getValue(m_renderAspectValue, timeEvalMode);
+        CHECK_MSTATUS(status);
         value = m_renderAspectValue;
         m_renderAspectCached = true;
-        CHECK_MSTATUS(status);
     }
     return value;
 }
@@ -800,7 +809,7 @@ MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time,
         // Get the projection matrix.
         MMatrix projMat;
         status = Camera::getProjMatrix(projMat, time, timeEvalMode);
-
+        CHECK_MSTATUS_AND_RETURN_IT(status);
         value = worldMat * projMat;
 
         // Add into the cache.
@@ -847,4 +856,3 @@ MStatus Camera::clearAttrValueCache() {
     clearAuxilaryAttrsCache();
     return MS::kSuccess;
 }
-

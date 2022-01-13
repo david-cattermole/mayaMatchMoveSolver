@@ -43,7 +43,7 @@ set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodes
 set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
 set(PROJECT_COPYRIGHT
   "2018, 2019, 2020, 2021, David Cattermole, Anil Reddy, Kazuma Tonegawa, Patcha Saheb Binginapalli.")
-
+enable_testing()
 
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
@@ -56,6 +56,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 # time.
 set(BUILD_PLUGIN 1 CACHE BOOL
         "Do you want to build the plug-in?")
+set(BUILD_MMSCENEGRAPH 1 CACHE BOOL
+        "Do you want to build with the mmSceneGraph feature?")
 set(BUILD_PYTHON 1 CACHE BOOL
         "Do you want to build and install the Python API and tools?")
 set(BUILD_MEL 1 CACHE BOOL
@@ -198,7 +200,6 @@ if (BUILD_CONFIG)
 endif ()
 
 if (BUILD_TESTS)
-  enable_testing()
   add_subdirectory(tests)
 endif ()
 

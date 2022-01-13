@@ -50,17 +50,21 @@ MString Bundle::getNodeName() const {
 MStatus Bundle::setNodeName(MString value) {
     MStatus status = MS::kSuccess;
     if (value != m_nodeName) {
+        m_object = MObject();
         status = m_matrix.setNodeName(value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+        m_nodeName = value;
     }
-    m_nodeName = value;
     return status;
 }
 
 MObject Bundle::getObject() {
-    MStatus status;
-    MString name = Bundle::getNodeName();
-    status = getAsObject(name, m_object);
+    if (m_object.isNull()) {
+        MStatus status;
+        MString name = Bundle::getNodeName();
+        status = getAsObject(name, m_object);
+        CHECK_MSTATUS(status);
+    }
     return m_object;
 }
 

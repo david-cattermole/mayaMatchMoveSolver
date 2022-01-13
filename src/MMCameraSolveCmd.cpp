@@ -299,7 +299,7 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         // INFO("Node name: " << node_name.asChar());
 
         auto object_type = computeObjectType(node_obj, nodeDagPath);
-        if (object_type == OBJECT_TYPE_CAMERA) {
+        if (object_type == ObjectType::kCamera) {
             // Add Cameras
             // INFO("Camera name: " << node_name.asChar());
             MString transform_node_name = nodeDagPath.fullPathName();
@@ -344,7 +344,7 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         // INFO("Node name: " << node_name.asChar());
 
         auto object_type = computeObjectType(node_obj, nodeDagPath);
-        if (object_type == OBJECT_TYPE_MARKER) {
+        if (object_type == ObjectType::kMarker) {
             // Add Markers
             // INFO("Marker name: " << node_name.asChar());
             auto mkr = MMMarker();

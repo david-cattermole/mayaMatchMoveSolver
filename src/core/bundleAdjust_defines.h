@@ -52,8 +52,8 @@
 // The default solver to use, if all solvers are available.
 #define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LMDER
 
-// Enable the Maya profiling data collection.
-#define MAYA_PROFILE 1
+// // Enable the Maya profiling data collection.
+// #define MAYA_PROFILE 1
 
 // Enable the use of "debug file" output, so the solver writes out a
 // debug file with all the internal details.
@@ -67,6 +67,24 @@
 // These are the possible values:
 #define TIME_EVAL_MODE_DG_CONTEXT  (0)
 #define TIME_EVAL_MODE_SET_TIME  (1)
+
+// What Scene Graph should we use for evaluation?
+//
+// These are the possible values:
+#define SCENE_GRAPH_MODE_MAYA_DAG  (0)
+#define SCENE_GRAPH_MODE_MM_SCENE_GRAPH  (1)
+// The default value
+#define SCENE_GRAPH_MODE_DEFAULT_VALUE SCENE_GRAPH_MODE_MAYA_DAG
+
+
+// How the list of frames is solved.
+//
+// These are the possible values:
+#define FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE  (0)
+#define FRAME_SOLVE_MODE_PER_FRAME  (1)
+// The default value
+#define FRAME_SOLVE_MODE_DEFAULT_VALUE FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE
+
 
 // Print Statistics for mmSolver command.
 //

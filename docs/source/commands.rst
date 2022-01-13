@@ -24,6 +24,7 @@ Flag                     Type                                       Description 
 -attrStiffness (-asf)    string, string, string, string             Node attribute, weight plug name, variance plug name, value plug name.  None
 -attrSmoothness (-asm)   string, string, string, string             Node attribute, weight plug name, variance plug name, value plug name.  None
 -solverType (-st)        unsigned int                               Type of solver to use.                                                  <auto detected>
+-sceneGraphMode (-sgm)   unsigned int                               The Scene Graph used; 0=Maya DAG, 1=MM Scene Graph                      0 (Maya DAG)
 -timeEvalMode (-tem)     unsigned int                               How to evalulate values at different times, 0=DG Context 1=Set TIme     0 (DG Context)
 -iterations (-it)        unsigned int                               Maximum number of iterations                                            20
 -tauFactor (-t)          double                                     Initial Damping Factor                                                  1E-03

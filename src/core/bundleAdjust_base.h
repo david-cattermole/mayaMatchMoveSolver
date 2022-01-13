@@ -67,7 +67,7 @@ inline
 double distance_2d(MPoint a, MPoint b) {
     double dx = (a.x - b.x);
     double dy = (a.y - b.y);
-    return sqrt((dx * dx) + (dy * dy));
+    return std::sqrt((dx * dx) + (dy * dy));
 }
 
 std::vector<SolverTypePair> getSolverTypes();
@@ -164,7 +164,7 @@ bool solve(SolverOptions &solverOptions,
            MarkerPtrList &markerList,
            BundlePtrList &bundleList,
            AttrPtrList &attrList,
-           MTimeArray &frameList,
+           const MTimeArray &frameList,
            StiffAttrsPtrList &stiffAttrsList,
            SmoothAttrsPtrList &smoothAttrsList,
            MDGModifier &dgmod,

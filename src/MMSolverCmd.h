@@ -74,6 +74,10 @@
 #define SOLVER_TYPE_FLAG           "-st"
 #define SOLVER_TYPE_FLAG_LONG      "-solverType"
 
+// The Scene Graph used for evaluation.
+#define SCENE_GRAPH_MODE_FLAG           "-sgm"
+#define SCENE_GRAPH_MODE_FLAG_LONG      "-sceneGraphMode"
+
 // Time Evaluation Mode
 //
 // How should the solver evaluate time? Should we use DG Context, or
@@ -85,6 +89,10 @@
 #define TIME_EVAL_MODE_FLAG           "-tem"
 #define TIME_EVAL_MODE_FLAG_LONG      "-timeEvalMode"
 #define TIME_EVAL_MODE_DEFAULT_VALUE  TIME_EVAL_MODE_DG_CONTEXT
+
+// Frame solve mode.
+#define FRAME_SOLVE_MODE_FLAG           "-fsm"
+#define FRAME_SOLVE_MODE_FLAG_LONG      "-frameSolveMode"
 
 // Maximum number of iterations
 //
@@ -248,10 +256,12 @@ private:
                         //                     1=cminpack_lmdif,
                         //                     2=cmpinpack_lmder.
     int m_timeEvalMode;  // How to evaluate values at different times?
+    SceneGraphMode m_sceneGraphMode;
     bool m_acceptOnlyBetter;  // Do not accept solved parameter values if
                               // the average devation is higher than at start.
     bool m_removeUnusedMarkers;     // Remove unused Markers from solve?
     bool m_removeUnusedAttributes;  // Remove unused Attributes from solve?
+    FrameSolveMode m_frameSolveMode;
 
     // What type of features does the given solver type support?
     bool m_supportAutoDiffForward;

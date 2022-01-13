@@ -56,6 +56,7 @@ MM_CAMERA_HEADER_VERSION_1 = {
 MM_CAMERA_FORMAT_VERSION_PREFERRED = MM_CAMERA_FORMAT_VERSION_1
 
 # Do we have support for new features of 3DE tde4 module?
+SUPPORT_CAMERA_PLAYBACK_RANGE = 'getCameraPlaybackRange' in dir(tde4)
 SUPPORT_CAMERA_FRAME_OFFSET = 'getCameraFrameOffset' in dir(tde4)
 SUPPORT_CLIPBOARD = 'setClipboardString' in dir(tde4)
 
@@ -432,6 +433,12 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
         # attributes, otherwise the camera will not show the image.
         plate_path = os.path.normpath(plate_path)
         tde4.setCameraPath(cam_id, plate_path)
+
+        if SUPPORT_CAMERA_PLAYBACK_RANGE is True:
+            playback_start = 1  # 3DE always starts at frame 1.
+            playback_end = tde4.getCameraNoFrames(cam_id)
+            tde4.setCameraPlaybackRange(
+                cam_id, playback_start, playback_end)
 
     # Set pixel aspect ratio
     par = options.get('par')

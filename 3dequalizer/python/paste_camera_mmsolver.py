@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Paste Camera (MM Solver)...
 #
-# 3DE4.script.version:  v1.5
+# 3DE4.script.version:  v1.6
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Camera
 # 3DE4.script.gui:      Object Browser::Context Menu Cameras

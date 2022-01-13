@@ -249,12 +249,12 @@ def _run_gui(req, pgroup_id, cam_id, lens_id):
     file_path = options.get('file_path')
     is_valid_file_path = _file_path_is_valid(file_path)
     if is_valid_file_path is False:
-        print 'Error: File path is not valid.'
+        print('Error: File path is not valid.')
         return
     file_data = _parse_data(file_path)
     has_valid_data = _file_data_has_valid_data(file_data)
     if has_valid_data is False:
-        print 'Error: File data is not valid.'
+        print('Error: File data is not valid.')
         return
 
     # Pass widget values to run function.

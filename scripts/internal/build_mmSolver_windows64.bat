@@ -112,7 +112,11 @@ IF "%BUILD_MMSCENEGRAPH%"=="1" (
 
    :: Install the needed cxxbridge.exe command to be installed with
    :: the exact version we need.
-   cargo install cxxbridge-cmd --version 1.0.60
+   ::
+   :: NOTE: When chaging this version number, make sure to update the
+   :: CXX version used in the C++ buildings:
+   :: './src/mmscenegraph/cppbind/Cargo.toml'
+   cargo install cxxbridge-cmd --version 1.0.62
 
    ECHO Building Rust crate... (%MMSCENEGRAPH_RUST_DIR%)
    CHDIR "%MMSCENEGRAPH_RUST_DIR%"

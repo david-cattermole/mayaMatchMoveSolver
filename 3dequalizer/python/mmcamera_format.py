@@ -482,8 +482,8 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
     fl = options.get('fl')
     focalLengthSamples = attr_data.get('focalLength')
     if (fl and focalLengthSamples
-            and isinstance(file_start_frame, (int, long))
-            and isinstance(file_end_frame, (int, long))
+            and isinstance(file_start_frame, int_type)
+            and isinstance(file_end_frame, int_type)
             and isinstance(chosen_start_frame, text_type)
             and isinstance(chosen_end_frame, text_type)):
         file_start = int(file_start_frame)
@@ -502,8 +502,8 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
     file_end_frame = camera_data.get('end_frame')
     chosen_start_frame = options.get('start_frame')
     chosen_end_frame = options.get('end_frame')
-    if (isinstance(file_start_frame, (int, long))
-            and isinstance(file_end_frame, (int, long))
+    if (isinstance(file_start_frame, int_type)
+            and isinstance(file_end_frame, int_type)
             and isinstance(chosen_start_frame, text_type)
             and isinstance(chosen_end_frame, text_type)):
         file_start = int(file_start_frame)

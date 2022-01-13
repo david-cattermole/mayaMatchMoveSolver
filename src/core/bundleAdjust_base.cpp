@@ -1588,24 +1588,24 @@ bool solve(SolverOptions &solverOptions,
 
         // Print warnings about unused solve objects.
         if ((unusedMarkerList.size() > 0) && (solverOptions.removeUnusedMarkers)) {
-            INFO("Unused Markers detected and ignored:");
+            WRN("Unused Markers detected and ignored:");
             for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
                  mit != unusedMarkerList.cend();
                  ++mit) {
                 MarkerPtr marker = *mit;
                 const char *markerName = marker->getLongNodeName().asChar();
-                INFO("-> " << markerName);
+                WRN("-> " << markerName);
             }
         }
 
         if ((unusedAttrList.size() > 0) && (solverOptions.removeUnusedAttributes)) {
-            INFO("Unused Attributes detected and ignored:");
+            WRN("Unused Attributes detected and ignored:");
             for (AttrPtrListCIt ait = unusedAttrList.cbegin();
                  ait != unusedAttrList.cend();
                  ++ait) {
                 AttrPtr attr = *ait;
                 const char *attrName = attr->getLongName().asChar();
-                INFO("-> " << attrName);
+                WRN("-> " << attrName);
             }
         }
 

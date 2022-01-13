@@ -1649,7 +1649,7 @@ bool solve(SolverOptions &solverOptions,
 
     SolverResult solveResult;
     auto frameSolveMode = solverOptions.frameSolveMode;
-    INFO("frameSolveMode: " << static_cast<uint32_t>(frameSolveMode));
+    // INFO("frameSolveMode: " << static_cast<uint32_t>(frameSolveMode));
     if (frameSolveMode == FrameSolveMode::kAllFrameAtOnce) {
         status = solveFrames(
             cameraList,

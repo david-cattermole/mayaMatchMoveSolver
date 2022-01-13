@@ -52,8 +52,9 @@ cmake -G "NMake Makefiles" ^
     -DTHIRDPARTY_BASE_WORKING_DIR=%WORKING_DIR% ^
     %SOURCE_DIR%
 
-nmake /F Makefile clean
-nmake /F Makefile all
+cmake --build . --parallel 4
+cmake --install .
+
 
 :: Return back project root directory.
 CHDIR "%ROOT%"

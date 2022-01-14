@@ -80,6 +80,7 @@ set(SOURCE_FILES
   MMReprojectionNode.cpp
   MMMarkerGroupTransformNode.cpp
   MMCameraCalibrateNode.cpp
+  MMCameraRelativePoseCmd.cpp
   MMLineIntersectNode.cpp
   MMMarkerTransformMatrix.cpp
   MMMarkerTransformNode.cpp

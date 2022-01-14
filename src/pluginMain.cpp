@@ -53,6 +53,7 @@
 #include <MMCameraCalibrateNode.h>
 #include <MMLineIntersectNode.h>
 #include <MMCameraSolveCmd.h>
+#include <MMCameraRelativePoseCmd.h>
 
 // Shape nodes.
 #include <shape/MarkerShapeNode.h>
@@ -226,6 +227,13 @@ MStatus initializePlugin(MObject obj) {
                      MMTestCameraMatrixCmd::cmdName(),
                      MMTestCameraMatrixCmd::creator,
                      MMTestCameraMatrixCmd::newSyntax,
+                     status);
+
+
+    REGISTER_COMMAND(plugin,
+                     MMCameraRelativePoseCmd::cmdName(),
+                     MMCameraRelativePoseCmd::creator,
+                     MMCameraRelativePoseCmd::newSyntax,
                      status);
 
     REGISTER_COMMAND(plugin,
@@ -517,6 +525,7 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMSolverAffectsCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, MMCameraRelativePoseCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMCameraSolveCmd::cmdName(), status);
 
     DEREGISTER_DRAW_OVERRIDE(

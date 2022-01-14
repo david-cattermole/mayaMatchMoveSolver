@@ -386,3 +386,65 @@ ExternalProject_Add(openMVG
         -DOpenMVG_USE_OPENCV=0
         -DOpenMVG_USE_OCVSIFT=0
 )
+
+
+##################
+# dlfcn
+##################
+#
+# dlfcn is required for the LDPK on Windows only.
+set(DLFCN_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/dlfcn)
+set(DLFCN_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/dlfcn)
+ExternalProject_Add(dlfcn
+    PREFIX ${DLFCN_PREFIX}
+    GIT_REPOSITORY "https://github.com/dlfcn-win32/dlfcn-win32.git"
+    GIT_TAG "v1.2.0"
+    INSTALL_DIR ${DLFCN_INSTALL_PATH}
+    CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_INSTALL_PREFIX=${DLFCN_INSTALL_PATH}
+        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+        -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
+        -DBUILD_SHARED_LIBS=ON
+        -DBUILD_TESTS=OFF
+)
+
+
+##################
+# LDPK (Lens Distortion Plug-in Kit)
+##################
+#
+# The LDPK from Science-d-Visions is used to deform images using lens
+# models.
+set(LDPK_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/ldpk)
+set(LDPK_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/ldpk)
+set(LDPK_DOWNLOAD_DIR ${THIRDPARTY_BASE_WORKING_DIR}/ldpk/src)
+set(LDPK_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/ldpk/src/ldpk)
+
+# Patches
+set(LDPK_PATCH_DIR ${CMAKE_CURRENT_SOURCE_DIR}/patches/ldpk)
+set(LDPK_PATCH_SRC_1 ${LDPK_PATCH_DIR}/CMakeLists.txt)
+set(LDPK_PATCH_DST_1 ${LDPK_SOURCE_DIR}/CMakeLists.txt)
+set(LDPK_PATCH_SRC_2 ${LDPK_PATCH_DIR}/ldpk-config.cmake.in)
+set(LDPK_PATCH_DST_2 ${LDPK_SOURCE_DIR}/ldpk-config.cmake.in)
+
+ExternalProject_Add(ldpk
+    PREFIX ${LDPK_PREFIX}
+    DEPENDS dlfcn
+    URL "https://www.3dequalizer.com/user_daten/sections/tech_docs/archives/ldpk-2.4.tgz"
+    DOWNLOAD_DIR ${LDPK_DOWNLOAD_DIR}
+    SOURCE_DIR ${LDPK_SOURCE_DIR}
+    INSTALL_DIR ${LDPK_INSTALL_PATH}
+    PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${LDPK_PATCH_SRC_1} ${LDPK_PATCH_DST_1}
+    COMMAND       ${CMAKE_COMMAND} -E copy ${LDPK_PATCH_SRC_2} ${LDPK_PATCH_DST_2}
+    CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_INSTALL_PREFIX=${LDPK_INSTALL_PATH}
+        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+        -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
+        -DDLFCN_LOCATION=${DLFCN_INSTALL_PATH}
+)

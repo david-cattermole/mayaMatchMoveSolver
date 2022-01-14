@@ -43,6 +43,7 @@ set(SOURCE_FILES
   core/calibrate/common.cpp
   core/calibrate/vanishingPoint.cpp
   core/lensModelBasic.cpp
+  core/lensModel3deClassic.cpp
   core/mmcamera.cpp
   core/mmcoord.cpp
   core/mmdata.cpp
@@ -91,6 +92,7 @@ set(SOURCE_FILES
   MMCameraSolveCmd.cpp
   MMLensDeformerNode.cpp
   MMLensModelBasicNode.cpp
+  MMLensModel3deClassicNode.cpp
   MMLensModelToggleNode.cpp
   MMLensData.cpp
   MMLensEvaluateNode.cpp
@@ -107,6 +109,8 @@ find_package(Eigen3 REQUIRED)
 find_package(Ceres REQUIRED)
 find_package(Libmv REQUIRED)
 find_package(OpenMVG REQUIRED)
+find_package(Dlfcn REQUIRED)
+find_package(LDPK REQUIRED)
 
 message(STATUS "MAYA: ${MAYA_FOUND}")
 message(STATUS "MAYA: Root=${MAYA_LOCATION}")
@@ -148,6 +152,16 @@ message(STATUS "OPENMVG: Root=${OPENMVG_ROOT}")
 message(STATUS "OPENMVG: Include=${OPENMVG_INCLUDE_DIRS}")
 message(STATUS "OPENMVG: Library=${OPENMVG_LIBRARIES}")
 
+message(STATUS "LDPK ${LDPK_FOUND}")
+message(STATUS "LDPK Root=${LDPK_ROOT}")
+message(STATUS "LDPK Libraries=${LDPK_LIBRARIES}")
+message(STATUS "LDPK Include=${LDPK_INCLUDE_DIRS}")
+
+message(STATUS "DLFCN ${DLFCN_FOUND}")
+message(STATUS "DLFCN Root=${DLFCN_ROOT}")
+message(STATUS "DLFCN Libraries=${DLFCN_LIBRARIES}")
+message(STATUS "DLFCN Include=${DLFCN_INCLUDE_DIRS}")
+
 # Treat warnings as errors.
 if(MSVC)
   add_compile_options(/W4 /WX)
@@ -181,6 +195,8 @@ target_include_directories(mmSolver
   PRIVATE ${CERES_INCLUDE_DIRS}
   PRIVATE ${LIBMV_INCLUDE_DIRS}
   PRIVATE ${OPENMVG_INCLUDE_DIRS}
+  PRIVATE ${DLFCN_INCLUDE_DIRS}
+  PRIVATE ${LDPK_INCLUDE_DIRS}
   )
 target_link_libraries(mmSolver
   PRIVATE
@@ -205,6 +221,8 @@ target_link_libraries(mmSolver
   ${CERES_LIBRARIES}
   ${LIBMV_LIBRARIES}
   ${OPENMVG_LIBRARIES}
+  ${DLFCN_LIBRARIES}
+  ${LDPK_LIBRARIES}
 )
 target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CMINPACK)
 target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CERES)

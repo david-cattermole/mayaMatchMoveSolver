@@ -1,0 +1,10 @@
+@PACKAGE_INIT@
+
+set_and_check(ldpk_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+if(NOT TARGET ldpk::ldpk)
+  include(${CMAKE_CURRENT_LIST_DIR}/ldpk-targets.cmake)
+endif()
+
+set(ldpk_LIBRARIES ldpk::ldpk)
+set(ldpk_INCLUDE_DIRS ${ldpk_INCLUDE_DIR})

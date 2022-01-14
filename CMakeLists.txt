@@ -152,6 +152,24 @@ set(OPENMVG_ROOT "/usr/local"
   CACHE PATH "OpenMVG directory")
 
 
+# DL-FCN
+set(DLFCN_ROOT "/usr/local"
+  CACHE PATH "dl-fcn directory")
+set(DLFCN_INCLUDE_PATH "/usr/local/include"
+  CACHE PATH "dl-fcn include directory")
+set(DLFCN_LIB_PATH "/usr/local/lib"
+  CACHE PATH "dl-fcn library directory")
+
+
+# LDPK
+set(LDPK_ROOT "/usr/local"
+  CACHE PATH "LDPK directory")
+set(LDPK_INCLUDE_PATH "/usr/local/include"
+  CACHE PATH "LDPK include directory")
+set(LDPK_LIB_PATH "/usr/local/lib"
+  CACHE PATH "LDPK library directory")
+
+
 # Default Solver to use.
 set(PREFERRED_SOLVER "cminpack_lmder"
   CACHE STRING

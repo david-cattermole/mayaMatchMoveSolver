@@ -46,6 +46,7 @@
 #include <MMLensDeformerNode.h>
 #include <MMLensEvaluateNode.h>
 #include <MMLensModelBasicNode.h>
+#include <MMLensModel3deClassicNode.h>
 #include <MMLensModelToggleNode.h>
 #include <MMLensData.h>
 #include <MMReprojectionCmd.h>
@@ -290,6 +291,13 @@ MStatus initializePlugin(MObject obj) {
                   MMLensModelBasicNode::m_id,
                   MMLensModelBasicNode::creator,
                   MMLensModelBasicNode::initialize,
+                  status);
+
+    REGISTER_NODE(plugin,
+                  MMLensModel3deClassicNode::nodeName(),
+                  MMLensModel3deClassicNode::m_id,
+                  MMLensModel3deClassicNode::creator,
+                  MMLensModel3deClassicNode::initialize,
                   status);
 
     REGISTER_NODE(plugin,
@@ -587,6 +595,9 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, MMLensModelBasicNode::nodeName(),
                     MMLensModelBasicNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMLensModel3deClassicNode::nodeName(),
+                    MMLensModel3deClassicNode::m_id, status);
 
     DEREGISTER_NODE(plugin, MMLensModelToggleNode::nodeName(),
                     MMLensModelToggleNode::m_id, status);

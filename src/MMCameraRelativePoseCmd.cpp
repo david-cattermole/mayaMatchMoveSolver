@@ -213,7 +213,7 @@ void *MMCameraRelativePoseCmd::creator() {
 }
 
 MString MMCameraRelativePoseCmd::cmdName() {
-    return MString("mmCameraSolve");
+    return MString("mmCameraRelativePose");
 }
 
 /*

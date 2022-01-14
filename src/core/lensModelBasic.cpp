@@ -85,9 +85,9 @@ void LensModelBasic::applyModel(double xd,
     double xc = 0.0;
     double yc = 0.0;
 
-    double r = sqrt(pow(xd - xc, 2) + pow(yd - yc, 2));
-    double r2 = pow(r, 2);
-    double r4 = pow(r, 4) * 2.0;
+    double r = std::sqrt(std::pow(xd - xc, 2) + std::pow(yd - yc, 2));
+    double r2 = std::pow(r, 2);
+    double r4 = std::pow(r, 4) * 2.0;
 
     xu = xd + ((xd - xc) * ((m_k1 * r2) + (m_k2 * r4)));
     yu = yd + ((yd - yc) * ((m_k1 * r2) + (m_k2 * r4)));

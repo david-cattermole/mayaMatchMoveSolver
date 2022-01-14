@@ -31,7 +31,12 @@
 // 'object', possible loss of data.
 #pragma warning( disable : 4267 )
 
-// Compiler Warning (level 4) C4127: conditional expression is constant
+// Compiler Warning (level 1) C4305: truncation from 'type1' to
+// 'type2'.
+#pragma warning( disable : 4305 )
+
+// Compiler Warning (level 4) C4127: conditional expression is
+// constant
 #pragma warning( disable : 4127 )
 
 // Compiler Warning (levels 3 and 4) C4244: 'conversion' conversion
@@ -65,6 +70,7 @@
 // Compiler Warning (level 4) C4702: unreachable code.
 #pragma warning( disable : 4702 )
 
+
 // STL
 #include <vector>
 #include <cmath>
@@ -83,6 +89,7 @@
 #include <mayaUtils.h>
 #include <Camera.h>
 #include <Marker.h>
+
 using MMMarker = Marker;
 using MMCamera = Camera;
 
@@ -130,8 +137,6 @@ using MMCamera = Camera;
 #include <libmv/simple_pipeline/packed_intrinsics.h>
 
 // OpenMVG
-#include <openMVG/image/image_io.hpp>
-#include <openMVG/image/image_concat.hpp>
 #include <openMVG/features/feature.hpp>
 #include <openMVG/features/feature_container.hpp>
 #include <openMVG/matching/regions_matcher.hpp>
@@ -161,16 +166,21 @@ using MMCamera = Camera;
 #include <maya/MItSelectionList.h>
 
 // GFlags test.
-DEFINE_bool(big_menu, true, "Include 'advanced' options in the menu listing");
-DEFINE_string(languages, "english,french,german",
-              "comma-separated list of languages to offer in the 'lang' menu");
+DEFINE_bool(
+    big_menu,
+    true,
+    "Include 'advanced' options in the menu listing");
+DEFINE_string(
+    languages,
+    "english,french,german",
+    "comma-separated list of languages to offer in the 'lang' menu");
 
 using KernelType =
-   openMVG::robust::ACKernelAdaptor<
-       openMVG::fundamental::kernel::NormalizedEightPointKernel,
-       openMVG::fundamental::kernel::SymmetricEpipolarDistanceError,
-       openMVG::UnnormalizerT,
-       openMVG::Mat3>;
+    openMVG::robust::ACKernelAdaptor<
+    openMVG::fundamental::kernel::NormalizedEightPointKernel,
+    openMVG::fundamental::kernel::SymmetricEpipolarDistanceError,
+    openMVG::UnnormalizerT,
+    openMVG::Mat3>;
 
 MMCameraSolveCmd::~MMCameraSolveCmd() {}
 
@@ -217,16 +227,16 @@ bool get_marker_coord(
     double &x,
     double &y,
     double &weight,
-    bool &enable)
-{
-    auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    bool &enable) {
 
+    auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     auto frame = static_cast<double>(frame_num);
     MTime time = MTime(frame, uiUnit);
 
     mkr.getPosXY(x, y, time, timeEvalMode);
     mkr.getEnable(enable, time, timeEvalMode);
     mkr.getWeight(weight, time, timeEvalMode);
+
     weight *= static_cast<double>(enable);
     return weight > 0;
 }
@@ -236,10 +246,9 @@ bool get_camera_image_res(
     const MTime::Unit &uiUnit,
     MMCamera &cam,
     int &image_width,
-    int &image_height)
-{
-    auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    int &image_height) {
 
+    auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     auto frame = static_cast<double>(frame_num);
     MTime time = MTime(frame, uiUnit);
 
@@ -286,7 +295,7 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
     m_image_height_b = 1;
 
     MItSelectionList iter1(objects);
-    for ( ; !iter1.isDone(); iter1.next() ) {
+    for (; !iter1.isDone(); iter1.next()) {
         MDagPath nodeDagPath;
         MObject node_obj;
 
@@ -301,7 +310,7 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kCamera) {
             // Add Cameras
-            // INFO("Camera name: " << node_name.asChar());
+            INFO("Camera name: " << node_name.asChar());
             MString transform_node_name = nodeDagPath.fullPathName();
 
             status = nodeDagPath.extendToShapeDirectlyBelow(0);
@@ -326,12 +335,12 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
                 m_image_height_b);
         }
     }
-    // INFO("image A: " << m_image_width_a << "x" << m_image_height_a);
-    // INFO("image B: " << m_image_width_b << "x" << m_image_height_b);
+    INFO("image A: " << m_image_width_a << "x" << m_image_height_a);
+    INFO("image B: " << m_image_width_b << "x" << m_image_height_b);
 
     // Parse objects into Camera intrinsics and Tracking Markers.
     MItSelectionList iter2(objects);
-    for ( ; !iter2.isDone(); iter2.next() ) {
+    for (; !iter2.isDone(); iter2.next()) {
         MDagPath nodeDagPath;
         MObject node_obj;
 
@@ -346,7 +355,7 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kMarker) {
             // Add Markers
-            // INFO("Marker name: " << node_name.asChar());
+            INFO("Marker name: " << node_name.asChar());
             auto mkr = MMMarker();
             mkr.setNodeName(node_name);
 
@@ -372,6 +381,10 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
                 double yy_a = (y_a + 0.5) * static_cast<double>(m_image_height_a);
                 double xx_b = (x_b + 0.5) * static_cast<double>(m_image_width_b);
                 double yy_b = (y_b + 0.5) * static_cast<double>(m_image_height_b);
+                INFO("x_a : " << x_a  << " y_a : " << y_a);
+                INFO("xx_a: " << xx_a << " yy_a: " << yy_a);
+                INFO("x_b : " << x_b  << " y_b : " << y_b);
+                INFO("xx_b: " << xx_b << " yy_b: " << yy_b);
                 auto xy_a = std::pair<double, double>{xx_a, yy_a};
                 auto xy_b = std::pair<double, double>{xx_b, yy_b};
                 m_marker_coords_a.push_back(xy_a);
@@ -383,10 +396,11 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
     return status;
 }
 
+
 void get_file_path_extension(const std::string &file,
                              std::string *path_name,
                              std::string *ext) {
-    size_t dot_pos =  file.rfind (".");
+    size_t dot_pos = file.rfind(".");
     if (dot_pos != std::string::npos) {
         *path_name = file.substr(0, dot_pos);
         *ext = file.substr(dot_pos + 1, file.length() - dot_pos - 1);
@@ -397,11 +411,11 @@ void get_file_path_extension(const std::string &file,
 }
 
 struct CostFunctor {
-   template <typename T>
-   bool operator()(const T* const x, T* residual) const {
-     residual[0] = 10.0 - x[0];
-     return true;
-   }
+    template<typename T>
+    bool operator()(const T *const x, T *residual) const {
+        residual[0] = 10.0 - x[0];
+        return true;
+    }
 };
 
 // Data generated using the following octave code.
@@ -417,86 +431,88 @@ const int kNumObservations = 67;
 
 // clang-format off
 const double data[] = {
-  0.000000e+00, 1.133898e+00,
-  7.500000e-02, 1.334902e+00,
-  1.500000e-01, 1.213546e+00,
-  2.250000e-01, 1.252016e+00,
-  3.000000e-01, 1.392265e+00,
-  3.750000e-01, 1.314458e+00,
-  4.500000e-01, 1.472541e+00,
-  5.250000e-01, 1.536218e+00,
-  6.000000e-01, 1.355679e+00,
-  6.750000e-01, 1.463566e+00,
-  7.500000e-01, 1.490201e+00,
-  8.250000e-01, 1.658699e+00,
-  9.000000e-01, 1.067574e+00,
-  9.750000e-01, 1.464629e+00,
-  1.050000e+00, 1.402653e+00,
-  1.125000e+00, 1.713141e+00,
-  1.200000e+00, 1.527021e+00,
-  1.275000e+00, 1.702632e+00,
-  1.350000e+00, 1.423899e+00,
-  1.425000e+00, 1.543078e+00,
-  1.500000e+00, 1.664015e+00,
-  1.575000e+00, 1.732484e+00,
-  1.650000e+00, 1.543296e+00,
-  1.725000e+00, 1.959523e+00,
-  1.800000e+00, 1.685132e+00,
-  1.875000e+00, 1.951791e+00,
-  1.950000e+00, 2.095346e+00,
-  2.025000e+00, 2.361460e+00,
-  2.100000e+00, 2.169119e+00,
-  2.175000e+00, 2.061745e+00,
-  2.250000e+00, 2.178641e+00,
-  2.325000e+00, 2.104346e+00,
-  2.400000e+00, 2.584470e+00,
-  2.475000e+00, 1.914158e+00,
-  2.550000e+00, 2.368375e+00,
-  2.625000e+00, 2.686125e+00,
-  2.700000e+00, 2.712395e+00,
-  2.775000e+00, 2.499511e+00,
-  2.850000e+00, 2.558897e+00,
-  2.925000e+00, 2.309154e+00,
-  3.000000e+00, 2.869503e+00,
-  3.075000e+00, 3.116645e+00,
-  3.150000e+00, 3.094907e+00,
-  3.225000e+00, 2.471759e+00,
-  3.300000e+00, 3.017131e+00,
-  3.375000e+00, 3.232381e+00,
-  3.450000e+00, 2.944596e+00,
-  3.525000e+00, 3.385343e+00,
-  3.600000e+00, 3.199826e+00,
-  3.675000e+00, 3.423039e+00,
-  3.750000e+00, 3.621552e+00,
-  3.825000e+00, 3.559255e+00,
-  3.900000e+00, 3.530713e+00,
-  3.975000e+00, 3.561766e+00,
-  4.050000e+00, 3.544574e+00,
-  4.125000e+00, 3.867945e+00,
-  4.200000e+00, 4.049776e+00,
-  4.275000e+00, 3.885601e+00,
-  4.350000e+00, 4.110505e+00,
-  4.425000e+00, 4.345320e+00,
-  4.500000e+00, 4.161241e+00,
-  4.575000e+00, 4.363407e+00,
-  4.650000e+00, 4.161576e+00,
-  4.725000e+00, 4.619728e+00,
-  4.800000e+00, 4.737410e+00,
-  4.875000e+00, 4.727863e+00,
-  4.950000e+00, 4.669206e+00,
+    0.000000e+00, 1.133898e+00,
+    7.500000e-02, 1.334902e+00,
+    1.500000e-01, 1.213546e+00,
+    2.250000e-01, 1.252016e+00,
+    3.000000e-01, 1.392265e+00,
+    3.750000e-01, 1.314458e+00,
+    4.500000e-01, 1.472541e+00,
+    5.250000e-01, 1.536218e+00,
+    6.000000e-01, 1.355679e+00,
+    6.750000e-01, 1.463566e+00,
+    7.500000e-01, 1.490201e+00,
+    8.250000e-01, 1.658699e+00,
+    9.000000e-01, 1.067574e+00,
+    9.750000e-01, 1.464629e+00,
+    1.050000e+00, 1.402653e+00,
+    1.125000e+00, 1.713141e+00,
+    1.200000e+00, 1.527021e+00,
+    1.275000e+00, 1.702632e+00,
+    1.350000e+00, 1.423899e+00,
+    1.425000e+00, 1.543078e+00,
+    1.500000e+00, 1.664015e+00,
+    1.575000e+00, 1.732484e+00,
+    1.650000e+00, 1.543296e+00,
+    1.725000e+00, 1.959523e+00,
+    1.800000e+00, 1.685132e+00,
+    1.875000e+00, 1.951791e+00,
+    1.950000e+00, 2.095346e+00,
+    2.025000e+00, 2.361460e+00,
+    2.100000e+00, 2.169119e+00,
+    2.175000e+00, 2.061745e+00,
+    2.250000e+00, 2.178641e+00,
+    2.325000e+00, 2.104346e+00,
+    2.400000e+00, 2.584470e+00,
+    2.475000e+00, 1.914158e+00,
+    2.550000e+00, 2.368375e+00,
+    2.625000e+00, 2.686125e+00,
+    2.700000e+00, 2.712395e+00,
+    2.775000e+00, 2.499511e+00,
+    2.850000e+00, 2.558897e+00,
+    2.925000e+00, 2.309154e+00,
+    3.000000e+00, 2.869503e+00,
+    3.075000e+00, 3.116645e+00,
+    3.150000e+00, 3.094907e+00,
+    3.225000e+00, 2.471759e+00,
+    3.300000e+00, 3.017131e+00,
+    3.375000e+00, 3.232381e+00,
+    3.450000e+00, 2.944596e+00,
+    3.525000e+00, 3.385343e+00,
+    3.600000e+00, 3.199826e+00,
+    3.675000e+00, 3.423039e+00,
+    3.750000e+00, 3.621552e+00,
+    3.825000e+00, 3.559255e+00,
+    3.900000e+00, 3.530713e+00,
+    3.975000e+00, 3.561766e+00,
+    4.050000e+00, 3.544574e+00,
+    4.125000e+00, 3.867945e+00,
+    4.200000e+00, 4.049776e+00,
+    4.275000e+00, 3.885601e+00,
+    4.350000e+00, 4.110505e+00,
+    4.425000e+00, 4.345320e+00,
+    4.500000e+00, 4.161241e+00,
+    4.575000e+00, 4.363407e+00,
+    4.650000e+00, 4.161576e+00,
+    4.725000e+00, 4.619728e+00,
+    4.800000e+00, 4.737410e+00,
+    4.875000e+00, 4.727863e+00,
+    4.950000e+00, 4.669206e+00,
 };
 // clang-format on
 
 struct ExponentialResidual {
-  ExponentialResidual(double x, double y) : x_(x), y_(y) {}
-  template <typename T>
-  bool operator()(const T* const m, const T* const c, T* residual) const {
-    residual[0] = y_ - exp(m[0] * x_ + c[0]);
-    return true;
-  }
- private:
-  const double x_;
-  const double y_;
+    ExponentialResidual(double x, double y) : x_(x), y_(y) {}
+
+    template<typename T>
+    bool operator()(const T *const m, const T *const c, T *residual) const {
+        residual[0] = y_ - exp(m[0] * x_ + c[0]);
+        return true;
+    }
+
+private:
+    const double x_;
+    const double y_;
 };
 
 MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
@@ -527,8 +543,9 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
 
         // Set up the only cost function (also known as residual). This uses
         // auto-differentiation to obtain the derivative (jacobian).
-        ceres::CostFunction* cost_function =
-            new ceres::AutoDiffCostFunction<CostFunctor, 1, 1>(new CostFunctor);
+        ceres::CostFunction *cost_function =
+            new ceres::AutoDiffCostFunction<CostFunctor, 1, 1>(
+                new CostFunctor);
         problem.AddResidualBlock(cost_function, nullptr, &x);
 
         // Run the solver!
@@ -539,7 +556,7 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         ceres::Solve(options, &problem, &summary);
 
         INFO(summary.BriefReport());
-        INFO("x : " << initial_x << " -> " << x)
+        INFO("x : " << initial_x << " -> " << x);
     }
 
     // Ceres Solver - Example #2 - Curve Fitting
@@ -553,7 +570,8 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         for (int i = 0; i < kNumObservations; ++i) {
             problem.AddResidualBlock(
                 new ceres::AutoDiffCostFunction<ExponentialResidual, 1, 1, 1>(
-                    new ExponentialResidual(data[2 * i], data[2 * i + 1])),
+                    new ExponentialResidual(data[2 * i],
+                                            data[2 * i + 1])),
                 NULL,
                 &m,
                 &c);
@@ -638,30 +656,30 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         std::string file_path_name;
         std::string file_ext;
         get_file_path_extension(output_file_path, &file_path_name, &file_ext);
-        std::transform(file_ext.begin(), file_ext.end(), file_ext.begin(), ::tolower);
+        std::transform(file_ext.begin(), file_ext.end(), file_ext.begin(),
+                       ::tolower);
 
-         int i = 0;
-         std::list<libmv::Reconstruction *>::iterator iter = reconstructions.begin();
-         if (file_ext == "ply") {
-             for (; iter != reconstructions.end(); ++iter) {
-                 std::stringstream s;
-                 if (reconstructions.size() > 1)
-                     s << file_path_name << "-" << i << ".ply";
-                 else
-                     s << output_file_path;
-                 libmv::ExportToPLY(**iter, s.str());
-             }
-         } else  if (file_ext == "py") {
-             for (; iter != reconstructions.end(); ++iter) {
-                 std::stringstream s;
-                 if (reconstructions.size() > 1)
-                     s << file_path_name << "-" << i << ".py";
-                 else
-                     s << output_file_path;
-                 libmv::ExportToBlenderScript(**iter, s.str());
-             }
-         }
-        INFO("Exporting Reconstructions...[DONE]");
+        int i = 0;
+        std::list<libmv::Reconstruction *>::iterator iter = reconstructions.begin();
+        if (file_ext == "ply") {
+            for (; iter != reconstructions.end(); ++iter) {
+                std::stringstream s;
+                if (reconstructions.size() > 1)
+                    s << file_path_name << "-" << i << ".ply";
+                else
+                    s << output_file_path;
+                libmv::ExportToPLY(**iter, s.str());
+            }
+        } else if (file_ext == "py") {
+            for (; iter != reconstructions.end(); ++iter) {
+                std::stringstream s;
+                if (reconstructions.size() > 1)
+                    s << file_path_name << "-" << i << ".py";
+                else
+                    s << output_file_path;
+                libmv::ExportToBlenderScript(**iter, s.str());
+            }
+        }INFO("Exporting Reconstructions...[DONE]");
 
         // Cleaning
         INFO("Cleaning.");
@@ -676,10 +694,10 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         fg.DeleteAndClear();
     }
 
-    // Fundamental matrix robust estimation using OpenMVG.
+    // OpenMVG - Fundamental matrix robust estimation
     {
-        auto minimal_samples = KernelType::MINIMUM_SAMPLES;// * 2.5;
-        uint32_t num_max_iteration = 1024; // * 4
+        auto minimal_samples = KernelType::MINIMUM_SAMPLES;
+        uint32_t num_max_iteration = 1024;
         double precision = std::numeric_limits<double>::infinity();
         bool verbose = true;
 
@@ -687,7 +705,7 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         auto num_markers = m_marker_coords_a.size();
         openMVG::Mat marker_coords_a(2, num_markers);
         openMVG::Mat marker_coords_b(2, num_markers);
-        for (size_t k = 0; k < num_markers; ++k)  {
+        for (size_t k = 0; k < num_markers; ++k) {
             auto coord_a = m_marker_coords_a[k];
             auto coord_b = m_marker_coords_b[k];
             openMVG::Vec2 mat_a(std::get<0>(coord_a), std::get<1>(coord_a));
@@ -709,7 +727,7 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
 
         std::vector<uint32_t> inliers;
         openMVG::Mat3 matrix;
-        const std::pair<double,double> ac_ransac_out =
+        const std::pair<double, double> ac_ransac_out =
             openMVG::robust::ACRANSAC(
                 kernel,
                 inliers,
@@ -736,8 +754,7 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
                  << " correspondences\n");
             outResult.append(errorMax);
             outResult.append(minNFA);
-        }
-        else  {
+        } else {
             INFO("ACRANSAC was unable to estimate a rigid fundamental");
         }
     }

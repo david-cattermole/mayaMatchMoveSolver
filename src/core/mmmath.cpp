@@ -33,7 +33,7 @@
 
 // STL
 #include <cmath>
-#include <cinttypes>
+#include <cstdint>
 #include <cstdlib>
 
 namespace mmmath {

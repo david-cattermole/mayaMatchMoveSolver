@@ -523,6 +523,7 @@ public:
   void push_back(T &&value);
   template <typename... Args>
   void emplace_back(Args &&...args);
+  void truncate(std::size_t len);
   void clear();
 
   using iterator = typename Slice<T>::iterator;
@@ -676,6 +677,11 @@ void Vec<T>::emplace_back(Args &&...args) {
                                size * size_of<T>()))
       T(std::forward<Args>(args)...);
   this->set_len(size + 1);
+}
+
+template <typename T>
+void Vec<T>::clear() {
+  this->truncate(0);
 }
 
 template <typename T>

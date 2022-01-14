@@ -31,6 +31,7 @@ global proc AEmmLensModelBasicTemplate(string $nodeName)
     editorTemplate -beginLayout "Inputs" -collapse 0;
 
     editorTemplate -addControl "enable";
+    editorTemplate -addSeparator;
     editorTemplate -addControl "k1";
     editorTemplate -addControl "k2";
     editorTemplate -endLayout;

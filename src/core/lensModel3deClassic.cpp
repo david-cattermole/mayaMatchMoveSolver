@@ -32,30 +32,48 @@
 #include <core/lensModel3deClassic.h>
 
 
-double LensModel3deClassic::getK1() const {
-    return m_k1;
+double LensModel3deClassic::getDistortion() const {
+    return m_distortion;
 }
 
-void LensModel3deClassic::setK1(double value) {
-    m_k1 = value;
+void LensModel3deClassic::setDistortion(double value) {
+    m_distortion = value;
     return;
 }
 
-double LensModel3deClassic::getK2() const {
-    return m_k2;
+double LensModel3deClassic::getAnamorphicSqueeze() const {
+    return m_anamorphicSqueeze;
 }
 
-void LensModel3deClassic::setK2(double value) {
-    m_k2 = value;
+void LensModel3deClassic::setAnamorphicSqueeze(double value) {
+    m_anamorphicSqueeze = value;
     return;
 }
 
-double LensModel3deClassic::getSqueeze() const {
-    return m_squeeze;
+double LensModel3deClassic::getCurvatureX() const {
+    return m_curvatureX;
 }
 
-void LensModel3deClassic::setSqueeze(double value) {
-    m_squeeze = value;
+void LensModel3deClassic::setCurvatureX(double value) {
+    m_curvatureX = value;
+    return;
+}
+
+double LensModel3deClassic::getCurvatureY() const {
+    return m_curvatureY;
+}
+
+void LensModel3deClassic::setCurvatureY(double value) {
+    m_curvatureY = value;
+    return;
+}
+
+double LensModel3deClassic::getQuarticDistortion() const {
+    return m_quarticDistortion;
+}
+
+void LensModel3deClassic::setQuarticDistortion(double value) {
+    m_quarticDistortion = value;
     return;
 }
 
@@ -75,22 +93,29 @@ void LensModel3deClassic::applyModel(double xd,
     // First compute the lens distortion from the 'previous' lens
     // model.
     LensModel* inputLensModel = LensModel3deClassic::getInputLensModel();
-    if (inputLensModel != NULL) {
+    if (inputLensModel != nullptr) {
         inputLensModel->applyModel(xd, yd, xd, yd);
     }
-    
-    m_lensPlugin->setParameterValue("tde4_focal_length_cm", 3.0);
-    m_lensPlugin->setParameterValue("tde4_filmback_width_cm", 2.4);
-    m_lensPlugin->setParameterValue("tde4_filmback_height_cm", 3.6);
-    m_lensPlugin->setParameterValue("tde4_pixel_aspect", 1.0);
-    m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm", 0.0);
-    m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm", 0.0);
 
-    m_lensPlugin->setParameterValue("Distortion", m_k1);
-    m_lensPlugin->setParameterValue("Anamorphic Squeeze", m_squeeze);
-    m_lensPlugin->setParameterValue("Curvature X", 0.0);
-    m_lensPlugin->setParameterValue("Curvature Y", 0.0);
-    m_lensPlugin->setParameterValue("Quartic Distortion", m_k2);
+    // TODO: Add camera attributes to the lens model.
+    double focal = 3.0;
+    double fbw = 3.6;
+    double fbh = 3.6;
+    double pixel_aspect = 1.0;
+    double lens_center_offset_x = 0.0;
+    double lens_center_offset_y = 0.0;
+    m_lensPlugin->setParameterValue("tde4_focal_length_cm", focal);
+    m_lensPlugin->setParameterValue("tde4_filmback_width_cm", fbw);
+    m_lensPlugin->setParameterValue("tde4_filmback_height_cm", fbh);
+    m_lensPlugin->setParameterValue("tde4_pixel_aspect", pixel_aspect);
+    m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm", lens_center_offset_x);
+    m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm", lens_center_offset_y);
+
+    m_lensPlugin->setParameterValue("Distortion", m_distortion);
+    m_lensPlugin->setParameterValue("Anamorphic Squeeze", m_anamorphicSqueeze);
+    m_lensPlugin->setParameterValue("Curvature X", m_curvatureX);
+    m_lensPlugin->setParameterValue("Curvature Y", m_curvatureY);
+    m_lensPlugin->setParameterValue("Quartic Distortion", m_quarticDistortion);
     m_lensPlugin->initializeParameters();
 
     // 'undistort' expects values 0.0 to 1.0, but our inputs are -0.5

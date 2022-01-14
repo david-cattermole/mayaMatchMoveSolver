@@ -49,9 +49,11 @@ public:
     // Input Attributes
     static MObject a_inLens;
     static MObject a_enable;
-    static MObject a_k1;
-    static MObject a_k2;
-    static MObject a_squeeze;
+    static MObject a_distortion;
+    static MObject a_anamorphicSqueeze;
+    static MObject a_curvatureX;
+    static MObject a_curvatureY;
+    static MObject a_quarticDistortion;
 
     // Output Attributes
     static MObject a_outLens;

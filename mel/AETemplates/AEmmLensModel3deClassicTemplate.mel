@@ -31,9 +31,12 @@ global proc AEmmLensModel3deClassicTemplate(string $nodeName)
     editorTemplate -beginLayout "Inputs" -collapse 0;
 
     editorTemplate -addControl "enable";
-    editorTemplate -addControl "k1";
-    editorTemplate -addControl "k2";
-    editorTemplate -addControl "squeeze";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "distortion";
+    editorTemplate -addControl "anamorphicSqueeze";
+    editorTemplate -addControl "curvatureX";
+    editorTemplate -addControl "curvatureY";
+    editorTemplate -addControl "quarticDistortion";
     editorTemplate -endLayout;
 
     editorTemplate -suppress "outLens";

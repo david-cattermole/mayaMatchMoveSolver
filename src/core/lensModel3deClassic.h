@@ -53,28 +53,39 @@ class LensModel3deClassic : public LensModel {
 public:
 
     LensModel3deClassic()
-            : m_k1(0.0)
-            , m_k2(0.0)
-            , m_squeeze(1.0) {
+            : m_distortion(0.0)
+            , m_anamorphicSqueeze(1.0)
+            , m_curvatureX(0.0)
+            , m_curvatureY(0.0)
+            , m_quarticDistortion(0.0) {
         m_lensPlugin =
             std::unique_ptr<LensPluginBase>(new LensPlugin());
     };
 
-    LensModel3deClassic(double k1, double k2, double squeeze)
-            : m_k1(k1)
-            , m_k2(k2)
-            , m_squeeze(squeeze) {
-        m_lensPlugin =
-            std::unique_ptr<LensPluginBase>(new LensPlugin());
+    LensModel3deClassic(double distortion,
+                        double anamorphic_squeeze,
+                        double curvature_x,
+                        double curvature_y,
+                        double quartic_distortion)
+            : m_distortion(distortion)
+            , m_anamorphicSqueeze(anamorphic_squeeze)
+            , m_curvatureX(curvature_x)
+            , m_curvatureY(curvature_y)
+            , m_quarticDistortion(quartic_distortion){
+        m_lensPlugin = std::unique_ptr<LensPluginBase>(new LensPlugin());
     };
 
-    double getK1() const;
-    double getK2() const;
-    double getSqueeze() const;
-    
-    void setK1(double value);
-    void setK2(double value);
-    void setSqueeze(double value);
+    double getDistortion() const;
+    double getAnamorphicSqueeze() const;
+    double getCurvatureX() const;
+    double getCurvatureY() const;
+    double getQuarticDistortion() const;
+
+    void setDistortion(double value);
+    void setAnamorphicSqueeze(double value);
+    void setCurvatureX(double value);
+    void setCurvatureY(double value);
+    void setQuarticDistortion(double value);
 
     LensModel* getInputLensModel() const;
 
@@ -89,9 +100,11 @@ private:
 
     LensModel* m_inputLensModel;
     std::unique_ptr<LensPluginBase> m_lensPlugin;
-    double m_k1;
-    double m_k2;
-    double m_squeeze;
+    double m_distortion;
+    double m_anamorphicSqueeze;
+    double m_curvatureX;
+    double m_curvatureY;
+    double m_quarticDistortion;
 };
 
 

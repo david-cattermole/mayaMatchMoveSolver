@@ -98,7 +98,7 @@ public:
     static MObject a_rotatePlane;
     static MObject a_rotateOrder;
 
-#if false
+#if 0
     // Principal Point
     static MObject a_principalPoint;
     static MObject a_principalPointX;
@@ -133,7 +133,7 @@ public:
     static MObject a_outHorizontalFilmAperture;
     static MObject a_outVerticalFilmAperture;
 
-#if false
+#if 0
     static MObject a_outFilmOffset;
     static MObject a_outHorizontalFilmOffset;
     static MObject a_outVerticalFilmOffset;

@@ -104,7 +104,7 @@ MMLensDeformerNode::deform(MDataBlock& data,
     MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
-    if (inputLensData != NULL) {
+    if (inputLensData != nullptr) {
         // Get the underlying lens model.
         LensModel* lensModel = (LensModel*) inputLensData->getValue();
 
@@ -115,7 +115,7 @@ MMLensDeformerNode::deform(MDataBlock& data,
             // Evaluate the lens distortion at (pt.x, pt.y).
             double out_x = pt.x;
             double out_y = pt.y;
-            if (lensModel != NULL) {
+            if (lensModel != nullptr) {
                 lensModel->applyModel(pt.x, pt.y, out_x, out_y);
             }
             pt.x = lerp(pt.x, out_x, env);

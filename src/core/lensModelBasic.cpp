@@ -64,7 +64,7 @@ void LensModelBasic::applyModel(double xd,
     // First compute the lens distortion from the 'previous' lens
     // model.
     LensModel* inputLensModel = LensModelBasic::getInputLensModel();
-    if (inputLensModel != NULL) {
+    if (inputLensModel != nullptr) {
         inputLensModel->applyModel(xd, yd, xd, yd);
     }
 

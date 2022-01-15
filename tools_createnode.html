@@ -91,6 +91,8 @@ the selected 2D points to a temporary file path and then place that
 file path on the clipboard automatically. Once the file path is on the
 clipboard, open the Maya Load Marker tool and the path will be
 read automatically.</p>
+<p>In Blender the <code class="docutils literal notranslate"><span class="pre">Motion</span> <span class="pre">Clip</span> <span class="pre">Editor</span></code> sidebar contains a <code class="docutils literal notranslate"><span class="pre">MM</span> <span class="pre">Solver</span></code>
+panel, with a Copy and Export 2D Tracks tool.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Camera</span></code> list contains all the cameras currently in the Maya
 scene. If no cameras are available (persp, front, top, left do not
 count), the default option is to create a new camera. The <code class="docutils literal notranslate"><span class="pre">Update</span></code>
@@ -163,6 +165,50 @@ into Project Notes and remembered.</p>
 or 2, it is recommend to use <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code>,
 because the <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code> tool can only export
 with the default <code class="docutils literal notranslate"><span class="pre">Content</span> <span class="pre">Distance</span></code> of <code class="docutils literal notranslate"><span class="pre">100</span></code> units.</p>
+</div>
+</div>
+<div class="section" id="copy-2d-tracks-from-blender">
+<span id="copy-blender-2d-tracks-ref"></span><h3>Copy 2D Tracks from Blender<a class="headerlink" href="#copy-2d-tracks-from-blender" title="Permalink to this headline">¶</a></h3>
+<p>It is possible to use Blender (v2.80+) to track 2D Markers for use in mmSolver.</p>
+<ol class="arabic">
+<li><p class="first">Install the <code class="docutils literal notranslate"><span class="pre">mmSolver_blender_addon.zip</span></code> add-on file from the
+<code class="docutils literal notranslate"><span class="pre">blender</span></code> directory of the MM Solver download.</p>
+<p>Simply open the Addons preferences; “Edit &gt; Preferences &gt; Add-ons”,
+click “Install…” and browse to the <code class="docutils literal notranslate"><span class="pre">mmSolver_blender_addon.zip</span></code>.</p>
+<p>See the <a class="reference external" href="https://docs.blender.org/manual/en/latest/editors/preferences/addons.html">Blender Addons documentation</a>.</p>
+</li>
+<li><p class="first">Open the <code class="docutils literal notranslate"><span class="pre">Motion</span> <span class="pre">Clip</span> <span class="pre">Editor</span></code> and track 2D points.</p>
+</li>
+<li><p class="first">Select the 2D Track points you wish to copy/export.</p>
+</li>
+<li><p class="first">Go to the <code class="docutils literal notranslate"><span class="pre">Motion</span> <span class="pre">Clip</span> <span class="pre">Editor</span> <span class="pre">&gt;</span> <span class="pre">(right-side)</span> <span class="pre">Sidebar</span> <span class="pre">&gt;</span> <span class="pre">Track</span> <span class="pre">&gt;</span> <span class="pre">MM</span> <span class="pre">Solver</span></code>
+panel, then click <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span></code>.</p>
+<p>This will export the selected 2D tracks to a temporary .uv file
+and then save the file path on your copy-paste buffer
+(ready for “CTRL + V”).</p>
+</li>
+<li><p class="first">Open Maya, and open the <code class="docutils literal notranslate"><span class="pre">Load</span> <span class="pre">Marker</span></code> tool
+(menu <code class="docutils literal notranslate"><span class="pre">mmSolver</span> <span class="pre">&gt;</span> <span class="pre">Load</span> <span class="pre">Marker...</span></code>), and press <code class="docutils literal notranslate"><span class="pre">Load</span></code>.</p>
+<p>For more details, see <a class="reference internal" href="#load-markers-in-maya-ref"><span class="std std-ref">Load Markers in Maya</span></a>.</p>
+</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>There are some important limitations in the add-on provided.</p>
+<ul class="last simple">
+<li>Cameras cannot have animated focal lengths inside the Motion Clip Editor.
+Therefore it is recommended not to use the “overscan” feature of the
+<code class="docutils literal notranslate"><span class="pre">Load</span> <span class="pre">Marker</span></code> tool in Maya.</li>
+<li>There is no Python function to undistort 2D data.
+Therefore it is not recommended to track “distorted” footage
+because there is no way to undistort the 2D Markers in Maya (currently).</li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Blender versions 2.83.18 LTS, 2.93.6 LTS, and v3.0.0 are known to work,
+other Blender versions with-in the same minor release will likely work,
+but has not been tested.</p>
 </div>
 </div>
 <div class="section" id="loading-markers-in-maya">
@@ -310,6 +356,7 @@ for each camera.</em></p>
 <li><a class="reference internal" href="#load-markers">Load Markers</a><ul>
 <li><a class="reference internal" href="#copy-2d-tracks-from-3dequalizer">Copy 2D Tracks from 3DEqualizer</a></li>
 <li><a class="reference internal" href="#d-tracks-rolling-shutter-correction">2D Tracks Rolling Shutter Correction</a></li>
+<li><a class="reference internal" href="#copy-2d-tracks-from-blender">Copy 2D Tracks from Blender</a></li>
 <li><a class="reference internal" href="#loading-markers-in-maya">Loading Markers in Maya</a></li>
 <li><a class="reference internal" href="#updating-replacing-markers-in-maya">Updating / Replacing Markers in Maya</a></li>
 </ul>
@@ -370,7 +417,7 @@ for each camera.</em></p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.6.
     </div>
   </body>
 </html>

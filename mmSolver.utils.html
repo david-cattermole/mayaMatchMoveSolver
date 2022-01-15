@@ -60,7 +60,7 @@ all end in tears.</p>
 </div>
 <dl class="function">
 <dt id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='140269777623888'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='140269777624080'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='140269777624272'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mmSolver.utils.animcurve.</code><code class="descname">create_anim_curve_node_apione</code><span class="sig-paren">(</span><em>times</em>, <em>values</em>, <em>node_attr=None</em>, <em>tangent_in_type=&lt;MyCustomMock id='140439737450768'&gt;</em>, <em>tangent_out_type=&lt;MyCustomMock id='140439737450960'&gt;</em>, <em>anim_type=&lt;MyCustomMock id='140439737451088'&gt;</em>, <em>undo_cache=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1561,10 +1561,45 @@ RAYTRACE_EPSILON.</li>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The closest world space intersection, over all mesh nodes
-given, or None if no point was found.</p>
+given, or None if no point was found</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">maya.OpenMaya.MFloatPoint or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.raytrace.closest_intersect_with_normal">
+<code class="descclassname">mmSolver.utils.raytrace.</code><code class="descname">closest_intersect_with_normal</code><span class="sig-paren">(</span><em>source</em>, <em>direction</em>, <em>mesh_nodes</em>, <em>test_both_directions=False</em>, <em>max_dist=None</em>, <em>tolerance=None</em>, <em>use_smooth_mesh=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.raytrace.closest_intersect_with_normal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the closest intersection point and normal on meshes given a
+source point and direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) – Origin point of the ray projection.</li>
+<li><strong>direction</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) – The direction the ray will travel.</li>
+<li><strong>mesh_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Mesh nodes</li>
+<li><strong>test_both_directions</strong> (<em>bool</em>) – testing ray direction both sides;
+default is False.</li>
+<li><strong>max_dist</strong> (<em>float</em>) – The maximum distance the ray will travel before
+stopping; default is RAYTRACE_MAX_DIST.</li>
+<li><strong>tolerance</strong> (<em>float</em>) – The minimum ray trace tolerance; default is
+RAYTRACE_EPSILON.</li>
+<li><strong>use_smooth_mesh</strong> (<em>bool</em>) – Use smooth preview mesh for intersection.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The closest world space intersection, over all mesh nodes
+given, return a tuple of the
+point and normal, or (None, None), if no point was found.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(maya.OpenMaya.MFloatPoint, maya.OpenMaya.MVector) or None</p>
 </td>
 </tr>
 </tbody>
@@ -1881,6 +1916,52 @@ letters as a human would expect:</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">{str: [int, ..]}</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.time.get_frame_range">
+<code class="descclassname">mmSolver.utils.time.</code><code class="descname">get_frame_range</code><span class="sig-paren">(</span><em>frame_range_mode</em>, <em>start_frame=None</em>, <em>end_frame=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.time.get_frame_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the FrameRange from the mode and start/end frame numbers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>frame_range_mode</strong> (<em>mmSolver.utils.constant.FRAME_RANGE_MODE_*_VALUE</em>) – The mode or type of frame range to
+get. For example we can get the current inner or outer
+timeline defined in the Maya scene.</li>
+<li><strong>start_frame</strong> (<em>int</em><em> or </em><em>None</em>) – If the frame_range_mode is set to
+FRAME_RANGE_MODE_CUSTOM_VALUE, this argument defines the exact
+start_frame to use. This argument is not used for any other
+frame_range_mode and can be left as None.</li>
+<li><strong>end_frame</strong> (<em>int</em><em> or </em><em>None</em>) – If the frame_range_mode is set to
+FRAME_RANGE_MODE_CUSTOM_VALUE, this argument defines the exact
+end_frame to use. This argument is not used for any other
+frame_range_mode and can be left as None.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#mmSolver.utils.time.FrameRange" title="mmSolver.utils.time.FrameRange">FrameRange</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mmSolver.utils.time.convert_frame_range_to_frame_list">
+<code class="descclassname">mmSolver.utils.time.</code><code class="descname">convert_frame_range_to_frame_list</code><span class="sig-paren">(</span><em>frame_range</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.time.convert_frame_range_to_frame_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a FrameRange to a list of integer frame numbers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>frame_range</strong> (<a class="reference internal" href="#mmSolver.utils.time.FrameRange" title="mmSolver.utils.time.FrameRange"><em>FrameRange</em></a>) – The frame range to convert to a list.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">[int, ..] or []</td>
 </tr>
 </tbody>
 </table>
@@ -3175,7 +3256,7 @@ isolate object list.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.6.
     </div>
   </body>
 </html>

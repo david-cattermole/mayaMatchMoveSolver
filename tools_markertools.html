@@ -134,11 +134,31 @@ between all the selected Markers.</p>
 from the associated camera.</p>
 <p>Select markers and mesh objects to ray-cast on to, if no mesh objects
 are selected the tool will ray-cast on to all visible mesh objects.</p>
-<p>If a bundle translate attribute is locked, it will be unlocked, then
-projected, and then the lock state will be reverted to the original
-value.</p>
+<p>If a bundle translate or rotation attribute is locked, it will be
+unlocked, then projected, and then the lock state will be reverted to
+the original value.</p>
 <p>The viewport camera does not need to be active for this tool to
 project. The tool will work on the current frame only.</p>
+<p>You may choose to change the bundle’s rotation attributes with these options:</p>
+<table border="1" class="colwidths-auto docutils" id="id1">
+<caption><span class="caption-text">Bundle Rotation Options</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>No Change</td>
+<td>Do not change the bundle rotation attributes at all.</td>
+</tr>
+<tr class="row-odd"><td>Aim At Camera</td>
+<td>Aim the bundle rotations towards the camera position.</td>
+</tr>
+<tr class="row-even"><td>Mesh Normal</td>
+<td>Set the bundle rotations to the hit mesh face normal.</td>
+</tr>
+</tbody>
+</table>
 <p>Usage:</p>
 <ol class="arabic simple">
 <li>Select Markers.</li>
@@ -297,7 +317,7 @@ normal visibility.</li>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.6.
     </div>
   </body>
 </html>

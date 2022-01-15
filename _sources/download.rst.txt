@@ -173,5 +173,14 @@ The tool can be accessed as a standard export script in the menu
 Tracks in the scene as .uv file format, ready to be imported into
 mmSolver.
 
+Install Blender Add-On
+----------------------
+
+Starting with mmSolver v0.3.15 a Blender Add-On (.zip file) is
+included in the 'blender' directory of mmSolver.
+
+If you wish to use Blender's 2D tracking featurs along with mmSolver
+please see the documentation for :ref:`installation and usage tips <copy-blender-2d-tracks-ref>`.
+
 .. _releases:
    https://github.com/david-cattermole/mayaMatchMoveSolver/releases

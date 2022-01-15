@@ -184,6 +184,12 @@ It is possible to use Blender (v2.80+) to track 2D Markers for use in mmSolver.
 
 .. note::
 
+    When loading 2D Tracks from Blender, change the ``Distortion
+    Mode`` to ``distort``, because Blender does not support
+    undistorting 2D tracks.
+
+.. note::
+
    There are some important limitations in the add-on provided.
 
    - Cameras cannot have animated focal lengths inside the Motion Clip Editor.

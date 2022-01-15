@@ -3,9 +3,9 @@
 Licenses
 ========
 
-    Copyright (C) 2018, 2019, 2020, 2021 David Cattermole.
+    Copyright (C) 2018-2022 David Cattermole.
     Copyright (C) 2019 Anil Reddy.
-    Copyright (C) 2020, 2021 Kazuma Tonegawa.
+    Copyright (C) 2020-2022 Kazuma Tonegawa.
     Copyright (C) 2021 Patcha Saheb Binginapalli.
 
 This software, mmSolver, is licensed under the GNU LGPL v3 license.

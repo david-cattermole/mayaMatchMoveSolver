@@ -37,14 +37,11 @@
 
 // STL
 #include <cmath>
-#include <cinttypes>
+#include <cstdint>
 #include <cstdlib>
 
 // Utils
 #include <utilities/debugUtils.h>
-
-// Maya
-#include <maya/MStreamUtils.h>
 
 namespace calibrate {
 
@@ -74,9 +71,7 @@ calcVanishingPointFromLinePair(
     if (success) {
         outPoint = vanishingPoint;
     } else {
-        MStreamUtils::stdErrorStream()
-            << "ERROR: Failed to calculate vanishing point."
-            << '\n';
+        INFO("ERROR: Failed to calculate vanishing point.");
     }
     return success;
 }
@@ -261,10 +256,8 @@ createOrientationMatrix(
         side = mmdata::Vector3D(-1, 0, 0);
     }
     else {
-        MStreamUtils::stdErrorStream()
-            << "ERROR: Invalid OrientationPlane: "
-            << static_cast<int>(orientPlane)
-            << '\n';
+        INFO("ERROR: Invalid OrientationPlane: "
+             << static_cast<int>(orientPlane));
         return mmdata::Matrix4x4();;
     }
     auto up = mmmath::cross(forward, side);
@@ -358,10 +351,8 @@ applySceneScale(
         translation.y_ *= scaleFactor;
         translation.z_ *= scaleFactor;
     } else {
-        MStreamUtils::stdErrorStream()
-            << "ERROR: Invalid SceneScaleMode: "
-            << static_cast<int>(sceneScaleMode)
-            << '\n';
+        INFO("ERROR: Invalid SceneScaleMode: "
+             << static_cast<int>(sceneScaleMode));
         return false;
     }
     outCameraTransform = mmdata::Matrix4x4(cameraTransform);
@@ -394,9 +385,7 @@ calcCameraParameters(
         focalLengthFactor,
         transformInverse);
     if (ok) {
-        MStreamUtils::stdErrorStream()
-            << "ERROR: Camera Rotation calculation is invalid. "
-            << '\n';
+        INFO("ERROR: Camera Rotation calculation is invalid. ");
         return false;
     }
 
@@ -409,9 +398,7 @@ calcCameraParameters(
         translation
     );
     if (!ok) {
-        MStreamUtils::stdErrorStream()
-            << "ERROR: Invalid translation vector."
-            << '\n';
+        INFO("ERROR: Invalid translation vector.");
         return false;
     }
 
@@ -446,11 +433,9 @@ calcCameraParameters(
         sceneScaleDistance_cm,
         transformScaled);
     if (!ok) {
-        MStreamUtils::stdErrorStream()
-            << "ERROR: Invalid scene scale. "
-            << "sceneScaleDistance_cm=" << sceneScaleDistance_cm
-            << "sceneScaleMode" << static_cast<int>(sceneScaleMode)
-            << '\n';
+        INFO("ERROR: Invalid scene scale. "
+             << "sceneScaleDistance_cm=" << sceneScaleDistance_cm
+             << "sceneScaleMode" << static_cast<int>(sceneScaleMode));
         return false;
     }
 

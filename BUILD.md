@@ -24,7 +24,9 @@ Required:
   - MacOS
     - [Xcode 7.3.1 with SDK 10.11, clang with libc++](https://developer.apple.com/download) (Maya 2018)
     - [Xcode version 7.3.1 and CMake are required](https://developer.apple.com/download) (Maya 2019)
-- [CMake 3.12+](https://cmake.org/)
+- [CMake 3.15+](https://cmake.org/)
+  - Older versions may work, however the Blender Add-On may fail to
+    generate.
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
 - [Maya Development Kit](https://www.autodesk.com/developer-network/platform-technologies/maya)
 - [CMinpack 1.3.8](https://github.com/devernay/cminpack/releases/tag/v1.3.8)
@@ -45,7 +47,7 @@ Required:
 
 An overview of compiling is:
 
-1. Download and compile Third-party projects.
+1. Download and compile third-party projects.
 2. Compile mmSolver.
 3. Copy 3DEqualizer python scripts into `.3dequalizer` user directory.
 
@@ -57,7 +59,7 @@ On Linux:
 # Go to root of project directory.
 $ cd <project root>
 
-# Download and Build Third-Party projects automatically.
+# Download and Build third-party projects automatically.
 $ bash scripts/build_thirdparty.bash
 
 # Build mmSolver, compile UI files, compile Maya plug-in, build
@@ -78,7 +80,7 @@ On Windows:
 :: Go to root of project directory.
 > CD <project root>
 
-:: Download and Build Third-Party projects automatically.
+:: Download and Build third-party projects automatically.
 > scripts/build_thirdparty.bat
 
 :: Build mmSolver, compile UI files, compile Maya plug-in, build

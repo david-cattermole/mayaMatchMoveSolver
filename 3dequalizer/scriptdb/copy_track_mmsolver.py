@@ -1,6 +1,6 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# Copyright (C) 2018, 2019, 2020 David Cattermole.
+# Copyright (C) 2018, 2019, 2020, 2021 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Copy 2D Tracks (MM Solver)
 #
-# 3DE4.script.version:  v1.8
+# 3DE4.script.version:  v1.9
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Point
 # 3DE4.script.gui:      Object Browser::Context Menu Points
@@ -51,6 +51,8 @@
 # 3DE4.script.comment:  MM Solver v0.3.1+.
 #
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 
 import json
@@ -60,6 +62,14 @@ import time
 import vl_sdv
 import tde4
 
+
+IS_PYTHON_2 = sys.version_info[0] == 2
+if IS_PYTHON_2 is True:
+    text_type = basestring
+    int_type = (int, long)
+else:
+    text_type = str
+    int_type = int
 
 TITLE = 'Copy 2D Tracks to MM Solver...'
 EXT = '.uv'
@@ -161,8 +171,7 @@ def main():
     now_str = time.strftime('%Y-%m-%d_%H_%M')
     prefix = 'tmp_{0}_'.format(now_str)
     f = tempfile.NamedTemporaryFile(
-        mode='w+b',
-        bufsize=-1,
+        mode='w',
         prefix=prefix,
         suffix=file_ext,
         delete=False
@@ -624,8 +633,8 @@ def _generate_v1(point_group, camera, points,
     :returns: A ASCII format string, with the UV Track data in it.
     :rtype: str
     """
-    assert isinstance(point_group, basestring)
-    assert isinstance(camera, basestring)
+    assert isinstance(point_group, text_type)
+    assert isinstance(camera, text_type)
     assert isinstance(points, (list, tuple))
     assert start_frame is None or isinstance(start_frame, int)
     assert isinstance(undistort, bool)
@@ -781,10 +790,10 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
     :returns: A JSON format string, with the UV Track data in it.
     :rtype: str
     """
-    assert isinstance(point_group, basestring)
-    assert isinstance(camera, basestring)
+    assert isinstance(point_group, text_type)
+    assert isinstance(camera, text_type)
     assert isinstance(points, (list, tuple))
-    assert isinstance(version, (int, long))
+    assert isinstance(version, int_type)
     assert version in [UV_TRACK_FORMAT_VERSION_2,
                        UV_TRACK_FORMAT_VERSION_3,
                        UV_TRACK_FORMAT_VERSION_4]

@@ -1,6 +1,6 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2019, 2021 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Paste Camera (MM Solver)...
 #
-# 3DE4.script.version:  v1.4
+# 3DE4.script.version:  v1.6
 #
 # 3DE4.script.gui:      Object Browser::Context Menu Camera
 # 3DE4.script.gui:      Object Browser::Context Menu Cameras
@@ -46,9 +46,22 @@
 #
 #
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import tde4
 import mmcamera_format
+
+
+IS_PYTHON_2 = sys.version_info[0] == 2
+if IS_PYTHON_2 is True:
+    text_type = basestring
+    int_type = (int, long)
+else:
+    text_type = str
+    int_type = int
 
 # GUI Constants
 TITLE = 'Paste Camera (MM Solver)...'
@@ -138,7 +151,7 @@ def _parse_data(file_path):
     :rtype: dict or None
     """
     assert file_path is not None
-    assert isinstance(file_path, basestring)
+    assert isinstance(file_path, text_type)
     assert len(file_path) > 0
     try:
         file_data = mmcamera_format.parse(file_path)
@@ -158,7 +171,7 @@ def _file_path_is_valid(file_path):
     """
     if file_path is None:
         return False
-    if not isinstance(file_path, basestring):
+    if not isinstance(file_path, text_type):
         return False
     if len(file_path) == 0:
         return False
@@ -236,12 +249,12 @@ def _run_gui(req, pgroup_id, cam_id, lens_id):
     file_path = options.get('file_path')
     is_valid_file_path = _file_path_is_valid(file_path)
     if is_valid_file_path is False:
-        print 'Error: File path is not valid.'
+        print('Error: File path is not valid.')
         return
     file_data = _parse_data(file_path)
     has_valid_data = _file_data_has_valid_data(file_data)
     if has_valid_data is False:
-        print 'Error: File data is not valid.'
+        print('Error: File data is not valid.')
         return
 
     # Pass widget values to run function.
@@ -432,7 +445,7 @@ def _build_gui(file_path):
     Build the widgets at the top of the window.
 
     :param file_path: The initial file path to parse.
-    :type file_path: basestring or None
+    :type file_path: text_type or None
 
     :returns: 3DEqualizer UI request id.
     """

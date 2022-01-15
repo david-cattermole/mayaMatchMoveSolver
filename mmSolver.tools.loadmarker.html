@@ -49,86 +49,11 @@
   <div class="section" id="module-mmSolver.tools.loadmarker">
 <span id="mmsolver-tools-loadmarker"></span><h1>mmSolver.tools.loadmarker<a class="headerlink" href="#module-mmSolver.tools.loadmarker" title="Permalink to this headline">¶</a></h1>
 <p>Tool to load markers into Maya from various thirdparty file formats.</p>
-<div class="section" id="module-mmSolver.tools.loadmarker.tool">
-<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.loadmarker.tool" title="Permalink to this headline">¶</a></h2>
-<p>The Load Marker tool - user facing.</p>
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.tool.open_window">
-<code class="descclassname">mmSolver.tools.loadmarker.tool.</code><code class="descname">open_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.tool.open_window" title="Permalink to this definition">¶</a></dt>
-<dd><p>Open the Load Marker GUI.</p>
-</dd></dl>
-
+<div class="section" id="tool">
+<h2>Tool<a class="headerlink" href="#tool" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-mmSolver.tools.loadmarker.lib.mayareadfile">
-<span id="library-basics"></span><h2>Library - Basics<a class="headerlink" href="#module-mmSolver.tools.loadmarker.lib.mayareadfile" title="Permalink to this headline">¶</a></h2>
-<p>Module for reading marker files.</p>
-<p>This should be used by end-users, not the internal modules.</p>
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.mayareadfile.read">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.mayareadfile.</code><code class="descname">read</code><span class="sig-paren">(</span><em>file_path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.mayareadfile.read" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read a file path, find the format parser based on the file extension.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.mayareadfile.create_nodes">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.mayareadfile.</code><code class="descname">create_nodes</code><span class="sig-paren">(</span><em>mkr_data_list</em>, <em>cam=None</em>, <em>mkr_grp=None</em>, <em>col=None</em>, <em>with_bundles=None</em>, <em>load_bundle_position=None</em>, <em>camera_field_of_view=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.mayareadfile.create_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create Markers for all given MarkerData objects</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mkr_data_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.interface.MarkerData" title="mmSolver.tools.loadmarker.lib.interface.MarkerData"><em>MarkerData</em></a><em>, </em><em>.</em><em>]</em>) – List of MarkerData with data for creating
-markers.</li>
-<li><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – Camera to create Markers under.</li>
-<li><strong>mkr_grp</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a>) – Marker Group, under cam, that the markers will
-be created under.</li>
-<li><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a><em> or </em><em>None</em>) – Collection to add Markers to.</li>
-<li><strong>with_bundles</strong> (<em>bool</em>) – Create a bundle for each Marker.</li>
-<li><strong>load_bundle_position</strong> (<em>bool</em>) – Apply the 3D positions to bundle.</li>
-<li><strong>camera_field_of_view</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>]</em>) – The camera field of view of the
-original camera with this 2D data.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of Markers.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker">Marker</a>, .]</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.mayareadfile.update_nodes">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.mayareadfile.</code><code class="descname">update_nodes</code><span class="sig-paren">(</span><em>mkr_list</em>, <em>mkr_data_list</em>, <em>load_bundle_position=None</em>, <em>camera_field_of_view=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.mayareadfile.update_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the given mkr_list with data from mkr_data_list.
-The length of both lists must match.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) – Markers to update.</li>
-<li><strong>mkr_data_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.interface.MarkerData" title="mmSolver.tools.loadmarker.lib.interface.MarkerData"><em>MarkerData</em></a><em>, </em><em>.</em><em>]</em>) – The MarkerData list to search for a match.</li>
-<li><strong>load_bundle_position</strong> (<em>bool</em>) – Apply the 3D positions to bundle.</li>
-<li><strong>camera_field_of_view</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>]</em>) – The camera field of view of the
-original camera with this 2D data.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of Marker objects that were changed.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker">Marker</a>, .]</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+<div class="section" id="library-basics">
+<h2>Library - Basics<a class="headerlink" href="#library-basics" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-mmSolver.tools.loadmarker.lib.formatmanager">
 <span id="library-advanced"></span><h2>Library - Advanced<a class="headerlink" href="#module-mmSolver.tools.loadmarker.lib.formatmanager" title="Permalink to this headline">¶</a></h2>
@@ -551,213 +476,6 @@ static if all values are the same.</p>
 
 </dd></dl>
 
-<span class="target" id="module-mmSolver.tools.loadmarker.lib.utils"></span><p>The Load Marker tool - user facing.</p>
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.utils.get_selected_cameras">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">get_selected_cameras</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_selected_cameras" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the (associated) Camera objects from the selection.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Camera objects.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera">mmSolver.api.Camera</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.utils.get_cameras">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">get_cameras</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_cameras" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all cameras in the scene file.</p>
-<p>Start-up cameras are ignored (‘persp’, ‘top’, ‘side’, ‘front’, etc)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of mmSolver.api.Camera</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.utils.get_marker_groups">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">get_marker_groups</code><span class="sig-paren">(</span><em>cam</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_marker_groups" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all MarkerGroups for the given camera.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of mmSolver.api.MarkerGroup</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.utils.get_selected_markers">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">get_selected_markers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_selected_markers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get selected Marker object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of mmSolver.api.Marker</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.utils.get_active_viewport_camera">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">get_active_viewport_camera</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_active_viewport_camera" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the Camera that is attached to the active viewport.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The Camera object, or None.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera">Camera</a> or None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.utils.get_start_directory">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">get_start_directory</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_start_directory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a start directory for a file browser window.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> – An input</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.utils.create_new_camera">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">create_new_camera</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.create_new_camera" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new camera nodes and object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Camera object.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera">Camera</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.utils.create_new_marker_group">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">create_new_marker_group</code><span class="sig-paren">(</span><em>cam</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.create_new_marker_group" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new marker group node and object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The camera to create the Marker Group under.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">MarkerGroup object.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="mmSolver.api.html#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup">MarkerGroup</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.utils.get_default_image_resolution">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">get_default_image_resolution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_default_image_resolution" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get image resolution from Maya Render Settings (Render ‘Globals’).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">tuple of two ints.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">(int, int)</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.utils.trigger_maya_to_refresh">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">trigger_maya_to_refresh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.trigger_maya_to_refresh" title="Permalink to this definition">¶</a></dt>
-<dd><p>Trigger Maya to refresh.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.utils.deferred_revert_of_config_value">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.utils.</code><code class="descname">deferred_revert_of_config_value</code><span class="sig-paren">(</span><em>config</em>, <em>key</em>, <em>old_value</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.deferred_revert_of_config_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the user preferences to a value, as a deferred fashion.</p>
-</dd></dl>
-
-<span class="target" id="module-mmSolver.tools.loadmarker.lib.fieldofview"></span><p>Camera field of view maths related functions.</p>
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.fieldofview.get_camera_field_of_view">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.fieldofview.</code><code class="descname">get_camera_field_of_view</code><span class="sig-paren">(</span><em>cam_shp</em>, <em>frames</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.fieldofview.get_camera_field_of_view" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the Camera’s field of view with a camera shape node at frames.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cam_shp</strong> (<em>str</em>) – Maya camera shape node.</li>
-<li><strong>frames</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) – List of frames to sample the camera/marker group</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[(int, float, float), .]</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.loadmarker.lib.fieldofview.calculate_overscan_ratio">
-<code class="descclassname">mmSolver.tools.loadmarker.lib.fieldofview.</code><code class="descname">calculate_overscan_ratio</code><span class="sig-paren">(</span><em>cam</em>, <em>mkr_grp</em>, <em>camera_fov</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.fieldofview.calculate_overscan_ratio" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate overscan with camera and FOV.</p>
-<p>Query the overscan of cam by comparing to the camera_fov
-field of view.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The mmSolver.api.Camera object to query field of view from.</li>
-<li><strong>camera_fov</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>, </em><em>.</em><em>]</em>) – Tuple of camera field of view per-frame values X and Y.</li>
-<li><strong>mkr_grp</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a><em> or </em><em>None</em>) – The mmapi MarkerGroup object, to be used additionally to the
-provided camera to calculate the overscan.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Overscan X and Y values.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(float, float)</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </div>
 <div class="section" id="module-mmSolver.tools.loadmarker.lib.formats">
 <span id="library-formats"></span><h2>Library - Formats<a class="headerlink" href="#module-mmSolver.tools.loadmarker.lib.formats" title="Permalink to this headline">¶</a></h2>
@@ -1092,8 +810,8 @@ UV_TRACK_FORMAT_VERSION_3 formats.</li>
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.loadmarker</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.tool">Tool</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.lib.mayareadfile">Library - Basics</a></li>
+<li><a class="reference internal" href="#tool">Tool</a></li>
+<li><a class="reference internal" href="#library-basics">Library - Basics</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.lib.formatmanager">Library - Advanced</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.lib.formats">Library - Formats</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.constant">Constants</a></li>
@@ -1150,7 +868,7 @@ UV_TRACK_FORMAT_VERSION_3 formats.</li>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.6.
     </div>
   </body>

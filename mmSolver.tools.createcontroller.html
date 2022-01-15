@@ -49,109 +49,11 @@
   <div class="section" id="module-mmSolver.tools.createcontroller">
 <span id="mmsolver-tools-createcontroller"></span><h1>mmSolver.tools.createcontroller<a class="headerlink" href="#module-mmSolver.tools.createcontroller" title="Permalink to this headline">¶</a></h1>
 <p>Create a new transform node to control an existing node.</p>
-<div class="section" id="module-mmSolver.tools.createcontroller.tool">
-<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.createcontroller.tool" title="Permalink to this headline">¶</a></h2>
-<p>Create a controller transform node.</p>
-<p>Usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="p">)</span> <span class="n">Select</span> <span class="n">transform</span> <span class="n">node</span><span class="o">.</span>
-
-<span class="mi">2</span><span class="p">)</span> <span class="n">Run</span> <span class="s1">&#39;create&#39;</span> <span class="n">tool</span><span class="p">,</span> <span class="n">new</span> <span class="n">world</span><span class="o">-</span><span class="n">space</span> <span class="n">transform</span> <span class="ow">is</span> <span class="n">created</span> <span class="n">at</span> <span class="n">same</span>
-   <span class="n">position</span> <span class="k">as</span> <span class="nb">input</span> <span class="n">transform</span> <span class="n">nodes</span><span class="o">.</span>
-
-<span class="mi">3</span><span class="p">)</span> <span class="n">New</span> <span class="n">nodes</span> <span class="n">are</span> <span class="n">selected</span><span class="o">.</span>
-
-<span class="mi">4</span><span class="p">)</span> <span class="n">User</span> <span class="n">manipulates</span> <span class="n">newly</span> <span class="n">created</span> <span class="n">nodes</span><span class="o">.</span>
-
-<span class="mi">5</span><span class="p">)</span> <span class="n">Run</span> <span class="s1">&#39;bake&#39;</span> <span class="n">tool</span><span class="p">,</span> <span class="n">selected</span> <span class="n">transform</span> <span class="n">nodes</span> <span class="n">are</span> <span class="n">deleted</span> <span class="ow">and</span>
-    <span class="n">animation</span> <span class="ow">is</span> <span class="n">transfered</span> <span class="n">back</span> <span class="n">onto</span> <span class="n">original</span> <span class="n">nodes</span><span class="o">.</span>
-</pre></div>
+<div class="section" id="tool">
+<h2>Tool<a class="headerlink" href="#tool" title="Permalink to this headline">¶</a></h2>
 </div>
-<dl class="function">
-<dt id="mmSolver.tools.createcontroller.tool.create">
-<code class="descclassname">mmSolver.tools.createcontroller.tool.</code><code class="descname">create</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller.tool.create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a controller for selected nodes.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.createcontroller.tool.remove">
-<code class="descclassname">mmSolver.tools.createcontroller.tool.</code><code class="descname">remove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller.tool.remove" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove selected controllers and bake data on controlled nodes.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-mmSolver.tools.createcontroller.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.createcontroller.lib" title="Permalink to this headline">¶</a></h2>
-<p>Create a controller transform node.</p>
-<p>Ideas:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Have</span> <span class="n">a</span> <span class="n">flag</span> <span class="n">to</span> <span class="n">allow</span> <span class="n">maintaining</span> <span class="n">the</span> <span class="n">relative</span> <span class="n">hierarchy</span> <span class="n">of</span> <span class="n">the</span>
-  <span class="nb">input</span> <span class="n">transforms</span><span class="o">.</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If no keyframes are set, this tool works on the current
-frame and adds a keyframe to the controller.</p>
-</div>
-<dl class="function">
-<dt id="mmSolver.tools.createcontroller.lib.create">
-<code class="descclassname">mmSolver.tools.createcontroller.lib.</code><code class="descname">create</code><span class="sig-paren">(</span><em>nodes</em>, <em>current_frame=None</em>, <em>eval_mode=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller.lib.create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a Controller for the given nodes.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – The nodes to create Controller for.</li>
-<li><strong>current_frame</strong> (<em>float</em><em> or </em><em>int</em>) – What frame number is considered to be
-‘current’ when evaluating transforms without
-any keyframes.</li>
-<li><strong>eval_mode</strong> (<em>mmSolver.utils.constant.EVAL_MODE_*</em>) – What type of transform evaluation method to use?</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of controller transform nodes.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[str, .]</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.createcontroller.lib.remove">
-<code class="descclassname">mmSolver.tools.createcontroller.lib.</code><code class="descname">remove</code><span class="sig-paren">(</span><em>nodes</em>, <em>current_frame=None</em>, <em>eval_mode=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller.lib.remove" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove a controller and push the animation back to the controlled
-object.</p>
-<p>Order the nodes to remove by hierarchy depth. This means that
-children will be removed first, then parents, this ensures we
-don’t delete a controller accidentally when a parent controller is
-deleted first.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – The nodes to delete.</li>
-<li><strong>current_frame</strong> (<em>float</em><em> or </em><em>int</em>) – What frame number is considered to be
-‘current’ when evaluating transforms without
-any keyframes.</li>
-<li><strong>eval_mode</strong> (<em>mmSolver.utils.constant.EVAL_MODE_*</em>) – What type of transform evaluation method to use?</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of once controlled transform nodes, that are no
-longer controlled.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[str, .]</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+<div class="section" id="library">
+<h2>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-mmSolver.tools.createcontroller.constant">
 <span id="constant"></span><h2>Constant<a class="headerlink" href="#module-mmSolver.tools.createcontroller.constant" title="Permalink to this headline">¶</a></h2>
@@ -168,8 +70,8 @@ longer controlled.</p>
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.createcontroller</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.createcontroller.tool">Tool</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.createcontroller.lib">Library</a></li>
+<li><a class="reference internal" href="#tool">Tool</a></li>
+<li><a class="reference internal" href="#library">Library</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.createcontroller.constant">Constant</a></li>
 </ul>
 </li>
@@ -224,7 +126,7 @@ longer controlled.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.6.
     </div>
   </body>

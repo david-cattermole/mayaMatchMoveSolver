@@ -48,40 +48,8 @@
             
   <div class="section" id="module-mmSolver.tools.raycastmarker">
 <span id="mmsolver-tools-raycastmarker"></span><h1>mmSolver.tools.raycastmarker<a class="headerlink" href="#module-mmSolver.tools.raycastmarker" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-mmSolver.tools.raycastmarker.tool">
-<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.raycastmarker.tool" title="Permalink to this headline">¶</a></h2>
-<p>This is a Ray cast Markers tool.</p>
-<dl class="function">
-<dt id="mmSolver.tools.raycastmarker.tool.main">
-<code class="descclassname">mmSolver.tools.raycastmarker.tool.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.raycastmarker.tool.main" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ray-casts each bundle connected to the selected markers on to the
-mesh from the associated camera.</p>
-<p>Select markers and mesh objects to ray-cast on to, if no mesh
-objects are selected the tool will ray-cast on to all visible mesh
-objects.</p>
-<p>If a bundle translate attribute is locked, it will be
-unlocked, then projected, and then the lock state will
-be reverted to the original value.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The Marker node is the origin point of the ray-cast, <em>not</em> the
-camera’s pivot position. This is intentional. If the user has a single
-dense (LIDAR) model node it can be helpful to project from a distance
-away from the camera origin. With a single dense mesh it is difficult
-to split the model up to use different mesh selections.</p>
-</div>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mmSolver.tools.raycastmarker.tool</span> <span class="k">as</span> <span class="nn">tool</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="mmSolver.tools.raycastmarker.tool.open_window">
-<code class="descclassname">mmSolver.tools.raycastmarker.tool.</code><code class="descname">open_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.raycastmarker.tool.open_window" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="tools">
+<h2>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -94,7 +62,7 @@ to split the model up to use different mesh selections.</p>
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.raycastmarker</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.raycastmarker.tool">Tools</a></li>
+<li><a class="reference internal" href="#tools">Tools</a></li>
 </ul>
 </li>
 </ul>
@@ -148,7 +116,7 @@ to split the model up to use different mesh selections.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, 2019, 2020, David Cattermole, Anil Reddy..
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.6.
     </div>
   </body>

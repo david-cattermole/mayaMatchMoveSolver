@@ -3,6 +3,7 @@
 .DS_Store
 #*
 *~
+*_.*
 *.pyc
 cmake-build-*
 *build/*

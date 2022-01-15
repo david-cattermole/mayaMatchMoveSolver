@@ -303,31 +303,26 @@ Run in the Linux Bash terminal:
 ```commandline
 # Maya 2016
 $ load_maya2016.sh  # Example script to set up Maya environment
-$ alias sphinx-build=sphinx-build-3  # Use Sphinx Build for Python 3.
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2016Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2016Deploy_linux
 $ cd /media/dev/mayaMatchMoveSolver_maya2016Deploy_linux ; git fetch --all; git checkout -f master; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_linux_maya2016.bash
 
 # Maya 2017
 $ load_maya2017.sh  # Example script to set up Maya environment
-$ alias sphinx-build=sphinx-build-3  # Use Sphinx Build for Python 3.
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2017Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2017Deploy_linux
 $ cd /media/dev/mayaMatchMoveSolver_maya2017Deploy_linux ; git fetch --all; git checkout -f master; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_linux_maya2017.bash
 
 # Maya 2018
 $ load_maya2018.sh  # Example script to set up Maya environment
-$ alias sphinx-build=sphinx-build-3  # Use Sphinx Build for Python 3.
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2018Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2018Deploy_linux
 $ cd /media/dev/mayaMatchMoveSolver_maya2018Deploy_linux ; git fetch --all; git checkout -f master; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_linux_maya2018.bash
 
 # Maya 2019
 $ load_maya2019.sh  # Example script to set up Maya environment
-$ alias sphinx-build=sphinx-build-3  # Use Sphinx Build for Python 3.
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2019Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2019Deploy_linux
 $ cd /media/dev/mayaMatchMoveSolver_maya2019Deploy_linux ; git fetch --all; git checkout -f master; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_linux_maya2019.bash
 
 # Maya 2020
 $ load_maya2020.sh  # Example script to set up Maya environment
-$ alias sphinx-build=sphinx-build-3  # Use Sphinx Build for Python 3.
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2020Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2020Deploy_linux
 $ cd /media/dev/mayaMatchMoveSolver_maya2020Deploy_linux ; git fetch --all; git checkout -f master; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_linux_maya2020.bash
 ```

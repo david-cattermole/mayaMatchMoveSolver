@@ -24,7 +24,9 @@ Required:
   - MacOS
     - [Xcode 7.3.1 with SDK 10.11, clang with libc++](https://developer.apple.com/download) (Maya 2018)
     - [Xcode version 7.3.1 and CMake are required](https://developer.apple.com/download) (Maya 2019)
-- [CMake 2.8+](https://cmake.org/)
+- [CMake 3.15+](https://cmake.org/)
+  - Older versions may work, however the Blender Add-On may fail to
+    generate.
 - [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
 - [Maya Development Kit](https://www.autodesk.com/developer-network/platform-technologies/maya)
 - [CMinpack 1.3.6](https://github.com/devernay/cminpack/releases/tag/v1.3.6)

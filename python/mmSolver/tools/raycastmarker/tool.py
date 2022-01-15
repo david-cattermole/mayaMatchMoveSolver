@@ -1,4 +1,4 @@
-# Copyright (C) 2019, 2020, Anil Reddy, David Cattermole.
+# Copyright (C) 2019, 2020, 2021, Anil Reddy, David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -50,11 +50,13 @@ def _get_active_or_selected_camera(cam_node_list):
 
 
 def _add_unique_markers_to_list(mkr, mkr_list, mkr_uid_list):
+    """
+    Warning: Modifies the mkr_list and mkr_uid_list lists inside this function.
+    """
     mkr_uid = mkr.get_node_uid()
     if mkr_uid not in mkr_uid_list:
         mkr_list.append(mkr)
         mkr_uid_list.add(mkr_uid)
-    # return mkr_list, mkr_uid_list
 
 
 def _get_markers(mkr_node_list, bnd_node_list, active_cam_shp):
@@ -176,6 +178,9 @@ def main():
     frame_range = time_utils.FrameRange(frame_start, frame_end)
 
     use_smooth_mesh = True
+    bundle_rotate_mode = configmaya.get_scene_option(
+        const.CONFIG_BUNDLE_ROTATE_MODE_KEY,
+        default=const.DEFAULT_BUNDLE_ROTATE_MODE)
     bundle_unlock_relock = configmaya.get_scene_option(
         const.CONFIG_BUNDLE_UNLOCK_RELOCK_KEY,
         default=const.DEFAULT_BUNDLE_UNLOCK_RELOCK)
@@ -196,7 +201,8 @@ def main():
             frame_range=frame_range,
             unlock_bnd_attrs=bundle_unlock_relock,
             relock_bnd_attrs=bundle_unlock_relock,
-            use_smooth_mesh=use_smooth_mesh)
+            use_smooth_mesh=use_smooth_mesh,
+            bundle_rotate_mode=bundle_rotate_mode)
         if len(bnd_nodes) > 0:
             maya.cmds.select(bnd_nodes)
         else:

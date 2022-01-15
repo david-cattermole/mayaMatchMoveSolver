@@ -65,51 +65,35 @@ endif ()
 
 # Source
 set(SOURCE_FILES
-  ../include/utilities/debugUtils.h
-  ../include/nodeTypeIds.h
-  core/reprojection.h
   core/reprojection.cpp
-  core/bundleAdjust_defines.h
-  core/bundleAdjust_base.h
   core/bundleAdjust_base.cpp
-  core/bundleAdjust_relationships.h
   core/bundleAdjust_relationships.cpp
-  core/bundleAdjust_solveFunc.h
   core/bundleAdjust_solveFunc.cpp
-  core/bundleAdjust_levmar_bc_dif.h
   core/bundleAdjust_levmar_bc_dif.cpp
-  core/bundleAdjust_cminpack_base.h
   core/bundleAdjust_cminpack_base.cpp
-  core/bundleAdjust_cminpack_lmdif.h
   core/bundleAdjust_cminpack_lmdif.cpp
-  core/bundleAdjust_cminpack_lmder.h
   core/bundleAdjust_cminpack_lmder.cpp
-  mayaUtils.h
-  Camera.h
+  core/calibrate/common.cpp
+  core/calibrate/vanishingPoint.cpp
+  core/mmcamera.cpp
+  core/mmcoord.cpp
+  core/mmdata.cpp
+  core/mmmath.cpp
   Camera.cpp
-  Marker.h
   Marker.cpp
-  Bundle.h
   Bundle.cpp
-  Attr.h
   Attr.cpp
-  commonArgFlags.h
+  mayaUtils.cpp
   commonArgFlags.cpp
-  MMSolverAffectsCmd.h
+  MMCameraCalibrateNode.cpp
+  MMLineIntersectNode.cpp
   MMSolverAffectsCmd.cpp
-  MMMarkerScaleNode.h
   MMMarkerScaleNode.cpp
-  MMReprojectionNode.h
   MMReprojectionNode.cpp
-  MMMarkerGroupTransformNode.h
   MMMarkerGroupTransformNode.cpp
-  MMTestCameraMatrixCmd.h
   MMTestCameraMatrixCmd.cpp
-  MMSolverCmd.h
   MMSolverCmd.cpp
-  MMSolverTypeCmd.h
   MMSolverTypeCmd.cpp
-  MMReprojectionCmd.h
   MMReprojectionCmd.cpp
   pluginMain.cpp
   )

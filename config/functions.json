@@ -135,7 +135,7 @@
             ]
         },
         "reproject_bundle": {
-            "name": "Move Bundle to Marker (current frame)",
+            "name": "Move Bundle to Marker in Screen-Space (current frame)",
             "tooltip": "Re-Project Bundle on top of Marker in screen space.",
             "command": [
                 "import mmSolver.tools.reprojectbundle.tool;",
@@ -291,6 +291,21 @@
             "command": [
                 "import mmSolver.tools.convertmarker.tool;",
                 "mmSolver.tools.convertmarker.tool.main();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.convertmarker.tool;",
+                "mmSolver.tools.convertmarker.tool.open_window();"
+            ]
+        },
+        "convert_to_marker_ui": {
+            "name": "Convert to Marker...",
+            "name_shelf": "",
+            "tooltip": "Convert 3D Transform to Marker.",
+            "icon_shelf": "convertToMarker_32x32.png",
+            "command": [
+                "import mmSolver.tools.convertmarker.tool;",
+                "mmSolver.tools.convertmarker.tool.open_window();"
             ]
         },
         "load_marker_ui": {
@@ -701,6 +716,41 @@
             "command": [
                 "import mmSolver.tools.userprefswindow.tool;",
                 "mmSolver.tools.userprefswindow.tool.open_window();"
+            ]
+        },
+        "camera_tools": {
+            "name": "Camera Tools",
+            "name_shelf": "",
+            "tooltip": "Camera Tools",
+            "icon_shelf": "cameraTools_32x32.png",
+            "command": ["pass"]
+        },
+        "camera_calibration_create_setup": {
+            "name": "Create Camera Calibration Setup (beta)",
+            "name_shelf": "",
+            "tooltip": "Create a default setup to calibrate a camera.",
+            "command": [
+                "import mmSolver.tools.calibratecamera.tool as tool;",
+                "tool.main();"
+            ]
+        },
+        "camera_calibration_update_values": {
+            "name": "Update Camera Calibration (beta)",
+            "name_shelf": "",
+            "tooltip": "Updates the camera calibration values.",
+            "command": [
+                "import mmSolver.tools.calibratecamera.tool as tool;",
+                "tool.update();"
+            ]
+        },
+        "ml_convert_rotation_order": {
+            "name": "Convert Rotation Order UI",
+            "name_menu": "Convert Rotation Order...",
+            "name_shelf": "RotOrd",
+            "tooltip": "Change the rotation order of an object while preserving animation.",
+            "command": [
+                "import mmSolver.tools.mltools.ml_convertRotationOrder as ml_convertRotationOrder;",
+                "ml_convertRotationOrder.ui();"
             ]
         }
     }

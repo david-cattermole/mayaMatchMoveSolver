@@ -19,12 +19,18 @@
 Reparent Transforms constants.
 """
 
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+
+import mmSolver.utils.constant as const
+
 WINDOW_TITLE = 'Reparent'
 
 # Constants for frame range mode.
-FRAME_RANGE_MODE_TIMELINE_INNER_VALUE = 'timeline_inner'
-FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE = 'timeline_outer'
-FRAME_RANGE_MODE_CUSTOM_VALUE = 'custom'
+FRAME_RANGE_MODE_TIMELINE_INNER_VALUE = const.FRAME_RANGE_MODE_TIMELINE_INNER_VALUE
+FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE = const.FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE
+FRAME_RANGE_MODE_CUSTOM_VALUE = const.FRAME_RANGE_MODE_CUSTOM_VALUE
 FRAME_RANGE_MODE_VALUES = [
     FRAME_RANGE_MODE_TIMELINE_INNER_VALUE,
     FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE,

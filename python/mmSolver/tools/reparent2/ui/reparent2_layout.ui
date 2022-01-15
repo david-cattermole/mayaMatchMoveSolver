@@ -134,7 +134,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="options_groupBox">
      <property name="title">
       <string>Options</string>
      </property>

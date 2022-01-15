@@ -19,6 +19,9 @@
             "edit_root_frame_add",
             "edit_root_frame_remove",
             "---Tools",
+            "camera_tools/---Calibrate",
+            "camera_tools/camera_calibration_create_setup",
+            "camera_tools/camera_calibration_update_values",
             "mb_tools/---Marker-Bundle Link",
             "mb_tools/link_marker_bundle",
             "mb_tools/unlink_marker_bundle",
@@ -70,6 +73,8 @@
             "general_tools/---Controllers",
             "general_tools/create_controller2",
             "general_tools/remove_controller2",
+            "general_tools/---ML Tools",
+            "general_tools/ml_convert_rotation_order",
             "general_tools/---Settings & Preferences",
             "general_tools/user_preferences_window",
             "file_io_tools/---Input Output",
@@ -91,6 +96,10 @@
             },
             "bundle_tools": {
                 "name": "Bundle Tools",
+                "tearoff": true
+            },
+            "camera_tools": {
+                "name": "Camera Tools",
                 "tearoff": true
             },
             "general_tools": {

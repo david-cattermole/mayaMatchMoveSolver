@@ -562,8 +562,13 @@ class SolverStep(solverbase.SolverBase):
         kwargs['robustLossScale'] = 1.0
         kwargs['timeEvalMode'] = self.get_time_eval_mode()
 
-        kwargs['removeUnusedMarkers'] = self.get_remove_unused_markers()
-        kwargs['removeUnusedAttributes'] = self.get_remove_unused_attributes()
+        value = self.get_remove_unused_markers()
+        if value is not None:
+            kwargs['removeUnusedMarkers'] = value
+
+        value = self.get_remove_unused_attributes()
+        if value is not None:
+            kwargs['removeUnusedAttributes'] = value
 
         # TODO: Add 'robustLossType' flag.
         # TODO: Add 'robustLossScale' flag.

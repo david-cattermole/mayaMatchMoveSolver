@@ -19,7 +19,7 @@ SETLOCAL
 :: along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 :: ---------------------------------------------------------------------
 ::
-:: Runs PyLint for the project.
+:: Runs 'cpplint' for the project.
 
 SET PROJECT_ROOT=%CD%
 

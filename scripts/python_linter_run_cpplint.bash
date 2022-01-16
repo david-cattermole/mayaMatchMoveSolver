@@ -18,7 +18,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# Runs PyLint for the project.
+# Runs 'cpplint' for the project.
 
 # The -e flag causes the script to exit as soon as one command returns
 # a non-zero exit code.
@@ -26,6 +26,6 @@ set -ev
 
 PROJECT_ROOT=`pwd`
 
-python -m pylint --recursive "${PROJECT_ROOT}/src" "${PROJECT_ROOT}/include"
+python -m cpplint --recursive "${PROJECT_ROOT}/src" "${PROJECT_ROOT}/include"
 
 cd ${PROJECT_ROOT}

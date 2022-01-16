@@ -1,7 +1,6 @@
 @ECHO OFF
-SETLOCAL
 ::
-:: Copyright (C) 2019 David Cattermole.
+:: Copyright (C) 2021 David Cattermole.
 ::
 :: This file is part of mmSolver.
 ::
@@ -19,19 +18,19 @@ SETLOCAL
 :: along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 :: ---------------------------------------------------------------------
 ::
-:: Builds the Maya MatchMove Solver project.
-
-:: Maya directories
+:: Deactivates the Python development environment for mmSolver.
 ::
-:: If you're not using Maya 2020 or have a non-standard install location,
-:: set these variables here.
-::
-:: Note: Do not enclose the MAYA_VERSION in quotes, it will
-::       lead to tears.
-SET MAYA_VERSION=2020
-SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2020"
+:: Warning: This file expects the variable "PYTHON_VIRTUAL_ENV_DIR_NAME"
+:: to be defined in the calling environment, if this is not done,
+:: undefined behaviour will happen (likely an error).
 
-:: Python executable - edit this to point to an explicit python executable file.
-SET PYTHON_EXE=python
+SET PROJECT_ROOT=%CD%
 
-scripts\internal\build_mmSolver_windows64.bat
+:: Deactivate script.
+SET PYTHON_VIRTUAL_ENV_DEACTIVATE_SCRIPT=%PYTHON_VIRTUAL_ENV_DIR_NAME%\Scripts\deactivate.bat
+
+:: Deactivate Python virtual environment.
+CALL %PYTHON_VIRTUAL_ENV_DEACTIVATE_SCRIPT%
+
+:: Return back project root directory.
+CHDIR "%PROJECT_ROOT%"

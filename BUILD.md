@@ -17,10 +17,13 @@ Required:
     - [GCC 4.4.7](https://gcc.gnu.org/) (Maya 2016 and 2017)
     - [GCC 4.8.3](https://gcc.gnu.org/) (Maya 2018)
     - [GCC 6.3.1](https://gcc.gnu.org/) (Maya 2019 and 2020)
+    - [GCC 9.3.1](https://gcc.gnu.org/) (Maya 2022)
+      - Red Hat `devtoolset-9` on RHEL 7 / CentOS 7
   - Windows
     - [Visual Studio 2012 update 5 (MSVC 11.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2016 and 2017)
     - [Visual Studio 2015 update 3 (MSVC 14.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2018 and 2019)
     - [Visual Studio 2017 (MSVC 15.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2020)
+    - [Visual Studio 2019 (MSVC 16.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2022)
   - MacOS
     - [Xcode 7.3.1 with SDK 10.11, clang with libc++](https://developer.apple.com/download) (Maya 2018)
     - [Xcode version 7.3.1 and CMake are required](https://developer.apple.com/download) (Maya 2019)
@@ -36,8 +39,11 @@ Required:
   - ... many internal dependencies.
 - [OpenMVG 2.0](https://github.com/openMVG/openMVG/releases/tag/v2.0)
   - ... many internal dependencies.
-- [Python 2.7.x or 3.x](https://www.python.org/) (for build scripts)
-- [Sphinx 1.8.3+](http://www.sphinx-doc.org/en/master/index.html) (for building documentation)
+- [Python 2.7.x or 3.x](https://www.python.org/) - for development building, testing and formatting Python code
+  - [Sphinx](http://www.sphinx-doc.org/en/master/index.html) - for building documentation.
+  - [Black](https://github.com/psf/black) - for Python code formatting.
+  - [PyLint](https://pylint.org/) - for Python code 'linting'.
+  - See 'requirements-dev.txt' for more details.
 - [Rust 1.43+](https://www.rust-lang.org/) for MM Scene Graph features.
   - [cxx-bridge](https://cxx.rs/) for Rust/C++ bindings.
   - See the 'Cargo.toml' files for a full list of (automatically)

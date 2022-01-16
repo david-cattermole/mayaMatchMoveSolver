@@ -29,6 +29,7 @@ find_program(MAYA_RCC_EXECUTABLE
         "${MAYA_BASE_DIR}"
     PATH_SUFFIXES
         MacOS
+        bin3/  # Use Python 3.x location, in Maya 2022.
         bin/
     DOC
         "Maya's Qt resource compiler (rcc) executable path"

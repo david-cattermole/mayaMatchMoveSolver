@@ -31,4 +31,7 @@ SETLOCAL
 SET MAYA_VERSION=2016
 SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2016"
 
+:: Python executable - edit this to point to an explicit python executable file.
+SET PYTHON_EXE=python
+
 scripts\internal\build_mmSolver_windows64.bat

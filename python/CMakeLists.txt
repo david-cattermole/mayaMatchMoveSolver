@@ -33,26 +33,54 @@ function(add_ui_compile
          name
          input_file
          output_file)
+    if(MAYA_VERSION GREATER_EQUAL 2022)
+        # Maya 2022 and above. Use Maya provided 'uic' executable to
+        # compile .ui files into .py files.
+        find_program(MAYA_QT_UIC_EXECUTABLE
+                uic
+            HINTS
+                "${MAYA_LOCATION}"
+                "$ENV{MAYA_LOCATION}"
+                "${MAYA_BASE_DIR}"
+            PATH_SUFFIXES
+                MacOS/
+                bin/
+            DOC
+                "Maya provided Qt 'uic' executable path"
+        )
 
-    set(EXEC_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/internal/compileUI.py)
-
-    add_custom_command(
-            OUTPUT ${output_file}
-            COMMAND ${MAYA_PYTHON_EXECUTABLE} ${EXEC_SCRIPT} ${input_file}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            DEPENDS ${input_file}
-    )
-
-    add_custom_target(
-            compile_ui_${name} ALL
-            DEPENDS ${output_file}
-            COMMENT "Compiling Qt UI file (${input_file})..."
-    )
-
+        set(EXEC_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/internal/compileUI.py)
+        # Runs 'uic -g python <ui_file> -o <output_python_file>'
+        add_custom_command(
+                OUTPUT ${output_file}
+                COMMAND ${MAYA_QT_UIC_EXECUTABLE} -g python ${input_file} -o ${output_file}
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                DEPENDS ${input_file}
+        )
+        add_custom_target(
+                compile_ui_${name} ALL
+                DEPENDS ${output_file}
+                COMMENT "Compiling Qt UI file (${input_file})..."
+        )
+    else ()
+        # Use the Maya Python environment to compile the .ui files
+        # into .py files.
+        set(EXEC_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/internal/compileUI.py)
+        add_custom_command(
+                OUTPUT ${output_file}
+                COMMAND ${MAYA_PYTHON_EXECUTABLE} ${EXEC_SCRIPT} ${input_file}
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                DEPENDS ${input_file}
+        )
+        add_custom_target(
+                compile_ui_${name} ALL
+                DEPENDS ${output_file}
+                COMMENT "Compiling Qt UI file (${input_file})..."
+        )
+    endif ()
     if (BUILD_PLUGIN)
         add_dependencies(mmSolver compile_ui_${name})
     endif ()
-
 endfunction()
 
 
@@ -63,8 +91,8 @@ if (BUILD_QT_UI)
             )
 
     add_ui_compile("centertwodee"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/centertwodee/ui/centertwodee_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/centertwodee/ui/ui_centertwodee_layout.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/centertwodee/ui/centertwodee_layout.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/centertwodee/ui/ui_centertwodee_layout.py
             )
 
     add_ui_compile("channelsen"
@@ -73,23 +101,23 @@ if (BUILD_QT_UI)
             )
 
     add_ui_compile("convertmarker"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/convertmarker/ui/convertmarker_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/convertmarker/ui/ui_convertmarker_layout.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/convertmarker/ui/convertmarker_layout.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/convertmarker/ui/ui_convertmarker_layout.py
             )
 
     add_ui_compile("raycastmarker"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/raycastmarker/ui/raycastmarker_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/raycastmarker/ui/ui_raycastmarker_layout.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/raycastmarker/ui/raycastmarker_layout.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/raycastmarker/ui/ui_raycastmarker_layout.py
             )
 
     add_ui_compile("reparent2"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/reparent2/ui/reparent2_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/reparent2/ui/ui_reparent2_layout.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/reparent2/ui/reparent2_layout.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/reparent2/ui/ui_reparent2_layout.py
             )
 
     add_ui_compile("removesolvernodes"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/removesolvernodes/ui/removesolvernodes_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/removesolvernodes/ui/ui_removesolvernodes_layout.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/removesolvernodes/ui/removesolvernodes_layout.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/removesolvernodes/ui/ui_removesolvernodes_layout.py
             )
 
     add_ui_compile("smoothkeyframes"

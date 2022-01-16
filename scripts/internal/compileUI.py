@@ -18,6 +18,8 @@
 """
 Compiles *.ui files, and saves the generated files alongside them.
 
+This only works with Maya versions 2020 and below. See note 2 below.
+
 The command may use the embedded paths if no path is given, or it may use an
 input file to find the directory.
 
@@ -31,8 +33,20 @@ $ cd <project root>
 $ mayapy compileUI.py
 $ mayapy compileUI.py /path/to/file.ui
 
-Note; Different versions of Maya contain different versions of PySide. Maya
-2017 and above contain PySide2 (for Qt5), Maya 2016 contains PySide(1).
+Note 1: Different versions of Maya contain different versions of
+PySide. Maya 2017 and above contain PySide2 (for Qt5), Maya 2016
+contains PySide(1).
+
+Note 2: This only works with Maya versions before Maya 2022. Maya 2022
+introduces Python 3, and newer versions of Qt that no longer include
+the 'pysideuic' or 'pyside2uic' modules.
+
+Please use this shell command (uic is distributed with Maya):
+$ uic -g python <ui_file> -o <output_python_file>
+
+See more information about this in the Maya documentation:
+https://help.autodesk.com/view/MAYAUL/2022/ENU/?guid=Maya_SDK_What_s_New_What_s_Changed_2022_Whats_New_in_API_html#generating-python-code-from-ui-files
+
 """
 
 import sys

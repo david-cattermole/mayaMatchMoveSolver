@@ -3,11 +3,13 @@
 .DS_Store
 #*
 *~
+*.bak
 *_.*
 *.pyc
 cmake-build-*
 *build/*
 *build_*/*
+*python_venv_*/*
 python/mmSolver/constant.py
 include/buildConstant.h
 docs/source/conf.py

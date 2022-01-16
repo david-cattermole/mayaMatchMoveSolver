@@ -396,8 +396,8 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                         depth_list.append(vector + offset)
                     oma.MAnimControl.setCurrentTime(
                         om.MTime(float(current_time)))
-        except(NameError, ValueError, TypeError) as e:
-            print e
+        except (NameError, ValueError, TypeError) as e:
+            LOG.warn(e)
         finally:
             mel.eval('paneLayout -e -manage true $gMainPane')
             cmds.refresh(suspend=False)
@@ -531,8 +531,8 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 # Select the master control.
                 cmds.select(main_grp, replace=True)
                 self.refreshRigsList()
-        except(NameError, ValueError, TypeError) as e:
-            print e
+        except (NameError, ValueError, TypeError) as e:
+            LOG.warn(e)
         finally:
             mel.eval('paneLayout -e -manage true $gMainPane')
             cmds.refresh(suspend=False)
@@ -783,8 +783,8 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                             cmds.select(clear=True)
                 self.deleteRigBtn()
                 self.refreshRigsList()
-        except(NameError, ValueError, TypeError) as e:
-            print e
+        except (NameError, ValueError, TypeError) as e:
+            LOG.warn(e)
         finally:
             mel.eval('paneLayout -e -manage true $gMainPane')
             cmds.refresh(suspend=False)

@@ -145,11 +145,11 @@ class Frame(object):
         if num is None:
             msg = 'Data is not valid, number value not valid; {0}'
             msg = msg.format(value)
-            raise excep.NotValid, msg
+            raise excep.NotValid(msg)
         if tags is None:
             msg = 'Data is not valid, tags value not valid; {0}'
             msg = msg.format(value)
-            raise excep.NotValid, msg
+            raise excep.NotValid(msg)
 
         self.set_number(num)
         self.set_tags(tags)

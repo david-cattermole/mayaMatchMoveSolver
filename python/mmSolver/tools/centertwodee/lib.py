@@ -20,6 +20,10 @@ Functions to deal with range mappings to work between the UI sliders
 and the offset/zoom nodes
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 
 import mmSolver.logger

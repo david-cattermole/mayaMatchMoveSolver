@@ -19,6 +19,10 @@
 The About window for mmSolver.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver.tools.aboutwindow.ui.about_window as about_window
 

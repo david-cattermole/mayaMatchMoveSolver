@@ -9,6 +9,7 @@ script:
     - ./scripts/internal/travisci_build_docs.sh
     - ./scripts/python_linter_run_pylint.bash
     - ./scripts/python_linter_run_flake8.bash
+    - ./scripts/python_linter_run_cpplint.bash
 
 deploy:
     provider: pages

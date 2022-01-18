@@ -111,9 +111,14 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
     }
 
     // Get 'Markers'
+    ObjectType objectType = ObjectType::kUnknown;
+    MDagPath dagPath;
     MString markerName = "";
     MString cameraName = "";
     MString bundleName = "";
+    MObject markerObject;
+    MObject cameraObject;
+    MObject bundleObject;
     unsigned int markerNum = argData.numberOfFlagUses(MARKER_FLAG);
     for (unsigned int i = 0; i < markerNum; ++i) {
         MArgList markerArgs;
@@ -127,18 +132,42 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
 
             markerName = markerArgs.asString(0, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = nodeExistsAndIsType(markerName, MFn::Type::kTransform);
+            status = getAsObject(markerName, markerObject);
             CHECK_MSTATUS_AND_RETURN_IT(status);
+            status = getAsDagPath(markerName, dagPath);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            objectType = computeObjectType(markerObject, dagPath);
+            if (objectType != ObjectType::kMarker) {
+                ERR("Given marker node is not a Marker; "
+                    << markerName.asChar());
+                continue;
+            }
 
             cameraName = markerArgs.asString(1, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = nodeExistsAndIsType(cameraName, MFn::Type::kCamera);
+            status = getAsObject(cameraName, cameraObject);
             CHECK_MSTATUS_AND_RETURN_IT(status);
+            status = getAsDagPath(cameraName, dagPath);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            objectType = computeObjectType(cameraObject, dagPath);
+            if (objectType != ObjectType::kCamera) {
+                ERR("Given camera node is not a Camera; "
+                    << cameraName.asChar());
+                continue;
+            }
 
             bundleName = markerArgs.asString(2, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = nodeExistsAndIsType(bundleName, MFn::Type::kTransform);
+            status = getAsObject(bundleName, bundleObject);
             CHECK_MSTATUS_AND_RETURN_IT(status);
+            status = getAsDagPath(bundleName, dagPath);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            objectType = computeObjectType(bundleObject, dagPath);
+            if (objectType != ObjectType::kBundle) {
+                ERR("Given bundle node is not a Bundle; "
+                    << bundleName.asChar());
+                continue;
+            }
 
             // Camera
             CameraPtr camera = CameraPtr(new Camera());

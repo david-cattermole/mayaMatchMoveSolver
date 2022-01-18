@@ -53,7 +53,7 @@ mark_as_advanced(
 )
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Ldpk
+find_package_handle_standard_args(LDPK
     REQUIRED_VARS
         LDPK_LIBRARIES
         LDPK_INCLUDE_DIRS

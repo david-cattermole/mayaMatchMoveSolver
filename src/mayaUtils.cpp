@@ -89,7 +89,7 @@ MStatus getAsSelectionList(
 
 
 MStatus nodeExistsAndIsType(
-    const MString nodeName,
+    const MString &nodeName,
     const MFn::Type nodeType
 ) {
     MStatus status;
@@ -119,7 +119,7 @@ MStatus nodeExistsAndIsType(
 
 
 MStatus getAsObject(
-    const MString nodeName,
+    const MString &nodeName,
     MObject &object
 ) {
     MStatus status;
@@ -135,7 +135,7 @@ MStatus getAsObject(
 
 
 MStatus getAsDagPath(
-    const MString nodeName,
+    const MString &nodeName,
     MDagPath &nodeDagPath
 ) {
     MStatus status;

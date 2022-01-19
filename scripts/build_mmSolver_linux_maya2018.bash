@@ -78,6 +78,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # The root of this project.
 PROJECT_ROOT=`readlink -f ${DIR}/..`
 
+# CMake executable name
+CMAKE_EXEC_NAME=cmake3
+
 # Number of CPUs
 CPU_NUM=`nproc --all`
 
@@ -87,7 +90,8 @@ cd build_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
 if [ ${FRESH_BUILD} -eq 1 ]; then
     rm --force -R *
 fi
-cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+${CMAKE_EXEC_NAME} \
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_INSTALL_PREFIX=${INSTALL_MODULE_DIR} \
       -DBUILD_PLUGIN=${BUILD_PLUGIN} \
       -DBUILD_PYTHON=${BUILD_PYTHON} \
@@ -105,19 +109,19 @@ cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DMAYA_LOCATION=${MAYA_LOCATION} \
       ..
 
-cmake --build . --parallel 8
+${CMAKE_EXEC_NAME} --build . --parallel ${CPU_NUM}
 
 # Comment this line out to stop the automatic install into the home directory.
-cmake --install .
+${CMAKE_EXEC_NAME} --install .
 
 # Run tests
 if [ ${RUN_TESTS} -eq 1 ]; then
-    cmake --build . --target test
+    ${CMAKE_EXEC_NAME} --build . --target test
 fi
 
 # Build ZIP package.
 if [ ${BUILD_PACKAGE} -eq 1 ]; then
-    cmake --build . --target package
+    ${CMAKE_EXEC_NAME} --build . --target package
 fi
 
 # Return back project root directory.

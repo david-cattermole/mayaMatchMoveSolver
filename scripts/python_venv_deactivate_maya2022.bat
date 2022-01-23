@@ -25,4 +25,4 @@ SET PROJECT_ROOT=%CD%
 SET MAYA_VERSION=2022
 
 SET PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_windows64_maya%MAYA_VERSION%
-CALL %PROJECT_ROOT%\scripts\python_venv_deactivate.bat
+CALL %PROJECT_ROOT%\scripts\internal\python_venv_deactivate.bat

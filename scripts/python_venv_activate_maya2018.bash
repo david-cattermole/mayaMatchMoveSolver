@@ -32,4 +32,4 @@ MAYA_VERSION=2018
 PYTHON_EXE=python
 
 PYTHON_VIRTUAL_ENV_DIR_NAME="python_venv_linux_maya${MAYA_VERSION}"
-source "${PROJECT_ROOT}/scripts/python_venv_activate.bash"
+source "${PROJECT_ROOT}/scripts/internal/python_venv_activate.bash"

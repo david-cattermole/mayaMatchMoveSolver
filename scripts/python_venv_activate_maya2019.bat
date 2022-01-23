@@ -28,4 +28,4 @@ SET MAYA_VERSION=2019
 SET PYTHON_EXE=python
 
 SET PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_windows64_maya%MAYA_VERSION%
-CALL %PROJECT_ROOT%\scripts\python_venv_activate.bat
+CALL %PROJECT_ROOT%\scripts\internal\python_venv_activate.bat

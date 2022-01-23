@@ -522,7 +522,6 @@ def write_temp_file(data_str):
     file_ext = const.EXT
     f = tempfile.NamedTemporaryFile(
         mode='w+b',
-        bufsize=-1,
         suffix=file_ext,
         delete=False
     )

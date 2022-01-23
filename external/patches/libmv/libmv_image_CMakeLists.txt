@@ -1,13 +1,13 @@
 # TODO(julien) remove this line, what's that for?
 ADD_DEFINITIONS(-DTHIS_SOURCE_DIR="\\"${CMAKE_CURRENT_SOURCE_DIR}\\"")
 
-IF(WIN32)
-  INCLUDE_DIRECTORIES(
-    ${JPEG_SOURCE_DIR}
-    ${PNG_SOURCE_DIR}
-    ${ZLIB_SOURCE_DIR}
+# IF(WIN32)
+INCLUDE_DIRECTORIES(
+  ${JPEG_SOURCE_DIR}
+  ${PNG_SOURCE_DIR}
+  ${ZLIB_SOURCE_DIR}
   )
-ENDIF(WIN32)
+# ENDIF(WIN32)
 
 # define the source files
 SET(IMAGE_SRC array_nd.cc

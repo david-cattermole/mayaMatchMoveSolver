@@ -46,7 +46,6 @@ set(THIRDPARTY_BASE_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/install"
 set(THIRDPARTY_BASE_WORKING_DIR "${CMAKE_CURRENT_SOURCE_DIR}/working"
   CACHE PATH "Base directory to download the thirdparty projects into.")
 
-
 # #########################################################
 # # ATLAS
 # #########################################################
@@ -170,15 +169,6 @@ set(THIRDPARTY_BASE_WORKING_DIR "${CMAKE_CURRENT_SOURCE_DIR}/working"
 # )
 
 
-
-
-
-
-
-
-
-
-
 #########################################################
 # CMinpack - Minimizer Package
 #########################################################
@@ -199,11 +189,12 @@ ExternalProject_Add(cminpack
         -DCMAKE_INSTALL_PREFIX=${CMINPACK_INSTALL_PATH}
         -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
         -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
+        -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
         -DBUILD_SHARED_LIBS=1
         -DBUILD_EXAMPLES=0
         -DUSE_FPIC=1
         -DUSE_BLAS=0
-        -DMKLROOT=${MKL_DIR}
 )
 
 
@@ -220,7 +211,7 @@ set(EIGEN_INCLUDE_DIR ${EIGEN_INSTALL_PATH}/include/eigen3)
 ExternalProject_Add(eigen
     PREFIX ${EIGEN_PREFIX}
     GIT_REPOSITORY "https://gitlab.com/libeigen/eigen.git"
-    GIT_TAG "3.2.7"  # was "3.3.9"
+    GIT_TAG "3.4.0"  # matches the version used by OpenMVG.
     INSTALL_DIR ${EIGEN_INSTALL_PATH}
     CMAKE_ARGS
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -229,10 +220,11 @@ ExternalProject_Add(eigen
         -DCMAKE_INSTALL_PREFIX=${EIGEN_INSTALL_PATH}
         -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
         -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
+        -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+        -DINCLUDE_INSTALL_DIR=${EIGEN_INCLUDE_DIR}
         # -DFFTW_DIR=${FFTW_INSTALL_PATH}
 )
-
-
 
 
 #########################################################
@@ -250,6 +242,8 @@ set(LIBMV_PATCH_SRC_2 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/Installation.cma
 set(LIBMV_PATCH_DST_2 ${LIBMV_SOURCE_DIR}/src/CMake)
 set(LIBMV_PATCH_SRC_3 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/reconstruction_tools.h)
 set(LIBMV_PATCH_DST_3 ${LIBMV_SOURCE_DIR}/src/libmv/reconstruction/tools.h)
+set(LIBMV_PATCH_SRC_20 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/src_CMakeLists.txt)
+set(LIBMV_PATCH_DST_20 ${LIBMV_SOURCE_DIR}/src/CMakeLists.txt)
 
 # Third party patches
 set(LIBMV_PATCH_SRC_4 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/third_party_CMakeLists.txt)
@@ -315,6 +309,7 @@ ExternalProject_Add(libmv
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_17} ${LIBMV_PATCH_DST_17}
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_18} ${LIBMV_PATCH_DST_18}
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_19} ${LIBMV_PATCH_DST_19}
+    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_20} ${LIBMV_PATCH_DST_20}
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_21} ${LIBMV_PATCH_DST_21}
     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_22} ${LIBMV_PATCH_DST_22}
     CMAKE_ARGS
@@ -351,8 +346,32 @@ set(OPENMVG_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/openMVG)
 set(OPENMVG_DOWNLOAD_DIR ${THIRDPARTY_BASE_WORKING_DIR}/openMVG/src)
 set(OPENMVG_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/openMVG/src/openMVG)
 
+# Choose components based on OS
+set(OpenMVG_BUILD_SHARED 0)
+set(OpenMVG_BUILD_TESTS 0)
+set(OpenMVG_BUILD_DOC 0)
+set(OpenMVG_BUILD_EXAMPLES 0)
+set(OpenMVG_BUILD_OPENGL_EXAMPLES 0)
+set(OpenMVG_BUILD_SOFTWARES 0)
+set(OpenMVG_BUILD_GUI_SOFTWARES 0)
+set(OpenMVG_BUILD_COVERAGE 0)
+if (MSVC)
+  # This specific set of flags has been tested to work with
+  # MSVC. Using different flags, although faster/better to compile,
+  # might result in a failed build.
+  set(OpenMVG_BUILD_SHARED 0)
+  set(OpenMVG_BUILD_TESTS 0)
+  set(OpenMVG_BUILD_DOC 1)
+  set(OpenMVG_BUILD_EXAMPLES 1)
+  set(OpenMVG_BUILD_OPENGL_EXAMPLES 0)
+  set(OpenMVG_BUILD_SOFTWARES 1)
+  set(OpenMVG_BUILD_GUI_SOFTWARES 0)
+  set(OpenMVG_BUILD_COVERAGE 0)
+endif()
+
 ExternalProject_Add(openMVG
     PREFIX ${OPENMVG_PREFIX}
+    DEPENDS eigen
     GIT_REPOSITORY "https://github.com/openMVG/openMVG.git"
     GIT_TAG "v2.0"
     DOWNLOAD_DIR ${OPENMVG_DOWNLOAD_DIR}
@@ -364,19 +383,28 @@ ExternalProject_Add(openMVG
         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
         -DCMAKE_INSTALL_PREFIX=${OPENMVG_INSTALL_PATH}
-        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+        -DCMAKE_PREFIX_PATH=${EIGEN_INSTALL_PATH}
         -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
-        -DOpenMVG_BUILD_SHARED=0
-        -DOpenMVG_BUILD_TESTS=0
-        -DOpenMVG_BUILD_DOC=1
-        -DOpenMVG_BUILD_EXAMPLES=1
-        -DOpenMVG_BUILD_OPENGL_EXAMPLES=0
-        -DOpenMVG_BUILD_SOFTWARES=1
-        -DOpenMVG_BUILD_GUI_SOFTWARES=0
-        -DOpenMVG_BUILD_COVERAGE=0
+        -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+        -DOpenMVG_BUILD_SHARED=${OpenMVG_BUILD_SHARED}
+        -DOpenMVG_BUILD_TESTS=${OpenMVG_BUILD_TESTS}
+        -DOpenMVG_BUILD_DOC=${OpenMVG_BUILD_DOC}
+        -DOpenMVG_BUILD_EXAMPLES=${OpenMVG_BUILD_EXAMPLES}
+        -DOpenMVG_BUILD_OPENGL_EXAMPLES=${OpenMVG_BUILD_OPENGL_EXAMPLES}
+        -DOpenMVG_BUILD_SOFTWARES=${OpenMVG_BUILD_SOFTWARES}
+        -DOpenMVG_BUILD_GUI_SOFTWARES=${OpenMVG_BUILD_GUI_SOFTWARES}
+        -DOpenMVG_BUILD_COVERAGE=${OpenMVG_BUILD_COVERAGE}
         -DOpenMVG_USE_OPENMP=1
         -DOpenMVG_USE_OPENCV=0
         -DOpenMVG_USE_OCVSIFT=0
+        # HACK to make sure eigen is on the include path.
+        -DCMAKE_INCLUDE_PATH=${EIGEN_INCLUDE_DIR}
+        -DEIGEN_ROOT=${EIGEN_INCLUDE_DIR}
+        -DEIGEN_INCLUDE_DIR_HINTS=${EIGEN_INCLUDE_DIR}
+        # WARNING: Enabling "EIGENSPARSE" results in an LGPL licensed
+        # Ceres.
+        -DEIGENSPARSE=1
 )
 
 
@@ -385,9 +413,12 @@ ExternalProject_Add(openMVG
 ##################
 #
 # dlfcn is required for the LDPK on Windows only.
+set(LDPK_DEPENDS "")
 set(DLFCN_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/dlfcn)
 set(DLFCN_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/dlfcn)
-ExternalProject_Add(dlfcn
+if (WIN32 AND NOT UNIX)
+  set(LDPK_DEPENDS "dlfcn")
+  ExternalProject_Add(dlfcn
     PREFIX ${DLFCN_PREFIX}
     GIT_REPOSITORY "https://github.com/dlfcn-win32/dlfcn-win32.git"
     GIT_TAG "v1.2.0"
@@ -399,9 +430,12 @@ ExternalProject_Add(dlfcn
         -DCMAKE_INSTALL_PREFIX=${DLFCN_INSTALL_PATH}
         -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
         -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
+        -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
         -DBUILD_SHARED_LIBS=ON
         -DBUILD_TESTS=OFF
-)
+    )
+endif ()
 
 
 ##################
@@ -424,7 +458,7 @@ set(LDPK_PATCH_DST_2 ${LDPK_SOURCE_DIR}/ldpk-config.cmake.in)
 
 ExternalProject_Add(ldpk
     PREFIX ${LDPK_PREFIX}
-    DEPENDS dlfcn
+    DEPENDS ${LDPK_DEPENDS}
     URL "https://www.3dequalizer.com/user_daten/sections/tech_docs/archives/ldpk-2.4.tgz"
     DOWNLOAD_DIR ${LDPK_DOWNLOAD_DIR}
     SOURCE_DIR ${LDPK_SOURCE_DIR}
@@ -438,5 +472,7 @@ ExternalProject_Add(ldpk
         -DCMAKE_INSTALL_PREFIX=${LDPK_INSTALL_PATH}
         -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
         -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
+        -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
+        -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
         -DDLFCN_LOCATION=${DLFCN_INSTALL_PATH}
 )

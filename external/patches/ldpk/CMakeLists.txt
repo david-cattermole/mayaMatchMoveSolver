@@ -141,7 +141,9 @@ target_include_directories(ldpk
   "$<INSTALL_INTERFACE:include>"
   # PUBLIC ${dlfcn-win32_INCLUDE_DIRS}
   )
-target_link_libraries(ldpk dlfcn-win32::dl)
+if (WIN32)
+  target_link_libraries(ldpk dlfcn-win32::dl)
+endif()
 install(TARGETS ldpk
   EXPORT ldpk-targets
   RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"

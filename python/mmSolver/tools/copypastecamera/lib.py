@@ -519,15 +519,15 @@ def write_temp_file(data_str):
     """
     Write file.
     """
+    assert isinstance(data_str, pycompat.TEXT_TYPE)
     file_ext = const.EXT
     f = tempfile.NamedTemporaryFile(
-        mode='w+b',
+        mode='w',
         suffix=file_ext,
         delete=False
     )
     if f.closed:
-        msg = "Error: Couldn't open file.\n%r"
-        msg = msg % f.name
+        LOG.error("Error: Couldn't open file.\n%r", f.name)
         return False
     f.write(data_str)
     f.close()

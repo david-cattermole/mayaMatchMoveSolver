@@ -1,7 +1,7 @@
 # To create and run the docker container in Power Shell or BASH:
 #
-# $ docker build --file Dockerfile_maya2019 -t mmsolver-linux-maya2019-build .
-# $ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-maya2019-build
+# $ docker build --file Dockerfile_maya2020 -t mmsolver-linux-maya2020-build .
+# $ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-maya2020-build
 #
 #
 # Once the docker image is built and run, you can execute the
@@ -10,7 +10,7 @@
 #
 # Install Python and run tools:
 #
-# $ source ./scripts/python_venv_activate_maya2019.bash
+# $ source ./scripts/python_venv_activate_maya2020.bash
 # $ ./scripts/python_linter_run_pylint.bash
 # $ ./scripts/python_linter_run_flake8.bash
 # $ ./scripts/python_linter_run_cpplint.bash
@@ -18,8 +18,8 @@
 #
 # Build CMake project:
 #
-# $ ./scripts/build_thirdparty_linux_maya2019.bash
-# $ ./scripts/build_mmSolver_linux_maya2019.bash
+# $ ./scripts/build_thirdparty_linux_maya2020.bash
+# $ ./scripts/build_mmSolver_linux_maya2020.bash
 #
 
 FROM centos:7
@@ -73,7 +73,7 @@ RUN yum install --assumeyes \
 #
 RUN curl -sSL https://raw.githubusercontent.com/wwfxuk/centos-vault-scl/master/activate.sh | bash
 
-# Development tools for Maya 2019.
+# Development tools for Maya 2020.
 RUN yum install --assumeyes \
        rh-python36 \
        rh-git218 \
@@ -88,8 +88,8 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
     && source ${HOME}/.cargo/env
 
 # Install Maya from archive.
-ADD ./external/archives/Autodesk_Maya_2019_Linux_64bit.tgz /temp
-RUN rpm -Uvh /temp/Maya*.rpm && rm -r /temp
+ADD ./external/archives/Autodesk_Maya_2020_ML_Linux_64bit.tgz /temp
+RUN rpm -Uvh /temp/Packages/Maya*.rpm && rm -r /temp
 ENV MAYA_LOCATION=/usr/autodesk/maya/
 ENV PATH=$MAYA_LOCATION/bin:$PATH
 
@@ -99,7 +99,6 @@ ENV MAYA_DISABLE_CIP=1
 
 WORKDIR /mmSolver
 
-# Maya 2019 and 2020
 ENTRYPOINT [ \
     "scl", "enable", \
                "rh-python36", \

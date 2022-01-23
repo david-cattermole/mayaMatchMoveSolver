@@ -187,7 +187,7 @@ if(EIGEN3_FOUND)
 endif()
 
 
-find_package(Gflags REQUIRED)
+# find_package(Gflags REQUIRED)
 message(STATUS "GFLAGS: ${GFLAGS_FOUND}")
 message(STATUS "GFLAGS: Include=${GFLAGS_INCLUDE_DIRS}")
 message(STATUS "GFLAGS: Library=${GFLAGS_LIBRARIES}")
@@ -202,7 +202,7 @@ if(GFLAGS_FOUND)
 endif()
 
 
-find_package(Glog REQUIRED)
+# find_package(Glog REQUIRED)
 message(STATUS "GLOG: ${GLOG_FOUND}")
 message(STATUS "GLOG: Include=${GLOG_INCLUDE_DIRS}")
 message(STATUS "GLOG: Library=${GLOG_LIBRARIES}")
@@ -217,7 +217,7 @@ if(GLOG_FOUND)
 endif()
 
 
-find_package(Ceres REQUIRED)
+# find_package(Ceres REQUIRED)
 message(STATUS "CERES: ${CERES_FOUND}")
 message(STATUS "CERES: Root=${CERES_ROOT}")
 message(STATUS "CERES: Include=${CERES_INCLUDE_DIRS}")
@@ -234,7 +234,7 @@ if(CERES_FOUND)
 endif()
 
 
-find_package(Libmv REQUIRED)
+# find_package(Libmv REQUIRED)
 message(STATUS "LIBMV: ${LIBMV_FOUND}")
 message(STATUS "LIBMV: Root=${LIBMV_ROOT}")
 message(STATUS "LIBMV: Include=${LIBMV_INCLUDE_DIRS}")

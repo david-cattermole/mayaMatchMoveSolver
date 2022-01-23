@@ -227,116 +227,116 @@ ExternalProject_Add(eigen
 )
 
 
-#########################################################
-# libmv - Multiple View library
-#########################################################
-set(LIBMV_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/libmv)
-set(LIBMV_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/libmv)
-set(LIBMV_DOWNLOAD_DIR ${THIRDPARTY_BASE_WORKING_DIR}/libmv/src)
-set(LIBMV_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/libmv/src/libmv)
+# #########################################################
+# # libmv - Multiple View library
+# #########################################################
+# set(LIBMV_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/libmv)
+# set(LIBMV_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/libmv)
+# set(LIBMV_DOWNLOAD_DIR ${THIRDPARTY_BASE_WORKING_DIR}/libmv/src)
+# set(LIBMV_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/libmv/src/libmv)
 
-# Main patches
-set(LIBMV_PATCH_SRC_1 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/CMakeLists.txt)
-set(LIBMV_PATCH_DST_1 ${LIBMV_SOURCE_DIR})
-set(LIBMV_PATCH_SRC_2 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/Installation.cmake)
-set(LIBMV_PATCH_DST_2 ${LIBMV_SOURCE_DIR}/src/CMake)
-set(LIBMV_PATCH_SRC_3 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/reconstruction_tools.h)
-set(LIBMV_PATCH_DST_3 ${LIBMV_SOURCE_DIR}/src/libmv/reconstruction/tools.h)
-set(LIBMV_PATCH_SRC_20 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/src_CMakeLists.txt)
-set(LIBMV_PATCH_DST_20 ${LIBMV_SOURCE_DIR}/src/CMakeLists.txt)
+# # Main patches
+# set(LIBMV_PATCH_SRC_1 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/CMakeLists.txt)
+# set(LIBMV_PATCH_DST_1 ${LIBMV_SOURCE_DIR})
+# set(LIBMV_PATCH_SRC_2 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/Installation.cmake)
+# set(LIBMV_PATCH_DST_2 ${LIBMV_SOURCE_DIR}/src/CMake)
+# set(LIBMV_PATCH_SRC_3 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/reconstruction_tools.h)
+# set(LIBMV_PATCH_DST_3 ${LIBMV_SOURCE_DIR}/src/libmv/reconstruction/tools.h)
+# set(LIBMV_PATCH_SRC_20 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/src_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_20 ${LIBMV_SOURCE_DIR}/src/CMakeLists.txt)
 
-# Third party patches
-set(LIBMV_PATCH_SRC_4 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/third_party_CMakeLists.txt)
-set(LIBMV_PATCH_DST_4 ${LIBMV_SOURCE_DIR}/src/third_party/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_5 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/third_party_ssba_CMakeLists.txt)
-set(LIBMV_PATCH_DST_5 ${LIBMV_SOURCE_DIR}/src/third_party/ssba/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_6 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_CMakeLists.txt)
-set(LIBMV_PATCH_DST_6 ${LIBMV_SOURCE_DIR}/src/libmv/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_21 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/third_party_pthreads-w32_CMakeLists.txt)
-set(LIBMV_PATCH_DST_21 ${LIBMV_SOURCE_DIR}/src/third_party/pthreads-w32/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_22 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/third_party_ceres_CMakeLists.txt)
-set(LIBMV_PATCH_DST_22 ${LIBMV_SOURCE_DIR}/src/third_party/ceres/CMakeLists.txt)
+# # Third party patches
+# set(LIBMV_PATCH_SRC_4 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/third_party_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_4 ${LIBMV_SOURCE_DIR}/src/third_party/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_5 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/third_party_ssba_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_5 ${LIBMV_SOURCE_DIR}/src/third_party/ssba/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_6 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_6 ${LIBMV_SOURCE_DIR}/src/libmv/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_21 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/third_party_pthreads-w32_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_21 ${LIBMV_SOURCE_DIR}/src/third_party/pthreads-w32/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_22 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/third_party_ceres_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_22 ${LIBMV_SOURCE_DIR}/src/third_party/ceres/CMakeLists.txt)
 
-# LibMV patches
-set(LIBMV_PATCH_SRC_8 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_autotrack_CMakeLists.txt)
-set(LIBMV_PATCH_DST_8 ${LIBMV_SOURCE_DIR}/src/libmv/autotrack/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_9 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_base_CMakeLists.txt)
-set(LIBMV_PATCH_DST_9 ${LIBMV_SOURCE_DIR}/src/libmv/base/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_10 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_camera_CMakeLists.txt)
-set(LIBMV_PATCH_DST_10 ${LIBMV_SOURCE_DIR}/src/libmv/camera/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_11 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_correspondence_CMakeLists.txt)
-set(LIBMV_PATCH_DST_11 ${LIBMV_SOURCE_DIR}/src/libmv/correspondence/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_12 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_descriptor_CMakeLists.txt)
-set(LIBMV_PATCH_DST_12 ${LIBMV_SOURCE_DIR}/src/libmv/descriptor/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_13 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_detector_CMakeLists.txt)
-set(LIBMV_PATCH_DST_13 ${LIBMV_SOURCE_DIR}/src/libmv/detector/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_14 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_image_CMakeLists.txt)
-set(LIBMV_PATCH_DST_14 ${LIBMV_SOURCE_DIR}/src/libmv/image/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_15 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_multiview_CMakeLists.txt)
-set(LIBMV_PATCH_DST_15 ${LIBMV_SOURCE_DIR}/src/libmv/multiview/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_16 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_numeric_CMakeLists.txt)
-set(LIBMV_PATCH_DST_16 ${LIBMV_SOURCE_DIR}/src/libmv/numeric/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_17 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_reconstruction_CMakeLists.txt)
-set(LIBMV_PATCH_DST_17 ${LIBMV_SOURCE_DIR}/src/libmv/reconstruction/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_18 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_simple_pipeline_CMakeLists.txt)
-set(LIBMV_PATCH_DST_18 ${LIBMV_SOURCE_DIR}/src/libmv/simple_pipeline/CMakeLists.txt)
-set(LIBMV_PATCH_SRC_19 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_tracking_CMakeLists.txt)
-set(LIBMV_PATCH_DST_19 ${LIBMV_SOURCE_DIR}/src/libmv/tracking/CMakeLists.txt)
+# # LibMV patches
+# set(LIBMV_PATCH_SRC_8 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_autotrack_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_8 ${LIBMV_SOURCE_DIR}/src/libmv/autotrack/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_9 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_base_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_9 ${LIBMV_SOURCE_DIR}/src/libmv/base/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_10 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_camera_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_10 ${LIBMV_SOURCE_DIR}/src/libmv/camera/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_11 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_correspondence_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_11 ${LIBMV_SOURCE_DIR}/src/libmv/correspondence/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_12 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_descriptor_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_12 ${LIBMV_SOURCE_DIR}/src/libmv/descriptor/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_13 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_detector_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_13 ${LIBMV_SOURCE_DIR}/src/libmv/detector/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_14 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_image_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_14 ${LIBMV_SOURCE_DIR}/src/libmv/image/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_15 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_multiview_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_15 ${LIBMV_SOURCE_DIR}/src/libmv/multiview/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_16 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_numeric_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_16 ${LIBMV_SOURCE_DIR}/src/libmv/numeric/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_17 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_reconstruction_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_17 ${LIBMV_SOURCE_DIR}/src/libmv/reconstruction/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_18 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_simple_pipeline_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_18 ${LIBMV_SOURCE_DIR}/src/libmv/simple_pipeline/CMakeLists.txt)
+# set(LIBMV_PATCH_SRC_19 ${CMAKE_CURRENT_SOURCE_DIR}/patches/libmv/libmv_tracking_CMakeLists.txt)
+# set(LIBMV_PATCH_DST_19 ${LIBMV_SOURCE_DIR}/src/libmv/tracking/CMakeLists.txt)
 
-ExternalProject_Add(libmv
-    DEPENDS eigen
-    PREFIX ${LIBMV_PREFIX}
-    GIT_REPOSITORY "git://git.blender.org/libmv.git"
-    GIT_TAG "f701b2b9fbc641b3252b3513239eeb14477ed5e1"
-    DOWNLOAD_DIR ${LIBMV_DOWNLOAD_DIR}
-    SOURCE_DIR ${LIBMV_SOURCE_DIR}
-    INSTALL_DIR ${LIBMV_INSTALL_PATH}
-    PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_1} ${LIBMV_PATCH_DST_1}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_2} ${LIBMV_PATCH_DST_2}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_3} ${LIBMV_PATCH_DST_3}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_4} ${LIBMV_PATCH_DST_4}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_5} ${LIBMV_PATCH_DST_5}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_6} ${LIBMV_PATCH_DST_6}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_8} ${LIBMV_PATCH_DST_8}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_9} ${LIBMV_PATCH_DST_9}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_10} ${LIBMV_PATCH_DST_10}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_11} ${LIBMV_PATCH_DST_11}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_12} ${LIBMV_PATCH_DST_12}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_13} ${LIBMV_PATCH_DST_13}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_14} ${LIBMV_PATCH_DST_14}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_15} ${LIBMV_PATCH_DST_15}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_16} ${LIBMV_PATCH_DST_16}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_17} ${LIBMV_PATCH_DST_17}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_18} ${LIBMV_PATCH_DST_18}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_19} ${LIBMV_PATCH_DST_19}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_20} ${LIBMV_PATCH_DST_20}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_21} ${LIBMV_PATCH_DST_21}
-    COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_22} ${LIBMV_PATCH_DST_22}
-    CMAKE_ARGS
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_INSTALL_PREFIX=${LIBMV_INSTALL_PATH}
-        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
-        -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
-        -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
-        #
-        # WARNING: Enabling "EIGENSPARSE" results in an LGPL licensed
-        # Ceres.
-        -DEIGENSPARSE=1
-        -DCXSPARSE=0  # Disabled because it's slower than SuiteSparse.
-        -DLAPACK=0
-        -DSUITESPARSE=0
-        -DSCHUR_SPECIALIZATIONS=1  # Enable this for more optimizations.
-        -DWITH_FAST_DETECTOR=1
-        -DBUILD_SHARED_LIBS=0
-        -DBUILD_TESTS=0
-        -DBUILD_GUI=0
-        -DBUILD_TOOLS=0
-        #
-        # TODO: Install Doxygen and fill this out.
-        # -DDOXYGEN_EXECUTABLE
-)
+# ExternalProject_Add(libmv
+#     DEPENDS eigen
+#     PREFIX ${LIBMV_PREFIX}
+#     GIT_REPOSITORY "git://git.blender.org/libmv.git"
+#     GIT_TAG "f701b2b9fbc641b3252b3513239eeb14477ed5e1"
+#     DOWNLOAD_DIR ${LIBMV_DOWNLOAD_DIR}
+#     SOURCE_DIR ${LIBMV_SOURCE_DIR}
+#     INSTALL_DIR ${LIBMV_INSTALL_PATH}
+#     PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_1} ${LIBMV_PATCH_DST_1}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_2} ${LIBMV_PATCH_DST_2}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_3} ${LIBMV_PATCH_DST_3}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_4} ${LIBMV_PATCH_DST_4}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_5} ${LIBMV_PATCH_DST_5}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_6} ${LIBMV_PATCH_DST_6}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_8} ${LIBMV_PATCH_DST_8}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_9} ${LIBMV_PATCH_DST_9}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_10} ${LIBMV_PATCH_DST_10}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_11} ${LIBMV_PATCH_DST_11}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_12} ${LIBMV_PATCH_DST_12}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_13} ${LIBMV_PATCH_DST_13}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_14} ${LIBMV_PATCH_DST_14}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_15} ${LIBMV_PATCH_DST_15}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_16} ${LIBMV_PATCH_DST_16}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_17} ${LIBMV_PATCH_DST_17}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_18} ${LIBMV_PATCH_DST_18}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_19} ${LIBMV_PATCH_DST_19}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_20} ${LIBMV_PATCH_DST_20}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_21} ${LIBMV_PATCH_DST_21}
+#     COMMAND       ${CMAKE_COMMAND} -E copy ${LIBMV_PATCH_SRC_22} ${LIBMV_PATCH_DST_22}
+#     CMAKE_ARGS
+#         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+#         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+#         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+#         -DCMAKE_INSTALL_PREFIX=${LIBMV_INSTALL_PATH}
+#         -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+#         -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
+#         -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
+#         #
+#         # WARNING: Enabling "EIGENSPARSE" results in an LGPL licensed
+#         # Ceres.
+#         -DEIGENSPARSE=1
+#         -DCXSPARSE=0  # Disabled because it's slower than SuiteSparse.
+#         -DLAPACK=0
+#         -DSUITESPARSE=0
+#         -DSCHUR_SPECIALIZATIONS=1  # Enable this for more optimizations.
+#         -DWITH_FAST_DETECTOR=1
+#         -DBUILD_SHARED_LIBS=0
+#         -DBUILD_TESTS=0
+#         -DBUILD_GUI=0
+#         -DBUILD_TOOLS=0
+#         #
+#         # TODO: Install Doxygen and fill this out.
+#         # -DDOXYGEN_EXECUTABLE
+# )
 
 #########################################################
 # openMVG - Multiple View library

@@ -22,6 +22,10 @@ Any queries use the Maya Python API, but modifications are handled with
 maya.cmds.* so that they support undo/redo correctly.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import warnings
 
 import maya.cmds
@@ -29,6 +33,8 @@ import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.python_compat as pycompat
+
 
 LOG = mmSolver.logger.get_logger()
 
@@ -52,7 +58,7 @@ class SetHelper(object):
             warnings.warn(msg)
             node = name
         if node is not None:
-            if isinstance(node, (str, unicode)):
+            if isinstance(node, pycompat.TEXT_TYPE):
                 obj = node_utils.get_as_object(node)
                 self._mfn = OpenMaya.MFnSet(obj)
             else:
@@ -73,7 +79,7 @@ class SetHelper(object):
                 node = self._mfn.name()
             except RuntimeError:
                 pass
-        if isinstance(node, (str, unicode)) and len(node) == 0:
+        if isinstance(node, pycompat.TEXT_TYPE) and len(node) == 0:
             node = None
         return node
 
@@ -128,7 +134,7 @@ class SetHelper(object):
         return
 
     def add_member(self, name):
-        assert isinstance(name, (str, unicode))
+        assert isinstance(name, pycompat.TEXT_TYPE)
         set_node = self.get_node()
         maya.cmds.sets(name, edit=True, include=set_node, noWarnings=True)
         return

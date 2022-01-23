@@ -19,10 +19,16 @@
 The information returned from a solve.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import collections
 import math
 import datetime
+
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 
 
 LOG = mmSolver.logger.get_logger()
@@ -42,7 +48,7 @@ def parse_command_result(cmd_result):
     """
     data = collections.defaultdict(list)
     for res in cmd_result:
-        assert isinstance(res, (str, unicode))
+        assert isinstance(res, pycompat.TEXT_TYPE)
         splt = res.partition(KEY_VALUE_SEP_CHAR)
         key = splt[0]
         value = splt[-1]
@@ -84,20 +90,20 @@ def _convert_to(name, key, typ, value, index):
         LOG.debug(msg.format(name, key, typ, value))
         return typ()
 
-    if typ is float and not isinstance(value[index], (str, unicode, float)):
+    if typ is float and not isinstance(value[index], (pycompat.TEXT_TYPE, float)):
         return typ()
 
-    if typ is str and not isinstance(value[index], (str, unicode, float, int, bool)):
+    if typ is str and not isinstance(value[index], (pycompat.TEXT_TYPE, float, int, bool)):
         return typ()
 
     if typ is int:
-        if isinstance(value[index], (str, unicode, float)):
+        if isinstance(value[index], (pycompat.TEXT_TYPE, float)):
             value[index] = float(value[index])
         else:
             return typ()
 
     if typ is bool:
-        if isinstance(value[index], (str, unicode, float)):
+        if isinstance(value[index], (pycompat.TEXT_TYPE, float)):
             value[index] = int(value[index])
         else:
             return typ()
@@ -311,7 +317,7 @@ class SolveResult(object):
                   the error (deviation).
         :rtype: {"marker_node": {float: float}}
         """
-        assert marker_node is None or isinstance(marker_node, (str, unicode))
+        assert marker_node is None or isinstance(marker_node, pycompat.TEXT_TYPE)
         v = None
         if marker_node is None:
             v = self._per_marker_per_frame_error.copy()

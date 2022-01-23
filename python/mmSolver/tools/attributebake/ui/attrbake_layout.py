@@ -33,6 +33,7 @@ import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.configmaya as configmaya
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.attributebake.ui.ui_attrbake_layout as ui_layout
 import mmSolver.tools.attributebake.constant as const
 import mmSolver.tools.attributebake.lib as lib
@@ -60,7 +61,7 @@ class AttributeBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.populateUi()
 
     def frameRangeModeIndexChangedHelper(self, frame_range_mode):
-        assert isinstance(frame_range_mode, basestring)
+        assert isinstance(frame_range_mode, pycompat.TEXT_TYPE)
         start_name = const.CONFIG_FRAME_START_KEY
         end_name = const.CONFIG_FRAME_END_KEY
 

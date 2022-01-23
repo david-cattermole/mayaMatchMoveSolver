@@ -19,6 +19,10 @@
 Utilities used with Collection compiled 'kwargs'.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 import maya.mel
 import maya.OpenMaya as OpenMaya

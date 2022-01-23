@@ -19,6 +19,10 @@
 Defines a MarkerGroup node.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import warnings
 
 import maya.cmds
@@ -26,6 +30,7 @@ import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.camera as camera
 import mmSolver._api.utils as api_utils
 import mmSolver._api.constant as const
@@ -89,7 +94,7 @@ class MarkerGroup(object):
                 node = self._mfn_tfm.fullPathName()
             except RuntimeError:
                 pass
-        if isinstance(node, (str, unicode)) and len(node) == 0:
+        if isinstance(node, pycompat.TEXT_TYPE) and len(node) == 0:
             node = None
         return node
 
@@ -100,7 +105,7 @@ class MarkerGroup(object):
         :param node: Maya node path.
         :type node: str
         """
-        assert isinstance(node, (str, unicode))
+        assert isinstance(node, pycompat.TEXT_TYPE)
         assert maya.cmds.objExists(node)
         assert api_utils.get_object_type(node) == const.OBJECT_TYPE_MARKER_GROUP
 
@@ -147,7 +152,7 @@ class MarkerGroup(object):
 
         :return: MarkerGroup object with node set as newly created node.
         """
-        assert isinstance(name, (str, unicode))
+        assert isinstance(name, pycompat.TEXT_TYPE)
         assert isinstance(cam, camera.Camera)
 
         cam_tfm = cam.get_transform_node()

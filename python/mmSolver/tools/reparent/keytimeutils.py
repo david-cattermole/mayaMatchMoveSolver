@@ -22,6 +22,7 @@ Keyframe time querying utilities.
 import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
 
@@ -38,7 +39,7 @@ class KeyframeTimes(object):
         """
         Add node attributes into the keyframe times.
         """
-        assert isinstance(node, (basestring, str, unicode))
+        assert isinstance(node, pycompat.TEXT_TYPE)
         assert isinstance(attrs, (list, tuple))
         nodes = [node]
         if parents is not None:

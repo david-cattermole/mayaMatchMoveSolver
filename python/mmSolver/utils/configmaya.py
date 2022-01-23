@@ -35,11 +35,16 @@ The levels are (in ascending order):
 - Maya Preferences
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import json
 
 import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.constant as const
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
 
@@ -70,7 +75,7 @@ def __add_node_option_attr(node_name, attr_name, value):
             longName=attr_name,
             attributeType='float'
         )
-    elif isinstance(value, basestring):
+    elif isinstance(value, pycompat.TEXT_TYPE):
         maya.cmds.addAttr(
             node_name,
             longName=attr_name,
@@ -133,8 +138,8 @@ def set_node_option(node_name, attr_name, value,
 
     :rtype: None
     """
-    assert isinstance(attr_name, basestring)
-    assert isinstance(value, (bool, float, int, basestring))
+    assert isinstance(attr_name, pycompat.TEXT_TYPE)
+    assert isinstance(value, (bool, float, int, pycompat.TEXT_TYPE))
     if add_attr is None:
         add_attr = False
     assert isinstance(add_attr, bool)
@@ -152,7 +157,7 @@ def set_node_option(node_name, attr_name, value,
     maya.cmds.setAttr(node_attr, lock=False)
     if isinstance(value, (bool, float, int)):
         maya.cmds.setAttr(node_attr, value)
-    elif isinstance(value, basestring):
+    elif isinstance(value, pycompat.TEXT_TYPE):
         maya.cmds.setAttr(node_attr, value, type='string')
     maya.cmds.setAttr(node_attr, lock=True)
     return
@@ -296,7 +301,7 @@ def get_preference_option(name, default=None):
     :return: The value found under 'name', or the 'default' value.
     :rtype: int, float or str
     """
-    assert isinstance(name, basestring)
+    assert isinstance(name, pycompat.TEXT_TYPE)
     exists = maya.cmds.optionVar(exists=name)
     if exists is False:
         return default
@@ -314,12 +319,12 @@ def set_preference_option(name, value):
     :param value: Value to set.
     :type value: int, float or str
     """
-    assert isinstance(name, basestring)
+    assert isinstance(name, pycompat.TEXT_TYPE)
     if isinstance(value, int):
         maya.cmds.optionVar(intValue=(name, value))
     elif isinstance(value, float):
         maya.cmds.optionVar(floatValue=(name, value))
-    elif isinstance(value, basestring):
+    elif isinstance(value, pycompat.TEXT_TYPE):
         maya.cmds.optionVar(stringValue=(name, value))
     else:
         msg = 'Invalid type for value argument. name=%r value=%r type=%r'

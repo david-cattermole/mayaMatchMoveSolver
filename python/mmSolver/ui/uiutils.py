@@ -19,6 +19,10 @@
 User interface utilities for Qt and Qt based applications.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 
 import mmSolver.ui.qtpyutils as qtpyutils
@@ -28,6 +32,8 @@ import mmSolver.ui.Qt as Qt
 import mmSolver.ui.Qt.QtCore as QtCore
 import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
+
+import mmSolver.utils.python_compat as pycompat
 
 
 def getHostApplication():
@@ -77,7 +83,9 @@ def getMayaMainWindow():
     """
     import maya.OpenMayaUI as omui
     window_ptr = omui.MQtUtil.mainWindow()
-    window = Qt.QtCompat.wrapInstance(long(window_ptr), QtWidgets.QMainWindow)
+    window = Qt.QtCompat.wrapInstance(
+        pycompat.LONG_TYPE(window_ptr),
+        QtWidgets.QMainWindow)
     return window
 
 
@@ -86,7 +94,7 @@ def findControlMayaWidget(name, clsTyp):
     ptr = omui.MQtUtil.findControl(name)
     widget = None
     if ptr:
-        widget = Qt.QtCompat.wrapInstance(long(ptr), clsTyp)
+        widget = Qt.QtCompat.wrapInstance(pycompat.LONG_TYPE(ptr), clsTyp)
     return widget
 
 

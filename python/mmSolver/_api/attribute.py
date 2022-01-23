@@ -19,11 +19,16 @@
 Module for attributes and related functions.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaAnim as OpenMayaAnim
 
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.utils as api_utils
 import mmSolver._api.constant as const
 import mmSolver.logger
@@ -61,22 +66,23 @@ class Attribute(object):
         A 'name' is a string of both node and attribute path; `node.attr`.
 
         :param name: Node and attribute path as a single string: 'node.attr'
-        :type name: basestring
+        :type name: str
 
         :param node: DG Maya node path.
-        :type node: basestring
+        :type node: str
 
         :param attr: Long or short attribute name.
-        :type attr: basestring
+        :type attr: str
         """
-        if isinstance(name, (str, unicode)):
+        if isinstance(name, pycompat.TEXT_TYPE):
             assert api_utils.get_object_type(name) == const.OBJECT_TYPE_ATTRIBUTE
             part = name.partition('.')
             node = part[0]
             attr = part[-1]
 
         self._plug = None
-        if isinstance(node, (str, unicode)) and isinstance(attr, (str, unicode)):
+        if (isinstance(node, pycompat.TEXT_TYPE)
+                and isinstance(attr, pycompat.TEXT_TYPE)):
             assert maya.cmds.objExists(node)
             # Long and short names must be checked.
             attr_list_long = maya.cmds.listAttr(node, shortNames=False) or []
@@ -111,7 +117,7 @@ class Attribute(object):
 
         :returns: The node name, or None if the Attribute class does
             not hold a valid node.
-        :rtype: None or basestring
+        :rtype: None or str
         """
         if self._plug is None:
             return None
@@ -127,7 +133,7 @@ class Attribute(object):
             nodes = maya.cmds.ls(node) or []
             if len(nodes) > 0:
                 node = nodes[0]
-        assert node is None or isinstance(node, basestring)
+        assert node is None or isinstance(node, pycompat.TEXT_TYPE)
         return node
 
     def get_node_uid(self):
@@ -172,8 +178,8 @@ class Attribute(object):
         name = None
         node = self.get_node(full_path=full_path)
         attr = self.get_attr(long_name=full_path)
-        if (isinstance(node, basestring)
-                and isinstance(attr, basestring)):
+        if (isinstance(node, pycompat.TEXT_TYPE)
+                and isinstance(attr, pycompat.TEXT_TYPE)):
             name = node + '.' + attr
         return name
 
@@ -224,8 +230,8 @@ class Attribute(object):
         attr_type = None
         node_name = self.get_node()
         attr_name = self.get_attr()
-        if (isinstance(node_name, basestring)
-                and isinstance(attr_name, basestring)):
+        if (isinstance(node_name, pycompat.TEXT_TYPE)
+                and isinstance(attr_name, pycompat.TEXT_TYPE)):
             attr_type = maya.cmds.attributeQuery(
                 attr_name,
                 node=node_name,

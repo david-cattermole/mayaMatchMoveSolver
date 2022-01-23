@@ -21,6 +21,10 @@ Browser widget class for visualising nodes.
 This class is designed to be sub-classed with functionality for final use.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 

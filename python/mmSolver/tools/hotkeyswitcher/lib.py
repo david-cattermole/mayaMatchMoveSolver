@@ -22,10 +22,10 @@ Modify and query the Hotkey Sets.
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.hotkeyswitcher.constant as const
 
 LOG = mmSolver.logger.get_logger()
-
 
 def get_ordered_hotkey_sets():
     names = maya.cmds.hotkeySet(query=True, hotkeySetArray=True)
@@ -40,7 +40,7 @@ def get_current_hotkey_set():
 
 
 def switch_to_hotkey_set(name):
-    assert isinstance(name, basestring)
+    assert isinstance(name, pycompat.TEXT_TYPE)
     exists = maya.cmds.hotkeySet(name, exists=True)
     if not exists:
         msg = 'Hotkey Set %r does not exist, cannot switch.'

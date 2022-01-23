@@ -19,6 +19,10 @@
 Utilities built around Maya nodes and node paths.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import warnings
 
 import maya.cmds
@@ -26,6 +30,7 @@ import maya.OpenMaya as OpenMaya1
 import maya.api.OpenMaya as OpenMaya2
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
 
@@ -104,9 +109,9 @@ def get_node_parents(node):
     :type node: str
 
     :returns: The parent nodes of node, in order from node upwards.
-    :rtype: [basestring, ..]
+    :rtype: [str, ..]
     """
-    assert isinstance(node, (basestring, str, unicode))
+    assert isinstance(node, pycompat.TEXT_TYPE)
     parent_nodes = []
     parents = maya.cmds.listRelatives(
         node,
@@ -330,7 +335,7 @@ def get_camera_above_node(node):
         if dag.apiType() == OpenMaya1.MFn.kTransform:
             num_children = dag.childCount()
             if num_children > 0:
-                for i in xrange(num_children):
+                for i in range(num_children):
                     child_obj = dag.child(i)
                     if child_obj.apiType() == OpenMaya1.MFn.kCamera:
                         cam_tfm = dag.fullPathName()

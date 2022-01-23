@@ -38,6 +38,7 @@ import mmSolver.ui.uiutils as uiutils
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.tools as tools_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.attributebake.lib as fastbake_lib
 
 LOG = mmSolver.logger.get_logger()
@@ -66,7 +67,7 @@ def transform_has_constraints(tfm_node):
 
 
 def _display_warning_ui(msg):
-    assert isinstance(msg, basestring)
+    assert isinstance(msg, pycompat.TEXT_TYPE)
     msg = msg
     LOG.warn(msg)
     return
@@ -360,8 +361,8 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
         return sorted(frames_list)
 
     def offsetVector(self, a, b):
-        assert isinstance(a, basestring)
-        assert isinstance(b, basestring)
+        assert isinstance(a, pycompat.TEXT_TYPE)
+        assert isinstance(b, pycompat.TEXT_TYPE)
         assert cmds.objExists(a) and cmds.objExists(b)
         a_pos = cmds.xform(a, q=True, ws=True, t=True)
         b_pos = cmds.xform(b, q=True, ws=True, t=True)

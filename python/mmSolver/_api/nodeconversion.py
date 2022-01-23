@@ -19,6 +19,10 @@
 Convert between different types of nodes.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver._api.marker as marker
 import mmSolver._api.bundle as bundle
 import mmSolver._api.nodefilter as nodefilter

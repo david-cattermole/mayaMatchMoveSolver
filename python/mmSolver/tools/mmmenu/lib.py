@@ -19,9 +19,14 @@
 Supporting functions for building the mmSolver menu.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import mmSolver.logger
 import mmSolver.ui.menuutils as menu_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.mmmenu.constant as const
 
 LOG = mmSolver.logger.get_logger()
@@ -53,7 +58,7 @@ def compile_function_definition(item, funcs):
     Find and create a function definition.
     """
     func_def = None
-    if isinstance(item, basestring):
+    if isinstance(item, pycompat.TEXT_TYPE):
         func_def = get_function_definition(item, funcs)
         if func_def is None and '---' in item:
             func_def = {'divider': True}

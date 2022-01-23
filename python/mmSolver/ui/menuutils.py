@@ -20,9 +20,14 @@ Functions to create Maya menus.
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 import maya.mel
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 
 
 LOG = mmSolver.logger.get_logger()
@@ -50,7 +55,7 @@ def create_menu(parent=None, name=None, **kwargs):
     :type name: str
     """
     assert parent is not None
-    assert isinstance(parent, basestring)
+    assert isinstance(parent, pycompat.TEXT_TYPE)
     menu = maya.cmds.menu(parent=parent, label=name, **kwargs)
     return menu
 
@@ -101,10 +106,10 @@ def create_menu_item(parent=None,
     :rtype: str
     """
     assert parent is not None
-    assert isinstance(parent, basestring)
-    assert name is None or isinstance(name, basestring)
-    assert tooltip is None or isinstance(tooltip, basestring)
-    assert cmd is None or isinstance(cmd, basestring)
+    assert isinstance(parent, pycompat.TEXT_TYPE)
+    assert name is None or isinstance(name, pycompat.TEXT_TYPE)
+    assert tooltip is None or isinstance(tooltip, pycompat.TEXT_TYPE)
+    assert cmd is None or isinstance(cmd, pycompat.TEXT_TYPE)
     assert divider is None or isinstance(divider, bool)
     assert subMenu is None or isinstance(subMenu, bool)
     assert tearOff is None or isinstance(tearOff, bool)
@@ -116,19 +121,19 @@ def create_menu_item(parent=None,
     label = 'label'
     annotation = ''
 
-    if isinstance(name, basestring):
+    if isinstance(name, pycompat.TEXT_TYPE):
         label = str(name)
-    if isinstance(tooltip, basestring):
+    if isinstance(tooltip, pycompat.TEXT_TYPE):
         annotation = str(tooltip)
 
     item = None
     if divider is not True and subMenu is not True:
         kwargs = {}
-        if isinstance(cmd, basestring):
+        if isinstance(cmd, pycompat.TEXT_TYPE):
             command = str(cmd)
             if cmdLanguage is None:
                 sourceType = 'python'
-            elif isinstance(cmdLanguage, basestring):
+            elif isinstance(cmdLanguage, pycompat.TEXT_TYPE):
                 sourceType = str(cmdLanguage)
             else:
                 msg = 'cmdLanguage must be None or str: cmdLanguage=%r'
@@ -192,8 +197,8 @@ def create_popup_menu(parent=None,
     :rtype: str
     """
     assert parent is not None
-    assert isinstance(parent, basestring)
-    assert postCmd is None or isinstance(postCmd, basestring)
+    assert isinstance(parent, pycompat.TEXT_TYPE)
+    assert postCmd is None or isinstance(postCmd, pycompat.TEXT_TYPE)
     if button is None:
         button = 3
     assert isinstance(button, int)

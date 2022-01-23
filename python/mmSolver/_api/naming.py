@@ -19,10 +19,15 @@
 Naming utilities.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import re
 
 import maya.cmds
 
+import mmSolver.utils.python_compat as pycompat
 from mmSolver._api import constant as const
 import mmSolver.logger
 
@@ -80,8 +85,8 @@ def find_valid_maya_node_name(name,
     :return: A valid Maya node name.
     :rtype: str
     """
-    assert isinstance(name, basestring)
-    assert prefix is None or isinstance(prefix, basestring)
+    assert isinstance(name, pycompat.TEXT_TYPE)
+    assert prefix is None or isinstance(prefix, pycompat.TEXT_TYPE)
     assert isinstance(auto_add_num, bool)
     assert isinstance(auto_add_num_padding, int)
     assert isinstance(auto_inc, bool)
@@ -153,9 +158,9 @@ def get_new_marker_name(name, prefix=None, suffix=None):
     :return: Name for the marker.
     :rtype: str
     """
-    assert isinstance(name, basestring)
-    assert prefix is None or isinstance(prefix, basestring)
-    assert suffix is None or isinstance(suffix, basestring)
+    assert isinstance(name, pycompat.TEXT_TYPE)
+    assert prefix is None or isinstance(prefix, pycompat.TEXT_TYPE)
+    assert suffix is None or isinstance(suffix, pycompat.TEXT_TYPE)
     if prefix is None:
         prefix = const.MARKER_NAME_PREFIX
     if suffix is None:
@@ -185,9 +190,9 @@ def get_new_bundle_name(name, prefix=None, suffix=None):
     :return: Name for the bundle.
     :rtype: str
     """
-    assert isinstance(name, basestring)
-    assert prefix is None or isinstance(prefix, basestring)
-    assert suffix is None or isinstance(suffix, basestring)
+    assert isinstance(name, pycompat.TEXT_TYPE)
+    assert prefix is None or isinstance(prefix, pycompat.TEXT_TYPE)
+    assert suffix is None or isinstance(suffix, pycompat.TEXT_TYPE)
     if prefix is None:
         prefix = const.BUNDLE_NAME_PREFIX
     if suffix is None:

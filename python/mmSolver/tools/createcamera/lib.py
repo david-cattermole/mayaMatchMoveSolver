@@ -19,9 +19,14 @@
 Library functions for creating Cameras.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
 
 LOG = mmSolver.logger.get_logger()
@@ -33,7 +38,7 @@ def create_camera(name=None):
     """
     if name is None:
         name = 'camera1'
-    assert isinstance(name, basestring)
+    assert isinstance(name, pycompat.TEXT_TYPE)
     tfm = maya.cmds.createNode('transform', name=name)
     shp_name = tfm.rpartition('|')[-1] + 'Shape'
     shp = maya.cmds.createNode('camera', parent=tfm, name=shp_name)

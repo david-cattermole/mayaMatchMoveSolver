@@ -19,6 +19,10 @@
 Solver Settings 'Standard' widget.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 
 import mmSolver.ui.qtpyutils as qtpyutils
@@ -29,6 +33,7 @@ import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.tools.solver.lib.state as lib_state
@@ -341,7 +346,7 @@ class SolverStandardWidget(QtWidgets.QWidget,
         )
         if data is None:
             return
-        assert isinstance(data, (int, long))
+        assert isinstance(data, pycompat.INT_TYPES)
         self.setSceneGraphModeValue(col, data)
         self.sceneGraphModeChanged.emit()
         return

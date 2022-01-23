@@ -19,6 +19,10 @@
 Build the mmSolver Maya shelf.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver.ui.shelfutils as shelf_utils
 import mmSolver.tools.mmshelf.constant as const

@@ -19,9 +19,14 @@
 Reads a Matchmover rz2 file.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import re
 
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.loadmarker.lib.interface as interface
 import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
 
@@ -33,7 +38,7 @@ class LoaderRZ2(interface.LoaderBase):
     args = []
 
     def parse(self, file_path, **kwargs):
-        if not isinstance(file_path, basestring):
+        if not isinstance(file_path, pycompat.TEXT_TYPE):
             raise TypeError('file_path is not a string: %r' % file_path)
         if not os.path.isfile(file_path):
             raise OSError('File path does not exist: %s' % file_path)
@@ -80,7 +85,7 @@ class LoaderRZ2(interface.LoaderBase):
         start_frame = int(range_grps[0])
         end_frame = int(range_grps[1])
         by_frame = int(range_grps[2])
-        frames = xrange(start_frame, end_frame, by_frame)
+        frames = range(start_frame, end_frame, by_frame)
 
         idx = end_idx
         while True:

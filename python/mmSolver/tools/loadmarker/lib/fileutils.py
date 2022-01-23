@@ -19,10 +19,15 @@
 File reading and parsing utilities.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import os.path
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.loadmarker.lib.formatmanager as formatmanager
 import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 
@@ -40,7 +45,7 @@ def get_file_path_format(text):
     :rtype: None or Format
     """
     format_ = None
-    if isinstance(text, (str, unicode)) is False:
+    if isinstance(text, pycompat.TEXT_TYPE) is False:
         return format_
     if os.path.isfile(text) is False:
         return format_
@@ -67,7 +72,7 @@ def is_valid_file_path(text):
     :returns: File path validity.
     :rtype: bool
     """
-    assert isinstance(text, (str, unicode))
+    assert isinstance(text, pycompat.TEXT_TYPE)
     fmt = get_file_path_format(text)
     valid = fmt is not None
     return valid

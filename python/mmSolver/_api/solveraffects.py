@@ -23,6 +23,10 @@ needing to re-calculate the relationships (which can be expensive to
 compute).
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver._api.constant as const
 import mmSolver._api.frame as frame

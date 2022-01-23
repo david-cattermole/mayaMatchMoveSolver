@@ -21,6 +21,10 @@ User facing undo/redo function.
 This function may be called in a UI context.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver.tools.undoredoscene.lib as lib
 

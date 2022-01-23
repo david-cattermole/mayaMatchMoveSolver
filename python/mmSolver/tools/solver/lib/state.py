@@ -22,10 +22,15 @@ All data is stored in the Maya scene and is dependent on the Maya
 scene.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.solver.constant as const
 import mmSolver.tools.solver.lib.scene_data as scene_data
 
@@ -142,7 +147,7 @@ def set_state_str(name, value):
     :param value: Value to set.
     :type value: str
     """
-    if isinstance(value, basestring) is False:
+    if isinstance(value, pycompat.TEXT_TYPE) is False:
         msg = 'Value cannot be %r; %r is not a string, name=%r'
         raise TypeError(msg % (type(value), value, name))
     scene_data.set_scene_data(name, value)

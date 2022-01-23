@@ -38,13 +38,19 @@ Example usage::
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import math
 import sys
 
+import mmSolver.utils.python_compat as pycompat
+
 # FFT module
-if sys.version_info[0] == 2:
+if pycompat.IS_PYTHON_2:
     import mmSolver.utils._fft_py2 as fft
-elif sys.version_info[0] == 3:
+else:
     import mmSolver.utils._fft_py3 as fft
 
 import mmSolver.utils.constant as const
@@ -57,7 +63,7 @@ except ImportError:
 
 
 # Optimal 'range' function for Python 2
-if sys.version_info[0] == 2:
+if pycompat.IS_PYTHON_2:
     range = xrange
 
 

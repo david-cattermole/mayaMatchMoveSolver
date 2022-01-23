@@ -81,6 +81,7 @@ import mmSolver.utils.time as time_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.transform as tfm_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.copypastecamera.constant as const
 
 
@@ -244,7 +245,7 @@ def get_image_path_pattern(image_name, use_frame_ext, test_disk=None):
               the values accurately.
     :rtype: (str, bool) or (None, None)
     """
-    assert isinstance(image_name, (str, unicode, basestring))
+    assert isinstance(image_name, pycompat.TEXT_TYPE)
     if test_disk is None:
         test_disk = False
     assert isinstance(test_disk, bool)
@@ -265,7 +266,7 @@ def get_frame_range_from_file_pattern(file_path_pattern, fallback_range=None):
     :returns: FrameRange
     :rtype: FrameRange or (int, int)
     """
-    assert isinstance(file_path_pattern, (str, unicode, basestring))
+    assert isinstance(file_path_pattern, pycompat.TEXT_TYPE)
     assert len(file_path_pattern) > 0
     assert isinstance(fallback_range, (time_utils.FrameRange))
     start = 99999999
@@ -350,13 +351,13 @@ def query_plate_data(cam_tfm, cam_shp, img_pl_shp, test_disk):
     :param img_pl_shp: Image Plane node shape node to query.
     :type img_pl_shp: str
     """
-    assert isinstance(cam_tfm, (str, unicode, basestring))
-    assert isinstance(cam_shp, (str, unicode, basestring))
+    assert isinstance(cam_tfm, pycompat.TEXT_TYPE)
+    assert isinstance(cam_shp, pycompat.TEXT_TYPE)
     assert len(cam_tfm) > 0
     assert len(cam_shp) > 0
     assert maya.cmds.objExists(cam_tfm)
     assert maya.cmds.objExists(cam_shp)
-    assert isinstance(img_pl_shp, (str, unicode, basestring))
+    assert isinstance(img_pl_shp, pycompat.TEXT_TYPE)
     assert maya.cmds.objExists(img_pl_shp)
 
     # Query image plane path
@@ -412,8 +413,8 @@ def query_camera_data(cam_tfm,
     """
     Get the camera information from the given cameras
     """
-    assert isinstance(cam_tfm, (str, unicode, basestring))
-    assert isinstance(cam_shp, (str, unicode, basestring))
+    assert isinstance(cam_tfm, pycompat.TEXT_TYPE)
+    assert isinstance(cam_shp, pycompat.TEXT_TYPE)
     assert len(cam_tfm) > 0
     assert len(cam_shp) > 0
     assert maya.cmds.objExists(cam_tfm)

@@ -21,6 +21,10 @@ Library functions for undo/redo.
 This module should not have any UI code.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 
 import mmSolver.logger

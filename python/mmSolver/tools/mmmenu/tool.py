@@ -19,6 +19,10 @@
 Build the mmSolver menu.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver.utils.config as config_utils
 import mmSolver.ui.menuutils as menu_utils

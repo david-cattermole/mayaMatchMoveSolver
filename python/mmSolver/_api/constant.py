@@ -19,6 +19,10 @@
 Constant values used in the API.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.OpenMaya as OpenMaya
 
 # Plug-in names

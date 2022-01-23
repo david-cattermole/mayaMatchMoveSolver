@@ -40,6 +40,10 @@ Additionally, studios may modify the '.mod' file to provide an
 intermediate studio or project location.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import collections
 import json
 import os
@@ -47,6 +51,7 @@ import platform
 
 import mmSolver.logger
 import mmSolver.utils.constant as const
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
 
@@ -373,9 +378,9 @@ class Config(object):
             the file, use the Config.read() method.
 
         :param value: The value to set.
-        :type value: basestring
+        :type value: str
         """
-        assert isinstance(value, basestring)
+        assert isinstance(value, pycompat.TEXT_TYPE)
         if value == self._file_path:
             # No change to the file path.
             return

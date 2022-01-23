@@ -19,6 +19,10 @@
 Re-Projection utilities - converting a 3D transform into a 2D point.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 
 import mmSolver.logger

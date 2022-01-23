@@ -19,6 +19,11 @@
 Toggle Image Planes in the active 3D viewport.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.tools.toggleviewportimgplns.lib as lib

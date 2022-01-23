@@ -25,12 +25,17 @@ without waiting for the full compilation only to find an error on the
 first Action.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import collections
 
 import maya.cmds
 import maya.mel
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.constant as const
 import mmSolver._api.excep as excep
 import mmSolver._api.utils as api_utils
@@ -92,8 +97,8 @@ def _get_camera_nodes_from_marker(mkr):
         return None
     cam_tfm_node = cam.get_transform_node()
     cam_shp_node = cam.get_shape_node()
-    assert isinstance(cam_tfm_node, basestring)
-    assert isinstance(cam_shp_node, basestring)
+    assert isinstance(cam_tfm_node, pycompat.TEXT_TYPE)
+    assert isinstance(cam_shp_node, pycompat.TEXT_TYPE)
     return cam_tfm_node, cam_shp_node
 
 
@@ -150,7 +155,7 @@ def get_markers_static_values(mkr_list):
     for mkr in mkr_list:
         assert isinstance(mkr, marker.Marker)
         mkr_node = mkr.get_node()
-        assert isinstance(mkr_node, basestring)
+        assert isinstance(mkr_node, pycompat.TEXT_TYPE)
 
         bnd_node = _get_bundle_node_name_from_marker(mkr)
         if bnd_node is None:
@@ -189,7 +194,7 @@ def markersAndCameras_compile_flags(mkr_list, mkr_static_values=None):
     for mkr in mkr_list:
         assert isinstance(mkr, marker.Marker)
         mkr_node = mkr.get_node()
-        assert isinstance(mkr_node, basestring)
+        assert isinstance(mkr_node, pycompat.TEXT_TYPE)
         mkr_cache = DictGetOrCall(mkr_static_values.get(mkr_node, dict()))
 
         bnd_node = mkr_cache.get_or_call(

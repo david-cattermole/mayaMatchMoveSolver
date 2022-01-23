@@ -15,12 +15,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.camera as camera_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 
@@ -102,7 +108,7 @@ class Lens(object):
                 node = self._mfn_node.name()
             except RuntimeError:
                 pass
-        if isinstance(node, (str, unicode)) and len(node) == 0:
+        if isinstance(node, pycompat.TEXT_TYPE) and len(node) == 0:
             node = None
         return node
 
@@ -127,7 +133,7 @@ class Lens(object):
         :param node: The existing Maya node.
         :type node: str
         """
-        assert isinstance(node, (str, unicode))
+        assert isinstance(node, pycompat.TEXT_TYPE)
         assert maya.cmds.objExists(node)
 
         self._mfn_node = None
@@ -158,10 +164,10 @@ class Lens(object):
         :return: Lens object with newly created node.
         :rtype: Lens
         """
-        assert isinstance(name, (str, unicode))
+        assert isinstance(name, pycompat.TEXT_TYPE)
         if model is None:
             model = const.LENS_NODE_TYPE_DEFAULT
-        assert isinstance(model, (str, unicode))
+        assert isinstance(model, pycompat.TEXT_TYPE)
         node = maya.cmds.createNode(model, name=name)
         self.set_node(node)
         return self

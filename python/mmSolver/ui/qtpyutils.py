@@ -22,6 +22,10 @@ This module will *not* import Qt.py, and contains functions designed to be
 run before Qt.py is imported.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 
 PREFERRED_BINDING = 'QT_PREFERRED_BINDING'

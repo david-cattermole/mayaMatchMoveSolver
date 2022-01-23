@@ -19,6 +19,10 @@
 Utilties to be used with Node Browser and sub-classes.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -60,7 +64,7 @@ def _findIndexWithUUID(node_uuid, parent_index, model, column):
         return parent_index
     number_of_rows = model.rowCount(parent_index)
     if number_of_rows > 0:
-        for row in xrange(number_of_rows):
+        for row in range(number_of_rows):
             index = model.index(row, column, parent=parent_index)
             idx = _findIndexWithUUID(node_uuid, index, model, column)
             if idx is None:

@@ -24,6 +24,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.camera as utils_camera
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
 
@@ -32,7 +33,7 @@ def create_image_poly_plane(name=None):
     """
     Create a default polygon image plane under camera.
     """
-    assert name is None or isinstance(name, basestring)
+    assert name is None or isinstance(name, pycompat.TEXT_TYPE)
     tfm, creator = maya.cmds.polyPlane(
         axis=(0.0, 0.0, 1.0),
         subdivisionsWidth=32,

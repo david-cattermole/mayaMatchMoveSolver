@@ -19,11 +19,16 @@
 Solver operation base class.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import abc
 import uuid
 
 import mmSolver.logger
 import mmSolver._api.constant as const
+import mmSolver.utils.python_compat as pycompat
 
 
 LOG = mmSolver.logger.get_logger()
@@ -76,7 +81,7 @@ class SolverBase(object):
         self._data = const.SOLVER_DATA_DEFAULT.copy()
         if isinstance(data, dict):
             self.set_data(data)
-        if isinstance(name, (str, unicode, uuid.UUID)):
+        if isinstance(name, (pycompat.TEXT_TYPE, uuid.UUID)):
             self._data['name'] = name
         else:
             # give the solver a random name.
@@ -98,7 +103,7 @@ class SolverBase(object):
         return self._data.get('name')
 
     def set_name(self, name):
-        assert isinstance(name, (str, unicode, uuid.UUID))
+        assert isinstance(name, (pycompat.TEXT_TYPE, uuid.UUID))
         self._data['name'] = str(name)
         return
 

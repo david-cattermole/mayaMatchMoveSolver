@@ -20,6 +20,10 @@ Displays the current state of the solver UI, with status and previous
 solve information.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 
 import mmSolver.ui.qtpyutils as qtpyutils

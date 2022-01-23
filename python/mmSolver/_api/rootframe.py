@@ -44,6 +44,10 @@ Root Frame calculation logic.
 #  highest, then add the next highest, etc. This should ensure
 #  stability of the solver is maximum.
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import collections
 
 import mmSolver.logger

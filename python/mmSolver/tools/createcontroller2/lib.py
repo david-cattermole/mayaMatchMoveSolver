@@ -26,6 +26,7 @@ import mmSolver.tools.attributebake.lib as fastbake_lib
 import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.time as time_utils
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
 
@@ -456,7 +457,7 @@ def remove_controller(controller_node, frame_start, frame_end,
         given controller.
     :rtype: [str, ..]
     """
-    assert isinstance(controller_node, basestring)
+    assert isinstance(controller_node, pycompat.TEXT_TYPE)
     assert cmds.objExists(controller_node)
     assert isinstance(frame_start, int)
     assert isinstance(frame_end, int)

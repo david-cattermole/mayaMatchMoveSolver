@@ -22,8 +22,13 @@ Solver Step - holds data representing a logical solver step.
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
 
@@ -116,7 +121,7 @@ class SolverStep(object):
     def __init__(self, data=None):
         super(SolverStep, self).__init__()
         assert 'name' in data
-        assert isinstance(data.get('name'), basestring) is True
+        assert isinstance(data.get('name'), pycompat.TEXT_TYPE) is True
         self._data = data.copy()
 
     def get_name(self):

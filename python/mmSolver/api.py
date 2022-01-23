@@ -19,6 +19,10 @@
 Controls the user-facing API.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 # All the objects for the user API.
 from mmSolver._api.camera import Camera
 from mmSolver._api.bundle import Bundle

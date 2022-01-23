@@ -15,12 +15,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.camera as camera_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 import mmSolver._api.lens as lensmodule
@@ -36,7 +42,7 @@ def _create_camera_attributes(cam_shp):
     :param cam_shp: Shape node for the Camera.
     :type cam_shp: str
     """
-    assert isinstance(cam_shp, (str, unicode))
+    assert isinstance(cam_shp, pycompat.TEXT_TYPE)
     assert maya.cmds.nodeType(cam_shp) == 'camera'
     node_obj = node_utils.get_as_object_apione(cam_shp)
     dg_node_fn = OpenMaya.MFnDependencyNode(node_obj)
@@ -191,7 +197,7 @@ class Camera(object):
                 node = self._mfn_tfm.fullPathName()
             except RuntimeError:
                 pass
-        if isinstance(node, (str, unicode)) and len(node) == 0:
+        if isinstance(node, pycompat.TEXT_TYPE) and len(node) == 0:
             node = None
         return node
 
@@ -219,7 +225,7 @@ class Camera(object):
         :param name: The existing Maya node.
         :type name: str
         """
-        assert isinstance(name, (str, unicode))
+        assert isinstance(name, pycompat.TEXT_TYPE)
         assert maya.cmds.objExists(name)
 
         self._mfn_tfm = None
@@ -268,7 +274,7 @@ class Camera(object):
                 node = self._mfn_shp.fullPathName()
             except RuntimeError:
                 pass
-        if isinstance(node, (str, unicode)) and len(node) == 0:
+        if isinstance(node, pycompat.TEXT_TYPE) and len(node) == 0:
             node = None
         return node
 
@@ -296,7 +302,7 @@ class Camera(object):
         :param name: The existing Maya node.
         :type name: str
         """
-        assert isinstance(name, (str, unicode))
+        assert isinstance(name, pycompat.TEXT_TYPE)
         assert maya.cmds.objExists(name)
 
         self._mfn_tfm = None

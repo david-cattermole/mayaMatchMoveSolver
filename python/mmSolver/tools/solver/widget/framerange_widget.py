@@ -15,9 +15,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""
 
-"""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
@@ -28,6 +29,7 @@ import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.time as utils_time
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.converttypes as converttypes
@@ -192,7 +194,7 @@ class FrameRangeWidget(QtWidgets.QWidget,
         )
         if data is None:
             return
-        assert isinstance(data, (int, long))
+        assert isinstance(data, pycompat.INT_TYPES)
         self.setRangeTypeValue(col, data)
         self.rangeTypeChanged.emit()
         return

@@ -25,6 +25,11 @@ so that frame 1, 11 and 21 are solved by a slower solver, and
 frames 1 to 21 are solved with a faster solver.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 import mmSolver._api.utils as api_utils

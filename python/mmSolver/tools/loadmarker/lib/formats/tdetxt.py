@@ -41,6 +41,10 @@ Simple file with 1 2D track and 1 frame of data::
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver.tools.loadmarker.lib.interface as interface
 import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
@@ -96,7 +100,7 @@ class Loader3DETXT(interface.LoaderBase):
             raise interface.ParserError('No points exist.')
 
         idx = 1  # Skip the first line
-        for i in xrange(num_points):
+        for i in range(num_points):
             line = lines[idx]
             mkr_name = line.strip()
 

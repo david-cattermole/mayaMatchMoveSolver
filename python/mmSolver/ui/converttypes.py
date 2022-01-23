@@ -22,6 +22,10 @@ This module should NOT be imported into any module that may not run with a
 GUI avalable (for example on the farm)
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 

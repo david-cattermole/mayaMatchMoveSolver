@@ -24,6 +24,7 @@ import maya.cmds
 import mmSolver.logger
 
 import mmSolver.utils.configmaya as configmaya
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.solver.constant as const
 
 
@@ -59,7 +60,7 @@ def ensure_attr_exists(node, attr_name,
             longName=attr_name,
             dataType='string'
         )
-        if isinstance(default_value, basestring):
+        if isinstance(default_value, pycompat.TEXT_TYPE):
             maya.cmds.setAttr(
                 node_attr,
                 default_value,
@@ -79,8 +80,8 @@ def __get_value_from_node(node, attr_name,
     .. note:: First create the attribute if it does not exist.
 
     """
-    assert isinstance(node, basestring)
-    assert isinstance(attr_name, basestring)
+    assert isinstance(node, pycompat.TEXT_TYPE)
+    assert isinstance(attr_name, pycompat.TEXT_TYPE)
     ensure_attr_exists(
         node, attr_name,
         attr_type=attr_type,
@@ -101,7 +102,7 @@ def __get_value_from_node(node, attr_name,
             msg = msg % type(value)
             raise TypeError(msg)
     elif attr_type in integer_attr_types:
-        valid_types = (int, long)
+        valid_types = pycompat.INT_TYPES
         if not isinstance(value, valid_types):
             msg = 'Value queried is not int: %r'
             msg = msg % type(value)
@@ -137,8 +138,8 @@ def __set_value_on_node(node, attr_name, value,
     .. note:: First create the attribute if it does not exist.
 
     """
-    assert isinstance(node, basestring)
-    assert isinstance(attr_name, basestring)
+    assert isinstance(node, pycompat.TEXT_TYPE)
+    assert isinstance(attr_name, pycompat.TEXT_TYPE)
     integer_attr_types = [
         'long', 'short', 'byte', 'char'
     ]
@@ -152,7 +153,7 @@ def __set_value_on_node(node, attr_name, value,
             msg = 'Value queried is not bool: %r' % type(value)
             raise TypeError(msg)
     elif attr_type in integer_attr_types:
-        valid_types = (int, long)
+        valid_types = pycompat.INT_TYPES
         if not isinstance(value, valid_types):
             msg = 'Value queried is not integer: %r' % type(value)
             raise TypeError(msg)
@@ -161,7 +162,7 @@ def __set_value_on_node(node, attr_name, value,
             msg = 'Value queried is not floating-point: %r' % type(value)
             raise TypeError(msg)
     elif attr_type in ['string']:
-        valid_types = (basestring, unicode, list, dict)
+        valid_types = (pycompat.TEXT_TYPE, list, dict)
         if not isinstance(value, valid_types):
             msg = 'Value queried is not string: %r' % type(value)
             raise TypeError(msg)

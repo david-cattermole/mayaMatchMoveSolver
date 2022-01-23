@@ -78,7 +78,7 @@ SET PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_windows64_maya%MAYA_VERSION%
 :: Note: There is no need to deactivate the virtual environment because
 :: this batch script is 'SETLOCAL' (see top of file) and therefore no
 :: environment variables are leaked into the calling environment.
-CALL %PROJECT_ROOT%\scripts\python_venv_activate.bat
+CALL %PROJECT_ROOT%\scripts\internal\python_venv_activate.bat
 
 :: Paths for dependencies.
 ::

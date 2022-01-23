@@ -23,7 +23,7 @@ SETLOCAL
 
 :: The root of this project.
 SET THIS_DIR=%~dp0
-SET ROOT=%THIS_DIR%..\external\
+SET ROOT=%THIS_DIR%..\..\external\
 ECHO Package Root: %ROOT%
 CHDIR %ROOT%
 

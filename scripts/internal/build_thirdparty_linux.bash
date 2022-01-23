@@ -30,7 +30,7 @@ CMAKE_EXE=cmake3
 
 # Path to this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-PACKAGE_ROOT=`readlink -f ${DIR}/../external`
+PACKAGE_ROOT=`readlink -f ${DIR}/../../external`
 echo "Package Root: ${PACKAGE_ROOT}"
 cd "${PACKAGE_ROOT}"
 

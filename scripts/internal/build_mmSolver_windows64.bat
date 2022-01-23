@@ -80,29 +80,29 @@ SET PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_windows64_maya%MAYA_VERSION%
 :: environment variables are leaked into the calling environment.
 CALL %PROJECT_ROOT%\scripts\python_venv_activate.bat
 
-:: Paths for dependancies.
+:: Paths for dependencies.
 ::
 :: By default these paths will work if the "build_thirdparty.bat"
 :: scripts have been run before this script.
-SET CMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack"
-SET CERES_ROOT="%PROJECT_ROOT%\external\install\libmv"
-SET CERES_INCLUDE_DIR="%PROJECT_ROOT%\external\install\libmv\include\third_party\ceres\include"
-SET CERES_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
-SET LIBMV_ROOT="%PROJECT_ROOT%\external\install\libmv"
-SET EIGEN3_INCLUDE_DIR="%PROJECT_ROOT%\external\install\eigen\include\eigen3"
-SET GLOG_ROOT="%PROJECT_ROOT%\external\install\libmv"
-SET GLOG_INCLUDE_DIR="%PROJECT_ROOT%\external\install\libmv\include\third_party\glog\src"
-SET GLOG_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
-SET GFLAGS_ROOT="%PROJECT_ROOT%\external\install\libmv"
-SET GFLAGS_INCLUDE_DIR="%PROJECT_ROOT%\external\install\libmv\include\third_party\gflags"
-SET GFLAGS_LIB_PATH="%PROJECT_ROOT%\external\install\libmv\lib"
-SET OPENMVG_ROOT="%PROJECT_ROOT%\external\install\openMVG"
+SET CMINPACK_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\cminpack"
+SET CERES_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\libmv"
+SET CERES_INCLUDE_DIR="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\libmv\include\third_party\ceres\include"
+SET CERES_LIB_PATH="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\libmv\lib"
+SET LIBMV_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\libmv"
+SET EIGEN3_INCLUDE_DIR="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\eigen\include\eigen3"
+SET GLOG_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\libmv"
+SET GLOG_INCLUDE_DIR="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\libmv\include\third_party\glog\src"
+SET GLOG_LIB_PATH="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\libmv\lib"
+SET GFLAGS_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\libmv"
+SET GFLAGS_INCLUDE_DIR="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\libmv\include\third_party\gflags"
+SET GFLAGS_LIB_PATH="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\libmv\lib"
+SET OPENMVG_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\openMVG"
 SET OPENMVG_INCLUDE_DIR="%OPENMVG_ROOT%\include"
 SET OPENMVG_LIB_PATH="%OPENMVG_ROOT%\lib"
-SET DLFCN_ROOT="%PROJECT_ROOT%\external\install\dlfcn"
+SET DLFCN_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\dlfcn"
 SET DLFCN_INCLUDE_DIR="%DLFCN_ROOT%\include"
 SET DLFCN_LIB_PATH="%DLFCN_ROOT%\lib"
-SET LDPK_ROOT="%PROJECT_ROOT%\external\install\ldpk"
+SET LDPK_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\ldpk"
 SET LDPK_INCLUDE_DIR="%LDPK_ROOT%\include"
 SET LDPK_LIB_PATH="%LDPK_ROOT%\lib"
 

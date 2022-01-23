@@ -102,7 +102,7 @@ set(SOURCE_FILES
 include(MMSolverUtils)
 
 # 'mmSolver' maya plugin library
-add_library_maya_plugin(mmSolver ${SOURCE_FILES})
+add_library_maya_plugin(mmSolver "${SOURCE_FILES}")
 set_target_maya_plugin_compile_options(mmSolver)
 target_include_directories(mmSolver
   PRIVATE ../include

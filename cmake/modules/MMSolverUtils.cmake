@@ -184,9 +184,9 @@ endfunction()
 
 function(add_library_maya_plugin target source_files)
   if (APPLE)
-    add_library(${target} MODULE ${source_files})
+    add_library(${target} MODULE "${source_files}")
   else ()
-    add_library(${target} SHARED ${source_files})
+    add_library(${target} SHARED "${source_files}")
   endif ()
 endfunction()
 

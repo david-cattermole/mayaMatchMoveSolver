@@ -25,8 +25,8 @@ SETLOCAL
 ::
 :: Note: Do not enclose the MAYA_VERSION in quotes, it will
 ::       lead to tears.
-SET MAYA_VERSION=2018
-SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2018"
+SET MAYA_VERSION=2020
+SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2020"
 
 :: Python executable - edit this to point to an explicit python executable file.
 SET PYTHON_EXE=python

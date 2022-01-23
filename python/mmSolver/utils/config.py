@@ -135,7 +135,7 @@ def read_data(file_path):
         try:
             text = f.read()
             data = json.loads(text)
-        except:
+        except BaseException:
             raise
     return data
 

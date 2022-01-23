@@ -35,15 +35,15 @@ set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
 # Source
 set(SOURCE_FILES
   core/bundleAdjust_base.cpp
+  core/bundleAdjust_cminpack_base.cpp
+  core/bundleAdjust_cminpack_lmder.cpp
+  core/bundleAdjust_cminpack_lmdif.cpp
   core/bundleAdjust_relationships.cpp
   core/bundleAdjust_solveFunc.cpp
-  core/bundleAdjust_cminpack_base.cpp
-  core/bundleAdjust_cminpack_lmdif.cpp
-  core/bundleAdjust_cminpack_lmder.cpp
   core/calibrate/common.cpp
   core/calibrate/vanishingPoint.cpp
-  core/lensModelBasic.cpp
   core/lensModel3deClassic.cpp
+  core/lensModelBasic.cpp
   core/mmcamera.cpp
   core/mmcoord.cpp
   core/mmdata.cpp

@@ -23,29 +23,33 @@
 function(set_global_maya_plugin_compile_options)
   # Compile Flags.
   #
+  # TODO: Make this function take a target and set the compile
+  # arguments per-target.
+  #
   # Release flags come from the Autodesk Maya build scripts (and
   # Visual Studio project files).
   if (MSVC)
     # For Visual Studio 11 2012
     set(CMAKE_CXX_FLAGS "")  # Zero out the C++ flags, we have complete control.
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GS /Zc:wchar_t /Zi /fp:precise /Zc:forScope /GR /Gd /EHsc")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 
-    add_definitions(/DOSWin_)
-    add_definitions(/DWIN32)
-    add_definitions(/D_WINDOWS)
-    add_definitions(/D_USRDLL)
-    add_definitions(/DNT_PLUGIN)
-    add_definitions(/D_HAS_ITERATOR_DEBUGGING=0)
-    add_definitions(/D_SECURE_SCL=0)
-    add_definitions(/D_SECURE_SCL_THROWS=0)
-    add_definitions(/D_SECURE_SCL_DEPRECATE=0)
-    add_definitions(/D_CRT_SECURE_NO_DEPRECATE)
-    add_definitions(/DTBB_USE_DEBUG=0)
-    add_definitions(/D__TBB_LIB_NAME=tbb.lib)
-    add_definitions(/D_WINDLL)
-    add_definitions(/DBits64_)
-    add_definitions(/DREQUIRE_IOSTREAM)
-    add_definitions(/DNT_PLUGIN)
+    add_compile_definitions(OSWin_)
+    add_compile_definitions(WIN32)
+    add_compile_definitions(_WINDOWS)
+    add_compile_definitions(_USRDLL)
+    add_compile_definitions(NT_PLUGIN)
+    add_compile_definitions(_HAS_ITERATOR_DEBUGGING=0)
+    add_compile_definitions(_SECURE_SCL=0)
+    add_compile_definitions(_SECURE_SCL_THROWS=0)
+    add_compile_definitions(_SECURE_SCL_DEPRECATE=0)
+    add_compile_definitions(_CRT_SECURE_NO_DEPRECATE)
+    add_compile_definitions(TBB_USE_DEBUG=0)
+    add_compile_definitions(__TBB_LIB_NAME=tbb.lib)
+    add_compile_definitions(_WINDLL)
+    add_compile_definitions(Bits64_)
+    add_compile_definitions(REQUIRE_IOSTREAM)
+    add_compile_definitions(NT_PLUGIN)
 
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /D \"_DEBUG\"")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
@@ -60,8 +64,8 @@ function(set_global_maya_plugin_compile_options)
     # doesn't support it.
     add_compile_definitions(GLOG_NO_ABBREVIATED_SEVERITIES)
 
-    add_definitions(/DGOOGLE_GLOG_DLL_DECL=)
-    add_definitions(-DGFLAGS_DLL_DECL=)
+    add_compile_definitions(GOOGLE_GLOG_DLL_DECL)
+    add_compile_definitions(GFLAGS_DLL_DECL)
 
     # Ceres running on Windows can trigger a MSVC warning:
     #
@@ -90,7 +94,12 @@ function(set_global_maya_plugin_compile_options)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-reorder")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-35 -fno-gnu-keywords")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -funsigned-char -fpascal-strings") #  -pthread
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCC_GNU_ -DOSMac_ -DOSMacOSX_ -DOSMac_MachO_ -D_LANGUAGE_C_PLUS_PLUS -mmacosx-version-min=10.8")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCC_GNU_")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOSMac_")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOSMacOSX_")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOSMac_MachO_")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_LANGUAGE_C_PLUS_PLUS")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.8")
 
     # Special MacOS linking stuff
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk")
@@ -108,17 +117,58 @@ function(set_global_maya_plugin_compile_options)
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fPIC -fno-strict-aliasing -m64")
   else ()
     # For Linux with GCC
-    set(CMAKE_CXX_FLAGS "")  # Zero out the C++ flags, we have complete control.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-multichar -Wno-comment -Wno-sign-compare")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -funsigned-char -pthread -fopenmp")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBits64_ -DUNIX -D_BOOL -DLINUX -DFUNCPROTO -D_GNU_SOURCE -DLINUX_64 -DREQUIRE_IOSTREAM")
-    # '-ftemplate-depth-27', rather than '25' is required to compile under GCC 4.8.5.
-    # '-ftemplate-depth-35', rather than '25' is required to compile under GCC 5.5.x.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-reorder -ftemplate-depth-35 -fno-gnu-keywords")
+
+    # Enable C++ Standard explicitly, to stop "gnu++" being used,
+    # because "gnu++" is not supported with Maya.
+    #
+    # set(CMAKE_CXX_FLAGS "")  # Zero out the C++ flags, we have complete control.
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    add_definitions("-std=c++${CMAKE_CXX_STANDARD}")
+
+    # Definitions
+    add_compile_definitions(Bits64_)
+    add_compile_definitions(UNIX)
+    add_compile_definitions(_BOOL)
+    add_compile_definitions(LINUX)
+    add_compile_definitions(linux)
+    add_compile_definitions(__linux__)
+    add_compile_definitions(OSLinux_)
+    add_compile_definitions(FUNCPROTO)
+    add_compile_definitions(_GNU_SOURCE)
+    add_compile_definitions(LINUX_64)
+    add_compile_definitions(REQUIRE_IOSTREAM)
+    add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
+
+    # Enable warnings.
+    add_definitions(-Wall)
+    add_definitions(-Wno-multichar)
+    add_definitions(-Wno-comment)
+    add_definitions(-Wno-sign-compare)
+    add_definitions(-Wno-unused-parameter)
+    add_definitions(-Wno-unused-parameter)
+    add_definitions(-Wno-unused-variable)
+    add_definitions(-Wno-unused-private-field)
+    add_definitions(-Wno-deprecated)
+    add_definitions(-Wno-reorder)
+    add_definitions(-Wpedantic)
+
+    # GCC Features
+    add_definitions(-pthread)
+    add_definitions(-fopenmp)
+    add_definitions(-fvisibility=hidden)
+    add_definitions(-funsigned-char)
+    add_definitions(-fno-gnu-keywords)
+    add_definitions(-fno-strict-aliasing)
+
+    # '-ftemplate-depth-27' is required to compile under GCC 4.8.5.
+    # '-ftemplate-depth-35' is required to compile under GCC 5.5.x.
+    #
+    # In GCC 6.3.x, with C++11 the default depth is set to 900, but
+    # the C++11 standard says 1024 is the default.
+    add_definitions(-ftemplate-depth-900)
+
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fPIC -fno-strict-aliasing -m64")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -m64")
   endif ()
 endfunction()
 

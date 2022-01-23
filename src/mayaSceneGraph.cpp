@@ -23,6 +23,7 @@
 #include <unordered_map>
 
 // Maya
+#include <maya/MTypes.h>
 #include <maya/MStreamUtils.h>
 #include <maya/MDagPath.h>
 #include <maya/MObject.h>

@@ -29,6 +29,7 @@
 #include <string>   // string
 
 // Maya
+#include <maya/MTypes.h>
 #include <maya/MStreamUtils.h>
 
 #ifdef _WIN32

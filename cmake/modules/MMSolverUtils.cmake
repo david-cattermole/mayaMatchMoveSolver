@@ -153,8 +153,10 @@ endfunction()
 function(set_target_maya_plugin_compile_options target)
   # Must add the plug-in entry/exit points otherwise
   # the plug-in won't load.
-  set_target_properties(${target} PROPERTIES
-    LINK_FLAGS "/export:initializePlugin /export:uninitializePlugin")
+  if (MSVC)
+    set_target_properties(${target} PROPERTIES
+      LINK_FLAGS "/export:initializePlugin /export:uninitializePlugin")
+  endif()
 endfunction()
 
 

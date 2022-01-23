@@ -60,6 +60,7 @@ echo "Activating Python Virtual Environment ${PYTHON_VIRTUAL_ENV_DIR_NAME}"
 source "${PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT}"
 
 # Install requirements
-${PYTHON_EXE} -m pip install --upgrade pip -r "${PROJECT_ROOT}/requirements-dev.txt"
+# ${PYTHON_EXE} -m pip install --upgrade pip
+${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/requirements-dev.txt"
 
 cd ${PROJECT_ROOT}

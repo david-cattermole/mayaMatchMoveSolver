@@ -23,139 +23,16 @@ SETLOCAL
 
 :: Maya directories
 ::
-:: If you're not using Maya 2022 or have a non-standard install location,
-:: set these variables here.
-::
 :: Note: Do not enclose the MAYA_VERSION in quotes, it will
 ::       lead to tears.
 SET MAYA_VERSION=2022
 SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2022"
 
-:: Clear all build information before re-compiling.
-:: Turn this off when wanting to make small changes and recompile.
-SET FRESH_BUILD=1
+:: Python executable - edit this to point to an explicit python executable file.
+SET PYTHON_EXE=python
+SET CMAKE_EXE=cmake
 
-:: Run the Python API and Solver tests inside Maya, after a
-:: successfully build an install process.
-SET RUN_TESTS=0
+:: Setup Compiler environment. Change for your install path as needed.
+CALL "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
 
-:: Use CMinpack?
-:: CMinpack is the recommended solving library.
-SET WITH_CMINPACK=1
-
-:: WARNING: Would you like to use GPL-licensed code? If so you will
-:: not be able to distribute
-SET WITH_GPL_CODE=0
-
-:: Where to install the module?
-::
-:: Note: In Windows 8 and 10, "My Documents" is no longer visible,
-::       however files copying to "My Documents" automatically go
-::       to the "Documents" directory.
-::
-:: The "$HOME/maya/2022/modules" directory is automatically searched
-:: for Maya module (.mod) files. Therefore we can install directly.
-::
-:: SET INSTALL_MODULE_DIR="%PROJECT_ROOT%\modules"
-SET INSTALL_MODULE_DIR="%USERPROFILE%\My Documents\maya\%MAYA_VERSION%\modules"
-
-:: Build ZIP Package.
-:: For developer use. Make ZIP packages ready to distribute to others.
-SET BUILD_PACKAGE=1
-
-
-:: Do not edit below, unless you know what you're doing.
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-:: What type of build? "Release" or "Debug"?
-SET BUILD_TYPE=Release
-
-:: Build options, to allow faster compilation times. (not to be used by
-:: users wanting to build this project.)
-SET BUILD_PLUGIN=1
-SET BUILD_PYTHON=1
-SET BUILD_MEL=1
-SET BUILD_QT_UI=1
-SET BUILD_DOCS=1
-SET BUILD_ICONS=1
-SET BUILD_CONFIG=1
-SET BUILD_TESTS=1
-
-:: To Generate a Visual Studio 'Solution' file, change the '0' to a '1'.
-SET GENERATE_SOLUTION=0
-
-:: The root of this project.
-SET PROJECT_ROOT=%CD%
-ECHO Project Root: %PROJECT_ROOT%
-
-:: Note: There is no need to deactivate the virtual environment because
-:: this batch script is 'SETLOCAL' (see top of file) and therefore no
-:: environment variables are leaked into the calling environment.
-CALL %PROJECT_ROOT%\scripts\python_venv_activate_maya2022.bat
-
-:: Clean up, if directed to do so.
-SET BUILD_DIR_NAME=build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
-MKDIR %BUILD_DIR_NAME%
-CHDIR %BUILD_DIR_NAME%
-IF "%FRESH_BUILD%"=="1" (
-    DEL /S /Q *
-    FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
-)
-
-:: Build plugin
-IF "%GENERATE_SOLUTION%"=="1" (
-
-
-REM For Maya 2022 (which uses Visual Studio 2017)
-REM To Generate a Visual Studio 'Solution' file
-    cmake -G "Visual Studio 15 2017 Win64" -T "v141" ^
-        -DMAYA_VERSION=%MAYA_VERSION% ^
-        -DUSE_GPL_LEVMAR=%WITH_GPL_CODE% ^
-        -DUSE_CMINPACK=%WITH_CMINPACK% ^
-        -DCMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack" ^
-        -DLEVMAR_ROOT="%PROJECT_ROOT%\external\install\levmar" ^
-        -DMAYA_LOCATION=%MAYA_LOCATION% ^
-        -DMAYA_VERSION=%MAYA_VERSION% ^
-        ..
-
-) ELSE (
-
-    cmake -G "NMake Makefiles" ^
-        -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
-        -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
-        -DBUILD_PLUGIN=%BUILD_PLUGIN% ^
-        -DBUILD_PYTHON=%BUILD_PYTHON% ^
-        -DBUILD_MEL=%BUILD_MEL% ^
-        -DBUILD_QT_UI=%BUILD_QT_UI% ^
-        -DBUILD_DOCS=%BUILD_DOCS% ^
-        -DBUILD_ICONS=%BUILD_ICONS% ^
-        -DBUILD_CONFIG=%BUILD_CONFIG% ^
-        -DBUILD_TESTS=%BUILD_TESTS% ^
-        -DUSE_GPL_LEVMAR=%WITH_GPL_CODE% ^
-        -DUSE_CMINPACK=%WITH_CMINPACK% ^
-        -DCMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack" ^
-        -DLEVMAR_ROOT="%PROJECT_ROOT%\external\install\levmar" ^
-        -DMAYA_LOCATION=%MAYA_LOCATION% ^
-        -DMAYA_VERSION=%MAYA_VERSION% ^
-        ..
-
-    nmake /F Makefile clean
-    nmake /F Makefile all
-
-REM Comment this line out to stop the automatic install into the home directory.
-    nmake /F Makefile install
-
-REM Run tests
-    IF "%RUN_TESTS%"=="1" (
-        nmake /F Makefile test
-    )
-
-REM Create a .zip package.
-IF "%BUILD_PACKAGE%"=="1" (
-       nmake /F Makefile package
-   )
-
-)
-
-:: Return back project root directory.
-CHDIR "%PROJECT_ROOT%"
+scripts\internal\build_mmSolver_windows64.bat

@@ -32,4 +32,7 @@ SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2019"
 SET PYTHON_EXE=python
 SET CMAKE_EXE=cmake
 
+:: Setup Compiler environment. Change for your install path as needed.
+CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+
 scripts\internal\build_thirdparty_windows64.bat

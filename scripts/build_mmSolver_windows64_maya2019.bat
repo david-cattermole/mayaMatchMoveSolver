@@ -23,9 +23,6 @@ SETLOCAL
 
 :: Maya directories
 ::
-:: If you're not using Maya 2019 or have a non-standard install location,
-:: set these variables here.
-::
 :: Note: Do not enclose the MAYA_VERSION in quotes, it will
 ::       lead to tears.
 SET MAYA_VERSION=2019
@@ -33,5 +30,9 @@ SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2019"
 
 :: Python executable - edit this to point to an explicit python executable file.
 SET PYTHON_EXE=python
+SET CMAKE_EXE=cmake
+
+:: Setup Compiler environment. Change for your install path as needed.
+CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
 
 scripts\internal\build_mmSolver_windows64.bat

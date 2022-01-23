@@ -23,9 +23,6 @@ SETLOCAL
 
 :: Maya directories
 ::
-:: If you're not using Maya 2016 or have a non-standard install location,
-:: set these variables here.
-::
 :: Note: Do not enclose the MAYA_VERSION in quotes, it will
 ::       lead to tears.
 SET MAYA_VERSION=2016
@@ -33,5 +30,8 @@ SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2016"
 
 :: Python executable - edit this to point to an explicit python executable file.
 SET PYTHON_EXE=python
+SET CMAKE_EXE=cmake
+
+:: TODO: Setup Compiler environment. Change for your install path as needed.
 
 scripts\internal\build_mmSolver_windows64.bat

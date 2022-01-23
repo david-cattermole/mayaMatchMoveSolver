@@ -288,10 +288,10 @@ class Marker(object):
         Initialize a Marker, give a name to connect to an existing Maya node.
 
         :param node: The Maya node to connect to.
-        :type node: None or basestring
+        :type node: None or str
 
         :param name: This is a backwards compatible kwarg for 'node'.
-        :type name: None or basestring
+        :type name: None or str
         """
         if name is not None:
             msg = (
@@ -300,7 +300,7 @@ class Marker(object):
             )
             warnings.warn(msg)
             node = name
-        if isinstance(node, basestring):
+        if isinstance(node, pycompat.TEXT_TYPE):
             try:
                 dag = node_utils.get_as_dag_path(node)
                 self._mfn = OpenMaya.MFnDagNode(dag)

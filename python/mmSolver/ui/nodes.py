@@ -23,6 +23,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+
 def get_nodes_recursively(top_node):
     nodes = []
     children = top_node.children()

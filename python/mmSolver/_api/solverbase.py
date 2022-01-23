@@ -83,10 +83,9 @@ class SolverBase(object):
             self.set_data(data)
         if isinstance(name, (pycompat.TEXT_TYPE, uuid.UUID)):
             self._data['name'] = name
-        else:
+        elif 'name' not in self._data:
             # give the solver a random name.
-            if 'name' not in self._data:
-                self._data['name'] = str(uuid.uuid4())
+            self._data['name'] = str(uuid.uuid4())
         assert 'name' in self._data
         return
 

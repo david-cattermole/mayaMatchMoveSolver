@@ -113,9 +113,9 @@ class Frame(object):
         Get the data of this Frame, both number and tags.
 
         Data structure returned is::
-           
+
             {
-                'number': int or float, 
+                'number': int or float,
                 'tags': list of strs,
             }
 
@@ -132,9 +132,9 @@ class Frame(object):
         Set the internal frame data using once function call.
 
         Expected data structure is::
-           
+
             {
-                'number': int or float, 
+                'number': int or float,
                 'tags': list of strs,
             }
 

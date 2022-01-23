@@ -512,7 +512,7 @@ class Camera(object):
         cam_tfm = self.get_transform_node()
         cam_shp = self.get_shape_node()
         if cam_tfm is None or cam_shp is None:
-            msg ="Camera object has no transform/shape node: object=%r"
+            msg = "Camera object has no transform/shape node: object=%r"
             LOG.warn(msg, self)
             return
         toggle_node = _create_lens_toggle_setup(cam_tfm, cam_shp)
@@ -525,7 +525,7 @@ class Camera(object):
         cam_tfm = self.get_transform_node()
         cam_shp = self.get_shape_node()
         if cam_tfm is None or cam_shp is None:
-            msg ="Camera object has no transform/shape node: object=%r"
+            msg = "Camera object has no transform/shape node: object=%r"
             LOG.warn(msg, self)
             return
         toggle_node = _create_lens_toggle_setup(cam_tfm, cam_shp)
@@ -544,7 +544,7 @@ class Camera(object):
         cam_tfm = self.get_transform_node()
         cam_shp = self.get_shape_node()
         if cam_tfm is None or cam_shp is None:
-            msg ="Camera object has no transform/shape node: object=%r"
+            msg = "Camera object has no transform/shape node: object=%r"
             LOG.warn(msg, self)
             return lens
         _create_lens_toggle_setup(cam_tfm, cam_shp)

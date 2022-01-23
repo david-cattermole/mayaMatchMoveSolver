@@ -49,7 +49,7 @@ def get_help_source():
     """
     Determine the user's perfered help source, or fallback to a
     preselected source.
-    
+
     :return: The help source to search for, a value in
              HELP_SOURCE_LIST.
 
@@ -57,7 +57,7 @@ def get_help_source():
     src = os.environ.get(ENV_VAR_NAME_HELP_SOURCE, None)
     if src is None:
         msg = (
-            'Preferred help source was not found with environment' 
+            'Preferred help source was not found with environment'
             ' variable MM_SOLVER_HELP_SOURCE, falling back to %r.'
         )
         LOG.warning(msg, HELP_SOURCE_FALLBACK)
@@ -116,7 +116,7 @@ def get_help_base_location(help_source=None):
         LOG.error(msg, help_source)
         raise ValueError(msg % help_source)
     return url
-    
+
 
 def open_help_in_browser(page=None, help_source=None):
     """

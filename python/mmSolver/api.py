@@ -211,12 +211,6 @@ from mmSolver._api.constant import (
     ACTION_STATUS_FAILED,
     ACTION_STATUS_LIST,
 )
-from mmSolver._api.state import (
-    is_solver_running,
-    set_solver_running,
-    get_user_interrupt,
-    set_user_interrupt,
-)
 
 # Utility functions that the user is allowed to use.
 from mmSolver._api.utils import (

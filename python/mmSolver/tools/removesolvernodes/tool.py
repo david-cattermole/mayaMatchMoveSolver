@@ -65,10 +65,14 @@ def collect_nodes(node_categories, mode=None):
 
 
 def collect_misc_nodes():
-    misc_nodes = cmds.ls(long=True,
-                       type=['mmMarkerScale',
-                             'mmReprojection',
-                             'mmMarkerGroupTransform'])
+    misc_nodes = cmds.ls(
+        long=True,
+        type=[
+            'mmMarkerScale',
+            'mmReprojection',
+            'mmMarkerGroupTransform'
+        ]
+    )
     other_nodes = cmds.ls('mmSolver*', long=True)
     combined_set = set(misc_nodes+other_nodes)
     return list(sorted(combined_set))

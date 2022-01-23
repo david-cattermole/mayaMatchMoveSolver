@@ -224,7 +224,7 @@ class SolverStep(object):
                 attrs_static_num += 1
 
         # If there are no static attributes, the solver will consider
-        # "use_static_attrs" to be off. 
+        # "use_static_attrs" to be off.
         use_anim_attrs = self.get_use_anim_attrs() and attrs_anim_num > 0
         use_static_attrs = self.get_use_static_attrs() and attrs_static_num > 0
         if use_anim_attrs is True and use_static_attrs is False:

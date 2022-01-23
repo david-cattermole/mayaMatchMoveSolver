@@ -344,8 +344,8 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
     def getPreBakeFramesListFromNode(self, node):
         frames_list = []
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
-        keys_list = cmds.keyframe(node, q=True, time=(start_frame, end_frame))
-        if keys_list == None:
+        keys_list = cmds.keyframe(node, q=True, time=(start_frame, end_frame)) or []
+        if len(keys_list) == 0:
             frames_list = [start_frame, end_frame]
         bake_options = self.bakeOptions()
         if bake_options == 'full_bake':
@@ -569,7 +569,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                     same_name_used = True
                 iterator += 1
 
-        if same_name_used == True:
+        if same_name_used is True:
             _display_warning_ui('same name exists already '
                                 'please type different name.')
         return valid_name_list, same_name_used
@@ -594,7 +594,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
         for sel_item, name_item in zip(sel, names):
             # Check if object has existing point constraint already
             has_constraints = transform_has_constraints(sel_item)
-            if has_constraints == False:
+            if has_constraints is False:
                 depth_list = self.calcDistance(cam_tfm, sel_item, 0)
                 node_screen_depths.append((sel_item, name_item, depth_list))
             else:
@@ -686,7 +686,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                                    FREEZE_RIG_SUFFIX_NAME)
                     # Calc full freeze list
                     dlist = self.calcDistance(cam_tfm, temp_grp, 0)
-                    if use_anim_layer == False:
+                    if use_anim_layer is False:
                         # Set keyframes on screenzdepth attribute,
                         # with no anim layer.
                         setZDepthKeyframes(
@@ -879,7 +879,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 cmds.connectAttr(src, child + '.scaleZ', f=True)
                 self.lockUnlockAttributes(child, lock=True)
             self.lockUnlockAttributes(parent, lock=True)
-        except:
+        except RuntimeError:
             _display_warning_ui('freeze rig can not be matched.')
         self.refreshRigsList()
 

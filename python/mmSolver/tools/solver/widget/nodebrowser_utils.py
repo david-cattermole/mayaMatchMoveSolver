@@ -47,7 +47,7 @@ def _populateWidgetsEnabled(col, widgets):
 
 
 def _expand_node(tree_view, model, parentIndex, expand=True, recurse=False):
-    tree_view.setExpanded(parentIndex, expand);
+    tree_view.setExpanded(parentIndex, expand)
     rows = model.rowCount(parentIndex)
     for rowNum in range(rows):
         childIndex = model.index(rowNum, 0, parentIndex)

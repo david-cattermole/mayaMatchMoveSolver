@@ -118,7 +118,7 @@ def average_smooth(value_array, width):
     :returns: Smoothed copy of 'value_array'.
     :rtype: [float, ..]
     """
-    sigma_val = (width-1.0)
+    sigma_val = (width - 1.0)
     if sigma_val <= 0.0:
         return value_array
 
@@ -130,15 +130,15 @@ def average_smooth(value_array, width):
     for i in range(value_num):
 
         # Get Average
-        start = int(i-sigma_val)
-        end = int(i+sigma_val)+1
+        start = int(i - sigma_val)
+        end = int(i + sigma_val) + 1
         if start < 0:
             start = 0
         if end >= value_num:
             end = value_num
         for j in range(start, end):
             sum_avg = sum_avg + value_array[j]
-        sum_avg = sum_avg/(end-start)
+        sum_avg = sum_avg / (end-start)
 
         for k in range(value_num):
             new_array[i] = ((sum_avg * weights[i]) +

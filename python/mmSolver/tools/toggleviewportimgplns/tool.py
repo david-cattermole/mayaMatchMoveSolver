@@ -49,5 +49,5 @@ def main():
         LOG.error('Please select an active viewport; model_panel=%r',
                   model_panel)
         return
-    lib.toggle_image_plane_visibility(model_panel)    
+    lib.toggle_image_plane_visibility(model_panel)
     return

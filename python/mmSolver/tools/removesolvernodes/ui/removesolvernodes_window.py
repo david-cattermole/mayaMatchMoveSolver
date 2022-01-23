@@ -162,9 +162,9 @@ def _run_tool(window_parent, save_scene, what_to_delete_dict):
     dialog = QtWidgets.QMessageBox(window_parent, )
     dialog.setWindowTitle(title)
     dialog.setIcon(QtWidgets.QMessageBox.Question)
-    dialog.setText(msg);
-    dialog.setInformativeText(inform_text);
-    dialog.setDetailedText(details);
+    dialog.setText(msg)
+    dialog.setInformativeText(inform_text)
+    dialog.setDetailedText(details)
     clicked_button = dialog.exec_()
     if clicked_button == QtWidgets.QMessageBox.No:
         return False

@@ -129,5 +129,5 @@ class MayaViewportHandler(logging.StreamHandler):
                                     position='botLeft')
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except BaseException:
             self.handleError(record)

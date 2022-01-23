@@ -251,7 +251,7 @@ def create_new_setup():
     mkr_grp = mmapi.MarkerGroup().create_node(cam=cam, name='calibrate')
 
     origin_mkr = mmapi.Marker().create_node(
-        mkr_grp=mkr_grp,  name='originPoint')
+        mkr_grp=mkr_grp, name='originPoint')
     origin_mkr_node = origin_mkr.get_node()
 
     # Axis 1

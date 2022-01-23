@@ -322,9 +322,9 @@ def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
             # selected' after resetting the objects.
             if options.do_isolate is True:
                 viewport_utils.set_isolated_nodes(panel, [], False)
-        else:
-            if options.do_isolate is True:
-                viewport_utils.set_isolated_nodes(panel, list(objs), True)
+
+        elif options.do_isolate is True:
+            viewport_utils.set_isolated_nodes(panel, list(objs), True)
 
     # Show menu restore.
     for panel, node_types_vis in panel_node_type_vis.items():

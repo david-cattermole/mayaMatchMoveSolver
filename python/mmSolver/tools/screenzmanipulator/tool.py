@@ -46,15 +46,19 @@ def screen_space_z(camera_tfm):
         LOG.warn('Please select a viewport.')
         return
 
-    cam_position = maya.cmds.xform(camera_tfm,
-                                   worldSpace=True,
-                                   query=True,
-                                   translation=True)
-    maya.cmds.manipMoveContext(const.MANIP_CONTEXT,
-                               edit=True,
-                               mode=6,  # 6 = 'Custom Axis Orientation'
-                               activeHandle=0,
-                               orientTowards=cam_position)
+    cam_position = maya.cmds.xform(
+        camera_tfm,
+        worldSpace=True,
+        query=True,
+        translation=True
+    )
+    maya.cmds.manipMoveContext(
+        const.MANIP_CONTEXT,
+        edit=True,
+        mode=6,  # 6 = 'Custom Axis Orientation'
+        activeHandle=0,
+        orientTowards=cam_position
+    )
     return
 
 

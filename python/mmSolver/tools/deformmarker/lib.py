@@ -68,10 +68,10 @@ def get_attr_blend_plugs(attr, anim_layer):
     node_attr = attr
     anim_blend_node = const.ANIM_BLEND_NODE
     anim_blend_connection = maya.cmds.listConnections(
-                            node_attr,
-                            type=anim_blend_node,
-                            source=True
-                            )
+        node_attr,
+        type=anim_blend_node,
+        source=True
+    )
     plugs = const.PLUGS
     inputs = []
     for plug in plugs:

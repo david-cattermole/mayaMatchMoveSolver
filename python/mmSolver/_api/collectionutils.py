@@ -77,7 +77,7 @@ def is_single_frame(kwargs):
               frame to solve.
     :rtype: bool
     """
-    has_one_frame = len(kwargs.get('frame')) is 1
+    has_one_frame = len(kwargs.get('frame')) == 1
     is_interactive = maya.cmds.about(query=True, batch=True) is False
     return has_one_frame and is_interactive
 

@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Attach Bundle to Curve tool. 
+Attach Bundle to Curve tool.
 """
 
 ATTR_NAME = 'alongCurve'

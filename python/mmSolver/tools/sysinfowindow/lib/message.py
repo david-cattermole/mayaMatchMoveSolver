@@ -67,7 +67,7 @@ def get_sysinfo_text():
         desktop_wind_man=desktop_wind_man,
         gpu_info=gpu_info,
     )
-    
+
     # mmSolver Configuration
     load_at_start = os.environ.get('MMSOLVER_LOAD_AT_STARTUP')
     create_menu = os.environ.get('MMSOLVER_CREATE_MENU')
@@ -82,6 +82,6 @@ def get_sysinfo_text():
         help_source=help_source,
         default_solver_const=default_solver_const,
         default_solver_env=default_solver_env,
-        debug_mode=debug_mode,        
+        debug_mode=debug_mode,
     )
     return text

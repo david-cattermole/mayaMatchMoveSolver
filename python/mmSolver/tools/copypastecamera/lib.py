@@ -141,14 +141,13 @@ def get_image_path_single_frame(file_path, test_disk):
         if file_ext_match:
             image_file_path = file_path
             multi_frame = False
-    else:
-        if os.path.isfile(file_path):
-            head, tail = os.path.split(file_path)
-            file_ext_prog = re.compile(const.PATTERN_RE_FILE_EXT)
-            file_ext_match = file_ext_prog.match(tail)
-            if file_ext_match:
-                image_file_path = file_path
-                multi_frame = False
+    elif os.path.isfile(file_path):
+        head, tail = os.path.split(file_path)
+        file_ext_prog = re.compile(const.PATTERN_RE_FILE_EXT)
+        file_ext_match = file_ext_prog.match(tail)
+        if file_ext_match:
+            image_file_path = file_path
+            multi_frame = False
     return image_file_path, multi_frame
 
 

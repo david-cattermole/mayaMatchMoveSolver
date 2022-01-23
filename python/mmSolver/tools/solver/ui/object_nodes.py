@@ -105,7 +105,7 @@ class MarkerNode(ObjectNode):
         d = self.data()
         mkr = d.get('marker')
         if mkr is None:
-            return color
+            return value
         used = mkr.get_used_hint()
         if used == mmapi.MARKER_USED_HINT_USED_VALUE:
             value = u'\u2714'  # "Heavy Check Mark"

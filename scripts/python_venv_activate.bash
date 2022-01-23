@@ -43,7 +43,7 @@ PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT=${PYTHON_VIRTUAL_ENV_DIR_NAME}/bin/activate
 
 # Delete any existing Python virtual environment, if it exists.
 if [ ${FRESH_PYTHON_VIRTUAL_ENV} -eq 1 ]; then
-    mkdir %PYTHON_VIRTUAL_ENV_DIR_NAME%
+    mkdir -p "${PYTHON_VIRTUAL_ENV_DIR_NAME}"
     cd "${PYTHON_VIRTUAL_ENV_DIR_NAME}"
     rm -f -R *
     cd "${PROJECT_ROOT}"

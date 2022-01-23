@@ -100,6 +100,8 @@ using MMCamera = Camera;
 #include <core/bundleAdjust_defines.h>
 
 // Ceres Solver
+#ifdef MMSOLVER_USE_CERES
+
 #pragma warning( push )
 // Compiler Warning (level 1) C4251: needs to have dll-interface to be
 // used by clients of class.
@@ -107,7 +109,11 @@ using MMCamera = Camera;
 #include <ceres/ceres.h>
 #pragma warning( pop )
 
+#endif  // MMSOLVER_USE_CERES
+
 // LibMV
+#ifdef MMSOLVER_USE_LIBMV
+
 #include <libmv/base/vector.h>
 #include <libmv/base/vector_utils.h>
 #include <libmv/base/scoped_ptr.h>
@@ -135,6 +141,8 @@ using MMCamera = Camera;
 #include <libmv/reconstruction/keyframe_selection.h>
 #include <libmv/simple_pipeline/camera_intrinsics.h>
 #include <libmv/simple_pipeline/packed_intrinsics.h>
+
+#endif  // MMSOLVER_USE_LIBMV
 
 // OpenMVG
 #include <openMVG/features/feature.hpp>
@@ -166,6 +174,8 @@ using MMCamera = Camera;
 #include <maya/MItSelectionList.h>
 
 // GFlags test.
+#ifdef MMSOLVER_USE_CERES
+
 DEFINE_bool(
     big_menu,
     true,
@@ -174,6 +184,8 @@ DEFINE_string(
     languages,
     "english,french,german",
     "comma-separated list of languages to offer in the 'lang' menu");
+
+#endif  // MMSOLVER_USE_CERES
 
 using KernelType =
     openMVG::robust::ACKernelAdaptor<
@@ -397,6 +409,8 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
 }
 
 
+#ifdef MMSOLVER_USE_LIBMV
+
 void get_file_path_extension(const std::string &file,
                              std::string *path_name,
                              std::string *ext) {
@@ -409,6 +423,11 @@ void get_file_path_extension(const std::string &file,
         *ext = "";
     }
 }
+
+#endif  // MMSOLVER_USE_LIBMV
+
+
+#ifdef MMSOLVER_USE_CERES
 
 struct CostFunctor {
     template<typename T>
@@ -515,6 +534,8 @@ private:
     const double y_;
 };
 
+#endif  // MMSOLVER_USE_CERES
+
 MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
@@ -530,6 +551,7 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
     // Test the GLOG library.
     INFO("Camera Solve Command - This is a log message!\n");
 
+#ifdef MMSOLVER_USE_CERES
     // Ceres Solver - Example #1
     //
     // https://ceres-solver.googlesource.com/ceres-solver/+/master/examples/helloworld.cc
@@ -588,7 +610,9 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         INFO("Initial m: " << 0.0 << " c: " << 0.0);
         INFO("Final   m: " << m << " c: " << c);
     }
+#endif  // MMSOLVER_USE_CERES
 
+#ifdef MMSOLVER_USE_LIBMV
     // LibMV - Example #1
     {
         auto focal = 500.0;
@@ -693,6 +717,7 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         // Delete the features graph
         fg.DeleteAndClear();
     }
+#endif  // MMSOLVER_USE_LIBMV
 
     // OpenMVG - Fundamental matrix robust estimation
     {

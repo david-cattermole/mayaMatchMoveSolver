@@ -123,12 +123,13 @@ IF EXIST "C:\MinGW" (
 IF "%BUILD_MMSCENEGRAPH%"=="1" (
    ECHO Building mmSceneGraph...
 
-   :: Install the needed cxxbridge.exe command to be installed with
-   :: the exact version we need.
+   :: Install the needed 'cxxbridge.exe' command.
    ::
    :: NOTE: When chaging this version number, make sure to update the
-   :: CXX version used in the C++ buildings:
+   :: CXX version used in the C++ buildings, and all the build scripts
+   :: using this value:
    :: './src/mmscenegraph/cppbind/Cargo.toml'
+   :: './scripts/internal/build_mmSolver_linux.bash'
    cargo install cxxbridge-cmd --version 1.0.62
 
    ECHO Building Rust crate... (%MMSCENEGRAPH_RUST_DIR%)

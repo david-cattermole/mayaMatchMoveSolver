@@ -58,11 +58,11 @@ import mmcamera_format
 
 IS_PYTHON_2 = sys.version_info[0] == 2
 if IS_PYTHON_2 is True:
-    text_type = basestring
-    int_type = (int, long)
+    TEXT_TYPE = basestring
+    INT_TYPES = (int, long)
 else:
-    text_type = str
-    int_type = int
+    TEXT_TYPE = str
+    INT_TYPES = (int, )
 
 # GUI Constants
 TITLE = 'Paste Camera (MM Solver)...'
@@ -152,7 +152,7 @@ def _parse_data(file_path):
     :rtype: dict or None
     """
     assert file_path is not None
-    assert isinstance(file_path, text_type)
+    assert isinstance(file_path, TEXT_TYPE)
     assert len(file_path) > 0
     try:
         file_data = mmcamera_format.parse(file_path)
@@ -172,7 +172,7 @@ def _file_path_is_valid(file_path):
     """
     if file_path is None:
         return False
-    if not isinstance(file_path, text_type):
+    if not isinstance(file_path, TEXT_TYPE):
         return False
     if len(file_path) == 0:
         return False

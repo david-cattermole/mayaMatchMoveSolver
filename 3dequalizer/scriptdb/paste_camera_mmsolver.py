@@ -60,11 +60,11 @@ import vl_sdv
 
 IS_PYTHON_2 = sys.version_info[0] == 2
 if IS_PYTHON_2 is True:
-    text_type = basestring
-    int_type = (int, long)
+    TEXT_TYPE = basestring
+    INT_TYPES = (int, long)
 else:
-    text_type = str
-    int_type = int
+    TEXT_TYPE = str
+    INT_TYPES = (int, )
 
 # MM Camera format
 # This is copied from 'mmSolver.tools.copypastecamera.constant module',
@@ -216,10 +216,10 @@ def _get_frame_list_to_set_values(cam_id, samples_list,
     :returns: List of integer frame numbers.
     :rtype: [int, ..]
     """
-    assert isinstance(file_start_frame, int_type)
-    assert isinstance(file_end_frame, int_type)
-    assert isinstance(chosen_start_frame, int_type)
-    assert isinstance(chosen_end_frame, int_type)
+    assert isinstance(file_start_frame, INT_TYPES)
+    assert isinstance(file_end_frame, INT_TYPES)
+    assert isinstance(chosen_start_frame, INT_TYPES)
+    assert isinstance(chosen_end_frame, INT_TYPES)
     user_requested_frames = set(range(chosen_start_frame, chosen_end_frame + 1))
 
     cam_start, cam_end, _ = tde4.getCameraSequenceAttr(cam_id)
@@ -300,10 +300,10 @@ def _set_camera_translation(pgroup_id, cam_id,
     :rtype: bool
     """
     values_were_set = False
-    assert isinstance(file_start_frame, int_type)
-    assert isinstance(file_end_frame, int_type)
-    assert isinstance(chosen_start_frame, int_type)
-    assert isinstance(chosen_end_frame, int_type)
+    assert isinstance(file_start_frame, INT_TYPES)
+    assert isinstance(file_end_frame, INT_TYPES)
+    assert isinstance(chosen_start_frame, INT_TYPES)
+    assert isinstance(chosen_end_frame, INT_TYPES)
     assert tx_samples
     assert ty_samples
     assert tz_samples
@@ -377,10 +377,10 @@ def _set_camera_rotation(pgroup_id, cam_id,
     :rtype: bool
     """
     values_were_set = False
-    assert isinstance(file_start_frame, int_type)
-    assert isinstance(file_end_frame, int_type)
-    assert isinstance(chosen_start_frame, int_type)
-    assert isinstance(chosen_end_frame, int_type)
+    assert isinstance(file_start_frame, INT_TYPES)
+    assert isinstance(file_end_frame, INT_TYPES)
+    assert isinstance(chosen_start_frame, INT_TYPES)
+    assert isinstance(chosen_end_frame, INT_TYPES)
     assert rx_samples
     assert ry_samples
     assert rz_samples
@@ -454,10 +454,10 @@ def _set_camera_focal_length(cam_id, lens_id,
     :rtype: bool
     """
     values_were_set = False
-    assert isinstance(file_start_frame, int_type)
-    assert isinstance(file_end_frame, int_type)
-    assert isinstance(chosen_start_frame, int_type)
-    assert isinstance(chosen_end_frame, int_type)
+    assert isinstance(file_start_frame, INT_TYPES)
+    assert isinstance(file_end_frame, INT_TYPES)
+    assert isinstance(chosen_start_frame, INT_TYPES)
+    assert isinstance(chosen_end_frame, INT_TYPES)
     assert samples
 
     samples_list = (samples, )
@@ -588,10 +588,10 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
     fl = options.get('fl')
     focalLengthSamples = attr_data.get('focalLength')
     if (fl and focalLengthSamples
-            and isinstance(file_start_frame, int_type)
-            and isinstance(file_end_frame, int_type)
-            and isinstance(chosen_start_frame, text_type)
-            and isinstance(chosen_end_frame, text_type)):
+            and isinstance(file_start_frame, INT_TYPES)
+            and isinstance(file_end_frame, INT_TYPES)
+            and isinstance(chosen_start_frame, TEXT_TYPE)
+            and isinstance(chosen_end_frame, TEXT_TYPE)):
         file_start = int(file_start_frame)
         file_end = int(file_end_frame)
         chosen_start = int(chosen_start_frame)
@@ -608,10 +608,10 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
     file_end_frame = camera_data.get('end_frame')
     chosen_start_frame = options.get('start_frame')
     chosen_end_frame = options.get('end_frame')
-    if (isinstance(file_start_frame, int_type)
-            and isinstance(file_end_frame, int_type)
-            and isinstance(chosen_start_frame, text_type)
-            and isinstance(chosen_end_frame, text_type)):
+    if (isinstance(file_start_frame, INT_TYPES)
+            and isinstance(file_end_frame, INT_TYPES)
+            and isinstance(chosen_start_frame, TEXT_TYPE)
+            and isinstance(chosen_end_frame, TEXT_TYPE)):
         file_start = int(file_start_frame)
         file_end = int(file_end_frame)
         chosen_start = int(chosen_start_frame)
@@ -662,7 +662,7 @@ def _parse_data(file_path):
     :rtype: dict or None
     """
     assert file_path is not None
-    assert isinstance(file_path, text_type)
+    assert isinstance(file_path, TEXT_TYPE)
     assert len(file_path) > 0
     try:
         file_data = parse(file_path)
@@ -682,7 +682,7 @@ def _file_path_is_valid(file_path):
     """
     if file_path is None:
         return False
-    if not isinstance(file_path, text_type):
+    if not isinstance(file_path, TEXT_TYPE):
         return False
     if len(file_path) == 0:
         return False

@@ -23,7 +23,7 @@
  */
 
 // cminpack
-#ifdef USE_SOLVER_CMINPACK
+#ifdef MMSOLVER_USE_CMINPACK
 #include <cminpack.h>
 #endif
 

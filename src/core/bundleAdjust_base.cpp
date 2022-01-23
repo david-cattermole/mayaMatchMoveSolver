@@ -70,7 +70,6 @@
 #include "mayaSceneGraph.h"
 #include <core/bundleAdjust_base.h>
 #include <core/bundleAdjust_relationships.h>
-// #include <core/bundleAdjust_levmar_bc_dif.h>
 #include <core/bundleAdjust_cminpack_base.h>
 #include <core/bundleAdjust_cminpack_lmdif.h>
 #include <core/bundleAdjust_cminpack_lmder.h>

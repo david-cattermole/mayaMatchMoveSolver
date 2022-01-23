@@ -24,7 +24,6 @@
 #define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDIF_H
 
 // STL
-#include <string>
 #include <vector>
 
 // Maya
@@ -40,8 +39,7 @@
 #include <Bundle.h>
 #include <Attr.h>
 
-#include <core/bundleAdjust_solveFunc.h>
-#include <core/bundleAdjust_base.h>
+#include <core/bundleAdjust_data.h>
 
 
 bool solve_3d_cminpack_lmdif(SolverOptions &solverOptions,

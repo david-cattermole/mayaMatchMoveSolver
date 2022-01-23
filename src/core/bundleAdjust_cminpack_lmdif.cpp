@@ -22,7 +22,7 @@
  * camera.
  */
 
-#ifdef USE_SOLVER_CMINPACK
+#ifdef MMSOLVER_USE_CMINPACK
 
 // CMinpack
 #include <cminpack.h>
@@ -256,4 +256,4 @@ int solveFunc_cminpack_lmdif(void *data,
 }
 
 
-#endif // USE_SOLVER_CMINPACK
+#endif // MMSOLVER_USE_CMINPACK

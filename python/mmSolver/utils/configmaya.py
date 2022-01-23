@@ -208,7 +208,7 @@ def set_node_option_structure(node_name, attr_name, data_struct, add_attr=None):
 
     :rtype: None
     """
-    assert isinstance(attr_name, (str, unicode))
+    assert isinstance(attr_name, pycompat.TEXT_TYPE)
     assert isinstance(data_struct, (list, dict))
 
     new_attr_data = json.dumps(data_struct)

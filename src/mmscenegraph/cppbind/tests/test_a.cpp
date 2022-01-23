@@ -226,8 +226,8 @@ int test_a() {
 
     auto out_deviation_list = flat_scene.deviations();
     auto out_point_list = flat_scene.points();
-    for (auto i = 0; i < num_points; ++i) {
     assert(out_point_list.size() == out_deviation_list.size());
+    for (uint32_t i = 0; i < num_points; ++i) {
         auto index = i * 2;
         auto point_x = out_point_list[index + 0];
         auto point_y = out_point_list[index + 1];

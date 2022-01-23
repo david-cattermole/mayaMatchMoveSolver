@@ -123,6 +123,24 @@ function(set_global_maya_plugin_compile_options)
 endfunction()
 
 
+function(set_global_treat_warnings_as_errors)
+  if(MSVC)
+    add_compile_options(/WX)
+  else()
+    add_compile_options(-Werror)
+  endif()
+endfunction()
+
+
+function(add_library_maya_plugin target source_files)
+  if (APPLE)
+    add_library(${target} MODULE ${source_files})
+  else ()
+    add_library(${target} SHARED ${source_files})
+  endif ()
+endfunction()
+
+
 function(add_target_link_library_names target names)
     string(STRIP ${names} names_strip)
     string(REPLACE " " ";" names_list ${names_strip})

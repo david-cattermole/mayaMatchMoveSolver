@@ -99,19 +99,40 @@ set(SOURCE_FILES
   pluginMain.cpp
 )
 
+include(MMSolverUtils)
 
-# Find external packages
+# 'mmSolver' maya plugin library
+add_library_maya_plugin(mmSolver ${SOURCE_FILES})
+set_target_maya_plugin_compile_options(mmSolver)
+target_include_directories(mmSolver
+  PRIVATE ../include
+  PRIVATE .
+  )
+# On Linux the 'm' library is required.
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+  target_link_libraries(mmSolver PUBLIC m)
+endif ()
+
+
+if (BUILD_MMSCENEGRAPH)
+  add_subdirectory(mmscenegraph)
+  if(MMSCENEGRAPH_INCLUDE_DIR)
+    target_link_libraries(mmSolver
+      PRIVATE
+      mmscenegraph
+      )
+    target_include_directories(mmSolver
+      PRIVATE ${MMSCENEGRAPH_INCLUDE_DIR}
+      )
+    target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_MMSCENEGRAPH)
+  endif()
+endif ()
+
+set_global_treat_warnings_as_errors()
+set_global_maya_plugin_compile_options()
+
+
 find_package(Maya REQUIRED)
-find_package(CMinpack REQUIRED)
-find_package(Gflags REQUIRED)
-find_package(Glog REQUIRED)
-find_package(Eigen3 REQUIRED)
-find_package(Ceres REQUIRED)
-find_package(Libmv REQUIRED)
-find_package(OpenMVG REQUIRED)
-find_package(Dlfcn REQUIRED)
-find_package(LDPK REQUIRED)
-
 message(STATUS "MAYA: ${MAYA_FOUND}")
 message(STATUS "MAYA: Root=${MAYA_LOCATION}")
 message(STATUS "MAYA: API=${MAYA_API_VERSION}")
@@ -119,126 +140,165 @@ message(STATUS "MAYA: Maya Executable=${MAYA_EXECUTABLE}")
 message(STATUS "MAYA: Python Executable=${MAYA_PYTHON_EXECUTABLE}")
 message(STATUS "MAYA: Includes=${MAYA_INCLUDE_DIRS}")
 message(STATUS "MAYA: Libraries=${MAYA_LIBRARIES}")
+if(MAYA_FOUND)
+  target_include_directories(mmSolver
+    PRIVATE ${MAYA_INCLUDE_DIRS}
+    )
+  target_link_libraries(mmSolver
+    PUBLIC
+    ${MAYA_OpenMaya_LIBRARY}
+    ${MAYA_OpenMayaAnim_LIBRARY}
+    ${MAYA_OpenMayaRender_LIBRARY}
+    ${MAYA_OpenMayaUI_LIBRARY}
+    ${MAYA_Foundation_LIBRARY}
+    )
+endif()
 
+
+find_package(CMinpack REQUIRED)
 message(STATUS "CMINPACK: ${CMINPACK_FOUND}")
 message(STATUS "CMINPACK: Root=${CMINPACK_ROOT}")
 message(STATUS "CMINPACK: Include=${CMINPACK_INCLUDE_DIRS}")
 message(STATUS "CMINPACK: Library=${CMINPACK_LIBRARIES}")
-
-message(STATUS "GFLAGS: ${GFLAGS_FOUND}")
-message(STATUS "GFLAGS: Include=${GFLAGS_INCLUDE_DIRS}")
-message(STATUS "GFLAGS: Library=${GFLAGS_LIBRARIES}")
-
-message(STATUS "GLOG: ${GLOG_FOUND}")
-message(STATUS "GLOG: Include=${GLOG_INCLUDE_DIRS}")
-message(STATUS "GLOG: Library=${GLOG_LIBRARIES}")
-
-message(STATUS "EIGEN3: ${EIGEN3_FOUND}")
-message(STATUS "EIGEN3: Root=${Eigen3_DIR}")
-message(STATUS "EIGEN3: Include=${EIGEN3_INCLUDE_DIRS}")
-
-message(STATUS "CERES: ${CERES_FOUND}")
-message(STATUS "CERES: Root=${CERES_ROOT}")
-message(STATUS "CERES: Include=${CERES_INCLUDE_DIRS}")
-message(STATUS "CERES: Library=${CERES_LIBRARIES}")
-
-message(STATUS "LIBMV: ${LIBMV_FOUND}")
-message(STATUS "LIBMV: Root=${LIBMV_ROOT}")
-message(STATUS "LIBMV: Include=${LIBMV_INCLUDE_DIRS}")
-message(STATUS "LIBMV: Library=${LIBMV_LIBRARIES}")
-
-message(STATUS "OPENMVG: ${OPENMVG_FOUND}")
-message(STATUS "OPENMVG: Root=${OPENMVG_ROOT}")
-message(STATUS "OPENMVG: Include=${OPENMVG_INCLUDE_DIRS}")
-message(STATUS "OPENMVG: Library=${OPENMVG_LIBRARIES}")
-
-message(STATUS "LDPK ${LDPK_FOUND}")
-message(STATUS "LDPK Root=${LDPK_ROOT}")
-message(STATUS "LDPK Libraries=${LDPK_LIBRARIES}")
-message(STATUS "LDPK Include=${LDPK_INCLUDE_DIRS}")
-
-message(STATUS "DLFCN ${DLFCN_FOUND}")
-message(STATUS "DLFCN Root=${DLFCN_ROOT}")
-message(STATUS "DLFCN Libraries=${DLFCN_LIBRARIES}")
-message(STATUS "DLFCN Include=${DLFCN_INCLUDE_DIRS}")
-
-# Treat warnings as errors.
-if(MSVC)
-  add_compile_options(/W4 /WX)
-else()
-  add_compile_options(-W -Wall -Werror -Wpedantic)
-endif()
-
-include(MMSolverUtils)
-
-set_global_maya_plugin_compile_options()
-
-if (BUILD_MMSCENEGRAPH)
-  add_subdirectory(mmscenegraph)
-endif ()
-
-# 'mmSolver' maya plugin library
-if (APPLE)
-  add_library(mmSolver MODULE ${SOURCE_FILES})
-else ()
-  add_library(mmSolver SHARED ${SOURCE_FILES})
-endif ()
-set_target_maya_plugin_compile_options(mmSolver)
-target_include_directories(mmSolver
-  PRIVATE ../include
-  PRIVATE .
-  PRIVATE ${MAYA_INCLUDE_DIRS}
-  PRIVATE ${GFLAGS_INCLUDE_DIRS}
-  PRIVATE ${GLOG_INCLUDE_DIRS}
-  PRIVATE ${CMINPACK_INCLUDE_DIRS}
-  PRIVATE ${EIGEN3_INCLUDE_DIRS}
-  PRIVATE ${CERES_INCLUDE_DIRS}
-  PRIVATE ${LIBMV_INCLUDE_DIRS}
-  PRIVATE ${OPENMVG_INCLUDE_DIRS}
-  PRIVATE ${DLFCN_INCLUDE_DIRS}
-  PRIVATE ${LDPK_INCLUDE_DIRS}
-  )
-target_link_libraries(mmSolver
-  PRIVATE
-  mmscenegraph
-)
-target_include_directories(mmSolver
-  PRIVATE ${MMSCENEGRAPH_INCLUDE_DIR}
-  )
-target_link_libraries(mmSolver
-  PUBLIC
-  ${MAYA_OpenMaya_LIBRARY}
-  ${MAYA_OpenMayaAnim_LIBRARY}
-  ${MAYA_OpenMayaRender_LIBRARY}
-  ${MAYA_OpenMayaUI_LIBRARY}
-  ${MAYA_Foundation_LIBRARY}
-  )
-target_link_libraries(mmSolver
-  PRIVATE
-  ${GFLAGS_LIBRARIES}
-  ${GLOG_LIBRARIES}
-  ${CMINPACK_LIBRARIES}
-  ${CERES_LIBRARIES}
-  ${LIBMV_LIBRARIES}
-  ${OPENMVG_LIBRARIES}
-  ${DLFCN_LIBRARIES}
-  ${LDPK_LIBRARIES}
-)
-target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CMINPACK)
-target_compile_definitions(mmSolver PRIVATE USE_SOLVER_CERES)
-target_compile_definitions(mmSolver PRIVATE USE_SOLVER_LIBMV)
-
-# On Linux the 'm' library is required.
-if(CMAKE_SYSTEM_NAME STREQUAL Linux)
-  target_link_libraries(mmSolver PUBLIC m)
-endif ()
-
-install_target_plugin_to_module(mmSolver "${MODULE_FULL_NAME}")
-
-# Install dynamic libraries; cminpack
-if (CMINPACK_FOUND)
+if(CMINPACK_FOUND)
+  target_include_directories(mmSolver
+    PRIVATE ${CMINPACK_INCLUDE_DIRS}
+    )
+  target_link_libraries(mmSolver
+    PRIVATE
+    ${CMINPACK_LIBRARIES}
+    )
+  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CMINPACK)
   install_library(
     ${CMINPACK_LIBRARY}
     ${CMINPACK_LIBRARY_DLL}
     "${MODULE_FULL_NAME}/lib/")
-endif ()
+endif()
+
+
+find_package(Eigen3 REQUIRED)
+message(STATUS "EIGEN3: ${EIGEN3_FOUND}")
+message(STATUS "EIGEN3: Root=${Eigen3_DIR}")
+message(STATUS "EIGEN3: Include=${EIGEN3_INCLUDE_DIRS}")
+if(EIGEN3_FOUND)
+  target_include_directories(mmSolver
+    PRIVATE ${EIGEN3_INCLUDE_DIRS}
+    )
+endif()
+
+
+find_package(Gflags REQUIRED)
+message(STATUS "GFLAGS: ${GFLAGS_FOUND}")
+message(STATUS "GFLAGS: Include=${GFLAGS_INCLUDE_DIRS}")
+message(STATUS "GFLAGS: Library=${GFLAGS_LIBRARIES}")
+if(GFLAGS_FOUND)
+  target_include_directories(mmSolver
+    PRIVATE ${GFLAGS_INCLUDE_DIRS}
+    )
+  target_link_libraries(mmSolver
+    PRIVATE
+    ${GFLAGS_LIBRARIES}
+    )
+endif()
+
+
+find_package(Glog REQUIRED)
+message(STATUS "GLOG: ${GLOG_FOUND}")
+message(STATUS "GLOG: Include=${GLOG_INCLUDE_DIRS}")
+message(STATUS "GLOG: Library=${GLOG_LIBRARIES}")
+if(GLOG_FOUND)
+  target_include_directories(mmSolver
+    PRIVATE ${GLOG_INCLUDE_DIRS}
+    )
+  target_link_libraries(mmSolver
+    PRIVATE
+    ${GLOG_LIBRARIES}
+    )
+endif()
+
+
+find_package(Ceres REQUIRED)
+message(STATUS "CERES: ${CERES_FOUND}")
+message(STATUS "CERES: Root=${CERES_ROOT}")
+message(STATUS "CERES: Include=${CERES_INCLUDE_DIRS}")
+message(STATUS "CERES: Library=${CERES_LIBRARIES}")
+if(CERES_FOUND)
+  target_include_directories(mmSolver
+    PRIVATE ${CERES_INCLUDE_DIRS}
+    )
+  target_link_libraries(mmSolver
+    PRIVATE
+    ${CERES_LIBRARIES}
+    )
+  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CERES)
+endif()
+
+
+find_package(Libmv REQUIRED)
+message(STATUS "LIBMV: ${LIBMV_FOUND}")
+message(STATUS "LIBMV: Root=${LIBMV_ROOT}")
+message(STATUS "LIBMV: Include=${LIBMV_INCLUDE_DIRS}")
+message(STATUS "LIBMV: Library=${LIBMV_LIBRARIES}")
+if(LIBMV_FOUND)
+  target_include_directories(mmSolver
+    PRIVATE ${LIBMV_INCLUDE_DIRS}
+    )
+  target_link_libraries(mmSolver
+    PRIVATE
+    ${LIBMV_LIBRARIES}
+    )
+  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_LIBMV)
+endif()
+
+
+find_package(OpenMVG REQUIRED)
+message(STATUS "OPENMVG: ${OPENMVG_FOUND}")
+message(STATUS "OPENMVG: Root=${OPENMVG_ROOT}")
+message(STATUS "OPENMVG: Include=${OPENMVG_INCLUDE_DIRS}")
+message(STATUS "OPENMVG: Library=${OPENMVG_LIBRARIES}")
+if(OPENMVG_FOUND)
+  target_include_directories(mmSolver
+    PRIVATE ${OPENMVG_INCLUDE_DIRS}
+    )
+  target_link_libraries(mmSolver
+    PRIVATE
+    ${OPENMVG_LIBRARIES}
+    )
+  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_OPENMVG)
+endif()
+
+
+if(WIN32)
+  find_package(Dlfcn REQUIRED)
+  message(STATUS "DLFCN ${DLFCN_FOUND}")
+  message(STATUS "DLFCN Root=${DLFCN_ROOT}")
+  message(STATUS "DLFCN Libraries=${DLFCN_LIBRARIES}")
+  message(STATUS "DLFCN Include=${DLFCN_INCLUDE_DIRS}")
+  target_include_directories(mmSolver
+    PRIVATE ${DLFCN_INCLUDE_DIRS}
+    )
+  target_link_libraries(mmSolver
+    PRIVATE
+    ${DLFCN_LIBRARIES}
+    )
+endif()
+
+
+find_package(LDPK REQUIRED)
+message(STATUS "LDPK ${LDPK_FOUND}")
+message(STATUS "LDPK Root=${LDPK_ROOT}")
+message(STATUS "LDPK Libraries=${LDPK_LIBRARIES}")
+message(STATUS "LDPK Include=${LDPK_INCLUDE_DIRS}")
+if(LDPK_FOUND)
+  target_include_directories(mmSolver
+    PRIVATE ${LDPK_INCLUDE_DIRS}
+    )
+  target_link_libraries(mmSolver
+    PRIVATE
+    ${LDPK_LIBRARIES}
+    )
+  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_LDPK)
+endif()
+
+
+install_target_plugin_to_module(mmSolver "${MODULE_FULL_NAME}")

@@ -1,14 +1,13 @@
 # External Archives
 
-This directory will be filled with tar/zip files external
-dependencies. You may copy-paste specific archives into this
-directory, or use the script `./external/download_all_archives.sh`.
+This directory is used to store tar/zip files for external
+dependencies. The external build scripts use this directory as needed
+and sometimes expect files to be added to this directory.
 
-On Microsoft Windows, you must manually download the archives from the
-list below and place into this directory.
+The following archives may be expected during building and should be
+downloaded from [Autodesk](https://www.autodesk.com/):
 
-Packages:
-- levmar:
-  - URL: http://users.ics.forth.gr/~lourakis/levmar/levmar-2.6.tgz
-  - file name: levmar-2.6.tgz
-  - MD5 Hash: 16bc34efa1617219f241eef06427f13f
+- Autodesk_Maya_2018_EN_Linux_64bit.tgz
+- Autodesk_Maya_2019_Linux_64bit.tgz
+- Autodesk_Maya_2020_ML_Linux_64bit.tgz
+- Autodesk_Maya_2022_ML_Linux_64bit.tgz

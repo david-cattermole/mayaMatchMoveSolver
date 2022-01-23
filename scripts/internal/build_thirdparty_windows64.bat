@@ -27,17 +27,16 @@ SET ROOT=%THIS_DIR%..\external\
 ECHO Package Root: %ROOT%
 CHDIR %ROOT%
 
-SET INSTALL_DIR="%ROOT%\install"
+SET INSTALL_DIR="%ROOT%\install\maya%MAYA_VERSION%_windows64"
 SET SOURCE_DIR="%ROOT%"
+SET CXX_STANDARD=11
 
 :: NOTE: The working directory is placed in the root 'C' drive, to
 :: minimise the file path length, as we may get up to 250 characters
 :: long, which is a limitation of Windows.
 ::
-:: SET WORKING_DIR="%ROOT%\working"
-SET WORKING_DIR="C:\mmSolver_temp"
-
-
+:: SET WORKING_DIR="%ROOT%\working\maya%MAYA_VERSION%_windows64"
+SET WORKING_DIR="C:\build_mmSolver_maya%MAYA_VERSION%_windows64"
 
 :: Build plugin
 CHDIR %WORKING_DIR%
@@ -46,15 +45,15 @@ CHDIR build
 DEL /S /Q *
 FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
 
-cmake -G "NMake Makefiles" ^
+%CMAKE_EXE% -G "NMake Makefiles" ^
     -DCMAKE_BUILD_TYPE=Release ^
+    -DCMAKE_CXX_STANDARD=%CXX_STANDARD% ^
     -DTHIRDPARTY_BASE_INSTALL_DIR=%INSTALL_DIR% ^
     -DTHIRDPARTY_BASE_WORKING_DIR=%WORKING_DIR% ^
     %SOURCE_DIR%
 
-cmake --build . --parallel 4
-cmake --install .
-
+%CMAKE_EXE% --build . --parallel 4
+%CMAKE_EXE% --install .
 
 :: Return back project root directory.
 CHDIR "%ROOT%"

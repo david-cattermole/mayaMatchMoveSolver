@@ -66,7 +66,7 @@ On Linux:
 $ cd <project root>
 
 # Download and Build third-party projects automatically.
-$ bash scripts/build_thirdparty.bash
+$ bash scripts/build_thirdparty_linux_mayaXXXX.bash
 
 # Build mmSolver, compile UI files, compile Maya plug-in, build
 # documentation, create module and install to home directory.
@@ -87,7 +87,7 @@ On Windows:
 > CD <project root>
 
 :: Download and Build third-party projects automatically.
-> scripts/build_thirdparty.bat
+> scripts/build_thirdparty_windows64_mayaXXXX.bat
 
 :: Build mmSolver, compile UI files, compile Maya plug-in, build
 :: documentation, create module and install to home directory.
@@ -107,10 +107,10 @@ On Windows:
 To build dependencies we have pre-configured build scripts for Linux
 and Windows.
   
-| Build Script Name   | Operating System |
-| ------------        | -----------      |
-| build_thirdparty.bash | Linux            |
-| build_thirdparty.bat  | Windows          |
+| Build Script Name                       | Operating System |
+| ------------                            | -----------      |
+| build_thirdparty_linux_mayaXXXX.bash    | Linux            |
+| build_thirdparty_windows64_mayaXXXX.bat | Windows          |
 
 The build scripts are located in `<project root>/scripts/`.
 These scripts will automatically install into `<project root>/external/install`.

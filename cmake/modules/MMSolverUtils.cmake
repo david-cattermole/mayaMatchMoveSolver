@@ -165,11 +165,13 @@ function(set_target_as_maya_plugin_library target)
   # On Linux, the Maya Plug-In file extension is '.so'.
   # On MacOS, the Maya Plug-In file extension is '.bundle'.
   # On Windows, the Maya Plug-In file extension is '.mll', not '.dll'.
-  set(maya_plugin_suffix ".so")
+  set(maya_plugin_suffix "")
   if (APPLE)
     set(maya_plugin_suffix ".bundle")
   elseif (WIN32)
     set(maya_plugin_suffix ".mll")
+  elseif (UNIX)
+    set(maya_plugin_suffix ".so")
   else()
     message(FATAL_ERROR "Only Linux, MacOS and Windows are supported.")
   endif ()

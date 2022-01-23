@@ -1,12 +1,14 @@
 [flake8]
 ignore =
     D203,
+    E226,
     E402,
     E501,
-    F841,
     F401,
-    E226,
+    F841,
+    W293,
     W391,
+    W503
 exclude =
     # No need to traverse our git directory
     .git,
@@ -17,4 +19,6 @@ exclude =
     # ml_tools is external code
     python/mmSolver/tools/mltools/ml_convertRotationOrder.py,
     python/mmSolver/tools/mltools/ml_utilities.py,
+    # Do not check generated Python files from .ui files.
+    ui_*.py,
 max-complexity = 10

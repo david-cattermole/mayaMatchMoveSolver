@@ -32,6 +32,9 @@ SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2016.5"
 SET PYTHON_EXE=python
 SET CMAKE_EXE=cmake
 
+:: C++ Standard to use.
+SET CXX_STANDARD=11
+
 :: TODO: Setup Compiler environment. Change for your install path as needed.
 
 scripts\internal\build_mmSolver_windows64.bat

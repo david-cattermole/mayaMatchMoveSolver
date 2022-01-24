@@ -29,7 +29,6 @@ CHDIR %ROOT%
 
 SET INSTALL_DIR="%ROOT%\install\maya%MAYA_VERSION%_windows64"
 SET SOURCE_DIR="%ROOT%"
-SET CXX_STANDARD=11
 
 :: NOTE: The working directory is placed in the root 'C' drive, to
 :: minimise the file path length, as we may get up to 250 characters

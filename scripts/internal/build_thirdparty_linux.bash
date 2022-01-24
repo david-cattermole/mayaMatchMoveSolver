@@ -26,8 +26,6 @@ set -ev
 
 CWD=`pwd`
 
-CMAKE_EXE=cmake3
-
 # Path to this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PACKAGE_ROOT=`readlink -f ${DIR}/../../external`
@@ -38,7 +36,6 @@ cd "${PACKAGE_ROOT}"
 INSTALL_DIR="${PACKAGE_ROOT}/install/maya${MAYA_VERSION}_linux"
 WORKING_DIR="${PACKAGE_ROOT}/working/maya${MAYA_VERSION}_linux"
 SOURCE_DIR="${PACKAGE_ROOT}"
-CXX_STANDARD=11
 
 # Build
 mkdir -p "${INSTALL_DIR}"

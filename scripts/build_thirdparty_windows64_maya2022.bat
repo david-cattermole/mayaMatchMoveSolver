@@ -32,6 +32,9 @@ SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2022"
 SET PYTHON_EXE=python
 SET CMAKE_EXE=cmake
 
+:: C++ Standard to use.
+SET CXX_STANDARD=14
+
 :: Setup Compiler environment. Change for your install path as needed.
 CALL "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
 

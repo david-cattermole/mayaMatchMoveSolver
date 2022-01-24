@@ -29,6 +29,9 @@ MAYA_LOCATION=/usr/autodesk/maya2022/
 PYTHON_EXE=python
 CMAKE_EXE=cmake3
 
+# C++ Standard to use.
+CXX_STANDARD=14
+
 # The -e flag causes the script to exit as soon as one command returns
 # a non-zero exit code.
 set -ev

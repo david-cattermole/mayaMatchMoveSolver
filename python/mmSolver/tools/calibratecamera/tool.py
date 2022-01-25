@@ -54,6 +54,7 @@ def main():
 
 
 def _find_camera_from_selection(sel):
+    cam = None
     filtered_nodes = mmapi.filter_nodes_into_categories(sel)
     cam_nodes = filtered_nodes['camera']
     mkr_grp_nodes = filtered_nodes['markergroup']
@@ -83,6 +84,7 @@ def _find_camera_from_selection(sel):
         cam = mkr.get_camera()
     if cam is not None and cam.is_valid():
         return cam
+    return None
 
 
 def _get_camera_for_update(sel):

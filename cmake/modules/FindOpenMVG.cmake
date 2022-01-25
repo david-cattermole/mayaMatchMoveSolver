@@ -82,6 +82,7 @@ foreach(OPENMVG_LIB
             ${OPENMVG_LIB}
         HINTS
             ${OPENMVG_LIB_PATH}
+            ${OPENMVG_LIB_PATH}/../lib64  # required for finding Ceres in OpenMVG v2.0.
             ${OPENMVG_ROOT}
             /usr/lib
             /usr/local/lib

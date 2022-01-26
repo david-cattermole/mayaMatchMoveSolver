@@ -67,6 +67,9 @@ def main(path_list):
         raise
     import maya.cmds
 
+    # Load the plug-in.
+    maya.cmds.loadPlugin('mmSolver')
+
     import unittest
     loader = unittest.TestLoader()
     final_suite = None

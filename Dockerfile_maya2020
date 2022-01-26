@@ -106,7 +106,9 @@ RUN yum install --assumeyes \
        devtoolset-6-gcc-c++ \
        devtoolset-6-make
 
-# Install (latest) Rust.
+# Install latest stable Rust with 'rustup'.
+#
+# TODO: Define a minimum Rust version to install.
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
     && source ${HOME}/.cargo/env
 
@@ -122,6 +124,7 @@ ENV MAYA_DISABLE_CIP=1
 
 WORKDIR /mmSolver
 
+# Maya 2020 development environment.
 ENTRYPOINT [ \
     "scl", "enable", \
                "rh-python36", \

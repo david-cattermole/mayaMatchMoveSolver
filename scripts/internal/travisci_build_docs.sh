@@ -39,6 +39,6 @@ make html
 
 # Makes 'jekyll build' run by GitHub Pages ignore the files in this
 # directory.
-touch build/html/.nojekyll
+touch build_linux_maya2022/html/.nojekyll
 
 cd ${PROJECT_ROOT}

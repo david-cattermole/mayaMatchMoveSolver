@@ -19,6 +19,10 @@
 Test a multi-frame bundle solve, with the bundle very, very far away from the camera.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import math
 import time
@@ -83,7 +87,7 @@ class TestSolver9(solverUtils.SolverTestCase):
             -100000000.0,
         ]
         for d in depth_list:
-            print 'Solve Depth: %r' % d
+            print('Solve Depth: %r' % d)
             maya.cmds.cutKey(bundle_tfm, cl=True, t=(), f=(), at='tx')
             maya.cmds.cutKey(bundle_tfm, cl=True, t=(), f=(), at='ty')
             maya.cmds.setAttr(bundle_tfm + '.tx', -2.5)
@@ -134,7 +138,7 @@ class TestSolver9(solverUtils.SolverTestCase):
                 # # Stopped by low error
                 # self.assertEqual(result[2], 'reason_num=6')
             e = time.time()
-            print 'total time:', e - s
+            print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_test9_after.ma')

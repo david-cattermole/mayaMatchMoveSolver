@@ -22,6 +22,10 @@ The 'nodeaffects' module is responsible for the internals of the
 'maya.cmds.mmSolverAffects' plug-in command.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 import unittest
 import pprint
@@ -31,6 +35,7 @@ import maya.cmds
 import test.test_utils.utilsutils as test_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.nodeaffects as nodeaffects
+import mmSolver.utils.python_compat as pycompat
 
 
 # @unittest.skip
@@ -72,7 +77,7 @@ class TestNodeAffects(test_utils.UtilsTestCase):
 
     @staticmethod
     def create_camera(name, tfm_node_type=None):
-        assert isinstance(name, basestring)
+        assert isinstance(name, pycompat.TEXT_TYPE)
         if tfm_node_type is None:
             tfm_node_type = 'transform'
         cam_tfm = maya.cmds.createNode(tfm_node_type, name=name)
@@ -196,7 +201,7 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         s = time.time()
         plugs = nodeaffects.find_plugs_affecting_transform(tfm_node, None)
         e = time.time()
-        print 'Compute time:', e - s
+        print('Compute time:', e - s)
 
         self.assertGreater(len(plugs), 0)
         for plug in must_have_plugs:

@@ -19,6 +19,10 @@
 Test functions for camera module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import os
 import unittest
@@ -27,6 +31,7 @@ import maya.cmds
 
 import test.test_api.apiutils as test_api_utils
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.camera as camera
 import mmSolver._api.constant as const
 
@@ -36,7 +41,7 @@ class TestCamera(test_api_utils.APITestCase):
 
     @staticmethod
     def create_camera(name):
-        assert isinstance(name, basestring)
+        assert isinstance(name, pycompat.TEXT_TYPE)
         cam_tfm = maya.cmds.createNode('transform', name=name)
         cam_tfm = node_utils.get_long_name(cam_tfm)
         shp_name = name + 'Shape'

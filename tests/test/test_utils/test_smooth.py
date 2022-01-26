@@ -19,6 +19,10 @@
 Test functions for API utils module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 import test.test_utils.utilsutils as test_utils
@@ -35,12 +39,12 @@ DATA_ONE = [
 
 # A single spike (length 5 - odd)
 DATA_TWO = [
-    0.0, 0.0, 1.0, 0.0, 0.0, 
+    0.0, 0.0, 1.0, 0.0, 0.0,
 ]
 
 # A single spike (length 8 - even).
 DATA_THREE = [
-    0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 
+    0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0,
 ]
 
 
@@ -102,7 +106,7 @@ class TestSmooth(test_utils.UtilsTestCase):
         """
         Test the fourier smoothing function, with data one input.
 
-        .. todo:: 
+        .. todo::
 
             Test with and without Numpy in the same interpreter
               session; We must get the exact same result!
@@ -161,7 +165,7 @@ class TestSmooth(test_utils.UtilsTestCase):
         data = list(DATA_TWO)
         x = smooth_utils.fourier_smooth(data, 2.0, filtr='gaussian')
         data = [
-            
+
             0.0, 0.27406862, 0.45186276, 0.27406862, 0.0,
         ]
         for a, b in zip(list(x), data):

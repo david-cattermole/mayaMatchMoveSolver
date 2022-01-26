@@ -19,6 +19,10 @@
 Test functions for Camera utilities module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 import maya.cmds
@@ -26,6 +30,7 @@ import maya.cmds
 import test.test_utils.utilsutils as test_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.camera as camera_utils
+import mmSolver.utils.python_compat as pycompat
 
 
 # @unittest.skip
@@ -36,7 +41,7 @@ class TestCamera(test_utils.UtilsTestCase):
 
     @staticmethod
     def create_camera(name, tfm_node_type=None):
-        assert isinstance(name, basestring)
+        assert isinstance(name, pycompat.TEXT_TYPE)
         if tfm_node_type is None:
             tfm_node_type = 'transform'
         cam_tfm = maya.cmds.createNode(tfm_node_type, name=name)

@@ -22,6 +22,10 @@ This script calls the solver multiple times in different ways, the aim
 is to reduce the slowness while maintaining static value solving.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 import unittest
 
@@ -51,7 +55,7 @@ class TestSolver6(solverUtils.SolverTestCase):
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateX', time=start, value=-2.0)
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateX', time=end, value=2.0)
@@ -69,7 +73,7 @@ class TestSolver6(solverUtils.SolverTestCase):
         maya.cmds.addAttr(marker_tfm, longName='enable', at='byte',
                           minValue=0, maxValue=1, defaultValue=True)
         maya.cmds.addAttr(marker_tfm, longName='weight', at='double',
-                      minValue=0.0, defaultValue=1.0)
+                          minValue=0.0, defaultValue=1.0)
         maya.cmds.setAttr(marker_tfm + '.tz', -10)
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-2.5)
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=3.0)
@@ -98,11 +102,11 @@ class TestSolver6(solverUtils.SolverTestCase):
             [(start), (25), (mid), (75), (end)],
             [(start), (12), (25), (37), (mid), (62), (75), (87), (end)],
         ]
-        print 'framesList:', framesList
+        print('framesList:', framesList)
         allFrames = []
         for f in range(start, end+1):
             allFrames.append(f)
-        print 'allFrames:', allFrames
+        print('allFrames:', allFrames)
 
         # Run solver!
         results = []
@@ -170,7 +174,7 @@ class TestSolver6(solverUtils.SolverTestCase):
         # results.append(result)
 
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_test6_%s_after.ma' % solver_name)
@@ -179,9 +183,9 @@ class TestSolver6(solverUtils.SolverTestCase):
         
         # Ensure the values are correct
         for i, result in enumerate(results):
-            print 'i', i, result[0]
+            print('i', i, result[0])
         for result in results:
-            print result[0]
+            print(result[0])
             self.assertEqual(result[0], 'success=1')
         return
 

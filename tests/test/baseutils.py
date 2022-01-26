@@ -19,6 +19,10 @@
 Testing Utilities - base class for the test cases.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import math
 import time
@@ -36,11 +40,11 @@ import maya.cmds
 class TestBase(unittest.TestCase):
 
     def setUp(self):
-        print ''
-        print '-' * 80
-        print 'Name:', self.id()
+        print('')
+        print('-' * 80)
+        print('Name:', self.id())
         if self.shortDescription():
-            print 'Description:', self.shortDescription()
+            print('Description:', self.shortDescription())
 
         # Start the timer
         self._start_test_time = time.time()
@@ -52,7 +56,6 @@ class TestBase(unittest.TestCase):
         self._pyProfiler = profile.Profile()
         self._pyProfiler.enable()
 
-
     def tearDown(self):
         # Stop the timer
         self._end_test_time = time.time()
@@ -61,8 +64,8 @@ class TestBase(unittest.TestCase):
         # Stop the Profiler
         self._pyProfiler.disable()
         self._pyProfiler.dump_stats(self._pyProfilerPath)
-        print 'Time: ', '{0: f}'.format(self._test_time)
-        print 'Python Profiler:', self._pyProfilerPath
+        print('Time: ', '{0: f}'.format(self._test_time))
+        print('Python Profiler:', self._pyProfilerPath)
 
     def reload_solver(self):
         maya.cmds.unloadPlugin('mmSolver')

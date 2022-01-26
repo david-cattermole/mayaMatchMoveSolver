@@ -19,6 +19,10 @@
 Test functions for transform utilities module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 import test.test_utils.utilsutils as test_utils
@@ -387,7 +391,8 @@ class TestTransform(test_utils.UtilsTestCase):
         dst_node = maya.cmds.createNode('transform')
         dst_tfm_node = mod.TransformNode(node=dst_node)
 
-        mod.set_transform_values(tfm_cache, frame_range,
+        mod.set_transform_values(
+            tfm_cache, frame_range,
             tfm_node, dst_tfm_node,
             delete_static_anim_curves=True,
         )

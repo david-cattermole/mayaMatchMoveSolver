@@ -19,6 +19,10 @@
 Test we can use the mmSolver to perform a triangulation technique.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 import math
 import unittest
@@ -150,7 +154,7 @@ class TestTriangulation(solverUtils.SolverTestCase):
             verbose=True
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')

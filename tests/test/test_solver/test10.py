@@ -19,6 +19,10 @@
 Solve a camera focal length to optimise rotateX, rotateY and focal length.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import time
 import unittest
@@ -135,7 +139,7 @@ class TestSolver10(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_test10_after.ma')

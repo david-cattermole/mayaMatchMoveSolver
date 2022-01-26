@@ -22,6 +22,10 @@ This test is the same as 'test.test_solver.test1' except this test uses the
 Python API. It's a basic example of how to use the API.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 import pprint
 import math
@@ -73,7 +77,7 @@ class TestRootFrame(test_api_utils.APITestCase):
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
         frame_nums = mod.get_root_frames_from_markers(
             mkr_list, min_frames_per_marker, start_frame, end_frame)
-        print 'frames:', frame_nums
+        print('frames:', frame_nums)
         return
 
     def test_get_root_frames_from_markers_2(self):
@@ -120,7 +124,7 @@ class TestRootFrame(test_api_utils.APITestCase):
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
         frame_nums = mod.get_root_frames_from_markers(
             mkr_list, min_frames_per_marker, start_frame, end_frame)
-        print 'frames:', frame_nums
+        print('frames:', frame_nums)
         return
 
     def test_get_root_frames_from_markers_3(self):
@@ -161,8 +165,9 @@ class TestRootFrame(test_api_utils.APITestCase):
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
         frame_nums = mod.get_root_frames_from_markers(
             mkr_list, min_frames_per_marker, start_frame, end_frame)
-        print 'frames:', frame_nums
+        print('frames:', frame_nums)
         return
+
 
 if __name__ == '__main__':
     prog = unittest.main()

@@ -22,6 +22,10 @@ This test is the same as 'test.test_solver.test1' except this test uses the
 Python API. It's a basic example of how to use the API.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 import pprint
 import math
@@ -31,6 +35,7 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.time as time_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
@@ -48,7 +53,7 @@ class TestSolve(test_api_utils.APITestCase):
         for res in solres_list:
             success = res.get_success()
             err = res.get_final_error()
-            print 'final error', success, err
+            print('final error', success, err)
             self.assertTrue(success)
             self.assertTrue(isinstance(err, float))
 
@@ -56,10 +61,10 @@ class TestSolve(test_api_utils.APITestCase):
         frm_err_list = mmapi.merge_frame_error_list(solres_list)
 
         avg_err = mmapi.get_average_frame_error_list(frm_err_list)
-        print 'avg error', avg_err
+        print('avg error', avg_err)
 
         max_err_frm, max_err_val = mmapi.get_max_frame_error(frm_err_list)
-        print 'max error frame and value:', max_err_frm, max_err_val
+        print('max error frame and value:', max_err_frm, max_err_val)
         self.assertLess(avg_err, 1.0)
         self.assertGreater(avg_err, 0.0)
         self.assertLess(max_err_val, 1.0)
@@ -77,7 +82,7 @@ class TestSolve(test_api_utils.APITestCase):
                                        name='cam_shp',
                                        parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
         cam = mmapi.Camera(shape=cam_shp)
 
@@ -154,7 +159,7 @@ class TestSolve(test_api_utils.APITestCase):
                                        name='cam_shp',
                                        parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
         cam = mmapi.Camera(shape=cam_shp)
 
@@ -239,7 +244,7 @@ class TestSolve(test_api_utils.APITestCase):
                                        name='cam_shp',
                                        parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
         cam = mmapi.Camera(shape=cam_shp)
 
@@ -382,7 +387,7 @@ class TestSolve(test_api_utils.APITestCase):
                                        name='cam_shp',
                                        parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
         cam = mmapi.Camera(shape=cam_shp)
 
@@ -501,7 +506,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         path = self.get_data_path('scenes', 'stA', 'stA.ma')
         ok = maya.cmds.file(path, open=True, ignoreVersion=True, force=True)
-        assert isinstance(ok, (str, unicode))
+        assert isinstance(ok, pycompat.TEXT_TYPE)
 
         # Camera
         cam_name = 'stA_1_1Shape1'
@@ -630,13 +635,13 @@ class TestSolve(test_api_utils.APITestCase):
         col = mmapi.Collection(node='collection1')
         lib_col.compile_collection(col)
         e = time.time()
-        print 'pre-solve time:', e - s
+        print('pre-solve time:', e - s)
 
         # Run solver!
         s = time.time()
         solres_list = mmapi.execute(col)
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # Set Deviation
         mkr_list = col.get_marker_list()
@@ -660,7 +665,7 @@ class TestSolve(test_api_utils.APITestCase):
         file_name = 'mmSolverBasicSolveA_badSolve01.ma'
         path = self.get_data_path('scenes', file_name)
         maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
-        print 'File opened:', path
+        print('File opened:', path)
 
         # Frames
         start_frame = 1
@@ -670,13 +675,13 @@ class TestSolve(test_api_utils.APITestCase):
         for f in root_frames:
             frm = mmapi.Frame(f)
             root_frm_list.append(frm)
-        print 'root frames:', root_frm_list
+        print('root frames:', root_frm_list)
 
         frm_list = []
         for f in range(start_frame, end_frame):
             frm = mmapi.Frame(f)
             frm_list.append(frm)
-        print 'frames:', frm_list
+        print('frames:', frm_list)
 
         # Solver
         sol = mmapi.SolverStandard()
@@ -686,9 +691,9 @@ class TestSolve(test_api_utils.APITestCase):
         sol.set_global_solve(False)
         sol.set_only_root_frames(False)
         sol_list = [sol]
-        print 'Solver:', sol
+        print('Solver:', sol)
         e = time.time()
-        print 'pre-solve time:', e - s
+        print('pre-solve time:', e - s)
 
         # Run solver!
         s = time.time()
@@ -696,7 +701,7 @@ class TestSolve(test_api_utils.APITestCase):
         col.set_solver_list(sol_list)
         solres_list = mmapi.execute(col)
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # Set Deviation
         mkr_list = col.get_marker_list()
@@ -757,7 +762,7 @@ class TestSolve(test_api_utils.APITestCase):
         lib_col.compile_collection(col)
         solres_list = mmapi.execute(col)
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # Set Deviation
         mkr_list = col.get_marker_list()
@@ -868,7 +873,7 @@ class TestSolve(test_api_utils.APITestCase):
         col.set_attribute_list(attr_list)
         col.set_solver_list(sol_list)
         e = time.time()
-        print 'pre=solve time:', e - s
+        print('pre=solve time:', e - s)
 
         # save the output, before.
         name = 'test_solve_solveAllFramesCausesStaticAnimCurves_before.ma'
@@ -879,7 +884,7 @@ class TestSolve(test_api_utils.APITestCase):
         s = time.time()
         solres_list = mmapi.execute(col)
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # Set Deviation
         mkr_list = col.get_marker_list()
@@ -1107,7 +1112,7 @@ class TestSolve(test_api_utils.APITestCase):
         min_frames_per_marker = 2
         frame_nums = mmapi.get_root_frames_from_markers(
             mkr_list, min_frames_per_marker, start, end)
-        print 'frame_nums', frame_nums
+        print('frame_nums', frame_nums)
         for f in frame_nums:
             frm = mmapi.Frame(f)
             root_frm_list.append(frm)
@@ -1173,7 +1178,7 @@ class TestSolve(test_api_utils.APITestCase):
         for res in results:
             success = res.get_success()
             err = res.get_final_error()
-            print 'err', err, 'success', success
+            print('err', err, 'success', success)
 
         # Set Deviation
         mmapi.update_deviation_on_markers(mkr_list, results)

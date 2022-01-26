@@ -3,6 +3,10 @@ Test querying DG relationship information between Markers and
 Attributes.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 import maya.cmds
@@ -146,7 +150,7 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
         assert (dummy + '.translateY') not in ret
         for r in ret:
             assert nothing not in r
-        print 'len(ret):', len(ret)
+        print('len(ret):', len(ret))
         assert len(ret) == 128
 
         # Test getting the affect mapping between markers and attrs.

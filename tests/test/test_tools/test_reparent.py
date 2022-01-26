@@ -19,6 +19,10 @@
 Test functions for reparent tool.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 import maya.cmds
@@ -254,9 +258,9 @@ class TestReparent(test_tools_utils.ToolsTestCase):
         node = tfm_node_c.get_node()
         plug = node + '.translateX'
         times = maya.cmds.keyframe(
-                plug,
-                query=True,
-                timeChange=True)
+            plug,
+            query=True,
+            timeChange=True)
         self.assertEqual(len(times), 5)
         self.assertEqual(sorted(times), sorted([1, 16, 61, 98, 120]))
         self.assertEqual(len(tfm_nodes), 1)
@@ -278,9 +282,9 @@ class TestReparent(test_tools_utils.ToolsTestCase):
         node = tfm_node_d.get_node()
         plug = node + '.translateX'
         times = maya.cmds.keyframe(
-                plug,
-                query=True,
-                timeChange=True)
+            plug,
+            query=True,
+            timeChange=True)
         self.assertEqual(len(times), 5)
         self.assertEqual(sorted(times), sorted([1, 16, 61, 98, 120]))
         self.assertEqual(len(tfm_nodes), 1)

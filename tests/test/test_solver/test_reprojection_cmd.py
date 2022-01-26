@@ -19,6 +19,10 @@
 Test the mmReprojection command for correctness.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import math
 import unittest
 
@@ -52,14 +56,14 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
             time=times,
             **kwargs
         )
-        print name, repr(values)
+        print(name, repr(values))
         values_b = maya.cmds.mmReprojection(
             worldPoint=(pnt_x, pnt_y, pnt_z),
             camera=(cam_tfm, cam_shp),
             time=times,
             **kwargs
         )
-        print str(name + '_b'), repr(values_b)
+        print(str(name + '_b'), repr(values_b))
         return values, values_b
 
     def test_reprojection_cmd(self):

@@ -43,6 +43,10 @@ Run code like this from Maya's Script Editor:
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import sys
 
@@ -60,7 +64,7 @@ def main(path_list):
         import maya.standalone
         maya.standalone.initialize()
     except RuntimeError:
-        pass
+        raise
     import maya.cmds
 
     import unittest
@@ -87,7 +91,7 @@ def main(path_list):
         if results.wasSuccessful() is True:
             maya.cmds.quit(force=True)
         else:
-            print >> sys.stderr, "Tests failed!"
+            print("Tests failed!", file=sys.stderr)
             failure_code = 1
             exit(failure_code)
     return

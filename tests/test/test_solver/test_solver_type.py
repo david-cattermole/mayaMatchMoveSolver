@@ -19,6 +19,10 @@
 Testing 'mmSolverType' command.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 try:
@@ -29,6 +33,7 @@ except RuntimeError:
 import maya.cmds
 
 
+import mmSolver.utils.python_compat as pycompat
 import test.test_solver.solverutils as solverUtils
 
 
@@ -54,7 +59,7 @@ class TestMMSolverType(solverUtils.SolverTestCase):
         assert len(a_list) > 0
         for solver_type in a_list:
             assert '=' in solver_type
-            assert isinstance(solver_type, (str, unicode))
+            assert isinstance(solver_type, pycompat.TEXT_TYPE)
 
         b_list = maya.cmds.mmSolverType(
             query=True,
@@ -66,7 +71,7 @@ class TestMMSolverType(solverUtils.SolverTestCase):
         assert len(a_list) == len(b_list)
         for solver_name in b_list:
             assert '=' not in solver_name
-            assert isinstance(solver_name, (str, unicode))
+            assert isinstance(solver_name, pycompat.TEXT_TYPE)
 
         c_list = maya.cmds.mmSolverType(
             query=True,
@@ -77,7 +82,7 @@ class TestMMSolverType(solverUtils.SolverTestCase):
         assert len(c_list) > 0
         assert len(a_list) == len(c_list)
         for solver_index in c_list:
-            assert isinstance(solver_index, (long, int))
+            assert isinstance(solver_index, pycompat.INT_TYPES)
         return
 
     def test_get_list_invalid_input(self):
@@ -99,7 +104,7 @@ class TestMMSolverType(solverUtils.SolverTestCase):
         """
         solver_type = maya.cmds.mmSolverType(query=True, default=True)
         assert '=' in solver_type
-        assert isinstance(solver_type, (str, unicode))
+        assert isinstance(solver_type, pycompat.TEXT_TYPE)
 
         solver_name = maya.cmds.mmSolverType(
             query=True,
@@ -109,7 +114,7 @@ class TestMMSolverType(solverUtils.SolverTestCase):
         )
         assert len(solver_name) < len(solver_type)
         assert '=' not in solver_name
-        assert isinstance(solver_name, (str, unicode))
+        assert isinstance(solver_name, pycompat.TEXT_TYPE)
 
         solver_index = maya.cmds.mmSolverType(
             query=True,
@@ -117,7 +122,7 @@ class TestMMSolverType(solverUtils.SolverTestCase):
             name=False,
             index=True,
         )
-        assert isinstance(solver_index, (long, int))
+        assert isinstance(solver_index, pycompat.INT_TYPES)
         return
 
 

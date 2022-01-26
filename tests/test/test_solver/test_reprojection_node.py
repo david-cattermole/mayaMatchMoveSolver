@@ -19,6 +19,10 @@
 Test the mmReprojection node for correctness.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import math
 import unittest
 
@@ -81,31 +85,31 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         outWorldInverseCameraProjectionMatrix = data.get('outWorldInverseCameraProjectionMatrix')
         outPan = data.get('outPan')
         outCameraDirectionRatio = data.get('outCameraDirectionRatio')
-        print '=== Printing Node ==='
-        print 'outCoord', outCoord
-        print 'outNormCoord', outNormCoord
-        print 'outPixel', outPixel
-        print 'outInsideFrustum', outInsideFrustum
-        print '-' * 5
-        print 'outPoint', outPoint
-        print 'outWorldPoint', outWorldPoint
-        print 'outMatrix', outMatrix
-        print 'outWorldMatrix', outWorldMatrix
-        print '-' * 5
-        print 'outCameraProjectionMatrix', outCameraProjectionMatrix
-        print 'outInverseCameraProjectionMatrix', outInverseCameraProjectionMatrix
-        print 'outWorldCameraProjectionMatrix', outWorldCameraProjectionMatrix
-        print 'outWorldInverseCameraProjectionMatrix', outWorldInverseCameraProjectionMatrix
-        print '-' * 5
-        print 'outPan', outPan
-        print '-' * 5
-        print 'outCameraDirectionRatio', outCameraDirectionRatio
-        print '-' * 40
+        print('=== Printing Node ===')
+        print('outCoord', outCoord)
+        print('outNormCoord', outNormCoord)
+        print('outPixel', outPixel)
+        print('outInsideFrustum', outInsideFrustum)
+        print('-' * 5)
+        print('outPoint', outPoint)
+        print('outWorldPoint', outWorldPoint)
+        print('outMatrix', outMatrix)
+        print('outWorldMatrix', outWorldMatrix)
+        print('-' * 5)
+        print('outCameraProjectionMatrix', outCameraProjectionMatrix)
+        print('outInverseCameraProjectionMatrix', outInverseCameraProjectionMatrix)
+        print('outWorldCameraProjectionMatrix', outWorldCameraProjectionMatrix)
+        print('outWorldInverseCameraProjectionMatrix', outWorldInverseCameraProjectionMatrix)
+        print('-' * 5)
+        print('outPan', outPan)
+        print('-' * 5)
+        print('outCameraDirectionRatio', outCameraDirectionRatio)
+        print('-' * 40)
 
     def check_values(self, data):
-        print '=== Testing Node Values ==='
+        print('=== Testing Node Values ===')
         for key, value in data.items():
-            print 'attr', repr(key), 'value', repr(value)
+            print('attr', repr(key), 'value', repr(value))
             if isinstance(value, (list, tuple)):
                 for v1 in value:
                     if isinstance(v1, (list, tuple)):
@@ -161,10 +165,10 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
 
         # Output Coordinates
         out_coord_tfm = maya.cmds.createNode('transform',
-                                               name='outputCoord',
-                                               parent=cam_tfm)
+                                             name='outputCoord',
+                                             parent=cam_tfm)
         out_coord_shp = maya.cmds.createNode('locator',
-                                               parent=out_coord_tfm)
+                                             parent=out_coord_tfm)
         maya.cmds.connectAttr(node + '.outCoordX', out_coord_tfm + '.translateX')
         maya.cmds.connectAttr(node + '.outCoordY', out_coord_tfm + '.translateY')
         maya.cmds.connectAttr(node + '.outInsideFrustum', out_coord_tfm + '.visibility')
@@ -193,10 +197,10 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         maya.cmds.setAttr(out_pixel_tfm + '.translateZ', -2000.0)
 
         # Output camera-space transform
-        out_cam_matrix_tfm = maya.cmds.createNode('transform', 
-                                                  name='outputTransform_inCameraSpace', 
+        out_cam_matrix_tfm = maya.cmds.createNode('transform',
+                                                  name='outputTransform_inCameraSpace',
                                                   parent=cam_tfm)
-        out_cam_matrix_shp = maya.cmds.createNode('locator', 
+        out_cam_matrix_shp = maya.cmds.createNode('locator',
                                                   parent=out_cam_matrix_tfm)
         decompose = maya.cmds.createNode('decomposeMatrix')
         maya.cmds.connectAttr(node + '.outMatrix', decompose + '.inputMatrix')
@@ -206,10 +210,10 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         maya.cmds.connectAttr(decompose + '.outputShear', out_cam_matrix_tfm + '.shear')
 
         # Output world-space transform
-        out_world_matrix_tfm = maya.cmds.createNode('transform', 
-                                                  name='outputTransform_inWorldSpace')
-        out_world_matrix_shp = maya.cmds.createNode('locator', 
-                                                  parent=out_world_matrix_tfm)
+        out_world_matrix_tfm = maya.cmds.createNode('transform',
+                                                    name='outputTransform_inWorldSpace')
+        out_world_matrix_shp = maya.cmds.createNode('locator',
+                                                    parent=out_world_matrix_tfm)
         decompose = maya.cmds.createNode('decomposeMatrix')
         maya.cmds.connectAttr(node + '.outWorldMatrix', decompose + '.inputMatrix')
         maya.cmds.connectAttr(decompose + '.outputTranslate', out_world_matrix_tfm + '.translate')
@@ -238,7 +242,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         self.print_node(data)
 
         # Change Depth Scale and query again.
-        # 
+        #
         # NOTE: If depthScale is set to a value other than 1.0, the
         # outWorldPoint is incorrectly scaled.
         maya.cmds.setAttr(node + '.depthScale', 1.0)

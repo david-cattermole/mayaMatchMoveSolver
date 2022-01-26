@@ -21,6 +21,10 @@ Test a rotation solve where the correct solve value is 0.0.
 Relates to GitHub issue #54.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import math
 import time
@@ -134,7 +138,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = 'solver_test_issue54_initial_value_zero_%s_after.ma'
@@ -146,8 +150,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         rx = maya.cmds.getAttr(cam_tfm + '.rx')
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
-        print 'rx', rx
-        print 'ry', ry
+        print('rx', rx)
+        print('ry', ry)
         assert self.approx_equal(rx, -2.85, eps=0.1)
         assert self.approx_equal(ry, -2.86, eps=0.1)
 
@@ -192,7 +196,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = 'solver_test_issue54_initial_value_twenty_%s_after.ma'
@@ -204,8 +208,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         rx = maya.cmds.getAttr(cam_tfm + '.rx')
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
-        print 'rx', rx
-        print 'ry', ry
+        print('rx', rx)
+        print('ry', ry)
         assert self.approx_equal(rx, 0.0, eps=0.01)
         assert self.approx_equal(ry, 0.0, eps=0.01)
 
@@ -250,7 +254,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = 'solver_test_issue54_initial_value_threeSixty_%s_after.ma'
@@ -262,8 +266,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         rx = maya.cmds.getAttr(cam_tfm + '.rx')
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
-        print 'rx', rx
-        print 'ry', ry
+        print('rx', rx)
+        print('ry', ry)
         assert self.approx_equal(rx, 360.0, eps=0.01)
         assert self.approx_equal(ry, 360.0, eps=0.01)
 
@@ -290,7 +294,6 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         self.do_solve_with_initial_value_zero('cminpack_lmder', 2)
         self.do_solve_with_initial_value_twenty('cminpack_lmder', 2)
         self.do_solve_with_initial_value_threeSixty('cminpack_lmder', 2)
-
 
 
 if __name__ == '__main__':

@@ -19,6 +19,10 @@
 Testing marker 'enabled' attribute.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import math
 import time
@@ -138,7 +142,7 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_marker_enabled_staticframe_after.ma')
@@ -200,7 +204,6 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
                              inTangentType='linear',
                              outTangentType='step')
 
-
         cameras = (
             (cam_tfm, cam_shp),
         )
@@ -236,7 +239,7 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
             )
             results.append(result)
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_marker_enabled_multiframe_after.ma')

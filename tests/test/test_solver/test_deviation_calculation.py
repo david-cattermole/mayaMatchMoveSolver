@@ -20,6 +20,10 @@ Tests printing statistics from the 'mmSolver' command using the
 'printStatistics' flag.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 try:

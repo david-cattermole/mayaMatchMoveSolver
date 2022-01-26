@@ -19,6 +19,10 @@
 Solve lens distortion using a line of points.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import math
 import time
@@ -53,7 +57,7 @@ class TestLens3(solverUtils.SolverTestCase):
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
         # maya.cmds.setAttr(cam_tfm + '.ry', -10.0)
 
@@ -68,7 +72,7 @@ class TestLens3(solverUtils.SolverTestCase):
             -1.1231859675317912, -1.1871395352225662, -1.1109997312441933,
             -1.1428886155934697, -1.1278301401493243, -1.1706081159505088,
             -1.026174880111348, -1.0396101080616948, -1.007821380899889,
-            -1.0505157687955868] # [random.uniform(-1.0, -1.2) for x in range(10)]
+            -1.0505157687955868]  # [random.uniform(-1.0, -1.2) for x in range(10)]
         num = len(x_amount_list)
         for i, x_amount in enumerate(x_amount_list):
             y_amount = -3.0 + ((float(i) / num) * 6.0)
@@ -141,7 +145,7 @@ class TestLens3(solverUtils.SolverTestCase):
             verbose=True,
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('lens3_%s_after.ma' % solver_name)

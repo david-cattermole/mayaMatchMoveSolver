@@ -19,6 +19,10 @@
 Solve a single non-animated bundle to the screen-space location of a bundle.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 import unittest
 
@@ -44,7 +48,7 @@ class TestSolver1(solverUtils.SolverTestCase):
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
 
         bundle_tfm = maya.cmds.createNode('transform', name='bundle_tfm')
@@ -101,7 +105,7 @@ class TestSolver1(solverUtils.SolverTestCase):
             verbose=True,
             **kwargs)
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
         
         # save the output
         path = self.get_data_path('solver_test1_%s_after.ma' % solver_name)

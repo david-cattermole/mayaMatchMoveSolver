@@ -22,6 +22,10 @@ This script calls the solver for each frame, rather than solving all
 frames together.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 import unittest
 
@@ -106,7 +110,7 @@ class TestSolver5(solverUtils.SolverTestCase):
             )
             results.append(result)
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_test5_after.ma')

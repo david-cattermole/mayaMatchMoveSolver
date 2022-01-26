@@ -19,6 +19,10 @@
 Semi-Complex hierarchy and object-space utilising solve.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 import unittest
 
@@ -44,7 +48,7 @@ class TestSolver2(solverUtils.SolverTestCase):
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
 
         group_tfm = maya.cmds.createNode('transform', name='group_tfm')
@@ -112,7 +116,7 @@ class TestSolver2(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
         self.assertEqual(result[0], 'success=0')
 
         # Run solver! (with less attributes)
@@ -140,7 +144,7 @@ class TestSolver2(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_test2_after.ma')
@@ -158,6 +162,7 @@ class TestSolver2(solverUtils.SolverTestCase):
 
     def test_init_cminpack_lmder(self):
         self.do_solve('cminpack_lmder', 2)
+
 
 if __name__ == '__main__':
     prog = unittest.main()

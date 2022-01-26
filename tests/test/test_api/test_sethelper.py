@@ -19,6 +19,10 @@
 Test functions for sethelper module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import os
 import unittest
@@ -225,7 +229,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         x = sethelper.SetHelper().create_node('mySet')
 
         members = []
-        for i in xrange(10):
+        for i in range(10):
             node = maya.cmds.createNode('transform')
             node_attr = node + '.translateX'
             members.append(node)
@@ -251,7 +255,7 @@ class TestSetHelper(test_api_utils.APITestCase):
         x = sethelper.SetHelper().create_node('mySet')
 
         members = []
-        for i in xrange(10):
+        for i in range(10):
             node = maya.cmds.createNode('transform')
             attr1 = node + '.translateX'
             attr2 = node + '.rotateY'
@@ -279,7 +283,7 @@ class TestSetHelper(test_api_utils.APITestCase):
 
         # Add members.
         members = []
-        for i in xrange(10):
+        for i in range(10):
             node = maya.cmds.createNode('transform')
             attr1 = node + '.translateX'
             attr2 = node + '.rotateY'

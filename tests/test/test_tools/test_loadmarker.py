@@ -19,12 +19,17 @@
 Test functions for loadmarker tool module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import unittest
 
 import maya.cmds
 
 import test.test_tools.toolsutils as test_tools_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import mmSolver.tools.loadmarker.lib.interface as interface
 import mmSolver.tools.loadmarker.lib.utils as lib_utils
@@ -107,8 +112,8 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
 
     def test_get_default_image_resolution(self):
         w, h = lib_utils.get_default_image_resolution()
-        assert isinstance(w, (int, long))
-        assert isinstance(h, (int, long))
+        assert isinstance(w, pycompat.INT_TYPES)
+        assert isinstance(h, pycompat.INT_TYPES)
         return
 
     def test_update_nodes(self):

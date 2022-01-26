@@ -19,6 +19,10 @@
 Testing marker 'weight' attribute.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import math
 import time
@@ -158,7 +162,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_marker_weight_staticframe_highweight_after.ma')
@@ -218,7 +222,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_marker_weight_staticframe_lowweight_after.ma')
@@ -284,7 +288,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_marker_weight_staticframe_ratioweight_after.ma')
@@ -344,7 +348,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_marker_weight_staticframe_sameweight_after.ma')
@@ -406,7 +410,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_marker_weight_staticframe_noweight_after.ma')

@@ -19,6 +19,10 @@
 Test functions for API utils module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import pprint
 import unittest
 import time
@@ -45,7 +49,7 @@ def create_example_solve_scene():
                                    name='cam_shp',
                                    parent=cam_tfm)
     maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-    maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+    maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
     maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
     cam = mmapi.Camera(shape=cam_shp)
 
@@ -241,7 +245,7 @@ class TestSolveResult(test_api_utils.APITestCase):
         col = mmapi.Collection(node='collection1')
         solres_list = mmapi.execute(col)
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solveresult_testPerfectSolve_after.ma')

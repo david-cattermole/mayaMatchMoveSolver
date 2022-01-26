@@ -20,6 +20,10 @@ Tests printing statistics from the 'mmSolver' command using the
 'printStatistics' flag.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 try:
@@ -44,7 +48,7 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
-        maya.cmds.setAttr(cam_tfm + '.ty',  1.0)
+        maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
 
         bundle_tfm = maya.cmds.createNode('transform', name='bundle_tfm')

@@ -19,6 +19,10 @@
 Test functions for markergroup module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import os
 import unittest
@@ -87,6 +91,7 @@ class TestMarkerGroup(test_api_utils.APITestCase):
         self.assertIsInstance(x, markergroup.MarkerGroup)
         self.assertEqual(x.get_node(), cam_tfm + '|markerGroup1')
         self.assertTrue(x.is_valid())
+
 
 if __name__ == '__main__':
     prog = unittest.main()

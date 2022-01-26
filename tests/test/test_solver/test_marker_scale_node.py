@@ -19,6 +19,10 @@
 Test the mmMarkerScale node for correctness.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 import mmSolver.utils.node as node_utils

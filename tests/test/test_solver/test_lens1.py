@@ -19,6 +19,10 @@
 Create a basic lens distortion evaluation set up.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import math
 import time
@@ -79,9 +83,9 @@ class TestLens1(solverUtils.SolverTestCase):
         # Compute the DG
         for axis in ['X', 'Y']:
             plug = tfm_b + '.translate' + axis
-            print 'trigger:', plug
+            print('trigger:', plug)
             value = maya.cmds.getAttr(plug)
-            print 'value:', axis, value
+            print('value:', axis, value)
         return
 
     def test_layered_lens_distortion_evaluation(self):
@@ -127,9 +131,9 @@ class TestLens1(solverUtils.SolverTestCase):
         # Compute the DG
         for axis in ['X', 'Y']:
             plug = tfm_b + '.translate' + axis
-            print 'trigger:', plug
+            print('trigger:', plug)
             value = maya.cmds.getAttr(plug)
-            print 'value:', axis, value
+            print('value:', axis, value)
         return
 
 

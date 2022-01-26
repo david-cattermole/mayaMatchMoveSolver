@@ -19,6 +19,10 @@
 Test functions for bundle module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import os
 import unittest
@@ -96,7 +100,7 @@ class TestBundle(test_api_utils.APITestCase):
         mkr_list1 = x.get_marker_list()
         self.assertEqual(len(mkr_list1), 0)
 
-        for i in xrange(10):
+        for i in range(10):
             mkr = marker.Marker().create_node()
             mkr.set_bundle(x)
         mkr_list2 = x.get_marker_list()

@@ -19,6 +19,10 @@
 Convert a mmSolver log file into an image.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import argparse
 import glob
 import os
@@ -148,7 +152,7 @@ def generate_plot_value_lines(data, ax):
 
 def read_log(file_path):
     data = {}
-    print 'file_path:', repr(file_path)
+    print('file_path:', repr(file_path))
     with open(file_path, 'r') as f:
         it_key_fmt = 'iter_%s_%s'
         it_key = 'iter_s_s'
@@ -203,7 +207,7 @@ def read_log(file_path):
 
 
 def read_flags(file_path):
-    print 'file_path:', repr(file_path)
+    print('file_path:', repr(file_path))
     return
 
 

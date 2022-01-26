@@ -20,6 +20,10 @@ Test the camera matrix generation in the mmSolver project; it
 should match Maya perfectly.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import time
 import unittest
@@ -69,65 +73,64 @@ class TestProjectionMatrix(solverUtils.SolverTestCase):
     def launch_film_fit(self, film_fit):
         line = '=' * 80
 
-        print line
-        print 'Normal usage, square filmback, no offsets'
+        print(line)
+        print('Normal usage, square filmback, no offsets')
         self.run_camera_matrix(filmback_width=1.0, filmback_height=1.0,
                                filmback_offset_x=0.0, filmback_offset_y=0.0,
                                focal_length=50.0,
                                film_fit=film_fit,
                                render_width=1920, render_height=1080)
 
-        print line
-        print 'Square filmback with offset values'
+        print(line)
+        print('Square filmback with offset values')
         self.run_camera_matrix(filmback_width=1.0, filmback_height=1.0,
                                filmback_offset_x=0.5, filmback_offset_y=0.5,
                                focal_length=50.0,
                                film_fit=film_fit,
                                render_width=1920, render_height=1080)
 
-        print line
-        print "'Landscape' sized filmback (width longer than height)"
+        print(line)
+        print("'Landscape' sized filmback (width longer than height)")
         self.run_camera_matrix(filmback_width=2.0, filmback_height=1.0,
                                filmback_offset_x=0.0, filmback_offset_y=0.0,
                                focal_length=50.0,
                                film_fit=film_fit,
                                render_width=1920, render_height=1080)
 
-        print line
-        print "'Landscape' sized filmback (width longer than height), with offsets"
+        print(line)
+        print("'Landscape' sized filmback (width longer than height), with offsets")
         self.run_camera_matrix(filmback_width=2.0, filmback_height=1.0,
                                filmback_offset_x=1.0, filmback_offset_y=1.0,
                                focal_length=50.0,
                                film_fit=film_fit,
                                render_width=1920, render_height=1080)
 
-        print line
-        print "'Portrait' sized filmback (height longer than width)"
+        print(line)
+        print("'Portrait' sized filmback (height longer than width)")
         self.run_camera_matrix(filmback_width=1.0, filmback_height=2.0,
                                filmback_offset_x=0.0, filmback_offset_y=0.0,
                                focal_length=50.0,
                                film_fit=film_fit,
                                render_width=1920, render_height=1080)
 
-        print line
-        print "'Portrait' sized filmback (height longer than width), with offsets"
+        print(line)
+        print("'Portrait' sized filmback (height longer than width), with offsets")
         self.run_camera_matrix(filmback_width=1.0, filmback_height=2.0,
                                filmback_offset_x=1.0, filmback_offset_y=1.0,
                                focal_length=50.0,
                                film_fit=film_fit,
                                render_width=1920, render_height=1080)
 
-
-        print line
-        print 'Non-standard render resolution'
+        print(line)
+        print('Non-standard render resolution')
         self.run_camera_matrix(filmback_width=1.0, filmback_height=1.0,
                                filmback_offset_x=0.0, filmback_offset_y=0.0,
                                focal_length=50.0,
                                film_fit=film_fit,
                                render_width=1080, render_height=1920)
 
-        print line
-        print 'Non-standard render resolution, with offsets'
+        print(line)
+        print('Non-standard render resolution, with offsets')
         self.run_camera_matrix(filmback_width=1.0, filmback_height=1.0,
                                filmback_offset_x=1.0, filmback_offset_y=1.0,
                                focal_length=50.0,
@@ -138,21 +141,21 @@ class TestProjectionMatrix(solverUtils.SolverTestCase):
         # Test all film fit values;
         line = '-' * 100
 
-        print 'test film fit: horizontal'
+        print('test film fit: horizontal')
         self.launch_film_fit(1)  # 1=horizontal
-        print line
+        print(line)
 
-        print 'test film fit: vertical'
+        print('test film fit: vertical')
         self.launch_film_fit(2)  # 2=vertical
-        print line
+        print(line)
 
-        print 'test film fit: fill'
+        print('test film fit: fill')
         self.launch_film_fit(0)  # 0=fill
-        print line
+        print(line)
 
-        print 'test film fit: overscan'
+        print('test film fit: overscan')
         self.launch_film_fit(3)  # 3=overscan
-        print line
+        print(line)
         return
 
 

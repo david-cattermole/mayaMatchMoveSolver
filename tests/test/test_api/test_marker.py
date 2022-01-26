@@ -19,6 +19,10 @@
 Test functions for marker module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import os
 import unittest
@@ -27,6 +31,7 @@ import maya.cmds
 
 
 import test.test_api.apiutils as test_api_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.utils.node as node_utils
 import mmSolver._api.bundle as bundle
 import mmSolver._api.camera as camera
@@ -65,7 +70,7 @@ class TestMarker(test_api_utils.APITestCase):
         name = 'myMarker1'
         x = marker.Marker().create_node(name=name)
         node = x.get_node()
-        self.assertIsInstance(node, (str, unicode))
+        self.assertIsInstance(node, pycompat.TEXT_TYPE)
         self.assertIn(name, node)
         self.assertEqual(node, '|myMarker1')
 
@@ -84,12 +89,12 @@ class TestMarker(test_api_utils.APITestCase):
         x = marker.Marker()
         x.create_node()
         node = x.get_node()
-        self.assertIsInstance(node, (str, unicode))
+        self.assertIsInstance(node, pycompat.TEXT_TYPE)
         self.assertTrue(maya.cmds.objExists(node))
 
         x = marker.Marker().create_node()
         node = x.get_node()
-        self.assertIsInstance(node, (str, unicode))
+        self.assertIsInstance(node, pycompat.TEXT_TYPE)
         self.assertTrue(maya.cmds.objExists(node))
 
         name = 'myMarker1'
@@ -132,7 +137,7 @@ class TestMarker(test_api_utils.APITestCase):
     def test_delete_node(self):
         x = marker.Marker().create_node()
         node1 = x.get_node()
-        self.assertIsInstance(node1, (str, unicode))
+        self.assertIsInstance(node1, pycompat.TEXT_TYPE)
         self.assertTrue(maya.cmds.objExists(node1))
 
         x.delete_node()
@@ -143,7 +148,7 @@ class TestMarker(test_api_utils.APITestCase):
 
         maya.cmds.undo()  # undo delete_node
         node3 = x.get_node()
-        self.assertIsInstance(node3, (str, unicode))
+        self.assertIsInstance(node3, pycompat.TEXT_TYPE)
         self.assertTrue(maya.cmds.objExists(node1))
         self.assertTrue(maya.cmds.objExists(node3))
         self.assertEqual(node1, node3)

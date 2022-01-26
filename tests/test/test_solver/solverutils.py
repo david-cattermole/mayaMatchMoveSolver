@@ -19,6 +19,10 @@
 Testing Utilities - base class for the test cases.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 
 try:
@@ -81,5 +85,5 @@ class SolverTestCase(baseUtils.TestBase):
             mode=affects_mode,
             **kwargs)
         e = time.time()
-        print 'mmSolverAffects time:', e - s
+        print('mmSolverAffects time:', e - s)
         return result

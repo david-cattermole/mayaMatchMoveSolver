@@ -19,6 +19,10 @@
 Test multi-camera solving on a single frame.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import math
 import time
@@ -58,13 +62,13 @@ class TestSolver8(solverUtils.SolverTestCase):
                              type='transform',
                              long=True)
         for node in nodes:
-            print "camera node:", node
+            print('camera node:', node)
             camTfm = node
             camShape = maya.cmds.listRelatives(node,
                                                children=True,
                                                type='camera',
                                                fullPath=True)[0]
-            print 'nodes', (camTfm, camShape)
+            print('nodes', (camTfm, camShape))
             cameras.append((camTfm, camShape))
 
         # Get Markers
@@ -121,7 +125,7 @@ class TestSolver8(solverUtils.SolverTestCase):
             verbose=True,
             **kwargs)
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_test8_%s_after.ma' % solver_name)

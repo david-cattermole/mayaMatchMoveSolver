@@ -19,6 +19,10 @@
 Testing marker min/max attribute (box constraints).
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 import unittest
 
@@ -127,7 +131,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_min_max_values_staticframe_after.ma')
@@ -194,7 +198,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_min_max_values_staticframe_lower_bound_only_after.ma')
@@ -207,7 +211,6 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         ty = maya.cmds.getAttr(bundle_01_tfm + '.ty')
         assert self.approx_equal(tx, -5.0)
         assert self.approx_equal(ty, 2.3)
-
 
     def test_single_frame_upper_bound_only(self):
         """
@@ -262,7 +265,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_min_max_values_staticframe_upper_bound_only_after.ma')

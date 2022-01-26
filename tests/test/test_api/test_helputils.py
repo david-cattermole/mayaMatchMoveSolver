@@ -19,12 +19,17 @@
 Test functions for 'helputils' module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import test.test_api.apiutils as test_api_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.ui.helputils as helputils
 
 
@@ -32,7 +37,7 @@ import mmSolver.ui.helputils as helputils
 class TestHelpUtils(test_api_utils.APITestCase):
     def test_get_help_source(self):
         src = helputils.get_help_source()
-        assert isinstance(src, (str, unicode))
+        assert isinstance(src, pycompat.TEXT_TYPE)
 
     def test_get_help_base_location(self):
         src = helputils.get_help_source()
@@ -42,7 +47,7 @@ class TestHelpUtils(test_api_utils.APITestCase):
             'Did you build and install documentation?'
             'url=%r'
         )
-        assert isinstance(url, (str, unicode)), msg
+        assert isinstance(url, pycompat.TEXT_TYPE), msg
 
 
 if __name__ == '__main__':

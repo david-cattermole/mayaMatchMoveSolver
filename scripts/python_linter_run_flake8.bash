@@ -20,10 +20,6 @@
 #
 # Runs Flake8 for the project.
 
-# The -e flag causes the script to exit as soon as one command returns
-# a non-zero exit code.
-set -ev
-
 PROJECT_ROOT=`pwd`
 
 python -m flake8 \

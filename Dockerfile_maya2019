@@ -55,6 +55,7 @@ RUN yum install --assumeyes \
        libXau \
        libxcb \
        libXcomposite \
+       libXtst \
        xorg-x11-server-Xorg \
        xorg-x11-server-Xvfb \
 
@@ -63,6 +64,30 @@ RUN yum install --assumeyes \
        libpng12 \
        libtiff \
     && ln -s /usr/lib64/libtiff.so.5 /usr/lib64/libtiff.so.3
+
+# Install miscellaneous Maya dependencies.
+#
+# https://knowledge.autodesk.com/support/maya/troubleshooting/caas/CloudHelp/cloudhelp/2019/ENU/Installation-Maya/files/GUID-D2B5433C-E0D2-421B-9BD8-24FED217FD7F-htm.html
+#
+RUN yum install --assumeyes \
+       gamin \
+       audiofile \
+       audiofile-devel \
+       e2fsprogs-libs \
+       gstreamer1 \
+       gstreamer1-plugins-base \
+       tcsh
+
+# Install fonts needed by Maya.
+# This is probably only needed by the GUI (which we will not open),
+# but it's good to have everything needed, just in case.
+RUN yum install  --assumeyes \
+       xorg-x11-fonts-ISO8859-1-100dpi \
+       xorg-x11-fonts-ISO8859-1-75dpi \
+       liberation-mono-fonts \
+       liberation-fonts-common \
+       liberation-sans-fonts \
+       liberation-serif-fonts
 
 # Fix as devtoolset-6 not in the offical CentOS 7 mirrors any more,
 # but we can hack the repo URLs. See the links below for details and

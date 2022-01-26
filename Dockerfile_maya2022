@@ -55,14 +55,69 @@ RUN yum install --assumeyes \
        libXau \
        libxcb \
        libXcomposite \
+       libXcursor \
+       libXext \
+       libXfixes \
+       libXi \
+       libXrandr \
+       libXrender \
+       libXScrnSaver \
+       libxshmfence \
+       xcb-util \
+       xcb-util-wm \
+       xcb-util-image \
+       xcb-util-keysyms \
+       xcb-util-renderutil \
+       libxkbcommon \
+       libxkbcommon-x11 \
+       libX11 \
+       libxkbcommon-x11 \
        xorg-x11-server-Xorg \
-       xorg-x11-server-Xvfb \
+       xorg-x11-server-Xvfb
 
 # Install image libraries and setup fix for Maya to find libtiff.
 RUN yum install --assumeyes \
        libpng12 \
        libtiff \
     && ln -s /usr/lib64/libtiff.so.5 /usr/lib64/libtiff.so.3
+
+# Install miscellaneous Maya dependencies.
+#
+# https://knowledge.autodesk.com/support/maya/troubleshooting/caas/CloudHelp/cloudhelp/2022/ENU/Installation-Maya/files/GUID-D2B5433C-E0D2-421B-9BD8-24FED217FD7F-htm.html
+#
+RUN yum install --assumeyes \
+       gamin \
+       audiofile \
+       audiofile-devel \
+       e2fsprogs-libs \
+       glibc \
+       libSM \
+       libICE \
+       zlib \
+       openssl-libs \
+       nss \
+       dbus \
+       libcap \
+       libdrm \
+       libmng \
+       flite \
+       speech-dispatcher \
+       cups \
+       tcsh
+
+
+# Install fonts needed by Maya.
+# This is probably only needed by the GUI (which we will not open),
+# but it's good to have everything needed, just in case.
+RUN yum install  --assumeyes \
+       fontconfig \
+       freetype \
+       xorg-x11-fonts-ISO8859-1-100dpi \
+       xorg-x11-fonts-ISO8859-1-75dpi \
+       liberation-mono-fonts \
+       liberation-fonts-common \
+       liberation-sans-fonts \
+       liberation-serif-fonts
 
 # Development tools for Maya 2022 and 2022.
 RUN yum install --assumeyes \

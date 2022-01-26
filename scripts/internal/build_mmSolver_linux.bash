@@ -145,6 +145,7 @@ CPU_NUM=`nproc --all`
 mkdir -p build_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
 cd build_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
 # -DCMAKE_CXX_CLANG_TIDY="clang-tidy"
+export MAYA_VERSION=${MAYA_VERSION}
 ${CMAKE_EXE} \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DCMAKE_INSTALL_PREFIX=${INSTALL_MODULE_DIR} \

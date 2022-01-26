@@ -53,4 +53,6 @@ external/include/*.h*
 external/include/*atlas*
 
 docs/build/html/*
+docs/build_*_maya*/html/*
 docs/build/doctrees/*
+docs/build_*_maya*/doctrees/*

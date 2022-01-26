@@ -33,9 +33,9 @@ import sys
 IS_PYTHON_2 = sys.version_info[0] == 2
 IS_PYTHON_3 = sys.version_info[0] == 3
 if IS_PYTHON_2 is True:
-    TEXT_TYPE = basestring
-    INT_TYPES = (int, long)
-    LONG_TYPE = long
+    TEXT_TYPE = basestring  # noqa: F821
+    INT_TYPES = (int, long)  # noqa: F821
+    LONG_TYPE = long  # noqa: F821
 else:
     TEXT_TYPE = str
     INT_TYPES = (int, )

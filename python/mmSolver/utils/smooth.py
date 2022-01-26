@@ -64,7 +64,7 @@ except ImportError:
 
 # Optimal 'range' function for Python 2
 if pycompat.IS_PYTHON_2:
-    range = xrange
+    range = xrange  # noqa: F821
 
 
 def smooth(smooth_type, value_array, width):

@@ -24,7 +24,7 @@
 import cmath, sys
 
 # For python 2.
-range = xrange
+range = xrange  # noqa: F821
 
 # For Python 2.6; 'int.bit_length()' was added in Python 2.7
 def _bit_length(x):

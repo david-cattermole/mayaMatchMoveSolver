@@ -34,6 +34,9 @@ set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
 
 # Source
 set(SOURCE_FILES
+  utilities/debugUtils.cpp
+  utilities/numberUtils.cpp
+  utilities/stringUtils.cpp
   core/bundleAdjust_base.cpp
   core/bundleAdjust_cminpack_base.cpp
   core/bundleAdjust_cminpack_lmder.cpp

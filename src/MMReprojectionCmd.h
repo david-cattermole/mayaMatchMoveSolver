@@ -42,7 +42,7 @@
 #include <maya/MTimeArray.h>
 
 // Internal Objects
-#include <Camera.h>
+#include "mayahelper/maya_camera.h"
 
 // Command arguments and command name:
 

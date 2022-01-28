@@ -31,7 +31,7 @@
 
 #include <nodeTypeIds.h>
 
-#include <core/lensModel.h>
+#include "lens/lens_model.h"
 #include <MMLensData.h>
 #include <MMMarkerTransformNode.h>
 

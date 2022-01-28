@@ -28,7 +28,7 @@
 
 #include <nodeTypeIds.h>
 
-#include <Camera.h>
+#include "mayahelper/maya_camera.h"
 
 
 MTypeId MMMarkerGroupTransformNode::m_id(MM_MARKER_GROUP_TRANSFORM_TYPE_ID);

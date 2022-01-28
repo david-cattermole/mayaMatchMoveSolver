@@ -30,7 +30,7 @@
 #include <maya/MTypeId.h>
 
 
-#include <core/lensModel.h>
+#include "lens/lens_model.h"
 
 
 class MMLensData : public MPxData {

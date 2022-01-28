@@ -21,10 +21,10 @@
  */
 
 
-#include <nodeTypeIds.h>
+#include "nodeTypeIds.h"
 
-#include <core/lensModel.h>
-#include <MMLensData.h>
+#include "lens/lens_model.h"
+#include "MMLensData.h"
 
 
 const MTypeId MMLensData::m_id(MM_LENS_DATA_TYPE_ID);

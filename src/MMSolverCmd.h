@@ -56,13 +56,13 @@
 #include <maya/MDoubleArray.h>
 
 // Internal Objects
-#include <Camera.h>
-#include <Marker.h>
-#include <Bundle.h>
-#include <Attr.h>
+#include "mayahelper/maya_camera.h"
+#include "mayahelper/maya_marker.h"
+#include "mayahelper/maya_bundle.h"
+#include "mayahelper/maya_attr.h"
 
 // Define solvers
-#include <core/bundleAdjust_base.h>
+#include "adjust/adjust_base.h"
 
 
 // Command arguments

@@ -36,21 +36,21 @@
 #include <maya/MStreamUtils.h>
 
 // Utilities
-#include <utilities/debugUtils.h>
-#include <utilities/numberUtils.h>
+#include "utilities/debug_utils.h"
+#include "utilities/number_utils.h"
 
 // STL
 #include <cstring>
 #include <cmath>
 
 
-#include <nodeTypeIds.h>
-#include <mayaUtils.h>
+#include "nodeTypeIds.h"
+#include "mayahelper/maya_utils.h"
 
 #include "core/mmdata.h"
 #include "core/mmmath.h"
 #include "core/mmcamera.h"
-#include "core/calibrate/common.h"
+#include "calibrate/calibrate_common.h"
 
 
 MStatus getLineAttributeValues(

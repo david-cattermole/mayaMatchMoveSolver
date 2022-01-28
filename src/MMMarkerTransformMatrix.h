@@ -25,7 +25,7 @@
 #include <maya/MPxTransform.h>
 #include <maya/MPxTransformationMatrix.h>
 
-#include <core/lensModel.h>
+#include "lens/lens_model.h"
 
 
 class MMMarkerTransformMatrix : public MPxTransformationMatrix {

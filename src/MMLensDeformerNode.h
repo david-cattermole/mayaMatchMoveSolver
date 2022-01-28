@@ -20,13 +20,13 @@
  * Lens Distortion Deformer.
  */
 
-
 #ifndef MM_LENS_DEFORMER_NODE_H
 #define MM_LENS_DEFORMER_NODE_H
 
 #include <string.h>
-#include <maya/MIOStream.h>
 #include <math.h>
+
+#include <maya/MIOStream.h>
 
 #include <maya/MPxGeometryFilter.h>
 #include <maya/MItGeometry.h>

@@ -34,19 +34,19 @@ set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
 
 # Source
 set(SOURCE_FILES
-  utilities/debugUtils.cpp
-  utilities/numberUtils.cpp
-  utilities/stringUtils.cpp
-  core/bundleAdjust_base.cpp
-  core/bundleAdjust_cminpack_base.cpp
-  core/bundleAdjust_cminpack_lmder.cpp
-  core/bundleAdjust_cminpack_lmdif.cpp
-  core/bundleAdjust_relationships.cpp
-  core/bundleAdjust_solveFunc.cpp
-  core/calibrate/common.cpp
-  core/calibrate/vanishingPoint.cpp
-  core/lensModel3deClassic.cpp
-  core/lensModelBasic.cpp
+  utilities/debug_utils.cpp
+  utilities/number_utils.cpp
+  utilities/string_utils.cpp
+  adjust/adjust_base.cpp
+  adjust/adjust_cminpack_base.cpp
+  adjust/adjust_cminpack_lmder.cpp
+  adjust/adjust_cminpack_lmdif.cpp
+  adjust/adjust_relationships.cpp
+  adjust/adjust_solveFunc.cpp
+  calibrate/calibrate_common.cpp
+  calibrate/vanishing_point.cpp
+  lens/lens_model_3de_classic.cpp
+  lens/lens_model_basic.cpp
   core/mmcamera.cpp
   core/mmcoord.cpp
   core/mmdata.cpp
@@ -72,13 +72,13 @@ set(SOURCE_FILES
   render/RenderGlobalsNode.cpp
   render/RenderOverride.cpp
   render/SceneRender.cpp
-  Camera.cpp
-  Marker.cpp
-  Bundle.cpp
-  Attr.cpp
-  mayaSceneGraph.cpp
-  mayaUtils.cpp
-  commonArgFlags.cpp
+  mayahelper/maya_camera.cpp
+  mayahelper/maya_marker.cpp
+  mayahelper/maya_bundle.cpp
+  mayahelper/maya_attr.cpp
+  mayahelper/maya_scene_graph.cpp
+  mayahelper/maya_utils.cpp
+  common_arg_flags.cpp
   MMSolverAffectsCmd.cpp
   MMMarkerScaleNode.cpp
   MMReprojectionNode.cpp

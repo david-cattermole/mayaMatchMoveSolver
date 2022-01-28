@@ -25,16 +25,16 @@
 
 // Internal
 #include <MMTestCameraMatrixCmd.h>
-#include <core/bundleAdjust_defines.h>
-#include <mayaUtils.h>
+#include "adjust/adjust_defines.h"
+#include "mayahelper/maya_utils.h"
 
 // STL
 #include <cmath>
 #include <cassert>
 
 // Utils
-#include <utilities/debugUtils.h>
-#include <utilities/numberUtils.h>
+#include "utilities/debug_utils.h"
+#include "utilities/number_utils.h"
 
 // Maya
 #include <maya/MString.h>
@@ -47,8 +47,8 @@
 #include <maya/MFnCamera.h>
 
 // Internal Objects
-#include <Attr.h>
-#include <Camera.h>
+#include "mayahelper/maya_attr.h"
+#include "mayahelper/maya_camera.h"
 
 
 MMTestCameraMatrixCmd::~MMTestCameraMatrixCmd() {}

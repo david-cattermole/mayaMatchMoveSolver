@@ -27,7 +27,7 @@
 // https://stackoverflow.com/questions/1394132/macro-and-member-function-conflict
 #define NOMINMAX
 
-#include "../mayaUtils.h"
+#include "mayahelper/maya_utils.h"
 
 #include "RenderOverride.h"
 #include "QuadRenderEdgeDetect.h"

@@ -35,12 +35,12 @@
 
 // Internal
 #include <MMSolverAffectsCmd.h>
-#include <commonArgFlags.h>
-#include <mayaUtils.h>
-#include <core/bundleAdjust_defines.h>
-#include <core/bundleAdjust_data.h>
-#include <core/bundleAdjust_base.h>
-#include <core/bundleAdjust_relationships.h>
+#include "common_arg_flags.h"
+#include "mayahelper/maya_utils.h"
+#include "adjust/adjust_defines.h"
+#include "adjust/adjust_data.h"
+#include "adjust/adjust_base.h"
+#include "adjust/adjust_relationships.h"
 
 // STL
 #include <vector>
@@ -48,8 +48,8 @@
 #include <cassert>
 
 // Utils
-#include <utilities/debugUtils.h>
-#include <utilities/stringUtils.h>
+#include "utilities/debug_utils.h"
+#include "utilities/string_utils.h"
 
 // Maya
 #include <maya/MSyntax.h>

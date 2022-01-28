@@ -28,8 +28,8 @@
 
 // Internal
 #include <MMSolverTypeCmd.h>
-#include <core/bundleAdjust_base.h>
-#include <mayaUtils.h>
+#include "adjust/adjust_base.h"
+#include "mayahelper/maya_utils.h"
 
 // STL
 #include <cmath>
@@ -37,8 +37,8 @@
 #include <cstdlib>
 
 // Utils
-#include <utilities/debugUtils.h>
-#include <utilities/stringUtils.h>
+#include "utilities/debug_utils.h"
+#include "utilities/string_utils.h"
 
 // Maya
 #include <maya/MStatus.h>

@@ -21,7 +21,7 @@
 
 #include "BundleConstants.h"
 #include "BundleDrawOverride.h"
-#include <mayaUtils.h>
+#include "mayahelper/maya_utils.h"
 
 #include <maya/MString.h>
 #include <maya/MPlug.h>

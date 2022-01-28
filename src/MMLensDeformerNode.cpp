@@ -28,10 +28,10 @@
 
 #include <maya/MFnTypedAttribute.h>
 
-#include <nodeTypeIds.h>
+#include "nodeTypeIds.h"
 
-#include <MMLensData.h>
-#include <MMLensDeformerNode.h>
+#include "MMLensData.h"
+#include "MMLensDeformerNode.h"
 
 
 MTypeId MMLensDeformerNode::m_id(MM_LENS_DEFORMER_TYPE_ID);

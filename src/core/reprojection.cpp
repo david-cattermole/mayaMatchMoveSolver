@@ -23,13 +23,13 @@
 
 
 // Internal
-#include <Camera.h>  // getProjectionMatrix, computeFrustumCoordinates
+#include "mayahelper/maya_camera.h"  // getProjectionMatrix, computeFrustumCoordinates
 
 // STL
 #include <cmath>
 
 // Utils
-#include <utilities/debugUtils.h>
+#include "utilities/debug_utils.h"
 
 // Maya
 #include <maya/MMatrix.h>

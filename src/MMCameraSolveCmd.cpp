@@ -86,18 +86,18 @@
 
 // Internal
 #include <MMCameraSolveCmd.h>
-#include <mayaUtils.h>
-#include <Camera.h>
-#include <Marker.h>
+#include "mayahelper/maya_utils.h"
+#include "mayahelper/maya_camera.h"
+#include "mayahelper/maya_marker.h"
 
 using MMMarker = Marker;
 using MMCamera = Camera;
 
 // MM Solver Utils
-#include <utilities/debugUtils.h>
+#include "utilities/debug_utils.h"
 
 // MM Solver Core
-#include <core/bundleAdjust_defines.h>
+#include "adjust/adjust_defines.h"
 
 // Ceres Solver
 #ifdef MMSOLVER_USE_CERES

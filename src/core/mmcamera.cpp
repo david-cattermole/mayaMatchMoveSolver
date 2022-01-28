@@ -27,7 +27,7 @@
 #include <cmath>
 
 // Utils
-#include <utilities/debugUtils.h>
+#include "utilities/debug_utils.h"
 
 namespace mmcamera {
 

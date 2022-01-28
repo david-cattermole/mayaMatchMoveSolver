@@ -32,15 +32,15 @@
 #include <maya/MTypeId.h>
 #include <maya/MFnPluginData.h>
 
-#include <utilities/debugUtils.h>
-#include <utilities/numberUtils.h>
+#include "utilities/debug_utils.h"
+#include "utilities/number_utils.h"
 
 #include <cstring>
 #include <cmath>
 
 #include <nodeTypeIds.h>
 
-#include <core/lensModelBasic.h>
+#include "lens/lens_model_basic.h"
 #include <MMLensData.h>
 #include <MMLensModelBasicNode.h>
 

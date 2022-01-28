@@ -35,18 +35,18 @@
 #include <maya/MTypeId.h>
 #include <maya/MFnPluginData.h>
 
-#include <utilities/debugUtils.h>
-#include <utilities/numberUtils.h>
+#include "utilities/debug_utils.h"
+#include "utilities/number_utils.h"
 
 #include <cstring>
 #include <cmath>
 #include <algorithm>
 
-#include <nodeTypeIds.h>
+#include "nodeTypeIds.h"
 
-#include <core/lensModel3deClassic.h>
-#include <MMLensData.h>
-#include <MMLensModel3deClassicNode.h>
+#include "lens/lens_model_3de_classic.h"
+#include "MMLensData.h"
+#include "MMLensModel3deClassicNode.h"
 
 
 MTypeId MMLensModel3deClassicNode::m_id(MM_LENS_MODEL_3DE_CLASSIC_TYPE_ID);

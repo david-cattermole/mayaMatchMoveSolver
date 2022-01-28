@@ -23,10 +23,10 @@
 
 // Internal
 #include <MMReprojectionCmd.h>
-#include <mayaUtils.h>
-#include <Camera.h>
-#include <core/bundleAdjust_defines.h>
-#include <core/bundleAdjust_base.h>
+#include "mayahelper/maya_utils.h"
+#include "mayahelper/maya_camera.h"
+#include "adjust/adjust_defines.h"
+#include "adjust/adjust_base.h"
 #include <core/reprojection.h>
 
 // STL
@@ -35,8 +35,8 @@
 #include <cassert>
 
 // Utils
-#include <utilities/debugUtils.h>
-#include <utilities/stringUtils.h>
+#include "utilities/debug_utils.h"
+#include "utilities/string_utils.h"
 
 // Maya
 #include <maya/MSyntax.h>

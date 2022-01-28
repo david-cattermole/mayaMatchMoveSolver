@@ -38,20 +38,20 @@
 #include <maya/MEulerRotation.h>
 
 // Utilities
-#include <utilities/debugUtils.h>
-#include <utilities/numberUtils.h>
+#include "utilities/debug_utils.h"
+#include "utilities/number_utils.h"
 
 // STL
 #include <cstring>
 #include <cmath>
 #include <cassert>
 
-#include <nodeTypeIds.h>
-#include <mayaUtils.h>
+#include "nodeTypeIds.h"
+#include "mayahelper/maya_utils.h"
 
-#include <core/mmcamera.h>
-#include <core/mmcoord.h>
-#include <core/calibrate/vanishingPoint.h>
+#include "core/mmcamera.h"
+#include "core/mmcoord.h"
+#include "calibrate/vanishing_point.h"
 
 
 // #define MM_DEBUG

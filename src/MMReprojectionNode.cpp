@@ -30,8 +30,8 @@
 #include <maya/MFnNumericData.h>
 #include <maya/MFnMatrixData.h>
 
-#include <utilities/debugUtils.h>
-#include <utilities/numberUtils.h>
+#include "utilities/debug_utils.h"
+#include "utilities/number_utils.h"
 
 #include <cstring>
 #include <cmath>
@@ -39,7 +39,7 @@
 #include <nodeTypeIds.h>
 
 #include <MMReprojectionNode.h>
-#include <Camera.h>  // getProjectionMatrix, computeFrustumCoordinates
+#include "mayahelper/maya_camera.h"  // getProjectionMatrix, computeFrustumCoordinates
 #include <core/reprojection.h>
 
 

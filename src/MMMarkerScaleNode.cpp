@@ -29,15 +29,15 @@
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MFnCompoundAttribute.h>
 
-#include <utilities/debugUtils.h>
-#include <utilities/numberUtils.h>
+#include "utilities/debug_utils.h"
+#include "utilities/number_utils.h"
 
 #include <cstring>
 #include <cmath>
 
 #include <nodeTypeIds.h>
 
-#include <Camera.h>
+#include "mayahelper/maya_camera.h"
 
 MTypeId MMMarkerScaleNode::m_id(MM_MARKER_SCALE_TYPE_ID);
 

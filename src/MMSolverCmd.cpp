@@ -22,10 +22,10 @@
 
 // Internal
 #include <MMSolverCmd.h>
-#include <core/bundleAdjust_defines.h>
-#include <core/bundleAdjust_data.h>
-#include <core/bundleAdjust_base.h>
-#include <mayaUtils.h>
+#include "adjust/adjust_defines.h"
+#include "adjust/adjust_data.h"
+#include "adjust/adjust_base.h"
+#include "mayahelper/maya_utils.h"
 
 // STL
 #include <cmath>
@@ -34,7 +34,7 @@
 #include <algorithm>
 
 // Utils
-#include <utilities/debugUtils.h>
+#include "utilities/debug_utils.h"
 
 // Maya
 #include <maya/MString.h>
@@ -45,11 +45,11 @@
 #include <maya/MStreamUtils.h>
 
 // Internal Objects
-#include "commonArgFlags.h"
-#include "Attr.h"
-#include "Marker.h"
-#include "Bundle.h"
-#include "Camera.h"
+#include "common_arg_flags.h"
+#include "mayahelper/maya_attr.h"
+#include "mayahelper/maya_marker.h"
+#include "mayahelper/maya_bundle.h"
+#include "mayahelper/maya_camera.h"
 
 MMSolverCmd::~MMSolverCmd() {}
 

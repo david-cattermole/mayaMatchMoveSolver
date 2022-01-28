@@ -285,6 +285,6 @@ namespace debug {
 
     };
 
-}
+} // namespace debug
 
 #endif // DEBUG_UTILS_H

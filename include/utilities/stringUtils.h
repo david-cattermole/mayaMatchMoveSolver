@@ -61,6 +61,6 @@ namespace mmstring {
         return result;
     }
 
-}
+} // namespace mmstring
 
 #endif // STRING_UTILS_H

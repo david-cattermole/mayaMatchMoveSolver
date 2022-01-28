@@ -214,6 +214,7 @@ if(GLOG_FOUND)
     PRIVATE
     ${GLOG_LIBRARIES}
     )
+  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_GLOG)
 endif()
 
 

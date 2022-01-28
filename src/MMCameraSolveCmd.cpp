@@ -107,6 +107,7 @@ using MMCamera = Camera;
 // used by clients of class.
 #pragma warning( disable : 4251 )
 #include <ceres/ceres.h>
+#include <glog/logging.h>
 #pragma warning( pop )
 
 #endif  // MMSOLVER_USE_CERES
@@ -174,7 +175,7 @@ using MMCamera = Camera;
 #include <maya/MItSelectionList.h>
 
 // GFlags test.
-#ifdef MMSOLVER_USE_CERES
+#ifdef MMSOLVER_USE_GLOG
 
 DEFINE_bool(
     big_menu,
@@ -185,7 +186,7 @@ DEFINE_string(
     "english,french,german",
     "comma-separated list of languages to offer in the 'lang' menu");
 
-#endif  // MMSOLVER_USE_CERES
+#endif  // MMSOLVER_USE_GLOG
 
 using KernelType =
     openMVG::robust::ACKernelAdaptor<

@@ -107,7 +107,7 @@ using MMCamera = Camera;
 // used by clients of class.
 #pragma warning( disable : 4251 )
 #include <ceres/ceres.h>
-#include <glog/logging.h>
+// #include <glog/logging.h>
 #pragma warning( pop )
 
 #endif  // MMSOLVER_USE_CERES
@@ -174,19 +174,19 @@ using MMCamera = Camera;
 #include <maya/MFnDependencyNode.h>
 #include <maya/MItSelectionList.h>
 
-// GFlags test.
-#ifdef MMSOLVER_USE_GLOG
+// // GFlags test.
+// #ifdef MMSOLVER_USE_GLOG
 
-DEFINE_bool(
-    big_menu,
-    true,
-    "Include 'advanced' options in the menu listing");
-DEFINE_string(
-    languages,
-    "english,french,german",
-    "comma-separated list of languages to offer in the 'lang' menu");
+// DEFINE_bool(
+//     big_menu,
+//     true,
+//     "Include 'advanced' options in the menu listing");
+// DEFINE_string(
+//     languages,
+//     "english,french,german",
+//     "comma-separated list of languages to offer in the 'lang' menu");
 
-#endif  // MMSOLVER_USE_GLOG
+// #endif  // MMSOLVER_USE_GLOG
 
 using KernelType =
     openMVG::robust::ACKernelAdaptor<
@@ -318,12 +318,12 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto node_name = nodeDagPath.fullPathName();
-        // INFO("Node name: " << node_name.asChar());
+        // MMSOLVER_INFO("Node name: " << node_name.asChar());
 
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kCamera) {
             // Add Cameras
-            INFO("Camera name: " << node_name.asChar());
+            MMSOLVER_INFO("Camera name: " << node_name.asChar());
             MString transform_node_name = nodeDagPath.fullPathName();
 
             status = nodeDagPath.extendToShapeDirectlyBelow(0);
@@ -348,8 +348,8 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
                 m_image_height_b);
         }
     }
-    INFO("image A: " << m_image_width_a << "x" << m_image_height_a);
-    INFO("image B: " << m_image_width_b << "x" << m_image_height_b);
+    MMSOLVER_INFO("image A: " << m_image_width_a << "x" << m_image_height_a);
+    MMSOLVER_INFO("image B: " << m_image_width_b << "x" << m_image_height_b);
 
     // Parse objects into Camera intrinsics and Tracking Markers.
     MItSelectionList iter2(objects);
@@ -363,12 +363,12 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto node_name = nodeDagPath.fullPathName();
-        // INFO("Node name: " << node_name.asChar());
+        // MMSOLVER_INFO("Node name: " << node_name.asChar());
 
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kMarker) {
             // Add Markers
-            INFO("Marker name: " << node_name.asChar());
+            MMSOLVER_INFO("Marker name: " << node_name.asChar());
             auto mkr = MMMarker();
             mkr.setNodeName(node_name);
 
@@ -394,10 +394,10 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
                 double yy_a = (y_a + 0.5) * static_cast<double>(m_image_height_a);
                 double xx_b = (x_b + 0.5) * static_cast<double>(m_image_width_b);
                 double yy_b = (y_b + 0.5) * static_cast<double>(m_image_height_b);
-                INFO("x_a : " << x_a  << " y_a : " << y_a);
-                INFO("xx_a: " << xx_a << " yy_a: " << yy_a);
-                INFO("x_b : " << x_b  << " y_b : " << y_b);
-                INFO("xx_b: " << xx_b << " yy_b: " << yy_b);
+                MMSOLVER_INFO("x_a : " << x_a  << " y_a : " << y_a);
+                MMSOLVER_INFO("xx_a: " << xx_a << " yy_a: " << yy_a);
+                MMSOLVER_INFO("x_b : " << x_b  << " y_b : " << y_b);
+                MMSOLVER_INFO("xx_b: " << xx_b << " yy_b: " << yy_b);
                 auto xy_a = std::pair<double, double>{xx_a, yy_a};
                 auto xy_b = std::pair<double, double>{xx_b, yy_b};
                 m_marker_coords_a.push_back(xy_a);
@@ -549,8 +549,8 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
     // Command Outputs
     MDoubleArray outResult;
 
-    // Test the GLOG library.
-    INFO("Camera Solve Command - This is a log message!\n");
+    // // Test the GLOG library.
+    // MMSOLVER_INFO("Camera Solve Command - This is a log message!\n");
 
 #ifdef MMSOLVER_USE_CERES
     // Ceres Solver - Example #1
@@ -578,8 +578,8 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         ceres::Solver::Summary summary;
         ceres::Solve(options, &problem, &summary);
 
-        INFO(summary.BriefReport());
-        INFO("x : " << initial_x << " -> " << x);
+        MMSOLVER_INFO(summary.BriefReport());
+        MMSOLVER_INFO("x : " << initial_x << " -> " << x);
     }
 
     // Ceres Solver - Example #2 - Curve Fitting
@@ -607,9 +607,9 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
 
         ceres::Solver::Summary summary;
         Solve(options, &problem, &summary);
-        INFO(summary.BriefReport());
-        INFO("Initial m: " << 0.0 << " c: " << 0.0);
-        INFO("Final   m: " << m << " c: " << c);
+        MMSOLVER_INFO(summary.BriefReport());
+        MMSOLVER_INFO("Initial m: " << 0.0 << " c: " << 0.0);
+        MMSOLVER_INFO("Final   m: " << m << " c: " << c);
     }
 #endif  // MMSOLVER_USE_CERES
 
@@ -629,11 +629,11 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
 
         auto focal_x = cam.focal_x();
         auto focal_y = cam.focal_y();
-        INFO("img_width = " << img_width);
-        INFO("img_width2 = " << img_width2);
-        INFO("ray = " << ray);
-        INFO("focal_x = " << focal_x);
-        INFO("focal_y = " << focal_y);
+        MMSOLVER_INFO("img_width = " << img_width);
+        MMSOLVER_INFO("img_width2 = " << img_width2);
+        MMSOLVER_INFO("ray = " << ray);
+        MMSOLVER_INFO("focal_x = " << focal_x);
+        MMSOLVER_INFO("focal_y = " << focal_y);
     }
 
     // LibMV - Example #2 - Reconstruct Video
@@ -653,9 +653,9 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         libmv::tracker::FeaturesGraph fg;
         FeatureSet *fs = fg.CreateNewFeatureSet();
 
-        INFO("Loading Matches file...");
+        MMSOLVER_INFO("Loading Matches file...");
         libmv::ImportMatchesFromTxt(input_file_path, &fg.matches_, fs);
-        INFO("Loading Matches file...[DONE].");
+        MMSOLVER_INFO("Loading Matches file...[DONE].");
 
         // Estimates the camera trajectory and 3D structure of the scene
         int w = image_width;
@@ -667,17 +667,17 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
             h = static_cast<int>(2.0 * (principal_point_v0 + 0.5));
         }
 
-        INFO("Euclidean Reconstruction From Video...");
+        MMSOLVER_INFO("Euclidean Reconstruction From Video...");
         std::list<libmv::Reconstruction *> reconstructions;
         EuclideanReconstructionFromVideo(
             fg.matches_,
             w, h,
             focal_length,
             &reconstructions);
-        INFO("Euclidean Reconstruction From Video...[DONE]");
+        MMSOLVER_INFO("Euclidean Reconstruction From Video...[DONE]");
 
         // Exports the reconstructions
-        INFO("Exporting Reconstructions...");
+        MMSOLVER_INFO("Exporting Reconstructions...");
         std::string file_path_name;
         std::string file_ext;
         get_file_path_extension(output_file_path, &file_path_name, &file_ext);
@@ -704,10 +704,10 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
                     s << output_file_path;
                 libmv::ExportToBlenderScript(**iter, s.str());
             }
-        }INFO("Exporting Reconstructions...[DONE]");
+        }MMSOLVER_INFO("Exporting Reconstructions...[DONE]");
 
         // Cleaning
-        INFO("Cleaning.");
+        MMSOLVER_INFO("Cleaning.");
         iter = reconstructions.begin();
         for (; iter != reconstructions.end(); ++iter) {
             (*iter)->ClearCamerasMap();
@@ -740,16 +740,16 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
             marker_coords_b.col(k) = mat_b;
         }
 
-        INFO("num_markers: " << num_markers);
+        MMSOLVER_INFO("num_markers: " << num_markers);
         KernelType kernel(
             marker_coords_a, m_image_width_a, m_image_height_a,
             marker_coords_b, m_image_width_b, m_image_height_b,
             point_to_line);
-        INFO("kernel.NumSamples(): " << kernel.NumSamples());
-        INFO("kernel.logalpha0(): " << kernel.logalpha0());
-        INFO("kernel.multError(): " << kernel.multError());
-        INFO("kernel.normalizer1(): " << kernel.normalizer1());
-        INFO("kernel.normalizer2(): " << kernel.normalizer2());
+        MMSOLVER_INFO("kernel.NumSamples(): " << kernel.NumSamples());
+        MMSOLVER_INFO("kernel.logalpha0(): " << kernel.logalpha0());
+        MMSOLVER_INFO("kernel.multError(): " << kernel.multError());
+        MMSOLVER_INFO("kernel.normalizer1(): " << kernel.normalizer1());
+        MMSOLVER_INFO("kernel.normalizer2(): " << kernel.normalizer2());
 
         std::vector<uint32_t> inliers;
         openMVG::Mat3 matrix;
@@ -764,16 +764,16 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         const double &errorMax = ac_ransac_out.first;
         const double &minNFA = ac_ransac_out.second;
         auto number_of_inliers = inliers.size();
-        INFO("errorMax: " << errorMax << " pixels");
-        INFO("minNFA: " << minNFA);
-        INFO("KernelType::MINIMUM_SAMPLES: " << KernelType::MINIMUM_SAMPLES);
-        INFO("matrix: " << matrix);
-        INFO("inliers.size(): " << number_of_inliers);
+        MMSOLVER_INFO("errorMax: " << errorMax << " pixels");
+        MMSOLVER_INFO("minNFA: " << minNFA);
+        MMSOLVER_INFO("KernelType::MINIMUM_SAMPLES: " << KernelType::MINIMUM_SAMPLES);
+        MMSOLVER_INFO("matrix: " << matrix);
+        MMSOLVER_INFO("inliers.size(): " << number_of_inliers);
 
         // Check the fundamental support some point to be considered
         // as valid.
         if (number_of_inliers > minimal_samples) {
-            INFO("Found a fundamental under the confidence threshold of: "
+            MMSOLVER_INFO("Found a fundamental under the confidence threshold of: "
                  << errorMax << " pixels\n\t"
                  << "with: " << inliers.size() << " inliers"
                  << " from: " << num_markers
@@ -781,7 +781,7 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
             outResult.append(errorMax);
             outResult.append(minNFA);
         } else {
-            INFO("ACRANSAC was unable to estimate a rigid fundamental");
+            MMSOLVER_INFO("ACRANSAC was unable to estimate a rigid fundamental");
         }
     }
 

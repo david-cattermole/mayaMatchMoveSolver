@@ -103,7 +103,7 @@ bool solve_3d_levmar_bc_dif(
             (LM_BC_DIF_WORKSZ(numberOfParameters, numberOfErrors) +
              numberOfParameters * numberOfParameters) * sizeof(double));
     if (!work) {
-        ERR("Memory allocation request failed.");
+        MMSOLVER_ERR("Memory allocation request failed.");
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
         return false;

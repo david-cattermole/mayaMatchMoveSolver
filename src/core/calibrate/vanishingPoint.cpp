@@ -182,7 +182,7 @@ bool twoVanishingPoints(
         principalPoint,
         focalLengthRatio);
     if (!ok) {
-        ERR("Failed to calculate focal length.");
+        MMSOLVER_ERR("Failed to calculate focal length.");
         return false;
     }
 

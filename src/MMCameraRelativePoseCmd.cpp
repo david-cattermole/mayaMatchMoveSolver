@@ -306,7 +306,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kCamera) {
             // Add Cameras
-            INFO("Camera name: " << node_name.asChar());
+            MMSOLVER_INFO("Camera name: " << node_name.asChar());
             MString transform_node_name = nodeDagPath.fullPathName();
 
             status = nodeDagPath.extendToShapeDirectlyBelow(0);
@@ -337,14 +337,14 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
                 m_sensor_height_mm_b);
         }
     }
-    INFO("image A: " << m_image_width_a << "x" << m_image_height_a);
-    INFO("image B: " << m_image_width_b << "x" << m_image_height_b);
-    INFO("sensor (mm) A: " << m_sensor_width_mm_a
+    MMSOLVER_INFO("image A: " << m_image_width_a << "x" << m_image_height_a);
+    MMSOLVER_INFO("image B: " << m_image_width_b << "x" << m_image_height_b);
+    MMSOLVER_INFO("sensor (mm) A: " << m_sensor_width_mm_a
          << "x" << m_sensor_height_mm_a);
-    INFO("sensor (mm) B: " << m_sensor_width_mm_b
+    MMSOLVER_INFO("sensor (mm) B: " << m_sensor_width_mm_b
          << "x" << m_sensor_height_mm_b);
-    INFO("focal (mm) A: " << m_focal_length_mm_a);
-    INFO("focal (mm) B: " << m_focal_length_mm_b);
+    MMSOLVER_INFO("focal (mm) A: " << m_focal_length_mm_a);
+    MMSOLVER_INFO("focal (mm) B: " << m_focal_length_mm_b);
 
     // Parse objects into Camera intrinsics and Tracking Markers.
     MItSelectionList iter2(objects);
@@ -361,7 +361,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kMarker) {
             // Add Markers
-            INFO("Marker name: " << node_name.asChar());
+            MMSOLVER_INFO("Marker name: " << node_name.asChar());
             auto mkr = MMMarker();
             mkr.setNodeName(node_name);
 
@@ -391,10 +391,10 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
                     (x_b + 0.5) * static_cast<double>(m_image_width_b);
                 double yy_b =
                     (y_b + 0.5) * static_cast<double>(m_image_height_b);
-                INFO("x_a : " << x_a << " y_a : " << y_a);
-                INFO("xx_a: " << xx_a << " yy_a: " << yy_a);
-                INFO("x_b : " << x_b << " y_b : " << y_b);
-                INFO("xx_b: " << xx_b << " yy_b: " << yy_b);
+                MMSOLVER_INFO("x_a : " << x_a << " y_a : " << y_a);
+                MMSOLVER_INFO("xx_a: " << xx_a << " yy_a: " << yy_a);
+                MMSOLVER_INFO("x_b : " << x_b << " y_b : " << y_b);
+                MMSOLVER_INFO("xx_b: " << xx_b << " yy_b: " << yy_b);
                 auto xy_a = std::pair<double, double>{xx_a, yy_a};
                 auto xy_b = std::pair<double, double>{xx_b, yy_b};
                 m_marker_coords_a.push_back(xy_a);
@@ -421,7 +421,7 @@ bool myRobustRelativePose
         return false;
     }
 
-    // INFO("=== 1");
+    // MMSOLVER_INFO("=== 1");
     // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     // Compute the bearing vectors
@@ -429,7 +429,7 @@ bool myRobustRelativePose
         bearing1 = (*intrinsics1)(x1),
         bearing2 = (*intrinsics2)(x2);
 
-    // INFO("=== 2");
+    // MMSOLVER_INFO("=== 2");
     // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     auto pinhole_cameras_only = isPinhole(intrinsics1->getType())
@@ -438,7 +438,7 @@ bool myRobustRelativePose
     auto more_than_eight = x1.cols() > 8;
 
     if (more_than_eight) {
-        // INFO("=== 7");
+        // MMSOLVER_INFO("=== 7");
         // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         // Define the AContrario adaptor to use the 8 point essential matrix solver.
@@ -462,7 +462,7 @@ bool myRobustRelativePose
                                       max_iteration_count,
                                       &relativePose_info.essential_matrix,
                                       upper_bound_precision, false);
-        INFO("=== 8");
+        MMSOLVER_INFO("=== 8");
 
         const double &threshold = ac_ransac_output.first;
         relativePose_info.found_residual_precision = openMVG::R2D(
@@ -471,13 +471,13 @@ bool myRobustRelativePose
         // auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES * 2.5;
         auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
         if (relativePose_info.vec_inliers.size() < minimum_samples) {
-            INFO("=== 9");
+            MMSOLVER_INFO("=== 9");
             return false; // no sufficient coverage (the model does not support enough samples)
         }
     } else if (more_than_five && pinhole_cameras_only) {
         // Five Point Solver only supports pinhole cameras.
 
-        // INFO("=== 3");
+        // MMSOLVER_INFO("=== 3");
         // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         // Define the AContrario adaptor to use the 5 point essential matrix solver.
@@ -490,7 +490,7 @@ bool myRobustRelativePose
                           dynamic_cast<const openMVG::cameras::Pinhole_Intrinsic *>(intrinsics1)->K(),
                           dynamic_cast<const openMVG::cameras::Pinhole_Intrinsic *>(intrinsics2)->K());
 
-        // INFO("=== 4");
+        // MMSOLVER_INFO("=== 4");
         // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         // Robustly estimation of the Model and its precision
@@ -499,7 +499,7 @@ bool myRobustRelativePose
             max_iteration_count, &relativePose_info.essential_matrix,
             relativePose_info.initial_residual_tolerance, false);
 
-        // INFO("=== 5");
+        // MMSOLVER_INFO("=== 5");
         // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         relativePose_info.found_residual_precision = ac_ransac_output.first;
@@ -508,14 +508,14 @@ bool myRobustRelativePose
         auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
         if (relativePose_info.vec_inliers.size() < minimum_samples) {
 
-            // INFO("=== 6");
+            // MMSOLVER_INFO("=== 6");
             // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
             return false; // no sufficient coverage (the model does not support enough samples)
         }
     }
 
-    // INFO("=== 10");
+    // MMSOLVER_INFO("=== 10");
     // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
 
@@ -529,7 +529,7 @@ bool myRobustRelativePose
         return false;
     }
 
-    // INFO("=== 11");
+    // MMSOLVER_INFO("=== 11");
     // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     relativePose_info.relativePose = relative_pose;
@@ -581,7 +581,7 @@ bool compute_relative_pose(
     const std::vector<std::pair<double, double>> &marker_coords_b,
     openMVG::sfm::RelativePose_Info &pose_info) {
 
-    INFO("B ---");
+    MMSOLVER_INFO("B ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     const openMVG::cameras::Pinhole_Intrinsic cam_a(
         image_width_a,
@@ -596,7 +596,7 @@ bool compute_relative_pose(
         ppx_pix_b,
         ppy_pix_b);
 
-    INFO("C ---");
+    MMSOLVER_INFO("C ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     openMVG::Mat marker_coords_matrix_a =
@@ -604,7 +604,7 @@ bool compute_relative_pose(
     openMVG::Mat marker_coords_matrix_b =
         convert_marker_coords_to_matrix(marker_coords_b);
 
-    INFO("D ---");
+    MMSOLVER_INFO("D ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     // Compute the relative pose thanks to a essential matrix estimation
@@ -623,19 +623,19 @@ bool compute_relative_pose(
         image_size_a,
         image_size_b,
         num_max_iter);
-    INFO("D2 ---");
+    MMSOLVER_INFO("D2 ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     if (!robust_pose_ok) {
-        ERR("Robust relative pose estimation failure.");
+        MMSOLVER_ERR("Robust relative pose estimation failure.");
         return false;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    INFO("Found an Essential matrix:");
-    INFO("- precision: " << pose_info.found_residual_precision << " pixels");
-    INFO("- #matches: " << marker_coords_matrix_a.size());
-    INFO("- #inliers: " << pose_info.vec_inliers.size());
-    INFO("- Translation: " << pose_info.relativePose.translation());
-    INFO("- Rotation: " << pose_info.relativePose.rotation());
+    MMSOLVER_INFO("Found an Essential matrix:");
+    MMSOLVER_INFO("- precision: " << pose_info.found_residual_precision << " pixels");
+    MMSOLVER_INFO("- #matches: " << marker_coords_matrix_a.size());
+    MMSOLVER_INFO("- #inliers: " << pose_info.vec_inliers.size());
+    MMSOLVER_INFO("- Translation: " << pose_info.relativePose.translation());
+    MMSOLVER_INFO("- Rotation: " << pose_info.relativePose.rotation());
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     return true;
 }
@@ -659,7 +659,7 @@ bool construct_two_camera_sfm_data_scene(
     auto image_height_size_b = static_cast<size_t>(image_height_b);
 
     // Setup a SfM scene with two view corresponding the pictures
-    INFO("E ---");
+    MMSOLVER_INFO("E ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     scene.views[0].reset(
         new openMVG::sfm::View(
@@ -682,7 +682,7 @@ bool construct_two_camera_sfm_data_scene(
 
     // Setup intrinsics camera data
     // Each view use it's own pinhole camera intrinsic
-    INFO("F ---");
+    MMSOLVER_INFO("F ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     scene.intrinsics[0].reset(
         new openMVG::cameras::Pinhole_Intrinsic(
@@ -698,7 +698,7 @@ bool construct_two_camera_sfm_data_scene(
             ppx_pix_b, ppy_pix_b));
 
     // Setup poses camera data
-    INFO("G ---");
+    MMSOLVER_INFO("G ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     auto pose_a = openMVG::geometry::Pose3(
         openMVG::Mat3::Identity(),
@@ -790,15 +790,15 @@ bool bundle_adjustment(openMVG::sfm::SfM_Data &scene) {
         bundle_adjust_multithreaded);
     ceres_options.bCeres_summary_ = true;
     ceres_options.bUse_loss_function_ = false;
-    INFO("ceres_options.bCeres_summary_: "
+    MMSOLVER_INFO("ceres_options.bCeres_summary_: "
          << ceres_options.bCeres_summary_);
-    INFO("ceres_options.linear_solver_type_: "
+    MMSOLVER_INFO("ceres_options.linear_solver_type_: "
          << ceres_options.linear_solver_type_);
-    INFO("ceres_options.preconditioner_type_: "
+    MMSOLVER_INFO("ceres_options.preconditioner_type_: "
          << ceres_options.preconditioner_type_);
-    INFO("ceres_options.sparse_linear_algebra_library_type_: "
+    MMSOLVER_INFO("ceres_options.sparse_linear_algebra_library_type_: "
          << ceres_options.sparse_linear_algebra_library_type_);
-    INFO("ceres_options.bUse_loss_function_: "
+    MMSOLVER_INFO("ceres_options.bUse_loss_function_: "
          << ceres_options.bUse_loss_function_);
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     openMVG::sfm::Bundle_Adjustment_Ceres bundle_adjustment(ceres_options);
@@ -820,7 +820,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     MDoubleArray outResult;
 
     // Essential geometry filtering of putative matches
-    INFO("Compute Essential geometry...");
+    MMSOLVER_INFO("Compute Essential geometry...");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     double focal_length_pix_a = 0.0;
@@ -863,7 +863,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         m_marker_coords_b,
         pose_info);
     if (!relative_pose_ok) {
-        ERR("Compute Relative pose failed.");
+        MMSOLVER_ERR("Compute Relative pose failed.");
         status = MS::kFailure;
         return status;
     }
@@ -883,7 +883,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         pose_info,
         scene);
     if (!sfm_data_ok) {
-        ERR("Failed to construct two camera SfM scene.");
+        MMSOLVER_ERR("Failed to construct two camera SfM scene.");
         status = MS::kFailure;
         return status;
     }
@@ -892,7 +892,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     // work are discarded (removed from the list of inliers).
     //
     // Init structure by inlier triangulation
-    INFO("H ---");
+    MMSOLVER_INFO("H ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     auto triangulate_ok = triangulate_relative_pose(
         m_marker_coords_a,
@@ -900,30 +900,30 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         pose_info.vec_inliers,
         scene);
     if (!triangulate_ok) {
-        ERR("Triangulate relative pose points failed.");
+        MMSOLVER_ERR("Triangulate relative pose points failed.");
         status = MS::kFailure;
         return status;
     }
 
-    INFO("I ---");
+    MMSOLVER_INFO("I ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     openMVG::sfm::Save(
         scene,
         "EssentialGeometry_before.json",
         openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
 
-    INFO("J ---");
+    MMSOLVER_INFO("J ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     if (0) {
         auto adjust_ok = bundle_adjustment(scene);
         if (!adjust_ok) {
-            ERR("Bundle Adjustment failed.");
+            MMSOLVER_ERR("Bundle Adjustment failed.");
             status = MS::kFailure;
             return status;
         }
     }
 
-    INFO("K ---");
+    MMSOLVER_INFO("K ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     openMVG::sfm::Save(
         scene,

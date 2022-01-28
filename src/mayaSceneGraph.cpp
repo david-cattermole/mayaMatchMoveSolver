@@ -853,7 +853,7 @@ convert_attributes_to_attr_ids(
         if (search != attrNameToAttrIdMap.end()) {
             out_attrIdList.push_back(search->second);
         } else {
-            ERR("key was not found: " << key);
+            MMSOLVER_ERR("key was not found: " << key);
             return MStatus::kFailure;
         }
     }
@@ -885,7 +885,7 @@ MStatus construct_scene_graph(
     auto nodeNameToNodeIdMap = StringToNodeIdMap();
 
     // Frames
-    // INFO("FrameList length: " << frameList.length());
+    // MMSOLVER_INFO("FrameList length: " << frameList.length());
     assert(frameList.length() > 0);
     auto uiUnit = MTime::uiUnit();
     auto start_frame = std::numeric_limits<mmsg::FrameValue>::max();
@@ -894,17 +894,17 @@ MStatus construct_scene_graph(
         MTime frame = frameList[i];
         auto frame_num =
             static_cast<mmsg::FrameValue>(frame.as(uiUnit));
-        // INFO("frameList i=" << i << " frame_num=" << frame_num);
+        // MMSOLVER_INFO("frameList i=" << i << " frame_num=" << frame_num);
         start_frame = std::min(start_frame, frame_num);
         end_frame = std::max(end_frame, frame_num);
         out_frameList.push_back(frame_num);
     }
     auto total_frame_count = (end_frame - start_frame) + 1;
     UNUSED(total_frame_count);
-    // INFO("Frames start_frame: " << start_frame);
-    // INFO("Frames end_frame: " << end_frame);
-    // INFO("Frames frame_count: " << total_frame_count);
-    // INFO("Frames count: " << out_frameList.size());
+    // MMSOLVER_INFO("Frames start_frame: " << start_frame);
+    // MMSOLVER_INFO("Frames end_frame: " << end_frame);
+    // MMSOLVER_INFO("Frames frame_count: " << total_frame_count);
+    // MMSOLVER_INFO("Frames count: " << out_frameList.size());
     assert(out_frameList.size() == frameList.length());
 
     add_cameras(
@@ -949,21 +949,21 @@ MStatus construct_scene_graph(
     );
 
     // // Print number of nodes in the evaluation objects.
-    // INFO("EvaluationObjects num_bundles: "
+    // MMSOLVER_INFO("EvaluationObjects num_bundles: "
     //      << evalObjects.num_bundles());
-    // INFO("EvaluationObjects num_cameras: "
+    // MMSOLVER_INFO("EvaluationObjects num_cameras: "
     //      << evalObjects.num_cameras());
-    // INFO("EvaluationObjects num_markers: "
+    // MMSOLVER_INFO("EvaluationObjects num_markers: "
     //      << evalObjects.num_markers());
 
     // // Print number of nodes in the scene graph.
-    // INFO("SceneGraph num_transform_nodes: "
+    // MMSOLVER_INFO("SceneGraph num_transform_nodes: "
     //      << out_sceneGraph.num_transform_nodes());
-    // INFO("SceneGraph num_bundle_nodes: "
+    // MMSOLVER_INFO("SceneGraph num_bundle_nodes: "
     //      << out_sceneGraph.num_bundle_nodes());
-    // INFO("SceneGraph num_camera_nodes: "
+    // MMSOLVER_INFO("SceneGraph num_camera_nodes: "
     //      << out_sceneGraph.num_camera_nodes());
-    // INFO("SceneGraph num_marker_nodes: "
+    // MMSOLVER_INFO("SceneGraph num_marker_nodes: "
     //      << out_sceneGraph.num_marker_nodes());
 
     // Bake down SceneGraph into FlatScene for fast evaluation.

@@ -502,7 +502,7 @@ void measureErrors_mayaDag(
         bool behind_camera = false;
         double behind_camera_error_factor = 1.0;
         double cam_dot_bnd = cam_dir * bnd_dir;
-        // WRN("Camera DOT Bundle: " << cam_dot_bnd);
+        // MMSOLVER_WRN("Camera DOT Bundle: " << cam_dot_bnd);
         if (cam_dot_bnd < 0.0) {
             behind_camera = true;
             behind_camera_error_factor = 1e+6;
@@ -566,7 +566,7 @@ void measureErrors_mayaDag(
         error_max = 0.0;
         error_min = 0.0;
         error_avg = 0.0;
-        ERR("No Marker measurements were taken.");
+        MMSOLVER_ERR("No Marker measurements were taken.");
     } else {
         error_avg *= 1.0 / numberOfErrorsMeasured;
     }
@@ -703,7 +703,7 @@ void measureErrors_mmSceneGraph(
         // auto point_y = out_point_list[errorIndex + 1];
         auto dx = out_deviation_list[errorIndex + 0] * ud->imageWidth;
         auto dy = out_deviation_list[errorIndex + 1] * ud->imageWidth;
-        // INFO("point: " << point_x << ", " << point_y
+        // MMSOLVER_INFO("point: " << point_x << ", " << point_y
         //      << " mkr: " << mkr_x << ", " << mkr_y
         //      << " dev: " << dx << ", " << dy);
 
@@ -726,7 +726,7 @@ void measureErrors_mmSceneGraph(
         error_max = 0.0;
         error_min = 0.0;
         error_avg = 0.0;
-        ERR("No Marker measurements were taken.");
+        MMSOLVER_ERR("No Marker measurements were taken.");
     } else {
         error_avg *= 1.0 / numberOfErrorsMeasured;
     }
@@ -935,7 +935,7 @@ int solveFunc(const int numberOfParameters,
     }
 
     if (ud->computation->isInterruptRequested()) {
-        WRN("User wants to cancel the evaluation!");
+        MMSOLVER_WRN("User wants to cancel the evaluation!");
         ud->userInterrupted = true;
         return SOLVE_FUNC_FAILURE;
     }
@@ -1038,7 +1038,7 @@ int solveFunc(const int numberOfParameters,
             ud->computation->setProgress(progressNum);
 
             if (ud->computation->isInterruptRequested()) {
-                WRN("User wants to cancel the evaluation!");
+                MMSOLVER_WRN("User wants to cancel the evaluation!");
                 ud->userInterrupted = true;
                 return SOLVE_FUNC_FAILURE;
             }

@@ -142,7 +142,7 @@ MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
             scaleX *= overscanX;
             scaleY *= overscanY;
         } else {
-            ERR("invalid overscan value: " << overscanMode);
+            MMSOLVER_ERR("invalid overscan value: " << overscanMode);
         }
 
         // Apply Overscan Inverse factor
@@ -163,7 +163,7 @@ MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
             scaleX *= overscanInverseX;
             scaleY *= overscanInverseY;
         } else {
-            ERR("invalid overscan value: " << overscanMode);
+            MMSOLVER_ERR("invalid overscan value: " << overscanMode);
         }
 
         // Output Translate

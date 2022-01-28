@@ -730,7 +730,7 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time,
         DoubleMatrixPair timeMatrixPair(timeDouble, value);
         m_projMatrixCache.insert(timeMatrixPair);
     } else {
-        // INFO("camera projection matrix cache hit");
+        // MMSOLVER_INFO("camera projection matrix cache hit");
         value = found->second;
     }
     return status;
@@ -816,7 +816,7 @@ MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time,
         DoubleMatrixPair timeMatrixPair(timeDouble, value);
         m_worldProjMatrixCache.insert(timeMatrixPair);
     } else {
-        // INFO("camera world proj matrix cache hit");
+        // MMSOLVER_INFO("camera world proj matrix cache hit");
         value = found->second;
     }
     return status;

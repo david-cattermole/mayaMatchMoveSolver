@@ -88,7 +88,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
         status = argData.getFlagArgumentList(CAMERA_FLAG, i, cameraArgs);
         if (status == MStatus::kSuccess) {
             if (cameraArgs.length() != 2) {
-                ERR("Camera argument list must have 2 arguments; "
+                MMSOLVER_ERR("Camera argument list must have 2 arguments; "
                     << "\"cameraTransform\", \"cameraShape\".");
                 continue;
             }
@@ -125,7 +125,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
         status = argData.getFlagArgumentList(MARKER_FLAG, i, markerArgs);
         if (status == MStatus::kSuccess) {
             if (markerArgs.length() != 3) {
-                ERR("Marker argument list must have 3 arguments; "
+                MMSOLVER_ERR("Marker argument list must have 3 arguments; "
                   << "\"marker\", \"cameraShape\",  \"bundle\".");
                 continue;
             }
@@ -138,7 +138,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             CHECK_MSTATUS_AND_RETURN_IT(status);
             objectType = computeObjectType(markerObject, dagPath);
             if (objectType != ObjectType::kMarker) {
-                ERR("Given marker node is not a Marker; "
+                MMSOLVER_ERR("Given marker node is not a Marker; "
                     << markerName.asChar());
                 continue;
             }
@@ -151,7 +151,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             CHECK_MSTATUS_AND_RETURN_IT(status);
             objectType = computeObjectType(cameraObject, dagPath);
             if (objectType != ObjectType::kCamera) {
-                ERR("Given camera node is not a Camera; "
+                MMSOLVER_ERR("Given camera node is not a Camera; "
                     << cameraName.asChar());
                 continue;
             }
@@ -164,7 +164,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             CHECK_MSTATUS_AND_RETURN_IT(status);
             objectType = computeObjectType(bundleObject, dagPath);
             if (objectType != ObjectType::kBundle) {
-                ERR("Given bundle node is not a Bundle; "
+                MMSOLVER_ERR("Given bundle node is not a Bundle; "
                     << bundleName.asChar());
                 continue;
             }
@@ -178,7 +178,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
                 }
             }
             if (camera->getShapeNodeName() == "") {
-                ERR("Camera shape name was not given with marker. "
+                MMSOLVER_ERR("Camera shape name was not given with marker. "
                             << "marker=" << markerName << " "
                             << "camera=" << cameraName << " "
                             << "bundle=" << bundleName);
@@ -208,7 +208,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             // Marker
             for (unsigned int j = 0; j < out_markerList.size(); ++j) {
                 if (out_markerList[j]->getNodeName() == markerName) {
-                    ERR("Marker name cannot be specified more than once. "
+                    MMSOLVER_ERR("Marker name cannot be specified more than once. "
                         << "markerName=" << markerName);
                 }
             }
@@ -230,7 +230,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
         status = argData.getFlagArgumentList(ATTR_FLAG, i, attrArgs);
         if (status == MStatus::kSuccess) {
             if (attrArgs.length() != 5) {
-                ERR("Attribute argument list must have 5 argument; "
+                MMSOLVER_ERR("Attribute argument list must have 5 argument; "
                     << "\"node.attribute\", "
                     << "\"min\", \"max\", "
                     << "\"offset\", \"scale\".");
@@ -325,7 +325,7 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
         status = argData.getFlagArgumentList(STIFFNESS_FLAG, i, stiffnessArgs);
         if (status == MStatus::kSuccess) {
             if (stiffnessArgs.length() != 4) {
-                ERR("Attribute Stiffness argument list must have 4 argument; "
+                MMSOLVER_ERR("Attribute Stiffness argument list must have 4 argument; "
                             << "\"node.attribute\", "
                             << "\"node.attributeStiffWeight\", "
                             << "\"node.attributeStiffVariance\", "
@@ -348,7 +348,7 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
                 foundIndex++;
             }
             if (foundAttr->getName() == ".") {
-                ERR("Attribute Stiffness name is not a declared attribute; "
+                MMSOLVER_ERR("Attribute Stiffness name is not a declared attribute; "
                             << nodeAttrName);
                 continue;
             }
@@ -381,7 +381,7 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
         status = argData.getFlagArgumentList(SMOOTHNESS_FLAG, i, smoothnessArgs);
         if (status == MStatus::kSuccess) {
             if (smoothnessArgs.length() != 4) {
-                ERR("Attribute Smoothness argument list must have 4 argument; "
+                MMSOLVER_ERR("Attribute Smoothness argument list must have 4 argument; "
                             << "\"node.attribute\", "
                             << "\"node.attributeSmoothWeight\", "
                             << "\"node.attributeSmoothVariance\", "
@@ -404,7 +404,7 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
                 foundIndex++;
             }
             if (foundAttr->getName() == ".") {
-                ERR("Attribute Smoothness name is not a declared attribute; "
+                MMSOLVER_ERR("Attribute Smoothness name is not a declared attribute; "
                             << nodeAttrName);
                 continue;
             }
@@ -455,7 +455,7 @@ MStatus parseSolveFramesArguments(const MArgDatabase &argData,
         status = argData.getFlagArgumentList(FRAME_FLAG, i, frameArgs);
         if (status == MStatus::kSuccess) {
             if (frameArgs.length() != 1) {
-                ERR("Attribute argument list must have 1 argument; \"frame\".");
+                MMSOLVER_ERR("Attribute argument list must have 1 argument; \"frame\".");
                 continue;
             }
             int value = frameArgs.asInt(0, &status);

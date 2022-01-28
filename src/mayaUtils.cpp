@@ -98,7 +98,7 @@ MStatus nodeExistsAndIsType(
 
     status = getAsSelectionList(nodeName, selList);
     if (status != MS::kSuccess) {
-        ERR("Node does not exist; " << nodeName);
+        MMSOLVER_ERR("Node does not exist; " << nodeName);
     }
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -107,7 +107,7 @@ MStatus nodeExistsAndIsType(
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (nodeObj.apiType() != nodeType) {
-        ERR("Node type is not correct;"
+        MMSOLVER_ERR("Node type is not correct;"
             << " node=" << nodeName
             << " type=" << nodeType);
         status = MS::kFailure;

@@ -88,7 +88,7 @@ MSyntax MMTestCameraMatrixCmd::newSyntax() {
  * Parse command line arguments
  */
 MStatus MMTestCameraMatrixCmd::parseArgs(const MArgList &args) {
-    // DBG("MMTestCameraMatrixCmd::parseArgs()");
+    // MMSOLVER_DBG("MMTestCameraMatrixCmd::parseArgs()");
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
@@ -115,9 +115,9 @@ MStatus MMTestCameraMatrixCmd::parseArgs(const MArgList &args) {
     m_camera->setTransformNodeName(cameraTransform);
     m_camera->setShapeNodeName(cameraShape);
 
-    // DBG("Camera:");
-    // DBG("  Transform = " << m_camera->getTransformNodeName());
-    // DBG("  Shape = " << m_camera->getShapeNodeName());
+    // MMSOLVER_DBG("Camera:");
+    // MMSOLVER_DBG("  Transform = " << m_camera->getTransformNodeName());
+    // MMSOLVER_DBG("  Shape = " << m_camera->getShapeNodeName());
 
     return status;
 }
@@ -139,7 +139,7 @@ MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
 //
     MStatus status = MStatus::kSuccess;
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
-    // DBG("MMTestCameraMatrixCmd::doIt()");
+    // MMSOLVER_DBG("MMTestCameraMatrixCmd::doIt()");
 
     // Read all the arguments.
     status = parseArgs(args);
@@ -174,7 +174,7 @@ MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
     if (!matches) {
         for (unsigned int i = 0; i<4; ++i) {
             for (unsigned int j = 0; j<4; ++j) {
-                INFO("[" << i << "]["<< j << "] "
+                MMSOLVER_INFO("[" << i << "]["<< j << "] "
                          << value(i, j) << " == " << value_maya(i, j)
                          << " | "
                          << number::isApproxEqual<double>(value(i, j),

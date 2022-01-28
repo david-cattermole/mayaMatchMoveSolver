@@ -306,7 +306,7 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
         out_supportParameterBounds = LEVMAR_SUPPORT_PARAMETER_BOUNDS_VALUE;
         out_supportRobustLoss = LEVMAR_SUPPORT_ROBUST_LOSS_VALUE;
     } else {
-        ERR("Solver Type is invalid. "
+        MMSOLVER_ERR("Solver Type is invalid. "
             << "Value may be 0 or 1 (0 == levmar, 1 == cminpack_lm);"
             << "value=" << out_solverType);
         status = MS::kFailure;

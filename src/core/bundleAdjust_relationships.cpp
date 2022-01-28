@@ -355,7 +355,7 @@ int countUpNumberOfUnknownParameters(const AttrPtrList &attrList,
             }
         } else {
             const char *attrName = attr->getName().asChar();
-            ERR("attr is not animated or free: " << attrName);
+            MMSOLVER_ERR("attr is not animated or free: " << attrName);
         }
         i++;
     }
@@ -431,7 +431,7 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
         cmd += "\"";
         cmd += bundleName;
         cmd += "\", None);";
-        // WRN("Running: " + cmd);
+        // MMSOLVER_WRN("Running: " + cmd);
         status = MGlobal::executePythonCommand(
             cmd, bundleAffectsResult,
             display, undoable);
@@ -448,7 +448,7 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
         cmd += camName;
         cmd += "\"";
         cmd += ");";
-        // WRN("Running: " + cmd);
+        // MMSOLVER_WRN("Running: " + cmd);
         status = MGlobal::executePythonCommand(
             cmd, markerAffectsResult,
             display, undoable);

@@ -71,7 +71,7 @@ calcVanishingPointFromLinePair(
     if (success) {
         outPoint = vanishingPoint;
     } else {
-        INFO("ERROR: Failed to calculate vanishing point.");
+        MMSOLVER_INFO("ERROR: Failed to calculate vanishing point.");
     }
     return success;
 }
@@ -256,7 +256,7 @@ createOrientationMatrix(
         side = mmdata::Vector3D(-1, 0, 0);
     }
     else {
-        INFO("ERROR: Invalid OrientationPlane: "
+        MMSOLVER_INFO("ERROR: Invalid OrientationPlane: "
              << static_cast<int>(orientPlane));
         return mmdata::Matrix4x4();;
     }
@@ -351,7 +351,7 @@ applySceneScale(
         translation.y_ *= scaleFactor;
         translation.z_ *= scaleFactor;
     } else {
-        INFO("ERROR: Invalid SceneScaleMode: "
+        MMSOLVER_INFO("ERROR: Invalid SceneScaleMode: "
              << static_cast<int>(sceneScaleMode));
         return false;
     }
@@ -385,7 +385,7 @@ calcCameraParameters(
         focalLengthFactor,
         transformInverse);
     if (ok) {
-        INFO("ERROR: Camera Rotation calculation is invalid. ");
+        MMSOLVER_INFO("ERROR: Camera Rotation calculation is invalid. ");
         return false;
     }
 
@@ -398,7 +398,7 @@ calcCameraParameters(
         translation
     );
     if (!ok) {
-        INFO("ERROR: Invalid translation vector.");
+        MMSOLVER_INFO("ERROR: Invalid translation vector.");
         return false;
     }
 
@@ -433,7 +433,7 @@ calcCameraParameters(
         sceneScaleDistance_cm,
         transformScaled);
     if (!ok) {
-        INFO("ERROR: Invalid scene scale. "
+        MMSOLVER_INFO("ERROR: Invalid scene scale. "
              << "sceneScaleDistance_cm=" << sceneScaleDistance_cm
              << "sceneScaleMode" << static_cast<int>(sceneScaleMode));
         return false;

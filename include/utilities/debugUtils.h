@@ -49,57 +49,57 @@
 
 // Debug defines...
 //#ifndef NDEBUG
-//#  define DBG(x)
+//#  define MMSOLVER_DBG(x)
 //#else
 #ifdef _WIN32  // Windows MSVC
-#define DBG(x)                                                          \
+#define MMSOLVER_DBG(x)                                                          \
     __pragma(warning(push))                                             \
     __pragma(warning(disable:4127))                                     \
     do { MStreamUtils::stdErrorStream() << __FILE__  << ':' << __LINE__ << ' ' << x << std::endl; } while (0); \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define DBG(x) do { MStreamUtils::stdErrorStream() << __FILE__  << ':' << __LINE__ << ' ' << x << std::endl; } while (0)
+#define MMSOLVER_DBG(x) do { MStreamUtils::stdErrorStream() << __FILE__  << ':' << __LINE__ << ' ' << x << std::endl; } while (0)
 #endif
 //#endif // NDEBUG
 
 #ifdef _WIN32  // Windows MSVC
-#define VRB(x)                                                       \
+#define MMSOLVER_VRB(x)                                                       \
     __pragma(warning(push))                                          \
     __pragma(warning(disable:4127))                                  \
     do { if (verbose) { MStreamUtils::stdErrorStream() << x << std::endl; } } while (0);       \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define VRB(x) do { if (verbose) { MStreamUtils::stdErrorStream() << x << std::endl; } } while (0)
+#define MMSOLVER_VRB(x) do { if (verbose) { MStreamUtils::stdErrorStream() << x << std::endl; } } while (0)
 #endif
 
 #ifdef _WIN32  // Windows MSVC
-#define ERR(x)                                              \
+#define MMSOLVER_ERR(x)                                              \
     __pragma(warning(push))                                 \
     __pragma(warning(disable:4127))                         \
     do { MStreamUtils::stdErrorStream() << "ERROR: " << x << std::endl; } while (0);  \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define ERR(x) do { MStreamUtils::stdErrorStream()  << "ERROR: " << x << std::endl; } while (0)
+#define MMSOLVER_ERR(x) do { MStreamUtils::stdErrorStream()  << "ERROR: " << x << std::endl; } while (0)
 #endif
 
 #ifdef _WIN32  // Windows MSVC
-#define WRN(x)                                                  \
+#define MMSOLVER_WRN(x)                                                  \
     __pragma(warning(push))                                     \
     __pragma(warning(disable:4127))                             \
     do { MStreamUtils::stdErrorStream()  << "WARNING: " << x << std::endl; } while (0);    \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define WRN(x) do { MStreamUtils::stdErrorStream() << "WARNING: " << x << std::endl; } while (0)
+#define MMSOLVER_WRN(x) do { MStreamUtils::stdErrorStream() << "WARNING: " << x << std::endl; } while (0)
 #endif
 
 #ifdef _WIN32  // Windows MSVC
-#define INFO(x)                                                     \
+#define MMSOLVER_INFO(x)                                                     \
     __pragma(warning(push))                                         \
     __pragma(warning(disable:4127))                                 \
     do { MStreamUtils::stdErrorStream() << x << std::endl; } while (0);                       \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define INFO(x) do { MStreamUtils::stdErrorStream() << x << std::endl; } while (0)
+#define MMSOLVER_INFO(x) do { MStreamUtils::stdErrorStream() << x << std::endl; } while (0)
 #endif
 
 // Used to indicate to the user that a variable is not used, and

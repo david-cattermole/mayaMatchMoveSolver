@@ -122,7 +122,7 @@ SolverTypePair getSolverTypeDefault() {
             }
         }
         if (solverTypeName == "") {
-            ERR("MMSOLVER_DEFAULT_SOLVER environment variable is invalid. "
+            MMSOLVER_ERR("MMSOLVER_DEFAULT_SOLVER environment variable is invalid. "
                 << "Value may be "
                 << "\"cminpack_lm\", "
                 << "\"cminpack_lmder\", "
@@ -188,7 +188,7 @@ void applyLossFunctionToErrors(int numberOfErrors,
         } else if (loss_type == ROBUST_LOSS_TYPE_CAUCHY) {
             lossFunctionCauchy(z, rho0, rho1, rho2);
         } else {
-            DBG("Invalid Robust Loss Type given; value=" << loss_type);
+            MMSOLVER_DBG("Invalid Robust Loss Type given; value=" << loss_type);
         }
         rho0 *= std::pow(loss_scale, 2.0);
         rho2 /= std::pow(loss_scale, 2.0);
@@ -402,25 +402,25 @@ void logResultsSolveDetails(
     numberOfErrors += numberOfAttrStiffnessErrors;
     numberOfErrors += numberOfAttrSmoothnessErrors;
 
-    VRB("Results:");
+    MMSOLVER_VRB("Results:");
     if (solverResult.success) {
-        VRB("Solver returned SUCCESS in " << solverResult.iterations << " iterations");
+        MMSOLVER_VRB("Solver returned SUCCESS in " << solverResult.iterations << " iterations");
     } else {
-        VRB("Solver returned FAILURE in " << solverResult.iterations << " iterations");
+        MMSOLVER_VRB("Solver returned FAILURE in " << solverResult.iterations << " iterations");
     }
 
     int reasonNum = solverResult.reason_number;
-    VRB("Reason: " << solverResult.reason);
-    VRB("Reason number: " << solverResult.reason_number);
+    MMSOLVER_VRB("Reason: " << solverResult.reason);
+    MMSOLVER_VRB("Reason number: " << solverResult.reason_number);
 
-    VRB(std::endl << "Solve Information:");
-    VRB("Maximum Error: " << solverResult.errorMax);
-    VRB("Average Error: " << solverResult.errorAvg);
-    VRB("Minimum Error: " << solverResult.errorMin);
+    MMSOLVER_VRB(std::endl << "Solve Information:");
+    MMSOLVER_VRB("Maximum Error: " << solverResult.errorMax);
+    MMSOLVER_VRB("Average Error: " << solverResult.errorAvg);
+    MMSOLVER_VRB("Minimum Error: " << solverResult.errorMin);
 
-    VRB("Iterations: " << solverResult.iterations);
-    VRB("Function Evaluations: " << solverResult.functionEvals);
-    VRB("Jacobian Evaluations: " << solverResult.jacobianEvals);
+    MMSOLVER_VRB("Iterations: " << solverResult.iterations);
+    MMSOLVER_VRB("Function Evaluations: " << solverResult.functionEvals);
+    MMSOLVER_VRB("Jacobian Evaluations: " << solverResult.jacobianEvals);
 
     if (verbose == false) {
         if (solverResult.success) {
@@ -441,7 +441,7 @@ void logResultsSolveDetails(
             solverResult.iterations);
         // Note: We use std::endl to flush the stream, and ensure an
         //  update for the user.
-        INFO(std::string(formatBuffer));
+        MMSOLVER_INFO(std::string(formatBuffer));
     }
 
     // Add all the data into the output string from the Maya command.
@@ -1101,18 +1101,18 @@ MStatus solveFrames(
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    VRB("Number of Markers; used="
+    MMSOLVER_VRB("Number of Markers; used="
         << usedMarkerList.size() << " | unused="
         << unusedMarkerList.size());
-    VRB("Number of Attributes; used="
+    MMSOLVER_VRB("Number of Attributes; used="
         << usedAttrList.size() << " | unused="
         << unusedAttrList.size());
-    VRB("Number of Parameters; " << numberOfParameters);
-    VRB("Number of Frames; " << frameList.length());
-    VRB("Number of Marker Errors; " << numberOfMarkerErrors);
-    VRB("Number of Attribute Stiffness Errors; " << numberOfAttrStiffnessErrors);
-    VRB("Number of Attribute Smoothness Errors; " << numberOfAttrSmoothnessErrors);
-    VRB("Number of Total Errors; " << numberOfErrors);
+    MMSOLVER_VRB("Number of Parameters; " << numberOfParameters);
+    MMSOLVER_VRB("Number of Frames; " << frameList.length());
+    MMSOLVER_VRB("Number of Marker Errors; " << numberOfMarkerErrors);
+    MMSOLVER_VRB("Number of Attribute Stiffness Errors; " << numberOfAttrStiffnessErrors);
+    MMSOLVER_VRB("Number of Attribute Smoothness Errors; " << numberOfAttrSmoothnessErrors);
+    MMSOLVER_VRB("Number of Total Errors; " << numberOfErrors);
 
     // Bail out of solve if we don't have enough used markers or
     // attributes.
@@ -1125,7 +1125,7 @@ MStatus solveFrames(
             status = MS::kSuccess;
             return status;
         }
-        ERR("Solver failure; not enough markers or attributes are not used by solver "
+        MMSOLVER_ERR("Solver failure; not enough markers or attributes are not used by solver "
             << "used markers=" << usedMarkerList.size() << " "
             << "used attributes=" << usedAttrList.size());
         resultStr = "success=0";
@@ -1143,7 +1143,7 @@ MStatus solveFrames(
             status = MS::kSuccess;
             return status;
         }
-        ERR("Solver failure; cannot solve for more attributes (\"parameters\") "
+        MMSOLVER_ERR("Solver failure; cannot solve for more attributes (\"parameters\") "
             << "than number of markers (\"errors\"). "
             << "parameters=" << numberOfParameters << " "
             << "errors=" << numberOfErrors);
@@ -1164,16 +1164,16 @@ MStatus solveFrames(
     errorDistanceList.resize((uint64_t) numberOfMarkerErrors / ERRORS_PER_MARKER, 0);
     assert(out_errorToMarkerList.size() == errorDistanceList.size());
 
-    VRB("Solving...");
-    VRB("Solver Type=" << solverOptions.solverType);
-    VRB("Maximum Iterations=" << solverOptions.iterMax);
-    VRB("Tau=" << solverOptions.tau);
-    VRB("Epsilon1=" << solverOptions.eps1);
-    VRB("Epsilon2=" << solverOptions.eps2);
-    VRB("Epsilon3=" << solverOptions.eps3);
-    VRB("Delta=" << fabs(solverOptions.delta));
-    VRB("Auto Differencing Type=" << solverOptions.autoDiffType);
-    VRB("Time Evaluation Mode=" << solverOptions.timeEvalMode);
+    MMSOLVER_VRB("Solving...");
+    MMSOLVER_VRB("Solver Type=" << solverOptions.solverType);
+    MMSOLVER_VRB("Maximum Iterations=" << solverOptions.iterMax);
+    MMSOLVER_VRB("Tau=" << solverOptions.tau);
+    MMSOLVER_VRB("Epsilon1=" << solverOptions.eps1);
+    MMSOLVER_VRB("Epsilon2=" << solverOptions.eps2);
+    MMSOLVER_VRB("Epsilon3=" << solverOptions.eps3);
+    MMSOLVER_VRB("Delta=" << fabs(solverOptions.delta));
+    MMSOLVER_VRB("Auto Differencing Type=" << solverOptions.autoDiffType);
+    MMSOLVER_VRB("Time Evaluation Mode=" << solverOptions.timeEvalMode);
 
     if ((verbose == false) && (printStats.enable == false)) {
         std::stringstream ss;
@@ -1188,7 +1188,7 @@ MStatus solveFrames(
         num = std::min<size_t>(0, num);
         std::string pad_chars(num, '=');
 
-        INFO(tmp_string << " " << pad_chars);
+        MMSOLVER_INFO(tmp_string << " " << pad_chars);
     }
 
     // MComputation helper.
@@ -1237,7 +1237,7 @@ MStatus solveFrames(
         }
     } else if (solverOptions.sceneGraphMode == SceneGraphMode::kMayaDag) {
     } else {
-        ERR("Invalid Scene Graph mode!");
+        MMSOLVER_ERR("Invalid Scene Graph mode!");
         status = MS::kFailure;
         return status;
     }
@@ -1385,7 +1385,7 @@ MStatus solveFrames(
     }
 
     // Set Initial parameters
-    VRB("Get Initial parameters...");
+    MMSOLVER_VRB("Get Initial parameters...");
     get_initial_parameters(numberOfParameters,
                            out_paramList,
                            out_paramToAttrList,
@@ -1393,15 +1393,15 @@ MStatus solveFrames(
                            frameList,
                            outResult);
 
-    VRB("Initial Parameters: ");
+    MMSOLVER_VRB("Initial Parameters: ");
     for (int i = 0; i < numberOfParameters; ++i) {
         // Copy parameter values into the 'previous' parameter list.
         out_previousParamList[i] = out_paramList[i];
-        VRB("-> " << out_paramList[i]);
+        MMSOLVER_VRB("-> " << out_paramList[i]);
     }
 
     if (solverOptions.solverType == SOLVER_TYPE_LEVMAR) {
-        ERR("Solver Type is not supported by this compiled plug-in. "
+        MMSOLVER_ERR("Solver Type is not supported by this compiled plug-in. "
             << "solverType=" << solverOptions.solverType);
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
@@ -1431,7 +1431,7 @@ MStatus solveFrames(
                 out_solveResult);
 
     } else {
-        ERR("Solver Type is invalid. solverType="
+        MMSOLVER_ERR("Solver Type is invalid. solverType="
             << solverOptions.solverType);
         resultStr = "success=0";
         outResult.append(MString(resultStr.c_str()));
@@ -1460,7 +1460,7 @@ MStatus solveFrames(
     }
 
     // Set the solved parameters
-    VRB("Setting Parameters...");
+    MMSOLVER_VRB("Setting Parameters...");
     if (errorIsBetter) {
         set_maya_attribute_values(
             numberOfParameters,
@@ -1481,9 +1481,9 @@ MStatus solveFrames(
             out_dgmod,
             out_curveChange);
     }
-    VRB("Solved Parameters:");
+    MMSOLVER_VRB("Solved Parameters:");
     for (int i = 0; i < numberOfParameters; ++i) {
-        VRB("-> " << out_paramList[i]);
+        MMSOLVER_VRB("-> " << out_paramList[i]);
     }
 
     logResultsSolveDetails(
@@ -1587,24 +1587,24 @@ bool solve(SolverOptions &solverOptions,
 
         // Print warnings about unused solve objects.
         if ((unusedMarkerList.size() > 0) && (solverOptions.removeUnusedMarkers)) {
-            WRN("Unused Markers detected and ignored:");
+            MMSOLVER_WRN("Unused Markers detected and ignored:");
             for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
                  mit != unusedMarkerList.cend();
                  ++mit) {
                 MarkerPtr marker = *mit;
                 const char *markerName = marker->getLongNodeName().asChar();
-                WRN("-> " << markerName);
+                MMSOLVER_WRN("-> " << markerName);
             }
         }
 
         if ((unusedAttrList.size() > 0) && (solverOptions.removeUnusedAttributes)) {
-            WRN("Unused Attributes detected and ignored:");
+            MMSOLVER_WRN("Unused Attributes detected and ignored:");
             for (AttrPtrListCIt ait = unusedAttrList.cbegin();
                  ait != unusedAttrList.cend();
                  ++ait) {
                 AttrPtr attr = *ait;
                 const char *attrName = attr->getLongName().asChar();
-                WRN("-> " << attrName);
+                MMSOLVER_WRN("-> " << attrName);
             }
         }
 
@@ -1648,7 +1648,7 @@ bool solve(SolverOptions &solverOptions,
 
     SolverResult solveResult;
     auto frameSolveMode = solverOptions.frameSolveMode;
-    // INFO("frameSolveMode: " << static_cast<uint32_t>(frameSolveMode));
+    // MMSOLVER_INFO("frameSolveMode: " << static_cast<uint32_t>(frameSolveMode));
     if (frameSolveMode == FrameSolveMode::kAllFrameAtOnce) {
         status = solveFrames(
             cameraList,

@@ -79,26 +79,26 @@ set(SOURCE_FILES
   mayahelper/maya_scene_graph.cpp
   mayahelper/maya_utils.cpp
   common_arg_flags.cpp
-  MMSolverAffectsCmd.cpp
-  MMMarkerScaleNode.cpp
-  MMReprojectionNode.cpp
-  MMMarkerGroupTransformNode.cpp
   MMCameraCalibrateNode.cpp
   MMCameraRelativePoseCmd.cpp
+  MMCameraSolveCmd.cpp
+  MMLensData.cpp
+  MMLensDeformerNode.cpp
+  MMLensEvaluateNode.cpp
+  MMLensModel3deClassicNode.cpp
+  MMLensModelBasicNode.cpp
+  MMLensModelToggleNode.cpp
   MMLineIntersectNode.cpp
+  MMMarkerGroupTransformNode.cpp
+  MMMarkerScaleNode.cpp
   MMMarkerTransformMatrix.cpp
   MMMarkerTransformNode.cpp
-  MMTestCameraMatrixCmd.cpp
+  MMReprojectionCmd.cpp
+  MMReprojectionNode.cpp
+  MMSolverAffectsCmd.cpp
   MMSolverCmd.cpp
   MMSolverTypeCmd.cpp
-  MMReprojectionCmd.cpp
-  MMCameraSolveCmd.cpp
-  MMLensDeformerNode.cpp
-  MMLensModelBasicNode.cpp
-  MMLensModel3deClassicNode.cpp
-  MMLensModelToggleNode.cpp
-  MMLensData.cpp
-  MMLensEvaluateNode.cpp
+  MMTestCameraMatrixCmd.cpp
   pluginMain.cpp
 )
 

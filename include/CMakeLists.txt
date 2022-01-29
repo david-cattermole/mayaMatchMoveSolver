@@ -21,6 +21,6 @@
 
 # Create C Header file with some build options baked in.
 configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/buildConstant.h.in
-  ${CMAKE_CURRENT_SOURCE_DIR}/buildConstant.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/buildConstant.h.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/buildConstant.h
   @ONLY)

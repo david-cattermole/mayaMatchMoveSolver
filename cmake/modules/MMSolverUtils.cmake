@@ -120,7 +120,6 @@ function(set_global_maya_plugin_compile_options)
   else ()
     # For Linux with GCC
 
-
     # Definitions
     add_compile_definitions(Bits64_)
     add_compile_definitions(UNIX)
@@ -151,7 +150,6 @@ function(set_global_maya_plugin_compile_options)
     add_definitions(-Wno-unused-private-field)
     add_definitions(-Wno-deprecated)
     add_definitions(-Wno-reorder)
-    add_definitions(-Wpedantic)
 
     # GCC Features
     add_definitions(-pthread)

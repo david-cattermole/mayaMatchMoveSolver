@@ -34,72 +34,72 @@ set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
 
 # Source
 set(SOURCE_FILES
-  utilities/debug_utils.cpp
-  utilities/number_utils.cpp
-  utilities/string_utils.cpp
-  adjust/adjust_base.cpp
-  adjust/adjust_cminpack_base.cpp
-  adjust/adjust_cminpack_lmder.cpp
-  adjust/adjust_cminpack_lmdif.cpp
-  adjust/adjust_relationships.cpp
-  adjust/adjust_solveFunc.cpp
-  calibrate/calibrate_common.cpp
-  calibrate/vanishing_point.cpp
-  lens/lens_model_3de_classic.cpp
-  lens/lens_model_basic.cpp
-  core/mmcamera.cpp
-  core/mmcoord.cpp
-  core/mmdata.cpp
-  core/mmmath.cpp
-  core/reprojection.cpp
-  shape/ShapeDrawUtils.cpp
-  shape/MarkerShapeNode.cpp
-  shape/MarkerDrawOverride.cpp
-  shape/BundleShapeNode.cpp
-  shape/BundleDrawOverride.cpp
-  shape/SkyDomeShapeNode.cpp
-  shape/SkyDomeDrawOverride.cpp
-  shape/LineShapeNode.cpp
-  shape/LineDrawOverride.cpp
-  render/HudRender.cpp
-  render/MMRendererCmd.cpp
-  render/PresentTarget.cpp
-  render/QuadRenderBase.cpp
-  render/QuadRenderBlend.cpp
-  render/QuadRenderCopy.cpp
-  render/QuadRenderEdgeDetect.cpp
-  render/QuadRenderInvert.cpp
-  render/RenderGlobalsNode.cpp
-  render/RenderOverride.cpp
-  render/SceneRender.cpp
-  mayahelper/maya_camera.cpp
-  mayahelper/maya_marker.cpp
-  mayahelper/maya_bundle.cpp
-  mayahelper/maya_attr.cpp
-  mayahelper/maya_scene_graph.cpp
-  mayahelper/maya_utils.cpp
-  common_arg_flags.cpp
-  MMCameraCalibrateNode.cpp
-  MMCameraRelativePoseCmd.cpp
-  MMCameraSolveCmd.cpp
-  MMLensData.cpp
-  MMLensDeformerNode.cpp
-  MMLensEvaluateNode.cpp
-  MMLensModel3deClassicNode.cpp
-  MMLensModelBasicNode.cpp
-  MMLensModelToggleNode.cpp
-  MMLineIntersectNode.cpp
-  MMMarkerGroupTransformNode.cpp
-  MMMarkerScaleNode.cpp
-  MMMarkerTransformMatrix.cpp
-  MMMarkerTransformNode.cpp
-  MMReprojectionCmd.cpp
-  MMReprojectionNode.cpp
-  MMSolverAffectsCmd.cpp
-  MMSolverCmd.cpp
-  MMSolverTypeCmd.cpp
-  MMTestCameraMatrixCmd.cpp
-  pluginMain.cpp
+  mmSolver/utilities/debug_utils.cpp
+  mmSolver/utilities/number_utils.cpp
+  mmSolver/utilities/string_utils.cpp
+  mmSolver/adjust/adjust_base.cpp
+  mmSolver/adjust/adjust_cminpack_base.cpp
+  mmSolver/adjust/adjust_cminpack_lmder.cpp
+  mmSolver/adjust/adjust_cminpack_lmdif.cpp
+  mmSolver/adjust/adjust_relationships.cpp
+  mmSolver/adjust/adjust_solveFunc.cpp
+  mmSolver/calibrate/calibrate_common.cpp
+  mmSolver/calibrate/vanishing_point.cpp
+  mmSolver/lens/lens_model_3de_classic.cpp
+  mmSolver/lens/lens_model_basic.cpp
+  mmSolver/core/mmcamera.cpp
+  mmSolver/core/mmcoord.cpp
+  mmSolver/core/mmdata.cpp
+  mmSolver/core/mmmath.cpp
+  mmSolver/core/reprojection.cpp
+  mmSolver/shape/ShapeDrawUtils.cpp
+  mmSolver/shape/MarkerShapeNode.cpp
+  mmSolver/shape/MarkerDrawOverride.cpp
+  mmSolver/shape/BundleShapeNode.cpp
+  mmSolver/shape/BundleDrawOverride.cpp
+  mmSolver/shape/SkyDomeShapeNode.cpp
+  mmSolver/shape/SkyDomeDrawOverride.cpp
+  mmSolver/shape/LineShapeNode.cpp
+  mmSolver/shape/LineDrawOverride.cpp
+  mmSolver/render/HudRender.cpp
+  mmSolver/render/MMRendererCmd.cpp
+  mmSolver/render/PresentTarget.cpp
+  mmSolver/render/QuadRenderBase.cpp
+  mmSolver/render/QuadRenderBlend.cpp
+  mmSolver/render/QuadRenderCopy.cpp
+  mmSolver/render/QuadRenderEdgeDetect.cpp
+  mmSolver/render/QuadRenderInvert.cpp
+  mmSolver/render/RenderGlobalsNode.cpp
+  mmSolver/render/RenderOverride.cpp
+  mmSolver/render/SceneRender.cpp
+  mmSolver/mayahelper/maya_camera.cpp
+  mmSolver/mayahelper/maya_marker.cpp
+  mmSolver/mayahelper/maya_bundle.cpp
+  mmSolver/mayahelper/maya_attr.cpp
+  mmSolver/mayahelper/maya_scene_graph.cpp
+  mmSolver/mayahelper/maya_utils.cpp
+  mmSolver/common_arg_flags.cpp
+  mmSolver/MMCameraCalibrateNode.cpp
+  mmSolver/MMCameraRelativePoseCmd.cpp
+  mmSolver/MMCameraSolveCmd.cpp
+  mmSolver/MMLensData.cpp
+  mmSolver/MMLensDeformerNode.cpp
+  mmSolver/MMLensEvaluateNode.cpp
+  mmSolver/MMLensModel3deClassicNode.cpp
+  mmSolver/MMLensModelBasicNode.cpp
+  mmSolver/MMLensModelToggleNode.cpp
+  mmSolver/MMLineIntersectNode.cpp
+  mmSolver/MMMarkerGroupTransformNode.cpp
+  mmSolver/MMMarkerScaleNode.cpp
+  mmSolver/MMMarkerTransformMatrix.cpp
+  mmSolver/MMMarkerTransformNode.cpp
+  mmSolver/MMReprojectionCmd.cpp
+  mmSolver/MMReprojectionNode.cpp
+  mmSolver/MMSolverAffectsCmd.cpp
+  mmSolver/MMSolverCmd.cpp
+  mmSolver/MMSolverTypeCmd.cpp
+  mmSolver/MMTestCameraMatrixCmd.cpp
+  mmSolver/pluginMain.cpp
 )
 
 include(MMSolverUtils)
@@ -118,7 +118,7 @@ endif ()
 
 
 if (BUILD_MMSCENEGRAPH)
-  add_subdirectory(mmscenegraph)
+  add_subdirectory(mmSolver/mmscenegraph)
   if(MMSCENEGRAPH_INCLUDE_DIR)
     target_link_libraries(mmSolver
       PRIVATE
@@ -130,6 +130,7 @@ if (BUILD_MMSCENEGRAPH)
     target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_MMSCENEGRAPH)
   endif()
 endif ()
+
 
 set_global_treat_warnings_as_errors()
 set_global_maya_plugin_compile_options()

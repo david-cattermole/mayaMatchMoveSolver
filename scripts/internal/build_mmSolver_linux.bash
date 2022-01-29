@@ -109,8 +109,8 @@ LDPK_INCLUDE_DIR="${LDPK_ROOT}/include"
 LDPK_LIB_PATH="${LDPK_ROOT}/lib"
 
 # Where to find the mmSceneGraph Rust libraries and headers.
-MMSCENEGRAPH_RUST_DIR=${PROJECT_ROOT}/src/mmscenegraph/rust
-MMSCENEGRAPH_CPP_DIR=${PROJECT_ROOT}/src/mmscenegraph/cppbind
+MMSCENEGRAPH_RUST_DIR=${PROJECT_ROOT}/src/mmSolver/mmscenegraph/rust
+MMSCENEGRAPH_CPP_DIR=${PROJECT_ROOT}/src/mmSolver/mmscenegraph/cppbind
 MMSCENEGRAPH_RUST_BUILD_DIR="${MMSCENEGRAPH_CPP_DIR}/target/release"
 MMSCENEGRAPH_INCLUDE_DIR="${MMSCENEGRAPH_CPP_DIR}/include"
 
@@ -123,7 +123,7 @@ if [ ${BUILD_MMSCENEGRAPH} -eq 1 ]; then
     # NOTE: When chaging this version number, make sure to update the
     # CXX version used in the C++ buildings, and all the build scripts
     # using this value:
-    # './src/mmscenegraph/cppbind/Cargo.toml'
+    # './src/mmSolver/mmscenegraph/cppbind/Cargo.toml'
     # './scripts/internal/build_mmSolver_windows64.bat'
     cargo install cxxbridge-cmd --version 1.0.62
 

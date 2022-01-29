@@ -264,13 +264,13 @@ MStatus SkyDomeShapeNode::initialize() {
     // Grid Lat/Long Enable
     m_grid_lat_enable = nAttr.create(
         "gridLatitudeEnable", "grlte",
-        MFnNumericData::kBoolean, 1);
+        MFnNumericData::kBoolean, 0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
 
     m_grid_long_enable = nAttr.create(
         "gridLongitudeEnable", "grlge",
-        MFnNumericData::kBoolean, 1);
+        MFnNumericData::kBoolean, 0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
 

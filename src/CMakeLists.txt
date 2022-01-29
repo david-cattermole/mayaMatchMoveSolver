@@ -163,6 +163,7 @@ message(STATUS "CMINPACK: ${CMINPACK_FOUND}")
 message(STATUS "CMINPACK: Root=${CMINPACK_ROOT}")
 message(STATUS "CMINPACK: Include=${CMINPACK_INCLUDE_DIRS}")
 message(STATUS "CMINPACK: Library=${CMINPACK_LIBRARIES}")
+message(STATUS "CMINPACK: Library DLL=${CMINPACK_LIBRARY_DLL}")
 if(CMINPACK_FOUND)
   target_include_directories(mmSolver
     PRIVATE ${CMINPACK_INCLUDE_DIRS}
@@ -172,7 +173,7 @@ if(CMINPACK_FOUND)
     ${CMINPACK_LIBRARIES}
     )
   target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CMINPACK)
-  install_library(
+  install_shared_library(
     ${CMINPACK_LIBRARY}
     ${CMINPACK_LIBRARY_DLL}
     "${MODULE_FULL_NAME}/lib/")
@@ -181,12 +182,32 @@ endif()
 
 find_package(Eigen3 REQUIRED)
 message(STATUS "EIGEN3: ${EIGEN3_FOUND}")
+message(STATUS "EIGEN3: Version=${EIGEN3_VERSION_STRING}")
 message(STATUS "EIGEN3: Root=${Eigen3_DIR}")
 message(STATUS "EIGEN3: Include=${EIGEN3_INCLUDE_DIRS}")
 if(EIGEN3_FOUND)
-  target_include_directories(mmSolver
-    PRIVATE ${EIGEN3_INCLUDE_DIRS}
+  target_link_libraries(mmSolver
+    PRIVATE
+    Eigen3::Eigen
     )
+  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_EIGEN)
+endif()
+
+
+find_package(Cxsparse REQUIRED)
+message(STATUS "CXSPARSE: ${CXSPARSE_FOUND}")
+message(STATUS "CXSPARSE: Root=${CXSPARSE_ROOT}")
+message(STATUS "CXSPARSE: Include=${CXSPARSE_INCLUDE_DIRS}")
+message(STATUS "CXSPARSE: Library=${CXSPARSE_LIBRARIES}")
+if(CXSPARSE_FOUND)
+  target_include_directories(mmSolver
+    PRIVATE ${CXSPARSE_INCLUDE_DIRS}
+    )
+  target_link_libraries(mmSolver
+    PRIVATE
+    ${CXSPARSE_LIBRARIES}
+    )
+  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CXSPARSE)
 endif()
 
 
@@ -202,6 +223,11 @@ if(GFLAGS_FOUND)
     PRIVATE
     ${GFLAGS_LIBRARIES}
     )
+  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_GFLAGS)
+  install_shared_library(
+    ${GFLAGS_LIBRARY}
+    ${GFLAGS_LIBRARY_DLL}
+    "${MODULE_FULL_NAME}/lib/")
 endif()
 
 
@@ -218,11 +244,16 @@ if(GLOG_FOUND)
     ${GLOG_LIBRARIES}
     )
   target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_GLOG)
+  install_shared_library(
+    ${GLOG_LIBRARY}
+    ${GLOG_LIBRARY_DLL}
+    "${MODULE_FULL_NAME}/lib/")
 endif()
 
 
-# find_package(Ceres REQUIRED)
+find_package(Ceres REQUIRED)
 message(STATUS "CERES: ${CERES_FOUND}")
+message(STATUS "CERES: Version=${CERES_VERSION}")
 message(STATUS "CERES: Root=${CERES_ROOT}")
 message(STATUS "CERES: Include=${CERES_INCLUDE_DIRS}")
 message(STATUS "CERES: Library=${CERES_LIBRARIES}")
@@ -232,7 +263,7 @@ if(CERES_FOUND)
     )
   target_link_libraries(mmSolver
     PRIVATE
-    ${CERES_LIBRARIES}
+    ceres
     )
   target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CERES)
 endif()
@@ -257,16 +288,28 @@ endif()
 
 find_package(OpenMVG REQUIRED)
 message(STATUS "OPENMVG: ${OPENMVG_FOUND}")
+message(STATUS "OPENMVG: Version=${OPENMVG_VERSION}")
 message(STATUS "OPENMVG: Root=${OPENMVG_ROOT}")
 message(STATUS "OPENMVG: Include=${OPENMVG_INCLUDE_DIRS}")
 message(STATUS "OPENMVG: Library=${OPENMVG_LIBRARIES}")
 if(OPENMVG_FOUND)
-  target_include_directories(mmSolver
-    PRIVATE ${OPENMVG_INCLUDE_DIRS}
-    )
   target_link_libraries(mmSolver
     PRIVATE
-    ${OPENMVG_LIBRARIES}
+    OpenMVG::openMVG_camera
+    OpenMVG::openMVG_exif
+    OpenMVG::openMVG_features
+    OpenMVG::openMVG_geodesy
+    OpenMVG::openMVG_geometry
+    OpenMVG::openMVG_graph
+    OpenMVG::openMVG_image
+    OpenMVG::openMVG_linearProgramming
+    OpenMVG::openMVG_matching
+    OpenMVG::openMVG_matching_image_collection
+    OpenMVG::openMVG_multiview
+    OpenMVG::openMVG_numeric
+    OpenMVG::openMVG_robust_estimation
+    OpenMVG::openMVG_sfm
+    OpenMVG::openMVG_system
     )
   target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_OPENMVG)
 endif()
@@ -277,6 +320,7 @@ if(WIN32)
   message(STATUS "DLFCN ${DLFCN_FOUND}")
   message(STATUS "DLFCN Root=${DLFCN_ROOT}")
   message(STATUS "DLFCN Libraries=${DLFCN_LIBRARIES}")
+  message(STATUS "DLFCN Library DLL=${DLFCN_LIBRARY_DLL}")
   message(STATUS "DLFCN Include=${DLFCN_INCLUDE_DIRS}")
   target_include_directories(mmSolver
     PRIVATE ${DLFCN_INCLUDE_DIRS}
@@ -285,6 +329,10 @@ if(WIN32)
     PRIVATE
     ${DLFCN_LIBRARIES}
     )
+  install_shared_libraries(
+    ${DLFCN_LIBRARY}
+    ${DLFCN_LIBRARY_DLL}
+    "${MODULE_FULL_NAME}/lib/")
 endif()
 
 

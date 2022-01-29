@@ -41,7 +41,7 @@ find_library(DLFCN_LIBRARY
         lib64/
 )
 
-find_path(DLFCN_LIBRARY_DLL dlfcn.dll
+find_path(DLFCN_LIBRARY_DLL dl.dll
     HINTS
         ${DLFCN_LIB_PATH}
         ${DLFCN_ROOT}
@@ -51,7 +51,7 @@ find_path(DLFCN_LIBRARY_DLL dlfcn.dll
         bin/
         )
 if(EXISTS ${DLFCN_LIBRARY_DLL})
-    set(DLFCN_LIBRARY_DLL ${DLFCN_LIBRARY_DLL}/dlfcn.dll)
+    set(DLFCN_LIBRARY_DLL ${DLFCN_LIBRARY_DLL}/dl.dll)
 endif()
 
 if(DLFCN_INCLUDE_DIR AND DLFCN_LIBRARY)

@@ -38,9 +38,10 @@ SET SOURCE_DIR="%ROOT%"
 SET WORKING_DIR="C:\build_mmSolver_maya%MAYA_VERSION%_windows64"
 
 :: Build plugin
+SET BUILD_DIR_NAME=build_maya%MAYA_VERSION%_linux
 CHDIR %WORKING_DIR%
-MKDIR build
-CHDIR build
+MKDIR %BUILD_DIR_NAME%
+CHDIR %BUILD_DIR_NAME%
 DEL /S /Q *
 FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
 

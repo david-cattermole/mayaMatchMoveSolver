@@ -70,6 +70,8 @@
 // Compiler Warning (level 4) C4702: unreachable code.
 #pragma warning( disable : 4702 )
 
+// Internal
+#include <MMCameraSolveCmd.h>
 
 // STL
 #include <vector>
@@ -83,21 +85,6 @@
 #include <iterator>
 #include <map>
 #include <limits>
-
-// Internal
-#include <MMCameraSolveCmd.h>
-#include "mayahelper/maya_utils.h"
-#include "mayahelper/maya_camera.h"
-#include "mayahelper/maya_marker.h"
-
-using MMMarker = Marker;
-using MMCamera = Camera;
-
-// MM Solver Utils
-#include "utilities/debug_utils.h"
-
-// MM Solver Core
-#include "adjust/adjust_defines.h"
 
 // Ceres Solver
 #ifdef MMSOLVER_USE_CERES
@@ -173,6 +160,16 @@ using MMCamera = Camera;
 #include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MItSelectionList.h>
+
+// MM Solver
+#include "utilities/debug_utils.h"
+#include "mayahelper/maya_utils.h"
+#include "mayahelper/maya_camera.h"
+#include "mayahelper/maya_marker.h"
+#include "adjust/adjust_defines.h"
+
+using MMMarker = Marker;
+using MMCamera = Camera;
 
 // // GFlags test.
 // #ifdef MMSOLVER_USE_GLOG

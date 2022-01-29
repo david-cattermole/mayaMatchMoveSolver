@@ -38,11 +38,12 @@ WORKING_DIR="${PACKAGE_ROOT}/working/maya${MAYA_VERSION}_linux"
 SOURCE_DIR="${PACKAGE_ROOT}"
 
 # Build
+BUILD_DIR_NAME="build_maya${MAYA_VERSION}_linux"
 mkdir -p "${INSTALL_DIR}"
 mkdir -p "${WORKING_DIR}"
 cd "${WORKING_DIR}"
-mkdir -p build
-cd build
+mkdir -p "${BUILD_DIR_NAME}"
+cd "${BUILD_DIR_NAME}"
 rm --force -R *
 
 # Number of CPUs

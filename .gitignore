@@ -47,6 +47,7 @@ tests/**/*.iff
 tests/**/*.png
 
 external/build/*
+external/build_*maya*/*
 external/install/*
 external/working/*
 external/include/*.h*

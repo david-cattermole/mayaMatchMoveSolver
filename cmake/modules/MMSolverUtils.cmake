@@ -120,12 +120,6 @@ function(set_global_maya_plugin_compile_options)
   else ()
     # For Linux with GCC
 
-    # Enable C++ Standard explicitly, to stop "gnu++" being used,
-    # because "gnu++" is not supported with Maya.
-    #
-    # set(CMAKE_CXX_FLAGS "")  # Zero out the C++ flags, we have complete control.
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    add_definitions("-std=c++${CMAKE_CXX_STANDARD}")
 
     # Definitions
     add_compile_definitions(Bits64_)
@@ -139,6 +133,11 @@ function(set_global_maya_plugin_compile_options)
     add_compile_definitions(_GNU_SOURCE)
     add_compile_definitions(LINUX_64)
     add_compile_definitions(REQUIRE_IOSTREAM)
+
+    # Use the older C++11 ABI for std::string and std::list, to be
+    # compatible with RHEL/CentOS 7, Maya and the VFX Platform.
+    #
+    # https://vfxplatform.com/#footnote-gcc6
     add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
 
     # Enable warnings.
@@ -245,6 +244,8 @@ function(install_target_plugin_to_module target module_dir)
   set_target_as_maya_plugin_library(${target})
 
   if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+    # This allows Linux to find the dynamic libraries at runtime.
+    #
     # HACK: On Linux, LD_LIBRARY_PATH cannot be modified at runtime (on
     # Windows it can), therefore the .mod files *can* change
     # LD_LIBRARY_PATH, but the changes are not used by 'ld.so', which
@@ -276,7 +277,7 @@ endfunction()
 
 
 # Install shared (dynamic) library.
-function(install_library lib_file lib_file_dll install_dir)
+function(install_shared_library lib_file lib_file_dll install_dir)
   # message(STATUS "INSTALL FILE: ${lib_file}")
   # message(STATUS "INSTALL DLL: ${lib_file_dll}")
   # message(STATUS "INSTALL DIR: ${install_dir}")
@@ -288,16 +289,24 @@ function(install_library lib_file lib_file_dll install_dir)
       message(FATAL_ERROR "Cannot find .dll file to install: ${lib_file_dll}")
     endif ()
   elseif (UNIX)
-    # Install both symlink and real library
-    get_filename_component(absolute_lib_file ${lib_file} REALPATH)
-    install(FILES ${lib_file} DESTINATION ${install_dir})
-    install(FILES ${absolute_lib_file} DESTINATION ${install_dir})
+    string(FIND ${lib_file} ".so" find_so)
+    if(${find_so} GREATER_EQUAL 0)
+      # Install both symlink and real library.
+      get_filename_component(absolute_lib_file ${lib_file} REALPATH)
+      install(FILES ${lib_file} DESTINATION ${install_dir})
+      install(FILES ${absolute_lib_file} DESTINATION ${install_dir})
+
+      file(GLOB lib_files
+        LIST_DIRECTORIES 0
+        "${lib_file}*")
+      install(FILES ${lib_files} DESTINATION ${install_dir})
+    endif ()
   endif ()
 endfunction()
 
 
 # Install many shared (dynamic) libraries.
-function(install_libraries lib_files lib_files_dll install_dir)
+function(install_shared_libraries lib_files lib_files_dll install_dir)
   # message(STATUS "INSTALL FILES: ${lib_files}")
   # message(STATUS "INSTALL DLLS: ${lib_files_dll}")
   # message(STATUS "INSTALL DIR: ${install_dir}")
@@ -315,7 +324,7 @@ function(install_libraries lib_files lib_files_dll install_dir)
     list(GET lib_files_list ${val} lib_file)
     list(GET lib_files_dll_list ${val} lib_file_dll)
 
-    install_library(
+    install_shared_library(
       ${lib_file}
       ${lib_file_dll}
       ${install_dir})

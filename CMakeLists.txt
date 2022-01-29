@@ -259,10 +259,6 @@ elseif (UNIX AND NOT WIN32)
 endif ()
 
 
-# TODO: Set up proper 'source' package file inclusion rules.
-# # set(CPACK_SOURCE_GENERATOR "TGZ")
-# # set(CPACK_SOURCE_PACKAGE_FILE_NAME "${MODULE_NAME}-Source")
-
 # Use CPack (part of CMake) to generate the packages...
 # If 'CPack' is not included, the 'packages' target will not be generated.
 include(CPack)

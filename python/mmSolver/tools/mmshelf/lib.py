@@ -23,6 +23,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import maya.mel
+import maya.cmds
+
 import os
 import mmSolver.logger
 import mmSolver.ui.shelfutils as shelf_utils
@@ -32,6 +35,20 @@ import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.mmshelf.constant as const
 
 LOG = mmSolver.logger.get_logger()
+
+
+def activate_shelf_tab(shelf_tab_name):
+    """
+    Set the Maya shelf to the shelf with 'shelf_tab_name' as the name.
+
+    :param shelf_tab_name: The shelf name to activate.
+    :rtype: None
+    """
+    # The MEL procedure "jumpToNamedShelf" can be found in the file:
+    # "${MAYA_LOCATION}/scripts/startup/shelf.mel"
+    mel_cmd = 'jumpToNamedShelf(\"{}\");'.format(shelf_tab_name)
+    maya.cmds.evalDeferred(lambda: maya.mel.eval(mel_cmd))
+    return
 
 
 def split_key(key):

@@ -19,24 +19,8 @@
 """
 A start-up script for mmSolver.
 
-We use the Python 'userSetup.py' file rather than 'userSetup.mel'
-because of the message here:
-
-https://around-the-corner.typepad.com/adn/2012/07/distributing-files-on-maya-maya-modules.html
-
-.. note:
-
-    Another issue is that it is very common to use a userSetup.mel
-    (.py) script to do some initialization, but Maya will load only
-    one userSetup.mel, and the first one found in its script search
-    path. That means any setup scripts in modules might be ignored by
-    Maya if the user defines its own setup script, or if another
-    module is first in the search order and have a userSetup.mel file
-    present. Something to remember... a workaround is to use the
-    module '/scripts/startup' folder and have your initialization code
-    posted there, or use a userSetup.py file instead. There is other
-    workarounds, but too complicated compare to this one.
-
+The functions defined in this module should be used to load the various
+components of mmSolver.
 """
 
 import os
@@ -116,9 +100,3 @@ def mmsolver_startup():
         # Register Events.
         maya.utils.executeDeferred(mmsolver_register_events)
     return
-
-
-# Run Start up Function after Maya has loaded.
-load_at_startup = bool(int(os.environ.get('MMSOLVER_LOAD_AT_STARTUP', 1)))
-if load_at_startup is True:
-    maya.utils.executeDeferred(mmsolver_startup)

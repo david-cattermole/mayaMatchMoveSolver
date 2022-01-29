@@ -1,0 +1,34 @@
+//
+// Copyright (C) 2022 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// ---------------------------------------------------------------------
+//
+// Install script for mmSolver.
+//
+
+global proc mmsolver_load() {
+    int $loaded = `pluginInfo -query -loaded "mmSolver"`;
+    if ($loaded == 0) {
+        loadPlugin "mmSolver";
+    }
+
+    string $load_at_startup = `getenv "MMSOLVER_LOAD_AT_STARTUP"`;
+    if ($load_at_startup != "0") {
+        pluginInfo -edit -autoload true "mmSolver";
+        warning -noContext "mmSolver will be automatically loaded at Maya startup.";
+    }
+}

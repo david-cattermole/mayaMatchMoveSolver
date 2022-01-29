@@ -491,14 +491,13 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::LineShapeNode::m_draw_db_classification);
 
     // Run the Python startup function when the plug-in loads.
-    bool displayEnabled = false;
+    bool displayEnabled = true;
     bool undoEnabled = false;
     MString command;
-    command += "import maya.utils;\n";
-    command += "global MMSOLVER_STARTED\n";
-    command += "if 'mmsolver_startup' in dir() and MMSOLVER_STARTED is False:\n";
-    command += "    maya.utils.executeDeferred(mmsolver_startup);\n";
-    status = MGlobal::executePythonCommand(
+    command += "global proc mmsolver_startup() ";
+    command += "{ python(\"import mmSolver.startup; mmSolver.startup.mmsolver_startup()\"); }\n";
+    command += "evalDeferred(\"mmsolver_startup\");\n";
+    status = MGlobal::executeCommand(
         command,
         displayEnabled,
         undoEnabled

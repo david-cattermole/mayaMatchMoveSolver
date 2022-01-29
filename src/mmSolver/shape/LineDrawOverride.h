@@ -39,6 +39,9 @@
 #include <maya/MDrawContext.h>
 #include <maya/MHWGeometryUtilities.h>
 
+// MM Solver
+#include "mmSolver/utilities/debug_utils.h"
+
 namespace mmsolver {
 
 class LineDrawData : public MUserData {
@@ -113,8 +116,7 @@ public:
 
     void handleTraceMessage(const MString &message) const override {
         MGlobal::displayInfo("LineDrawOverride: " + message);
-        MStreamUtils::stdOutStream()
-            << "LineDrawOverride: " << message.asChar() << '\n';
+        MMSOLVER_INFO("LineDrawOverride: " << message.asChar());
     }
 
 private:

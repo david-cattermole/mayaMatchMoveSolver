@@ -70,10 +70,13 @@ def mmsolver_startup():
     Responsible for starting up mmSolver, including creating shelves,
     hotkeys and menus.
     """
-    LOG.info('MM Solver Startup...')
-
     global MMSOLVER_STARTED
+    if MMSOLVER_STARTED is True:
+        LOG.debug('Skipping MM Solver Startup, MM Solver is already started.')
+        return
     MMSOLVER_STARTED = True
+
+    LOG.info('MM Solver Startup...')
 
     # Only run GUI code when the Maya interactive GUI opens.
     is_batch_mode = maya.cmds.about(batch=True)

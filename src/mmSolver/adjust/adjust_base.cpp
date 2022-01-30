@@ -123,7 +123,7 @@ SolverTypePair getSolverTypeDefault() {
                 << "Value may be "
                 << "\"cminpack_lm\", "
                 << "\"cminpack_lmder\", "
-                << "or \"levmar\"; "
+                << "or \"ceres\"; "
                 << "; value=" << defaultSolver);
         }
     }

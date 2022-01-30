@@ -415,6 +415,10 @@ MStatus initializePlugin(MObject obj) {
         if (!shader_manager) {
             // If we cannot add shaders, return plug-in initialisation
             // failure.
+            MString warning_message = MString(
+                "mmSolver: Shader Manager is unavailable, cannot load plug-in.");
+            MGlobal::displayWarning(warning_message);
+            MMSOLVER_ERR(warning_message.asChar());
             return MStatus::kFailure;
         }
         MString shader_location;
@@ -448,28 +452,32 @@ MStatus initializePlugin(MObject obj) {
     mel_cmd = "selectType -byName \"";
     mel_cmd += mmsolver::MarkerShapeNode::m_selection_type_name;
     mel_cmd += "\" 1";
-    CHECK_MSTATUS(MGlobal::executeCommand(mel_cmd));
+    status = MGlobal::executeCommand(mel_cmd);
+    CHECK_MSTATUS(status);
 
     MSelectionMask::registerSelectionType(
         mmsolver::BundleShapeNode::m_selection_type_name, 2);
     mel_cmd = "selectType -byName \"";
     mel_cmd += mmsolver::BundleShapeNode::m_selection_type_name;
     mel_cmd += "\" 1";
-    CHECK_MSTATUS(MGlobal::executeCommand(mel_cmd));
+    status = MGlobal::executeCommand(mel_cmd);
+    CHECK_MSTATUS(status);
 
     MSelectionMask::registerSelectionType(
         mmsolver::SkyDomeShapeNode::m_selection_type_name, 2);
     mel_cmd = "selectType -byName \"";
     mel_cmd += mmsolver::SkyDomeShapeNode::m_selection_type_name;
     mel_cmd += "\" 1";
-    CHECK_MSTATUS(MGlobal::executeCommand(mel_cmd));
+    status = MGlobal::executeCommand(mel_cmd);
+    CHECK_MSTATUS(status);
 
     MSelectionMask::registerSelectionType(
         mmsolver::LineShapeNode::m_selection_type_name, 2);
     mel_cmd = "selectType -byName \"";
     mel_cmd += mmsolver::LineShapeNode::m_selection_type_name;
     mel_cmd += "\" 1";
-    CHECK_MSTATUS(MGlobal::executeCommand(mel_cmd));
+    status = MGlobal::executeCommand(mel_cmd);
+    CHECK_MSTATUS(status);
 
     // Register plugin display filter.
     // The filter is registered in both interactive and batch mode (Hardware 2.0)
@@ -493,15 +501,18 @@ MStatus initializePlugin(MObject obj) {
     // Run the Python startup function when the plug-in loads.
     bool displayEnabled = true;
     bool undoEnabled = false;
-    MString command;
-    command += "global proc mmsolver_startup() ";
-    command += "{ python(\"import mmSolver.startup; mmSolver.startup.mmsolver_startup()\"); }\n";
-    command += "evalDeferred(\"mmsolver_startup\");\n";
+    MString startup_cmd;
+    startup_cmd += "global proc mmsolver_startup() ";
+    startup_cmd += "{ ";
+    startup_cmd += "python(\"import mmSolver.startup; mmSolver.startup.mmsolver_startup()\"); ";
+    startup_cmd += "} ";
+    startup_cmd += "evalDeferred(\"mmsolver_startup\");";
     status = MGlobal::executeCommand(
-        command,
+        startup_cmd,
         displayEnabled,
         undoEnabled
     );
+    CHECK_MSTATUS(status);
 
     return status;
 }

@@ -236,7 +236,7 @@ def _generate_window_raw(n, filtr=None):
             window[i] = _gaussian(mean, i, std)
 
     elif filtr == 'triangle':
-        half_n = (n - 1) / 2
+        half_n = (n - 1) // 2
         # Middle index number
         window[half_n] = n
 
@@ -337,10 +337,10 @@ def _fourier_smooth_raw(data, width, filtr=None):
     x = _fft_convolve_raw(s, window)
     if n % 2 == 1:
         # n is odd
-        x = x[n/2:-(n/2)]
+        x = x[n//2:-(n//2)]
     else:
         # n is even
-        x = x[(n/2)-1:-(n/2)]
+        x = x[(n//2)-1:-(n//2)]
 
     assert len(x) == len(data)
     return x
@@ -374,7 +374,7 @@ def _generate_window_numpy(n, filtr=None):
             window[i] = _gaussian(mean, i, std)
 
     elif filtr == 'triangle':
-        half_n = (n - 1) / 2
+        half_n = (n - 1) // 2
         # Middle index number
         window[half_n] = n
 
@@ -440,10 +440,10 @@ def _fourier_smooth_numpy(data, width, filtr=None):
     x = np.convolve(s, window, mode='valid')
     if n % 2 == 1:
         # n is odd
-        x = x[n/2:-(n/2)]
+        x = x[n//2:-(n//2)]
     else:
         # n is even
-        x = x[(n/2)-1:-(n/2)]
+        x = x[(n//2)-1:-(n//2)]
 
     assert len(x) == len(data)
     return x

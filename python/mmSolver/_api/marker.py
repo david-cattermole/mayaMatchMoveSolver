@@ -518,12 +518,13 @@ class Marker(object):
 
         # Connect the marker to the camera.
         cam = self.get_camera()
-        cam_shp = cam.get_shape_node()
-        tfm = self.get_node()
-        src = cam_shp + '.outLens'
-        dst = tfm + '.inLens'
-        if not maya.cmds.isConnected(src, dst):
-            maya.cmds.connectAttr(src, dst)
+        if cam is not None:
+            cam_shp = cam.get_shape_node()
+            tfm = self.get_node()
+            src = cam_shp + '.outLens'
+            dst = tfm + '.inLens'
+            if not maya.cmds.isConnected(src, dst):
+                maya.cmds.connectAttr(src, dst)
 
         event_utils.trigger_event(
             const.EVENT_NAME_MARKER_CREATED,

@@ -50,7 +50,7 @@ class TestLens1(solverUtils.SolverTestCase):
         shp_a = maya.cmds.createNode('locator', parent=tfm_a)
         tfm_b = maya.cmds.createNode('transform')
         shp_b = maya.cmds.createNode('locator', parent=tfm_b)
-        lens_node = maya.cmds.createNode('mmLensBasic')
+        lens_node = maya.cmds.createNode('mmLensModelBasic')
         eval_node = maya.cmds.createNode('mmLensEvaluate')
 
         plug = lens_node + '.k1'
@@ -93,8 +93,8 @@ class TestLens1(solverUtils.SolverTestCase):
         shp_a = maya.cmds.createNode('locator', parent=tfm_a)
         tfm_b = maya.cmds.createNode('transform')
         shp_b = maya.cmds.createNode('locator', parent=tfm_b)
-        lens_a_node = maya.cmds.createNode('mmLensBasic')
-        lens_b_node = maya.cmds.createNode('mmLensBasic')
+        lens_a_node = maya.cmds.createNode('mmLensModelBasic')
+        lens_b_node = maya.cmds.createNode('mmLensModelBasic')
         eval_node = maya.cmds.createNode('mmLensEvaluate')
 
         plug = lens_a_node + '.k1'

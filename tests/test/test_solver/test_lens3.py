@@ -50,7 +50,7 @@ class TestLens3(solverUtils.SolverTestCase):
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
 
-        lens_node = maya.cmds.createNode('mmLensBasic')
+        lens_node = maya.cmds.createNode('mmLensModelBasic')
         maya.cmds.setAttr(lens_node + '.k1', 0.0)
         maya.cmds.setAttr(lens_node + '.k2', 0.0)
 

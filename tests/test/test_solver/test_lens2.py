@@ -48,7 +48,7 @@ class TestLens2(solverUtils.SolverTestCase):
     def test_create_lens_deformer(self):
         tfm, creator = maya.cmds.polyPlane(axis=(0.0, 0.0, 1.0))
         shp = maya.cmds.listRelatives(tfm, shapes=True)[0]
-        lens_node = maya.cmds.createNode('mmLensBasic')
+        lens_node = maya.cmds.createNode('mmLensModelBasic')
         deform_node = maya.cmds.deformer(tfm, type='mmLensDeformer')[0]
 
         plug = lens_node + '.k1'
@@ -70,8 +70,8 @@ class TestLens2(solverUtils.SolverTestCase):
     def test_create_lens_deformer_with_layers(self):
         tfm, creator = maya.cmds.polyPlane(axis=(0.0, 0.0, 1.0))
         shp = maya.cmds.listRelatives(tfm, shapes=True)[0]
-        lens_a_node = maya.cmds.createNode('mmLensBasic')
-        lens_b_node = maya.cmds.createNode('mmLensBasic')
+        lens_a_node = maya.cmds.createNode('mmLensModelBasic')
+        lens_b_node = maya.cmds.createNode('mmLensModelBasic')
         deform_node = maya.cmds.deformer(tfm, type='mmLensDeformer')[0]
 
         plug = lens_a_node + '.k1'

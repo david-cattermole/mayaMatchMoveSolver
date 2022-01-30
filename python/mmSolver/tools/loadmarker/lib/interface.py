@@ -173,7 +173,7 @@ class KeyframeData(object):
         # Sort keys, based on int values, not string.
         keys = self._data.keys()
         int_keys = list()
-        for key in self._data.iterkeys():
+        for key in self._data.keys():
             int_keys.append(int(key))
         keys = sorted(int_keys)
 
@@ -237,7 +237,7 @@ class KeyframeData(object):
         initial = None
         total = float()  # assume it's a float?
         total_num = int()
-        for key in iter(self._data):
+        for key in self._data.keys():
             if initial is None:
                 initial = self._data[key]
             total = total + float(self._data[key])

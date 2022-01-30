@@ -263,9 +263,9 @@ def __set_node_data(mkr, bnd, mkr_data,
     # Get keyframe data
     mkr_x_data = mkr_data.get_x().get_raw_data()
     mkr_y_data = mkr_data.get_y().get_raw_data()
-    for t, v in mkr_x_data.iteritems():
+    for t, v in mkr_x_data.items():
         mkr_x_data[t] = (v - 0.5) * overscan_x
-    for t, v in mkr_y_data.iteritems():
+    for t, v in mkr_y_data.items():
         mkr_y_data[t] = (v - 0.5) * overscan_y
     mkr_x = interface.KeyframeData(data=mkr_x_data)
     mkr_y = interface.KeyframeData(data=mkr_y_data)

@@ -251,7 +251,7 @@ def _recursive_update(d, u):
     :returns: A dictionary with both d and u merged together.
     :rtype: dict
     """
-    for k, v in u.iteritems():
+    for k, v in u.items():
         if isinstance(v, collections.Mapping):
             d[k] = _recursive_update(d.get(k, {}), v)
         else:

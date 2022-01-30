@@ -34,7 +34,7 @@ def generate_plot_error_per_iteration(data, ax):
     x = []
     y_avg = []
     y_errors = []
-    for it_k, it_v in data.iteritems():
+    for it_k, it_v in data.items():
         if it_v['type'] != 'normal':
             continue
         x.append(it_v['number'])
@@ -62,7 +62,7 @@ def generate_plot_error_min_avg_max(data, ax):
     y_min = []
     y_avg = []
     y_max = []
-    for it_k, it_v in data.iteritems():
+    for it_k, it_v in data.items():
         if it_v['type'] != 'normal':
             continue
         x.append(it_v['number'])
@@ -87,11 +87,11 @@ def generate_plot_value_dots(data, ax):
     color = []
     size = []
     it_num_max = 1
-    for it_k, it_v in data.iteritems():
+    for it_k, it_v in data.items():
         if it_v['type'] != 'normal':
             continue
         it_num_max = it_v['number']
-    for it_k, it_v in data.iteritems():
+    for it_k, it_v in data.items():
         if it_v['type'] != 'normal':
             continue
         it_num = it_v['number']
@@ -118,11 +118,11 @@ def generate_plot_value_lines(data, ax):
     x_parm = []
     y_parm = []
     it_num_max = 1
-    for it_k, it_v in data.iteritems():
+    for it_k, it_v in data.items():
         if it_v['type'] != 'normal':
             continue
         it_num_max = it_v['number']
-    for it_k, it_v in data.iteritems():
+    for it_k, it_v in data.items():
         if it_v['type'] != 'normal':
             continue
         it_num = it_v['number']

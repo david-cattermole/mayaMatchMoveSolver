@@ -233,7 +233,7 @@ def get_root_frames_from_markers(mkr_list, min_frames_per_marker,
                 break
 
             frame_map = common_nodes[mkr_node][mkr_count]
-            frame_keys = frame_map.keys()
+            frame_keys = list(frame_map.keys())
             i = 0
             while len(frame_keys) > 0:
                 if len(mkr_frames[mkr_node]) >= min_frames_count:

@@ -23,15 +23,6 @@
 set(CMAKE_MACOSX_RPATH 1)
 
 
-# Default Solver to use.
-set(PREFERRED_SOLVER "cminpack_lmder"
-  CACHE STRING
-  "Choices are cminpack_lm, cminpack_lmder or ceres. Which solver is used by default?")
-
-
-# Set a default solver
-set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
-
 # Source
 set(SOURCE_FILES
   mmSolver/utilities/debug_utils.cpp

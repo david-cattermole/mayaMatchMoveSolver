@@ -237,6 +237,22 @@ function(install_target_to_module target module_dir)
 endfunction()
 
 
+# Get the build operating system name, to be used when constructing
+# build paths.
+function(get_maya_module_os_name output_var)
+  set(${output_var} unknown PARENT_SCOPE)
+  if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+    set(${output_var} mac PARENT_SCOPE)
+  elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+    set(${output_var} linux PARENT_SCOPE)
+  elseif(CMAKE_SYSTEM_NAME STREQUAL Windows)
+    set(${output_var} win64 PARENT_SCOPE)
+  else ()
+    message(FATAL_ERROR "Only Linux, MacOS and Windows are supported.")
+  endif ()
+endfunction()
+
+
 # Install the Plug-In.
 function(install_target_plugin_to_module target module_dir)
   set_target_as_maya_plugin_library(${target})

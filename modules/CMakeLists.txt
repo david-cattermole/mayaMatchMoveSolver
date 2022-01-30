@@ -18,18 +18,10 @@
 #
 # Configure the Maya module file.
 
+include(MMSolverUtils)
 
 # Module paths
-set(MODULE_OS_NAME "unknown")
-if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    set(MODULE_OS_NAME "mac")
-elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
-    set(MODULE_OS_NAME "linux")
-elseif(CMAKE_SYSTEM_NAME STREQUAL Windows)
-    set(MODULE_OS_NAME "win64")
-else ()
-    message(FATAL_ERROR "Only Linux, MacOS and Windows are supported.")
-endif ()
+get_maya_module_os_name(MODULE_OS_NAME)
 
 # Module names
 set(MODULE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")

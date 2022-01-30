@@ -18,6 +18,7 @@
 #
 # Configure the Documentation building system.
 
+include(MMSolverUtils)
 
 # Create Python file for documentation sphinx build with some build
 # options baked in.
@@ -45,22 +46,14 @@ set(input_files
         )
 
 # Get the location where the build files will be generated
-set(BUILD_OS_NAME "unknown")
-if(MSVC)
-  set(BUILD_OS_NAME "windows64")
-elseif(MACOS)
-  set(BUILD_OS_NAME "mac")
-else()
-  set(BUILD_OS_NAME "linux")
-endif()
-set(BUILD_DOCS_DIR "build_${BUILD_OS_NAME}_maya${MAYA_VERSION}")
+get_maya_module_os_name(os_name)
+set(BUILD_DOCS_DIR "build_${os_name}_maya${MAYA_VERSION}")
 
+set(input_file source/index.html)
 set(output_file ${BUILD_DOCS_DIR}/html/py-modindex.html)
-
-
 add_custom_command(
         OUTPUT ${output_file}
-        COMMAND ${CMAKE_COMMAND} -E copy source/index.html ${BUILD_DOCS_DIR}/html/index.html
+        COMMAND ${CMAKE_COMMAND} -E copy ${input_file} ${BUILD_DOCS_DIR}/html/index.html
         COMMAND make html
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS ${input_files}

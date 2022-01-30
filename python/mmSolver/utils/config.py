@@ -165,7 +165,7 @@ def write_data(data, file_path, human_readable=True):
             'separators': (',', ':'),
         }
     text = json.dumps(data, **kwargs)
-    with open(file_path, 'wb') as f:
+    with open(file_path, 'w') as f:
         f.write(text)
     return
 

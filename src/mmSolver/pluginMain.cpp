@@ -547,6 +547,10 @@ MStatus uninitializePlugin(MObject obj) {
         mmsolver::SkyDomeShapeNode::m_draw_db_classification,
         mmsolver::SkyDomeShapeNode::m_draw_registrant_id,
         status);
+    DEREGISTER_DRAW_OVERRIDE(
+        mmsolver::LineShapeNode::m_draw_db_classification,
+        mmsolver::LineShapeNode::m_draw_registrant_id,
+        status);
 
     DEREGISTER_LOCATOR_NODE(
         plugin,
@@ -562,6 +566,11 @@ MStatus uninitializePlugin(MObject obj) {
         plugin,
         mmsolver::SkyDomeShapeNode::nodeName(),
         mmsolver::SkyDomeShapeNode::m_id,
+        status);
+    DEREGISTER_LOCATOR_NODE(
+        plugin,
+        mmsolver::LineShapeNode::nodeName(),
+        mmsolver::LineShapeNode::m_id,
         status);
 
     DEREGISTER_NODE(plugin,

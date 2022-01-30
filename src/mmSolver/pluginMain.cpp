@@ -243,6 +243,12 @@ MStatus initializePlugin(MObject obj) {
                      MMCameraSolveCmd::newSyntax,
                      status);
 
+    REGISTER_COMMAND(plugin,
+                     mmsolver::render::MMRendererCmd::cmdName(),
+                     mmsolver::render::MMRendererCmd::creator,
+                     mmsolver::render::MMRendererCmd::newSyntax,
+                     status);
+
     REGISTER_NODE(plugin,
                   MMMarkerScaleNode::nodeName(),
                   MMMarkerScaleNode::m_id,
@@ -416,31 +422,25 @@ MStatus initializePlugin(MObject obj) {
             // If we cannot add shaders, return plug-in initialisation
             // failure.
             MString warning_message = MString(
-                "mmSolver: Shader Manager is unavailable, cannot load plug-in.");
+                "mmSolver: Shader Manager is unavailable, cannot load Viewport Renderer.");
             MGlobal::displayWarning(warning_message);
-            MMSOLVER_ERR(warning_message.asChar());
-            return MStatus::kFailure;
-        }
-        MString shader_location;
-        MString cmd = MString("getModulePath -moduleName \"mayaMatchMoveSolver\";");
-        if (!MGlobal::executeCommand(cmd, shader_location, false)) {
-            MString warning_message = MString(
-                "mmSolver: Could not get module path, looking up env var.");
-            MGlobal::displayWarning(warning_message);
-            shader_location = MString(std::getenv("MMSOLVER_LOCATION"));
-        }
-        shader_location += MString("/shader");
-        shader_manager->addShaderPath(shader_location);
+            MMSOLVER_WRN(warning_message.asChar());
+        } else {
+            MString shader_location;
+            MString cmd = MString("getModulePath -moduleName \"mayaMatchMoveSolver\";");
+            if (!MGlobal::executeCommand(cmd, shader_location, false)) {
+                MString warning_message = MString(
+                    "mmSolver: Could not get module path, looking up env var.");
+                MGlobal::displayWarning(warning_message);
+                shader_location = MString(std::getenv("MMSOLVER_LOCATION"));
+            }
+            shader_location += MString("/shader");
+            shader_manager->addShaderPath(shader_location);
 
-        mmsolver::render::RenderOverride *ptr =
-            new mmsolver::render::RenderOverride(MM_RENDERER_NAME);
-        renderer->registerOverride(ptr);
-
-        REGISTER_COMMAND(plugin,
-                         mmsolver::render::MMRendererCmd::cmdName(),
-                         mmsolver::render::MMRendererCmd::creator,
-                         mmsolver::render::MMRendererCmd::newSyntax,
-                         status);
+            mmsolver::render::RenderOverride *ptr =
+                new mmsolver::render::RenderOverride(MM_RENDERER_NAME);
+            renderer->registerOverride(ptr);
+        }
     }
 
     MString mel_cmd = "";
@@ -533,9 +533,6 @@ MStatus uninitializePlugin(MObject obj) {
             renderer->deregisterOverride(ptr);
             delete ptr;
         }
-        DEREGISTER_COMMAND(plugin,
-                           mmsolver::render::MMRendererCmd::cmdName(),
-                           status);
     }
 
     DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);
@@ -545,6 +542,7 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMCameraRelativePoseCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, MMCameraSolveCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, mmsolver::render::MMRendererCmd::cmdName(), status);
 
     DEREGISTER_DRAW_OVERRIDE(
         mmsolver::MarkerShapeNode::m_draw_db_classification,

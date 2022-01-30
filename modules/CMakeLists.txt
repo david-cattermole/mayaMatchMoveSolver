@@ -29,24 +29,10 @@ set(MODULE_FULL_NAME "${MODULE_NAME}-maya${MAYA_VERSION}-${MODULE_OS_NAME}")
 set(MODULE_BUILD_DIR "${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}")
 
 # Create Module Description file.
-if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/mayaMatchMoveSolver_mac.mod
-            ${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}.mod
-            @ONLY)
-elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
-    configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/mayaMatchMoveSolver_linux.mod
-            ${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}.mod
-            @ONLY)
-elseif(CMAKE_SYSTEM_NAME STREQUAL Windows)
-    configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/mayaMatchMoveSolver_windows.mod
-            ${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}.mod
-            @ONLY)
-else ()
-    message(FATAL_ERROR "Only Linux, MacOS and Windows are supported.")
-endif ()
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/mayaMatchMoveSolver_${MODULE_OS_NAME}.mod
+        ${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}.mod
+        @ONLY)
 
 # Install the Module Description file.
 install(FILES

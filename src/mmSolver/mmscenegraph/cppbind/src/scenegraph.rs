@@ -196,6 +196,5 @@ impl ShimSceneGraph {
 }
 
 pub fn shim_create_scene_graph_box() -> Box<ShimSceneGraph> {
-    println!("shim_create_scene_graph_box()");
     Box::new(ShimSceneGraph::new())
 }

@@ -72,7 +72,6 @@ impl ShimFlatScene {
 }
 
 pub fn shim_create_flat_scene_box() -> Box<ShimFlatScene> {
-    println!("shim_create_flat_scene_box()");
     let bnd_ids = Vec::new();
     let cam_ids = Vec::new();
     let mkr_ids = Vec::new();

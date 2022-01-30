@@ -88,6 +88,5 @@ impl ShimAttrDataBlock {
 }
 
 pub fn shim_create_attr_data_block_box() -> Box<ShimAttrDataBlock> {
-    println!("shim_create_attr_data_block_box()");
     Box::new(ShimAttrDataBlock::new())
 }

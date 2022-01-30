@@ -87,6 +87,5 @@ impl ShimEvaluationObjects {
 }
 
 pub fn shim_create_evaluation_objects_box() -> Box<ShimEvaluationObjects> {
-    println!("shim_create_evaluation_objects_box()");
     Box::new(ShimEvaluationObjects::new())
 }

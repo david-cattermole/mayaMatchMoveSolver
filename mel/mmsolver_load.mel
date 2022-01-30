@@ -20,15 +20,58 @@
 // Install script for mmSolver.
 //
 
+
+proc int mmsolver_get_load_at_startup_envvar() {
+    string $load_at_startup = `getenv "MMSOLVER_LOAD_AT_STARTUP"`;
+    if ($load_at_startup == "") {
+        return 1;
+    }
+    if ($load_at_startup != "0") {
+        return 1;
+    }
+    return 0;
+}
+
+
+proc int mmsolver_autoload_ask_user() {
+    string $yes_button = "Yes";
+    string $no_button = "No";
+    string $default_button = $no_button;
+
+    int $load_at_startup = mmsolver_get_load_at_startup_envvar();
+    if ($load_at_startup == 1) {
+        $default_button = $yes_button;
+    }
+
+    string $confirm = `confirmDialog
+        -title "MM Solver Load"
+        -message "Would you like to auto-load MM Solver at Maya start-up?"
+        -button $yes_button
+        -button $no_button
+        -defaultButton $default_button
+        -cancelButton $no_button
+        -dismissString $no_button`;
+    if ($confirm == $yes_button) {
+        return 1;
+    }
+    return 0;
+}
+
 global proc mmsolver_load() {
     int $loaded = `pluginInfo -query -loaded "mmSolver"`;
     if ($loaded == 0) {
         loadPlugin "mmSolver";
     }
 
-    string $load_at_startup = `getenv "MMSOLVER_LOAD_AT_STARTUP"`;
-    if ($load_at_startup != "0") {
-        pluginInfo -edit -autoload true "mmSolver";
+    int $autoload = 0;
+    if (`about -batch` == 1) {
+        $autoload = mmsolver_get_load_at_startup_envvar();
+    } else {
+        $autoload = mmsolver_autoload_ask_user();
+    }
+
+    pluginInfo -edit -autoload $autoload "mmSolver";
+    if ($autoload == 1) {
         warning -noContext "mmSolver will be automatically loaded at Maya startup.";
     }
 }

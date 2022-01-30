@@ -90,13 +90,17 @@ def main(path_list):
     results = runner.run(final_suite)
 
     if maya.cmds.about(batch=True):
-        maya.standalone.uninitialize()
-        if results.wasSuccessful() is True:
-            maya.cmds.quit(force=True)
-        else:
+        maya.cmds.file(new=True, force=True)
+        exit_code = 0
+        if results.wasSuccessful() is False:
+            exit_code = 1
             print("Tests failed!", file=sys.stderr)
-            failure_code = 1
-            exit(failure_code)
+        # NOTE: We should call 'maya.standalone.uninitialize()', but
+        # that seems to hang Maya if we do, but at least 'sys.exit()'
+        # will not hang and we can CTRL+C in the terminal to exit out
+        # of the Maya Python interpreter.
+        print("Press CTRL+C to exit 'mayapy'.")
+        sys.exit(exit_code)
     return
 
 

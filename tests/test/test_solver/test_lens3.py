@@ -77,10 +77,7 @@ class TestLens3(solverUtils.SolverTestCase):
         for i, x_amount in enumerate(x_amount_list):
             y_amount = -3.0 + ((float(i) / num) * 6.0)
 
-            bundle_tfm = maya.cmds.createNode(
-                'transform', name='bundle_tfm', parent=grp_tfm)
-            bundle_shp = maya.cmds.createNode(
-                'locator', name='bundle_shp', parent=bundle_tfm)
+            bundle_tfm, bundle_shp = self.create_bundle('bundle', parent=grp_tfm)
             maya.cmds.setAttr(bundle_tfm + '.tx', 0.0)
             maya.cmds.setAttr(bundle_tfm + '.ty', 0.0)
             maya.cmds.setAttr(bundle_tfm + '.tz', 0.0)
@@ -88,10 +85,8 @@ class TestLens3(solverUtils.SolverTestCase):
                 (bundle_tfm + '.ty', 'None', 'None', 'None', 'None'),
             )
 
-            marker_tfm = maya.cmds.createNode(
-                'transform', name='marker_tfm', parent=cam_tfm)
-            marker_shp = maya.cmds.createNode(
-                'locator', name='marker_shp', parent=marker_tfm)
+            marker_tfm, marker_shp = self.create_marker(
+                'marker', cam_tfm, bnd_tfm=bundle_tfm)
             maya.cmds.setAttr(marker_tfm + '.tz', -10)
 
             eval_node = maya.cmds.createNode('mmLensEvaluate')

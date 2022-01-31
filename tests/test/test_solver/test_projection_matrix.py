@@ -47,8 +47,7 @@ class TestProjectionMatrix(solverUtils.SolverTestCase):
                           focal_length=50.0,
                           film_fit=0,
                           render_width=1920, render_height=1080):
-        cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
-        cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
+        cam_tfm, cam_shp = self.create_camera('cam')
         maya.cmds.setAttr(cam_tfm + '.horizontalFilmAperture', filmback_width)
         maya.cmds.setAttr(cam_tfm + '.verticalFilmAperture', filmback_height)
         maya.cmds.setAttr(cam_tfm + '.horizontalFilmOffset', filmback_offset_x)

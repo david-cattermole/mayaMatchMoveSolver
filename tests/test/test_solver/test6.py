@@ -52,8 +52,7 @@ class TestSolver6(solverUtils.SolverTestCase):
         end = 100
         mid = start + ((end - start) / 2)
 
-        cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
-        cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
+        cam_tfm, cam_shp = self.create_camera('cam')
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
         maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
@@ -62,18 +61,15 @@ class TestSolver6(solverUtils.SolverTestCase):
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=start, value=-2.5)
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=end, value=2.5)
 
-        bundle_tfm = maya.cmds.createNode('transform', name='bundle_tfm')
-        bundle_shp = maya.cmds.createNode('locator', name='bundle_shp', parent=bundle_tfm)
+        bundle_tfm, bundle_shp = self.create_bundle('bundle')
         maya.cmds.setAttr(bundle_tfm + '.tx', -2.5)
         maya.cmds.setAttr(bundle_tfm + '.ty', 2.4)
         maya.cmds.setAttr(bundle_tfm + '.tz', -15.0)
 
-        marker_tfm = maya.cmds.createNode('transform', name='marker_tfm', parent=cam_tfm)
-        marker_shp = maya.cmds.createNode('locator', name='marker_shp', parent=marker_tfm)
-        maya.cmds.addAttr(marker_tfm, longName='enable', at='byte',
-                          minValue=0, maxValue=1, defaultValue=True)
-        maya.cmds.addAttr(marker_tfm, longName='weight', at='double',
-                          minValue=0.0, defaultValue=1.0)
+        marker_tfm, marker_shp = self.create_marker(
+            'marker',
+            cam_tfm,
+            bnd_tfm=bundle_tfm)
         maya.cmds.setAttr(marker_tfm + '.tz', -10)
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-2.5)
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=3.0)

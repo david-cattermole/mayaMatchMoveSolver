@@ -52,28 +52,20 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         """
         Create a scene file ready for solving.
         """
-        cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
-        cam_shp = maya.cmds.createNode('camera', name='cam_shp',
-                                       parent=cam_tfm)
+        cam_tfm, cam_shp = self.create_camera('cam')
         maya.cmds.setAttr(cam_tfm + '.tx', cam_translate[0])
         maya.cmds.setAttr(cam_tfm + '.ty', cam_translate[1])
         maya.cmds.setAttr(cam_tfm + '.tz', cam_translate[2])
 
-        bundle_tfm = maya.cmds.createNode('transform',
-                                          name='bundle_tfm')
-        bundle_shp = maya.cmds.createNode('locator',
-                                          name='bundle_shp',
-                                          parent=bundle_tfm)
+        bundle_tfm, bundle_shp = self.create_bundle('bundle')
         maya.cmds.setAttr(bundle_tfm + '.tx', bnd_translate[0])
         maya.cmds.setAttr(bundle_tfm + '.ty', bnd_translate[1])
         maya.cmds.setAttr(bundle_tfm + '.tz', bnd_translate[2])
 
-        marker_tfm = maya.cmds.createNode('transform',
-                                          name='marker_tfm',
-                                          parent=cam_tfm)
-        marker_shp = maya.cmds.createNode('locator',
-                                          name='marker_shp',
-                                          parent=marker_tfm)
+        marker_tfm, marker_shp = self.create_marker(
+            'marker',
+            cam_tfm,
+            bnd_tfm=bundle_tfm)
         maya.cmds.setAttr(marker_tfm + '.tx', 0.0)
         maya.cmds.setAttr(marker_tfm + '.ty', 0.0)
         maya.cmds.setAttr(marker_tfm + '.tz', -10)

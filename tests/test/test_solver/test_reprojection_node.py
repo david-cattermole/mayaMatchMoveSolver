@@ -36,15 +36,6 @@ import mmSolver.utils.node as node_utils
 class TestReprojectionNode(solverUtils.SolverTestCase):
 
     @staticmethod
-    def create_camera(name):
-        cam_tfm = maya.cmds.createNode('transform', name=name)
-        cam_tfm = node_utils.get_long_name(cam_tfm)
-        cam_shp = maya.cmds.createNode('camera', name=name+'Shape',
-                                       parent=cam_tfm)
-        cam_shp = node_utils.get_long_name(cam_shp)
-        return cam_tfm, cam_shp
-
-    @staticmethod
     def query_output_attrs(node):
         data = {}
         attrs = [

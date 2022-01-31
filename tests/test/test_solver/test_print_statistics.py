@@ -45,50 +45,37 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
 
-        cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
-        cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
+        cam_tfm, cam_shp = self.create_camera('cam')
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
         maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
 
-        bundle_tfm = maya.cmds.createNode('transform', name='bundle_tfm')
-        bundle_shp = maya.cmds.createNode('locator', name='bundle_shp', parent=bundle_tfm)
+        bundle_tfm, bundle_shp = self.create_bundle('bundle')
         maya.cmds.setAttr(bundle_tfm + '.tx', 5.5)
         maya.cmds.setAttr(bundle_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundle_tfm + '.tz', -25.0)
 
-        bundleUnadjustable_tfm = maya.cmds.createNode(
-            'transform', name='bundleUnadjustable_tfm')
-        bundleUnadjustable_shp = maya.cmds.createNode(
-            'locator', name='bundleUnadjustable_shp', parent=bundleUnadjustable_tfm)
+        bundleUnadjustable_tfm, bundleUnadjustable_shp = \
+            self.create_bundle('bundleUnadjustable')
         maya.cmds.setAttr(bundleUnadjustable_tfm + '.tx', 5.5)
         maya.cmds.setAttr(bundleUnadjustable_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundleUnadjustable_tfm + '.tz', -25.0)
 
         # This bundle is not affected by any marker.
-        bundleUnused_tfm = maya.cmds.createNode('transform', name='bundleUnused_tfm')
-        bundleUnused_shp = maya.cmds.createNode('locator', name='bundleUnused_shp',
-                                                parent=bundleUnused_tfm)
+        bundleUnused_tfm, bundleUnused_shp = \
+            self.create_bundle('bundleUnused')
 
-        marker_tfm = maya.cmds.createNode('transform', name='marker_tfm', parent=cam_tfm)
-        marker_shp = maya.cmds.createNode('locator', name='marker_shp', parent=marker_tfm)
-        maya.cmds.addAttr(marker_tfm, longName='enable', at='byte',
-                          minValue=0, maxValue=1, defaultValue=True)
-        maya.cmds.addAttr(marker_tfm, longName='weight', at='double',
-                          minValue=0.0, defaultValue=1.0)
+        marker_tfm, marker_shp = self.create_marker(
+            'marker',
+            cam_tfm,
+            bnd_tfm=bundle_tfm)
         maya.cmds.setAttr(marker_tfm + '.tx', -2.5)
         maya.cmds.setAttr(marker_tfm + '.ty', 1.3)
         maya.cmds.setAttr(marker_tfm + '.tz', -10)
 
         # This marker is not affected by any marker.
-        markerUnused_tfm = maya.cmds.createNode(
-            'transform', name='markerUnused_tfm', parent=cam_tfm)
-        markerUnused_shp = maya.cmds.createNode(
-            'locator', name='markerUnused_shp', parent=markerUnused_tfm)
-        maya.cmds.addAttr(markerUnused_tfm, longName='enable', at='byte',
-                          minValue=0, maxValue=1, defaultValue=True)
-        maya.cmds.addAttr(markerUnused_tfm, longName='weight', at='double',
-                          minValue=0.0, defaultValue=1.0)
+        markerUnused_tfm, markerUnused_shp = self.create_marker(
+            'markerUnused', cam_tfm)
         maya.cmds.setAttr(markerUnused_tfm + '.tx', 0.0)
         maya.cmds.setAttr(markerUnused_tfm + '.ty', 0.0)
         maya.cmds.setAttr(markerUnused_tfm + '.tz', -10)

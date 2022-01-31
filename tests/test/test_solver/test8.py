@@ -73,15 +73,26 @@ class TestSolver8(solverUtils.SolverTestCase):
 
         # Get Markers
         markers = []
-
         for camTfm, camShape in cameras:
             nodes = maya.cmds.ls(camTfm + '|marker_tfm*',
                                  type='transform', long=True)
             for node in nodes:
                 markerTfm = node
+                maya.cmds.addAttr(markerTfm, longName='enable', at='byte',
+                                  minValue=0, maxValue=1, defaultValue=True)
+                maya.cmds.addAttr(markerTfm, longName='weight', at='double',
+                                  minValue=0.0, defaultValue=1.0)
+                maya.cmds.addAttr(markerTfm, longName='bundle', at='message')
+
                 name = markerTfm.rpartition('|')[-1]
                 bundleName = '|cam_bundles|' + name.replace('marker_tfm', 'bundle_tfm')
                 bundleTfm = maya.cmds.ls(bundleName, type='transform')[0]
+
+                src = bundleTfm + '.message'
+                dst = markerTfm + '.bundle'
+                if not maya.cmds.isConnected(src, dst):
+                    maya.cmds.connectAttr(src, dst)
+
                 markers.append((markerTfm, camShape, bundleTfm))
 
         # Get Attrs

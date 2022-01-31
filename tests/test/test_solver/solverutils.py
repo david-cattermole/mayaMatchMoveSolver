@@ -32,6 +32,8 @@ except RuntimeError:
     pass
 import maya.cmds
 
+import mmSolver.utils.node as node_utils
+
 import test.baseutils as baseUtils
 
 
@@ -87,3 +89,67 @@ class SolverTestCase(baseUtils.TestBase):
         e = time.time()
         print('mmSolverAffects time:', e - s)
         return result
+
+    @staticmethod
+    def create_camera(name):
+        tfm_name = name + '_tfm'
+        shp_name = name + '_shp'
+
+        tfm = maya.cmds.createNode('transform', name=tfm_name)
+        shp = maya.cmds.createNode('camera', name=shp_name, parent=tfm)
+
+        tfm = node_utils.get_long_name(tfm)
+        shp = node_utils.get_long_name(shp)
+        return tfm, shp
+
+    @staticmethod
+    def create_bundle(name, parent=None):
+        tfm_name = name + '_tfm'
+        shp_name = name + '_shp'
+
+        tfm = maya.cmds.createNode('transform', name=tfm_name, parent=parent)
+        shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm)
+
+        tfm = node_utils.get_long_name(tfm)
+        shp = node_utils.get_long_name(shp)
+        return tfm, shp
+
+    @staticmethod
+    def create_marker(name, cam_tfm, bnd_tfm=None):
+        tfm_name = name + '_tfm'
+        shp_name = name + '_shp'
+
+        tfm = maya.cmds.createNode('transform', name=tfm_name, parent=cam_tfm)
+        tfm = node_utils.get_long_name(tfm)
+
+        shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm)
+        shp = node_utils.get_long_name(shp)
+
+        maya.cmds.addAttr(
+            tfm,
+            longName='enable',
+            at='short',
+            minValue=0,
+            maxValue=1,
+            defaultValue=True
+        )
+        maya.cmds.addAttr(
+            tfm,
+            longName='weight',
+            at='double',
+            minValue=0.0,
+            defaultValue=1.0)
+        maya.cmds.setAttr(tfm + '.enable', keyable=True, channelBox=True)
+        maya.cmds.setAttr(tfm + '.weight', keyable=True, channelBox=True)
+
+        maya.cmds.addAttr(
+            tfm,
+            longName='bundle',
+            at='message')
+
+        if bnd_tfm is not None:
+            src = bnd_tfm + '.message'
+            dst = tfm + '.bundle'
+            if not maya.cmds.isConnected(src, dst):
+                maya.cmds.connectAttr(src, dst)
+        return tfm, shp

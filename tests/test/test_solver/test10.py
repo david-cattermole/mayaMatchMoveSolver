@@ -46,8 +46,7 @@ class TestSolver10(solverUtils.SolverTestCase):
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
 
-        cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
-        cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
+        cam_tfm, cam_shp = self.create_camera('cam')
         maya.cmds.setAttr(cam_tfm + '.tx', 0.0)
         maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
@@ -63,37 +62,27 @@ class TestSolver10(solverUtils.SolverTestCase):
         maya.cmds.connectAttr(mkr_scl + '.outScale', mkr_grp + '.scale')
 
         # Bundle 1
-        bundle1_tfm = maya.cmds.createNode('transform', name='bundle1_tfm')
-        bundle1_shp = maya.cmds.createNode('locator', name='bundle1_shp', parent=bundle1_tfm)
+        bundle1_tfm, bundle1_shp = self.create_bundle('bundle1')
         maya.cmds.setAttr(bundle1_tfm + '.tx', -2.0)
         maya.cmds.setAttr(bundle1_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundle1_tfm + '.tz', -25.0)
 
         # Bundle 2
-        bundle2_tfm = maya.cmds.createNode('transform', name='bundle2_tfm')
-        bundle2_shp = maya.cmds.createNode('locator', name='bundle2_shp', parent=bundle2_tfm)
+        bundle2_tfm, bundle2_shp = self.create_bundle('bundle2')
         maya.cmds.setAttr(bundle2_tfm + '.tx', 0.0)
         maya.cmds.setAttr(bundle2_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundle2_tfm + '.tz', -25.0)
 
         # Marker 1
-        marker1_tfm = maya.cmds.createNode('transform', name='marker1_tfm', parent=mkr_grp)
-        marker1_shp = maya.cmds.createNode('locator', name='marker1_shp', parent=marker1_tfm)
-        maya.cmds.addAttr(marker1_tfm, longName='enable', at='byte',
-                          minValue=0, maxValue=1, defaultValue=True)
-        maya.cmds.addAttr(marker1_tfm, longName='weight', at='double',
-                          minValue=0.0, defaultValue=1.0)
+        marker1_tfm, marker1_shp = self.create_marker(
+            'marker1', mkr_grp, bnd_tfm=bundle1_tfm)
         maya.cmds.setAttr(marker1_tfm + '.tx', -2.0)
         maya.cmds.setAttr(marker1_tfm + '.ty', 1.3)
         maya.cmds.setAttr(marker1_tfm + '.tz', -10)
 
         # Marker 2
-        marker2_tfm = maya.cmds.createNode('transform', name='marker2_tfm', parent=mkr_grp)
-        marker2_shp = maya.cmds.createNode('locator', name='marker2_shp', parent=marker2_tfm)
-        maya.cmds.addAttr(marker2_tfm, longName='enable', at='byte',
-                          minValue=0, maxValue=1, defaultValue=True)
-        maya.cmds.addAttr(marker2_tfm, longName='weight', at='double',
-                          minValue=0.0, defaultValue=1.0)
+        marker2_tfm, marker2_shp = self.create_marker(
+            'marker2', mkr_grp, bnd_tfm=bundle2_tfm)
         maya.cmds.setAttr(marker2_tfm + '.tx', 2.0)
         maya.cmds.setAttr(marker2_tfm + '.ty', 1.3)
         maya.cmds.setAttr(marker2_tfm + '.tz', -10)

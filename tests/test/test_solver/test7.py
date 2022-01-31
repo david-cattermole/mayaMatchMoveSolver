@@ -79,6 +79,8 @@ class TestSolver7(solverUtils.SolverTestCase):
                               minValue=0, maxValue=1, defaultValue=True)
             maya.cmds.addAttr(markerTfm, longName='weight', at='double',
                               minValue=0.0, defaultValue=1.0)
+            maya.cmds.addAttr(markerTfm, longName='bundle', at='message')
+
             camTfm = maya.cmds.listRelatives(node,
                                              parent=True,
                                              type='transform',
@@ -89,6 +91,12 @@ class TestSolver7(solverUtils.SolverTestCase):
             bundleName = markerTfm.rpartition('|')[-1]
             bundleName = bundleName.replace('marker', 'bundle')
             bundleTfm = maya.cmds.ls(bundleName, type='transform')[0]
+
+            src = bundleTfm + '.message'
+            dst = markerTfm + '.bundle'
+            if not maya.cmds.isConnected(src, dst):
+                maya.cmds.connectAttr(src, dst)
+
             markers.append((markerTfm, camShape, bundleTfm))
 
         # Get Attrs
@@ -131,7 +139,7 @@ class TestSolver7(solverUtils.SolverTestCase):
         path = self.get_data_path('solver_test7_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
-        
+
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
 

@@ -36,15 +36,6 @@ import mmSolver.utils.node as node_utils
 # @unittest.skip
 class TestTriangulation(solverUtils.SolverTestCase):
 
-    @staticmethod
-    def create_camera(name):
-        cam_tfm = maya.cmds.createNode('transform', name=name)
-        cam_tfm = node_utils.get_long_name(cam_tfm)
-        cam_shp = maya.cmds.createNode('camera', name=name+'Shape',
-                                       parent=cam_tfm)
-        cam_shp = node_utils.get_long_name(cam_shp)
-        return cam_tfm, cam_shp
-
     def test_triangulation(self):
         start = 1
         end = 10
@@ -59,18 +50,8 @@ class TestTriangulation(solverUtils.SolverTestCase):
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=start, value=0.0)
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=end, value=20.0)
 
-        # Marker
-        marker_tfm = maya.cmds.createNode('transform', name='marker_tfm', parent=cam_tfm)
-        marker_shp = maya.cmds.createNode('locator', name='marker_shp', parent=marker_tfm)
-        maya.cmds.setAttr(marker_tfm + '.tz', -10)
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-2.5)
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=-0.5)
-
         # Reprojection node
         node = maya.cmds.createNode('mmReprojection')
-
-        # Connect transform
-        maya.cmds.connectAttr(marker_tfm + '.worldMatrix', node + '.transformWorldMatrix')
 
         # Connect camera attributes
         maya.cmds.connectAttr(cam_tfm + '.worldMatrix', node + '.cameraWorldMatrix')
@@ -95,11 +76,22 @@ class TestTriangulation(solverUtils.SolverTestCase):
 
         # Bundle (with aim transform)
         aim_tfm = maya.cmds.createNode('transform', name='aimAt_tfm')
-        bundle_tfm = maya.cmds.createNode('transform', name='bundle_tfm', parent=aim_tfm)
-        bundle_shp = maya.cmds.createNode('locator', name='bundle_shp', parent=bundle_tfm)
+        bundle_tfm, bundle_shp = self.create_bundle('bundle', parent=aim_tfm)
         maya.cmds.setAttr(aim_tfm + '.translateX', point[0])
         maya.cmds.setAttr(aim_tfm + '.translateY', point[1])
         maya.cmds.setAttr(aim_tfm + '.translateZ', point[2])
+
+        # Marker
+        marker_tfm, marker_shp = self.create_marker(
+            'marker',
+            cam_tfm,
+            bnd_tfm=bundle_tfm)
+        maya.cmds.setAttr(marker_tfm + '.tz', -10)
+        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-2.5)
+        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=-0.5)
+
+        # Connect transform
+        maya.cmds.connectAttr(marker_tfm + '.worldMatrix', node + '.transformWorldMatrix')
 
         # Aim the bundle at the camera.
         maya.cmds.currentTime(start, edit=True)

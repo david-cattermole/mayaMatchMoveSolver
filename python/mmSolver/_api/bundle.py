@@ -379,7 +379,7 @@ class Bundle(object):
             type=const.MARKER_TRANSFORM_OLD_NODE_TYPE,
             skipConversionNodes=True) or []
         mkr_list = []
-        for conn in conns:
+        for conn in sorted(set(conns)):
             mkr = mmSolver._api.marker.Marker(node=conn)
             mkr_list.append(mkr)
         return mkr_list

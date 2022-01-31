@@ -33,6 +33,7 @@ except RuntimeError:
     pass
 import maya.cmds
 
+import mmSolver.api as mmapi
 
 import test.test_solver.solverutils as solverUtils
 
@@ -40,7 +41,7 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver1(solverUtils.SolverTestCase):
 
-    def do_solve(self, solver_name, solver_index):
+    def do_solve(self, solver_name, solver_index, scene_graph_mode):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
@@ -98,6 +99,7 @@ class TestSolver1(solverUtils.SolverTestCase):
             frame=frames,
             solverType=solver_index,
             iterations=1000,
+            sceneGraphMode=scene_graph_mode,
             verbose=True,
             **kwargs)
         e = time.time()
@@ -110,17 +112,30 @@ class TestSolver1(solverUtils.SolverTestCase):
 
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
-        assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
-        assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
+        tx = maya.cmds.getAttr(bundle_tfm+'.tx')
+        ty = maya.cmds.getAttr(bundle_tfm+'.ty')
+        print('tx:', tx)
+        print('ty:', ty)
+        assert self.approx_equal(tx, -6.0)
+        assert self.approx_equal(ty, 3.6)
 
     def test_init_levmar(self):
-        self.do_solve('levmar', 0)
+        self.do_solve('levmar', 0, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+
+    def test_init_levmar_mmscenegraph(self):
+        self.do_solve('levmar', 0, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
     def test_init_cminpack_lmdif(self):
-        self.do_solve('cminpack_lmdif', 1)
+        self.do_solve('cminpack_lmdif', 1, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+
+    def test_init_cminpack_lmdif_mmscenegraph(self):
+        self.do_solve('cminpack_lmdif', 1, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
     def test_init_cminpack_lmder(self):
-        self.do_solve('cminpack_lmder', 2)
+        self.do_solve('cminpack_lmder', 2, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+
+    def test_init_cminpack_lmder_mmscenegraph(self):
+        self.do_solve('cminpack_lmder', 2, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
 
 if __name__ == '__main__':

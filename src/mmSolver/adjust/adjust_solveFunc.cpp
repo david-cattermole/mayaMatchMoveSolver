@@ -202,6 +202,8 @@ void setParameters_mayaDag(
         SolverData *ud,
         std::ofstream *debugFile,
         MStatus &status) {
+    UNUSED(debugFile);
+
     MTime currentFrame = MAnimControl::currentTime();
     for (int i = 0; i < numberOfParameters; ++i) {
         IndexPair attrPair = ud->paramToAttrList[i];
@@ -222,14 +224,6 @@ void setParameters_mayaDag(
         if (attrPair.second != -1) {
             frame = ud->frameList[attrPair.second];
         }
-
-#ifdef WITH_DEBUG_FILE
-        if (debugFileIsOpen && debugFile != NULL) {
-            (*debugFile) << "i=" << i << " v=" << value << "\n";
-        }
-#else
-        UNUSED(debugFile);
-#endif
         attr->setValue(value, frame, *ud->dgmod, *ud->curveChange);
     }
 
@@ -293,14 +287,7 @@ void setParameters(
         SolverData *ud,
         std::ofstream *debugFile,
         MStatus &status) {
-#ifdef WITH_DEBUG_FILE
-    bool debugFileIsOpen = false;
-    if (debugFile != NULL) {
-        debugFileIsOpen = debugFile->is_open();
-    }
-#else
     UNUSED(debugFile);
-#endif
 
     const SceneGraphMode sceneGraphMode = ud->solverOptions->sceneGraphMode;
     if (sceneGraphMode == SceneGraphMode::kMayaDag) {
@@ -505,37 +492,6 @@ void measureErrors_mayaDag(
             behind_camera = true;
             behind_camera_error_factor = 1e+6;
         }
-
-#ifdef WITH_DEBUG_FILE
-        if (debugIsOpen && debugFile != NULL) {
-            (*debugFile) << "Bundle: " << bnd->getNodeName()
-                         << "\n";
-            (*debugFile) << "Behind Camera: " << behind_camera
-                         << "\n";
-            (*debugFile) << "Cam DOT Bnd: " << cam_dot_bnd
-                         << "\n";
-            (*debugFile) << "bnd_mpos: "
-                         << bnd_mpos_tmp.x << ", "
-                         << bnd_mpos_tmp.y << ", "
-                         << bnd_mpos_tmp.z
-                         << "\n";
-            (*debugFile) << "cam_pos: "
-                         << cam_pos.x << ", "
-                         << cam_pos.y << ", "
-                         << cam_pos.z
-                         << "\n";
-            (*debugFile) << "cam_dir: "
-                         << cam_dir.x << ", "
-                         << cam_dir.y << ", "
-                         << cam_dir.z
-                         << "\n";
-            (*debugFile) << "bnd_dir: "
-                         << bnd_dir.x << ", "
-                         << bnd_dir.y << ", "
-                         << bnd_dir.z
-                         << "\n";
-        }
-#endif
 
         // According to the Ceres solver 'circle_fit.cc'
         // example, using the 'sqrt' distance error function is a
@@ -748,14 +704,7 @@ void measureErrors(
         double &error_min,
         std::ofstream *debugFile,
         MStatus &status) {
-#ifdef WITH_DEBUG_FILE
-    bool debugIsOpen = false;
-    if (debugFile != NULL) {
-        debugIsOpen = debugFile->is_open();
-    }
-#else
     UNUSED(debugFile);
-#endif
     error_avg = 0.0;
     error_max = -0.0;
     error_min = std::numeric_limits<double>::max();
@@ -806,24 +755,6 @@ void measureErrors(
     }
     assert(error_max >= error_min);
     assert(error_min <= error_max);
-
-#ifdef WITH_DEBUG_FILE
-    if (debugIsOpen && debugFile != NULL) {
-        for (int i = 0; i < (numberOfErrors / ERRORS_PER_MARKER); ++i) {
-            (*debugFile) << "error i=" << i
-                         << " x=" << ud->errorList[(i * ERRORS_PER_MARKER) + 0]
-                         << " y=" << ud->errorList[(i * ERRORS_PER_MARKER) + 1]
-                         << "\n";
-            (*debugFile) << "error dist i=" << i
-                         << " v=" << ud->errorDistanceList[i]
-                         << "\n";
-        }
-        (*debugFile) << "emin=" << error_min
-                     << " emax=" << error_max
-                     << " eavg=" << error_avg
-                     << "\n";
-    }
-#endif
     return;
 }
 
@@ -840,16 +771,8 @@ void incrementNormalIteration(SolverData *ud,
     MStreamUtils::stdErrorStream() << " | Eval ";
     MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw(4)
                                    << ud->funcEvalNum;
-#ifdef WITH_DEBUG_FILE
-    if (debugIsOpen && debugFile != NULL) {
-        (*debugFile) << "\n"
-                     << "iteration normal: " << ud->iterNum
-                     << "\n";
-    }
-#else
     UNUSED(debugIsOpen);
     UNUSED(debugFile);
-#endif
     return;
 }
 
@@ -871,16 +794,8 @@ void incrementJacobianIteration(SolverData *ud,
             MStreamUtils::stdErrorStream() << "\n";
         }
     }
-#ifdef WITH_DEBUG_FILE
-    if (debugIsOpen && debugFile != NULL) {
-        (*debugFile) << "\n"
-                  << "iteration jacobian: " << ud->jacIterNum
-                  << "\n";
-    }
-#else
     UNUSED(debugIsOpen);
     UNUSED(debugFile);
-#endif
     return;
 }
 
@@ -908,13 +823,6 @@ int solveFunc(const int numberOfParameters,
 
     std::ofstream *debugFile = NULL;
     bool debugIsOpen = false;
-#ifdef WITH_DEBUG_FILE
-    if (ud->debugFileName.length() > 0) {
-        const char *debugFileChar = ud->debugFileName.asChar();
-        debugFile->open(debugFileChar, std::ios_base::app);
-    }
-    debugIsOpen = debugFile->is_open();
-#endif
 
     if (ud->isNormalCall) {
         incrementNormalIteration(ud, debugIsOpen, debugFile);

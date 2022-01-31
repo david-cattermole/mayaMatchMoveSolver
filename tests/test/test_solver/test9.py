@@ -146,7 +146,7 @@ class TestSolver9(solverUtils.SolverTestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
     def test_init_levmar(self):
-        self.do_solve('levmar', 0)
+        self.do_solve('ceres', 0)
 
     def test_init_cminpack_lmdif(self):
         self.do_solve('cminpack_lmdif', 1)

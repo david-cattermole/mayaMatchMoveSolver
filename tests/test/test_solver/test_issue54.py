@@ -265,11 +265,11 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
 
     def test_init_levmar(self):
         """
-        Solve nodal camera on a single frame, using levmar.
+        Solve nodal camera on a single frame, using ceres.
         """
-        self.do_solve_with_initial_value_zero('levmar', 0)
-        self.do_solve_with_initial_value_twenty('levmar', 0)
-        self.do_solve_with_initial_value_threeSixty('levmar', 0)
+        self.do_solve_with_initial_value_zero('ceres', 0)
+        self.do_solve_with_initial_value_twenty('ceres', 0)
+        self.do_solve_with_initial_value_threeSixty('ceres', 0)
 
     def test_init_cminpack_lmdif(self):
         """

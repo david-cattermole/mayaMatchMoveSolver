@@ -123,7 +123,7 @@ class TestSolver5(solverUtils.SolverTestCase):
         return
 
     def test_init_levmar(self):
-        self.do_solve('levmar', 0)
+        self.do_solve('ceres', 0)
 
     def test_init_cminpack_lmdif(self):
         self.do_solve('cminpack_lmdif', 1)

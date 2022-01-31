@@ -149,9 +149,9 @@ class TestLens3(solverUtils.SolverTestCase):
 
     def test_init_levmar(self):
         """
-        Solve lens distortion on a single frame, using levmar.
+        Solve lens distortion on a single frame, using ceres.
         """
-        self.do_solve('levmar', 0)
+        self.do_solve('ceres', 0)
 
     def test_init_cminpack_lmdif(self):
         """

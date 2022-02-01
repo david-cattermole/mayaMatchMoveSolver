@@ -151,7 +151,7 @@ class TestSolver2(solverUtils.SolverTestCase):
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
 
-    def test_init_levmar(self):
+    def test_init_ceres(self):
         self.do_solve('ceres', 0)
 
     def test_init_cminpack_lmdif(self):

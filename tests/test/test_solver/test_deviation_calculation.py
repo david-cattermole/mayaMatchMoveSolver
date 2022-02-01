@@ -144,7 +144,7 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
         self.assertTrue(self.approx_equal(mkr_middleLeft_values[1], 576.0, eps=eps))
         return
 
-    def test_init_levmar(self):
+    def test_init_ceres(self):
         self.do_solve('ceres', 0)
 
     def test_init_cminpack_lmdif(self):

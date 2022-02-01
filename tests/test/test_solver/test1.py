@@ -123,10 +123,10 @@ class TestSolver1(solverUtils.SolverTestCase):
         assert self.approx_equal(tx, -6.0)
         assert self.approx_equal(ty, 3.6)
 
-    def test_init_levmar(self):
+    def test_init_ceres(self):
         self.do_solve('ceres', 0, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
-    def test_init_levmar_mmscenegraph(self):
+    def test_init_ceres_mmscenegraph(self):
         self.do_solve('ceres', 0, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
     def test_init_cminpack_lmdif(self):

@@ -123,7 +123,7 @@ class TestSolverIssue176(solverUtils.SolverTestCase):
         successes = [result[0] != 'success=1' for result in results]
         self.assertEqual(any(successes), False)
 
-    def test_init_levmar(self):
+    def test_init_ceres(self):
         self.do_solve('ceres', 0)
 
     def test_init_cminpack_lmdif(self):

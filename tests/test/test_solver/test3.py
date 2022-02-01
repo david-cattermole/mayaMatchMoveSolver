@@ -117,7 +117,7 @@ class TestSolver3(solverUtils.SolverTestCase):
         assert self.approx_equal(rx, 7.44014, eps=0.001)
         assert self.approx_equal(ry, -32.3891, eps=0.001)
 
-    def test_init_levmar(self):
+    def test_init_ceres(self):
         """
         Solve nodal camera on a single frame, using ceres.
         """

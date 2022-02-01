@@ -147,7 +147,7 @@ class TestLens3(solverUtils.SolverTestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
-    def test_init_levmar(self):
+    def test_init_ceres(self):
         """
         Solve lens distortion on a single frame, using ceres.
         """

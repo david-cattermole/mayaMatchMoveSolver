@@ -158,7 +158,7 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
         self.assertEqual(len(attributes_unused), 2)
         return
 
-    def test_init_levmar(self):
+    def test_init_ceres(self):
         self.do_solve('ceres', 0)
 
     def test_init_cminpack_lmdif(self):

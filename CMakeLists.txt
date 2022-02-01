@@ -78,7 +78,7 @@ set(BUILD_ICONS 1 CACHE BOOL
         "Do you want to build and install the icons?")
 set(BUILD_CONFIG 1 CACHE BOOL
         "Do you want to build and install the config files?")
-set(BUILD_TESTS 1 CACHE BOOL
+set(BUILD_TESTS 0 CACHE BOOL
         "Do you want to build the test files?")
 
 

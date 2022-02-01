@@ -70,7 +70,7 @@ BUILD_QT_UI=1
 BUILD_DOCS=1
 BUILD_ICONS=1
 BUILD_CONFIG=1
-BUILD_TESTS=1
+BUILD_TESTS=0
 
 # Path to this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"

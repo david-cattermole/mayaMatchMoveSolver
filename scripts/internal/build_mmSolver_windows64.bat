@@ -160,9 +160,9 @@ CHDIR "%BUILD_DIR%"
 :: To Generate a Visual Studio 'Solution' file, for Maya 2018 (which
 :: uses Visual Studio 2015), replace the cmake -G line with the following line:
 ::
-:: cmake -G "Visual Studio 14 2015 Win64" -T "v140"
+:: %CMAKE_EXE% -G "Visual Studio 14 2015 Win64" -T "v140"
 
-cmake -G "NMake Makefiles" ^
+%CMAKE_EXE% -G "NMake Makefiles" ^
     -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
     -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
     -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
@@ -199,19 +199,19 @@ cmake -G "NMake Makefiles" ^
     -DMMSCENEGRAPH_INCLUDE_DIR=%MMSCENEGRAPH_INCLUDE_DIR% ^
     ..
 
-cmake --build . --parallel 8
+%CMAKE_EXE% --build . --parallel 4
 
 :: Comment this line out to stop the automatic install into the home directory.
-cmake --install .
+%CMAKE_EXE% --install .
 
 :: Run tests
 IF "%RUN_TESTS%"=="1" (
-    cmake --build . --target test
+    %CMAKE_EXE% --build . --target test
 )
 
 :: Create a .zip package.
 IF "%BUILD_PACKAGE%"=="1" (
-    cmake --build . --target package
+    %CMAKE_EXE% --build . --target package
 )
 
 :: Return back project root directory.

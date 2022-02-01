@@ -48,7 +48,7 @@ MMMarkerGroupTransformNode::MMMarkerGroupTransformNode(MPxTransformationMatrix *
 void MMMarkerGroupTransformNode::postConstructor() {
     MPxTransform::postConstructor();
 #if MAYA_API_VERSION < 20190000
-    if (baseTransformationMatrix == NULL) {
+    if (baseTransformationMatrix == nullptr) {
         baseTransformationMatrix = new MPxTransformationMatrix();
     }
 #endif

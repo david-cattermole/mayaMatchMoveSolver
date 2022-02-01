@@ -53,7 +53,7 @@ MMMarkerTransformNode::MMMarkerTransformNode(MPxTransformationMatrix *tm) : MPxT
 void MMMarkerTransformNode::postConstructor() {
     MPxTransform::postConstructor();
 #if MAYA_API_VERSION < 20190000
-    if (baseTransformationMatrix == NULL) {
+    if (baseTransformationMatrix == nullptr) {
         baseTransformationMatrix = new MMMarkerTransformMatrix();
     }
 #endif
@@ -135,8 +135,8 @@ MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
 
         // Get Input Lens
         MMLensData* inputLensData = (MMLensData*) dataHandle.asPluginData();
-        LensModel* inputLensModel = NULL;
-        if (inputLensData != NULL) {
+        LensModel* inputLensModel = nullptr;
+        if (inputLensData != nullptr) {
             inputLensModel = (LensModel*) inputLensData->getValue();
         }
 

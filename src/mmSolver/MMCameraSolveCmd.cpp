@@ -596,7 +596,7 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
                 new ceres::AutoDiffCostFunction<ExponentialResidual, 1, 1, 1>(
                     new ExponentialResidual(data[2 * i],
                                             data[2 * i + 1])),
-                NULL,
+                nullptr,
                 &m,
                 &c);
         }

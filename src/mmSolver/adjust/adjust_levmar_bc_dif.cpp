@@ -119,7 +119,7 @@ bool solve_3d_levmar_bc_dif(
             &paramList[0],
 
             // Measurement Vector (input only)
-            // NULL implies a zero vector
+            // nullptr implies a zero vector
             &errorList[0],
 
             // Parameter Vector Dimension (input only)
@@ -129,13 +129,13 @@ bool solve_3d_levmar_bc_dif(
             // Measurement Vector Dimension (input only)
             numberOfErrors,
 
-            // vector of lower bounds. If NULL, no lower bounds apply
+            // vector of lower bounds. If nullptr, no lower bounds apply
             &paramLowerBoundList[0],
 
-            // vector of upper bounds. If NULL, no upper bounds apply (input only)
+            // vector of upper bounds. If nullptr, no upper bounds apply (input only)
             &paramUpperBoundList[0],
 
-            // diagonal scaling constants. NULL implies no scaling (input only)
+            // diagonal scaling constants. nullptr implies no scaling (input only)
             &paramWeightList[0],
 
             // Maximum Number of Iterations (input only)
@@ -151,7 +151,7 @@ bool solve_3d_levmar_bc_dif(
             // If \delta<0, the Jacobian is approximated with central differences
             // which are more accurate (but slower!) compared to the forward
             // differences employed by default.
-            // Set to NULL for defaults to be used.
+            // Set to nullptr for defaults to be used.
             levmar_opts,
 
             // Output Information (output only)
@@ -177,23 +177,23 @@ bool solve_3d_levmar_bc_dif(
             // info[8] = number of Jacobian evaluations
             // info[9] = number linear systems solved (number of attempts for reducing error)
             //
-            // Set to NULL if don't care
+            // Set to nullptr if don't care
             levmar_info,
 
             // Working Data (input only)
-            // working memory, allocated internally if NULL. If !=NULL, it is assumed to
+            // working memory, allocated internally if nullptr. If !=nullptr, it is assumed to
             // point to a memory chunk at least LM_DIF_WORKSZ(numberOfParameters, numberOfErrors)*sizeof(double) bytes
             // long
             work,
 
             // Covariance matrix (output only)
             // Covariance matrix corresponding to LS solution; Assumed to point to a mxm matrix.
-            // Set to NULL if not needed.
+            // Set to nullptr if not needed.
             covar,
 
             // Custom Data for 'func' (input only)
             // pointer to possibly needed additional data, passed uninterpreted to func.
-            // Set to NULL if not needed
+            // Set to nullptr if not needed
             (void *) &userData);
 
     free(work);
@@ -236,7 +236,7 @@ void solveFunc_levmar_bc_dif(double *p,
     // We will not compute a jacobian in 'levmar'
     SolverData *ud = static_cast<SolverData *>(data);
     ud->doCalcJacobian = false;
-    double *fjac = NULL;
+    double *fjac = nullptr;
 
     // int ret = solveFunc(m, n, p, x, data);
     int ret = solveFunc(m, n, p, x, fjac, data);

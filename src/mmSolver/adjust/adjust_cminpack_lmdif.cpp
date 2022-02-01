@@ -239,7 +239,7 @@ int solveFunc_cminpack_lmdif(void *data,
 
     // We will not compute a jacobian in 'lmdif'
     ud->doCalcJacobian = false;
-    double *fjac = NULL;
+    double *fjac = nullptr;
 
     // int ret = solveFunc(n, m, x, fvec, data);
     int ret = solveFunc(n, m, x, fvec, fjac, data);

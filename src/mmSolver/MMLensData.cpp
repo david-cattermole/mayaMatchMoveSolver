@@ -35,7 +35,7 @@ void* MMLensData::creator() {
 }
 
 MMLensData::MMLensData()
-    : m_value(NULL), MPxData() {
+    : m_value(nullptr), MPxData() {
 }
 
 MMLensData::~MMLensData() {}

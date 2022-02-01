@@ -92,8 +92,8 @@ MStatus MMLensModel3deClassicNode::compute(const MPlug &plug, MDataBlock &data) 
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
-        LensModel* inputLensModel = NULL;
-        if (inputLensData != NULL) {
+        LensModel* inputLensModel = nullptr;
+        if (inputLensData != nullptr) {
             inputLensModel = (LensModel*) inputLensData->getValue();
         }
 
@@ -141,7 +141,7 @@ MStatus MMLensModel3deClassicNode::compute(const MPlug &plug, MDataBlock &data) 
 
             newLensData->setValue(newLensModel);
         } else {
-            newLensData->setValue(NULL);
+            newLensData->setValue(nullptr);
         }
         outLensHandle.setMPxData(newLensData);
         outLensHandle.setClean();

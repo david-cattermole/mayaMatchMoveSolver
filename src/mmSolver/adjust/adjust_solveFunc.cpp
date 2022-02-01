@@ -821,7 +821,7 @@ int solveFunc(const int numberOfParameters,
     int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
     assert(ud->errorToParamList.size() == static_cast<size_t>(numberOfMarkers));
 
-    std::ofstream *debugFile = NULL;
+    std::ofstream *debugFile = nullptr;
     bool debugIsOpen = false;
 
     if (ud->isNormalCall) {

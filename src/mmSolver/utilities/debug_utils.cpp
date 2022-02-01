@@ -72,7 +72,7 @@ Timestamp get_timestamp() {
 #else
     // For Linux
     struct timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     return now.tv_usec + (Timestamp) now.tv_sec * 1000000;
 #endif
 }

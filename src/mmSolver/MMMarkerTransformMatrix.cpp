@@ -37,7 +37,7 @@
 MTypeId MMMarkerTransformMatrix::m_id(MM_MARKER_TRANSFORM_MATRIX_TYPE_ID);
 
 
-MMMarkerTransformMatrix::MMMarkerTransformMatrix() : m_value(NULL) {}
+MMMarkerTransformMatrix::MMMarkerTransformMatrix() : m_value(nullptr) {}
 
 MPxTransformationMatrix *MMMarkerTransformMatrix::creator() {
     return new MMMarkerTransformMatrix();
@@ -65,7 +65,7 @@ MMatrix MMMarkerTransformMatrix::asMatrix() const {
     // Calculate and add lens distortion to the translates of the
     // matrix.
     LensModel* lensModel = getLensModel();
-    if (lensModel != NULL) {
+    if (lensModel != nullptr) {
         MVector translate = tm.getTranslation(MSpace::kTransform, &status);
         CHECK_MSTATUS(status);
         MVector out_translate(translate);

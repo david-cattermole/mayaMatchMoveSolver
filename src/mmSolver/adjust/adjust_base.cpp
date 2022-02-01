@@ -103,7 +103,7 @@ SolverTypePair getSolverTypeDefault() {
     std::vector<SolverTypePair> solverTypes = getSolverTypes();
 
     const char* defaultSolver_ptr = std::getenv("MMSOLVER_DEFAULT_SOLVER");
-    if (defaultSolver_ptr != NULL) {
+    if (defaultSolver_ptr != nullptr) {
         // The memory may change under our feet, we copy the data into a
         // string for save keeping.
         std::string defaultSolver(defaultSolver_ptr);
@@ -1310,7 +1310,7 @@ MStatus solveFrames(
     double initialErrorMax = 0;
     if (solverOptions.acceptOnlyBetter || printStats.deviation) {
         // Never write debug data during statistics gathering.
-        std::ofstream *debugFileStream = NULL;
+        std::ofstream *debugFileStream = nullptr;
 
         std::vector<bool> frameIndexEnable(frameList.length(), 1);
         std::vector<bool> skipErrorMeasurements(numberOfErrors, 1);

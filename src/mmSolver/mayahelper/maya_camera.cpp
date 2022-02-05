@@ -262,7 +262,8 @@ MStatus getProjectionMatrix(
     MStatus status = MS::kSuccess;
 
     double filmAspectRatio = filmBackWidth / filmBackHeight;
-    double imageAspectRatio = (double)imageWidth / (double)imageHeight;
+    double imageAspectRatio =
+        static_cast<double>(imageWidth) / static_cast<double>(imageHeight);
 
     double left = 0.0;
     double right = 0.0;

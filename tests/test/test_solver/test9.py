@@ -35,20 +35,24 @@ except RuntimeError:
     pass
 import maya.cmds
 
-
+import mmSolver.api as mmapi
 import test.test_solver.solverutils as solverUtils
 
 
 # @unittest.skip
 class TestSolver9(solverUtils.SolverTestCase):
 
-    def do_solve(self, solver_name, solver_index):
+    def do_solve(self, solver_name, solver_index, scene_graph_mode):
         """
         Solve an animated bundle across time.
         """
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
+        scene_graph_name = mmapi.SCENE_GRAPH_MODE_NAME_LIST[scene_graph_mode]
+        scene_graph_label = mmapi.SCENE_GRAPH_MODE_LABEL_LIST[scene_graph_mode]
+        print('Scene Graph:', scene_graph_label)
+
         start = 1
         end = 2
 
@@ -64,13 +68,14 @@ class TestSolver9(solverUtils.SolverTestCase):
         # Bundle is created very, very far away from camera.
         bundle_tfm, bundle_shp = self.create_bundle('bundle')
 
+        mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_tfm, marker_shp = self.create_marker(
             'marker',
-            cam_tfm,
+            mkr_grp,
             bnd_tfm=bundle_tfm)
         maya.cmds.setAttr(marker_tfm + '.tx', 0)
         maya.cmds.setAttr(marker_tfm + '.ty', 0)
-        maya.cmds.setAttr(marker_tfm + '.tz', -10)
+        maya.cmds.setAttr(marker_tfm + '.tz', -1)
 
         depth_list = [
             # These depths solve correctly.
@@ -141,18 +146,29 @@ class TestSolver9(solverUtils.SolverTestCase):
             print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_test9_after.ma')
+        file_name = 'solver_test9_{}_{}_after.ma'.format(
+            solver_name, scene_graph_name)
+        path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
-    def test_init_ceres(self):
-        self.do_solve('ceres', 0)
+    def test_init_ceres_maya_dag(self):
+        self.do_solve('ceres', 0, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
-    def test_init_cminpack_lmdif(self):
-        self.do_solve('cminpack_lmdif', 1)
+    def test_init_ceres_mmscenegraph(self):
+        self.do_solve('ceres', 0, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
-    def test_init_cminpack_lmder(self):
-        self.do_solve('cminpack_lmder', 2)
+    def test_init_cminpack_lmdif_maya_dag(self):
+        self.do_solve('cminpack_lmdif', 1, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+
+    def test_init_cminpack_lmdif_mmscenegraph(self):
+        self.do_solve('cminpack_lmdif', 1, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+
+    def test_init_cminpack_lmder_maya_dag(self):
+        self.do_solve('cminpack_lmder', 2, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+
+    def test_init_cminpack_lmder_mmscenegraph(self):
+        self.do_solve('cminpack_lmder', 2, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
 
 if __name__ == '__main__':

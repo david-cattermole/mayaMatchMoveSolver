@@ -35,6 +35,7 @@ except RuntimeError:
     pass
 import maya.cmds
 
+import mmSolver.api as mmapi
 
 import test.test_solver.solverutils as solverUtils
 
@@ -42,13 +43,16 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestSolver3(solverUtils.SolverTestCase):
 
-    def do_solve(self, solver_name, solver_index):
+    def do_solve(self, solver_name, solver_index, scene_graph_mode):
         """
         Solve nodal camera on a single frame
         """
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
+        scene_graph_name = mmapi.SCENE_GRAPH_MODE_NAME_LIST[scene_graph_mode]
+        scene_graph_label = mmapi.SCENE_GRAPH_MODE_LABEL_LIST[scene_graph_mode]
+        print('Scene Graph:', scene_graph_label)
 
         cam_tfm, cam_shp = self.create_camera('cam')
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
@@ -60,10 +64,12 @@ class TestSolver3(solverUtils.SolverTestCase):
         maya.cmds.setAttr(bundle_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundle_tfm + '.tz', -25.0)
 
-        marker_tfm, marker_shp = self.create_marker('marker', cam_tfm)
-        maya.cmds.setAttr(marker_tfm + '.tx', -2.5)
-        maya.cmds.setAttr(marker_tfm + '.ty', 1.3)
-        maya.cmds.setAttr(marker_tfm + '.tz', -10)
+        mkr_grp = self.create_marker_group('marker_group', cam_tfm)
+
+        marker_tfm, marker_shp = self.create_marker('marker', mkr_grp)
+        maya.cmds.setAttr(marker_tfm + '.tx', -0.243056042)
+        maya.cmds.setAttr(marker_tfm + '.ty', 0.189583713)
+        maya.cmds.setAttr(marker_tfm + '.tz', -1.0)
 
         cameras = (
             (cam_tfm, cam_shp),
@@ -78,7 +84,7 @@ class TestSolver3(solverUtils.SolverTestCase):
         frames = [
             (1),
         ]
-        
+
         # save the output
         path = self.get_data_path('solver_test3_%s_before.ma' % solver_name)
         maya.cmds.file(rename=path)
@@ -109,7 +115,7 @@ class TestSolver3(solverUtils.SolverTestCase):
         path = self.get_data_path('solver_test3_%s_after.ma' % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
-        
+
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
         rx = maya.cmds.getAttr(cam_tfm + '.rx')
@@ -117,25 +123,24 @@ class TestSolver3(solverUtils.SolverTestCase):
         assert self.approx_equal(rx, 7.44014, eps=0.001)
         assert self.approx_equal(ry, -32.3891, eps=0.001)
 
-    def test_init_ceres(self):
-        """
-        Solve nodal camera on a single frame, using ceres.
-        """
-        self.do_solve('ceres', 0)
+    def test_init_ceres_maya_dag(self):
+        self.do_solve('ceres', 0, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
-    def test_init_cminpack_lmdif(self):
-        """
-        Solve nodal camera on a single frame, using cminpack_lmdif
-        """
-        self.do_solve('cminpack_lmdif', 1)
+    def test_init_ceres_mmscenegraph(self):
+        self.do_solve('ceres', 0, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
-    def test_init_cminpack_lmder(self):
-        """
-        Solve nodal camera on a single frame, using cminpack_lmder
-        """
-        self.do_solve('cminpack_lmder', 2)
+    def test_init_cminpack_lmdif_maya_dag(self):
+        self.do_solve('cminpack_lmdif', 1, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+
+    def test_init_cminpack_lmdif_mmscenegraph(self):
+        self.do_solve('cminpack_lmdif', 1, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+
+    def test_init_cminpack_lmder_maya_dag(self):
+        self.do_solve('cminpack_lmder', 2, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+
+    def test_init_cminpack_lmder_mmscenegraph(self):
+        self.do_solve('cminpack_lmder', 2, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
 
 if __name__ == '__main__':
     prog = unittest.main()
-

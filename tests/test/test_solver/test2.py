@@ -34,7 +34,6 @@ except RuntimeError:
 import maya.cmds
 
 import mmSolver.api as mmapi
-
 import test.test_solver.solverutils as solverUtils
 
 
@@ -179,7 +178,7 @@ class TestSolver2(solverUtils.SolverTestCase):
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
-        
+
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
 

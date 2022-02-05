@@ -409,7 +409,6 @@ void measureErrors_mayaDag(
 
     // Compute Marker Errors
     MMatrix cameraWorldProjectionMatrix;
-    MPoint mkr_mpos;
     MPoint bnd_mpos;
     int numberOfErrorsMeasured = 0;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
@@ -453,6 +452,7 @@ void measureErrors_mayaDag(
         double mkr_y = 0.0;
 #if USE_MARKER_POSITION_CACHE == 1
         // Use pre-computed marker position and weight
+        MPoint mkr_mpos;
         mkr_mpos = ud->markerPosList[i];
         mkr_x = mkr_mpos.x;
         mkr_y = mkr_mpos.y;
@@ -510,11 +510,10 @@ void measureErrors_mayaDag(
         // be best to test this detail.
         double dx = fabs(mkr_x - bnd_mpos.x) * ud->imageWidth;
         double dy = fabs(mkr_y - bnd_mpos.y) * ud->imageWidth;
-        double d = distance_2d(mkr_mpos, bnd_mpos) * ud->imageWidth;
+        double d = distance_2d(mkr_x, mkr_y, bnd_mpos.x, bnd_mpos.y) * ud->imageWidth;
 
-        int errorIndex = i * ERRORS_PER_MARKER;
-        auto errorIndex_x = errorIndex + 0;
-        auto errorIndex_y = errorIndex + 1;
+        auto errorIndex_x = i * ERRORS_PER_MARKER;
+        auto errorIndex_y = errorIndex_x + 1;
         errors[errorIndex_x] = dx * mkr_weight * behind_camera_error_factor;
         errors[errorIndex_y] = dy * mkr_weight * behind_camera_error_factor;
 
@@ -665,9 +664,8 @@ void measureErrors_mmSceneGraph(
         // TODO: Calculate 'behind_camera_error_factor', the same as the Maya DAG function.
         double behind_camera_error_factor = 1.0;
 
-        auto errorIndex = i * ERRORS_PER_MARKER;
-        auto errorIndex_x = errorIndex + 0;
-        auto errorIndex_y = errorIndex + 1;
+        auto errorIndex_x = i * ERRORS_PER_MARKER;
+        auto errorIndex_y = errorIndex_x + 1;
         auto mkr_x = out_marker_list[errorIndex_x];
         auto mkr_y = out_marker_list[errorIndex_y];
         auto point_x = out_point_list[errorIndex_x];
@@ -677,7 +675,6 @@ void measureErrors_mmSceneGraph(
         auto dy = out_deviation_list[errorIndex_y];
         auto ddx = dx * ud->imageWidth;
         auto ddy = dy * ud->imageWidth;
-
         double d = std::sqrt((dx * dx) + (dy * dy)) * ud->imageWidth;
 
         errors[errorIndex_x] = dx * mkr_weight * behind_camera_error_factor;

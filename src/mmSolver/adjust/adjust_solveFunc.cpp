@@ -206,13 +206,13 @@ void setParameters_mayaDag(
 
     MTime currentFrame = MAnimControl::currentTime();
     for (int i = 0; i < numberOfParameters; ++i) {
-        IndexPair attrPair = ud->paramToAttrList[i];
+        const IndexPair attrPair = ud->paramToAttrList[i];
         AttrPtr attr = ud->attrList[attrPair.first];
 
-        double offset = attr->getOffsetValue();
-        double scale = attr->getScaleValue();
-        double xmin = attr->getMinimumValue();
-        double xmax = attr->getMaximumValue();
+        const double offset = attr->getOffsetValue();
+        const double scale = attr->getScaleValue();
+        const double xmin = attr->getMinimumValue();
+        const double xmax = attr->getMaximumValue();
         double value = parameters[i];
         value = parameterBoundFromInternalToExternal(
             value,
@@ -253,14 +253,14 @@ void setParameters_mmSceneGraph(
     UNUSED(debugFile);
 
     for (int i = 0; i < numberOfParameters; ++i) {
-        IndexPair attrPair = ud->paramToAttrList[i];
+        const IndexPair attrPair = ud->paramToAttrList[i];
         AttrPtr attr = ud->attrList[attrPair.first];
         mmsg::AttrId attrId = ud->mmsgAttrIdList[attrPair.first];
 
-        double offset = attr->getOffsetValue();
-        double scale = attr->getScaleValue();
-        double xmin = attr->getMinimumValue();
-        double xmax = attr->getMaximumValue();
+        const double offset = attr->getOffsetValue();
+        const double scale = attr->getScaleValue();
+        const double xmin = attr->getMinimumValue();
+        const double xmax = attr->getMaximumValue();
         double value = parameters[i];
         value = parameterBoundFromInternalToExternal(
             value,

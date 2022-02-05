@@ -132,7 +132,7 @@ SolverTypePair getSolverTypeDefault() {
 };
 
 
-void lossFunctionTrivial(double z,
+void lossFunctionTrivial(const double z,
                          double &rho0,
                          double &rho1,
                          double &rho2) {
@@ -143,7 +143,7 @@ void lossFunctionTrivial(double z,
 };
 
 
-void lossFunctionSoftL1(double z,
+void lossFunctionSoftL1(const double z,
                         double &rho0,
                         double &rho1,
                         double &rho2) {
@@ -155,7 +155,7 @@ void lossFunctionSoftL1(double z,
 };
 
 
-void lossFunctionCauchy(double z,
+void lossFunctionCauchy(const double z,
                         double &rho0,
                         double &rho1,
                         double &rho2) {
@@ -168,10 +168,10 @@ void lossFunctionCauchy(double z,
 };
 
 
-void applyLossFunctionToErrors(int numberOfErrors,
+void applyLossFunctionToErrors(const int numberOfErrors,
                                double *f,
-                               int loss_type,
-                               double loss_scale) {
+                               const int loss_type,
+                               const double loss_scale) {
     for (int i = 0; i < numberOfErrors; ++i) {
         // The loss function
         double z = std::pow(f[i] / loss_scale, 2);
@@ -208,8 +208,10 @@ void applyLossFunctionToErrors(int numberOfErrors,
 //
 // Implements Box Constraints; Issue #64.
 double parameterBoundFromInternalToExternal(double value,
-                                            double xmin, double xmax,
-                                            double offset, double scale) {
+                                            const double xmin,
+                                            const double xmax,
+                                            const double offset,
+                                            const double scale) {
     const double float_max = std::numeric_limits<float>::max();
     if ((xmin <= -float_max) && (xmax >= float_max)) {
         // No bounds!
@@ -241,8 +243,10 @@ double parameterBoundFromInternalToExternal(double value,
 //
 // Implements Box Constraints; Issue #64.
 double parameterBoundFromExternalToInternal(double value,
-                                            double xmin, double xmax,
-                                            double offset, double scale){
+                                            double xmin,
+                                            double xmax,
+                                            const double offset,
+                                            const double scale){
     double initial_xmin = xmin;
     double initial_xmax = xmax;
     double reconvert_value = 0.0;
@@ -325,7 +329,7 @@ bool get_initial_parameters(const int numberOfParameters,
 }
 
 
-bool set_maya_attribute_values(int numberOfParameters,
+bool set_maya_attribute_values(const int numberOfParameters,
                                const std::vector<std::pair<int, int> > &paramToAttrList,
                                AttrPtrList &attrList,
                                const std::vector<double> &paramList,
@@ -364,7 +368,7 @@ bool set_maya_attribute_values(int numberOfParameters,
 
 // Compute the average error based on the error values
 // the solve function last computed.
-bool compute_error_stats(int numberOfMarkerErrors,
+bool compute_error_stats(const int numberOfMarkerErrors,
                          SolverData &userData,
                          double &errorAvg,
                          double &errorMin,
@@ -388,11 +392,11 @@ void logResultsSolveDetails(
         SolverResult &solverResult,
         SolverData &userData,
         SolverTimer &timer,
-        int numberOfParameters,
-        int numberOfMarkerErrors,
-        int numberOfAttrStiffnessErrors,
-        int numberOfAttrSmoothnessErrors,
-        bool verbose,
+        const int numberOfParameters,
+        const int numberOfMarkerErrors,
+        const int numberOfAttrStiffnessErrors,
+        const int numberOfAttrSmoothnessErrors,
+        const bool verbose,
         std::vector<double> &paramList,
         MStringArray &outResult) {
     int numberOfErrors = numberOfMarkerErrors;
@@ -638,11 +642,11 @@ void logResultsSolveDetails(
 };
 
 
-MStatus logResultsObjectCounts(int numberOfParameters,
-                               int numberOfErrors,
-                               int numberOfMarkerErrors,
-                               int numberOfAttrStiffnessErrors,
-                               int numberOfAttrSmoothnessErrors,
+MStatus logResultsObjectCounts(const int numberOfParameters,
+                               const int numberOfErrors,
+                               const int numberOfMarkerErrors,
+                               const int numberOfAttrStiffnessErrors,
+                               const int numberOfAttrSmoothnessErrors,
                                MStringArray &outResult) {
     MStatus status = MStatus::kSuccess;
 
@@ -679,9 +683,9 @@ MStatus logResultsObjectCounts(int numberOfParameters,
  * markerToAttrList is expected to be pre-computed from the function
  * 'getMarkerToAttributeRelationship'.
  */
-MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
-                                         AttrPtrList attrList,
-                                         BoolList2D markerToAttrList,
+MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList markerList,
+                                         const AttrPtrList attrList,
+                                         const BoolList2D markerToAttrList,
                                          MStringArray &outResult) {
     MStatus status = MStatus::kSuccess;
     std::string resultStr;
@@ -736,10 +740,10 @@ MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
  * Print out if objects added to the solve (such as markers and
  * attributes) are being used, or are unused.
  */
-MStatus logResultsSolveObjectUsage(MarkerPtrList usedMarkerList,
-                                   MarkerPtrList unusedMarkerList,
-                                   AttrPtrList usedAttrList,
-                                   AttrPtrList unusedAttrList,
+MStatus logResultsSolveObjectUsage(const MarkerPtrList usedMarkerList,
+                                   const MarkerPtrList unusedMarkerList,
+                                   const AttrPtrList usedAttrList,
+                                   const AttrPtrList unusedAttrList,
                                    MStringArray &outResult) {
     MStatus status = MStatus::kSuccess;
 
@@ -839,7 +843,7 @@ void _splitIntoUsedAndUnusedLists(_T inputList,
  * Increment the value of key in the indexCountMap, by 1.
  *
  */
-IndexCountMap _incrementMapIndex(size_t key, IndexCountMap indexCountMap) {
+IndexCountMap _incrementMapIndex(const size_t key, IndexCountMap &indexCountMap) {
     IndexCountMapIt it = indexCountMap.find(key);
     int temp;
     if (it != indexCountMap.end()) {
@@ -859,9 +863,9 @@ IndexCountMap _incrementMapIndex(size_t key, IndexCountMap indexCountMap) {
  * Split the given Markers and Attributes into both used and unused
  * objects.
  */
-MStatus splitUsedMarkersAndAttributes(MarkerPtrList markerList,
-                                      AttrPtrList attrList,
-                                      BoolList2D markerToAttrList,
+MStatus splitUsedMarkersAndAttributes(const MarkerPtrList markerList,
+                                      const AttrPtrList attrList,
+                                      const BoolList2D markerToAttrList,
                                       MarkerPtrList &out_usedMarkerList,
                                       MarkerPtrList &out_unusedMarkerList,
                                       AttrPtrList &out_usedAttrList,

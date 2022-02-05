@@ -79,104 +79,121 @@ std::vector<SolverTypePair> getSolverTypes();
 SolverTypePair getSolverTypeDefault();
 
 
-double parameterBoundFromInternalToExternal(double value,
-                                            double xmin, double xmax,
-                                            double offset, double scale);
+double parameterBoundFromInternalToExternal(
+    const double value,
+    const double xmin,
+    const double xmax,
+    const double offset,
+    const double scale);
 
 
-double parameterBoundFromExternalToInternal(double value,
-                                            double xmin, double xmax,
-                                            double offset, double scale);
+double parameterBoundFromExternalToInternal(
+    const double value,
+    const double xmin,
+    const double xmax,
+    const double offset,
+    const double scale);
 
 
-void lossFunctionTrivial(double z,
-                         double &rho0,
-                         double &rho1,
-                         double &rho2);
+void lossFunctionTrivial(
+    const double z,
+    double &rho0,
+    double &rho1,
+    double &rho2);
 
 
-void lossFunctionSoftL1(double z,
-                        double &rho0,
-                        double &rho1,
-                        double &rho2);
+void lossFunctionSoftL1(
+    const double z,
+    double &rho0,
+    double &rho1,
+    double &rho2);
 
 
-void lossFunctionCauchy(double z,
-                        double &rho0,
-                        double &rho1,
-                        double &rho2);
+void lossFunctionCauchy(
+    const double z,
+    double &rho0,
+    double &rho1,
+    double &rho2);
 
 
-void applyLossFunctionToErrors(int numberOfErrors,
-                               double *f,
-                               int loss_type,
-                               double loss_scale);
+void applyLossFunctionToErrors(
+    const int numberOfErrors,
+    double *f,
+    int loss_type,
+    double loss_scale);
 
 
-bool get_initial_parameters(int numberOfParameters,
-                            std::vector<double> &paramList,
-                            std::vector<std::pair<int, int> > &paramToAttrList,
-                            AttrPtrList &attrList,
-                            MTimeArray &frameList,
-                            MStringArray &outResult);
+bool get_initial_parameters(
+    const int numberOfParameters,
+    std::vector<double> &paramList,
+    std::vector<std::pair<int, int> > &paramToAttrList,
+    AttrPtrList &attrList,
+    MTimeArray &frameList,
+    MStringArray &outResult);
 
 
-bool set_maya_attribute_values(int numberOfParameters,
-                               std::vector<std::pair<int, int> > &paramToAttrList,
-                               AttrPtrList &attrList,
-                               std::vector<double> &paramList,
-                               MTimeArray &frameList,
-                               MDGModifier &dgmod,
-                               MAnimCurveChange &curveChange);
+bool set_maya_attribute_values(
+    const int numberOfParameters,
+    std::vector<std::pair<int, int> > &paramToAttrList,
+    AttrPtrList &attrList,
+    std::vector<double> &paramList,
+    MTimeArray &frameList,
+    MDGModifier &dgmod,
+    MAnimCurveChange &curveChange);
 
 
-bool compute_error_stats(int numberOfMarkerErrors,
-                         SolverData &userData,
-                         double &errorAvg,
-                         double &errorMin,
-                         double &errorMax);
+bool compute_error_stats(
+    const int numberOfMarkerErrors,
+    SolverData &userData,
+    double &errorAvg,
+    double &errorMin,
+    double &errorMax);
 
 
-void logResultsSolveDetails(SolverResult &solverResult,
-                            SolverData &userData,
-                            SolverTimer &timer,
-                            int numberOfParameters,
-                            int numberOfMarkerErrors,
-                            int numberOfAttrStiffnessErrors,
-                            int numberOfAttrSmoothnessErrors,
-                            bool verbose,
-                            std::vector<double> &paramList,
-                            MStringArray &outResult);
+void logResultsSolveDetails(
+    SolverResult &solverResult,
+    SolverData &userData,
+    SolverTimer &timer,
+    int numberOfParameters,
+    int numberOfMarkerErrors,
+    int numberOfAttrStiffnessErrors,
+    int numberOfAttrSmoothnessErrors,
+    bool verbose,
+    std::vector<double> &paramList,
+    MStringArray &outResult);
 
 
-MStatus logResultsObjectCounts(int numberOfParameters,
-                               int numberOfErrors,
-                               int numberOfMarkerErrors,
-                               int numberOfAttrStiffnessErrors,
-                               int numberOfAttrSmoothnessErrors,
-                               MStringArray &outResult);
+MStatus logResultsObjectCounts(
+    const int numberOfParameters,
+    const int numberOfErrors,
+    const int numberOfMarkerErrors,
+    const int numberOfAttrStiffnessErrors,
+    const int numberOfAttrSmoothnessErrors,
+    MStringArray &outResult);
 
 
-MStatus logResultsMarkerAffectsAttribute(MarkerPtrList markerList,
-                                         AttrPtrList attrList,
-                                         BoolList2D markerToAttrList,
-                                         MStringArray &outResult);
+MStatus logResultsMarkerAffectsAttribute(
+    const MarkerPtrList markerList,
+    const AttrPtrList attrList,
+    const BoolList2D markerToAttrList,
+    MStringArray &outResult);
 
 
-bool solve(SolverOptions &solverOptions,
-           CameraPtrList &cameraList,
-           MarkerPtrList &markerList,
-           BundlePtrList &bundleList,
-           AttrPtrList &attrList,
-           const MTimeArray &frameList,
-           StiffAttrsPtrList &stiffAttrsList,
-           SmoothAttrsPtrList &smoothAttrsList,
-           MDGModifier &dgmod,
-           MAnimCurveChange &curveChange,
-           MComputation &computation,
-           MString &debugFileName,
-           MStringArray &printStatsList,
-           bool with_verbosity,
-           MStringArray &outResult);
+bool solve(
+    SolverOptions &solverOptions,
+    CameraPtrList &cameraList,
+    MarkerPtrList &markerList,
+    BundlePtrList &bundleList,
+    AttrPtrList &attrList,
+    const MTimeArray &frameList,
+    StiffAttrsPtrList &stiffAttrsList,
+    SmoothAttrsPtrList &smoothAttrsList,
+    MDGModifier &dgmod,
+    MAnimCurveChange &curveChange,
+    MComputation &computation,
+    MString &debugFileName,
+    MStringArray &printStatsList,
+    bool with_verbosity,
+    MStringArray &outResult);
 
 #endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H

@@ -18,7 +18,6 @@
 // ====================================================================
 //
 /// 3D Euler Rotation mathematics.
-
 use crate::constant::Matrix33;
 use crate::constant::Matrix44;
 use crate::constant::Real;
@@ -227,6 +226,7 @@ pub fn euler_from_matrix3(matrix: Matrix33, order: u8) -> EulerAngles {
 // http://bediyap.com/programming/convert-quaternion-to-euler-rotations/
 
 // Supported Rotation Orders.
+#[repr(u8)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
 pub enum RotateOrder {
     XYZ = 0, // XYZ

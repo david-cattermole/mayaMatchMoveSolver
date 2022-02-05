@@ -121,6 +121,11 @@ pub mod ffi {
         sensor_width: AttrId,
         sensor_height: AttrId,
         focal_length: AttrId,
+        lens_offset_x: AttrId,
+        lens_offset_y: AttrId,
+        near_clip_plane: AttrId,
+        far_clip_plane: AttrId,
+        camera_scale: AttrId,
     }
 
     #[derive(Debug, Copy, Clone, Hash)]
@@ -150,6 +155,25 @@ pub mod ffi {
 
         #[cxx_name = "kYZX"]
         YZX = 1,
+
+        #[cxx_name = "kUnknown"]
+        Unknown = 255,
+    }
+
+    #[repr(u8)]
+    #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
+    pub(crate) enum FilmFit {
+        #[cxx_name = "kFill"]
+        Fill = 0,
+
+        #[cxx_name = "kHorizontal"]
+        Horizontal = 1,
+
+        #[cxx_name = "kVertical"]
+        Vertical = 2,
+
+        #[cxx_name = "kOverscan"]
+        Overscan = 3,
 
         #[cxx_name = "kUnknown"]
         Unknown = 255,
@@ -201,6 +225,14 @@ pub mod ffi {
         attr_sensor_width: AttrId,
         attr_sensor_height: AttrId,
         attr_focal_length: AttrId,
+        attr_lens_offset_x: AttrId,
+        attr_lens_offset_y: AttrId,
+        attr_near_clip_plane: AttrId,
+        attr_far_clip_plane: AttrId,
+        attr_camera_scale: AttrId,
+        film_fit: FilmFit,
+        render_image_width: i32,
+        render_image_height: i32,
     }
 
     #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
@@ -263,6 +295,9 @@ pub mod ffi {
             scale_attrs: Scale3DAttrIds,
             camera_attrs: CameraAttrIds,
             rotate_order: RotateOrder,
+            film_fit: FilmFit,
+            render_image_width: i32,
+            render_image_height: i32,
         ) -> CameraNode;
         fn create_marker_node(
             &mut self,

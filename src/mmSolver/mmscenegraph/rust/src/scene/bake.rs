@@ -33,10 +33,10 @@ use crate::node::traits::NodeCanViewScene;
 use crate::node::traits::NodeHasId;
 use crate::node::traits::NodeHasWeight;
 use crate::node::NodeId;
+use crate::scene::evaluationobjects::EvaluationObjects;
 use crate::scene::flat::FlatScene;
 use crate::scene::graph::SceneGraph;
 use crate::scene::graphiter::UpstreamDepthFirstSearch;
-use crate::scene::evaluationobjects::EvaluationObjects;
 
 /// Get all upstream node_indices from node_index.
 ///
@@ -232,18 +232,39 @@ pub fn bake_scene_graph(
 
     // Camera attributes.
     let mut cam_attr_list = Vec::new();
+    let mut cam_film_fit_list = Vec::new();
+    let mut cam_render_res_list = Vec::new();
     cam_attr_list.reserve(cam_nodes.len());
+    cam_film_fit_list.reserve(cam_nodes.len());
+    cam_render_res_list.reserve(cam_nodes.len());
     for cam_node in cam_nodes.iter() {
         let attr_sensor_width = cam_node.get_attr_sensor_width();
         let attr_sensor_height = cam_node.get_attr_sensor_height();
         let attr_focal_length = cam_node.get_attr_focal_length();
+        let attr_lens_offset_x = cam_node.get_attr_lens_offset_x();
+        let attr_lens_offset_y = cam_node.get_attr_lens_offset_y();
+        let attr_near_clip_plane = cam_node.get_attr_near_clip_plane();
+        let attr_far_clip_plane = cam_node.get_attr_far_clip_plane();
+        let attr_camera_scale = cam_node.get_attr_camera_scale();
 
         let cam_attrs = AttrCameraIds {
             sensor_width: attr_sensor_width,
             sensor_height: attr_sensor_height,
             focal_length: attr_focal_length,
+            lens_offset_x: attr_lens_offset_x,
+            lens_offset_y: attr_lens_offset_y,
+            near_clip_plane: attr_near_clip_plane,
+            far_clip_plane: attr_far_clip_plane,
+            camera_scale: attr_camera_scale,
         };
         cam_attr_list.push(cam_attrs);
+
+        let film_fit = cam_node.get_film_fit();
+        cam_film_fit_list.push(film_fit);
+
+        let render_image_width = cam_node.get_render_image_width();
+        let render_image_height = cam_node.get_render_image_height();
+        cam_render_res_list.push((render_image_width, render_image_height));
     }
 
     // Marker attributes
@@ -303,6 +324,8 @@ pub fn bake_scene_graph(
         tfm_attr_list,
         rotate_order_list,
         cam_attr_list,
+        cam_film_fit_list,
+        cam_render_res_list,
         mkr_attr_list,
         // Transform hierarchy struture and metadata.
         tfm_node_ids,

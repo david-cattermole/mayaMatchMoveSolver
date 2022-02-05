@@ -20,6 +20,7 @@
 
 use crate::attr::datablock::AttrDataBlock;
 use crate::constant::Real;
+use crate::math::camera::FilmFit;
 use crate::math::rotate::euler::RotateOrder;
 use crate::node::bundle::BundleNode;
 use crate::node::camera::CameraNode;
@@ -117,7 +118,14 @@ pub fn create_static_camera(
     scale: (Real, Real, Real),
     sensor: (Real, Real),
     focal_length: Real,
+    lens_offset: (Real, Real),
+    near_clip_plane: Real,
+    far_clip_plane: Real,
+    camera_scale: Real,
     rotate_order: RotateOrder,
+    film_fit: FilmFit,
+    render_image_width: i32,
+    render_image_height: i32,
 ) -> CameraNode {
     let (tx, ty, tz) = translate;
     let attr_tx = attrdb.create_attr_static(tx);
@@ -138,9 +146,15 @@ pub fn create_static_camera(
     let scale_attrs = (attr_sx, attr_sy, attr_sz);
 
     let (sensor_width, sensor_height) = sensor;
+    let (lens_offset_x, lens_offset_y) = lens_offset;
     let attr_sensor_width = attrdb.create_attr_static(sensor_width);
     let attr_sensor_height = attrdb.create_attr_static(sensor_height);
     let attr_focal_length = attrdb.create_attr_static(focal_length);
+    let attr_lens_offset_x = attrdb.create_attr_static(lens_offset_x);
+    let attr_lens_offset_y = attrdb.create_attr_static(lens_offset_y);
+    let attr_near_clip_plane = attrdb.create_attr_static(near_clip_plane);
+    let attr_far_clip_plane = attrdb.create_attr_static(far_clip_plane);
+    let attr_camera_scale = attrdb.create_attr_static(camera_scale);
 
     sg.create_camera_node(
         translate_attrs,
@@ -149,7 +163,15 @@ pub fn create_static_camera(
         attr_sensor_width,
         attr_sensor_height,
         attr_focal_length,
+        attr_lens_offset_x,
+        attr_lens_offset_y,
+        attr_near_clip_plane,
+        attr_far_clip_plane,
+        attr_camera_scale,
         rotate_order,
+        film_fit,
+        render_image_width,
+        render_image_height,
     )
 }
 

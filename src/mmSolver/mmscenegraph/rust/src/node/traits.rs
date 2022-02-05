@@ -19,6 +19,7 @@
 //
 
 use crate::attr::AttrId;
+use crate::math::camera::FilmFit;
 use crate::math::rotate::euler::RotateOrder;
 use crate::node::NodeId;
 
@@ -77,13 +78,40 @@ pub trait NodeCanViewScene {
     fn set_attr_sensor_width(&mut self, attr: AttrId);
     fn set_attr_sensor_height(&mut self, attr: AttrId);
     fn set_attr_focal_length(&mut self, attr: AttrId);
+
+    fn get_attr_lens_offset_x(&self) -> AttrId;
+    fn get_attr_lens_offset_y(&self) -> AttrId;
+    fn set_attr_lens_offset_x(&mut self, attr: AttrId);
+    fn set_attr_lens_offset_y(&mut self, attr: AttrId);
+
+    fn get_attr_near_clip_plane(&self) -> AttrId;
+    fn get_attr_far_clip_plane(&self) -> AttrId;
+    fn set_attr_near_clip_plane(&mut self, attr: AttrId);
+    fn set_attr_far_clip_plane(&mut self, attr: AttrId);
+
+    fn get_attr_camera_scale(&self) -> AttrId;
+    fn set_attr_camera_scale(&mut self, attr: AttrId);
+
+    fn get_film_fit(&self) -> FilmFit;
+    fn set_film_fit(&mut self, value: FilmFit);
+
+    fn get_render_image_width(&self) -> i32;
+    fn get_render_image_height(&self) -> i32;
+    fn set_render_image_width(&mut self, value: i32);
+    fn set_render_image_height(&mut self, value: i32);
 }
 
-pub trait NodeCanTransform2D: NodeHasId + NodeCanTranslate2D + NodeHasWeight {}
+pub trait NodeCanTransform2D:
+    NodeHasId + NodeCanTranslate2D + NodeHasWeight
+{
+}
 
 pub trait NodeCanTransform3D:
     NodeHasId + NodeCanTranslate3D + NodeCanRotate3D + NodeCanScale3D
 {
 }
 
-pub trait NodeCanTransformAndView3D: NodeCanTransform3D + NodeCanViewScene {}
+pub trait NodeCanTransformAndView3D:
+    NodeCanTransform3D + NodeCanViewScene
+{
+}

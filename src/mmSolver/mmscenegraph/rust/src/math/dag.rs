@@ -23,8 +23,10 @@ use crate::attr::AttrId;
 use crate::attr::AttrTransformIds;
 use crate::constant::FrameValue;
 use crate::constant::Matrix44;
+use crate::constant::Real;
 use crate::constant::MM_TO_INCH;
 use crate::math::camera::get_projection_matrix;
+use crate::math::camera::FilmFit;
 use crate::math::rotate::euler::RotateOrder;
 use crate::math::transform::calculate_matrix_with_values;
 // use crate::math::transform::decompose_matrix;
@@ -120,6 +122,14 @@ pub fn compute_projection_matrix_with_attrs(
     attr_sensor_x: AttrId,
     attr_sensor_y: AttrId,
     attr_focal: AttrId,
+    attr_lens_offset_x: AttrId,
+    attr_lens_offset_y: AttrId,
+    attr_near_clip_plane: AttrId,
+    attr_far_clip_plane: AttrId,
+    attr_camera_scale: AttrId,
+    film_fit: FilmFit,
+    render_image_width: i32,
+    render_image_height: i32,
     frame: FrameValue,
 ) -> Matrix44 {
     // println!("Compute Projection Matrix!");
@@ -127,29 +137,30 @@ pub fn compute_projection_matrix_with_attrs(
 
     let sensor_x = attr_data_block.get_attr_value(attr_sensor_x, frame);
     let sensor_y = attr_data_block.get_attr_value(attr_sensor_y, frame);
-
-    // TODO: Pass the correct image width and height.
-    let image_width = sensor_x * 1000.0;
-    let image_height = sensor_y * 1000.0;
-
     let sensor_x = sensor_x * MM_TO_INCH;
     let sensor_y = sensor_y * MM_TO_INCH;
 
-    let film_offset_x = 0.0;
-    let film_offset_y = 0.0;
-    let film_fit = 1; // 1 = horizontal
-    let near_clip_plane = 0.1;
-    let far_clip_plane = 10000.0;
-    let camera_scale = 1.0;
+    let lens_offset_x =
+        attr_data_block.get_attr_value(attr_lens_offset_x, frame);
+    let lens_offset_y =
+        attr_data_block.get_attr_value(attr_lens_offset_y, frame);
+    let lens_offset_x = lens_offset_x * MM_TO_INCH;
+    let lens_offset_y = lens_offset_y * MM_TO_INCH;
+
+    let near_clip_plane =
+        attr_data_block.get_attr_value(attr_near_clip_plane, frame);
+    let far_clip_plane =
+        attr_data_block.get_attr_value(attr_far_clip_plane, frame);
+    let camera_scale = attr_data_block.get_attr_value(attr_camera_scale, frame);
 
     get_projection_matrix(
         focal_length,
         sensor_x,
         sensor_y,
-        film_offset_x,
-        film_offset_y,
-        image_width,
-        image_height,
+        lens_offset_x,
+        lens_offset_y,
+        render_image_width as Real,
+        render_image_height as Real,
         film_fit,
         near_clip_plane,
         far_clip_plane,
@@ -169,12 +180,30 @@ where
     let attr_sensor_x = camera.get_attr_sensor_width();
     let attr_sensor_y = camera.get_attr_sensor_height();
     let attr_focal = camera.get_attr_focal_length();
+    let attr_lens_offset_x = camera.get_attr_lens_offset_x();
+    let attr_lens_offset_y = camera.get_attr_lens_offset_y();
+    let attr_near_clip_plane = camera.get_attr_near_clip_plane();
+    let attr_far_clip_plane = camera.get_attr_far_clip_plane();
+    let attr_camera_scale = camera.get_attr_camera_scale();
+
+    // Constants per-camera.
+    let film_fit = camera.get_film_fit();
+    let render_image_width = camera.get_render_image_width();
+    let render_image_height = camera.get_render_image_height();
 
     compute_projection_matrix_with_attrs(
         attr_data_block,
         attr_sensor_x,
         attr_sensor_y,
         attr_focal,
+        attr_lens_offset_x,
+        attr_lens_offset_y,
+        attr_near_clip_plane,
+        attr_far_clip_plane,
+        attr_camera_scale,
+        film_fit,
+        render_image_width,
+        render_image_height,
         frame,
     )
 }

@@ -27,6 +27,15 @@ use crate::constant::INCH_TO_MM;
 use crate::constant::MM_TO_CM;
 use crate::constant::RADIANS_TO_DEGREES;
 
+#[repr(u8)]
+#[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
+pub enum FilmFit {
+    Fill = 0,
+    Horizontal = 1,
+    Vertical = 2,
+    Overscan = 3,
+}
+
 #[derive(Debug)]
 pub struct FilmFitScale {
     x: Real,
@@ -75,7 +84,7 @@ mod tests {
         let film_offset_y = 0.0;
         let image_width = 2048.0;
         let image_height = 1556.0;
-        let film_fit = 1; // 1 = horizontal
+        let film_fit = FilmFit::Horizontal;
         let near_clip_plane = 0.1;
         let far_clip_plane = 10000.0;
         let camera_scale = 1.0;
@@ -115,7 +124,7 @@ pub fn get_angle_of_view_as_radian(
     film_back_size: Real,
     focal_length: Real,
 ) -> Real {
-    println!("Get Angle of View as radian");
+    // println!("Get Angle of View as radian");
     let angle_of_view = film_back_size * (0.5 / focal_length);
     2.0 * angle_of_view.atan()
 }
@@ -174,7 +183,7 @@ pub fn apply_film_fit_logic(
     frustum: Frustum,
     image_aspect_ratio: Real,
     film_aspect_ratio: Real,
-    film_fit: u8, // 0=fill, 1=horizontal, 2=vertical, 3=overscan
+    film_fit: FilmFit,
 ) -> (FilmFitScale, Screen) {
     let mut film_fit_scale = FilmFitScale { x: 1.0, y: 1.0 };
     let mut screen = Screen {
@@ -187,22 +196,17 @@ pub fn apply_film_fit_logic(
     };
 
     match film_fit {
-        // horizontal
-        1 => {
+        FilmFit::Horizontal => {
             film_fit_scale.x = image_aspect_ratio / film_aspect_ratio;
             screen.size_x = frustum.right - frustum.left;
             screen.size_y = screen.size_x / image_aspect_ratio;
         }
-
-        // vertical
-        2 => {
+        FilmFit::Vertical => {
             film_fit_scale.x = 1.0 / (image_aspect_ratio / film_aspect_ratio);
             screen.size_y = frustum.top - frustum.bottom;
             screen.size_x = screen.size_y * image_aspect_ratio;
         }
-
-        // fill
-        0 => {
+        FilmFit::Fill => {
             if film_aspect_ratio > image_aspect_ratio {
                 film_fit_scale.x = film_aspect_ratio / image_aspect_ratio;
                 screen.size_y = frustum.top - frustum.bottom;
@@ -215,8 +219,7 @@ pub fn apply_film_fit_logic(
                     / film_aspect_ratio;
             }
         }
-        3 => {
-            // overscan
+        FilmFit::Overscan => {
             if film_aspect_ratio > image_aspect_ratio {
                 film_fit_scale.y = image_aspect_ratio / film_aspect_ratio;
                 screen.size_x = frustum.right - frustum.left;
@@ -229,7 +232,6 @@ pub fn apply_film_fit_logic(
                 screen.size_y = frustum.top - frustum.bottom;
             }
         }
-        _ => panic!("Wrong film fit value: {}", film_fit),
     }
     screen.right *= film_fit_scale.x;
     screen.left *= film_fit_scale.x;
@@ -283,7 +285,7 @@ pub fn get_projection_matrix(
     film_offset_y: Real,
     image_width: Real,
     image_height: Real,
-    film_fit: u8,
+    film_fit: FilmFit,
     near_clip_plane: Real,
     far_clip_plane: Real,
     camera_scale: Real,

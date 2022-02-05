@@ -51,6 +51,11 @@ pub struct AttrCameraIds {
     pub sensor_width: AttrId,
     pub sensor_height: AttrId,
     pub focal_length: AttrId,
+    pub lens_offset_x: AttrId,
+    pub lens_offset_y: AttrId,
+    pub near_clip_plane: AttrId,
+    pub far_clip_plane: AttrId,
+    pub camera_scale: AttrId,
 }
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]

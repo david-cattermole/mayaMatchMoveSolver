@@ -84,7 +84,10 @@ public:
         Rotate3DAttrIds rotate_attrs,
         Scale3DAttrIds scale_attrs,
         CameraAttrIds camera_attrs,
-        RotateOrder rotate_order
+        RotateOrder rotate_order,
+        FilmFit film_fit,
+        int32_t render_image_width,
+        int32_t render_image_height
     ) noexcept;
 
     MMSCENEGRAPH_API_EXPORT

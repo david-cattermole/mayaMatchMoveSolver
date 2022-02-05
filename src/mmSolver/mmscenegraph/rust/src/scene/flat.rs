@@ -27,6 +27,7 @@ use crate::attr::AttrTransformIds;
 use crate::constant::FrameValue;
 use crate::constant::Matrix44;
 use crate::constant::Real;
+use crate::math::camera::FilmFit;
 use crate::math::dag::compute_projection_matrix_with_attrs;
 use crate::math::dag::compute_world_matrices_with_attrs;
 use crate::math::reprojection::reproject_as_normalised_coord;
@@ -53,6 +54,8 @@ pub struct FlatScene {
     pub tfm_attr_list: Vec<AttrTransformIds>,
     pub rotate_order_list: Vec<RotateOrder>,
     pub cam_attr_list: Vec<AttrCameraIds>,
+    pub cam_film_fit_list: Vec<FilmFit>,
+    pub cam_render_res_list: Vec<(i32, i32)>,
     pub mkr_attr_list: Vec<AttrMarkerIds>,
 
     // The transform metadata for the nodes.
@@ -81,6 +84,8 @@ impl FlatScene {
         tfm_attr_list: Vec<AttrTransformIds>,
         rotate_order_list: Vec<RotateOrder>,
         cam_attr_list: Vec<AttrCameraIds>,
+        cam_film_fit_list: Vec<FilmFit>,
+        cam_render_res_list: Vec<(i32, i32)>,
         mkr_attr_list: Vec<AttrMarkerIds>,
 
         tfm_node_ids: Vec<NodeId>,
@@ -98,6 +103,8 @@ impl FlatScene {
             tfm_attr_list,
             rotate_order_list,
             cam_attr_list,
+            cam_film_fit_list,
+            cam_render_res_list,
             mkr_attr_list,
 
             tfm_node_ids,
@@ -242,11 +249,27 @@ impl FlatScene {
         self.out_deviation_list
             .reserve(num_markers * NUM_VALUES_PER_DEVIATION * num_frames);
 
-        let cam_attrs_iter = (0..).zip(self.cam_attr_list.iter());
-        for (i, cam_attrs) in cam_attrs_iter {
-            let cam_sensor_width = cam_attrs.sensor_width;
-            let cam_sensor_height = cam_attrs.sensor_height;
-            let cam_focal_length = cam_attrs.focal_length;
+        let cam_attrs_iter = (0..).zip(
+            self.cam_attr_list.iter().zip(
+                self.cam_film_fit_list
+                    .iter()
+                    .zip(self.cam_render_res_list.iter()),
+            ),
+        );
+
+        for (
+            i,
+            (cam_attrs, (cam_film_fit, (cam_render_width, cam_render_height))),
+        ) in cam_attrs_iter
+        {
+            let attr_cam_sensor_width = cam_attrs.sensor_width;
+            let attr_cam_sensor_height = cam_attrs.sensor_height;
+            let attr_cam_focal_length = cam_attrs.focal_length;
+            let attr_cam_lens_offset_x = cam_attrs.lens_offset_x;
+            let attr_cam_lens_offset_y = cam_attrs.lens_offset_y;
+            let attr_cam_near_clip_plane = cam_attrs.near_clip_plane;
+            let attr_cam_far_clip_plane = cam_attrs.far_clip_plane;
+            let attr_cam_camera_scale = cam_attrs.camera_scale;
 
             let mkr_attrs_iter = (0..).zip(self.mkr_attr_list.iter());
             for (mkr_index, mkr_attrs) in mkr_attrs_iter {
@@ -266,9 +289,17 @@ impl FlatScene {
                         self.out_cam_world_matrix_list[cam_index_at_frame];
                     let cam_proj_matrix = compute_projection_matrix_with_attrs(
                         &attrdb,
-                        cam_sensor_width,
-                        cam_sensor_height,
-                        cam_focal_length,
+                        attr_cam_sensor_width,
+                        attr_cam_sensor_height,
+                        attr_cam_focal_length,
+                        attr_cam_lens_offset_x,
+                        attr_cam_lens_offset_y,
+                        attr_cam_near_clip_plane,
+                        attr_cam_far_clip_plane,
+                        attr_cam_camera_scale,
+                        *cam_film_fit,
+                        *cam_render_width,
+                        *cam_render_height,
                         frame,
                     );
                     // println!("Camera Transform Matrix: {}", cam_tfm_matrix);
@@ -282,13 +313,27 @@ impl FlatScene {
                     self.out_point_list.push(reproj_mat[0]);
                     self.out_point_list.push(reproj_mat[1]);
 
+                    // Scale the Marker Y for deviation calculation.
+                    let cam_sensor_width =
+                        attrdb.get_attr_value(attr_cam_sensor_width, frame);
+                    let cam_sensor_height =
+                        attrdb.get_attr_value(attr_cam_sensor_height, frame);
+                    let sensor_aspect = cam_sensor_width / cam_sensor_height;
+                    let render_aspect = (*cam_render_width as Real)
+                        / (*cam_render_height as Real);
+                    let aspect = render_aspect / sensor_aspect;
+
                     let mkr_tx = attrdb.get_attr_value(mkr_attrs.tx, frame);
                     let mkr_ty = attrdb.get_attr_value(mkr_attrs.ty, frame);
+                    let mkr_ty = mkr_ty * aspect;
                     self.out_marker_list.push(mkr_tx);
                     self.out_marker_list.push(mkr_ty);
 
                     // // TODO: Use marker weight?
                     // let mkr_weight = attr_data_block.get_attr_value(mkr_attr.weight, frame);
+
+                    // TODO: Compute the dot product of the camera
+                    // forward vector and the direction to the bundle.
 
                     let dev_x = (mkr_tx - reproj_mat[0]).abs();
                     let dev_y = (mkr_ty - reproj_mat[1]).abs();

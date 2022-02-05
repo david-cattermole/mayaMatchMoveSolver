@@ -25,6 +25,7 @@ use petgraph::Graph as PGGraph;
 
 use crate::attr::AttrId;
 use crate::constant::NodeIndex;
+use crate::math::camera::FilmFit;
 use crate::math::rotate::euler::RotateOrder;
 use crate::node::bundle::BundleNode;
 use crate::node::camera::CameraNode;
@@ -169,7 +170,15 @@ impl SceneGraph {
         sensor_width_attr: AttrId,
         sensor_height_attr: AttrId,
         focal_length_attr: AttrId,
+        lens_offset_x_attr: AttrId,
+        lens_offset_y_attr: AttrId,
+        near_clip_plane_attr: AttrId,
+        far_clip_plane_attr: AttrId,
+        camera_scale_attr: AttrId,
         rotate_order: RotateOrder,
+        film_fit: FilmFit,
+        render_image_width: i32,
+        render_image_height: i32,
     ) -> CameraNode {
         let mut node = CameraNode::default();
 
@@ -192,6 +201,15 @@ impl SceneGraph {
         node.set_attr_sensor_width(sensor_width_attr);
         node.set_attr_sensor_height(sensor_height_attr);
         node.set_attr_focal_length(focal_length_attr);
+        node.set_attr_lens_offset_x(lens_offset_x_attr);
+        node.set_attr_lens_offset_y(lens_offset_y_attr);
+        node.set_attr_near_clip_plane(near_clip_plane_attr);
+        node.set_attr_far_clip_plane(far_clip_plane_attr);
+        node.set_attr_camera_scale(camera_scale_attr);
+
+        node.set_film_fit(film_fit);
+        node.set_render_image_width(render_image_width);
+        node.set_render_image_height(render_image_height);
 
         let node_id = NodeId::Camera(self.cam_nodes.len() as NodeIndex);
         node.set_id(node_id);

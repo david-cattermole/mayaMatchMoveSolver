@@ -93,14 +93,20 @@ SceneGraph::create_camera_node(
         Rotate3DAttrIds rotate_attrs,
         Scale3DAttrIds scale_attrs,
         CameraAttrIds camera_attrs,
-        RotateOrder rotate_order
+        RotateOrder rotate_order,
+        FilmFit film_fit,
+        int32_t render_image_width,
+        int32_t render_image_height
 ) noexcept {
     return inner_->create_camera_node(
         translate_attrs,
         rotate_attrs,
         scale_attrs,
         camera_attrs,
-        rotate_order);
+        rotate_order,
+        film_fit,
+        render_image_width,
+        render_image_height);
 }
 
 MarkerNode

@@ -844,6 +844,7 @@ namespace mmscenegraph {
   struct CameraAttrIds;
   struct MarkerAttrIds;
   enum class RotateOrder : ::std::uint8_t;
+  enum class FilmFit : ::std::uint8_t;
   struct TransformNode;
   struct BundleNode;
   struct CameraNode;
@@ -960,6 +961,11 @@ struct CameraAttrIds final {
   ::mmscenegraph::AttrId sensor_width;
   ::mmscenegraph::AttrId sensor_height;
   ::mmscenegraph::AttrId focal_length;
+  ::mmscenegraph::AttrId lens_offset_x;
+  ::mmscenegraph::AttrId lens_offset_y;
+  ::mmscenegraph::AttrId near_clip_plane;
+  ::mmscenegraph::AttrId far_clip_plane;
+  ::mmscenegraph::AttrId camera_scale;
 
   using IsRelocatable = ::std::true_type;
 };
@@ -988,6 +994,17 @@ enum class RotateOrder : ::std::uint8_t {
   kUnknown = 255,
 };
 #endif // CXXBRIDGE1_ENUM_mmscenegraph$RotateOrder
+
+#ifndef CXXBRIDGE1_ENUM_mmscenegraph$FilmFit
+#define CXXBRIDGE1_ENUM_mmscenegraph$FilmFit
+enum class FilmFit : ::std::uint8_t {
+  kFill = 0,
+  kHorizontal = 1,
+  kVertical = 2,
+  kOverscan = 3,
+  kUnknown = 255,
+};
+#endif // CXXBRIDGE1_ENUM_mmscenegraph$FilmFit
 
 #ifndef CXXBRIDGE1_STRUCT_mmscenegraph$TransformNode
 #define CXXBRIDGE1_STRUCT_mmscenegraph$TransformNode
@@ -1056,6 +1073,14 @@ struct CameraNode final {
   ::mmscenegraph::AttrId attr_sensor_width;
   ::mmscenegraph::AttrId attr_sensor_height;
   ::mmscenegraph::AttrId attr_focal_length;
+  ::mmscenegraph::AttrId attr_lens_offset_x;
+  ::mmscenegraph::AttrId attr_lens_offset_y;
+  ::mmscenegraph::AttrId attr_near_clip_plane;
+  ::mmscenegraph::AttrId attr_far_clip_plane;
+  ::mmscenegraph::AttrId attr_camera_scale;
+  ::mmscenegraph::FilmFit film_fit;
+  ::std::int32_t render_image_width;
+  ::std::int32_t render_image_height;
 
   bool operator==(const CameraNode &) const noexcept;
   bool operator!=(const CameraNode &) const noexcept;
@@ -1116,7 +1141,7 @@ struct ShimSceneGraph final : public ::rust::Opaque {
   MMSCENEGRAPH_API_EXPORT ::std::size_t num_marker_nodes() const noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::TransformNode create_transform_node(::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::RotateOrder rotate_order) noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::BundleNode create_bundle_node(::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::RotateOrder rotate_order) noexcept;
-  MMSCENEGRAPH_API_EXPORT ::mmscenegraph::CameraNode create_camera_node(::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::CameraAttrIds camera_attrs, ::mmscenegraph::RotateOrder rotate_order) noexcept;
+  MMSCENEGRAPH_API_EXPORT ::mmscenegraph::CameraNode create_camera_node(::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::CameraAttrIds camera_attrs, ::mmscenegraph::RotateOrder rotate_order, ::mmscenegraph::FilmFit film_fit, ::std::int32_t render_image_width, ::std::int32_t render_image_height) noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::MarkerNode create_marker_node(::mmscenegraph::MarkerAttrIds marker_attrs) noexcept;
   MMSCENEGRAPH_API_EXPORT bool link_marker_to_camera(::mmscenegraph::NodeId mkr_node_id, ::mmscenegraph::NodeId cam_node_id) noexcept;
   MMSCENEGRAPH_API_EXPORT bool link_marker_to_bundle(::mmscenegraph::NodeId mkr_node_id, ::mmscenegraph::NodeId bnd_node_id) noexcept;
@@ -1259,7 +1284,7 @@ void mmscenegraph$cxxbridge1$ShimSceneGraph$clear(::mmscenegraph::ShimSceneGraph
 
 ::mmscenegraph::BundleNode mmscenegraph$cxxbridge1$ShimSceneGraph$create_bundle_node(::mmscenegraph::ShimSceneGraph &self, ::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::RotateOrder rotate_order) noexcept;
 
-::mmscenegraph::CameraNode mmscenegraph$cxxbridge1$ShimSceneGraph$create_camera_node(::mmscenegraph::ShimSceneGraph &self, ::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::CameraAttrIds camera_attrs, ::mmscenegraph::RotateOrder rotate_order) noexcept;
+::mmscenegraph::CameraNode mmscenegraph$cxxbridge1$ShimSceneGraph$create_camera_node(::mmscenegraph::ShimSceneGraph &self, ::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::CameraAttrIds camera_attrs, ::mmscenegraph::RotateOrder rotate_order, ::mmscenegraph::FilmFit film_fit, ::std::int32_t render_image_width, ::std::int32_t render_image_height) noexcept;
 
 ::mmscenegraph::MarkerNode mmscenegraph$cxxbridge1$ShimSceneGraph$create_marker_node(::mmscenegraph::ShimSceneGraph &self, ::mmscenegraph::MarkerAttrIds marker_attrs) noexcept;
 
@@ -1625,8 +1650,8 @@ MMSCENEGRAPH_API_EXPORT ::mmscenegraph::BundleNode ShimSceneGraph::create_bundle
   return mmscenegraph$cxxbridge1$ShimSceneGraph$create_bundle_node(*this, translate_attrs, rotate_attrs, scale_attrs, rotate_order);
 }
 
-MMSCENEGRAPH_API_EXPORT ::mmscenegraph::CameraNode ShimSceneGraph::create_camera_node(::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::CameraAttrIds camera_attrs, ::mmscenegraph::RotateOrder rotate_order) noexcept {
-  return mmscenegraph$cxxbridge1$ShimSceneGraph$create_camera_node(*this, translate_attrs, rotate_attrs, scale_attrs, camera_attrs, rotate_order);
+MMSCENEGRAPH_API_EXPORT ::mmscenegraph::CameraNode ShimSceneGraph::create_camera_node(::mmscenegraph::Translate3DAttrIds translate_attrs, ::mmscenegraph::Rotate3DAttrIds rotate_attrs, ::mmscenegraph::Scale3DAttrIds scale_attrs, ::mmscenegraph::CameraAttrIds camera_attrs, ::mmscenegraph::RotateOrder rotate_order, ::mmscenegraph::FilmFit film_fit, ::std::int32_t render_image_width, ::std::int32_t render_image_height) noexcept {
+  return mmscenegraph$cxxbridge1$ShimSceneGraph$create_camera_node(*this, translate_attrs, rotate_attrs, scale_attrs, camera_attrs, rotate_order, film_fit, render_image_width, render_image_height);
 }
 
 MMSCENEGRAPH_API_EXPORT ::mmscenegraph::MarkerNode ShimSceneGraph::create_marker_node(::mmscenegraph::MarkerAttrIds marker_attrs) noexcept {

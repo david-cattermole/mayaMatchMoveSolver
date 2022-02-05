@@ -283,17 +283,25 @@ get_scale_attrs(
 MStatus
 get_camera_attrs(
     Attr &mayaAttr,
+    CameraPtr &camera,
     const MTimeArray &frameList,
     const mmsg::FrameValue start_frame,
     const mmsg::FrameValue end_frame,
     const int timeEvalMode,
     mmsg::AttrDataBlock &out_attrDataBlock,
     mmsg::CameraAttrIds &out_attrIds,
+    mmsg::FilmFit &out_film_fit,
+    int32_t &out_render_image_width,
+    int32_t &out_render_image_height,
     StringToAttrIdMap &out_attrNameToAttrIdMap
 ) {
     MStatus status = MS::kSuccess;
     double scaleFactor = 1.0;  // No conversion.
     double inch_to_mm = 25.4;
+
+    out_film_fit = static_cast<mmsg::FilmFit>(camera->getFilmFitValue());
+    out_render_image_width = camera->getRenderWidthValue();
+    out_render_image_height = camera->getRenderHeightValue();
 
     add_attribute(
         mayaAttr,
@@ -334,6 +342,71 @@ get_camera_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
+    add_attribute(
+        mayaAttr,
+        MString("horizontalFilmOffset"),
+        frameList,
+        start_frame,
+        end_frame,
+        timeEvalMode,
+        inch_to_mm,
+        out_attrDataBlock,
+        out_attrIds.lens_offset_x,
+        out_attrNameToAttrIdMap);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    add_attribute(
+        mayaAttr,
+        MString("verticalFilmOffset"),
+        frameList,
+        start_frame,
+        end_frame,
+        timeEvalMode,
+        inch_to_mm,
+        out_attrDataBlock,
+        out_attrIds.lens_offset_y,
+        out_attrNameToAttrIdMap);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    add_attribute(
+        mayaAttr,
+        MString("nearClipPlane"),
+        frameList,
+        start_frame,
+        end_frame,
+        timeEvalMode,
+        scaleFactor,
+        out_attrDataBlock,
+        out_attrIds.near_clip_plane,
+        out_attrNameToAttrIdMap);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    add_attribute(
+        mayaAttr,
+        MString("farClipPlane"),
+        frameList,
+        start_frame,
+        end_frame,
+        timeEvalMode,
+        scaleFactor,
+        out_attrDataBlock,
+        out_attrIds.far_clip_plane,
+        out_attrNameToAttrIdMap);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    add_attribute(
+        mayaAttr,
+        MString("cameraScale"),
+        frameList,
+        start_frame,
+        end_frame,
+        timeEvalMode,
+        scaleFactor,
+        out_attrDataBlock,
+        out_attrIds.camera_scale,
+        out_attrNameToAttrIdMap);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
     return status;
 }
 
@@ -361,7 +434,6 @@ get_rotate_order_attr(
     }
     return status;
 }
-
 
 MStatus
 get_transform_attrs(
@@ -406,6 +478,29 @@ get_transform_attrs(
     get_rotate_order_attr(
         mayaAttr, timeEvalMode, out_rotateOrder);
 
+    return status;
+}
+
+MStatus
+get_film_fit_attr(
+    Attr &mayaAttr,
+    const int timeEvalMode,
+    mmsg::FilmFit &out_filmFit
+) {
+    MStatus status = MS::kSuccess;
+
+    status = mayaAttr.setAttrName(MString("filmFit"));
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    short value = 0;
+    mayaAttr.getValue(value, timeEvalMode);
+    switch (value) {
+        break; case 0: out_filmFit = mmsg::FilmFit::kFill;
+        break; case 1: out_filmFit = mmsg::FilmFit::kHorizontal;
+        break; case 2: out_filmFit = mmsg::FilmFit::kVertical;
+        break; case 3: out_filmFit = mmsg::FilmFit::kOverscan;
+        break; default: out_filmFit = mmsg::FilmFit::kUnknown;
+    }
     return status;
 }
 
@@ -615,14 +710,21 @@ add_cameras(
         status = mayaAttr.setNodeName(shape_name);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
+        auto film_fit = mmsg::FilmFit::kUnknown;
+        auto render_image_width = 0;
+        auto render_image_height = 0;
         get_camera_attrs(
             mayaAttr,
+            cam_ptr,
             frameList,
             start_frame,
             end_frame,
             timeEvalMode,
             out_attrDataBlock,
             camera_attr_ids,
+            film_fit,
+            render_image_width,
+            render_image_height,
             out_attrNameToAttrIdMap
         );
 
@@ -631,7 +733,10 @@ add_cameras(
             rotate_attr_ids,
             scale_attr_ids,
             camera_attr_ids,
-            rotate_order);
+            rotate_order,
+            film_fit,
+            render_image_width,
+            render_image_height);
         out_cameraNodes.push_back(cam_node);
         out_evalObjects.add_camera(cam_node);
 
@@ -880,6 +985,7 @@ MStatus construct_scene_graph(
     std::vector<mmsg::MarkerNode> &out_markerNodes,
     std::vector<mmscenegraph::AttrId> &out_attrIdList
 ) {
+    // MMSOLVER_INFO("construct_scene_graph -----------------------------------");
     MStatus status = MS::kSuccess;
 
     auto evalObjects = mmsg::EvaluationObjects();

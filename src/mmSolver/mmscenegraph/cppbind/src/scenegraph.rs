@@ -26,6 +26,7 @@ use crate::attr::bind_to_core_translate_3d_attr_ids;
 use crate::cxxbridge::ffi::BundleNode as BindBundleNode;
 use crate::cxxbridge::ffi::CameraAttrIds as BindCameraAttrIds;
 use crate::cxxbridge::ffi::CameraNode as BindCameraNode;
+use crate::cxxbridge::ffi::FilmFit as BindFilmFit;
 use crate::cxxbridge::ffi::MarkerAttrIds as BindMarkerAttrIds;
 use crate::cxxbridge::ffi::MarkerNode as BindMarkerNode;
 use crate::cxxbridge::ffi::NodeId as BindNodeId;
@@ -34,6 +35,7 @@ use crate::cxxbridge::ffi::RotateOrder as BindRotateOrder;
 use crate::cxxbridge::ffi::Scale3DAttrIds as BindScale3DAttrIds;
 use crate::cxxbridge::ffi::TransformNode as BindTransformNode;
 use crate::cxxbridge::ffi::Translate3DAttrIds as BindTranslate3DAttrIds;
+use crate::math::bind_to_core_film_fit;
 use crate::math::bind_to_core_rotate_order;
 use crate::node::bind_to_core_node_id;
 use crate::node::core_to_bind_bundle_node;
@@ -113,13 +115,24 @@ impl ShimSceneGraph {
         scale_attrs: BindScale3DAttrIds,
         camera_attrs: BindCameraAttrIds,
         rotate_order: BindRotateOrder,
+        film_fit: BindFilmFit,
+        render_image_width: i32,
+        render_image_height: i32,
     ) -> BindCameraNode {
         let translate_attrs =
             bind_to_core_translate_3d_attr_ids(translate_attrs);
         let rotate_attrs = bind_to_core_rotate_3d_attr_ids(rotate_attrs);
         let scale_attrs = bind_to_core_scale_3d_attr_ids(scale_attrs);
-        let (sensor_width_attr, sensor_height_attr, focal_length_attr) =
-            bind_to_core_camera_attr_ids(camera_attrs);
+        let (
+            sensor_width_attr,
+            sensor_height_attr,
+            focal_length_attr,
+            lens_offset_x_attr,
+            lens_offset_y_attr,
+            near_clip_plane_attr,
+            far_clip_plane_attr,
+            camera_scale_attr,
+        ) = bind_to_core_camera_attr_ids(camera_attrs);
 
         let core_node = self.inner.create_camera_node(
             translate_attrs,
@@ -128,7 +141,15 @@ impl ShimSceneGraph {
             sensor_width_attr,
             sensor_height_attr,
             focal_length_attr,
+            lens_offset_x_attr,
+            lens_offset_y_attr,
+            near_clip_plane_attr,
+            far_clip_plane_attr,
+            camera_scale_attr,
             bind_to_core_rotate_order(rotate_order),
+            bind_to_core_film_fit(film_fit),
+            render_image_width,
+            render_image_height,
         );
 
         core_to_bind_camera_node(core_node)

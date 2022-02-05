@@ -443,28 +443,38 @@ void measureErrors_mayaDag(
         MPoint cam_pos;
         camera->getWorldPosition(cam_pos, frame, timeEvalMode);
         camera->getForwardDirection(cam_dir, frame, timeEvalMode);
-        double filmBackWidth = camera->getFilmbackWidthValue(frame, timeEvalMode);
-        double filmBackHeight = camera->getFilmbackHeightValue(frame, timeEvalMode);
-        double filmBackInvAspect = filmBackHeight / filmBackWidth;
 
         BundlePtr bnd = marker->getBundle();
 
         // When using lens distortion, we need to re-compute the
         // marker positions, since they are affected by lens
         // distortion.
+        double mkr_x = 0.0;
+        double mkr_y = 0.0;
 #if USE_MARKER_POSITION_CACHE == 1
         // Use pre-computed marker position and weight
         mkr_mpos = ud->markerPosList[i];
+        mkr_x = mkr_mpos.x;
+        mkr_y = mkr_mpos.y;
 #else
-        status = marker->getPos(mkr_mpos, frame, timeEvalMode);
+        status = marker->getPosXY(mkr_x, mkr_y, frame, timeEvalMode);
         CHECK_MSTATUS(status);
-        mkr_mpos = mkr_mpos * cameraWorldProjectionMatrix;
-        mkr_mpos.cartesianize();
-        // convert to -0.5 to 0.5, maintaining the aspect
-        // ratio of the film back.
-        mkr_mpos[0] *= 0.5;
-        mkr_mpos[1] *= 0.5 * filmBackInvAspect;
 #endif
+        // TODO: Apply lens distortion to marker position.
+
+        // Scale marker Y.
+        {
+            double filmBackWidth = camera->getFilmbackWidthValue(frame, timeEvalMode);
+            double filmBackHeight = camera->getFilmbackHeightValue(frame, timeEvalMode);
+            int32_t renderWidth = camera->getRenderWidthValue();
+            int32_t renderHeight = camera->getRenderHeightValue();
+            double filmBackAspect = filmBackWidth / filmBackHeight;
+            double renderAspect =
+                static_cast<double>(renderWidth) / static_cast<double>(renderHeight);
+            double aspect = renderAspect / filmBackAspect;
+            mkr_y *= aspect;
+        }
+
         double mkr_weight = ud->markerWeightList[i];
         assert(mkr_weight > 0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
         mkr_weight = std::sqrt(mkr_weight);
@@ -478,10 +488,10 @@ void measureErrors_mayaDag(
         bnd_dir.normalize();
         bnd_mpos = bnd_mpos * cameraWorldProjectionMatrix;
         bnd_mpos.cartesianize();
-        // Convert to -0.5 to 0.5, maintaining the aspect ratio of the
+        // Convert to -0.5 to 0.5 range for 2D coordinates inside the
         // film back.
         bnd_mpos[0] *= 0.5;
-        bnd_mpos[1] *= 0.5 * filmBackInvAspect;
+        bnd_mpos[1] *= 0.5;
 
         // Is the bundle behind the camera?
         bool behind_camera = false;
@@ -498,18 +508,20 @@ void measureErrors_mayaDag(
         // bad idea as it will introduce non-linearities, we are
         // better off using something like 'x*x - y*y'. It would
         // be best to test this detail.
-        double dx = fabs(mkr_mpos.x - bnd_mpos.x) * ud->imageWidth;
-        double dy = fabs(mkr_mpos.y - bnd_mpos.y) * ud->imageWidth;
+        double dx = fabs(mkr_x - bnd_mpos.x) * ud->imageWidth;
+        double dy = fabs(mkr_y - bnd_mpos.y) * ud->imageWidth;
         double d = distance_2d(mkr_mpos, bnd_mpos) * ud->imageWidth;
 
         int errorIndex = i * ERRORS_PER_MARKER;
-        errors[errorIndex + 0] = dx * mkr_weight * behind_camera_error_factor;
-        errors[errorIndex + 1] = dy * mkr_weight * behind_camera_error_factor;
+        auto errorIndex_x = errorIndex + 0;
+        auto errorIndex_y = errorIndex + 1;
+        errors[errorIndex_x] = dx * mkr_weight * behind_camera_error_factor;
+        errors[errorIndex_y] = dy * mkr_weight * behind_camera_error_factor;
 
         // 'ud->errorList' is the deviation shown to the user, it
         // should not have any loss functions or scaling applied to it.
-        ud->errorList[errorIndex + 0] = dx * behind_camera_error_factor;
-        ud->errorList[errorIndex + 1] = dy * behind_camera_error_factor;
+        ud->errorList[errorIndex_x] = dx * behind_camera_error_factor;
+        ud->errorList[errorIndex_y] = dy * behind_camera_error_factor;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) { error_max = d; }
@@ -650,26 +662,31 @@ void measureErrors_mmSceneGraph(
         assert(mkr_weight > 0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
         mkr_weight = std::sqrt(mkr_weight);
 
+        // TODO: Calculate 'behind_camera_error_factor', the same as the Maya DAG function.
+        double behind_camera_error_factor = 1.0;
+
         auto errorIndex = i * ERRORS_PER_MARKER;
-        // auto mkr_x = out_marker_list[errorIndex + 0];
-        // auto mkr_y = out_marker_list[errorIndex + 1];
-        // auto point_x = out_point_list[errorIndex + 0];
-        // auto point_y = out_point_list[errorIndex + 1];
-        auto dx = out_deviation_list[errorIndex + 0] * ud->imageWidth;
-        auto dy = out_deviation_list[errorIndex + 1] * ud->imageWidth;
-        // MMSOLVER_INFO("point: " << point_x << ", " << point_y
-        //      << " mkr: " << mkr_x << ", " << mkr_y
-        //      << " dev: " << dx << ", " << dy);
+        auto errorIndex_x = errorIndex + 0;
+        auto errorIndex_y = errorIndex + 1;
+        auto mkr_x = out_marker_list[errorIndex_x];
+        auto mkr_y = out_marker_list[errorIndex_y];
+        auto point_x = out_point_list[errorIndex_x];
+        auto point_y = out_point_list[errorIndex_y];
+
+        auto dx = out_deviation_list[errorIndex_x];
+        auto dy = out_deviation_list[errorIndex_y];
+        auto ddx = dx * ud->imageWidth;
+        auto ddy = dy * ud->imageWidth;
 
         double d = std::sqrt((dx * dx) + (dy * dy)) * ud->imageWidth;
 
-        errors[errorIndex + 0] = dx * mkr_weight;
-        errors[errorIndex + 1] = dy * mkr_weight;
+        errors[errorIndex_x] = dx * mkr_weight * behind_camera_error_factor;
+        errors[errorIndex_y] = dy * mkr_weight * behind_camera_error_factor;
 
         // 'ud->errorList' is the deviation shown to the user, it
         // should not have any loss functions or scaling applied to it.
-        ud->errorList[errorIndex + 0] = dx;
-        ud->errorList[errorIndex + 1] = dy;
+        ud->errorList[errorIndex_x] = dx * behind_camera_error_factor;
+        ud->errorList[errorIndex_y] = dy * behind_camera_error_factor;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) { error_max = d; }

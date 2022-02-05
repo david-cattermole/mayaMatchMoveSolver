@@ -85,11 +85,25 @@ pub fn bind_to_core_scale_3d_attr_ids(
 
 pub fn bind_to_core_camera_attr_ids(
     bind_attrs: BindCameraAttrIds,
-) -> (CoreAttrId, CoreAttrId, CoreAttrId) {
+) -> (
+    CoreAttrId,
+    CoreAttrId,
+    CoreAttrId,
+    CoreAttrId,
+    CoreAttrId,
+    CoreAttrId,
+    CoreAttrId,
+    CoreAttrId,
+) {
     (
         bind_to_core_attr_id(bind_attrs.sensor_width),
         bind_to_core_attr_id(bind_attrs.sensor_height),
         bind_to_core_attr_id(bind_attrs.focal_length),
+        bind_to_core_attr_id(bind_attrs.lens_offset_x),
+        bind_to_core_attr_id(bind_attrs.lens_offset_y),
+        bind_to_core_attr_id(bind_attrs.near_clip_plane),
+        bind_to_core_attr_id(bind_attrs.far_clip_plane),
+        bind_to_core_attr_id(bind_attrs.camera_scale),
     )
 }
 

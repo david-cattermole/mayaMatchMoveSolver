@@ -19,6 +19,7 @@
 //
 
 use crate::attr::AttrId;
+use crate::math::camera::FilmFit;
 use crate::math::rotate::euler::RotateOrder;
 use crate::node::traits::NodeCanRotate3D;
 use crate::node::traits::NodeCanScale3D;
@@ -45,6 +46,14 @@ pub struct CameraNode {
     attr_sensor_width: AttrId,
     attr_sensor_height: AttrId,
     attr_focal_length: AttrId,
+    attr_lens_offset_x: AttrId,
+    attr_lens_offset_y: AttrId,
+    attr_near_clip_plane: AttrId,
+    attr_far_clip_plane: AttrId,
+    attr_camera_scale: AttrId,
+    film_fit: FilmFit,
+    render_image_width: i32,
+    render_image_height: i32,
 }
 
 impl Default for CameraNode {
@@ -64,6 +73,14 @@ impl Default for CameraNode {
             attr_sensor_width: AttrId::None,
             attr_sensor_height: AttrId::None,
             attr_focal_length: AttrId::None,
+            attr_lens_offset_x: AttrId::None,
+            attr_lens_offset_y: AttrId::None,
+            attr_near_clip_plane: AttrId::None,
+            attr_far_clip_plane: AttrId::None,
+            attr_camera_scale: AttrId::None,
+            film_fit: FilmFit::Horizontal,
+            render_image_width: 1920,
+            render_image_height: 1080,
         }
     }
 }
@@ -171,6 +188,70 @@ impl NodeCanViewScene for CameraNode {
 
     fn set_attr_focal_length(&mut self, attr: AttrId) {
         self.attr_focal_length = attr;
+    }
+
+    fn get_attr_lens_offset_x(&self) -> AttrId {
+        self.attr_lens_offset_x
+    }
+
+    fn get_attr_lens_offset_y(&self) -> AttrId {
+        self.attr_lens_offset_y
+    }
+
+    fn set_attr_lens_offset_x(&mut self, attr: AttrId) {
+        self.attr_lens_offset_x = attr;
+    }
+
+    fn set_attr_lens_offset_y(&mut self, attr: AttrId) {
+        self.attr_lens_offset_y = attr;
+    }
+
+    fn get_attr_near_clip_plane(&self) -> AttrId {
+        self.attr_near_clip_plane
+    }
+
+    fn get_attr_far_clip_plane(&self) -> AttrId {
+        self.attr_far_clip_plane
+    }
+
+    fn set_attr_near_clip_plane(&mut self, attr: AttrId) {
+        self.attr_near_clip_plane = attr;
+    }
+
+    fn set_attr_far_clip_plane(&mut self, attr: AttrId) {
+        self.attr_far_clip_plane = attr;
+    }
+
+    fn get_attr_camera_scale(&self) -> AttrId {
+        self.attr_camera_scale
+    }
+
+    fn set_attr_camera_scale(&mut self, attr: AttrId) {
+        self.attr_camera_scale = attr;
+    }
+
+    fn get_film_fit(&self) -> FilmFit {
+        self.film_fit
+    }
+
+    fn set_film_fit(&mut self, value: FilmFit) {
+        self.film_fit = value;
+    }
+
+    fn get_render_image_width(&self) -> i32 {
+        self.render_image_width
+    }
+
+    fn get_render_image_height(&self) -> i32 {
+        self.render_image_height
+    }
+
+    fn set_render_image_width(&mut self, value: i32) {
+        self.render_image_width = value;
+    }
+
+    fn set_render_image_height(&mut self, value: i32) {
+        self.render_image_height = value;
     }
 }
 

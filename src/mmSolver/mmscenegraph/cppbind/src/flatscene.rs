@@ -80,6 +80,8 @@ pub fn shim_create_flat_scene_box() -> Box<ShimFlatScene> {
     let tfm_attr_list = Vec::new();
     let rotate_order_list = Vec::new();
     let cam_attr_list = Vec::new();
+    let cam_film_fit_list = Vec::new();
+    let cam_render_res_list = Vec::new();
     let mkr_attr_list = Vec::new();
     let tfm_node_ids = Vec::new();
     let tfm_node_indices = Vec::new();
@@ -93,6 +95,8 @@ pub fn shim_create_flat_scene_box() -> Box<ShimFlatScene> {
         tfm_attr_list,
         rotate_order_list,
         cam_attr_list,
+        cam_film_fit_list,
+        cam_render_res_list,
         mkr_attr_list,
         tfm_node_ids,
         tfm_node_indices,

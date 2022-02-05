@@ -56,13 +56,14 @@ class TestSolver1(solverUtils.SolverTestCase):
         maya.cmds.setAttr(bundle_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundle_tfm + '.tz', -25.0)
 
+        mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_tfm, marker_shp = self.create_marker(
             'marker',
-            cam_tfm,
+            mkr_grp,
             bnd_tfm=bundle_tfm)
-        maya.cmds.setAttr(marker_tfm + '.tx', -2.5)
-        maya.cmds.setAttr(marker_tfm + '.ty', 1.3)
-        maya.cmds.setAttr(marker_tfm + '.tz', -10)
+        maya.cmds.setAttr(marker_tfm + '.tx', -0.243056042)
+        maya.cmds.setAttr(marker_tfm + '.ty', 0.189583713)
+        maya.cmds.setAttr(marker_tfm + '.tz', -1)
 
         cameras = (
             (cam_tfm, cam_shp),
@@ -106,7 +107,7 @@ class TestSolver1(solverUtils.SolverTestCase):
             **kwargs)
         e = time.time()
         print('total time:', e - s)
-        
+
         # save the output
         file_name = 'solver_test1_{}_sceneGraph{}_after.ma'.format(
             solver_name, scene_graph_mode)

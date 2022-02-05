@@ -33,6 +33,7 @@ except RuntimeError:
 import maya.cmds
 
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.camera as camera_utils
 
 import test.baseutils as baseUtils
 
@@ -115,11 +116,32 @@ class SolverTestCase(baseUtils.TestBase):
         return tfm, shp
 
     @staticmethod
-    def create_marker(name, cam_tfm, bnd_tfm=None):
+    def create_marker_group(name, cam_tfm):
+        cam_tfm, cam_shp = camera_utils.get_camera(cam_tfm)
+
+        mkr_grp = maya.cmds.createNode(
+            'mmMarkerGroupTransform',
+            name=name,
+            parent=cam_tfm)
+        mkr_grp = node_utils.get_long_name(mkr_grp)
+        mkr_scl = maya.cmds.createNode('mmMarkerScale')
+
+        # Connect camera attributes
+        maya.cmds.connectAttr(cam_shp + '.focalLength', mkr_scl + '.focalLength')
+        maya.cmds.connectAttr(cam_shp + '.cameraAperture', mkr_scl + '.cameraAperture')
+        maya.cmds.connectAttr(cam_shp + '.filmOffset', mkr_scl + '.filmOffset')
+
+        # Connect marker scale to marker group
+        maya.cmds.connectAttr(mkr_scl + '.outScale', mkr_grp + '.scale')
+        maya.cmds.connectAttr(mkr_scl + '.outTranslate', mkr_grp + '.translate')
+        return mkr_grp
+
+    @staticmethod
+    def create_marker(name, mkr_grp, bnd_tfm=None):
         tfm_name = name + '_tfm'
         shp_name = name + '_shp'
 
-        tfm = maya.cmds.createNode('transform', name=tfm_name, parent=cam_tfm)
+        tfm = maya.cmds.createNode('transform', name=tfm_name, parent=mkr_grp)
         tfm = node_utils.get_long_name(tfm)
 
         shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm)

@@ -45,6 +45,7 @@ class TestSolver1(solverUtils.SolverTestCase):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
+        print('Scene Graph:', mmapi.SCENE_GRAPH_MODE_NAME_LIST[scene_graph_mode])
 
         cam_tfm, cam_shp = self.create_camera('cam')
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)

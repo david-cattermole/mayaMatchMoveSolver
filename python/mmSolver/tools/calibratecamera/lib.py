@@ -26,7 +26,6 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-# import mmSolver.tools.calibratecamera.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
@@ -56,12 +55,11 @@ def _create_line(cam, mkr_grp, base_name):
         'mmLineShape',
         parent=line_tfm,
         name=line_shape_name)
-    maya.cmds.connectAttr(
-        mkr1_node + '.worldMatrix[0]',
-        line_shp + '.matrixA')
-    maya.cmds.connectAttr(
-        mkr2_node + '.worldMatrix[0]',
-        line_shp + '.matrixB')
+    src_a = mkr1_node + '.worldMatrix[0]'
+    src_b = mkr2_node + '.worldMatrix[0]'
+    dst = line_shp + '.matrixArray'
+    maya.cmds.connectAttr(src_a, dst, nextAvailable=True)
+    maya.cmds.connectAttr(src_b, dst, nextAvailable=True)
 
     # Make line non-selectable.
     display_type = 2  # 2 = 'Reference'

@@ -75,8 +75,7 @@ MObject LineShapeNode::m_inner_line_width;
 MObject LineShapeNode::m_outer_line_width;
 MObject LineShapeNode::m_outer_scale;
 MObject LineShapeNode::m_point_size;
-MObject LineShapeNode::m_matrix_a;
-MObject LineShapeNode::m_matrix_b;
+MObject LineShapeNode::m_matrix_array;
 
 LineShapeNode::LineShapeNode() {}
 
@@ -126,9 +125,9 @@ MStatus LineShapeNode::preEvaluation(
         const MEvaluationNode &evaluationNode) {
     if (context.isNormal()) {
         MStatus status;
-        bool ok_a = evaluationNode.dirtyPlugExists(m_matrix_a, &status) && status;
-        bool ok_b = evaluationNode.dirtyPlugExists(m_matrix_b, &status) && status;
-        if (ok_a || ok_b) {
+        bool ok = evaluationNode.dirtyPlugExists(m_matrix_array, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        if (ok) {
             MHWRender::MRenderer::setGeometryDrawDirty(thisMObject());
         }
     }
@@ -274,19 +273,16 @@ MStatus LineShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setSoftMax(point_size_soft_max));
 
     // Matrix
-    m_matrix_a = matrixAttr.create(
-        "matrixA", "mtxa",
+    m_matrix_array = matrixAttr.create(
+        "matrixArray", "mtxarry",
         MFnMatrixAttribute::kDouble, &status);
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(matrixAttr.setStorable(true));
     CHECK_MSTATUS(matrixAttr.setConnectable(true));
-
-    m_matrix_b = matrixAttr.create(
-        "matrixB", "mtxb",
-        MFnMatrixAttribute::kDouble, &status);
-    CHECK_MSTATUS(status);
-    CHECK_MSTATUS(matrixAttr.setStorable(true));
-    CHECK_MSTATUS(matrixAttr.setConnectable(true));
+    CHECK_MSTATUS(matrixAttr.setArray(true));
+    CHECK_MSTATUS(matrixAttr.setReadable(false));
+    CHECK_MSTATUS(matrixAttr.setWritable(true));
+    CHECK_MSTATUS(matrixAttr.setIndexMatters(false));
 
     // Add attributes
     CHECK_MSTATUS(addAttribute(m_draw_name));
@@ -302,8 +298,7 @@ MStatus LineShapeNode::initialize() {
     CHECK_MSTATUS(addAttribute(m_outer_scale));
     CHECK_MSTATUS(addAttribute(m_inner_line_width));
     CHECK_MSTATUS(addAttribute(m_outer_line_width));
-    CHECK_MSTATUS(addAttribute(m_matrix_a));
-    CHECK_MSTATUS(addAttribute(m_matrix_b));
+    CHECK_MSTATUS(addAttribute(m_matrix_array));
 
     return MS::kSuccess;
 }

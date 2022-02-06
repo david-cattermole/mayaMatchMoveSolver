@@ -97,8 +97,7 @@ public:
     static MObject m_inner_line_width;
     static MObject m_outer_line_width;
     static MObject m_outer_scale;
-    static MObject m_matrix_a;
-    static MObject m_matrix_b;
+    static MObject m_matrix_array;
 };
 
 } // namespace mmsolver

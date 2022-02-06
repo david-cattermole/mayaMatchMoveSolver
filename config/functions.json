@@ -806,6 +806,39 @@
             "icon_shelf": "cameraTools_32x32.png",
             "command": ["pass"]
         },
+        "create_line": {
+            "name": "Create Line",
+            "name_shelf": "",
+            "tooltip": "Create a new Line.",
+            "icon_shelf": "createLine_32x32.png",
+            "command": [
+                "import mmSolver.tools.createline.tool;",
+                "mmSolver.tools.createline.tool.main();"
+            ]
+        },
+        "line_tools": {
+            "name": "Line Tools",
+            "name_shelf": "",
+            "tooltip": "Line Tools",
+            "icon_shelf": "lineTools_32x32.png",
+            "command": ["pass"]
+        },
+        "toggle_line_lock": {
+            "name": "Toggle Line Lock-State",
+            "tooltip": "Toggles selected line lock state.",
+            "command": [
+                "import mmSolver.tools.togglelinelock.tool;",
+                "mmSolver.tools.togglelinelock.tool.main();"
+            ]
+        },
+        "subdivide_line": {
+            "name": "Subdivide Line",
+            "tooltip": "Subdivide selected line",
+            "command": [
+                "import mmSolver.tools.createline.tool;",
+                "mmSolver.tools.createline.tool.main();"
+            ]
+        },
         "camera_calibration_create_setup": {
             "name": "Create Camera Calibration Setup (beta)",
             "name_shelf": "",

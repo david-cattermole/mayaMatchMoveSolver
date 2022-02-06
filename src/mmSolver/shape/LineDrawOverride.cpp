@@ -30,6 +30,7 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MPoint.h>
 #include <maya/MTransformationMatrix.h>
+#include <maya/MPointArray.h>
 
 // Maya Viewport 2.0
 #include <maya/MPxDrawOverride.h>
@@ -96,19 +97,36 @@ MBoundingBox LineDrawOverride::boundingBox(
 {
     MStatus status;
 
-    auto matrix_a = MMatrix();
-    auto matrix_b = MMatrix();
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_matrix_a, matrix_a);
-    CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_matrix_b, matrix_b);
-    CHECK_MSTATUS(status);
+    MPoint corner1;
+    MPoint corner2;
 
-    MPoint corner1 = MPoint(
-        matrix_a(3, 0), matrix_a(3, 1), matrix_a(3, 2));
-    MPoint corner2 = MPoint(
-        matrix_b(3, 0), matrix_b(3, 1), matrix_b(3, 2));
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, LineShapeNode::m_matrix_array);
+        if (!plug.isNull()) {
+            uint32_t numElements = plug.evaluateNumElements();
+            for (uint32_t i = 0; i < numElements; ++i) {
+                MPlug plugElement = plug.elementByPhysicalIndex(i, &status);
+                CHECK_MSTATUS(status);
+                if (!plugElement.isNull()) {
+                    MDataHandle dataHandle = plugElement.asMDataHandle(&status);
+                    CHECK_MSTATUS(status);
+                    MMatrix matrix = dataHandle.asMatrix();
+
+                    double x = matrix[3][0];
+                    double y = matrix[3][1];
+                    double z = matrix[3][2];
+                    corner1[0] = std::min(corner1[0], x);
+                    corner1[1] = std::min(corner1[1], y);
+                    corner1[2] = std::min(corner1[2], z);
+
+                    corner2[0] = std::max(corner2[0], x);
+                    corner2[1] = std::max(corner2[1], y);
+                    corner2[2] = std::max(corner2[2], z);
+                }
+            }
+        }
+    }
 
     return MBoundingBox(corner1, corner2);
 }
@@ -135,7 +153,6 @@ MUserData *LineDrawOverride::prepareForDraw(
     MMatrix matrix_inverse = objPath.exclusiveMatrixInverse(&status);
     CHECK_MSTATUS(status);
     MMatrix obj_matrix = matrix_inverse;
-
 
     // CHECK_MSTATUS(status);
     status = getNodeAttr(objPath, LineShapeNode::m_outer_scale, data->m_outer_scale);
@@ -191,24 +208,7 @@ MUserData *LineDrawOverride::prepareForDraw(
         objPath, LineShapeNode::m_draw_name, data->m_draw_name);
     CHECK_MSTATUS(status);
 
-    // The positions of the lines.
-    auto matrix_a = MMatrix();
-    auto matrix_b = MMatrix();
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_matrix_a, matrix_a);
-    CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_matrix_b, matrix_b);
-    CHECK_MSTATUS(status);
-
-    MPoint start_point = MPoint(
-        matrix_a(3, 0), matrix_a(3, 1), matrix_a(3, 2));
-    MPoint end_point = MPoint(
-        matrix_b(3, 0), matrix_b(3, 1), matrix_b(3, 2));
-    data->m_point_list.clear();
-    data->m_point_list.append(start_point * obj_matrix);
-    data->m_point_list.append(end_point * obj_matrix);
-
+    // Colors
     float hue = 0.0;
     float sat = 0.0;
     float val = 0.0;
@@ -256,6 +256,35 @@ MUserData *LineDrawOverride::prepareForDraw(
     data->m_inner_color = inner_color;
     data->m_outer_color = outer_color;
 
+    // The positions of the lines.
+    data->m_point_list.clear();
+    MObject node = objPath.node(&status);
+    if (status) {
+        MPlug plug(node, LineShapeNode::m_matrix_array);
+        if (!plug.isNull()) {
+            uint32_t numElements = plug.evaluateNumElements();
+            for (uint32_t i = 0; i < numElements; ++i) {
+                MPlug plugElement = plug.elementByPhysicalIndex(i, &status);
+                CHECK_MSTATUS(status);
+                if (!plugElement.isNull()) {
+                    MDataHandle dataHandle = plugElement.asMDataHandle(&status);
+                    CHECK_MSTATUS(status);
+                    MMatrix matrix = dataHandle.asMatrix();
+                    MPoint point(matrix(3, 0), matrix(3, 1), matrix(3, 2));
+                    data->m_point_list.append(point * obj_matrix);
+                }
+            }
+        }
+    }
+    auto numberOfPoints = data->m_point_list.length();
+    if (numberOfPoints == 0) {
+        return data;
+    }
+
+    auto lastPointNum = numberOfPoints - 1;
+    MPoint start_point = data->m_point_list[0];
+    MPoint end_point = data->m_point_list[lastPointNum];
+
     return data;
 }
 
@@ -269,26 +298,34 @@ void LineDrawOverride::addUIDrawables(
     if (!data) {
         return;
     }
+    const auto num_of_points = data->m_point_list.length();
+    if (num_of_points == 0) {
+        return;
+    }
 
-    auto inverse_num_of_points = 1.0 / data->m_point_list.length();
+    const auto inverse_num_of_points = 1.0 / data->m_point_list.length();
     auto middle_point = MPoint();
     for (uint32_t i = 0; i < data->m_point_list.length(); i++) {
         MPoint pnt = data->m_point_list[i];
         middle_point += pnt * inverse_num_of_points;
     }
 
-    auto num_inner_points = data->m_point_list.length();
-    auto num_outer_points = 4;
+    const auto num_inner_points = num_of_points;
+    const auto num_outer_points = 4;  // 2 lines with 2 points each.
 
     MPointArray inner_line_list(num_inner_points);
-    for (uint32_t i = 0; i < data->m_point_list.length(); i++) {
-        MPoint orig = data->m_point_list[i];
-        inner_line_list.set(orig, i);
+    for (uint32_t i = 0; i < (num_of_points - 1); i++) {
+        auto index_a = i + 0;
+        auto index_b = i + 1;
+        MPoint pnt_a = data->m_point_list[index_a];
+        MPoint pnt_b = data->m_point_list[index_b];
+        inner_line_list.set(pnt_a, index_a);
+        inner_line_list.set(pnt_b, index_b);
     }
 
     MPointArray outer_line_list(num_outer_points);
     auto first_point_index = 0;
-    auto last_point_index = 1;
+    auto last_point_index = num_inner_points - 1;
     auto dir = MVector(data->m_point_list[first_point_index] - data->m_point_list[last_point_index]);
     dir.normalize();
     dir *= data->m_outer_scale;
@@ -328,7 +365,7 @@ void LineDrawOverride::addUIDrawables(
         drawManager.setDepthPriority(data->m_depth_priority);
 
         drawManager.mesh(
-            MHWRender::MUIDrawManager::kLines,
+            MHWRender::MUIDrawManager::kLineStrip,
             inner_line_list);
 
         drawManager.endDrawInXray();
@@ -382,7 +419,7 @@ void LineDrawOverride::addUIDrawables(
         drawManager.endDrawInXray();
         drawManager.endDrawable();
     }
-    
+
     // Draw text
     {
         // X-Ray mode disregards depth testing and will always draw

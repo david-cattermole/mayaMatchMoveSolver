@@ -22,9 +22,14 @@
             "solver_tools/solver_popup/edit_root_frame_add",
             "solver_tools/solver_popup/edit_root_frame_remove",
             "create_marker",
-            "camera_tools/camera_popup/---Calibrate",
-            "camera_tools/camera_popup/camera_calibration_create_setup",
-            "camera_tools/camera_popup/camera_calibration_update_values",
+            "camera_tools/camera_popup/---Camera & Lens",
+            "camera_tools/camera_popup/create_camera",
+            "camera_tools/camera_popup/create_image_plane",
+            "camera_tools/camera_popup/create_lens",
+            "camera_tools/camera_popup/---Distortion",
+            "camera_tools/camera_popup/camera_toggle_distortion",
+            "camera_tools/camera_popup/---Input Output",
+            "camera_tools/camera_popup/copy_camera_to_clipboard",
             "mb_tools/mb_popup/---Selection",
             "mb_tools/mb_popup/swap_marker_bundles",
             "mb_tools/mb_popup/select_marker_bundles",
@@ -60,6 +65,14 @@
             "bundle_tools/bundle_popup/attach_bundle_to_curve",
             "bundle_tools/bundle_popup/---Create Bundle",
             "bundle_tools/bundle_popup/create_bundle",
+            "line_tools/line_popup/---Edit Line",
+            "line_tools/line_popup/toggle_line_lock",
+            "line_tools/line_popup/subdivide_line",
+            "line_tools/line_popup/---Create Line",
+            "line_tools/line_popup/create_line",
+            "line_tools/line_popup/---Calibrate",
+            "line_tools/line_popup/camera_calibration_create_setup",
+            "line_tools/line_popup/camera_calibration_update_values",
             "display_tools/display_popup/---Create",
             "display_tools/display_popup/create_sky_dome",
             "general_tools/gen_tools_popup/---Viewport",
@@ -122,6 +135,10 @@
                 "popup_button": ["left", "right"]
             },
             "camera_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "line_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
             },

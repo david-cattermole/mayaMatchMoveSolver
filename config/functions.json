@@ -676,13 +676,6 @@
                 "mmSolver.tools.parenttransform.tool.unparent();"
             ]
         },
-        "camera_tools": {
-            "name": "Camera Tools",
-            "name_shelf": "Cam",
-            "tooltip": "Camera Tools",
-            "icon_shelf": "createCamera_32x32.png",
-            "command": ["pass"]
-        },
         "create_camera": {
             "name": "Create Camera",
             "name_shelf": "",

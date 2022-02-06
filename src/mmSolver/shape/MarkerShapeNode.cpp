@@ -200,7 +200,7 @@ MStatus MarkerShapeNode::initialize() {
     auto icon_size_min = 0.0;
     m_icon_size = nAttr.create(
         "iconSize", "icnsz",
-        MFnNumericData::kDouble, 10.0);
+        MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(icon_size_min));

@@ -16,6 +16,8 @@
             "create_tools/create_popup/load_marker_ui",
             "create_tools/create_popup/---Create Bundle",
             "create_tools/create_popup/create_bundle",
+            "create_tools/create_popup/---Create Display",
+            "create_tools/create_popup/create_sky_dome",
             "solver_tools/solver_popup/---Time",
             "solver_tools/solver_popup/navigate_root_frame_prev",
             "solver_tools/solver_popup/navigate_root_frame_next",

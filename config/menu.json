@@ -13,6 +13,7 @@
             "create_marker",
             "convert_to_marker",
             "load_marker_ui",
+            "create_sky_dome",
             "---Selection",
             "swap_marker_bundles",
             "select_marker_bundles",

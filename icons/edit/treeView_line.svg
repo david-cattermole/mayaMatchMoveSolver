@@ -14,7 +14,7 @@
    inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
    sodipodi:docname="treeView_line.svg"
    enable-background="new"
-   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\ui\mmSolver_marker.png"
+   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver\icons\ui\mmSolver_line.png"
    inkscape:export-xdpi="54.878166"
    inkscape:export-ydpi="54.878166">
   <defs
@@ -185,17 +185,17 @@
       </g>
       <g
          id="g8245"
-         style="display:inline;fill:#3b3be8;fill-opacity:1;stroke:#3b3be8;stroke-opacity:1"
+         style="display:inline;fill:#e83be8;fill-opacity:1;stroke:#e83be8;stroke-opacity:1"
          transform="matrix(0.87237822,0,0,0.87237822,3.7558049,12.550982)">
         <circle
-           style="fill:#3b3be8;fill-opacity:1;stroke:#3b3be8;stroke-width:0.836617;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:none"
+           style="fill:#e83be8;fill-opacity:1;stroke:#e83be8;stroke-width:0.836617;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:none"
            id="path4774"
            cx="35.280491"
            cy="11.661215"
            r="3.8344967"
            transform="rotate(60)" />
         <rect
-           style="fill:#3b3be8;fill-opacity:1;stroke:#3b3be8;stroke-width:1.31381;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           style="fill:#e83be8;fill-opacity:1;stroke:#e83be8;stroke-width:1.31381;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            id="rect4776"
            width="4.0999546"
            height="45.266205"
@@ -203,7 +203,7 @@
            y="-39.169445"
            transform="rotate(60)" />
         <circle
-           style="display:inline;fill:#3b3be8;fill-opacity:1;stroke:#3b3be8;stroke-width:0.836617;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:none"
+           style="display:inline;fill:#e83be8;fill-opacity:1;stroke:#e83be8;stroke-width:0.836617;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:none"
            id="path4774-4"
            cx="35.280491"
            cy="-44.884239"

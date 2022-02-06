@@ -172,25 +172,25 @@ MStatus LineShapeNode::initialize() {
             "textColor", "txtclr");
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 0.0f));
+    CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 1.0f));
 
     m_point_color = nAttr.createColor(
             "pointColor", "pntclr");
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 0.0f));
+    CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 1.0f));
 
     m_inner_color = nAttr.createColor(
             "innerColor", "inrclr");
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 0.0f));
+    CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 1.0f));
 
     m_outer_color = nAttr.createColor(
             "outerColor", "otrclr");
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.5f, 0.5f));
+    CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.5f, 1.0f));
 
     // Alpha
     auto alpha_min = 0.0;

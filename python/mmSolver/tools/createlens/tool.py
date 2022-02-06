@@ -40,7 +40,7 @@ def main():
     sel = maya.cmds.ls(sl=True, long=True)
     node_filtered = mmapi.filter_nodes_into_categories(sel)
     cams = node_filtered['camera']
-    cams = filter(utils_camera.is_not_startup_cam, cams)
+    cams = [x for x in cams if utils_camera.is_not_startup_cam(x)]
 
     cams_to_add_lenses = []
     if len(cams) == 0:

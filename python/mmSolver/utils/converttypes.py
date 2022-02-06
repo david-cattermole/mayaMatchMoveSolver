@@ -88,7 +88,7 @@ def stringToIntList(value):
             continue
 
         dash_split = v.split('-')
-        dash_split = filter(lambda x: x.isdigit(), dash_split)
+        dash_split = [x for x in dash_split if x.isdigit()]
         if len(dash_split) > 1:
             # Even if the user adds more than 1 dash character, we only take
             # the first two.

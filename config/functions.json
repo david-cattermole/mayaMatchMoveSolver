@@ -833,7 +833,7 @@
             ]
         },
         "camera_calibration_create_setup": {
-            "name": "Create Camera Calibration Setup (beta)",
+            "name": "Create Camera Calibration Setup",
             "name_shelf": "",
             "tooltip": "Create a default setup to calibrate a camera.",
             "command": [
@@ -842,7 +842,7 @@
             ]
         },
         "camera_calibration_update_values": {
-            "name": "Update Camera Calibration (beta)",
+            "name": "Update Camera Calibration",
             "name_shelf": "",
             "tooltip": "Updates the camera calibration values.",
             "command": [

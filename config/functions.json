@@ -828,8 +828,8 @@
             "name": "Subdivide Line",
             "tooltip": "Subdivide selected line",
             "command": [
-                "import mmSolver.tools.createline.tool;",
-                "mmSolver.tools.createline.tool.main();"
+                "import mmSolver.tools.subdivideline.tool;",
+                "mmSolver.tools.subdivideline.tool.main();"
             ]
         },
         "camera_calibration_create_setup": {

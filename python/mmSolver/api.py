@@ -39,7 +39,6 @@ from mmSolver._api.collection import (
 from mmSolver._api.line import Line
 from mmSolver._api.lens import Lens
 from mmSolver._api.execute import (
-    createExecuteOptions,
     create_execute_options,
     ExecuteOptions,
     ActionState,
@@ -92,9 +91,6 @@ from mmSolver._api.naming import (
     get_new_bundle_name,
     get_new_line_name,
 )
-convert_valid_maya_name = find_valid_maya_node_name
-get_marker_name = get_new_marker_name
-get_bundle_name = get_new_bundle_name
 from mmSolver._api.state import (
     is_solver_running,
     set_solver_running,
@@ -378,8 +374,7 @@ __all__ = [
     'action_to_components',
 
     # Execute
-    'createExecuteOptions',    # Old function name, to be deprecated in v0.4.0.
-    'create_execute_options',  # New function name
+    'create_execute_options',
     'execute',
     'validate',
 
@@ -395,9 +390,6 @@ __all__ = [
     'get_new_marker_name',
     'get_new_bundle_name',
     'get_new_line_name',
-    'convert_valid_maya_name',  # Backwards compatibility
-    'get_marker_name',  # Backwards compatibility
-    'get_bundle_name',  # Backwards compatibility
 
     # State
     'is_solver_running',

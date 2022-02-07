@@ -66,15 +66,15 @@ ExecuteOptions = collections.namedtuple(
 )
 
 
-def createExecuteOptions(verbose=False,
-                         refresh=False,
-                         disable_viewport_two=True,
-                         force_update=False,
-                         do_isolate=False,
-                         pre_solve_force_eval=True,
-                         display_grid=True,
-                         display_node_types=None,
-                         use_minimal_ui=None):
+def create_execute_options(verbose=False,
+                           refresh=False,
+                           disable_viewport_two=True,
+                           force_update=False,
+                           do_isolate=False,
+                           pre_solve_force_eval=True,
+                           display_grid=True,
+                           display_node_types=None,
+                           use_minimal_ui=None):
     """
     Create :py:class:`ExecuteOptions` object.
 
@@ -135,11 +135,6 @@ def createExecuteOptions(verbose=False,
         use_minimal_ui=use_minimal_ui
     )
     return options
-
-
-# More consistently named function name.
-# TODO: The 'createExecuteOptions' name will be deprecated in v0.4.0.
-create_execute_options = createExecuteOptions
 
 
 def preSolve_updateProgress(prog_fn, status_fn):
@@ -666,7 +661,7 @@ def execute(col,
     :rtype: [SolverResult, ..]
     """
     if options is None:
-        options = createExecuteOptions()
+        options = create_execute_options()
     if validate_mode is None:
         validate_mode = const.VALIDATE_MODE_PRE_VALIDATE_VALUE
     assert validate_mode in const.VALIDATE_MODE_VALUE_LIST

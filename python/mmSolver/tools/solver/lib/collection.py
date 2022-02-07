@@ -566,7 +566,7 @@ def gather_execute_options():
     minimal_ui = userprefs_lib.get_value(config, key)
     minimal_ui = minimal_ui == userprefs_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_TRUE_VALUE
 
-    options = mmapi.createExecuteOptions(
+    options = mmapi.create_execute_options(
         refresh=refresh_state,
         disable_viewport_two=disable_viewport_two_state,
         force_update=force_update_state,

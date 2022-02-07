@@ -283,6 +283,8 @@ MStatus LineShapeNode::initialize() {
     CHECK_MSTATUS(matrixAttr.setReadable(false));
     CHECK_MSTATUS(matrixAttr.setWritable(true));
     CHECK_MSTATUS(matrixAttr.setIndexMatters(false));
+    CHECK_MSTATUS(matrixAttr.setDisconnectBehavior(
+                      MFnAttribute::DisconnectBehavior::kDelete));
 
     // Add attributes
     CHECK_MSTATUS(addAttribute(m_draw_name));

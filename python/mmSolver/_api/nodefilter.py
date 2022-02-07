@@ -39,6 +39,7 @@ def filter_nodes_into_categories(nodes):
 
     - 'camera'
     - 'marker'
+    - 'line'
     - 'markergroup'
     - 'bundle'
     - 'attribute'
@@ -55,6 +56,7 @@ def filter_nodes_into_categories(nodes):
     result = {
         'camera': [],
         'marker': [],
+        'line': [],
         'markergroup': [],
         'bundle': [],
         'attribute': [],
@@ -65,6 +67,8 @@ def filter_nodes_into_categories(nodes):
         obj_type = api_utils.get_object_type(node)
         if obj_type == const.OBJECT_TYPE_MARKER:
             result['marker'].append(node)
+        elif obj_type == const.OBJECT_TYPE_LINE:
+            result['line'].append(node)
         elif obj_type == const.OBJECT_TYPE_MARKER_GROUP:
             result['markergroup'].append(node)
         elif obj_type == const.OBJECT_TYPE_BUNDLE:
@@ -92,6 +96,20 @@ def filter_marker_nodes(nodes):
     """
     filter_nodes = filter_nodes_into_categories(nodes)
     return filter_nodes.get('marker', [])
+
+
+def filter_line_nodes(nodes):
+    """
+    Filter the given 'nodes' by only the Line nodes.
+
+    :param nodes: List of nodes to query.
+    :type nodes: list or str
+
+    :returns: A list of Line nodes, or empty list if no Line nodes.
+    :rtype: list
+    """
+    filter_nodes = filter_nodes_into_categories(nodes)
+    return filter_nodes.get('line', [])
 
 
 def filter_marker_group_nodes(nodes):

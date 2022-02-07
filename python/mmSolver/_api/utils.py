@@ -71,6 +71,7 @@ def get_object_type(node):
     Possible object type values are:
 
     - OBJECT_TYPE_MARKER
+    - OBJECT_TYPE_LINE
     - OBJECT_TYPE_BUNDLE
     - OBJECT_TYPE_ATTRIBUTE
     - OBJECT_TYPE_CAMERA
@@ -142,6 +143,12 @@ def get_object_type(node):
           and ('shearYZ' not in keyable_attrs)):
         object_type = const.OBJECT_TYPE_BUNDLE
 
+    if ((node_type == 'transform')
+          and ('mmLineShape' in shape_node_types)
+          and ('enable' in attrs)
+          and ('weight' in attrs)):
+        object_type = const.OBJECT_TYPE_LINE
+
     # TODO: Ensure other types of camera transform nodes are supported.
     elif ((node_type == 'transform') and
           ('camera' in shape_node_types)):
@@ -191,6 +198,30 @@ def get_marker_group_above_node(node):
             break
         dag.pop(1)
     return mkr_grp_node
+
+
+def get_line_above_node(node):
+    """
+    Get the first line transform node above the node.
+
+    :param node: The node name to check above for a line.
+    :type node: str
+
+    :return: String of line found, or None.
+    :rtype: str
+    """
+    line_node = None
+    dag = node_utils.get_as_dag_path(node)
+    while dag.length() != 0:
+        name = dag.fullPathName()
+        shps = maya.cmds.listRelatives(
+            name, shapes=True, type=const.LINE_SHAPE_NODE_TYPE) or []
+        if ((maya.cmds.nodeType(name) == const.LINE_TRANSFORM_NODE_TYPE)
+                and (len(shps) > 0)):
+            line_node = name
+            break
+        dag.pop(1)
+    return line_node
 
 
 def get_data_on_node_attr(node_name, attr_name):

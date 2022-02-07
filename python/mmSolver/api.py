@@ -36,6 +36,7 @@ from mmSolver._api.collection import (
     Collection,
     update_deviation_on_collection
 )
+from mmSolver._api.line import Line
 from mmSolver._api.lens import Lens
 from mmSolver._api.execute import (
     createExecuteOptions,
@@ -89,6 +90,7 @@ from mmSolver._api.naming import (
     find_valid_maya_node_name,
     get_new_marker_name,
     get_new_bundle_name,
+    get_new_line_name,
 )
 convert_valid_maya_name = find_valid_maya_node_name
 get_marker_name = get_new_marker_name
@@ -107,6 +109,7 @@ from mmSolver._api.nodeconversion import (
 from mmSolver._api.nodefilter import (
     filter_nodes_into_categories,
     filter_marker_nodes,
+    filter_line_nodes,
     filter_marker_group_nodes,
     filter_bundle_nodes,
     filter_camera_nodes,
@@ -138,6 +141,7 @@ from mmSolver._api.constant import (
     OBJECT_TYPE_CAMERA,
     OBJECT_TYPE_MARKER_GROUP,
     OBJECT_TYPE_BUNDLE,
+    OBJECT_TYPE_LINE,
     OBJECT_TYPE_COLLECTION,
     OBJECT_TYPE_IMAGE_PLANE,
     OBJECT_TYPE_LIST,
@@ -193,6 +197,7 @@ from mmSolver._api.constant import (
 
     EVENT_NAME_MARKER_CREATED,
     EVENT_NAME_BUNDLE_CREATED,
+    EVENT_NAME_LINE_CREATED,
     EVENT_NAME_COLLECTION_CREATED,
     EVENT_NAME_COLLECTION_MARKERS_CHANGED,
     EVENT_NAME_COLLECTION_ATTRS_CHANGED,
@@ -228,6 +233,7 @@ from mmSolver._api.utils import (
     get_value_on_node_attr,
     set_value_on_node_attr,
     get_marker_group_above_node,
+    get_line_above_node,
 )
 from mmSolver.utils.undo import (
     undo_chunk_context,
@@ -249,6 +255,7 @@ __all__ = [
     'Camera',
     'Bundle',
     'Marker',
+    'Line',
     'MarkerGroup',
     'Attribute',
     'ExecuteOptions',
@@ -269,6 +276,7 @@ __all__ = [
     'OBJECT_TYPE_ATTRIBUTE',
     'OBJECT_TYPE_MARKER',
     'OBJECT_TYPE_CAMERA',
+    'OBJECT_TYPE_LINE',
     'OBJECT_TYPE_MARKER_GROUP',
     'OBJECT_TYPE_BUNDLE',
     'OBJECT_TYPE_COLLECTION',
@@ -316,6 +324,7 @@ __all__ = [
     'VALIDATE_MODE_NONE_VALUE',
     'VALIDATE_MODE_VALUE_LIST',
     'EVENT_NAME_MARKER_CREATED',
+    'EVENT_NAME_LINE_CREATED',
     'EVENT_NAME_BUNDLE_CREATED',
     'EVENT_NAME_COLLECTION_CREATED',
     'EVENT_NAME_COLLECTION_MARKERS_CHANGED',
@@ -385,6 +394,7 @@ __all__ = [
     'find_valid_maya_node_name',
     'get_new_marker_name',
     'get_new_bundle_name',
+    'get_new_line_name',
     'convert_valid_maya_name',  # Backwards compatibility
     'get_marker_name',  # Backwards compatibility
     'get_bundle_name',  # Backwards compatibility
@@ -406,6 +416,7 @@ __all__ = [
     # Node Filter
     'filter_nodes_into_categories',
     'filter_marker_nodes',
+    'filter_line_nodes',
     'filter_marker_group_nodes',
     'filter_bundle_nodes',
     'filter_camera_nodes',
@@ -422,6 +433,7 @@ __all__ = [
     'get_value_on_node_attr',
     'set_value_on_node_attr',
     'get_marker_group_above_node',
+    'get_line_above_node',
 
     # Nodes
     'get_long_name',

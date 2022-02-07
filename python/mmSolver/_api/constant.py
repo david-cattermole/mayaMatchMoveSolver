@@ -37,6 +37,8 @@ MARKER_NAME_PREFIX = 'marker'
 MARKER_NAME_SUFFIX = '_MKR'
 BUNDLE_NAME_PREFIX = 'bundle'
 BUNDLE_NAME_SUFFIX = '_BND'
+LINE_NAME_PREFIX = 'line'
+LINE_NAME_SUFFIX = '_LN'
 
 
 # list of characters that are not supported in maya for node names.
@@ -54,6 +56,7 @@ OBJECT_TYPE_UNKNOWN = 'unknown'
 OBJECT_TYPE_ATTRIBUTE = 'attribute'
 OBJECT_TYPE_MARKER = 'marker'
 OBJECT_TYPE_CAMERA = 'camera'
+OBJECT_TYPE_LINE = 'line'
 OBJECT_TYPE_LENS = 'lens'
 OBJECT_TYPE_MARKER_GROUP = 'markergroup'
 OBJECT_TYPE_BUNDLE = 'bundle'
@@ -162,6 +165,8 @@ CAMERA_TRANSFORM_NODE_API_TYPES = (
 CAMERA_SHAPE_NODE_API_TYPES = (
     OpenMaya.MFn.kCamera,
 )
+LINE_TRANSFORM_NODE_TYPE = 'transform'
+LINE_SHAPE_NODE_TYPE = 'mmLineShape'
 LENS_NODE_TYPE_DEFAULT = 'mmLensModel3deClassic'  # 'mmLensModelBasic'
 LENS_DATA_TYPE_ID = 0x0012F184
 LENS_TOGGLE_NODE_NAME = 'lensDistortionToggle1'
@@ -170,6 +175,7 @@ LENS_TOGGLE_NODE_NAME = 'lensDistortionToggle1'
 # Icon names
 MARKER_SHAPE_ICON_NAME = 'out_mmMarkerShape.png'
 BUNDLE_SHAPE_ICON_NAME = 'out_mmBundleShape.png'
+LINE_SHAPE_ICON_NAME = 'out_mmLineShape.png'
 LENS_SHAPE_ICON_NAME = 'out_mmLensShape.png'
 
 
@@ -193,6 +199,11 @@ MARKER_ATTR_LONG_NAME_BUNDLE = 'bundle'
 MARKER_ATTR_LONG_NAME_MARKER_NAME = 'markerName'
 MARKER_ATTR_LONG_NAME_MARKER_ID = 'markerId'
 MARKER_ATTR_LONG_NAME_MARKER_USED_HINT = 'markerUsedHint'
+
+
+# Line Attribute Names
+LINE_ATTR_LONG_NAME_ENABLE = 'enable'
+LINE_ATTR_LONG_NAME_WEIGHT = 'weight'
 
 
 # Default plate fallback values.
@@ -259,6 +270,7 @@ VALIDATE_MODE_VALUE_LIST = [
 # Event Names
 EVENT_NAME_MARKER_CREATED = 'marker_created'
 EVENT_NAME_BUNDLE_CREATED = 'bundle_created'
+EVENT_NAME_LINE_CREATED = 'line_created'
 EVENT_NAME_COLLECTION_CREATED = 'collection_created'
 EVENT_NAME_COLLECTION_MARKERS_CHANGED = 'collection_markers_changed'
 EVENT_NAME_COLLECTION_ATTRS_CHANGED = 'collection_attributes_changed'
@@ -271,6 +283,7 @@ EVENT_NAME_MAYA_SCENE_CLOSING = 'maya_scene_closing'
 EVENT_NAME_LIST = [
     EVENT_NAME_MARKER_CREATED,
     EVENT_NAME_BUNDLE_CREATED,
+    EVENT_NAME_LINE_CREATED,
     EVENT_NAME_COLLECTION_CREATED,
     EVENT_NAME_COLLECTION_MARKERS_CHANGED,
     EVENT_NAME_COLLECTION_ATTRS_CHANGED,

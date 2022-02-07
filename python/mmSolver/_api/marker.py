@@ -283,23 +283,13 @@ class Marker(object):
 
     """
 
-    def __init__(self, node=None, name=None):
+    def __init__(self, node=None):
         """
         Initialize a Marker, give a name to connect to an existing Maya node.
 
         :param node: The Maya node to connect to.
         :type node: None or str
-
-        :param name: This is a backwards compatible kwarg for 'node'.
-        :type name: None or str
         """
-        if name is not None:
-            msg = (
-                "mmSolver.api.Marker(name=value), "
-                "'name' is a deprecated flag, use 'node' keyword. "
-            )
-            warnings.warn(msg)
-            node = name
         if isinstance(node, pycompat.TEXT_TYPE):
             try:
                 dag = node_utils.get_as_dag_path(node)

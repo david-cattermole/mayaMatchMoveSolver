@@ -4,7 +4,6 @@
 #*
 *~
 *.bak
-*_.*
 *.pyc
 cmake-build-*
 *build/*

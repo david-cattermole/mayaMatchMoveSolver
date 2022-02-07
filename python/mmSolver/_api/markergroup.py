@@ -165,7 +165,7 @@ class MarkerGroup(object):
         self.set_node(mkr_grp)
 
         # Add attr and connect depth
-        depth = 0.2
+        depth = 2.0
         maya.cmds.addAttr(mkr_grp, longName='depth', at='double', minValue=0.0,
                           defaultValue=1.0)
         maya.cmds.setAttr(mkr_grp + '.depth', keyable=True)

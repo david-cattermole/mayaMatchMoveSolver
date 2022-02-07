@@ -765,7 +765,7 @@ class Line(object):
 
         :returns: Marker objects, or empty list if Line does not have
             any Markers connected.
-        :rtype: None or Marker
+        :rtype: List of Markers
         """
         line_node = self.get_node()
         if line_node is None:

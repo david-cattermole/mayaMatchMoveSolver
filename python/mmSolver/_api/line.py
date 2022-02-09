@@ -618,14 +618,6 @@ class Line(object):
                 msg = msg.format(repr(mkr_node), repr(cam_shp))
                 raise excep.AlreadyLinked(msg)
 
-        # Connect the line to the camera.
-        if cam.get_lens() is not None:
-            cam_shp = cam.get_shape_node()
-            src = cam_shp + '.outLens'
-            dst = mkr_node + '.inLens'
-            if not maya.cmds.isConnected(src, dst):
-                maya.cmds.connectAttr(src, dst)
-
         # Create Line Group
         mkr_grp = None
         mkr_grp_nodes = maya.cmds.ls(cam_tfm, dag=True, long=True,

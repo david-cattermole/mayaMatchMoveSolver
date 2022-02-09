@@ -303,9 +303,15 @@ class Line(object):
 
         # Create two Markers.
         mkr_name_a = naming.get_new_marker_name('marker1')
-        mkr_a = marker.Marker().create_node(mkr_grp=mkr_grp, name=mkr_name_a)
+        mkr_a = marker.Marker().create_node(
+            mkr_grp=mkr_grp,
+            cam=cam,
+            name=mkr_name_a)
         mkr_name_b = naming.get_new_marker_name('marker1')
-        mkr_b = marker.Marker().create_node(mkr_grp=mkr_grp, name=mkr_name_b)
+        mkr_b = marker.Marker().create_node(
+            mkr_grp=mkr_grp,
+            cam=cam,
+            name=mkr_name_b)
         mkr_node_a = mkr_a.get_node()
         mkr_node_b = mkr_b.get_node()
         maya.cmds.setAttr(mkr_node_a + '.tx', -0.25)

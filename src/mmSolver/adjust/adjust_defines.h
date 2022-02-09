@@ -48,6 +48,10 @@
 #define SOLVER_TYPE_CMINPACK_LMDER 2
 #define SOLVER_TYPE_CMINPACK_LM_DER_NAME "cminpack_lmder"
 
+// // Dense LM solver using 'ceres',
+// #define SOLVER_TYPE_CERES 3
+// #define SOLVER_TYPE_CERES_NAME "ceres"
+
 // The default solver to use, if all solvers are available.
 #define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LMDER
 

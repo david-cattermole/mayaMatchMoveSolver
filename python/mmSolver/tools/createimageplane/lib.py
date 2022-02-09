@@ -1,4 +1,4 @@
-# Copyright (C) 2020 David Cattermole.
+# Copyright (C) 2020, 2022 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -18,6 +18,12 @@
 """
 Library functions for creating and modifying image planes.
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import os
 
 import maya.cmds
 
@@ -197,14 +203,71 @@ def set_image_plane_values(cam, image_plane_shp, img_poly_plane_tfm, deform_node
     return img_poly_plane_tfm
 
 
-def create_image_plane_shader(tfm, image_plane_shp):
+def _get_default_image():
+    base_install_location = os.environ.get('MMSOLVER_LOCATION', None)
+    assert base_install_location is not None
+    fallback = os.path.join(base_install_location, 'resources')
+
+    dir_path = os.environ.get('MMSOLVER_RESOURCE_PATH', fallback)
+    assert isinstance(dir_path, pycompat.TEXT_TYPE)
+
+    file_name = 'default_mmSolver_1920x1080_hd.png'
+    file_path = os.path.join(dir_path, file_name)
+    return file_path
+
+
+def create_image_plane_shader(image_plane_tfm):
     """Create an image plane shader, to display an image sequence in Maya
     on a Polygon image plane.
     """
-    # TODO: Create a shader network to display an image sequence.
-    sg_node = None
-    shd_node = None
-    file_node = None
+    obj_nodes = [image_plane_tfm]
+    file_path = _get_default_image()
+
+    file_place2d = maya.cmds.shadingNode('place2dTexture', asUtility=True)
+    file_node = maya.cmds.shadingNode('file', asTexture=True, isColorManaged=True)
+    shd_node = maya.cmds.shadingNode('surfaceShader', asShader=True)
+    sg_node = maya.cmds.sets(renderable=True, noSurfaceShader=True, empty=True)
+
+    src = file_node + '.outColor'
+    dst = shd_node + '.outColor'
+    maya.cmds.connectAttr(src, dst, force=True)
+
+    src = shd_node + '.outColor'
+    dst = sg_node + '.surfaceShader'
+    maya.cmds.connectAttr(src, dst, force=True)
+
+    conns = [
+        ['coverage', 'coverage'],
+        ['translateFrame', 'translateFrame'],
+        ['rotateFrame', 'rotateFrame'],
+        ['mirrorU', 'mirrorU'],
+        ['mirrorV', 'mirrorV'],
+        ['stagger', 'stagger'],
+        ['wrapU', 'wrapU'],
+        ['wrapV', 'wrapV'],
+        ['repeatUV', 'repeatUV'],
+        ['offset', 'offset'],
+        ['rotateUV', 'rotateUV'],
+        ['noiseUV', 'noiseUV'],
+        ['vertexUvOne', 'vertexUvOne'],
+        ['vertexUvTwo', 'vertexUvTwo'],
+        ['vertexUvThree', 'vertexUvThree'],
+        ['vertexCameraOne', 'vertexCameraOne'],
+        ['outUV', 'uvCoord'],
+        ['outUvFilterSize', 'uvFilterSize'],
+    ]
+    for (src_attr, dst_attr) in conns:
+        src = file_place2d + '.' + src_attr
+        dst = file_node + '.' + dst_attr
+        maya.cmds.connectAttr(src, dst, force=True)
+
+    # Assign shader.
+    maya.cmds.sets(obj_nodes, edit=True, forceElement=sg_node)
+
+    # TODO: Guess if the file path is an image sequence or not.
+    is_image_sequence = False
+    maya.cmds.setAttr(file_node + '.fileTextureName', file_path, type='string')
+    maya.cmds.setAttr(file_node + '.useFrameExtension', is_image_sequence)
     return sg_node, shd_node, file_node
 
 
@@ -227,7 +290,7 @@ def create_poly_image_plane_on_camera(cam):
     # Get file path and create new shader assignment for poly image
     # plane.
     # TODO: Get the file path.
-    sg_node, shd_node, file_node = create_image_plane_shader(img_poly_plane, image_plane_shp)
+    sg_node, shd_node, file_node = create_image_plane_shader(img_poly_plane)
     return img_poly_plane
 
 

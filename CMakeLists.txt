@@ -217,6 +217,7 @@ endif ()
 
 if (BUILD_ICONS)
   add_subdirectory(icons)
+  add_subdirectory(images)
 endif ()
 
 if (BUILD_CONFIG)

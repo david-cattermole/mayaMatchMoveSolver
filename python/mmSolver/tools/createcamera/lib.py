@@ -43,5 +43,10 @@ def create_camera(name=None):
     shp_name = tfm.rpartition('|')[-1] + 'Shape'
     shp = maya.cmds.createNode('camera', parent=tfm, name=shp_name)
     maya.cmds.setAttr(tfm + '.rotateOrder', 2)  # 2 = ZXY
+
+    # Viewport display helpers.
+    maya.cmds.setAttr(tfm + '.displayGateMaskColor', 0.0, 0.0, 0.0, type='double3')
+    maya.cmds.setAttr(tfm + '.displayFilmGate', 1)
+
     cam = mmapi.Camera(shape=shp)
     return cam

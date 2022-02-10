@@ -67,6 +67,8 @@
             "line_tools/line_popup/camera_calibration_create_setup",
             "line_tools/line_popup/camera_calibration_update_values",
             "display_tools/display_popup/---Create",
+            "display_tools/display_popup/create_horizon_line",
+            "display_tools/display_popup/create_axis_dome",
             "display_tools/display_popup/create_sky_dome",
             "general_tools/gen_tools_popup/---Viewport",
             "general_tools/gen_tools_popup/center_twodee",

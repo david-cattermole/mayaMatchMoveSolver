@@ -18,3 +18,12 @@
 """
 Contains constant values for the Create Sky Dome tool.
 """
+
+PRESET_SKY_DOME_NAME = 'sky_dome'
+PRESET_AXIS_DOME_NAME = 'axis_dome'
+PRESET_HORIZON_LINE_NAME = 'horizon_line'
+PRESET_NAME_LIST = [
+    PRESET_SKY_DOME_NAME,
+    PRESET_AXIS_DOME_NAME,
+    PRESET_HORIZON_LINE_NAME
+]

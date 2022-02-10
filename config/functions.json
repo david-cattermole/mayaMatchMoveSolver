@@ -410,7 +410,30 @@
             "icon_shelf": "createSkyDome_32x32.png",
             "command": [
                 "import mmSolver.tools.createskydome.tool;",
-                "mmSolver.tools.createskydome.tool.main();"
+                "import mmSolver.tools.createskydome.constant as const;",
+                "mmSolver.tools.createskydome.tool.main(preset_name=const.PRESET_SKY_DOME_NAME);"
+            ]
+        },
+        "create_axis_dome": {
+            "name": "Create Axis Dome",
+            "name_shelf": "",
+            "tooltip": "Create a new Axis Dome.",
+            "icon_shelf": "createSkyDome_32x32.png",
+            "command": [
+                "import mmSolver.tools.createskydome.tool;",
+                "import mmSolver.tools.createskydome.constant as const;",
+                "mmSolver.tools.createskydome.tool.main(preset_name=const.PRESET_AXIS_DOME_NAME);"
+            ]
+        },
+        "create_horizon_line": {
+            "name": "Create Horizon Line",
+            "name_shelf": "",
+            "tooltip": "Create a new Horizon Line.",
+            "icon_shelf": "createSkyDome_32x32.png",
+            "command": [
+                "import mmSolver.tools.createskydome.tool;",
+                "import mmSolver.tools.createskydome.constant as const;",
+                "mmSolver.tools.createskydome.tool.main(preset_name=const.PRESET_HORIZON_LINE_NAME);"
             ]
         },
         "general_tools": {

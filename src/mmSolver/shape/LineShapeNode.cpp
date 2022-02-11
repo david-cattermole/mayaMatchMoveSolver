@@ -88,7 +88,7 @@ MString LineShapeNode::nodeName() {
 MStatus
 LineShapeNode::compute(const MPlug &/*plug*/,
                          MDataBlock &/*dataBlock*/) {
-    return MS::kUnknownParameter;;
+    return MS::kUnknownParameter;
 }
 
 bool LineShapeNode::isBounded() const {

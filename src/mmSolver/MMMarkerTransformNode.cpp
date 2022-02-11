@@ -107,8 +107,8 @@ MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
                                                    const MDataHandle& handle,
                                                    const MDGContext& context) {
 #else
-    MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
-                                                       const MDataHandle& handle) {
+MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
+                                                   const MDataHandle& handle) {
 #endif
     // Make sure that there is something interesting to process.
     if (plug.isNull()) {

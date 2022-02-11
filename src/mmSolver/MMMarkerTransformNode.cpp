@@ -146,7 +146,7 @@ MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
         dataHandle.setMPxData(newLensData);
 
         // Update the custom transformation matrix with new values.
-        MMMarkerTransformMatrix *ltm = getMarkerTransformMatrix();
+        MMMarkerTransformMatrix *ltm = MMMarkerTransformNode::getMarkerTransformMatrix();
         if (ltm) {
             ltm->setLensModel(inputLensModel);
         } else {
@@ -157,7 +157,7 @@ MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
 
         // Mark the matrix as dirty so that DG information
         // will update.
-        dirtyMatrix();
+        MMMarkerTransformNode::dirtyMatrix();
 
         return status;
     }

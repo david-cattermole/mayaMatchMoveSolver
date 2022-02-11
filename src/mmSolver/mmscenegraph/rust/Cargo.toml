@@ -8,10 +8,6 @@ publish = false
 [lib]
 name = "mmscenegraph_rust"
 path = "./src/lib.rs"
-# NOTE: 'lib' is used to link with Rust crates, staticlib' is used to
-# link with C++.
-#crate_type = ["staticlib", "lib"]
-# crate_type = ["cdylib", "lib"]
 crate_type = ["lib"]
 
 [[bench]]

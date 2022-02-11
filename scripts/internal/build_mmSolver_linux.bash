@@ -111,7 +111,9 @@ LDPK_LIB_PATH="${LDPK_ROOT}/lib"
 # Where to find the mmSceneGraph Rust libraries and headers.
 MMSCENEGRAPH_RUST_DIR=${PROJECT_ROOT}/src/mmSolver/mmscenegraph/rust
 MMSCENEGRAPH_CPP_DIR=${PROJECT_ROOT}/src/mmSolver/mmscenegraph/cppbind
-MMSCENEGRAPH_RUST_BUILD_DIR="${MMSCENEGRAPH_CPP_DIR}/target/release"
+MMSCENEGRAPH_RUST_TARGET_DIR="${MMSCENEGRAPH_RUST_DIR}/target_maya${MAYA_VERSION}_linux/"
+MMSCENEGRAPH_CPP_TARGET_DIR="${MMSCENEGRAPH_CPP_DIR}/target_maya${MAYA_VERSION}_linux/"
+MMSCENEGRAPH_RUST_BUILD_DIR="${MMSCENEGRAPH_CPP_TARGET_DIR}/release"
 MMSCENEGRAPH_INCLUDE_DIR="${MMSCENEGRAPH_CPP_DIR}/include"
 
 # Build Rust code.
@@ -129,14 +131,14 @@ if [ ${BUILD_MMSCENEGRAPH} -eq 1 ]; then
 
     echo "Building Rust crate... (${MMSCENEGRAPH_RUST_DIR})"
     cd "${MMSCENEGRAPH_RUST_DIR}"
-    cargo build --release
+    cargo build --release --target-dir "${MMSCENEGRAPH_RUST_TARGET_DIR}"
 
     echo "Building C++ Bindings... (${MMSCENEGRAPH_CPP_DIR})"
     cd "${MMSCENEGRAPH_CPP_DIR}"
     # Assumes 'cxxbridge' (cxxbridge-cmd) is installed.
     echo "Generating C++ Headers..."
     cxxbridge --header --output "${MMSCENEGRAPH_CPP_DIR}/include/mmscenegraph/_cxx.h"
-    cargo build --release
+    cargo build --release --target-dir "${MMSCENEGRAPH_CPP_TARGET_DIR}"
 
     cd "${PROJECT_ROOT}"
 fi

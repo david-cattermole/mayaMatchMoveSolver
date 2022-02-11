@@ -112,7 +112,9 @@ SET LDPK_LIB_PATH="%LDPK_ROOT%\lib"
 :: Where to find the mmSceneGraph Rust libraries and headers.
 SET MMSCENEGRAPH_RUST_DIR=%PROJECT_ROOT%\src\mmSolver\mmscenegraph\rust
 SET MMSCENEGRAPH_CPP_DIR=%PROJECT_ROOT%\src\mmSolver\mmscenegraph\cppbind
-SET MMSCENEGRAPH_RUST_BUILD_DIR="%MMSCENEGRAPH_CPP_DIR%\target\release"
+SET MMSCENEGRAPH_RUST_TARGET_DIR="%MMSCENEGRAPH_RUST_DIR%\target_maya%MAYA_VERSION%_windows64"
+SET MMSCENEGRAPH_CPP_TARGET_DIR="%MMSCENEGRAPH_CPP_DIR%\target_maya%MAYA_VERSION%_windows64"
+SET MMSCENEGRAPH_RUST_BUILD_DIR="%MMSCENEGRAPH_CPP_TARGET_DIR%\release"
 SET MMSCENEGRAPH_INCLUDE_DIR="%MMSCENEGRAPH_CPP_DIR%\include"
 
 :: MinGW is a common install for developers on Windows and
@@ -137,14 +139,14 @@ IF "%BUILD_MMSCENEGRAPH%"=="1" (
 
    ECHO Building Rust crate... (%MMSCENEGRAPH_RUST_DIR%)
    CHDIR "%MMSCENEGRAPH_RUST_DIR%"
-   cargo build --release
+   cargo build --release --target-dir "%MMSCENEGRAPH_RUST_TARGET_DIR%"
 
    ECHO Building C++ Bindings... (%MMSCENEGRAPH_CPP_DIR%)
    CHDIR "%MMSCENEGRAPH_CPP_DIR%"
    :: Assumes 'cxxbridge' (cxxbridge-cmd) is installed.
    ECHO Generating C++ Headers...
    cxxbridge --header --output "%MMSCENEGRAPH_CPP_DIR%\include\mmscenegraph\_cxx.h"
-   cargo build --release
+   cargo build --release --target-dir "%MMSCENEGRAPH_CPP_TARGET_DIR%"
 
    CHDIR "%PROJECT_ROOT%"
 )

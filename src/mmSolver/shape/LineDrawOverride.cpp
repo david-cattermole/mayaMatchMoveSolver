@@ -21,6 +21,9 @@
 
 #include "LineDrawOverride.h"
 
+// STL
+#include <algorithm>
+
 // Maya
 #include <maya/MString.h>
 #include <maya/MPlug.h>

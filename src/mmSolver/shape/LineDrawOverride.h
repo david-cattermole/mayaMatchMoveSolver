@@ -22,8 +22,6 @@
 #ifndef MM_LINE_DRAW_OVERRIDE_H
 #define MM_LINE_DRAW_OVERRIDE_H
 
-#include "LineShapeNode.h"
-
 // Maya
 #include <maya/MString.h>
 #include <maya/MColor.h>
@@ -40,6 +38,7 @@
 #include <maya/MHWGeometryUtilities.h>
 
 // MM Solver
+#include "LineShapeNode.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {

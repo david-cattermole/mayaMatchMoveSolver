@@ -39,6 +39,7 @@
 
 // MM Solver
 #include "MarkerShapeNode.h"
+#include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 
@@ -116,8 +117,7 @@ public:
 
     void handleTraceMessage(const MString &message) const override {
         MGlobal::displayInfo("MarkerDrawOverride: " + message);
-        MStreamUtils::stdOutStream()
-            << "MarkerDrawOverride: " << message.asChar() << '\n';
+        MMSOLVER_INFO("MarkerDrawOverride: " << message.asChar());
     }
 
 private:

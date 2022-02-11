@@ -22,8 +22,6 @@
 #ifndef MM_SKY_DOME_DRAW_OVERRIDE_H
 #define MM_SKY_DOME_DRAW_OVERRIDE_H
 
-#include "SkyDomeShapeNode.h"
-
 // Maya
 #include <maya/MString.h>
 #include <maya/MColor.h>
@@ -38,6 +36,10 @@
 #include <maya/MUserData.h>
 #include <maya/MDrawContext.h>
 #include <maya/MHWGeometryUtilities.h>
+
+// MM Solver
+#include "SkyDomeShapeNode.h"
+#include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 
@@ -162,8 +164,7 @@ public:
 
     void handleTraceMessage(const MString &message) const override {
         MGlobal::displayInfo("SkyDomeDrawOverride: " + message);
-        MStreamUtils::stdOutStream()
-                << "SkyDomeDrawOverride: " << message.asChar() << '\n';
+        MMSOLVER_INFO("SkyDomeDrawOverride: " << message.asChar());
     }
 
 private:

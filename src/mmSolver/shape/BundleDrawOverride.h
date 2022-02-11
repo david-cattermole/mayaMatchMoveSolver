@@ -39,6 +39,10 @@
 #include <maya/MDrawContext.h>
 #include <maya/MHWGeometryUtilities.h>
 
+// MM Solver
+#include "BundleShapeNode.h"
+#include "mmSolver/utilities/debug_utils.h"
+
 namespace mmsolver {
 
 class BundleDrawData : public MUserData {
@@ -109,8 +113,7 @@ public:
 
     void handleTraceMessage(const MString &message) const override {
         MGlobal::displayInfo("BundleDrawOverride: " + message);
-        MStreamUtils::stdOutStream()
-            << "BundleDrawOverride: " << message.asChar() << '\n';
+        MMSOLVER_INFO("BundleDrawOverride: " << message.asChar());
     }
 
 private:

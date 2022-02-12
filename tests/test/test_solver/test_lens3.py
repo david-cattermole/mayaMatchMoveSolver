@@ -151,7 +151,7 @@ class TestLens3(solverUtils.SolverTestCase):
         """
         Solve lens distortion on a single frame, using ceres.
         """
-        self.do_solve('ceres', 0)
+        self.do_solve('ceres', 3)
 
     def test_init_cminpack_lmdif(self):
         """

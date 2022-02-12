@@ -124,7 +124,7 @@ class TestSolverIssue176(solverUtils.SolverTestCase):
         self.assertEqual(any(successes), False)
 
     def test_init_ceres(self):
-        self.do_solve('ceres', 0)
+        self.do_solve('ceres', 3)
 
     def test_init_cminpack_lmdif(self):
         self.do_solve('cminpack_lmdif', 1)

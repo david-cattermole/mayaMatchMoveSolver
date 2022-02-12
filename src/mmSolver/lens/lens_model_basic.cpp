@@ -56,12 +56,21 @@ void LensModelBasic::setInputLensModel(LensModel* value) {
     return;
 }
 
+void LensModelBasic::initModel() const {
+    // Initialize the 'previous' lens model in the chain.
+    LensModel* inputLensModel = LensModelBasic::getInputLensModel();
+    if (inputLensModel != nullptr) {
+        inputLensModel->initModel();
+    }
+    // This node does not need to initialize a 3DE lens plug-in.
+    return;
+}
+
 void LensModelBasic::applyModel(double xd,
                                 double yd,
                                 double &xu,
                                 double &yu) const {
-    // First compute the lens distortion from the 'previous' lens
-    // model.
+    // Apply the 'previous' lens model in the chain.
     LensModel* inputLensModel = LensModelBasic::getInputLensModel();
     if (inputLensModel != nullptr) {
         inputLensModel->applyModel(xd, yd, xd, yd);

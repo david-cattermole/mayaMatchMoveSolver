@@ -29,10 +29,57 @@ public:
 
     virtual ~LensModel() = 0;
 
+    LensModel()
+            : m_focalLength_cm(3.0)
+            , m_filmBackWidth_cm(3.6)
+            , m_filmBackHeight_cm(2.4)
+            , m_pixelAspect(1.0)
+            , m_lensCenterOffsetX_cm(0.0)
+            , m_lensCenterOffsetY_cm(0.0) {};
+
+    // double getFocalLength() const;
+    // double getFilmBackWidth() const;
+    // double getFilmBackHeight() const;
+    // double getPixelAspect() const;
+    // double getLensCenterOffsetX() const;
+    // double getLensCenterOffsetY() const;
+
+    // void setFocalLength(double value);
+    // void setFilmBackWidth(double value);
+    // void setFilmBackHeight(double value);
+    // void setPixelAspect(double value);
+    // void setLensCenterOffsetX(double value);
+    // void setLensCenterOffsetY(double value);
+
+    double getFocalLength() const {return m_focalLength_cm;}
+    double getFilmBackWidth() const {return m_filmBackWidth_cm;}
+    double getFilmBackHeight() const {return m_filmBackHeight_cm;}
+    double getPixelAspect() const {return m_pixelAspect;}
+    double getLensCenterOffsetX() const {return m_lensCenterOffsetX_cm;}
+    double getLensCenterOffsetY() const {return m_lensCenterOffsetY_cm;}
+
+    void setFocalLength(double value) {m_focalLength_cm = value;}
+    void setFilmBackWidth(double value) {m_filmBackWidth_cm = value;}
+    void setFilmBackHeight(double value) {m_filmBackHeight_cm = value;}
+    void setPixelAspect(double value) {m_pixelAspect = value;}
+    void setLensCenterOffsetX(double value) {m_lensCenterOffsetX_cm = value;}
+    void setLensCenterOffsetY(double value) {m_lensCenterOffsetY_cm = value;}
+
+    virtual void initModel() const = 0;
+
     virtual void applyModel(double x,
                             double y,
                             double &out_x,
                             double &out_y) const = 0;
+
+protected:
+    // cm = centimeter, the unit of the value.
+    double m_focalLength_cm;
+    double m_filmBackWidth_cm;
+    double m_filmBackHeight_cm;
+    double m_pixelAspect;
+    double m_lensCenterOffsetX_cm;
+    double m_lensCenterOffsetY_cm;
 };
 
 

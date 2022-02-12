@@ -58,7 +58,8 @@ class LensModel3deClassic : public LensModel {
 public:
 
     LensModel3deClassic()
-            : m_distortion(0.0)
+            : LensModel{}
+            , m_distortion(0.0)
             , m_anamorphicSqueeze(1.0)
             , m_curvatureX(0.0)
             , m_curvatureY(0.0)
@@ -72,12 +73,14 @@ public:
                         double curvature_x,
                         double curvature_y,
                         double quartic_distortion)
-            : m_distortion(distortion)
+            : LensModel{}
+            , m_distortion(distortion)
             , m_anamorphicSqueeze(anamorphic_squeeze)
             , m_curvatureX(curvature_x)
             , m_curvatureY(curvature_y)
             , m_quarticDistortion(quartic_distortion){
-        m_lensPlugin = std::unique_ptr<LensPluginBase>(new LensPlugin());
+        m_lensPlugin =
+            std::unique_ptr<LensPluginBase>(new LensPlugin());
     };
 
     double getDistortion() const;
@@ -96,6 +99,8 @@ public:
 
     void setInputLensModel(LensModel* value);
 
+    virtual void initModel() const;
+
     virtual void applyModel(double x,
                             double y,
                             double &out_x,
@@ -105,6 +110,7 @@ private:
 
     LensModel* m_inputLensModel;
     std::unique_ptr<LensPluginBase> m_lensPlugin;
+
     double m_distortion;
     double m_anamorphicSqueeze;
     double m_curvatureX;

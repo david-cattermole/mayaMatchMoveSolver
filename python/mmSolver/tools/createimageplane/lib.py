@@ -101,6 +101,17 @@ def create_image_poly_plane(name=None):
         defaultValue=value)
     maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
 
+    # Pixel Aspect Ratio attribute
+    attr = 'pixelAspect'
+    value = 1.0
+    maya.cmds.addAttr(
+        tfm,
+        longName=attr,
+        at='double',
+        minValue=0.001,
+        defaultValue=value)
+    maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
+
     # Horizontal Film Offset attribute
     attr = 'horizontalFilmOffset'
     maya.cmds.addAttr(
@@ -159,6 +170,17 @@ def create_image_poly_plane(name=None):
     ]
     for attr in attrs:
         maya.cmds.connectAttr(tfm + '.' + attr, mkr_scl + '.' + attr)
+
+    attrs = [
+        'focalLength',
+        'horizontalFilmAperture',
+        'verticalFilmAperture',
+        'pixelAspect',
+        'horizontalFilmOffset',
+        'verticalFilmOffset'
+    ]
+    for attr in attrs:
+        maya.cmds.connectAttr(tfm + '.' + attr, deform_node + '.' + attr)
 
     # Connect marker scale to transform node.
     maya.cmds.connectAttr(mkr_scl + '.outScale', tfm + '.scale')

@@ -28,21 +28,34 @@
 class LensModelBasic : public LensModel {
 public:
 
-    LensModelBasic() : m_k1(0.0), m_k2(0.0) {};
+    LensModelBasic()
+            : LensModel{}
+            , m_k1(0.0)
+            , m_k2(0.0) {};
 
-    LensModelBasic(double k1, double k2) : m_k1(k1), m_k2(k2) {};
+    LensModelBasic(double focal_length,
+                   double film_back_width,
+                   double film_back_height,
+                   double pixel_aspect,
+                   double lens_center_offset_x,
+                   double lens_center_offset_y,
+                   double k1,
+                   double k2)
+            : LensModel{}
+            , m_k1(k1)
+            , m_k2(k2) {};
 
     double getK1() const;
-
-    void setK1(double value);
-
     double getK2() const;
 
+    void setK1(double value);
     void setK2(double value);
 
     LensModel* getInputLensModel() const;
 
     void setInputLensModel(LensModel* value);
+
+    virtual void initModel() const;
 
     virtual void applyModel(double x,
                             double y,

@@ -29,14 +29,24 @@
 
 // Maya
 #include <maya/MFnTypedAttribute.h>
+#include <maya/MFnNumericAttribute.h>
+#include <maya/MFnNumericData.h>
 
 // MM Solver
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/MMLensData.h"
+#include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/number_utils.h"
 
 MTypeId MMLensDeformerNode::m_id(MM_LENS_DEFORMER_TYPE_ID);
 
 MObject MMLensDeformerNode::a_inLens;
+MObject MMLensDeformerNode::a_focalLength;
+MObject MMLensDeformerNode::a_horizontalFilmAperture;
+MObject MMLensDeformerNode::a_verticalFilmAperture;
+MObject MMLensDeformerNode::a_pixelAspect;
+MObject MMLensDeformerNode::a_horizontalFilmOffset;
+MObject MMLensDeformerNode::a_verticalFilmOffset;
 
 
 MMLensDeformerNode::MMLensDeformerNode() {}
@@ -48,6 +58,8 @@ void* MMLensDeformerNode::creator() {
 }
 
 MStatus MMLensDeformerNode::initialize() {
+    MStatus status = MS::kSuccess;
+    MFnNumericAttribute numericAttr;
     MFnTypedAttribute typedAttr;
 
     // In Lens
@@ -59,9 +71,59 @@ MStatus MMLensDeformerNode::initialize() {
     CHECK_MSTATUS(typedAttr.setKeyable(false));
     CHECK_MSTATUS(typedAttr.setReadable(true));
     CHECK_MSTATUS(typedAttr.setWritable(true));
-    CHECK_MSTATUS(addAttribute(a_inLens));
 
-    attributeAffects(MMLensDeformerNode::a_inLens, MMLensDeformerNode::outputGeom);
+    a_focalLength = numericAttr.create(
+        "focalLength", "fl",
+        MFnNumericData::kDouble, 35.0, &status);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+
+    a_horizontalFilmAperture = numericAttr.create(
+        "horizontalFilmAperture", "fbkw",
+        MFnNumericData::kDouble, 36.0 * MM_TO_INCH, &status);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+
+    a_verticalFilmAperture = numericAttr.create(
+        "verticalFilmAperture", "fbkh",
+        MFnNumericData::kDouble, 24.0 * MM_TO_INCH, &status);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+
+    a_pixelAspect = numericAttr.create(
+        "pixelAspect", "pxasp",
+        MFnNumericData::kDouble, 1.0, &status);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+
+    a_horizontalFilmOffset = numericAttr.create(
+        "horizontalFilmOffset", "lcox",
+        MFnNumericData::kDouble, 0.0, &status);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+
+    a_verticalFilmOffset = numericAttr.create(
+        "verticalFilmOffset", "lcoy",
+        MFnNumericData::kDouble, 0.0, &status);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+
+    CHECK_MSTATUS(addAttribute(a_inLens));
+    CHECK_MSTATUS(addAttribute(a_focalLength));
+    CHECK_MSTATUS(addAttribute(a_horizontalFilmAperture));
+    CHECK_MSTATUS(addAttribute(a_verticalFilmAperture));
+    CHECK_MSTATUS(addAttribute(a_pixelAspect));
+    CHECK_MSTATUS(addAttribute(a_horizontalFilmOffset));
+    CHECK_MSTATUS(addAttribute(a_verticalFilmOffset));
+
+    CHECK_MSTATUS(attributeAffects(a_inLens, outputGeom));
+    CHECK_MSTATUS(attributeAffects(a_focalLength, outputGeom));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, outputGeom));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, outputGeom));
+    CHECK_MSTATUS(attributeAffects(a_pixelAspect, outputGeom));
+    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, outputGeom));
+    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, outputGeom));
+
     return MS::kSuccess;
 }
 
@@ -104,25 +166,63 @@ MMLensDeformerNode::deform(MDataBlock& data,
     MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
-    if (inputLensData != nullptr) {
-        // Get the underlying lens model.
-        LensModel* lensModel = (LensModel*) inputLensData->getValue();
-
-        // Deform each point on the input geometry.
-        for ( ; !iter.isDone(); iter.next()) {
-            MPoint pt = iter.position();
-
-            // Evaluate the lens distortion at (pt.x, pt.y).
-            double out_x = pt.x;
-            double out_y = pt.y;
-            if (lensModel != nullptr) {
-                lensModel->applyModel(pt.x, pt.y, out_x, out_y);
-            }
-            pt.x = lerp(pt.x, out_x, env);
-            pt.y = lerp(pt.y, out_y, env);
-
-            iter.setPosition(pt);
-        }
+    if (inputLensData == nullptr) {
+        return status;
     }
+
+    // Get the underlying lens model.
+    LensModel* lensModel = (LensModel*) inputLensData->getValue();
+    if (lensModel == nullptr) {
+        return status;
+    }
+
+    MDataHandle focalLengthHandle = data.inputValue(a_focalLength, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MDataHandle horizontalFilmApertureHandle = data.inputValue(a_horizontalFilmAperture, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MDataHandle verticalFilmApertureHandle = data.inputValue(a_verticalFilmAperture, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MDataHandle pixelAspectHandle = data.inputValue(a_pixelAspect, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MDataHandle horizontalFilmOffsetHandle = data.inputValue(a_horizontalFilmOffset, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MDataHandle verticalFilmOffsetHandle = data.inputValue(a_verticalFilmOffset, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    double focalLength = focalLengthHandle.asDouble();
+    double filmBackWidth = horizontalFilmApertureHandle.asDouble();
+    double filmBackHeight = verticalFilmApertureHandle.asDouble();
+    double pixelAspect = pixelAspectHandle.asDouble();
+    double lensCenterOffsetX = horizontalFilmOffsetHandle.asDouble();
+    double lensCenterOffsetY = verticalFilmOffsetHandle.asDouble();
+    focalLength *= MM_TO_INCH;
+    filmBackWidth *= INCH_TO_CM;
+    filmBackHeight *= INCH_TO_CM;
+    lensCenterOffsetX *= INCH_TO_CM;
+    lensCenterOffsetY *= INCH_TO_CM;
+
+    lensModel->setFocalLength(focalLength);
+    lensModel->setFilmBackWidth(filmBackWidth);
+    lensModel->setFilmBackHeight(filmBackHeight);
+    lensModel->setPixelAspect(pixelAspect);
+    lensModel->setLensCenterOffsetX(lensCenterOffsetX);
+    lensModel->setLensCenterOffsetY(lensCenterOffsetY);
+
+    lensModel->initModel();
+
+    // Deform each point on the input geometry.
+    for ( ; !iter.isDone(); iter.next()) {
+        MPoint pt = iter.position();
+
+        // Evaluate the lens distortion at (pt.x, pt.y).
+        double out_x = pt.x;
+        double out_y = pt.y;
+        lensModel->applyModel(pt.x, pt.y, out_x, out_y);
+
+        pt.x = lerp(pt.x, out_x, env);
+        pt.y = lerp(pt.y, out_y, env);
+        iter.setPosition(pt);
+    }
+
     return status;
 }

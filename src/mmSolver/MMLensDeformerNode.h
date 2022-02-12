@@ -58,8 +58,14 @@ public:
                            unsigned int   multiIndex);
 
 public:
-    static  MObject a_inLens;
-    static  MTypeId m_id;
+    static MObject a_inLens;
+    static MObject a_focalLength;
+    static MObject a_horizontalFilmAperture;
+    static MObject a_verticalFilmAperture;
+    static MObject a_pixelAspect;
+    static MObject a_horizontalFilmOffset;
+    static MObject a_verticalFilmOffset;
+    static MTypeId m_id;
 
 private:
 

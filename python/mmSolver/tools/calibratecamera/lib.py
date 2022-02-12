@@ -32,7 +32,6 @@ LOG = mmSolver.logger.get_logger()
 
 
 def _create_line(cam, mkr_grp, name):
-    # Create line
     line_name = mmapi.get_new_line_name(name)
     line = mmapi.Line().create_node(mkr_grp=mkr_grp, name=line_name)
     mkr_line = line.get_marker_list()
@@ -211,7 +210,7 @@ def create_new_setup():
     mkr_grp = mmapi.MarkerGroup().create_node(cam=cam, name='calibrate')
 
     origin_mkr = mmapi.Marker().create_node(
-        mkr_grp=mkr_grp, name='originPoint')
+        mkr_grp=mkr_grp, name='origin_point')
     origin_mkr_node = origin_mkr.get_node()
 
     # Axis 1

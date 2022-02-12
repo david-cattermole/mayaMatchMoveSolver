@@ -82,6 +82,6 @@ def main():
         # user has the transform and shape nodes selected.
         if cam_shp in created:
             continue
-        lib.create_poly_image_plane_on_camera(cam)
+        lib.create_image_plane_on_camera(cam)
         created.add(cam_shp)
     return

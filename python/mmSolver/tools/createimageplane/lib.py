@@ -29,8 +29,9 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.utils.camera as utils_camera
+import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.python_compat as pycompat
+import mmSolver.tools.createimageplane.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
@@ -120,6 +121,23 @@ def create_image_poly_plane(name=None):
         defaultValue=0.0)
     maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
 
+    # Image Sequence attribute
+    attr = 'imageSequence'
+    maya.cmds.addAttr(
+        tfm,
+        longName=attr,
+        dataType='string')
+
+    # Display Mode
+    maya.cmds.addAttr(
+        tfm,
+        longName='displayMode',
+        attributeType='enum',
+        enumName='Live:Baked:')
+    maya.cmds.setAttr(
+        tfm + '.displayMode',
+        edit=True, keyable=True)
+
     # Connect Image Plane dummy attrs to Marker Scale node.
     attrs = [
         'depth',
@@ -152,10 +170,10 @@ def create_image_poly_plane(name=None):
     for attr in attrs:
         maya.cmds.setAttr(tfm + '.' + attr, lock=True)
         maya.cmds.setAttr(tfm + '.' + attr, keyable=False, channelBox=False)
-    return tfm, deform_node
+    return tfm, shp, deform_node
 
 
-def set_image_plane_values(cam, image_plane_shp, img_poly_plane_tfm, deform_node):
+def set_image_plane_values(cam, baked_shp, live_tfm, deform_node):
     """Set the values of a polygon image plane with a regular Maya image
     plane.
 
@@ -184,23 +202,23 @@ def set_image_plane_values(cam, image_plane_shp, img_poly_plane_tfm, deform_node
     ]
     for attr in attrs:
         src = cam_shp + '.' + attr
-        dst = img_poly_plane_tfm + '.' + attr
+        dst = live_tfm + '.' + attr
         if not maya.cmds.isConnected(src, dst):
             maya.cmds.connectAttr(src, dst)
 
     # Copy the image plane 'depth' attribute value to the poly image
     # plane.
-    if image_plane_shp is not None:
-        src = image_plane_shp + '.depth'
-        dst = img_poly_plane_tfm + '.depth'
+    if baked_shp is not None:
+        src = baked_shp + '.depth'
+        dst = live_tfm + '.depth'
         value = maya.cmds.getAttr(src)
         maya.cmds.setAttr(dst, value)
 
     # Parent the transform under the camera.
-    img_poly_plane_tfm_uuid = maya.cmds.ls(img_poly_plane_tfm, uuid=True)[0]
-    maya.cmds.parent(img_poly_plane_tfm, cam_tfm, relative=True)
-    img_poly_plane_tfm = maya.cmds.ls(img_poly_plane_tfm_uuid, long=True)[0]
-    return img_poly_plane_tfm
+    img_poly_plane_tfm_uuid = maya.cmds.ls(live_tfm, uuid=True)[0]
+    maya.cmds.parent(live_tfm, cam_tfm, relative=True)
+    live_tfm = maya.cmds.ls(img_poly_plane_tfm_uuid, long=True)[0]
+    return live_tfm
 
 
 def _get_default_image():
@@ -216,12 +234,74 @@ def _get_default_image():
     return file_path
 
 
+def _expand_image_sequence_path(image_sequence_path, format_style):
+    start = None
+    end = None
+    file_pattern = image_sequence_path
+    if format_style == const.FORMAT_STYLE_MAYA:
+        # file.<f>.png
+        pass
+    elif format_style == const.FORMAT_STYLE_STANDARD:
+        # file.####.png
+        pass
+    is_seq = start is not None or end is not None
+    return file_pattern, start, end, is_seq
+
+
+def create_baked_image_plane_node(cam_tfm):
+    name = 'bakedImagePlane1'
+    img_pl_tfm, img_pl_shp = maya.cmds.imagePlane(
+        camera=cam_tfm,
+        name=name)
+    return img_pl_tfm, img_pl_shp
+
+
+def set_image_sequence(tfm, image_sequence_path):
+    # format_style = const.FORMAT_STYLE_STANDARD
+    # file_pattern, start, end, is_seq = _expand_image_sequence_path(
+    #     image_sequence_path,
+    #     format_style)
+
+    maya.cmds.setAttr(
+        tfm + '.imageSequence',
+        image_sequence_path,
+        type='string')
+    return
+
+
+def set_shader_file_path(file_node, image_sequence_path):
+    format_style = const.FORMAT_STYLE_STANDARD
+    file_pattern, start, end, is_seq = _expand_image_sequence_path(
+        image_sequence_path,
+        format_style)
+
+    maya.cmds.setAttr(
+        file_node + '.fileTextureName',
+        image_sequence_path,
+        type='string')
+    maya.cmds.setAttr(file_node + '.useFrameExtension', is_seq)
+    return
+
+
+def set_image_plane_file_path(image_plane_shp, image_sequence_path):
+    format_style = const.FORMAT_STYLE_STANDARD
+    file_pattern, start, end, is_seq = _expand_image_sequence_path(
+        image_sequence_path,
+        format_style)
+
+    maya.cmds.setAttr(
+        image_plane_shp + '.imageName',
+        image_sequence_path,
+        type='string')
+    maya.cmds.setAttr(image_plane_shp + '.useFrameExtension', is_seq)
+    return
+
+
 def create_image_plane_shader(image_plane_tfm):
     """Create an image plane shader, to display an image sequence in Maya
     on a Polygon image plane.
     """
     obj_nodes = [image_plane_tfm]
-    file_path = _get_default_image()
 
     file_place2d = maya.cmds.shadingNode('place2dTexture', asUtility=True)
     file_node = maya.cmds.shadingNode('file', asTexture=True, isColorManaged=True)
@@ -263,35 +343,51 @@ def create_image_plane_shader(image_plane_tfm):
 
     # Assign shader.
     maya.cmds.sets(obj_nodes, edit=True, forceElement=sg_node)
-
-    # TODO: Guess if the file path is an image sequence or not.
-    is_image_sequence = False
-    maya.cmds.setAttr(file_node + '.fileTextureName', file_path, type='string')
-    maya.cmds.setAttr(file_node + '.useFrameExtension', is_image_sequence)
     return sg_node, shd_node, file_node
 
 
-def create_poly_image_plane_on_camera(cam):
+def create_image_plane_on_camera(cam):
     """Create an Image Plane that can be distorted in Maya's viewport
     (realtime).
     """
     assert isinstance(cam, mmapi.Camera)
     cam_tfm = cam.get_transform_node()
     cam_shp = cam.get_shape_node()
-    image_plane_shps = utils_camera.get_image_plane_shapes_from_camera(cam_tfm, cam_shp)
-    image_plane_shp = None
+    image_plane_shps = camera_utils.get_image_plane_shapes_from_camera(cam_tfm, cam_shp)
+    baked_tfm = None
+    baked_shp = None
     if len(image_plane_shps) > 0:
-        image_plane_shp = image_plane_shps[0]
+        baked_shp = image_plane_shps[0]
+    if baked_shp is None:
+        baked_tfm, baked_shp = \
+            create_baked_image_plane_node(cam_tfm)
 
     # Convert Maya image plane into a polygon image plane.
-    img_poly_plane, deform_node = create_image_poly_plane(name='imagePlane1')
-    img_poly_plane = set_image_plane_values(cam, image_plane_shp, img_poly_plane, deform_node)
+    poly_tfm, poly_shp, deform_node = create_image_poly_plane(name='imagePlane1')
+    poly_tfm = set_image_plane_values(
+        cam,
+        baked_shp,
+        poly_tfm,
+        deform_node)
+
+    display_mode_expr = const.DISPLAY_MODE_EXPRESSION.format(
+        image_plane_tfm=poly_tfm,
+        baked_image_plane_shape=baked_shp,
+        live_image_plane_shape=poly_shp)
+    display_mode_expr = display_mode_expr.replace('{{', '{')
+    display_mode_expr = display_mode_expr.replace('}}', '}')
+    display_mode_expr_node = maya.cmds.expression(string=display_mode_expr)
 
     # Get file path and create new shader assignment for poly image
     # plane.
-    # TODO: Get the file path.
-    sg_node, shd_node, file_node = create_image_plane_shader(img_poly_plane)
-    return img_poly_plane
+    sg_node, shd_node, file_node = create_image_plane_shader(poly_tfm)
+
+    # Image sequence.
+    image_sequence_path = _get_default_image()
+    set_image_sequence(poly_tfm, image_sequence_path)
+    set_shader_file_path(file_node, image_sequence_path)
+    set_image_plane_file_path(baked_shp, image_sequence_path)
+    return poly_tfm
 
 
 def convert_image_planes_on_camera(cam):
@@ -303,15 +399,15 @@ def convert_image_planes_on_camera(cam):
     # Find image plane currently on the camera.
     cam_tfm = cam.get_transform_node()
     cam_shp = cam.get_shape_node()
-    image_planes = utils_camera.get_image_plane_shapes_from_camera(cam_tfm, cam_shp)
+    image_planes = camera_utils.get_image_plane_shapes_from_camera(cam_tfm, cam_shp)
     for image_plane_shp in image_planes:
         # Convert Maya image plane into a polygon image plane.
-        img_poly_plane, deform_node = create_image_poly_plane()
-        set_image_plane_values(cam, image_plane_shp, img_poly_plane, deform_node)
+        img_poly_plane_tfm, img_poly_plane_shp, deform_node = create_image_poly_plane()
+        set_image_plane_values(cam, image_plane_shp, img_poly_plane_tfm, deform_node)
 
-        # Get file path and create new shader assignment for poly image
-        # plane.
-        sg_node, shd_node, file_node = create_image_plane_shader(img_poly_plane)
+        # Get file path and create new shader assignment for poly
+        # image plane.
+        sg_node, shd_node, file_node = create_image_plane_shader(img_poly_plane_tfm)
 
         # Disable/hide the Maya image plane.
         maya.cmds.setAttr(image_plane_shp + '.displayMode', 0)  # 0 = 'None' mode

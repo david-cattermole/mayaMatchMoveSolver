@@ -39,8 +39,8 @@
 #include <maya/MFnUnitAttribute.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnEnumAttribute.h>
-#include <maya/MFnMatrixAttribute.h>
 #include <maya/MFnNumericData.h>
+#include <maya/MFnMessageAttribute.h>
 
 #if MAYA_API_VERSION >= 20190000
 #include <maya/MViewport2Renderer.h>
@@ -75,7 +75,7 @@ MObject LineShapeNode::m_inner_line_width;
 MObject LineShapeNode::m_outer_line_width;
 MObject LineShapeNode::m_outer_scale;
 MObject LineShapeNode::m_point_size;
-MObject LineShapeNode::m_matrix_array;
+MObject LineShapeNode::m_objects;
 
 LineShapeNode::LineShapeNode() {}
 
@@ -125,7 +125,7 @@ MStatus LineShapeNode::preEvaluation(
         const MEvaluationNode &evaluationNode) {
     if (context.isNormal()) {
         MStatus status;
-        bool ok = evaluationNode.dirtyPlugExists(m_matrix_array, &status);
+        bool ok = evaluationNode.dirtyPlugExists(m_objects, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         if (ok) {
             MHWRender::MRenderer::setGeometryDrawDirty(thisMObject());
@@ -158,7 +158,7 @@ MStatus LineShapeNode::initialize() {
     MFnUnitAttribute uAttr;
     MFnNumericAttribute nAttr;
     MFnEnumAttribute eAttr;
-    MFnMatrixAttribute matrixAttr;
+    MFnMessageAttribute msgAttr;
 
     // Draw Name
     m_draw_name = nAttr.create(
@@ -272,18 +272,17 @@ MStatus LineShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setSoftMin(point_size_soft_min));
     CHECK_MSTATUS(nAttr.setSoftMax(point_size_soft_max));
 
-    // Matrix
-    m_matrix_array = matrixAttr.create(
-        "matrixArray", "mtxarry",
-        MFnMatrixAttribute::kDouble, &status);
+    // Objects
+    m_objects = msgAttr.create("objects", "objs", &status);
     CHECK_MSTATUS(status);
-    CHECK_MSTATUS(matrixAttr.setStorable(true));
-    CHECK_MSTATUS(matrixAttr.setConnectable(true));
-    CHECK_MSTATUS(matrixAttr.setArray(true));
-    CHECK_MSTATUS(matrixAttr.setReadable(false));
-    CHECK_MSTATUS(matrixAttr.setWritable(true));
-    CHECK_MSTATUS(matrixAttr.setIndexMatters(false));
-    CHECK_MSTATUS(matrixAttr.setDisconnectBehavior(
+    CHECK_MSTATUS(msgAttr.setStorable(true));
+    CHECK_MSTATUS(msgAttr.setCached(true));
+    CHECK_MSTATUS(msgAttr.setConnectable(true));
+    CHECK_MSTATUS(msgAttr.setArray(true));
+    CHECK_MSTATUS(msgAttr.setReadable(false));
+    CHECK_MSTATUS(msgAttr.setWritable(true));
+    CHECK_MSTATUS(msgAttr.setIndexMatters(false));
+    CHECK_MSTATUS(msgAttr.setDisconnectBehavior(
                       MFnAttribute::DisconnectBehavior::kDelete));
 
     // Add attributes
@@ -300,7 +299,7 @@ MStatus LineShapeNode::initialize() {
     CHECK_MSTATUS(addAttribute(m_outer_scale));
     CHECK_MSTATUS(addAttribute(m_inner_line_width));
     CHECK_MSTATUS(addAttribute(m_outer_line_width));
-    CHECK_MSTATUS(addAttribute(m_matrix_array));
+    CHECK_MSTATUS(addAttribute(m_objects));
 
     return MS::kSuccess;
 }

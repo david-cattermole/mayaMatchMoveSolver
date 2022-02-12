@@ -27,6 +27,7 @@
 // Maya
 #include <maya/MString.h>
 #include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
 #include <maya/MColor.h>
 #include <maya/MDistance.h>
 #include <maya/MEventMessage.h>
@@ -34,6 +35,7 @@
 #include <maya/MPoint.h>
 #include <maya/MTransformationMatrix.h>
 #include <maya/MPointArray.h>
+#include <maya/MFnMatrixData.h>
 
 // Maya Viewport 2.0
 #include <maya/MPxDrawOverride.h>
@@ -44,6 +46,32 @@
 #include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
+
+MStatus get_position_from_connected_node(const MPlug &plug,
+                            double &x, double &y, double &z) {
+    MStatus status = MS::kSuccess;
+    if (!plug.isNull() && plug.isConnected()) {
+        MPlugArray connected_plugs;
+        bool as_src = false;
+        bool as_dst = true;
+        plug.connectedTo(connected_plugs, as_dst, as_src, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        if (connected_plugs.length() == 1) {
+            MPlug connected_plug = connected_plugs[0];
+            MObject connected_node = connected_plug.node();
+            MDagPath dag_path;
+            MDagPath::getAPathTo(connected_node, dag_path);
+
+            MMatrix matrix = dag_path.inclusiveMatrix(&status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+
+            x = matrix[3][0];
+            y = matrix[3][1];
+            z = matrix[3][2];
+        }
+    }
+    return status;
+}
 
 // By setting isAlwaysDirty to false in MPxDrawOverride constructor,
 // the draw override will be updated (via prepareForDraw()) only when
@@ -105,20 +133,20 @@ MBoundingBox LineDrawOverride::boundingBox(
 
     MObject node = objPath.node(&status);
     if (status) {
-        MPlug plug(node, LineShapeNode::m_matrix_array);
+        MPlug plug(node, LineShapeNode::m_objects);
         if (!plug.isNull()) {
+            double x = 0.0;
+            double y = 0.0;
+            double z = 0.0;
+
             uint32_t numElements = plug.evaluateNumElements();
             for (uint32_t i = 0; i < numElements; ++i) {
                 MPlug plugElement = plug.elementByPhysicalIndex(i, &status);
                 CHECK_MSTATUS(status);
                 if (!plugElement.isNull()) {
-                    MDataHandle dataHandle = plugElement.asMDataHandle(&status);
+                    status = get_position_from_connected_node(plugElement, x, y, z);
                     CHECK_MSTATUS(status);
-                    MMatrix matrix = dataHandle.asMatrix();
 
-                    double x = matrix[3][0];
-                    double y = matrix[3][1];
-                    double z = matrix[3][2];
                     corner1[0] = std::min(corner1[0], x);
                     corner1[1] = std::min(corner1[1], y);
                     corner1[2] = std::min(corner1[2], z);
@@ -263,17 +291,22 @@ MUserData *LineDrawOverride::prepareForDraw(
     data->m_point_list.clear();
     MObject node = objPath.node(&status);
     if (status) {
-        MPlug plug(node, LineShapeNode::m_matrix_array);
+        double x = 0.0;
+        double y = 0.0;
+        double z = 0.0;
+        MPoint point;
+
+        MPlug plug(node, LineShapeNode::m_objects);
         if (!plug.isNull()) {
             uint32_t numElements = plug.evaluateNumElements();
             for (uint32_t i = 0; i < numElements; ++i) {
                 MPlug plugElement = plug.elementByPhysicalIndex(i, &status);
                 CHECK_MSTATUS(status);
                 if (!plugElement.isNull()) {
-                    MDataHandle dataHandle = plugElement.asMDataHandle(&status);
+                    status = get_position_from_connected_node(plugElement, x, y, z);
                     CHECK_MSTATUS(status);
-                    MMatrix matrix = dataHandle.asMatrix();
-                    MPoint point(matrix(3, 0), matrix(3, 1), matrix(3, 2));
+
+                    point = MPoint(x, y, z);
                     data->m_point_list.append(point * obj_matrix);
                 }
             }

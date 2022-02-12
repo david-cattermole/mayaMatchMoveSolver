@@ -319,9 +319,9 @@ class Line(object):
         maya.cmds.setAttr(mkr_node_a + '.ty', -0.15)
         maya.cmds.setAttr(mkr_node_b + '.ty', 0.15)
 
-        src_a = mkr_node_a + '.worldMatrix[0]'
-        src_b = mkr_node_b + '.worldMatrix[0]'
-        dst = shp + '.matrixArray'
+        src_a = mkr_node_a + '.message'
+        src_b = mkr_node_b + '.message'
+        dst = shp + '.objects'
         maya.cmds.connectAttr(src_a, dst, nextAvailable=True)
         maya.cmds.connectAttr(src_b, dst, nextAvailable=True)
 
@@ -774,7 +774,7 @@ class Line(object):
         if shp is None:
             return []
 
-        node_attr = shp + '.matrixArray'
+        node_attr = shp + '.objects'
         conns = maya.cmds.listConnections(
             node_attr,
             source=True,
@@ -790,7 +790,7 @@ class Line(object):
             plugs=True,
             type=const.MARKER_TRANSFORM_OLD_NODE_TYPE) or []
 
-        # Sorts the markers based on the .matrixArray attribute
+        # Sorts the markers based on the .objects attribute
         # element index.
         if len(conns) == 0:
             return []
@@ -812,7 +812,7 @@ class Line(object):
         return mkr_list
 
     def _clear_marker_list(self, shp):
-        node_attr = shp + '.matrixArray'
+        node_attr = shp + '.objects'
         prev_mkr_node_list = maya.cmds.listConnections(
             node_attr,
             source=True,
@@ -826,8 +826,8 @@ class Line(object):
             plugs=False,
             type=const.MARKER_TRANSFORM_OLD_NODE_TYPE) or []
         for i, prev_mkr_node in enumerate(prev_mkr_node_list):
-            src = prev_mkr_node + '.worldMatrix[0]'
-            dst = shp + '.matrixArray[{}]'.format(i)
+            src = prev_mkr_node + '.message'
+            dst = shp + '.objects[{}]'.format(i)
             if maya.cmds.isConnected(src, dst):
                 maya.cmds.disconnectAttr(src, dst)
 
@@ -855,8 +855,8 @@ class Line(object):
 
         for i, mkr in enumerate(mkr_list):
             mkr_node = mkr.get_node()
-            src = mkr_node + '.worldMatrix[0]'
-            dst = line_shp + '.matrixArray[{}]'.format(i)
+            src = mkr_node + '.message'
+            dst = line_shp + '.objects[{}]'.format(i)
             if not maya.cmds.isConnected(src, dst):
                 maya.cmds.connectAttr(src, dst)
         return

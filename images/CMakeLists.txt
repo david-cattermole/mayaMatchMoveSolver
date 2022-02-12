@@ -20,4 +20,4 @@
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
   DESTINATION "${MODULE_FULL_NAME}/resources"
-  FILES_MATCHING PATTERN "default_mmSolver_*.png")
+  FILES_MATCHING PATTERN "default_mmSolver_*.iff")

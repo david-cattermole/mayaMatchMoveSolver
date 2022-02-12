@@ -229,7 +229,7 @@ def _get_default_image():
     dir_path = os.environ.get('MMSOLVER_RESOURCE_PATH', fallback)
     assert isinstance(dir_path, pycompat.TEXT_TYPE)
 
-    file_name = 'default_mmSolver_1920x1080_hd.png'
+    file_name = 'default_mmSolver_1920x1080_hd.iff'
     file_path = os.path.join(dir_path, file_name)
     return file_path
 

@@ -28,6 +28,7 @@
 
 // Maya
 #include <maya/MPlug.h>
+#include <maya/MObjectArray.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
 #include <maya/MFnNumericAttribute.h>
@@ -39,6 +40,7 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_utils.h"
 
 
 MTypeId MMMarkerScaleNode::m_id(MM_MARKER_SCALE_TYPE_ID);
@@ -399,140 +401,36 @@ MStatus MMMarkerScaleNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_outScale));
 
     // Attribute Affects
-    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_focalLength, a_outScaleZ));
+    MObjectArray inputAttrs;
+    inputAttrs.append(a_focalLength);
+    inputAttrs.append(a_cameraAperture);
+    inputAttrs.append(a_horizontalFilmAperture);
+    inputAttrs.append(a_verticalFilmAperture);
+    inputAttrs.append(a_filmOffset);
+    inputAttrs.append(a_horizontalFilmOffset);
+    inputAttrs.append(a_verticalFilmOffset);
+    inputAttrs.append(a_overscanMode);
+    inputAttrs.append(a_overscan);
+    inputAttrs.append(a_overscanX);
+    inputAttrs.append(a_overscanY);
+    inputAttrs.append(a_overscanInverse);
+    inputAttrs.append(a_overscanInverseX);
+    inputAttrs.append(a_overscanInverseY);
+    inputAttrs.append(a_depth);
 
-    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_cameraAperture, a_outScaleZ));
+    MObjectArray outputAttrs;
+    outputAttrs.append(a_outTranslate);
+    outputAttrs.append(a_outTranslateX);
+    outputAttrs.append(a_outTranslateY);
+    outputAttrs.append(a_outTranslateZ);
+    outputAttrs.append(a_outScale);
+    outputAttrs.append(a_outScaleX);
+    outputAttrs.append(a_outScaleY);
+    outputAttrs.append(a_outScaleZ);
 
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, a_outScaleZ));
-
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, a_outScaleZ));
-
-    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_filmOffset, a_outScaleZ));
-
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, a_outScaleZ));
-
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, a_outScaleZ));
-
-    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_overscanMode, a_outScaleZ));
-
-    CHECK_MSTATUS(attributeAffects(a_overscan, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_overscan, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_overscan, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_overscan, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_overscan, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_overscan, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_overscan, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_overscan, a_outScaleZ));
-
-    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_overscanX, a_outScaleZ));
-
-    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_overscanY, a_outScaleZ));
-
-    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverse, a_outScaleZ));
-
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseX, a_outScaleZ));
-
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_overscanInverseY, a_outScaleZ));
-
-    CHECK_MSTATUS(attributeAffects(a_depth, a_outTranslate));
-    CHECK_MSTATUS(attributeAffects(a_depth, a_outTranslateX));
-    CHECK_MSTATUS(attributeAffects(a_depth, a_outTranslateY));
-    CHECK_MSTATUS(attributeAffects(a_depth, a_outTranslateZ));
-    CHECK_MSTATUS(attributeAffects(a_depth, a_outScale));
-    CHECK_MSTATUS(attributeAffects(a_depth, a_outScaleX));
-    CHECK_MSTATUS(attributeAffects(a_depth, a_outScaleY));
-    CHECK_MSTATUS(attributeAffects(a_depth, a_outScaleZ));
+    CHECK_MSTATUS(MMNodeInitUtils::attributeAffectsMulti(
+                      inputAttrs,
+                      outputAttrs));
 
     return (MS::kSuccess);
 }

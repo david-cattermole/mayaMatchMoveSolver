@@ -138,6 +138,16 @@ def create_image_poly_plane(name=None):
         tfm + '.displayMode',
         edit=True, keyable=True)
 
+    # Add message attributes
+    maya.cmds.addAttr(
+        tfm,
+        longName='shaderFileNode',
+        attributeType='message')
+    maya.cmds.addAttr(
+        tfm,
+        longName='imagePlaneShapeNode',
+        attributeType='message')
+
     # Connect Image Plane dummy attrs to Marker Scale node.
     attrs = [
         'depth',
@@ -231,7 +241,35 @@ def _get_default_image():
 
     file_name = 'default_mmSolver_1920x1080_hd.iff'
     file_path = os.path.join(dir_path, file_name)
-    return file_path
+    return os.path.abspath(file_path)
+
+
+def _get_image_plane_file_node(image_plane_tfm):
+    file_node = None
+    conns = maya.cmds.listConnections(
+        image_plane_tfm + '.shaderFileNode',
+        destination=False,
+        source=True,
+        plugs=False,
+        type='file',
+    ) or []
+    if len(conns) > 0:
+        file_node = conns[0]
+    return file_node
+
+
+def _get_image_plane_baked_shape_node(image_plane_tfm):
+    file_node = None
+    conns = maya.cmds.listConnections(
+        image_plane_tfm + '.imagePlaneShapeNode',
+        destination=False,
+        source=True,
+        plugs=False,
+        type='imagePlane',
+    ) or []
+    if len(conns) > 0:
+        file_node = conns[0]
+    return file_node
 
 
 def _expand_image_sequence_path(image_sequence_path, format_style):
@@ -269,7 +307,12 @@ def set_image_sequence(tfm, image_sequence_path):
     return
 
 
-def set_shader_file_path(file_node, image_sequence_path):
+def set_shader_file_path(image_plane_tfm, image_sequence_path):
+    file_node = _get_image_plane_file_node(image_plane_tfm)
+    if file_node is None:
+        LOG.warn('file node is invalid.')
+        return
+
     format_style = const.FORMAT_STYLE_STANDARD
     file_pattern, start, end, is_seq = _expand_image_sequence_path(
         image_sequence_path,
@@ -283,7 +326,12 @@ def set_shader_file_path(file_node, image_sequence_path):
     return
 
 
-def set_image_plane_file_path(image_plane_shp, image_sequence_path):
+def set_image_plane_file_path(image_plane_tfm, image_sequence_path):
+    image_plane_shp = _get_image_plane_baked_shape_node(image_plane_tfm)
+    if image_plane_shp is None:
+        LOG.warn('file node is invalid.')
+        return
+
     format_style = const.FORMAT_STYLE_STANDARD
     file_pattern, start, end, is_seq = _expand_image_sequence_path(
         image_sequence_path,
@@ -370,6 +418,7 @@ def create_image_plane_on_camera(cam):
         poly_tfm,
         deform_node)
 
+    # Connect Display mode to live/baked nodes.
     display_mode_expr = const.DISPLAY_MODE_EXPRESSION.format(
         image_plane_tfm=poly_tfm,
         baked_image_plane_shape=baked_shp,
@@ -382,11 +431,15 @@ def create_image_plane_on_camera(cam):
     # plane.
     sg_node, shd_node, file_node = create_image_plane_shader(poly_tfm)
 
+    # Shortcut connections to nodes.
+    maya.cmds.connectAttr(file_node + '.message', poly_tfm + '.shaderFileNode')
+    maya.cmds.connectAttr(baked_shp + '.message', poly_tfm + '.imagePlaneShapeNode')
+
     # Image sequence.
     image_sequence_path = _get_default_image()
     set_image_sequence(poly_tfm, image_sequence_path)
-    set_shader_file_path(file_node, image_sequence_path)
-    set_image_plane_file_path(baked_shp, image_sequence_path)
+    set_shader_file_path(poly_tfm, image_sequence_path)
+    set_image_plane_file_path(poly_tfm, image_sequence_path)
     return poly_tfm
 
 

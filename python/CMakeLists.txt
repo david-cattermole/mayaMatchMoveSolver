@@ -35,7 +35,8 @@ function(add_ui_compile
          output_file)
     if(MAYA_VERSION GREATER_EQUAL 2022)
         # Maya 2022 and above. Use Maya provided 'uic' executable to
-        # compile .ui files into .py files.
+        # compile .ui files into .py files. Earlier versions of Maya
+        # can only compile to C++ code with 'uic'.
         find_program(MAYA_QT_UIC_EXECUTABLE
                 uic
             HINTS
@@ -49,10 +50,11 @@ function(add_ui_compile
                 "Maya provided Qt 'uic' executable path"
         )
 
-        set(EXEC_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/internal/compileUI.py)
         # Runs 'uic -g python <ui_file> -o <output_python_file>'
         add_custom_command(
-                OUTPUT ${output_file}
+                OUTPUT
+                    ${output_file}
+                    ${output_file}.never_exist  # force re-run.
                 COMMAND ${MAYA_QT_UIC_EXECUTABLE} -g python ${input_file} -o ${output_file}
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                 DEPENDS ${input_file}
@@ -67,7 +69,9 @@ function(add_ui_compile
         # into .py files.
         set(EXEC_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/internal/compileUI.py)
         add_custom_command(
-                OUTPUT ${output_file}
+                OUTPUT
+                    ${output_file}
+                    ${output_file}.never_exist  # force re-run.
                 COMMAND ${MAYA_PYTHON_EXECUTABLE} ${EXEC_SCRIPT} ${input_file}
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                 DEPENDS ${input_file}

@@ -149,7 +149,6 @@ using MMCamera = Camera;
 #include <maya/MFnDependencyNode.h>
 #include <maya/MItSelectionList.h>
 
-
 #define START_FRAME_SHORT_FLAG "-sf"
 #define START_FRAME_LONG_FLAG "-startFrame"
 #define END_FRAME_SHORT_FLAG "-ef"
@@ -610,7 +609,8 @@ bool compute_relative_pose(
     MMSOLVER_INFO("D ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-    // Compute the relative pose thanks to a essential matrix estimation
+    // Compute the relative pose thanks to an essential matrix
+    // estimation.
     const std::pair<size_t, size_t> image_size_a(
         static_cast<size_t>(image_width_a),
         static_cast<size_t>(image_height_a));
@@ -849,7 +849,6 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         ppx_pix_b,
         ppy_pix_b);
 
-
     openMVG::sfm::RelativePose_Info pose_info;
     auto relative_pose_ok = compute_relative_pose(
         m_image_width_a,
@@ -917,13 +916,11 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
 
     MMSOLVER_INFO("J ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    if (0) {
-        auto adjust_ok = bundle_adjustment(scene);
-        if (!adjust_ok) {
-            MMSOLVER_ERR("Bundle Adjustment failed.");
-            status = MS::kFailure;
-            return status;
-        }
+    auto adjust_ok = bundle_adjustment(scene);
+    if (!adjust_ok) {
+        MMSOLVER_ERR("Bundle Adjustment failed.");
+        status = MS::kFailure;
+        return status;
     }
 
     MMSOLVER_INFO("K ---");
@@ -933,7 +930,31 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         "EssentialGeometry_after.json",
         openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
 
-    // TODO: Convert the sfm_data back to Maya data and set Camera and Bundles.
+    // TODO: Convert the sfm_data back to Maya data and set Camera and
+    // Bundles.
+    auto views = scene.GetViews();
+    auto poses = scene.GetPoses();
+    auto intrinsics = scene.GetIntrinsics();
+    auto landmarks = scene.GetLandmarks();
+
+    for (auto it : views) {
+        auto key = it.first;
+        auto view = *it.second;
+        auto pose_id = view.id_pose;
+        MMSOLVER_INFO("view: " << key << "=" << pose_id);
+
+        // auto pose = poses.at(pose_id);
+        auto pose = scene.GetPoseOrDie(&view);
+        MMSOLVER_INFO("pose translation: " << pose.translation());
+        MMSOLVER_INFO("pose rotation: " << pose.rotation());
+    }
+
+    for (auto it : landmarks) {
+        auto key = it.first;
+        auto landmark = it.second;
+        auto pos = landmark.X;
+        MMSOLVER_INFO("landmark: " << key << "=" << pos);
+    }
 
     MMCameraRelativePoseCmd::setResult(outResult);
     return status;

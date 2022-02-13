@@ -49,9 +49,8 @@ global proc AEmmLineShapeTemplate(string $nodeName)
     editorTemplate -addControl "drawName";
     editorTemplate -endLayout;
 
-    editorTemplate -beginLayout "Input Matrix" -collapse 1;
-    editorTemplate -addControl "matrixA";
-    editorTemplate -addControl "matrixB";
+    editorTemplate -beginLayout "Input Objects" -collapse 1;
+    editorTemplate -addControl "objects";
     editorTemplate -endLayout;
 
     AEmmNodeShapeTemplateCommonEnd($nodeName);

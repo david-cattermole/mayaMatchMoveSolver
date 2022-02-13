@@ -24,6 +24,7 @@ ui_*.py
 old/*
 precompiled/*
 venv/*
+*/.mayaSwatches/*
 
 *.so
 *.so.*

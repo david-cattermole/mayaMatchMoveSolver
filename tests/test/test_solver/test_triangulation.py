@@ -72,26 +72,27 @@ class TestTriangulation(solverUtils.SolverTestCase):
 
         # Get projected point.
         maya.cmds.setAttr(node + '.depthScale', 1.0)
-        point = maya.cmds.getAttr(node + '.outWorldPoint')[0]
 
         # Bundle (with aim transform)
         aim_tfm = maya.cmds.createNode('transform', name='aimAt_tfm')
         bundle_tfm, bundle_shp = self.create_bundle('bundle', parent=aim_tfm)
+
+        # Marker
+        mkr_grp = self.create_marker_group('marker_group', cam_tfm)
+        marker_tfm, marker_shp = self.create_marker(
+            'marker',
+            mkr_grp,
+            bnd_tfm=bundle_tfm)
+        maya.cmds.setAttr(marker_tfm + '.tz', -1)
+        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-0.243056042)
+        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=-0.048611208)
+
+        # Connect transform and calculate reprojected world point.
+        maya.cmds.connectAttr(marker_tfm + '.worldMatrix', node + '.transformWorldMatrix')
+        point = maya.cmds.getAttr(node + '.outWorldPoint')[0]
         maya.cmds.setAttr(aim_tfm + '.translateX', point[0])
         maya.cmds.setAttr(aim_tfm + '.translateY', point[1])
         maya.cmds.setAttr(aim_tfm + '.translateZ', point[2])
-
-        # Marker
-        marker_tfm, marker_shp = self.create_marker(
-            'marker',
-            cam_tfm,
-            bnd_tfm=bundle_tfm)
-        maya.cmds.setAttr(marker_tfm + '.tz', -10)
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-2.5)
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=-0.5)
-
-        # Connect transform
-        maya.cmds.connectAttr(marker_tfm + '.worldMatrix', node + '.transformWorldMatrix')
 
         # Aim the bundle at the camera.
         maya.cmds.currentTime(start, edit=True)
@@ -107,6 +108,9 @@ class TestTriangulation(solverUtils.SolverTestCase):
         )
         if maya.cmds.objExists(aim_const[0]):
             maya.cmds.delete(aim_const[0])
+
+        # Give the bundle an initial good depth position to start with.
+        maya.cmds.setAttr(bundle_tfm + '.tx', -1.0)
 
         cameras = (
             (cam_tfm, cam_shp),

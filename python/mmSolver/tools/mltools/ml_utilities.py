@@ -58,6 +58,10 @@
 #                                                             __________
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - /_ Enjoy! _/- - -
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 __author__ = 'Morgan Loomis'
 __license__ = 'MIT'
 __revision__ = 35
@@ -333,8 +337,8 @@ def formLayoutGrid(form, controls, offset=1):
     '''
 
     kwargs = {'edit':True, 'attachPosition':[]}
-    rowInc = 100/len(controls)
-    colInc = 100/len(controls[0])
+    rowInc = 100 // len(controls)
+    colInc = 100 // len(controls[0])
     position = {'left':0,'right':100,'top':0,'bottom':100}
 
     for r,row in enumerate(controls):

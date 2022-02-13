@@ -58,18 +58,19 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         bundle_02_tfm, bundle_02_shp = self.create_bundle('bundle_02', parent=grp)
         maya.cmds.setAttr(grp + '.tz', -10)
 
+        mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_01_tfm, marker_01_shp = self.create_marker(
-            'marker_01', cam_tfm, bnd_tfm=bundle_01_tfm)
-        maya.cmds.setAttr(marker_01_tfm + '.tx', -2.5)
-        maya.cmds.setAttr(marker_01_tfm + '.ty', 1.3)
-        maya.cmds.setAttr(marker_01_tfm + '.tz', -10)
+            'marker_01', mkr_grp, bnd_tfm=bundle_01_tfm)
+        maya.cmds.setAttr(marker_01_tfm + '.tx', -0.243056042)
+        maya.cmds.setAttr(marker_01_tfm + '.ty', 0.189583713)
+        maya.cmds.setAttr(marker_01_tfm + '.tz', -1.0)
 
         # disable this marker
         marker_02_tfm, marker_02_shp = self.create_marker(
-            'marker_02', cam_tfm, bnd_tfm=bundle_02_tfm)
-        maya.cmds.setAttr(marker_02_tfm + '.tx', 2.5)
-        maya.cmds.setAttr(marker_02_tfm + '.ty', 1.3)
-        maya.cmds.setAttr(marker_02_tfm + '.tz', -10)
+            'marker_02', mkr_grp, bnd_tfm=bundle_02_tfm)
+        maya.cmds.setAttr(marker_02_tfm + '.tx', 0.243056042)
+        maya.cmds.setAttr(marker_02_tfm + '.ty', 0.189583713)
+        maya.cmds.setAttr(marker_02_tfm + '.tz', -1.0)
         maya.cmds.setAttr(marker_02_tfm + '.enable', 0)
 
         cameras = (
@@ -143,22 +144,23 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         maya.cmds.setKeyframe(grp, attribute='translateX', time=start, value=0)
         maya.cmds.setKeyframe(grp, attribute='translateY', time=start, value=0)
 
+        mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_01_tfm, marker_01_shp = self.create_marker(
-            'marker_01', cam_tfm, bnd_tfm=bundle_01_tfm)
-        maya.cmds.setAttr(marker_01_tfm + '.tz', -10)
-        maya.cmds.setKeyframe(marker_01_tfm, attribute='translateX', time=start, value=-2.5)
-        maya.cmds.setKeyframe(marker_01_tfm, attribute='translateX', time=end, value=-3.0)
-        maya.cmds.setKeyframe(marker_01_tfm, attribute='translateY', time=start, value=1.5)
-        maya.cmds.setKeyframe(marker_01_tfm, attribute='translateY', time=end, value=1.3)
+            'marker_01', mkr_grp, bnd_tfm=bundle_01_tfm)
+        maya.cmds.setAttr(marker_01_tfm + '.tz', -1.0)
+        maya.cmds.setKeyframe(marker_01_tfm, attribute='translateX', time=start, value=-0.243056042)
+        maya.cmds.setKeyframe(marker_01_tfm, attribute='translateX', time=end, value=-0.29166725)
+        maya.cmds.setKeyframe(marker_01_tfm, attribute='translateY', time=start, value=0.218750438)
+        maya.cmds.setKeyframe(marker_01_tfm, attribute='translateY', time=end, value=0.189583713)
 
         # disable this marker
         marker_02_tfm, marker_02_shp = self.create_marker(
-            'marker_02', cam_tfm, bnd_tfm=bundle_02_tfm)
-        maya.cmds.setAttr(marker_02_tfm + '.tz', -10)
-        maya.cmds.setKeyframe(marker_02_tfm, attribute='translateX', time=start, value=2.5)
-        maya.cmds.setKeyframe(marker_02_tfm, attribute='translateX', time=end, value=3.0)
-        maya.cmds.setKeyframe(marker_02_tfm, attribute='translateY', time=start, value=1.5)
-        maya.cmds.setKeyframe(marker_02_tfm, attribute='translateY', time=end, value=1.3)
+            'marker_02', mkr_grp, bnd_tfm=bundle_02_tfm)
+        maya.cmds.setAttr(marker_02_tfm + '.tz', -1.0)
+        maya.cmds.setKeyframe(marker_02_tfm, attribute='translateX', time=start, value=0.243056042)
+        maya.cmds.setKeyframe(marker_02_tfm, attribute='translateX', time=end, value=0.29166725)
+        maya.cmds.setKeyframe(marker_02_tfm, attribute='translateY', time=start, value=0.218750438)
+        maya.cmds.setKeyframe(marker_02_tfm, attribute='translateY', time=end, value=0.189583713)
         maya.cmds.setKeyframe(marker_02_tfm, attribute='enable', time=start, value=1)
         maya.cmds.setKeyframe(marker_02_tfm, attribute='enable', time=mid, value=0)
         maya.cmds.setKeyframe(marker_02_tfm, attribute='enable', time=end, value=1)
@@ -220,10 +222,10 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         ty_mid = maya.cmds.getAttr(grp + '.ty', time=mid)
         ty_end = maya.cmds.getAttr(grp + '.ty', time=end)
         assert self.approx_equal(tx_start, -0.51855463, eps=0.001)
-        assert self.approx_equal(tx_mid, -2.30211317518, eps=0.001)
+        assert self.approx_equal(tx_mid, -2.266493967, eps=0.001)
         assert self.approx_equal(tx_end, -1.48144697, eps=0.001)
         assert self.approx_equal(ty_start, 1.30993172, eps=0.001)
-        assert self.approx_equal(ty_mid, 1.65458758547, eps=0.001)
+        assert self.approx_equal(ty_mid, 1.631927621, eps=0.001)
         assert self.approx_equal(ty_end, 2.10503952, eps=0.001)
 
 

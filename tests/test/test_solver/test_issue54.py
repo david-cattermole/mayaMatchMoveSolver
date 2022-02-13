@@ -62,13 +62,12 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         maya.cmds.setAttr(bundle_tfm + '.ty', bnd_translate[1])
         maya.cmds.setAttr(bundle_tfm + '.tz', bnd_translate[2])
 
+        mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_tfm, marker_shp = self.create_marker(
-            'marker',
-            cam_tfm,
-            bnd_tfm=bundle_tfm)
+            'marker', mkr_grp, bnd_tfm=bundle_tfm)
         maya.cmds.setAttr(marker_tfm + '.tx', 0.0)
         maya.cmds.setAttr(marker_tfm + '.ty', 0.0)
-        maya.cmds.setAttr(marker_tfm + '.tz', -10)
+        maya.cmds.setAttr(marker_tfm + '.tz', -1.0)
 
         maya.cmds.setAttr(cam_tfm + '.rx', cam_rotate[0])
         maya.cmds.setAttr(cam_tfm + '.ry', cam_rotate[1])
@@ -267,9 +266,9 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         """
         Solve nodal camera on a single frame, using ceres.
         """
-        self.do_solve_with_initial_value_zero('ceres', 0)
-        self.do_solve_with_initial_value_twenty('ceres', 0)
-        self.do_solve_with_initial_value_threeSixty('ceres', 0)
+        self.do_solve_with_initial_value_zero('ceres', 3)
+        self.do_solve_with_initial_value_twenty('ceres', 3)
+        self.do_solve_with_initial_value_threeSixty('ceres', 3)
 
     def test_init_cminpack_lmdif(self):
         """

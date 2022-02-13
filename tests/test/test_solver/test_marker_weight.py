@@ -59,18 +59,19 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         bundle_02_tfm, bundle_02_shp = self.create_bundle('bundle_02', parent=grp)
         maya.cmds.setAttr(grp + '.tz', -10)
 
+        mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_01_tfm, marker_01_shp = self.create_marker(
-            'marker_01', cam_tfm, bnd_tfm=bundle_01_tfm)
-        maya.cmds.setAttr(marker_01_tfm + '.tx', -2.5)
-        maya.cmds.setAttr(marker_01_tfm + '.ty', 1.3)
-        maya.cmds.setAttr(marker_01_tfm + '.tz', -10)
+            'marker_01', mkr_grp, bnd_tfm=bundle_01_tfm)
+        maya.cmds.setAttr(marker_01_tfm + '.tx', -0.243056042)
+        maya.cmds.setAttr(marker_01_tfm + '.ty', 0.189583713)
+        maya.cmds.setAttr(marker_01_tfm + '.tz', -1.0)
         maya.cmds.setAttr(marker_01_tfm + '.weight', w1)
 
         marker_02_tfm, marker_02_shp = self.create_marker(
-            'marker_02', cam_tfm, bnd_tfm=bundle_02_tfm)
-        maya.cmds.setAttr(marker_02_tfm + '.tx', 2.5)
-        maya.cmds.setAttr(marker_02_tfm + '.ty', 1.3)
-        maya.cmds.setAttr(marker_02_tfm + '.tz', -10)
+            'marker_02', mkr_grp, bnd_tfm=bundle_02_tfm)
+        maya.cmds.setAttr(marker_02_tfm + '.tx', 0.243056042)
+        maya.cmds.setAttr(marker_02_tfm + '.ty', 0.189583713)
+        maya.cmds.setAttr(marker_02_tfm + '.tz', -1.0)
         maya.cmds.setAttr(marker_02_tfm + '.weight', w2)
         return (cam_tfm, cam_shp,
                 marker_01_tfm, marker_02_tfm,
@@ -214,8 +215,8 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         maya.cmds.setAttr(cam_tfm + '.ty', 0.0)
         maya.cmds.setAttr(cam_tfm + '.tz', 0.0)
 
-        maya.cmds.setAttr(marker_01_tfm + '.tx', -1.0)
-        maya.cmds.setAttr(marker_02_tfm + '.tx', 1.0)
+        maya.cmds.setAttr(marker_01_tfm + '.tx', -0.097222417)
+        maya.cmds.setAttr(marker_02_tfm + '.tx', 0.097222417)
 
         cameras = (
             (cam_tfm, cam_shp),
